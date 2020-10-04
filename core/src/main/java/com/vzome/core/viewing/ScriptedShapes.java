@@ -31,7 +31,7 @@ public class ScriptedShapes extends AbstractShapes
 
     public ScriptedShapes( File prefsFolder, String pkgName, String name, IcosahedralSymmetry symm, AbstractShapes fallback )
     {
-        super( pkgName, name, symm );
+        super( pkgName, name, null, symm );
         this.fallback = fallback;
     }
     

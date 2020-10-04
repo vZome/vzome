@@ -1,10 +1,10 @@
-package com.vzome.core.editor;
+package com.vzome.core.editor.api;
 
 import java.util.ArrayList;
 
+import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
-import com.vzome.core.model.Color;
 import com.vzome.core.model.ColoredMeshJson;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.SimpleMeshJson;

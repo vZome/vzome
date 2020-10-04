@@ -1,4 +1,3 @@
-import { startProgress } from './progress'
 
 const LOG_LEVEL = 'INFO'
 
@@ -173,8 +172,6 @@ export const init = ( window, store ) =>
     "/lt/runtime/rt.jar.java.awt.geom.js",
     "/lt/runtime/rt.jar.sun.awt.js"
  ]
-
-  store.dispatch( startProgress( "Loading vZome Online Viewer..." ) )
 
   window.cheerpjInit( {
     preloadResources: resourcesToPreload,

@@ -45,7 +45,7 @@ public class CommandUniformH4Polytope extends CommandTransform
             symm = new H4Symmetry( field );
             h4Symms .put( field, symm );
         }
-        this .mRoots = format .getQuaternionicSymmetry( "H_4" ) .getRoots();
+        this .mRoots = ((XmlSymmetryFormat) format) .getQuaternionicSymmetry( "H_4" ) .getRoots();
     }
     
     private final Map<AlgebraicField, H4Symmetry> h4Symms = new HashMap<>();

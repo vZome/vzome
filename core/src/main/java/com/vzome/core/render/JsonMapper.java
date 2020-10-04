@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.vecmath.Matrix4d;
-import javax.vecmath.Quat4d;
+import javax.vecmath.Quat4f;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,9 +17,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.construction.Color;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
-import com.vzome.core.model.Color;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -191,7 +191,7 @@ public class JsonMapper
                     matrix .setElement( i, j, value );
                 }
             }
-            Quat4d quat = new Quat4d();
+            Quat4f quat = new Quat4f();
             matrix .get( quat );
             result = this .objectMapper .createObjectNode();
             result .put( "x", quat .x );

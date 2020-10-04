@@ -13,19 +13,18 @@ import com.vzome.core.construction.PlaneFromPointAndNormal;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.PolygonFromVertices;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class LinePlaneIntersect extends ChangeManifestations
 {
-    public LinePlaneIntersect( Selection selection, RealizedModel realized )
+    public LinePlaneIntersect( EditorModel editor )
     {
-        super( selection, realized );
+        super( editor );
     }
     
     @Override

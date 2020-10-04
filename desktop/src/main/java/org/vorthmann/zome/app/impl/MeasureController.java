@@ -11,11 +11,12 @@ import org.vorthmann.ui.DefaultController;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
-import com.vzome.core.editor.EditorModel;
-import com.vzome.core.editor.Manifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.EditorModelImpl;
 import com.vzome.core.editor.SelectionSummary;
-import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.Manifestations;
+import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Panel;
@@ -39,7 +40,7 @@ public class MeasureController extends DefaultController implements SelectionSum
 	    this .renderedModel = renderedModel;
 	    this .selection = model .getSelection();
 	    this .editorModel = model; // allow run time access to the current editorModel.symmetrySystem
-	    model .addSelectionSummaryListener( this );
+	    ((EditorModelImpl) model) .addSelectionSummaryListener( this );
         this .twoPlaces .setMaximumFractionDigits( 2 );
         this .fourPlaces .setMaximumFractionDigits( 4 );
 	}
@@ -156,7 +157,7 @@ public class MeasureController extends DefaultController implements SelectionSum
 	{
         AlgebraicVector v1 = s1.getOffset();
         AlgebraicVector v2 = s2.getOffset();
-        SymmetrySystem ss = editorModel.getSymmetrySystem();
+        OrbitSource ss = ((EditorModelImpl) editorModel).getSymmetrySystem();
         Axis axis1 = ss .getAxis( v1 );
         Axis axis2 = ss .getAxis( v2 );
         boolean sameOrbit = axis1 .getDirection().equals(axis2 .getDirection());

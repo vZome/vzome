@@ -3,7 +3,7 @@ package org.vorthmann.zome.app.impl;
 import java.io.File;
 
 import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Quat4d;
+import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
 import org.vorthmann.ui.Controller;
@@ -21,7 +21,7 @@ public class AnimationCaptureController extends DefaultController implements Con
 	
 	private CameraController cameraController;
 	
-	private final Quat4d rotation;
+	private final Quat4f rotation;
 		
 	private final File parentDir;
 	
@@ -35,7 +35,7 @@ public class AnimationCaptureController extends DefaultController implements Con
 		this.cameraController = cameraController;
 		Vector3f viewRotAxis = new Vector3f( 0f, 1.618f, 1f );
 		this .cameraController .mapViewToWorld( viewRotAxis );
-		this .rotation = new Quat4d();
+		this .rotation = new Quat4f();
 		this .rotation .set( new AxisAngle4f( viewRotAxis, (float) rotationRadians ) );
 			
 		this .parentDir = directory .isDirectory()? directory : directory .getParentFile();

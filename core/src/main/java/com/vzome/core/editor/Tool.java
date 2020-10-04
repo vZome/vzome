@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Construction;
+import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.model.Manifestation;
 
 public abstract class Tool extends ChangeManifestations implements com.vzome.api.Tool
@@ -29,7 +30,7 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
 
     public Tool( String id, ToolsModel tools )
     {
-        super( tools .getEditorModel() .getSelection(), tools .getEditorModel() .getRealizedModel() );
+        super( tools .getEditorModel() );
         this .tools = tools;
         this .id = id;
         this .inputBehaviors = EnumSet.of( InputBehaviors.SELECT );

@@ -39,12 +39,17 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.AbstractCommand;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.commands.XmlSymmetryFormat;
+import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.Snapshot.SnapshotAction;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
@@ -57,14 +62,14 @@ import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
-import com.vzome.core.model.Color;
 import com.vzome.core.model.ColoredMeshJson;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Exporter;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
+import com.vzome.core.model.ManifestationImpl;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
+import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.model.Strut;
 import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.Colors;
@@ -72,15 +77,15 @@ import com.vzome.core.render.RenderedModel;
 import com.vzome.core.tools.BookmarkTool;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
-import com.vzome.xml.DomUtils;
+import com.vzome.xml.DomSerializer;
 
 public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 {
-    private final RealizedModel mRealizedModel;
+    private final RealizedModelImpl mRealizedModel;
 
     private final Point originPoint;
 
-    private final EditorModel editorModel;
+    private final EditorModelImpl editorModel;
 
     private final EditHistory mHistory;
 
@@ -120,7 +125,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport( this );
 
-    private final Map<String,SymmetrySystem> symmetrySystems = new HashMap<>();
+    private final Map<String,OrbitSource> symmetrySystems = new HashMap<>();
 
     private final Lights sceneLighting;
 
@@ -171,7 +176,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
      // TODO: vvv - most of this can be moved into EditorModel initialization
         
-        this .mRealizedModel = new RealizedModel( this .field, new Projection.Default( this .field ) );
+        this .mRealizedModel = new RealizedModelImpl( this .field, new Projection.Default( this .field ) );
 
         if ( xml != null ) {
             NodeList nl = xml .getElementsByTagName( "SymmetrySystem" );
@@ -203,12 +208,19 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
         this .mRealizedModel .addListener( this .renderedModel ); // just setting the default
         // the renderedModel must either be disabled, or have shapes here, so the origin ball gets rendered
-        this .editorModel = new EditorModel( this .mRealizedModel, originPoint, kind, symmetrySystem, this .symmetrySystems );
+        this .editorModel = new EditorModelImpl( this .mRealizedModel, originPoint, kind, symmetrySystem, this .symmetrySystems );
         this .tools .setEditorModel( this .editorModel );
 
         // cannot be done in the constructors
-        for ( SymmetrySystem symmetrySys : this .symmetrySystems .values()) {
-            symmetrySys .createToolFactories( this .tools );
+        for ( OrbitSource symmetrySys : this .symmetrySystems .values()) {
+            ((SymmetrySystem) symmetrySys) .createToolFactories( this .tools );
+            for ( Tool.Kind toolkind : Tool.Kind.values() )
+            {
+                List<Tool.Factory> list = ((SymmetrySystem) symmetrySys) .getToolFactories( toolkind );
+                for ( Tool.Factory factory : list ) {
+                    this .editorModel .addSelectionSummaryListener( (SelectionSummary.Listener) factory );
+                }
+            }
         }
 
         kind .registerToolFactories( this .toolFactories, this .tools );
@@ -244,7 +256,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             @Override
             public void showCommand( Element xml, int editNumber )
             {
-                String str = editNumber + ": " + DomUtils .toString( xml );
+                String str = editNumber + ": " + DomSerializer .toString( xml );
                 DocumentModel.this .firePropertyChange( "current.edit.xml", null, str );
             }
 
@@ -297,7 +309,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         this .mRealizedModel .addListener( renderedModel );
 
         // "re-render" the origin
-        Manifestation m = this .mRealizedModel .findConstruction( originPoint );
+        ManifestationImpl m = (ManifestationImpl) this .mRealizedModel .findConstruction( originPoint );
         m .setRenderedObject( null );
         this .mRealizedModel .show( m );
     }
@@ -494,7 +506,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         for (Manifestation man : editorModel .getSelection() ) {
             last = man;
         }
-        return last == null ? null : last .getRenderedObject() .getColor();
+        return last == null ? null : last .getColor();
     }
 
     public void finishLoading( boolean openUndone, boolean asTemplate ) throws Command.Failure
@@ -512,7 +524,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             //   (Adjust that if $Version.edition == $file.edition, to avoid confusion.)
 
             String tns = mXML .getNamespaceURI();
-            XmlSaveFormat format = XmlSaveFormat.getFormat( tns );
+            XmlSymmetryFormat format = XmlSymmetryFormat.getFormat( tns );
             if ( format == null )
                 return; // already checked and reported version compatibility,
             // up in the constructor
@@ -526,7 +538,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
                 @Override
                 public OrbitSet getGroup( String name )
                 {
-                    SymmetrySystem system = symmetrySystems .get( name );
+                    OrbitSource system = symmetrySystems .get( name );
                     return system .getOrbits();
                 }
 
@@ -741,13 +753,13 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         childElement .appendChild( viewXml );
         vZomeRoot .appendChild( childElement );
 
-        childElement = this .editorModel .getSymmetrySystem() .getXml( doc );
+        childElement = ((SymmetrySystem) this .editorModel .getSymmetrySystem()) .getXml( doc );
         vZomeRoot .appendChild( childElement );
 
         childElement = this .tools .getXml( doc );
         vZomeRoot .appendChild( childElement );
 
-        DomUtils .serialize( doc, out );
+        DomSerializer .serialize( doc, out );
     }
 
     public AlgebraicField getField()
@@ -757,7 +769,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     public void addSelectionListener( ManifestationChanges listener )
     {
-        this .editorModel .getSelection() .addListener( listener );
+        ((SelectionImpl) this .editorModel .getSelection()) .addListener( listener );
     }
 
     private AbstractToolFactory bookmarkFactory;
@@ -883,12 +895,12 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         return this .tools;
     }
 
-    public SymmetrySystem getSymmetrySystem()
+    public OrbitSource getSymmetrySystem()
     {
         return this .editorModel .getSymmetrySystem();
     }
 
-    public SymmetrySystem getSymmetrySystem( String name )
+    public OrbitSource getSymmetrySystem( String name )
     {
         if ( name == null )
             return this .getSymmetrySystem();

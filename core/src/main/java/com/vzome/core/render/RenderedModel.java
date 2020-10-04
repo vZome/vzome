@@ -11,6 +11,9 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.construction.Color;
+import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
@@ -19,10 +22,11 @@ import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.model.Color;
 import com.vzome.core.model.Connector;
+import com.vzome.core.model.HasRenderedObject;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
+import com.vzome.core.model.ManifestationImpl;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 
@@ -90,21 +94,20 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         {
             return symmetry;
         }
+
+        @Override
+        public Color getVectorColor( AlgebraicVector vector )
+        {
+            return null;
+        }
+
+        @Override
+        public String getName()
+        {
+            return null;
+        }
     }
 
-    public interface OrbitSource
-    {
-        Symmetry getSymmetry();
-    	    	
-        Axis getAxis( AlgebraicVector vector );
-        
-        Color getColor( Direction orbit );
-
-		OrbitSet getOrbits();
-		
-		Shapes getShapes();
-    }
-        
     public RenderedModel( final AlgebraicField field, final OrbitSource orbitSource )
     {
         super();
@@ -158,18 +161,18 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     
     public RenderedManifestation render( Manifestation manifestation )
     {
-        RenderedManifestation rm = new RenderedManifestation( manifestation );
-        rm .setModel( this );
-        rm .resetAttributes( this .orbitSource, this .mPolyhedra, this .oneSidedPanels, this .colorPanels );
+        RenderedManifestation rm = new RenderedManifestation( manifestation, this .orbitSource );
+        rm .resetAttributes( this .oneSidedPanels, this .colorPanels );
         return rm;
     }
 
     @Override
 	public void manifestationAdded( Manifestation m )
 	{
+        ManifestationImpl mi = (ManifestationImpl) m;
 		if ( ! this .enabled )
 		{
-			m .setRenderedObject( new RenderedManifestation( m ) );
+		    mi .setRenderedObject( new RenderedManifestation( m, this .orbitSource ) );
 			return;
 		}
 		
@@ -177,7 +180,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         Polyhedron poly = rm .getShape();
 	    if ( poly == null )
 	        return; // no direction for this strut
-	    m .setRenderedObject( rm );
+	    mi .setRenderedObject( rm );
         
 	    mRendered .add( rm );
 	    this .byID .put( rm .getGuid(), rm );
@@ -191,12 +194,13 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     @Override
 	public void manifestationRemoved( Manifestation m )
 	{
+        ManifestationImpl mi = (ManifestationImpl) m;
 		if ( ! this .enabled ) {
-			m .setRenderedObject( null );
+			mi .setRenderedObject( null );
 			return;
 		}
 		
-	    RenderedManifestation rendered = m .getRenderedObject();
+	    RenderedManifestation rendered = (RenderedManifestation) ((HasRenderedObject) m) .getRenderedObject();
 	    if ( rendered == null )
 	        return; // there was no way to render the shape
 	    
@@ -209,7 +213,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	        throw new IllegalStateException( "unable to remove RenderedManifestation" );
 	    
         this .byID .remove( rendered .getGuid() );
-        m .setRenderedObject( null );
+        mi .setRenderedObject( null );
 	}
     
     public RenderedManifestation getRenderedManifestation( String guid )
@@ -219,7 +223,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 
 	public void setManifestationGlow( Manifestation m, boolean on )
 	{
-        RenderedManifestation rendered = m .getRenderedObject();
+        RenderedManifestation rendered = (RenderedManifestation) ((HasRenderedObject) m) .getRenderedObject();
         if ( rendered == null )
             return; // could not find a shape for m, probably
         rendered .setGlow( on? mSelectionGlow : 0f );
@@ -233,7 +237,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     
     public void setManifestationColor( Manifestation m, Color color )
     {
-        RenderedManifestation rendered = m .getRenderedObject();
+        RenderedManifestation rendered = (RenderedManifestation) ((HasRenderedObject) m) .getRenderedObject();
         if ( rendered == null )
             return; // could not find a shape for m, probably
         rendered .setColor( color );
@@ -247,7 +251,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     
     public void setManifestationTransparency( Manifestation m, boolean on )
     {
-        RenderedManifestation rendered = m .getRenderedObject();
+        RenderedManifestation rendered = (RenderedManifestation) ((HasRenderedObject) m) .getRenderedObject();
         if ( rendered == null )
             return; // could not find a shape for m, probably
         rendered .setTransparency( on? mSelectionGlow : 0f );
@@ -312,7 +316,8 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
                     }
                 }
               
-                rendered .resetAttributes( orbitSource, mPolyhedra, this .oneSidedPanels, this .colorPanels );
+                rendered .setOrbitSource( this .orbitSource );
+                rendered .resetAttributes( this .oneSidedPanels, this .colorPanels );
                 newSet .add( rendered );  // must re-hash, since shape has changed
 
                 float glow = rendered .getGlow();
@@ -352,7 +357,6 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         RenderedModel snapshot = new RenderedModel( this .orbitSource .getSymmetry(), false );
         for (RenderedManifestation rm : mRendered) {
             RenderedManifestation copy = rm .copy();
-            copy .setModel( this );
             snapshot .mRendered .add( copy );
         }
         return snapshot;

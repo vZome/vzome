@@ -5,7 +5,6 @@ package com.vzome.core.math.symmetry;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.PentagonField;
 
 /**
  * @author Scott Vorthmann
@@ -119,7 +118,7 @@ public class OctahedralSymmetry extends AbstractSymmetry
         AlgebraicVector yAxis = mField.basisVector( 3, AlgebraicVector.Y );
         AlgebraicVector zAxis = mField.basisVector( 3, AlgebraicVector.Z );
         Direction dir;
-        if ( mField instanceof PentagonField )
+        if ( mField .doubleFrameVectors() )
             dir = createZoneOrbit( frameColor, 0, 1, xAxis, true, true, mField .createRational( 2 ) );
         else
             dir = createZoneOrbit( frameColor, 0, 1, xAxis, true );

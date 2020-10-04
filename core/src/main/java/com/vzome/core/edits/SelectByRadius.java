@@ -5,7 +5,7 @@ import java.util.List;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command;
-import com.vzome.core.editor.EditorModel;
+import com.vzome.core.editor.api.EditorModel;
 
 public class SelectByRadius extends SelectByDiameter {
     public static final String NAME = "SelectByRadius";

@@ -14,6 +14,7 @@ import com.vzome.api.Tool.OutputBehaviors;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
+import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.model.Manifestation;
 
 public class ApplyTool extends ChangeManifestations
@@ -78,7 +79,7 @@ public class ApplyTool extends ChangeManifestations
 
     public ApplyTool( ToolsModel tools, Tool tool, EnumSet<InputBehaviors> inputAction, EnumSet<OutputBehaviors> outputAction, boolean redundantOutputs )
     {
-        super( tools .getEditorModel() .getSelection(), tools .getEditorModel() .getRealizedModel() );
+        super( tools .getEditorModel() );
         this.tools = tools;
 
         this .tool = tool;
@@ -137,7 +138,7 @@ public class ApplyTool extends ChangeManifestations
     public Manifestation manifestConstruction( Construction c )
     {
         Manifestation m = getManifestation( c );
-        boolean preExistsNotHidden = ( m != null && m .getRenderedObject() != null );
+        boolean preExistsNotHidden = ( m != null && m .isRendered() );
         if ( justSelect )
         {
             // Pre-existing manifestation, NOT considered an output.
@@ -164,7 +165,7 @@ public class ApplyTool extends ChangeManifestations
         if ( this .tool .needsInput() )
             throw new UnsupportedOperationException( "select is not supported within Tool.performEdit" );
 
-        if ( m .getRenderedObject() == null )
+        if ( ! m .isRendered() )
             super .showManifestation( m );
         super .select( m, true /* safe to ignore groups, they won't exist */ );
     }

@@ -15,19 +15,19 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Manifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.Manifestations;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
+import com.vzome.core.model.StrutImpl;
 
 public class Validate2Manifold extends ChangeManifestations
 {
-	public Validate2Manifold( Selection selection, RealizedModel model )
-	{
-		super( selection, model );
+	public Validate2Manifold( EditorModel editor )
+    {
+        super( editor );
 	}
 
 	@SuppressWarnings("serial")
@@ -77,12 +77,12 @@ public class Validate2Manifold extends ChangeManifestations
 	            else {
 	                // We are using Strut rather than Segment because of the equality,
 	                //  which ignores orientation.
-	                Strut strut = new Strut( prev, vertex );
+	                Strut strut = new StrutImpl( prev, vertex );
 	                edges .addStrut( strut, panel );
 	                prev = vertex;
 	            }
 	        }
-            Strut strut = new Strut( prev, v0 );
+            Strut strut = new StrutImpl( prev, v0 );
             edges .addStrut( strut, panel );
 	    }
 	    

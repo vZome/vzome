@@ -1,7 +1,7 @@
 
 //(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
 
-package com.vzome.core.editor;
+package com.vzome.core.editor.api;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -11,25 +11,24 @@ import java.util.function.Predicate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
-import com.vzome.core.model.Color;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
-import com.vzome.core.render.RenderedManifestation;
 import com.vzome.xml.DomUtils;
 
 public abstract class ChangeManifestations extends ChangeSelection
 {
     protected final RealizedModel mManifestations;
 
-    public ChangeManifestations( Selection selection, RealizedModel realized )
+    public ChangeManifestations( EditorModel editorModel )
     {
-        super( selection );
+        super( editorModel .getSelection() );
 
-        mManifestations = realized;
+        mManifestations = editorModel .getRealizedModel();
         // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
         mManifestedNow = new HashMap<>();
     }
@@ -86,7 +85,7 @@ public abstract class ChangeManifestations extends ChangeSelection
         }
         else {
             // already manifested, just make sure it shows
-            if ( m .getRenderedObject() == null )
+            if ( ! m .isRendered() )
                 plan( new RenderManifestation( m, true ) );
         }
         return m;
@@ -355,12 +354,7 @@ public abstract class ChangeManifestations extends ChangeSelection
         {
             mManifestation = manifestation;
             this .newColor = color;
-            RenderedManifestation rm = manifestation .getRenderedObject();
-            if ( rm != null ) {
-                oldColor = rm .getColor();
-            }
-            else
-                oldColor = Color .GREY_TRANSPARENT; // TODO fix this case
+            oldColor = manifestation .getColor();
         }
 
         @Override
@@ -428,5 +422,4 @@ public abstract class ChangeManifestations extends ChangeSelection
     protected Manifestations.PanelIterator getVisiblePanels(Predicate<Panel> postFilter) {
         return Manifestations.getVisiblePanels(mManifestations, postFilter);
     }
-
 }

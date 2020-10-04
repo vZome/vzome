@@ -10,20 +10,18 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
-import com.vzome.core.model.Color;
+import com.vzome.core.construction.Color;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
-import com.vzome.core.render.RenderedManifestation;
 
 public class ColorManifestations extends ChangeManifestations
 {
     private Color color;
     
-    public ColorManifestations( Selection selection, RealizedModel realized )
+    public ColorManifestations( EditorModel editorModel )
     {
-        super( selection, realized );
+        super( editorModel );
     }
     
     @Override
@@ -40,8 +38,7 @@ public class ColorManifestations extends ChangeManifestations
 
         // TODO: this behavior should move to perform()
         for (Manifestation m : mSelection) {
-            RenderedManifestation rm = m .getRenderedObject();
-            if ( rm != null )
+            if ( m .isRendered() )
                 // This test is probably unnecessary now that we store color in Manifestation,
                 //  but I don't want to risk a subtle bug by removing the test.
                 colorManifestation( m, color );

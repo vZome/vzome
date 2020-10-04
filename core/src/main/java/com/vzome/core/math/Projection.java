@@ -7,13 +7,12 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.commands.XmlSaveFormat;
 
 public interface Projection
 {
     AlgebraicVector projectImage( AlgebraicVector source, boolean wFirst );
     void getXmlAttributes( Element element );
-    void setXmlAttributes( Element xml, XmlSaveFormat format );
+    void setXmlAttributes( Element xml );
     String getProjectionName();
     
     public static class Default implements Projection
@@ -37,7 +36,7 @@ public interface Projection
         public void getXmlAttributes( Element element ) {}
 
         @Override
-        public void setXmlAttributes( Element xml, XmlSaveFormat format ) {}
+        public void setXmlAttributes( Element xml ) {}
 
         @Override
         public String getProjectionName()

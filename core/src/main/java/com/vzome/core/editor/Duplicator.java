@@ -14,6 +14,7 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.SegmentJoiningPoints;
+import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;

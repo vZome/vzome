@@ -5,7 +5,7 @@ import java.util.function.BiConsumer;
 /**
  * @author David Hall
  */
-public abstract class ParameterizedField<T extends Object> extends AlgebraicField {
+public abstract class ParameterizedField<T extends Object> extends AbstractAlgebraicField {
 
     protected final T operand;
     protected final double[] coefficients;

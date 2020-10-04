@@ -103,11 +103,11 @@
     <testcase classname="/2019/06-Jun.11-Scott-meetingBuilds" name="B4-F-triality-yellow-stretch" time="0.1"/>
     <system-out>https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files/2019/06-Jun/11-Scott-meetingBuilds/B4-F-triality-yellow-stretch.vZome
 </system-out>
-    <system-err>Apr 25, 2020 1:05:27 PM com.vzome.core.editor.SideEffects logBugAccommodation
+    <system-err>Apr 25, 2020 1:05:27 PM com.vzome.core.editor.api.SideEffects logBugAccommodation
 WARNING: ACCOMMODATION: null manifestation
-Apr 25, 2020 1:05:27 PM com.vzome.core.editor.SideEffects logBugAccommodation
+Apr 25, 2020 1:05:27 PM com.vzome.core.editor.api.SideEffects logBugAccommodation
 WARNING: ACCOMMODATION: null manifestation
-Apr 25, 2020 1:05:27 PM com.vzome.core.editor.SideEffects logBugAccommodation
+Apr 25, 2020 1:05:27 PM com.vzome.core.editor.api.SideEffects logBugAccommodation
 WARNING: ACCOMMODATION: null manifestation
 </system-err>
   </testsuite>

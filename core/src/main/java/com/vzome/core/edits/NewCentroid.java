@@ -9,12 +9,11 @@ import java.util.List;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.CentroidPoint;
+import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
-import com.vzome.core.model.Connector;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
 public class NewCentroid extends ChangeManifestations
 {
@@ -24,9 +23,10 @@ public class NewCentroid extends ChangeManifestations
         List<Point> verticesList = new ArrayList<>();
         for (Manifestation man : mSelection) {
             unselect( man );
-            if ( man instanceof Connector )
+            Construction construction = man .toConstruction();
+            if ( construction instanceof Point )
             {
-                Point nextPoint = (Point) ((Connector) man) .getFirstConstruction();
+                Point nextPoint = (Point) construction;
                 verticesList .add( nextPoint );
             }
         }
@@ -40,9 +40,9 @@ public class NewCentroid extends ChangeManifestations
         redo();
     }
 
-    public NewCentroid( Selection selection, RealizedModel realized )
+    public NewCentroid( EditorModel editorModel )
     {
-        super( selection, realized );
+        super( editorModel );
     }
     
     @Override

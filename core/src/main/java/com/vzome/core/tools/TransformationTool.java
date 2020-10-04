@@ -8,9 +8,9 @@ import java.util.Arrays;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Transformation;
-import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
+import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.model.Manifestation;
 
 public abstract class TransformationTool extends Tool

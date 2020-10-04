@@ -6,9 +6,8 @@ package com.vzome.desktop.controller;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.vecmath.Matrix4d;
-import javax.vecmath.Quat4d;
-import javax.vecmath.Vector3d;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
 import com.vzome.core.math.RealVector;
@@ -27,7 +26,7 @@ public abstract class ZoneVectorBall
     
     private OrbitSet orbits;
     
-    private Vector3d zoneVector3d;
+    private Vector3f zoneVector3d;
 
     private Axis zone = null;
 
@@ -53,15 +52,15 @@ public abstract class ZoneVectorBall
     {
         Vector3f Z = new Vector3f( 0f, 0f, 1f );
         mViewPlatform .mapViewToWorld( Z );
-        zoneVector3d = new Vector3d( Z.x, Z.y, Z.z );
+        zoneVector3d = new Vector3f( Z.x, Z.y, Z.z );
         mapVectorToAxis();
         return zone;
     }
 
-    public void trackballRolled( Quat4d roll )
+    public void trackballRolled( Quat4f roll )
     {
         mViewPlatform .getWorldRotation( roll );
-        Matrix4d rollM = new Matrix4d();
+        Matrix4f rollM = new Matrix4f();
         rollM.set( roll );
         // roll is now a rotation in world coordinates
         rollM.transform( zoneVector3d );
@@ -73,7 +72,7 @@ public abstract class ZoneVectorBall
      * to define a new vector, as for the working plane.
      * @param vector
      */
-    public void setVector( Vector3d vector )
+    public void setVector( Vector3f vector )
     {
         zoneVector3d = vector;
         mapVectorToAxis();

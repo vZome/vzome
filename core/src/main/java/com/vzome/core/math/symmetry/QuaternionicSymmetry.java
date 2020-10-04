@@ -3,9 +3,7 @@
 
 package com.vzome.core.math.symmetry;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.StringTokenizer;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -13,6 +11,7 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Quaternion;
 import com.vzome.core.math.VefParser;
+import com.vzome.xml.ResourceLoader;
 
 /**
  * @author Scott Vorthmann
@@ -41,14 +40,7 @@ public class QuaternionicSymmetry
     {
         mName = name;
         try {
-            InputStream input =
-                getClass() .getClassLoader() .getResourceAsStream( rootsResource );
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] buf = new byte[1024];
-            int num;
-            while ( ( num = input .read( buf, 0, 1024 )) > 0 )
-                out .write( buf, 0, num );
-            String vefData = new String( out .toByteArray() );
+            String vefData = ResourceLoader.loadStringResource( rootsResource );
             RootParser parser = new RootParser( field );
             parser .parseVEF( vefData, field );
             mRoots = parser .getQuaternions();

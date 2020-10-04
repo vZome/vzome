@@ -9,6 +9,9 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -24,7 +27,7 @@ public class ApiEdit extends ChangeManifestations
 {
 	public ApiEdit( EditorModel editor )
 	{
-		super( editor .getSelection(), editor .getRealizedModel() );
+		super( editor );
 	}
 	
 	private Selection getSelection()
@@ -73,7 +76,7 @@ public class ApiEdit extends ChangeManifestations
 		@Override
 		public Selection getInputs()
 		{
-			Selection inputsUnselected = new Selection();
+			Selection inputsUnselected = new SelectionImpl();
 	        for ( Manifestation man : this .edit .getSelection() ) {
             	inputsUnselected .select( man );
 			}

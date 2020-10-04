@@ -1,7 +1,7 @@
 
-import { FILE_LOADED, fetchModel } from './files'
+import { FILE_LOADED } from './files'
 import DEFAULT_MODEL from '../models/logo'
-import { writeTextFile, callStaticMethod, callObjectMethod, createWriteableFile, JAVA_CODE_LOADED } from './jre'
+import { writeTextFile, callStaticMethod, callObjectMethod, createWriteableFile } from './jre'
 import { startProgress, stopProgress } from './progress'
 
 // These are dispatched from Java
@@ -26,13 +26,21 @@ export const exportTriggered = ( extension, message ) => async (dispatch, getSta
   })
 }
 
+const normalize = ( instance ) =>
+{
+  const pos = instance.position
+  const quat = instance.rotation
+  const rotation = quat? [ quat.x, quat.y, quat.z, quat.w ] : [ 1, 0, 0, 0 ]
+  return { ...instance, shapeId: instance.shape, position: [ pos.x, pos.y, pos.z ], rotation }
+}
+
 const initialState = {
   renderingOn: true,
   controller: undefined,
   fileName: undefined,
   shapes: DEFAULT_MODEL.shapes,
-  instances: DEFAULT_MODEL.instances,
-  previous: DEFAULT_MODEL.instances,
+  instances: DEFAULT_MODEL.instances.map( normalize ),
+  previous: DEFAULT_MODEL.instances.map( normalize )
 }
 
 export const reducer = ( state = initialState, action ) => {
@@ -63,7 +71,7 @@ export const reducer = ( state = initialState, action ) => {
         ...state,
         instances: [
           ...state.instances,
-          action.payload
+          normalize( action.payload )
         ]
       }
 
@@ -124,15 +132,6 @@ export const reducer = ( state = initialState, action ) => {
 
 export const middleware = store => next => async action => 
 {
-  if ( action.type === JAVA_CODE_LOADED ) {
-    let url = "/app/models/vZomeLogo.vZome"
-    const urlParams = new URLSearchParams( window.location.search );
-    if ( urlParams.has( "url" ) ) {
-      url = decodeURI( urlParams.get( "url" ) )
-    }
-    store.dispatch( fetchModel( url ) )
-  }
-
   if ( action.type === FILE_LOADED ) {
     store.dispatch( startProgress( "Parsing vZome model..." ) )
     const path = "/str/" + action.payload.name
@@ -149,4 +148,17 @@ export const middleware = store => next => async action =>
   }
   
   return next( action )
+}
+
+export const supportsEdits = false
+
+const filterInstances = ( shape, instances ) =>
+{
+  return instances.filter( instance => instance.shapeId === shape.id )
+}
+
+export const sortedShapes = ( { vzomejava } ) =>
+{
+  const instances = vzomejava.renderingOn? vzomejava.instances : vzomejava.previous
+  return vzomejava.shapes.map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
 }

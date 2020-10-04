@@ -3,7 +3,6 @@
 
 package com.vzome.core.algebra;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -73,7 +72,24 @@ public class AlgebraicMatrix
         }
     }
     
-    public AlgebraicMatrix( AlgebraicVector... columns )
+    // NOTE: I'm removing the varargs constructor, since it trips up runtime for JSweet-transpiled code
+    
+    public AlgebraicMatrix( AlgebraicVector x, AlgebraicVector y )
+    {
+        this( new AlgebraicVector[] { x, y } );
+    }
+    
+    public AlgebraicMatrix( AlgebraicVector x, AlgebraicVector y, AlgebraicVector z )
+    {
+        this( new AlgebraicVector[] { x, y, z } );
+    }
+    
+    public AlgebraicMatrix( AlgebraicVector x, AlgebraicVector y, AlgebraicVector z, AlgebraicVector w )
+    {
+        this( new AlgebraicVector[] { x, y, z, w } );
+    }
+    
+    public AlgebraicMatrix( AlgebraicVector[] columns )
     {
         final int rows = columns[ 0 ] .dimension(); // all vectors must be of this same dimension
         final int cols = columns .length;
@@ -120,9 +136,9 @@ public class AlgebraicMatrix
 
         int rank = Fields .gaussJordanReduction( this .matrix, result .matrix );
         if(rank != matrix.length) {
-            // TODO: What should we do here?
-            System.err.println((new Throwable()).getStackTrace()[0].getMethodName() 
-                    + " expects matrix rank to be " + matrix.length + ", but it is " + rank + "."); 
+            String message = "AlgebraicMatrix inverse expects matrix rank to be " + matrix.length + ", but it is " + rank + ".";
+            System.err.println( message );
+            throw new RuntimeException( message );
         }
         return result;
 	}
@@ -254,7 +270,7 @@ public class AlgebraicMatrix
             AlgebraicNumber sign = matrix[0][0].getField().one();
             for(int i = 0; i < matrix.length; i++) {
                 if(!matrix[0][i].isZero()) {
-                    AlgebraicNumber[][] aux = (AlgebraicNumber[][]) Array.newInstance(AlgebraicNumber.class, auxLength, auxLength);
+                    AlgebraicNumber[][] aux = new AlgebraicNumber[auxLength][auxLength];
                     int iAux = 0;
                     int jAux = 0;
                     for(int row = 1; row < matrix.length; row++){

@@ -2,10 +2,10 @@ package com.vzome.desktop.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.render.JsonMapper;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
-import com.vzome.core.render.Shapes;
 
 public class JsonClientRendering implements RenderingChanges
 {

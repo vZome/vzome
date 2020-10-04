@@ -17,15 +17,17 @@ import javax.vecmath.Vector3f;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.commands.XmlSymmetryFormat;
+import com.vzome.core.construction.Color;
 import com.vzome.core.exporters.ColoredMeshJsonExporter;
 import com.vzome.core.exporters.DaeExporter;
 import com.vzome.core.exporters.DxfExporter;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters.HistoryExporter;
-import com.vzome.core.exporters.LiveGraphicsExporter;
 import com.vzome.core.exporters.OffExporter;
 import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
@@ -51,11 +53,10 @@ import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.kinds.RootThreeFieldApplication;
 import com.vzome.core.kinds.RootTwoFieldApplication;
 import com.vzome.core.kinds.SnubDodecFieldApplication;
-import com.vzome.core.model.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.viewing.Lights;
 import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;
-import com.vzome.xml.DomUtils;
+import com.vzome.xml.DomParser;
 
 public class Application implements AlgebraicField.Registry
 {
@@ -105,7 +106,6 @@ public class Application implements AlgebraicField.Registry
         this .exporters .put( "pov", new POVRayExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "opengl", new OpenGLExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "dae", new DaeExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "LiveGraphics", new LiveGraphicsExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "json", new WebviewJsonExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "step", new STEPExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "vrml", new VRMLExporter( null, this .mColors, this .mLights, null ) );
@@ -128,7 +128,7 @@ public class Application implements AlgebraicField.Registry
         this .exporters2d .put( "ps",  PostScriptExporter::new );
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        this.fieldAppSuppliers.put("golden", GoldenFieldApplication::new);
+        this.fieldAppSuppliers.put("golden", () -> new GoldenFieldApplication( new PentagonField() ) );
         this.fieldAppSuppliers.put("rootTwo", RootTwoFieldApplication::new);
         this.fieldAppSuppliers.put("rootThree", RootThreeFieldApplication::new);
         this.fieldAppSuppliers.put("dodecagon", RootThreeFieldApplication::new);
@@ -142,9 +142,9 @@ public class Application implements AlgebraicField.Registry
         String noLineNums = this .properties .getProperty( "no.line.numbers" );
         boolean captureLineNumbers = noLineNums == null || noLineNums .equals( "false" );
 
-        Element element = DomUtils .parseXml( bytes, captureLineNumbers );
+        Element element = DomParser .parseXml( bytes, captureLineNumbers );
         String tns = element .getNamespaceURI();
-        XmlSaveFormat format = XmlSaveFormat .getFormat( tns );
+        XmlSymmetryFormat format = XmlSymmetryFormat .getFormat( tns );
 
         if ( format == null )
         {

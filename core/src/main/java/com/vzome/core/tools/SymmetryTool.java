@@ -9,14 +9,15 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.commands.XmlSymmetryFormat;
 import com.vzome.core.construction.MatrixTransformation;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.SymmetryTransformation;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.editor.AbstractToolFactory;
-import com.vzome.core.editor.Selection;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.OctahedralSymmetry;
@@ -285,7 +286,7 @@ public class SymmetryTool extends TransformationTool
     protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Failure
     {
         String symmName = element .getAttribute( "symmetry" );
-        this.symmetry = format .parseSymmetry( symmName );
+        this.symmetry = ((XmlSymmetryFormat) format) .parseSymmetry( symmName );
         super .setXmlAttributes( element, format );
     }
 }

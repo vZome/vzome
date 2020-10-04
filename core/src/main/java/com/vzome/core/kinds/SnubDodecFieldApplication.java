@@ -8,7 +8,6 @@ import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.BigRational;
 import com.vzome.core.algebra.SnubDodecField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandTauDivision;
@@ -82,22 +81,8 @@ public class SnubDodecFieldApplication extends DefaultFieldApplication
                     // These two vector specific scalars allow the unit strut lengths 
                     // to generate the same sized snubDodec as one generated with the 
                     // YELLOW strut.
-                    scaleFaceNorm = mField .createAlgebraicNumber(new BigRational[] {
-                            new BigRational(-3),
-                            new BigRational( 2),
-                            new BigRational( 2),
-                            new BigRational(-1),
-                            new BigRational( 5),
-                            new BigRational(-3)
-                        }).reciprocal();
-                    scaleVertex = mField .createAlgebraicNumber(new BigRational[] {
-                            new BigRational( -3, 3), // -1
-                            new BigRational(  2, 3),
-                            new BigRational(  7, 3),
-                            new BigRational( -4, 3),
-                            new BigRational(  2, 3),
-                            new BigRational( -1, 3)
-                        }).reciprocal();
+                    scaleFaceNorm = mField .createAlgebraicNumber( new int[] { -3, 2, 2, -1, 5, -3 } ) .reciprocal();
+                    scaleVertex = mField .createAlgebraicNumber( new int[] { -3, 2, 7, -4, 2, -1 }, 3 ) .reciprocal();
                     
 //                    // These two vector specific scalars allow the unit strut lengths 
 //                    // to generate the same sized snubDodec as one generated with the 

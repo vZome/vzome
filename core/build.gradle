@@ -34,15 +34,24 @@ configurations {
     all*.exclude group: 'org.abego.treelayout', module: 'org.abego.treelayout.core'
 }
 
+//  Uncomment this for the jsweet target, and adjust the sourceSet below
+// compileJava {
+// 	enabled = false
+// }
+
 // Support for decoupled "regression" task
 sourceSets {
     main {
         java {
+            //  Uncomment these for the jsweet target, and adjust compileJava above
+            // srcDir file( 'src/main/java' )
+            // srcDir file( 'src/jsweet/java' )
+            
             exclude 'com/vzome/opengl/FancyRenderer.java'
         }
     }
     regression {
-        java.srcDir file('src/regression/java')
+        java.srcDir file( 'src/regression/java' )
     } 
 }
 
@@ -70,6 +79,10 @@ dependencies {
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.3'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.3'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.3'
+
+    compile group: 'org.jsweet', name: 'jsweet-transpiler', version: '2.3.7'
+    compile group: 'org.jsweet', name: 'jsweet-core', version: "6.1.0"
+    compile group: 'org.jsweet', name: 'j4ts', version: '0.7.0-SNAPSHOT'
 
     runtime     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
     runtime     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
@@ -406,5 +419,148 @@ def writeProjectProperties( keys, propsFile )
     } finally {
         writer.close()
     }
+}
+
+
+buildscript {
+	repositories {
+		mavenCentral()
+		maven { url "http://repository.jsweet.org/artifactory/libs-release-local" }
+		maven { url "http://repository.jsweet.org/artifactory/plugins-release-local" }
+	}
+	dependencies {
+		classpath("org.jsweet:jsweet-gradle-plugin:2.3.7") { transitive = true }
+	}
+}
+
+apply plugin: 'org.jsweet.jsweet-gradle-plugin'
+
+jsweet {
+	veryVerbose = true
+	encoding = 'UTF-8'
+	sourceMap = false  // I can't set breakpoints if the browser cannot find the Java file, so disabling for now.
+
+    // module = 'es2015'
+
+    bundle = true
+
+	outDir = new File('client/public/jsweet')
+
+	targetVersion = 'ES6'
+    tsOnly = false
+	includes = [
+        'java/io/*.java',
+        'java/nio/*.java',
+        'java/text/*.java',
+        'java/util/*.java',
+        'org/w3c/dom/*.java',
+
+        'com/vzome/jsweet/JsAlgebraicNumber.java',
+        'com/vzome/jsweet/JsAlgebraicField.java',
+        'com/vzome/jsweet/JsRealizedModel.java',
+        'com/vzome/jsweet/JsSelection.java',
+        'com/vzome/jsweet/JsManifestation.java',
+        'com/vzome/jsweet/JsBall.java',
+        'com/vzome/jsweet/JsStrut.java',
+        'com/vzome/jsweet/JsEditorModel.java',
+        'com/vzome/jsweet/JsEditContext.java',
+
+        'com/vzome/xml/DomUtils.java',
+        'com/vzome/xml/ResourceLoader.java',
+
+        'com/vzome/core/generic/*.java',
+
+        'com/vzome/core/math/*.java',
+
+        'com/vzome/core/math/symmetry/*.java',
+
+        'com/vzome/core/math/convexhull/*.java',
+
+        'com/vzome/core/algebra/*.java',
+
+        'com/vzome/core/construction/*.java',
+
+        'com/vzome/core/commands/*.java',
+
+        'com/vzome/core/model/Group.java',
+        'com/vzome/core/model/GroupElement.java',
+        'com/vzome/core/model/Manifestation.java',
+        'com/vzome/core/model/ManifestationChanges.java',
+        'com/vzome/core/model/Connector.java',
+        'com/vzome/core/model/Strut.java',
+        'com/vzome/core/model/Panel.java',
+        'com/vzome/core/model/RealizedModel.java',
+        'com/vzome/core/model/SimpleMeshJson.java',
+        'com/vzome/core/model/ColoredMeshJson.java',
+
+        'com/vzome/core/editor/api/*.java',
+
+        'com/vzome/core/edits/*.java',
+
+        'com/vzome/core/kinds/DefaultFieldApplication.java',
+        'com/vzome/core/kinds/GoldenFieldApplication.java',
+
+        'com/vzome/api/Tool.java',
+        'com/vzome/core/tools/*.java',
+        'com/vzome/core/editor/Duplicator.java',
+        'com/vzome/core/editor/AbstractToolFactory.java',
+        'com/vzome/core/editor/CommandEdit.java',
+        'com/vzome/core/editor/Tool.java',
+        'com/vzome/core/editor/ToolsModel.java',
+        'com/vzome/core/editor/BeginBlock.java',
+        'com/vzome/core/editor/EndBlock.java',
+        'com/vzome/core/editor/ApplyTool.java',
+        'com/vzome/core/editor/SelectToolParameters.java',
+        'com/vzome/core/editor/FieldApplication.java',
+        'com/vzome/core/editor/SymmetrySystem.java',
+        'com/vzome/core/editor/SelectionSummary.java',
+        'com/vzome/core/kinds/AbstractSymmetryPerspective.java',
+        'com/vzome/core/kinds/OctahedralSymmetryPerspective.java',
+        'com/vzome/core/kinds/IcosahedralSymmetryPerspective.java',
+        'com/vzome/core/render/Colors.java',
+        'com/vzome/core/viewing/AbstractShapes.java',
+        'com/vzome/core/viewing/OctahedralShapes.java',
+        'com/vzome/core/viewing/ExportedVEFShapes.java',
+        'com/vzome/core/viewing/ExportedVEFStrutGeometry.java',
+        'com/vzome/core/parts/StrutGeometry.java',
+        'com/vzome/core/parts/FastDefaultStrutGeometry.java',
+        'com/vzome/core/model/RenderedObject.java',
+        'com/vzome/core/render/RenderedManifestation.java'
+    ]
+    excludes = [
+        
+        'com/vzome/core/algebra/BigRational.java',
+        'com/vzome/core/algebra/RootThreeField.java',
+        'com/vzome/core/algebra/AbstractAlgebraicField.java',
+        'com/vzome/core/algebra/RootTwoField.java',
+        'com/vzome/core/algebra/SnubDodecField.java',
+        'com/vzome/core/algebra/PentagonField.java',
+        'com/vzome/core/algebra/ParameterizedField.java',
+        'com/vzome/core/algebra/HeptagonField.java',
+        'com/vzome/core/algebra/AlgebraicSeries.java',
+        'com/vzome/core/algebra/*Impl.java',
+        'com/vzome/core/algebra/AlgebraicFields.java',
+
+        'com/vzome/core/commands/ZomicVirtualMachine.java',
+        'com/vzome/core/commands/CommandExecuteZomicScript.java',
+        'com/vzome/core/commands/CommandExecutePythonScript.java',
+
+    //     'com/vzome/core/model/*Impl.java',
+
+        'com/vzome/core/edits/AffineHeptagon.java',
+        'com/vzome/core/edits/HeptagonSubdivision.java',
+        'com/vzome/core/edits/AdjustSelectionByOrbitLength.java',
+        'com/vzome/core/edits/DodecagonSymmetry.java',
+        'com/vzome/core/edits/GhostSymmetry24Cell.java',
+        'com/vzome/core/edits/SelectAutomaticStruts.java',
+        'com/vzome/core/edits/SelectParallelStruts.java',
+        'com/vzome/core/edits/Symmetry4d.java',
+        'com/vzome/core/edits/MapToColor.java',
+        'com/vzome/core/edits/PolarZonohedron.java',
+        'com/vzome/core/edits/Run*Script.java',
+        'com/vzome/core/edits/Validate2Manifold.java',
+        'com/vzome/core/edits/RealizeMetaParts.java',
+        'com/vzome/core/edits/ReplaceWithShape.java'
+    ]
 }
 

@@ -4,17 +4,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
-public abstract class ConvexHull extends ChangeManifestations {
-    public ConvexHull(Selection selection, RealizedModel realized) {
-        super(selection, realized);
+public abstract class ConvexHull extends ChangeManifestations
+{
+    public ConvexHull( EditorModel editorModel )
+    {
+        super( editorModel );
     }
     
     // common code for 2d and 3d convex hulls

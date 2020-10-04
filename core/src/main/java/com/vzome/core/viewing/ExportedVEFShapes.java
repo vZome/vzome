@@ -22,16 +22,15 @@ import java.util.logging.Logger;
 
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.editor.Application;
+import com.vzome.core.construction.Color;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.VefParser;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.model.Color;
 import com.vzome.core.parts.StrutGeometry;
 import com.vzome.core.render.Colors;
+import com.vzome.xml.ResourceLoader;
 
 /**
  * @author vorth
@@ -65,7 +64,7 @@ public class ExportedVEFShapes extends AbstractShapes
 
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm, boolean useZomic )
     {
-        this( prefsFolder, pkgName, name, null, symm, new ScriptedShapes( prefsFolder, pkgName, name, (IcosahedralSymmetry) symm ) );
+        this( prefsFolder, pkgName, name, null, symm, new OctahedralShapes( pkgName, name, symm ) );
     }
 
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm )
@@ -86,10 +85,10 @@ public class ExportedVEFShapes extends AbstractShapes
 
         String colorProps = MODEL_PREFIX + pkgName + "/colors.properties";
         try {
-            ClassLoader cl = Application.class .getClassLoader();
-            InputStream in = cl .getResourceAsStream( colorProps );
-            if ( in != null )
-                this .colors .load( in );
+            ClassLoader cl = this .getClass() .getClassLoader(); // NOTE: this may break Oculus
+            InputStream inputStream = cl .getResourceAsStream( colorProps );
+            if ( inputStream != null )
+                this .colors .load( inputStream );
         } catch ( IOException ioe ) {
             if ( logger .isLoggable( Level.FINE ) )
                 logger .fine( "problem with shape color properties: " + colorProps );
@@ -132,6 +131,10 @@ public class ExportedVEFShapes extends AbstractShapes
             return INJECTED .get( mPkgName + "-" + name );
         
         String script = mPkgName + "/" + name + ".vef";
+        
+        if ( ResourceLoader.hasInjectedResource( MODEL_PREFIX + script ) )
+            return ResourceLoader.getInjectedResource( MODEL_PREFIX + script );
+
         File shapeFile = new File( this .prefsFolder, "Shapes/" + script );
         InputStream stream = null;
         try {

@@ -11,9 +11,9 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.EditorModel;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Strut;
 import com.vzome.xml.DomUtils;
@@ -28,7 +28,7 @@ public class SelectCollinear extends ChangeManifestations {
 
     public SelectCollinear( EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editor );
     }
 
     @Override

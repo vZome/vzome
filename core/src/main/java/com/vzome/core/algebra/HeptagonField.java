@@ -3,7 +3,7 @@
 
 package com.vzome.core.algebra;
 
-public class HeptagonField extends AlgebraicField
+public class HeptagonField extends AbstractAlgebraicField
 {
     public static final String FIELD_NAME = "heptagon";
     

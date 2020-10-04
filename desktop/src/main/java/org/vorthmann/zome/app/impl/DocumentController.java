@@ -31,7 +31,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
-import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 
 import org.vorthmann.j3d.MouseTool;
 import org.vorthmann.j3d.MouseToolDefault;
@@ -47,13 +47,15 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
+import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters2d.Java2dSnapshot;
 import com.vzome.core.math.Polyhedron;
@@ -62,7 +64,6 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.model.Color;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
@@ -71,7 +72,6 @@ import com.vzome.core.model.Strut;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
@@ -285,7 +285,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
         for ( SymmetryPerspective symper : document .getFieldApplication() .getSymmetryPerspectives() )
         {
             String name = symper .getName();
-            SymmetryController symmController = new SymmetryController( strutBuilder, this .documentModel .getSymmetrySystem( name ), mRenderedModel );
+            SymmetryController symmController = new SymmetryController( strutBuilder, (SymmetrySystem) this .documentModel .getSymmetrySystem( name ), mRenderedModel );
             strutBuilder .addSubController( "symmetry." + name, symmController );
             this .symmetries .put( name, symmController );
         }
@@ -445,7 +445,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
      */
     private void setSymmetrySystem( String symmetryName )
     {
-        SymmetrySystem symmetrySystem = this .documentModel .getSymmetrySystem( symmetryName );
+        SymmetrySystem symmetrySystem = (SymmetrySystem) this .documentModel .getSymmetrySystem( symmetryName );
         symmetryName = symmetrySystem .getName(); // in case it was null before
         this .documentModel .setSymmetrySystem( symmetrySystem );
         
@@ -608,13 +608,13 @@ public class DocumentController extends DefaultController implements Scene.Provi
                 break;
     
             case "lookAtOrigin":
-                cameraController.setLookAtPoint( new Point3d( 0, 0, 0 ) );
+                cameraController.setLookAtPoint( new Point3f( 0, 0, 0 ) );
                 break;
     
             case "lookAtSymmetryCenter":
                 {
                     RealVector loc = documentModel .getParamLocation( "ball" );
-                    cameraController .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
+                    cameraController .setLookAtPoint( new Point3f( loc.x, loc.y, loc.z ) );
                 }
                 break;
     
@@ -1451,7 +1451,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
 
         case "lookAtThis":
             RealVector loc = documentModel .getCentroid( pickedManifestation );
-            cameraController .setLookAtPoint( new Point3d( loc.x, loc.y, loc.z ) );
+            cameraController .setLookAtPoint( new Point3f( loc.x, loc.y, loc.z ) );
             break;
 
         default:
@@ -1629,8 +1629,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
 
         case "objectColor":
             if ( pickedManifestation != null ) {
-                RenderedManifestation rm = pickedManifestation .getRenderedObject();
-                String colorStr = rm .getColor() .toString();
+                String colorStr = pickedManifestation .getColor() .toString();
                 pickedManifestation = null;
                 return colorStr;
             }

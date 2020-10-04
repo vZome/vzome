@@ -5,8 +5,8 @@ import java.io.IOException;
 import com.vzome.core.algebra.AlgebraicField.Registry;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.VefToModel;
-import com.vzome.core.editor.EditorModel;
-import com.vzome.core.editor.ManifestConstructions;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.ManifestConstructions;
 
 public class LoadVEF extends ImportMesh {
 
@@ -25,7 +25,7 @@ public class LoadVEF extends ImportMesh {
             throws IOException
     {
         VefToModel v2m = new VefToModel( projection, events, scale, offset );
-        v2m .parseVEF( this .meshData, this .editor .getKind() .getField() );
+        v2m .parseVEF( this .meshData, this .mManifestations .getField() );
     }
 
     @Override

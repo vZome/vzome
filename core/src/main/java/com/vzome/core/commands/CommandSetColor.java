@@ -5,8 +5,6 @@ package com.vzome.core.commands;
 
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
-import com.vzome.core.model.Color;
-import com.vzome.core.model.Manifestation;
 
 public class CommandSetColor extends AbstractCommand
 {
@@ -16,8 +14,8 @@ public class CommandSetColor extends AbstractCommand
     
     private static final Object[][] PARAM_SIGNATURE = new Object[][]{};
 
-    private static final Object[][] ATTR_SIGNATURE = new Object[][]{ { MANIFESTATION_ATTR, Manifestation.class },
-        { COLOR_ATTR, Color.class } };
+//    private static final Object[][] ATTR_SIGNATURE = new Object[][]{ { MANIFESTATION_ATTR, Manifestation.class },
+//        { COLOR_ATTR, Color.class } };
 
     @Override
     public Object[][] getParameterSignature()
@@ -28,7 +26,7 @@ public class CommandSetColor extends AbstractCommand
     @Override
     public Object[][] getAttributeSignature()
     {
-        return ATTR_SIGNATURE;
+        return null;
     }
 
     @Override

@@ -4,8 +4,8 @@
 package com.vzome.core.edits;
 
 
-import com.vzome.core.editor.ChangeSelection;
-import com.vzome.core.editor.EditorModel;
+import com.vzome.core.editor.api.ChangeSelection;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
 
 public class SelectAll extends ChangeSelection
@@ -15,7 +15,7 @@ public class SelectAll extends ChangeSelection
         super( editor .getSelection() );
         
         for (Manifestation m : editor .getRealizedModel() ) {
-            if ( m .getRenderedObject() != null )
+            if ( m .isRendered() )
             {
                 if ( ! this .mSelection .manifestationSelected( m ) )
                     select( m, true );

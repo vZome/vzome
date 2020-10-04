@@ -5,6 +5,7 @@ import { Canvas, useThree, extend, useFrame } from 'react-three-fiber'
 import * as THREE from 'three'
 import { PerspectiveCamera } from 'drei'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
+import { selectionToggled } from '../bundles/mesh'
 
 extend({ TrackballControls })
 const Controls = props => {
@@ -23,23 +24,41 @@ const computeNormal = ( vertices, face ) => {
   return new THREE.Vector3().crossVectors( e1, e2 )
 }
 
-const Shape = ( { vertices, faces } ) => (
-  <geometry attach="geometry"
-    vertices={ vertices.map( v => new THREE.Vector3( v.x, v.y, v.z ) ) }
-    faces={ faces.map( f => new THREE.Face3( f.vertices[0], f.vertices[1], f.vertices[2], computeNormal( vertices, f ) ) ) }
-    onUpdate={ self => (self.verticesNeedUpdate = true) }
-  />
-)
+const createGeometry = ( { vertices, faces } ) =>
+{
+  var geometry = new THREE.Geometry();
+  geometry.vertices = vertices.map( v => new THREE.Vector3( v.x, v.y, v.z ) )
+  geometry.faces = faces.map( f => new THREE.Face3( f.vertices[0], f.vertices[1], f.vertices[2], computeNormal( vertices, f ) ) )
+  geometry.computeBoundingSphere();
+  return geometry
+}
 
-const Instance = ( { position, rotation, shape, color } ) => {
-  const quaternion = rotation? [ rotation.x, rotation.y, rotation.z, rotation.w ] : [1,0,0,0];
+const Instance = ( { id, position, rotation, geometry, color, selected, toggleSelected } ) =>
+{
+  const handleClick = ( e ) =>
+  {
+    if ( toggleSelected ) { // toggleSelected is undefined when the model is not editable
+      e.stopPropagation()
+      toggleSelected( id, selected )
+    }
+  }
   return (
-    <group position={ [ position.x, position.y, position.z ] } quaternion={ quaternion }>
-      <mesh>
-        <Shape vertices={shape.vertices} faces={shape.faces} />
-        <meshLambertMaterial attach="material" color={color} />
+    <group position={ position } quaternion={ rotation || [0,0,0,1] }>
+      <mesh geometry={geometry} onClick={handleClick}>
+        <meshLambertMaterial attach="material" color={color} emissive={selected? "#888888" : "black"} />
       </mesh>
     </group>
+  )
+}
+
+const InstancedShape = ( { instances, shape, toggleSelected } ) =>
+{
+  const geometry = useMemo( () => createGeometry( shape ), [ shape ] )
+  return (
+    <>
+      { instances.map( instance => 
+        <Instance key={instance.id} {...instance} geometry={geometry} toggleSelected={toggleSelected} /> ) }
+    </>
   )
 }
 
@@ -70,17 +89,15 @@ const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
 
 /*
 TODO:
-  2. lighting component extract (Redux context tunneling)
-  3. auto-load real logo model, internal
-  3. UI overlay
-  4. geometry cache
+  - lighting component extract (Redux context tunneling)
 */
 
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-const ModelCanvas = ( { lighting, instances, shapes, camera } ) => {
+const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler } ) => {
   const { fov, position, up, lookAt } = camera
+  const toggleSelected = clickable && selectionToggler
   return(
     <>
       <Canvas gl={{ antialias: true, alpha: false }} >
@@ -88,18 +105,27 @@ const ModelCanvas = ( { lighting, instances, shapes, camera } ) => {
           <Lighting {...lighting} />
         </PerspectiveCamera>
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
-        { instances.map( ( { id, position, color, rotation, shape } ) => 
-            <Instance key={id} position={position} color={color} rotation={rotation} shape={shapes[shape]} /> ) }
+        { shapes.map( ( { shape, instances } ) =>
+          <InstancedShape key={shape.id} shape={shape} instances={instances} toggleSelected={toggleSelected} />
+        ) }
       </Canvas>
     </>
   )
 }
 
-const select = ( { camera, lighting, vzomejava } ) => ({
-  camera,
-  lighting,
-  shapes: vzomejava.shapes.reduce( (result, item) => { result[ item.id ] = item; return result }, {} ),
-  instances: vzomejava.renderingOn? vzomejava.instances : vzomejava.previous
-})
+const select = ( state ) =>
+{
+  const { camera, lighting, implementations } = state
+  return {
+    camera,
+    lighting,
+    shapes: implementations.sortedShapes( state ),
+    clickable: implementations.supportsEdits
+  }
+}
 
-export default connect( select )( ModelCanvas )
+const boundEventActions = {
+  selectionToggler : selectionToggled
+}
+
+export default connect( select, boundEventActions )( ModelCanvas )

@@ -24,7 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
-import javax.vecmath.Quat4d;
+import javax.vecmath.Quat4f;
 
 import org.vorthmann.j3d.MouseToolDefault;
 import org.vorthmann.j3d.Tool;
@@ -321,7 +321,7 @@ public class ZomicEditorPanel extends JPanel implements Tool {
 		return new Trackball()
         {
             @Override
-            protected void trackballRolled( Quat4d roll )
+            protected void trackballRolled( Quat4f roll )
             {
                 // TODO remove this?
             }

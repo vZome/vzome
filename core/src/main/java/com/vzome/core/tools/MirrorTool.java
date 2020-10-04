@@ -17,10 +17,11 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.editor.AbstractToolFactory;
-import com.vzome.core.editor.Selection;
-import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
+import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.Selection;
+import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.math.symmetry.Symmetry.SpecialOrbit;
@@ -68,13 +69,13 @@ public class MirrorTool extends TransformationTool
         }
     }
 
-    protected final SymmetrySystem symmSys;
+    protected final OrbitSource symmSys;
     
     public MirrorTool( String id, ToolsModel tools )
     {
         super( id, tools );
         // symmSys may be null for some test cases, but shouldn't be otherwise
-        symmSys = tools.getEditorModel().getSymmetrySystem();
+        symmSys = ((SymmetryAware) tools.getEditorModel()).getSymmetrySystem();
     }
 
     @Override

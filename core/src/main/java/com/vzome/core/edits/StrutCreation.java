@@ -11,14 +11,14 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.commands.AttributeMap;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.commands.XmlSymmetryFormat;
 import com.vzome.core.construction.AnchoredSegment;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentEndPoint;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.EditorModel;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.math.symmetry.Axis;
-import com.vzome.core.model.RealizedModel;
 
 public class StrutCreation extends ChangeManifestations
 {
@@ -28,7 +28,7 @@ public class StrutCreation extends ChangeManifestations
     
     public StrutCreation( EditorModel editor )
     {
-        this( null, null, null, editor .getRealizedModel() );
+        this( null, null, null, editor );
     }
     
     @Override
@@ -39,9 +39,9 @@ public class StrutCreation extends ChangeManifestations
         this.mLength = (AlgebraicNumber) params .get( "length" );
     }
 
-    public StrutCreation( Point anchor, Axis axis, AlgebraicNumber len, RealizedModel realized )
+    public StrutCreation( Point anchor, Axis axis, AlgebraicNumber len, EditorModel editor )
     {
-        super( null, realized );
+        super( editor );
         
         mAnchor = anchor;
         mAxis = axis;
@@ -63,7 +63,7 @@ public class StrutCreation extends ChangeManifestations
     protected void getXmlAttributes( Element xml )
     {
         XmlSaveFormat .serializePoint( xml, "anchor", mAnchor );
-        XmlSaveFormat .serializeAxis( xml, "symm", "dir", "index", "sense", mAxis );
+        XmlSymmetryFormat .serializeAxis( xml, "symm", "dir", "index", "sense", mAxis );
         XmlSaveFormat .serializeNumber( xml, "len", mLength );
     }
 
@@ -73,7 +73,7 @@ public class StrutCreation extends ChangeManifestations
         if ( format .rationalVectors() )
         {
             mAnchor = format .parsePoint( xml, "anchor" );
-            mAxis = format .parseAxis( xml, "symm", "dir", "index", "sense" );
+            mAxis = ((XmlSymmetryFormat) format) .parseAxis( xml, "symm", "dir", "index", "sense" );
             mLength = format .parseNumber( xml, "len" );
         }
         else

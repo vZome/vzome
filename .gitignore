@@ -2,6 +2,7 @@
 node_modules
 .gradle/
 .idea/
+.jsweet/
 .nb-gradle/
 .settings/
 bin/
@@ -44,3 +45,6 @@ oculus/.vscode
 *.jar.js
 client/app.tgz
 client/app
+client/src/jsweet
+client/public/jsweet
+

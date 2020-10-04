@@ -9,25 +9,34 @@ import java.util.Set;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.LegacyEditorModel;
+import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.Selection;
+import com.vzome.core.editor.api.SymmetryAware;
+import com.vzome.core.editor.api.UndoableEdit;
+import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
+import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.model.Strut;
 
-public class EditorModel
+public class EditorModelImpl implements LegacyEditorModel, SymmetryAware
 {
-    public EditorModel( RealizedModel realized, Point originPoint, FieldApplication kind, SymmetrySystem symmetrySystem, Map<String, SymmetrySystem> symmetrySystems )
+    public EditorModelImpl( RealizedModelImpl realized, Point originPoint, Symmetries4D kind, OrbitSource symmetrySystem, Map<String, OrbitSource> symmetrySystems )
     {
         mRealized = realized;
-        mSelection = new Selection();
+        mSelection = new SelectionImpl();
         this.kind = kind;
         this.symmetrySystem = symmetrySystem;
         this.symmetrySystems = symmetrySystems;
-        for ( SymmetrySystem symmetrySys : symmetrySystems .values()) {
-            symmetrySys .setEditorModel( this );
+        for ( OrbitSource symmetrySys : symmetrySystems .values()) {
+            ((SymmetrySystem) symmetrySys) .setEditorModel( this );
         }
 
         this .selectionSummary = new SelectionSummary( this .mSelection );
+        this .mSelection .addListener( this .selectionSummary );
 
         Manifestation m = realized .manifest( originPoint );
         m .addConstruction( originPoint );
@@ -128,9 +137,9 @@ public class EditorModel
         }
     }
 
-    private final RealizedModel mRealized;
+    private final RealizedModelImpl mRealized;
 
-    protected Selection mSelection;
+    protected SelectionImpl mSelection;
 
     private SelectionSummary selectionSummary;
 
@@ -138,11 +147,11 @@ public class EditorModel
 
     private Segment mSymmetryAxis;
 
-    private final FieldApplication kind;
+    private final Symmetries4D kind;
 
-    private SymmetrySystem symmetrySystem;
+    private OrbitSource symmetrySystem;
 
-    private final Map<String, SymmetrySystem> symmetrySystems;
+    private final Map<String, OrbitSource> symmetrySystems;
 
     public Construction getSelectedConstruction( Class<? extends Construction > kind )
     {
@@ -181,23 +190,24 @@ public class EditorModel
         this .selectionSummary .notifyListeners();
     }
 
-    public SymmetrySystem getSymmetrySystem()
+    public OrbitSource getSymmetrySystem()
     {
         return this .symmetrySystem;
     }
 
-    public void setSymmetrySystem( SymmetrySystem system )
+    public void setSymmetrySystem( OrbitSource system )
     {
         this .symmetrySystem = system;
     }
 
-    public SymmetrySystem getSymmetrySystem( String name )
+    public OrbitSource getSymmetrySystem( String name )
     {
         return this .symmetrySystems .get( name );
     }
 
-    public FieldApplication getKind()
+    @Override
+    public Symmetries4D get4dSymmetries()
     {
-        return kind;
+        return this .kind;
     }
 }

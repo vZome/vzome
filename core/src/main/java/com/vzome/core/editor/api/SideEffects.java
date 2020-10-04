@@ -1,7 +1,7 @@
 
 //(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
 
-package com.vzome.core.editor;
+package com.vzome.core.editor.api;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,7 +14,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command;
-import com.vzome.xml.DomUtils;
 
 public abstract class SideEffects extends UndoableEdit
 {
@@ -29,8 +28,8 @@ public abstract class SideEffects extends UndoableEdit
             {
                 Element effect = se .getXml( doc );
                 if ( effect != null ) {
-                    if ( BUG_ACCOMMODATION_LOGGER .isLoggable( Level.FINEST ) )
-                        BUG_ACCOMMODATION_LOGGER .finest( "side-effect: " + DomUtils .getXmlString( effect ) );
+//                    if ( BUG_ACCOMMODATION_LOGGER .isLoggable( Level.FINEST ) )
+//                        BUG_ACCOMMODATION_LOGGER .finest( "side-effect: " + DomSerializer .getXmlString( effect ) );
                     effects .appendChild( effect );
                 }
                 // else effect was ChangeConstructions.AttachConstruction, which we don't need to serialize

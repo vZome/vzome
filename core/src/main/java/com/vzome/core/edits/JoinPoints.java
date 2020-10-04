@@ -11,11 +11,10 @@ import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
 public class JoinPoints extends ChangeManifestations {
 
@@ -33,9 +32,9 @@ public class JoinPoints extends ChangeManifestations {
 //	protected ToolBehavior toolBehavior = new ToolBehavior();
 
     // Either configure() or setXmlAttributes() will be called before perform().
-    public JoinPoints( Selection selection, RealizedModel realized ) 
+    public JoinPoints( EditorModel editor )
     {
-        super( selection, realized );
+        super( editor );
     }
     
     @Override

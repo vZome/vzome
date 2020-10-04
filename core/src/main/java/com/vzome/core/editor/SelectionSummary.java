@@ -3,7 +3,8 @@ package com.vzome.core.editor;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.vzome.core.model.Color;
+import com.vzome.core.construction.Color;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
@@ -21,7 +22,6 @@ public class SelectionSummary implements ManifestationChanges
 	public SelectionSummary( Selection selection )
 	{
 		this .selection = selection;
-		selection .addListener( this );
 	}
 	
 	public void notifyListeners()

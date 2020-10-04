@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.vorthmann.ui.Controller;
 
 import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.render.Colors;
 

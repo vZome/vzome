@@ -12,7 +12,7 @@ public class OctahedralShapes extends AbstractShapes
 {
     public OctahedralShapes( String pkgName, String name, Symmetry symm )
     {
-        super( pkgName, name, symm );
+        super( pkgName, name, null, symm );
     }
 
     @Override

@@ -7,17 +7,16 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class Parallelepiped extends ChangeManifestations
 {
-	public Parallelepiped( Selection selection, RealizedModel realized )
-	{
-		super( selection, realized );
+	public Parallelepiped( EditorModel editor )
+    {
+        super( editor );
 	}
 
 	@Override

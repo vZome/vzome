@@ -14,18 +14,17 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.commands.Command.Failure;
-import com.vzome.core.editor.Manifestations.ManifestationIterator;
-import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.construction.Color;
+import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.Manifestations.ManifestationIterator;
 import com.vzome.core.edits.ColorMappers.ColorMapper;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.model.Color;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
-import com.vzome.core.render.RenderedManifestation;
 import com.vzome.xml.DomUtils;
 
 /**
@@ -86,15 +85,15 @@ public class ManifestationColorMappers {
         return colorMappers.get(mapperName);
     }
 
-    static ManifestationColorMapper getColorMapper( String mapperName, SymmetrySystem symm )
+    static ManifestationColorMapper getColorMapper( String mapperName, OrbitSource symmetry )
     {
         ManifestationColorMapper colorMapper
-            = mapperName.equals("SystemColorMap") ? new SystemColorMap(symm)
-            : mapperName.equals("SystemCentroidColorMap") ? new SystemCentroidColorMap(symm)
-            : mapperName.equals("NearestSpecialOrbitColorMap") ? new NearestSpecialOrbitColorMap(symm)
-            : mapperName.equals("CentroidNearestSpecialOrbitColorMap") ? new CentroidNearestSpecialOrbitColorMap(symm)
-            : mapperName.equals("NearestPredefinedOrbitColorMap") ? new NearestPredefinedOrbitColorMap(symm)
-            : mapperName.equals("CentroidNearestPredefinedOrbitColorMap") ? new CentroidNearestPredefinedOrbitColorMap(symm)
+            = mapperName.equals("SystemColorMap") ? new SystemColorMap(symmetry)
+            : mapperName.equals("SystemCentroidColorMap") ? new SystemCentroidColorMap(symmetry)
+            : mapperName.equals("NearestSpecialOrbitColorMap") ? new NearestSpecialOrbitColorMap(symmetry)
+            : mapperName.equals("CentroidNearestSpecialOrbitColorMap") ? new CentroidNearestSpecialOrbitColorMap(symmetry)
+            : mapperName.equals("NearestPredefinedOrbitColorMap") ? new NearestPredefinedOrbitColorMap(symmetry)
+            : mapperName.equals("CentroidNearestPredefinedOrbitColorMap") ? new CentroidNearestPredefinedOrbitColorMap(symmetry)
             : ManifestationColorMappers.getColorMapper(mapperName);
 
         if (colorMapper == null) {
@@ -125,16 +124,16 @@ public class ManifestationColorMappers {
         {}
 
         @Override
-        public Color apply(Manifestation man) {
+        public Color apply( Manifestation man ) {
             return (man == null || !man.isRendered())
                     ? null
-                    : applyTo( man.getRenderedObject() );
+                    : applyTo( man );
         }
         
-        protected Color applyTo(RenderedManifestation rendered )
+        protected Color applyTo( Manifestation manifestation )
         {
-            Color color = rendered.getColor();
-            if(color == null && Connector.class.equals(rendered.getManifestation().getClass()) ) {
+            Color color = manifestation.getColor();
+            if(color == null && Connector.class.equals( manifestation.getClass() ) ) {
                 color = Color.WHITE; // provide default ball color so it can be manipulated
             }
             return color;
@@ -158,7 +157,7 @@ public class ManifestationColorMappers {
      */
     public static class Identity extends ManifestationColorMapper {
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
+        protected Color applyTo(Manifestation rendered) {
             return rendered.getColor();
         }
     }
@@ -168,7 +167,7 @@ public class ManifestationColorMappers {
      */
     public static class ColorComplementor extends ManifestationColorMapper {
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
+        protected Color applyTo(Manifestation rendered) {
             return Color.getComplement(super.applyTo(rendered) );
         }
     }
@@ -178,7 +177,7 @@ public class ManifestationColorMappers {
      */
     public static class ColorInverter extends ManifestationColorMapper {
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
+        protected Color applyTo(Manifestation rendered) {
             return Color.getInverted( super.applyTo(rendered) );
         }
     }
@@ -188,7 +187,7 @@ public class ManifestationColorMappers {
      */
     public static class ColorMaximizer extends ManifestationColorMapper {
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
+        protected Color applyTo(Manifestation rendered) {
             return Color.getMaximum( super.applyTo(rendered) );
         }
     }
@@ -198,7 +197,7 @@ public class ManifestationColorMappers {
      */
     public static class ColorSoftener extends ManifestationColorMapper {
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
+        protected Color applyTo(Manifestation rendered) {
             return Color.getPastel( super.applyTo(rendered) );
         }
     }
@@ -230,7 +229,7 @@ public class ManifestationColorMappers {
         }
 
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
+        protected Color applyTo(Manifestation rendered) {
             Color color = super.applyTo(rendered);
             return new Color(color.getRed(), color.getGreen(), color.getBlue(), this.alpha);
         }
@@ -284,7 +283,7 @@ public class ManifestationColorMappers {
         }
 
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
+        protected Color applyTo(Manifestation rendered) {
             return color;
         }
     }
@@ -358,12 +357,12 @@ public class ManifestationColorMappers {
         }
 
         @Override
-        public Color applyTo(RenderedManifestation rendered) {
+        public Color applyTo(Manifestation rendered) {
             Color color = rendered.getColor();
             int alpha = color == null
                     ? 0xFF 
                     : color.getAlpha();
-            return applyTo( rendered.getManifestation().getCentroid(), alpha );
+            return applyTo( rendered.getCentroid(), alpha );
         }
 
         protected abstract Color applyTo(AlgebraicVector centroid, int alpha);
@@ -382,7 +381,7 @@ public class ManifestationColorMappers {
     }
 
     /**
-     * Scales the intensity of the current color of each RenderedManifestation 
+     * Scales the intensity of the current color of each Manifestation 
      * based on the distance of its centroid from the origin.
      * A position ranging from the origin to the fullScale vector position
      * adjusts the intensity of the current color from darkest to lightest.
@@ -420,8 +419,8 @@ public class ManifestationColorMappers {
         }
 
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
-            AlgebraicVector centroid = rendered.getManifestation().getCentroid();
+        protected Color applyTo(Manifestation rendered) {
+            AlgebraicVector centroid = rendered.getCentroid();
             Color initialColor = super.applyTo(rendered);
             return mapToMagnitude( centroid, offset, fullScaleSquared, initialColor );
         }
@@ -554,12 +553,11 @@ public class ManifestationColorMappers {
     public static abstract class ManifestationSubclassColorMapper extends ManifestationColorMapper {
 
         @Override
-        protected Color applyTo(RenderedManifestation rendered) {
-            Color color = rendered.getColor();
+        protected Color applyTo(Manifestation man) {
+            Color color = man.getColor();
             int alpha = color == null
                     ? 0xFF
                     : color.getAlpha();
-            Manifestation man = rendered.getManifestation();
             if (Connector.class.equals(man.getClass())) {
                 return applyTo( Connector.class.cast(man), alpha );
             } else if (Strut.class.isAssignableFrom(man.getClass())) {
@@ -576,15 +574,15 @@ public class ManifestationColorMappers {
     }
 
     /**
-     * Gets standard color mapping from the SymmetrySystem
+     * Gets standard color mapping from the OrbitSource
      */
     public static class SystemColorMap extends ManifestationSubclassColorMapper {
 
-        protected final SymmetrySystem symmetrySystem;
+        protected final OrbitSource symmetrySystem;
 
-        protected SystemColorMap(SymmetrySystem symm) {
+        protected SystemColorMap(OrbitSource symmetry) {
             super();
-            this.symmetrySystem = symm;
+            this.symmetrySystem = symmetry;
         }
 
         @Override
@@ -603,7 +601,7 @@ public class ManifestationColorMappers {
         }
 
         protected Color applyTo(AlgebraicVector vector) {
-            return symmetrySystem.getColor(vector);
+            return symmetrySystem.getVectorColor(vector);
         }
 
         // Note that symmetrySystem is read from the XML and passed to the c'tor
@@ -623,16 +621,16 @@ public class ManifestationColorMappers {
      */
     public static class SystemCentroidColorMap extends CentroidColorMapper {
 
-        protected final SymmetrySystem symmetrySystem;
+        protected final OrbitSource symmetrySystem;
 
-        protected SystemCentroidColorMap(SymmetrySystem symm) {
+        protected SystemCentroidColorMap(OrbitSource symmetry) {
             super();
-            this.symmetrySystem = symm;
+            this.symmetrySystem = symmetry;
         }
 
         @Override
         protected Color applyTo(AlgebraicVector centroid, int alpha) {
-            return symmetrySystem.getColor(centroid);
+            return symmetrySystem.getVectorColor(centroid);
         }
         // Note that symmetrySystem is read from the XML and passed to the c'tor
         // unlike the normal pattern of deserializing the XML here.
@@ -651,7 +649,7 @@ public class ManifestationColorMappers {
     public static class NearestSpecialOrbitColorMap extends SystemColorMap {
         protected Set<Direction> specialOrbits = new LinkedHashSet<>(); // maintains insert order.
 
-        protected NearestSpecialOrbitColorMap(SymmetrySystem symm) {
+        protected NearestSpecialOrbitColorMap(OrbitSource symm) {
             super(symm);
             specialOrbits.add( symm.getSymmetry().getSpecialOrbit( Symmetry.SpecialOrbit.BLUE ) );
             specialOrbits.add( symm.getSymmetry().getSpecialOrbit( Symmetry.SpecialOrbit.YELLOW ) );
@@ -680,7 +678,7 @@ public class ManifestationColorMappers {
             }
             Axis nearestSpecialOrbit = symmetrySystem.getSymmetry().getAxis(vector.toRealVector(), specialOrbits);
             AlgebraicVector normal = nearestSpecialOrbit.normal();
-            return symmetrySystem.getColor( normal );
+            return symmetrySystem.getVectorColor( normal );
         }
     }
 
@@ -689,7 +687,7 @@ public class ManifestationColorMappers {
      */
     public static class CentroidNearestSpecialOrbitColorMap extends NearestSpecialOrbitColorMap {
 
-        protected CentroidNearestSpecialOrbitColorMap(SymmetrySystem symm) {
+        protected CentroidNearestSpecialOrbitColorMap(OrbitSource symm) {
             super(symm);
         }
 
@@ -713,7 +711,7 @@ public class ManifestationColorMappers {
      * Gets standard color of the nearest predefined orbit using the symmetry's standard color scheme
      */
     public static class NearestPredefinedOrbitColorMap extends NearestSpecialOrbitColorMap {
-        protected NearestPredefinedOrbitColorMap(SymmetrySystem symm) {
+        protected NearestPredefinedOrbitColorMap(OrbitSource symm) {
             super(symm);
             // setting specialOrbits to null will use the predefined orbits of the symmetery
             specialOrbits = null;
@@ -724,7 +722,7 @@ public class ManifestationColorMappers {
      * Gets standard color of the nearest predefined orbit based on the centroid of each manifestation
      */
     public static class CentroidNearestPredefinedOrbitColorMap extends CentroidNearestSpecialOrbitColorMap {
-        protected CentroidNearestPredefinedOrbitColorMap(SymmetrySystem symm) {
+        protected CentroidNearestPredefinedOrbitColorMap(OrbitSource symm) {
             super(symm);
             // setting specialOrbits to null will use the predefined orbits of the symmetery
             specialOrbits = null;

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Group;
 import com.vzome.core.model.GroupElement;
 import com.vzome.core.model.Manifestation;
@@ -19,7 +20,7 @@ import com.vzome.core.model.ManifestationChanges;
 /**
  * @author Scott Vorthmann
  */
-public class Selection implements Iterable<Manifestation>
+public class SelectionImpl implements Selection
 {
     // Note that LinkedHashSet maintains insertion-order, which is significant in this case.
     private Collection<Manifestation> mManifestations = new LinkedHashSet<>();
@@ -95,7 +96,7 @@ public class Selection implements Iterable<Manifestation>
         if ( m == null )
             return;
 
-        Group group = biggestGroup( m );
+        Group group = Selection.biggestGroup( m );
         if ( group == null )
             add( m );
         else
@@ -106,7 +107,7 @@ public class Selection implements Iterable<Manifestation>
     public void unselectWithGrouping( Manifestation m )
     {
         if ( mManifestations .contains( m ) ) {
-            Group group = biggestGroup( m );
+            Group group = Selection.biggestGroup( m );
             if ( group == null )
                 remove( m );
             else
@@ -188,7 +189,7 @@ public class Selection implements Iterable<Manifestation>
                 //  is only one group represented
                 return selectedGroup;
             
-            Group group = biggestGroup( m );
+            Group group = Selection.biggestGroup( m );
             if ( group == null )
                 return null; // some ungrouped manifestation selected
             else if ( selectedGroup == null )
@@ -200,19 +201,6 @@ public class Selection implements Iterable<Manifestation>
         return selectedGroup;
     }
     
-    public static Group biggestGroup( Manifestation m )
-    {
-        Group parent = m .getContainer();
-        Group group = parent;
-        while ( parent != null ) {
-            parent = group .getContainer();
-            if ( parent == null )
-                break;
-            group = parent;
-        }
-        return group;
-    }
-
     public void gatherGroup()
     {
 //        if ( getSelectedGroup() != null )
@@ -221,7 +209,7 @@ public class Selection implements Iterable<Manifestation>
         Group newGroup = new Group();
         
         for (Manifestation m : mManifestations) {
-            Group group = biggestGroup( m );
+            Group group = Selection.biggestGroup( m );
             if ( group == newGroup )
                 ; // already added some ancestor group of m
             else if ( group == null )
@@ -259,7 +247,7 @@ public class Selection implements Iterable<Manifestation>
         mSelectedGroup = new Group();
         
         for (Manifestation m : mManifestations) {
-            Group group = biggestGroup( m );
+            Group group = Selection.biggestGroup( m );
             if ( group == null ) {
                 mSelectedGroup .add( m );
 //                System.out.println( "GROUP add:" + m .toString() );
@@ -291,7 +279,7 @@ public class Selection implements Iterable<Manifestation>
         }
     }
 
-	public void refresh( boolean on, Selection otherSelection )
+	public void refresh( boolean on, SelectionImpl otherSelection )
 	{
         for (Manifestation m : mManifestations) {
             if (otherSelection == null || ! otherSelection .mManifestations .contains( m )) {
@@ -313,7 +301,7 @@ public class Selection implements Iterable<Manifestation>
         return this .mManifestations .size();
     }
 
-	public void clearForOrderedUndo()
+	public void clear()
 	{
 		// for ChangeSelection undo when the selection is ordered
 		this .mManifestations .clear();

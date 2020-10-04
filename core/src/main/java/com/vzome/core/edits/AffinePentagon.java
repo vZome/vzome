@@ -5,10 +5,8 @@ package com.vzome.core.edits;
 
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicFields;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
@@ -17,11 +15,10 @@ import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.construction.TransformedPoint;
 import com.vzome.core.construction.Translation;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class AffinePentagon extends ChangeManifestations
@@ -53,9 +50,9 @@ public class AffinePentagon extends ChangeManifestations
         // I'm not going to enable it in the menu yet.
         // TODO: I plan to replace this command with a more generalized AffinePolygon command 
         // and I'll add the new command to the menu at that time 
-        if (! AlgebraicFields.haveSameInitialCoefficients(field, PentagonField.FIELD_NAME) ) {
-            fail("Affine pentagon command requires a Pentagon field or subField.");
-        }
+//        if (! AlgebraicFields.haveSameInitialCoefficients(field, "golden" ) ) {
+//            fail("Affine pentagon command requires a Pentagon field or subField.");
+//        }
 
         // Before we start, be sure the balls at the ends of each strut have not been deleted or hidden.
         // Restore them just in case. No need to test if they already exist.
@@ -141,9 +138,9 @@ public class AffinePentagon extends ChangeManifestations
         redo();
     }
         
-    public AffinePentagon( Selection selection, RealizedModel realized )
+    public AffinePentagon( EditorModel editorModel )
     {
-        super( selection, realized );
+        super( editorModel );
     }
 
     @Override

@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
 import com.vzome.api.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.editor.ApiEdit;
-import com.vzome.core.editor.EditorModel;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.commands.XmlSaveFormat;
 
 public class RunPythonScript extends ApiEdit

@@ -13,14 +13,15 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.commands.XmlSymmetryFormat;
 import com.vzome.core.construction.MatrixTransformation;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.editor.AbstractToolFactory;
-import com.vzome.core.editor.Selection;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
@@ -352,7 +353,7 @@ public class AxialStretchTool extends TransformationTool
         value = element .getAttribute( "first" );
         this .first = value == null || ! value .equals( "false" );;
 
-        this .symmetry = (IcosahedralSymmetry) format .parseSymmetry( "icosahedral" );
+        this .symmetry = (IcosahedralSymmetry) ((XmlSymmetryFormat) format) .parseSymmetry( "icosahedral" );
         super .setXmlAttributes( element, format );
     }
 

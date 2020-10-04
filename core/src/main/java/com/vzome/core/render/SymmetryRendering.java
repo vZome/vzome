@@ -7,11 +7,12 @@ import java.util.Map;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.opengl.InstancedGeometry;
 
 public class SymmetryRendering implements RenderingChanges
@@ -111,7 +112,7 @@ public class SymmetryRendering implements RenderingChanges
             Collection<RenderedManifestation> instances = shapesAndInstances .getInstances();
             Polyhedron shape = null;
             for ( RenderedManifestation rm : instances ) {
-                rm .resetAttributes( this .orbits, shapes, false, true );
+                rm .resetAttributes( false, true );
                 shape = rm .getShape(); // they are all the same shape!
             }
             ShapeAndInstances newShapesAndInstances = this .getShapeAndInstances( shape );

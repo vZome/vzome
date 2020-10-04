@@ -26,6 +26,7 @@ import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.commands.CommandSymmetry;
@@ -33,11 +34,11 @@ import com.vzome.core.commands.CommandTauDivision;
 import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.editor.ToolsModel;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.generic.Utilities;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.render.Shapes;
 import com.vzome.core.tools.AxialStretchTool;
 import com.vzome.core.tools.BookmarkTool;
 import com.vzome.core.tools.IcosahedralToolFactory;
@@ -60,7 +61,7 @@ public class FieldApplicationTest
     private static Collection<FieldApplication> getTestFieldApplications() {
         // preserve insertion order for consistent test result
         Collection<FieldApplication> result = new ArrayList<>();
-        result.add( new GoldenFieldApplication());
+        result.add( new GoldenFieldApplication( new PentagonField() ) );
         result.add( new RootTwoFieldApplication());
         result.add( new RootThreeFieldApplication());
         result.add( new HeptagonFieldApplication());

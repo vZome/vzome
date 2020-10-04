@@ -12,9 +12,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.math.Projection;
-import com.vzome.core.model.Color;
 import com.vzome.core.model.ColoredMeshJson;
 
 public class ApplicationTest {

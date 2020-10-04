@@ -8,18 +8,17 @@ import java.util.List;
 
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Transformation;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
 public class TransformSelection extends ChangeManifestations
 {
     protected final Transformation transform;
     
-    public TransformSelection( Selection selection, RealizedModel realized, Transformation transform )
+    public TransformSelection( EditorModel editor, Transformation transform )
     {
-        super( selection, realized );
+        super( editor );
         this .transform = transform;
     }
     
@@ -35,7 +34,7 @@ public class TransformSelection extends ChangeManifestations
         redo();  // get the unselects out of the way, if anything needs to be re-selected
         // now apply it to the input objects
         for (Manifestation m : inputs) {
-            if ( m .getRenderedObject() == null )
+            if ( ! m .isRendered() )
                 continue;
             Construction c = m .getFirstConstruction();
             Construction result = transform .transform( c );

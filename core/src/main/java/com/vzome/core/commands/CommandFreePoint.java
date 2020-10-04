@@ -15,9 +15,7 @@ import com.vzome.core.construction.Point;
 public class CommandFreePoint extends AbstractCommand
 {
     private static Object[][] PARAMS = new Object[][]{};
-    
-    private static Object[][] ATTRS = new Object[][]{ { "where", int[].class } };
-    
+        
     @Override
     public Object[][] getParameterSignature()
     {
@@ -27,7 +25,7 @@ public class CommandFreePoint extends AbstractCommand
     @Override
     public Object[][] getAttributeSignature()
     {
-        return ATTRS;
+        return null;
     }
 
     @Override

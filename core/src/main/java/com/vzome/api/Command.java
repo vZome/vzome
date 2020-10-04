@@ -8,7 +8,7 @@ import java.util.List;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 

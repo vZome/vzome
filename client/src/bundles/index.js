@@ -8,8 +8,13 @@ import * as vzomejava from './vzomejava'
 import * as camera from './camera'
 import * as lighting from './lighting'
 import * as progress from './progress'
+import * as jsweet from './jsweet'
+import * as mesh from './mesh'
+import * as implementations from './implementations'
+import * as commands from '../commands'
+import * as goldenField from '../fields/golden'
 
-const bundles = { jre, files, alerts, vzomejava, camera, lighting, progress }
+const bundles = { jre, files, alerts, vzomejava, camera, lighting, progress, jsweet, mesh, implementations, commands, goldenField }
 
 
 export default ( middleware ) =>
@@ -30,7 +35,7 @@ export default ( middleware ) =>
   const allMiddleware = names.reduce( ( arr, key ) => {
     const newMiddleware = bundles[key].middleware
     if ( newMiddleware ) {
-      console.log( JSON.stringify( `bundle middleware: ${key}` ) )
+      console.log( `bundle middleware: ${key}` )
       arr.push( newMiddleware )
     }
     return arr
@@ -41,7 +46,7 @@ export default ( middleware ) =>
   names.map( key => {
     const init = bundles[key].init
     if ( init ) {
-      console.log( JSON.stringify( `bundle init: ${key}` ) )
+      console.log( `bundle init: ${key}` )
       init( window, store )
     }
     return null

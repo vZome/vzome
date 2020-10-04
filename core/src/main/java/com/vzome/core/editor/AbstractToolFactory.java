@@ -4,6 +4,9 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 import com.vzome.api.Tool.Factory;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.Selection;
+import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.RealizedModel;
 

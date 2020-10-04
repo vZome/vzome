@@ -14,12 +14,12 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.PolygonFromVertices;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.math.Polyhedron;
+import com.vzome.core.model.HasRenderedObject;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
-import com.vzome.core.render.RenderedManifestation;
+import com.vzome.core.model.RenderedObject;
 
 public class RealizeMetaParts extends ChangeManifestations
 {
@@ -31,7 +31,7 @@ public class RealizeMetaParts extends ChangeManifestations
     	AlgebraicNumber scale = null;
         for (Manifestation man : mSelection) {
             unselect( man );
-            RenderedManifestation rm = man .getRenderedObject();
+            RenderedObject rm = ((HasRenderedObject) man) .getRenderedObject();
             if (rm != null) {
                 Polyhedron shape = rm .getShape();
                 if ( scale == null ) {
@@ -70,9 +70,9 @@ public class RealizeMetaParts extends ChangeManifestations
         return new FreePoint( vertex .scale( scale ) );
     }
 
-    public RealizeMetaParts( Selection selection, RealizedModel realized )
+    public RealizeMetaParts( EditorModel editor )
     {
-        super( selection, realized );
+        super( editor );
     }
         
     @Override

@@ -3,7 +3,7 @@
 
 package com.vzome.core.algebra;
 
-public class RootTwoField extends AlgebraicField
+public class RootTwoField extends AbstractAlgebraicField
 {
     public static final String FIELD_NAME = "rootTwo";
     
@@ -26,6 +26,12 @@ public class RootTwoField extends AlgebraicField
     {
         super( FIELD_NAME, 2 );
     };
+    
+    @Override
+    public boolean scale4dRoots()
+    {
+        return true;
+    }
 
     @Override
     public void defineMultiplier( StringBuffer buf, int which )

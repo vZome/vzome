@@ -7,7 +7,7 @@ import org.w3c.dom.Element;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Segment;
-import com.vzome.core.editor.EditorModel;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Strut;
 
 public class StrutMove extends StrutCreation

@@ -14,6 +14,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.commands.XmlSaveFormat;
 
 public class Branch extends UndoableEdit

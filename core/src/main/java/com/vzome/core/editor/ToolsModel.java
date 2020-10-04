@@ -17,6 +17,8 @@ import org.w3c.dom.NodeList;
 import com.vzome.api.Tool.InputBehaviors;
 import com.vzome.api.Tool.OutputBehaviors;
 import com.vzome.core.construction.Point;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.xml.DomUtils;
 
 @SuppressWarnings("serial")

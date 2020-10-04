@@ -3,14 +3,12 @@
 
 package org.vorthmann.zome.app.impl;
 
-import java.math.BigInteger;
 import java.util.StringTokenizer;
 
 import org.vorthmann.ui.DefaultController;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.algebra.BigRational;
 
 public class NumberController extends DefaultController
 {
@@ -41,12 +39,10 @@ public class NumberController extends DefaultController
             return result;
 
         case "values":
-            BigInteger divisor = value .getDivisor();
-            result = new String[ order + 1 ];
-            result[ order ] = divisor .toString();
-            BigRational[] factors = value .getFactors();
+            int[] td = value .toTrailingDivisor();
+            result = new String[ td .length ];
             for( int i = 0; i < order; i++ )
-                result[ i ] = factors[ i ] .times( new BigRational( divisor, BigInteger.ONE ) ) .toString();
+                result[ i ] = Integer .toString( td[ i ] );
             return result;
 
 		default:

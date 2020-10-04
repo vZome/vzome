@@ -4,6 +4,7 @@
 package com.vzome.core.editor;
 
 import com.vzome.core.commands.AbstractCommand;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 
 /**

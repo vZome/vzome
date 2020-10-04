@@ -3,7 +3,7 @@
 
 package com.vzome.core.algebra;
 
-public class SnubDodecField extends AlgebraicField
+public class SnubDodecField extends AbstractAlgebraicField
 {
     public static final String FIELD_NAME = "snubDodec";
     
