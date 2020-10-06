@@ -50,6 +50,7 @@ macAppBundle {
     creatorCode = 'vZ60'
     icon = 'vZome-6.icns'
     bundleJRE = 'true'
+    jreHome = '/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home'
     javaProperties.putAll jvmArgs
     javaProperties.put 'java.ext.dirs', '.'
     arguments.addAll vzomeArgs
