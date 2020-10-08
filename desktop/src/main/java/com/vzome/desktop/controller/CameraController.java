@@ -538,7 +538,12 @@ public class CameraController extends DefaultController implements Scene.Provide
     public void setSymmetry( RenderedModel model, Snapper snapper )
     {
         this .symmetryModel = model;
-        this .scene = new Scene( this .sceneLighting, false, model .getOrbitSource() .getSymmetry() .getChiralOrder() );
+        if ( this .scene == null )
+            // Lazy scene creation
+            // TODO: what if we don't start with the largest-order symmetry?
+            this .scene = new Scene( this .sceneLighting, false, model .getOrbitSource() .getSymmetry() .getChiralOrder() );
+        else
+            scene .reset();
         for ( RenderedManifestation rm : symmetryModel )
             scene .manifestationAdded( rm );
         this .snapper = snapper;
