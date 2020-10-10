@@ -32,9 +32,7 @@ const reducer = ( state=initialState, action ) => {
       points: Object.assign( {}, state.points,
         { [JSON.stringify(start)]: start, [JSON.stringify(end)]: end }
       ),
-      segments: Object.assign( {}, state.segments,
-        { [JSON.stringify(segment)]: segment }
-      )
+      segments: { ...state.segments, ...{ [JSON.stringify([start,end])]: segment } }
     } )
   }
   return state
