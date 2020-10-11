@@ -17,21 +17,30 @@ function Controls( props ) {
   return <trackballControls ref={ref} args={[camera, gl.domElement]} {...props} />
 }
 
-function App( {structure, workingPlane, doMoveWorkingPlane, doToggleWorkingPlane, doAddSegment} )
+function App( {structure, workingPlane, doMoveWorkingPlane, doToggleStrutMode, doAddSegment, doAddPoint} )
 {
-  function buildAndMove( start, end )
+  function buildNodeOrEdge( start, end )
   {
-    workingPlane.enabled && start && doAddSegment( start, end )
+    doAddPoint( end )
+    start && doAddSegment( start, end )
     doMoveWorkingPlane( end )
   }
   return (
     <Canvas camera={{ fov: 50 }} resize={{polyfill}}>
       <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} />
-      <Scene points={structure.points} segments={structure.segments} ballClick={buildAndMove}
-        setFocus={doMoveWorkingPlane} clearFocus={doToggleWorkingPlane} focus={workingPlane.enabled && workingPlane.position} />
-      {workingPlane.enabled && <BuildPlane config={workingPlane} buildFn={buildAndMove} defocus={doToggleWorkingPlane} />}
+      <Scene points={structure.points} segments={structure.segments}
+        buildEdge={buildNodeOrEdge}
+        setFocus={doMoveWorkingPlane}
+        clearFocus={doToggleStrutMode}
+        focus={workingPlane.enabled && workingPlane.buildingStruts && workingPlane.position} />
+      {workingPlane.enabled &&
+      <BuildPlane config={workingPlane} buildNodeOrEdge={buildNodeOrEdge} />}
     </Canvas>
   )
 }
 
-export default connect( 'doAddSegment', 'doMoveWorkingPlane', 'doToggleWorkingPlane', 'selectWorkingPlane', 'selectStructure', App );
+export default connect(
+  'doAddSegment', 'doAddPoint',
+  'doMoveWorkingPlane', 'doToggleStrutMode',
+  'selectWorkingPlane', 'selectStructure',
+  App );

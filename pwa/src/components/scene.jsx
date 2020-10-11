@@ -4,7 +4,7 @@ import { useResource } from 'react-three-fiber'
 import Ball from './ball'
 import Strut from './strut'
 
-function Scene( { points, segments, ballClick, setFocus, clearFocus, focus } )
+function Scene( { points, segments, buildEdge, setFocus, clearFocus, focus } )
 {
   const [geometryRef, geometry] = useResource()
   const [materialRef, material] = useResource()
@@ -16,7 +16,7 @@ function Scene( { points, segments, ballClick, setFocus, clearFocus, focus } )
     else if ( atFocus( position ) )
       clearFocus()
     else
-      ballClick( focus, position )
+      buildEdge( focus, position )
   }
   return (
     <group>
