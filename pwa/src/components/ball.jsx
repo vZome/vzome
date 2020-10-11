@@ -1,9 +1,9 @@
 import React from 'react'
 
-function Ball( { onClick, geom, material, position=[0,0,0], focus } ) {
+function Ball( { onClick, geom, material, position=[0,0,0] } ) {
   const ballClick = (e) => {
     e.stopPropagation()
-    onClick( focus, position )
+    onClick( position )
   }
   return (
     <mesh position={position} geometry={geom} material={material}

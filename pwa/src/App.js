@@ -21,13 +21,14 @@ function App( {structure, workingPlane, doMoveWorkingPlane, doToggleWorkingPlane
 {
   function buildAndMove( start, end )
   {
-    start && doAddSegment( start, end )
+    workingPlane.enabled && start && doAddSegment( start, end )
     doMoveWorkingPlane( end )
   }
   return (
     <Canvas camera={{ fov: 50 }} resize={{polyfill}}>
       <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} />
-      <Scene points={structure.points} segments={structure.segments} ballClick={buildAndMove} focus={workingPlane.position} />
+      <Scene points={structure.points} segments={structure.segments} ballClick={buildAndMove}
+        setFocus={doMoveWorkingPlane} clearFocus={doToggleWorkingPlane} focus={workingPlane.enabled && workingPlane.position} />
       {workingPlane.enabled && <BuildPlane config={workingPlane} buildFn={buildAndMove} defocus={doToggleWorkingPlane} />}
     </Canvas>
   )
