@@ -110,6 +110,16 @@ function quatmul( u, v )
     a(a(x(u0, v3), x(u3, v0)), s(x(u1, v2), x(u2, v1)))]
 }
 
+function quatconj( [u0=[0], u1=[0], u2=[0], u3=[0]] )
+{
+  return [ u0, negate(u1), negate(u2), negate(u3) ]
+}
+
+function quatTransform( Q, v )
+{
+  return quatmul( Q, quatmul( [[0]].concat(v), quatconj(Q)) ).slice(1)
+}
+
 function quatnormalize(q)
 {
   return scalarmul( [ q.map( grsign ).reduce( (a, b) => a || b ) || 1 ], q )
@@ -127,7 +137,7 @@ for ( let i = 2; i < 5; i++ )
   red[i] = quatmul( red[i-1], red[1] )
 const vZomeIcosahedralQuaternions = []; let b, r, y
 for (b of blue) for (r of red) for (y of yellow)
-  vZomeIcosahedralQuaternions.push( wlast( quatnormalize( quatmul( b, quatmul( y, r ) ) ).map( n => embed( n ) ) ) )
+  vZomeIcosahedralQuaternions.push( wlast( quatnormalize( quatmul( b, quatmul( y, r ) ) ) ) )
 
 
 export const field = {
@@ -140,9 +150,9 @@ export const field = {
   one: [ 1, 0, 1 ],
   goldenRatio: [ 0, 1, 1 ],
 
-  vZomeIcosahedralQuaternions,
+  quaternions: vZomeIcosahedralQuaternions,
 
-  plus, minus, times, scalarmul, vectoradd, embed, reciprocal, negate, createRationalFromPairs,
+  plus, minus, times, scalarmul, vectoradd, embed, reciprocal, negate, createRationalFromPairs, quatTransform,
 
   embedv: (v) => v.map( embed ),
 

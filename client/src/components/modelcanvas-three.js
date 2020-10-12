@@ -5,7 +5,8 @@ import { Canvas, useThree, extend, useFrame } from 'react-three-fiber'
 import * as THREE from 'three'
 import { PerspectiveCamera } from 'drei'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
-import { selectionToggled } from '../bundles/mesh'
+import { selectionToggled, commandTriggered } from '../bundles/mesh'
+import BuildPlane from './buildplane'
 
 extend({ TrackballControls })
 const Controls = props => {
@@ -95,7 +96,7 @@ TODO:
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler } ) => {
+const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler, doEdit, workingPlane } ) => {
   const { fov, position, up, lookAt } = camera
   const toggleSelected = clickable && selectionToggler
   return(
@@ -108,6 +109,8 @@ const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler } 
         { shapes.map( ( { shape, instances } ) =>
           <InstancedShape key={shape.id} shape={shape} instances={instances} toggleSelected={toggleSelected} />
         ) }
+        {workingPlane.enabled &&
+        <BuildPlane config={workingPlane} buildNodeOrEdge={ end => doEdit( 'newball', { end } ) } />}
       </Canvas>
     </>
   )
@@ -115,8 +118,9 @@ const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler } 
 
 const select = ( state ) =>
 {
-  const { camera, lighting, implementations } = state
+  const { camera, lighting, implementations, workingPlane } = state
   return {
+    workingPlane,
     camera,
     lighting,
     shapes: implementations.sortedShapes( state ),
@@ -125,7 +129,8 @@ const select = ( state ) =>
 }
 
 const boundEventActions = {
-  selectionToggler : selectionToggled
+  doEdit : commandTriggered,
+  selectionToggler : selectionToggled,
 }
 
 export default connect( select, boundEventActions )( ModelCanvas )
