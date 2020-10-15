@@ -1,341 +1,224 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<vzome:vZome field="golden" version="2.1 Beta 14" xmlns:vzome="http://tns.vorthmann.org/vZome/3.0.0/">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" coreVersion="7.0" field="golden">
+  <EditHistory editNumber="122" lastStickyEdit="-1">
+    <BeginBlock/>
+    <SelectAll grouping="2.1.1"/>
+    <EndBlock/>
+    <BuildAnchoredSegment dir="red" grouping="2.1.1" index="2" len="3 5"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <BuildAnchoredSegment dir="yellow" grouping="2.1.1" index="9" len="2 3"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 3 5 3 5"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 0 0 5 8"/>
+    <EndBlock/>
+    <Symmetry grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Symmetry>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 0 0 5 8"/>
+    <EndBlock/>
+    <BuildAnchoredSegment dir="rose" grouping="2.1.1" index="18" len="3 5"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="5 8 0 0 2 3"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 -3 -5 3 5"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <Polygon grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1">
+      <polygonVertex at="5 8 0 0 2 3"/>
+      <polygonVertex at="3 5 -3 -5 3 5"/>
+      <polygonVertex at="0 0 0 0 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation endSegment="6 10 -4 -6 0 0" grouping="2.1.1" startSegment="3 5 0 0 5 8"/>
+    <EndBlock/>
+    <LinePlaneIntersect grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </LinePlaneIntersect>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 0 0 5 8"/>
+    <SelectManifestation grouping="2.1.1" point="5 8 0 0 2 3"/>
+    <SelectManifestation grouping="2.1.1" point="22/5 36/5 -8/5 -14/5 14/5 22/5"/>
+    <EndBlock/>
+    <Polygon grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="5 8 0 0 2 3"/>
+    <EndBlock/>
+    <BuildAnchoredSegment dir="maroon" grouping="2.1.1" index="33" len="3 5"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="22/5 36/5 -8/5 -14/5 14/5 22/5"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 0 0 5 8"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <Polygon grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1">
+      <polygonVertex at="22/5 36/5 -8/5 -14/5 14/5 22/5"/>
+      <polygonVertex at="3 5 0 0 5 8"/>
+      <polygonVertex at="0 0 0 0 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation endSegment="3 5 -4 -7 4 6" grouping="2.1.1" startSegment="5 8 0 0 2 3"/>
+    <EndBlock/>
+    <LinePlaneIntersect grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </LinePlaneIntersect>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="4 7 -1 -3 3 4"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 0 0 5 8"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 -3 -5 3 5"/>
+    <EndBlock/>
+    <Polygon grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 -3 -5 3 5"/>
+    <EndBlock/>
+    <BuildAnchoredSegment dir="green" grouping="2.1.1" index="30" len="6 10"/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 -5 -8 3 5"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 -2 -3 5 8"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 -5 -8 -3 -5"/>
+    <EndBlock/>
+    <Polygon grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1">
+      <polygonVertex at="0 0 -5 -8 3 5"/>
+      <polygonVertex at="0 0 -2 -3 5 8"/>
+      <polygonVertex at="0 0 -5 -8 -3 -5"/>
+    </SelectManifestation>
+    <SelectManifestation endSegment="-5 -8 -6 -10 2 3" grouping="2.1.1" startSegment="3 5 -3 -5 3 5"/>
+    <EndBlock/>
+    <LinePlaneIntersect grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </LinePlaneIntersect>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 -4 -7 3 4"/>
+    <EndBlock/>
+    <Symmetry grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Symmetry>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 -5 -8 3 5"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 -4 -7 3 4"/>
+    <EndBlock/>
+    <TauDivision grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </TauDivision>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="0 0 -5 -7 2 5"/>
+    <EndBlock/>
+    <Symmetry grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Symmetry>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="5 7 -2 -5 0 0"/>
+    <SelectManifestation grouping="2.1.1" point="4 7 -1 -3 3 4"/>
+    <SelectManifestation grouping="2.1.1" point="3 5 -3 -5 3 5"/>
+    <EndBlock/>
+    <Polygon grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1">
+      <polygonVertex at="5 7 -2 -5 0 0"/>
+      <polygonVertex at="4 7 -1 -3 3 4"/>
+      <polygonVertex at="3 5 -3 -5 3 5"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Hide grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <BeginBlock/>
+    <SelectManifestation grouping="2.1.1">
+      <polygonVertex at="5 7 -2 -5 0 0"/>
+      <polygonVertex at="4 7 -1 -3 3 4"/>
+      <polygonVertex at="3 5 -3 -5 3 5"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <CentralSymmetry grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </CentralSymmetry>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1">
+      <polygonVertex at="-5 -7 2 5 0 0"/>
+      <polygonVertex at="-4 -7 1 3 -3 -4"/>
+      <polygonVertex at="-3 -5 3 5 -3 -5"/>
+    </SelectManifestation>
+    <SelectManifestation grouping="2.1.1">
+      <polygonVertex at="5 7 -2 -5 0 0"/>
+      <polygonVertex at="4 7 -1 -3 3 4"/>
+      <polygonVertex at="3 5 -3 -5 3 5"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Symmetry grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Symmetry>
+    <DeselectAll grouping="2.1.1"/>
+  </EditHistory>
+  <notes/>
+  <sceneModel ambientLight="41,41,41" background="178,205,230">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
   <Viewing>
-    <ViewModel near="0.2718281786416199" far="217.46253967285156" width="48.9290714263916" distance="108.73126983642578"
-    stereoAngle="0.0" parallel="false">
+    <ViewModel distance="190.35284423828125" far="380.7054748535156" near="0.47588205337524414" parallel="false" stereoAngle="0.0" width="85.65876007080078">
       <LookAtPoint x="0.0" y="0.0" z="0.0"/>
-      <UpDirection x="0.5381530344613756" y="-0.7167836904881801" z="0.44341002757059533"/>
-      <LookDirection x="-0.841406160175055" y="-0.4876295358231485" z="0.23292296883813873"/>
-    </ViewModel>
-    <ViewModel near="0.10000000149011612" far="80.0" width="18.0" distance="40.0" stereoAngle="0.0" parallel="false"
-    name="default">
-      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
-      <UpDirection x="0.0" y="1.0" z="0.0"/>
-      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+      <UpDirection x="-0.02352222427725792" y="0.9952272772789001" z="0.09470773488283157"/>
+      <LookDirection x="-0.5526390075683594" y="0.06599921733140945" z="-0.8308034539222717"/>
     </ViewModel>
   </Viewing>
-  <SymmetrySystem name="icosahedral" useGraphicalViews="false" renderingStyle="solid connectors">
-    <Direction name="blue" available="true" snap="true" build="true" render="true" color="0,118,149">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="red" available="true" snap="true" build="true" render="true" color="175,0,0">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="yellow" available="true" snap="true" build="true" render="true" color="240,160,0">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="green" available="true" snap="true" build="true" render="true" color="0,141,54">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="orange" available="true" snap="true" build="true" render="true" color="220,76,0">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="purple" available="true" snap="true" build="true" render="true" color="108,0,198">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="black" render="true" color="30,30,30">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="lavender" render="true" color="175,135,255">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="olive" render="true" color="100,113,0">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="maroon" render="true" color="117,0,50">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="rose" render="true" color="255,51,143">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="navy" render="true" color="0,0,153">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="turquoise" render="true" color="18,205,148">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="coral" render="true" color="255,126,106">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="sulfur" render="true" color="230,245,62">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="unnamed_0" render="true">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="unnamed_1" render="true">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="unnamed_2" render="true">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="unnamed_3" render="true">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="unnamed_4" render="true" color="239,255,239">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="unnamed_5" render="true">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="unnamed_6" render="true">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
-    <Direction name="unnamed_7" render="true">
-      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
-    </Direction>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
+    <Direction color="0,118,149" name="blue"/>
+    <Direction color="175,0,0" name="red"/>
+    <Direction color="240,160,0" name="yellow"/>
+    <Direction color="0,141,54" name="green"/>
+    <Direction color="220,76,0" name="orange"/>
+    <Direction color="108,0,198" name="purple"/>
+    <Direction color="30,30,30" name="black"/>
+    <Direction color="175,135,255" name="lavender"/>
+    <Direction color="100,113,0" name="olive"/>
+    <Direction color="117,0,50" name="maroon"/>
+    <Direction color="255,51,143" name="rose"/>
+    <Direction color="0,0,153" name="navy"/>
+    <Direction color="18,205,148" name="turquoise"/>
+    <Direction color="255,126,106" name="coral"/>
+    <Direction color="230,245,62" name="sulfur"/>
+    <Direction color="187,144,85" name="sand"/>
+    <Direction color="129,191,30" name="apple"/>
+    <Direction color="144,56,14" name="cinnamon"/>
+    <Direction color="12,84,55" name="spruce"/>
+    <Direction color="105,54,1" name="brown"/>
+    <Direction color="255,255,255" name="13" prototype="19 -11 -17 10 28 -17"/>
   </SymmetrySystem>
-  <EditHistory editNumber="123">
-    <BeginBlock/>
-    <SelectAll/>
-    <EndBlock/>
-    <CommandEdit command="CommandBuildAnchoredSegment">
-      <Axis symm="icosahedral" dir="red" index="2" attrName="axis"/>
-      <IntegralNumber value="5phi+3" attrName="length"/>
-    </CommandEdit>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <point attrName="manifestation"/>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandBuildAnchoredSegment">
-      <Axis symm="icosahedral" dir="yellow" index="9" attrName="axis"/>
-      <IntegralNumber value="3phi+2" attrName="length"/>
-    </CommandEdit>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <point x="5phi+3" y="5phi+3" z="5phi+3" attrName="manifestation"/>
-    </SelectManifestation>
-    <SelectManifestation>
-      <point x="5phi+3" z="8phi+5" attrName="manifestation"/>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandSymmetry"/>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <point x="5phi+3" z="8phi+5" attrName="manifestation"/>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandBuildAnchoredSegment">
-      <Axis symm="icosahedral" dir="rose" index="18" attrName="axis"/>
-      <IntegralNumber value="5phi+3" attrName="length"/>
-    </CommandEdit>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <point x="8phi+5" z="3phi+2" attrName="manifestation"/>
-    </SelectManifestation>
-    <SelectManifestation>
-      <point x="5phi+3" y="-5phi-3" z="5phi+3" attrName="manifestation"/>
-    </SelectManifestation>
-    <SelectManifestation>
-      <point attrName="manifestation"/>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandPolygon"/>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <polygon attrName="manifestation">
-        <vertex x="8phi+5" z="3phi+2"/>
-        <vertex x="5phi+3" y="-5phi-3" z="5phi+3"/>
-        <vertex/>
-      </polygon>
-    </SelectManifestation>
-    <SelectManifestation>
-      <segment attrName="manifestation">
-        <start x="5phi+3" z="8phi+5"/>
-        <end x="10phi+6" y="-6phi-4"/>
-      </segment>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandLinePlaneIntersect"/>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <point x="5phi+3" z="8phi+5" attrName="manifestation"/>
-    </SelectManifestation>
-    <SelectManifestation>
-      <point x="8phi+5" z="3phi+2" attrName="manifestation"/>
-    </SelectManifestation>
-    <SelectManifestation>
-      <point x="(36phi+22)/5" y="(-14phi-8)/5" z="(22phi+14)/5" attrName="manifestation"/>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandPolygon"/>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <point x="8phi+5" z="3phi+2" attrName="manifestation"/>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandBuildAnchoredSegment">
-      <Axis symm="icosahedral" dir="maroon" index="33" attrName="axis"/>
-      <IntegralNumber value="5phi+3" attrName="length"/>
-    </CommandEdit>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <point x="(36phi+22)/5" y="(-14phi-8)/5" z="(22phi+14)/5" attrName="manifestation"/>
-    </SelectManifestation>
-    <SelectManifestation>
-      <point x="5phi+3" z="8phi+5" attrName="manifestation"/>
-    </SelectManifestation>
-    <SelectManifestation>
-      <point attrName="manifestation"/>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandPolygon"/>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <polygon attrName="manifestation">
-        <vertex x="(36phi+22)/5" y="(-14phi-8)/5" z="(22phi+14)/5"/>
-        <vertex x="5phi+3" z="8phi+5"/>
-        <vertex/>
-      </polygon>
-    </SelectManifestation>
-    <SelectManifestation>
-      <segment attrName="manifestation">
-        <start x="8phi+5" z="3phi+2"/>
-        <end x="5phi+3" y="-7phi-4" z="6phi+4"/>
-      </segment>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandLinePlaneIntersect"/>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <point x="(-7phi-4)/-1" y="-3phi-1" z="4phi+3" attrName="manifestation"/>
-    </SelectManifestation>
-    <SelectManifestation>
-      <point x="5phi+3" z="8phi+5" attrName="manifestation"/>
-    </SelectManifestation>
-    <SelectManifestation>
-      <point x="5phi+3" y="-5phi-3" z="5phi+3" attrName="manifestation"/>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandPolygon"/>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <point x="5phi+3" y="-5phi-3" z="5phi+3" attrName="manifestation"/>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandBuildAnchoredSegment">
-      <Axis symm="icosahedral" dir="green" index="30" attrName="axis"/>
-      <IntegralNumber value="10phi+6" attrName="length"/>
-    </CommandEdit>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <point y="-8phi-5" z="5phi+3" attrName="manifestation"/>
-    </SelectManifestation>
-    <SelectManifestation>
-      <point y="-3phi-2" z="8phi+5" attrName="manifestation"/>
-    </SelectManifestation>
-    <SelectManifestation>
-      <point y="-8phi-5" z="-5phi-3" attrName="manifestation"/>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandPolygon"/>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <polygon attrName="manifestation">
-        <vertex y="-8phi-5" z="5phi+3"/>
-        <vertex y="-3phi-2" z="8phi+5"/>
-        <vertex y="-8phi-5" z="-5phi-3"/>
-      </polygon>
-    </SelectManifestation>
-    <SelectManifestation>
-      <segment attrName="manifestation">
-        <start x="5phi+3" y="-5phi-3" z="5phi+3"/>
-        <end x="-8phi-5" y="-10phi-6" z="3phi+2"/>
-      </segment>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandLinePlaneIntersect"/>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <point y="-7phi-4" z="(-4phi-3)/-1" attrName="manifestation"/>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandSymmetry"/>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <point y="-8phi-5" z="5phi+3" attrName="manifestation"/>
-    </SelectManifestation>
-    <SelectManifestation>
-      <point y="-7phi-4" z="(-4phi-3)/-1" attrName="manifestation"/>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandTauDivision"/>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <point y="-7phi-5" z="(-5phi-2)/-1" attrName="manifestation"/>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandSymmetry"/>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <point x="7phi+5" y="-5phi-2" attrName="manifestation"/>
-    </SelectManifestation>
-    <SelectManifestation>
-      <point x="(-7phi-4)/-1" y="-3phi-1" z="4phi+3" attrName="manifestation"/>
-    </SelectManifestation>
-    <SelectManifestation>
-      <point x="5phi+3" y="-5phi-3" z="5phi+3" attrName="manifestation"/>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandPolygon"/>
-    <BeginBlock/>
-    <SelectAll/>
-    <SelectManifestation>
-      <polygon attrName="manifestation">
-        <vertex x="7phi+5" y="-5phi-2"/>
-        <vertex x="(-7phi-4)/-1" y="-3phi-1" z="4phi+3"/>
-        <vertex x="5phi+3" y="-5phi-3" z="5phi+3"/>
-      </polygon>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandHide"/>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <polygon attrName="manifestation">
-        <vertex x="7phi+5" y="-5phi-2"/>
-        <vertex x="(-7phi-4)/-1" y="-3phi-1" z="4phi+3"/>
-        <vertex x="5phi+3" y="-5phi-3" z="5phi+3"/>
-      </polygon>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandCentralSymmetry"/>
-    <BeginBlock/>
-    <DeselectAll/>
-    <SelectManifestation>
-      <polygon attrName="manifestation">
-        <vertex x="-7phi-5" y="5phi+2"/>
-        <vertex x="(7phi+4)/-1" y="3phi+1" z="-4phi-3"/>
-        <vertex x="-5phi-3" y="5phi+3" z="-5phi-3"/>
-      </polygon>
-    </SelectManifestation>
-    <SelectManifestation>
-      <polygon attrName="manifestation">
-        <vertex x="7phi+5" y="-5phi-2"/>
-        <vertex x="(-7phi-4)/-1" y="-3phi-1" z="4phi+3"/>
-        <vertex x="5phi+3" y="-5phi-3" z="5phi+3"/>
-      </polygon>
-    </SelectManifestation>
-    <EndBlock/>
-    <CommandEdit command="CommandSymmetry"/>
-    <DeselectAll/>
-  </EditHistory>
+  <Tools/>
 </vzome:vZome>
