@@ -10,6 +10,7 @@ import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.ImplicitSymmetryParameters;
 import com.vzome.core.editor.api.LegacyEditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Selection;
@@ -115,17 +116,21 @@ public class EditorModelImpl implements LegacyEditorModel, SymmetryAware
                 return null;
 
             Constructor<?>[] constructors = factoryClass .getConstructors();
-            Constructor<?> goodConstructor = null, editorConstructor = null;
+            Constructor<?> goodConstructor = null, editorConstructor = null, ispConstructor = null;
             for ( Constructor<?> constructor : constructors ) {
                 Class<?>[] parameterTypes = constructor .getParameterTypes();
                 if ( parameterTypes.length == 2 && parameterTypes[0] .equals( Selection.class ) && parameterTypes[1] .equals( RealizedModel.class ) ) {
                     goodConstructor = constructor;
                 } else if ( parameterTypes.length == 1 && parameterTypes[0] .equals( EditorModel.class ) ) {
                     editorConstructor = constructor;
+                } else if ( parameterTypes.length == 1 && parameterTypes[0] .equals( ImplicitSymmetryParameters.class ) ) {
+                    ispConstructor = constructor;
                 }
             }
             if ( editorConstructor != null ) {
                 return (UndoableEdit) editorConstructor .newInstance( new Object[] { this } );
+            } else if ( ispConstructor != null ) {
+                return (UndoableEdit) ispConstructor .newInstance( new Object[] { this } );
             } else if ( goodConstructor != null ) {
                 return (UndoableEdit) goodConstructor .newInstance( new Object[] { this.mSelection, this.mRealized } );
             } else {
