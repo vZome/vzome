@@ -17,12 +17,12 @@ function length(v) {
   return new THREE.Vector3().fromArray(v).length()
 }
 
-function Strut( { material, position, offset } ) {
+function Strut( { material, position, offset, radius=0.1 } ) {
   return (
     <mesh material={material}
       quaternion={offsetToQuaternion(offset)}
       position={strutCenter(position,offset)}>
-      <cylinderBufferGeometry attach="geometry" args={[0.1,0.1,length(offset),12,1]}/>
+      <cylinderBufferGeometry attach="geometry" args={[ radius, radius, length(offset),12,1]}/>
     </mesh>
   )
 }

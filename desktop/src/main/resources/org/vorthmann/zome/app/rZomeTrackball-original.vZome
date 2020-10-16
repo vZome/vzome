@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<vzome:vZome field="golden" version="3.0 beta 96" xmlns:vzome="http://tns.vorthmann.org/vZome/5.0.0/">
-  <EditHistory editNumber="167">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" coreVersion="7.0" field="golden">
+  <EditHistory editNumber="167" lastStickyEdit="124">
     <RunZomicScript> { label unit.start branch{ yellow +0 red +0 label inner.long branch { yellow +0 label yellow.hole.long
       } branch { red +0 label red.hole.long } blue +0 branch { size -1 blue -0 label blue.hole.long } branch {
       size -1 red +4 label blue.chamfer.long } size 2 red +4 label outer.long branch { size 1 purple -35 label
@@ -24,14 +24,17 @@
       unit.face label red.hole.short label red.chamfer.short label red.chamfer.common label red.hole.common label
       unit.face label blue.hole.common label blue.chamfer.common label blue.chamfer.short label blue.hole.short
       label unit.face label blue.chamfer.common label blue.hole.common label blue.hole.long label blue.chamfer.long
-      label unit.end } </RunZomicScript>
+      label unit.end } 
+</RunZomicScript>
     <BeginBlock/>
     <SelectManifestation point="5 5 8 13 6 8"/>
     <SelectManifestation point="2 5 8 16 3 5"/>
     <SelectManifestation point="2 3 10 16 3 5"/>
     <SelectManifestation point="3 5 8 13 6 10"/>
     <EndBlock/>
-    <Polygon/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation point="5 5 7 13 3 9"/>
@@ -39,14 +42,18 @@
     <SelectManifestation point="2 5 8 16 3 5"/>
     <SelectManifestation point="5 5 8 13 6 8"/>
     <EndBlock/>
-    <Polygon/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation point="5 5 7 13 3 9"/>
     <SelectManifestation point="7 9 7 13 -1 3"/>
     <SelectManifestation point="4 4 8 15 1 6"/>
     <EndBlock/>
-    <Polygon/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation point="7 9 7 13 -1 3"/>
@@ -54,7 +61,9 @@
     <SelectManifestation point="2 5 8 16 3 5"/>
     <SelectManifestation point="4 4 8 15 1 6"/>
     <EndBlock/>
-    <Polygon/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation point="2 3 10 16 3 5"/>
@@ -62,7 +71,9 @@
     <SelectManifestation point="5 11 8 13 0 2"/>
     <SelectManifestation point="7 11 8 13 0 0"/>
     <EndBlock/>
-    <Polygon/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation point="7 11 8 13 0 0"/>
@@ -70,7 +81,9 @@
     <SelectManifestation point="5/2 7/2 19/2 16 3 7/2"/>
     <SelectManifestation point="2 3 10 16 3 5"/>
     <EndBlock/>
-    <Polygon/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation point="6 10 9 13 0 0"/>
@@ -78,7 +91,9 @@
     <SelectManifestation point="2 4 9 15 2 3"/>
     <SelectManifestation point="5/2 7/2 19/2 16 3 7/2"/>
     <EndBlock/>
-    <Polygon/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation point="2 3 10 16 3 5"/>
@@ -86,7 +101,9 @@
     <SelectManifestation point="4 3 10 12 7 9"/>
     <SelectManifestation point="3 5 8 13 6 10"/>
     <EndBlock/>
-    <Polygon/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
     <BeginBlock/>
     <SelectManifestation>
       <polygonVertex at="2 3 10 16 3 5"/>
@@ -99,12 +116,14 @@
     <SelectManifestation point="2 3 8 13 6 9"/>
     <SelectManifestation point="4 3 10 12 7 9"/>
     <EndBlock/>
-    <Polygon/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation point="0 0 0 0 0 0"/>
     <EndBlock/>
-    <SymmetryTool symmetry="icosahedral" name="icosahedral.1/icosahedral.1"/>
+    <SymmetryTool name="icosahedral.1/icosahedral.1" symmetry="icosahedral"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>
@@ -169,7 +188,9 @@
       <polygonVertex at="5/2 7/2 19/2 16 3 7/2"/>
     </SelectManifestation>
     <EndBlock/>
-    <Hide/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
     <BeginBlock/>
     <SelectManifestation>
       <polygonVertex at="6 10 9 13 0 0"/>
@@ -231,20 +252,20 @@
     </SelectManifestation>
     <EndBlock/>
     <ToolApplied name="icosahedral.1/icosahedral.1" selectInputs="true"/>
-    <setItemColor red="240" green="242" blue="244"/>
+    <setItemColor blue="244" green="242" red="240"/>
     <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="6" len="1 1"/>
     <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="1" len="1 1"/>
     <BeginBlock/>
     <SelectManifestation point="0 0 0 0 0 0"/>
-    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 1 2 1 1"/>
+    <SelectManifestation endSegment="0 0 1 2 1 1" startSegment="0 0 0 0 0 0"/>
     <EndBlock/>
-    <RotationTool symmetry="icosahedral" name="rotation.2/rotation.2"/>
+    <RotationTool name="rotation.2/rotation.2" symmetry="icosahedral"/>
     <BeginBlock/>
     <DeselectAll/>
-    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="1 1 2 3 0 0"/>
+    <SelectManifestation endSegment="1 1 2 3 0 0" startSegment="0 0 0 0 0 0"/>
     <SelectManifestation point="0 0 0 0 0 0"/>
     <EndBlock/>
-    <RotationTool symmetry="icosahedral" name="rotation.3/rotation.3"/>
+    <RotationTool name="rotation.3/rotation.3" symmetry="icosahedral"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation point="5 9 8 13 0 0"/>
@@ -263,17 +284,21 @@
     <SelectManifestation point="-1 -2 9 15 4 6"/>
     <SelectManifestation point="-2 -3 8 13 6 9"/>
     <EndBlock/>
-    <Polygon/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
     <ToolApplied name="icosahedral.1/icosahedral.1" selectInputs="true"/>
-    <setItemColor red="221" green="96" blue="96"/>
+    <setItemColor blue="96" green="96" red="221"/>
     <BeginBlock/>
     <SelectManifestation point="2 4 9 15 2 3"/>
     <SelectManifestation point="5 9 8 13 0 0"/>
     <SelectManifestation point="2 4 9 15 -2 -3"/>
     <EndBlock/>
-    <Polygon/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Polygon>
     <ToolApplied name="icosahedral.1/icosahedral.1" selectInputs="true"/>
-    <setItemColor red="252" green="215" blue="67"/>
+    <setItemColor blue="67" green="215" red="252"/>
     <BeginBlock/>
     <SelectManifestation point="2 4 9 15 2 3"/>
     <SelectManifestation point="5 9 8 13 0 0"/>
@@ -284,13 +309,57 @@
     <SelectManifestation point="-2 -3 8 13 6 9"/>
     <SelectManifestation point="-1 -2 9 15 4 6"/>
     <EndBlock/>
-    <Hide/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
     <SelectManifestation>
       <polygonVertex at="5 5 7 13 3 9"/>
       <polygonVertex at="7 9 7 13 -1 3"/>
       <polygonVertex at="4 4 8 15 1 6"/>
     </SelectManifestation>
     <ToolApplied name="icosahedral.1/icosahedral.1" selectInputs="true"/>
-    <setItemColor red="58" green="196" blue="231"/>
+    <setItemColor blue="231" green="196" red="58"/>
   </EditHistory>
+  <notes/>
+  <sceneModel ambientLight="41,41,41" background="178,205,230">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="278.3500671386719" far="556.6998901367188" near="0.6958749890327454" parallel="false" stereoAngle="0.0" width="125.25751495361328">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0" y="1.0" z="0.0"/>
+      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
+    <Direction color="6,96,141" name="blue"/>
+    <Direction color="197,3,20" name="red"/>
+    <Direction color="245,163,1" name="yellow"/>
+    <Direction color="2,130,53" name="green"/>
+    <Direction color="236,89,1" name="orange"/>
+    <Direction color="113,64,178" name="purple"/>
+    <Direction color="36,35,38" name="black"/>
+    <Direction color="144,127,227" name="lavender"/>
+    <Direction color="116,104,1" name="olive"/>
+    <Direction color="141,2,41" name="maroon"/>
+    <Direction color="251,94,160" name="rose"/>
+    <Direction color="52,48,136" name="navy"/>
+    <Direction color="53,181,179" name="turquoise"/>
+    <Direction color="254,124,123" name="coral"/>
+    <Direction color="218,225,83" name="sulfur"/>
+    <Direction color="187,144,85" name="sand"/>
+    <Direction color="129,191,30" name="apple"/>
+    <Direction color="144,56,14" name="cinnamon"/>
+    <Direction color="12,84,55" name="spruce"/>
+    <Direction color="105,54,1" name="brown"/>
+    <Direction color="255,255,255" name="27" prototype="-3 3 7 -4 -2 1"/>
+    <Direction color="255,255,255" name="28" prototype="-33 21 -39 24 -42 27"/>
+  </SymmetrySystem>
+  <Tools>
+    <Tool id="icosahedral.1/icosahedral.1" label="" selectInputs="true"/>
+    <Tool deleteInputs="true" id="rotation.2/rotation.2" label=""/>
+    <Tool deleteInputs="true" id="rotation.3/rotation.3" label=""/>
+  </Tools>
 </vzome:vZome>
