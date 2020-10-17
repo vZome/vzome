@@ -1,19 +1,19 @@
 
 import { field as goldenField } from '../fields/golden'
 
-export const doMoveWorkingPlane = (position) => ({dispatch}) => {
+export const doMoveWorkingPlane = position => ( dispatch ) => {
   dispatch( { type: 'WORKING_PLANE_MOVED', payload: position } )
 }
 
-export const doToggleWorkingPlane = () => ({dispatch}) => {
+export const doToggleWorkingPlane = () => ( dispatch ) => {
   dispatch( { type: 'WORKING_PLANE_TOGGLED' } )
 }
 
-export const doToggleStrutMode = () => ({dispatch}) => {
+export const doToggleStrutMode = () => ( dispatch ) => {
   dispatch( { type: 'STRUT_MODE_TOGGLED' } )
 }
 
-export const doChangeOrientation = () => ({dispatch}) => {
+export const doChangeOrientation = () => ( dispatch ) => {
   dispatch( { type: 'ORIENTATION_CHANGED' } )
 }
 

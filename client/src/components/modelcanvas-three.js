@@ -6,6 +6,7 @@ import * as THREE from 'three'
 import { PerspectiveCamera } from 'drei'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
 import { selectionToggled, commandTriggered } from '../bundles/mesh'
+import { doMoveWorkingPlane } from '../bundles/planes'
 import BuildPlane from './buildplane'
 
 extend({ TrackballControls })
@@ -96,9 +97,14 @@ TODO:
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler, doEdit, workingPlane } ) => {
+const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler, doEdit, movePlane, workingPlane } ) => {
   const { fov, position, up, lookAt } = camera
   const toggleSelected = clickable && selectionToggler
+  const buildNodeOrEdge = ( start, end ) =>
+  {
+    doEdit( 'buildstrut', { start, end } )
+    movePlane( end )
+  }
   return(
     <>
       <Canvas gl={{ antialias: true, alpha: false }} >
@@ -110,7 +116,7 @@ const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler, d
           <InstancedShape key={shape.id} shape={shape} instances={instances} toggleSelected={toggleSelected} />
         ) }
         {workingPlane.enabled &&
-        <BuildPlane config={workingPlane} buildNodeOrEdge={ end => doEdit( 'newball', { end } ) } />}
+        <BuildPlane config={workingPlane} buildNodeOrEdge={buildNodeOrEdge} />}
       </Canvas>
     </>
   )
@@ -130,6 +136,7 @@ const select = ( state ) =>
 
 const boundEventActions = {
   doEdit : commandTriggered,
+  movePlane : doMoveWorkingPlane,
   selectionToggler : selectionToggled,
 }
 

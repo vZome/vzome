@@ -4,7 +4,7 @@ import { useResource } from 'react-three-fiber'
 
 function BuildPlane( { config, buildNodeOrEdge } )
 {
-  const { position, quaternion, grid, color, size, field } = config
+  const { position, quaternion, grid, color, size, field, buildingStruts } = config
   const [ materialRef, material ] = useResource()
   const rsize = field.embed( size )
   const dotSize = rsize / 25
@@ -26,7 +26,7 @@ function BuildPlane( { config, buildNodeOrEdge } )
   {
     e.stopPropagation()
     console.log( "handle grid click: " + JSON.stringify( gridPt ) )
-    buildNodeOrEdge( makeAbsolute( gridPt ) )
+    buildNodeOrEdge( buildingStruts? position : undefined, makeAbsolute( gridPt ) )
   }
   const wlast = q =>
   {
