@@ -29,7 +29,6 @@ import com.vzome.core.exporters.DxfExporter;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters.HistoryExporter;
 import com.vzome.core.exporters.OffExporter;
-import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
 import com.vzome.core.exporters.PartsListExporter;
 import com.vzome.core.exporters.PdbExporter;
@@ -104,7 +103,6 @@ public class Application implements AlgebraicField.Registry
         this .exporters .put( "shapes", new ShapesJsonExporter() );
 
         this .exporters .put( "pov", new POVRayExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "opengl", new OpenGLExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "dae", new DaeExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "json", new WebviewJsonExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "step", new STEPExporter( null, this .mColors, this .mLights, null ) );
