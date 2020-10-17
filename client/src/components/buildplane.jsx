@@ -28,9 +28,14 @@ function BuildPlane( { config, buildNodeOrEdge } )
     console.log( "handle grid click: " + JSON.stringify( gridPt ) )
     buildNodeOrEdge( makeAbsolute( gridPt ) )
   }
-
+  const wlast = q =>
+  {
+    const [ w, x, y, z ] = q
+    return [ x, y, z, w ]
+  }
+  
   return (
-    <group position={field.embedv( position )} quaternion={field.embedv( quaternion )}>
+    <group position={field.embedv( position )} quaternion={field.embedv( wlast( quaternion ) )}>
       <meshBasicMaterial ref={materialRef} transparent={true} opacity={0.2} color={color} side={THREE.DoubleSide} />
       <mesh material={material} >
         <planeGeometry attach="geometry" args={[ rsize, rsize ]} />

@@ -110,6 +110,9 @@ function quatmul( u, v )
     a(a(x(u0, v3), x(u3, v0)), s(x(u1, v2), x(u2, v1)))]
 }
 
+// Everything here uses a W-first representation of quaternions.
+//   These quaternions must be transformed to W-last when using with three.js.
+
 function quatconj( [u0=[0], u1=[0], u2=[0], u3=[0]] )
 {
   return [ u0, negate(u1), negate(u2), negate(u3) ]
@@ -125,19 +128,13 @@ function quatnormalize(q)
   return scalarmul( [ q.map( grsign ).reduce( (a, b) => a || b ) || 1 ], q )
 }
 
-function wlast(q)
-{
-  const [ w, x, y, z ] = q
-  return [ x, y, z, w ]
-}
-
 const one = [[1],,,], h = [1,,2], blue = [one, [,[1],,], [,,,[1]], [,,[1],]],
   yellow = [one, [h, h, h, h], [[-1,,2], h, h, h]], red = [one, [[,1,2], h, [-1,1,2],]]
 for ( let i = 2; i < 5; i++ )
   red[i] = quatmul( red[i-1], red[1] )
 const vZomeIcosahedralQuaternions = []; let b, r, y
 for (b of blue) for (r of red) for (y of yellow)
-  vZomeIcosahedralQuaternions.push( wlast( quatnormalize( quatmul( b, quatmul( y, r ) ) ) ) )
+  vZomeIcosahedralQuaternions.push( quatnormalize( quatmul( b, quatmul( y, r ) ) ) )
 
 
 export const field = {

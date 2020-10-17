@@ -44,7 +44,7 @@ const Instance = ( { id, position, rotation, geometry, color, selected, toggleSe
     }
   }
   return (
-    <group position={ position } quaternion={ rotation || [0,0,0,1] }>
+    <group position={ position } quaternion={ rotation }>
       <mesh geometry={geometry} onClick={handleClick}>
         <meshLambertMaterial attach="material" color={color} emissive={selected? "#888888" : "black"} />
       </mesh>
