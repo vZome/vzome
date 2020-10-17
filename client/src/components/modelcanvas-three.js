@@ -35,7 +35,7 @@ const createGeometry = ( { vertices, faces } ) =>
   return geometry
 }
 
-const Instance = ( { id, position, rotation, geometry, color, selected, onClick } ) =>
+const Instance = ( { id, position, rotation, geometry, color, selected, atFocus, onClick } ) =>
 {
   const handleClick = ( e ) =>
   {
@@ -47,19 +47,19 @@ const Instance = ( { id, position, rotation, geometry, color, selected, onClick 
   return (
     <group position={ position } quaternion={ rotation }>
       <mesh geometry={geometry} onClick={handleClick}>
-        <meshLambertMaterial attach="material" color={color} emissive={selected? "#888888" : "black"} />
+        <meshLambertMaterial attach="material" color={color} emissive={(selected || atFocus(id))? "#888888" : "black"} />
       </mesh>
     </group>
   )
 }
 
-const InstancedShape = ( { instances, shape, onClick } ) =>
+const InstancedShape = ( { instances, shape, onClick, atFocus } ) =>
 {
   const geometry = useMemo( () => createGeometry( shape ), [ shape ] )
   return (
     <>
       { instances.map( instance => 
-        <Instance key={instance.id} {...instance} geometry={geometry} onClick={onClick} /> ) }
+        <Instance key={instance.id} {...instance} geometry={geometry} atFocus={atFocus} onClick={onClick} /> ) }
     </>
   )
 }
@@ -101,7 +101,7 @@ const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler, d
   const { fov, position, up, lookAt } = camera
   const mouseSelectMode = false
   const focus = workingPlane.position
-  const atFocus = id => id === JSON.stringify(focus)
+  const atFocus = id => workingPlane.buildingStruts && ( id === JSON.stringify(focus) )
   const buildNodeOrEdge = ( start, end ) =>
   {
     doEdit( 'buildstrut', { start, end } )
@@ -127,7 +127,7 @@ const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler, d
         </PerspectiveCamera>
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
         { shapes.map( ( { shape, instances } ) =>
-          <InstancedShape key={shape.id} shape={shape} instances={instances} onClick={clickable && handleClick} />
+          <InstancedShape key={shape.id} shape={shape} instances={instances} atFocus={atFocus} onClick={clickable && handleClick} />
         ) }
         {workingPlane.enabled &&
         <BuildPlane config={workingPlane} buildNodeOrEdge={buildNodeOrEdge} />}

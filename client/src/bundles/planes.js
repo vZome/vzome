@@ -37,7 +37,7 @@ const initialState = {
   grid,
   color: "#00aacc",
   enabled: true,
-  buildingStruts: true,
+  buildingStruts: false,
   field: goldenField
 }
 
