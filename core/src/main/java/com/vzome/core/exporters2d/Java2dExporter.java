@@ -142,7 +142,7 @@ public class Java2dExporter
                 if ( ! backFacing )
                 {
                     if ( doLighting ) {
-                        AlgebraicVector faceNormal = partOrientation .timesColumn( face .getNormal() );
+                        AlgebraicVector faceNormal = partOrientation .timesColumn( face .getNormal( vertices ) );
                         RealVector normal = model .renderVector( faceNormal ) .normalize();
                         Vector3f normalV = new Vector3f( normal.x, normal.y, normal.z );
                         this .viewTransform .transform( normalV );
