@@ -51,7 +51,6 @@ import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.exporters.Exporter3d;
-import com.vzome.core.exporters.OpenGLExporter;
 import com.vzome.core.exporters.POVRayExporter;
 import com.vzome.core.exporters.PartGeometryExporter;
 import com.vzome.core.exporters.ShapesJsonExporter;
@@ -787,10 +786,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
         case "pov":
             exporter = new POVRayExporter( camera, colors, lights, currentSnapshot );
-            break;
-
-        case "opengl":
-            exporter = new OpenGLExporter( camera, colors, lights, currentSnapshot );
             break;
 
         default:
