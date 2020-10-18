@@ -7,6 +7,7 @@ function BuildPlane( { config, buildNodeOrEdge } )
   const { position, quaternion, grid, color, size, field, buildingStruts } = config
   const [ materialRef, material ] = useResource()
   const rsize = field.embed( size )
+  const planeSize = rsize * 8
   const dotSize = rsize / 12
   
   const makeAbsolute = ( gridPt ) =>
@@ -38,7 +39,7 @@ function BuildPlane( { config, buildNodeOrEdge } )
     <group position={field.embedv( position )} quaternion={field.embedv( wlast( quaternion ) )}>
       <meshBasicMaterial ref={materialRef} transparent={true} opacity={0.2} color={color} side={THREE.DoubleSide} />
       <mesh material={material} >
-        <planeGeometry attach="geometry" args={[ rsize, rsize ]} />
+        <planeGeometry attach="geometry" args={[ planeSize, planeSize ]} />
       </mesh>
       {grid.map( ( gv ) => {
         const [ x, y ] = field.embedv( gv ) 

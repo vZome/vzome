@@ -104,6 +104,7 @@ const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler, d
   const atFocus = id => workingPlane.buildingStruts && ( id === JSON.stringify(focus) )
   const buildNodeOrEdge = ( start, end ) =>
   {
+    start = workingPlane.buildingStruts? start : undefined
     doEdit( 'buildstrut', { start, end } )
     movePlane( end )
   }

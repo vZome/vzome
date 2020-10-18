@@ -1,20 +1,20 @@
 
 import { field as goldenField } from '../fields/golden'
 
-export const doMoveWorkingPlane = position => ( dispatch ) => {
-  dispatch( { type: 'WORKING_PLANE_MOVED', payload: position } )
+export const doMoveWorkingPlane = position => {
+  return { type: 'WORKING_PLANE_MOVED', payload: position }
 }
 
-export const doToggleWorkingPlane = () => ( dispatch ) => {
-  dispatch( { type: 'WORKING_PLANE_TOGGLED' } )
+export const doToggleWorkingPlane = () => {
+  return { type: 'WORKING_PLANE_TOGGLED' }
 }
 
-export const doToggleStrutMode = () => ( dispatch ) => {
-  dispatch( { type: 'STRUT_MODE_TOGGLED' } )
+export const doToggleStrutMode = () => {
+  return { type: 'STRUT_MODE_TOGGLED' }
 }
 
-export const doChangeOrientation = () => ( dispatch ) => {
-  dispatch( { type: 'ORIENTATION_CHANGED' } )
+export const doChangeOrientation = () => {
+  return { type: 'ORIENTATION_CHANGED' }
 }
 
 const series = goldenField.goldenSeries( 6 ).map( n => goldenField.times( goldenField.goldenRatio, n ) )
