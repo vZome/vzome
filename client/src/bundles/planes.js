@@ -17,23 +17,30 @@ export const doChangeOrientation = () => ( dispatch ) => {
   dispatch( { type: 'ORIENTATION_CHANGED' } )
 }
 
-const samePosition = (a1,a2) => (JSON.stringify(a1)===JSON.stringify(a2))
+const series = goldenField.goldenSeries( 6 ).map( n => goldenField.times( goldenField.goldenRatio, n ) )
 
-const size = goldenField .times( goldenField .goldenRatio, goldenField .goldenRatio )
+const zero = goldenField.zero
+const grid = [ [ zero, zero ] ]
 
-const grid = []
-for (const x of [-2,-1,0,1,2]) {
-  for (const y of [-2,-1,0,1,2]) {
-    const gx = goldenField.times( size, [ x, 0, 1 ] )
-    const gy = goldenField.times( size, [ y, 0, 1 ] )
-    grid.push( [ gx, gy ] )
-  }
-}
+series.forEach( x => {
+  const nx = goldenField.negate( x )
+  grid.push( [ x, zero ] )
+  grid.push( [ zero, x ] )
+  grid.push( [ nx, zero ] )
+  grid.push( [ zero, nx ] )
+  series.forEach( y => {
+    const ny = goldenField.negate( y )
+    grid.push( [ x, y ] )
+    grid.push( [ x, ny ] )
+    grid.push( [ nx, y ] )
+    grid.push( [ nx, ny ] )
+  });  
+});
 
 const initialState = {
   position: [ goldenField.zero, goldenField.zero, goldenField.zero ],
   quaternion: goldenField.quaternions[ 0 ],
-  size: goldenField.times( [5,0,1], size ),
+  size: goldenField.times( [5,0,1], goldenField.goldenRatio ),
   grid,
   color: "#00aacc",
   enabled: true,

@@ -7,7 +7,7 @@ function BuildPlane( { config, buildNodeOrEdge } )
   const { position, quaternion, grid, color, size, field, buildingStruts } = config
   const [ materialRef, material ] = useResource()
   const rsize = field.embed( size )
-  const dotSize = rsize / 25
+  const dotSize = rsize / 12
   
   const makeAbsolute = ( gridPt ) =>
   {

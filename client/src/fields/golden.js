@@ -137,6 +137,40 @@ for (b of blue) for (r of red) for (y of yellow)
   vZomeIcosahedralQuaternions.push( quatnormalize( quatmul( b, quatmul( y, r ) ) ) )
 
 
+// All of this code for goldenSeries, etc. came from https://observablehq.com/@vorth/finding-golden-numbers
+
+const replacement = item => (item === "1")? [ "φ" ] : [ "1", "φ" ]
+
+const symbolSequence = ( depth ) =>
+{
+  function recurrence( arr ){
+    return arr.reduce( (acc, item) => {
+      return [ ...acc, ...replacement( item ) ]
+    }, [] )
+  }
+  var seq = [ "1" ]
+  for (var i = 0; i < depth; i++) {
+    seq = recurrence( seq )
+  }
+  return seq
+}
+
+const goldenSequence = ( depth ) =>
+{
+  return symbolSequence( depth ).map( symbol => ( ( symbol === "1" )? [1,0,1] : [0,1,1] ) )
+}
+
+const goldenSeries = ( depth ) =>
+{
+  return goldenSequence( depth ).reduce( function( r, a ) {
+    if (r.length > 0)
+      a = plus( a, r[r.length - 1] );
+    r.push( a );
+    return r;
+  }, [])
+}
+
+
 export const field = {
 
   name: 'golden',
@@ -148,6 +182,8 @@ export const field = {
   goldenRatio: [ 0, 1, 1 ],
 
   quaternions: vZomeIcosahedralQuaternions,
+
+  goldenSeries,
 
   plus, minus, times, scalarmul, vectoradd, embed, reciprocal, negate, createRationalFromPairs, quatTransform,
 
