@@ -455,15 +455,7 @@ jsweet {
         'java/util/*.java',
         'org/w3c/dom/*.java',
 
-        'com/vzome/jsweet/JsAlgebraicNumber.java',
-        'com/vzome/jsweet/JsAlgebraicField.java',
-        'com/vzome/jsweet/JsRealizedModel.java',
-        'com/vzome/jsweet/JsSelection.java',
-        'com/vzome/jsweet/JsManifestation.java',
-        'com/vzome/jsweet/JsBall.java',
-        'com/vzome/jsweet/JsStrut.java',
-        'com/vzome/jsweet/JsEditorModel.java',
-        'com/vzome/jsweet/JsEditContext.java',
+        'com/vzome/jsweet/*.java',
 
         'com/vzome/xml/DomUtils.java',
         'com/vzome/xml/ResourceLoader.java',

@@ -1,5 +1,6 @@
 
 import * as mesh from './mesh'
+import * as planes from './planes'
 import { field as goldenField } from '../fields/golden'
 
 // import { NewCentroid } from '../jsweet/com/vzome/core/edits/NewCentroid'
@@ -18,6 +19,7 @@ const WORK_FINISHED = 'WORK_FINISHED'
 
 const initialState = {
   vzomePkg: undefined,       // ANTI-PATTERN, not a plain Object
+  shimClass: undefined,       // ANTI-PATTERN, not a plain Object
   orbitSource: undefined,    // ANTI-PATTERN, not a plain Object
   fieldApp: undefined,       // ANTI-PATTERN, not a plain Object
   shapes: {},
@@ -30,8 +32,8 @@ export const reducer = ( state = initialState, action ) =>
   switch ( action.type ) {
 
     case PACKAGE_INJECTED: {
-      const vzomePkg = action.payload
-      return { ...state, vzomePkg }
+      const { vzomePkg, shimClass } = action.payload
+      return { ...state, vzomePkg, shimClass }
     }
 
     case ORBITS_INITIALIZED: {
@@ -146,7 +148,8 @@ const knownOrbitNames = [
 export const init = async ( window, store ) =>
 {
   const vzomePkg = window.com.vzome
-  store.dispatch( { type: PACKAGE_INJECTED, payload: vzomePkg } )
+  const shimClass = vzomePkg.jsweet.JsAdapter
+  store.dispatch( { type: PACKAGE_INJECTED, payload: { vzomePkg, shimClass } } )
 
   const injectResource = async ( path ) =>
   {
@@ -184,6 +187,9 @@ export const init = async ( window, store ) =>
 
   store.dispatch( { type: ORBITS_INITIALIZED, payload: { fieldApp, orbitSource } } )
   store.dispatch( mesh.resolverDefined( { resolve } ) )
+
+  const gridPoints = shimClass.getZoneGrid( orbitSource, [ [1,0,1], [0,0,1], [0,1,1] ] )
+  store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
 
   // TODO: fetch all shape VEFs in a ZIP, then inject each
   knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/default/${name}.vef` ) )

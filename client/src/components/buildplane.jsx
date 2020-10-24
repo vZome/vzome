@@ -18,10 +18,12 @@ function BuildPlane( { config, buildNodeOrEdge } )
   const handleHoverIn = ( e, gridPt ) =>
   {
     e.stopPropagation()
+    console.log( "hover in: " + JSON.stringify( gridPt ) )
   }
   const handleHoverOut = ( e, gridPt ) =>
   {
     e.stopPropagation()
+    console.log( "hover out: " + JSON.stringify( gridPt ) )
   }
   const handleClick = ( e, gridPt ) =>
   {
@@ -38,13 +40,13 @@ function BuildPlane( { config, buildNodeOrEdge } )
   return (
     <group position={field.embedv( position )} quaternion={field.embedv( wlast( quaternion ) )}>
       <meshBasicMaterial ref={materialRef} transparent={true} opacity={0.2} color={color} side={THREE.DoubleSide} />
-      <mesh material={material} >
+      {/* <mesh material={material} >
         <planeGeometry attach="geometry" args={[ planeSize, planeSize ]} />
-      </mesh>
+      </mesh> */}
       {grid.map( ( gv ) => {
-        const [ x, y ] = field.embedv( gv ) 
+        const [ x, y, z ] = field.embedv( gv ) 
         return (
-          <mesh position={[x,y,0]} key={JSON.stringify( gv )} material={material}
+          <mesh position={[x,y,z]} key={JSON.stringify( gv )} material={material}
               onPointerOver={ e => handleHoverIn( e, gv ) }
               onPointerOut={ e => handleHoverOut( e, gv ) }
               onClick={ e => handleClick( e, gv ) }>

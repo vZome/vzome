@@ -1,6 +1,10 @@
 
 import { field as goldenField } from '../fields/golden'
 
+export const doSetWorkingPlaneGrid = grid => {
+  return { type: 'WORKING_PLANE_GRID_DEFINED', payload: grid }
+}
+
 export const doMoveWorkingPlane = position => {
   return { type: 'WORKING_PLANE_MOVED', payload: position }
 }
@@ -41,9 +45,9 @@ const initialState = {
   position: [ goldenField.zero, goldenField.zero, goldenField.zero ],
   quaternion: goldenField.quaternions[ 0 ],
   size: goldenField.times( [5,0,1], goldenField.goldenRatio ),
-  grid,
+  grid: [],
   color: "#00aacc",
-  enabled: true,
+  enabled: false,
   buildingStruts: false,
   field: goldenField
 }
@@ -51,6 +55,9 @@ const initialState = {
 export const reducer = ( state=initialState, action ) => {
   if ( action.type === 'WORKING_PLANE_TOGGLED' ) {
     state = Object.assign( {}, state, { enabled: !state.enabled } )
+  }
+  else if ( action.type === 'WORKING_PLANE_GRID_DEFINED' ) {
+    state = { ...state, enabled: true, grid: action.payload }
   }
   else if ( action.type === 'STRUT_MODE_TOGGLED' ) {
     state = Object.assign( {}, state, { buildingStruts: !state.buildingStruts } )
