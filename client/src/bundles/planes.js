@@ -57,7 +57,7 @@ export const reducer = ( state=initialState, action ) => {
     state = Object.assign( {}, state, { enabled: !state.enabled } )
   }
   else if ( action.type === 'WORKING_PLANE_GRID_DEFINED' ) {
-    state = { ...state, enabled: true, grid: action.payload }
+    state = { ...state, enabled: true, buildingStruts: true, grid: action.payload }
   }
   else if ( action.type === 'STRUT_MODE_TOGGLED' ) {
     state = Object.assign( {}, state, { buildingStruts: !state.buildingStruts } )

@@ -170,6 +170,15 @@ const goldenSeries = ( depth ) =>
   }, [])
 }
 
+const origin = dimensions =>
+{
+  const result = []
+  for ( let index = 0; index < dimensions; index++ ) {
+    result.push( [ 0, 0, 1 ] )
+  }
+  return result
+}
+
 
 export const field = {
 
@@ -184,6 +193,8 @@ export const field = {
   quaternions: vZomeIcosahedralQuaternions,
 
   goldenSeries,
+
+  origin,
 
   plus, minus, times, scalarmul, vectoradd, embed, reciprocal, negate, createRationalFromPairs, quatTransform,
 

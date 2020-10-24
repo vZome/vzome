@@ -188,11 +188,19 @@ export const init = async ( window, store ) =>
   store.dispatch( { type: ORBITS_INITIALIZED, payload: { fieldApp, orbitSource } } )
   store.dispatch( mesh.resolverDefined( { resolve } ) )
 
+  const origin = goldenField.origin( 3 )
+  const originBall = mesh.createInstance( [ origin ] )
+  store.dispatch( mesh.meshChanged( new Map().set( originBall.id, originBall ), new Map(), new Map() ) )
+
   const gridPoints = shimClass.getZoneGrid( orbitSource, [ [0,0,1], [1,0,1], [1,1,1] ] )
   store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
 
   // TODO: fetch all shape VEFs in a ZIP, then inject each
-  knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/default/${name}.vef` ) )
+  Promise.all( knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/default/${name}.vef` ) ) )
+    .then( () => {
+      // now we are finally ready with a shape for the origin ball
+      store.dispatch( resolve( [ originBall ] ) )
+    })
 }
 
 const makeShape = ( shape ) =>
