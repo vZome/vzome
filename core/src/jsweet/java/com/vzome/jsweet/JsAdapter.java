@@ -38,8 +38,14 @@ public class JsAdapter
         for ( Iterator<Axis> iterator = planeOrbits.zones(); iterator.hasNext();) {
             Axis zone = (Axis) iterator.next();
             Direction orbit = zone .getDirection();
-            AlgebraicVector gridPoint = zone .normal() .scale( orbit .getUnitLength() .times( field .createPower( Direction.USER_SCALE ) ) );
-            gridPoints .add( mapVectorToJavascript( gridPoint ) );
+            if ( ! orbit .isStandard() )
+                continue;
+            AlgebraicNumber scale = orbit .getUnitLength();
+            for ( int i = 0; i < 5; i++ ) {
+                scale = scale .times( field .createPower( 1 ) );
+                AlgebraicVector gridPoint = zone .normal() .scale( scale );
+                gridPoints .add( mapVectorToJavascript( gridPoint ) );
+            }
         }
         return gridPoints .stream() .toArray( size -> new int[size][][] );
     }

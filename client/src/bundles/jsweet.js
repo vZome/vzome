@@ -188,7 +188,7 @@ export const init = async ( window, store ) =>
   store.dispatch( { type: ORBITS_INITIALIZED, payload: { fieldApp, orbitSource } } )
   store.dispatch( mesh.resolverDefined( { resolve } ) )
 
-  const gridPoints = shimClass.getZoneGrid( orbitSource, [ [1,0,1], [0,0,1], [0,1,1] ] )
+  const gridPoints = shimClass.getZoneGrid( orbitSource, [ [0,0,1], [1,0,1], [1,1,1] ] )
   store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
 
   // TODO: fetch all shape VEFs in a ZIP, then inject each
