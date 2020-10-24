@@ -18,7 +18,7 @@ const vZomeInitialState = {  // These values match the camera in the default vZo
 
 const initialState = {  // These values match the camera in the default vZomeLogo model file
   fov: convertFOV( 0.442 ),
-  position: [ 0, 0, 25 ],
+  position: [ 0, 0, 75 ],
   lookAt: [ 0, 0, 0 ],
   up: [ 0, 1, 0 ],
   far: 217.46,

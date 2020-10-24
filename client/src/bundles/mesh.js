@@ -8,6 +8,7 @@ const RESOLVER_DEFINED = 'RESOLVER_DEFINED'
 const ALL_SELECTED = 'ALL_SELECTED'
 const ALL_DESELECTED = 'ALL_DESELECTED'
 const MESH_CHANGED = 'MESH_CHANGED'
+const PREVIEW_CHANGED = 'PREVIEW_CHANGED'
 
 export const objectSelected = ( id ) => ({ type: OBJECT_SELECTED, payload: id })
 
@@ -20,6 +21,8 @@ export const allSelected = () => ({ type: ALL_SELECTED })
 export const allDeselected = () => ({ type: ALL_DESELECTED })
 
 export const meshChanged = ( shown, selected, hidden ) => ({ type: MESH_CHANGED, payload: { shown, selected, hidden } })
+
+export const previewChanged = ( previewed ) => ({ type: PREVIEW_CHANGED, payload: previewed })
 
 export const createRandom = () => ( dispatch, getState ) =>
 {
@@ -73,6 +76,7 @@ const initialState = {
   shown: new Map(),
   selected: new Map(), // This Map is especially important, so we iterate in insertion order
   hidden: new Map(),
+  previewed: new Map(),
   fields: {},
   field: undefined,
   resolver: undefined,
@@ -110,6 +114,11 @@ export const reducer = ( state = initialState, action ) =>
 
     case MESH_CHANGED: {
       return { ...state, ...action.payload } // replace shown, selected, hidden
+    }
+
+    case PREVIEW_CHANGED: {
+      const previewed = action.payload
+      return { ...state, previewed }
     }
 
     case OBJECT_SELECTED: {

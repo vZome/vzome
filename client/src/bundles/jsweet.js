@@ -192,7 +192,11 @@ export const init = async ( window, store ) =>
   const originBall = mesh.createInstance( [ origin ] )
   store.dispatch( mesh.meshChanged( new Map().set( originBall.id, originBall ), new Map(), new Map() ) )
 
-  const gridPoints = shimClass.getZoneGrid( orbitSource, [ [0,0,1], [1,0,1], [1,1,1] ] )
+  const blue = [ [0,0,1], [0,0,1], [1,0,1] ]
+  const yellow = [ [0,0,1], [1,0,1], [1,1,1] ]
+  const red = [ [1,0,1], [0,0,1], [0,1,1] ]
+  const green = [ [1,0,1], [1,0,1], [0,0,1] ]
+  const gridPoints = shimClass.getZoneGrid( orbitSource, blue )
   store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
 
   // TODO: fetch all shape VEFs in a ZIP, then inject each
@@ -413,10 +417,13 @@ export const sortedShapes = ( { mesh, jsweet } ) =>
     return []
   
   const instances = []
-  mesh.shown.forEach( ( instance, id ) => {
+  mesh.previewed.forEach( instance => {
     instances.push( renderableInstance( instance, false, mesh.field, jsweet.shapedInstances ) )
   })
-  mesh.selected.forEach( ( instance, id ) => {
+  mesh.shown.forEach( instance => {
+    instances.push( renderableInstance( instance, false, mesh.field, jsweet.shapedInstances ) )
+  })
+  mesh.selected.forEach( instance => {
     instances.push( renderableInstance( instance, true, mesh.field, jsweet.shapedInstances ) )
   })
   return Object.values( jsweet.shapes ).map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
