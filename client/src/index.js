@@ -10,7 +10,7 @@ import './index.css';
 import App from './App';
 import createBundleStore from './bundles'
 
-const store = createBundleStore( [ thunk ] );
+const store = createBundleStore( [ logger, thunk ] );
 
 render(
   <Provider store={store}>

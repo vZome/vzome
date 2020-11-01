@@ -5,7 +5,9 @@ import { Canvas, useThree, extend, useFrame } from 'react-three-fiber'
 import * as THREE from 'three'
 import { PerspectiveCamera } from 'drei'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
-import { selectionToggled } from '../bundles/mesh'
+import { selectionToggled, commandTriggered, previewChanged } from '../bundles/mesh'
+import { doMoveWorkingPlane, doToggleStrutMode } from '../bundles/planes'
+import BuildPlane from './buildplane'
 
 extend({ TrackballControls })
 const Controls = props => {
@@ -33,31 +35,31 @@ const createGeometry = ( { vertices, faces } ) =>
   return geometry
 }
 
-const Instance = ( { id, position, rotation, geometry, color, selected, toggleSelected } ) =>
+const Instance = ( { id, position, rotation, geometry, color, selected, atFocus, onClick } ) =>
 {
   const handleClick = ( e ) =>
   {
-    if ( toggleSelected ) { // toggleSelected is undefined when the model is not editable
+    if ( onClick ) { // may be undefined when the model is not editable, or when the object is not clickable in the current mode
       e.stopPropagation()
-      toggleSelected( id, selected )
+      onClick( id, selected )
     }
   }
   return (
-    <group position={ position } quaternion={ rotation || [0,0,0,1] }>
+    <group position={ position } quaternion={ rotation }>
       <mesh geometry={geometry} onClick={handleClick}>
-        <meshLambertMaterial attach="material" color={color} emissive={selected? "#888888" : "black"} />
+        <meshLambertMaterial attach="material" color={color} emissive={(selected || atFocus(id))? "#888888" : "black"} />
       </mesh>
     </group>
   )
 }
 
-const InstancedShape = ( { instances, shape, toggleSelected } ) =>
+const InstancedShape = ( { instances, shape, onClick, atFocus } ) =>
 {
   const geometry = useMemo( () => createGeometry( shape ), [ shape ] )
   return (
     <>
       { instances.map( instance => 
-        <Instance key={instance.id} {...instance} geometry={geometry} toggleSelected={toggleSelected} /> ) }
+        <Instance key={instance.id} {...instance} geometry={geometry} atFocus={atFocus} onClick={onClick} /> ) }
     </>
   )
 }
@@ -95,9 +97,35 @@ TODO:
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler } ) => {
+const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler, doEdit, movePlane, clearFocus, workingPlane, changePreview } ) => {
   const { fov, position, up, lookAt } = camera
-  const toggleSelected = clickable && selectionToggler
+  const mouseSelectMode = ! workingPlane
+  const focus = workingPlane && workingPlane.position
+  const atFocus = id => workingPlane && workingPlane.buildingStruts && ( id === JSON.stringify(focus) )
+  const buildNodeOrEdge = ( start, end, move, preview ) =>
+  {
+    start = workingPlane && workingPlane.buildingStruts? start : undefined
+    doEdit( 'buildstrut', { start, end, preview } )
+    move && movePlane( end )
+  }
+  const eraseNodeOrEdge = () =>
+  {
+    changePreview( new Map() )
+  }
+  const handleClick = ( id, selected ) =>
+  {
+    const position = JSON.parse( id )
+    if ( mouseSelectMode )
+      selectionToggler( id, selected )
+    else if ( ! focus )
+      movePlane( position )
+    else if ( atFocus( id ) )
+      clearFocus()
+    else {
+      changePreview( new Map() )
+      buildNodeOrEdge( focus, position, true )
+    }
+  }
   return(
     <>
       <Canvas gl={{ antialias: true, alpha: false }} >
@@ -106,8 +134,10 @@ const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler } 
         </PerspectiveCamera>
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
         { shapes.map( ( { shape, instances } ) =>
-          <InstancedShape key={shape.id} shape={shape} instances={instances} toggleSelected={toggleSelected} />
+          <InstancedShape key={shape.id} shape={shape} instances={instances} atFocus={atFocus} onClick={clickable && handleClick} />
         ) }
+        {workingPlane && workingPlane.enabled &&
+        <BuildPlane config={workingPlane} buildNodeOrEdge={buildNodeOrEdge} eraseNodeOrEdge={eraseNodeOrEdge} />}
       </Canvas>
     </>
   )
@@ -115,17 +145,22 @@ const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler } 
 
 const select = ( state ) =>
 {
-  const { camera, lighting, implementations } = state
+  const { camera, lighting, model, workingPlane } = state
   return {
+    workingPlane,
     camera,
     lighting,
-    shapes: implementations.sortedShapes( state ),
-    clickable: implementations.supportsEdits
+    shapes: model.sortedShapes( state ),
+    clickable: model.supportsEdits
   }
 }
 
 const boundEventActions = {
-  selectionToggler : selectionToggled
+  doEdit : commandTriggered,
+  movePlane : doMoveWorkingPlane,
+  selectionToggler : selectionToggled,
+  clearFocus: doToggleStrutMode,
+  changePreview: previewChanged,
 }
 
 export default connect( select, boundEventActions )( ModelCanvas )

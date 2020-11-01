@@ -18,8 +18,8 @@ export const Spinner = ( { visible, message } ) =>
 }
 
 const select = ( { progress } ) => ({
-  visible: progress.showing,
-  message: progress.message
+  visible: progress && progress.showing,
+  message: progress && progress.message
 })
 
 export default connect( select )( Spinner )

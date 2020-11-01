@@ -67,56 +67,59 @@ const Exporter = ({ enabled, doExport }) =>
   }
   const handleShow = () => setShow(true);
 
-  return (
-    <>
-      <OverlayTrigger placement="bottom" overlay={<Tooltip>Export this model</Tooltip>} >
-        <Button id="exporter" variant="link" onClick={handleShow}
-          style={{ cursor: enabled ? 'pointer' : 'default' }} >
-          <img alt="export" className="Icon" src="/app/export.svg" />
-        </Button>
-      </OverlayTrigger>
+  if ( enabled )
+    return (
+      <>
+        <OverlayTrigger placement="bottom" overlay={<Tooltip>Export this model</Tooltip>} >
+          <Button id="exporter" variant="link" onClick={handleShow}
+            style={{ cursor: enabled ? 'pointer' : 'default' }} >
+            <img alt="export" className="Icon" src="/app/export.svg" />
+          </Button>
+        </OverlayTrigger>
 
-      <Modal centered show={show} size='lg' onHide={handleCancel}>
-        <Modal.Header closeButton>
-          <Modal.Title>Export a Model File</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Tab.Container id="model-tabs" defaultActiveKey={key} onSelect={setFormat}>
-            <Row>
-              <Col sm={4}>
-                <Nav variant="pills" className="flex-column">
-                  { formats.map( (format) => (
-                    <Nav.Item>
-                      <Nav.Link key={format.key} eventKey={format.key}>{format.label}</Nav.Link>
-                    </Nav.Item>
-                  ) ) }
-                </Nav>
-              </Col>
-              <Col sm={8}>
-                <Tab.Content>
-                  { formats.map( (format) => (
-                    <Tab.Pane key={format.key} eventKey={format.key}>{format.description}</Tab.Pane>
-                  ) ) }
-                </Tab.Content>
-              </Col>
-            </Row>
-          </Tab.Container>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button variant="primary" onClick={handleExport}>
-            Export
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </>
-  )
+        <Modal centered show={show} size='lg' onHide={handleCancel}>
+          <Modal.Header closeButton>
+            <Modal.Title>Export a Model File</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Tab.Container id="model-tabs" defaultActiveKey={key} onSelect={setFormat}>
+              <Row>
+                <Col sm={4}>
+                  <Nav variant="pills" className="flex-column">
+                    { formats.map( (format) => (
+                      <Nav.Item>
+                        <Nav.Link key={format.key} eventKey={format.key}>{format.label}</Nav.Link>
+                      </Nav.Item>
+                    ) ) }
+                  </Nav>
+                </Col>
+                <Col sm={8}>
+                  <Tab.Content>
+                    { formats.map( (format) => (
+                      <Tab.Pane key={format.key} eventKey={format.key}>{format.description}</Tab.Pane>
+                    ) ) }
+                  </Tab.Content>
+                </Col>
+              </Row>
+            </Tab.Container>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleExport}>
+              Export
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    )
+  else
+    return null
 } 
 
 const select = (state) => ({
-  enabled: state.jre.javaReady
+  enabled: state.jre && state.jre.javaReady
 })
 
 const boundEventActions = {

@@ -11,7 +11,10 @@ let FileOpener = ({ enabled, loadFile }) =>
   const ref = useRef()
   const handleOpen = () => ref.current.click()
 
-  return (
+  if ( ! enabled )
+    return null
+
+    return (
     <OverlayTrigger placement="bottom" overlay={<Tooltip>Open a local vZome file</Tooltip>} >
       <Button id="fileopener" variant="link" onClick={handleOpen}
         style={{ cursor: enabled ? 'pointer' : 'default' }} >
@@ -29,7 +32,7 @@ let FileOpener = ({ enabled, loadFile }) =>
 } 
 
 const select = (state) => ({
-  enabled: state.jre.javaReady
+  enabled: state.jre && state.jre.javaReady
 })
 
 const boundEventActions = {

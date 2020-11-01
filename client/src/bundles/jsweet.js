@@ -1,5 +1,6 @@
 
 import * as mesh from './mesh'
+import * as planes from './planes'
 import { field as goldenField } from '../fields/golden'
 
 // import { NewCentroid } from '../jsweet/com/vzome/core/edits/NewCentroid'
@@ -16,8 +17,30 @@ const INSTANCE_SHAPED = 'INSTANCE_SHAPED'
 const WORK_STARTED = 'WORK_STARTED'
 const WORK_FINISHED = 'WORK_FINISHED'
 
+// This is a selector, called when updating the ModelCanvas component
+const sortedShapes = ( { mesh, model } ) =>
+{
+  if ( model.working )
+    return []
+  
+  const instances = []
+  mesh.previewed.forEach( instance => {
+    instances.push( renderableInstance( instance, false, mesh.field, model.shapedInstances ) )
+  })
+  mesh.shown.forEach( instance => {
+    instances.push( renderableInstance( instance, false, mesh.field, model.shapedInstances ) )
+  })
+  mesh.selected.forEach( instance => {
+    instances.push( renderableInstance( instance, true, mesh.field, model.shapedInstances ) )
+  })
+  return Object.values( model.shapes ).map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
+}
+
 const initialState = {
+  sortedShapes,
+  supportsEdits: true,
   vzomePkg: undefined,       // ANTI-PATTERN, not a plain Object
+  shimClass: undefined,       // ANTI-PATTERN, not a plain Object
   orbitSource: undefined,    // ANTI-PATTERN, not a plain Object
   fieldApp: undefined,       // ANTI-PATTERN, not a plain Object
   shapes: {},
@@ -30,8 +53,8 @@ export const reducer = ( state = initialState, action ) =>
   switch ( action.type ) {
 
     case PACKAGE_INJECTED: {
-      const vzomePkg = action.payload
-      return { ...state, vzomePkg }
+      const { vzomePkg, shimClass } = action.payload
+      return { ...state, vzomePkg, shimClass }
     }
 
     case ORBITS_INITIALIZED: {
@@ -146,7 +169,8 @@ const knownOrbitNames = [
 export const init = async ( window, store ) =>
 {
   const vzomePkg = window.com.vzome
-  store.dispatch( { type: PACKAGE_INJECTED, payload: vzomePkg } )
+  const shimClass = vzomePkg.jsweet.JsAdapter
+  store.dispatch( { type: PACKAGE_INJECTED, payload: { vzomePkg, shimClass } } )
 
   const injectResource = async ( path ) =>
   {
@@ -185,8 +209,23 @@ export const init = async ( window, store ) =>
   store.dispatch( { type: ORBITS_INITIALIZED, payload: { fieldApp, orbitSource } } )
   store.dispatch( mesh.resolverDefined( { resolve } ) )
 
+  const origin = goldenField.origin( 3 )
+  const originBall = mesh.createInstance( [ origin ] )
+  store.dispatch( mesh.meshChanged( new Map().set( originBall.id, originBall ), new Map(), new Map() ) )
+
+  const blue = [ [0,0,1], [0,0,1], [1,0,1] ]
+  const yellow = [ [0,0,1], [1,0,1], [1,1,1] ]
+  const red = [ [1,0,1], [0,0,1], [0,1,1] ]
+  const green = [ [1,0,1], [1,0,1], [0,0,1] ]
+  const gridPoints = shimClass.getZoneGrid( orbitSource, blue )
+  store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
+
   // TODO: fetch all shape VEFs in a ZIP, then inject each
-  knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/default/${name}.vef` ) )
+  Promise.all( knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/default/${name}.vef` ) ) )
+    .then( () => {
+      // now we are finally ready with a shape for the origin ball
+      store.dispatch( resolve( [ originBall ] ) )
+    })
 }
 
 const makeShape = ( shape ) =>
@@ -203,7 +242,7 @@ const makeShape = ( shape ) =>
 // This thunk gets hooked up as the resolver for the mesh
 const resolve = ( instances ) => ( dispatch, getState ) =>
 {
-  const { vzomePkg, orbitSource, shapes, shapedInstances } = getState().jsweet
+  const { vzomePkg, orbitSource, shapes, shapedInstances } = getState().model
   const { field } = getState().mesh
   const jsAF = new vzomePkg.jsweet.JsAlgebraicField( field )
   instances.map( ({ id, vectors }) =>
@@ -228,9 +267,14 @@ const resolve = ( instances ) => ( dispatch, getState ) =>
       dispatch( { type: SHAPE_DEFINED, payload: shape } )
     }
 
-    // get shape, orientation, color from rm
+    const wlast = q =>
+    {
+      const [ w, x, y, z ] = q
+      return [ x, y, z, w ]
+    }
+      // get shape, orientation, color from rm
     const quatIndex = rm.getStrutZone()
-    const rotation = ( quatIndex && (quatIndex >= 0) && field.vZomeIcosahedralQuaternions[ quatIndex ] ) || [0,0,0,1]
+    const rotation = ( quatIndex && (quatIndex >= 0) && wlast( field.embedv( field.quaternions[ quatIndex ] ) ) ) || [0,0,0,1]
     const color = rm.getColor().getRGB()
   
     dispatch( { type: INSTANCE_SHAPED, payload: { id, shapeId, rotation, color } } )
@@ -353,7 +397,7 @@ export const legacyCommand = ( pkg, editClass ) => ( config ) => ( dispatch, get
   selected = new Map( selected )
   const adapter = new Adapter( shown, hidden, selected )
 
-  const { fieldApp } = getState().jsweet
+  const { fieldApp } = getState().model
   const field = fieldApp.getField()
   const realizedModel = new pkg.JsRealizedModel( field, adapter )
   const selection = new pkg.JsSelection( field, adapter )
@@ -385,20 +429,4 @@ const renderableInstance = ( instance, selected, field, shapedInstances ) =>
 const filterInstances = ( shape, instances ) =>
 {
   return instances.filter( instance => instance.shapeId === shape.id )
-}
-
-// This is a selector, called when updating the ModelCanvas component
-export const sortedShapes = ( { mesh, jsweet } ) =>
-{
-  if ( jsweet.working )
-    return []
-  
-  const instances = []
-  mesh.shown.forEach( ( instance, id ) => {
-    instances.push( renderableInstance( instance, false, mesh.field, jsweet.shapedInstances ) )
-  })
-  mesh.selected.forEach( ( instance, id ) => {
-    instances.push( renderableInstance( instance, true, mesh.field, jsweet.shapedInstances ) )
-  })
-  return Object.values( jsweet.shapes ).map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
 }

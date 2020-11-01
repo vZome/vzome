@@ -110,15 +110,22 @@ function quatmul( u, v )
     a(a(x(u0, v3), x(u3, v0)), s(x(u1, v2), x(u2, v1)))]
 }
 
+// Everything here uses a W-first representation of quaternions.
+//   These quaternions must be transformed to W-last when using with three.js.
+
+function quatconj( [u0=[0], u1=[0], u2=[0], u3=[0]] )
+{
+  return [ u0, negate(u1), negate(u2), negate(u3) ]
+}
+
+function quatTransform( Q, v )
+{
+  return quatmul( Q, quatmul( [[0]].concat(v), quatconj(Q)) ).slice(1)
+}
+
 function quatnormalize(q)
 {
   return scalarmul( [ q.map( grsign ).reduce( (a, b) => a || b ) || 1 ], q )
-}
-
-function wlast(q)
-{
-  const [ w, x, y, z ] = q
-  return [ x, y, z, w ]
 }
 
 const one = [[1],,,], h = [1,,2], blue = [one, [,[1],,], [,,,[1]], [,,[1],]],
@@ -127,7 +134,50 @@ for ( let i = 2; i < 5; i++ )
   red[i] = quatmul( red[i-1], red[1] )
 const vZomeIcosahedralQuaternions = []; let b, r, y
 for (b of blue) for (r of red) for (y of yellow)
-  vZomeIcosahedralQuaternions.push( wlast( quatnormalize( quatmul( b, quatmul( y, r ) ) ).map( n => embed( n ) ) ) )
+  vZomeIcosahedralQuaternions.push( quatnormalize( quatmul( b, quatmul( y, r ) ) ) )
+
+
+// All of this code for goldenSeries, etc. came from https://observablehq.com/@vorth/finding-golden-numbers
+
+const replacement = item => (item === "1")? [ "φ" ] : [ "1", "φ" ]
+
+const symbolSequence = ( depth ) =>
+{
+  function recurrence( arr ){
+    return arr.reduce( (acc, item) => {
+      return [ ...acc, ...replacement( item ) ]
+    }, [] )
+  }
+  var seq = [ "1" ]
+  for (var i = 0; i < depth; i++) {
+    seq = recurrence( seq )
+  }
+  return seq
+}
+
+const goldenSequence = ( depth ) =>
+{
+  return symbolSequence( depth ).map( symbol => ( ( symbol === "1" )? [1,0,1] : [0,1,1] ) )
+}
+
+const goldenSeries = ( depth ) =>
+{
+  return goldenSequence( depth ).reduce( function( r, a ) {
+    if (r.length > 0)
+      a = plus( a, r[r.length - 1] );
+    r.push( a );
+    return r;
+  }, [])
+}
+
+const origin = dimensions =>
+{
+  const result = []
+  for ( let index = 0; index < dimensions; index++ ) {
+    result.push( [ 0, 0, 1 ] )
+  }
+  return result
+}
 
 
 export const field = {
@@ -140,9 +190,13 @@ export const field = {
   one: [ 1, 0, 1 ],
   goldenRatio: [ 0, 1, 1 ],
 
-  vZomeIcosahedralQuaternions,
+  quaternions: vZomeIcosahedralQuaternions,
 
-  plus, minus, times, scalarmul, vectoradd, embed, reciprocal, negate, createRationalFromPairs,
+  goldenSeries,
+
+  origin,
+
+  plus, minus, times, scalarmul, vectoradd, embed, reciprocal, negate, createRationalFromPairs, quatTransform,
 
   embedv: (v) => v.map( embed ),
 

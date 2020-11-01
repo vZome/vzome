@@ -66,9 +66,9 @@ const EditMenu = ({ visible, edits, doEdit }) =>
     return null
 } 
 
-const select = ( { jre, implementations, mesh } ) => ({
-  visible: jre.javaReady && implementations.supportsEdits,
-  edits: Object.getOwnPropertyNames( mesh.commands )
+const select = ( { model, mesh, workingPlane } ) => ({
+  visible: model.supportsEdits && ! workingPlane,
+  edits: mesh && Object.getOwnPropertyNames( mesh.commands )
 })
 
 const boundEventActions = {

@@ -1,5 +1,6 @@
 
-import { FILE_LOADED } from './files'
+import { FILE_LOADED, fetchModel } from './files'
+import { JAVA_CODE_LOADED } from './jre'
 import DEFAULT_MODEL from '../models/logo'
 import { writeTextFile, callStaticMethod, callObjectMethod, createWriteableFile } from './jre'
 import { startProgress, stopProgress } from './progress'
@@ -17,8 +18,8 @@ const CONTROLLER_RETURNED = 'CONTROLLER_RETURNED'
 export const exportTriggered = ( extension, message ) => async (dispatch, getState) =>
 {
   dispatch( startProgress( message ) )
-  const controller = getState().vzomejava.controller
-  const path = "/" + getState().vzomejava.fileName.replace( ".vZome", "." + extension )
+  const controller = getState().model.controller
+  const path = "/" + getState().model.fileName.replace( ".vZome", "." + extension )
   const file = await createWriteableFile( path )
   callObjectMethod( controller, "doFileAction", "export." + extension, file ).then( () =>
   {
@@ -34,7 +35,19 @@ const normalize = ( instance ) =>
   return { ...instance, shapeId: instance.shape, position: [ pos.x, pos.y, pos.z ], rotation }
 }
 
+const sortedShapes = ( { model } ) =>
+{
+  const instances = model.renderingOn? model.instances : model.previous
+  const filterInstances = ( shape, instances ) =>
+  {
+    return instances.filter( instance => instance.shapeId === shape.id )
+  }
+  return model.shapes.map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
+}
+
 const initialState = {
+  sortedShapes,
+  supportsEdits: false,
   renderingOn: true,
   controller: undefined,
   fileName: undefined,
@@ -132,6 +145,15 @@ export const reducer = ( state = initialState, action ) => {
 
 export const middleware = store => next => async action => 
 {
+  if ( action.type === JAVA_CODE_LOADED ) {
+    let url = "/app/models/vZomeLogo.vZome"
+    const urlParams = new URLSearchParams( window.location.search );
+    if ( urlParams.has( "url" ) ) {
+      url = decodeURI( urlParams.get( "url" ) )
+    }
+    store.dispatch( fetchModel( url ) )
+  }
+
   if ( action.type === FILE_LOADED ) {
     store.dispatch( startProgress( "Parsing vZome model..." ) )
     const path = "/str/" + action.payload.name
@@ -148,17 +170,4 @@ export const middleware = store => next => async action =>
   }
   
   return next( action )
-}
-
-export const supportsEdits = false
-
-const filterInstances = ( shape, instances ) =>
-{
-  return instances.filter( instance => instance.shapeId === shape.id )
-}
-
-export const sortedShapes = ( { vzomejava } ) =>
-{
-  const instances = vzomejava.renderingOn? vzomejava.instances : vzomejava.previous
-  return vzomejava.shapes.map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
 }
