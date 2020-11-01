@@ -17,6 +17,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.construction.Color;
 import com.vzome.xml.DomUtils;
 
@@ -37,7 +38,12 @@ public class Lights implements Iterable<Lights.DirectionalLight>
         }
 
         public Vector3f direction;
-        public Color color;
+        private Color color;
+        
+        public String getColor()
+        {
+            return this.color.toWebString();
+        }
     }
 
     private final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
@@ -124,9 +130,16 @@ public class Lights implements Iterable<Lights.DirectionalLight>
         mAmbientLightColor = color;
     }
 
+    @JsonIgnore
     public Color getAmbientColor()
     {
         return mAmbientLightColor;
+    }
+    
+    @JsonGetter( "ambientColor" )
+    public String getAmbientColorWeb()
+    {
+        return mAmbientLightColor.toWebString();
     }
     
     public void getDirectionalLights()
@@ -141,9 +154,16 @@ public class Lights implements Iterable<Lights.DirectionalLight>
         return light .color;
     }
 
+    @JsonIgnore
     public Color getBackgroundColor()
     {
         return this .backgroundColor;
+    }
+    
+    @JsonGetter( "backgroundColor" )
+    public String getBackgroundColorWeb()
+    {
+        return backgroundColor.toWebString();
     }
 
     public void setBackgroundColor( Color color )

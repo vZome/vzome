@@ -150,9 +150,16 @@ public class RenderedManifestation implements RenderedObject
         return mManifestation;
     }
 
+    @JsonIgnore
     public Color getColor()
     {
         return this.color;
+    }
+
+    @JsonGetter( "color" )
+    public String getColorWeb()
+    {
+        return this.color.toWebString();
     }
 
     public void setColor( Color color )
@@ -485,6 +492,7 @@ public class RenderedManifestation implements RenderedObject
         this.orbitSource = orbitSource;
     }
 
+    @JsonIgnore
     public OrbitSource getOrbitSource()
     {
         return this.orbitSource;

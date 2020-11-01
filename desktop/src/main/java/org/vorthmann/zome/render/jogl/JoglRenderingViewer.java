@@ -172,7 +172,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         for ( int column = 0; column < 4; column++ )
             for ( int row = 0; row < 4; row++ )
             {
-                this .modelView[ i ] = (float) copy .getElement( row, column );
+                this .modelView[ i ] = copy .getElement( row, column );
                 ++i;
             }
         this .cameraChanged  = true;
