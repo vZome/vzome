@@ -99,12 +99,12 @@ TODO:
 
 const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler, doEdit, movePlane, clearFocus, workingPlane, changePreview } ) => {
   const { fov, position, up, lookAt } = camera
-  const mouseSelectMode = false
-  const focus = workingPlane.position
-  const atFocus = id => workingPlane.buildingStruts && ( id === JSON.stringify(focus) )
+  const mouseSelectMode = ! workingPlane
+  const focus = workingPlane && workingPlane.position
+  const atFocus = id => workingPlane && workingPlane.buildingStruts && ( id === JSON.stringify(focus) )
   const buildNodeOrEdge = ( start, end, move, preview ) =>
   {
-    start = workingPlane.buildingStruts? start : undefined
+    start = workingPlane && workingPlane.buildingStruts? start : undefined
     doEdit( 'buildstrut', { start, end, preview } )
     move && movePlane( end )
   }
@@ -136,7 +136,7 @@ const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler, d
         { shapes.map( ( { shape, instances } ) =>
           <InstancedShape key={shape.id} shape={shape} instances={instances} atFocus={atFocus} onClick={clickable && handleClick} />
         ) }
-        {workingPlane.enabled &&
+        {workingPlane && workingPlane.enabled &&
         <BuildPlane config={workingPlane} buildNodeOrEdge={buildNodeOrEdge} eraseNodeOrEdge={eraseNodeOrEdge} />}
       </Canvas>
     </>
@@ -145,13 +145,13 @@ const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler, d
 
 const select = ( state ) =>
 {
-  const { camera, lighting, implementations, workingPlane } = state
+  const { camera, lighting, model, workingPlane } = state
   return {
     workingPlane,
     camera,
     lighting,
-    shapes: implementations.sortedShapes( state ),
-    clickable: implementations.supportsEdits
+    shapes: model.sortedShapes( state ),
+    clickable: model.supportsEdits
   }
 }
 

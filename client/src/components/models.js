@@ -44,6 +44,9 @@ const Models = ({ enabled, openModel, doEdit }) =>
   }
   const handleShow = () => setShow( true )
 
+  if ( !enabled )
+    return null;
+    
   return (
     <>
       <OverlayTrigger placement="bottom" overlay={<Tooltip>Built-in models</Tooltip>} >
@@ -93,7 +96,7 @@ const Models = ({ enabled, openModel, doEdit }) =>
 } 
 
 const select = (state) => ({
-  enabled: state.jre.javaReady
+  enabled: state.jre && state.jre.javaReady
 })
 
 const boundEventActions = {

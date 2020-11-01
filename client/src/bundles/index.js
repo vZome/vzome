@@ -10,12 +10,28 @@ import * as lighting from './lighting'
 import * as progress from './progress'
 import * as jsweet from './jsweet'
 import * as mesh from './mesh'
-import * as implementations from './implementations'
 import * as commands from '../commands'
 import * as goldenField from '../fields/golden'
 import * as workingPlane from './planes'
 
-const bundles = { jre, files, alerts, vzomejava, camera, lighting, progress, jsweet, mesh, implementations, commands, goldenField, workingPlane }
+const requiredBundles = { camera, lighting, goldenField }
+
+let bundles
+const urlParams = new URLSearchParams( window.location.search );
+if ( urlParams.has( "editMode" ) ) {
+  switch ( urlParams.get( "editMode" ) ) {
+
+    case "plane":
+      bundles = { ...requiredBundles, model: jsweet, mesh, commands, workingPlane }
+      break;
+  
+    default:
+      bundles = { ...requiredBundles, model: jsweet, mesh, commands }
+      break;
+  }
+} else {
+  bundles = { ...requiredBundles, jre, files, alerts, model: vzomejava, progress }
+}
 
 
 export default ( middleware ) =>

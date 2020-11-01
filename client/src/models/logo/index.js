@@ -1,5 +1,14 @@
 export default {
-  "shapes" : [ {
+  notes: "This is a vZome Shapes JSON export, with a 'camera' field added manually.",
+  camera:  {
+    fieldOfView: 0.442,
+    position: { x: -23.6819, y: 12.3843, z: -46.8956 },
+    lookAtPoint: { x: 0, y: -3.4270, z: 5.5450 },
+    upDirection: { x: -0.8263, y: 0.3136, z: 0.4677 },
+    farClipDistance: 119.34,
+    nearClipDistance: 0.1491
+  },
+  shapes : [ {
     "id" : "73c8f4c7-caea-4017-9de0-8bfc11e8f413",
     "vertices" : [ {
       "x" : 0.4295635,
@@ -836,7 +845,7 @@ export default {
       "vertices" : [ 8, 11, 12 ]
     } ]
   } ],
-  "instances" : [ {
+  instances : [ {
     "shape" : "73c8f4c7-caea-4017-9de0-8bfc11e8f413",
     "color" : "#FFFFFF",
     "position" : {

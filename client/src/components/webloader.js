@@ -23,8 +23,9 @@ const WebLoader = ({ enabled, openModel }) =>
   const handleShow = () => setShow( true )
   const handleChange = (event) => setUrl( event.target.value )
 
-  // value={url} onChange={setUrl}
-
+  if ( !enabled )
+    return null;
+    
   return (
     <>
       <OverlayTrigger placement="bottom" overlay={<Tooltip>Open a remote vZome model</Tooltip>} >
@@ -62,7 +63,7 @@ const WebLoader = ({ enabled, openModel }) =>
 } 
 
 const select = (state) => ({
-  enabled: state.jre.javaReady
+  enabled: state.jre && state.jre.javaReady
 })
 
 const boundEventActions = {

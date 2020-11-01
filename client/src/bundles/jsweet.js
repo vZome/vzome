@@ -17,7 +17,28 @@ const INSTANCE_SHAPED = 'INSTANCE_SHAPED'
 const WORK_STARTED = 'WORK_STARTED'
 const WORK_FINISHED = 'WORK_FINISHED'
 
+// This is a selector, called when updating the ModelCanvas component
+const sortedShapes = ( { mesh, model } ) =>
+{
+  if ( model.working )
+    return []
+  
+  const instances = []
+  mesh.previewed.forEach( instance => {
+    instances.push( renderableInstance( instance, false, mesh.field, model.shapedInstances ) )
+  })
+  mesh.shown.forEach( instance => {
+    instances.push( renderableInstance( instance, false, mesh.field, model.shapedInstances ) )
+  })
+  mesh.selected.forEach( instance => {
+    instances.push( renderableInstance( instance, true, mesh.field, model.shapedInstances ) )
+  })
+  return Object.values( model.shapes ).map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
+}
+
 const initialState = {
+  sortedShapes,
+  supportsEdits: true,
   vzomePkg: undefined,       // ANTI-PATTERN, not a plain Object
   shimClass: undefined,       // ANTI-PATTERN, not a plain Object
   orbitSource: undefined,    // ANTI-PATTERN, not a plain Object
@@ -221,7 +242,7 @@ const makeShape = ( shape ) =>
 // This thunk gets hooked up as the resolver for the mesh
 const resolve = ( instances ) => ( dispatch, getState ) =>
 {
-  const { vzomePkg, orbitSource, shapes, shapedInstances } = getState().jsweet
+  const { vzomePkg, orbitSource, shapes, shapedInstances } = getState().model
   const { field } = getState().mesh
   const jsAF = new vzomePkg.jsweet.JsAlgebraicField( field )
   instances.map( ({ id, vectors }) =>
@@ -376,7 +397,7 @@ export const legacyCommand = ( pkg, editClass ) => ( config ) => ( dispatch, get
   selected = new Map( selected )
   const adapter = new Adapter( shown, hidden, selected )
 
-  const { fieldApp } = getState().jsweet
+  const { fieldApp } = getState().model
   const field = fieldApp.getField()
   const realizedModel = new pkg.JsRealizedModel( field, adapter )
   const selection = new pkg.JsSelection( field, adapter )
@@ -408,23 +429,4 @@ const renderableInstance = ( instance, selected, field, shapedInstances ) =>
 const filterInstances = ( shape, instances ) =>
 {
   return instances.filter( instance => instance.shapeId === shape.id )
-}
-
-// This is a selector, called when updating the ModelCanvas component
-export const sortedShapes = ( { mesh, jsweet } ) =>
-{
-  if ( jsweet.working )
-    return []
-  
-  const instances = []
-  mesh.previewed.forEach( instance => {
-    instances.push( renderableInstance( instance, false, mesh.field, jsweet.shapedInstances ) )
-  })
-  mesh.shown.forEach( instance => {
-    instances.push( renderableInstance( instance, false, mesh.field, jsweet.shapedInstances ) )
-  })
-  mesh.selected.forEach( instance => {
-    instances.push( renderableInstance( instance, true, mesh.field, jsweet.shapedInstances ) )
-  })
-  return Object.values( jsweet.shapes ).map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
 }
