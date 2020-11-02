@@ -34,18 +34,16 @@ configurations {
     all*.exclude group: 'org.abego.treelayout', module: 'org.abego.treelayout.core'
 }
 
-//  Uncomment this for the jsweet target, and adjust the sourceSet below
-// compileJava {
-// 	enabled = false
-// }
-
 // Support for decoupled "regression" task
 sourceSets {
     main {
         java {
             //  Uncomment these for the jsweet target, and adjust compileJava above
-            // srcDir file( 'src/main/java' )
-            // srcDir file( 'src/jsweet/java' )
+            println( project.gradle.startParameter.taskNames )
+            if( project.gradle.startParameter.taskNames.contains( 'core:jsweet' ) ) {
+                srcDir file( 'src/main/java' )
+                srcDir file( 'src/jsweet/java' )
+            }
             
             exclude 'com/vzome/opengl/FancyRenderer.java'
         }
