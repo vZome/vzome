@@ -12,6 +12,8 @@ banner() {
   echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
 }
 
+BN=${BUILD_NUMBER:-'dev'}
+
 banner 'building the distribution'
 pushd ..
 ./gradlew distZip || exit $?
@@ -22,14 +24,14 @@ if [ "$1" == "" ]; then
 fi
 
 banner 'extracting JAR files'
-unzip -o ../desktop/build/distributions/vZome-Linux-*.dev.zip -d . || exit $?
+unzip -o ../desktop/build/distributions/vZome-Linux-*.${BN}.zip -d . || exit $?
 
-JARS=$( ls vZome-Linux-*.dev/lib | grep -e jackson -e vecmath -e '^core' -e desktop -e javax.json -e cheerp ) || exit $?
+JARS=$( ls vZome-Linux-*.${BN}/lib | grep -e jackson -e vecmath -e '^core' -e desktop -e javax.json -e cheerp ) || exit $?
 mkdir -p unpacked || exit $?
 for JAR in $JARS; do
-  mv vZome-Linux-*.dev/lib/$JAR unpacked || exit $?
+  mv vZome-Linux-*.${BN}/lib/$JAR unpacked || exit $?
 done
-rm -rf vZome-Linux-*.dev/ || exit $?
+rm -rf vZome-Linux-*.${BN}/ || exit $?
 
 DEPS=$( echo $JARS | sed 's/ /:/g' )
 echo DEPS: $DEPS
