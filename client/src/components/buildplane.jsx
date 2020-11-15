@@ -7,7 +7,7 @@ function BuildPlane( { config, buildNodeOrEdge, eraseNodeOrEdge } )
   const { position, quaternion, grid, color, size, field, buildingStruts } = config
   const [ materialRef, material ] = useResource()
   const rsize = field.embed( size )
-  const dotSize = rsize / 12
+  const dotSize = rsize / 24
   
   const makeAbsolute = ( gridPt ) =>
   {
@@ -38,7 +38,7 @@ function BuildPlane( { config, buildNodeOrEdge, eraseNodeOrEdge } )
   
   return (
     <group position={field.embedv( position )} quaternion={field.embedv( wlast( quaternion ) )}>
-      <meshBasicMaterial ref={materialRef} transparent={true} opacity={0.2} color={color} side={THREE.DoubleSide} />
+      <meshLambertMaterial ref={materialRef} transparent={true} opacity={0.7} color={color} side={THREE.DoubleSide} />
       {grid.map( ( gv ) => {
         const [ x, y, z ] = field.embedv( gv ) 
         return (
@@ -46,7 +46,7 @@ function BuildPlane( { config, buildNodeOrEdge, eraseNodeOrEdge } )
               onPointerOver={ e => handleHoverIn( e, gv ) }
               onPointerOut={ e => handleHoverOut( e ) }
               onClick={ e => handleClick( e, gv ) }>
-            <boxBufferGeometry attach="geometry" args={[dotSize,dotSize,dotSize]} />
+            <icosahedronBufferGeometry attach="geometry" args={[dotSize]} />
           </mesh>
         )}) }
     </group>
