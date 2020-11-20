@@ -2,7 +2,7 @@ import React from 'react'
 import * as THREE from 'three'
 import { useResource } from 'react-three-fiber'
 
-function BuildPlane( { config, buildNodeOrEdge, eraseNodeOrEdge } )
+function BuildPlane( { config, startGridHover, stopGridHover, gridClick } )
 {
   const { position, quaternion, grid, color, size, field, buildingStruts } = config
   const [ materialRef, material ] = useResource()
@@ -17,18 +17,18 @@ function BuildPlane( { config, buildNodeOrEdge, eraseNodeOrEdge } )
   const handleHoverIn = ( e, gridPt ) =>
   {
     e.stopPropagation()
-    buildNodeOrEdge( buildingStruts? position : undefined, makeAbsolute( gridPt ), false, true )
+    startGridHover( makeAbsolute( gridPt ) )
   }
-  const handleHoverOut = ( e ) =>
+  const handleHoverOut = ( e, gridPt ) =>
   {
     e.stopPropagation()
-    eraseNodeOrEdge()
+    stopGridHover( makeAbsolute( gridPt ) )
   }
   const handleClick = ( e, gridPt ) =>
   {
     e.stopPropagation()
     console.log( "handle grid click: " + JSON.stringify( gridPt ) )
-    buildNodeOrEdge( buildingStruts? position : undefined, makeAbsolute( gridPt ), true, false )
+    gridClick( makeAbsolute( gridPt ) )
   }
   const wlast = q =>
   {
@@ -44,7 +44,7 @@ function BuildPlane( { config, buildNodeOrEdge, eraseNodeOrEdge } )
         return (
           <mesh position={[x,y,z]} key={JSON.stringify( gv )} material={material}
               onPointerOver={ e => handleHoverIn( e, gv ) }
-              onPointerOut={ e => handleHoverOut( e ) }
+              onPointerOut={ e => handleHoverOut( e, gv ) }
               onClick={ e => handleClick( e, gv ) }>
             <icosahedronBufferGeometry attach="geometry" args={[dotSize]} />
           </mesh>

@@ -1,4 +1,4 @@
-
+import * as mouseEvents from './mouseevents'
 
 const OBJECT_SELECTED = 'OBJECT_SELECTED'
 const OBJECT_DESELECTED = 'OBJECT_DESELECTED'
@@ -187,6 +187,28 @@ export const reducer = ( state = initialState, action ) =>
       }
     }
 
+    case mouseEvents.GRID_HOVER_STARTED:
+      return state
+  
+    case mouseEvents.GRID_HOVER_STOPPED:
+      return state
+    
+    case mouseEvents.GRID_CLICKED:
+      state = { ...state, buildingStruts: true, position: action.payload }
+      return state
+    
+    case mouseEvents.SHAPE_CLICKED:
+      const vectors = action.payload
+      if ( vectors.length === 1 ) {
+        // Ignore clicks on struts and panels
+        state = { ...state, enabled: true, buildingStruts: true, position: vectors[ 0 ] }
+      }
+      return state
+    
+    case mouseEvents.BACKGROUND_CLICKED:
+      state = { ...state, enabled: !state.enabled }
+      return state
+    
     default:
       return state
   }

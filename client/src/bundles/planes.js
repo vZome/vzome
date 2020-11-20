@@ -1,20 +1,9 @@
 
 import { field as goldenField } from '../fields/golden'
+import * as mouseEvents from './mouseevents'
 
 export const doSetWorkingPlaneGrid = grid => {
   return { type: 'WORKING_PLANE_GRID_DEFINED', payload: grid }
-}
-
-export const doMoveWorkingPlane = position => {
-  return { type: 'WORKING_PLANE_MOVED', payload: position }
-}
-
-export const doToggleWorkingPlane = () => {
-  return { type: 'WORKING_PLANE_TOGGLED' }
-}
-
-export const doToggleStrutMode = () => {
-  return { type: 'STRUT_MODE_TOGGLED' }
 }
 
 export const doChangeOrientation = () => {
@@ -52,28 +41,44 @@ const initialState = {
   field: goldenField
 }
 
-export const reducer = ( state=initialState, action ) => {
-  if ( action.type === 'WORKING_PLANE_TOGGLED' ) {
-    state = Object.assign( {}, state, { enabled: !state.enabled } )
-  }
-  else if ( action.type === 'WORKING_PLANE_GRID_DEFINED' ) {
-    state = { ...state, enabled: true, buildingStruts: true, grid: action.payload }
-  }
-  else if ( action.type === 'STRUT_MODE_TOGGLED' ) {
-    state = Object.assign( {}, state, { buildingStruts: !state.buildingStruts } )
-  }
-  else if ( action.type === 'WORKING_PLANE_MOVED' ) {
-    state = Object.assign( {}, state, {
-      position: action.payload,
-      buildingStruts: true,
-      enabled: true
-    })
-  }
-  else if ( action.type === 'ORIENTATION_CHANGED' ) {
-    state = Object.assign( {}, state, {
-      orientation: (state.orientation+1)%3,
-      enabled: true
-    })
+export const reducer = ( state=initialState, action ) =>
+{
+  switch ( action.type )
+  {
+    case mouseEvents.GRID_HOVER_STARTED:
+      
+      break;
+  
+    case mouseEvents.GRID_HOVER_STOPPED:
+    
+      break;
+    
+    case mouseEvents.GRID_CLICKED:
+      state = { ...state, buildingStruts: true, position: action.payload }
+      break;
+    
+    case mouseEvents.SHAPE_CLICKED:
+      const vectors = action.payload
+      if ( vectors.length === 1 ) {
+        // Ignore clicks on struts and panels
+        state = { ...state, enabled: true, buildingStruts: true, position: vectors[ 0 ] }
+      }
+      break;
+    
+    case mouseEvents.BACKGROUND_CLICKED:
+      state = { ...state, enabled: !state.enabled }
+      break;
+    
+    case 'WORKING_PLANE_GRID_DEFINED':
+      state = { ...state, enabled: true, buildingStruts: true, grid: action.payload }
+      break;
+
+    case 'ORIENTATION_CHANGED':
+      state = { ...state, enabled: true, orientation: (state.orientation+1)%3 }
+      break;
+
+    default:
+      break;
   }
   return state
 }
