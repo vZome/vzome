@@ -3,6 +3,7 @@ package com.vzome.core.editor;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -208,6 +209,11 @@ public class EditorModelImpl implements LegacyEditorModel, SymmetryAware
     public OrbitSource getSymmetrySystem( String name )
     {
         return this .symmetrySystems .get( name );
+    }
+    
+    public Iterator<OrbitSource> getSymmetrySystems()
+    {
+        return this .symmetrySystems .values() .iterator();
     }
 
     @Override
