@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -163,8 +164,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         this .failures = failures;
         this .mXML = xml;
         this .sceneLighting = new Lights( app .getLights() );
-        if ( xml != null ) {
-            Element lightsXml = ( this .mXML == null )? null : (Element) this .mXML .getElementsByTagName( "sceneModel" ) .item( 0 );
+        if ( this .mXML != null ) {
+            Element lightsXml = (Element) this .mXML .getElementsByTagName( "sceneModel" ) .item( 0 );
             if ( lightsXml != null ) {
                 String colorString = lightsXml .getAttribute( "background" );
                 this .sceneLighting .setBackgroundColor( Color .parseColor( colorString ) );
@@ -177,7 +178,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         
         this .mRealizedModel = new RealizedModelImpl( this .field, new Projection.Default( this .field ) );
 
-        if ( xml != null ) {
+        if ( this .mXML != null ) {
             NodeList nl = xml .getElementsByTagName( "SymmetrySystem" );
             if ( nl .getLength() != 0 )
                 xml = (Element) nl .item( 0 );
@@ -192,16 +193,35 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
         this .tools = new ToolsModel( this, this .originPoint );
 
+        // Initialize the default SymmetrySystems from the FieldApplication
         Collection<FieldApplication.SymmetryPerspective> symms = kind .getSymmetryPerspectives();
         for ( FieldApplication.SymmetryPerspective symmPerspective1 : symms )
         {
             SymmetrySystem osm = new SymmetrySystem( null, symmPerspective1, this, app .getColors(), true );
-            // one of these will be overwritten below, if we are loading from a file that has it set
             this .symmetrySystems .put( osm .getName(), osm );
         }
-
+        // Now overwrite some or all of those default SymmetrySystems with those stored in the file.
+        //   This is important mostly for the automatic orbits, but can also carry color overrides.
+        //
         SymmetrySystem symmetrySystem = new SymmetrySystem( xml, symmPerspective, this, app .getColors(), true );
         this .symmetrySystems .put( symmPerspective .getName(), symmetrySystem );
+        if ( this .mXML != null ) {
+            NodeList nl = this .mXML .getElementsByTagName( "OtherSymmetries" );
+            if ( nl .getLength() != 0 ) {
+                xml = (Element) nl .item( 0 );
+                NodeList nodes = xml .getElementsByTagName( "SymmetrySystem" );
+                for ( int i = 0; i < nodes .getLength(); i++ ) {
+                    Node node = nodes .item( i );
+                    if ( node instanceof Element ) {
+                        Element symmElem = (Element) node;
+                        String symmName = symmElem .getAttribute( "name" );  
+                        symmPerspective = kind .getSymmetryPerspective( symmName );
+                        SymmetrySystem otherSymmetrySystem = new SymmetrySystem( symmElem, symmPerspective, this, app .getColors(), true );
+                        this .symmetrySystems .put( symmName, otherSymmetrySystem );
+                    }
+                }
+            }
+        }
 
         this .renderedModel = new RenderedModel( this .field, symmetrySystem );
 
@@ -753,6 +773,24 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         vZomeRoot .appendChild( childElement );
 
         childElement = ((SymmetrySystem) this .editorModel .getSymmetrySystem()) .getXml( doc );
+        vZomeRoot .appendChild( childElement );
+
+        // We have to store all symmetries, not just the current one, due to sequences like this:
+        //   1. drag an icosahedral olive strut
+        //   2. switch to octahedral symmetry
+        //   3. do "build with this" on the olive strut
+        //   4. drag out a strut
+        //   5. switch back to icosahedral symmetry
+        // The end result is that the command in step 4 records the name of an automatic orbit.
+        // That automatic orbit must be captured in the file.
+        childElement = doc .createElement( "OtherSymmetries" );
+        for ( Iterator<OrbitSource> iterator = this .editorModel .getSymmetrySystems(); iterator.hasNext(); ) {
+            OrbitSource symmetry = iterator.next();
+            if ( symmetry == this .editorModel .getSymmetrySystem() )
+                continue; // already serialized above
+            Element symmElement = ((SymmetrySystem) symmetry) .getXml( doc );
+            childElement .appendChild( symmElement );
+        }
         vZomeRoot .appendChild( childElement );
 
         childElement = this .tools .getXml( doc );
