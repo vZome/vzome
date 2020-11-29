@@ -6,7 +6,7 @@ import * as THREE from 'three'
 import { PerspectiveCamera } from 'drei'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
 import { selectionToggled } from '../bundles/mesh'
-import { doStartGridHover, doStopGridHover, doBallClick } from '../bundles/planes'
+import { doStartGridHover, doStopGridHover, doBallClick, doBackgroundClick } from '../bundles/planes'
 import BuildPlane from './buildplane'
 import Mesh from './geometry'
 import { createInstance } from '../bundles/mesh'
@@ -44,6 +44,16 @@ const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
   )
 }
 
+const isLeftMouseButton = e =>
+{
+  e = e || window.event;
+  if ( "which" in e )  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+    return e.which === 1
+  else if ( "button" in e )  // IE, Opera 
+    return e.button === 0
+  return false
+}
+
 /*
 TODO:
   - lighting component extract (Redux context tunneling)
@@ -52,9 +62,10 @@ TODO:
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-const ModelCanvas = ( { lighting, camera, mesh, resolver, preRendered, clickable, selectionToggler, startGridHover, stopGridHover, shapeClick, workingPlane } ) => {
+const ModelCanvas = ( { lighting, camera, mesh, resolver, preRendered, clickable, selectionToggler,
+                        startGridHover, stopGridHover, shapeClick, bkgdClick, workingPlane } ) => {
   const { fov, position, up, lookAt } = camera
-  const focus = workingPlane && workingPlane.buildingStruts && workingPlane.position
+  const focus = workingPlane && workingPlane.enabled && workingPlane.buildingStruts && workingPlane.position
   const atFocus = id => focus && ( id === JSON.stringify(focus) )
   const handleClick = clickable && (( id, vectors, selected ) =>
   {
@@ -66,8 +77,12 @@ const ModelCanvas = ( { lighting, camera, mesh, resolver, preRendered, clickable
       selectionToggler( id, selected )
     }
   })
+  const handleBackgroundClick = ( e ) =>
+  {
+    workingPlane && isLeftMouseButton( e ) && bkgdClick()
+  }
   return(
-      <Canvas gl={{ antialias: true, alpha: false }} >
+      <Canvas gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
         <PerspectiveCamera makeDefault {...{fov, position, up}}>
           <Lighting {...lighting} />
         </PerspectiveCamera>
@@ -111,6 +126,7 @@ const boundEventActions = {
   startGridHover: doStartGridHover,
   stopGridHover: doStopGridHover,
   shapeClick: doBallClick,
+  bkgdClick: doBackgroundClick,
 }
 
 export default connect( select, boundEventActions )( ModelCanvas )
