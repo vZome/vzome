@@ -2,9 +2,9 @@ import React from 'react'
 import * as THREE from 'three'
 import { useResource } from 'react-three-fiber'
 
-function BuildPlane( { config, startGridHover, stopGridHover, gridClick } )
+function BuildPlane( { config, startGridHover, stopGridHover } )
 {
-  const { position, quaternion, grid, color, size, field, buildingStruts } = config
+  const { position, quaternion, grid, color, size, field } = config
   const [ materialRef, material ] = useResource()
   const rsize = field.embed( size )
   const dotSize = rsize / 24
@@ -28,7 +28,6 @@ function BuildPlane( { config, startGridHover, stopGridHover, gridClick } )
   {
     e.stopPropagation()
     console.log( "handle grid click: " + JSON.stringify( gridPt ) )
-    gridClick( makeAbsolute( gridPt ) )
   }
   const wlast = q =>
   {

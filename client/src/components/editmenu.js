@@ -66,8 +66,8 @@ const EditMenu = ({ visible, edits, doEdit }) =>
     return null
 } 
 
-const select = ( { model, mesh, workingPlane } ) => ({
-  visible: model.supportsEdits && ! workingPlane,
+const select = ( { jsweet, mesh, workingPlane } ) => ({
+  visible: jsweet && ! workingPlane,
   edits: mesh && Object.getOwnPropertyNames( mesh.commands )
 })
 

@@ -12,39 +12,15 @@ import { field as goldenField } from '../fields/golden'
 
 const PACKAGE_INJECTED = 'PACKAGE_INJECTED'
 const ORBITS_INITIALIZED = 'ORBITS_INITIALIZED'
-const SHAPE_DEFINED = 'SHAPE_DEFINED'
-const INSTANCE_SHAPED = 'INSTANCE_SHAPED'
 const WORK_STARTED = 'WORK_STARTED'
 const WORK_FINISHED = 'WORK_FINISHED'
 
-// This is a selector, called when updating the ModelCanvas component
-const sortedShapes = ( { mesh, model } ) =>
-{
-  if ( model.working )
-    return []
-  
-  const instances = []
-  mesh.previewed.forEach( instance => {
-    instances.push( renderableInstance( instance, false, mesh.field, model.shapedInstances ) )
-  })
-  mesh.shown.forEach( instance => {
-    instances.push( renderableInstance( instance, false, mesh.field, model.shapedInstances ) )
-  })
-  mesh.selected.forEach( instance => {
-    instances.push( renderableInstance( instance, true, mesh.field, model.shapedInstances ) )
-  })
-  return Object.values( model.shapes ).map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
-}
-
 const initialState = {
-  sortedShapes,
   supportsEdits: true,
   vzomePkg: undefined,       // ANTI-PATTERN, not a plain Object
   shimClass: undefined,       // ANTI-PATTERN, not a plain Object
-  orbitSource: undefined,    // ANTI-PATTERN, not a plain Object
   fieldApp: undefined,       // ANTI-PATTERN, not a plain Object
-  shapes: {},
-  shapedInstances : {},  // where we store shape and orientation, outside of the mesh
+  resolver: undefined,       // ANTI-PATTERN, not a plain Object
   working: false,
 }
 
@@ -58,20 +34,8 @@ export const reducer = ( state = initialState, action ) =>
     }
 
     case ORBITS_INITIALIZED: {
-      const { fieldApp, orbitSource } = action.payload
-      return { ...state, orbitSource, fieldApp }
-    }
-
-    case INSTANCE_SHAPED: {
-      const { id } = action.payload
-      const shapedInstances = { ...state.shapedInstances, [id]: action.payload }
-      return { ...state, shapedInstances }
-    }
-
-    case SHAPE_DEFINED: {
-      const shape = action.payload
-      const shapes = { ...state.shapes, [shape.id]: shape }
-      return { ...state, shapes }
+      const { fieldApp, resolver } = action.payload
+      return { ...state, fieldApp, resolver }
     }
 
     case WORK_STARTED: {
@@ -206,9 +170,6 @@ export const init = async ( window, store ) =>
   const colors = new vzomePkg.core.render.Colors( new Properties( defaults ) )
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
 
-  store.dispatch( { type: ORBITS_INITIALIZED, payload: { fieldApp, orbitSource } } )
-  store.dispatch( mesh.resolverDefined( { resolve } ) )
-
   const origin = goldenField.origin( 3 )
   const originBall = mesh.createInstance( [ origin ] )
   store.dispatch( mesh.meshChanged( new Map().set( originBall.id, originBall ), new Map(), new Map() ) )
@@ -223,12 +184,12 @@ export const init = async ( window, store ) =>
   // TODO: fetch all shape VEFs in a ZIP, then inject each
   Promise.all( knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/default/${name}.vef` ) ) )
     .then( () => {
-      // now we are finally ready with a shape for the origin ball
-      store.dispatch( resolve( [ originBall ] ) )
+      // now we are finally ready to resolve instance shapes
+      store.dispatch( { type: ORBITS_INITIALIZED, payload: { fieldApp, resolver: resolver( goldenField, vzomePkg, orbitSource ) } } )
     })
 }
 
-const makeShape = ( shape ) =>
+const embedShape = ( shape ) =>
 {
   const vertices = shape.getVertexList().toArray().map( av => {
     const { x, y, z } = av.toRealVector()
@@ -239,32 +200,23 @@ const makeShape = ( shape ) =>
   return { id, vertices, faces }
 }
 
-// This thunk gets hooked up as the resolver for the mesh
-const resolve = ( instances ) => ( dispatch, getState ) =>
+const resolver = ( field, vzomePkg, orbitSource ) => shapes => instance =>
 {
-  const { vzomePkg, orbitSource, shapes, shapedInstances } = getState().model
-  const { field } = getState().mesh
+  const { id, vectors } = instance
   const jsAF = new vzomePkg.jsweet.JsAlgebraicField( field )
-  instances.map( ({ id, vectors }) =>
   {
-    // first, is the instance already resolved?
-    if ( shapedInstances[ id ] )
-      return
-
-    // Not resolved, so use the orbitSource
     const man = vzomePkg.jsweet.JsManifestation.manifest( vectors, jsAF )
     const rm = new vzomePkg.core.render.RenderedManifestation( man, orbitSource )
     rm.resetAttributes( orbitSource, orbitSource.getShapes(), false, true )
 
     // may be a zero-length strut, no shape
     if ( !rm.getShape() )
-      return
+      return undefined
     
     // is the shape new?
     const shapeId = rm.getShapeId().toString()
     if ( ! shapes[ shapeId ] ) {
-      const shape = makeShape( rm.getShape() )
-      dispatch( { type: SHAPE_DEFINED, payload: shape } )
+      shapes[ shapeId ] = embedShape( rm.getShape() )
     }
 
     const wlast = q =>
@@ -277,8 +229,8 @@ const resolve = ( instances ) => ( dispatch, getState ) =>
     const rotation = ( quatIndex && (quatIndex >= 0) && wlast( field.embedv( field.quaternions[ quatIndex ] ) ) ) || [0,0,0,1]
     const color = rm.getColor().getRGB()
   
-    dispatch( { type: INSTANCE_SHAPED, payload: { id, shapeId, rotation, color } } )
-  } )
+    return { id, rotation, color, shapeId }
+  }
 }
 
 class Adapter
@@ -391,13 +343,13 @@ class Properties
 
 export const legacyCommand = ( pkg, editClass ) => ( config ) => ( dispatch, getState ) =>
 {
-  let { shown, hidden, selected, resolver } = getState().mesh
+  let { shown, hidden, selected } = getState().mesh
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )
   const adapter = new Adapter( shown, hidden, selected )
 
-  const { fieldApp } = getState().model
+  const { fieldApp } = getState().jsweet
   const field = fieldApp.getField()
   const realizedModel = new pkg.JsRealizedModel( field, adapter )
   const selection = new pkg.JsSelection( field, adapter )
@@ -411,22 +363,5 @@ export const legacyCommand = ( pkg, editClass ) => ( config ) => ( dispatch, get
 
   dispatch( { type: WORK_STARTED } )
   dispatch( mesh.meshChanged( shown, selected, hidden ) )
-  // shape any new mesh objects
-  dispatch( resolver.resolve( Array.from( shown.values() ) ) )     // overkill, but hard to optimize
-  dispatch( resolver.resolve( Array.from( selected.values() ) ) )  // overkill, but hard to optimize
   dispatch( { type: WORK_FINISHED } )
-}
-
-export const supportsEdits = true
-
-const renderableInstance = ( instance, selected, field, shapedInstances ) =>
-{
-  const { id, vectors } = instance
-  const position = field.embedv( vectors[0] )
-  return { ...shapedInstances[ id ], position, selected }
-}
-
-const filterInstances = ( shape, instances ) =>
-{
-  return instances.filter( instance => instance.shapeId === shape.id )
 }

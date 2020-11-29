@@ -35,18 +35,7 @@ const normalize = ( instance ) =>
   return { ...instance, shapeId: instance.shape, position: [ pos.x, pos.y, pos.z ], rotation }
 }
 
-const sortedShapes = ( { model } ) =>
-{
-  const instances = model.renderingOn? model.instances : model.previous
-  const filterInstances = ( shape, instances ) =>
-  {
-    return instances.filter( instance => instance.shapeId === shape.id )
-  }
-  return model.shapes.map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
-}
-
 const initialState = {
-  sortedShapes,
   supportsEdits: false,
   renderingOn: true,
   controller: undefined,

@@ -1,6 +1,27 @@
 
 import { field as goldenField } from '../fields/golden'
-import * as mouseEvents from './mouseevents'
+import buildStrut from '../commands/buildstrut'
+
+export const doStartGridHover = position =>
+{
+  return { type: 'GRID_HOVER_STARTED', payload: position }
+}
+
+export const doStopGridHover = position =>
+{
+  return { type: 'GRID_HOVER_STOPPED', payload: position }
+}
+
+export const doBallClick = ( focus, position ) => ( dispatch, getState ) =>
+{
+  dispatch( { type: 'BALL_CLICKED', payload: position } )
+  dispatch( buildStrut( focus, position ) )
+}
+
+export const doBackgroundClick = () =>
+{
+  return { type: 'BACKGROUND_CLICKED' }
+}
 
 export const doSetWorkingPlaneGrid = grid => {
   return { type: 'WORKING_PLANE_GRID_DEFINED', payload: grid }
@@ -32,6 +53,7 @@ series.forEach( x => {
 
 const initialState = {
   position: [ goldenField.zero, goldenField.zero, goldenField.zero ],
+  endPt: undefined,
   quaternion: goldenField.quaternions[ 0 ],
   size: goldenField.times( [5,0,1], goldenField.goldenRatio ),
   grid: [],
@@ -45,27 +67,24 @@ export const reducer = ( state=initialState, action ) =>
 {
   switch ( action.type )
   {
-    case mouseEvents.GRID_HOVER_STARTED:
-      
+    case 'GRID_HOVER_STARTED':
+      state = { ...state, endPt: action.payload }
       break;
   
-    case mouseEvents.GRID_HOVER_STOPPED:
-    
+    case 'GRID_HOVER_STOPPED':
+      state = { ...state, endPt: undefined }
+      break;
+        
+    case 'BALL_CLICKED':
+      const target = action.payload
+      if ( JSON.stringify( state.position ) === JSON.stringify( target ) )
+        state = { ...state, enabled: true, buildingStruts: !state.buildingStruts, endPt: undefined }
+      else
+        state = { ...state, enabled: true, buildingStruts: true, position: target, endPt: undefined }
       break;
     
-    case mouseEvents.GRID_CLICKED:
-      state = { ...state, buildingStruts: true, position: action.payload }
-      break;
-    
-    case mouseEvents.SHAPE_CLICKED:
-      const vectors = action.payload
-      if ( vectors.length === 1 ) {
-        // Ignore clicks on struts and panels
-        state = { ...state, enabled: true, buildingStruts: true, position: vectors[ 0 ] }
-      }
-      break;
-    
-    case mouseEvents.BACKGROUND_CLICKED:
+    // not generated yet, so untested
+    case 'BACKGROUND_CLICKED':
       state = { ...state, enabled: !state.enabled }
       break;
     
