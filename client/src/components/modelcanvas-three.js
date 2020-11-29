@@ -6,7 +6,7 @@ import * as THREE from 'three'
 import { PerspectiveCamera } from 'drei'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
 import { selectionToggled } from '../bundles/mesh'
-import { doStartGridHover, doStopGridHover, doBallClick, doBackgroundClick } from '../bundles/planes'
+import * as planes from '../bundles/planes'
 import BuildPlane from './buildplane'
 import Mesh from './geometry'
 import { createInstance } from '../bundles/mesh'
@@ -63,7 +63,7 @@ TODO:
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
 const ModelCanvas = ( { lighting, camera, mesh, resolver, preRendered, clickable, selectionToggler,
-                        startGridHover, stopGridHover, shapeClick, bkgdClick, workingPlane } ) => {
+                        startGridHover, stopGridHover, startBallHover, stopBallHover, shapeClick, bkgdClick, workingPlane } ) => {
   const { fov, position, up, lookAt } = camera
   const focus = workingPlane && workingPlane.enabled && workingPlane.buildingStruts && workingPlane.position
   const atFocus = id => focus && ( id === JSON.stringify(focus) )
@@ -81,13 +81,20 @@ const ModelCanvas = ( { lighting, camera, mesh, resolver, preRendered, clickable
   {
     workingPlane && isLeftMouseButton( e ) && bkgdClick()
   }
+  const onHover = ( vectors, inbound ) =>
+  {
+    if ( workingPlane && vectors.length === 1 ) {
+      const position = vectors[ 0 ]
+      inbound? startBallHover( position ) : stopBallHover( position )
+    }
+  }
   return(
       <Canvas gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
         <PerspectiveCamera makeDefault {...{fov, position, up}}>
           <Lighting {...lighting} />
         </PerspectiveCamera>
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
-        <Mesh {...{ mesh, resolver, preRendered, handleClick, highlightBall: atFocus }} />
+        <Mesh {...{ mesh, resolver, preRendered, handleClick, onHover, highlightBall: atFocus }} />
         {workingPlane && workingPlane.enabled &&
           <BuildPlane config={workingPlane} { ...{ startGridHover, stopGridHover } } />}
       </Canvas>
@@ -123,10 +130,12 @@ const select = ( state ) =>
 
 const boundEventActions = {
   selectionToggler : selectionToggled,
-  startGridHover: doStartGridHover,
-  stopGridHover: doStopGridHover,
-  shapeClick: doBallClick,
-  bkgdClick: doBackgroundClick,
+  startGridHover: planes.doStartGridHover,
+  stopGridHover: planes.doStopGridHover,
+  startBallHover: planes.doStartBallHover,
+  stopBallHover: planes.doStopBallHover,
+  shapeClick: planes.doBallClick,
+  bkgdClick: planes.doBackgroundClick,
 }
 
 export default connect( select, boundEventActions )( ModelCanvas )

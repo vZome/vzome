@@ -19,8 +19,18 @@ const createGeometry = ( { vertices, faces } ) =>
   return geometry
 }
 
-const Instance = ( { id, vectors, position, rotation, geometry, color, selected, highlightBall, onClick } ) =>
+const Instance = ( { id, vectors, position, rotation, geometry, color, selected, highlightBall, onClick, onHover } ) =>
 {
+  const handleHoverIn = ( e ) =>
+  {
+    e.stopPropagation()
+    onHover( vectors, true )
+  }
+  const handleHoverOut = ( e ) =>
+  {
+    e.stopPropagation()
+    onHover( vectors, false )
+  }
   const handleClick = ( e ) =>
   {
     if ( onClick ) { // may be undefined when the model is not editable, or when the object is not clickable in the current mode
@@ -32,20 +42,20 @@ const Instance = ( { id, vectors, position, rotation, geometry, color, selected,
   // TODO: cache materials
   return (
     <group position={ position } quaternion={ rotation }>
-      <mesh geometry={geometry} onClick={handleClick}>
+      <mesh geometry={geometry} onPointerOver={handleHoverIn} onPointerOut={handleHoverOut} onClick={handleClick}>
         <meshLambertMaterial attach="material" color={color} emissive={emissive} />
       </mesh>
     </group>
   )
 }
 
-const InstancedShape = ( { instances, shape, onClick, highlightBall } ) =>
+const InstancedShape = ( { instances, shape, onClick, onHover, highlightBall } ) =>
 {
   const geometry = useMemo( () => createGeometry( shape ), [ shape ] )
   return (
     <>
       { instances.map( instance => 
-        <Instance key={instance.id} {...instance} geometry={geometry} highlightBall={highlightBall} onClick={onClick} /> ) }
+        <Instance key={instance.id} {...instance} geometry={geometry} highlightBall={highlightBall} onClick={onClick} onHover={onHover} /> ) }
     </>
   )
 }
@@ -64,7 +74,7 @@ const filterInstances = ( shape, instances ) =>
   return instances.filter( instance => instance.shapeId === shape.id )
 }
 
-export default ({ mesh, resolver, preRendered, highlightBall, handleClick }) =>
+export default ({ mesh, resolver, preRendered, highlightBall, handleClick, onHover }) =>
 {
   const shapes = useMemo( () => ( preRendered && preRendered.shapes ) || {}, [ resolver, preRendered ] )
   const shapedInstances = useMemo( () => ({}), [ resolver ] )
@@ -81,7 +91,7 @@ export default ({ mesh, resolver, preRendered, highlightBall, handleClick }) =>
   return (
     <>
       { sortedInstances.map( ( { shape, instances } ) =>
-        <InstancedShape key={shape.id} shape={shape} instances={instances} highlightBall={highlightBall} onClick={handleClick} />
+        <InstancedShape key={shape.id} shape={shape} instances={instances} highlightBall={highlightBall} onClick={handleClick} onHover={onHover} />
       ) }
     </>
   )

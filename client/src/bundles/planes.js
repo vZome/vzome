@@ -12,6 +12,16 @@ export const doStopGridHover = position =>
   return { type: 'GRID_HOVER_STOPPED', payload: position }
 }
 
+export const doStartBallHover = position =>
+{
+  return { type: 'BALL_HOVER_STARTED', payload: position }
+}
+
+export const doStopBallHover = position =>
+{
+  return { type: 'BALL_HOVER_STOPPED', payload: position }
+}
+
 export const doBallClick = ( focus, position ) => ( dispatch, getState ) =>
 {
   dispatch( { type: 'BALL_CLICKED', payload: position } )
@@ -68,36 +78,35 @@ export const reducer = ( state=initialState, action ) =>
   switch ( action.type )
   {
     case 'GRID_HOVER_STARTED':
-      state = { ...state, endPt: action.payload }
-      break;
+      return { ...state, endPt: action.payload }
+          
+    case 'BALL_HOVER_STARTED':
+      if ( state.endPt )
+        return state
+      else
+        return { ...state, endPt: action.payload }
   
-    case 'GRID_HOVER_STOPPED':
-      state = { ...state, endPt: undefined }
-      break;
+    case 'BALL_HOVER_STOPPED':
+      return { ...state, endPt: undefined }
         
     case 'BALL_CLICKED':
       const target = action.payload
       if ( JSON.stringify( state.position ) === JSON.stringify( target ) )
-        state = { ...state, enabled: true, buildingStruts: !state.buildingStruts, endPt: undefined }
+        return { ...state, enabled: true, buildingStruts: !state.buildingStruts, endPt: undefined }
       else
-        state = { ...state, enabled: true, buildingStruts: true, position: target, endPt: undefined }
-      break;
+        return { ...state, enabled: true, buildingStruts: true, position: target, endPt: undefined }
     
     // not generated yet, so untested
     case 'BACKGROUND_CLICKED':
-      state = { ...state, enabled: !state.enabled }
-      break;
+      return { ...state, enabled: !state.enabled }
     
     case 'WORKING_PLANE_GRID_DEFINED':
-      state = { ...state, enabled: true, buildingStruts: true, grid: action.payload }
-      break;
+      return { ...state, enabled: true, buildingStruts: true, grid: action.payload }
 
     case 'ORIENTATION_CHANGED':
-      state = { ...state, enabled: true, orientation: (state.orientation+1)%3 }
-      break;
+      return { ...state, enabled: true, orientation: (state.orientation+1)%3 }
 
     default:
-      break;
+      return state
   }
-  return state
 }
