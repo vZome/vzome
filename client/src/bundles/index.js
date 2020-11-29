@@ -4,7 +4,7 @@ import { createStore, applyMiddleware, combineReducers } from 'redux'
 import * as jre from './jre'
 import * as files from './files'
 import * as alerts from './alerts'
-import * as vzomejava from './vzomejava'
+import * as vZomeJava from './vzomejava'
 import * as camera from './camera'
 import * as lighting from './lighting'
 import * as progress from './progress'
@@ -22,15 +22,15 @@ if ( urlParams.has( "editMode" ) ) {
   switch ( urlParams.get( "editMode" ) ) {
 
     case "plane":
-      bundles = { ...requiredBundles, model: jsweet, mesh, commands, workingPlane }
+      bundles = { ...requiredBundles, jsweet, mesh, commands, workingPlane }
       break;
   
     default:
-      bundles = { ...requiredBundles, model: jsweet, mesh, commands }
+      bundles = { ...requiredBundles, jsweet, mesh, commands }
       break;
   }
 } else {
-  bundles = { ...requiredBundles, jre, files, alerts, model: vzomejava, progress }
+  bundles = { ...requiredBundles, jre, files, alerts, vZomeJava, progress }
 }
 
 

@@ -5,9 +5,11 @@ import { Canvas, useThree, extend, useFrame } from 'react-three-fiber'
 import * as THREE from 'three'
 import { PerspectiveCamera } from 'drei'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
-import { selectionToggled, commandTriggered, previewChanged } from '../bundles/mesh'
-import { doMoveWorkingPlane, doToggleStrutMode } from '../bundles/planes'
+import { selectionToggled } from '../bundles/mesh'
+import * as planes from '../bundles/planes'
 import BuildPlane from './buildplane'
+import Mesh from './geometry'
+import { createInstance } from '../bundles/mesh'
 
 extend({ TrackballControls })
 const Controls = props => {
@@ -15,53 +17,6 @@ const Controls = props => {
   const controls = useRef()
   useFrame(() => controls.current.update())
   return <trackballControls ref={controls} args={[camera, gl.domElement]} {...props} />
-}
-
-const computeNormal = ( vertices, face ) => {
-  const v0 = vertices[ face.vertices[0] ]
-  const v1 = vertices[ face.vertices[1] ]
-  const v2 = vertices[ face.vertices[2] ]
-  const e1 = new THREE.Vector3().subVectors( v1, v0 )
-  const e2 = new THREE.Vector3().subVectors( v2, v0 )
-  return new THREE.Vector3().crossVectors( e1, e2 )
-}
-
-const createGeometry = ( { vertices, faces } ) =>
-{
-  var geometry = new THREE.Geometry();
-  geometry.vertices = vertices.map( v => new THREE.Vector3( v.x, v.y, v.z ) )
-  geometry.faces = faces.map( f => new THREE.Face3( f.vertices[0], f.vertices[1], f.vertices[2], computeNormal( vertices, f ) ) )
-  geometry.computeBoundingSphere();
-  return geometry
-}
-
-const Instance = ( { id, position, rotation, geometry, color, selected, atFocus, onClick } ) =>
-{
-  const handleClick = ( e ) =>
-  {
-    if ( onClick ) { // may be undefined when the model is not editable, or when the object is not clickable in the current mode
-      e.stopPropagation()
-      onClick( id, selected )
-    }
-  }
-  return (
-    <group position={ position } quaternion={ rotation }>
-      <mesh geometry={geometry} onClick={handleClick}>
-        <meshLambertMaterial attach="material" color={color} emissive={(selected || atFocus(id))? "#888888" : "black"} />
-      </mesh>
-    </group>
-  )
-}
-
-const InstancedShape = ( { instances, shape, onClick, atFocus } ) =>
-{
-  const geometry = useMemo( () => createGeometry( shape ), [ shape ] )
-  return (
-    <>
-      { instances.map( instance => 
-        <Instance key={instance.id} {...instance} geometry={geometry} atFocus={atFocus} onClick={onClick} /> ) }
-    </>
-  )
 }
 
 // Found this trick for getting the DL.target into the scene here:
@@ -89,6 +44,16 @@ const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
   )
 }
 
+const isLeftMouseButton = e =>
+{
+  e = e || window.event;
+  if ( "which" in e )  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+    return e.which === 1
+  else if ( "button" in e )  // IE, Opera 
+    return e.button === 0
+  return false
+}
+
 /*
 TODO:
   - lighting component extract (Redux context tunneling)
@@ -97,70 +62,80 @@ TODO:
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-const ModelCanvas = ( { lighting, shapes, camera, clickable, selectionToggler, doEdit, movePlane, clearFocus, workingPlane, changePreview } ) => {
+const ModelCanvas = ( { lighting, camera, mesh, resolver, preRendered, clickable, selectionToggler,
+                        startGridHover, stopGridHover, startBallHover, stopBallHover, shapeClick, bkgdClick, workingPlane } ) => {
   const { fov, position, up, lookAt } = camera
-  const mouseSelectMode = ! workingPlane
-  const focus = workingPlane && workingPlane.position
-  const atFocus = id => workingPlane && workingPlane.buildingStruts && ( id === JSON.stringify(focus) )
-  const buildNodeOrEdge = ( start, end, move, preview ) =>
+  const focus = workingPlane && workingPlane.enabled && workingPlane.buildingStruts && workingPlane.position
+  const atFocus = id => focus && ( id === JSON.stringify(focus) )
+  const handleClick = clickable && (( id, vectors, selected ) =>
   {
-    start = workingPlane && workingPlane.buildingStruts? start : undefined
-    doEdit( 'buildstrut', { start, end, preview } )
-    move && movePlane( end )
-  }
-  const eraseNodeOrEdge = () =>
-  {
-    changePreview( new Map() )
-  }
-  const handleClick = ( id, selected ) =>
-  {
-    const position = JSON.parse( id )
-    if ( mouseSelectMode )
-      selectionToggler( id, selected )
-    else if ( ! focus )
-      movePlane( position )
-    else if ( atFocus( id ) )
-      clearFocus()
+    if ( workingPlane ) {
+      if ( vectors.length === 1 )
+        shapeClick( focus, vectors[ 0 ] )
+    }
     else {
-      changePreview( new Map() )
-      buildNodeOrEdge( focus, position, true )
+      selectionToggler( id, selected )
+    }
+  })
+  const handleBackgroundClick = ( e ) =>
+  {
+    workingPlane && isLeftMouseButton( e ) && bkgdClick()
+  }
+  const onHover = ( vectors, inbound ) =>
+  {
+    if ( workingPlane && vectors.length === 1 ) {
+      const position = vectors[ 0 ]
+      inbound? startBallHover( position ) : stopBallHover( position )
     }
   }
   return(
-    <>
-      <Canvas gl={{ antialias: true, alpha: false }} >
+      <Canvas gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
         <PerspectiveCamera makeDefault {...{fov, position, up}}>
           <Lighting {...lighting} />
         </PerspectiveCamera>
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
-        { shapes.map( ( { shape, instances } ) =>
-          <InstancedShape key={shape.id} shape={shape} instances={instances} atFocus={atFocus} onClick={clickable && handleClick} />
-        ) }
+        <Mesh {...{ mesh, resolver, preRendered, handleClick, onHover, highlightBall: atFocus }} />
         {workingPlane && workingPlane.enabled &&
-        <BuildPlane config={workingPlane} buildNodeOrEdge={buildNodeOrEdge} eraseNodeOrEdge={eraseNodeOrEdge} />}
+          <BuildPlane config={workingPlane} { ...{ startGridHover, stopGridHover } } />}
       </Canvas>
-    </>
   )
 }
 
 const select = ( state ) =>
 {
-  const { camera, lighting, model, workingPlane } = state
+  const { camera, lighting, jsweet, mesh, workingPlane, vZomeJava } = state
+  const preRendered = vZomeJava && { ...vZomeJava, instances: vZomeJava.renderingOn? vZomeJava.instances : vZomeJava.previous }
+  const shown = new Map( mesh && mesh.shown )
+  if ( workingPlane && workingPlane.enabled && workingPlane.endPt ) {
+    const { position, endPt, buildingStruts } = workingPlane
+    let previewBall = createInstance( [ endPt ] )
+    if ( ! shown.has( previewBall.id ) )
+      shown.set( previewBall.id, previewBall )
+    if ( buildingStruts ) {
+      let previewStrut = createInstance( [ position, endPt ] )
+      if ( ! shown.has( previewStrut.id ) )
+        shown.set( previewStrut.id, previewStrut )
+    }
+  }
   return {
     workingPlane,
     camera,
     lighting,
-    shapes: model.sortedShapes( state ),
-    clickable: model.supportsEdits
+    mesh: { ...mesh, shown },
+    resolver: jsweet && jsweet.resolver,
+    preRendered,
+    clickable: !!jsweet
   }
 }
 
 const boundEventActions = {
-  doEdit : commandTriggered,
-  movePlane : doMoveWorkingPlane,
   selectionToggler : selectionToggled,
-  clearFocus: doToggleStrutMode,
-  changePreview: previewChanged,
+  startGridHover: planes.doStartGridHover,
+  stopGridHover: planes.doStopGridHover,
+  startBallHover: planes.doStartBallHover,
+  stopBallHover: planes.doStopBallHover,
+  shapeClick: planes.doBallClick,
+  bkgdClick: planes.doBackgroundClick,
 }
 
 export default connect( select, boundEventActions )( ModelCanvas )

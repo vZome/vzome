@@ -3,10 +3,8 @@ import * as mesh from '../bundles/mesh'
 
 export default () => ( dispatch, getState ) =>
 {
-  let { field, shown, selected, hidden, resolver } = getState().mesh
+  let { field, shown, selected, hidden } = getState().mesh
   shown = new Map( shown )
-
-  const news = []
 
   const red = [ [ 2, 3, 1 ], [ 1, 2, 1 ], [ 0, 0, 1 ] ]
   let start = undefined
@@ -24,13 +22,10 @@ export default () => ( dispatch, getState ) =>
   // Avoid creating a duplicate... make this reusable
   newBall = shown.get( newBall.id ) || selected.get( newBall.id ) || hidden.get( newBall.id ) || newBall
   shown.delete( newBall.id ) || selected.delete( newBall.id ) || hidden.delete( newBall.id )
-  news.push( newBall )
 
   newStrut = shown.get( newStrut.id ) || selected.get( newStrut.id ) || hidden.get( newStrut.id ) || newStrut
   shown.delete( newStrut.id ) || selected.delete( newStrut.id ) || hidden.delete( newStrut.id )
-  news.push( newStrut )
 
   selected = new Map().set( newStrut.id, newStrut ).set( newBall.id, newBall )
   dispatch( mesh.meshChanged( shown, selected, hidden ) )
-  dispatch( resolver.resolve( news ) )
 }

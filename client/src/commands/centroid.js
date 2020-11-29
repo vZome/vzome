@@ -3,7 +3,7 @@ import * as mesh from '../bundles/mesh'
 
 export default () => ( dispatch, getState ) =>
 {
-  let { field, selected, shown, hidden, resolver } = getState().mesh
+  let { field, selected, shown, hidden } = getState().mesh
   shown = new Map( shown )
 
   const scale = field.createRational( 1, selected.size )
@@ -27,5 +27,4 @@ export default () => ( dispatch, getState ) =>
 
   selected = new Map().set( newBall.id, newBall )
   dispatch( mesh.meshChanged( shown, selected, hidden ) )
-  dispatch( resolver.resolve( [ newBall ] ) )
 }

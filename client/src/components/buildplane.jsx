@@ -2,12 +2,12 @@ import React from 'react'
 import * as THREE from 'three'
 import { useResource } from 'react-three-fiber'
 
-function BuildPlane( { config, buildNodeOrEdge, eraseNodeOrEdge } )
+function BuildPlane( { config, startGridHover, stopGridHover } )
 {
-  const { position, quaternion, grid, color, size, field, buildingStruts } = config
+  const { position, quaternion, grid, color, size, field } = config
   const [ materialRef, material ] = useResource()
   const rsize = field.embed( size )
-  const dotSize = rsize / 12
+  const dotSize = rsize / 24
   
   const makeAbsolute = ( gridPt ) =>
   {
@@ -17,18 +17,17 @@ function BuildPlane( { config, buildNodeOrEdge, eraseNodeOrEdge } )
   const handleHoverIn = ( e, gridPt ) =>
   {
     e.stopPropagation()
-    buildNodeOrEdge( buildingStruts? position : undefined, makeAbsolute( gridPt ), false, true )
+    startGridHover( makeAbsolute( gridPt ) )
   }
-  const handleHoverOut = ( e ) =>
+  const handleHoverOut = ( e, gridPt ) =>
   {
     e.stopPropagation()
-    eraseNodeOrEdge()
+    stopGridHover( makeAbsolute( gridPt ) )
   }
   const handleClick = ( e, gridPt ) =>
   {
     e.stopPropagation()
     console.log( "handle grid click: " + JSON.stringify( gridPt ) )
-    buildNodeOrEdge( buildingStruts? position : undefined, makeAbsolute( gridPt ), true, false )
   }
   const wlast = q =>
   {
@@ -38,15 +37,15 @@ function BuildPlane( { config, buildNodeOrEdge, eraseNodeOrEdge } )
   
   return (
     <group position={field.embedv( position )} quaternion={field.embedv( wlast( quaternion ) )}>
-      <meshBasicMaterial ref={materialRef} transparent={true} opacity={0.2} color={color} side={THREE.DoubleSide} />
+      <meshLambertMaterial ref={materialRef} transparent={true} opacity={0.7} color={color} side={THREE.DoubleSide} />
       {grid.map( ( gv ) => {
         const [ x, y, z ] = field.embedv( gv ) 
         return (
           <mesh position={[x,y,z]} key={JSON.stringify( gv )} material={material}
               onPointerOver={ e => handleHoverIn( e, gv ) }
-              onPointerOut={ e => handleHoverOut( e ) }
+              onPointerOut={ e => handleHoverOut( e, gv ) }
               onClick={ e => handleClick( e, gv ) }>
-            <boxBufferGeometry attach="geometry" args={[dotSize,dotSize,dotSize]} />
+            <icosahedronBufferGeometry attach="geometry" args={[dotSize]} />
           </mesh>
         )}) }
     </group>
