@@ -63,10 +63,15 @@ const InstancedShape = ( { instances, shape, onClick, onHover, highlightBall } )
 const shapeInstance = ( instance, selected, field, shapedInstances, resolve ) =>
 {
   // TODO: handle undefined result from resolve
-  const shapedInstance = shapedInstances[ instance.id ] || resolve( instance )
-  shapedInstances[ instance.id ] = shapedInstance
+  let shapedInstance = shapedInstances[ instance.id ]
+  if ( shapedInstance )
+    return { ...shapedInstance, selected }
+  shapedInstance = resolve( instance )
   const position = field.embedv( instance.vectors[0] ) // TODO: does this work for struts and panels?
-  return { ...shapedInstance, position, selected, vectors: instance.vectors }
+  // everything except selected state will go into shapedInstances
+  shapedInstance = { ...shapedInstance, position, vectors: instance.vectors }
+  shapedInstances[ instance.id ] = shapedInstance
+  return { ...shapedInstance, selected }
 }
 
 const filterInstances = ( shape, instances ) =>
