@@ -838,12 +838,8 @@ public class DocumentController extends DefaultController implements Scene.Provi
                 File dir = file .isDirectory()? file : file .getParentFile();
                 Dimension size = this .canvasSize;
                 String html = readResource( "org/vorthmann/zome/app/animation.html" );
-                html = html .replaceFirst( "%%WIDTH%%", Integer .toString( size .width ) );
-                html = html .replaceFirst( "%%HEIGHT%%", Integer .toString( size .height ) );
                 File htmlFile = new File( dir, "index.html" );
                 writeFile( html, htmlFile );
-                String js = readResource( "org/vorthmann/zome/app/j360-loop.js" );
-                writeFile( js, new File( dir, "j360-loop.js" ) );
 
                 AnimationCaptureController animation = new AnimationCaptureController( this .cameraController, dir );
                 captureImageFile( null, AnimationCaptureController.TYPE, animation );
