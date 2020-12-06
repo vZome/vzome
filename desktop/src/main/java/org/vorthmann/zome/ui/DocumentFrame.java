@@ -69,7 +69,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
     private LessonPanel lessonPanel;
     
-    private JFrame zomicFrame, pythonFrame;
+    private JFrame zomicFrame, zomodFrame, pythonFrame;
 
     private JButton snapshotButton;
 
@@ -302,14 +302,23 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     pythonFrame .pack();
                     pythonFrame .setVisible( true );
                     break;
-                
+                    
                 case "showZomicWindow":
                     if ( zomicFrame == null ) {
                         zomicFrame = new JFrame( "Zomic Scripting" );
-                        zomicFrame .setContentPane( new ZomicEditorPanel( zomicFrame, mController ) );
+                        zomicFrame .setContentPane( new ZomicEditorPanel( zomicFrame, mController, false ) );
                     }
                     zomicFrame .pack();
                     zomicFrame .setVisible( true );
+                    break;
+
+                case "showZomodWindow":
+                    if ( zomodFrame == null ) {
+                        zomodFrame = new JFrame( "Zomod Scripting" );
+                        zomodFrame .setContentPane( new ZomicEditorPanel( zomicFrame, mController, true ) );
+                    }
+                    zomodFrame .pack();
+                    zomodFrame .setVisible( true );
                     break;
                 
                 case "setItemColor":
@@ -792,6 +801,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             case "setBackgroundColor":
             case "showPolytopesDialog":
             case "showZomicWindow":
+            case "showZomodWindow":
             case "showPythonWindow":
             case "rZomeOrbits":
             case "predefinedOrbits":

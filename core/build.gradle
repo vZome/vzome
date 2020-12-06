@@ -74,6 +74,8 @@ dependencies {
     compile     group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
     compile     group: 'org.jogamp', name: 'jogl-all', version:'v2.4.0-rc-20200307'
 
+    compile group: 'antlr',             name: 'antlr',             version:'2.7.7'
+
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.3'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.3'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.3'
