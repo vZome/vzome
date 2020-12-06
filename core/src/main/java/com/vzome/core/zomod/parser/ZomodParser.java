@@ -163,7 +163,7 @@ public ZomodParser(ParserSharedInputState state) {
 							xml.startElement( "strut" );
 								if ( step .isHalf )
 									xml .attribute( "half", "true" );
-								xml .attribute( "size", Integer.toString( step.scale ) );
+								xml .attribute( "scale", Integer.toString( step.scale ) );
 								xml.startElement( step.color );
 									String sense = step.isPlus ? "plus" : "minus";
 									xml .attribute( "sense", sense );

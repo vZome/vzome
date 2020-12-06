@@ -764,7 +764,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
     @Override
     public void doScriptAction( String command, String script )
     {
-        if ( command.equals( "RunZomicScript" ) || command.equals( "RunPythonScript" ) )
+        if ( command.equals( "RunZomicScript" ) || command.equals( "RunZomodScript" ) || command.equals( "RunPythonScript" ) )
         {
             Map<String,Object> props = new HashMap<>();
             props .put( "script", script );

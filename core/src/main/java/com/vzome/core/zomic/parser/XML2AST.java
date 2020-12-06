@@ -82,6 +82,13 @@ public class XML2AST extends DefaultHandler
 		|| "blue" .equals( localName )
 		|| "black" .equals( localName ) ) {
 			String index = atts .getValue( "index" );
+			
+			// These bits are specific to Zomod, but there should be no more use of this code for Zomic anyway.
+			String sense = atts .getValue( "sense" );
+			if ( "minus" .equals( sense ) )
+			    index = "-" + index;
+
+			
 			Axis axis;
 			try  {
 				axis = naming .getAxis( localName, index );
