@@ -26,7 +26,7 @@ if ( urlParams.has( "editMode" ) ) {
       break;
   
     default:
-      bundles = { ...requiredBundles, jsweet, mesh, commands }
+      bundles = { ...requiredBundles, jsweet, mesh, commands, files, alerts, progress }
       break;
   }
 } else {

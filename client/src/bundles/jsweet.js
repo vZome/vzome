@@ -2,6 +2,8 @@
 import * as mesh from './mesh'
 import * as planes from './planes'
 import { field as goldenField } from '../fields/golden'
+import { FILE_LOADED, fetchModel } from './files'
+import { startProgress, stopProgress } from './progress'
 
 // import { NewCentroid } from '../jsweet/com/vzome/core/edits/NewCentroid'
 
@@ -10,16 +12,12 @@ import { field as goldenField } from '../fields/golden'
 //
 // I should be able to use require() and a commonjs module, but it has the same J4TS build problem.
 
-const PACKAGE_INJECTED = 'PACKAGE_INJECTED'
 const ORBITS_INITIALIZED = 'ORBITS_INITIALIZED'
 const WORK_STARTED = 'WORK_STARTED'
 const WORK_FINISHED = 'WORK_FINISHED'
 
 const initialState = {
-  supportsEdits: true,
-  vzomePkg: undefined,       // ANTI-PATTERN, not a plain Object
-  shimClass: undefined,       // ANTI-PATTERN, not a plain Object
-  fieldApp: undefined,       // ANTI-PATTERN, not a plain Object
+  editFactory: undefined,       // ANTI-PATTERN, not a plain Object
   resolver: undefined,       // ANTI-PATTERN, not a plain Object
   working: false,
 }
@@ -28,14 +26,9 @@ export const reducer = ( state = initialState, action ) =>
 {
   switch ( action.type ) {
 
-    case PACKAGE_INJECTED: {
-      const { vzomePkg, shimClass } = action.payload
-      return { ...state, vzomePkg, shimClass }
-    }
-
     case ORBITS_INITIALIZED: {
-      const { fieldApp, resolver } = action.payload
-      return { ...state, fieldApp, resolver }
+      const { editFactory, resolver } = action.payload
+      return { ...state, editFactory, resolver }
     }
 
     case WORK_STARTED: {
@@ -134,7 +127,6 @@ export const init = async ( window, store ) =>
 {
   const vzomePkg = window.com.vzome
   const shimClass = vzomePkg.jsweet.JsAdapter
-  store.dispatch( { type: PACKAGE_INJECTED, payload: { vzomePkg, shimClass } } )
 
   const injectResource = async ( path ) =>
   {
@@ -149,12 +141,6 @@ export const init = async ( window, store ) =>
     console.log( `injected resource ${path}` )
   }
 
-  // Discover all the legacy edit classes and register as commands
-  const commands = {}
-  for ( const [ name, editClass ] of Object.entries( vzomePkg.core.edits ) )
-    commands[ name ] = legacyCommand( vzomePkg.jsweet, editClass )
-  store.dispatch( mesh.commandsDefined( commands ) )
-
   // Initialize the field application
   await Promise.all( [
     injectResource( 'com/vzome/core/math/symmetry/binaryTetrahedralGroup.vef' ),
@@ -164,6 +150,22 @@ export const init = async ( window, store ) =>
   const context = new vzomePkg.jsweet.JsEditContext()
   const field = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
   const fieldApp = new vzomePkg.core.kinds.GoldenFieldApplication( field )
+
+  const editFactory = ( className, adapter ) =>
+  {
+    const field = fieldApp.getField()
+    const realizedModel = new vzomePkg.jsweet.JsRealizedModel( field, adapter )
+    const selection = new vzomePkg.jsweet.JsSelection( field, adapter )
+    const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp )
+    const classes = vzomePkg.core.edits
+    return new classes[ className ]( editor )
+  }
+
+  // Discover all the legacy edit classes and register as commands
+  const commands = {}
+  for ( const [ name, editClass ] of Object.entries( vzomePkg.core.edits ) )
+    commands[ name ] = legacyCommand( editFactory, name )
+  store.dispatch( mesh.commandsDefined( commands ) )
 
   // Prepare the orbitSource for resolveShapes
   const symmPer = fieldApp.getSymmetryPerspective( "icosahedral" )
@@ -181,11 +183,17 @@ export const init = async ( window, store ) =>
   const gridPoints = shimClass.getZoneGrid( orbitSource, blue )
   store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
 
+  const state = {
+    editFactory,
+    resolver: createResolver( goldenField, vzomePkg, orbitSource ),
+  }
+
   // TODO: fetch all shape VEFs in a ZIP, then inject each
   Promise.all( knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/default/${name}.vef` ) ) )
     .then( () => {
       // now we are finally ready to resolve instance shapes
-      store.dispatch( { type: ORBITS_INITIALIZED, payload: { fieldApp, resolver: resolver( goldenField, vzomePkg, orbitSource ) } } )
+      store.dispatch( { type: ORBITS_INITIALIZED, payload: state } )
+      store.dispatch( fetchModel( "/app/models/120-cell.vZome" ) )
     })
 }
 
@@ -200,7 +208,7 @@ const embedShape = ( shape ) =>
   return { id, vertices, faces }
 }
 
-const resolver = ( field, vzomePkg, orbitSource ) => shapes => instance =>
+const createResolver = ( field, vzomePkg, orbitSource ) => shapes => instance =>
 {
   const { id, vectors } = instance
   const jsAF = new vzomePkg.jsweet.JsAlgebraicField( field )
@@ -341,7 +349,7 @@ class Properties
   }
 }
 
-export const legacyCommand = ( pkg, editClass ) => ( config ) => ( dispatch, getState ) =>
+export const legacyCommand = ( editFactory, className ) => ( config ) => ( dispatch, getState ) =>
 {
   let { shown, hidden, selected } = getState().mesh
   shown = new Map( shown )
@@ -349,13 +357,7 @@ export const legacyCommand = ( pkg, editClass ) => ( config ) => ( dispatch, get
   selected = new Map( selected )
   const adapter = new Adapter( shown, hidden, selected )
 
-  const { fieldApp } = getState().jsweet
-  const field = fieldApp.getField()
-  const realizedModel = new pkg.JsRealizedModel( field, adapter )
-  const selection = new pkg.JsSelection( field, adapter )
-  const editor = new pkg.JsEditorModel( realizedModel, selection, fieldApp )
-
-  const edit = new editClass( editor )
+  const edit = editFactory( className, adapter )
 
   edit.configure( new Properties( config ) )
 
@@ -364,4 +366,39 @@ export const legacyCommand = ( pkg, editClass ) => ( config ) => ( dispatch, get
   dispatch( { type: WORK_STARTED } )
   dispatch( mesh.meshChanged( shown, selected, hidden ) )
   dispatch( { type: WORK_FINISHED } )
+}
+
+export const middleware = store => next => async action => 
+{
+  if ( action.type === FILE_LOADED ) {
+    store.dispatch( startProgress( "Parsing vZome model..." ) )
+    const path = "/str/" + action.payload.name
+
+    // I tried using JXON here, but wants to make the EditHistory into an object not an array.
+    // I could also just roll my own, ala https://developer.mozilla.org/en-US/docs/Archive/JXON,
+    //   but I think there would be enough special cases that I might as well just use the DOM.
+
+    const parser = new DOMParser();
+    const domDoc = parser.parseFromString( action.payload.text, "application/xml" );
+    console.log( domDoc )
+    const history = domDoc.firstElementChild.firstElementChild // TODO: fragile! may not get EditHistory first
+    const editNumber = history.getAttribute( "editNumber" )
+    const firstEdit = history.firstElementChild
+    const editName = firstEdit.nodeName
+
+    const editFactory = store.getState().jsweet.editFactory
+
+    const shown = new Map()
+    const hidden = new Map()
+    const selected = new Map()
+    const adapter = new Adapter( shown, selected, hidden )
+    const edit = editFactory( editName, adapter )
+    edit.loadAndPerform( firstEdit, null, { performAndRecord: edit => edit.perform() } )
+
+    store.dispatch( mesh.meshChanged( shown, selected, hidden ) )
+
+    store.dispatch( stopProgress() )
+  }
+  
+  return next( action )
 }

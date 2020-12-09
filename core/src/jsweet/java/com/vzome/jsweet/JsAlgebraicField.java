@@ -391,6 +391,45 @@ public class JsAlgebraicField implements AlgebraicField
             return result;
     }
 
+    @Override
+    public AlgebraicVector parseVector(String nums)
+    {
+        StringTokenizer tokens = new StringTokenizer( nums, " " );
+        int numToks = tokens .countTokens();
+        if ( numToks % getOrder() != 0 )
+            throw new IllegalStateException( "Field order (" + getOrder() + ") does not divide token count: " + numToks + ", for '" + nums + "'" );
+
+        int dims = numToks / getOrder();
+        AlgebraicNumber[] coords = new AlgebraicNumber[ dims ];
+        for ( int i = 0; i < dims; i++ ) {
+            coords[ i ] = this .parseNumber( tokens );
+        }
+        return new AlgebraicVector( coords );
+    }
+
+    @Override
+    public AlgebraicNumber parseNumber( String nums )
+    {
+        StringTokenizer tokens = new StringTokenizer( nums, " " );
+        return this .parseNumber( tokens );
+    }
+
+    private AlgebraicNumber parseNumber( StringTokenizer tokens )
+    {
+        int order = this .getOrder();
+        int[] tds = new int[ order + 1 ];
+        tds[ order ] = 1; // TODO support rational numbers
+        for ( int i = 0; i < tds.length - 1; i++ ) {
+            String digit = tokens.nextToken();
+            tds[ i ] = Integer.parseInt( digit );
+        }
+        return this .createAlgebraicNumberFromTD( tds );
+    }
+
+    
+    
+    
+    
     
     
     
@@ -450,18 +489,6 @@ public class JsAlgebraicField implements AlgebraicField
 
     @Override
     public AlgebraicNumber parseLegacyNumber(String val)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicNumber parseNumber(String nums)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicVector parseVector(String nums)
     {
         throw new RuntimeException( "unimplemented" );
     }

@@ -32,7 +32,9 @@ let FileOpener = ({ enabled, loadFile }) =>
 } 
 
 const select = (state) => ({
-  enabled: state.jre && state.jre.javaReady
+  // TODO make a real selector!
+  enabled: ( state.jre && state.jre.javaReady ) 
+            || ( !state.jre && state.alerts !== undefined ) // there is no state for files, but this correlates
 })
 
 const boundEventActions = {

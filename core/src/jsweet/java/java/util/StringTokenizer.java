@@ -7,6 +7,7 @@ import jsweet.lang.Replace;
 public class StringTokenizer
 {
     private final Iterator<String> tokens;
+    private final int count;
 
     public StringTokenizer( String str )
     {
@@ -24,6 +25,7 @@ public class StringTokenizer
         if ( strs[ last ] == "" )
             strs = Arrays.copyOf( strs, last );
 
+        this .count = strs.length;
         this .tokens = Arrays.asList( strs ) .iterator();
     }
     
@@ -41,5 +43,10 @@ public class StringTokenizer
     public String nextToken()
     {
         return this .tokens .next();
+    }
+    
+    public int countTokens()
+    {
+        return this.count;
     }
 }

@@ -36,7 +36,6 @@ const normalize = ( instance ) =>
 }
 
 const initialState = {
-  supportsEdits: false,
   renderingOn: true,
   controller: undefined,
   fileName: undefined,
