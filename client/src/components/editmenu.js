@@ -26,7 +26,7 @@ const EditMenu = ({ visible, edits, doEdit }) =>
   if ( visible )
     return (
       <div>
-        <IconButton
+        <IconButton id="editmenu"
           aria-label="more"
           aria-controls="long-menu"
           aria-haspopup="true"
@@ -39,8 +39,8 @@ const EditMenu = ({ visible, edits, doEdit }) =>
           open={open} onClose={handleClose}
           PaperProps={{
             style: {
-              maxHeight: ITEM_HEIGHT * 4.5,
-              width: '20ch',
+              maxHeight: ITEM_HEIGHT * 20,
+              width: '30ch',
             },
           }}
         >

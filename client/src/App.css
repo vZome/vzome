@@ -72,6 +72,12 @@ body,
   top: 1%;
 }
 
+#editmenu {
+  position: fixed;
+  left: 1%;
+  top: 1%;
+}
+
 .FileInput {
   display: none;
 }
