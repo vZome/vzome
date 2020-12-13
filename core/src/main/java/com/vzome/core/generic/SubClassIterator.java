@@ -20,21 +20,6 @@ public class SubClassIterator<T, S extends T> extends FilteredIterator<T, S> {
     protected S apply(T element) {
         return subClass.cast(element);
     }
-
-    public SubClassIterator(Class<S> subClass, Iterable<T> iterable) {
-        super(iterable);
-        this.subClass = subClass;
-    }
-    
-    public SubClassIterator(Class<S> subClass, Predicate<T> preTest, Iterable<T> iterable) {
-        super(preTest, iterable);
-        this.subClass = subClass;
-    }
-    
-    public SubClassIterator(Class<S> subClass, Iterable<T> iterable, Predicate<S> postTest) {
-        super(iterable, postTest);
-        this.subClass = subClass;
-    }
     
     public SubClassIterator(Class<S> subClass, Predicate<T> preTest, Iterable<T> iterable, Predicate<S> postTest) {
         super(preTest, iterable, postTest);
