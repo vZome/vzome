@@ -11,7 +11,7 @@ export const fileSelected = selected => ( dispatch, getState ) =>
   const reader = new FileReader();
   reader.onload = () =>
   {
-    getState().java.parser( selected.name, reader.result, dispatch )
+    getState().java.parser( selected.name, reader.result, dispatch, getState )
   }
   reader.onerror = () =>
   {
@@ -34,7 +34,7 @@ export const fetchModel = ( path ) => ( dispatch, getState ) =>
     })
     .then( (text) => {
       const name = path.split( '\\' ).pop().split( '/' ).pop()
-      getState().java.parser( name, text, dispatch )
+      getState().java.parser( name, text, dispatch, getState )
     })
     .catch( error =>
     {

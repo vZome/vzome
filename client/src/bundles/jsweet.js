@@ -127,6 +127,7 @@ const knownOrbitNames = [
 export const init = async ( window, store ) =>
 {
   const vzomePkg = window.com.vzome
+  const util = window.java.util
   const shimClass = vzomePkg.jsweet.JsAdapter
 
   const injectResource = async ( path ) =>
@@ -154,12 +155,15 @@ export const init = async ( window, store ) =>
 
   const editFactory = ( className, adapter ) =>
   {
-    const field = fieldApp.getField()
+    let editClass = vzomePkg.core.edits[ className ]
+    if ( ! editClass )
+      editClass = vzomePkg.core.editor[ className ]
+    if ( ! editClass )
+      return undefined
     const realizedModel = new vzomePkg.jsweet.JsRealizedModel( field, adapter )
     const selection = new vzomePkg.jsweet.JsSelection( field, adapter )
     const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp )
-    const classes = vzomePkg.core.edits
-    return new classes[ className ]( editor )
+    return new editClass( editor )
   }
 
   // Discover all the legacy edit classes and register as commands
@@ -168,9 +172,11 @@ export const init = async ( window, store ) =>
     commands[ name ] = legacyCommand( editFactory, name )
   store.dispatch( mesh.commandsDefined( commands ) )
 
+  const properties = new Properties( defaults )
+
   // Prepare the orbitSource for resolveShapes
   const symmPer = fieldApp.getSymmetryPerspective( "icosahedral" )
-  const colors = new vzomePkg.core.render.Colors( new Properties( defaults ) )
+  const colors = new vzomePkg.core.render.Colors( properties )
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
 
   const origin = goldenField.origin( 3 )
@@ -184,9 +190,13 @@ export const init = async ( window, store ) =>
   const gridPoints = shimClass.getZoneGrid( orbitSource, blue )
   store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
 
+  const format = vzomePkg.core.commands.XmlSymmetryFormat.getFormat( vzomePkg.core.commands.XmlSymmetryFormat.CURRENT_FORMAT );
+  const symms = new vzomePkg.jsweet.JsOrbitSetField( orbitSource )
+  format.initialize( field, symms, 0, "vZome Online", new util.Properties() )
+
   const state = {
     resolver: createResolver( goldenField, vzomePkg, orbitSource ),
-    parser: parseModelFile( editFactory )
+    parser: parseModelFile( editFactory, format )
   }
 
   // TODO: fetch all shape VEFs in a ZIP, then inject each
@@ -311,16 +321,31 @@ class Adapter
     return this.selected.has( id )
   }
 
-  findOrAddManifestation( vectors )
+  findOrCreateManifestation( vectors )
   {
     const created = mesh.createInstance( vectors )
     const { id } = created
     const existing = this.shown.get( id ) || this.hidden.get( id ) || this.selected.get( id )
     if ( existing )
-      return existing;
+      return existing.vectors;
     // TODO avoid creating zero-length struts, to match Java semantics of RMI.findConstruction
-    this.shown.set( id, created )
     return vectors
+  }
+
+  showManifestation( vectors )
+  {
+    let instance = mesh.createInstance( vectors )
+    instance = this.shown.get( instance.id ) || this.selected.get( instance.id ) || this.hidden.get( instance.id ) || instance
+    this.selected.delete( instance.id ) || this.hidden.delete( instance.id )
+    this.shown.set( instance.id, instance )
+  }
+
+  hideManifestation( vectors )
+  {
+    let instance = mesh.createInstance( vectors )
+    instance = this.shown.get( instance.id ) || this.selected.get( instance.id ) || this.hidden.get( instance.id ) || instance
+    this.selected.delete( instance.id ) || this.shown.delete( instance.id )
+    this.hidden.set( instance.id, instance )
   }
 
   allIterator()
@@ -370,7 +395,7 @@ export const legacyCommand = ( editFactory, className ) => ( config ) => ( dispa
   dispatch( { type: WORK_FINISHED } )
 }
 
-export const parseModelFile = ( editFactory ) => ( name, xmlText, dispatch ) =>
+export const parseModelFile = ( editFactory, format ) => ( name, xmlText, dispatch, getState ) =>
 {
   // I tried using JXON here, but wants to make the EditHistory into an object not an array.
   // I could also just roll my own, ala https://developer.mozilla.org/en-US/docs/Archive/JXON,
@@ -381,15 +406,33 @@ export const parseModelFile = ( editFactory ) => ( name, xmlText, dispatch ) =>
   console.log( domDoc )
   const history = domDoc.firstElementChild.firstElementChild // TODO: fragile! may not get EditHistory first
   const editNumber = history.getAttribute( "editNumber" )
-  const firstEdit = history.firstElementChild
-  const editName = firstEdit.nodeName
+  let editElement = history.firstElementChild
 
-  const shown = new Map()
-  const hidden = new Map()
-  const selected = new Map()
+  let { shown, hidden, selected } = getState().mesh
+  shown = new Map( shown )
+  hidden = new Map( hidden )
+  selected = new Map( selected )
   const adapter = new Adapter( shown, selected, hidden )
-  const edit = editFactory( editName, adapter )
-  edit.loadAndPerform( firstEdit, null, { performAndRecord: edit => edit.perform() } )
+
+  const legacyNames = {
+    setItemColor: "ColorManifestations",
+    BnPolyope: "B4Polytope",
+    DeselectByClass: "AdjustSelectionByClass",
+    realizeMetaParts: "RealizeMetaParts",
+    SelectSimilarSize: "AdjustSelectionByOrbitLength",
+    zomic: "RunZomicScript",
+    py: "RunPythonScript",
+    apiProxy: "ApiEdit",
+  }
+  do {
+    console.log( editElement.outerHTML )
+    const editName = legacyNames[ editElement.nodeName ] || editElement.nodeName
+    const edit = editFactory( editName, adapter )
+    edit.loadAndPerform( editElement, format, { performAndRecord: edit => edit.perform() } )
+    editElement = editElement.nextElementSibling
+  }
+  while ( editElement );
+  
 
   dispatch( mesh.meshChanged( shown, selected, hidden ) )
   dispatch( stopProgress() )

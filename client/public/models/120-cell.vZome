@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" coreVersion="7.0" field="golden">
-  <EditHistory editNumber="9" lastStickyEdit="-1">
+  <EditHistory editNumber="8" lastStickyEdit="-1">
     <Polytope4d group="H4" quaternion="3 5 0 0 0 0 0 0" renderEdges="1000" wythoff="1000"/>
     <BeginBlock/>
     <SelectManifestation point="0 0 0 0 0 0"/>
     <SelectManifestation point="-5 -8 0 0 -2 -3"/>
     <EndBlock/>
-    <SelectByRadius/>
+    <!-- <SelectByRadius/> -->
     <setItemColor blue="153" green="0" red="0"/>
     <SelectManifestation point="0 0 0 0 0 0"/>
     <Delete/>

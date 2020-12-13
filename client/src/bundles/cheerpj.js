@@ -139,7 +139,7 @@ export const reducer = ( state = initialState, action ) => {
   }
 }
 
-export const parseModelFile = ( name, xmlText, dispatch ) =>
+export const parseModelFile = ( name, xmlText, dispatch, getState ) =>
 {
   dispatch( {type: MODEL_LOAD_STARTED, payload: name } )
   dispatch( startProgress( "Parsing vZome model, please be patient..." ) )
