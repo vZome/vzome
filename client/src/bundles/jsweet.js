@@ -2,8 +2,8 @@
 import * as mesh from './mesh'
 import * as planes from './planes'
 import { field as goldenField } from '../fields/golden'
-import { FILE_LOADED, fetchModel } from './files'
-import { startProgress, stopProgress } from './progress'
+import { fetchModel } from './files'
+import { stopProgress } from './progress'
 
 // import { NewCentroid } from '../jsweet/com/vzome/core/edits/NewCentroid'
 
@@ -17,8 +17,9 @@ const WORK_STARTED = 'WORK_STARTED'
 const WORK_FINISHED = 'WORK_FINISHED'
 
 const initialState = {
-  editFactory: undefined,       // ANTI-PATTERN, not a plain Object
+  readOnly: false,
   resolver: undefined,       // ANTI-PATTERN, not a plain Object
+  parser: undefined,       // ANTI-PATTERN, not a plain Object
   working: false,
 }
 
@@ -27,8 +28,8 @@ export const reducer = ( state = initialState, action ) =>
   switch ( action.type ) {
 
     case ORBITS_INITIALIZED: {
-      const { editFactory, resolver } = action.payload
-      return { ...state, editFactory, resolver }
+      const { resolver, parser } = action.payload
+      return { ...state, resolver, parser }
     }
 
     case WORK_STARTED: {
@@ -184,8 +185,8 @@ export const init = async ( window, store ) =>
   store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
 
   const state = {
-    editFactory,
     resolver: createResolver( goldenField, vzomePkg, orbitSource ),
+    parser: parseModelFile( editFactory )
   }
 
   // TODO: fetch all shape VEFs in a ZIP, then inject each
@@ -193,7 +194,8 @@ export const init = async ( window, store ) =>
     .then( () => {
       // now we are finally ready to resolve instance shapes
       store.dispatch( { type: ORBITS_INITIALIZED, payload: state } )
-      store.dispatch( fetchModel( "/app/models/120-cell.vZome" ) )
+      if ( ! store.getState().workingPlane )
+        store.dispatch( fetchModel( "/app/models/120-cell.vZome" ) )
     })
 }
 
@@ -368,37 +370,27 @@ export const legacyCommand = ( editFactory, className ) => ( config ) => ( dispa
   dispatch( { type: WORK_FINISHED } )
 }
 
-export const middleware = store => next => async action => 
+export const parseModelFile = ( editFactory ) => ( name, xmlText, dispatch ) =>
 {
-  if ( action.type === FILE_LOADED ) {
-    store.dispatch( startProgress( "Parsing vZome model..." ) )
-    const path = "/str/" + action.payload.name
+  // I tried using JXON here, but wants to make the EditHistory into an object not an array.
+  // I could also just roll my own, ala https://developer.mozilla.org/en-US/docs/Archive/JXON,
+  //   but I think there would be enough special cases that I might as well just use the DOM.
 
-    // I tried using JXON here, but wants to make the EditHistory into an object not an array.
-    // I could also just roll my own, ala https://developer.mozilla.org/en-US/docs/Archive/JXON,
-    //   but I think there would be enough special cases that I might as well just use the DOM.
+  const parser = new DOMParser();
+  const domDoc = parser.parseFromString( xmlText, "application/xml" );
+  console.log( domDoc )
+  const history = domDoc.firstElementChild.firstElementChild // TODO: fragile! may not get EditHistory first
+  const editNumber = history.getAttribute( "editNumber" )
+  const firstEdit = history.firstElementChild
+  const editName = firstEdit.nodeName
 
-    const parser = new DOMParser();
-    const domDoc = parser.parseFromString( action.payload.text, "application/xml" );
-    console.log( domDoc )
-    const history = domDoc.firstElementChild.firstElementChild // TODO: fragile! may not get EditHistory first
-    const editNumber = history.getAttribute( "editNumber" )
-    const firstEdit = history.firstElementChild
-    const editName = firstEdit.nodeName
+  const shown = new Map()
+  const hidden = new Map()
+  const selected = new Map()
+  const adapter = new Adapter( shown, selected, hidden )
+  const edit = editFactory( editName, adapter )
+  edit.loadAndPerform( firstEdit, null, { performAndRecord: edit => edit.perform() } )
 
-    const editFactory = store.getState().jsweet.editFactory
-
-    const shown = new Map()
-    const hidden = new Map()
-    const selected = new Map()
-    const adapter = new Adapter( shown, selected, hidden )
-    const edit = editFactory( editName, adapter )
-    edit.loadAndPerform( firstEdit, null, { performAndRecord: edit => edit.perform() } )
-
-    store.dispatch( mesh.meshChanged( shown, selected, hidden ) )
-
-    store.dispatch( stopProgress() )
-  }
-  
-  return next( action )
+  dispatch( mesh.meshChanged( shown, selected, hidden ) )
+  dispatch( stopProgress() )
 }

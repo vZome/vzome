@@ -2,9 +2,7 @@ import { startProgress, stopProgress } from './progress'
 import { FILE_EXPORTED } from './jre'
 import { showAlert } from './alerts'
 
-export const FILE_LOADED = 'FILE_LOADED'
-
-export const fileSelected = selected => dispatch =>
+export const fileSelected = selected => ( dispatch, getState ) =>
 {
   console.log( selected )
 
@@ -13,10 +11,7 @@ export const fileSelected = selected => dispatch =>
   const reader = new FileReader();
   reader.onload = () =>
   {
-    dispatch( {
-      type: FILE_LOADED,
-      payload: { name: selected.name, text: reader.result }
-    } )
+    getState().java.parser( selected.name, reader.result, dispatch )
   }
   reader.onerror = () =>
   {
@@ -26,7 +21,7 @@ export const fileSelected = selected => dispatch =>
   reader.readAsText( selected )
 }
 
-export const fetchModel = path => dispatch =>
+export const fetchModel = ( path ) => ( dispatch, getState ) =>
 {
   dispatch( startProgress( "Fetching model content..." ) )
   fetch( path )
@@ -38,13 +33,8 @@ export const fetchModel = path => dispatch =>
       return response.text()
     })
     .then( (text) => {
-      dispatch( {
-        type: FILE_LOADED,
-        payload: {
-          name: path.split( '\\' ).pop().split( '/' ).pop(),
-          text
-        }
-      } )
+      const name = path.split( '\\' ).pop().split( '/' ).pop()
+      getState().java.parser( name, text, dispatch )
     })
     .catch( error =>
     {
@@ -55,7 +45,7 @@ export const fetchModel = path => dispatch =>
 }
 
 // from https://www.bitdegree.org/learn/javascript-download
-export const download = (filename, blob) =>
+export const download = ( filename, blob ) =>
 {
   const element = document.createElement( 'a' )
   const blobURI = URL.createObjectURL( blob )

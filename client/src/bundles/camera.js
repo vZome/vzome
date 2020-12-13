@@ -1,5 +1,5 @@
 
-import { MODEL_LOADED} from "./vzomejava"
+import { MODEL_LOADED} from "./cheerpj"
 
 const CAMERA_DEFINED = 'CAMERA_DEFINED'
 

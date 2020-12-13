@@ -2,7 +2,6 @@
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { fetchModel } from '../bundles/files'
-import { commandTriggered } from '../bundles/mesh'
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
 import Tab from 'react-bootstrap/Tab'
@@ -30,7 +29,7 @@ const models = [
   }
 ]
 
-const Models = ({ enabled, openModel, doEdit }) =>
+const Models = ({ enabled, openModel }) =>
 {
   const [show, setShow] = useState( false )
   const [model, setModel] = useState( models[0].key )
@@ -97,13 +96,11 @@ const Models = ({ enabled, openModel, doEdit }) =>
 
 const select = (state) => ({
   // TODO make a real selector!
-  enabled: ( state.jre && state.jre.javaReady ) 
-            || ( !state.jre && state.alerts !== undefined ) // there is no state for files, but this correlates
+  enabled: ! state.workingPlane,
 })
 
 const boundEventActions = {
-  openModel : fetchModel,
-  doEdit : commandTriggered
+  openModel : fetchModel
 }
 
 export default connect( select, boundEventActions )( Models )
