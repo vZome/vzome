@@ -3,7 +3,8 @@ import * as mesh from './mesh'
 import * as planes from './planes'
 import { field as goldenField } from '../fields/golden'
 import { fetchModel } from './files'
-import { stopProgress } from './progress'
+import { startProgress, stopProgress } from './progress'
+import { parseViewXml } from './camera'
 
 // import { NewCentroid } from '../jsweet/com/vzome/core/edits/NewCentroid'
 
@@ -426,10 +427,22 @@ export const parseModelFile = ( editFactory, format ) => ( name, xmlText, dispat
   // I could also just roll my own, ala https://developer.mozilla.org/en-US/docs/Archive/JXON,
   //   but I think there would be enough special cases that I might as well just use the DOM.
 
+  dispatch( startProgress( "Parsing vZome file..." ) )
+
+  const getChildElement = ( parent, name ) =>
+  {
+    let target = parent.firstElementChild
+    while ( name !== target.nodeName )
+      target = target.nextElementSibling
+    return target
+  }
+
   const parser = new DOMParser();
   const domDoc = parser.parseFromString( xmlText, "application/xml" );
-  console.log( domDoc )
-  const history = domDoc.firstElementChild.firstElementChild // TODO: fragile! may not get EditHistory first
+  let vZomeRoot = domDoc.firstElementChild
+  console.log( vZomeRoot )
+
+  const history = getChildElement( vZomeRoot, "EditHistory" )
   const editNumber = history.getAttribute( "editNumber" )
   let editElement = history.firstElementChild
 
@@ -458,6 +471,11 @@ export const parseModelFile = ( editFactory, format ) => ( name, xmlText, dispat
   }
   while ( editElement );
   
+  const viewing = getChildElement( vZomeRoot, "Viewing" )
+  if ( viewing ) {
+    dispatch( parseViewXml( viewing, getChildElement ) )
+  }
+
 
   dispatch( mesh.meshChanged( shown, selected, hidden ) )
   dispatch( stopProgress() )

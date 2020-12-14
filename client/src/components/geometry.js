@@ -38,7 +38,7 @@ const Instance = ( { id, vectors, position, rotation, geometry, color, selected,
       onClick( id, vectors, selected )
     }
   }
-  const emissive = selected? "#707070" : highlightBall( id )? "#884444" : "black"
+  const emissive = selected? "#bbbbbb" : highlightBall( id )? "#884444" : "black"
   // TODO: cache materials
   return (
     <group position={ position } quaternion={ rotation }>
