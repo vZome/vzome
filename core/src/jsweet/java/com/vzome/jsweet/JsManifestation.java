@@ -39,13 +39,17 @@ public abstract class JsManifestation implements Manifestation
     @Override
     public Color getColor()
     {
-        return this.color;
+        boolean colorful = (boolean) ( (Function) this.adapter .$get( "manifestationHasColor" ) ).apply( this.adapter, $array( vectors ) );
+        if ( ! colorful )
+            return null;
+        int rgb = (int) ( (Function) this.adapter .$get( "manifestationColor" ) ).apply( this.adapter, $array( vectors ) );
+        return new Color( rgb );
     }
 
     @Override
     public void setColor( Color color )
     {
-        this.color = color;
+        ( (Function) this.adapter .$get( "setManifestationColor" ) ).apply( this.adapter, $array( vectors, color.getRGB() ) );
     }
 
     @Override

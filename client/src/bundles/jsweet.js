@@ -222,35 +222,38 @@ const embedShape = ( shape ) =>
 
 const createResolver = ( field, vzomePkg, orbitSource ) => shapes => instance =>
 {
-  const { id, vectors } = instance
+  const { id, vectors, color } = instance
   const jsAF = new vzomePkg.jsweet.JsAlgebraicField( field )
-  {
-    const man = vzomePkg.jsweet.JsManifestation.manifest( vectors, jsAF )
-    const rm = new vzomePkg.core.render.RenderedManifestation( man, orbitSource )
-    rm.resetAttributes( orbitSource, orbitSource.getShapes(), false, true )
 
-    // may be a zero-length strut, no shape
-    if ( !rm.getShape() )
-      return undefined
-    
-    // is the shape new?
-    const shapeId = rm.getShapeId().toString()
-    if ( ! shapes[ shapeId ] ) {
-      shapes[ shapeId ] = embedShape( rm.getShape() )
-    }
+  const shown = new Map()
+  shown.set( id, instance )
+  const adapter = new Adapter( shown, new Map(), new Map() )
 
-    const wlast = q =>
-    {
-      const [ w, x, y, z ] = q
-      return [ x, y, z, w ]
-    }
-      // get shape, orientation, color from rm
-    const quatIndex = rm.getStrutZone()
-    const rotation = ( quatIndex && (quatIndex >= 0) && wlast( field.embedv( field.quaternions[ quatIndex ] ) ) ) || [0,0,0,1]
-    const color = rm.getColor().getRGB()
+  const man = vzomePkg.jsweet.JsManifestation.manifest( vectors, jsAF, adapter )
+  const rm = new vzomePkg.core.render.RenderedManifestation( man, orbitSource )
+  rm.resetAttributes( orbitSource, orbitSource.getShapes(), false, true )
+
+  // may be a zero-length strut, no shape
+  if ( !rm.getShape() )
+    return undefined
   
-    return { id, rotation, color, shapeId }
+  // is the shape new?
+  const shapeId = rm.getShapeId().toString()
+  if ( ! shapes[ shapeId ] ) {
+    shapes[ shapeId ] = embedShape( rm.getShape() )
   }
+
+  const wlast = q =>
+  {
+    const [ w, x, y, z ] = q
+    return [ x, y, z, w ]
+  }
+    // get shape, orientation, color from rm
+  const quatIndex = rm.getStrutZone()
+  const rotation = ( quatIndex && (quatIndex >= 0) && wlast( field.embedv( field.quaternions[ quatIndex ] ) ) ) || [0,0,0,1]
+  const finalColor = rm.getColor().getRGB()
+
+  return { id, rotation, color: finalColor, shapeId }
 }
 
 class Adapter
@@ -319,6 +322,27 @@ class Adapter
   {
     const { id } = mesh.createInstance( vectors )
     return this.selected.has( id )
+  }
+
+  manifestationHasColor( vectors )
+  {
+    const { id } = mesh.createInstance( vectors )
+    const existing = this.shown.get( id ) || this.selected.get( id )
+    return !!existing.color
+  }
+
+  manifestationColor( vectors )
+  {
+    const { id } = mesh.createInstance( vectors )
+    const existing = this.shown.get( id ) || this.selected.get( id )
+    return existing.color
+  }
+
+  setManifestationColor( vectors, color )
+  {
+    const { id } = mesh.createInstance( vectors )
+    const existing = this.shown.get( id ) || this.selected.get( id )
+    existing.color = color
   }
 
   findOrCreateManifestation( vectors )
