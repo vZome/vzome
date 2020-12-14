@@ -284,6 +284,7 @@ class Adapter
     const { id } = mesh.createInstance( vectors )
     this.shown.delete( id )
     this.selected.delete( id )
+    this.hidden.delete( id )
   }
 
   select( vectors )
