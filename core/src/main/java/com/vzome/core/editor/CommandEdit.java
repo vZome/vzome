@@ -50,8 +50,6 @@ import com.vzome.xml.DomUtils;
  */
 public class CommandEdit extends ChangeManifestations
 {
-    public static final String UNKNOWN_COMMAND = "unknown.command";
-
 	private EditorModel mEditorModel;
 	
     private AbstractCommand mCommand;
@@ -122,10 +120,8 @@ public class CommandEdit extends ChangeManifestations
             if ( isHide )
                 hideManifestation( man );
             else {
-                Iterator<Construction> cs = man .getConstructions();
-                if ( ! cs .hasNext() )
-                    throw new Command.Failure( "No construction for this manifestation" );
-                constrsBefore .add( cs .next() );  // yes, just using the first one
+                Construction construction = man .getFirstConstruction();
+                constrsBefore .add( construction );  // yes, just using the first one
             }
         }
 
@@ -216,13 +212,7 @@ public class CommandEdit extends ChangeManifestations
             cmdName = xml .getAttribute( "command" );
         if ( cmdName .equals( "CommandIcosahedralSymmetry" ) )
             cmdName = "CommandSymmetry";
-        try {
-            Class<?> clazz = Class .forName( "com.vzome.core.commands." + cmdName );
-            mCommand = (AbstractCommand) clazz.getConstructor().newInstance();
-        } catch ( Exception e ) {
-            loadAndPerformLgger .log( Level.SEVERE, "error creating command: " + xml .getLocalName(), e );
-            throw new Failure( UNKNOWN_COMMAND );
-        }
+        this.mCommand = (AbstractCommand) context .createLegacyCommand( cmdName );
 
         if ( format .selectionsNotSaved() )
         {

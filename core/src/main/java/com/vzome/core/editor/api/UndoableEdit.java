@@ -37,6 +37,8 @@ public abstract class UndoableEdit
     public interface Context
     {
         UndoableEdit createEdit( Element xml );
+        
+        Command createLegacyCommand( String cmdName ) throws Command.Failure;
 
         void performAndRecord( UndoableEdit edit );
     }

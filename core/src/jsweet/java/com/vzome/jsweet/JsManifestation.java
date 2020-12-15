@@ -21,7 +21,6 @@ public abstract class JsManifestation implements Manifestation
 {
     protected final int[][][] vectors;
     protected final AlgebraicField field;
-    private Color color;
     protected final Object adapter;
 
     public JsManifestation( AlgebraicField field, Object adapter, int[][][] vectors )

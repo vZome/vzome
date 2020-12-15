@@ -2,9 +2,9 @@
 import * as mesh from './mesh'
 import * as planes from './planes'
 import { field as goldenField } from '../fields/golden'
-import { fetchModel } from './files'
 import { startProgress, stopProgress } from './progress'
 import { parseViewXml } from './camera'
+import { showAlert } from './alerts'
 
 // import { NewCentroid } from '../jsweet/com/vzome/core/edits/NewCentroid'
 
@@ -129,7 +129,6 @@ export const init = async ( window, store ) =>
 {
   const vzomePkg = window.com.vzome
   const util = window.java.util
-  const shimClass = vzomePkg.jsweet.JsAdapter
 
   const injectResource = async ( path ) =>
   {
@@ -154,23 +153,47 @@ export const init = async ( window, store ) =>
   const field = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
   const fieldApp = new vzomePkg.core.kinds.GoldenFieldApplication( field )
 
-  const editFactory = ( className, adapter ) =>
+  const contextFactory = ( adapter, namespace ) =>
   {
-    let editClass = vzomePkg.core.edits[ className ]
-    if ( ! editClass )
-      editClass = vzomePkg.core.editor[ className ]
-    if ( ! editClass )
-      return undefined
     const realizedModel = new vzomePkg.jsweet.JsRealizedModel( field, adapter )
     const selection = new vzomePkg.jsweet.JsSelection( field, adapter )
     const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp )
-    return new editClass( editor )
+    const createEdit = xmlElement =>
+    {
+      let editName = xmlElement.nodeName
+      const legacyNames = {
+        setItemColor: "ColorManifestations",
+        BnPolyope: "B4Polytope",
+        DeselectByClass: "AdjustSelectionByClass",
+        realizeMetaParts: "RealizeMetaParts",
+        SelectSimilarSize: "AdjustSelectionByOrbitLength",
+        zomic: "RunZomicScript",
+        py: "RunPythonScript",
+        apiProxy: "ApiEdit",
+      }
+      editName = legacyNames[ editName ] || editName
+      let editClass = vzomePkg.core.edits[ editName ]
+      if ( ! editClass )
+        editClass = vzomePkg.core.editor[ editName ]
+      if ( editClass )
+        return new editClass( editor )
+      else
+        return new vzomePkg.core.editor.CommandEdit( null, editor )
+    }
+    const createLegacyCommand = name =>
+    {
+      return new vzomePkg.core.commands[ name ]()
+    }
+    const performAndRecord = edit => edit.perform()
+    const format = vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace );
+    format.initialize( field, symms, 0, "vZome Online", new util.Properties() )
+    return { createEdit, createLegacyCommand, performAndRecord, format }
   }
 
   // Discover all the legacy edit classes and register as commands
   const commands = {}
   for ( const [ name, editClass ] of Object.entries( vzomePkg.core.edits ) )
-    commands[ name ] = legacyCommand( editFactory, name )
+    commands[ name ] = legacyCommand( contextFactory, name )
   store.dispatch( mesh.commandsDefined( commands ) )
 
   const properties = new Properties( defaults )
@@ -188,16 +211,14 @@ export const init = async ( window, store ) =>
   const yellow = [ [0,0,1], [1,0,1], [1,1,1] ]
   const red = [ [1,0,1], [0,0,1], [0,1,1] ]
   const green = [ [1,0,1], [1,0,1], [0,0,1] ]
-  const gridPoints = shimClass.getZoneGrid( orbitSource, blue )
+  const gridPoints = vzomePkg.jsweet.JsAdapter.getZoneGrid( orbitSource, blue )
   store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
 
-  const format = vzomePkg.core.commands.XmlSymmetryFormat.getFormat( vzomePkg.core.commands.XmlSymmetryFormat.CURRENT_FORMAT );
   const symms = new vzomePkg.jsweet.JsOrbitSetField( orbitSource )
-  format.initialize( field, symms, 0, "vZome Online", new util.Properties() )
 
   const state = {
     resolver: createResolver( goldenField, vzomePkg, orbitSource ),
-    parser: parseModelFile( editFactory, format )
+    parser: parseModelFile( contextFactory )
   }
 
   // TODO: fetch all shape VEFs in a ZIP, then inject each
@@ -205,8 +226,8 @@ export const init = async ( window, store ) =>
     .then( () => {
       // now we are finally ready to resolve instance shapes
       store.dispatch( { type: ORBITS_INITIALIZED, payload: state } )
-      if ( ! store.getState().workingPlane )
-        store.dispatch( fetchModel( "/app/models/120-cell.vZome" ) )
+      // if ( ! store.getState().workingPlane )
+      //   store.dispatch( fetchModel( "/app/models/120-cell.vZome" ) )
     })
 }
 
@@ -402,15 +423,16 @@ class Properties
   }
 }
 
-export const legacyCommand = ( editFactory, className ) => ( config ) => ( dispatch, getState ) =>
+export const legacyCommand = ( contextFactory, className ) => ( config ) => ( dispatch, getState ) =>
 {
   let { shown, hidden, selected } = getState().mesh
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )
   const adapter = new Adapter( shown, hidden, selected )
+  const context = contextFactory( adapter, "" )
 
-  const edit = editFactory( className, adapter )
+  const edit = context.createEdit( new JavaDomElement( { localName: className } ) )
 
   edit.configure( new Properties( config ) )
 
@@ -421,7 +443,31 @@ export const legacyCommand = ( editFactory, className ) => ( config ) => ( dispa
   dispatch( { type: WORK_FINISHED } )
 }
 
-export const parseModelFile = ( editFactory, format ) => ( name, xmlText, dispatch, getState ) =>
+class JavaDomElement
+{
+  constructor( element )
+  {
+    this.nativeElement = element
+    this.__interfaces = [ "org.w3c.dom.Element" ]
+  }
+
+  getAttribute( name )
+  {
+    return this.nativeElement.getAttribute( name )
+  }
+
+  getLocalName( name )
+  {
+    return this.nativeElement.localName
+  }
+
+  getChildNodes()
+  {
+    return { getLength: () => 0 }
+  }
+}
+
+export const parseModelFile = contextFactory => ( name, xmlText, dispatch, getState ) =>
 {
   // I tried using JXON here, but wants to make the EditHistory into an object not an array.
   // I could also just roll my own, ala https://developer.mozilla.org/en-US/docs/Archive/JXON,
@@ -442,6 +488,7 @@ export const parseModelFile = ( editFactory, format ) => ( name, xmlText, dispat
   let vZomeRoot = domDoc.firstElementChild
   console.log( vZomeRoot )
 
+  const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
   const history = getChildElement( vZomeRoot, "EditHistory" )
   const editNumber = history.getAttribute( "editNumber" )
   let editElement = history.firstElementChild
@@ -451,32 +498,28 @@ export const parseModelFile = ( editFactory, format ) => ( name, xmlText, dispat
   hidden = new Map( hidden )
   selected = new Map( selected )
   const adapter = new Adapter( shown, selected, hidden )
+  const context = contextFactory( adapter, namespace )
 
-  const legacyNames = {
-    setItemColor: "ColorManifestations",
-    BnPolyope: "B4Polytope",
-    DeselectByClass: "AdjustSelectionByClass",
-    realizeMetaParts: "RealizeMetaParts",
-    SelectSimilarSize: "AdjustSelectionByOrbitLength",
-    zomic: "RunZomicScript",
-    py: "RunPythonScript",
-    apiProxy: "ApiEdit",
-  }
-  do {
-    console.log( editElement.outerHTML )
-    const editName = legacyNames[ editElement.nodeName ] || editElement.nodeName
-    const edit = editFactory( editName, adapter )
-    edit.loadAndPerform( editElement, format, { performAndRecord: edit => edit.perform() } )
-    editElement = editElement.nextElementSibling
-  }
-  while ( editElement );
-  
-  const viewing = getChildElement( vZomeRoot, "Viewing" )
-  if ( viewing ) {
-    dispatch( parseViewXml( viewing, getChildElement ) )
+  try {
+    do {
+      console.log( editElement.outerHTML )
+      const edit = context.createEdit( editElement )
+      edit.loadAndPerform( new JavaDomElement( editElement ), context.format, context )
+      editElement = editElement.nextElementSibling
+    }
+    while ( editElement );
+    
+    const viewing = getChildElement( vZomeRoot, "Viewing" )
+    if ( viewing ) {
+      dispatch( parseViewXml( viewing, getChildElement ) )
+    }
+  } catch (error) {
+    console.log( error )
+    dispatch( stopProgress() )
+    dispatch( showAlert( `Unable to parse model file: ${name}` ) )
+    return
   }
 
-
-  dispatch( mesh.meshChanged( shown, selected, hidden ) )
   dispatch( stopProgress() )
+  dispatch( mesh.meshChanged( shown, selected, hidden ) )
 }
