@@ -23,12 +23,6 @@ public class JsStrut extends JsManifestation implements Strut
     }
 
     @Override
-    public boolean isUnnecessary()
-    {
-        return false;
-    }
-
-    @Override
     public AlgebraicVector getLocation()
     {
         return ((JsAlgebraicField) this .field) .createVectorFromTDs( this .vectors[ 0 ] );
@@ -89,18 +83,6 @@ public class JsStrut extends JsManifestation implements Strut
 
     @Override
     public AlgebraicVector getCentroid()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void addConstruction(Construction mConstruction)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void removeConstruction(Construction mConstruction)
     {
         throw new RuntimeException( "unimplemented" );
     }

@@ -417,13 +417,17 @@ public class JsAlgebraicField implements AlgebraicField
     private AlgebraicNumber parseNumber( StringTokenizer tokens )
     {
         int order = this .getOrder();
-        int[] tds = new int[ order + 1 ];
-        tds[ order ] = 1; // TODO support rational numbers
-        for ( int i = 0; i < tds.length - 1; i++ ) {
+        int[] pairs = new int[ order * 2 ];
+        for ( int i = 0; i < order; i++ ) {
             String digit = tokens.nextToken();
-            tds[ i ] = Integer.parseInt( digit );
+            String[] parts = digit.split( "/" );
+            pairs[ i * 2 ] = Integer.parseInt( parts[ 0 ] );
+            if ( parts.length > 1 )
+                pairs[ i * 2 + 1 ] = Integer.parseInt( parts[ 1 ] );
+            else
+                pairs[ i * 2 + 1 ] = 1;
         }
-        return this .createAlgebraicNumberFromTD( tds );
+        return this .createAlgebraicNumberFromPairs( pairs );
     }
 
     

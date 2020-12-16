@@ -149,11 +149,23 @@ export const init = async ( window, store ) =>
     injectResource( 'com/vzome/core/math/symmetry/H4roots-rotationalSubgroup.vef' ),
     injectResource( 'com/vzome/core/math/symmetry/H4roots.vef' ),
   ] )
+  const properties = new Properties( defaults )
+  const colors = new vzomePkg.core.render.Colors( properties )
   const context = new vzomePkg.jsweet.JsEditContext()
   const field = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
   const fieldApp = new vzomePkg.core.kinds.GoldenFieldApplication( field )
 
-  const contextFactory = ( adapter, namespace ) =>
+  const formatFactory = ( namespace, symmName ) =>
+  {
+    const format = vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )
+    const symmPer = fieldApp.getSymmetryPerspective( symmName )
+    const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
+    const orbitSetField = new vzomePkg.jsweet.JsOrbitSetField( orbitSource )
+    format.initialize( field, orbitSetField, 0, "vZome Online", new util.Properties() )
+    return format
+  }
+
+  const contextFactory = ( adapter ) =>
   {
     const realizedModel = new vzomePkg.jsweet.JsRealizedModel( field, adapter )
     const selection = new vzomePkg.jsweet.JsSelection( field, adapter )
@@ -161,6 +173,8 @@ export const init = async ( window, store ) =>
     const createEdit = xmlElement =>
     {
       let editName = xmlElement.nodeName
+      if ( editName === "Snapshot" )
+        return null
       const legacyNames = {
         setItemColor: "ColorManifestations",
         BnPolyope: "B4Polytope",
@@ -185,9 +199,7 @@ export const init = async ( window, store ) =>
       return new vzomePkg.core.commands[ name ]()
     }
     const performAndRecord = edit => edit.perform()
-    const format = vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace );
-    format.initialize( field, symms, 0, "vZome Online", new util.Properties() )
-    return { createEdit, createLegacyCommand, performAndRecord, format }
+    return { createEdit, createLegacyCommand, performAndRecord }
   }
 
   // Discover all the legacy edit classes and register as commands
@@ -196,11 +208,8 @@ export const init = async ( window, store ) =>
     commands[ name ] = legacyCommand( contextFactory, name )
   store.dispatch( mesh.commandsDefined( commands ) )
 
-  const properties = new Properties( defaults )
-
   // Prepare the orbitSource for resolveShapes
   const symmPer = fieldApp.getSymmetryPerspective( "icosahedral" )
-  const colors = new vzomePkg.core.render.Colors( properties )
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
 
   const origin = goldenField.origin( 3 )
@@ -214,11 +223,9 @@ export const init = async ( window, store ) =>
   const gridPoints = vzomePkg.jsweet.JsAdapter.getZoneGrid( orbitSource, blue )
   store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
 
-  const symms = new vzomePkg.jsweet.JsOrbitSetField( orbitSource )
-
   const state = {
     resolver: createResolver( goldenField, vzomePkg, orbitSource ),
-    parser: parseModelFile( contextFactory )
+    parser: parseModelFile( contextFactory, formatFactory )
   }
 
   // TODO: fetch all shape VEFs in a ZIP, then inject each
@@ -313,6 +320,8 @@ class Adapter
   {
     const { id } = mesh.createInstance( vectors )
     const instance = this.shown.get( id )
+    if ( ! instance )
+      throw new Error( `No shown instance to select at ${id}`)
     this.shown.delete( id )
     this.selected.set( id, instance )
   }
@@ -443,6 +452,29 @@ export const legacyCommand = ( contextFactory, className ) => ( config ) => ( di
   dispatch( { type: WORK_FINISHED } )
 }
 
+class JavaDomNodeList
+{
+  constructor( nodeList )
+  {
+    this.nativeNodeList = nodeList
+    this.__interfaces = [ "org.w3c.dom.NodeList" ]
+  }
+
+  getLength()
+  {
+    return this.nativeNodeList.length
+  }
+
+  item( i )
+  {
+    const node = this.nativeNodeList.item( i )
+    if ( node.nodeType === 1 )
+      return new JavaDomElement( node )
+    else
+      return node
+  }
+}
+
 class JavaDomElement
 {
   constructor( element )
@@ -463,11 +495,11 @@ class JavaDomElement
 
   getChildNodes()
   {
-    return { getLength: () => 0 }
+    return new JavaDomNodeList( this.nativeElement.childNodes )
   }
 }
 
-export const parseModelFile = contextFactory => ( name, xmlText, dispatch, getState ) =>
+export const parseModelFile = ( contextFactory, formatFactory ) => ( name, xmlText, dispatch, getState ) =>
 {
   // I tried using JXON here, but wants to make the EditHistory into an object not an array.
   // I could also just roll my own, ala https://developer.mozilla.org/en-US/docs/Archive/JXON,
@@ -489,6 +521,10 @@ export const parseModelFile = contextFactory => ( name, xmlText, dispatch, getSt
   console.log( vZomeRoot )
 
   const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
+  const system = getChildElement( vZomeRoot, "SymmetrySystem")
+  const symmName = system? system.getAttribute( "name" ) : "icosahedral"
+  const format = formatFactory( namespace, symmName )
+
   const history = getChildElement( vZomeRoot, "EditHistory" )
   const editNumber = history.getAttribute( "editNumber" )
   let editElement = history.firstElementChild
@@ -498,13 +534,14 @@ export const parseModelFile = contextFactory => ( name, xmlText, dispatch, getSt
   hidden = new Map( hidden )
   selected = new Map( selected )
   const adapter = new Adapter( shown, selected, hidden )
-  const context = contextFactory( adapter, namespace )
+  const context = contextFactory( adapter )
 
   try {
     do {
       console.log( editElement.outerHTML )
       const edit = context.createEdit( editElement )
-      edit.loadAndPerform( new JavaDomElement( editElement ), context.format, context )
+      if ( edit )
+        edit.loadAndPerform( new JavaDomElement( editElement ), format, context )
       editElement = editElement.nextElementSibling
     }
     while ( editElement );

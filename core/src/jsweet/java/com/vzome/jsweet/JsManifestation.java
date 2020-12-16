@@ -58,6 +58,20 @@ public abstract class JsManifestation implements Manifestation
     }
 
     @Override
+    public void addConstruction(Construction mConstruction)
+    {}
+
+    @Override
+    public void removeConstruction(Construction mConstruction)
+    {}
+
+    @Override
+    public boolean isUnnecessary()
+    {
+        return true;
+    }
+
+    @Override
     public Construction getFirstConstruction()
     {
         return toConstruction();

@@ -62,6 +62,8 @@ public class JsRealizedModel implements RealizedModel {
         if ( c == null )
             return null;
         int[][][] vectors = JsManifestation.canonicalizeConstruction( c );
+        if ( vectors == null )
+            return null;
         vectors = (int[][][]) ( (Function) this.adapter .$get( "findOrCreateManifestation" ) ).apply( this.adapter, $array( vectors ) );
         if ( vectors == null )
             return null;
@@ -101,6 +103,13 @@ public class JsRealizedModel implements RealizedModel {
         ((JsManifestation) man) .setColor( color );
     }
 
+    @Override
+    public void add( Manifestation man )
+    {
+        int[][][] vectors = ((JsManifestation) man) .getVectors();
+        ( (Function) this.adapter .$get( "showManifestation" ) ).apply( this.adapter, $array( vectors ) );
+    }
+
     
     
     @Override
@@ -111,12 +120,6 @@ public class JsRealizedModel implements RealizedModel {
 
     @Override
     public int size()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void add(Manifestation m)
     {
         throw new RuntimeException( "unimplemented" );
     }
