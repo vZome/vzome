@@ -5,6 +5,7 @@ import { field as goldenField } from '../fields/golden'
 import { startProgress, stopProgress } from './progress'
 import { parseViewXml } from './camera'
 import { showAlert } from './alerts'
+import { fetchModel } from './files'
 
 // import { NewCentroid } from '../jsweet/com/vzome/core/edits/NewCentroid'
 
@@ -233,8 +234,8 @@ export const init = async ( window, store ) =>
     .then( () => {
       // now we are finally ready to resolve instance shapes
       store.dispatch( { type: ORBITS_INITIALIZED, payload: state } )
-      // if ( ! store.getState().workingPlane )
-      //   store.dispatch( fetchModel( "/app/models/120-cell.vZome" ) )
+      if ( ! store.getState().workingPlane )
+        store.dispatch( fetchModel( "/app/models/vZomeLogo.vZome" ) )
     })
 }
 
