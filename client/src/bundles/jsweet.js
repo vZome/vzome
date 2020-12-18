@@ -534,7 +534,7 @@ export const parseModelFile = ( contextFactory, formatFactory ) => ( name, xmlTe
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )
-  const adapter = new Adapter( shown, selected, hidden )
+  const adapter = new Adapter( shown, hidden, selected )
   const context = contextFactory( adapter )
 
   try {
