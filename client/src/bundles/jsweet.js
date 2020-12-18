@@ -173,7 +173,7 @@ export const init = async ( window, store ) =>
     const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp )
     const createEdit = xmlElement =>
     {
-      let editName = xmlElement.nodeName
+      let editName = xmlElement.getLocalName()
       if ( editName === "Snapshot" )
         return null
       const legacyNames = {
@@ -235,7 +235,7 @@ export const init = async ( window, store ) =>
       // now we are finally ready to resolve instance shapes
       store.dispatch( { type: ORBITS_INITIALIZED, payload: state } )
       if ( ! store.getState().workingPlane )
-        store.dispatch( fetchModel( "/app/models/vZomeLogo.vZome" ) )
+        store.dispatch( fetchModel( "/app/models/120-cell.vZome" ) )
     })
 }
 
@@ -489,7 +489,7 @@ class JavaDomElement
     return this.nativeElement.getAttribute( name )
   }
 
-  getLocalName( name )
+  getLocalName()
   {
     return this.nativeElement.localName
   }
@@ -540,9 +540,10 @@ export const parseModelFile = ( contextFactory, formatFactory ) => ( name, xmlTe
   try {
     do {
       console.log( editElement.outerHTML )
-      const edit = context.createEdit( editElement )
+      const wrappedElement = new JavaDomElement( editElement )
+      const edit = context.createEdit( wrappedElement )
       if ( edit )
-        edit.loadAndPerform( new JavaDomElement( editElement ), format, context )
+        edit.loadAndPerform( wrappedElement, format, context )
       editElement = editElement.nextElementSibling
     }
     while ( editElement );
