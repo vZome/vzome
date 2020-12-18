@@ -110,6 +110,9 @@ public class JsRealizedModel implements RealizedModel {
         ( (Function) this.adapter .$get( "showManifestation" ) ).apply( this.adapter, $array( vectors ) );
     }
 
+    // Stubbing these three out eliminates a HUGE performance hit, since JS does not like HashMaps with object keys.
+    //  In JS we manage uniqueness in a simpler way, anyway.
+    
     @Override
     public Manifestation findPerEditManifestation( Manifestation m ) { return null; }
 
