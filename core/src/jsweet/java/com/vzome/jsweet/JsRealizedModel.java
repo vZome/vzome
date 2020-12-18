@@ -110,6 +110,18 @@ public class JsRealizedModel implements RealizedModel {
         ( (Function) this.adapter .$get( "showManifestation" ) ).apply( this.adapter, $array( vectors ) );
     }
 
+    @Override
+    public Manifestation findPerEditManifestation( Manifestation m ) { return null; }
+
+    @Override
+    public void addPerEditManifestation(Manifestation m) {}
+
+    @Override
+    public void clearPerEditManifestations() {}
+
+    
+    
+    
     
     
     @Override
