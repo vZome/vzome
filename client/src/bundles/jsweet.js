@@ -14,7 +14,8 @@ import { fetchModel } from './files'
 //
 // I should be able to use require() and a commonjs module, but it has the same J4TS build problem.
 
-const ORBITS_INITIALIZED = 'ORBITS_INITIALIZED'
+const PARSER_READY = 'PARSER_READY'
+const RESOLVER_READY = 'RESOLVER_READY'
 const WORK_STARTED = 'WORK_STARTED'
 const WORK_FINISHED = 'WORK_FINISHED'
 
@@ -29,9 +30,12 @@ export const reducer = ( state = initialState, action ) =>
 {
   switch ( action.type ) {
 
-    case ORBITS_INITIALIZED: {
-      const { resolver, parser } = action.payload
-      return { ...state, resolver, parser }
+    case PARSER_READY: {
+      return { ...state, parser: action.payload }
+    }
+
+    case RESOLVER_READY: {
+      return { ...state, resolver: action.payload }
     }
 
     case WORK_STARTED: {
@@ -136,10 +140,15 @@ export const init = async ( window, store ) =>
     const fullPath = `/app/resources/${path}`
     const response = await fetch( fullPath )
     if ( ! response.ok ) {
-      throw new Error( 'Network response was not ok' );
+      console.log( `No resource for ${fullPath}` )
+      return
     }
     const text = await response.text()
     // Inject the VEF into a static map on ExportedVEFShapes
+    if ( text[ 0 ] === "<" ) {
+      console.log( `No resource for ${fullPath}` )
+      return
+    }
     vzomePkg.xml.ResourceLoader.injectResource( path, text )
     console.log( `injected resource ${path}` )
   }
@@ -154,22 +163,28 @@ export const init = async ( window, store ) =>
   const colors = new vzomePkg.core.render.Colors( properties )
   const context = new vzomePkg.jsweet.JsEditContext()
   const field = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
-  const fieldApp = new vzomePkg.core.kinds.GoldenFieldApplication( field )
+  const fieldApps = { golden: new vzomePkg.core.kinds.GoldenFieldApplication( field ) }
 
-  const formatFactory = ( namespace, symmName ) =>
+  const formatFactory = ( namespace, fieldName, systemXml ) =>
   {
+    const fieldApp = fieldApps[ fieldName ]
+    if ( ! fieldApp )
+      throw new Error( `Field "${fieldName}" is not supported yet.` )
+    const symmName = systemXml? systemXml.getAttribute( "name" ) : "icosahedral"
     const format = vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )
     const symmPer = fieldApp.getSymmetryPerspective( symmName )
     if ( ! symmPer )
       throw new Error( `Symmetry "${symmName}" is not supported yet.` )
-    const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
+    const orbitSource = new vzomePkg.core.editor.SymmetrySystem( systemXml, symmPer, context, colors, true )
     const orbitSetField = new vzomePkg.jsweet.JsOrbitSetField( orbitSource )
     format.initialize( field, orbitSetField, 0, "vZome Online", new util.Properties() )
+    format.orbitSource = orbitSource
     return format
   }
 
-  const contextFactory = ( adapter ) =>
+  const contextFactory = ( adapter, fieldName ) =>
   {
+    const fieldApp = fieldApps[ fieldName ]
     const realizedModel = new vzomePkg.jsweet.JsRealizedModel( field, adapter )
     const selection = new vzomePkg.jsweet.JsSelection( field, adapter )
     const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp )
@@ -212,8 +227,9 @@ export const init = async ( window, store ) =>
   store.dispatch( mesh.commandsDefined( commands ) )
 
   // Prepare the orbitSource for resolveShapes
-  const symmPer = fieldApp.getSymmetryPerspective( "icosahedral" )
+  const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
+  const resolver = resolverFactory( vzomePkg )( orbitSource )
 
   const origin = goldenField.origin( 3 )
   const originBall = mesh.createInstance( [ origin ] )
@@ -226,19 +242,20 @@ export const init = async ( window, store ) =>
   const gridPoints = vzomePkg.jsweet.JsAdapter.getZoneGrid( orbitSource, blue )
   store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
 
-  const state = {
-    resolver: createResolver( goldenField, vzomePkg, orbitSource ),
-    parser: parseModelFile( contextFactory, formatFactory )
-  }
+  const parser = parseModelFile( contextFactory, formatFactory, resolverFactory( vzomePkg ) )
 
   // TODO: fetch all shape VEFs in a ZIP, then inject each
+  Promise.all( knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/octahedral/${name}.vef` ) ) )
+    .then( () => {
   Promise.all( knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/default/${name}.vef` ) ) )
     .then( () => {
       // now we are finally ready to resolve instance shapes
-      store.dispatch( { type: ORBITS_INITIALIZED, payload: state } )
+      store.dispatch( { type: RESOLVER_READY, payload: resolver } )
+      store.dispatch( { type: PARSER_READY, payload: parser } )
       if ( ! store.getState().workingPlane )
         store.dispatch( fetchModel( "/app/models/120-cell.vZome" ) )
     })
+  })
 }
 
 const embedShape = ( shape ) =>
@@ -252,10 +269,10 @@ const embedShape = ( shape ) =>
   return { id, vertices, faces }
 }
 
-const createResolver = ( field, vzomePkg, orbitSource ) => shapes => instance =>
+const resolverFactory = vzomePkg => orbitSource => shapes => instance =>
 {
   const { id, vectors, color } = instance
-  const jsAF = new vzomePkg.jsweet.JsAlgebraicField( field )
+  const jsAF = orbitSource.getSymmetry().getField()
 
   const shown = new Map()
   shown.set( id, instance )
@@ -282,6 +299,7 @@ const createResolver = ( field, vzomePkg, orbitSource ) => shapes => instance =>
   }
     // get shape, orientation, color from rm
   const quatIndex = rm.getStrutZone()
+  const field = jsAF.delegate
   const rotation = ( quatIndex && (quatIndex >= 0) && wlast( field.embedv( field.quaternions[ quatIndex ] ) ) ) || [0,0,0,1]
   const finalColor = rm.getColor().getRGB()
 
@@ -502,7 +520,7 @@ class JavaDomElement
   }
 }
 
-export const parseModelFile = ( contextFactory, formatFactory ) => ( name, xmlText, dispatch, getState ) =>
+export const parseModelFile = ( contextFactory, formatFactory, resolverFactory ) => ( name, xmlText, dispatch, getState ) =>
 {
   // I tried using JXON here, but wants to make the EditHistory into an object not an array.
   // I could also just roll my own, ala https://developer.mozilla.org/en-US/docs/Archive/JXON,
@@ -523,26 +541,27 @@ export const parseModelFile = ( contextFactory, formatFactory ) => ( name, xmlTe
   let vZomeRoot = domDoc.firstElementChild
   console.log( vZomeRoot )
 
-  let { shown, hidden, selected } = getState().mesh
-  shown = new Map( shown )
-  hidden = new Map( hidden )
-  selected = new Map( selected )
+  const origin = goldenField.origin( 3 )
+  const originBall = mesh.createInstance( [ origin ] )
+  const shown = new Map().set( originBall.id, originBall )
+  const hidden = new Map()
+  const selected = new Map()
+  const adapter = new Adapter( shown, hidden, selected )
 
   try {
     const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
-    const system = getChildElement( vZomeRoot, "SymmetrySystem")
     const fieldName = vZomeRoot.getAttribute( "field" )
-    if ( fieldName !== "golden" )
-      throw new Error( `The "${fieldName}" field is not supported yet.`)
-    const symmName = system? system.getAttribute( "name" ) : "icosahedral"
-    const format = formatFactory( namespace, symmName )
+    const system = new JavaDomElement( getChildElement( vZomeRoot, "SymmetrySystem") )
+    const format = formatFactory( namespace, fieldName, system )
+
+    const resolver = resolverFactory( format.orbitSource )
+    dispatch( { type: RESOLVER_READY, payload: resolver } )
 
     const history = getChildElement( vZomeRoot, "EditHistory" )
     const editNumber = history.getAttribute( "editNumber" )
     let editElement = history.firstElementChild
 
-    const adapter = new Adapter( shown, hidden, selected )
-    const context = contextFactory( adapter )
+    const context = contextFactory( adapter, fieldName )
 
     do {
       console.log( editElement.outerHTML )
