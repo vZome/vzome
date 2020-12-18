@@ -160,6 +160,8 @@ export const init = async ( window, store ) =>
   {
     const format = vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )
     const symmPer = fieldApp.getSymmetryPerspective( symmName )
+    if ( ! symmPer )
+      throw new Error( `Symmetry "${symmName}" is not supported yet.` )
     const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
     const orbitSetField = new vzomePkg.jsweet.JsOrbitSetField( orbitSource )
     format.initialize( field, orbitSetField, 0, "vZome Online", new util.Properties() )
@@ -521,23 +523,27 @@ export const parseModelFile = ( contextFactory, formatFactory ) => ( name, xmlTe
   let vZomeRoot = domDoc.firstElementChild
   console.log( vZomeRoot )
 
-  const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
-  const system = getChildElement( vZomeRoot, "SymmetrySystem")
-  const symmName = system? system.getAttribute( "name" ) : "icosahedral"
-  const format = formatFactory( namespace, symmName )
-
-  const history = getChildElement( vZomeRoot, "EditHistory" )
-  const editNumber = history.getAttribute( "editNumber" )
-  let editElement = history.firstElementChild
-
   let { shown, hidden, selected } = getState().mesh
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )
-  const adapter = new Adapter( shown, hidden, selected )
-  const context = contextFactory( adapter )
 
   try {
+    const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
+    const system = getChildElement( vZomeRoot, "SymmetrySystem")
+    const fieldName = vZomeRoot.getAttribute( "field" )
+    if ( fieldName !== "golden" )
+      throw new Error( `The "${fieldName}" field is not supported yet.`)
+    const symmName = system? system.getAttribute( "name" ) : "icosahedral"
+    const format = formatFactory( namespace, symmName )
+
+    const history = getChildElement( vZomeRoot, "EditHistory" )
+    const editNumber = history.getAttribute( "editNumber" )
+    let editElement = history.firstElementChild
+
+    const adapter = new Adapter( shown, hidden, selected )
+    const context = contextFactory( adapter )
+
     do {
       console.log( editElement.outerHTML )
       const wrappedElement = new JavaDomElement( editElement )
@@ -555,7 +561,7 @@ export const parseModelFile = ( contextFactory, formatFactory ) => ( name, xmlTe
   } catch (error) {
     console.log( error )
     dispatch( stopProgress() )
-    dispatch( showAlert( `Unable to parse model file: ${name}` ) )
+    dispatch( showAlert( `Unable to parse model file: ${name};\n ${error.message}` ) )
     return
   }
 
