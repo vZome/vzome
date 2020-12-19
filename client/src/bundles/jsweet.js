@@ -176,10 +176,58 @@ export const init = async ( window, store ) =>
     if ( ! symmPer )
       throw new Error( `Symmetry "${symmName}" is not supported yet.` )
     const orbitSource = new vzomePkg.core.editor.SymmetrySystem( systemXml, symmPer, context, colors, true )
+    orbitSource.quaternions = makeQuaternions( orbitSource.getSymmetry().getMatrices() )
     const orbitSetField = new vzomePkg.jsweet.JsOrbitSetField( orbitSource )
     format.initialize( field, orbitSetField, 0, "vZome Online", new util.Properties() )
     format.orbitSource = orbitSource
     return format
+  }
+
+  const makeQuaternions = ( matrices ) =>
+  {
+    return matrices.map( am => {
+      let m = [[],[],[]]
+      for ( let i = 0; i < 3; i++) {
+        for ( let j = 0; j < 3; j++) {
+          const an = am.getElement( i, j );
+          m[ i ][ j ] = an.evaluate()
+        }
+      }
+      return matrix2quat( m )
+    });
+  }
+
+  // Due to Mike Day, Insomniac Games
+  //   https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2015/01/matrix-to-quat.pdf
+  const matrix2quat = ( m ) =>
+  {
+    const [ [ m00, m10, m20 ],
+            [ m01, m11, m21 ],
+            [ m02, m12, m22 ],
+          ] = m
+    let t
+    let q
+    if (m22 < 0) {
+      if (m00 > m11) {
+        t = 1 + m00 - m11 - m22
+        q = [ t, m01 + m10, m20 + m02, m12 - m21 ]
+      }
+      else {
+        t = 1 - m00 + m11 - m22
+        q = [ m01 + m10, t, m12 + m21, m20 - m02 ]
+      }
+    }
+    else {
+      if (m00 < -m11) {
+        t = 1 - m00 - m11 + m22
+        q = [ m20 + m02, m12 + m21, t, m01 - m10 ]
+      }
+      else {
+        t = 1 + m00 + m11 + m22
+        q = [ m12 - m21, m20 - m02, m01 - m10, t ]
+      }
+    }
+    return q.map( x => x * 0.5 / Math.sqrt(t) )
   }
 
   const contextFactory = ( adapter, fieldName ) =>
@@ -292,15 +340,9 @@ const resolverFactory = vzomePkg => orbitSource => shapes => instance =>
     shapes[ shapeId ] = embedShape( rm.getShape() )
   }
 
-  const wlast = q =>
-  {
-    const [ w, x, y, z ] = q
-    return [ x, y, z, w ]
-  }
-    // get shape, orientation, color from rm
+  // get shape, orientation, color from rm
   const quatIndex = rm.getStrutZone()
-  const field = jsAF.delegate
-  const rotation = ( quatIndex && (quatIndex >= 0) && wlast( field.embedv( field.quaternions[ quatIndex ] ) ) ) || [0,0,0,1]
+  const rotation = ( quatIndex && (quatIndex >= 0) && orbitSource.quaternions[ quatIndex ] ) || [0,0,0,1]
   const finalColor = rm.getColor().getRGB()
 
   return { id, rotation, color: finalColor, shapeId }
