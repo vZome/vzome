@@ -277,6 +277,7 @@ export const init = async ( window, store ) =>
   // Prepare the orbitSource for resolveShapes
   const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
+  orbitSource.quaternions = makeQuaternions( orbitSource.getSymmetry().getMatrices() )
   const resolver = resolverFactory( vzomePkg )( orbitSource )
 
   const origin = goldenField.origin( 3 )
@@ -497,12 +498,12 @@ class Properties
 
 export const legacyCommand = ( contextFactory, className ) => ( config ) => ( dispatch, getState ) =>
 {
-  let { shown, hidden, selected } = getState().mesh
+  let { shown, hidden, selected, field } = getState().mesh
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )
   const adapter = new Adapter( shown, hidden, selected )
-  const context = contextFactory( adapter, "" )
+  const context = contextFactory( adapter, field.name )
 
   const edit = context.createEdit( new JavaDomElement( { localName: className } ) )
 
