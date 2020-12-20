@@ -92,8 +92,11 @@ public abstract class ImportMesh extends ChangeManifestations
         if ( scale != null )
             DomUtils .addAttribute( element, "scale", scale .toString( AlgebraicField.ZOMIC_FORMAT ) );
         if ( projection != null ) {
-            DomUtils .addAttribute( element, "projection", projection.getProjectionName() );
-            projection.getXmlAttributes(element);
+            String name = projection.getProjectionName();
+            if ( ! "".equals( name ) ) {
+                DomUtils .addAttribute( element, "projection", projection.getProjectionName() );
+                projection.getXmlAttributes(element);
+            }
         }
         Node textNode = element .getOwnerDocument() .createTextNode( XmlSaveFormat .escapeNewlines( meshData ) );
         element .appendChild( textNode );
