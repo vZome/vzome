@@ -15,6 +15,7 @@ import com.vzome.core.zomic.parser.ErrorHandler;
 import com.vzome.core.zomic.program.ZomicStatement;
 import com.vzome.core.zomod.parser.Parser;
 
+@SuppressWarnings( "deprecation" )
 public class RunZomodScript extends RunZomicScript
 {
 
