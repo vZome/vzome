@@ -73,7 +73,8 @@ public abstract class TransformationTool extends Tool
                 continue;
             result .setColor( c .getColor() ); // just for consistency
             Manifestation m = applyTool .manifestConstruction( result );
-            applyTool .colorManifestation( m, c .getColor() );
+            if ( m != null )  // not sure why, but this happens
+                applyTool .colorManifestation( m, c .getColor() );
         }
         applyTool .redo();
     }
