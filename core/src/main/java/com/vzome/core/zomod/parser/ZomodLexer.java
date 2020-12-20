@@ -7,8 +7,6 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.Hashtable;
 
-import com.vzome.core.math.symmetry.Constants;
-
 import antlr.ByteBuffer;
 import antlr.CharBuffer;
 import antlr.CharStreamException;
@@ -25,7 +23,7 @@ import antlr.TokenStreamIOException;
 import antlr.TokenStreamRecognitionException;
 import antlr.collections.impl.BitSet;
 
-@SuppressWarnings( { "all", "warnings", "unchecked", "unused", "cast", "rawtypes" } )
+@SuppressWarnings( { "all", "warnings", "unchecked", "unused", "cast", "rawtypes", "deprecation" } )
 public class ZomodLexer extends antlr.CharScanner implements ZomodParserTokenTypes, TokenStream
  {
 
@@ -346,7 +344,7 @@ tryAgain:
 		int _saveIndex;
 		
 		mDIGIT(false);
-		scale = Integer .valueOf( new String(text.getBuffer(),_begin,text.length()-_begin) ) .intValue() + Constants.SHORT - 1;
+		scale = Integer .valueOf( new String(text.getBuffer(),_begin,text.length()-_begin) ) .intValue() + com.vzome.core.math.symmetry.Constants.SHORT - 1;
 		if ( _createToken && _token==null && _ttype!=Token.SKIP ) {
 			_token = makeToken(_ttype);
 			_token.setText(new String(text.getBuffer(), _begin, text.length()-_begin));
