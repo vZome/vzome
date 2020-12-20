@@ -3,7 +3,6 @@
 
 package com.vzome.core.zomod.parser;
 
-import com.vzome.core.antlr.ANTLR2XML;
 import com.vzome.core.zomic.parser.ErrorHandler;
 
 import antlr.NoViableAltException;
@@ -15,16 +14,17 @@ import antlr.TokenStream;
 import antlr.TokenStreamException;
 import antlr.collections.impl.BitSet;
 
+@SuppressWarnings( "deprecation" )
 public class ZomodParser extends antlr.LLkParser       implements ZomodParserTokenTypes
  {
 
-	private ANTLR2XML xml;
+	private com.vzome.core.antlr.ANTLR2XML xml;
 
 	private ErrorHandler mErrors;
 	
 	private ZomodVersion mVersion;
 
-	public void connectHandlers( ANTLR2XML xml, ErrorHandler errors, ZomodVersion version ){
+	public void connectHandlers( com.vzome.core.antlr.ANTLR2XML xml, ErrorHandler errors, ZomodVersion version ){
 		this .xml = xml;
 		xml .setParser( this );
 		mErrors = errors;

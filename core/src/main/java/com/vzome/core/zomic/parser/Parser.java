@@ -1,11 +1,10 @@
 
 package com.vzome.core.zomic.parser;
 
+
 import java.io.DataInputStream;
 import java.io.InputStream;
 
-import com.vzome.core.antlr.ANTLR2XML;
-import com.vzome.core.antlr.ANTLRContentSupplier;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.zomic.program.ZomicStatement;
 
@@ -13,6 +12,7 @@ import antlr.RecognitionException;
 import antlr.TokenStreamException;
 import antlr.TokenStreamRecognitionException;
 
+@SuppressWarnings( "deprecation" )
 @Deprecated
 public class Parser
 {
@@ -27,7 +27,7 @@ public class Parser
     ZomicStatement parse( InputStream input, ErrorHandler errors, String version ) {
         XML2AST handler = new XML2AST( symm );
         try  {
-            ANTLRContentSupplier xml = new ANTLRContentSupplier( handler );
+            com.vzome.core.antlr.ANTLRContentSupplier xml = new com.vzome.core.antlr.ANTLRContentSupplier( handler );
             parse( input, xml, errors, version );
         } catch( RecognitionException e ) {
             errors .parseError( e .getLine(), e .getColumn(), e .getMessage() );
@@ -40,7 +40,7 @@ public class Parser
         return handler .getProgram();
     }
 
-    protected void parse( InputStream input, ANTLR2XML xml, ErrorHandler errors, String version )
+    protected void parse( InputStream input, com.vzome.core.antlr.ANTLR2XML xml, ErrorHandler errors, String version )
     throws RecognitionException, TokenStreamException
     {
         ZomicLexer lexer = new ZomicLexer( new DataInputStream( input ) );

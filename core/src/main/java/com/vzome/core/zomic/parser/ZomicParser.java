@@ -12,17 +12,15 @@ import antlr.TokenStream;
 import antlr.TokenStreamException;
 import antlr.collections.impl.BitSet;
 
-import com.vzome.core.antlr.ANTLR2XML;
-import com.vzome.core.math.symmetry.Constants;
-
+@SuppressWarnings( "deprecation" )
 public class ZomicParser extends antlr.LLkParser       implements ZomicParserTokenTypes
  {
 
-	private ANTLR2XML xml;
+	private com.vzome.core.antlr.ANTLR2XML xml;
 
 	private ErrorHandler mErrors;
 
-	public void connectHandlers( ANTLR2XML xml, ErrorHandler errors ){
+	public void connectHandlers( com.vzome.core.antlr.ANTLR2XML xml, ErrorHandler errors ){
 		this .xml = xml;
 		xml .setParser( this );
 		mErrors = errors;
@@ -769,7 +767,7 @@ public ZomicParser(ParserSharedInputState state) {
 		case LITERAL_short:
 		{
 			match(LITERAL_short);
-			xml .attribute( "scale", Integer.toString( Constants.SHORT ) );
+			xml .attribute( "scale", Integer.toString( com.vzome.core.math.symmetry.Constants.SHORT ) );
 			break;
 		}
 		case INT:
@@ -822,13 +820,13 @@ public ZomicParser(ParserSharedInputState state) {
 			}
 			}
 			}
-			xml .attribute( "scale", Integer.toString( Constants.MEDIUM ) );
+			xml .attribute( "scale", Integer.toString( com.vzome.core.math.symmetry.Constants.MEDIUM ) );
 			break;
 		}
 		case LITERAL_long:
 		{
 			match(LITERAL_long);
-			xml .attribute( "scale", Integer.toString( Constants.LONG ) );
+			xml .attribute( "scale", Integer.toString( com.vzome.core.math.symmetry.Constants.LONG ) );
 			break;
 		}
 		default:
