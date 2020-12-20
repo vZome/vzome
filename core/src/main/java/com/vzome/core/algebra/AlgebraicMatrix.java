@@ -138,7 +138,6 @@ public class AlgebraicMatrix
         if(rank != matrix.length) {
             String message = "AlgebraicMatrix inverse expects matrix rank to be " + matrix.length + ", but it is " + rank + ".";
             System.err.println( message );
-            throw new RuntimeException( message );
         }
         return result;
 	}
