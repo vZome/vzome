@@ -22,12 +22,6 @@ public class JsBall extends JsManifestation implements Connector
     }
 
     @Override
-    public boolean isUnnecessary()
-    {
-        return false;
-    }
-
-    @Override
     public AlgebraicVector getLocation()
     {
         return ((JsAlgebraicField) this .field) .createVectorFromTDs( this .vectors[ 0 ] );
@@ -69,18 +63,6 @@ public class JsBall extends JsManifestation implements Connector
 
     @Override
     public AlgebraicVector getCentroid()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void addConstruction(Construction mConstruction)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void removeConstruction(Construction mConstruction)
     {
         throw new RuntimeException( "unimplemented" );
     }

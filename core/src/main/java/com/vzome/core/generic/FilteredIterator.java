@@ -43,18 +43,6 @@ public abstract class FilteredIterator<T, R> implements Iterator<R>, Iterable<R>
      */
     protected abstract R apply(T element);
 
-    protected FilteredIterator(Iterable<T> iterable) {
-        this(null, iterable, null);    
-    }
-
-    protected FilteredIterator(Predicate<T> preTest, Iterable<T> iterable) {
-        this(preTest, iterable, null);    
-    }
-
-    protected FilteredIterator(Iterable<T> iterable, Predicate<R> postTest) {
-        this(null, iterable, postTest);    
-    }
-
     /**
      * Creates a new FilteredIterator by wrapping the iterator 
      *  and returning only converted elements matching the filters.

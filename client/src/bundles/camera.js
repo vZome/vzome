@@ -1,7 +1,7 @@
 
-import { MODEL_LOADED} from "./vzomejava"
 
 const CAMERA_DEFINED = 'CAMERA_DEFINED'
+const MODEL_LOADED = 'MODEL_LOADED'
 
 const aspectRatio = window.innerWidth / window.innerHeight
 const convertFOV = (fovX) => ( fovX / aspectRatio ) * 180 / Math.PI  // converting radians to degrees
@@ -53,4 +53,32 @@ export const reducer = ( state = initialState, action ) => {
     default:
       return state
   }
+}
+
+export const parseViewXml = ( viewingElement, getChildElement ) => dispatch =>
+{
+  const parseVector = ( element, name ) =>
+  {
+    const child = getChildElement( element, name )
+    const x = parseFloat( child.getAttribute( "x" ) )
+    const y = parseFloat( child.getAttribute( "y" ) )
+    const z = parseFloat( child.getAttribute( "z" ) )
+    return { x, y, z }
+  }
+  const viewModel = getChildElement( viewingElement, "ViewModel" )
+  const distance = parseFloat( viewModel.getAttribute( "distance" ) )
+  const nearClipDistance = parseFloat( viewModel.getAttribute( "near" ) )
+  const farClipDistance = parseFloat( viewModel.getAttribute( "far" ) )
+  const lookAtPoint = parseVector( viewModel, "LookAtPoint" )
+  const upDirection = parseVector( viewModel, "UpDirection" )
+  const lookDirection = parseVector( viewModel, "LookDirection" )
+  const x = lookAtPoint.x - distance * lookDirection.x
+  const y = lookAtPoint.y - distance * lookDirection.y
+  const z = lookAtPoint.z - distance * lookDirection.z
+  const position = { x, y, z }
+  const payload = {
+    position, lookAtPoint, upDirection, fieldOfView: 0.442, nearClipDistance, farClipDistance
+  }
+  dispatch( { type: CAMERA_DEFINED, payload } )
+  dispatch( { type: MODEL_LOADED } )
 }

@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -301,4 +302,29 @@ public class RealizedModelImpl implements RealizedModel
 	{
 		return field;
 	}
+
+    /**
+     * This records the NEW manifestations produced by manifestConstruction for this edit,
+     * to avoid creating colliding manifestations.
+     */
+    // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
+    private transient Map<Manifestation, Manifestation> mManifestedNow;  // used only while calling manifest
+
+    @Override
+    public Manifestation findPerEditManifestation( Manifestation m )
+    {
+        return this .mManifestedNow .get( m ); // If it weren't for this get, we could use a Set
+    }
+
+    @Override
+    public void addPerEditManifestation( Manifestation m )
+    {
+        this .mManifestedNow .put( m, m );
+    }
+
+    @Override
+    public void clearPerEditManifestations()
+    {
+        mManifestedNow = new HashMap<>();
+    }
 }

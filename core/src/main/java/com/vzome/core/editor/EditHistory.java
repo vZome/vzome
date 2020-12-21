@@ -648,6 +648,12 @@ public class EditHistory implements Iterable<UndoableEdit>
                         edit .setLineNumber( getLineNumber() );
                         return edit;
                     }
+
+                    @Override
+                    public Command createLegacyCommand( String cmdName ) throws Failure
+                    {
+                        return context .createLegacyCommand( cmdName );
+                    }
                 } ); // this method needs to have the history, since it may migrate
                 //        		System.out.println();
 

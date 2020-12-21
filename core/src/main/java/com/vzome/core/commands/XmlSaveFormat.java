@@ -248,7 +248,7 @@ public class XmlSaveFormat
             value = parseAlgebraicVector( val );
         else if ( valName .equals( "Boolean" ) ) {
             String gnum = val .getAttribute( "value" );
-            value = Boolean .getBoolean( gnum );
+            value = Boolean .parseBoolean( gnum );
         }
         else if ( valName .equals( "Integer" ) ) {
             String gnum = val .getAttribute( "value" );

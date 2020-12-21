@@ -988,4 +988,17 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
     {
         return this.sceneLighting;
     }
+
+    private static final String UNKNOWN_COMMAND = "unknown.command";
+
+    @Override
+    public Command createLegacyCommand( String cmdName ) throws Command.Failure
+    {
+        try {
+            Class<?> clazz = Class .forName( "com.vzome.core.commands." + cmdName );
+            return (Command) clazz.getConstructor().newInstance();
+        } catch ( Exception e ) {
+            throw new Command.Failure( UNKNOWN_COMMAND + " " + cmdName );
+        }
+    }
 }

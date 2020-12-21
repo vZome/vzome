@@ -1,6 +1,7 @@
 package com.vzome.jsweet;
 
 import com.vzome.core.construction.Construction;
+import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.api.EditorModel;
@@ -16,12 +17,14 @@ public class JsEditorModel implements EditorModel, ImplicitSymmetryParameters, S
     private final RealizedModel realizedModel;
     private final Selection selection;
     private final Symmetries4D kind;
+    private final Point symmetryCenter;
 
     public JsEditorModel( RealizedModel realizedModel, Selection selection, Symmetries4D kind )
     {
         this.realizedModel = realizedModel;
         this.selection = selection;
         this.kind = kind;
+        this.symmetryCenter = new FreePoint( realizedModel .getField() .origin( 3 ) );
     }
 
     @Override
@@ -42,22 +45,24 @@ public class JsEditorModel implements EditorModel, ImplicitSymmetryParameters, S
         return this.kind;
     }
 
-    
-    
+    @Override
+    public Segment getSymmetrySegment()
+    {
+        return null;
+    }
+
     @Override
     public Point getCenterPoint()
     {
-        throw new RuntimeException( "unimplemented" );
+        return this.symmetryCenter;
     }
+    
+    
+    
 
+    
     @Override
     public void setCenterPoint(Construction point)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public Segment getSymmetrySegment()
     {
         throw new RuntimeException( "unimplemented" );
     }

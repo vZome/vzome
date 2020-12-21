@@ -3,7 +3,6 @@ package com.vzome.core.editor.api;
 import java.util.function.Predicate;
 
 import com.vzome.core.generic.FilteredIterator;
-import com.vzome.core.generic.SubClassIterator;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -33,10 +32,10 @@ public class Manifestations {
             return element;
         }
     }
-    
+        
     // Connectors        
     public static ConnectorIterator getConnectors(Iterable<Manifestation> manifestations) {
-        return new ConnectorIterator(null, manifestations, null);
+        return new ConnectorIterator( null, manifestations, null );
     }
     public static ConnectorIterator getConnectors(Iterable<Manifestation> manifestations, Predicate<Connector> postFilter) {
         return new ConnectorIterator(null, manifestations, postFilter);
@@ -56,9 +55,26 @@ public class Manifestations {
     public static ConnectorIterator getHiddenConnectors(Iterable<Manifestation> manifestations, Predicate<Connector> postFilter) {
         return new ConnectorIterator(Filters::isHidden, manifestations, postFilter);
     }
-    public static class ConnectorIterator extends SubClassIterator<Manifestation, Connector> {
-        private ConnectorIterator(Predicate<Manifestation> preFilter, Iterable<Manifestation> manifestations, Predicate<Connector> postFilter) {
-            super(Connector.class, preFilter, manifestations, postFilter);
+    
+    public static class ConnectorIterator extends FilteredIterator<Manifestation, Connector>
+    {
+        @Override
+        public boolean preFilter( Manifestation element )
+        {
+            return ( element != null && element instanceof Connector )
+                    ? super.preFilter(element)
+                    : false;
+        }
+        
+        @Override
+        protected Connector apply( Manifestation element )
+        {
+            return (Connector) element;
+        }
+        
+        private ConnectorIterator( Predicate<Manifestation> preFilter, Iterable<Manifestation> manifestations, Predicate<Connector> postFilter )
+        {
+            super( preFilter, manifestations, postFilter );
         }
     }
 
@@ -84,9 +100,26 @@ public class Manifestations {
     public static StrutIterator getHiddenStruts(Iterable<Manifestation> manifestations, Predicate<Strut> postFilter) {
         return new StrutIterator(Filters::isHidden, manifestations, postFilter);
     }
-    public static class StrutIterator extends SubClassIterator<Manifestation, Strut> {
-        private StrutIterator(Predicate<Manifestation> preFilter, Iterable<Manifestation> manifestations, Predicate<Strut> postFilter) {
-            super(Strut.class, preFilter, manifestations, postFilter);
+    
+    public static class StrutIterator extends FilteredIterator<Manifestation, Strut>
+    {
+        @Override
+        public boolean preFilter( Manifestation element )
+        {
+            return ( element != null && element instanceof Strut )
+                    ? super.preFilter(element)
+                    : false;
+        }
+        
+        @Override
+        protected Strut apply( Manifestation element )
+        {
+            return (Strut) element;
+        }
+        
+        private StrutIterator( Predicate<Manifestation> preFilter, Iterable<Manifestation> manifestations, Predicate<Strut> postFilter )
+        {
+            super( preFilter, manifestations, postFilter );
         }
     }
 
@@ -112,13 +145,31 @@ public class Manifestations {
     public static PanelIterator getHiddenPanels(Iterable<Manifestation> manifestations, Predicate<Panel> postFilter) {
         return new PanelIterator(Filters::isHidden, manifestations, postFilter);
     }
-    public static class PanelIterator extends SubClassIterator<Manifestation, Panel> {
-        private PanelIterator(Predicate<Manifestation> preFilter, Iterable<Manifestation> manifestations, Predicate<Panel> postFilter) {
-            super(Panel.class, preFilter, manifestations, postFilter);
+    
+    public static class PanelIterator extends FilteredIterator<Manifestation, Panel>
+    {
+        @Override
+        public boolean preFilter( Manifestation element )
+        {
+            return ( element != null && element instanceof Panel )
+                    ? super.preFilter(element)
+                    : false;
+        }
+        
+        @Override
+        protected Panel apply( Manifestation element )
+        {
+            return (Panel) element;
+        }
+        
+        private PanelIterator( Predicate<Manifestation> preFilter, Iterable<Manifestation> manifestations, Predicate<Panel> postFilter )
+        {
+            super( preFilter, manifestations, postFilter );
         }
     }
 
-    public static class Filters {
+    public static class Filters
+    {
         private Filters() {}; // no public c'tor
 
         public static boolean isRendered(Manifestation man) {
@@ -133,5 +184,10 @@ public class Manifestations {
             return man.isHidden();
         }
 
+        // Required to overcome invalid overload of ConnectorIterator, etc. in JSweet
+        public static boolean is( Manifestation man )
+        {
+            return true;
+        }
     }
 }

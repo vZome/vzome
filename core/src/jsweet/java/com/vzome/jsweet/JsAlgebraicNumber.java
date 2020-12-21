@@ -183,15 +183,35 @@ public class JsAlgebraicNumber implements AlgebraicNumber
         return Arrays .toString( this .factors );
     }
 
-    
-    
-    
     @Override
-    public int compareTo(AlgebraicNumber o)
+    public int compareTo( AlgebraicNumber other )
     {
-        throw new RuntimeException( "unimplemented" );
+        if ( this == other ) {
+            return 0;
+        }
+        if ( other.equals(this) ) { 
+            // intentionally throws a NullPointerException if other is null
+            // or an IllegalStateException if fields are different
+            return 0;
+        }
+        // Since we know both fields are the same, 
+        // both AlgebraicNumbers must have the same number of factors
+        // so there's no point in comparing factors.length
+        // assert(this.factors.length == other.factors.length);
+        Double d1 = this.evaluate();
+        Double d2 = other.evaluate();
+        // Because of the rounding errors when converting to a double,
+        // It's possible that the two double values are equal 
+        // yet the two AlgebraicaNumbers are not.
+        // TODO: Develop a test case to show this scenario
+        // TODO: Consider if it's worth the overhead of using BigDecimal.compareTo() in this case
+        return d1.compareTo(d2);
     }
 
+    
+    
+    
+    
     @Override
     public boolean greaterThan(AlgebraicNumber other)
     {

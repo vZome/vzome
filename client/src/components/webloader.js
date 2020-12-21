@@ -63,7 +63,8 @@ const WebLoader = ({ enabled, openModel }) =>
 } 
 
 const select = (state) => ({
-  enabled: state.jre && state.jre.javaReady
+  // TODO make a real selector!
+  enabled: ! state.workingPlane
 })
 
 const boundEventActions = {

@@ -3,9 +3,7 @@
 
 package com.vzome.core.editor.api;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.function.Predicate;
 
 import org.w3c.dom.Document;
@@ -29,35 +27,20 @@ public abstract class ChangeManifestations extends ChangeSelection
         super( editorModel .getSelection() );
 
         mManifestations = editorModel .getRealizedModel();
-        // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
-        mManifestedNow = new HashMap<>();
+        mManifestations .clearPerEditManifestations();
     }
-
-    /**
-     * This records the NEW manifestations produced by manifestConstruction for this edit,
-     * to avoid creating colliding manifestations.  It is never referenced after the last
-     * call to manifestConstruction.
-     * 
-     * TODO: look at implications for unmanifestConstruction
-     */
-    // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
-    private transient Map<Manifestation, Manifestation> mManifestedNow;  // used only while calling manifest
 
     @Override
     public void redo()
     {
-        if ( mManifestedNow != null )
-            // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
-            mManifestedNow = new HashMap<>();
+        mManifestations .clearPerEditManifestations();
         super .redo();
-        //        System.out.print( " manifestations: " + mManifestations .size() );
     }
 
     @Override
     public void undo()
     {
-        if ( mManifestedNow != null )
-            mManifestedNow = null;
+        mManifestations .clearPerEditManifestations();
         super .undo();
     }
 
@@ -75,12 +58,12 @@ public abstract class ChangeManifestations extends ChangeSelection
         Manifestation m = mManifestations .findConstruction( c );
         if ( m == null )
             return null;
-        Manifestation made = mManifestedNow .get( m );
+        Manifestation made = mManifestations .findPerEditManifestation( m );
         if ( made != null )
             return made;
         if ( m .isUnnecessary() )  { // just manifested, not added yet
             // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
-            mManifestedNow .put( m, m );
+            mManifestations .addPerEditManifestation( m );
             plan( new ManifestConstruction( c, m, true ) );
         }
         else {
