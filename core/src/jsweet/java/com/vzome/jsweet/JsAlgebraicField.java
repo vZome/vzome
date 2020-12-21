@@ -391,6 +391,49 @@ public class JsAlgebraicField implements AlgebraicField
             return result;
     }
 
+    @Override
+    public AlgebraicVector parseVector(String nums)
+    {
+        StringTokenizer tokens = new StringTokenizer( nums, " " );
+        int numToks = tokens .countTokens();
+        if ( numToks % getOrder() != 0 )
+            throw new IllegalStateException( "Field order (" + getOrder() + ") does not divide token count: " + numToks + ", for '" + nums + "'" );
+
+        int dims = numToks / getOrder();
+        AlgebraicNumber[] coords = new AlgebraicNumber[ dims ];
+        for ( int i = 0; i < dims; i++ ) {
+            coords[ i ] = this .parseNumber( tokens );
+        }
+        return new AlgebraicVector( coords );
+    }
+
+    @Override
+    public AlgebraicNumber parseNumber( String nums )
+    {
+        StringTokenizer tokens = new StringTokenizer( nums, " " );
+        return this .parseNumber( tokens );
+    }
+
+    private AlgebraicNumber parseNumber( StringTokenizer tokens )
+    {
+        int order = this .getOrder();
+        int[] pairs = new int[ order * 2 ];
+        for ( int i = 0; i < order; i++ ) {
+            String digit = tokens.nextToken();
+            String[] parts = digit.split( "/" );
+            pairs[ i * 2 ] = Integer.parseInt( parts[ 0 ] );
+            if ( parts.length > 1 )
+                pairs[ i * 2 + 1 ] = Integer.parseInt( parts[ 1 ] );
+            else
+                pairs[ i * 2 + 1 ] = 1;
+        }
+        return this .createAlgebraicNumberFromPairs( pairs );
+    }
+
+    
+    
+    
+    
     
     
     
@@ -450,18 +493,6 @@ public class JsAlgebraicField implements AlgebraicField
 
     @Override
     public AlgebraicNumber parseLegacyNumber(String val)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicNumber parseNumber(String nums)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicVector parseVector(String nums)
     {
         throw new RuntimeException( "unimplemented" );
     }

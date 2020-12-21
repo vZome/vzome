@@ -38,7 +38,7 @@ const Instance = ( { id, vectors, position, rotation, geometry, color, selected,
       onClick( id, vectors, selected )
     }
   }
-  const emissive = selected? "#707070" : highlightBall( id )? "#884444" : "black"
+  const emissive = selected? "#bbbbbb" : highlightBall( id )? "#884444" : "black"
   // TODO: cache materials
   return (
     <group position={ position } quaternion={ rotation }>
@@ -79,11 +79,11 @@ const filterInstances = ( shape, instances ) =>
   return instances.filter( instance => instance.shapeId === shape.id )
 }
 
-export default ({ mesh, resolver, preRendered, highlightBall, handleClick, onHover }) =>
+export default ({ mesh, resolver, preResolved, highlightBall, handleClick, onHover }) =>
 {
-  const shapes = useMemo( () => ( preRendered && preRendered.shapes ) || {}, [ resolver, preRendered ] )
+  const shapes = useMemo( () => ( preResolved && preResolved.shapes ) || {}, [ resolver, preResolved ] )
   const shapedInstances = useMemo( () => ({}), [ resolver ] )
-  const instances = ( preRendered && preRendered.instances ) || []
+  const instances = ( preResolved && preResolved.instances ) || []
   if ( resolver ) {
     // resolver won't be available until the JSweet init has dispatched ORBITS_INITIALIZED
     const resolve = resolver( shapes )

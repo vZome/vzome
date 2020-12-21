@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
-import { exportTriggered } from '../bundles/vzomejava'
+import { exportTriggered } from '../bundles/cheerpj'
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
 import Tab from 'react-bootstrap/Tab'
@@ -119,7 +119,7 @@ const Exporter = ({ enabled, doExport }) =>
 } 
 
 const select = (state) => ({
-  enabled: state.jre && state.jre.javaReady
+  enabled: state.java.readOnly  // correlates with vZomeJava, for now
 })
 
 const boundEventActions = {

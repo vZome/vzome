@@ -22,7 +22,7 @@ const EditMenu = ({ visible, edits, doEdit }) =>
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const h4_8 = { groupName: "H4", renderGroupName: "H4", index: 8, edgesToRender: 15 }
+  const h4_c = { groupName: "H4", renderGroupName: "H4", index: 12, edgesToRender: 15 }
   if ( visible )
     return (
       <div>
@@ -52,7 +52,7 @@ const EditMenu = ({ visible, edits, doEdit }) =>
           <MenuItem onClick={ e => doEdit( 'ShowPoint', { mode: 'origin' } ) }>Show Origin</MenuItem>
           <MenuItem onClick={ e => doEdit( 'Delete' ) }>Delete</MenuItem>
           <Divider />
-          <MenuItem onClick={ e => doEdit( 'Polytope4d', h4_8 ) }>120-Cell</MenuItem>
+          <MenuItem onClick={ e => doEdit( 'Polytope4d', h4_c ) }>H4 Polytope</MenuItem>
           <Divider />
           { edits.map( edit =>
             <MenuItem key={edit} onClick={ e => doEdit( edit ) } >
@@ -66,8 +66,8 @@ const EditMenu = ({ visible, edits, doEdit }) =>
     return null
 } 
 
-const select = ( { jsweet, mesh, workingPlane } ) => ({
-  visible: jsweet && ! workingPlane,
+const select = ( { java, mesh, workingPlane } ) => ({
+  visible: !java.readOnly && ! workingPlane,
   edits: mesh && Object.getOwnPropertyNames( mesh.commands )
 })
 

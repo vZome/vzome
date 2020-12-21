@@ -62,7 +62,9 @@ public class JsRealizedModel implements RealizedModel {
         if ( c == null )
             return null;
         int[][][] vectors = JsManifestation.canonicalizeConstruction( c );
-        vectors = (int[][][]) ( (Function) this.adapter .$get( "findOrAddManifestation" ) ).apply( this.adapter, $array( vectors ) );
+        if ( vectors == null )
+            return null;
+        vectors = (int[][][]) ( (Function) this.adapter .$get( "findOrCreateManifestation" ) ).apply( this.adapter, $array( vectors ) );
         if ( vectors == null )
             return null;
         return JsManifestation .manifest( vectors, this.field, this.adapter );
@@ -76,17 +78,53 @@ public class JsRealizedModel implements RealizedModel {
     }
 
     @Override
-    public void show( Manifestation mManifestation )
+    public Manifestation getManifestation( Construction c )
     {
-        System.out.println( "show ball at: " + mManifestation .getLocation() .toRealVector() );
+        return findConstruction( c );
     }
 
     @Override
-    public void hide( Manifestation mManifestation )
+    public void show( Manifestation man )
     {
-        System.out.println( "hide ball at: " + mManifestation .getLocation() .toRealVector() );
+        int[][][] vectors = ((JsManifestation) man) .getVectors();
+        ( (Function) this.adapter .$get( "showManifestation" ) ).apply( this.adapter, $array( vectors ) );
     }
 
+    @Override
+    public void hide( Manifestation man )
+    {
+        int[][][] vectors = ((JsManifestation) man) .getVectors();
+        ( (Function) this.adapter .$get( "hideManifestation" ) ).apply( this.adapter, $array( vectors ) );
+    }
+
+    @Override
+    public void setColor( Manifestation man, Color color )
+    {
+        ((JsManifestation) man) .setColor( color );
+    }
+
+    @Override
+    public void add( Manifestation man )
+    {
+        int[][][] vectors = ((JsManifestation) man) .getVectors();
+        ( (Function) this.adapter .$get( "showManifestation" ) ).apply( this.adapter, $array( vectors ) );
+    }
+
+    // Stubbing these three out eliminates a HUGE performance hit, since JS does not like HashMaps with object keys.
+    //  In JS we manage uniqueness in a simpler way, anyway.
+    
+    @Override
+    public Manifestation findPerEditManifestation( Manifestation m ) { return null; }
+
+    @Override
+    public void addPerEditManifestation(Manifestation m) {}
+
+    @Override
+    public void clearPerEditManifestations() {}
+
+    
+    
+    
     
     
     @Override
@@ -96,25 +134,7 @@ public class JsRealizedModel implements RealizedModel {
     }
 
     @Override
-    public Manifestation getManifestation(Construction c)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
     public int size()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void add(Manifestation m)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void setColor(Manifestation manifestation, Color color)
     {
         throw new RuntimeException( "unimplemented" );
     }

@@ -21,7 +21,6 @@ public abstract class JsManifestation implements Manifestation
 {
     protected final int[][][] vectors;
     protected final AlgebraicField field;
-    private Color color;
     protected final Object adapter;
 
     public JsManifestation( AlgebraicField field, Object adapter, int[][][] vectors )
@@ -39,19 +38,37 @@ public abstract class JsManifestation implements Manifestation
     @Override
     public Color getColor()
     {
-        return this.color;
+        boolean colorful = (boolean) ( (Function) this.adapter .$get( "manifestationHasColor" ) ).apply( this.adapter, $array( vectors ) );
+        if ( ! colorful )
+            return null;
+        int rgb = (int) ( (Function) this.adapter .$get( "manifestationColor" ) ).apply( this.adapter, $array( vectors ) );
+        return new Color( rgb );
     }
 
     @Override
     public void setColor( Color color )
     {
-        this.color = color;
+        ( (Function) this.adapter .$get( "setManifestationColor" ) ).apply( this.adapter, $array( vectors, color.getRGB() ) );
     }
 
     @Override
     public boolean isRendered()
     {
         return (boolean) ( (Function) this.adapter .$get( "manifestationRendered" ) ).apply( this.adapter, $array( vectors ) );
+    }
+
+    @Override
+    public void addConstruction(Construction mConstruction)
+    {}
+
+    @Override
+    public void removeConstruction(Construction mConstruction)
+    {}
+
+    @Override
+    public boolean isUnnecessary()
+    {
+        return true;
     }
 
     @Override

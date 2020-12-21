@@ -2,6 +2,10 @@
 import * as mesh from './mesh'
 import * as planes from './planes'
 import { field as goldenField } from '../fields/golden'
+import { startProgress, stopProgress } from './progress'
+import { parseViewXml } from './camera'
+import { showAlert } from './alerts'
+import { fetchModel } from './files'
 
 // import { NewCentroid } from '../jsweet/com/vzome/core/edits/NewCentroid'
 
@@ -10,17 +14,15 @@ import { field as goldenField } from '../fields/golden'
 //
 // I should be able to use require() and a commonjs module, but it has the same J4TS build problem.
 
-const PACKAGE_INJECTED = 'PACKAGE_INJECTED'
-const ORBITS_INITIALIZED = 'ORBITS_INITIALIZED'
+const PARSER_READY = 'PARSER_READY'
+const RESOLVER_READY = 'RESOLVER_READY'
 const WORK_STARTED = 'WORK_STARTED'
 const WORK_FINISHED = 'WORK_FINISHED'
 
 const initialState = {
-  supportsEdits: true,
-  vzomePkg: undefined,       // ANTI-PATTERN, not a plain Object
-  shimClass: undefined,       // ANTI-PATTERN, not a plain Object
-  fieldApp: undefined,       // ANTI-PATTERN, not a plain Object
+  readOnly: false,
   resolver: undefined,       // ANTI-PATTERN, not a plain Object
+  parser: undefined,       // ANTI-PATTERN, not a plain Object
   working: false,
 }
 
@@ -28,14 +30,12 @@ export const reducer = ( state = initialState, action ) =>
 {
   switch ( action.type ) {
 
-    case PACKAGE_INJECTED: {
-      const { vzomePkg, shimClass } = action.payload
-      return { ...state, vzomePkg, shimClass }
+    case PARSER_READY: {
+      return { ...state, parser: action.payload }
     }
 
-    case ORBITS_INITIALIZED: {
-      const { fieldApp, resolver } = action.payload
-      return { ...state, fieldApp, resolver }
+    case RESOLVER_READY: {
+      return { ...state, resolver: action.payload }
     }
 
     case WORK_STARTED: {
@@ -133,27 +133,25 @@ const knownOrbitNames = [
 export const init = async ( window, store ) =>
 {
   const vzomePkg = window.com.vzome
-  const shimClass = vzomePkg.jsweet.JsAdapter
-  store.dispatch( { type: PACKAGE_INJECTED, payload: { vzomePkg, shimClass } } )
+  const util = window.java.util
 
   const injectResource = async ( path ) =>
   {
     const fullPath = `/app/resources/${path}`
     const response = await fetch( fullPath )
     if ( ! response.ok ) {
-      throw new Error( 'Network response was not ok' );
+      console.log( `No resource for ${fullPath}` )
+      return
     }
     const text = await response.text()
     // Inject the VEF into a static map on ExportedVEFShapes
+    if ( text[ 0 ] === "<" ) {
+      console.log( `No resource for ${fullPath}` )
+      return
+    }
     vzomePkg.xml.ResourceLoader.injectResource( path, text )
     console.log( `injected resource ${path}` )
   }
-
-  // Discover all the legacy edit classes and register as commands
-  const commands = {}
-  for ( const [ name, editClass ] of Object.entries( vzomePkg.core.edits ) )
-    commands[ name ] = legacyCommand( vzomePkg.jsweet, editClass )
-  store.dispatch( mesh.commandsDefined( commands ) )
 
   // Initialize the field application
   await Promise.all( [
@@ -161,14 +159,126 @@ export const init = async ( window, store ) =>
     injectResource( 'com/vzome/core/math/symmetry/H4roots-rotationalSubgroup.vef' ),
     injectResource( 'com/vzome/core/math/symmetry/H4roots.vef' ),
   ] )
+  const properties = new Properties( defaults )
+  const colors = new vzomePkg.core.render.Colors( properties )
   const context = new vzomePkg.jsweet.JsEditContext()
   const field = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
-  const fieldApp = new vzomePkg.core.kinds.GoldenFieldApplication( field )
+  const fieldApps = { golden: new vzomePkg.core.kinds.GoldenFieldApplication( field ) }
+
+  const formatFactory = ( namespace, fieldName, systemXml ) =>
+  {
+    const fieldApp = fieldApps[ fieldName ]
+    if ( ! fieldApp )
+      throw new Error( `Field "${fieldName}" is not supported yet.` )
+    const symmName = systemXml? systemXml.getAttribute( "name" ) : "icosahedral"
+    const format = vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )
+    const symmPer = fieldApp.getSymmetryPerspective( symmName )
+    if ( ! symmPer )
+      throw new Error( `Symmetry "${symmName}" is not supported yet.` )
+    const orbitSource = new vzomePkg.core.editor.SymmetrySystem( systemXml, symmPer, context, colors, true )
+    orbitSource.quaternions = makeQuaternions( orbitSource.getSymmetry().getMatrices() )
+    const orbitSetField = new vzomePkg.jsweet.JsOrbitSetField( orbitSource )
+    format.initialize( field, orbitSetField, 0, "vZome Online", new util.Properties() )
+    format.orbitSource = orbitSource
+    return format
+  }
+
+  const makeQuaternions = ( matrices ) =>
+  {
+    return matrices.map( am => {
+      let m = [[],[],[]]
+      for ( let i = 0; i < 3; i++) {
+        for ( let j = 0; j < 3; j++) {
+          const an = am.getElement( i, j );
+          m[ i ][ j ] = an.evaluate()
+        }
+      }
+      return matrix2quat( m )
+    });
+  }
+
+  // Due to Mike Day, Insomniac Games
+  //   https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2015/01/matrix-to-quat.pdf
+  const matrix2quat = ( m ) =>
+  {
+    const [ [ m00, m10, m20 ],
+            [ m01, m11, m21 ],
+            [ m02, m12, m22 ],
+          ] = m
+    let t
+    let q
+    if (m22 < 0) {
+      if (m00 > m11) {
+        t = 1 + m00 - m11 - m22
+        q = [ t, m01 + m10, m20 + m02, m12 - m21 ]
+      }
+      else {
+        t = 1 - m00 + m11 - m22
+        q = [ m01 + m10, t, m12 + m21, m20 - m02 ]
+      }
+    }
+    else {
+      if (m00 < -m11) {
+        t = 1 - m00 - m11 + m22
+        q = [ m20 + m02, m12 + m21, t, m01 - m10 ]
+      }
+      else {
+        t = 1 + m00 + m11 + m22
+        q = [ m12 - m21, m20 - m02, m01 - m10, t ]
+      }
+    }
+    return q.map( x => x * 0.5 / Math.sqrt(t) )
+  }
+
+  const contextFactory = ( adapter, fieldName ) =>
+  {
+    const fieldApp = fieldApps[ fieldName ]
+    const realizedModel = new vzomePkg.jsweet.JsRealizedModel( field, adapter )
+    const selection = new vzomePkg.jsweet.JsSelection( field, adapter )
+    const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp )
+    const createEdit = xmlElement =>
+    {
+      let editName = xmlElement.getLocalName()
+      if ( editName === "Snapshot" )
+        return null
+      const legacyNames = {
+        setItemColor: "ColorManifestations",
+        BnPolyope: "B4Polytope",
+        DeselectByClass: "AdjustSelectionByClass",
+        realizeMetaParts: "RealizeMetaParts",
+        SelectSimilarSize: "AdjustSelectionByOrbitLength",
+        zomic: "RunZomicScript",
+        py: "RunPythonScript",
+        apiProxy: "ApiEdit",
+      }
+      editName = legacyNames[ editName ] || editName
+      let editClass = vzomePkg.core.edits[ editName ]
+      if ( ! editClass )
+        editClass = vzomePkg.core.editor[ editName ]
+      if ( editClass )
+        return new editClass( editor )
+      else
+        return new vzomePkg.core.editor.CommandEdit( null, editor )
+    }
+    const createLegacyCommand = name =>
+    {
+      return new vzomePkg.core.commands[ name ]()
+    }
+    const performAndRecord = edit => edit.perform()
+    return { createEdit, createLegacyCommand, performAndRecord }
+  }
+
+  // Discover all the legacy edit classes and register as commands
+  const commands = {}
+  for ( const [ name, editClass ] of Object.entries( vzomePkg.core.edits ) )
+    commands[ name ] = legacyCommand( contextFactory, name )
+  store.dispatch( mesh.commandsDefined( commands ) )
 
   // Prepare the orbitSource for resolveShapes
-  const symmPer = fieldApp.getSymmetryPerspective( "icosahedral" )
-  const colors = new vzomePkg.core.render.Colors( new Properties( defaults ) )
+  const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
+  orbitSource.quaternions = makeQuaternions( orbitSource.getSymmetry().getMatrices() )
+  const resolver = resolverFactory( vzomePkg )( orbitSource )
 
   const origin = goldenField.origin( 3 )
   const originBall = mesh.createInstance( [ origin ] )
@@ -178,15 +288,23 @@ export const init = async ( window, store ) =>
   const yellow = [ [0,0,1], [1,0,1], [1,1,1] ]
   const red = [ [1,0,1], [0,0,1], [0,1,1] ]
   const green = [ [1,0,1], [1,0,1], [0,0,1] ]
-  const gridPoints = shimClass.getZoneGrid( orbitSource, blue )
+  const gridPoints = vzomePkg.jsweet.JsAdapter.getZoneGrid( orbitSource, blue )
   store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
 
+  const parser = parseModelFile( contextFactory, formatFactory, resolverFactory( vzomePkg ) )
+
   // TODO: fetch all shape VEFs in a ZIP, then inject each
+  Promise.all( knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/octahedral/${name}.vef` ) ) )
+    .then( () => {
   Promise.all( knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/default/${name}.vef` ) ) )
     .then( () => {
       // now we are finally ready to resolve instance shapes
-      store.dispatch( { type: ORBITS_INITIALIZED, payload: { fieldApp, resolver: resolver( goldenField, vzomePkg, orbitSource ) } } )
+      store.dispatch( { type: RESOLVER_READY, payload: resolver } )
+      store.dispatch( { type: PARSER_READY, payload: parser } )
+      if ( ! store.getState().workingPlane )
+        store.dispatch( fetchModel( "/app/models/120-cell.vZome" ) )
     })
+  })
 }
 
 const embedShape = ( shape ) =>
@@ -200,37 +318,35 @@ const embedShape = ( shape ) =>
   return { id, vertices, faces }
 }
 
-const resolver = ( field, vzomePkg, orbitSource ) => shapes => instance =>
+const resolverFactory = vzomePkg => orbitSource => shapes => instance =>
 {
-  const { id, vectors } = instance
-  const jsAF = new vzomePkg.jsweet.JsAlgebraicField( field )
-  {
-    const man = vzomePkg.jsweet.JsManifestation.manifest( vectors, jsAF )
-    const rm = new vzomePkg.core.render.RenderedManifestation( man, orbitSource )
-    rm.resetAttributes( orbitSource, orbitSource.getShapes(), false, true )
+  const { id, vectors, color } = instance
+  const jsAF = orbitSource.getSymmetry().getField()
 
-    // may be a zero-length strut, no shape
-    if ( !rm.getShape() )
-      return undefined
-    
-    // is the shape new?
-    const shapeId = rm.getShapeId().toString()
-    if ( ! shapes[ shapeId ] ) {
-      shapes[ shapeId ] = embedShape( rm.getShape() )
-    }
+  const shown = new Map()
+  shown.set( id, instance )
+  const adapter = new Adapter( shown, new Map(), new Map() )
 
-    const wlast = q =>
-    {
-      const [ w, x, y, z ] = q
-      return [ x, y, z, w ]
-    }
-      // get shape, orientation, color from rm
-    const quatIndex = rm.getStrutZone()
-    const rotation = ( quatIndex && (quatIndex >= 0) && wlast( field.embedv( field.quaternions[ quatIndex ] ) ) ) || [0,0,0,1]
-    const color = rm.getColor().getRGB()
+  const man = vzomePkg.jsweet.JsManifestation.manifest( vectors, jsAF, adapter )
+  const rm = new vzomePkg.core.render.RenderedManifestation( man, orbitSource )
+  rm.resetAttributes( orbitSource, orbitSource.getShapes(), false, true )
+
+  // may be a zero-length strut, no shape
+  if ( !rm.getShape() )
+    return undefined
   
-    return { id, rotation, color, shapeId }
+  // is the shape new?
+  const shapeId = rm.getShapeId().toString()
+  if ( ! shapes[ shapeId ] ) {
+    shapes[ shapeId ] = embedShape( rm.getShape() )
   }
+
+  // get shape, orientation, color from rm
+  const quatIndex = rm.getStrutZone()
+  const rotation = ( quatIndex && (quatIndex >= 0) && orbitSource.quaternions[ quatIndex ] ) || [0,0,0,1]
+  const finalColor = rm.getColor().getRGB()
+
+  return { id, rotation, color: finalColor, shapeId }
 }
 
 class Adapter
@@ -261,12 +377,15 @@ class Adapter
     const { id } = mesh.createInstance( vectors )
     this.shown.delete( id )
     this.selected.delete( id )
+    this.hidden.delete( id )
   }
 
   select( vectors )
   {
     const { id } = mesh.createInstance( vectors )
     const instance = this.shown.get( id )
+    if ( ! instance )
+      throw new Error( `No shown instance to select at ${id}`)
     this.shown.delete( id )
     this.selected.set( id, instance )
   }
@@ -301,16 +420,52 @@ class Adapter
     return this.selected.has( id )
   }
 
-  findOrAddManifestation( vectors )
+  manifestationHasColor( vectors )
+  {
+    const { id } = mesh.createInstance( vectors )
+    const existing = this.shown.get( id ) || this.selected.get( id )
+    return !!existing.color
+  }
+
+  manifestationColor( vectors )
+  {
+    const { id } = mesh.createInstance( vectors )
+    const existing = this.shown.get( id ) || this.selected.get( id )
+    return existing.color
+  }
+
+  setManifestationColor( vectors, color )
+  {
+    const { id } = mesh.createInstance( vectors )
+    const existing = this.shown.get( id ) || this.selected.get( id )
+    existing.color = color
+  }
+
+  findOrCreateManifestation( vectors )
   {
     const created = mesh.createInstance( vectors )
     const { id } = created
     const existing = this.shown.get( id ) || this.hidden.get( id ) || this.selected.get( id )
     if ( existing )
-      return existing;
+      return existing.vectors;
     // TODO avoid creating zero-length struts, to match Java semantics of RMI.findConstruction
-    this.shown.set( id, created )
     return vectors
+  }
+
+  showManifestation( vectors )
+  {
+    let instance = mesh.createInstance( vectors )
+    instance = this.shown.get( instance.id ) || this.selected.get( instance.id ) || this.hidden.get( instance.id ) || instance
+    this.selected.delete( instance.id ) || this.hidden.delete( instance.id )
+    this.shown.set( instance.id, instance )
+  }
+
+  hideManifestation( vectors )
+  {
+    let instance = mesh.createInstance( vectors )
+    instance = this.shown.get( instance.id ) || this.selected.get( instance.id ) || this.hidden.get( instance.id ) || instance
+    this.selected.delete( instance.id ) || this.shown.delete( instance.id )
+    this.hidden.set( instance.id, instance )
   }
 
   allIterator()
@@ -341,21 +496,16 @@ class Properties
   }
 }
 
-export const legacyCommand = ( pkg, editClass ) => ( config ) => ( dispatch, getState ) =>
+export const legacyCommand = ( contextFactory, className ) => ( config ) => ( dispatch, getState ) =>
 {
-  let { shown, hidden, selected } = getState().mesh
+  let { shown, hidden, selected, field } = getState().mesh
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )
   const adapter = new Adapter( shown, hidden, selected )
+  const context = contextFactory( adapter, field.name )
 
-  const { fieldApp } = getState().jsweet
-  const field = fieldApp.getField()
-  const realizedModel = new pkg.JsRealizedModel( field, adapter )
-  const selection = new pkg.JsSelection( field, adapter )
-  const editor = new pkg.JsEditorModel( realizedModel, selection, fieldApp )
-
-  const edit = new editClass( editor )
+  const edit = context.createEdit( new JavaDomElement( { localName: className } ) )
 
   edit.configure( new Properties( config ) )
 
@@ -364,4 +514,119 @@ export const legacyCommand = ( pkg, editClass ) => ( config ) => ( dispatch, get
   dispatch( { type: WORK_STARTED } )
   dispatch( mesh.meshChanged( shown, selected, hidden ) )
   dispatch( { type: WORK_FINISHED } )
+}
+
+class JavaDomNodeList
+{
+  constructor( nodeList )
+  {
+    this.nativeNodeList = nodeList
+    this.__interfaces = [ "org.w3c.dom.NodeList" ]
+  }
+
+  getLength()
+  {
+    return this.nativeNodeList.length
+  }
+
+  item( i )
+  {
+    const node = this.nativeNodeList.item( i )
+    if ( node.nodeType === 1 )
+      return new JavaDomElement( node )
+    else
+      return node
+  }
+}
+
+class JavaDomElement
+{
+  constructor( element )
+  {
+    this.nativeElement = element
+    this.__interfaces = [ "org.w3c.dom.Element" ]
+  }
+
+  getAttribute( name )
+  {
+    return this.nativeElement.getAttribute( name )
+  }
+
+  getLocalName()
+  {
+    return this.nativeElement.localName
+  }
+
+  getChildNodes()
+  {
+    return new JavaDomNodeList( this.nativeElement.childNodes )
+  }
+}
+
+export const parseModelFile = ( contextFactory, formatFactory, resolverFactory ) => ( name, xmlText, dispatch, getState ) =>
+{
+  // I tried using JXON here, but wants to make the EditHistory into an object not an array.
+  // I could also just roll my own, ala https://developer.mozilla.org/en-US/docs/Archive/JXON,
+  //   but I think there would be enough special cases that I might as well just use the DOM.
+
+  dispatch( startProgress( "Parsing vZome file..." ) )
+
+  const getChildElement = ( parent, name ) =>
+  {
+    let target = parent.firstElementChild
+    while ( name !== target.nodeName )
+      target = target.nextElementSibling
+    return target
+  }
+
+  const parser = new DOMParser();
+  const domDoc = parser.parseFromString( xmlText, "application/xml" );
+  let vZomeRoot = domDoc.firstElementChild
+  console.log( vZomeRoot )
+
+  const origin = goldenField.origin( 3 )
+  const originBall = mesh.createInstance( [ origin ] )
+  const shown = new Map().set( originBall.id, originBall )
+  const hidden = new Map()
+  const selected = new Map()
+  const adapter = new Adapter( shown, hidden, selected )
+
+  try {
+    const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
+    const fieldName = vZomeRoot.getAttribute( "field" )
+    const system = new JavaDomElement( getChildElement( vZomeRoot, "SymmetrySystem") )
+    const format = formatFactory( namespace, fieldName, system )
+
+    const resolver = resolverFactory( format.orbitSource )
+    dispatch( { type: RESOLVER_READY, payload: resolver } )
+
+    const history = getChildElement( vZomeRoot, "EditHistory" )
+    const editNumber = history.getAttribute( "editNumber" )
+    let editElement = history.firstElementChild
+
+    const context = contextFactory( adapter, fieldName )
+
+    do {
+      console.log( editElement.outerHTML )
+      const wrappedElement = new JavaDomElement( editElement )
+      const edit = context.createEdit( wrappedElement )
+      if ( edit )
+        edit.loadAndPerform( wrappedElement, format, context )
+      editElement = editElement.nextElementSibling
+    }
+    while ( editElement );
+    
+    const viewing = getChildElement( vZomeRoot, "Viewing" )
+    if ( viewing ) {
+      dispatch( parseViewXml( viewing, getChildElement ) )
+    }
+  } catch (error) {
+    console.log( error )
+    dispatch( stopProgress() )
+    dispatch( showAlert( `Unable to parse model file: ${name};\n ${error.message}` ) )
+    return
+  }
+
+  dispatch( stopProgress() )
+  dispatch( mesh.meshChanged( shown, selected, hidden ) )
 }
