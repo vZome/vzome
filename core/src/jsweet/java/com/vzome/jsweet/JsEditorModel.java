@@ -5,14 +5,14 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.api.EditorModel;
-import com.vzome.core.editor.api.ImplicitSymmetryParameters;
+import com.vzome.core.editor.api.LegacyEditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Selection;
 import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.model.RealizedModel;
 
-public class JsEditorModel implements EditorModel, ImplicitSymmetryParameters, SymmetryAware
+public class JsEditorModel implements EditorModel, LegacyEditorModel, SymmetryAware
 {
     private final RealizedModel realizedModel;
     private final Selection selection;
@@ -56,7 +56,13 @@ public class JsEditorModel implements EditorModel, ImplicitSymmetryParameters, S
     {
         return this.symmetryCenter;
     }
-    
+
+    @Override
+    public boolean hasFailedConstruction( Construction cons )
+    {
+        return false;
+    }
+
     
     
 
@@ -87,6 +93,12 @@ public class JsEditorModel implements EditorModel, ImplicitSymmetryParameters, S
 
     @Override
     public OrbitSource getSymmetrySystem( String name )
+    {
+        throw new RuntimeException( "unimplemented" );
+    }
+
+    @Override
+    public void addFailedConstruction( Construction cons )
     {
         throw new RuntimeException( "unimplemented" );
     }

@@ -265,7 +265,8 @@ export const init = async ( window, store ) =>
       return new vzomePkg.core.commands[ name ]()
     }
     const performAndRecord = edit => edit.perform()
-    return { createEdit, createLegacyCommand, performAndRecord }
+    // This object implements the UndoableEdit.Context interface, and adds access to the adapter
+    return { createEdit, createLegacyCommand, performAndRecord, adapter }
   }
 
   // Discover all the legacy edit classes and register as commands
@@ -356,6 +357,11 @@ class Adapter
     this.shown = shown
     this.hidden = hidden
     this.selected = selected
+  }
+
+  spawn()
+  {
+    return new Adapter( new Map( this.shown ), new Map( this.hidden ), new Map( this.selected ) )
   }
 
   selectAll()
@@ -574,7 +580,7 @@ export const parseModelFile = ( contextFactory, formatFactory, resolverFactory )
   const getChildElement = ( parent, name ) =>
   {
     let target = parent.firstElementChild
-    while ( name !== target.nodeName )
+    while ( target && name.toLowerCase() !== target.nodeName.toLowerCase() )
       target = target.nextElementSibling
     return target
   }
@@ -589,12 +595,12 @@ export const parseModelFile = ( contextFactory, formatFactory, resolverFactory )
   const shown = new Map().set( originBall.id, originBall )
   const hidden = new Map()
   const selected = new Map()
-  const adapter = new Adapter( shown, hidden, selected )
 
   try {
     const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
     const fieldName = vZomeRoot.getAttribute( "field" )
-    const system = new JavaDomElement( getChildElement( vZomeRoot, "SymmetrySystem") )
+    const systemXml = getChildElement( vZomeRoot, "SymmetrySystem" )
+    const system = systemXml && new JavaDomElement( systemXml )
     const format = formatFactory( namespace, fieldName, system )
 
     const resolver = resolverFactory( format.orbitSource )
@@ -604,17 +610,28 @@ export const parseModelFile = ( contextFactory, formatFactory, resolverFactory )
     const editNumber = history.getAttribute( "editNumber" )
     let editElement = history.firstElementChild
 
-    const context = contextFactory( adapter, fieldName )
-
-    do {
-      console.log( editElement.outerHTML )
-      const wrappedElement = new JavaDomElement( editElement )
-      const edit = context.createEdit( wrappedElement )
-      if ( edit )
-        edit.loadAndPerform( wrappedElement, format, context )
-      editElement = editElement.nextElementSibling
+    const performEdits = ( editElement, context ) =>
+    {
+      do {
+        console.log( editElement.outerHTML )
+        if ( editElement.nodeName === "Branch" ) {
+          const sandbox = contextFactory( context.adapter.spawn(), fieldName )
+          performEdits( editElement.firstElementChild, sandbox )
+          // we discard the spawned context
+        } else {
+          const wrappedElement = new JavaDomElement( editElement )
+          const edit = context.createEdit( wrappedElement )
+          if ( edit )
+            edit.loadAndPerform( wrappedElement, format, context )
+        }
+        editElement = editElement.nextElementSibling
+      }
+      while ( editElement );
     }
-    while ( editElement );
+
+    const adapter = new Adapter( shown, hidden, selected )
+    const context = contextFactory( adapter, fieldName )
+    performEdits( editElement, context )
     
     const viewing = getChildElement( vZomeRoot, "Viewing" )
     if ( viewing ) {
