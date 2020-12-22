@@ -201,6 +201,18 @@ export const init = async ( window, store ) =>
     return editClass
   }
 
+  const createEdit = ( xmlElement, editor ) =>
+  {
+    let editName = xmlElement.getLocalName()
+    if ( editName === "Snapshot" )
+      return null
+    const editClass = xmlToEditClass( editName )
+    if ( editClass )
+      return new editClass( editor )
+    else
+      return new vzomePkg.core.editor.CommandEdit( null, editor )
+  }
+
   const injectResource = async ( path ) =>
   {
     const fullPath = `/app/resources/${path}`
@@ -228,14 +240,15 @@ export const init = async ( window, store ) =>
   const properties = new Properties( defaults )
   const colors = new vzomePkg.core.render.Colors( properties )
   const context = new vzomePkg.jsweet.JsEditContext()
-  const field = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
-  const fieldApps = { golden: new vzomePkg.core.kinds.GoldenFieldApplication( field ) }
+  const gfield = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
+  const fieldApps = { golden: new vzomePkg.core.kinds.GoldenFieldApplication( gfield ) }
 
   const formatFactory = ( namespace, fieldName, systemXml ) =>
   {
     const fieldApp = fieldApps[ fieldName ]
     if ( ! fieldApp )
       throw new Error( `Field "${fieldName}" is not supported yet.` )
+    const field = fieldApp.getField()
     const symmName = systemXml? systemXml.getAttribute( "name" ) : "icosahedral"
     const format = vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )
     const symmPer = fieldApp.getSymmetryPerspective( symmName )
@@ -249,56 +262,39 @@ export const init = async ( window, store ) =>
     return format
   }
 
-  const contextFactory = ( adapter, fieldName ) =>
+  const createEditor = ( adapter, fieldName ) =>
   {
     const fieldApp = fieldApps[ fieldName ]
+    const field = fieldApp.getField()
     const realizedModel = new vzomePkg.jsweet.JsRealizedModel( field, adapter )
     const selection = new vzomePkg.jsweet.JsSelection( field, adapter )
-    const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp )
-    const createEdit = xmlElement =>
-    {
-      let editName = xmlElement.getLocalName()
-      if ( editName === "Snapshot" )
-        return null
-      const editClass = xmlToEditClass( editName )
-      if ( editClass )
-        return new editClass( editor )
-      else
-        return new vzomePkg.core.editor.CommandEdit( null, editor )
-    }
-    const createLegacyCommand = name =>
-    {
-      return new vzomePkg.core.commands[ name ]()
-    }
-    const performAndRecord = edit => edit.perform()
+    return new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp )
+  }
 
-    // Spawn off another adopter to isolate state changes
-    const spawn = () => contextFactory( adapter.spawn(), fieldName )
+  // This object implements the UndoableEdit.Context interface
+  const editContext = {
+    // Since we are not creating Branch edits, this should never be used
+    createEdit: () => { throw new Error( "createEdit should never be called" ) },
 
-    // for publishing mesh changes
-    const getMesh = () =>
-    {
-      const { shown, hidden, selected } = adapter
-      return { shown, selected, hidden }
-    }
-
-    // This object implements the UndoableEdit.Context interface, and adds spawn capability
-    return { createEdit, createLegacyCommand, performAndRecord, spawn, getMesh }
+    createLegacyCommand: name => new vzomePkg.core.commands[ name ](),
+    
+    // We will do our own edit recording, so this is just perform
+    performAndRecord: edit => edit.perform()
   }
 
   // Discover all the legacy edit classes and register as commands
   const commands = {}
   for ( const [ name, editClass ] of Object.entries( vzomePkg.core.edits ) )
-    commands[ name ] = legacyCommand( contextFactory, name )
+    commands[ name ] = legacyCommand( createEdit, createEditor, name )
   store.dispatch( commandsDefined( commands ) )
 
+  // TODO replace this with "new model"
   // Prepare the orbitSource for resolveShapes
   const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
   orbitSource.quaternions = makeQuaternions( orbitSource.getSymmetry().getMatrices() )
   const resolver = resolverFactory( vzomePkg )( orbitSource )
-
-  const origin = goldenField.origin( 3 )
+  const origin = goldenField.origin( 3 ) // TODO use the field name
   const originBall = mesh.createInstance( [ origin ] )
   store.dispatch( mesh.meshChanged( new Map().set( originBall.id, originBall ), new Map(), new Map() ) )
 
@@ -309,7 +305,7 @@ export const init = async ( window, store ) =>
   const gridPoints = vzomePkg.jsweet.JsAdapter.getZoneGrid( orbitSource, blue )
   store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
 
-  const parser = parseModelFile( contextFactory, formatFactory, resolverFactory( vzomePkg ) )
+  const parser = createParser( editContext, createEditor, createEdit, formatFactory, resolverFactory( vzomePkg ) )
 
   // TODO: fetch all shape VEFs in a ZIP, then inject each
   Promise.all( knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/octahedral/${name}.vef` ) ) )
@@ -320,7 +316,7 @@ export const init = async ( window, store ) =>
       store.dispatch( { type: RESOLVER_READY, payload: resolver } )
       store.dispatch( { type: PARSER_READY, payload: parser } )
       if ( ! store.getState().workingPlane )
-        store.dispatch( fetchModel( "/app/models/120-cell.vZome" ) )
+        store.dispatch( fetchModel( "/app/models/vZomeLogo.vZome" ) )
     })
   })
 }
@@ -369,16 +365,16 @@ const resolverFactory = vzomePkg => orbitSource => shapes => instance =>
 
 class Adapter
 {
-  constructor( shown, hidden, selected )
+  constructor( shown, selected, hidden )
   {
     this.shown = shown
     this.hidden = hidden
     this.selected = selected
   }
 
-  spawn()
+  clone()
   {
-    return new Adapter( new Map( this.shown ), new Map( this.hidden ), new Map( this.selected ) )
+    return new Adapter( new Map( this.shown ), new Map( this.selected ), new Map( this.hidden ) )
   }
 
   selectAll()
@@ -519,16 +515,15 @@ class Properties
   }
 }
 
-export const legacyCommand = ( contextFactory, className ) => ( config ) => ( dispatch, getState ) =>
+export const legacyCommand = ( createEdit, createEditor, className ) => ( config ) => ( dispatch, getState ) =>
 {
   let { shown, hidden, selected, field } = getState().mesh.present
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )
-  const adapter = new Adapter( shown, hidden, selected )
-  const context = contextFactory( adapter, field.name )
-
-  const edit = context.createEdit( new JavaDomElement( { localName: className } ) )
+  const adapter = new Adapter( shown, selected, hidden )
+  const editor = createEditor( adapter, field.name )
+  const edit = createEdit( new JavaDomElement( { localName: className } ), editor )
 
   edit.configure( new Properties( config ) )
 
@@ -586,7 +581,7 @@ class JavaDomElement
   }
 }
 
-export const parseModelFile = ( contextFactory, formatFactory, resolverFactory ) => ( name, xmlText, dispatch, getState ) =>
+export const createParser = ( editContext, createEditor, createEdit, formatFactory, resolverFactory ) => ( name, xmlText, dispatch, getState ) =>
 {
   // I tried using JXON here, but wants to make the EditHistory into an object not an array.
   // I could also just roll my own, ala https://developer.mozilla.org/en-US/docs/Archive/JXON,
@@ -607,15 +602,16 @@ export const parseModelFile = ( contextFactory, formatFactory, resolverFactory )
   let vZomeRoot = domDoc.firstElementChild
   console.log( vZomeRoot )
 
-  const origin = goldenField.origin( 3 )
-  const originBall = mesh.createInstance( [ origin ] )
-  const shown = new Map().set( originBall.id, originBall )
-  const hidden = new Map()
-  const selected = new Map()
-
   try {
     const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
     const fieldName = vZomeRoot.getAttribute( "field" )
+
+    const origin = goldenField.origin( 3 ) // TODO use the field name
+    const originBall = mesh.createInstance( [ origin ] )
+    const shown = new Map().set( originBall.id, originBall )
+    const hidden = new Map()
+    const selected = new Map()  
+
     const systemXml = getChildElement( vZomeRoot, "SymmetrySystem" )
     const system = systemXml && new JavaDomElement( systemXml )
     const format = formatFactory( namespace, fieldName, system )
@@ -627,21 +623,23 @@ export const parseModelFile = ( contextFactory, formatFactory, resolverFactory )
     const editNumber = history.getAttribute( "editNumber" )
     let editElement = history.firstElementChild
 
-    const performEdits = ( editElement, context, publish ) =>
+    const performEdits = ( editElement, adapter, publishMesh ) =>
     {
       do {
         console.log( editElement.outerHTML )
         if ( editElement.nodeName === "Branch" ) {
-          performEdits( editElement.firstElementChild, context.spawn(), () => {} ) // nothing published
-          // we discard the spawned context
+          const sandbox = adapter.clone()
+          performEdits( editElement.firstElementChild, sandbox, () => {} ) // nothing published
+          // we discard the cloned sandbox adapter
         } else {
           const wrappedElement = new JavaDomElement( editElement )
-          const edit = context.createEdit( wrappedElement )
+          adapter = adapter.clone()  // each command builds on the last
+          const editor = createEditor( adapter, fieldName )
+          const edit = createEdit( wrappedElement, editor )
           // null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit
           if ( edit ) {
-            const editChanges = context.spawn()
-            edit.loadAndPerform( wrappedElement, format, editChanges )
-            publish( editChanges.getMesh() )
+            edit.loadAndPerform( wrappedElement, format, editContext ) // a fixed editContext is sufficient for us
+            publishMesh( adapter )
           }
         }
         editElement = editElement.nextElementSibling
@@ -649,11 +647,11 @@ export const parseModelFile = ( contextFactory, formatFactory, resolverFactory )
       while ( editElement );
     }
 
-    const publish = ( { shown, selected, hidden } ) => dispatch( mesh.meshChanged( shown, selected, hidden ) )
+    const publishMesh = ( { shown, selected, hidden } ) => dispatch( mesh.meshChanged( shown, selected, hidden ) )
 
-    const adapter = new Adapter( shown, hidden, selected )
-    const context = contextFactory( adapter, fieldName )
-    performEdits( editElement, context, publish )
+    const adapter = new Adapter( shown, selected, hidden )
+    publishMesh( adapter ) // so the user can undo back to the initial state?
+    performEdits( editElement, adapter, publishMesh )
     
     const viewing = getChildElement( vZomeRoot, "Viewing" )
     if ( viewing ) {

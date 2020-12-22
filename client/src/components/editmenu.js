@@ -70,10 +70,10 @@ const EditMenu = ({ visible, edits, doEdit, canUndo, canRedo, doUndo, doRedo }) 
 } 
 
 const select = ( { java, mesh, commands, workingPlane } ) => ({
-  canUndo: mesh.past.length > 0,
-  canRedo: mesh.future.length > 0,
-  visible: !java.readOnly && ! workingPlane,
-  edits: mesh && Object.getOwnPropertyNames( commands )
+  canUndo: mesh && mesh.past.length > 0,
+  canRedo: mesh && mesh.future.length > 0,
+  visible: !!commands,
+  edits: commands && Object.getOwnPropertyNames( commands )
 })
 
 const boundEventActions = {

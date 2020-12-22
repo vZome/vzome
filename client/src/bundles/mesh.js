@@ -4,7 +4,6 @@ import undoable from 'redux-undo'
 const OBJECT_SELECTED = 'OBJECT_SELECTED'
 const OBJECT_DESELECTED = 'OBJECT_DESELECTED'
 const FIELD_DEFINED = 'FIELD_DEFINED'
-const RESOLVER_DEFINED = 'RESOLVER_DEFINED'
 const ALL_SELECTED = 'ALL_SELECTED'
 const ALL_DESELECTED = 'ALL_DESELECTED'
 const MESH_CHANGED = 'MESH_CHANGED'
@@ -23,15 +22,12 @@ export const meshChanged = ( shown, selected, hidden ) => ({ type: MESH_CHANGED,
 
 export const fieldDefined = ( field ) => ({ type: FIELD_DEFINED, payload: field })
 
-export const resolverDefined = ( resolver ) => ({ type: RESOLVER_DEFINED, payload: resolver })
-
 const initialState = {
   shown: new Map(),
   selected: new Map(), // This Map is especially important, so we iterate in insertion order
   hidden: new Map(),
   fields: {},
   field: undefined,
-  resolver: undefined,
 }
 
 const canonicalizedId = ( vectors ) =>
@@ -118,11 +114,6 @@ export const reducer = undoable( ( state = initialState, action ) =>
         field: newField, // TODO use a different action to set this
         fields: { ...state.fields, [newField.name]: newField }
       }
-    }
-
-    case RESOLVER_DEFINED: {
-      const resolver = action.payload
-      return { ...state, resolver }
     }
             
     default:

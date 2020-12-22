@@ -3,7 +3,7 @@ import * as mesh from '../bundles/mesh'
 
 export default ( start, end ) => ( dispatch, getState ) =>
 {
-  let { shown, selected, hidden } = getState().mesh
+  let { shown, selected, hidden } = getState().mesh.present
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )

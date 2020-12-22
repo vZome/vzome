@@ -105,7 +105,7 @@ const select = ( state ) =>
 {
   const { camera, lighting, mesh, workingPlane, java } = state
   const preResolved = java.shapes && { shapes: java.shapes, instances: java.renderingOn? java.instances : java.previous }
-  const shown = new Map( mesh && mesh.shown )
+  const shown = new Map( mesh && mesh.present.shown )
   if ( workingPlane && workingPlane.enabled && workingPlane.endPt ) {
     const { position, endPt, buildingStruts } = workingPlane
     let previewBall = createInstance( [ endPt ] )
@@ -121,7 +121,7 @@ const select = ( state ) =>
     workingPlane,
     camera,
     lighting,
-    mesh: { ...mesh, shown },
+    mesh: mesh && { ...mesh.present, shown },
     resolver: java.resolver,
     preResolved,
     clickable: ! java.readOnly
