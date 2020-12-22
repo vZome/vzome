@@ -1,4 +1,6 @@
 
+import undoable from 'redux-undo'
+
 const OBJECT_SELECTED = 'OBJECT_SELECTED'
 const OBJECT_DESELECTED = 'OBJECT_DESELECTED'
 const COMMANDS_DEFINED = 'COMMANDS_DEFINED'
@@ -22,7 +24,7 @@ export const meshChanged = ( shown, selected, hidden ) => ({ type: MESH_CHANGED,
 
 export const createRandom = () => ( dispatch, getState ) =>
 {
-  let { shown, selected, hidden, field, resolver } = getState().mesh
+  let { shown, selected, hidden, field, resolver } = getState().mesh.present
   shown = new Map( shown )
   selected = new Map( selected )
   hidden = new Map( hidden )
@@ -62,7 +64,7 @@ export const commandTriggered = ( cmd, config={} ) => ( dispatch, getState ) =>
       break;
 
     default:
-      const state = getState().mesh
+      const state = getState().mesh.present
       const command = state.commands[ cmd ]
       dispatch( command( config ) )
   }
@@ -103,7 +105,7 @@ export const createInstance = ( vectors ) =>
   return { id, vectors }
 }
 
-export const reducer = ( state = initialState, action ) =>
+export const reducer = undoable( ( state = initialState, action ) =>
 {
   switch (action.type) {
 
@@ -180,4 +182,4 @@ export const reducer = ( state = initialState, action ) =>
     default:
       return state
   }
-}
+} )

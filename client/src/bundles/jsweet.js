@@ -504,7 +504,7 @@ class Properties
 
 export const legacyCommand = ( contextFactory, className ) => ( config ) => ( dispatch, getState ) =>
 {
-  let { shown, hidden, selected, field } = getState().mesh
+  let { shown, hidden, selected, field } = getState().mesh.present
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )
