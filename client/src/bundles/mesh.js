@@ -3,7 +3,6 @@ import undoable from 'redux-undo'
 
 const OBJECT_SELECTED = 'OBJECT_SELECTED'
 const OBJECT_DESELECTED = 'OBJECT_DESELECTED'
-const COMMANDS_DEFINED = 'COMMANDS_DEFINED'
 const FIELD_DEFINED = 'FIELD_DEFINED'
 const RESOLVER_DEFINED = 'RESOLVER_DEFINED'
 const ALL_SELECTED = 'ALL_SELECTED'
@@ -22,53 +21,9 @@ export const allDeselected = () => ({ type: ALL_DESELECTED })
 
 export const meshChanged = ( shown, selected, hidden ) => ({ type: MESH_CHANGED, payload: { shown, selected, hidden } })
 
-export const createRandom = () => ( dispatch, getState ) =>
-{
-  let { shown, selected, hidden, field, resolver } = getState().mesh.present
-  shown = new Map( shown )
-  selected = new Map( selected )
-  hidden = new Map( hidden )
-
-  const location = field.randomVector()
-  let instance = createInstance( [ location ] )
-  const { id } = instance
-
-  instance = shown.get( id ) || selected.get( id ) || hidden.get( id ) || instance
-  shown.delete( id ) || selected.delete( id ) || hidden.delete( id )
-  selected = selected.set( id, instance )
-
-  dispatch( meshChanged( shown, selected, hidden ) )
-  dispatch( resolver.resolve( [ instance ] ) )
-}
-
 export const fieldDefined = ( field ) => ({ type: FIELD_DEFINED, payload: field })
 
 export const resolverDefined = ( resolver ) => ({ type: RESOLVER_DEFINED, payload: resolver })
-
-export const commandsDefined = ( commands ) => ({ type: COMMANDS_DEFINED, payload: commands })
-
-export const commandTriggered = ( cmd, config={} ) => ( dispatch, getState ) =>
-{
-  switch ( cmd ) {
-
-    case 'random':
-      dispatch( createRandom() )
-      break;
-  
-    case 'allSelected':
-      dispatch( allSelected() )
-      break;
-  
-    case 'allDeselected':
-      dispatch( allDeselected() )
-      break;
-
-    default:
-      const state = getState().mesh.present
-      const command = state.commands[ cmd ]
-      dispatch( command( config ) )
-  }
-}
 
 const initialState = {
   shown: new Map(),
@@ -77,7 +32,6 @@ const initialState = {
   fields: {},
   field: undefined,
   resolver: undefined,
-  commands: {},
 }
 
 const canonicalizedId = ( vectors ) =>
@@ -169,14 +123,6 @@ export const reducer = undoable( ( state = initialState, action ) =>
     case RESOLVER_DEFINED: {
       const resolver = action.payload
       return { ...state, resolver }
-    }
-
-    case COMMANDS_DEFINED: {
-      const newCommands = action.payload
-      return {
-        ...state,
-        commands: { ...state.commands, ...newCommands }
-      }
     }
             
     default:

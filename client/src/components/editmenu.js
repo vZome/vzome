@@ -1,7 +1,7 @@
 
 import React from 'react'
 import { connect } from 'react-redux'
-import { commandTriggered } from '../bundles/mesh'
+import { commandTriggered } from '../commands'
 import { ActionCreators as UndoActionCreators } from 'redux-undo'
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
@@ -48,7 +48,6 @@ const EditMenu = ({ visible, edits, doEdit, canUndo, canRedo, doUndo, doRedo }) 
           <MenuItem disabled={!canUndo} onClick={doUndo}>Undo</MenuItem>
           <MenuItem disabled={!canRedo} onClick={doRedo}>Redo</MenuItem>
           <Divider />
-          <MenuItem onClick={ e => doEdit( 'random' ) }>New Random</MenuItem>
           <MenuItem onClick={ e => doEdit( 'allSelected' ) }>Select All</MenuItem>
           <MenuItem onClick={ e => doEdit( 'allDeselected' ) }>Deselect All</MenuItem>
           <MenuItem onClick={ e => doEdit( 'centroid' ) }>Centroid 1</MenuItem>
@@ -70,11 +69,11 @@ const EditMenu = ({ visible, edits, doEdit, canUndo, canRedo, doUndo, doRedo }) 
     return null
 } 
 
-const select = ( { java, mesh, workingPlane } ) => ({
+const select = ( { java, mesh, commands, workingPlane } ) => ({
   canUndo: mesh.past.length > 0,
   canRedo: mesh.future.length > 0,
   visible: !java.readOnly && ! workingPlane,
-  edits: mesh && Object.getOwnPropertyNames( mesh.present.commands )
+  edits: mesh && Object.getOwnPropertyNames( commands )
 })
 
 const boundEventActions = {

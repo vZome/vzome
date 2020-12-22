@@ -1,5 +1,6 @@
 
 import * as mesh from './mesh'
+import { commandsDefined } from '../commands'
 import * as planes from './planes'
 import { field as goldenField } from '../fields/golden'
 import { startProgress, stopProgress } from './progress'
@@ -130,10 +131,75 @@ const knownOrbitNames = [
 
 // Initialization
 
+const makeQuaternions = ( matrices ) =>
+{
+  return matrices.map( am => {
+    let m = [[],[],[]]
+    for ( let i = 0; i < 3; i++) {
+      for ( let j = 0; j < 3; j++) {
+        const an = am.getElement( i, j );
+        m[ i ][ j ] = an.evaluate()
+      }
+    }
+    return matrix2quat( m )
+  });
+}
+
+// Due to Mike Day, Insomniac Games
+//   https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2015/01/matrix-to-quat.pdf
+const matrix2quat = ( m ) =>
+{
+  const [ [ m00, m10, m20 ],
+          [ m01, m11, m21 ],
+          [ m02, m12, m22 ],
+        ] = m
+  let t
+  let q
+  if (m22 < 0) {
+    if (m00 > m11) {
+      t = 1 + m00 - m11 - m22
+      q = [ t, m01 + m10, m20 + m02, m12 - m21 ]
+    }
+    else {
+      t = 1 - m00 + m11 - m22
+      q = [ m01 + m10, t, m12 + m21, m20 - m02 ]
+    }
+  }
+  else {
+    if (m00 < -m11) {
+      t = 1 - m00 - m11 + m22
+      q = [ m20 + m02, m12 + m21, t, m01 - m10 ]
+    }
+    else {
+      t = 1 + m00 + m11 + m22
+      q = [ m12 - m21, m20 - m02, m01 - m10, t ]
+    }
+  }
+  return q.map( x => x * 0.5 / Math.sqrt(t) )
+}
 export const init = async ( window, store ) =>
 {
   const vzomePkg = window.com.vzome
   const util = window.java.util
+
+  const xmlToEditClass = editName =>
+  {
+    const legacyNames = {
+      setItemColor: "ColorManifestations",
+      BnPolyope: "B4Polytope",
+      DeselectByClass: "AdjustSelectionByClass",
+      realizeMetaParts: "RealizeMetaParts",
+      SelectSimilarSize: "AdjustSelectionByOrbitLength",
+      zomic: "RunZomicScript",
+      py: "RunPythonScript",
+      apiProxy: "ApiEdit",
+    }
+    editName = legacyNames[ editName ] || editName
+    let editClass = vzomePkg.core.edits[ editName ]
+    if ( ! editClass )
+      editClass = vzomePkg.core.editor[ editName ]
+    return editClass
+  }
 
   const injectResource = async ( path ) =>
   {
@@ -183,53 +249,6 @@ export const init = async ( window, store ) =>
     return format
   }
 
-  const makeQuaternions = ( matrices ) =>
-  {
-    return matrices.map( am => {
-      let m = [[],[],[]]
-      for ( let i = 0; i < 3; i++) {
-        for ( let j = 0; j < 3; j++) {
-          const an = am.getElement( i, j );
-          m[ i ][ j ] = an.evaluate()
-        }
-      }
-      return matrix2quat( m )
-    });
-  }
-
-  // Due to Mike Day, Insomniac Games
-  //   https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2015/01/matrix-to-quat.pdf
-  const matrix2quat = ( m ) =>
-  {
-    const [ [ m00, m10, m20 ],
-            [ m01, m11, m21 ],
-            [ m02, m12, m22 ],
-          ] = m
-    let t
-    let q
-    if (m22 < 0) {
-      if (m00 > m11) {
-        t = 1 + m00 - m11 - m22
-        q = [ t, m01 + m10, m20 + m02, m12 - m21 ]
-      }
-      else {
-        t = 1 - m00 + m11 - m22
-        q = [ m01 + m10, t, m12 + m21, m20 - m02 ]
-      }
-    }
-    else {
-      if (m00 < -m11) {
-        t = 1 - m00 - m11 + m22
-        q = [ m20 + m02, m12 + m21, t, m01 - m10 ]
-      }
-      else {
-        t = 1 + m00 + m11 + m22
-        q = [ m12 - m21, m20 - m02, m01 - m10, t ]
-      }
-    }
-    return q.map( x => x * 0.5 / Math.sqrt(t) )
-  }
-
   const contextFactory = ( adapter, fieldName ) =>
   {
     const fieldApp = fieldApps[ fieldName ]
@@ -241,20 +260,7 @@ export const init = async ( window, store ) =>
       let editName = xmlElement.getLocalName()
       if ( editName === "Snapshot" )
         return null
-      const legacyNames = {
-        setItemColor: "ColorManifestations",
-        BnPolyope: "B4Polytope",
-        DeselectByClass: "AdjustSelectionByClass",
-        realizeMetaParts: "RealizeMetaParts",
-        SelectSimilarSize: "AdjustSelectionByOrbitLength",
-        zomic: "RunZomicScript",
-        py: "RunPythonScript",
-        apiProxy: "ApiEdit",
-      }
-      editName = legacyNames[ editName ] || editName
-      let editClass = vzomePkg.core.edits[ editName ]
-      if ( ! editClass )
-        editClass = vzomePkg.core.editor[ editName ]
+      const editClass = xmlToEditClass( editName )
       if ( editClass )
         return new editClass( editor )
       else
@@ -265,15 +271,26 @@ export const init = async ( window, store ) =>
       return new vzomePkg.core.commands[ name ]()
     }
     const performAndRecord = edit => edit.perform()
-    // This object implements the UndoableEdit.Context interface, and adds access to the adapter
-    return { createEdit, createLegacyCommand, performAndRecord, adapter }
+
+    // Spawn off another adopter to isolate state changes
+    const spawn = () => contextFactory( adapter.spawn(), fieldName )
+
+    // for publishing mesh changes
+    const getMesh = () =>
+    {
+      const { shown, hidden, selected } = adapter
+      return { shown, selected, hidden }
+    }
+
+    // This object implements the UndoableEdit.Context interface, and adds spawn capability
+    return { createEdit, createLegacyCommand, performAndRecord, spawn, getMesh }
   }
 
   // Discover all the legacy edit classes and register as commands
   const commands = {}
   for ( const [ name, editClass ] of Object.entries( vzomePkg.core.edits ) )
     commands[ name ] = legacyCommand( contextFactory, name )
-  store.dispatch( mesh.commandsDefined( commands ) )
+  store.dispatch( commandsDefined( commands ) )
 
   // Prepare the orbitSource for resolveShapes
   const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
@@ -610,28 +627,33 @@ export const parseModelFile = ( contextFactory, formatFactory, resolverFactory )
     const editNumber = history.getAttribute( "editNumber" )
     let editElement = history.firstElementChild
 
-    const performEdits = ( editElement, context ) =>
+    const performEdits = ( editElement, context, publish ) =>
     {
       do {
         console.log( editElement.outerHTML )
         if ( editElement.nodeName === "Branch" ) {
-          const sandbox = contextFactory( context.adapter.spawn(), fieldName )
-          performEdits( editElement.firstElementChild, sandbox )
+          performEdits( editElement.firstElementChild, context.spawn(), () => {} ) // nothing published
           // we discard the spawned context
         } else {
           const wrappedElement = new JavaDomElement( editElement )
           const edit = context.createEdit( wrappedElement )
-          if ( edit )
-            edit.loadAndPerform( wrappedElement, format, context )
+          // null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit
+          if ( edit ) {
+            const editChanges = context.spawn()
+            edit.loadAndPerform( wrappedElement, format, editChanges )
+            publish( editChanges.getMesh() )
+          }
         }
         editElement = editElement.nextElementSibling
       }
       while ( editElement );
     }
 
+    const publish = ( { shown, selected, hidden } ) => dispatch( mesh.meshChanged( shown, selected, hidden ) )
+
     const adapter = new Adapter( shown, hidden, selected )
     const context = contextFactory( adapter, fieldName )
-    performEdits( editElement, context )
+    performEdits( editElement, context, publish )
     
     const viewing = getChildElement( vZomeRoot, "Viewing" )
     if ( viewing ) {
@@ -639,11 +661,8 @@ export const parseModelFile = ( contextFactory, formatFactory, resolverFactory )
     }
   } catch (error) {
     console.log( error )
-    dispatch( stopProgress() )
     dispatch( showAlert( `Unable to parse model file: ${name};\n ${error.message}` ) )
-    return
   }
 
   dispatch( stopProgress() )
-  dispatch( mesh.meshChanged( shown, selected, hidden ) )
 }
