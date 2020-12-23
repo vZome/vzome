@@ -49,17 +49,9 @@ export default ( middleware ) =>
 
   const rootReducer = combineReducers( reducers )
   
-  const allMiddleware = names.reduce( ( arr, key ) => {
-    const newMiddleware = bundles[key].middleware
-    if ( newMiddleware ) {
-      console.log( `bundle middleware: ${key}` )
-      arr.push( newMiddleware )
-    }
-    return arr
-  }, middleware )
-
-  const store = createStore( rootReducer, applyMiddleware( ...allMiddleware ) );
+  const store = createStore( rootReducer, applyMiddleware( ...middleware ) );
   
+  // TODO: is there a better pattern than these inits?
   names.map( key => {
     const init = bundles[key].init
     if ( init ) {
