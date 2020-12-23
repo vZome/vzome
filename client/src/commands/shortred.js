@@ -3,7 +3,7 @@ import * as mesh from '../bundles/mesh'
 
 export default () => ( dispatch, getState ) =>
 {
-  let { field, shown, selected, hidden } = getState().mesh
+  let { field, shown, selected, hidden } = getState().mesh.present
   shown = new Map( shown )
 
   const red = [ [ 2, 3, 1 ], [ 1, 2, 1 ], [ 0, 0, 1 ] ]
