@@ -64,8 +64,9 @@ const shapeInstance = ( instance, selected, field, shapedInstances, resolve ) =>
 {
   // TODO: handle undefined result from resolve
   let shapedInstance = shapedInstances[ instance.id ]
-  if ( shapedInstance )
+  if ( shapedInstance && ( instance.color === shapedInstance.color ) ) {
     return { ...shapedInstance, selected }
+  }
   shapedInstance = resolve( instance )
   const position = field.embedv( instance.vectors[0] ) // TODO: does this work for struts and panels?
   // everything except selected state will go into shapedInstances

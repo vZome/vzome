@@ -455,9 +455,13 @@ class Adapter
 
   setManifestationColor( vectors, color )
   {
-    const { id } = mesh.createInstance( vectors )
-    const existing = this.shown.get( id ) || this.selected.get( id )
-    existing.color = color
+    const instance = mesh.createInstance( vectors )
+    instance.color = color
+    if ( this.shown.has( instance.id ) ) {
+      this.shown.set( instance.id, instance )
+    } else if ( this.selected.has( instance.id ) ) {
+      this.selected.set( instance.id, instance )
+    }
   }
 
   findOrCreateManifestation( vectors )
