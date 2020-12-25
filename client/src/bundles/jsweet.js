@@ -2,13 +2,14 @@
 import * as mesh from './mesh'
 import { commandsDefined } from '../commands'
 import * as planes from './planes'
-import { field as goldenField } from '../fields/golden'
+import goldenField from '../fields/golden'
 import { startProgress, stopProgress } from './progress'
 import { parseViewXml } from './camera'
 import { showAlert } from './alerts'
 import { fetchModel } from './files'
+import * as models from './models'
+import { meshChanged } from './mesh'
 
-// import { NewCentroid } from '../jsweet/com/vzome/core/edits/NewCentroid'
 
 // I can't use the ES6 module approach until I figure out how to use J4TS that way.
 //  For now, I can load the bundles in index.html, and access the packages through window.
@@ -288,15 +289,11 @@ export const init = async ( window, store ) =>
     commands[ name ] = legacyCommand( createEdit, createEditor, name )
   store.dispatch( commandsDefined( commands ) )
 
-  // TODO replace this with "new model"
   // Prepare the orbitSource for resolveShapes
   const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
   orbitSource.quaternions = makeQuaternions( orbitSource.getSymmetry().getMatrices() )
   const resolver = resolverFactory( vzomePkg )( orbitSource )
-  const origin = goldenField.origin( 3 ) // TODO use the field name
-  const originBall = mesh.createInstance( [ origin ] )
-  store.dispatch( mesh.meshChanged( new Map().set( originBall.id, originBall ), new Map(), new Map() ) )
 
   const blue = [ [0,0,1], [0,0,1], [1,0,1] ]
   const yellow = [ [0,0,1], [1,0,1], [1,1,1] ]
@@ -521,12 +518,13 @@ class Properties
 
 export const legacyCommand = ( createEdit, createEditor, className ) => ( config ) => ( dispatch, getState ) =>
 {
-  let { shown, hidden, selected, field } = getState().mesh.present
+  let { mesh, fieldName } = models.selectCurrentModel( getState() )
+  let { shown, hidden, selected } = mesh
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )
   const adapter = new Adapter( shown, selected, hidden )
-  const editor = createEditor( adapter, field.name )
+  const editor = createEditor( adapter, fieldName )
   const edit = createEdit( new JavaDomElement( { localName: className } ), editor )
 
   edit.configure( new Properties( config ) )
@@ -534,7 +532,7 @@ export const legacyCommand = ( createEdit, createEditor, className ) => ( config
   edit.perform()  // side-effects will appear in shown, hidden, and selected maps
 
   dispatch( { type: WORK_STARTED } )
-  dispatch( mesh.meshChanged( shown, selected, hidden ) )
+  dispatch( meshChanged( shown, selected, hidden ) )
   dispatch( { type: WORK_FINISHED } )
 }
 
@@ -593,6 +591,8 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
 
   dispatch( startProgress( "Parsing vZome file..." ) )
 
+  const fields = getState().fields
+
   const getChildElement = ( parent, name ) =>
   {
     let target = parent.firstElementChild
@@ -609,6 +609,8 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
   try {
     const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
     const fieldName = vZomeRoot.getAttribute( "field" )
+
+    dispatch( models.startLoadingModel( name, fields[ fieldName ] ) )
 
     const origin = goldenField.origin( 3 ) // TODO use the field name
     const originBall = mesh.createInstance( [ origin ] )
@@ -661,6 +663,7 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
     if ( viewing ) {
       dispatch( parseViewXml( viewing, getChildElement ) )
     }
+    dispatch( models.finishLoadingModel() )
   } catch (error) {
     console.log( error )
     dispatch( showAlert( `Unable to parse model file: ${name};\n ${error.message}` ) )

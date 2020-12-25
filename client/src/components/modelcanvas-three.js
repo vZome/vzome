@@ -10,6 +10,7 @@ import * as planes from '../bundles/planes'
 import BuildPlane from './buildplane'
 import Mesh from './geometry'
 import { createInstance } from '../bundles/mesh'
+import { selectDisplayedModel } from '../bundles/models'
 
 extend({ TrackballControls })
 const Controls = props => {
@@ -62,7 +63,7 @@ TODO:
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-const ModelCanvas = ( { lighting, camera, mesh, resolver, preResolved, clickable, selectionToggler,
+const ModelCanvas = ( { lighting, camera, mesh, field, resolver, preResolved, clickable, selectionToggler,
                         startGridHover, stopGridHover, startBallHover, stopBallHover, shapeClick, bkgdClick, workingPlane } ) => {
   const { fov, position, up, lookAt } = camera
   const focus = workingPlane && workingPlane.enabled && workingPlane.buildingStruts && workingPlane.position
@@ -94,7 +95,7 @@ const ModelCanvas = ( { lighting, camera, mesh, resolver, preResolved, clickable
           <Lighting {...lighting} />
         </PerspectiveCamera>
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
-        <Mesh {...{ mesh, resolver, preResolved, handleClick, onHover, highlightBall: atFocus }} />
+        <Mesh {...{ mesh, field, resolver, preResolved, handleClick, onHover, highlightBall: atFocus }} />
         {workingPlane && workingPlane.enabled &&
           <BuildPlane config={workingPlane} { ...{ startGridHover, stopGridHover } } />}
       </Canvas>
@@ -103,9 +104,12 @@ const ModelCanvas = ( { lighting, camera, mesh, resolver, preResolved, clickable
 
 const select = ( state ) =>
 {
-  const { camera, lighting, mesh, workingPlane, java } = state
+  const { camera, lighting, models, fields, workingPlane, java } = state
+  const model = models && selectDisplayedModel( state )
+  const mesh = model && model.mesh
+  const field = fields && model && fields[ model.fieldName ]
   const preResolved = java.shapes && { shapes: java.shapes, instances: java.renderingOn? java.instances : java.previous }
-  const shown = new Map( mesh && mesh.present.shown )
+  const shown = mesh && new Map( mesh.shown )
   if ( workingPlane && workingPlane.enabled && workingPlane.endPt ) {
     const { position, endPt, buildingStruts } = workingPlane
     let previewBall = createInstance( [ endPt ] )
@@ -121,7 +125,8 @@ const select = ( state ) =>
     workingPlane,
     camera,
     lighting,
-    mesh: mesh && { ...mesh.present, shown },
+    field,
+    mesh: mesh && { ...mesh, shown },
     resolver: java.resolver,
     preResolved,
     clickable: ! java.readOnly

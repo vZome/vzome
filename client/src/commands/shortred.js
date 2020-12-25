@@ -1,9 +1,11 @@
 
 import * as mesh from '../bundles/mesh'
+import * as models from '../bundles/models'
 
 export default () => ( dispatch, getState ) =>
 {
-  let { field, shown, selected, hidden } = getState().mesh.present
+  let { mesh: { shown, hidden, selected }, fieldName } = models.selectCurrentModel( getState() )
+  const field = getState().fields[ fieldName ]
   shown = new Map( shown )
 
   const red = [ [ 2, 3, 1 ], [ 1, 2, 1 ], [ 0, 0, 1 ] ]

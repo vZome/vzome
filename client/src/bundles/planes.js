@@ -1,5 +1,5 @@
 
-import { field as goldenField } from '../fields/golden'
+import goldenField from '../fields/golden'
 import buildStrut from '../commands/buildstrut'
 
 export const doStartGridHover = position =>

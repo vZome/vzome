@@ -11,10 +11,11 @@ import * as progress from './progress'
 import * as jsweet from './jsweet'
 import * as mesh from './mesh'
 import * as commands from '../commands'
-import * as goldenField from '../fields/golden'
 import * as workingPlane from './planes'
+import * as models from './models'
+import * as fields from '../fields'
 
-const requiredBundles = { camera, lighting, goldenField }
+const requiredBundles = { camera, lighting, fields }
 
 let bundles
 const urlParams = new URLSearchParams( window.location.search );
@@ -22,11 +23,11 @@ if ( urlParams.has( "editMode" ) ) {
   switch ( urlParams.get( "editMode" ) ) {
 
     case "plane":
-      bundles = { ...requiredBundles, java: jsweet, mesh, workingPlane }
+      bundles = { ...requiredBundles, java: jsweet, models, workingPlane }
       break;
   
     default:
-      bundles = { ...requiredBundles, java: jsweet, mesh, commands, files, alerts, progress }
+      bundles = { ...requiredBundles, java: jsweet, models, commands, files, alerts, progress }
       break;
   }
 } else {
