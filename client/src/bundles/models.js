@@ -12,10 +12,11 @@ export const designReducer = combineReducers( {
     // TODO: add current command
   } ) ),
   fieldName: ( state="", action ) => state, // fieldName cannot be changed, so a constant reducer is fine
+  shaperName: ( state="", action ) => state, // shaperName cannot be changed (YET!), so a constant reducer is fine
   camera: camera.reducer,
 })
 
-export const initializeDesign = field => ({
+export const initializeDesign = ( field, shaperName ) => ({
   history: {
     past: [],
     present: {
@@ -24,6 +25,7 @@ export const initializeDesign = field => ({
     future: [],
   },
   fieldName: field.name,
+  shaperName,
   camera: camera.initialState,
 })
 
@@ -60,6 +62,12 @@ export const selectCurrentMesh = state => selectCurrentDesign( state ).history.p
 export const selectCurrentCamera = state => selectCurrentDesign( state ).camera
 
 export const selectCurrentField = state => state.fields[ selectCurrentDesign( state ).fieldName ]
+
+export const selectCurrentShaper = state =>
+{
+  const shaperName = selectCurrentDesign( state ).shaperName || "solid connectors"
+  return state.shapers[ shaperName ]
+}
 
 export const reducer = ( state = addNewModel( emptyState, goldenField ), action ) =>
 {

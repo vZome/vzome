@@ -107,7 +107,8 @@ const select = ( state ) =>
   const { lighting, models, workingPlane, java } = state
   const mesh = models && designs.selectCurrentMesh( state )
   const field = models && designs.selectCurrentField( state )
-  let camera = state.camera || designs.selectCurrentCamera( state )
+  const camera = state.camera || designs.selectCurrentCamera( state )
+  const resolver = models && designs.selectCurrentShaper( state )
   const preResolved = java.shapes && { shapes: java.shapes, instances: java.renderingOn? java.instances : java.previous }
   const shown = mesh && new Map( mesh.shown )
   if ( workingPlane && workingPlane.enabled && workingPlane.endPt ) {
@@ -126,10 +127,10 @@ const select = ( state ) =>
     camera,
     lighting,
     field,
-    mesh: mesh && { ...mesh, shown },
-    resolver: java.resolver,
+    resolver,
     preResolved,
-    clickable: ! java.readOnly
+    mesh: mesh && { ...mesh, shown },
+    clickable: !!models
   }
 }
 

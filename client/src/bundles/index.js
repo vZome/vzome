@@ -11,6 +11,7 @@ import * as commands from '../commands'
 import * as workingPlane from './planes'
 import * as models from './models'
 import * as fields from '../fields'
+import * as shapers from './shapers'
 
 const requiredBundles = { lighting, fields }
 
@@ -20,11 +21,11 @@ if ( urlParams.has( "editMode" ) ) {
   switch ( urlParams.get( "editMode" ) ) {
 
     case "plane":
-      bundles = { ...requiredBundles, java: jsweet, models, workingPlane }
+      bundles = { ...requiredBundles, java: jsweet, models, shapers, workingPlane }
       break;
   
     default:
-      bundles = { ...requiredBundles, java: jsweet, models, commands, alerts, progress }
+      bundles = { ...requiredBundles, java: jsweet, models, shapers, commands, alerts, progress }
       break;
   }
 } else {
