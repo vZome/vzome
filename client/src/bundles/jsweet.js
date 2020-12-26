@@ -2,13 +2,15 @@
 import * as mesh from './mesh'
 import { commandsDefined } from '../commands'
 import * as planes from './planes'
-import { field as goldenField } from '../fields/golden'
+import goldenField from '../fields/golden'
 import { startProgress, stopProgress } from './progress'
 import { parseViewXml } from './camera'
 import { showAlert } from './alerts'
 import { fetchModel } from './files'
+import * as designs from './models'
+import { meshChanged } from './mesh'
+import * as shapers from './shapers'
 
-// import { NewCentroid } from '../jsweet/com/vzome/core/edits/NewCentroid'
 
 // I can't use the ES6 module approach until I figure out how to use J4TS that way.
 //  For now, I can load the bundles in index.html, and access the packages through window.
@@ -177,6 +179,7 @@ const matrix2quat = ( m ) =>
   }
   return q.map( x => x * 0.5 / Math.sqrt(t) )
 }
+
 export const init = async ( window, store ) =>
 {
   const vzomePkg = window.com.vzome
@@ -284,19 +287,16 @@ export const init = async ( window, store ) =>
 
   // Discover all the legacy edit classes and register as commands
   const commands = {}
-  for ( const [ name, editClass ] of Object.entries( vzomePkg.core.edits ) )
+  for ( const name of Object.keys( vzomePkg.core.edits ) )
     commands[ name ] = legacyCommand( createEdit, createEditor, name )
   store.dispatch( commandsDefined( commands ) )
 
-  // TODO replace this with "new model"
   // Prepare the orbitSource for resolveShapes
   const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
   orbitSource.quaternions = makeQuaternions( orbitSource.getSymmetry().getMatrices() )
-  const resolver = resolverFactory( vzomePkg )( orbitSource )
-  const origin = goldenField.origin( 3 ) // TODO use the field name
-  const originBall = mesh.createInstance( [ origin ] )
-  store.dispatch( mesh.meshChanged( new Map().set( originBall.id, originBall ), new Map(), new Map() ) )
+  const shaper = resolverFactory( vzomePkg )( orbitSource )
+  const shaperName = orbitSource.getShapes().getName()    
 
   const blue = [ [0,0,1], [0,0,1], [1,0,1] ]
   const yellow = [ [0,0,1], [1,0,1], [1,1,1] ]
@@ -308,17 +308,13 @@ export const init = async ( window, store ) =>
   const parser = createParser( editContext, createEditor, createEdit, formatFactory, resolverFactory( vzomePkg ) )
 
   // TODO: fetch all shape VEFs in a ZIP, then inject each
-  Promise.all( knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/octahedral/${name}.vef` ) ) )
-    .then( () => {
-  Promise.all( knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/default/${name}.vef` ) ) )
-    .then( () => {
-      // now we are finally ready to resolve instance shapes
-      store.dispatch( { type: RESOLVER_READY, payload: resolver } )
-      store.dispatch( { type: PARSER_READY, payload: parser } )
-      if ( ! store.getState().workingPlane )
-        store.dispatch( fetchModel( "/app/models/vZomeLogo.vZome" ) )
-    })
-  })
+  await Promise.all( knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/octahedral/${name}.vef` ) ) )
+  await Promise.all( knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/default/${name}.vef` ) ) )
+  // now we are finally ready to shape instances
+  store.dispatch( shapers.shaperDefined( shaperName, shaper ) )
+  store.dispatch( { type: PARSER_READY, payload: parser } )
+  // if ( ! store.getState().workingPlane )
+  //   store.dispatch( fetchModel( "/app/models/vZomeLogo.vZome" ) )
 }
 
 const embedShape = ( shape ) =>
@@ -521,7 +517,8 @@ class Properties
 
 export const legacyCommand = ( createEdit, createEditor, className ) => ( config ) => ( dispatch, getState ) =>
 {
-  let { shown, hidden, selected, field } = getState().mesh.present
+  let { shown, hidden, selected } = designs.selectCurrentMesh( getState() )
+  const field = designs.selectCurrentField( getState() )
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )
@@ -534,7 +531,7 @@ export const legacyCommand = ( createEdit, createEditor, className ) => ( config
   edit.perform()  // side-effects will appear in shown, hidden, and selected maps
 
   dispatch( { type: WORK_STARTED } )
-  dispatch( mesh.meshChanged( shown, selected, hidden ) )
+  dispatch( meshChanged( shown, selected, hidden ) )
   dispatch( { type: WORK_FINISHED } )
 }
 
@@ -593,6 +590,8 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
 
   dispatch( startProgress( "Parsing vZome file..." ) )
 
+  const fields = getState().fields
+
   const getChildElement = ( parent, name ) =>
   {
     let target = parent.firstElementChild
@@ -620,20 +619,28 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
     const system = systemXml && new JavaDomElement( systemXml )
     const format = formatFactory( namespace, fieldName, system )
 
-    const resolver = resolverFactory( format.orbitSource )
-    dispatch( { type: RESOLVER_READY, payload: resolver } )
+    const orbitSource = format.orbitSource
+    const shaperName = orbitSource.getShapes().getName()
+    // We don't want to dispatch all the edits, which can trigger tons of
+    //  overhead and re-rendering.  Instead, we'll build up a design
+    //  by calling the designReducer manually.
+    let design = designs.initializeDesign( fields[ fieldName ], shaperName )
+
+    const shaper = resolverFactory( orbitSource )
+    dispatch( shapers.shaperDefined( shaperName, shaper ) )
 
     const history = getChildElement( vZomeRoot, "EditHistory" )
+    // TODO: use editNumber
     const editNumber = history.getAttribute( "editNumber" )
     let editElement = history.firstElementChild
 
-    const performEdits = ( editElement, adapter, publishMesh ) =>
+    const performEdits = ( editElement, adapter, recordEdit ) =>
     {
       do {
         console.log( editElement.outerHTML )
         if ( editElement.nodeName === "Branch" ) {
           const sandbox = adapter.clone()
-          performEdits( editElement.firstElementChild, sandbox, () => {} ) // nothing published
+          performEdits( editElement.firstElementChild, sandbox, () => {} ) // don't record mesh changes for branches
           // we discard the cloned sandbox adapter
         } else {
           const wrappedElement = new JavaDomElement( editElement )
@@ -643,7 +650,7 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
           // null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit
           if ( edit ) {
             edit.loadAndPerform( wrappedElement, format, editContext ) // a fixed editContext is sufficient for us
-            publishMesh( adapter )
+            design = designs.designReducer( design, recordEdit( adapter ) )
           }
         }
         editElement = editElement.nextElementSibling
@@ -651,16 +658,22 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
       while ( editElement );
     }
 
-    const publishMesh = ( { shown, selected, hidden } ) => dispatch( mesh.meshChanged( shown, selected, hidden ) )
+    // TODO: move this to Adapter itself?
+    const recordEdit = ( { shown, selected, hidden } ) => mesh.meshChanged( shown, selected, hidden )
 
     const adapter = new Adapter( shown, selected, hidden )
-    publishMesh( adapter ) // so the user can undo back to the initial state?
-    performEdits( editElement, adapter, publishMesh )
+    performEdits( editElement, adapter, recordEdit )
     
     const viewing = getChildElement( vZomeRoot, "Viewing" )
     if ( viewing ) {
-      dispatch( parseViewXml( viewing, getChildElement ) )
+      design = designs.designReducer( design, parseViewXml( viewing, getChildElement ) )
     }
+    
+    const extIndex = name.lastIndexOf( '.' )
+    if ( extIndex > 0 ) {
+      name = name.substring( 0, extIndex )
+    }
+    dispatch( designs.loadedDesign( name, design ) )
   } catch (error) {
     console.log( error )
     dispatch( showAlert( `Unable to parse model file: ${name};\n ${error.message}` ) )

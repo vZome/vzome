@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import React, { useMemo } from 'react'
+import { Mesh } from 'three'
 
 const computeNormal = ( vertices, face ) => {
   const v0 = vertices[ face.vertices[0] ]
@@ -80,7 +81,7 @@ const filterInstances = ( shape, instances ) =>
   return instances.filter( instance => instance.shapeId === shape.id )
 }
 
-export default ({ mesh, resolver, preResolved, highlightBall, handleClick, onHover }) =>
+const Geometry = ({ mesh, field, resolver, preResolved, highlightBall, handleClick, onHover }) =>
 {
   const shapes = useMemo( () => ( preResolved && preResolved.shapes ) || {}, [ resolver, preResolved ] )
   const shapedInstances = useMemo( () => ({}), [ resolver ] )
@@ -89,8 +90,8 @@ export default ({ mesh, resolver, preResolved, highlightBall, handleClick, onHov
     // resolver won't be available until the JSweet init has dispatched ORBITS_INITIALIZED
     const resolve = resolver( shapes )
     // TODO: this breaks encapsulation of the mesh state; fix it
-    mesh.shown.forEach( instance => instances.push( shapeInstance( instance, false, mesh.field, shapedInstances, resolve ) ) )
-    mesh.selected.forEach( instance => instances.push( shapeInstance( instance, true, mesh.field, shapedInstances, resolve ) ) )
+    mesh.shown.forEach( instance => instances.push( shapeInstance( instance, false, field, shapedInstances, resolve ) ) )
+    mesh.selected.forEach( instance => instances.push( shapeInstance( instance, true, field, shapedInstances, resolve ) ) )
   }
   const sortByShape = () => Object.values( shapes ).map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
   const sortedInstances = useMemo( sortByShape, [ shapes, instances ] )  // When !preRendered, instances will change every render
@@ -102,3 +103,6 @@ export default ({ mesh, resolver, preResolved, highlightBall, handleClick, onHov
     </>
   )
 }
+
+export default Geometry
+

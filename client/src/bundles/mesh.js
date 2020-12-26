@@ -1,9 +1,7 @@
 
-import undoable from 'redux-undo'
 
 const OBJECT_SELECTED = 'OBJECT_SELECTED'
 const OBJECT_DESELECTED = 'OBJECT_DESELECTED'
-const FIELD_DEFINED = 'FIELD_DEFINED'
 const ALL_SELECTED = 'ALL_SELECTED'
 const ALL_DESELECTED = 'ALL_DESELECTED'
 const MESH_CHANGED = 'MESH_CHANGED'
@@ -20,14 +18,20 @@ export const allDeselected = () => ({ type: ALL_DESELECTED })
 
 export const meshChanged = ( shown, selected, hidden ) => ({ type: MESH_CHANGED, payload: { shown, selected, hidden } })
 
-export const fieldDefined = ( field ) => ({ type: FIELD_DEFINED, payload: field })
+export const justOrigin = field => {
+  const originBall = createInstance( [ field.origin( 3 ) ] )
+  const shown = new Map().set( originBall.id, originBall )
+  return {
+    shown,
+    selected: new Map(),
+    hidden: new Map(),
+  }
+}
 
 const initialState = {
   shown: new Map(),
   selected: new Map(), // This Map is especially important, so we iterate in insertion order
   hidden: new Map(),
-  fields: {},
-  field: undefined,
 }
 
 const canonicalizedId = ( vectors ) =>
@@ -55,7 +59,7 @@ export const createInstance = ( vectors ) =>
   return { id, vectors }
 }
 
-export const reducer = undoable( ( state = initialState, action ) =>
+export const reducer = ( state = initialState, action ) =>
 {
   switch (action.type) {
 
@@ -106,17 +110,8 @@ export const reducer = undoable( ( state = initialState, action ) =>
         shown: new Map( [ ...state.selected, ...state.shown ] )
       }
     }
-
-    case FIELD_DEFINED: {
-      const newField = action.payload
-      return {
-        ...state,
-        field: newField, // TODO use a different action to set this
-        fields: { ...state.fields, [newField.name]: newField }
-      }
-    }
             
     default:
       return state
   }
-} )
+}

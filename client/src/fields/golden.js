@@ -1,10 +1,4 @@
 
-import * as mesh from '../bundles/mesh'
-
-export const init = ( window, store ) =>
-{
-  store.dispatch( mesh.fieldDefined( field ) )
-}
 
 // Most of this code is from Jacob Rus: https://observablehq.com/@jrus/zome-arithmetic
 
@@ -180,7 +174,7 @@ const origin = dimensions =>
 }
 
 
-export const field = {
+export default {
 
   name: 'golden',
 

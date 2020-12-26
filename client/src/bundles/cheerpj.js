@@ -1,5 +1,5 @@
 
-import { fetchModel } from './files'
+import { fetchModel, download } from './files'
 import DEFAULT_MODEL from '../models/logo'
 import { startProgress, stopProgress } from './progress'
 
@@ -58,7 +58,7 @@ export const reducer = ( state = initialState, action ) => {
     case MODEL_LOAD_STARTED:
       return {
         ...state,
-        fileName: action.payload.name,
+        fileName: action.payload,
         renderingOn: false,
         controller: undefined,
         instances: [],
@@ -184,9 +184,7 @@ export const init = ( window, store ) =>
   window.dispatchToRedux = (s) => {
     store.dispatch( JSON.parse( s ) )
   }
-  window.fileExported = (name, bytes) => {
-    store.dispatch( { type: FILE_EXPORTED, payload: { name, bytes } } )
-  }
+  window.fileExported = download
 
   const resourcesToPreload = [
     "/lt/runtime/rt.jar.java.nio.js",
