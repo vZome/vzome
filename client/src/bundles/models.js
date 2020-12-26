@@ -4,24 +4,32 @@ import undoable from 'redux-undo'
 
 import goldenField from '../fields/golden'
 import * as mesh from './mesh'
+import * as camera from './camera'
 
-const modelReducer = undoable( combineReducers({
-  mesh: mesh.reducer,
-  fieldName: ( state="", action ) => state // fieldName cannot be changed, so a constant reducer is fine
-}) )
+export const designReducer = combineReducers( {
+  history: undoable( combineReducers( {
+    mesh: mesh.reducer,
+    // TODO: add current command
+  } ) ),
+  fieldName: ( state="", action ) => state, // fieldName cannot be changed, so a constant reducer is fine
+  camera: camera.reducer,
+})
 
-const initializeModel = field => ({
-  past: [],
-  present: {
-    mesh: mesh.justOrigin( field ),
-    fieldName: field.name
+export const initializeDesign = field => ({
+  history: {
+    past: [],
+    present: {
+      mesh: mesh.justOrigin( field ),
+    },
+    future: [],
   },
-  future: []
+  fieldName: field.name,
+  camera: camera.initialState,
 })
 
 const emptyState = {
   nextUntitledIndex: 0,
-  models: {},
+  data: {},
 }
 
 const addNewModel = ( state, field ) =>
@@ -30,10 +38,9 @@ const addNewModel = ( state, field ) =>
   return {
     nextUntitledIndex: state.nextUntitledIndex + 1,
     current: name,
-    displayed: name,
-    models: {
-      ...state.models,
-      [ name ]: modelReducer( initializeModel( field ) )
+    data: {
+      ...state.data,
+      [ name ]: initializeDesign( field )
     }
   }
 }
@@ -44,21 +51,15 @@ export const switchModel = name => ( { type: 'SWITCH_MODEL', payload: name } )
 
 export const renameModel = name => ( { type: 'RENAME_MODEL', payload: name } )
 
-export const startLoadingModel = ( name, field ) => ( { type: 'START_LOADING_MODEL', payload: { name, field } } )
+export const loadedDesign = ( name, design ) => ( { type: 'LOADED_DESIGN', payload: { name, design } } )
 
-export const finishLoadingModel = () => ( { type: 'FINISH_LOADING_MODEL' } )
+export const selectCurrentDesign = state => state.models.data[ state.models.current ]
 
-export const selectCurrentModel = state =>
-{
-  const model = state.models.models[ state.models.current ]
-  return model.present
-}
+export const selectCurrentMesh = state => selectCurrentDesign( state ).history.present.mesh
 
-export const selectDisplayedModel = state =>
-{
-  const model = state.models.models[ state.models.displayed ]
-  return model.present
-}
+export const selectCurrentCamera = state => selectCurrentDesign( state ).camera
+
+export const selectCurrentField = state => state.fields[ selectCurrentDesign( state ).fieldName ]
 
 export const reducer = ( state = addNewModel( emptyState, goldenField ), action ) =>
 {
@@ -75,54 +76,48 @@ export const reducer = ( state = addNewModel( emptyState, goldenField ), action 
       return {
         ...state,
         current: name,
-        displayed: name,
       }
     }
 
-    case 'START_LOADING_MODEL': {
-      const { name, field } = action.payload
+    case 'LOADED_DESIGN': {
+      const { name, design } = action.payload
       return {
         ...state,
         current: name,
-        models: {
-          ...state.models,
-          [ name ]: modelReducer( initializeModel( field ) )
+        data: {
+          ...state.data,
+          [ name ]: design
         }
-      }
-    }
-
-    case 'FINISH_LOADING_MODEL': {
-      return {
-        ...state,
-        displayed: state.current,
       }
     }
 
     case 'RENAME_MODEL': {
       const oldName = state.current
       const name = action.payload
-      const model = state.models[ oldName ]
-      delete state.models[ oldName ]
+      const model = state.data[ oldName ]
+      delete state.data[ oldName ]
       return {
         ...state,
         current: name,
-        displayed: name,
-        models: {
-          ...state.models,
+        data: {
+          ...state.data,
           [ name ]: model
         }
       }
     }
 
     default:
-      const modelState = state.models[ state.current ]
+      // All other actions are funneled only to the current design; we don't
+      //  want any changes to affect all designs simultaneously.
+      const modelState = state.data[ state.current ]
       if ( modelState ) {
-        return { ...state,
-                  models: {
-                    ...state.models,
-                    [ state.current ]: modelReducer( modelState, action )
-                  }
-                }
+        return {
+          ...state,
+          data: {
+            ...state.data,
+            [ state.current ]: designReducer( modelState, action )
+          }
+        }
       } else {
         return state
       }

@@ -1,21 +1,18 @@
 
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 
-import * as jre from './jre'
-import * as files from './files'
 import * as alerts from './alerts'
 import * as cheerpj from './cheerpj'
 import * as camera from './camera'
 import * as lighting from './lighting'
 import * as progress from './progress'
 import * as jsweet from './jsweet'
-import * as mesh from './mesh'
 import * as commands from '../commands'
 import * as workingPlane from './planes'
 import * as models from './models'
 import * as fields from '../fields'
 
-const requiredBundles = { camera, lighting, fields }
+const requiredBundles = { lighting, fields }
 
 let bundles
 const urlParams = new URLSearchParams( window.location.search );
@@ -27,11 +24,11 @@ if ( urlParams.has( "editMode" ) ) {
       break;
   
     default:
-      bundles = { ...requiredBundles, java: jsweet, models, commands, files, alerts, progress }
+      bundles = { ...requiredBundles, java: jsweet, models, commands, alerts, progress }
       break;
   }
 } else {
-  bundles = { ...requiredBundles, java: cheerpj, files, alerts, progress }
+  bundles = { ...requiredBundles, java: cheerpj, camera, alerts, progress }
 }
 
 

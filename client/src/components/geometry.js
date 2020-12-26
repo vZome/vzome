@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import React, { useMemo } from 'react'
+import { Mesh } from 'three'
 
 const computeNormal = ( vertices, face ) => {
   const v0 = vertices[ face.vertices[0] ]
@@ -80,7 +81,7 @@ const filterInstances = ( shape, instances ) =>
   return instances.filter( instance => instance.shapeId === shape.id )
 }
 
-export default ({ mesh, field, resolver, preResolved, highlightBall, handleClick, onHover }) =>
+const Geometry = ({ mesh, field, resolver, preResolved, highlightBall, handleClick, onHover }) =>
 {
   const shapes = useMemo( () => ( preResolved && preResolved.shapes ) || {}, [ resolver, preResolved ] )
   const shapedInstances = useMemo( () => ({}), [ resolver ] )
@@ -102,3 +103,6 @@ export default ({ mesh, field, resolver, preResolved, highlightBall, handleClick
     </>
   )
 }
+
+export default Geometry
+

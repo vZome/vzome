@@ -7,7 +7,7 @@ import { startProgress, stopProgress } from './progress'
 import { parseViewXml } from './camera'
 import { showAlert } from './alerts'
 import { fetchModel } from './files'
-import * as models from './models'
+import * as designs from './models'
 import { meshChanged } from './mesh'
 
 
@@ -518,13 +518,13 @@ class Properties
 
 export const legacyCommand = ( createEdit, createEditor, className ) => ( config ) => ( dispatch, getState ) =>
 {
-  let { mesh, fieldName } = models.selectCurrentModel( getState() )
-  let { shown, hidden, selected } = mesh
+  let { shown, hidden, selected } = designs.selectCurrentMesh( getState() )
+  const field = designs.selectCurrentField( getState() )
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )
   const adapter = new Adapter( shown, selected, hidden )
-  const editor = createEditor( adapter, fieldName )
+  const editor = createEditor( adapter, field.name )
   const edit = createEdit( new JavaDomElement( { localName: className } ), editor )
 
   edit.configure( new Properties( config ) )
@@ -610,7 +610,10 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
     const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
     const fieldName = vZomeRoot.getAttribute( "field" )
 
-    dispatch( models.startLoadingModel( name, fields[ fieldName ] ) )
+    // We don't want to dispatch all the edits, which can trigger tons of
+    //  overhead and re-rendering.  Instead, we'll build up a design
+    //  by calling the designReducer manually.
+    let design = designs.initializeDesign( fields[ fieldName ] )
 
     const origin = goldenField.origin( 3 ) // TODO use the field name
     const originBall = mesh.createInstance( [ origin ] )
@@ -626,16 +629,17 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
     dispatch( { type: RESOLVER_READY, payload: resolver } )
 
     const history = getChildElement( vZomeRoot, "EditHistory" )
+    // TODO: use editNumber
     const editNumber = history.getAttribute( "editNumber" )
     let editElement = history.firstElementChild
 
-    const performEdits = ( editElement, adapter, publishMesh ) =>
+    const performEdits = ( editElement, adapter, recordEdit ) =>
     {
       do {
         console.log( editElement.outerHTML )
         if ( editElement.nodeName === "Branch" ) {
           const sandbox = adapter.clone()
-          performEdits( editElement.firstElementChild, sandbox, () => {} ) // nothing published
+          performEdits( editElement.firstElementChild, sandbox, () => {} ) // don't record mesh changes for branches
           // we discard the cloned sandbox adapter
         } else {
           const wrappedElement = new JavaDomElement( editElement )
@@ -645,7 +649,7 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
           // null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit
           if ( edit ) {
             edit.loadAndPerform( wrappedElement, format, editContext ) // a fixed editContext is sufficient for us
-            publishMesh( adapter )
+            design = designs.designReducer( design, recordEdit( adapter ) )
           }
         }
         editElement = editElement.nextElementSibling
@@ -653,17 +657,17 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
       while ( editElement );
     }
 
-    const publishMesh = ( { shown, selected, hidden } ) => dispatch( mesh.meshChanged( shown, selected, hidden ) )
+    // TODO: move this to Adapter itself?
+    const recordEdit = ( { shown, selected, hidden } ) => mesh.meshChanged( shown, selected, hidden )
 
     const adapter = new Adapter( shown, selected, hidden )
-    publishMesh( adapter ) // so the user can undo back to the initial state?
-    performEdits( editElement, adapter, publishMesh )
+    performEdits( editElement, adapter, recordEdit )
     
     const viewing = getChildElement( vZomeRoot, "Viewing" )
     if ( viewing ) {
-      dispatch( parseViewXml( viewing, getChildElement ) )
+      design = designs.designReducer( design, parseViewXml( viewing, getChildElement ) )
     }
-    dispatch( models.finishLoadingModel() )
+    dispatch( designs.loadedDesign( name, design ) )
   } catch (error) {
     console.log( error )
     dispatch( showAlert( `Unable to parse model file: ${name};\n ${error.message}` ) )

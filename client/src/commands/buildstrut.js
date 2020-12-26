@@ -1,10 +1,10 @@
 
 import * as mesh from '../bundles/mesh'
-import * as models from '../bundles/models'
+import * as designs from '../bundles/models'
 
 export default ( start, end ) => ( dispatch, getState ) =>
 {
-  let { mesh: { shown, hidden, selected } } = models.selectCurrentModel( getState() )
+  let { shown, hidden, selected } = designs.selectCurrentMesh( getState() )
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )

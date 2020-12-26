@@ -76,12 +76,14 @@ const EditMenu = ({ visible, edits, modelNames, doEdit, canUndo, canRedo, doUndo
     return null
 } 
 
-const select = ( { models, commands } ) => {
-  const undoable = models && models.models[ models.current ]
+const select = ( state ) =>
+{
+  const { models, commands } = state
+  const history = models && designs.selectCurrentDesign( state ).history
   return {
-    modelNames: models && Object.keys( models.models ),
-    canUndo: undoable && undoable.past.length > 0,
-    canRedo: undoable && undoable.future.length > 0,
+    modelNames: models && Object.keys( models.data ),
+    canUndo: history && history.past.length > 0,
+    canRedo: history && history.future.length > 0,
     visible: !!commands,
     edits: commands && Object.getOwnPropertyNames( commands )
   }

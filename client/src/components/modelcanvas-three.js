@@ -8,9 +8,9 @@ import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls
 import { selectionToggled } from '../bundles/mesh'
 import * as planes from '../bundles/planes'
 import BuildPlane from './buildplane'
-import Mesh from './geometry'
+import Geometry from './geometry'
 import { createInstance } from '../bundles/mesh'
-import { selectDisplayedModel } from '../bundles/models'
+import * as designs from '../bundles/models'
 
 extend({ TrackballControls })
 const Controls = props => {
@@ -95,7 +95,7 @@ const ModelCanvas = ( { lighting, camera, mesh, field, resolver, preResolved, cl
           <Lighting {...lighting} />
         </PerspectiveCamera>
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
-        <Mesh {...{ mesh, field, resolver, preResolved, handleClick, onHover, highlightBall: atFocus }} />
+        <Geometry {...{ mesh, field, resolver, preResolved, handleClick, onHover, highlightBall: atFocus }} />
         {workingPlane && workingPlane.enabled &&
           <BuildPlane config={workingPlane} { ...{ startGridHover, stopGridHover } } />}
       </Canvas>
@@ -104,10 +104,10 @@ const ModelCanvas = ( { lighting, camera, mesh, field, resolver, preResolved, cl
 
 const select = ( state ) =>
 {
-  const { camera, lighting, models, fields, workingPlane, java } = state
-  const model = models && selectDisplayedModel( state )
-  const mesh = model && model.mesh
-  const field = fields && model && fields[ model.fieldName ]
+  const { lighting, models, workingPlane, java } = state
+  const mesh = models && designs.selectCurrentMesh( state )
+  const field = models && designs.selectCurrentField( state )
+  let camera = state.camera || designs.selectCurrentCamera( state )
   const preResolved = java.shapes && { shapes: java.shapes, instances: java.renderingOn? java.instances : java.previous }
   const shown = mesh && new Map( mesh.shown )
   if ( workingPlane && workingPlane.enabled && workingPlane.endPt ) {
