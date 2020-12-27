@@ -49,3 +49,5 @@ client/src/jsweet
 client/public/jsweet
 
 core/src/main/antlr/com/vzome/core/grammar/zomic/.antlr
+client/public/resources
+client/.vscode

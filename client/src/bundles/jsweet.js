@@ -204,11 +204,22 @@ export const init = async ( window, store ) =>
     return editClass
   }
 
-  const createEdit = ( xmlElement, editor ) =>
+  const createEdit = ( xmlElement, editor, toolFactories ) =>
   {
     let editName = xmlElement.getLocalName()
     if ( editName === "Snapshot" )
       return null
+
+    const toolId = xmlElement.getAttribute( "name" );
+    if ( toolId ) {
+      const factory = toolFactories.get( editName )
+      if ( factory ) {
+        const edit = factory.deserializeTool( toolId );
+        if ( edit )
+          return edit
+      }
+    }
+
     const editClass = xmlToEditClass( editName )
     if ( editClass )
       return new editClass( editor )
@@ -262,6 +273,14 @@ export const init = async ( window, store ) =>
     const orbitSetField = new vzomePkg.jsweet.JsOrbitSetField( orbitSource )
     format.initialize( field, orbitSetField, 0, "vZome Online", new util.Properties() )
     format.orbitSource = orbitSource
+
+    const originPoint = new vzomePkg.core.construction.FreePoint( field.origin( 3 ) )
+    const toolsModel = new vzomePkg.core.editor.ToolsModel( null, originPoint )
+    // orbitSource.createToolFactories( toolsModel ) // I think this is only needed for editing
+    format.toolFactories = new util.HashMap()
+    fieldApp.registerToolFactories( format.toolFactories, toolsModel )
+    format.toolsModel = toolsModel
+
     return format
   }
 
@@ -618,6 +637,7 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
     const systemXml = getChildElement( vZomeRoot, "SymmetrySystem" )
     const system = systemXml && new JavaDomElement( systemXml )
     const format = formatFactory( namespace, fieldName, system )
+    const toolFactories = format.toolFactories
 
     const orbitSource = format.orbitSource
     const shaperName = orbitSource.getShapes().getName()
@@ -640,13 +660,14 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
         console.log( editElement.outerHTML )
         if ( editElement.nodeName === "Branch" ) {
           const sandbox = adapter.clone()
-          performEdits( editElement.firstElementChild, sandbox, () => {} ) // don't record mesh changes for branches
+          performEdits( editElement.firstElementChild, sandbox, () => ({}) ) // don't record mesh changes for branches
           // we discard the cloned sandbox adapter
         } else {
           const wrappedElement = new JavaDomElement( editElement )
           adapter = adapter.clone()  // each command builds on the last
           const editor = createEditor( adapter, fieldName )
-          const edit = createEdit( wrappedElement, editor )
+          format.toolsModel.setEditorModel( editor )
+          const edit = createEdit( wrappedElement, editor, toolFactories )
           // null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit
           if ( edit ) {
             edit.loadAndPerform( wrappedElement, format, editContext ) // a fixed editContext is sufficient for us

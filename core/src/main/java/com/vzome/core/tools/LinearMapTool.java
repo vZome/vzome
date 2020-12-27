@@ -4,8 +4,6 @@
 package com.vzome.core.tools;
 
 
-import java.util.EnumSet;
-
 import com.vzome.core.construction.ChangeOfBasis;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
@@ -78,7 +76,7 @@ public class LinearMapTool extends TransformationTool
     {
         super( name, tools );
         this.originalScaling = originalScaling;
-        this .setInputBehaviors( EnumSet.of( InputBehaviors.DELETE ) );
+        this .setInputBehaviors( false, true );
     }
 
     protected String checkSelection( boolean prepareTool )

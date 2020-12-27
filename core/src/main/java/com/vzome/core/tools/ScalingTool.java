@@ -4,8 +4,6 @@
 package com.vzome.core.tools;
 
 
-import java.util.EnumSet;
-
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -131,7 +129,7 @@ public class ScalingTool extends SymmetryTool
     {
         super( id, symmetry, tools );
         this .scaleFactor = null;
-        this .setInputBehaviors( EnumSet.of( InputBehaviors.DELETE ) );
+        this .setInputBehaviors( false, true );
     }
 
     void setScaleFactor( AlgebraicNumber scaleFactor )

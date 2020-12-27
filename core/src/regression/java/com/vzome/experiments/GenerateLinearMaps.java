@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -12,8 +11,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import com.vzome.api.Tool;
-import com.vzome.api.Tool.InputBehaviors;
-import com.vzome.api.Tool.OutputBehaviors;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -167,8 +164,8 @@ public class GenerateLinearMaps
 			join();
 			
 			select( p2 ); // input for the transform
-			symmetryTool .apply( EnumSet.of( InputBehaviors.SELECT ), EnumSet.noneOf(OutputBehaviors.class) );
-			mappingTool .apply( EnumSet.of( InputBehaviors.DELETE ), EnumSet.noneOf(OutputBehaviors.class) );
+			symmetryTool .apply( true, false, false, false );
+			mappingTool .apply( false, true, false, false );
 
 			deselect();
 			
