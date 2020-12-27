@@ -204,11 +204,17 @@ export const init = async ( window, store ) =>
     return editClass
   }
 
-  const createEdit = ( xmlElement, editor, toolFactories ) =>
+  const createEdit = ( xmlElement, editor, toolFactories, toolsModel ) =>
   {
     let editName = xmlElement.getLocalName()
     if ( editName === "Snapshot" )
       return null
+
+    if ( toolsModel ) {
+      const toolEdit = toolsModel.createEdit( editName );
+      if ( toolEdit )
+          return toolEdit;
+    }
 
     const toolId = xmlElement.getAttribute( "name" );
     if ( toolId ) {
@@ -458,7 +464,7 @@ class Adapter
   {
     const { id } = mesh.createInstance( vectors )
     const existing = this.shown.get( id ) || this.selected.get( id )
-    return !!existing.color
+    return existing && !!existing.color
   }
 
   manifestationColor( vectors )
@@ -667,7 +673,7 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
           adapter = adapter.clone()  // each command builds on the last
           const editor = createEditor( adapter, fieldName )
           format.toolsModel.setEditorModel( editor )
-          const edit = createEdit( wrappedElement, editor, toolFactories )
+          const edit = createEdit( wrappedElement, editor, toolFactories, format.toolsModel )
           // null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit
           if ( edit ) {
             edit.loadAndPerform( wrappedElement, format, editContext ) // a fixed editContext is sufficient for us
