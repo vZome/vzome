@@ -185,6 +185,36 @@ export const init = async ( window, store ) =>
   const vzomePkg = window.com.vzome
   const util = window.java.util
 
+  class ImportColoredMeshJson extends vzomePkg.core.edits.ImportMesh
+  {
+    parseMeshData( offset, events, registry )
+    {
+      const coloredMesh = JSON.parse( this.meshData )
+      const field = registry.getField( coloredMesh.field )
+      const vertices = coloredMesh.vertices.map( nums => {
+        let vertex = field.createIntegerVectorFromTDs( nums )
+        if ( vertex.dimension() > 3 )
+            vertex = this.projection.projectImage( vertex, false )
+        if ( offset != null )
+            vertex = offset.plus( vertex )
+        return vertex
+      } )
+      // TODO: handle legacy format; see ColoredMeshJson.java
+      coloredMesh.balls.forEach( ball => {
+        const vertex = vertices[ ball.vertex ]
+        const color = ball.color && vzomePkg.core.construction.Color.parseWebColor( ball.color )
+        events.constructionAdded( new vzomePkg.core.construction.FreePoint( vertex ), color );
+      });
+      coloredMesh.struts.forEach( strut => {
+        const point1 = new vzomePkg.core.construction.FreePoint( vertices[ strut.vertices[ 0 ] ] )
+        const point2 = new vzomePkg.core.construction.FreePoint( vertices[ strut.vertices[ 1 ] ] )
+        const color = strut.color && vzomePkg.core.construction.Color.parseWebColor( strut.color )
+        events.constructionAdded( new vzomePkg.core.construction.SegmentJoiningPoints( point1, point2 ), color );
+      });
+      // TODO: handle panels
+    }
+  }
+
   const xmlToEditClass = editName =>
   {
     const legacyNames = {
@@ -209,6 +239,9 @@ export const init = async ( window, store ) =>
     let editName = xmlElement.getLocalName()
     if ( editName === "Snapshot" )
       return null
+
+    if ( editName === "ImportColoredMeshJson" )
+      return new ImportColoredMeshJson( editor )
 
     if ( toolsModel ) {
       const toolEdit = toolsModel.createEdit( editName );
@@ -599,6 +632,11 @@ class JavaDomElement
   getLocalName()
   {
     return this.nativeElement.localName
+  }
+
+  getTextContent()
+  {
+    return this.nativeElement.textContent
   }
 
   getChildNodes()
