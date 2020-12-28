@@ -42,17 +42,17 @@ export const reducer = ( state = initialState, action ) => {
   }
 }
 
-export const parseViewXml = ( viewingElement, getChildElement ) =>
+export const parseViewXml = ( viewingElement ) =>
 {
   const parseVector = ( element, name ) =>
   {
-    const child = getChildElement( element, name )
+    const child = element.getChildElement( name )
     const x = parseFloat( child.getAttribute( "x" ) )
     const y = parseFloat( child.getAttribute( "y" ) )
     const z = parseFloat( child.getAttribute( "z" ) )
     return { x, y, z }
   }
-  const viewModel = getChildElement( viewingElement, "ViewModel" )
+  const viewModel = viewingElement.getChildElement( "ViewModel" )
   const distance = parseFloat( viewModel.getAttribute( "distance" ) )
   const nearClipDistance = parseFloat( viewModel.getAttribute( "near" ) )
   const farClipDistance = parseFloat( viewModel.getAttribute( "far" ) )

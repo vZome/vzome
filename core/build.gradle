@@ -549,7 +549,6 @@ jsweet {
         'com/vzome/core/edits/SelectAutomaticStruts.java',
         'com/vzome/core/edits/SelectParallelStruts.java',
         'com/vzome/core/edits/Symmetry4d.java',
-        'com/vzome/core/edits/MapToColor.java',
         'com/vzome/core/edits/PolarZonohedron.java',
         'com/vzome/core/edits/Run*Script.java',
         'com/vzome/core/edits/Validate2Manifold.java',
