@@ -2,6 +2,7 @@ package com.vzome.jsweet;
 
 import static jsweet.util.Lang.$array;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import def.js.Object;
 
 public class JsSelection implements Selection
 {
-    private final Object adapter;
+    private Object adapter;
     private final JsAlgebraicField field;
 
     public JsSelection( JsAlgebraicField field, Object adapter )
@@ -22,10 +23,18 @@ public class JsSelection implements Selection
         this.field = field;
         this.adapter = adapter;
     }
+    
+    void setAdapter( Object adapter )
+    {
+        this.adapter = adapter;
+    }
 
     @Override
     public Iterator<Manifestation> iterator()
     {
+        if ( this.adapter == null ) // can happen during predefined Tool initialization
+            return Collections.emptyIterator();
+
         Function f = (Function) this.adapter .$get( "selectedIterator" );
         final def.js.Iterator<int[][][]> jSiterator = (def.js.Iterator<int[][][]>) f.apply( this.adapter );
         return new Iterator<Manifestation>()

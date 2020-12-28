@@ -12,19 +12,29 @@ import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.model.RealizedModel;
 
+import def.js.Object;
+
 public class JsEditorModel implements EditorModel, LegacyEditorModel, SymmetryAware
 {
     private final RealizedModel realizedModel;
     private final Selection selection;
     private final Symmetries4D kind;
     private final Point symmetryCenter;
+    private final OrbitSource symmetries;
 
-    public JsEditorModel( RealizedModel realizedModel, Selection selection, Symmetries4D kind )
+    public JsEditorModel( RealizedModel realizedModel, Selection selection, Symmetries4D kind, OrbitSource symmetries )
     {
         this.realizedModel = realizedModel;
         this.selection = selection;
         this.kind = kind;
+        this.symmetries = symmetries;
         this.symmetryCenter = new FreePoint( realizedModel .getField() .origin( 3 ) );
+    }
+    
+    public void setAdapter( Object adapter )
+    {
+        ((JsRealizedModel) this.realizedModel) .setAdapter( adapter );
+        ((JsSelection) this.selection) .setAdapter( adapter );
     }
 
     @Override
@@ -63,6 +73,12 @@ public class JsEditorModel implements EditorModel, LegacyEditorModel, SymmetryAw
         return false;
     }
 
+    @Override
+    public OrbitSource getSymmetrySystem()
+    {
+        return this .symmetries;
+    }
+
     
     
 
@@ -81,12 +97,6 @@ public class JsEditorModel implements EditorModel, LegacyEditorModel, SymmetryAw
 
     @Override
     public Construction getSelectedConstruction( Class<? extends Construction> kind )
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public OrbitSource getSymmetrySystem()
     {
         throw new RuntimeException( "unimplemented" );
     }

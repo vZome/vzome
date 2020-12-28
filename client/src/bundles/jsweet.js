@@ -315,7 +315,6 @@ export const init = async ( window, store ) =>
 
     const originPoint = new vzomePkg.core.construction.FreePoint( field.origin( 3 ) )
     const toolsModel = new vzomePkg.core.editor.ToolsModel( null, originPoint )
-    // orbitSource.createToolFactories( toolsModel ) // I think this is only needed for editing
     format.toolFactories = new util.HashMap()
     fieldApp.registerToolFactories( format.toolFactories, toolsModel )
     format.toolsModel = toolsModel
@@ -323,13 +322,13 @@ export const init = async ( window, store ) =>
     return format
   }
 
-  const createEditor = ( adapter, fieldName ) =>
+  const createEditor = ( adapter, fieldName, orbitSource ) =>
   {
     const fieldApp = fieldApps[ fieldName ]
     const field = fieldApp.getField()
     const realizedModel = new vzomePkg.jsweet.JsRealizedModel( field, adapter )
     const selection = new vzomePkg.jsweet.JsSelection( field, adapter )
-    return new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp )
+    return new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp, orbitSource )
   }
 
   // This object implements the UndoableEdit.Context interface
@@ -575,13 +574,15 @@ class Properties
 
 export const legacyCommand = ( createEdit, createEditor, className ) => ( config ) => ( dispatch, getState ) =>
 {
-  let { shown, hidden, selected } = designs.selectCurrentMesh( getState() )
   const field = designs.selectCurrentField( getState() )
+  // TODO const symmetry = designs.selectCurrentSymmetry( getState() )
+  // TODO const shapes = designs.selectCurrentShapes( getState() )
+  let { shown, hidden, selected } = designs.selectCurrentMesh( getState() )
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )
   const adapter = new Adapter( shown, selected, hidden )
-  const editor = createEditor( adapter, field.name )
+  const editor = createEditor( adapter, field.name ) // TODO add symmetrySystem argument
   const edit = createEdit( new JavaDomElement( { localName: className } ), editor )
 
   edit.configure( new Properties( config ) )
@@ -684,6 +685,10 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
     const toolFactories = format.toolFactories
 
     const orbitSource = format.orbitSource
+    const editor = createEditor( null, fieldName, orbitSource ) // without an adapter, for the moment
+    format.toolsModel.setEditorModel( editor )
+    orbitSource.createToolFactories( format.toolsModel ) // needed to register built-in tools
+
     const shaperName = orbitSource.getShapes().getName()
     // We don't want to dispatch all the edits, which can trigger tons of
     //  overhead and re-rendering.  Instead, we'll build up a design
@@ -709,8 +714,7 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
         } else {
           const wrappedElement = new JavaDomElement( editElement )
           adapter = adapter.clone()  // each command builds on the last
-          const editor = createEditor( adapter, fieldName )
-          format.toolsModel.setEditorModel( editor )
+          editor.setAdapter( adapter )
           const edit = createEdit( wrappedElement, editor, toolFactories, format.toolsModel )
           // null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit
           if ( edit ) {
