@@ -76,20 +76,10 @@ public class JsStrut extends JsManifestation implements Strut
     }
 
     @Override
-    public boolean isHidden()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
     public AlgebraicVector getCentroid()
     {
         throw new RuntimeException( "unimplemented" );
     }
-
-    @Override
-    public void setHidden(boolean b)
-    {}
 
     @Override
     public void setContainer(Group container)
