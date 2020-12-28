@@ -4,13 +4,10 @@
 package com.vzome.core.editor;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 import org.w3c.dom.Element;
 
-import com.vzome.api.Tool.InputBehaviors;
-import com.vzome.api.Tool.OutputBehaviors;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
@@ -77,17 +74,17 @@ public class ApplyTool extends ChangeManifestations
 
     private final ToolsModel tools;
 
-    public ApplyTool( ToolsModel tools, Tool tool, EnumSet<InputBehaviors> inputAction, EnumSet<OutputBehaviors> outputAction, boolean redundantOutputs )
+    public ApplyTool( ToolsModel tools, Tool tool, boolean selectInputs, boolean deleteInputs, boolean createOutputs, boolean selectOutputs, boolean redundantOutputs )
     {
         super( tools .getEditorModel() );
         this.tools = tools;
 
         this .tool = tool;
-        selectInputs = inputAction .contains( InputBehaviors.SELECT );
-        deleteInputs = inputAction .contains( InputBehaviors.DELETE );
-        hideInputs = false;
-        deselectOutputs = ! outputAction .contains( OutputBehaviors.SELECT );
-        justSelect = ! outputAction .contains( OutputBehaviors.CREATE );
+        this .selectInputs = selectInputs;
+        this .deleteInputs = deleteInputs;
+        this .hideInputs = false;
+        this .deselectOutputs = ! selectOutputs;
+        this .justSelect = ! createOutputs;
         this .redundantOutputs = redundantOutputs;
     }
 

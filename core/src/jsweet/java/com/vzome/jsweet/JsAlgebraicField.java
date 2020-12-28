@@ -464,6 +464,17 @@ public class JsAlgebraicField implements AlgebraicField
         return createAlgebraicNumber( ones, phis, div, 0 );
     }
 
+    @Override
+    public AlgebraicVector createIntegerVectorFromTDs(int[][] nums)
+    {
+        final int dims = nums.length;
+        AlgebraicVector result = origin( dims );
+        for (int dim = 0; dim < dims; dim++) {
+            result .setComponent( dim, createAlgebraicNumberFromTD( nums[dim] ) );
+        }
+        return result;
+    }
+
     
     
     
@@ -509,12 +520,6 @@ public class JsAlgebraicField implements AlgebraicField
 
     @Override
     public AlgebraicVector createIntegerVector(int[][] nums)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicVector createIntegerVectorFromTDs(int[][] nums)
     {
         throw new RuntimeException( "unimplemented" );
     }

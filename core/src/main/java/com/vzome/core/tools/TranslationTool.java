@@ -4,8 +4,6 @@
 package com.vzome.core.tools;
 
 
-import java.util.EnumSet;
-
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -25,7 +23,7 @@ public class TranslationTool extends TransformationTool
     public TranslationTool( String id, ToolsModel tools )
     {
         super( id, tools );
-        this .setInputBehaviors( EnumSet.of( InputBehaviors.DELETE ) );
+        this .setInputBehaviors( false, true );
     }
     
 	private static final String ID = "translation";

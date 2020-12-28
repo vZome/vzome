@@ -185,6 +185,36 @@ export const init = async ( window, store ) =>
   const vzomePkg = window.com.vzome
   const util = window.java.util
 
+  class ImportColoredMeshJson extends vzomePkg.core.edits.ImportMesh
+  {
+    parseMeshData( offset, events, registry )
+    {
+      const coloredMesh = JSON.parse( this.meshData )
+      const field = registry.getField( coloredMesh.field )
+      const vertices = coloredMesh.vertices.map( nums => {
+        let vertex = field.createIntegerVectorFromTDs( nums )
+        if ( vertex.dimension() > 3 )
+            vertex = this.projection.projectImage( vertex, false )
+        if ( offset != null )
+            vertex = offset.plus( vertex )
+        return vertex
+      } )
+      // TODO: handle legacy format; see ColoredMeshJson.java
+      coloredMesh.balls.forEach( ball => {
+        const vertex = vertices[ ball.vertex ]
+        const color = ball.color && vzomePkg.core.construction.Color.parseWebColor( ball.color )
+        events.constructionAdded( new vzomePkg.core.construction.FreePoint( vertex ), color );
+      });
+      coloredMesh.struts.forEach( strut => {
+        const point1 = new vzomePkg.core.construction.FreePoint( vertices[ strut.vertices[ 0 ] ] )
+        const point2 = new vzomePkg.core.construction.FreePoint( vertices[ strut.vertices[ 1 ] ] )
+        const color = strut.color && vzomePkg.core.construction.Color.parseWebColor( strut.color )
+        events.constructionAdded( new vzomePkg.core.construction.SegmentJoiningPoints( point1, point2 ), color );
+      });
+      // TODO: handle panels
+    }
+  }
+
   const xmlToEditClass = editName =>
   {
     const legacyNames = {
@@ -204,11 +234,31 @@ export const init = async ( window, store ) =>
     return editClass
   }
 
-  const createEdit = ( xmlElement, editor ) =>
+  const createEdit = ( xmlElement, editor, toolFactories, toolsModel ) =>
   {
     let editName = xmlElement.getLocalName()
     if ( editName === "Snapshot" )
       return null
+
+    if ( editName === "ImportColoredMeshJson" )
+      return new ImportColoredMeshJson( editor )
+
+    if ( toolsModel ) {
+      const toolEdit = toolsModel.createEdit( editName );
+      if ( toolEdit )
+          return toolEdit;
+    }
+
+    const toolId = xmlElement.getAttribute( "name" );
+    if ( toolId ) {
+      const factory = toolFactories.get( editName )
+      if ( factory ) {
+        const edit = factory.deserializeTool( toolId );
+        if ( edit )
+          return edit
+      }
+    }
+
     const editClass = xmlToEditClass( editName )
     if ( editClass )
       return new editClass( editor )
@@ -262,16 +312,23 @@ export const init = async ( window, store ) =>
     const orbitSetField = new vzomePkg.jsweet.JsOrbitSetField( orbitSource )
     format.initialize( field, orbitSetField, 0, "vZome Online", new util.Properties() )
     format.orbitSource = orbitSource
+
+    const originPoint = new vzomePkg.core.construction.FreePoint( field.origin( 3 ) )
+    const toolsModel = new vzomePkg.core.editor.ToolsModel( null, originPoint )
+    format.toolFactories = new util.HashMap()
+    fieldApp.registerToolFactories( format.toolFactories, toolsModel )
+    format.toolsModel = toolsModel
+
     return format
   }
 
-  const createEditor = ( adapter, fieldName ) =>
+  const createEditor = ( adapter, fieldName, orbitSource ) =>
   {
     const fieldApp = fieldApps[ fieldName ]
     const field = fieldApp.getField()
     const realizedModel = new vzomePkg.jsweet.JsRealizedModel( field, adapter )
     const selection = new vzomePkg.jsweet.JsSelection( field, adapter )
-    return new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp )
+    return new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp, orbitSource )
   }
 
   // This object implements the UndoableEdit.Context interface
@@ -439,7 +496,7 @@ class Adapter
   {
     const { id } = mesh.createInstance( vectors )
     const existing = this.shown.get( id ) || this.selected.get( id )
-    return !!existing.color
+    return existing && !!existing.color
   }
 
   manifestationColor( vectors )
@@ -517,13 +574,15 @@ class Properties
 
 export const legacyCommand = ( createEdit, createEditor, className ) => ( config ) => ( dispatch, getState ) =>
 {
-  let { shown, hidden, selected } = designs.selectCurrentMesh( getState() )
   const field = designs.selectCurrentField( getState() )
+  // TODO const symmetry = designs.selectCurrentSymmetry( getState() )
+  // TODO const shapes = designs.selectCurrentShapes( getState() )
+  let { shown, hidden, selected } = designs.selectCurrentMesh( getState() )
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )
   const adapter = new Adapter( shown, selected, hidden )
-  const editor = createEditor( adapter, field.name )
+  const editor = createEditor( adapter, field.name ) // TODO add symmetrySystem argument
   const edit = createEdit( new JavaDomElement( { localName: className } ), editor )
 
   edit.configure( new Properties( config ) )
@@ -576,6 +635,11 @@ class JavaDomElement
     return this.nativeElement.localName
   }
 
+  getTextContent()
+  {
+    return this.nativeElement.textContent
+  }
+
   getChildNodes()
   {
     return new JavaDomNodeList( this.nativeElement.childNodes )
@@ -618,8 +682,13 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
     const systemXml = getChildElement( vZomeRoot, "SymmetrySystem" )
     const system = systemXml && new JavaDomElement( systemXml )
     const format = formatFactory( namespace, fieldName, system )
+    const toolFactories = format.toolFactories
 
     const orbitSource = format.orbitSource
+    const editor = createEditor( null, fieldName, orbitSource ) // without an adapter, for the moment
+    format.toolsModel.setEditorModel( editor )
+    orbitSource.createToolFactories( format.toolsModel ) // needed to register built-in tools
+
     const shaperName = orbitSource.getShapes().getName()
     // We don't want to dispatch all the edits, which can trigger tons of
     //  overhead and re-rendering.  Instead, we'll build up a design
@@ -640,13 +709,13 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
         console.log( editElement.outerHTML )
         if ( editElement.nodeName === "Branch" ) {
           const sandbox = adapter.clone()
-          performEdits( editElement.firstElementChild, sandbox, () => {} ) // don't record mesh changes for branches
+          performEdits( editElement.firstElementChild, sandbox, () => ({}) ) // don't record mesh changes for branches
           // we discard the cloned sandbox adapter
         } else {
           const wrappedElement = new JavaDomElement( editElement )
           adapter = adapter.clone()  // each command builds on the last
-          const editor = createEditor( adapter, fieldName )
-          const edit = createEdit( wrappedElement, editor )
+          editor.setAdapter( adapter )
+          const edit = createEdit( wrappedElement, editor, toolFactories, format.toolsModel )
           // null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit
           if ( edit ) {
             edit.loadAndPerform( wrappedElement, format, editContext ) // a fixed editContext is sufficient for us

@@ -4,8 +4,6 @@
 package com.vzome.core.tools;
 
 
-import java.util.EnumSet;
-
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -139,9 +137,9 @@ public class RotationTool extends SymmetryTool
         this .fullRotation = full;
         this .corrected = true;
         if ( full )
-            this .setInputBehaviors( EnumSet.of( InputBehaviors.SELECT ) );
+            this .setInputBehaviors( true, false );
         else
-            this .setInputBehaviors( EnumSet.of( InputBehaviors.DELETE ) );
+            this .setInputBehaviors( false, true );
         ;
     }
 
