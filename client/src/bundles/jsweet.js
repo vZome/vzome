@@ -396,7 +396,7 @@ const resolverFactory = vzomePkg => orbitSource => shapes => instance =>
 
   const man = vzomePkg.jsweet.JsManifestation.manifest( vectors, jsAF, adapter )
   const rm = new vzomePkg.core.render.RenderedManifestation( man, orbitSource )
-  rm.resetAttributes( orbitSource, orbitSource.getShapes(), false, true )
+  rm.resetAttributes( false, true )
 
   // may be a zero-length strut, no shape
   if ( !rm.getShape() )
@@ -408,12 +408,14 @@ const resolverFactory = vzomePkg => orbitSource => shapes => instance =>
     shapes[ shapeId ] = embedShape( rm.getShape() )
   }
 
-  // get shape, orientation, color from rm
+  // get shape, orientation, color, and position from rm
+  const positionAV = rm.getLocationAV() || jsAF.origin( 3 )
+  const { x, y, z } = orbitSource.getSymmetry().embedInR3( positionAV )
   const quatIndex = rm.getStrutZone()
   const rotation = ( quatIndex && (quatIndex >= 0) && orbitSource.quaternions[ quatIndex ] ) || [0,0,0,1]
   const finalColor = rm.getColor().getRGB()
 
-  return { id, rotation, color: finalColor, shapeId }
+  return { id, position: [ x, y, z ], rotation, color: finalColor, shapeId }
 }
 
 class Adapter
@@ -456,8 +458,9 @@ class Adapter
   {
     const { id } = mesh.createInstance( vectors )
     const instance = this.shown.get( id )
-    if ( ! instance )
+    if ( ! instance ) {
       throw new Error( `No shown instance to select at ${id}`)
+    }
     this.shown.delete( id )
     this.selected.set( id, instance )
   }
@@ -643,6 +646,19 @@ class JavaDomElement
   getChildNodes()
   {
     return new JavaDomNodeList( this.nativeElement.childNodes )
+  }
+
+  getElementsByTagName( name )
+  {
+    let target = this.nativeElement.firstElementChild
+    const results = []
+    while ( target ) {
+      if ( name.toLowerCase() === target.nodeName.toLowerCase() ) {
+        results.push( target )
+      }
+      target = target.nextElementSibling
+    }
+    return { getLength: () => results.length, item: i => results[ i ] }
   }
 }
 

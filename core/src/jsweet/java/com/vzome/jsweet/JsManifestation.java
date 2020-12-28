@@ -76,8 +76,6 @@ public abstract class JsManifestation implements Manifestation
     {
         return toConstruction();
     }
-
-    
     
     public static int[][] canonicalizeNumbers( AlgebraicNumber... ns )
     {
@@ -125,7 +123,20 @@ public abstract class JsManifestation implements Manifestation
 
         default:
             // TODO JsPanel
-            return null;
+            return new JsPanel( field, adapter, vectors );
         }
+    }
+
+    @Override
+    public void setHidden(boolean b) {}  // State will be in the Adapter
+
+    
+    
+    
+    
+    @Override
+    public boolean isHidden()
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 }

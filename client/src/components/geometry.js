@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import React, { useMemo } from 'react'
-import { Mesh } from 'three'
 
 const computeNormal = ( vertices, face ) => {
   const v0 = vertices[ face.vertices[0] ]
@@ -69,9 +68,8 @@ const shapeInstance = ( instance, selected, field, shapedInstances, resolve ) =>
     return { ...shapedInstance, selected }
   }
   shapedInstance = resolve( instance )
-  const position = field.embedv( instance.vectors[0] ) // TODO: does this work for struts and panels?
   // everything except selected state will go into shapedInstances
-  shapedInstance = { ...shapedInstance, position, vectors: instance.vectors }
+  shapedInstance = { ...shapedInstance, vectors: instance.vectors }
   shapedInstances[ instance.id ] = shapedInstance
   return { ...shapedInstance, selected }
 }
