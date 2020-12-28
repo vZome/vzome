@@ -21,13 +21,15 @@ public class JsEditorModel implements EditorModel, LegacyEditorModel, SymmetryAw
     private final Symmetries4D kind;
     private final Point symmetryCenter;
     private final OrbitSource symmetries;
+    private final Object symmetrySystems;
 
-    public JsEditorModel( RealizedModel realizedModel, Selection selection, Symmetries4D kind, OrbitSource symmetries )
+    public JsEditorModel( RealizedModel realizedModel, Selection selection, Symmetries4D kind, OrbitSource symmetries, Object symmetrySystems )
     {
         this.realizedModel = realizedModel;
         this.selection = selection;
         this.kind = kind;
         this.symmetries = symmetries;
+        this.symmetrySystems = symmetrySystems;
         this.symmetryCenter = new FreePoint( realizedModel .getField() .origin( 3 ) );
     }
     
@@ -79,6 +81,12 @@ public class JsEditorModel implements EditorModel, LegacyEditorModel, SymmetryAw
         return this .symmetries;
     }
 
+    @Override
+    public OrbitSource getSymmetrySystem( String name )
+    {
+        return this.symmetrySystems .$get( name );
+    }
+
     
     
 
@@ -97,12 +105,6 @@ public class JsEditorModel implements EditorModel, LegacyEditorModel, SymmetryAw
 
     @Override
     public Construction getSelectedConstruction( Class<? extends Construction> kind )
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public OrbitSource getSymmetrySystem( String name )
     {
         throw new RuntimeException( "unimplemented" );
     }

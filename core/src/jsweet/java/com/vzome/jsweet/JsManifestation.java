@@ -129,14 +129,10 @@ public abstract class JsManifestation implements Manifestation
 
     @Override
     public void setHidden(boolean b) {}  // State will be in the Adapter
-
-    
-    
-    
     
     @Override
     public boolean isHidden()
     {
-        throw new RuntimeException( "unimplemented" );
+        return (boolean) ( (Function) this.adapter .$get( "manifestationHidden" ) ).apply( this.adapter, $array( vectors ) );
     }
 }

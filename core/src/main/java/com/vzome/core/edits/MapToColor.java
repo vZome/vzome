@@ -74,9 +74,10 @@ public class MapToColor extends ChangeManifestations {
         String colorMapperName = xml .getAttribute( COLORMAPPER_ATTR_NAME );
         this .colorMapper = ManifestationColorMappers .getColorMapper( colorMapperName, symmetry );
 
-        if( !colorMapper.getName().equals(colorMapperName) ) {
-            logger.warning("Substituting " + colorMapper.getName() + " for specifed " + COLORMAPPER_ATTR_NAME + ": " + colorMapperName);
-        }
+        // Disabling this warning because colorMapper.getName() fails in Javascript, due to JSweet transpiling limitations
+//        if( !colorMapper.getName().equals(colorMapperName) ) {
+//            logger.warning("Substituting " + colorMapper.getName() + " for specifed " + COLORMAPPER_ATTR_NAME + ": " + colorMapperName);
+//        }
         colorMapper.setXmlAttributes(xml);
     }
 

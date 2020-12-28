@@ -291,43 +291,85 @@ export const init = async ( window, store ) =>
     // Since we are not creating Branch edits, this should never be used
     createEdit: () => { throw new Error( "createEdit should never be called" ) },
 
-    createLegacyCommand: name => new vzomePkg.core.commands[ name ](),
+    createLegacyCommand: name => {
+      const constructor = vzomePkg.core.commands[ name ]
+      if ( constructor )
+        return new constructor()
+      else
+        throw new Error( `${name} command is not available yet`)
+    },
     
     // We will do our own edit recording, so this is just perform
     performAndRecord: edit => edit.perform()
   }
 
-  const documentFactory = ( fieldName, namespace, systemXml, toolsXml ) =>
+  const documentFactory = ( fieldName, namespace, xml ) =>
   {
+    // This reproduces the DocumentModel constructor pretty faithfully
+
     const fieldApp = fieldApps[ fieldName ]
     if ( ! fieldApp )
       throw new Error( `Field "${fieldName}" is not supported yet.` )
     const field = fieldApp.getField()
-    const symmName = systemXml? systemXml.getAttribute( "name" ) : "icosahedral"
-    const symmPer = fieldApp.getSymmetryPerspective( symmName )
-    if ( ! symmPer )
-      throw new Error( `Symmetry "${symmName}" is not supported yet.` )
+
+    const originPoint = new vzomePkg.core.construction.FreePoint( field.origin( 3 ) )
+
+    const systemXml = xml && xml.getChildElement( "SymmetrySystem" )
+    const symmName = systemXml && systemXml.getAttribute( "name" )
+    const symmPer = ( symmName && fieldApp.getSymmetryPerspective( symmName ) ) || fieldApp.getDefaultSymmetryPerspective()
+
+    const toolsModel = new vzomePkg.core.editor.ToolsModel( editContext, originPoint )
+
+    // Initialize the default SymmetrySystems from the FieldApplication
+    const symmetrySystems = {}
+    const symmPerspectives = fieldApp.getSymmetryPerspectives().iterator()
+    while ( symmPerspectives.hasNext() ) {
+      const perspective = symmPerspectives.next()
+      const osm = new vzomePkg.core.editor.SymmetrySystem( null, perspective, editContext, colors, true )
+      symmetrySystems[ osm.getName() ] = osm
+    }
+
+    // Now overwrite some or all of those default SymmetrySystems with those stored in the file.
+    //   This is important mostly for the automatic orbits, but can also carry color overrides.
     const orbitSource = new vzomePkg.core.editor.SymmetrySystem( systemXml, symmPer, editContext, colors, true )
+    symmetrySystems[ symmPer.getName() ] = orbitSource
+    // if ( this .mXML != null ) {
+    //     NodeList nl = this .mXML .getElementsByTagName( "OtherSymmetries" );
+    //     if ( nl .getLength() != 0 ) {
+    //         xml = (Element) nl .item( 0 );
+    //         NodeList nodes = xml .getElementsByTagName( "SymmetrySystem" );
+    //         for ( int i = 0; i < nodes .getLength(); i++ ) {
+    //             Node node = nodes .item( i );
+    //             if ( node instanceof Element ) {
+    //                 Element symmElem = (Element) node;
+    //                 String symmName = symmElem .getAttribute( "name" );  
+    //                 symmPerspective = kind .getSymmetryPerspective( symmName );
+    //                 SymmetrySystem otherSymmetrySystem = new SymmetrySystem( symmElem, symmPerspective, this, app .getColors(), true );
+    //                 this .symmetrySystems .put( symmName, otherSymmetrySystem );
+    //             }
+    //         }
+    //     }
+    //     }
+
     orbitSource.quaternions = makeQuaternions( orbitSource.getSymmetry().getMatrices() )
     const orbitSetField = new vzomePkg.jsweet.JsOrbitSetField( orbitSource )
 
     const format = namespace && vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )
     format && format.initialize( field, orbitSetField, 0, "vZome Online", new util.Properties() )
 
-    const originPoint = new vzomePkg.core.construction.FreePoint( field.origin( 3 ) )
-    const toolsModel = new vzomePkg.core.editor.ToolsModel( null, originPoint )
     const toolFactories = new util.HashMap()
     fieldApp.registerToolFactories( toolFactories, toolsModel )
 
     const realizedModel = new vzomePkg.jsweet.JsRealizedModel( field )
     const selection = new vzomePkg.jsweet.JsSelection( field )
-    const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp, orbitSource )
+    const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp, orbitSource, symmetrySystems )
     
     toolsModel.setEditorModel( editor )
     orbitSource.createToolFactories( toolsModel ) // needed to register built-in tools
     const bookmarkFactory = new vzomePkg.core.tools.BookmarkTool.Factory( toolsModel );
     bookmarkFactory.createPredefinedTool( "ball at origin" );
 
+    const toolsXml = xml && xml.getChildElement( "Tools" )
     toolsXml && toolsModel.loadFromXml( toolsXml )
 
     const shaper = shaperFactory( vzomePkg, orbitSource )
@@ -507,6 +549,12 @@ class Adapter
     return this.shown.has( id ) || this.selected.has( id )
   }
 
+  manifestationHidden( vectors )
+  {
+    const { id } = mesh.createInstance( vectors )
+    return this.hidden.has( id )
+  }
+
   manifestationSelected( vectors )
   {
     const { id } = mesh.createInstance( vectors )
@@ -664,13 +712,21 @@ class JavaDomElement
     return new JavaDomNodeList( this.nativeElement.childNodes )
   }
 
+  getChildElement( name )
+  {
+    let target = this.nativeElement.firstElementChild
+    while ( target && name.toLowerCase() !== target.nodeName.toLowerCase() )
+      target = target.nextElementSibling
+    return new JavaDomElement( target )
+  }
+
   getElementsByTagName( name )
   {
     let target = this.nativeElement.firstElementChild
     const results = []
     while ( target ) {
       if ( name.toLowerCase() === target.nodeName.toLowerCase() ) {
-        results.push( target )
+        results.push( new JavaDomElement( target ) )
       }
       target = target.nextElementSibling
     }
@@ -684,18 +740,10 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
 
   const fields = getState().fields
 
-  const getChildElement = ( parent, name ) =>
-  {
-    let target = parent.firstElementChild
-    while ( target && name.toLowerCase() !== target.nodeName.toLowerCase() )
-      target = target.nextElementSibling
-    return target
-  }
-
   try {
     const parser = new DOMParser();
     const domDoc = parser.parseFromString( xmlText, "application/xml" );
-    let vZomeRoot = domDoc.firstElementChild
+    let vZomeRoot = new JavaDomElement( domDoc.firstElementChild )
 
     const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
     const fieldName = vZomeRoot.getAttribute( "field" )
@@ -706,13 +754,7 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
     const hidden = new Map()
     const selected = new Map()  
 
-    const systemXml = getChildElement( vZomeRoot, "SymmetrySystem" )
-    const system = systemXml && new JavaDomElement( systemXml )
-
-    const toolsXml = getChildElement( vZomeRoot, "Tools" )
-    const tools = systemXml && new JavaDomElement( toolsXml )
-
-    const { shaper, createEditFromXml } = createDocument( fieldName, namespace, system, tools )
+    const { shaper, createEditFromXml } = createDocument( fieldName, namespace, vZomeRoot )
 
     // We don't want to dispatch all the edits, which can trigger tons of
     //  overhead and re-rendering.  Instead, we'll build up a design
@@ -722,7 +764,7 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
     // const shaper = resolverFactory( orbitSource )
     dispatch( shapers.shaperDefined( shaper.shapesName, shaper ) )
 
-    const history = getChildElement( vZomeRoot, "EditHistory" )
+    const history = vZomeRoot.getChildElement( "EditHistory" ).nativeElement
     // TODO: use editNumber
     const editNumber = history.getAttribute( "editNumber" )
     let editElement = history.firstElementChild
@@ -757,9 +799,9 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
     const adapter = new Adapter( shown, selected, hidden )
     performEdits( editElement, adapter, recordEdit )
     
-    const viewing = getChildElement( vZomeRoot, "Viewing" )
+    const viewing = vZomeRoot.getChildElement( "Viewing" )
     if ( viewing ) {
-      design = designs.designReducer( design, parseViewXml( viewing, getChildElement ) )
+      design = designs.designReducer( design, parseViewXml( viewing ) )
     }
     
     const extIndex = name.lastIndexOf( '.' )
