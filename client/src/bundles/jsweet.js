@@ -297,7 +297,7 @@ export const init = async ( window, store ) =>
     performAndRecord: edit => edit.perform()
   }
 
-  const documentFactory = ( fieldName, namespace, systemXml ) =>
+  const documentFactory = ( fieldName, namespace, systemXml, toolsXml ) =>
   {
     const fieldApp = fieldApps[ fieldName ]
     if ( ! fieldApp )
@@ -327,6 +327,8 @@ export const init = async ( window, store ) =>
     orbitSource.createToolFactories( toolsModel ) // needed to register built-in tools
     const bookmarkFactory = new vzomePkg.core.tools.BookmarkTool.Factory( toolsModel );
     bookmarkFactory.createPredefinedTool( "ball at origin" );
+
+    toolsXml && toolsModel.loadFromXml( toolsXml )
 
     const shaper = shaperFactory( vzomePkg, orbitSource )
     shaper.shapesName = orbitSource.getShapes().getName()
@@ -471,6 +473,8 @@ class Adapter
   select( vectors )
   {
     const { id } = mesh.createInstance( vectors )
+    if ( this.selected.has( id ) )
+      return // idempotent
     const instance = this.shown.get( id )
     if ( ! instance ) {
       throw new Error( `No shown instance to select at ${id}`)
@@ -548,8 +552,9 @@ class Adapter
   showManifestation( vectors )
   {
     let instance = mesh.createInstance( vectors )
-    instance = this.shown.get( instance.id ) || this.selected.get( instance.id ) || this.hidden.get( instance.id ) || instance
-    this.selected.delete( instance.id ) || this.hidden.delete( instance.id )
+    if ( this.shown.has( instance.id ) || this.selected.has( instance.id ) )
+      return // idempotent
+    this.hidden.delete( instance.id )
     this.shown.set( instance.id, instance )
   }
 
@@ -704,7 +709,10 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
     const systemXml = getChildElement( vZomeRoot, "SymmetrySystem" )
     const system = systemXml && new JavaDomElement( systemXml )
 
-    const { shaper, createEditFromXml } = createDocument( fieldName, namespace, system )
+    const toolsXml = getChildElement( vZomeRoot, "Tools" )
+    const tools = systemXml && new JavaDomElement( toolsXml )
+
+    const { shaper, createEditFromXml } = createDocument( fieldName, namespace, system, tools )
 
     // We don't want to dispatch all the edits, which can trigger tons of
     //  overhead and re-rendering.  Instead, we'll build up a design
