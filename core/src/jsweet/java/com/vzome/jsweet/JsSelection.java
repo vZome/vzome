@@ -87,9 +87,11 @@ public class JsSelection implements Selection
     @Override
     public int size()
     {
-        throw new RuntimeException( "unimplemented" );
+        return (int) ( (Function) this.adapter .$get( "selectionSize" ) ).apply( this.adapter );
     }
 
+    
+    
     
     
     @Override

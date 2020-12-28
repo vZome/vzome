@@ -18,13 +18,11 @@ import * as shapers from './shapers'
 // I should be able to use require() and a commonjs module, but it has the same J4TS build problem.
 
 const PARSER_READY = 'PARSER_READY'
-const RESOLVER_READY = 'RESOLVER_READY'
 const WORK_STARTED = 'WORK_STARTED'
 const WORK_FINISHED = 'WORK_FINISHED'
 
 const initialState = {
   readOnly: false,
-  resolver: undefined,       // ANTI-PATTERN, not a plain Object
   parser: undefined,       // ANTI-PATTERN, not a plain Object
   working: false,
 }
@@ -35,10 +33,6 @@ export const reducer = ( state = initialState, action ) =>
 
     case PARSER_READY: {
       return { ...state, parser: action.payload }
-    }
-
-    case RESOLVER_READY: {
-      return { ...state, resolver: action.payload }
     }
 
     case WORK_STARTED: {
@@ -228,13 +222,10 @@ export const init = async ( window, store ) =>
       apiProxy: "ApiEdit",
     }
     editName = legacyNames[ editName ] || editName
-    let editClass = vzomePkg.core.edits[ editName ]
-    if ( ! editClass )
-      editClass = vzomePkg.core.editor[ editName ]
-    return editClass
+    return vzomePkg.core.edits[ editName ] || vzomePkg.core.editor[ editName ]
   }
 
-  const createEdit = ( xmlElement, editor, toolFactories, toolsModel ) =>
+  const editFactory = ( editor, toolFactories, toolsModel ) => xmlElement =>
   {
     let editName = xmlElement.getLocalName()
     if ( editName === "Snapshot" )
@@ -292,44 +283,8 @@ export const init = async ( window, store ) =>
   ] )
   const properties = new Properties( defaults )
   const colors = new vzomePkg.core.render.Colors( properties )
-  const context = new vzomePkg.jsweet.JsEditContext()
   const gfield = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
   const fieldApps = { golden: new vzomePkg.core.kinds.GoldenFieldApplication( gfield ) }
-
-  const formatFactory = ( namespace, fieldName, systemXml ) =>
-  {
-    const fieldApp = fieldApps[ fieldName ]
-    if ( ! fieldApp )
-      throw new Error( `Field "${fieldName}" is not supported yet.` )
-    const field = fieldApp.getField()
-    const symmName = systemXml? systemXml.getAttribute( "name" ) : "icosahedral"
-    const format = vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )
-    const symmPer = fieldApp.getSymmetryPerspective( symmName )
-    if ( ! symmPer )
-      throw new Error( `Symmetry "${symmName}" is not supported yet.` )
-    const orbitSource = new vzomePkg.core.editor.SymmetrySystem( systemXml, symmPer, context, colors, true )
-    orbitSource.quaternions = makeQuaternions( orbitSource.getSymmetry().getMatrices() )
-    const orbitSetField = new vzomePkg.jsweet.JsOrbitSetField( orbitSource )
-    format.initialize( field, orbitSetField, 0, "vZome Online", new util.Properties() )
-    format.orbitSource = orbitSource
-
-    const originPoint = new vzomePkg.core.construction.FreePoint( field.origin( 3 ) )
-    const toolsModel = new vzomePkg.core.editor.ToolsModel( null, originPoint )
-    format.toolFactories = new util.HashMap()
-    fieldApp.registerToolFactories( format.toolFactories, toolsModel )
-    format.toolsModel = toolsModel
-
-    return format
-  }
-
-  const createEditor = ( adapter, fieldName, orbitSource ) =>
-  {
-    const fieldApp = fieldApps[ fieldName ]
-    const field = fieldApp.getField()
-    const realizedModel = new vzomePkg.jsweet.JsRealizedModel( field, adapter )
-    const selection = new vzomePkg.jsweet.JsSelection( field, adapter )
-    return new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp, orbitSource )
-  }
 
   // This object implements the UndoableEdit.Context interface
   const editContext = {
@@ -342,17 +297,76 @@ export const init = async ( window, store ) =>
     performAndRecord: edit => edit.perform()
   }
 
+  const documentFactory = ( fieldName, namespace, systemXml ) =>
+  {
+    const fieldApp = fieldApps[ fieldName ]
+    if ( ! fieldApp )
+      throw new Error( `Field "${fieldName}" is not supported yet.` )
+    const field = fieldApp.getField()
+    const symmName = systemXml? systemXml.getAttribute( "name" ) : "icosahedral"
+    const symmPer = fieldApp.getSymmetryPerspective( symmName )
+    if ( ! symmPer )
+      throw new Error( `Symmetry "${symmName}" is not supported yet.` )
+    const orbitSource = new vzomePkg.core.editor.SymmetrySystem( systemXml, symmPer, editContext, colors, true )
+    orbitSource.quaternions = makeQuaternions( orbitSource.getSymmetry().getMatrices() )
+    const orbitSetField = new vzomePkg.jsweet.JsOrbitSetField( orbitSource )
+
+    const format = namespace && vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )
+    format && format.initialize( field, orbitSetField, 0, "vZome Online", new util.Properties() )
+
+    const originPoint = new vzomePkg.core.construction.FreePoint( field.origin( 3 ) )
+    const toolsModel = new vzomePkg.core.editor.ToolsModel( null, originPoint )
+    const toolFactories = new util.HashMap()
+    fieldApp.registerToolFactories( toolFactories, toolsModel )
+
+    const realizedModel = new vzomePkg.jsweet.JsRealizedModel( field )
+    const selection = new vzomePkg.jsweet.JsSelection( field )
+    const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp, orbitSource )
+    
+    toolsModel.setEditorModel( editor )
+    orbitSource.createToolFactories( toolsModel ) // needed to register built-in tools
+    const bookmarkFactory = new vzomePkg.core.tools.BookmarkTool.Factory( toolsModel );
+    bookmarkFactory.createPredefinedTool( "ball at origin" );
+
+    const shaper = shaperFactory( vzomePkg, orbitSource )
+    shaper.shapesName = orbitSource.getShapes().getName()
+
+    const createEditFromXml = xmlElement =>
+    {
+      const edit = editFactory( editor, toolFactories, toolsModel )( xmlElement )
+      if ( ! edit )
+        return undefined
+      edit.deserializeAndPerform = ( adapter ) => {
+        editor.setAdapter( adapter )
+        edit.loadAndPerform( xmlElement, format, editContext )
+      }
+      return edit
+    }
+
+    const configureAndPerformEdit = ( className, config, adapter ) =>
+    {
+      const edit = editFactory( editor, toolFactories, toolsModel )( new JavaDomElement( { localName: className } ) )
+      if ( ! edit )
+        return
+      editor.setAdapter( adapter )
+      edit.configure( new Properties( config ) )
+      edit.perform()
+    }
+
+    return { shaper, createEditFromXml, configureAndPerformEdit }
+  }
+
   // Discover all the legacy edit classes and register as commands
   const commands = {}
   for ( const name of Object.keys( vzomePkg.core.edits ) )
-    commands[ name ] = legacyCommand( createEdit, createEditor, name )
+    commands[ name ] = legacyCommandFactory( documentFactory, name )
   store.dispatch( commandsDefined( commands ) )
 
   // Prepare the orbitSource for resolveShapes
   const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
-  const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, context, colors, true )
+  const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, editContext, colors, true )
   orbitSource.quaternions = makeQuaternions( orbitSource.getSymmetry().getMatrices() )
-  const shaper = resolverFactory( vzomePkg )( orbitSource )
+  const shaper = shaperFactory( vzomePkg, orbitSource )
   const shaperName = orbitSource.getShapes().getName()    
 
   const blue = [ [0,0,1], [0,0,1], [1,0,1] ]
@@ -362,7 +376,7 @@ export const init = async ( window, store ) =>
   const gridPoints = vzomePkg.jsweet.JsAdapter.getZoneGrid( orbitSource, blue )
   store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
 
-  const parser = createParser( editContext, createEditor, createEdit, formatFactory, resolverFactory( vzomePkg ) )
+  const parser = createParser( documentFactory )
 
   // TODO: fetch all shape VEFs in a ZIP, then inject each
   await Promise.all( knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/octahedral/${name}.vef` ) ) )
@@ -385,7 +399,7 @@ const embedShape = ( shape ) =>
   return { id, vertices, faces }
 }
 
-const resolverFactory = vzomePkg => orbitSource => shapes => instance =>
+const shaperFactory = ( vzomePkg, orbitSource ) => shapes => instance =>
 {
   const { id, vectors, color } = instance
   const jsAF = orbitSource.getSymmetry().getField()
@@ -575,7 +589,7 @@ class Properties
   }
 }
 
-export const legacyCommand = ( createEdit, createEditor, className ) => ( config ) => ( dispatch, getState ) =>
+export const legacyCommandFactory = ( createEditor, className ) => ( config ) => ( dispatch, getState ) =>
 {
   const field = designs.selectCurrentField( getState() )
   // TODO const symmetry = designs.selectCurrentSymmetry( getState() )
@@ -585,12 +599,9 @@ export const legacyCommand = ( createEdit, createEditor, className ) => ( config
   hidden = new Map( hidden )
   selected = new Map( selected )
   const adapter = new Adapter( shown, selected, hidden )
-  const editor = createEditor( adapter, field.name ) // TODO add symmetrySystem argument
-  const edit = createEdit( new JavaDomElement( { localName: className } ), editor )
+  // side-effects will appear in shown, hidden, and selected maps
 
-  edit.configure( new Properties( config ) )
-
-  edit.perform()  // side-effects will appear in shown, hidden, and selected maps
+  createEditor( field.name ).configureAndPerformEdit( className, config, adapter )
 
   dispatch( { type: WORK_STARTED } )
   dispatch( meshChanged( shown, selected, hidden ) )
@@ -630,7 +641,7 @@ class JavaDomElement
 
   getAttribute( name )
   {
-    return this.nativeElement.getAttribute( name )
+    return this.nativeElement.getAttribute && this.nativeElement.getAttribute( name )
   }
 
   getLocalName()
@@ -662,12 +673,8 @@ class JavaDomElement
   }
 }
 
-export const createParser = ( editContext, createEditor, createEdit, formatFactory, resolverFactory ) => ( name, xmlText, dispatch, getState ) =>
+export const createParser = ( createDocument ) => ( name, xmlText, dispatch, getState ) =>
 {
-  // I tried using JXON here, but wants to make the EditHistory into an object not an array.
-  // I could also just roll my own, ala https://developer.mozilla.org/en-US/docs/Archive/JXON,
-  //   but I think there would be enough special cases that I might as well just use the DOM.
-
   dispatch( startProgress( "Parsing vZome file..." ) )
 
   const fields = getState().fields
@@ -680,12 +687,11 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
     return target
   }
 
-  const parser = new DOMParser();
-  const domDoc = parser.parseFromString( xmlText, "application/xml" );
-  let vZomeRoot = domDoc.firstElementChild
-  console.log( vZomeRoot )
-
   try {
+    const parser = new DOMParser();
+    const domDoc = parser.parseFromString( xmlText, "application/xml" );
+    let vZomeRoot = domDoc.firstElementChild
+
     const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
     const fieldName = vZomeRoot.getAttribute( "field" )
 
@@ -697,22 +703,16 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
 
     const systemXml = getChildElement( vZomeRoot, "SymmetrySystem" )
     const system = systemXml && new JavaDomElement( systemXml )
-    const format = formatFactory( namespace, fieldName, system )
-    const toolFactories = format.toolFactories
 
-    const orbitSource = format.orbitSource
-    const editor = createEditor( null, fieldName, orbitSource ) // without an adapter, for the moment
-    format.toolsModel.setEditorModel( editor )
-    orbitSource.createToolFactories( format.toolsModel ) // needed to register built-in tools
+    const { shaper, createEditFromXml } = createDocument( fieldName, namespace, system )
 
-    const shaperName = orbitSource.getShapes().getName()
     // We don't want to dispatch all the edits, which can trigger tons of
     //  overhead and re-rendering.  Instead, we'll build up a design
     //  by calling the designReducer manually.
-    let design = designs.initializeDesign( fields[ fieldName ], shaperName )
+    let design = designs.initializeDesign( fields[ fieldName ], shaper.name )
 
-    const shaper = resolverFactory( orbitSource )
-    dispatch( shapers.shaperDefined( shaperName, shaper ) )
+    // const shaper = resolverFactory( orbitSource )
+    dispatch( shapers.shaperDefined( shaper.shapesName, shaper ) )
 
     const history = getChildElement( vZomeRoot, "EditHistory" )
     // TODO: use editNumber
@@ -730,11 +730,11 @@ export const createParser = ( editContext, createEditor, createEdit, formatFacto
         } else {
           const wrappedElement = new JavaDomElement( editElement )
           adapter = adapter.clone()  // each command builds on the last
-          editor.setAdapter( adapter )
-          const edit = createEdit( wrappedElement, editor, toolFactories, format.toolsModel )
+          // editor.setAdapter( adapter )
+          const edit = createEditFromXml( wrappedElement )
           // null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit
           if ( edit ) {
-            edit.loadAndPerform( wrappedElement, format, editContext ) // a fixed editContext is sufficient for us
+            edit.deserializeAndPerform( adapter )
             design = designs.designReducer( design, recordEdit( adapter ) )
           }
         }
