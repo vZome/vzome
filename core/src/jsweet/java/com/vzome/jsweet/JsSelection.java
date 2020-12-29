@@ -90,52 +90,62 @@ public class JsSelection implements Selection
         return (int) ( (Function) this.adapter .$get( "selectionSize" ) ).apply( this.adapter );
     }
 
-    
-    
-    
-    
-    @Override
-    public void selectWithGrouping(Manifestation mMan)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void unselectWithGrouping(Manifestation mMan)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
     @Override
     public void gatherGroup()
     {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void gatherGroup211()
-    {
-        throw new RuntimeException( "unimplemented" );
+        ( (Function) this.adapter .$get( "createGroup" ) ).apply( this.adapter );
     }
 
     @Override
     public void scatterGroup()
     {
-        throw new RuntimeException( "unimplemented" );
+        ( (Function) this.adapter .$get( "disbandGroup" ) ).apply( this.adapter );
+    }
+
+    @Override
+    public void gatherGroup211()
+    {
+        ( (Function) this.adapter .$get( "createLegacyGroup" ) ).apply( this.adapter );
     }
 
     @Override
     public void scatterGroup211()
     {
-        throw new RuntimeException( "unimplemented" );
+        ( (Function) this.adapter .$get( "disbandLegacyGroup" ) ).apply( this.adapter );
+    }
+
+    @Override
+    public void selectWithGrouping( Manifestation man )
+    {
+        if ( man == null ) // This check is performed in SelectionImpl.java
+            return;
+
+        int[][][] vectors = ((JsManifestation) man) .getVectors();
+        ( (Function) this.adapter .$get( "selectWithGrouping" ) ).apply( this.adapter, $array( vectors ) );
+    }
+
+    @Override
+    public void unselectWithGrouping( Manifestation man )
+    {
+        if ( man == null ) // This check is performed in SelectionImpl.java
+            return;
+
+        int[][][] vectors = ((JsManifestation) man) .getVectors();
+        ( (Function) this.adapter .$get( "unselectWithGrouping" ) ).apply( this.adapter, $array( vectors ) );
     }
 
     @Override
     public boolean isSelectionAGroup()
     {
-        throw new RuntimeException( "unimplemented" );
+        return (boolean) ( (Function) this.adapter .$get( "selectionIsGroup" ) ).apply( this.adapter );
     }
+    
+    
+    
+    
 
+    
+    
     @Override
     public void copy(List<Manifestation> bookmarkedSelection)
     {
