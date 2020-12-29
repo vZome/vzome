@@ -185,7 +185,7 @@ public class CommandEdit extends ChangeManifestations
             // here we accommodate model files that include failed edits in their history
             if ( cons .failed() )
             {
-                logBugAccommodation( "failed construction" );
+                CommandEdit.logBugAccommodation( "failed construction" ); // weird qualification, but it passes JSweet
                 ((LegacyEditorModel) mEditorModel) .addFailedConstruction( cons );
                 continue;
             }
@@ -285,7 +285,7 @@ public class CommandEdit extends ChangeManifestations
                             
                             if ( ((LegacyEditorModel) mEditorModel) .hasFailedConstruction( c ) )
                             {
-                                logBugAccommodation( "skip selecting a failed construction" );
+                                CommandEdit.logBugAccommodation( "skip selecting a failed construction" ); // weird qualification, but it passes JSweet
                                 continue;
                             }
                             

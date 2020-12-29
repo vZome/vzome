@@ -91,6 +91,12 @@ public class JsPanel extends JsManifestation implements Panel
     @Override
     public void setZoneVector( AlgebraicVector vector ) {}
 
+    @Override
+    public AlgebraicVector getFirstVertex()
+    {
+        return ((JsAlgebraicField) this .field) .createVectorFromTDs( this .vectors[ 0 ] );
+    }
+
     
     
     
@@ -118,12 +124,6 @@ public class JsPanel extends JsManifestation implements Panel
 
     @Override
     public void setContainer( Group container )
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicVector getFirstVertex()
     {
         throw new RuntimeException( "unimplemented" );
     }

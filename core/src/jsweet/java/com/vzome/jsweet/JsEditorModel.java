@@ -19,7 +19,8 @@ public class JsEditorModel implements EditorModel, LegacyEditorModel, SymmetryAw
     private final RealizedModel realizedModel;
     private final Selection selection;
     private final Symmetries4D kind;
-    private final Point symmetryCenter;
+    private Segment symmetrySegment;
+    private Point symmetryCenter;
     private final OrbitSource symmetries;
     private final Object symmetrySystems;
 
@@ -60,7 +61,7 @@ public class JsEditorModel implements EditorModel, LegacyEditorModel, SymmetryAw
     @Override
     public Segment getSymmetrySegment()
     {
-        return null;
+        return this .symmetrySegment;
     }
 
     @Override
@@ -87,30 +88,27 @@ public class JsEditorModel implements EditorModel, LegacyEditorModel, SymmetryAw
         return this.symmetrySystems .$get( name );
     }
 
+    @Override
+    public void addFailedConstruction( Construction cons ) {}
+
+    @Override
+    public void setCenterPoint( Construction point )
+    {
+        this.symmetryCenter = (Point) point;
+    }
+
+    @Override
+    public void setSymmetrySegment( Segment segment )
+    {
+        this.symmetrySegment = segment;
+    }
     
     
 
     
-    @Override
-    public void setCenterPoint(Construction point)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void setSymmetrySegment(Segment segment)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
 
     @Override
     public Construction getSelectedConstruction( Class<? extends Construction> kind )
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void addFailedConstruction( Construction cons )
     {
         throw new RuntimeException( "unimplemented" );
     }
