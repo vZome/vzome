@@ -10,6 +10,7 @@ import { fetchModel } from './files'
 import * as designs from './models'
 import { meshChanged } from './mesh'
 import * as shapers from './shapers'
+import { ActionCreators } from 'redux-undo';
 
 
 // I can't use the ES6 module approach until I figure out how to use J4TS that way.
@@ -766,16 +767,17 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
 
     const history = vZomeRoot.getChildElement( "EditHistory" ).nativeElement
     // TODO: use editNumber
-    const editNumber = history.getAttribute( "editNumber" )
+    const targetEdit = parseInt( history.getAttribute( "editNumber" ) )
+    let currentEdit = 0
     let editElement = history.firstElementChild
 
-    const performEdits = ( editElement, adapter, recordEdit ) =>
+    const performEdits = ( editElement, adapter, recordEdit, increment ) =>
     {
       do {
         console.log( editElement.outerHTML )
         if ( editElement.nodeName === "Branch" ) {
           const sandbox = adapter.clone()
-          performEdits( editElement.firstElementChild, sandbox, () => ({}) ) // don't record mesh changes for branches
+          performEdits( editElement.firstElementChild, sandbox, () => ({}), 0 ) // don't record mesh changes for branches, don't increment currentEdit
           // we discard the cloned sandbox adapter
         } else {
           const wrappedElement = new JavaDomElement( editElement )
@@ -786,6 +788,7 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
           if ( edit ) {
             edit.deserializeAndPerform( adapter )
             design = designs.designReducer( design, recordEdit( adapter ) )
+            currentEdit += increment
           }
         }
         editElement = editElement.nextElementSibling
@@ -797,7 +800,14 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
     const recordEdit = ( { shown, selected, hidden } ) => mesh.meshChanged( shown, selected, hidden )
 
     const adapter = new Adapter( shown, selected, hidden )
-    performEdits( editElement, adapter, recordEdit )
+    performEdits( editElement, adapter, recordEdit, 1 )
+
+    console.log( `target is ${targetEdit}, currentEdit is ${currentEdit}` )
+    while ( currentEdit > targetEdit ) {
+      design = designs.designReducer( design, ActionCreators.undo() )
+      --currentEdit
+    }
+    console.log( `target is ${targetEdit}, currentEdit is ${currentEdit}` )
     
     const viewing = vZomeRoot.getChildElement( "Viewing" )
     if ( viewing ) {
