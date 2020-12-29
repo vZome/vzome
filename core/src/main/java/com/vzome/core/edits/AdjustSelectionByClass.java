@@ -6,6 +6,7 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.editor.api.ActionEnum;
 import com.vzome.core.editor.api.ChangeSelection;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Connector;
