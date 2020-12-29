@@ -353,7 +353,11 @@ export const init = async ( window, store ) =>
     //     }
 
     orbitSource.quaternions = makeQuaternions( orbitSource.getSymmetry().getMatrices() )
-    const orbitSetField = new vzomePkg.jsweet.JsOrbitSetField( orbitSource )
+    const orbitSetField = {
+      __interfaces: [ "com.vzome.core.math.symmetry.OrbitSet.Field" ],
+      getGroup: name => symmetrySystems[ name ].getOrbits(),
+      getQuaternionSet: name => fieldApp.getQuaternionSymmetry( name )
+    }
 
     const format = namespace && vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )
     format && format.initialize( field, orbitSetField, 0, "vZome Online", new util.Properties() )
@@ -520,6 +524,7 @@ class Adapter
       return // idempotent
     const instance = this.shown.get( id )
     if ( ! instance ) {
+      const hidden = this.hidden.get( id )
       throw new Error( `No shown instance to select at ${id}`)
     }
     this.shown.delete( id )
@@ -788,9 +793,9 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
           if ( edit ) {
             edit.deserializeAndPerform( adapter )
             design = designs.designReducer( design, recordEdit( adapter ) )
-            currentEdit += increment
           }
         }
+        currentEdit += increment
         editElement = editElement.nextElementSibling
       }
       while ( editElement );
