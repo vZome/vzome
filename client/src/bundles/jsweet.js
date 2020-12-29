@@ -717,7 +717,7 @@ class JavaDomElement
     let target = this.nativeElement.firstElementChild
     while ( target && name.toLowerCase() !== target.nodeName.toLowerCase() )
       target = target.nextElementSibling
-    return new JavaDomElement( target )
+    return target && new JavaDomElement( target )
   }
 
   getElementsByTagName( name )

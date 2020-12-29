@@ -55,8 +55,12 @@ public class JsStrut extends JsManifestation implements Strut
     }
 
     @Override
-    public void setZoneVector(AlgebraicVector vector)
+    public void setZoneVector( AlgebraicVector vector ) {}
+
+    @Override
+    public AlgebraicVector getZoneVector()
     {
+        return this .getOffset();
     }
 
     
@@ -83,12 +87,6 @@ public class JsStrut extends JsManifestation implements Strut
 
     @Override
     public void setContainer(Group container)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicVector getZoneVector()
     {
         throw new RuntimeException( "unimplemented" );
     }
