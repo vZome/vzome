@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
@@ -16,7 +13,6 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
-import com.vzome.core.model.Group;
 import com.vzome.core.model.Panel;
 
 import def.js.Object;
@@ -26,12 +22,6 @@ public class JsPanel extends JsManifestation implements Panel
     public JsPanel( AlgebraicField field, Object adapter, int[][][] coords )
     {
         super( field, adapter, coords );
-    }
-
-    @Override
-    public Group getContainer()
-    {
-        return null;
     }
 
     @Override
@@ -103,30 +93,6 @@ public class JsPanel extends JsManifestation implements Panel
     
     
     
-
-    @Override
-    public Iterator<Construction> getConstructions()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public Element getXml(Document doc)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicVector getCentroid()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void setContainer( Group container )
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
 
     @Override
     public Iterator<AlgebraicVector> getVertices()

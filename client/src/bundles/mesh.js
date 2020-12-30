@@ -25,6 +25,7 @@ export const justOrigin = field => {
     shown,
     selected: new Map(),
     hidden: new Map(),
+    groups: []
   }
 }
 
@@ -32,6 +33,7 @@ const initialState = {
   shown: new Map(),
   selected: new Map(), // This Map is especially important, so we iterate in insertion order
   hidden: new Map(),
+  groups: []
 }
 
 const canonicalizedId = ( vectors ) =>
@@ -64,7 +66,7 @@ export const reducer = ( state = initialState, action ) =>
   switch (action.type) {
 
     case MESH_CHANGED: {
-      return { ...state, ...action.payload } // replace shown, selected, hidden
+      return { ...state, ...action.payload } // replace shown, selected, hidden, groups
     }
 
     case OBJECT_SELECTED: {
