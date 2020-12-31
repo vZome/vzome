@@ -12,7 +12,7 @@ import Divider from '@material-ui/core/Divider';
 
 const ITEM_HEIGHT = 48;
 
-const EditMenu = ({ visible, edits, modelNames, doEdit, canUndo, canRedo, doUndo, doRedo, doSelectModel }) =>
+const EditMenu = ({ visible, edits, doEdit, canUndo, canRedo, doUndo, doRedo }) =>
 {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -46,11 +46,6 @@ const EditMenu = ({ visible, edits, modelNames, doEdit, canUndo, canRedo, doUndo
             },
           }}
         >
-          { modelNames.map( modelName =>
-            <MenuItem key={modelName} onClick={ () => doSelectModel( modelName ) } >
-              {modelName}
-            </MenuItem>
-          ) }
           <Divider />
           <MenuItem disabled={!canUndo} onClick={doUndo}>Undo</MenuItem>
           <MenuItem disabled={!canRedo} onClick={doRedo}>Redo</MenuItem>
@@ -81,7 +76,6 @@ const select = ( state ) =>
   const { models, commands } = state
   const history = models && designs.selectCurrentDesign( state ).history
   return {
-    modelNames: models && Object.keys( models.data ),
     canUndo: history && history.past.length > 0,
     canRedo: history && history.future.length > 0,
     visible: !!commands,
@@ -93,7 +87,6 @@ const boundEventActions = {
   doEdit : commandTriggered,
   doUndo : UndoActionCreators.undo,
   doRedo : UndoActionCreators.redo,
-  doSelectModel: designs.switchModel,
 }
 
 export default connect( select, boundEventActions )( EditMenu )

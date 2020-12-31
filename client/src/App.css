@@ -16,62 +16,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-
-/* The Overlay (background) */
-.overlay {
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  right: 0px;
-  display: flex;
-  align-items: center;
-  overflow: auto;
-  
-  z-index: 1; /* Sit on top */
-  background-color: rgb(120,120,120); /* Black fallback color */
-  background-color: rgba(120,120,120, 0.5); /* Black w/opacity */
-  overflow-x: hidden; /* Disable horizontal scroll */
-}
-
-/* Position the content inside the overlay */
-.spinner {
-  margin: auto;
-  max-height: 100%;
-}
-
-#message {
-  position: fixed;
-  bottom: 1em;
-  width: 100%;
-  text-align: center;
-  background-color: rgb(120,120,120); /* Grey fallback color */
-  background-color: rgba(120,120,120, 0.0); /* Grey w/opacity */
-  color: white;
-  margin: auto;
-}
-
 .dropdown {
   position: fixed;
   left: 13%;
-  top: 1%;
-}
-
-#web {
-  position: fixed;
-  right: 13%;
-  top: 1%;
-}
-
-#models {
-  position: fixed;
-  right: 9%;
-  top: 1%;
-}
-
-#fileopener {
-  position: fixed;
-  right: 5%;
   top: 1%;
 }
 
