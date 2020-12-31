@@ -19,6 +19,7 @@ function App() {
     <>
       <VZomeAppBar/>
       <ModelCanvas/>
+      <ErrorAlert/> 
       {/* <Fab color="primary" aria-label="undo">
         <UndoRoundedIcon />
       </Fab>
@@ -29,8 +30,7 @@ function App() {
       {/* <WebLoader/>
       <Models/>
       <FileOpener/>
-      <Exporter/>
-      <ErrorAlert/> */}
+      <Exporter/>*/}
       {/* <EditMenu/> */}
       {/* <Spinner/> */}
       {/* <div>Export icon made from <a href="http://www.onlinewebfonts.com/icon">Icon Fonts</a> is licensed by CC BY 3.0</div> */}

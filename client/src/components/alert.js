@@ -1,20 +1,20 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { clearAlert } from '../bundles/alerts'
-import Alert from 'react-bootstrap/Alert'
-import Modal from 'react-bootstrap/Modal'
+import { Alert, AlertTitle } from '@material-ui/lab';
+import Snackbar from '@material-ui/core/Snackbar';
+
 
 const ErrorAlert = ( { message, dismissed } ) =>
 {
   return (
-    <Modal show={message} size='lg' onEscapeKeyDown={dismissed}>
-      <Modal.Body>
-        <Alert variant="danger" onClose={dismissed} dismissible>
-          <Alert.Heading>There's a problem.</Alert.Heading>
-          <p>{message}</p>
-        </Alert>
-      </Modal.Body>
-    </Modal>
+    <Snackbar open={!!message} onClose={dismissed}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+      <Alert variant='filled' severity="error" onClose={dismissed}>
+        <AlertTitle>There's a problem</AlertTitle>
+        {message}
+      </Alert>
+    </Snackbar>
   )
 }
 

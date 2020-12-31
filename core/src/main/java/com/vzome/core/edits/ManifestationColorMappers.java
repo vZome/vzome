@@ -476,17 +476,17 @@ public class ManifestationColorMappers {
     public static class RadialStandardBasisColorMap extends ManifestationSubclassColorMapper {
 
         @Override
-        protected Color applyTo(Connector ball, int alpha) {
+        protected Color applyToBall(Connector ball, int alpha) {
             return applyTo(ball.getLocation(), alpha);
         }
         
         @Override
-        protected Color applyTo(Strut strut, int alpha) {
+        protected Color applyToStrut(Strut strut, int alpha) {
             return applyTo(strut.getOffset(), alpha);
         }
 
         @Override
-        protected Color applyTo(Panel panel, int alpha) {
+        protected Color applyToPanel(Panel panel, int alpha) {
             return applyTo(panel.getNormal(), alpha);
         }
 
@@ -502,8 +502,8 @@ public class ManifestationColorMappers {
     public static class CanonicalOrientationColorMap extends RadialStandardBasisColorMap {
 
         @Override
-        protected Color applyTo(Connector ball, int alpha) {
-            return super.applyTo(ball, alpha);
+        protected Color applyToBall(Connector ball, int alpha) {
+            return super.applyToBall(ball, alpha);
         }
         
         @Override
@@ -558,19 +558,19 @@ public class ManifestationColorMappers {
             int alpha = color == null
                     ? 0xFF
                     : color.getAlpha();
-            if (Connector.class.equals(man.getClass())) {
-                return applyTo( Connector.class.cast(man), alpha );
-            } else if (Strut.class.isAssignableFrom(man.getClass())) {
-                return applyTo( Strut.class.cast(man), alpha );
-            } else if (Panel.class.isAssignableFrom(man.getClass())) {
-                return applyTo( Panel.class.cast(man), alpha );
+            if ( man instanceof Connector ) {
+                return applyToBall( (Connector) man, alpha );
+            } else if ( man instanceof Strut ) {
+                return applyToBall( (Connector) man, alpha );
+            } else if ( man instanceof Panel ) {
+                return applyToPanel( (Panel) man, alpha );
             }
             return null;
         }
 
-        protected abstract Color applyTo(Connector ball, int alpha);
-        protected abstract Color applyTo(Strut strut, int alpha);
-        protected abstract Color applyTo(Panel panel, int alpha);
+        protected abstract Color applyToBall(Connector ball, int alpha);
+        protected abstract Color applyToStrut(Strut strut, int alpha);
+        protected abstract Color applyToPanel(Panel panel, int alpha);
     }
 
     /**
@@ -586,17 +586,17 @@ public class ManifestationColorMappers {
         }
 
         @Override
-        protected Color applyTo(Connector ball, int alpha) {
+        protected Color applyToBall(Connector ball, int alpha) {
             return Color.WHITE;
         }
 
         @Override
-        protected Color applyTo(Strut strut, int alpha) {
+        protected Color applyToStrut(Strut strut, int alpha) {
             return applyTo(strut.getOffset());
         }
 
         @Override
-        protected Color applyTo(Panel panel, int alpha) {
+        protected Color applyToPanel(Panel panel, int alpha) {
             return applyTo(panel.getNormal()).getPastel();
         }
 
@@ -657,17 +657,17 @@ public class ManifestationColorMappers {
         }
 
         @Override
-        protected Color applyTo(Connector ball, int alpha) {
+        protected Color applyToBall(Connector ball, int alpha) {
             return applyTo(ball.getLocation());
         }
 
         @Override
-        protected Color applyTo(Strut strut, int alpha) {
+        protected Color applyToStrut(Strut strut, int alpha) {
             return applyTo(strut.getOffset());
         }
 
         @Override
-        protected Color applyTo(Panel panel, int alpha) {
+        protected Color applyToPanel(Panel panel, int alpha) {
             return applyTo(panel.getNormal()).getPastel();
         }
 
@@ -692,17 +692,17 @@ public class ManifestationColorMappers {
         }
 
         @Override
-        protected Color applyTo(Connector ball, int alpha) {
+        protected Color applyToBall(Connector ball, int alpha) {
             return applyTo(ball.getCentroid());
         }
 
         @Override
-        protected Color applyTo(Strut strut, int alpha) {
+        protected Color applyToStrut(Strut strut, int alpha) {
             return applyTo(strut.getCentroid());
         }
 
         @Override
-        protected Color applyTo(Panel panel, int alpha) {
+        protected Color applyToPanel(Panel panel, int alpha) {
             return applyTo(panel.getCentroid()).getPastel();
         }
     }

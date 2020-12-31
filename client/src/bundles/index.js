@@ -20,12 +20,12 @@ const urlParams = new URLSearchParams( window.location.search );
 const profile = urlParams.get( "profile" ) || urlParams.get( "editMode" )
 switch ( profile ) {
 
-  case "plane":
-    bundles = { ...requiredBundles, java: jsweet, models, shapers, workingPlane }
-    break;
-
   case "jsweet":
     bundles = { ...requiredBundles, java: cheerpj, camera, alerts, progress }
+    break;
+
+  case "plane":
+    bundles = { ...requiredBundles, java: jsweet, models, shapers, workingPlane }
     break;
 
   default:
