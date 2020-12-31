@@ -6,7 +6,7 @@ import SvgIcon from '@material-ui/core/SvgIcon'
 export default function VZomeLogo() {
   return (
     <SvgIcon fontSize="large"
-        stroke='black' stroke-linejoin='round' stroke-width='0.5' 
+        stroke='black' strokeLinejoin='round' strokeWidth='0.5' 
         viewBox='55 40 340.0 340.0' >
       {/* <rect fill='#bbdaed' x='1' y='1' width='437.0' height='397.0'/> */}
       <path fill='#3e3e3e' d='M 269.02 277.8 L 272.46 283.83 L 287.98 296.29 L 286.3 291.64  z'/>

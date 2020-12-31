@@ -127,6 +127,33 @@ const knownOrbitNames = [
   "yellow",
 ]
 
+const shapeNames = [
+  'bigzome',
+  'default',
+  'dodecagon3d',
+  'dodecs',
+  'heptagon/antiprism',
+  'lifelike',
+  'moves.sh',
+  'noTwist',
+  'octahedral',
+  'octahedralFast',
+  'octahedralRealistic',
+  'pentagonal',
+  'rootThreeOctaSmall',
+  'rootTwo',
+  'rootTwoBig',
+  'rootTwoSmall',
+  'sqrtPhi/fivefold',
+  'sqrtPhi/zome',
+  'sqrtPhi/tinyIcosahedra',
+  'sqrtPhi/octahedra',
+  'tiny',
+  'vienne',
+  'vienne2',
+  'vienne3'
+]
+
 // Initialization
 
 const makeQuaternions = ( matrices ) =>
@@ -270,7 +297,7 @@ export const init = async ( window, store ) =>
     const text = await response.text()
     // Inject the VEF into a static map on ExportedVEFShapes
     if ( text[ 0 ] === "<" ) {
-      console.log( `No resource for ${fullPath}` )
+      // HTML from a 404, just skip it
       return
     }
     vzomePkg.xml.ResourceLoader.injectResource( path, text )
@@ -429,8 +456,9 @@ export const init = async ( window, store ) =>
   const parser = createParser( documentFactory )
 
   // TODO: fetch all shape VEFs in a ZIP, then inject each
-  await Promise.all( knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/octahedral/${name}.vef` ) ) )
-  await Promise.all( knownOrbitNames.map( name => injectResource( `com/vzome/core/parts/default/${name}.vef` ) ) )
+  const shapeResources = []
+  shapeNames.forEach( shapeName => knownOrbitNames.forEach( orbitName => shapeResources.push( `com/vzome/core/parts/${shapeName}/${orbitName}.vef` ) ) )
+  await Promise.all( shapeResources.map( injectResource ) )
   // now we are finally ready to shape instances
   store.dispatch( shapers.shaperDefined( shaperName, shaper ) )
   store.dispatch( { type: PARSER_READY, payload: parser } )
