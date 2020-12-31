@@ -7,6 +7,8 @@ import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import Divider from '@material-ui/core/Divider';
 import { connect } from 'react-redux'
+
+import UrlDialog from './webloader'
 import { fetchModel, fileSelected } from '../bundles/files'
 
 const models = [
@@ -45,6 +47,7 @@ const models = [
 const DesignsMenu = ( { openDesign, openFile } ) =>
 {
   const [anchorEl, setAnchorEl] = React.useState(null)
+  const [showDialog, setShowDialog] = React.useState(false)
   const ref = useRef()
   const chooseFile = () => {
     setAnchorEl(null)
@@ -62,6 +65,11 @@ const DesignsMenu = ( { openDesign, openFile } ) =>
 
   const handleClose = () => {
     setAnchorEl(null)
+  }
+
+  const handleShowUrlDialog = () => {
+    setAnchorEl(null)
+    setShowDialog(true)
   }
 
   return (
@@ -86,11 +94,13 @@ const DesignsMenu = ( { openDesign, openFile } ) =>
               } }
             accept=".vZome" /> 
         </MenuItem>
+        <MenuItem onClick={handleShowUrlDialog}>Remote vZome URL</MenuItem>
         <Divider />
         { models.map( (model) => (
           <MenuItem key={model.key} onClick={()=>handleSelectModel(model.key)}>{model.label}</MenuItem>
         ) ) }
       </Menu>
+      <UrlDialog show={showDialog} setShow={setShowDialog} openDesign={openDesign} />
     </>
   )
 }

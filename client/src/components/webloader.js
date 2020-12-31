@@ -1,16 +1,15 @@
 
 import React, { useState } from 'react'
-import { connect } from 'react-redux'
-import { fetchModel } from '../bundles/files'
-import Modal from 'react-bootstrap/Modal'
-import Button from 'react-bootstrap/Button'
-import Form from 'react-bootstrap/Form'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
-import Tooltip from 'react-bootstrap/Tooltip'
+import TextField from '@material-ui/core/TextField';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
 
-const WebLoader = ({ enabled, openModel }) =>
+export default ({ show, setShow, openDesign }) =>
 {
-  const [show, setShow] = useState( false )
   const [url, setUrl] = useState( '' )
 
   const handleCancel = () =>{
@@ -18,57 +17,36 @@ const WebLoader = ({ enabled, openModel }) =>
   }
   const handleOpen = () =>{
     setShow( false )
-    openModel( url )
+    openDesign( url )
   }
-  const handleShow = () => setShow( true )
   const handleChange = (event) => setUrl( event.target.value )
 
-  if ( !enabled )
-    return null;
-    
   return (
-    <>
-      <OverlayTrigger placement="bottom" overlay={<Tooltip>Open a remote vZome model</Tooltip>} >
-        <Button id="web" variant="link" onClick={handleShow}
-          style={{ cursor: enabled ? 'pointer' : 'default' }} >
-          <img alt="web model" className="Icon" src="/app/dodecFaces.svg" />
+    <Dialog open={show} onClose={handleCancel} aria-labelledby="form-dialog-title" maxWidth='lg' fullWidth={true}>
+      <DialogTitle id="form-dialog-title">Load a Remote vZome Design</DialogTitle>
+      <DialogContent>
+        <DialogContentText>
+          The server must allow cross-origin access.
+        </DialogContentText>
+        <TextField onChange={handleChange}
+          autoFocus
+          margin="dense"
+          id="name"
+          label="vZome design URL"
+          type="url"
+          fullWidth
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleCancel} color="secondary">
+          Cancel
         </Button>
-      </OverlayTrigger>
-
-      <Modal centered show={show} size='lg' onHide={handleCancel}>
-        <Modal.Header closeButton>
-          <Modal.Title>Load a Remote vZome Model</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group controlId="formUrl">
-              <Form.Control type="url" placeholder="Enter URL" value={url} onChange={handleChange} />
-              <Form.Text className="text-muted">
-                The server must allow cross-origin access.
-              </Form.Text>
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCancel}>
-            Cancel
-          </Button>
-          <Button variant="primary" onClick={handleOpen}>
-            Open
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </>
+        <Button onClick={handleOpen} color="primary">
+          Open
+        </Button>
+      </DialogActions>
+    </Dialog>
   )
 } 
 
-const select = (state) => ({
-  // TODO make a real selector!
-  enabled: ! state.workingPlane
-})
 
-const boundEventActions = {
-  openModel : fetchModel
-}
-
-export default connect( select, boundEventActions )( WebLoader )
