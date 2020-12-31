@@ -434,8 +434,14 @@ export const init = async ( window, store ) =>
   // now we are finally ready to shape instances
   store.dispatch( shapers.shaperDefined( shaperName, shaper ) )
   store.dispatch( { type: PARSER_READY, payload: parser } )
-  // if ( ! store.getState().workingPlane )
-  //   store.dispatch( fetchModel( "/app/models/vZomeLogo.vZome" ) )
+  if ( ! store.getState().workingPlane ) {
+    let url = "/app/models/vZomeLogo.vZome"
+    const urlParams = new URLSearchParams( window.location.search );
+    if ( urlParams.has( "url" ) ) {
+      url = decodeURI( urlParams.get( "url" ) )
+    }
+    store.dispatch( fetchModel( url ) )
+  }
 }
 
 const embedShape = ( shape ) =>
@@ -617,7 +623,7 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
     // We don't want to dispatch all the edits, which can trigger tons of
     //  overhead and re-rendering.  Instead, we'll build up a design
     //  by calling the designReducer manually.
-    let design = designs.initializeDesign( fields[ fieldName ], shaper.name )
+    let design = designs.initializeDesign( fields[ fieldName ], shaper.shapesName )
 
     // const shaper = resolverFactory( orbitSource )
     dispatch( shapers.shaperDefined( shaper.shapesName, shaper ) )
