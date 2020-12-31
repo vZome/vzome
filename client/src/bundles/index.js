@@ -17,19 +17,20 @@ const requiredBundles = { lighting, fields }
 
 let bundles
 const urlParams = new URLSearchParams( window.location.search );
-if ( urlParams.has( "editMode" ) ) {
-  switch ( urlParams.get( "editMode" ) ) {
+const profile = urlParams.get( "profile" ) || urlParams.get( "editMode" )
+switch ( profile ) {
 
-    case "plane":
-      bundles = { ...requiredBundles, java: jsweet, models, shapers, workingPlane }
-      break;
-  
-    default:
-      bundles = { ...requiredBundles, java: jsweet, models, shapers, commands, alerts, progress }
-      break;
-  }
-} else {
-  bundles = { ...requiredBundles, java: cheerpj, camera, alerts, progress }
+  case "plane":
+    bundles = { ...requiredBundles, java: jsweet, models, shapers, workingPlane }
+    break;
+
+  case "jsweet":
+    bundles = { ...requiredBundles, java: cheerpj, camera, alerts, progress }
+    break;
+
+  default:
+    bundles = { ...requiredBundles, java: jsweet, models, shapers, commands, alerts, progress }
+    break;
 }
 
 

@@ -434,8 +434,14 @@ export const init = async ( window, store ) =>
   // now we are finally ready to shape instances
   store.dispatch( shapers.shaperDefined( shaperName, shaper ) )
   store.dispatch( { type: PARSER_READY, payload: parser } )
-  if ( ! store.getState().workingPlane )
-    store.dispatch( fetchModel( "/app/models/vZomeLogo.vZome" ) )
+  if ( ! store.getState().workingPlane ) {
+    let url = "/app/models/vZomeLogo.vZome"
+    const urlParams = new URLSearchParams( window.location.search );
+    if ( urlParams.has( "url" ) ) {
+      url = decodeURI( urlParams.get( "url" ) )
+    }
+    store.dispatch( fetchModel( url ) )
+  }
 }
 
 const embedShape = ( shape ) =>
