@@ -238,6 +238,31 @@ export const init = async ( window, store ) =>
     }
   }
 
+  class ImportSimpleMeshJson extends vzomePkg.core.edits.ImportMesh
+  {
+    parseMeshData( offset, events, registry )
+    {
+      const simpleMesh = JSON.parse( this.meshData )
+      const field = registry.getField( simpleMesh.field || 'golden' )
+      const vertices = simpleMesh.vertices.map( nums => {
+        let vertex = field.createIntegerVectorFromTDs( nums )
+        if ( vertex.dimension() > 3 )
+            vertex = this.projection.projectImage( vertex, false )
+        if ( offset != null )
+            vertex = offset.plus( vertex )
+        return vertex
+      } )
+      simpleMesh.edges.forEach( strut => {
+        const point1 = new vzomePkg.core.construction.FreePoint( vertices[ strut[ 0 ] ] )
+        const point2 = new vzomePkg.core.construction.FreePoint( vertices[ strut[ 1 ] ] )
+        events.constructionAdded( point1 )
+        events.constructionAdded( point2 )
+        events.constructionAdded( new vzomePkg.core.construction.SegmentJoiningPoints( point1, point2 ) );
+      });
+      // TODO: handle panels
+    }
+  }
+
   const xmlToEditClass = editName =>
   {
     const legacyNames = {
@@ -262,6 +287,9 @@ export const init = async ( window, store ) =>
 
     if ( editName === "ImportColoredMeshJson" )
       return new ImportColoredMeshJson( editor )
+
+    if ( editName === "ImportSimpleMeshJson" )
+      return new ImportSimpleMeshJson( editor )
 
     if ( toolsModel ) {
       const toolEdit = toolsModel.createEdit( editName );
