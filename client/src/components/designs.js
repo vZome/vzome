@@ -5,6 +5,7 @@ import Tooltip from '@material-ui/core/Tooltip'
 import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
+import Divider from '@material-ui/core/Divider';
 import { connect } from 'react-redux'
 import { fetchModel, fileSelected } from '../bundles/files'
 
@@ -23,7 +24,22 @@ const models = [
     key: "120-cell",
     label: "Hyper-dodecahedron",
     description: "The 4D analogue of a dodecahedron, with 120 dodecahedral cells"
-  }
+  },
+  {
+    key: "bluePlaneArches1",
+    label: "Arched Rhombic Triacontahedron",
+    description: "A sculpture built using just the blue planes"
+  },
+  {
+    key: "C240",
+    label: "C-240 Buckyball",
+    description: "C-240 Buckyball"
+  },
+  {
+    key: "orangePurpleChiral",
+    label: "Orange and Purple Tangle",
+    description: "A design by Brian Hall"
+  },
 ]
 
 const DesignsMenu = ( { openDesign, openFile } ) =>
@@ -61,10 +77,7 @@ const DesignsMenu = ( { openDesign, openFile } ) =>
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        { models.map( (model) => (
-          <MenuItem key={model.key} onClick={()=>handleSelectModel(model.key)}>{model.label}</MenuItem>
-        ) ) }
-        <MenuItem onClick={chooseFile}>Open local design...
+        <MenuItem onClick={chooseFile}>Local vZome file
           <input className="FileInput" type="file" ref={ref}
             onChange={ (e) => {
                 const selected = e.target.files && e.target.files[0]
@@ -73,6 +86,10 @@ const DesignsMenu = ( { openDesign, openFile } ) =>
               } }
             accept=".vZome" /> 
         </MenuItem>
+        <Divider />
+        { models.map( (model) => (
+          <MenuItem key={model.key} onClick={()=>handleSelectModel(model.key)}>{model.label}</MenuItem>
+        ) ) }
       </Menu>
     </>
   )

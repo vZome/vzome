@@ -32,7 +32,7 @@ function App() {
       <FileOpener/>
       <Exporter/>*/}
       {/* <EditMenu/> */}
-      {/* <Spinner/> */}
+      <Spinner/>
       {/* <div>Export icon made from <a href="http://www.onlinewebfonts.com/icon">Icon Fonts</a> is licensed by CC BY 3.0</div> */}
       {/* <a href="https://github.com/mhnpd/react-loader-spinner">react-loader-spinner</a> */}
       {/* <a href="http://simpleicon.com/folder-2.html">folder icon</a> */}
