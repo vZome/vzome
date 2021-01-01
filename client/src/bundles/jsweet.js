@@ -281,6 +281,8 @@ export const init = async ( window, store ) =>
 
   const editFactory = ( editor, toolFactories, toolsModel ) => xmlElement =>
   {
+    editor.setAdapter( null ) // This should trigger NPEs in any edits that have side-effects in their constructor
+
     let editName = xmlElement.getLocalName()
     if ( editName === "Snapshot" )
       return null
@@ -701,7 +703,8 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
         } else {
           const wrappedElement = new JavaDomElement( editElement )
           adapter = adapter.clone()  // each command builds on the last
-          // editor.setAdapter( adapter )
+          // Note that we do not do editor.setAdapter( adapter ) yet.  This means that we cannot
+          //  deal with edits that have side-effects in their constructors!
           const edit = createEditFromXml( wrappedElement )
           // null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit
           if ( edit ) {

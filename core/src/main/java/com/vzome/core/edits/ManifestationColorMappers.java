@@ -561,7 +561,7 @@ public class ManifestationColorMappers {
             if ( man instanceof Connector ) {
                 return applyToBall( (Connector) man, alpha );
             } else if ( man instanceof Strut ) {
-                return applyToBall( (Connector) man, alpha );
+                return applyToStrut( (Strut) man, alpha );
             } else if ( man instanceof Panel ) {
                 return applyToPanel( (Panel) man, alpha );
             }
