@@ -17,10 +17,11 @@ banner 'Transpiling Java sources with JSweet'
 
 pushd client
 
-source ./cheerpj.bash
+source ./cheerpj.bash || exit $?
 
 banner 'Preparing the distribution folder with NPM'
-npm run build
+npm install || exit $?
+npm run build || exit $?
 
 
 banner 'Creating the app.tgz archive'
