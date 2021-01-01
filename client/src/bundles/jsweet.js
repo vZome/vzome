@@ -212,6 +212,7 @@ export const init = async ( window, store ) =>
   {
     parseMeshData( offset, events, registry )
     {
+      // TODO: handle projection and scale
       const coloredMesh = JSON.parse( this.meshData )
       const field = registry.getField( coloredMesh.field )
       const vertices = coloredMesh.vertices.map( nums => {
@@ -234,6 +235,14 @@ export const init = async ( window, store ) =>
         const color = strut.color && vzomePkg.core.construction.Color.parseWebColor( strut.color )
         events.constructionAdded( new vzomePkg.core.construction.SegmentJoiningPoints( point1, point2 ), color );
       });
+      coloredMesh.panels.forEach( panel => {
+        const points = []
+        panel.vertices.forEach( i => {
+          points.push( new vzomePkg.core.construction.FreePoint( vertices[ i ] ) )
+        } )
+        const color = panel.color && vzomePkg.core.construction.Color.parseWebColor( panel.color )
+        events.constructionAdded( new vzomePkg.core.construction.PolygonFromVertices( points ), color );
+      });
       // TODO: handle panels
     }
   }
@@ -242,6 +251,7 @@ export const init = async ( window, store ) =>
   {
     parseMeshData( offset, events, registry )
     {
+      // TODO: handle projection and scale
       const simpleMesh = JSON.parse( this.meshData )
       const field = registry.getField( simpleMesh.field || 'golden' )
       const vertices = simpleMesh.vertices.map( nums => {
@@ -259,7 +269,13 @@ export const init = async ( window, store ) =>
         events.constructionAdded( point2 )
         events.constructionAdded( new vzomePkg.core.construction.SegmentJoiningPoints( point1, point2 ) );
       });
-      // TODO: handle panels
+      simpleMesh.faces.forEach( panel => {
+        const points = []
+        panel.forEach( i => {
+          points.push( new vzomePkg.core.construction.FreePoint( vertices[ i ] ) )
+        } )
+        events.constructionAdded( new vzomePkg.core.construction.PolygonFromVertices( points ) );
+      });
     }
   }
 

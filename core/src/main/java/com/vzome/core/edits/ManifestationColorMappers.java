@@ -133,7 +133,7 @@ public class ManifestationColorMappers {
         protected Color applyTo( Manifestation manifestation )
         {
             Color color = manifestation.getColor();
-            if(color == null && Connector.class.equals( manifestation.getClass() ) ) {
+            if( color == null ) { // TODO fix this! Should use techniques like SystemColorMap.
                 color = Color.WHITE; // provide default ball color so it can be manipulated
             }
             return color;
