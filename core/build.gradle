@@ -453,6 +453,7 @@ jsweet {
         'java/nio/*.java',
         'java/text/*.java',
         'java/util/*.java',
+        'java/beans/*.java',
         'org/w3c/dom/*.java',
 
         'com/vzome/jsweet/*.java',
@@ -493,6 +494,7 @@ jsweet {
         'com/vzome/core/kinds/GoldenFieldApplication.java',
 
         'com/vzome/api/Tool.java',
+        'com/vzome/api/InputBehaviors.java',
         'com/vzome/core/tools/*.java',
         'com/vzome/core/editor/Duplicator.java',
         'com/vzome/core/editor/AbstractToolFactory.java',
@@ -547,8 +549,7 @@ jsweet {
         'com/vzome/core/edits/SelectAutomaticStruts.java',
         'com/vzome/core/edits/SelectParallelStruts.java',
         'com/vzome/core/edits/Symmetry4d.java',
-        'com/vzome/core/edits/MapToColor.java',
-        'com/vzome/core/edits/PolarZonohedron.java',
+        // 'com/vzome/core/edits/PolarZonohedron.java',
         'com/vzome/core/edits/Run*Script.java',
         'com/vzome/core/edits/Validate2Manifold.java',
         'com/vzome/core/edits/RealizeMetaParts.java',

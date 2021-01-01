@@ -33,9 +33,9 @@ public class AffinePentagon extends ChangeManifestations
             unselect( man );
             if ( man instanceof Strut ) {
                 if ( strut1 == null ) {
-                    strut1 = Strut.class.cast(man);
+                    strut1 = (Strut) man;
                 } else if ( strut2 == null ) {
-                    strut2 = Strut.class.cast(man);
+                    strut2 = (Strut) man;
                 }
             }
         }
@@ -56,8 +56,8 @@ public class AffinePentagon extends ChangeManifestations
 
         // Before we start, be sure the balls at the ends of each strut have not been deleted or hidden.
         // Restore them just in case. No need to test if they already exist.
-        Segment s1 = Segment.class.cast(strut1.getFirstConstruction());
-        Segment s2 = Segment.class.cast(strut2.getFirstConstruction());
+        Segment s1 = (Segment) strut1.getFirstConstruction();
+        Segment s2 = (Segment) strut2.getFirstConstruction();
         manifestConstruction(new SegmentEndPoint(s1, true));
         manifestConstruction(new SegmentEndPoint(s1, false));
         manifestConstruction(new SegmentEndPoint(s2, true));

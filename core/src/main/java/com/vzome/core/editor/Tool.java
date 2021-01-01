@@ -6,7 +6,6 @@ package com.vzome.core.editor;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 import org.w3c.dom.Element;
@@ -25,7 +24,7 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
 
     private boolean predefined, hidden;
     private String label;
-    private EnumSet<InputBehaviors> inputBehaviors;
+    private boolean selectInputs, deleteInputs;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
 
     public Tool( String id, ToolsModel tools )
@@ -33,17 +32,24 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
         super( tools .getEditorModel() );
         this .tools = tools;
         this .id = id;
-        this .inputBehaviors = EnumSet.of( InputBehaviors.SELECT );
+        this .selectInputs = true;
+        this .deleteInputs = false;
     }
 
-    public EnumSet<InputBehaviors> getInputBehaviors()
+    public boolean isSelectInputs()
     {
-        return this .inputBehaviors;
+        return this.selectInputs;
+    }
+    
+    public boolean isDeleteInputs()
+    {
+        return this.deleteInputs;
     }
 
-    public void setInputBehaviors( EnumSet<InputBehaviors> inputBehaviors )
+    public void setInputBehaviors( boolean selectInputs, boolean deleteInputs )
     {
-        this .inputBehaviors = inputBehaviors;
+        this.selectInputs = selectInputs;
+        this.deleteInputs = deleteInputs;
     }
 
     public void addPropertyChangeListener( PropertyChangeListener listener )
@@ -145,9 +151,9 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
     }
 
     @Override
-    public void apply( EnumSet<InputBehaviors> inputAction, EnumSet<OutputBehaviors> outputAction )
+    public void apply( boolean selectInputs, boolean deleteInputs, boolean createOutputs, boolean selectOutputs )
     {
-        this .tools .applyTool( this, inputAction, outputAction );
+        this .tools .applyTool( this, selectInputs, deleteInputs, createOutputs, selectOutputs );
     }
 
     @Override

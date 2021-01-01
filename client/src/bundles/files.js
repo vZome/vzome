@@ -1,5 +1,4 @@
 import { startProgress, stopProgress } from './progress'
-import { FILE_EXPORTED } from './jre'
 import { showAlert } from './alerts'
 
 export const fileSelected = selected => ( dispatch, getState ) =>
@@ -45,8 +44,9 @@ export const fetchModel = ( path ) => ( dispatch, getState ) =>
 }
 
 // from https://www.bitdegree.org/learn/javascript-download
-export const download = ( filename, blob ) =>
+export const download = ( filename, bytes ) =>
 {
+  const blob = new Blob([bytes.subarray(1)]);
   const element = document.createElement( 'a' )
   const blobURI = URL.createObjectURL( blob )
   element.setAttribute( 'href', blobURI )
@@ -60,14 +60,3 @@ export const download = ( filename, blob ) =>
   document.body.removeChild( element )
 }
 
-
-export const middleware = store => next => async action => 
-{
-  if ( action.type === FILE_EXPORTED ) {
-    const { name, bytes } = action.payload
-    const blob = new Blob([bytes.subarray(1)]);
-    download( name, blob )
-  }
-  
-  return next( action )
-}

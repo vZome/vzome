@@ -2,67 +2,23 @@
 html,
 body,
 #root {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
+  height: 100%;  /* This makes the root div fill the viewport vertically. */
+  display: flex; /* This is the key to getting the Canvas to fill the area below the AppBar. */
+  flex-direction: column; /*  This makes it "below", not "to the right of". */
 }
 
-/* The Overlay (background) */
-.overlay {
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  bottom: 0px;
-  right: 0px;
-  display: flex;
-  align-items: center;
-  overflow: auto;
-  
-  z-index: 1; /* Sit on top */
-  background-color: rgb(120,120,120); /* Black fallback color */
-  background-color: rgba(120,120,120, 0.5); /* Black w/opacity */
-  overflow-x: hidden; /* Disable horizontal scroll */
-}
-
-/* Position the content inside the overlay */
-.spinner {
-  margin: auto;
-  max-height: 100%;
-}
-
-#message {
-  position: fixed;
-  bottom: 1em;
-  width: 100%;
-  text-align: center;
-  background-color: rgb(120,120,120); /* Grey fallback color */
-  background-color: rgba(120,120,120, 0.0); /* Grey w/opacity */
-  color: white;
-  margin: auto;
+body {
+  margin: 0; /* This is essential to avoid a small white border around the whole main div. */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .dropdown {
   position: fixed;
   left: 13%;
-  top: 1%;
-}
-
-#web {
-  position: fixed;
-  right: 13%;
-  top: 1%;
-}
-
-#models {
-  position: fixed;
-  right: 9%;
-  top: 1%;
-}
-
-#fileopener {
-  position: fixed;
-  right: 5%;
   top: 1%;
 }
 

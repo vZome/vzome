@@ -6,11 +6,10 @@ import * as serviceWorker from './serviceWorker';
 import logger from 'redux-logger'
 import thunk from 'redux-thunk'
 
-import './index.css';
 import App from './App';
 import createBundleStore from './bundles'
 
-const store = createBundleStore( [ logger, thunk ] );
+const store = createBundleStore( [ thunk ] );
 
 render(
   <Provider store={store}>

@@ -5,6 +5,7 @@ package com.vzome.core.tools;
 
 import java.util.Arrays;
 
+import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Transformation;
@@ -71,10 +72,12 @@ public abstract class TransformationTool extends Tool
             Construction result = transform .transform( c );
             if ( result == null )
                 continue;
-            result .setColor( c .getColor() ); // just for consistency
+            Color color = c .getColor();
+            result .setColor( color ); // just for consistency
             Manifestation m = applyTool .manifestConstruction( result );
             if ( m != null )  // not sure why, but this happens
-                applyTool .colorManifestation( m, c .getColor() );
+                if ( color != null ) // This can be true in the Javascript world
+                    applyTool .colorManifestation( m, c .getColor() );
         }
         applyTool .redo();
     }

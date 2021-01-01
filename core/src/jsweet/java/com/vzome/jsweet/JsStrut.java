@@ -1,16 +1,10 @@
 package com.vzome.jsweet;
 
-import java.util.Iterator;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.SegmentJoiningPoints;
-import com.vzome.core.model.Group;
 import com.vzome.core.model.Strut;
 
 import def.js.Object;
@@ -35,12 +29,6 @@ public class JsStrut extends JsManifestation implements Strut
     }
 
     @Override
-    public Group getContainer()
-    {
-        return null;
-    }
-
-    @Override
     public AlgebraicVector getEnd()
     {
         return ((JsAlgebraicField) this .field) .createVectorFromTDs( this .vectors[ 1 ] );
@@ -55,54 +43,18 @@ public class JsStrut extends JsManifestation implements Strut
     }
 
     @Override
-    public void setZoneVector(AlgebraicVector vector)
-    {
-    }
-
-    
-    
-    
-    
-    @Override
-    public Iterator<Construction> getConstructions()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public Element getXml(Document doc)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public boolean isHidden()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicVector getCentroid()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void setHidden(boolean b)
-    {}
-
-    @Override
-    public void setContainer(Group container)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
+    public void setZoneVector( AlgebraicVector vector ) {}
 
     @Override
     public AlgebraicVector getZoneVector()
     {
-        throw new RuntimeException( "unimplemented" );
+        return this .getOffset();
     }
 
+    
+    
+    
+    
     @Override
     public int compareTo(Strut other)
     {

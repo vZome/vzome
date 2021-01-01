@@ -17,11 +17,16 @@ import def.js.Object;
 public class JsRealizedModel implements RealizedModel {
 
     private final AlgebraicField field;
-    private final Object adapter;
+    private Object adapter;
 
     public JsRealizedModel( AlgebraicField field, Object adapter )
     {
         this.field = field;
+        this.adapter = adapter;
+    }
+    
+    void setAdapter( Object adapter )
+    {
         this.adapter = adapter;
     }
 

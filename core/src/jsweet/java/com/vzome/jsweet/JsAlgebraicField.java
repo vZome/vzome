@@ -430,6 +430,51 @@ public class JsAlgebraicField implements AlgebraicField
         return this .createAlgebraicNumberFromPairs( pairs );
     }
 
+    @Override
+    public AlgebraicNumber parseLegacyNumber( String string )
+    {
+        int div = 1;
+        if ( string .startsWith( "(" ) ) {
+            int closeParen = string .indexOf( ')' );
+            div = Integer .parseInt( string .substring( closeParen+2 ) );
+            string = string .substring( 1, closeParen );
+        }
+
+        int phis = 0;
+        int phiIndex = string .indexOf( "phi" );
+        if ( phiIndex >= 0 ) {
+            String part = string .substring( 0, phiIndex );
+            if ( part .length() == 0 )
+                phis = 1;
+            else if ( part .equals( "-" ) )
+                phis = -1;
+            else
+                phis = Integer .parseInt( part );
+            string = string .substring( phiIndex+3 );
+        }
+
+        int ones;
+        if ( string .length() == 0 )
+            ones = 0;
+        else {
+            if ( string .startsWith( "+" ) )
+                string = string .substring( 1 );
+            ones = Integer .parseInt( string );
+        }
+        return createAlgebraicNumber( ones, phis, div, 0 );
+    }
+
+    @Override
+    public AlgebraicVector createIntegerVectorFromTDs(int[][] nums)
+    {
+        final int dims = nums.length;
+        AlgebraicVector result = origin( dims );
+        for (int dim = 0; dim < dims; dim++) {
+            result .setComponent( dim, createAlgebraicNumberFromTD( nums[dim] ) );
+        }
+        return result;
+    }
+
     
     
     
@@ -480,19 +525,7 @@ public class JsAlgebraicField implements AlgebraicField
     }
 
     @Override
-    public AlgebraicVector createIntegerVectorFromTDs(int[][] nums)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
     public AlgebraicMatrix createMatrix(int[][][] data)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicNumber parseLegacyNumber(String val)
     {
         throw new RuntimeException( "unimplemented" );
     }

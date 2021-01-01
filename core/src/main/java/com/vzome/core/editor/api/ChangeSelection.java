@@ -22,12 +22,6 @@ import com.vzome.xml.DomUtils;
 
 public abstract class ChangeSelection extends SideEffects
 {
-    public enum ActionEnum {
-        IGNORE,
-        SELECT,
-        DESELECT
-    }
-
     protected final Selection mSelection;
 
     private boolean groupingDoneInSelection;

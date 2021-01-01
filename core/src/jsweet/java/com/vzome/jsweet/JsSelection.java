@@ -2,6 +2,7 @@ package com.vzome.jsweet;
 
 import static jsweet.util.Lang.$array;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import def.js.Object;
 
 public class JsSelection implements Selection
 {
-    private final Object adapter;
+    private Object adapter;
     private final JsAlgebraicField field;
 
     public JsSelection( JsAlgebraicField field, Object adapter )
@@ -22,10 +23,18 @@ public class JsSelection implements Selection
         this.field = field;
         this.adapter = adapter;
     }
+    
+    void setAdapter( Object adapter )
+    {
+        this.adapter = adapter;
+    }
 
     @Override
     public Iterator<Manifestation> iterator()
     {
+        if ( this.adapter == null ) // can happen during predefined Tool initialization
+            return Collections.emptyIterator();
+
         Function f = (Function) this.adapter .$get( "selectedIterator" );
         final def.js.Iterator<int[][][]> jSiterator = (def.js.Iterator<int[][][]>) f.apply( this.adapter );
         return new Iterator<Manifestation>()
@@ -78,53 +87,65 @@ public class JsSelection implements Selection
     @Override
     public int size()
     {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    
-    
-    @Override
-    public void selectWithGrouping(Manifestation mMan)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void unselectWithGrouping(Manifestation mMan)
-    {
-        throw new RuntimeException( "unimplemented" );
+        return (int) ( (Function) this.adapter .$get( "selectionSize" ) ).apply( this.adapter );
     }
 
     @Override
     public void gatherGroup()
     {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void gatherGroup211()
-    {
-        throw new RuntimeException( "unimplemented" );
+        ( (Function) this.adapter .$get( "createGroup" ) ).apply( this.adapter );
     }
 
     @Override
     public void scatterGroup()
     {
-        throw new RuntimeException( "unimplemented" );
+        ( (Function) this.adapter .$get( "disbandGroup" ) ).apply( this.adapter );
+    }
+
+    @Override
+    public void gatherGroup211()
+    {
+        ( (Function) this.adapter .$get( "createLegacyGroup" ) ).apply( this.adapter );
     }
 
     @Override
     public void scatterGroup211()
     {
-        throw new RuntimeException( "unimplemented" );
+        ( (Function) this.adapter .$get( "disbandLegacyGroup" ) ).apply( this.adapter );
+    }
+
+    @Override
+    public void selectWithGrouping( Manifestation man )
+    {
+        if ( man == null ) // This check is performed in SelectionImpl.java
+            return;
+
+        int[][][] vectors = ((JsManifestation) man) .getVectors();
+        ( (Function) this.adapter .$get( "selectWithGrouping" ) ).apply( this.adapter, $array( vectors ) );
+    }
+
+    @Override
+    public void unselectWithGrouping( Manifestation man )
+    {
+        if ( man == null ) // This check is performed in SelectionImpl.java
+            return;
+
+        int[][][] vectors = ((JsManifestation) man) .getVectors();
+        ( (Function) this.adapter .$get( "unselectWithGrouping" ) ).apply( this.adapter, $array( vectors ) );
     }
 
     @Override
     public boolean isSelectionAGroup()
     {
-        throw new RuntimeException( "unimplemented" );
+        return (boolean) ( (Function) this.adapter .$get( "selectionIsGroup" ) ).apply( this.adapter );
     }
+    
+    
+    
+    
 
+    
+    
     @Override
     public void copy(List<Manifestation> bookmarkedSelection)
     {

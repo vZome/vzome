@@ -1,7 +1,9 @@
 
 import React from 'react'
 import { connect } from 'react-redux'
-import { commandTriggered } from '../bundles/mesh'
+import { commandTriggered } from '../commands'
+import * as designs from '../bundles/models'
+import { ActionCreators as UndoActionCreators } from 'redux-undo'
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -10,7 +12,7 @@ import Divider from '@material-ui/core/Divider';
 
 const ITEM_HEIGHT = 48;
 
-const EditMenu = ({ visible, edits, doEdit }) =>
+const EditMenu = ({ visible, edits, doEdit, canUndo, canRedo, doUndo, doRedo }) =>
 {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -44,7 +46,10 @@ const EditMenu = ({ visible, edits, doEdit }) =>
             },
           }}
         >
-          <MenuItem onClick={ e => doEdit( 'random' ) }>New Random</MenuItem>
+          <Divider />
+          <MenuItem disabled={!canUndo} onClick={doUndo}>Undo</MenuItem>
+          <MenuItem disabled={!canRedo} onClick={doRedo}>Redo</MenuItem>
+          <Divider />
           <MenuItem onClick={ e => doEdit( 'allSelected' ) }>Select All</MenuItem>
           <MenuItem onClick={ e => doEdit( 'allDeselected' ) }>Deselect All</MenuItem>
           <MenuItem onClick={ e => doEdit( 'centroid' ) }>Centroid 1</MenuItem>
@@ -66,13 +71,22 @@ const EditMenu = ({ visible, edits, doEdit }) =>
     return null
 } 
 
-const select = ( { java, mesh, workingPlane } ) => ({
-  visible: !java.readOnly && ! workingPlane,
-  edits: mesh && Object.getOwnPropertyNames( mesh.commands )
-})
+const select = ( state ) =>
+{
+  const { models, commands } = state
+  const history = models && designs.selectCurrentDesign( state ).history
+  return {
+    canUndo: history && history.past.length > 0,
+    canRedo: history && history.future.length > 0,
+    visible: !!commands,
+    edits: commands && Object.getOwnPropertyNames( commands )
+  }
+}
 
 const boundEventActions = {
   doEdit : commandTriggered,
+  doUndo : UndoActionCreators.undo,
+  doRedo : UndoActionCreators.redo,
 }
 
 export default connect( select, boundEventActions )( EditMenu )

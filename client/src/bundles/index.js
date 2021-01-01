@@ -1,36 +1,36 @@
 
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 
-import * as jre from './jre'
-import * as files from './files'
 import * as alerts from './alerts'
 import * as cheerpj from './cheerpj'
 import * as camera from './camera'
 import * as lighting from './lighting'
 import * as progress from './progress'
 import * as jsweet from './jsweet'
-import * as mesh from './mesh'
 import * as commands from '../commands'
-import * as goldenField from '../fields/golden'
 import * as workingPlane from './planes'
+import * as models from './models'
+import * as fields from '../fields'
+import * as shapers from './shapers'
 
-const requiredBundles = { camera, lighting, goldenField }
+const requiredBundles = { lighting, fields }
 
 let bundles
 const urlParams = new URLSearchParams( window.location.search );
-if ( urlParams.has( "editMode" ) ) {
-  switch ( urlParams.get( "editMode" ) ) {
+const profile = urlParams.get( "profile" ) || urlParams.get( "editMode" )
+switch ( profile ) {
 
-    case "plane":
-      bundles = { ...requiredBundles, java: jsweet, mesh, workingPlane }
-      break;
-  
-    default:
-      bundles = { ...requiredBundles, java: jsweet, mesh, commands, files, alerts, progress }
-      break;
-  }
-} else {
-  bundles = { ...requiredBundles, java: cheerpj, files, alerts, progress }
+  case "jsweet":
+    bundles = { ...requiredBundles, java: cheerpj, camera, alerts, progress }
+    break;
+
+  case "plane":
+    bundles = { ...requiredBundles, java: jsweet, models, shapers, workingPlane }
+    break;
+
+  default:
+    bundles = { ...requiredBundles, java: jsweet, models, shapers, commands, alerts, progress }
+    break;
 }
 
 
@@ -49,17 +49,9 @@ export default ( middleware ) =>
 
   const rootReducer = combineReducers( reducers )
   
-  const allMiddleware = names.reduce( ( arr, key ) => {
-    const newMiddleware = bundles[key].middleware
-    if ( newMiddleware ) {
-      console.log( `bundle middleware: ${key}` )
-      arr.push( newMiddleware )
-    }
-    return arr
-  }, middleware )
-
-  const store = createStore( rootReducer, applyMiddleware( ...allMiddleware ) );
+  const store = createStore( rootReducer, applyMiddleware( ...middleware ) );
   
+  // TODO: is there a better pattern than these inits?
   names.map( key => {
     const init = bundles[key].init
     if ( init ) {

@@ -128,9 +128,9 @@ public class Color
     public static Color parseWebColor( String colorStr )
     {
         return new Color(
-                Integer.valueOf( colorStr.substring( 1, 3 ), 16 ),
-                Integer.valueOf( colorStr.substring( 3, 5 ), 16 ),
-                Integer.valueOf( colorStr.substring( 5, 7 ), 16 ) );
+                Integer.valueOf( colorStr.substring( 1, 3 ), 16 ).intValue(),
+                Integer.valueOf( colorStr.substring( 3, 5 ), 16 ).intValue(),
+                Integer.valueOf( colorStr.substring( 5, 7 ), 16 ).intValue() );
     }
 
     public int getRed()

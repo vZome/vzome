@@ -1,9 +1,11 @@
 
 import * as mesh from '../bundles/mesh'
+import * as designs from '../bundles/models'
 
 export default () => ( dispatch, getState ) =>
 {
-  let { field, selected, shown, hidden } = getState().mesh
+  let { shown, hidden, selected } = designs.selectCurrentMesh( getState() )
+  const field = designs.selectCurrentField( getState() )
   shown = new Map( shown )
 
   const scale = field.createRational( 1, selected.size )

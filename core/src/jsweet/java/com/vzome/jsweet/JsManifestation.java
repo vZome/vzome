@@ -3,6 +3,10 @@ package com.vzome.jsweet;
 import static jsweet.util.Lang.$array;
 
 import java.util.Arrays;
+import java.util.Iterator;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -12,6 +16,7 @@ import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
+import com.vzome.core.model.Group;
 import com.vzome.core.model.Manifestation;
 
 import def.js.Function;
@@ -48,7 +53,8 @@ public abstract class JsManifestation implements Manifestation
     @Override
     public void setColor( Color color )
     {
-        ( (Function) this.adapter .$get( "setManifestationColor" ) ).apply( this.adapter, $array( vectors, color.getRGB() ) );
+        if ( color != null )
+            ( (Function) this.adapter .$get( "setManifestationColor" ) ).apply( this.adapter, $array( vectors, color.getRGB() ) );
     }
 
     @Override
@@ -76,8 +82,6 @@ public abstract class JsManifestation implements Manifestation
     {
         return toConstruction();
     }
-
-    
     
     public static int[][] canonicalizeNumbers( AlgebraicNumber... ns )
     {
@@ -125,7 +129,58 @@ public abstract class JsManifestation implements Manifestation
 
         default:
             // TODO JsPanel
-            return null;
+            return new JsPanel( field, adapter, vectors );
         }
+    }
+
+    @Override
+    public void setHidden( boolean b ) {}  // State will be in the Adapter
+    
+    @Override
+    public boolean isHidden()
+    {
+        return (boolean) ( (Function) this.adapter .$get( "manifestationHidden" ) ).apply( this.adapter, $array( vectors ) );
+    }
+
+    @Override
+    public void setContainer( Group container )
+    {
+        throw new RuntimeException( "unimplemented" );
+    }
+
+    @Override
+    public Group getContainer()
+    {
+        int[][][][] members = (int[][][][]) ( (Function) this.adapter .$get( "getLargestGroup" ) ).apply( this.adapter, $array( vectors ) );
+        if ( members == null )
+            return null;
+        Group group = new Group();
+        for ( int i = 0; i < members.length; i++ ) {
+            group.add( manifest( members[ i ], field, adapter ) );
+        }
+        return group;
+    }
+    
+    
+    
+    
+    
+    
+    @Override
+    public Iterator<Construction> getConstructions()
+    {
+        throw new RuntimeException( "unimplemented" );
+    }
+
+    @Override
+    public Element getXml( Document doc )
+    {
+        throw new RuntimeException( "unimplemented" );
+    }
+
+    @Override
+    public AlgebraicVector getCentroid()
+    {
+        throw new RuntimeException( "unimplemented" );
     }
 }

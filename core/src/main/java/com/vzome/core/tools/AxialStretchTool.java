@@ -4,8 +4,6 @@
 package com.vzome.core.tools;
 
 
-import java.util.EnumSet;
-
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicMatrix;
@@ -226,7 +224,7 @@ public class AxialStretchTool extends TransformationTool
 		this .red = red;
 		this .first = first;
 		this .category = category;
-        this .setInputBehaviors( EnumSet.of( InputBehaviors.DELETE ) );
+        this .setInputBehaviors( false, true );
     }
 
     @Override
