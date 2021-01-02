@@ -1,5 +1,5 @@
 
-import * as mesh from './mesh'
+import * as parser from './dbugger'
 import { commandsDefined } from '../commands'
 import * as planes from './planes'
 import goldenField from '../fields/golden'
@@ -7,11 +7,12 @@ import { startProgress, stopProgress } from './progress'
 import { parseViewXml } from './camera'
 import { showAlert } from './alerts'
 import { fetchModel } from './files'
-import * as designs from './models'
+import * as designs from './designs'
 import { meshChanged } from './mesh'
 import * as shapers from './shapers'
-import { ActionCreators } from 'redux-undo';
+import * as dbugger from './dbugger'
 import Adapter from './adapter'
+import { JavaDomElement } from './wrappers'
 
 
 // I can't use the ES6 module approach until I figure out how to use J4TS that way.
@@ -582,10 +583,10 @@ class Properties
 
 export const legacyCommandFactory = ( createEditor, className ) => ( config ) => ( dispatch, getState ) =>
 {
-  const field = designs.selectCurrentField( getState() )
+  const field = designs.selectField( getState() )
   // TODO const symmetry = designs.selectCurrentSymmetry( getState() )
   // TODO const shapes = designs.selectCurrentShapes( getState() )
-  let { shown, hidden, selected } = designs.selectCurrentMesh( getState() )
+  let { shown, hidden, selected } = designs.selectMesh( getState() )
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )
@@ -599,167 +600,56 @@ export const legacyCommandFactory = ( createEditor, className ) => ( config ) =>
   dispatch( { type: WORK_FINISHED } )
 }
 
-class JavaDomNodeList
-{
-  constructor( nodeList )
-  {
-    this.nativeNodeList = nodeList
-    this.__interfaces = [ "org.w3c.dom.NodeList" ]
-  }
-
-  getLength()
-  {
-    return this.nativeNodeList.length
-  }
-
-  item( i )
-  {
-    const node = this.nativeNodeList.item( i )
-    if ( node.nodeType === 1 )
-      return new JavaDomElement( node )
-    else
-      return node
-  }
-}
-
-class JavaDomElement
-{
-  constructor( element )
-  {
-    this.nativeElement = element
-    this.__interfaces = [ "org.w3c.dom.Element" ]
-  }
-
-  getAttribute( name )
-  {
-    return this.nativeElement.getAttribute && this.nativeElement.getAttribute( name )
-  }
-
-  getLocalName()
-  {
-    return this.nativeElement.localName
-  }
-
-  getTextContent()
-  {
-    return this.nativeElement.textContent
-  }
-
-  getChildNodes()
-  {
-    return new JavaDomNodeList( this.nativeElement.childNodes )
-  }
-
-  getChildElement( name )
-  {
-    let target = this.nativeElement.firstElementChild
-    while ( target && name.toLowerCase() !== target.nodeName.toLowerCase() )
-      target = target.nextElementSibling
-    return target && new JavaDomElement( target )
-  }
-
-  getElementsByTagName( name )
-  {
-    let target = this.nativeElement.firstElementChild
-    const results = []
-    while ( target ) {
-      if ( name.toLowerCase() === target.nodeName.toLowerCase() ) {
-        results.push( new JavaDomElement( target ) )
-      }
-      target = target.nextElementSibling
-    }
-    return { getLength: () => results.length, item: i => results[ i ] }
-  }
-}
-
 export const createParser = ( createDocument ) => ( name, xmlText, dispatch, getState ) =>
 {
-  dispatch( startProgress( "Parsing vZome file..." ) )
+  const extIndex = name.lastIndexOf( '.' )
+  if ( extIndex > 0 ) {
+    name = name.substring( 0, extIndex )
+  }
+
+  dispatch( startProgress( `Parsing "${name}"...` ) )
 
   const fields = getState().fields
 
   try {
-    const parser = new DOMParser();
-    const domDoc = parser.parseFromString( xmlText, "application/xml" );
+    const domDoc = new DOMParser().parseFromString( xmlText, "application/xml" );
     let vZomeRoot = new JavaDomElement( domDoc.firstElementChild )
 
     const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
     const fieldName = vZomeRoot.getAttribute( "field" )
 
-    const origin = goldenField.origin( 3 ) // TODO use the field name
-    const originBall = mesh.createInstance( [ origin ] )
-    const shown = new Map().set( originBall.id, originBall )
-    const hidden = new Map()
-    const selected = new Map()  
-
     const { shaper, createEditFromXml } = createDocument( fieldName, namespace, vZomeRoot )
 
     // We don't want to dispatch all the edits, which can trigger tons of
-    //  overhead and re-rendering.  Instead, we'll build up a design
+    //  overhead and re-rendering.  Instead, we'll build up a design locally
     //  by calling the designReducer manually.
     let design = designs.initializeDesign( fields[ fieldName ], shaper.shapesName )
-
-    // const shaper = resolverFactory( orbitSource )
-    dispatch( shapers.shaperDefined( shaper.shapesName, shaper ) )
-
-    const history = vZomeRoot.getChildElement( "EditHistory" ).nativeElement
-    // TODO: use editNumber
-    const targetEdit = parseInt( history.getAttribute( "editNumber" ) )
-    let currentEdit = 0
-    let editElement = history.firstElementChild
-
-    const performEdits = ( editElement, adapter, recordEdit, increment ) =>
-    {
-      do {
-        console.log( editElement.outerHTML )
-        if ( editElement.nodeName === "Branch" ) {
-          const sandbox = adapter.clone()
-          performEdits( editElement.firstElementChild, sandbox, () => ({}), 0 ) // don't record mesh changes for branches, don't increment currentEdit
-          // we discard the cloned sandbox adapter
-        } else {
-          const wrappedElement = new JavaDomElement( editElement )
-          adapter = adapter.clone()  // each command builds on the last
-          // Note that we do not do editor.setAdapter( adapter ) yet.  This means that we cannot
-          //  deal with edits that have side-effects in their constructors!
-          const edit = createEditFromXml( wrappedElement )
-          // null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit
-          if ( edit ) {
-            edit.deserializeAndPerform( adapter )
-            design = designs.designReducer( design, recordEdit( adapter ) )
-          }
-        }
-        currentEdit += increment
-        editElement = editElement.nextElementSibling
-      }
-      while ( editElement );
-    }
-
-    // TODO: move this to Adapter itself?
-    const recordEdit = ( { shown, selected, hidden } ) => mesh.meshChanged( shown, selected, hidden )
-
-    const adapter = new Adapter( shown, selected, hidden )
-    performEdits( editElement, adapter, recordEdit, 1 )
-
-    console.log( `target is ${targetEdit}, currentEdit is ${currentEdit}` )
-    while ( currentEdit > targetEdit ) {
-      design = designs.designReducer( design, ActionCreators.undo() )
-      --currentEdit
-    }
-    console.log( `target is ${targetEdit}, currentEdit is ${currentEdit}` )
+    // Each call to designReducer may create an element in the history
+    //  (if it has any changes to the mesh),
+    //  so we want to be judicious in when we do it.
+    // Each call to dispatch, on the other hand, triggers rendering, so we want to be even
+    //  more careful about that.
     
     const viewing = vZomeRoot.getChildElement( "Viewing" )
     if ( viewing ) {
-      design = designs.designReducer( design, parseViewXml( viewing ) )
+      design = designs.designReducer( design, parseViewXml( viewing ) ) // not recorded in history
     }
+
+    // TODO: skip this dispatch if we already have a shaper for shapesName, in getState().shapers
+    dispatch( shapers.shaperDefined( shaper.shapesName, shaper ) ) // outside the design
+
+    const edits = vZomeRoot.getChildElement( "EditHistory" ).nativeElement
+    // TODO: use editNumber
+    const targetEdit = parseInt( edits.getAttribute( "editNumber" ) )
+
+    design = designs.designReducer( design, parser.sourceLoaded( edits, createEditFromXml, targetEdit ) ) // recorded in history
+    dispatch( designs.loadingDesign( name, design ) )
+
+    dispatch( dbugger.run( name ) )
     
-    const extIndex = name.lastIndexOf( '.' )
-    if ( extIndex > 0 ) {
-      name = name.substring( 0, extIndex )
-    }
-    dispatch( designs.loadedDesign( name, design ) )
   } catch (error) {
     console.log( error )
-    dispatch( showAlert( `Unable to parse model file: ${name};\n ${error.message}` ) )
+    dispatch( showAlert( `Unable to parse vZome design file: ${name};\n ${error.message}` ) )
   }
 
   dispatch( stopProgress() )

@@ -5,15 +5,18 @@ import undoable from 'redux-undo'
 import goldenField from '../fields/golden'
 import * as mesh from './mesh'
 import * as camera from './camera'
+import * as dbugger from './dbugger'
 
 export const designReducer = combineReducers( {
   history: undoable( combineReducers( {
     mesh: mesh.reducer,
-    // TODO: add current command
+    dbugger: dbugger.reducer,
+    // TODO: record last command
   } ) ),
+  camera: camera.reducer,
+  success: ( state="", action ) => state, // fieldName cannot be changed, so a constant reducer is fine
   fieldName: ( state="", action ) => state, // fieldName cannot be changed, so a constant reducer is fine
   shaperName: ( state="", action ) => state, // shaperName cannot be changed (YET!), so a constant reducer is fine
-  camera: camera.reducer,
 })
 
 export const initializeDesign = ( field, shaperName ) => ({
@@ -21,12 +24,14 @@ export const initializeDesign = ( field, shaperName ) => ({
     past: [],
     present: {
       mesh: mesh.justOrigin( field ),
+      dbugger: [ 0 ],
     },
     future: [],
   },
+  success: true,
+  camera: camera.initialState,
   fieldName: field.name,
   shaperName,
-  camera: camera.initialState,
 })
 
 const emptyState = {
@@ -53,19 +58,25 @@ export const switchModel = name => ( { type: 'SWITCH_MODEL', payload: name } )
 
 export const renameModel = name => ( { type: 'RENAME_MODEL', payload: name } )
 
+export const loadingDesign = ( name, design ) => ( { type: 'LOADING_DESIGN', payload: { name, design } } )
+
 export const loadedDesign = ( name, design ) => ( { type: 'LOADED_DESIGN', payload: { name, design } } )
 
-export const selectCurrentDesign = state => state.models.data[ state.models.current ]
+export const selectDesign = ( state, name ) => state.designs.data[ name || state.designs.current ]
 
-export const selectCurrentMesh = state => selectCurrentDesign( state ).history.present.mesh
+export const selectMesh = ( state, name ) => selectDesign( state, name ).history.present.mesh
 
-export const selectCurrentCamera = state => selectCurrentDesign( state ).camera
+export const selectDebugger = ( state, name ) => selectDesign( state, name ).history.present.dbugger
 
-export const selectCurrentField = state => state.fields[ selectCurrentDesign( state ).fieldName ]
+export const selectCamera = ( state, name ) => selectDesign( state, name ).camera
 
-export const selectCurrentShaper = state =>
+export const selectSource = ( state, name ) => selectDesign( state, name ).history.present.dbugger.source
+
+export const selectField = ( state, name ) => state.fields[ selectDesign( state, name ).fieldName ]
+
+export const selectShaper = ( state, name ) =>
 {
-  const shaperName = selectCurrentDesign( state ).shaperName || "solid connectors"
+  const shaperName = selectDesign( state, name ).shaperName || "solid connectors"
   return state.shapers[ shaperName ]
 }
 
@@ -84,6 +95,17 @@ export const reducer = ( state = addNewModel( emptyState, goldenField ), action 
       return {
         ...state,
         current: name,
+      }
+    }
+
+    case 'LOADING_DESIGN': {
+      const { name, design } = action.payload
+      return {
+        ...state,
+        data: {
+          ...state.data,
+          [ name ]: design
+        }
       }
     }
 

@@ -1,4 +1,5 @@
 import React from 'react'
+import { makeStyles } from '@material-ui/core/styles';
 
 // import Fab from '@material-ui/core/Fab'
 // import UndoRoundedIcon from '@material-ui/icons/UndoRounded'
@@ -10,14 +11,27 @@ import ModelCanvas from './components/modelcanvas-three.js'
 import ErrorAlert from './components/alert.js'
 import Spinner from './components/spinner.js'
 import VZomeAppBar from './components/appbar.js'
+import Debugger from './components/debugger.js'
 // import Exporter from './components/exporter.js'
 // import EditMenu from './components/editmenu.js'
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+  },
+  content: {
+    flexGrow: 1,
+  },
+}));
+
 function App() {
+  const classes = useStyles();
   return (
     <>
       <VZomeAppBar/>
-      <ModelCanvas/>
+      <Debugger/>
+      <main className={classes.content}>
+        <ModelCanvas/>
+      </main>
       <ErrorAlert/> 
       {/* <Fab color="primary" aria-label="undo">
         <UndoRoundedIcon />
