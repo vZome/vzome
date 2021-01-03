@@ -82,7 +82,7 @@ export default function AboutDialog() {
           </Typography>
           <Typography gutterBottom>
             Right now, you can load and view existing vZome designs, created using
-            the <Link target="_blank" rel="noopener" href="https://vzome.com">vZome desktop app</Link>.
+            the <Link target="_blank" rel="noopener" href="https://vzome.com/home/index/vzome-7/">vZome desktop app</Link>.
             Click on the folder icon try out some of the built-in designs, or load one of your own!
           </Typography>
           <Typography gutterBottom>
