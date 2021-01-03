@@ -9,7 +9,7 @@ import * as progress from './progress'
 import * as jsweet from './jsweet'
 import * as commands from '../commands'
 import * as workingPlane from './planes'
-import * as models from './models'
+import * as designs from './designs'
 import * as fields from '../fields'
 import * as shapers from './shapers'
 
@@ -25,14 +25,13 @@ switch ( profile ) {
     break;
 
   case "plane":
-    bundles = { ...requiredBundles, java: jsweet, models, shapers, workingPlane }
+    bundles = { ...requiredBundles, java: jsweet, designs, shapers, workingPlane }
     break;
 
   default:
-    bundles = { ...requiredBundles, java: jsweet, models, shapers, commands, alerts, progress }
+    bundles = { ...requiredBundles, java: jsweet, designs, shapers, commands, alerts, progress }
     break;
 }
-
 
 export default ( middleware ) =>
 {
@@ -45,11 +44,16 @@ export default ( middleware ) =>
     return obj
   }, {} )
 
+  if ( urlParams.get( 'debug' ) === 'true' ) {
+    reducers.dbuggerEnabled = () => true
+  }
+
+
   console.log( `bundle reducers: ${JSON.stringify( Object.keys( reducers ) )}` )
 
   const rootReducer = combineReducers( reducers )
   
-  const store = createStore( rootReducer, applyMiddleware( ...middleware ) );
+  const store = createStore( rootReducer, undefined, applyMiddleware( ...middleware ) );
   
   // TODO: is there a better pattern than these inits?
   names.map( key => {

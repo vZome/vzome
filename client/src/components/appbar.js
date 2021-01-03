@@ -12,6 +12,7 @@ import VZomeLogo from './logo'
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
+    zIndex: theme.zIndex.drawer + 1,
   },
   title: {
     marginLeft: theme.spacing(2),

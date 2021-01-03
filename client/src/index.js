@@ -9,7 +9,7 @@ import thunk from 'redux-thunk'
 import App from './App';
 import createBundleStore from './bundles'
 
-const store = createBundleStore( [ thunk ] );
+const store = createBundleStore( [ thunk, logger ] );
 
 render(
   <Provider store={store}>

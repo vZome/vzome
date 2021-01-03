@@ -10,7 +10,7 @@ import * as planes from '../bundles/planes'
 import BuildPlane from './buildplane'
 import Geometry from './geometry'
 import { createInstance } from '../bundles/mesh'
-import * as designs from '../bundles/models'
+import * as designs from '../bundles/designs'
 
 extend({ TrackballControls })
 const Controls = props => {
@@ -104,11 +104,11 @@ const ModelCanvas = ( { lighting, camera, mesh, field, resolver, preResolved, cl
 
 const select = ( state ) =>
 {
-  const { lighting, models, workingPlane, java } = state
-  const mesh = models && designs.selectCurrentMesh( state )
-  const field = models && designs.selectCurrentField( state )
-  const camera = state.camera || designs.selectCurrentCamera( state )
-  const resolver = models && designs.selectCurrentShaper( state )
+  const { lighting, workingPlane, java } = state
+  const mesh = state.designs && designs.selectMesh( state )
+  const field = state.designs && designs.selectField( state )
+  const camera = state.camera || designs.selectCamera( state )
+  const resolver = state.designs && designs.selectShaper( state )
   const preResolved = java.shapes && { shapes: java.shapes, instances: java.renderingOn? java.instances : java.previous }
   const shown = mesh && new Map( mesh.shown )
   if ( workingPlane && workingPlane.enabled && workingPlane.endPt ) {
@@ -130,7 +130,7 @@ const select = ( state ) =>
     resolver,
     preResolved,
     mesh: mesh && { ...mesh, shown },
-    clickable: !!models
+    clickable: !!state.designs
   }
 }
 
