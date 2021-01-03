@@ -6,8 +6,9 @@ import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
 
 import AboutButton from './about'
-import OpenButton from './designs'
+import OpenButton from './folder'
 import VZomeLogo from './logo'
+import DesignsSelect from './designs'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,6 +38,7 @@ export default function VZomeAppBar() {
           <Typography variant="h5" className={classes.title}>
             vZome <Box component="span" fontStyle="oblique">Online</Box>
           </Typography>
+          <DesignsSelect/>
           <OpenButton className={classes.open}/>
           <AboutButton/>
         </Toolbar>

@@ -1,118 +1,98 @@
 
-import React, { useRef } from 'react'
-import IconButton from '@material-ui/core/IconButton'
-import Tooltip from '@material-ui/core/Tooltip'
-import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
-import Divider from '@material-ui/core/Divider';
+import React from 'react'
 import { connect } from 'react-redux'
 
-import UrlDialog from './webloader'
-import { fetchModel, fileSelected } from '../bundles/files'
+import * as designFns from '../bundles/designs'
 
-const models = [
-  {
-    key: "vZomeLogo",
-    label: "vZome Logo",
-    description: "The vZome logo, one tetrahedral cell of the 4D 600-cell (cell-first projection)"
-  },
-  {
-    key: "affineDodec",
-    label: "Stretched Dodecahedron",
-    description: "A regular dodecahedron stretched by a linear transformation"
-  },
-  {
-    key: "120-cell",
-    label: "Hyper-dodecahedron",
-    description: "The 4D analogue of a dodecahedron, with 120 dodecahedral cells"
-  },
-  {
-    key: "bluePlaneArches1",
-    label: "Arched Rhombic Triacontahedron",
-    description: "A sculpture built using just the blue planes"
-  },
-  {
-    key: "C240",
-    label: "C-240 Buckyball",
-    description: "C-240 Buckyball"
-  },
-  {
-    key: "orangePurpleChiral",
-    label: "Orange and Purple Tangle",
-    description: "A design by Brian Hall"
-  },
-]
+import { makeStyles, withStyles } from '@material-ui/core/styles'
+import MenuItem from '@material-ui/core/MenuItem'
+import FormControl from '@material-ui/core/FormControl'
+import Select from '@material-ui/core/Select'
+import InputBase from '@material-ui/core/InputBase';
 
-const DesignsMenu = ( { openDesign, openFile } ) =>
+const BootstrapInput = withStyles((theme) => ({
+  root: {
+    'label + &': {
+      marginTop: theme.spacing(3),
+    },
+  },
+  input: {
+    borderRadius: 4,
+    position: 'relative',
+    backgroundColor: theme.palette.background.paper,
+    border: '1px solid #ced4da',
+    fontSize: 16,
+    padding: '10px 26px 10px 12px',
+    transition: theme.transitions.create(['border-color', 'box-shadow']),
+    // Use the system font instead of the default Roboto font.
+    fontFamily: [
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
+    '&:focus': {
+      borderRadius: 4,
+      borderColor: '#80bdff',
+      backgroundColor: theme.palette.background.paper,
+      boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
+    },
+  },
+}))(InputBase)
+
+const useStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: '20%',
+  },
+}))
+
+const DesignsSelect = ( { modelNames, current, doSelectModel } ) =>
 {
-  const [anchorEl, setAnchorEl] = React.useState(null)
-  const [showDialog, setShowDialog] = React.useState(false)
-  const ref = useRef()
-  const chooseFile = () => {
-    setAnchorEl(null)
-    ref.current.click()
+  const classes = useStyles()
+
+  const handleChange = event =>
+  {
+    doSelectModel( event.target.value )
   }
 
-  const handleClickOpen = (event) => {
-    setAnchorEl( event.currentTarget )
-  }
-
-  const handleSelectModel = model => {
-    setAnchorEl(null)
-    openDesign( `/app/models/${model}.vZome` )
-  }
-
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
-
-  const handleShowUrlDialog = () => {
-    setAnchorEl(null)
-    setShowDialog(true)
-  }
+  if ( ! modelNames )
+    return null
 
   return (
-    <>
-      <Tooltip title="Open a design" aria-label="open">
-        <IconButton color="inherit" aria-label="open" onClick={handleClickOpen}>
-          <FolderOpenRoundedIcon fontSize="large"/>
-        </IconButton>
-      </Tooltip>
-      <Menu
-        anchorEl={anchorEl}
-        keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
+    <FormControl variant="filled" className={classes.formControl}>
+      <Select value={current}
+        id="designs-select"
+        onChange={handleChange}
+        label="Design"
+        input={<BootstrapInput />}
       >
-        <MenuItem onClick={chooseFile}>Local vZome file
-          <input className="FileInput" type="file" ref={ref}
-            onChange={ (e) => {
-                const selected = e.target.files && e.target.files[0]
-                if ( selected )
-                  openFile( selected )
-              } }
-            accept=".vZome" /> 
-        </MenuItem>
-        <MenuItem onClick={handleShowUrlDialog}>Remote vZome URL</MenuItem>
-        <Divider />
-        { models.map( (model) => (
-          <MenuItem key={model.key} onClick={()=>handleSelectModel(model.key)}>{model.label}</MenuItem>
-        ) ) }
-      </Menu>
-      <UrlDialog show={showDialog} setShow={setShowDialog} openDesign={openDesign} />
-    </>
+        { modelNames.map( modelName =>
+          <MenuItem key={modelName} value={modelName}>{modelName}</MenuItem>
+        ) }
+      </Select>
+    </FormControl>
   )
 }
 
-const select = (state) => ({
-  // TODO make a real selector!
-  enabled: ! state.workingPlane,
-})
 
-const boundEventActions = {
-  openDesign : fetchModel,
-  openFile : fileSelected,
+const select = ( state ) =>
+{
+  const { designs } = state
+  return {
+    modelNames: designs && Object.keys( designs.data ),
+    current: designs && designs.current
+  }
 }
 
-export default connect( select, boundEventActions )( DesignsMenu )
+const boundEventActions = {
+  doSelectModel: designFns.switchModel,
+}
+
+export default connect( select, boundEventActions )( DesignsSelect )
