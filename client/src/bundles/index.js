@@ -20,7 +20,7 @@ const urlParams = new URLSearchParams( window.location.search );
 const profile = urlParams.get( "profile" ) || urlParams.get( "editMode" )
 switch ( profile ) {
 
-  case "jsweet":
+  case "tortoise":
     bundles = { ...requiredBundles, java: cheerpj, camera, alerts, progress }
     break;
 

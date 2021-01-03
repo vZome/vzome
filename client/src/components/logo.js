@@ -1,10 +1,15 @@
 
 import React from 'react'
 import SvgIcon from '@material-ui/core/SvgIcon'
-
+import IconButton from '@material-ui/core/IconButton';
+import Link from '@material-ui/core/Link';
 
 export default function VZomeLogo() {
   return (
+  <IconButton
+    component={Link}
+    href='https://vzome.com' target="_blank" rel="noopener"
+  >
     <SvgIcon fontSize="large"
         stroke='black' strokeLinejoin='round' strokeWidth='0.5' 
         viewBox='55 40 340.0 340.0' >
@@ -150,5 +155,6 @@ export default function VZomeLogo() {
       <path fill='#ffffff' d='M 351.25 54.2 L 339 65.73 L 345.25 84.84 L 357.49 73.1  z'/>
       <path fill='#efefea' d='M 345.25 84.84 L 339 65.73 L 310.98 76.93 L 319.66 95.01  z'/>
     </SvgIcon>
+  </IconButton>
   )
 }
