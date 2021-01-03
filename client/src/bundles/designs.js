@@ -7,14 +7,30 @@ import * as mesh from './mesh'
 import * as camera from './camera'
 import * as dbugger from './dbugger'
 
+/*
+
+There are a few odd things happening here.
+
+The first is that all actions (except those defined here) are funneled to the current design;
+see the default case in the main reducer below.
+
+Next, each design has its own undoable history, as well as reducers that are NOT undoable, like the camera.
+
+Finally, I'm trying to collect dbugger and mesh changes together into atomic undoable steps.
+Later, I'll do the same thing to record commands for save.  This is the reason for editStepReducer.
+
+*/
+
+export const editStepReducer = combineReducers( {
+  mesh: mesh.reducer,
+  dbugger: dbugger.reducer,
+  // TODO: record last command
+} )
+
 export const designReducer = combineReducers( {
-  history: undoable( combineReducers( {
-    mesh: mesh.reducer,
-    dbugger: dbugger.reducer,
-    // TODO: record last command
-  } ) ),
+  history: undoable( editStepReducer ),
   camera: camera.reducer,
-  success: ( state="", action ) => state, // fieldName cannot be changed, so a constant reducer is fine
+  success: ( state="", action ) => state, // success cannot be changed, so a constant reducer is fine
   fieldName: ( state="", action ) => state, // fieldName cannot be changed, so a constant reducer is fine
   shaperName: ( state="", action ) => state, // shaperName cannot be changed (YET!), so a constant reducer is fine
 })
@@ -70,7 +86,7 @@ export const selectDebugger = ( state, name ) => selectDesign( state, name ).his
 
 export const selectCamera = ( state, name ) => selectDesign( state, name ).camera
 
-export const selectSource = ( state, name ) => selectDesign( state, name ).history.present.dbugger.source
+export const selectSource = ( state, name ) => selectDebugger( state, name ).source
 
 export const selectField = ( state, name ) => state.fields[ selectDesign( state, name ).fieldName ]
 

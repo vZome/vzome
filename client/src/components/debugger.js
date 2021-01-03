@@ -31,8 +31,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const Debugger = ( { data } )  => {
+const Debugger = ( { data, current } )  =>
+{
   const classes = useStyles();
+
+  const selected = current && ':' + current.join( ':' )
 
   const renderTree = ( element, id ) => {
     const children = []
@@ -61,13 +64,12 @@ const Debugger = ( { data } )  => {
     >
       <Toolbar />
       <div className={classes.drawerContainer}>
-        <TreeView
-          className={classes.treeview}
+        <TreeView className={classes.treeview} selected={selected}
           defaultCollapseIcon={<ExpandMoreIcon />}
-          defaultExpanded={['root']}
+          defaultExpanded={['']}
           defaultExpandIcon={<ChevronRightIcon />}
         >
-          {renderTree( data, "" ) }
+          {renderTree( data, '' ) }
         </TreeView>
       </div>
     </Drawer>
@@ -79,8 +81,10 @@ const select = ( state ) =>
 {
   const design = state.designs && designFns.selectDesign( state )
   const failed = design && ! design.success
+  const dbugger = state.designs && designFns.selectDebugger( state )
   return {
-    data: failed && designFns.selectSource( state ),
+    data: failed && state.dbuggerEnabled && dbugger.source,
+    current: dbugger && dbugger.currentEditStack
   }
 }
 

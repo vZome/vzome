@@ -21,12 +21,21 @@ export const reducer = ( state = initialState, action ) =>
         targetEdit,
       }
 
+    case 'EDIT_REACHED':
+      const currentEditStack = action.payload
+      return {
+        ...state,
+        currentEditStack,
+      }
+
     default:
       return state
   }
 }
 
 export const sourceLoaded = ( source, editFactory, targetEdit ) => ({ type: 'SOURCE_LOADED', payload: { source, editFactory, targetEdit } })
+
+export const reachedEdit = editStack => ( { type: 'EDIT_REACHED', payload: editStack } )
 
 const createCursor = ( element, currentEditStack ) =>
 {
@@ -69,6 +78,7 @@ export const run = designName => ( dispatch, getState ) =>
         if ( edit ) {
           edit.deserializeAndPerform( adapter )
           design = designs.designReducer( design, recordEdit( adapter ) )
+          design = designs.designReducer( design, reachedEdit( [ currentEdit+1 ] ) )
         }
       }
       currentEdit += increment

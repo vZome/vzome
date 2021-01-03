@@ -33,7 +33,6 @@ switch ( profile ) {
     break;
 }
 
-
 export default ( middleware ) =>
 {
   const names = Object.keys( bundles )
@@ -45,11 +44,16 @@ export default ( middleware ) =>
     return obj
   }, {} )
 
+  if ( urlParams.get( 'debug' ) === 'true' ) {
+    reducers.dbuggerEnabled = () => true
+  }
+
+
   console.log( `bundle reducers: ${JSON.stringify( Object.keys( reducers ) )}` )
 
   const rootReducer = combineReducers( reducers )
   
-  const store = createStore( rootReducer, applyMiddleware( ...middleware ) );
+  const store = createStore( rootReducer, undefined, applyMiddleware( ...middleware ) );
   
   // TODO: is there a better pattern than these inits?
   names.map( key => {
