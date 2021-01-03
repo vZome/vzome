@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
 
 import AboutButton from './about'
-import OpenButton from './designs'
+import OpenButton from './folder'
 import VZomeLogo from './logo'
 
 const useStyles = makeStyles((theme) => ({
