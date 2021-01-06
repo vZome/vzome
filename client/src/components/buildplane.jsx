@@ -6,8 +6,10 @@ function BuildPlane( { config, startGridHover, stopGridHover } )
 {
   const { position, quaternion, grid, color, size, field } = config
   const [ materialRef, material ] = useResource()
+  const [ planeMaterialRef, planeMaterial ] = useResource()
   const rsize = field.embed( size )
   const dotSize = rsize / 24
+  const discSize = rsize * 4
   
   const makeAbsolute = ( gridPt ) =>
   {
@@ -37,7 +39,14 @@ function BuildPlane( { config, startGridHover, stopGridHover } )
   
   return (
     <group position={field.embedv( position )} quaternion={field.embedv( wlast( quaternion ) )}>
-      <meshLambertMaterial ref={materialRef} transparent={true} opacity={0.7} color={color} side={THREE.DoubleSide} />
+      <meshLambertMaterial ref={planeMaterialRef} transparent={true} opacity={0.5} color={color} />
+      <mesh rotation={[ Math.PI / 2, 0, 0 ]} material={planeMaterial}>
+        <cylinderBufferGeometry attach="geometry" args={[ discSize, discSize, 0.05, 60 ]} />
+      </mesh>
+      <mesh material={planeMaterial}>
+        <torusBufferGeometry attach="geometry" args={[ discSize, 0.5, 15, 60 ]} />
+      </mesh>
+      <meshLambertMaterial ref={materialRef} color='black' side={THREE.DoubleSide} />
       {grid.map( ( gv ) => {
         const [ x, y, z ] = field.embedv( gv ) 
         return (
