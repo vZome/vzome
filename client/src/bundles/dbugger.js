@@ -13,11 +13,11 @@ export const reducer = ( state = initialState, action ) =>
   switch (action.type) {
 
     case 'SOURCE_LOADED':
-      const { source, editFactory, targetEdit } = action.payload
+      const { source, parseAndPerformEdit, targetEdit } = action.payload
       return {
         ...state,
         source,
-        editFactory,
+        parseAndPerformEdit,
         targetEdit,
       }
 
@@ -33,25 +33,11 @@ export const reducer = ( state = initialState, action ) =>
   }
 }
 
-export const sourceLoaded = ( source, editFactory, targetEdit ) => ({ type: 'SOURCE_LOADED', payload: { source, editFactory, targetEdit } })
+export const sourceLoaded = ( source, parseAndPerformEdit, targetEdit ) => ({ type: 'SOURCE_LOADED', payload: { source, parseAndPerformEdit, targetEdit } })
 
 export const reachedEdit = editStack => ( { type: 'EDIT_REACHED', payload: editStack } )
 
-const createCursor = ( element, currentEditStack ) =>
-{
-  let dbugger
-  let editElement
-  dbugger.currentEditStack.array.forEach( editNum => {
-    let i = 0
-    editElement = editElement.firstElementChild
-    while ( i < editNum ) {
-      editElement = editElement.nextElementSibling
-    }
-  });
-  console.log( `starting from ${dbugger.currentEditStack} ${editElement.outerHTML}`)
-
-
-}
+const recordEdit = ( { shown, selected, hidden } ) => mesh.meshChanged( shown, selected, hidden )
 
 export const run = designName => ( dispatch, getState ) =>
 {
@@ -63,20 +49,16 @@ export const run = designName => ( dispatch, getState ) =>
   const performEdits = ( editElement, adapter, recordEdit, increment ) =>
   {
     do {
-      console.log( editElement.outerHTML )
       if ( editElement.nodeName === "Branch" ) {
+        console.log( '<Branch>' )
         const sandbox = adapter.clone()
         performEdits( editElement.firstElementChild, sandbox, () => ({}), 0 ) // don't record mesh changes for branches, don't increment currentEdit
         // we discard the cloned sandbox adapter
+        console.log( '</Branch>' )
       } else {
-        const wrappedElement = new JavaDomElement( editElement )
+        console.log( editElement.outerHTML )
         adapter = adapter.clone()  // each command builds on the last
-        // Note that we do not do editor.setAdapter( adapter ) yet.  This means that we cannot
-        //  deal with edits that have side-effects in their constructors!
-        const edit = dbugger.editFactory( wrappedElement )
-        // null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit
-        if ( edit ) {
-          edit.deserializeAndPerform( adapter )
+        if ( dbugger.parseAndPerformEdit( editElement, adapter ) ) {
           design = designs.designReducer( design, recordEdit( adapter ) )
           design = designs.designReducer( design, reachedEdit( [ currentEdit+1 ] ) )
         }
@@ -92,9 +74,6 @@ export const run = designName => ( dispatch, getState ) =>
   let editElement = dbugger.source.firstElementChild
   const targetEdit = dbugger.targetEdit
   try {
-    // TODO: move this to Adapter itself?
-    const recordEdit = ( { shown, selected, hidden } ) => mesh.meshChanged( shown, selected, hidden )
-
     const { shown, selected, hidden } = designs.selectMesh( getState(), designName )
     const adapter = new Adapter( shown, selected, hidden )
     performEdits( editElement, adapter, recordEdit, 1 )
@@ -114,19 +93,51 @@ export const run = designName => ( dispatch, getState ) =>
   dispatch( designs.loadedDesign( designName, design ) )
 }
 
-export const stepOver = () => ( dispatch, getState ) =>
+export const stepOver = designName => ( dispatch, getState ) =>
 {
+  const dbugger = designs.selectDebugger( getState(), designName )
+  let design = designs.selectDesign( getState(), designName ) // the starting point only
+  const { shown, selected, hidden } = designs.selectMesh( getState(), designName )
+  const adapter = new Adapter( shown, selected, hidden )
 
+  try {
+    // if current is branch then...
+    // else step
+    if ( dbugger.parseAndPerformEdit( dbugger.sourceNode, adapter ) ) {
+      design = designs.designReducer( design, recordEdit( adapter ) )
+      // design = designs.designReducer( design, reachedEdit( [ currentEdit+1 ] ) )
+    }
+  } catch (error) {
+    console.log( error )
+    dispatch( showAlert( `Unable to parse vZome design file: ${designName};\n ${error.message}` ) )
+    design.success = false
+  }
+  dispatch( designs.loadedDesign( designName, design ) )
 }
 
-export const stepIn = () => ( dispatch, getState ) =>
+export const stepIn = designName => ( dispatch, getState ) =>
 {
   // if current is branch then...
-  // else stepOver
+  // else step
 }
 
-export const stepOut = () => ( dispatch, getState ) =>
+export const stepOut = designName => ( dispatch, getState ) =>
 {
-
+  // stepOver until the frame ends
 }
 
+class StackFrame
+{
+  constructor( parentNode, parentFrame )
+  {
+    this.sourceNode = parentNode.firstElementChild
+    this.index = 0
+    this.parentFrame = parentFrame
+  }
+
+  getSourceId()
+  {
+    const parentId = this.parentFrame? this.parentFrame.getSourceId() : ""
+    return parentId + ':' + this.index
+  }
+}
