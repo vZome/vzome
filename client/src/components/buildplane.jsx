@@ -36,6 +36,17 @@ function BuildPlane( { config, startGridHover, stopGridHover } )
     const [ w, x, y, z ] = q
     return [ x, y, z, w ]
   }
+
+  /*
+    Ideas:
+      - when building struts, render the colored rays
+      - always render the dots in colors
+
+      - always render the hinge cylinder
+      - hover on the hinge should show the two control handles:
+         - a ball plus arc for the hinge angle around the center
+         - a small torus for the plane angle around the hinge
+  */
   
   return (
     <group position={field.embedv( position )} quaternion={field.embedv( wlast( quaternion ) )}>
