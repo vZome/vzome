@@ -47,9 +47,17 @@ const canonicalizedId = ( vectors ) =>
       min = strings[ i ]
     }
   }
+  // Since % does not actually perform a consistent sawtooth modulus function for negative numbers,
+  //  we add strings.length to force a positive number.
+  const get = i => strings[ ( strings.length + minIndex + i ) % strings.length ]
+
+  // We have the minimum (get(0)), now figure out which way to go
+  const incr = ( get( 1 ).localeCompare( get( -1 ) ) < 0 )? 1 : -1
+
   let sorted = ""
   for ( let j = 0; j < strings.length; j++ ) {
-    sorted += strings[ ( minIndex + j ) % strings.length ]
+    const next = get( j * incr )
+    sorted += next
   }
   return sorted
 }
