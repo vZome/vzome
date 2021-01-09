@@ -6,7 +6,7 @@ import { ActionCreators } from 'redux-undo';
 import * as mesh from './mesh'
 import { showAlert } from './alerts'
 
-export const initialState = { currentEditStack: [ 0 ], targetEdit: 0 }
+export const initialState = { currentEditStack: [ 0 ], targetEdit: ':' }
 
 export const reducer = ( state = initialState, action ) =>
 {

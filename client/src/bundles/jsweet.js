@@ -675,7 +675,7 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
 
     const edits = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement )
     // TODO: use editNumber
-    const targetEdit = parseInt( edits.getAttribute( "editNumber" ) )
+    const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
 
     design = designs.designReducer( design, parser.sourceLoaded( edits, parseAndPerformEdit, targetEdit ) ) // recorded in history
     dispatch( designs.loadingDesign( name, design ) )
