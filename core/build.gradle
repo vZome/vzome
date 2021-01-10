@@ -543,13 +543,9 @@ jsweet {
 
         'com/vzome/core/edits/AffineHeptagon.java',
         'com/vzome/core/edits/HeptagonSubdivision.java',
-        'com/vzome/core/edits/AdjustSelectionByOrbitLength.java',
         'com/vzome/core/edits/DodecagonSymmetry.java',
         'com/vzome/core/edits/GhostSymmetry24Cell.java',
-        'com/vzome/core/edits/SelectAutomaticStruts.java',
-        'com/vzome/core/edits/SelectParallelStruts.java',
         'com/vzome/core/edits/Symmetry4d.java',
-        // 'com/vzome/core/edits/PolarZonohedron.java',
         'com/vzome/core/edits/Run*Script.java',
         'com/vzome/core/edits/Validate2Manifold.java',
         'com/vzome/core/edits/RealizeMetaParts.java',
