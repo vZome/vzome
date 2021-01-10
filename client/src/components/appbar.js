@@ -9,6 +9,7 @@ import AboutButton from './about'
 import OpenButton from './folder'
 import VZomeLogo from './logo'
 import DesignsSelect from './designs'
+import UndoRedoButtons from './undoredo'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,6 +39,7 @@ export default function VZomeAppBar() {
           <Typography variant="h5" className={classes.title}>
             vZome <Box component="span" fontStyle="oblique">Online</Box>
           </Typography>
+          <UndoRedoButtons/>
           <DesignsSelect/>
           <OpenButton className={classes.open}/>
           <AboutButton/>
