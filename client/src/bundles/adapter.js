@@ -149,7 +149,7 @@ export default class Adapter
     const selectionSize = this.selected.size
     if ( selectionSize === 0 )
       return false;
-    return this.groups.find( group => ( group.size === selectionSize ) && ( Array.from(group).every( id => this.selected.has( id ) ) ) )
+    return this.groups.find( group => ( group.size === selectionSize ) && ( Array.from( group ).every( id => this.selected.has( id ) ) ) )
   }
 
   // RealizedModel calls
@@ -164,12 +164,12 @@ export default class Adapter
     let largestGroup
     let largestSize = 0
     matchingGroups.map( group => {
-      if ( group.length > largestSize ) {
+      if ( group.size > largestSize ) {
         largestGroup = group
-        largestSize = group.length
+        largestSize = group.size
       }
     })
-    return largestGroup && largestGroup.map( id => {
+    return largestGroup && Array.from( largestGroup ).map( id => {
       const instance = this.selected.get( id ) || this.shown.get( id )
       return instance.vectors
      } )
