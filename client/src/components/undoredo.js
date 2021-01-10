@@ -5,8 +5,8 @@ import { ActionCreators as UndoActionCreators } from 'redux-undo'
 
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
-import FastForwardRoundedIcon from '@material-ui/icons/FastForwardRounded'
-import FastRewindRoundedIcon from '@material-ui/icons/FastRewindRounded'
+import SkipNextRoundedIcon from '@material-ui/icons/SkipNextRounded'
+import SkipPreviousRoundedIcon from '@material-ui/icons/SkipPreviousRounded'
 import UndoRoundedIcon from '@material-ui/icons/UndoRounded'
 import RedoRoundedIcon from '@material-ui/icons/RedoRounded'
 
@@ -28,7 +28,7 @@ const UndoRedoButtons = ({ doUndoAll, doUndo, doRedo, doRedoAll, canUndo, canRed
     <>
       <Tooltip title="Undo all" aria-label="undo-all">
         <IconButton color="inherit" aria-label="undo-all" onClick={handleUndoAll} disabled={!canUndo}>
-          <FastRewindRoundedIcon fontSize="large"/>
+          <SkipPreviousRoundedIcon fontSize="large"/>
         </IconButton>
       </Tooltip>
       <Tooltip title="Undo" aria-label="undo">
@@ -43,7 +43,7 @@ const UndoRedoButtons = ({ doUndoAll, doUndo, doRedo, doRedoAll, canUndo, canRed
       </Tooltip>
       <Tooltip title="Redo all" aria-label="redo-all">
         <IconButton color="inherit" aria-label="redo-all" onClick={handleRedoAll} disabled={!canRedo}>
-          <FastForwardRoundedIcon fontSize="large"/>
+          <SkipNextRoundedIcon fontSize="large"/>
         </IconButton>
       </Tooltip>
     </>
