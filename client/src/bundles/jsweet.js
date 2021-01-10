@@ -381,7 +381,7 @@ export const init = async ( window, store ) =>
     injectResource( 'com/vzome/core/math/symmetry/H4roots-rotationalSubgroup.vef' ),
     injectResource( 'com/vzome/core/math/symmetry/H4roots.vef' ),
   ] )
-  const properties = new Properties( defaults )
+  const properties = new JsProperties( defaults )
   const colors = new vzomePkg.core.render.Colors( properties )
   const gfield = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
   const fieldApps = { golden: new vzomePkg.core.kinds.GoldenFieldApplication( gfield ) }
@@ -479,16 +479,17 @@ export const init = async ( window, store ) =>
     const shaper = shaperFactory( vzomePkg, orbitSource )
     shaper.shapesName = orbitSource.getShapes().getName()
 
-    const createEditFromXml = xmlElement =>
+    const parseAndPerformEdit = ( xmlElement, adapter ) =>
     {
-      const edit = editFactory( editor, toolFactories, toolsModel )( xmlElement )
-      if ( ! edit )
-        return undefined
-      edit.deserializeAndPerform = ( adapter ) => {
-        editor.setAdapter( adapter )
-        edit.loadAndPerform( xmlElement, format, editContext )
-      }
-      return edit
+      const wrappedElement = new JavaDomElement( xmlElement )
+      // Note that we do not do editor.setAdapter( adapter ) yet.  This means that we cannot
+      //  deal with edits that have side-effects in their constructors!
+      const edit = editFactory( editor, toolFactories, toolsModel )( wrappedElement )
+      if ( ! edit )   // Null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit.
+        return false  //  Not indicating failure, just indicating nothing to record in history
+      editor.setAdapter( adapter )
+      edit.loadAndPerform( wrappedElement, format, editContext )
+      return true
     }
 
     const configureAndPerformEdit = ( className, config, adapter ) =>
@@ -497,11 +498,11 @@ export const init = async ( window, store ) =>
       if ( ! edit )
         return
       editor.setAdapter( adapter )
-      edit.configure( new Properties( config ) )
+      edit.configure( new JsProperties( config ) )
       edit.perform()
     }
 
-    return { shaper, createEditFromXml, configureAndPerformEdit }
+    return { shaper, parseAndPerformEdit, configureAndPerformEdit }
   }
 
   // Discover all the legacy edit classes and register as commands
@@ -555,7 +556,7 @@ const embedShape = ( shape ) =>
 
 const shaperFactory = ( vzomePkg, orbitSource ) => shapes => instance =>
 {
-  const { id, vectors, color } = instance
+  const { id, vectors } = instance
   const jsAF = orbitSource.getSymmetry().getField()
 
   const shown = new Map()
@@ -586,7 +587,7 @@ const shaperFactory = ( vzomePkg, orbitSource ) => shapes => instance =>
   return { id, position: [ x, y, z ], rotation, color: finalColor, shapeId }
 }
 
-class Properties
+class JsProperties
 {
   constructor( config )
   {
@@ -623,6 +624,17 @@ export const legacyCommandFactory = ( createEditor, className ) => ( config ) =>
   dispatch( { type: WORK_FINISHED } )
 }
 
+const assignIds = ( element, id=':' ) => {
+  element.id = id
+  let child = element.firstElementChild
+  let i = 0
+  while ( child ) {
+    assignIds( child, `${id}${i++}:` )
+    child = child.nextElementSibling
+  }
+  return element
+}
+
 export const createParser = ( createDocument ) => ( name, xmlText, dispatch, getState ) =>
 {
   const extIndex = name.lastIndexOf( '.' )
@@ -641,7 +653,7 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
     const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
     const fieldName = vZomeRoot.getAttribute( "field" )
 
-    const { shaper, createEditFromXml } = createDocument( fieldName, namespace, vZomeRoot )
+    const { shaper, parseAndPerformEdit } = createDocument( fieldName, namespace, vZomeRoot )
 
     // We don't want to dispatch all the edits, which can trigger tons of
     //  overhead and re-rendering.  Instead, we'll build up a design locally
@@ -661,11 +673,11 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
     // TODO: skip this dispatch if we already have a shaper for shapesName, in getState().shapers
     dispatch( shapers.shaperDefined( shaper.shapesName, shaper ) ) // outside the design
 
-    const edits = vZomeRoot.getChildElement( "EditHistory" ).nativeElement
+    const edits = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement )
     // TODO: use editNumber
-    const targetEdit = parseInt( edits.getAttribute( "editNumber" ) )
+    const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
 
-    design = designs.designReducer( design, parser.sourceLoaded( edits, createEditFromXml, targetEdit ) ) // recorded in history
+    design = designs.designReducer( design, parser.sourceLoaded( edits, parseAndPerformEdit, targetEdit ) ) // recorded in history
     dispatch( designs.loadingDesign( name, design ) )
 
     dispatch( dbugger.run( name ) )

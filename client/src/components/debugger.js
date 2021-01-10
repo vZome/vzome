@@ -35,9 +35,9 @@ const Debugger = ( { data, current } )  =>
 {
   const classes = useStyles();
 
-  const selected = current && ':' + current.join( ':' )
+  const selected = current && ':' + current.join( ':' ) + ':'
 
-  const renderTree = ( element, id ) => {
+  const renderTree = ( element ) => {
     const children = []
     let child = element.firstElementChild
     while ( child ) {
@@ -45,8 +45,8 @@ const Debugger = ( { data, current } )  =>
       child = child.nextElementSibling
     }
     return (
-      <TreeItem key={id} nodeId={id} label={element.nodeName}>
-        { children.length > 0 ? children.map( ( child, i ) => renderTree( child, `${id}:${i}` ) ) : null }
+      <TreeItem key={element.id} nodeId={element.id} label={element.nodeName}>
+        { children.length > 0 ? children.map( child => renderTree( child ) ) : null }
       </TreeItem>
     )
   }
@@ -66,7 +66,7 @@ const Debugger = ( { data, current } )  =>
       <div className={classes.drawerContainer}>
         <TreeView className={classes.treeview} selected={selected}
           defaultCollapseIcon={<ExpandMoreIcon />}
-          defaultExpanded={['']}
+          defaultExpanded={[':']}
           defaultExpandIcon={<ChevronRightIcon />}
         >
           {renderTree( data, '' ) }
