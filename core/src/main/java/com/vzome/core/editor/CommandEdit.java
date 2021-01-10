@@ -165,7 +165,14 @@ public class CommandEdit extends ChangeManifestations
             selectionAfter = new ConstructionList();
             for ( int i = 0; i < actualsLen; i++ ) {
                 Construction param = constrsBefore .get( i );
-                if ( ((Class<?>) signature[0][1]) .isAssignableFrom( param .getClass() ) ) {
+                Class<?> formalClass = ((Class<?>) signature[0][1]);
+                
+                // Can't do this in JSweet, so we'll work around it.
+//              if ( ((Class<?>) signature[0][1]) .isAssignableFrom( param .getClass() ) ) {
+
+                if ( ( formalClass == Point.class && param instanceof Point )
+                  || ( formalClass == Segment.class && param instanceof Segment ) ) // for CommandMidpoint
+                {
                     ConstructionList single = new ConstructionList();
                     single .addConstruction( param );
                     partial = mCommand .apply( single, mAttrs, news );
