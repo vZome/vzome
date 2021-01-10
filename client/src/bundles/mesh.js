@@ -16,7 +16,7 @@ export const allSelected = () => ({ type: ALL_SELECTED })
 
 export const allDeselected = () => ({ type: ALL_DESELECTED })
 
-export const meshChanged = ( shown, selected, hidden ) => ({ type: MESH_CHANGED, payload: { shown, selected, hidden } })
+export const meshChanged = ( shown, selected, hidden, groups ) => ({ type: MESH_CHANGED, payload: { shown, selected, hidden, groups } })
 
 export const justOrigin = field => {
   const originBall = createInstance( [ field.origin( 3 ) ] )
@@ -77,7 +77,7 @@ export const reducer = ( state = initialState, action ) =>
       return { ...state, ...action.payload } // replace shown, selected, hidden, groups
     }
 
-    case OBJECT_SELECTED: {
+    case OBJECT_SELECTED: { // TODO: use groups here
       const id = action.payload
       const obj = state.shown.get( id )
       if ( typeof obj === "undefined" ) {
@@ -91,7 +91,7 @@ export const reducer = ( state = initialState, action ) =>
       }
     }
 
-    case OBJECT_DESELECTED: {
+    case OBJECT_DESELECTED: { // TODO: use groups here
       const id = action.payload
       const obj = state.selected.get( id )
       if ( typeof obj === "undefined" ) {
