@@ -37,7 +37,7 @@ export const sourceLoaded = ( source, parseAndPerformEdit, targetEdit ) => ({ ty
 
 export const reachedEdit = editStack => ( { type: 'EDIT_REACHED', payload: editStack } )
 
-const recordEdit = ( { shown, selected, hidden } ) => mesh.meshChanged( shown, selected, hidden )
+const recordEdit = ( { shown, selected, hidden, groups } ) => mesh.meshChanged( shown, selected, hidden, groups )
 
 export const run = designName => ( dispatch, getState ) =>
 {
@@ -74,8 +74,8 @@ export const run = designName => ( dispatch, getState ) =>
   let editElement = dbugger.source.firstElementChild
   const targetEdit = dbugger.targetEdit
   try {
-    const { shown, selected, hidden } = designs.selectMesh( getState(), designName )
-    const adapter = new Adapter( shown, selected, hidden )
+    const { shown, selected, hidden, groups } = designs.selectMesh( getState(), designName )
+    const adapter = new Adapter( shown, selected, hidden, groups )
     performEdits( editElement, adapter, recordEdit, 1 )
 
     console.log( `target is ${targetEdit}, currentEdit is ${currentEdit}` )

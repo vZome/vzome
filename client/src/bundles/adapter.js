@@ -1,5 +1,4 @@
 
-import { Group } from '@material-ui/icons'
 import * as mesh from './mesh'
 
 export default class Adapter
@@ -33,6 +32,11 @@ export default class Adapter
     this.selected = temp
   }
 
+  debugBottleneck( id )
+  {
+    const setConditionalBreakpointHere = id
+  }
+
   select( vectors )
   {
     const { id } = mesh.createInstance( vectors )
@@ -44,6 +48,7 @@ export default class Adapter
     }
     this.shown.delete( id )
     this.selected.set( id, instance )
+    this.debugBottleneck( id )
   }
 
   unselect( vectors )
@@ -52,6 +57,7 @@ export default class Adapter
     const instance = this.selected.get( id )
     this.selected.delete( id )
     this.shown.set( id, instance )
+    this.debugBottleneck( id )
   }
 
   selectionSize()
@@ -68,14 +74,14 @@ export default class Adapter
   {
     if ( this.selectionIsGroup() )
       return
-    const group = Array.from( this.selected.keys() )
+    const group = new Set( this.selected.keys() )
     this.groups.push( group )
   }
 
   disbandGroup()
   {
     this.groups = this.groups.filter( group =>
-      ( group.length !== this.selected.size ) || ( group.some( id => ! this.selected.has( id ) ) ) )
+      ( group.size !== this.selected.size ) || ( Array.from(group).some( id => ! this.selected.has( id ) ) ) )
   }
 
   createLegacyGroup()
@@ -99,6 +105,7 @@ export default class Adapter
         const instance = this.shown.get( id ) || this.selected.get( id )
         this.shown.delete( id )
         this.selected.set( id, instance )
+        this.debugBottleneck( id )
       });
     } else {
       const instance = this.shown.get( id )
@@ -107,6 +114,7 @@ export default class Adapter
       }
       this.shown.delete( id )
       this.selected.set( id, instance )
+      this.debugBottleneck( id )
     }
   }
 
@@ -121,11 +129,13 @@ export default class Adapter
         const instance = this.shown.get( id ) || this.selected.get( id )
         this.selected.delete( id )
         this.shown.set( id, instance )
+        this.debugBottleneck( id )
       });
     } else {
       const instance = this.selected.get( id )
       this.selected.delete( id )
       this.shown.set( id, instance )
+      this.debugBottleneck( id )
     }
   }
 
@@ -139,7 +149,7 @@ export default class Adapter
     const selectionSize = this.selected.size
     if ( selectionSize === 0 )
       return false;
-    return this.groups.find( group => ( group.length === selectionSize ) && ( group.every( id => this.selected.has( id ) ) ) )
+    return this.groups.find( group => ( group.size === selectionSize ) && ( Array.from(group).every( id => this.selected.has( id ) ) ) )
   }
 
   // RealizedModel calls
@@ -147,7 +157,7 @@ export default class Adapter
   getLargestGroup( vectors )
   {
     const { id } = mesh.createInstance( vectors )
-    const matchingGroups = this.groups.filter( group => group.includes( id ) )
+    const matchingGroups = this.groups.filter( group => group.has( id ) )
     if ( matchingGroups.length === 0 )
       return null
 
@@ -159,15 +169,20 @@ export default class Adapter
         largestSize = group.length
       }
     })
-    return largestGroup && largestGroup.map( id => ( this.selected.get( id ) || this.shown.get( id ) ).vectors )
+    return largestGroup && largestGroup.map( id => {
+      const instance = this.selected.get( id ) || this.shown.get( id )
+      return instance.vectors
+     } )
   }
 
   delete( vectors )
   {
     const { id } = mesh.createInstance( vectors )
+    this.debugBottleneck( id )
     this.shown.delete( id )
     this.selected.delete( id )
     this.hidden.delete( id )
+    this.groups.forEach( group => group.delete( id ) )
   }
 
   manifestationRendered( vectors )
@@ -231,6 +246,7 @@ export default class Adapter
       return // idempotent
     this.hidden.delete( instance.id )
     this.shown.set( instance.id, instance )
+    this.debugBottleneck( instance.id )
   }
 
   hideManifestation( vectors )
@@ -239,6 +255,7 @@ export default class Adapter
     instance = this.shown.get( instance.id ) || this.selected.get( instance.id ) || this.hidden.get( instance.id ) || instance
     this.selected.delete( instance.id ) || this.shown.delete( instance.id )
     this.hidden.set( instance.id, instance )
+    this.debugBottleneck( instance.id )
   }
 
   allIterator()
