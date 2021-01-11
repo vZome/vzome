@@ -680,7 +680,7 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
     design = designs.designReducer( design, parser.sourceLoaded( edits, parseAndPerformEdit, targetEdit ) ) // recorded in history
     dispatch( designs.loadingDesign( name, design ) )
 
-    dispatch( dbugger.run( name ) )
+    dispatch( dbugger.doRun( name ) )
     
   } catch (error) {
     console.log( error )

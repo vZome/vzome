@@ -1,12 +1,11 @@
 
 import * as designs from '../bundles/designs'
-import { JavaDomElement } from './wrappers'
 import Adapter from './adapter'
 import { ActionCreators } from 'redux-undo';
 import * as mesh from './mesh'
 import { showAlert } from './alerts'
 
-export const initialState = { currentEditStack: [ 0 ], targetEdit: ':' }
+export const initialState = { currentEditStack: null, targetEdit: ':' }
 
 export const reducer = ( state = initialState, action ) =>
 {
@@ -19,6 +18,7 @@ export const reducer = ( state = initialState, action ) =>
         source,
         parseAndPerformEdit,
         targetEdit,
+        currentEditStack: source.firstElementChild
       }
 
     case 'EDIT_REACHED':
@@ -93,51 +93,46 @@ export const run = designName => ( dispatch, getState ) =>
   dispatch( designs.loadedDesign( designName, design ) )
 }
 
-export const stepOver = designName => ( dispatch, getState ) =>
+export const doRun = designName => ( dispatch, getState ) =>
 {
-  const dbugger = designs.selectDebugger( getState(), designName )
   let design = designs.selectDesign( getState(), designName ) // the starting point only
-  const { shown, selected, hidden } = designs.selectMesh( getState(), designName )
-  const adapter = new Adapter( shown, selected, hidden )
+  const dbugger = designs.selectDebugger( getState(), designName )
+  const { shown, selected, hidden, groups } = designs.selectMesh( getState(), designName )
+  let adapter = new Adapter( shown, selected, hidden, groups )
+  let editElement = dbugger.currentEditStack
+
+  const privateContinue = () =>
+  {
+    while ( editElement ) {
+      const nextElement = privateStepOver()
+      if ( nextElement ) {
+        editElement = nextElement
+      } else {
+        return
+      }
+    }
+  }
+
+  const privateStepOver = () =>
+  {
+    // TODO handle branches!
+    console.log( editElement.outerHTML )
+    adapter = adapter.clone()  // each command builds on the last
+    dbugger.parseAndPerformEdit( editElement, adapter )
+    // if ( !nextElement ) {
+    //   const parent = editElement.parentElement
+    //   nextElement = ( parent.nodeName === 'EditHistory' )? null : parent.nextElementSibling
+    // }
+    design = designs.designReducer( designs.designReducer( design, recordEdit( adapter ) ), reachedEdit( editElement.nextElementSibling ) )
+    return editElement.nextElementSibling
+  }
 
   try {
-    // if current is branch then...
-    // else step
-    if ( dbugger.parseAndPerformEdit( dbugger.sourceNode, adapter ) ) {
-      design = designs.designReducer( design, recordEdit( adapter ) )
-      // design = designs.designReducer( design, reachedEdit( [ currentEdit+1 ] ) )
-    }
+    privateContinue() // TODO switch on which command
   } catch (error) {
     console.log( error )
     dispatch( showAlert( `Unable to parse vZome design file: ${designName};\n ${error.message}` ) )
     design.success = false
   }
   dispatch( designs.loadedDesign( designName, design ) )
-}
-
-export const stepIn = designName => ( dispatch, getState ) =>
-{
-  // if current is branch then...
-  // else step
-}
-
-export const stepOut = designName => ( dispatch, getState ) =>
-{
-  // stepOver until the frame ends
-}
-
-class StackFrame
-{
-  constructor( parentNode, parentFrame )
-  {
-    this.sourceNode = parentNode.firstElementChild
-    this.index = 0
-    this.parentFrame = parentFrame
-  }
-
-  getSourceId()
-  {
-    const parentId = this.parentFrame? this.parentFrame.getSourceId() : ""
-    return parentId + ':' + this.index
-  }
 }
