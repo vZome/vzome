@@ -208,33 +208,42 @@ public class JsAlgebraicNumber implements AlgebraicNumber
         return d1.compareTo(d2);
     }
 
-    
-    
-    
-    
     @Override
-    public boolean greaterThan(AlgebraicNumber other)
+    public boolean greaterThan( AlgebraicNumber other )
     {
-        throw new RuntimeException( "unimplemented" );
+        return compareTo(other) > 0;
     }
 
     @Override
-    public boolean lessThan(AlgebraicNumber other)
+    public boolean lessThan( AlgebraicNumber other )
     {
-        throw new RuntimeException( "unimplemented" );
+        return compareTo(other) < 0;
     }
 
     @Override
-    public boolean greaterThanOrEqualTo(AlgebraicNumber other)
+    public boolean greaterThanOrEqualTo( AlgebraicNumber other )
     {
-        throw new RuntimeException( "unimplemented" );
+        return compareTo(other) >= 0;
     }
 
     @Override
-    public boolean lessThanOrEqualTo(AlgebraicNumber other)
+    public boolean lessThanOrEqualTo( AlgebraicNumber other )
     {
-        throw new RuntimeException( "unimplemented" );
+        return compareTo(other) <= 0;
     }
+
+    @Override
+    public int signum()
+    {
+        return Double.valueOf( Math.signum( evaluate()) ).intValue();
+    }
+
+    
+    
+    
+    
+    
+    
 
     @Override
     public AlgebraicNumber times(int n)
@@ -250,12 +259,6 @@ public class JsAlgebraicNumber implements AlgebraicNumber
 
     @Override
     public boolean isRational()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public int signum()
     {
         throw new RuntimeException( "unimplemented" );
     }
