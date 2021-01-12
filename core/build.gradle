@@ -80,9 +80,9 @@ dependencies {
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.3'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.3'
 
-    compile group: 'org.jsweet', name: 'jsweet-transpiler', version: '2.3.7'
+    compile group: 'org.jsweet', name: 'jsweet-transpiler', version: '3.0.0'
     compile group: 'org.jsweet', name: 'jsweet-core', version: "6.1.0"
-    compile group: 'org.jsweet', name: 'j4ts', version: '0.7.0-SNAPSHOT'
+    compile group: 'org.jsweet', name: 'j4ts', version: '2.0.0'
 
     runtime     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
     runtime     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
