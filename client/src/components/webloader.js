@@ -26,7 +26,7 @@ export default ({ show, setShow, openDesign }) =>
       <DialogTitle id="form-dialog-title">Load a Remote vZome Design</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          The server must allow cross-origin access.
+          The URL must be open to public access.
         </DialogContentText>
         <TextField onChange={handleChange}
           autoFocus

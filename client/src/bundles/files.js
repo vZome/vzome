@@ -22,8 +22,11 @@ export const fileSelected = selected => ( dispatch, getState ) =>
 
 export const fetchModel = ( path ) => ( dispatch, getState ) =>
 {
+  // TODO: I should really deploy my own copy of this proxy on Heroku
+  const fetchWithCORS = url => fetch ( url ).catch ( _ => fetch( 'https://cors-anywhere.herokuapp.com/' + url ) )
+
   dispatch( startProgress( "Fetching model content..." ) )
-  fetch( path )
+  fetchWithCORS( path )
     .then( response =>
     {
       if ( !response.ok ) {
