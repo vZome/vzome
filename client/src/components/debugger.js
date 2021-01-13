@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const Debugger = ( { data, current, designName, doContinue } )  =>
+const Debugger = ( { data, current, designName, doDebug } )  =>
 {
   const classes = useStyles();
 
@@ -81,7 +81,7 @@ const Debugger = ( { data, current, designName, doContinue } )  =>
             </IconButton>
           </Tooltip>
           <Tooltip title="Step over" aria-label="step-over">
-            <IconButton color="secondary" aria-label="step-over" disabled={true} onClick={handleStepIn}>
+            <IconButton color="secondary" aria-label="step-over" onClick={()=>doDebug(designName, 'STEP_OVER')}>
               <RedoRoundedIcon/>
             </IconButton>
           </Tooltip>
@@ -91,7 +91,7 @@ const Debugger = ( { data, current, designName, doContinue } )  =>
             </IconButton>
           </Tooltip>
           <Tooltip title="Continue" aria-label="continue">
-            <IconButton color="secondary" aria-label="continue" onClick={()=>doContinue(designName)}>
+            <IconButton color="secondary" aria-label="continue" onClick={()=>doDebug(designName, 'CONTINUE')}>
               <FastForwardRoundedIcon/>
             </IconButton>
           </Tooltip>
@@ -122,7 +122,7 @@ const select = ( state ) =>
 }
 
 const boundEventActions = {
-  doContinue : dbugger.doRun,
+  doDebug : dbugger.debug,
 }
 
 export default connect( select, boundEventActions )( Debugger )

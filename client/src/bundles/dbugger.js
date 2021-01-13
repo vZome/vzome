@@ -93,7 +93,7 @@ export const run = designName => ( dispatch, getState ) =>
   dispatch( designs.loadedDesign( designName, design ) )
 }
 
-export const doRun = designName => ( dispatch, getState ) =>
+export const debug = ( designName, action ) => ( dispatch, getState ) =>
 {
   let design = designs.selectDesign( getState(), designName ) // the starting point only
   const dbugger = designs.selectDebugger( getState(), designName )
@@ -128,7 +128,17 @@ export const doRun = designName => ( dispatch, getState ) =>
   }
 
   try {
-    privateContinue() // TODO switch on which command
+    switch ( action ) {
+
+      case 'STEP_OVER':
+        privateStepOver()
+        break;
+    
+      case 'CONTINUE':
+      default:
+        privateContinue()
+        break;
+    }
   } catch (error) {
     console.log( error )
     dispatch( showAlert( `Unable to parse vZome design file: ${designName};\n ${error.message}` ) )

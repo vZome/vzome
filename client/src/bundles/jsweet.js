@@ -683,7 +683,7 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
     design = designs.designReducer( design, ActionCreators.clearHistory() )  // kind of a hack so both histories are in sync, with no past
     dispatch( designs.loadingDesign( name, design ) )
 
-    dispatch( dbugger.doRun( name ) )
+    dispatch( dbugger.debug( name, 'CONTINUE' ) )
     
   } catch (error) {
     console.log( error )
