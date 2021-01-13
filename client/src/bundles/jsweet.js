@@ -1,4 +1,6 @@
 
+import { ActionCreators } from 'redux-undo';
+
 import * as parser from './dbugger'
 import { commandsDefined } from '../commands'
 import * as planes from './planes'
@@ -678,6 +680,7 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
     const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
 
     design = designs.designReducer( design, parser.sourceLoaded( edits, parseAndPerformEdit, targetEdit ) ) // recorded in history
+    design = designs.designReducer( design, ActionCreators.clearHistory() )  // kind of a hack so both histories are in sync, with no past
     dispatch( designs.loadingDesign( name, design ) )
 
     dispatch( dbugger.doRun( name ) )
