@@ -5,9 +5,7 @@ import { ActionCreators } from 'redux-undo';
 import * as mesh from './mesh'
 import { showAlert } from './alerts'
 
-export const initialState = { currentEditStack: null, targetEdit: ':' }
-
-export const reducer = ( state = initialState, action ) =>
+export const reducer = ( state = {}, action ) =>
 {
   switch (action.type) {
 
@@ -18,15 +16,27 @@ export const reducer = ( state = initialState, action ) =>
         source,
         parseAndPerformEdit,
         targetEdit,
-        currentEditStack: source.firstElementChild
+        currentElement: source.firstElementChild,
+        branchStack: []
       }
 
     case 'EDIT_REACHED':
-      const currentEditStack = action.payload
+      const element = action.payload
       return {
         ...state,
-        currentEditStack,
+        currentElement: element,
       }
+
+    case 'ENTERING_BRANCH': {
+      const { element, adapter } = action.payload
+      const branchStack = state.branchStack.slice()
+      branchStack.push( { branch: element, adapter } )
+      return {
+        ...state,
+        currentElement: element.firstElementChild,
+        branchStack,
+      }
+    }
 
     default:
       return state
@@ -35,7 +45,9 @@ export const reducer = ( state = initialState, action ) =>
 
 export const sourceLoaded = ( source, parseAndPerformEdit, targetEdit ) => ({ type: 'SOURCE_LOADED', payload: { source, parseAndPerformEdit, targetEdit } })
 
-export const reachedEdit = editStack => ( { type: 'EDIT_REACHED', payload: editStack } )
+export const reachedEdit = element => ( { type: 'EDIT_REACHED', payload: element } )
+
+export const enteringBranch = ( element, adapter ) => ( { type: 'ENTERING_BRANCH', payload: { element, adapter } } )
 
 const recordEdit = ( { shown, selected, hidden, groups } ) => mesh.meshChanged( shown, selected, hidden, groups )
 
@@ -99,12 +111,12 @@ export const debug = ( designName, action ) => ( dispatch, getState ) =>
   const dbugger = designs.selectDebugger( getState(), designName )
   const { shown, selected, hidden, groups } = designs.selectMesh( getState(), designName )
   let adapter = new Adapter( shown, selected, hidden, groups )
-  let editElement = dbugger.currentEditStack
+  let editElement = dbugger.currentElement
 
-  const privateContinue = () =>
+  const conTinue = () =>
   {
     while ( editElement ) {
-      const nextElement = privateStepOver()
+      const nextElement = stepOver()
       if ( nextElement ) {
         editElement = nextElement
       } else {
@@ -113,30 +125,73 @@ export const debug = ( designName, action ) => ( dispatch, getState ) =>
     }
   }
 
-  const privateStepOver = () =>
+  const stepIn = () =>
   {
-    // TODO handle branches!
-    console.log( editElement.outerHTML )
-    adapter = adapter.clone()  // each command builds on the last
-    dbugger.parseAndPerformEdit( editElement, adapter )
-    // if ( !nextElement ) {
-    //   const parent = editElement.parentElement
-    //   nextElement = ( parent.nodeName === 'EditHistory' )? null : parent.nextElementSibling
-    // }
-    design = designs.designReducer( designs.designReducer( design, recordEdit( adapter ) ), reachedEdit( editElement.nextElementSibling ) )
-    return editElement.nextElementSibling
+    if ( editElement.nodeName === "Branch" ) {
+      const branchAdapter = adapter.clone()
+      design = designs.designReducer( design, recordEdit( branchAdapter ) )
+      design = designs.designReducer( design, enteringBranch( editElement, adapter ) )
+      editElement = editElement.firstElementChild
+      adapter = branchAdapter
+    } else {
+      stepOver()
+    }
+  }
+
+  const stepOver = () =>
+  {
+    if ( editElement.nodeName === "Branch" ) {
+      editElement = stepIn()
+      return stepOut()
+    } else {
+      adapter = adapter.clone()  // each command builds on the last
+      dbugger.parseAndPerformEdit( editElement, adapter )
+      // if ( !nextElement ) {
+      //   const parent = editElement.parentElement
+      //   nextElement = ( parent.nodeName === 'EditHistory' )? null : parent.nextElementSibling
+      // }
+      design = designs.designReducer( design, recordEdit( adapter ) )
+      design = designs.designReducer( design, reachedEdit( editElement.nextElementSibling ) )
+      return editElement.nextElementSibling
+    }
+  }
+
+  const stepOut = () =>
+  {
+    while ( editElement ) {
+      const nextElement = stepOver()
+      if ( nextElement ) {
+        editElement = nextElement
+      } else {
+        editElement = editElement.parentElement
+        if ( editElement.nodeName === "Branch" ) {
+
+        } else {
+
+        }
+        return
+      }
+    }
   }
 
   try {
     switch ( action ) {
 
+      case 'STEP_IN':
+        stepIn()
+        break;
+    
       case 'STEP_OVER':
-        privateStepOver()
+        stepOver()
+        break;
+    
+      case 'STEP_OUT':
+        stepOut()
         break;
     
       case 'CONTINUE':
       default:
-        privateContinue()
+        conTinue()
         break;
     }
   } catch (error) {

@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const Debugger = ( { data, current, designName, doDebug } )  =>
+const Debugger = ( { data, current, branches, designName, doDebug } )  =>
 {
   const classes = useStyles();
 
@@ -56,10 +56,7 @@ const Debugger = ( { data, current, designName, doDebug } )  =>
     )
   }
 
-  const handleStepIn = () =>
-  {
-
-  }
+  const expanded = branches && [ ':', ...branches ]
 
   if ( !data )
     return null
@@ -76,7 +73,7 @@ const Debugger = ( { data, current, designName, doDebug } )  =>
       <div className={classes.drawerContainer}>
         <Toolbar variant='dense'>
           <Tooltip title="Step in" aria-label="step-in">
-            <IconButton color="secondary" aria-label="step-in" disabled={true} onClick={handleStepIn}>
+            <IconButton color="secondary" aria-label="step-in" onClick={()=>doDebug(designName, 'STEP_IN')}>
               <GetAppRoundedIcon/>
             </IconButton>
           </Tooltip>
@@ -86,7 +83,7 @@ const Debugger = ( { data, current, designName, doDebug } )  =>
             </IconButton>
           </Tooltip>
           <Tooltip title="Step out" aria-label="step-out">
-            <IconButton color="secondary" aria-label="step-out" disabled={true} onClick={handleStepIn}>
+            <IconButton color="secondary" aria-label="step-out" onClick={()=>doDebug(designName, 'STEP_OUT')}>
               <PublishRoundedIcon/>
             </IconButton>
           </Tooltip>
@@ -96,9 +93,9 @@ const Debugger = ( { data, current, designName, doDebug } )  =>
             </IconButton>
           </Tooltip>
         </Toolbar>
-        <TreeView className={classes.treeview} selected={current}
+        <TreeView className={classes.treeview} selected={current} expanded={expanded}
           defaultCollapseIcon={<ExpandMoreIcon />}
-          defaultExpanded={[':']}
+          defaultExpanded={ expanded }
           defaultExpandIcon={<ChevronRightIcon />}
         >
           {renderTree( data, '' ) }
@@ -116,7 +113,8 @@ const select = ( state ) =>
   const dbugger = state.designs && designFns.selectDebugger( state )
   return {
     data: failed && state.dbuggerEnabled && dbugger.source,
-    current: dbugger && dbugger.currentEditStack && dbugger.currentEditStack.id,
+    current: dbugger && dbugger.currentElement && dbugger.currentElement.id,
+    branches: dbugger && dbugger.branchStack && dbugger.branchStack.map( ({ branch }) => branch.id ),
     designName: dbugger && designFns.selectDesignName( state )
   }
 }
