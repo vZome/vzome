@@ -433,24 +433,21 @@ export const init = async ( window, store ) =>
     //   This is important mostly for the automatic orbits, but can also carry color overrides.
     const orbitSource = new vzomePkg.core.editor.SymmetrySystem( systemXml, symmPer, editContext, colors, true )
     symmetrySystems[ symmPer.getName() ] = orbitSource
-    // if ( this .mXML != null ) {
-    //     NodeList nl = this .mXML .getElementsByTagName( "OtherSymmetries" );
-    //     if ( nl .getLength() != 0 ) {
-    //         xml = (Element) nl .item( 0 );
-    //         NodeList nodes = xml .getElementsByTagName( "SymmetrySystem" );
-    //         for ( int i = 0; i < nodes .getLength(); i++ ) {
-    //             Node node = nodes .item( i );
-    //             if ( node instanceof Element ) {
-    //                 Element symmElem = (Element) node;
-    //                 String symmName = symmElem .getAttribute( "name" );  
-    //                 symmPerspective = kind .getSymmetryPerspective( symmName );
-    //                 SymmetrySystem otherSymmetrySystem = new SymmetrySystem( symmElem, symmPerspective, this, app .getColors(), true );
-    //                 this .symmetrySystems .put( symmName, otherSymmetrySystem );
-    //             }
-    //         }
-    //     }
-    //     }
+    if ( xml ) {
+      const symms = xml.getChildElement( "OtherSymmetries" )
+      if ( symms ) {
+        const nodes = symms.getElementsByTagName( "SymmetrySystem" )
+        for ( let i = 0; i < nodes.getLength(); i++ ) {
+          const symmElem = nodes.item( i )
+          const symmName = symmElem.getAttribute( "name" )
+          const symmPerspective = fieldApp.getSymmetryPerspective( symmName )
+          const otherSymmetrySystem = new vzomePkg.core.editor.SymmetrySystem( symmElem, symmPerspective, this, colors, true )
+          symmetrySystems[ symmName ] = otherSymmetrySystem
+        }
+      }
+    }
 
+    // This has no analogue in Java DocumentModel
     orbitSource.quaternions = makeQuaternions( orbitSource.getSymmetry().getMatrices() )
     const orbitSetField = {
       __interfaces: [ "com.vzome.core.math.symmetry.OrbitSet.Field" ],
@@ -458,18 +455,21 @@ export const init = async ( window, store ) =>
       getQuaternionSet: name => fieldApp.getQuaternionSymmetry( name )
     }
 
+    const realizedModel = new vzomePkg.jsweet.JsRealizedModel( field )
+    const selection = new vzomePkg.jsweet.JsSelection( field )
+    const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp, orbitSource, symmetrySystems )
+    toolsModel.setEditorModel( editor )
+
     const format = namespace && vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )
     format && format.initialize( field, orbitSetField, 0, "vZome Online", new util.Properties() )
 
     const toolFactories = new util.HashMap()
-    fieldApp.registerToolFactories( toolFactories, toolsModel )
+    for ( const symmetrySystem of Object.values( symmetrySystems ) ) {
+      symmetrySystem.createToolFactories( toolsModel ) // needed to register built-in tools
+    }
 
-    const realizedModel = new vzomePkg.jsweet.JsRealizedModel( field )
-    const selection = new vzomePkg.jsweet.JsSelection( field )
-    const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp, orbitSource, symmetrySystems )
+    fieldApp.registerToolFactories( toolFactories, toolsModel )
     
-    toolsModel.setEditorModel( editor )
-    orbitSource.createToolFactories( toolsModel ) // needed to register built-in tools
     const bookmarkFactory = new vzomePkg.core.tools.BookmarkTool.Factory( toolsModel );
     bookmarkFactory.createPredefinedTool( "ball at origin" );
 
