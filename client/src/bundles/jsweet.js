@@ -681,10 +681,14 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
 
     design = designs.designReducer( design, parser.sourceLoaded( edits, parseAndPerformEdit, targetEdit ) ) // recorded in history
     design = designs.designReducer( design, ActionCreators.clearHistory() )  // kind of a hack so both histories are in sync, with no past
+
     dispatch( designs.loadingDesign( name, design ) )
 
-    dispatch( dbugger.debug( name, 'CONTINUE' ) )
-    
+    if ( ! getState().dbuggerEnabled ) {
+      dispatch( dbugger.debug( name, 'CONTINUE' ) )
+    }
+    dispatch( designs.loadedDesign( name, design ) )
+
   } catch (error) {
     console.log( error )
     dispatch( showAlert( `Unable to parse vZome design file: ${name};\n ${error.message}` ) )

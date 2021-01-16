@@ -108,11 +108,9 @@ const Debugger = ( { data, current, branches, designName, doDebug } )  =>
 
 const select = ( state ) =>
 {
-  const design = state.designs && designFns.selectDesign( state )
-  const failed = design && ! design.success
   const dbugger = state.designs && designFns.selectDebugger( state )
   return {
-    data: failed && state.dbuggerEnabled && dbugger.source,
+    data: state.dbuggerEnabled && dbugger.source,
     current: dbugger && dbugger.currentElement && dbugger.currentElement.id,
     branches: dbugger && dbugger.branchStack && dbugger.branchStack.map( ({ branch }) => branch.id ),
     designName: dbugger && designFns.selectDesignName( state )
