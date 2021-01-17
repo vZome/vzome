@@ -58,6 +58,8 @@ export const loadingDesign = ( name, design ) => ( { type: 'LOADING_DESIGN', pay
 
 export const loadedDesign = ( name, design ) => ( { type: 'LOADED_DESIGN', payload: { name, design } } )
 
+export const selectDesignName = state => state.designs.current
+
 export const selectDesign = ( state, name ) => state.designs.data[ name || state.designs.current ]
 
 export const selectMesh = ( state, name ) => selectDesign( state, name ).mesh.present

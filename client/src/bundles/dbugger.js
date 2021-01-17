@@ -1,14 +1,11 @@
 
 import * as designs from '../bundles/designs'
-import { JavaDomElement } from './wrappers'
 import Adapter from './adapter'
 import { ActionCreators } from 'redux-undo';
 import * as mesh from './mesh'
 import { showAlert } from './alerts'
 
-export const initialState = { currentEditStack: [ 0 ], targetEdit: ':' }
-
-export const reducer = ( state = initialState, action ) =>
+export const reducer = ( state = {}, action ) =>
 {
   switch (action.type) {
 
@@ -19,13 +16,16 @@ export const reducer = ( state = initialState, action ) =>
         source,
         parseAndPerformEdit,
         targetEdit,
+        currentElement: source.firstElementChild,
+        branchStack: []
       }
 
     case 'EDIT_REACHED':
-      const currentEditStack = action.payload
+      const { element, branchStack } = action.payload
       return {
         ...state,
-        currentEditStack,
+        currentElement: element,
+        branchStack: branchStack || state.branchStack
       }
 
     default:
@@ -35,7 +35,7 @@ export const reducer = ( state = initialState, action ) =>
 
 export const sourceLoaded = ( source, parseAndPerformEdit, targetEdit ) => ({ type: 'SOURCE_LOADED', payload: { source, parseAndPerformEdit, targetEdit } })
 
-export const reachedEdit = editStack => ( { type: 'EDIT_REACHED', payload: editStack } )
+export const reachedEdit = ( element, branchStack ) => ( { type: 'EDIT_REACHED', payload: { element, branchStack } } )
 
 const recordEdit = ( { shown, selected, hidden, groups } ) => mesh.meshChanged( shown, selected, hidden, groups )
 
@@ -93,19 +93,107 @@ export const run = designName => ( dispatch, getState ) =>
   dispatch( designs.loadedDesign( designName, design ) )
 }
 
-export const stepOver = designName => ( dispatch, getState ) =>
+export const debug = ( designName, action ) => ( dispatch, getState ) =>
 {
-  const dbugger = designs.selectDebugger( getState(), designName )
   let design = designs.selectDesign( getState(), designName ) // the starting point only
-  const { shown, selected, hidden } = designs.selectMesh( getState(), designName )
-  const adapter = new Adapter( shown, selected, hidden )
+  const dbugger = designs.selectDebugger( getState(), designName )
+  const { shown, selected, hidden, groups } = designs.selectMesh( getState(), designName )
+  
+  // All the inner functions here will adjust these, and record changes to them.
+  let adapter = new Adapter( shown, selected, hidden, groups )
+  let editElement = dbugger.currentElement
+  let stack = dbugger.branchStack.slice() // only modified when stepping in or out
+
+  const Stepped = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
+
+  const step = () =>
+  {
+    if ( ! editElement )
+      return Stepped.DONE
+    if ( editElement.nodeName === "Branch" ) {
+      const branchAdapter = adapter.clone()
+      stack.push( { branch: editElement, adapter } )
+      design = designs.designReducer( design, recordEdit( branchAdapter ) )
+      design = designs.designReducer( design, reachedEdit( editElement.firstElementChild, stack ) )
+      editElement = editElement.firstElementChild // this assumes there are no empty branches
+      adapter = branchAdapter
+      return Stepped.IN
+    } else {
+      adapter = adapter.clone()  // each command builds on the last
+      dbugger.parseAndPerformEdit( editElement, adapter )
+      if ( editElement.nextElementSibling ) {
+        design = designs.designReducer( design, recordEdit( adapter ) )
+        design = designs.designReducer( design, reachedEdit( editElement.nextElementSibling ) )
+        editElement = editElement.nextElementSibling
+        return Stepped.OVER
+      } else {
+        const top = stack.pop()
+        if ( top ) {
+          adapter = top.adapter.clone()  // overwrite and discard the prior value
+          design = designs.designReducer( design, recordEdit( adapter ) )
+          editElement = top.branch.nextElementSibling // This assumes there is always a next one, but that should be true
+          design = designs.designReducer( design, reachedEdit( editElement, stack ) )
+          return Stepped.OUT
+        } else {
+          // at the end of the editHistory
+          design = designs.designReducer( design, recordEdit( adapter ) )
+          design = designs.designReducer( design, reachedEdit( null ) )
+          return Stepped.DONE
+        }
+      }
+    }
+  }
+
+  const conTinue = () =>
+  {
+    let stepped
+    do {
+      stepped = stepOut()
+    } while ( stepped !== Stepped.DONE );
+  }
+
+  const stepOver = () =>
+  {
+    const stepped = step()
+    switch ( stepped ) {
+
+      case Stepped.IN:
+        stepOut()
+        return Stepped.OVER
+    
+      default:
+        return stepped
+    }
+  }
+
+  const stepOut = () =>
+  {
+    let stepped
+    do {
+      stepped = stepOver()
+    } while ( stepped !== Stepped.OUT && stepped !== Stepped.DONE )
+    return stepped
+  }
 
   try {
-    // if current is branch then...
-    // else step
-    if ( dbugger.parseAndPerformEdit( dbugger.sourceNode, adapter ) ) {
-      design = designs.designReducer( design, recordEdit( adapter ) )
-      // design = designs.designReducer( design, reachedEdit( [ currentEdit+1 ] ) )
+    switch ( action ) {
+
+      case 'STEP_IN':
+        step()
+        break;
+    
+      case 'STEP_OVER':
+        stepOver()
+        break;
+    
+      case 'STEP_OUT':
+        stepOut()
+        break;
+    
+      case 'CONTINUE':
+      default:
+        conTinue()
+        break;
     }
   } catch (error) {
     console.log( error )
@@ -113,31 +201,4 @@ export const stepOver = designName => ( dispatch, getState ) =>
     design.success = false
   }
   dispatch( designs.loadedDesign( designName, design ) )
-}
-
-export const stepIn = designName => ( dispatch, getState ) =>
-{
-  // if current is branch then...
-  // else step
-}
-
-export const stepOut = designName => ( dispatch, getState ) =>
-{
-  // stepOver until the frame ends
-}
-
-class StackFrame
-{
-  constructor( parentNode, parentFrame )
-  {
-    this.sourceNode = parentNode.firstElementChild
-    this.index = 0
-    this.parentFrame = parentFrame
-  }
-
-  getSourceId()
-  {
-    const parentId = this.parentFrame? this.parentFrame.getSourceId() : ""
-    return parentId + ':' + this.index
-  }
 }

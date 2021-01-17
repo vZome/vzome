@@ -8,8 +8,15 @@ import TreeView from '@material-ui/lab/TreeView'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import TreeItem from '@material-ui/lab/TreeItem'
+import IconButton from '@material-ui/core/IconButton'
+import Tooltip from '@material-ui/core/Tooltip'
+import RedoRoundedIcon from '@material-ui/icons/RedoRounded'
+import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded'
+import PublishRoundedIcon from '@material-ui/icons/PublishRounded'
+import FastForwardRoundedIcon from '@material-ui/icons/FastForwardRounded'
 
 import * as designFns from '../bundles/designs'
+import * as dbugger from '../bundles/dbugger'
 
 const drawerWidth = 500
 
@@ -31,11 +38,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const Debugger = ( { data, current } )  =>
+const Debugger = ( { data, current, branches, designName, doDebug } )  =>
 {
   const classes = useStyles();
-
-  const selected = current && ':' + current.join( ':' ) + ':'
 
   const renderTree = ( element ) => {
     const children = []
@@ -51,6 +56,8 @@ const Debugger = ( { data, current } )  =>
     )
   }
 
+  const expanded = branches && [ ':', ...branches ]
+
   if ( !data )
     return null
 
@@ -64,9 +71,31 @@ const Debugger = ( { data, current } )  =>
     >
       <Toolbar />
       <div className={classes.drawerContainer}>
-        <TreeView className={classes.treeview} selected={selected}
+        <Toolbar variant='dense'>
+          <Tooltip title="Step in" aria-label="step-in">
+            <IconButton color="secondary" aria-label="step-in" onClick={()=>doDebug(designName, 'STEP_IN')}>
+              <GetAppRoundedIcon/>
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Step over" aria-label="step-over">
+            <IconButton color="secondary" aria-label="step-over" onClick={()=>doDebug(designName, 'STEP_OVER')}>
+              <RedoRoundedIcon/>
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Step out" aria-label="step-out">
+            <IconButton color="secondary" aria-label="step-out" onClick={()=>doDebug(designName, 'STEP_OUT')}>
+              <PublishRoundedIcon/>
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Continue" aria-label="continue">
+            <IconButton color="secondary" aria-label="continue" onClick={()=>doDebug(designName, 'CONTINUE')}>
+              <FastForwardRoundedIcon/>
+            </IconButton>
+          </Tooltip>
+        </Toolbar>
+        <TreeView className={classes.treeview} selected={current} expanded={expanded}
           defaultCollapseIcon={<ExpandMoreIcon />}
-          defaultExpanded={[':']}
+          defaultExpanded={ expanded }
           defaultExpandIcon={<ChevronRightIcon />}
         >
           {renderTree( data, '' ) }
@@ -79,13 +108,17 @@ const Debugger = ( { data, current } )  =>
 
 const select = ( state ) =>
 {
-  const design = state.designs && designFns.selectDesign( state )
-  const failed = design && ! design.success
   const dbugger = state.designs && designFns.selectDebugger( state )
   return {
-    data: failed && state.dbuggerEnabled && dbugger.source,
-    current: dbugger && dbugger.currentEditStack
+    data: state.dbuggerEnabled && dbugger.source,
+    current: dbugger && dbugger.currentElement && dbugger.currentElement.id,
+    branches: dbugger && dbugger.branchStack && dbugger.branchStack.map( ({ branch }) => branch.id ),
+    designName: dbugger && designFns.selectDesignName( state )
   }
 }
 
-export default connect( select )( Debugger )
+const boundEventActions = {
+  doDebug : dbugger.debug,
+}
+
+export default connect( select, boundEventActions )( Debugger )
