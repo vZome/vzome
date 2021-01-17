@@ -308,6 +308,10 @@ export const init = async ( window, store ) =>
 
   const xmlToEditClass = editName =>
   {
+    if ( editName === 'CommandEdit' ) {
+      // The constructor pattern is wrong
+      return undefined
+    }
     const legacyNames = {
       setItemColor: "ColorManifestations",
       BnPolyope: "B4Polytope",
