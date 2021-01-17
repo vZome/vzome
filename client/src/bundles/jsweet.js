@@ -687,7 +687,9 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
     if ( ! getState().dbuggerEnabled ) {
       dispatch( dbugger.debug( name, 'CONTINUE' ) )
     }
-    dispatch( designs.loadedDesign( name, design ) )
+    else {
+      dispatch( designs.loadedDesign( name, design ) )
+    }
 
   } catch (error) {
     console.log( error )
