@@ -21,22 +21,12 @@ export const reducer = ( state = {}, action ) =>
       }
 
     case 'EDIT_REACHED':
-      const element = action.payload
+      const { element, branchStack } = action.payload
       return {
         ...state,
         currentElement: element,
+        branchStack: branchStack || state.branchStack
       }
-
-    case 'ENTERING_BRANCH': {
-      const { element, adapter } = action.payload
-      const branchStack = state.branchStack.slice()
-      branchStack.push( { branch: element, adapter } )
-      return {
-        ...state,
-        currentElement: element.firstElementChild,
-        branchStack,
-      }
-    }
 
     default:
       return state
@@ -45,9 +35,7 @@ export const reducer = ( state = {}, action ) =>
 
 export const sourceLoaded = ( source, parseAndPerformEdit, targetEdit ) => ({ type: 'SOURCE_LOADED', payload: { source, parseAndPerformEdit, targetEdit } })
 
-export const reachedEdit = element => ( { type: 'EDIT_REACHED', payload: element } )
-
-export const enteringBranch = ( element, adapter ) => ( { type: 'ENTERING_BRANCH', payload: { element, adapter } } )
+export const reachedEdit = ( element, branchStack ) => ( { type: 'EDIT_REACHED', payload: { element, branchStack } } )
 
 const recordEdit = ( { shown, selected, hidden, groups } ) => mesh.meshChanged( shown, selected, hidden, groups )
 
@@ -110,75 +98,88 @@ export const debug = ( designName, action ) => ( dispatch, getState ) =>
   let design = designs.selectDesign( getState(), designName ) // the starting point only
   const dbugger = designs.selectDebugger( getState(), designName )
   const { shown, selected, hidden, groups } = designs.selectMesh( getState(), designName )
+  
+  // All the inner functions here will adjust these, and record changes to them.
   let adapter = new Adapter( shown, selected, hidden, groups )
   let editElement = dbugger.currentElement
+  let stack = dbugger.branchStack.slice() // only modified when stepping in or out
 
-  const conTinue = () =>
+  const Stepped = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
+
+  const step = () =>
   {
-    while ( editElement ) {
-      const nextElement = stepOver()
-      if ( nextElement ) {
-        editElement = nextElement
+    if ( ! editElement )
+      return Stepped.DONE
+    if ( editElement.nodeName === "Branch" ) {
+      const branchAdapter = adapter.clone()
+      stack.push( { branch: editElement, adapter } )
+      design = designs.designReducer( design, recordEdit( branchAdapter ) )
+      design = designs.designReducer( design, reachedEdit( editElement.firstElementChild, stack ) )
+      editElement = editElement.firstElementChild // this assumes there are no empty branches
+      adapter = branchAdapter
+      return Stepped.IN
+    } else {
+      adapter = adapter.clone()  // each command builds on the last
+      dbugger.parseAndPerformEdit( editElement, adapter )
+      if ( editElement.nextElementSibling ) {
+        design = designs.designReducer( design, recordEdit( adapter ) )
+        design = designs.designReducer( design, reachedEdit( editElement.nextElementSibling ) )
+        editElement = editElement.nextElementSibling
+        return Stepped.OVER
       } else {
-        return
+        const top = stack.pop()
+        if ( top ) {
+          adapter = top.adapter.clone()  // overwrite and discard the prior value
+          design = designs.designReducer( design, recordEdit( adapter ) )
+          editElement = top.branch.nextElementSibling // This assumes there is always a next one, but that should be true
+          design = designs.designReducer( design, reachedEdit( editElement, stack ) )
+          return Stepped.OUT
+        } else {
+          // at the end of the editHistory
+          design = designs.designReducer( design, recordEdit( adapter ) )
+          design = designs.designReducer( design, reachedEdit( null ) )
+          return Stepped.DONE
+        }
       }
     }
   }
 
-  const stepIn = () =>
+  const conTinue = () =>
   {
-    if ( editElement.nodeName === "Branch" ) {
-      const branchAdapter = adapter.clone()
-      design = designs.designReducer( design, recordEdit( branchAdapter ) )
-      design = designs.designReducer( design, enteringBranch( editElement, adapter ) )
-      editElement = editElement.firstElementChild
-      adapter = branchAdapter
-    } else {
-      stepOver()
-    }
+    let stepped
+    do {
+      stepped = stepOut()
+    } while ( stepped !== Stepped.DONE );
   }
 
   const stepOver = () =>
   {
-    if ( editElement.nodeName === "Branch" ) {
-      editElement = stepIn()
-      return stepOut()
-    } else {
-      adapter = adapter.clone()  // each command builds on the last
-      dbugger.parseAndPerformEdit( editElement, adapter )
-      // if ( !nextElement ) {
-      //   const parent = editElement.parentElement
-      //   nextElement = ( parent.nodeName === 'EditHistory' )? null : parent.nextElementSibling
-      // }
-      design = designs.designReducer( design, recordEdit( adapter ) )
-      design = designs.designReducer( design, reachedEdit( editElement.nextElementSibling ) )
-      return editElement.nextElementSibling
+    const stepped = step()
+    switch ( stepped ) {
+
+      case Stepped.IN:
+        stepOut()
+        return Stepped.OVER
+    
+      default:
+        return stepped
     }
   }
 
   const stepOut = () =>
   {
-    while ( editElement ) {
-      const nextElement = stepOver()
-      if ( nextElement ) {
-        editElement = nextElement
-      } else {
-        editElement = editElement.parentElement
-        if ( editElement.nodeName === "Branch" ) {
-
-        } else {
-
-        }
-        return
-      }
-    }
+    let stepped
+    do {
+      stepped = stepOver()
+    } while ( stepped !== Stepped.OUT && stepped !== Stepped.DONE )
+    return stepped
   }
 
   try {
     switch ( action ) {
 
       case 'STEP_IN':
-        stepIn()
+        step()
         break;
     
       case 'STEP_OVER':
