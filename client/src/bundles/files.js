@@ -10,7 +10,7 @@ export const fileSelected = selected => ( dispatch, getState ) =>
   const reader = new FileReader();
   reader.onload = () =>
   {
-    getState().java.parser( selected.name, reader.result, dispatch, getState )
+    getState().java.parser( selected.name, selected.name, reader.result, dispatch, getState )
   }
   reader.onerror = () =>
   {
@@ -20,7 +20,7 @@ export const fileSelected = selected => ( dispatch, getState ) =>
   reader.readAsText( selected )
 }
 
-export const fetchModel = ( path ) => ( dispatch, getState ) =>
+export const fetchModel = ( path, id ) => ( dispatch, getState ) =>
 {
   // TODO: I should really deploy my own copy of this proxy on Heroku
   const fetchWithCORS = url => fetch ( url ).catch ( _ => fetch( 'https://cors-anywhere.herokuapp.com/' + url ) )
@@ -36,7 +36,8 @@ export const fetchModel = ( path ) => ( dispatch, getState ) =>
     })
     .then( (text) => {
       const name = path.split( '\\' ).pop().split( '/' ).pop()
-      getState().java.parser( name, text, dispatch, getState )
+      const designId = id || name
+      getState().java.parser( name, designId, text, dispatch, getState )
     })
     .catch( error =>
     {

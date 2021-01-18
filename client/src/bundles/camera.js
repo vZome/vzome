@@ -14,8 +14,8 @@ const vZomeInitialState = {  // These values match the camera in the default vZo
   near: 0.1491,
 }
 
-export const initialState = {  // These values match the camera in the default vZomeLogo model file
-  fov: convertFOV( 0.442 ),
+export const initialState = {
+  fov: convertFOV( 0.75 ), // 0.44 in vZome
   position: [ 0, 0, 75 ],
   lookAt: [ 0, 0, 0 ],
   up: [ 0, 1, 0 ],
@@ -29,10 +29,10 @@ export const reducer = ( state = initialState, action ) => {
     case CAMERA_DEFINED:
       const { position, lookAtPoint, upDirection, fieldOfView, nearClipDistance, farClipDistance } = action.payload
       return {
+        ...state,
         position: [ ...Object.values( position ) ],
         lookAt: [ ...Object.values( lookAtPoint ) ],
         up: [ ...Object.values( upDirection ) ],
-        fov: convertFOV( fieldOfView ),
         near: nearClipDistance,
         far: farClipDistance
       }
@@ -64,7 +64,7 @@ export const parseViewXml = ( viewingElement ) =>
   const z = lookAtPoint.z - distance * lookDirection.z
   const position = { x, y, z }
   const payload = {
-    position, lookAtPoint, upDirection, fieldOfView: 0.442, nearClipDistance, farClipDistance
+    position, lookAtPoint, upDirection, nearClipDistance, farClipDistance
   }
   return { type: CAMERA_DEFINED, payload }
 }

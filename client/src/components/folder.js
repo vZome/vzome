@@ -42,6 +42,12 @@ const models = [
     label: "Orange and Purple Tangle",
     description: "A design by Brian Hall"
   },
+  {
+    key: "truncated5Cell",
+    url: "/models/2007/04-Apr/5cell/A4_3C.vZome",
+    label: "Truncated 5-Cell",
+    description: "Truncated 5-Cell"
+  },
 ]
 
 const DesignsMenu = ( { openDesign, openFile } ) =>
@@ -60,7 +66,8 @@ const DesignsMenu = ( { openDesign, openFile } ) =>
 
   const handleSelectModel = model => {
     setAnchorEl(null)
-    openDesign( `/app/models/${model}.vZome` )
+    const { url, key } = model
+    openDesign( url || `/app/models/${key}.vZome`, key )
   }
 
   const handleClose = () => {
@@ -97,7 +104,7 @@ const DesignsMenu = ( { openDesign, openFile } ) =>
         <MenuItem onClick={handleShowUrlDialog}>Remote vZome URL</MenuItem>
         <Divider />
         { models.map( (model) => (
-          <MenuItem key={model.key} onClick={()=>handleSelectModel(model.key)}>{model.label}</MenuItem>
+          <MenuItem key={model.key} onClick={()=>handleSelectModel(model)}>{model.label}</MenuItem>
         ) ) }
       </Menu>
       <UrlDialog show={showDialog} setShow={setShowDialog} openDesign={openDesign} />

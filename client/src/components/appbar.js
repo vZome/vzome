@@ -25,26 +25,29 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export default function VZomeAppBar() {
+const VZomeAppBar = ( { article=false } ) =>
+{
   const classes = useStyles()
 
   return (
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          {/* <IconButton edge="start" className={classes.menuButton} aria-label="logo"> */}
-            <VZomeLogo/>
-          {/* </IconButton> */}
-
+          <VZomeLogo/>
           <Typography variant="h5" className={classes.title}>
             vZome <Box component="span" fontStyle="oblique">Online</Box>
           </Typography>
-          <UndoRedoButtons/>
-          <DesignsSelect/>
-          <OpenButton className={classes.open}/>
-          <AboutButton/>
+          { article? null :
+            <>
+              <UndoRedoButtons/>
+              <DesignsSelect/>
+              <OpenButton className={classes.open}/>
+            </> }
+            <AboutButton/>
         </Toolbar>
       </AppBar>
     </div>
   )
 }
+
+export default VZomeAppBar

@@ -16,33 +16,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.dropdown {
-  position: fixed;
-  left: 13%;
-  top: 1%;
-}
-
-#exporter {
-  position: fixed;
-  right: 1%;
-  top: 1%;
-}
-
-#editmenu {
-  position: fixed;
-  left: 1%;
-  top: 1%;
-}
-
 .FileInput {
   display: none;
-}
-
-button {
-  background-color: Transparent;
-  background-repeat:no-repeat;
-  border: none;
-  cursor:pointer;
-  overflow: hidden;
-  outline:none;
 }
