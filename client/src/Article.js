@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
+import Link from '@material-ui/core/Link'
 
 import VZomeAppBar from './components/appbar.js'
 import ModelCanvas from './components/modelcanvas-three.js'
@@ -47,15 +48,18 @@ const Article = () =>
           <Typography gutterBottom >
             The 5-cell is the simplest 4-dimensional regular polytope, consisting of 5 equivalent tetrahedral cells.
             We can experience this in three dimensions only by projecting from 4D down to 3D.
-            There is a well-known orthogonal projection that can be built in Zometool, shown below.
-            You can count the five tetrahedra: the outer green one, and the four interior tetrahedra with yellow edges
+            There is a well-known orthogonal projection that can be built
+            in <Link target="_blank" href="https://zometool.com" rel="noopener" >Zometool</Link>,
+            shown below.
+            You can count the five tetrahedra: the outer green one, and the four interior tetrahedra with three yellow edges
             foreshortened by the projection.
           </Typography>
           <div className={classes.viewer}>
             <ModelCanvas design='greenTetra' />
           </div>
           <Typography gutterBottom >
-            Until 2007, my friend David Richter and I believed that there was no other orthogonal 3D projection of the 5-cell 
+            Until 2007, my friend <Link target="_blank" href="https://homepages.wmich.edu/~drichter" rel="noopener" >David Richter</Link> and
+            I believed that there was no other orthogonal 3D projection of the 5-cell 
             that could be constructed with Zome. This turns out to be false. I stumbled upon such a projection,
             and David saw immediately that this implied that the entire family of 9 uniform A4 polytopes could also be projected in this manner.
             Furthermore, David showed that there are two other rZome-constructible projections, one using red, yellow, and blue,
@@ -73,10 +77,11 @@ const Article = () =>
             You can see this clearly if you zoom out in the 3d view, using your scroll wheel.
           </Typography>
           <Typography gutterBottom >
-            This article illustrates the "ghost symmetry" projection for each of the 8 uniform
+            This article illustrates the "ghost symmetry" projection for a few of the 8 uniform polytopes
             that have the symmetry of the 5-cell, known as the A4 Coxeter group.
             For more discussion of this group, 
-            see David's page on the other Zome projections of the A4 family.
+            see <Link target="_blank" href="https://homepages.wmich.edu/~drichter/a4polychorazome.htm" rel="noopener" >David's page</Link> on
+            the other Zome projections of the A4 family.
           </Typography>
           <div className={classes.viewer}>
             <ModelCanvas design='A4_9' />
