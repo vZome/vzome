@@ -12,12 +12,13 @@ export const designReducer = combineReducers( {
   mesh: undoable( mesh.reducer ),
   dbugger: undoable( dbugger.reducer ),
   camera: camera.reducer,
+  name: ( state="", action ) => state, // name cannot be changed (YET), so a constant reducer is fine
   success: ( state="", action ) => state, // success cannot be changed, so a constant reducer is fine
   fieldName: ( state="", action ) => state, // fieldName cannot be changed, so a constant reducer is fine
   shaperName: ( state="", action ) => state, // shaperName cannot be changed (YET!), so a constant reducer is fine
 })
 
-export const initializeDesign = ( field, shaperName ) => ({
+export const initializeDesign = ( field, name, shaperName ) => ({
   mesh: {
     past: [],
     present: mesh.justOrigin( field ),
@@ -28,6 +29,7 @@ export const initializeDesign = ( field, shaperName ) => ({
   camera: camera.initialState,
   fieldName: field.name,
   shaperName,
+  name,
 })
 
 const emptyState = {
@@ -43,38 +45,38 @@ const addNewModel = ( state, field ) =>
     current: name,
     data: {
       ...state.data,
-      [ name ]: initializeDesign( field )
+      [ name ]: initializeDesign( field, name )
     }
   }
 }
 
 export const newModel = field => ( { type: 'NEW_MODEL', payload: field } )
 
-export const switchModel = name => ( { type: 'SWITCH_MODEL', payload: name } )
+export const switchModel = id => ( { type: 'SWITCH_MODEL', payload: id } )
 
 export const renameModel = name => ( { type: 'RENAME_MODEL', payload: name } )
 
-export const loadingDesign = ( name, design ) => ( { type: 'LOADING_DESIGN', payload: { name, design } } )
+export const loadingDesign = ( id, design ) => ( { type: 'LOADING_DESIGN', payload: { id, design } } )
 
-export const loadedDesign = ( name, design ) => ( { type: 'LOADED_DESIGN', payload: { name, design } } )
+export const loadedDesign = ( id, design ) => ( { type: 'LOADED_DESIGN', payload: { id, design } } )
 
-export const selectDesignName = state => state.designs.current
+export const selectDesign = ( state, id ) => state.designs.data[ id ] || state.designs.data[ state.designs.current ]
 
-export const selectDesign = ( state, name ) => state.designs.data[ name || state.designs.current ]
+export const selectDesignName = ( state, id ) => selectDesign( state, id ).name
 
-export const selectMesh = ( state, name ) => selectDesign( state, name ).mesh.present
+export const selectMesh = ( state, id ) => selectDesign( state, id ).mesh.present
 
-export const selectDebugger = ( state, name ) => selectDesign( state, name ).dbugger.present
+export const selectDebugger = ( state, id ) => selectDesign( state, id ).dbugger.present
 
-export const selectCamera = ( state, name ) => selectDesign( state, name ).camera
+export const selectCamera = ( state, id ) => selectDesign( state, id ).camera
 
-export const selectSource = ( state, name ) => selectDebugger( state, name ).source
+export const selectSource = ( state, id ) => selectDebugger( state, id ).source
 
-export const selectField = ( state, name ) => state.fields[ selectDesign( state, name ).fieldName ]
+export const selectField = ( state, id ) => state.fields[ selectDesign( state, id ).fieldName ]
 
-export const selectShaper = ( state, name ) =>
+export const selectShaper = ( state, id ) =>
 {
-  const shaperName = selectDesign( state, name ).shaperName || "solid connectors"
+  const shaperName = selectDesign( state, id ).shaperName || "solid connectors"
   return state.shapers[ shaperName ]
 }
 
@@ -97,24 +99,24 @@ export const reducer = ( state = addNewModel( emptyState, goldenField ), action 
     }
 
     case 'LOADING_DESIGN': {
-      const { name, design } = action.payload
+      const { id, design } = action.payload
       return {
         ...state,
         data: {
           ...state.data,
-          [ name ]: design
+          [ id ]: design
         }
       }
     }
 
     case 'LOADED_DESIGN': {
-      const { name, design } = action.payload
+      const { id, design } = action.payload
       return {
         ...state,
-        current: name,
+        current: id,
         data: {
           ...state.data,
-          [ name ]: design
+          [ id ]: design
         }
       }
     }

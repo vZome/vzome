@@ -545,7 +545,18 @@ export const init = async ( window, store ) =>
     if ( urlParams.has( "url" ) ) {
       url = decodeURI( urlParams.get( "url" ) )
     }
-    store.dispatch( fetchModel( url ) )
+    store.dispatch( fetchModel( url, 'logo' ) )
+
+    const fiveCellDesigns = [
+      { id: 'greenTetra', url: 'https://vzome.com/models/2007/04-Apr/5cell/greenTetra.vZome' },
+      { id: 'A4_18', url: 'https://vzome.com/models/2007/04-Apr/5cell/A4_18.vZome' },
+      { id: 'A4_9', url: 'https://vzome.com/models/2007/04-Apr/5cell/A4_9.vZome' },
+      { id: 'A4_BD', url: 'https://vzome.com/models/2007/04-Apr/5cell/A4_BD.vZome' },
+    ]
+
+    if ( window.location.href.includes( "fivecell" ) ) {
+      fiveCellDesigns.map( ({ id, url }) => store.dispatch( fetchModel( url, id ) ) )
+    }
   }
 }
 
@@ -641,7 +652,7 @@ const assignIds = ( element, id=':' ) => {
   return element
 }
 
-export const createParser = ( createDocument ) => ( name, xmlText, dispatch, getState ) =>
+export const createParser = ( createDocument ) => ( name, id, xmlText, dispatch, getState ) =>
 {
   const extIndex = name.lastIndexOf( '.' )
   if ( extIndex > 0 ) {
@@ -664,7 +675,7 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
     // We don't want to dispatch all the edits, which can trigger tons of
     //  overhead and re-rendering.  Instead, we'll build up a design locally
     //  by calling the designReducer manually.
-    let design = designs.initializeDesign( fields[ fieldName ], shaper.shapesName )
+    let design = designs.initializeDesign( fields[ fieldName ], name, shaper.shapesName )
     // Each call to designReducer may create an element in the history
     //  (if it has any changes to the mesh),
     //  so we want to be judicious in when we do it.
@@ -686,13 +697,13 @@ export const createParser = ( createDocument ) => ( name, xmlText, dispatch, get
     design = designs.designReducer( design, parser.sourceLoaded( edits, parseAndPerformEdit, targetEdit ) ) // recorded in history
     design = designs.designReducer( design, ActionCreators.clearHistory() )  // kind of a hack so both histories are in sync, with no past
 
-    dispatch( designs.loadingDesign( name, design ) )
+    dispatch( designs.loadingDesign( id, design ) )
 
     if ( ! getState().dbuggerEnabled ) {
-      dispatch( dbugger.debug( name, 'CONTINUE' ) )
+      dispatch( dbugger.debug( id, 'CONTINUE' ) )
     }
     else {
-      dispatch( designs.loadedDesign( name, design ) )
+      dispatch( designs.loadedDesign( id, design ) )
     }
 
   } catch (error) {

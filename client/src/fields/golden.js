@@ -122,8 +122,8 @@ function quatnormalize(q)
   return scalarmul( [ q.map( grsign ).reduce( (a, b) => a || b ) || 1 ], q )
 }
 
-const one = [[1],,,], h = [1,,2], blue = [one, [,[1],,], [,,,[1]], [,,[1],]],
-  yellow = [one, [h, h, h, h], [[-1,,2], h, h, h]], red = [one, [[,1,2], h, [-1,1,2],]]
+const one = [[1],[0],[0],[0]], h = [1,0,2], blue = [one, [[0],[1],[0],[0]], [[0],[0],[0],[1]], [[0],[0],[1],[0]]],
+  yellow = [one, [h, h, h, h], [[-1,0,2], h, h, h]], red = [one, [[0,1,2], h, [-1,1,2],]]
 for ( let i = 2; i < 5; i++ )
   red[i] = quatmul( red[i-1], red[1] )
 const vZomeIcosahedralQuaternions = []; let b, r, y

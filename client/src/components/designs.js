@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const DesignsSelect = ( { modelNames, current, doSelectModel } ) =>
+const DesignsSelect = ( { designs, current, doSelectModel } ) =>
 {
   const classes = useStyles()
 
@@ -62,7 +62,7 @@ const DesignsSelect = ( { modelNames, current, doSelectModel } ) =>
     doSelectModel( event.target.value )
   }
 
-  if ( ! modelNames )
+  if ( ! designs )
     return null
 
   return (
@@ -73,8 +73,8 @@ const DesignsSelect = ( { modelNames, current, doSelectModel } ) =>
         label="Design"
         input={<BootstrapInput />}
       >
-        { modelNames.map( modelName =>
-          <MenuItem key={modelName} value={modelName}>{modelName}</MenuItem>
+        { Object.keys( designs ).map( id =>
+          <MenuItem key={id} value={id}>{designs[ id ].name}</MenuItem>
         ) }
       </Select>
     </FormControl>
@@ -86,7 +86,7 @@ const select = ( state ) =>
 {
   const { designs } = state
   return {
-    modelNames: designs && Object.keys( designs.data ),
+    designs: designs && designs.data,
     current: designs && designs.current
   }
 }

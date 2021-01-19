@@ -1,5 +1,5 @@
 
-import React, { useRef, useMemo } from 'react'
+import React, { useRef, useMemo, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { Canvas, useThree, extend, useFrame } from 'react-three-fiber'
 import * as THREE from 'three'
@@ -64,7 +64,8 @@ TODO:
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
 const ModelCanvas = ( { lighting, camera, mesh, field, resolver, preResolved, clickable, selectionToggler,
-                        startGridHover, stopGridHover, startBallHover, stopBallHover, shapeClick, bkgdClick, workingPlane } ) => {
+                        startGridHover, stopGridHover, startBallHover, stopBallHover, shapeClick, bkgdClick, workingPlane } ) =>
+{
   const { fov, position, up, lookAt } = camera
   const focus = workingPlane && workingPlane.enabled && workingPlane.buildingStruts && workingPlane.position
   const atFocus = id => focus && ( id === JSON.stringify(focus) )
@@ -102,13 +103,14 @@ const ModelCanvas = ( { lighting, camera, mesh, field, resolver, preResolved, cl
   )
 }
 
-const select = ( state ) =>
+const select = ( state, ownProps ) =>
 {
+  const { design } = ownProps
   const { lighting, workingPlane, java } = state
-  const mesh = state.designs && designs.selectMesh( state )
-  const field = state.designs && designs.selectField( state )
-  const camera = state.camera || designs.selectCamera( state )
-  const resolver = state.designs && designs.selectShaper( state )
+  const mesh = state.designs && designs.selectMesh( state, design )
+  const field = state.designs && designs.selectField( state, design )
+  const camera = state.camera || designs.selectCamera( state, design )
+  const resolver = state.designs && designs.selectShaper( state, design )
   const preResolved = java.shapes && { shapes: java.shapes, instances: java.renderingOn? java.instances : java.previous }
   const shown = mesh && new Map( mesh.shown )
   if ( workingPlane && workingPlane.enabled && workingPlane.endPt ) {
@@ -130,7 +132,7 @@ const select = ( state ) =>
     resolver,
     preResolved,
     mesh: mesh && { ...mesh, shown },
-    clickable: !!state.designs
+    clickable: !!state.designs,
   }
 }
 
