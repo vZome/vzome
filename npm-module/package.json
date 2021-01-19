@@ -1,0 +1,42 @@
+{
+  "name": "vzome",
+  "version": "1.0.0",
+  "description": "vzome React component",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "files": [
+    "css",
+    "es",
+    "lib",
+    "umd"
+  ],
+  "scripts": {
+    "build": "~/npm-global/bin/nwb build-react-component",
+    "clean": "~/npm-global/bin/nwb clean-module && ~/npm-global/bin/nwb clean-demo",
+    "prepublishOnly": "~/npm-global/bin/nwb run build",
+    "start": "~/npm-global/bin/nwb serve-react-demo",
+    "test": "~/npm-global/bin/nwb test-react",
+    "test:coverage": "~/npm-global/bin/nwb test-react --coverage",
+    "test:watch": "~/npm-global/bin/nwb test-react --server"
+  },
+  "dependencies": {
+    "drei": "0.0.70",
+    "react-three-fiber": "^4.1.0",
+    "three": "^0.119.1"
+  },
+  "peerDependencies": {
+    "react": "16.x"
+  },
+  "devDependencies": {
+    "nwb": "0.25.x",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  },
+  "author": "",
+  "homepage": "",
+  "license": "MIT",
+  "repository": "",
+  "keywords": [
+    "react-component"
+  ]
+}
