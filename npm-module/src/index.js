@@ -1,2 +1,0 @@
-
-export DesignCanvas from './designcanvas'

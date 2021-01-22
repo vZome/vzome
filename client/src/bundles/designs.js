@@ -2,7 +2,7 @@
 import { combineReducers } from 'redux'
 import undoable from 'redux-undo'
 
-import goldenField from '../fields/golden'
+import { goldenField } from 'react-vzome'
 import * as mesh from './mesh'
 import * as camera from './camera'
 import * as dbugger from './dbugger'

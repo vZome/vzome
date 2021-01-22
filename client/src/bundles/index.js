@@ -2,36 +2,38 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 
 import * as alerts from './alerts'
-import * as cheerpj from './cheerpj'
 import * as camera from './camera'
 import * as lighting from './lighting'
 import * as progress from './progress'
-import * as jsweet from './jsweet'
 import * as commands from '../commands'
 import * as workingPlane from './planes'
 import * as designs from './designs'
-import * as fields from '../fields'
 import * as shapers from './shapers'
 
-const requiredBundles = { lighting, fields }
+const requiredBundles = { lighting, camera }
 
 let bundles
 const urlParams = new URLSearchParams( window.location.search );
 const profile = urlParams.get( "profile" ) || urlParams.get( "editMode" )
 switch ( profile ) {
 
-  case "tortoise":
-    bundles = { ...requiredBundles, java: cheerpj, camera, alerts, progress }
-    break;
-
   case "plane":
-    bundles = { ...requiredBundles, java: jsweet, designs, shapers, workingPlane }
+    bundles = { ...requiredBundles, designs, shapers, workingPlane }
     break;
 
   default:
-    bundles = { ...requiredBundles, java: jsweet, designs, shapers, commands, alerts, progress }
+    bundles = { ...requiredBundles, designs, shapers, commands, alerts, progress }
     break;
 }
+
+  // if ( ! store.getState().workingPlane ) {
+  //   let url = "/app/models/vZomeLogo.vZome"
+  //   const urlParams = new URLSearchParams( window.location.search );
+  //   if ( urlParams.has( "url" ) ) {
+  //     url = decodeURI( urlParams.get( "url" ) )
+  //   }
+  //   store.dispatch( fetchModel( url, 'logo' ) )
+  // }
 
 export default ( middleware ) =>
 {
@@ -47,7 +49,6 @@ export default ( middleware ) =>
   if ( urlParams.get( 'debug' ) === 'true' ) {
     reducers.dbuggerEnabled = () => true
   }
-
 
   console.log( `bundle reducers: ${JSON.stringify( Object.keys( reducers ) )}` )
 

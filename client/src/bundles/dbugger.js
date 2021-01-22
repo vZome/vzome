@@ -1,9 +1,9 @@
 
 import * as designs from '../bundles/designs'
-import Adapter from './adapter'
 // import { ActionCreators } from 'redux-undo';
 import * as mesh from './mesh'
 import { showAlert } from './alerts'
+import { vZomeJava, Adapter } from 'react-vzome'
 
 export const reducer = ( state = {}, action ) =>
 {
@@ -44,96 +44,6 @@ export const reachedEdit = ( element, branchStack ) => ( { type: 'EDIT_REACHED',
     // }
     // console.log( `target is ${targetEdit}, currentEdit is ${currentEdit}` )
 
-const parse = ( action, parseAndPerform, adapter, editElement, stack=[], recordSnapshot ) =>
-{
-  const Stepped = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
-
-  const step = () =>
-  {
-    if ( ! editElement )
-      return Stepped.DONE
-    if ( editElement.nodeName === "Branch" ) {
-      const branchAdapter = adapter.clone()
-      stack.push( { branch: editElement, adapter } )
-      recordSnapshot && recordSnapshot( branchAdapter, editElement.firstElementChild, stack )
-      editElement = editElement.firstElementChild // this assumes there are no empty branches
-      adapter = branchAdapter
-      return Stepped.IN
-    } else {
-      adapter = adapter.clone()  // each command builds on the last
-      parseAndPerform( editElement, adapter )
-      if ( editElement.nextElementSibling ) {
-        recordSnapshot && recordSnapshot( adapter, editElement.nextElementSibling )
-        editElement = editElement.nextElementSibling
-        return Stepped.OVER
-      } else {
-        const top = stack.pop()
-        if ( top ) {
-          adapter = top.adapter.clone()  // overwrite and discard the prior value
-          editElement = top.branch.nextElementSibling // This assumes there is always a next one, but that should be true
-          recordSnapshot && recordSnapshot( adapter, editElement, stack )
-          return Stepped.OUT
-        } else {
-          // at the end of the editHistory
-          recordSnapshot && recordSnapshot( adapter, null )
-          return Stepped.DONE
-        }
-      }
-    }
-  }
-
-  const conTinue = () =>
-  {
-    let stepped
-    do {
-      stepped = stepOut()
-    } while ( stepped !== Stepped.DONE );
-  }
-
-  const stepOver = () =>
-  {
-    const stepped = step()
-    switch ( stepped ) {
-
-      case Stepped.IN:
-        stepOut()
-        return Stepped.OVER
-    
-      default:
-        return stepped
-    }
-  }
-
-  const stepOut = () =>
-  {
-    let stepped
-    do {
-      stepped = stepOver()
-    } while ( stepped !== Stepped.OUT && stepped !== Stepped.DONE )
-    return stepped
-  }
-
-  switch ( action ) {
-
-    case 'STEP_IN':
-      step()
-      break;
-  
-    case 'STEP_OVER':
-      stepOver()
-      break;
-  
-    case 'STEP_OUT':
-      stepOut()
-      break;
-  
-    case 'CONTINUE':
-    default:
-      conTinue()
-      break;
-  }
-}
-
 export const debug = ( designName, action ) => ( dispatch, getState ) =>
 {
   let design = designs.selectDesign( getState(), designName ) // the starting point only
@@ -152,7 +62,7 @@ export const debug = ( designName, action ) => ( dispatch, getState ) =>
   }
 
   try {
-    parse( action, dbugger.parseAndPerformEdit, adapter, editElement, stack, recordSnapshot )
+    vZomeJava.parse( action, dbugger.parseAndPerformEdit, adapter, editElement, stack, recordSnapshot )
   } catch (error) {
     console.log( error )
     dispatch( showAlert( `Unable to parse vZome design file: ${designName};\n ${error.message}` ) )

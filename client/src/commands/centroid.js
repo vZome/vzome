@@ -1,6 +1,7 @@
 
 import * as mesh from '../bundles/mesh'
 import * as designs from '../bundles/designs'
+import { createInstance } from 'react-vzome'
 
 export default () => ( dispatch, getState ) =>
 {
@@ -20,7 +21,7 @@ export default () => ( dispatch, getState ) =>
     }
   }
   const vectors = [ field.scalarmul( scale, sum ) ] // canonically, all mesh objects are arrays of vectors
-  let newBall = mesh.createInstance( vectors )
+  let newBall = createInstance( vectors )
   const { id } = newBall
 
   // Avoid creating a duplicate... make this reusable

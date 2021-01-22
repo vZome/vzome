@@ -1,3 +1,5 @@
+
+import { vZomeJava } from 'react-vzome'
 import { startProgress, stopProgress } from './progress'
 import { showAlert } from './alerts'
 
@@ -34,17 +36,19 @@ export const fetchModel = ( path, id ) => ( dispatch, getState ) =>
       }
       return response.text()
     })
-    .then( (text) => {
+    .then( async (text) => {
       const name = path.split( '\\' ).pop().split( '/' ).pop()
       const designId = id || name
-      getState().java.parser( name, designId, text, dispatch, getState )
+      const { parser } = await vZomeJava.coreState  // Must wait for the vZome code to initialize
+      const { edits, camera, field, parseAndPerformEdit, targetEdit, shaper } = parser( text )
+      parser( text )
     })
     .catch( error =>
     {
       console.error( 'There has been a problem with your fetch operation:', error );
       dispatch( stopProgress() )
       dispatch( showAlert( `Unable to load URL: ${path}` ) )
-    });
+    })
 }
 
 // from https://www.bitdegree.org/learn/javascript-download
