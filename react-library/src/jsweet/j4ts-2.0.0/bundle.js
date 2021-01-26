@@ -19,7 +19,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 /* Generated from Java with JSweet 2.4.0-SNAPSHOT - http://www.jsweet.org */
-var javaemul;
+export var javaemul;
 (function (javaemul) {
     var internal;
     (function (internal) {
@@ -2254,7 +2254,7 @@ var javaemul;
         })(NumberHelper = internal.NumberHelper || (internal.NumberHelper = {}));
     })(internal = javaemul.internal || (javaemul.internal = {}));
 })(javaemul || (javaemul = {}));
-var java;
+export var java;
 (function (java) {
     var net;
     (function (net) {

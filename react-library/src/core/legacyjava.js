@@ -6,10 +6,8 @@ import { JavaDomElement, JsProperties } from './wrappers'
 import allShapes from '../resources/com/vzome/core/parts/index.js'
 import groupResources from '../resources/com/vzome/core/math/symmetry/index.js'
 
-// I can't use the ES6 module approach until I figure out how to use J4TS that way.
-//  For now, I can load the bundles in index.html, and access the packages through window.
-//
-// I should be able to use require() and a commonjs module, but it has the same J4TS build problem.
+import { com } from '../jsweet/bundle'
+import { java } from '../jsweet/j4ts-2.0.0/bundle'
 
 const fields = { [goldenField.name]: goldenField }
 
@@ -177,11 +175,8 @@ const matrix2quat = ( m ) =>
 
 export const init = async () =>
 {
-  // Herein lies my main problem.  These two lines only work when the JSweet-transpiled
-  //  Java code (now as JavaScript) is included in two script tags in the main index.html,
-  //  like it was 2005.  I need to find a way to make ES6 modules from that code!
-  const vzomePkg = window.com.vzome
-  const util = window.java.util
+  const vzomePkg = com.vzome
+  const util = java.util
 
   class ImportColoredMeshJson extends vzomePkg.core.edits.ImportMesh
   {

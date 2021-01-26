@@ -1,5 +1,9 @@
+
+import { java, javaemul } from './j4ts-2.0.0/bundle'
+
+
 /* Generated from Java with JSweet 2.3.7 - http://www.jsweet.org */
-var com;
+export var com;
 (function (com) {
     var vzome;
     (function (vzome) {
@@ -13476,7 +13480,6 @@ var com;
         })(api = vzome.api || (vzome.api = {}));
     })(vzome = com.vzome || (com.vzome = {}));
 })(com || (com = {}));
-var java;
 (function (java) {
     var util;
     (function (util) {
@@ -13496,7 +13499,7 @@ var java;
         util.UUID = UUID;
         UUID["__class"] = "java.util.UUID";
     })(util = java.util || (java.util = {}));
-})(java || (java = {}));
+})(java);
 (function (java) {
     var util;
     (function (util) {
@@ -13567,7 +13570,7 @@ var java;
         util.StringTokenizer = StringTokenizer;
         StringTokenizer["__class"] = "java.util.StringTokenizer";
     })(util = java.util || (java.util = {}));
-})(java || (java = {}));
+})(java);
 (function (java) {
     var util;
     (function (util) {
@@ -13584,7 +13587,7 @@ var java;
         util.Properties = Properties;
         Properties["__class"] = "java.util.Properties";
     })(util = java.util || (java.util = {}));
-})(java || (java = {}));
+})(java);
 (function (java) {
     var io;
     (function (io) {
@@ -13598,7 +13601,7 @@ var java;
         io.File = File;
         File["__class"] = "java.io.File";
     })(io = java.io || (java.io = {}));
-})(java || (java = {}));
+})(java);
 (function (java) {
     var io;
     (function (io) {
@@ -13620,7 +13623,7 @@ var java;
         StringWriter["__class"] = "java.io.StringWriter";
         StringWriter["__interfaces"] = ["java.lang.Appendable", "java.io.Closeable", "java.lang.AutoCloseable", "java.io.Flushable"];
     })(io = java.io || (java.io = {}));
-})(java || (java = {}));
+})(java);
 (function (java) {
     var io;
     (function (io) {
@@ -13655,7 +13658,7 @@ var java;
         PrintWriter["__class"] = "java.io.PrintWriter";
         PrintWriter["__interfaces"] = ["java.lang.Appendable", "java.io.Closeable", "java.lang.AutoCloseable", "java.io.Flushable"];
     })(io = java.io || (java.io = {}));
-})(java || (java = {}));
+})(java);
 (function (java) {
     var beans;
     (function (beans) {
@@ -13672,7 +13675,7 @@ var java;
         beans.PropertyChangeSupport = PropertyChangeSupport;
         PropertyChangeSupport["__class"] = "java.beans.PropertyChangeSupport";
     })(beans = java.beans || (java.beans = {}));
-})(java || (java = {}));
+})(java);
 (function (java) {
     var nio;
     (function (nio) {
@@ -13683,7 +13686,7 @@ var java;
         nio.FloatBuffer = FloatBuffer;
         FloatBuffer["__class"] = "java.nio.FloatBuffer";
     })(nio = java.nio || (java.nio = {}));
-})(java || (java = {}));
+})(java);
 (function (java) {
     var text;
     (function (text) {
@@ -13702,7 +13705,7 @@ var java;
         text.NumberFormat = NumberFormat;
         NumberFormat["__class"] = "java.text.NumberFormat";
     })(text = java.text || (java.text = {}));
-})(java || (java = {}));
+})(java);
 (function (com) {
     var vzome;
     (function (vzome) {
@@ -33361,6 +33364,7 @@ var java;
         })(core = vzome.core || (vzome.core = {}));
     })(vzome = com.vzome || (com.vzome = {}));
 })(com || (com = {}));
+try {
 com.vzome.core.editor.CommandEdit.loadAndPerformLgger_$LI$();
 com.vzome.core.editor.CommandEdit.logger_$LI$();
 com.vzome.core.commands.CommandTetrahedralSymmetry.ATTR_SIGNATURE_$LI$();
@@ -33433,3 +33437,7 @@ com.vzome.core.render.Colors.HIGHLIGHT_MAC_$LI$();
 com.vzome.core.render.Colors.HIGHLIGHT_$LI$();
 com.vzome.core.render.Colors.PANEL_$LI$();
 com.vzome.core.render.Colors.BACKGROUND_$LI$();
+    
+} catch (error) {
+    console.log( error )
+}

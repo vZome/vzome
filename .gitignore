@@ -53,3 +53,4 @@ client/.vscode
 .tsc-rootfile.js
 react-vzome-viewer/dist
 .eslintcache
+react-vzome-*.tgz
