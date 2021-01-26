@@ -9,8 +9,12 @@ import Divider from '@material-ui/core/Divider';
 import { connect } from 'react-redux'
 
 import UrlDialog from './webloader'
-import { fileSelected } from '../bundles/files'
+import { fetchFileText, fetchUrlText } from '../bundles/files'
 import { openDesign } from '../bundles/designs'
+
+const openDesignUrl = url => openDesign( fetchUrlText( url ), url )
+
+const openDesignFile = file => openDesign( fetchFileText( file ), file.name )
 
 const models = [
   {
@@ -51,7 +55,7 @@ const models = [
   },
 ]
 
-const DesignsMenu = ( { openDesign, openFile } ) =>
+const DesignsMenu = ( { openUrl, openFile } ) =>
 {
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [showDialog, setShowDialog] = React.useState(false)
@@ -68,7 +72,7 @@ const DesignsMenu = ( { openDesign, openFile } ) =>
   const handleSelectModel = model => {
     setAnchorEl(null)
     const { url, key } = model
-    openDesign( url || `/app/models/${key}.vZome`, key )
+    openUrl( url || `/app/models/${key}.vZome`, key )
   }
 
   const handleClose = () => {
@@ -108,7 +112,7 @@ const DesignsMenu = ( { openDesign, openFile } ) =>
           <MenuItem key={model.key} onClick={()=>handleSelectModel(model)}>{model.label}</MenuItem>
         ) ) }
       </Menu>
-      <UrlDialog show={showDialog} setShow={setShowDialog} openDesign={openDesign} />
+      <UrlDialog show={showDialog} setShow={setShowDialog} openDesign={openUrl} />
     </>
   )
 }
@@ -119,8 +123,8 @@ const select = (state) => ({
 })
 
 const boundEventActions = {
-  openDesign : openDesign,
-  openFile : fileSelected,
+  openUrl : openDesignUrl,
+  openFile : openDesignFile,
 }
 
 export default connect( select, boundEventActions )( DesignsMenu )

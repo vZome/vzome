@@ -155,22 +155,21 @@ export const reducer = ( state = addNewModel( emptyState, goldenField ), action 
   }
 }
 
-export const openDesign = ( url, id ) => async ( dispatch, getState ) =>
+export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =>
 {
   const { parser } = await vZomeJava.coreState  // Must wait for the vZome code to initialize
-  const text = await fetchUrlText( url )
+  const text = await textPromise
   if ( !text )
     return null;
   const { edits, camera, field, parseAndPerformEdit, targetEdit, shaper } = parser( text ) || {}
   if ( !edits )
     return null;
   const name = url.split( '\\' ).pop().split( '/' ).pop()
-  const designId = id || name
 
   // We don't want to dispatch all the edits, which can trigger tons of
   //  overhead and re-rendering.  Instead, we'll build up a design locally
   //  by calling the designReducer manually.
-  let design = initializeDesign( field, designId, shaper.shapesName )
+  let design = initializeDesign( field, name, shaper.shapesName )
   // Each call to designReducer may create an element in the history
   //  (if it has any changes to the mesh),
   //  so we want to be judicious in when we do it.
@@ -185,13 +184,13 @@ export const openDesign = ( url, id ) => async ( dispatch, getState ) =>
   design = designReducer( design, dbugger.sourceLoaded( edits, parseAndPerformEdit, targetEdit ) ) // recorded in history
   design = designReducer( design, Undo.clearHistory() )  // kind of a hack so both histories are in sync, with no past
 
-  dispatch( loadingDesign( id, design ) )
+  dispatch( loadingDesign( name, design ) )
 
   if ( ! getState().dbuggerEnabled ) {
-    dispatch( dbugger.debug( id, vZomeJava.Step.DONE ) )
+    dispatch( dbugger.debug( name, vZomeJava.Step.DONE ) )
   }
   else {
-    dispatch( loadedDesign( id, design ) )
+    dispatch( loadedDesign( name, design ) )
   }
     // dispatch( showAlert( `Unable to parse vZome design file: ${name};\n ${error.message}` ) )
 }

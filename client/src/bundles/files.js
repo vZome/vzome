@@ -1,25 +1,22 @@
 
-import { startProgress, stopProgress } from './progress'
-import { showAlert } from './alerts'
 
-export const fileSelected = selected => ( dispatch, getState ) =>
+export const fetchFileText = selected =>
 {
-  console.log( selected )
+  const temporaryFileReader = new FileReader()
 
-  dispatch( startProgress( "Reading file content..." ) )
-  
-  const reader = new FileReader();
-  reader.onload = () =>
-  {
-    getState().java.parser( selected.name, selected.name, reader.result, dispatch, getState )
-  }
-  reader.onerror = () =>
-  {
-    dispatch( stopProgress() )
-    dispatch( showAlert( `Unable to read file: ${selected.name}` ) )
-  }
-  reader.readAsText( selected )
+  return new Promise( (resolve, reject) => {
+    temporaryFileReader.onerror = () => {
+      temporaryFileReader.abort()
+      reject(new DOMException("Problem parsing input file."))
+    }
+
+    temporaryFileReader.onload = () => {
+      resolve( temporaryFileReader.result )
+    }
+    temporaryFileReader.readAsText( selected )
+  })
 }
+
 
 export const fetchUrlText = ( path ) =>
 {
