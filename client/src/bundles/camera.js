@@ -17,11 +17,17 @@ export const initialState = {
 export const reducer = ( state = initialState, action ) => {
   switch (action.type) {
 
-    case CAMERA_DEFINED:
+    case CAMERA_DEFINED: {
+      const { position, lookAt } = action.payload
+      // move 40% closer, to accommodate the wider FOV here, relative to vZome desktop
+      const look = lookAt.map( (x,i) => x - position[ i ] )
+      const closer = lookAt.map( (x,i) => x - 0.6 * look[ i ] )
       return {
         ...state,
-        ...action.payload
+        ...action.payload,
+        position: closer
       }
+    }
 
     default:
       return state
