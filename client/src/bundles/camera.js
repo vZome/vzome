@@ -18,17 +18,14 @@ export const reducer = ( state = initialState, action ) => {
   switch (action.type) {
 
     case CAMERA_DEFINED:
-      const { position, lookAtPoint, upDirection, nearClipDistance, farClipDistance } = action.payload
       return {
         ...state,
-        position: [ ...Object.values( position ) ],
-        lookAt: [ ...Object.values( lookAtPoint ) ],
-        up: [ ...Object.values( upDirection ) ],
-        near: nearClipDistance,
-        far: farClipDistance
+        ...action.payload
       }
 
     default:
       return state
   }
 }
+
+export const cameraDefined = ( camera ) => ({ type: CAMERA_DEFINED, payload: camera })
