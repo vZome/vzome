@@ -1,5 +1,4 @@
 
-import { vZomeJava } from 'react-vzome'
 import { startProgress, stopProgress } from './progress'
 import { showAlert } from './alerts'
 
@@ -22,33 +21,24 @@ export const fileSelected = selected => ( dispatch, getState ) =>
   reader.readAsText( selected )
 }
 
-export const fetchModel = ( path, id ) => ( dispatch, getState ) =>
+export const fetchUrlText = ( path ) =>
 {
   // TODO: I should really deploy my own copy of this proxy on Heroku
   const fetchWithCORS = url => fetch ( url ).catch ( _ => fetch( 'https://cors-anywhere.herokuapp.com/' + url ) )
 
-  dispatch( startProgress( "Fetching model content..." ) )
-  fetchWithCORS( path )
-    .then( response =>
-    {
-      if ( !response.ok ) {
-        throw new Error( 'Network response was not ok' );
-      }
-      return response.text()
-    })
-    .then( async (text) => {
-      const name = path.split( '\\' ).pop().split( '/' ).pop()
-      const designId = id || name
-      const { parser } = await vZomeJava.coreState  // Must wait for the vZome code to initialize
-      const { edits, camera, field, parseAndPerformEdit, targetEdit, shaper } = parser( text )
-      parser( text )
-    })
-    .catch( error =>
-    {
-      console.error( 'There has been a problem with your fetch operation:', error );
-      dispatch( stopProgress() )
-      dispatch( showAlert( `Unable to load URL: ${path}` ) )
-    })
+  return fetchWithCORS( path )
+  .then( response =>
+  {
+    if ( !response.ok ) {
+      throw new Error( 'Network response was not ok' );
+    }
+    return response.text()
+  })
+  .catch( error =>
+  {
+    console.error( 'There has been a problem with your fetch operation:', error );
+    return null
+  })
 }
 
 // from https://www.bitdegree.org/learn/javascript-download

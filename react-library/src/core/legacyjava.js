@@ -672,13 +672,6 @@ export const parseViewXml = ( viewingElement ) =>
 
 export const createParser = ( createDocument ) => ( xmlText ) =>
 {
-  const extIndex = name.lastIndexOf( '.' )
-  if ( extIndex > 0 ) {
-    name = name.substring( 0, extIndex )
-  }
-
-  // dispatch( startProgress( `Parsing "${name}"...` ) )
-
   try {
     const domDoc = new DOMParser().parseFromString( xmlText, "application/xml" );
     let vZomeRoot = new JavaDomElement( domDoc.firstElementChild )
@@ -688,45 +681,16 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
 
     const { shaper, parseAndPerformEdit } = createDocument( fieldName, namespace, vZomeRoot )
     const field = fields[ fieldName ]
-
-    // We don't want to dispatch all the edits, which can trigger tons of
-    //  overhead and re-rendering.  Instead, we'll build up a design locally
-    //  by calling the designReducer manually.
-    // let design = designs.initializeDesign( fields[ fieldName ], name, shaper.shapesName )
-    // Each call to designReducer may create an element in the history
-    //  (if it has any changes to the mesh),
-    //  so we want to be judicious in when we do it.
-    // Each call to dispatch, on the other hand, triggers rendering, so we want to be even
-    //  more careful about that.
     
     const viewing = vZomeRoot.getChildElement( "Viewing" )
     const camera = viewing && parseViewXml( viewing )
-
-    // TODO: skip this dispatch if we already have a shaper for shapesName, in getState().shapers
-    // dispatch( shapers.shaperDefined( shaper.shapesName, shaper ) ) // outside the design
-
     const edits = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement )
     // TODO: use editNumber
     const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
 
     return { edits, camera, field, parseAndPerformEdit, targetEdit, shaper }
-    // design = designs.designReducer( design, parser.sourceLoaded( edits, parseAndPerformEdit, targetEdit ) ) // recorded in history
-    // design = designs.designReducer( design, ActionCreators.clearHistory() )  // kind of a hack so both histories are in sync, with no past
-
-    // dispatch( designs.loadingDesign( id, design ) )
-
-    // if ( ! getState().dbuggerEnabled ) {
-    //   dispatch( dbugger.debug( id, 'CONTINUE' ) )
-    // }
-    // else {
-    //   dispatch( designs.loadedDesign( id, design ) )
-    // }
-
   } catch (error) {
     console.log( error )
     return null
-    // dispatch( showAlert( `Unable to parse vZome design file: ${name};\n ${error.message}` ) )
   }
-
-  // dispatch( stopProgress() )
 }

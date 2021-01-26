@@ -22,7 +22,7 @@ const originShown = field =>
   return new Map().set( originBall.id, originBall )
 }
 
-export const fetchModel = ( path, parser ) =>
+export const fetchModel = ( path ) =>
 {
   // TODO: I should really deploy my own copy of this proxy on Heroku
   const fetchWithCORS = url => fetch ( url ).catch ( _ => fetch( 'https://cors-anywhere.herokuapp.com/' + url ) )
@@ -34,9 +34,6 @@ export const fetchModel = ( path, parser ) =>
         throw new Error( 'Network response was not ok' );
       }
       return response.text()
-    })
-    .then( (text) => {
-      return parser( text )
     })
     .catch( error =>
     {
@@ -53,8 +50,11 @@ const UrlViewer = props =>
   const [ resolver, setResolver ] = useState( null )
   useEffect( () => {
     async function parseUrl() {
-      const { parser } = await vZome.coreState
-      const { edits, camera, field, parseAndPerformEdit, targetEdit, shaper } = await fetchModel( url, parser ) || {}
+      const { parser } = await vZome.coreState  // Must wait for the vZome code to initialize
+      const text = await fetchModel( url )
+      if ( !text )
+        return;
+      const { edits, camera, field, parseAndPerformEdit, targetEdit, shaper } = parser( text ) || {}
       if ( !edits )
         return;
       setCamera( { ...camera, fov: convertFOV( 0.75 ) } )

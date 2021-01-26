@@ -9,7 +9,8 @@ import Divider from '@material-ui/core/Divider';
 import { connect } from 'react-redux'
 
 import UrlDialog from './webloader'
-import { fetchModel, fileSelected } from '../bundles/files'
+import { fileSelected } from '../bundles/files'
+import { openDesign } from '../bundles/designs'
 
 const models = [
   {
@@ -118,7 +119,7 @@ const select = (state) => ({
 })
 
 const boundEventActions = {
-  openDesign : fetchModel,
+  openDesign : openDesign,
   openFile : fileSelected,
 }
 
