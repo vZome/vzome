@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded'
@@ -64,6 +64,7 @@ const DesignsMenu = ( { openUrl, openFile } ) =>
     setAnchorEl(null)
     ref.current.click()
   }
+  useEffect( () => openUrl( '/app/models/vZomeLogo.vZome' ), [openUrl] )
 
   const handleClickOpen = (event) => {
     setAnchorEl( event.currentTarget )
