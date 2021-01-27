@@ -11,7 +11,7 @@ const select = ( state ) =>
 {
   const { lighting } = state
   const mesh = state.designs && designs.selectMesh( state )
-  const camera = state.camera || designs.selectCamera( state )
+  const camera = ( state.designs && designs.selectCamera( state ) ) || state.camera
   const resolver = state.designs && designs.selectShaper( state )
   // const shown = mesh && new Map( mesh.shown )
   // if ( workingPlane && workingPlane.enabled && workingPlane.endPt ) {

@@ -4,9 +4,8 @@ import undoable, { ActionCreators as Undo } from 'redux-undo'
 
 import { goldenField, vZomeJava } from 'react-vzome'
 import * as mesh from './mesh'
-import { cameraDefined, reducer as cameraReducer, initialState as cameraDefault } from './camera'
+import { reducer as cameraReducer, initialState as cameraDefault, cameraDefined } from './camera'
 import * as dbugger from './dbugger'
-import { fetchUrlText } from './files'
 import * as shapers from './shapers'
 
 export const designReducer = combineReducers( {
@@ -27,8 +26,8 @@ export const initializeDesign = ( field, name, shaperName ) => ({
   },
   // TODO: initialize dbugger?
   success: true,
-  camera: cameraDefault,
   fieldName: field.name,
+  camera: cameraDefault,
   shaperName,
   name,
 })
@@ -179,8 +178,7 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
   // TODO: skip this dispatch if we already have a shaper for shapesName, in getState().shapers
   dispatch( shapers.shaperDefined( shaper.shapesName, shaper ) ) // outside the design
 
-  dispatch( cameraDefined( camera ) ) // outside the design
-
+  design = designReducer( design, cameraDefined( camera ) )
   design = designReducer( design, dbugger.sourceLoaded( edits, parseAndPerformEdit, targetEdit ) ) // recorded in history
   design = designReducer( design, Undo.clearHistory() )  // kind of a hack so both histories are in sync, with no past
 

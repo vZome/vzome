@@ -2,7 +2,7 @@
 
 const CAMERA_DEFINED = 'CAMERA_DEFINED'
 
-const aspectRatio = window.innerWidth / window.innerHeight
+const aspectRatio = window.innerWidth / window.innerHeight  // TODO fix this hardwiring
 const convertFOV = (fovX) => ( fovX / aspectRatio ) * 180 / Math.PI  // converting radians to degrees
 
 export const initialState = {
