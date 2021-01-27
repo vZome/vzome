@@ -498,7 +498,7 @@ const assignIds = ( element, id=':' ) => {
 
 export const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
 
-export const parse = ( action, parseAndPerform, adapter, editElement, stack=[], recordSnapshot ) =>
+export const interpret = ( action, parseAndPerform, adapter, editElement, stack=[], recordSnapshot ) =>
 {
   const step = () =>
   {
@@ -627,7 +627,7 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
 
     return { edits, camera, field, parseAndPerformEdit, targetEdit, shaper }
   } catch (error) {
-    console.log( error )
+    console.log( `%%%%%%%%%%%%%%%%%%% legacyjava.js parser failed: ${error}` )
     return null
   }
 }

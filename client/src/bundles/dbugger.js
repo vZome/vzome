@@ -62,7 +62,7 @@ export const debug = ( designName, action ) => ( dispatch, getState ) =>
   }
 
   try {
-    vZomeJava.parse( action, dbugger.parseAndPerformEdit, adapter, editElement, stack, recordSnapshot )
+    vZomeJava.interpret( action, dbugger.parseAndPerformEdit, adapter, editElement, stack, recordSnapshot )
   } catch (error) {
     console.log( error )
     dispatch( showAlert( `Unable to parse vZome design file: ${designName};\n ${error.message}` ) )

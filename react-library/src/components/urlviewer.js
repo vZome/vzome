@@ -63,7 +63,7 @@ const UrlViewer = props =>
       const record = ( adapter ) => {
         meshAdapter = adapter
       } // yup, overwrite every time
-      vZome.parse( vZome.Step.DONE, parseAndPerformEdit, meshAdapter, edits.firstElementChild, [], record )
+      vZome.interpret( vZome.Step.DONE, parseAndPerformEdit, meshAdapter, edits.firstElementChild, [], record )
       setMesh( meshAdapter )
     }
     parseUrl();

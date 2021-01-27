@@ -7,7 +7,7 @@ export const fetchFileText = selected =>
   return new Promise( (resolve, reject) => {
     temporaryFileReader.onerror = () => {
       temporaryFileReader.abort()
-      reject(new DOMException("Problem parsing input file."))
+      reject( temporaryFileReader.error )
     }
 
     temporaryFileReader.onload = () => {
