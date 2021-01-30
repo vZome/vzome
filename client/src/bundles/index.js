@@ -10,33 +10,19 @@ import * as workingPlane from './planes'
 import * as designs from './designs'
 import * as shapers from './shapers'
 
-const requiredBundles = { lighting, camera }
-
-let bundles
-const urlParams = new URLSearchParams( window.location.search );
-const profile = urlParams.get( "profile" ) || urlParams.get( "editMode" )
-switch ( profile ) {
-
-  case "plane":
-    bundles = { ...requiredBundles, designs, shapers, workingPlane }
-    break;
-
-  default:
-    bundles = { ...requiredBundles, designs, shapers, commands, alerts, progress }
-    break;
-}
-
-  // if ( ! store.getState().workingPlane ) {
-  //   let url = "/app/models/vZomeLogo.vZome"
-  //   const urlParams = new URLSearchParams( window.location.search );
-  //   if ( urlParams.has( "url" ) ) {
-  //     url = decodeURI( urlParams.get( "url" ) )
-  //   }
-  //   store.dispatch( fetchModel( url, 'logo' ) )
-  // }
-
-export default ( middleware ) =>
+const createBundleStore = ( profile, middleware ) =>
 {
+  let bundles = { lighting, camera }
+  switch ( profile ) {
+
+    case "plane":
+      bundles = { ...bundles, designs, shapers, workingPlane }
+      break;
+
+    default:
+      bundles = { ...bundles, designs, shapers, commands, alerts, progress }
+      break;
+  }
   const names = Object.keys( bundles )
 
   const reducers = names.reduce( ( obj, key ) => {
@@ -45,10 +31,6 @@ export default ( middleware ) =>
       obj[ key ] = reducer
     return obj
   }, {} )
-
-  if ( urlParams.get( 'debug' ) === 'true' ) {
-    reducers.dbuggerEnabled = () => true
-  }
 
   console.log( `bundle reducers: ${JSON.stringify( Object.keys( reducers ) )}` )
 
@@ -68,3 +50,5 @@ export default ( middleware ) =>
 
   return store
 }
+
+export default createBundleStore

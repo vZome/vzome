@@ -7,8 +7,8 @@ import url from '@rollup/plugin-url';
 export default {
     input: pkg.source,
     output: [
-        { file: pkg.main, format: 'cjs' },
-        { file: pkg.module, format: 'esm' }
+        { file: pkg.main, format: 'cjs', sourcemap: true },
+        { file: pkg.module, format: 'esm', sourcemap: true }
     ],
     plugins: [
         external(),

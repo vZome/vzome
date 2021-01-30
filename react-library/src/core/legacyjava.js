@@ -519,10 +519,13 @@ export const interpret = ( action, parseAndPerform, adapter, editElement, stack=
         editElement = editElement.nextElementSibling
         return Step.OVER
       } else {
-        const top = stack.pop()
+        let top
+        do {
+          top = stack.pop()
+        } while ( top && ! top.branch.nextElementSibling )
         if ( top ) {
           adapter = top.adapter.clone()  // overwrite and discard the prior value
-          editElement = top.branch.nextElementSibling // This assumes there is always a next one, but that should be true
+          editElement = top.branch.nextElementSibling
           recordSnapshot && recordSnapshot( adapter, editElement, stack )
           return Step.OUT
         } else {

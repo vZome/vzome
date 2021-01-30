@@ -13,7 +13,11 @@ import VZomeAppBar from './components/appbar.js'
 import Debugger from './components/debugger.js'
 import createBundleStore from './bundles'
 
-const store = createBundleStore( [ thunk, logger ] );
+const queryParams = new URLSearchParams( window.location.search );
+const profile = queryParams.get( "profile" ) || queryParams.get( "editMode" )
+const debug = queryParams.get( 'debug' ) === 'true'
+
+const store = createBundleStore( profile, [ thunk, logger ] );
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -22,12 +26,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function App() {
+const App = () =>
+{
   const classes = useStyles();
   return (
     <Provider store={store}>
       <VZomeAppBar/>
-      <Debugger/>
+      { debug && <Debugger/> }
       <main className={classes.content}>
         <DesignEditor/>
       </main>

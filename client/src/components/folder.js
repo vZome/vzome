@@ -55,6 +55,12 @@ const models = [
   },
 ]
 
+let url = "/app/models/vZomeLogo.vZome"
+const urlParams = new URLSearchParams( window.location.search );
+if ( urlParams.has( "url" ) ) {
+  url = decodeURI( urlParams.get( "url" ) )
+}
+
 const DesignsMenu = ( { openUrl, openFile } ) =>
 {
   const [anchorEl, setAnchorEl] = React.useState(null)
@@ -64,7 +70,7 @@ const DesignsMenu = ( { openUrl, openFile } ) =>
     setAnchorEl(null)
     ref.current.click()
   }
-  useEffect( () => openUrl( '/app/models/vZomeLogo.vZome' ), [openUrl] )
+  useEffect( () => openUrl( url ), [openUrl] )
 
   const handleClickOpen = (event) => {
     setAnchorEl( event.currentTarget )

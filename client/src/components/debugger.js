@@ -111,7 +111,7 @@ const select = ( state ) =>
 {
   const dbugger = state.designs && designFns.selectDebugger( state )
   return {
-    data: state.dbuggerEnabled && dbugger.source,
+    data: dbugger.source,
     current: dbugger && dbugger.currentElement && dbugger.currentElement.id,
     branches: dbugger && dbugger.branchStack && dbugger.branchStack.map( ({ branch }) => branch.id ),
     designName: dbugger && designFns.selectDesignName( state )
