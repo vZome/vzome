@@ -3,18 +3,18 @@ import { render } from 'react-dom'
 
 import { DesignCanvas, UrlViewer, ShapedGeometry } from 'react-vzome-viewer'
 
-import dodec from './models/dodecahedron'
-import logo from './models/logo'
+import dodec from './models/dodecahedron/converted'
+// import logo from './models/logo'
 
-const convertLegacyFormat = rawDesign => ({
-  ...rawDesign,
-  instances: rawDesign.instances.map( instance => ({
-    ...instance,
-    shapeId: instance.shape,
-    position: Object.values( instance.position ),
-    rotation: instance.rotation && Object.values( instance.rotation ),
-  }))
-})
+// const convertLegacyFormat = rawDesign => ({
+//   ...rawDesign,
+//   instances: rawDesign.instances.map( instance => ({
+//     ...instance,
+//     shapeId: instance.shape,
+//     position: Object.values( instance.position ),
+//     rotation: instance.rotation && Object.values( instance.rotation ),
+//   }))
+// })
 
 const viewerStyle = {
   height: "400px",
@@ -35,7 +35,7 @@ export const Demo = () =>
     <div>
       <div style={viewerStyle}>
         <DesignCanvas>
-          <ShapedGeometry {...convertLegacyFormat(dodec)} />
+          <ShapedGeometry {...dodec} />
         </DesignCanvas>
       </div>
       <div style={viewerStyle}>

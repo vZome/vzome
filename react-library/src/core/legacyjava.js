@@ -466,12 +466,12 @@ const shaperFactory = ( vzomePkg, orbitSource ) => shapes => instance =>
   return { id, position: [ x, y, z ], rotation, color: finalColor, shapeId }
 }
 
-export const legacyCommandFactory = ( createEditor, className ) => ( config ) => ( dispatch, getState ) =>
+export const legacyCommandFactory = ( createEditor, className ) => ( config ) => 
 {
-  const field = designs.selectField( getState() )
+  const field = undefined // TODO designs.selectField( getState() )
   // TODO const symmetry = designs.selectCurrentSymmetry( getState() )
   // TODO const shapes = designs.selectCurrentShapes( getState() )
-  let { shown, hidden, selected } = designs.selectMesh( getState() )
+  let { shown, hidden, selected } = {} // TODO designs.selectMesh( getState() )
   shown = new Map( shown )
   hidden = new Map( hidden )
   selected = new Map( selected )
@@ -480,9 +480,10 @@ export const legacyCommandFactory = ( createEditor, className ) => ( config ) =>
 
   createEditor( field.name ).configureAndPerformEdit( className, config, adapter )
 
-  dispatch( { type: WORK_STARTED } )
-  dispatch( meshChanged( shown, selected, hidden ) )
-  dispatch( { type: WORK_FINISHED } )
+  // TODO
+  // dispatch( { type: WORK_STARTED } )
+  // dispatch( meshChanged( shown, selected, hidden ) )
+  // dispatch( { type: WORK_FINISHED } )
 }
 
 const assignIds = ( element, id=':' ) => {

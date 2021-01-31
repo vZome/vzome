@@ -1,10 +1,21 @@
 {
-  "name": "react-vzome",
-  "version": "0.1.0",
-  "private": true,
-  "main": "dist/index.cjs.js",
+  "name": "@vzome/react-vzome",
+  "version": "0.9.1",
+  "author": "Scott Vorthmann <scott@vorthmann.org> (http://vzome.com)",
+  "description": "React components for rendering interactive 3D content from vZome files",
+  "homepage": "https://vzome.com/app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vZome/vzome.git",
+    "directory": "react-library"
+  },
+  "license": "MIT",
+  "browser": "dist/index.umd.js",
   "module": "dist/index.esm.js",
   "source": "src/index.js",
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
@@ -15,17 +26,17 @@
     "npm-run-all": "^4.1.5",
     "rollup": "^2.38.0",
     "rollup-plugin-delete": "^2.0.0",
-    "rollup-plugin-peer-deps-external": "^2.2.4"
-  },
-  "dependencies": {
-    "drei": "0.0.70",
-    "react-three-fiber": "^4.1.0",
-    "three": "^0.119.1",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
     "react-scripts": "4.0.1",
     "web-vitals": "^0.2.4"
+  },
+  "dependencies": {
+    "drei": "3.1.0",
+    "react-three-fiber": "^4.2.21",
+    "three": "^0.124.0"
   },
   "peerDependencies": {
     "react": "^17.0.1",

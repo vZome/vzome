@@ -7,7 +7,7 @@ import url from '@rollup/plugin-url';
 export default {
     input: pkg.source,
     output: [
-        { file: pkg.main, format: 'cjs', sourcemap: true },
+        { file: pkg.browser, format: 'umd', sourcemap: true, name: 'react-vzome' },
         { file: pkg.module, format: 'esm', sourcemap: true }
     ],
     plugins: [
