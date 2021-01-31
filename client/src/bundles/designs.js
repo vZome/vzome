@@ -1,17 +1,18 @@
 
 import { combineReducers } from 'redux'
-import undoable from 'redux-undo'
+import undoable, { ActionCreators as Undo } from 'redux-undo'
 
-import goldenField from '../fields/golden'
+import { goldenField, vZomeJava } from 'react-vzome'
 import * as mesh from './mesh'
-import * as camera from './camera'
+import { reducer as cameraReducer, initialState as cameraDefault, cameraDefined } from './camera'
 import * as dbugger from './dbugger'
-
+import * as shapers from './shapers'
+import { showAlert } from './alerts'
 
 export const designReducer = combineReducers( {
   mesh: undoable( mesh.reducer ),
   dbugger: undoable( dbugger.reducer ),
-  camera: camera.reducer,
+  camera: cameraReducer,
   name: ( state="", action ) => state, // name cannot be changed (YET), so a constant reducer is fine
   success: ( state="", action ) => state, // success cannot be changed, so a constant reducer is fine
   fieldName: ( state="", action ) => state, // fieldName cannot be changed, so a constant reducer is fine
@@ -26,8 +27,8 @@ export const initializeDesign = ( field, name, shaperName ) => ({
   },
   // TODO: initialize dbugger?
   success: true,
-  camera: camera.initialState,
   fieldName: field.name,
+  camera: cameraDefault,
   shaperName,
   name,
 })
@@ -151,5 +152,48 @@ export const reducer = ( state = addNewModel( emptyState, goldenField ), action 
       } else {
         return state
       }
+  }
+}
+
+export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =>
+{
+  const { parser } = await vZomeJava.coreState  // Must wait for the vZome code to initialize
+  try {
+    const text = await textPromise
+    const { edits, camera, field, parseAndPerformEdit, targetEdit, shaper } = parser( text ) || {}
+    if ( !edits ) {
+      throw new Error( `XML parsing failed` )
+    }
+    const name = url.split( '\\' ).pop().split( '/' ).pop()
+
+    // We don't want to dispatch all the edits, which can trigger tons of
+    //  overhead and re-rendering.  Instead, we'll build up a design locally
+    //  by calling the designReducer manually.
+    let design = initializeDesign( field, name, shaper.shapesName )
+    // Each call to designReducer may create an element in the history
+    //  (if it has any changes to the mesh),
+    //  so we want to be judicious in when we do it.
+    // Each call to dispatch, on the other hand, triggers rendering, so we want to be even
+    //  more careful about that.
+    
+    // TODO: skip this dispatch if we already have a shaper for shapesName, in getState().shapers
+    dispatch( shapers.shaperDefined( shaper.shapesName, shaper ) ) // outside the design
+
+    design = designReducer( design, cameraDefined( camera ) )
+    design = designReducer( design, dbugger.sourceLoaded( edits, parseAndPerformEdit, targetEdit ) ) // recorded in history
+    design = designReducer( design, Undo.clearHistory() )  // kind of a hack so both histories are in sync, with no past
+
+    dispatch( loadingDesign( name, design ) )
+
+    if ( ! getState().dbuggerEnabled ) {
+      dispatch( dbugger.debug( name, vZomeJava.Step.DONE ) )
+    }
+    else {
+      dispatch( loadedDesign( name, design ) )
+    }
+  } catch (error) {
+    const message = `Unable to parse vZome design file: ${url};\n ${error.message}`
+    console.log( message )
+    dispatch( showAlert( `Unable to parse vZome design file: ${url};\n ${error.message}` ) )
   }
 }

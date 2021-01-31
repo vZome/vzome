@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded'
@@ -9,7 +9,12 @@ import Divider from '@material-ui/core/Divider';
 import { connect } from 'react-redux'
 
 import UrlDialog from './webloader'
-import { fetchModel, fileSelected } from '../bundles/files'
+import { fetchFileText, fetchUrlText } from '../bundles/files'
+import { openDesign } from '../bundles/designs'
+
+const openDesignUrl = url => openDesign( fetchUrlText( url ), url )
+
+const openDesignFile = file => openDesign( fetchFileText( file ), file.name )
 
 const models = [
   {
@@ -44,13 +49,19 @@ const models = [
   },
   {
     key: "truncated5Cell",
-    url: "/models/2007/04-Apr/5cell/A4_3C.vZome",
+    url: "https://vzome.com/models/2007/04-Apr/5cell/A4_3C.vZome",
     label: "Truncated 5-Cell",
     description: "Truncated 5-Cell"
   },
 ]
 
-const DesignsMenu = ( { openDesign, openFile } ) =>
+let url = "/app/models/vZomeLogo.vZome"
+const urlParams = new URLSearchParams( window.location.search );
+if ( urlParams.has( "url" ) ) {
+  url = decodeURI( urlParams.get( "url" ) )
+}
+
+const DesignsMenu = ( { openUrl, openFile } ) =>
 {
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [showDialog, setShowDialog] = React.useState(false)
@@ -59,6 +70,7 @@ const DesignsMenu = ( { openDesign, openFile } ) =>
     setAnchorEl(null)
     ref.current.click()
   }
+  useEffect( () => openUrl( url ), [openUrl] )
 
   const handleClickOpen = (event) => {
     setAnchorEl( event.currentTarget )
@@ -67,7 +79,7 @@ const DesignsMenu = ( { openDesign, openFile } ) =>
   const handleSelectModel = model => {
     setAnchorEl(null)
     const { url, key } = model
-    openDesign( url || `/app/models/${key}.vZome`, key )
+    openUrl( url || `/app/models/${key}.vZome`, key )
   }
 
   const handleClose = () => {
@@ -107,7 +119,7 @@ const DesignsMenu = ( { openDesign, openFile } ) =>
           <MenuItem key={model.key} onClick={()=>handleSelectModel(model)}>{model.label}</MenuItem>
         ) ) }
       </Menu>
-      <UrlDialog show={showDialog} setShow={setShowDialog} openDesign={openDesign} />
+      <UrlDialog show={showDialog} setShow={setShowDialog} openDesign={openUrl} />
     </>
   )
 }
@@ -118,8 +130,8 @@ const select = (state) => ({
 })
 
 const boundEventActions = {
-  openDesign : fetchModel,
-  openFile : fileSelected,
+  openUrl : openDesignUrl,
+  openFile : openDesignFile,
 }
 
 export default connect( select, boundEventActions )( DesignsMenu )

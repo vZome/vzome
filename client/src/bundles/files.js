@@ -1,50 +1,41 @@
-import { startProgress, stopProgress } from './progress'
-import { showAlert } from './alerts'
 
-export const fileSelected = selected => ( dispatch, getState ) =>
+
+export const fetchFileText = selected =>
 {
-  console.log( selected )
+  const temporaryFileReader = new FileReader()
 
-  dispatch( startProgress( "Reading file content..." ) )
-  
-  const reader = new FileReader();
-  reader.onload = () =>
-  {
-    getState().java.parser( selected.name, selected.name, reader.result, dispatch, getState )
-  }
-  reader.onerror = () =>
-  {
-    dispatch( stopProgress() )
-    dispatch( showAlert( `Unable to read file: ${selected.name}` ) )
-  }
-  reader.readAsText( selected )
+  return new Promise( (resolve, reject) => {
+    temporaryFileReader.onerror = () => {
+      temporaryFileReader.abort()
+      reject( temporaryFileReader.error )
+    }
+
+    temporaryFileReader.onload = () => {
+      resolve( temporaryFileReader.result )
+    }
+    temporaryFileReader.readAsText( selected )
+  })
 }
 
-export const fetchModel = ( path, id ) => ( dispatch, getState ) =>
+
+export const fetchUrlText = ( path ) =>
 {
   // TODO: I should really deploy my own copy of this proxy on Heroku
   const fetchWithCORS = url => fetch ( url ).catch ( _ => fetch( 'https://cors-anywhere.herokuapp.com/' + url ) )
 
-  dispatch( startProgress( "Fetching model content..." ) )
-  fetchWithCORS( path )
-    .then( response =>
-    {
-      if ( !response.ok ) {
-        throw new Error( 'Network response was not ok' );
-      }
-      return response.text()
-    })
-    .then( (text) => {
-      const name = path.split( '\\' ).pop().split( '/' ).pop()
-      const designId = id || name
-      getState().java.parser( name, designId, text, dispatch, getState )
-    })
-    .catch( error =>
-    {
-      console.error( 'There has been a problem with your fetch operation:', error );
-      dispatch( stopProgress() )
-      dispatch( showAlert( `Unable to load URL: ${path}` ) )
-    });
+  return fetchWithCORS( path )
+  .then( response =>
+  {
+    if ( !response.ok ) {
+      throw new Error( 'Network response was not ok' );
+    }
+    return response.text()
+  })
+  .catch( error =>
+  {
+    console.error( 'There has been a problem with your fetch operation:', error );
+    return null
+  })
 }
 
 // from https://www.bitdegree.org/learn/javascript-download

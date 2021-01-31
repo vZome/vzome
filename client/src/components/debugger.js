@@ -17,6 +17,7 @@ import FastForwardRoundedIcon from '@material-ui/icons/FastForwardRounded'
 
 import * as designFns from '../bundles/designs'
 import * as dbugger from '../bundles/dbugger'
+import { vZomeJava } from 'react-vzome'
 
 const drawerWidth = 500
 
@@ -73,22 +74,22 @@ const Debugger = ( { data, current, branches, designName, doDebug } )  =>
       <div className={classes.drawerContainer}>
         <Toolbar variant='dense'>
           <Tooltip title="Step in" aria-label="step-in">
-            <IconButton color="secondary" aria-label="step-in" onClick={()=>doDebug(designName, 'STEP_IN')}>
+            <IconButton color="secondary" aria-label="step-in" onClick={()=>doDebug(designName, vZomeJava.Step.IN)}>
               <GetAppRoundedIcon/>
             </IconButton>
           </Tooltip>
           <Tooltip title="Step over" aria-label="step-over">
-            <IconButton color="secondary" aria-label="step-over" onClick={()=>doDebug(designName, 'STEP_OVER')}>
+            <IconButton color="secondary" aria-label="step-over" onClick={()=>doDebug(designName, vZomeJava.Step.OVER)}>
               <RedoRoundedIcon/>
             </IconButton>
           </Tooltip>
           <Tooltip title="Step out" aria-label="step-out">
-            <IconButton color="secondary" aria-label="step-out" onClick={()=>doDebug(designName, 'STEP_OUT')}>
+            <IconButton color="secondary" aria-label="step-out" onClick={()=>doDebug(designName, vZomeJava.Step.OUT)}>
               <PublishRoundedIcon/>
             </IconButton>
           </Tooltip>
           <Tooltip title="Continue" aria-label="continue">
-            <IconButton color="secondary" aria-label="continue" onClick={()=>doDebug(designName, 'CONTINUE')}>
+            <IconButton color="secondary" aria-label="continue" onClick={()=>doDebug(designName, vZomeJava.Step.DONE)}>
               <FastForwardRoundedIcon/>
             </IconButton>
           </Tooltip>
@@ -110,7 +111,7 @@ const select = ( state ) =>
 {
   const dbugger = state.designs && designFns.selectDebugger( state )
   return {
-    data: state.dbuggerEnabled && dbugger.source,
+    data: dbugger.source,
     current: dbugger && dbugger.currentElement && dbugger.currentElement.id,
     branches: dbugger && dbugger.branchStack && dbugger.branchStack.map( ({ branch }) => branch.id ),
     designName: dbugger && designFns.selectDesignName( state )

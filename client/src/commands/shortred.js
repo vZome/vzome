@@ -1,6 +1,7 @@
 
 import * as mesh from '../bundles/mesh'
 import * as designs from '../bundles/designs'
+import { createInstance } from 'react-vzome'
 
 export default () => ( dispatch, getState ) =>
 {
@@ -18,8 +19,8 @@ export default () => ( dispatch, getState ) =>
   }
   // shown now has all the previously selected mesh objects
   const end = field.vectoradd( start, red )
-  let newBall = mesh.createInstance( [ end ] ) // canonically, all mesh objects are arrays of vectors
-  let newStrut = mesh.createInstance( [ start, end ] )
+  let newBall = createInstance( [ end ] ) // canonically, all mesh objects are arrays of vectors
+  let newStrut = createInstance( [ start, end ] )
 
   // Avoid creating a duplicate... make this reusable
   newBall = shown.get( newBall.id ) || selected.get( newBall.id ) || hidden.get( newBall.id ) || newBall

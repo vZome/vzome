@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
 import Paper from '@material-ui/core/Paper'
@@ -7,36 +6,40 @@ import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 
 import VZomeAppBar from './components/appbar.js'
-import ModelCanvas from './components/modelcanvas-three.js'
+import { UrlViewer } from 'react-vzome'
 
 const useStyles = makeStyles( (theme) => ({
-  viewer: {
-    height: "400px",
-    minHeight: "400px",
-    maxHeight: "60vh",
-    marginLeft: "15%",
-    marginRight: "15%",
-    marginTop: "15px",
-    marginBottom: "15px",
-    borderWidth: "medium",
-    borderRadius: "10px",
-    border: "solid",
-  },
   paper: {
     paddingLeft: "2%",
     paddingRight: "2%",
   }
 }));
 
+const viewerStyle = {
+  height: "400px",
+  minHeight: "400px",
+  maxHeight: "60vh",
+  marginLeft: "15%",
+  marginRight: "15%",
+  marginTop: "15px",
+  marginBottom: "15px",
+  borderWidth: "medium",
+  borderRadius: "10px",
+  border: "solid",
+}
+
+const VZomeViewer = ({ url }) =>
+{
+  return (
+    <div style={viewerStyle}>
+      <UrlViewer url={url} />
+    </div>
+  )
+}
+
 const Article = () =>
 {
-  // const dispatch = useDispatch();
-  // useEffect( () => {
-  //   console.log( 'USED EFFECT' )
-  //   const model = '120-cell'
-  //   dispatch( fetchModel( `/app/models/${model}.vZome`, model ) )
-  // })
-  const classes = useStyles();
+  const classes = useStyles()
   return (
     <>
       <VZomeAppBar article/>
@@ -54,9 +57,7 @@ const Article = () =>
             You can count the five tetrahedra: the outer green one, and the four interior tetrahedra with three yellow edges
             foreshortened by the projection.
           </Typography>
-          <div className={classes.viewer}>
-            <ModelCanvas design='greenTetra' />
-          </div>
+          <VZomeViewer url={"https://vzome.com/models/2007/04-Apr/5cell/greenTetra.vZome"} />
           <Typography gutterBottom >
             Until 2007, my friend <Link target="_blank" href="https://homepages.wmich.edu/~drichter" rel="noopener" >David Richter</Link> and
             I believed that there was no other orthogonal 3D projection of the 5-cell 
@@ -65,9 +66,7 @@ const Article = () =>
             Furthermore, David showed that there are two other rZome-constructible projections, one using red, yellow, and blue,
             and one using just yellow and blue.
           </Typography>
-          <div className={classes.viewer}>
-            <ModelCanvas design='A4_18' />
-          </div>
+          <VZomeViewer url={"https://vzome.com/models/2007/04-Apr/5cell/A4_18.vZome"} />
           <Typography gutterBottom >
             The remarkable thing about this projection is that it exhibits "ghost symmetry". 
             This is our term for a phenomenon wherein the symmetry of a 4D object is subtly exposed in a 3D projection. 
@@ -83,9 +82,7 @@ const Article = () =>
             see <Link target="_blank" href="https://homepages.wmich.edu/~drichter/a4polychorazome.htm" rel="noopener" >David's page</Link> on
             the other Zome projections of the A4 family.
           </Typography>
-          <div className={classes.viewer}>
-            <ModelCanvas design='A4_9' />
-          </div>
+          <VZomeViewer url={"https://vzome.com/models/2007/04-Apr/5cell/A4_9.vZome"} />
           <Typography gutterBottom >
             All of these are constructible in real Zome, in principle. 
             However, several of them are challenging to build, due to the false intersections at inconvenient places, 
@@ -94,13 +91,11 @@ const Article = () =>
             This corresponds to projecting only one hemisphere of the 4D hypersphere into 3D.
             Unfortunately, doing so will destroy the 5-fold symmetric shadows.
           </Typography>
-          <div className={classes.viewer}>
-            <ModelCanvas design='A4_BD' />
-          </div>
+          <VZomeViewer url={"https://vzome.com/models/2007/04-Apr/5cell/A4_BD.vZome"} />
         </Paper>
       </Container>
     </>
   );
 }
 
-export default Article;
+export default Article

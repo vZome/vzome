@@ -1,4 +1,5 @@
 
+import { createInstance } from 'react-vzome'
 
 const OBJECT_SELECTED = 'OBJECT_SELECTED'
 const OBJECT_DESELECTED = 'OBJECT_DESELECTED'
@@ -34,39 +35,6 @@ const initialState = {
   selected: new Map(), // This Map is especially important, so we iterate in insertion order
   hidden: new Map(),
   groups: []
-}
-
-const canonicalizedId = ( vectors ) =>
-{
-  const strings = vectors.map( n => JSON.stringify( n ) )
-  let min = strings[ 0 ]
-  let minIndex = 0
-  for ( let i = 1; i < strings.length; i++ ) {
-    if ( strings[ i ].localeCompare( min ) < 0 ) {
-      minIndex = i
-      min = strings[ i ]
-    }
-  }
-  // Since % does not actually perform a consistent sawtooth modulus function for negative numbers,
-  //  we add strings.length to force a positive number.
-  const get = i => strings[ ( strings.length + minIndex + i ) % strings.length ]
-
-  // We have the minimum (get(0)), now figure out which way to go
-  const incr = ( get( 1 ).localeCompare( get( -1 ) ) < 0 )? 1 : -1
-
-  let sorted = ""
-  for ( let j = 0; j < strings.length; j++ ) {
-    const next = get( j * incr )
-    sorted += next
-  }
-  return sorted
-}
-
-export const createInstance = ( vectors ) =>
-{
-  const id = canonicalizedId( vectors )
-  // We cannot rearrange vectors, as that would break strut semantics for some legacy commands
-  return { id, vectors }
 }
 
 export const reducer = ( state = initialState, action ) =>

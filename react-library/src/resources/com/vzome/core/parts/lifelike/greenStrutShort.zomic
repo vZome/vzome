@@ -1,0 +1,115 @@
+
+// move to the center of the strut
+from size -99 green +0
+
+// adjust to the parts scale
+scale -5
+
+label unit.start
+
+branch { 
+
+// move to strut origin
+from save scale { scale +5
+size -99 green -0 }
+
+	branch {
+	// "near" prism base
+		long red +0
+		 short yellow +8
+	label base_1_narrow_r
+		short blue +10 rotate around red -0
+	label base_1_wide_r
+		short blue +10 rotate around red -0
+	label base_1_peak
+		short blue +10 rotate around red -0
+	label base_1_wide_l
+		short blue +10 rotate around red -0
+	label base_1_narrow_l
+		short blue +10 rotate around red -0
+	}
+
+}
+
+rotate around blue +13
+
+branch { 
+
+// move to strut origin
+from save scale { scale +5
+size -99 green -0 }
+
+	branch {
+	// "far" prism base
+		long red +0
+		 short yellow +8
+	label base_2_narrow_r
+		short blue +10 rotate around red -0
+	label base_2_wide_r
+		short blue +10 rotate around red -0
+	label base_2_peak
+		short blue +10 rotate around red -0
+	label base_2_wide_l
+		short blue +10 rotate around red -0
+	label base_2_narrow_l
+		short blue +10 rotate around red -0
+	}
+
+}
+
+
+{  //faces
+
+			label unit.face
+	label base_1_peak
+	label base_2_narrow_r
+	label base_1_wide_r
+	
+			label unit.face
+	label base_2_narrow_r
+	label base_2_wide_r
+	label base_1_wide_r
+	
+			label unit.face
+	label base_1_wide_r
+	label base_2_wide_r
+	label base_1_narrow_r
+	
+			label unit.face
+	label base_2_wide_r
+	label base_2_peak
+	label base_1_narrow_r
+	
+			label unit.face
+	label base_1_narrow_r
+	label base_2_peak
+	label base_1_narrow_l
+	
+			label unit.face
+	label base_2_peak
+	label base_2_wide_l
+	label base_1_narrow_l
+	
+			label unit.face
+	label base_1_narrow_l
+	label base_2_wide_l
+	label base_1_wide_l
+	
+			label unit.face
+	label base_2_wide_l
+	label base_2_narrow_l
+	label base_1_wide_l
+	
+			label unit.face
+	label base_1_wide_l
+	label base_2_narrow_l
+	label base_1_peak
+	
+			label unit.face
+	label base_2_narrow_l
+	label base_2_narrow_r
+	label base_1_peak
+	
+}
+
+label unit.end

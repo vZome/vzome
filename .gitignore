@@ -50,5 +50,8 @@ client/src/jsweet
 core/src/main/antlr/com/vzome/core/grammar/zomic/.antlr
 client/public/resources
 client/.vscode
-bundle.js
 .tsc-rootfile.js
+react-vzome-viewer/dist
+.eslintcache
+react-vzome-*.tgz
+launch.json

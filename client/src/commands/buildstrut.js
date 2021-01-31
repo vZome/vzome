@@ -1,6 +1,7 @@
 
 import * as mesh from '../bundles/mesh'
 import * as designs from '../bundles/designs'
+import { createInstance } from 'react-vzome'
 
 export default ( start, end ) => ( dispatch, getState ) =>
 {
@@ -9,7 +10,7 @@ export default ( start, end ) => ( dispatch, getState ) =>
   hidden = new Map( hidden )
   selected = new Map( selected )
 
-  let newBall = mesh.createInstance( [ end ] ) // canonically, all mesh objects are arrays of vectors
+  let newBall = createInstance( [ end ] ) // canonically, all mesh objects are arrays of vectors
 
   // Avoid creating a duplicate... make this reusable
   newBall = shown.get( newBall.id ) || selected.get( newBall.id ) || hidden.get( newBall.id ) || newBall
@@ -17,7 +18,7 @@ export default ( start, end ) => ( dispatch, getState ) =>
   shown.set( newBall.id, newBall )
 
   if ( start ) {
-    let newStrut = mesh.createInstance( [ start, end ] )
+    let newStrut = createInstance( [ start, end ] )
     newStrut = shown.get( newStrut.id ) || selected.get( newStrut.id ) || hidden.get( newStrut.id ) || newStrut
     selected.delete( newStrut.id ) || hidden.delete( newStrut.id )
     shown.set( newStrut.id, newStrut )
