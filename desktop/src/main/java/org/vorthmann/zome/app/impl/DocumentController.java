@@ -53,9 +53,9 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.editor.api.OrbitSource;
-import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
+import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters2d.Java2dSnapshot;
 import com.vzome.core.math.Polyhedron;
@@ -833,6 +833,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
                     this .runScript( script, file );
                 return;
             }
+
             if ( "capture-animation" .equals( command ) )
             {
                 File dir = file .isDirectory()? file : file .getParentFile();
@@ -1180,6 +1181,14 @@ public class DocumentController extends DefaultController implements Scene.Provi
         case "field.name":
             return this .documentModel .getField() .getName();
 
+        case "vZome-xml":
+            try ( ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
+                documentModel .serialize( out, properties );
+                return out .toString();
+            } catch ( Exception e ) {
+                return null;
+            }
+            
         case "field.label": {
             String name = this .documentModel .getField() .getName();
             return super.getProperty( "field.label." + name ); // defer to app controller

@@ -84,6 +84,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     private Controller lessonController;
     
     private JDialog polytopesDialog, importScaleDialog;
+    
+    private ShareDialog shareDialog;
 
 	private final boolean developerExtras;
 	
@@ -219,6 +221,13 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     else {
                         mController .doFileAction( "save", mFile );
                     }
+                    break;
+
+                case "Share":
+                    if ( shareDialog == null )
+                        shareDialog = new ShareDialog( DocumentFrame.this, mController );
+                    shareDialog .setFileData( mFile .getName(), mController .getProperty( "vZome-xml" ) );
+                    shareDialog .setVisible( true );
                     break;
 
                 case "saveDefault":
@@ -752,6 +761,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             enable = this .canSave;
             break;
 
+        case "Share":
+            enable = this .mFile != null;
+
         default:
             if ( command .startsWith( "export." ) ) {
                 enable = this .canSave;
@@ -795,6 +807,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             case "save":
             case "saveDefault":
             case "close":
+            case "Share":
             case "snapshot.2d":
             case "showToolsPanel":
             case "setItemColor":

@@ -7,9 +7,14 @@ task wrapper(type: Wrapper) {
    gradleVersion = '4.5.1' //version required
 }
 
-// these environment variables are available during a Jenkins build
+// These environment variables are automatically available during a Jenkins build
 ext.buildNumber = System.getenv( "BUILD_NUMBER" ) ?: 'dev'
 ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
+
+// These environment variables must be configured in the Jenkins job explicitly.
+ext.githubClientId = System.getenv( "GITHUB_CLIENT_ID" )
+ext.githubClientSecret = System.getenv( "GITHUB_CLIENT_SECRET" )
+
 ext.appName = 'vZome'
 ext.edition = appName
 

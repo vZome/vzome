@@ -483,6 +483,9 @@ public class ApplicationController extends DefaultController
 
     private void newDocumentController( final String name, final DocumentModel document, final Properties props )
     {
+        props .setProperty( "githubClientId", this .properties .getProperty( "githubClientId" ) );
+        props .setProperty( "githubClientSecret", this .properties .getProperty( "githubClientSecret" ) );
+        
         DocumentController newest = new DocumentController( document, this, props );
         this .registerDocumentController( name, newest );
         // trigger window creation in the UI
