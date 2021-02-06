@@ -763,6 +763,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
         case "Share":
             enable = this .mFile != null;
+            break;
 
         default:
             if ( command .startsWith( "export." ) ) {
