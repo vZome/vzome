@@ -55,3 +55,4 @@ react-vzome-viewer/dist
 .eslintcache
 react-vzome-*.tgz
 launch.json
+build.properties
