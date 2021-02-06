@@ -32,9 +32,11 @@ import javafx.embed.swing.JFXPanel;
 
 public class ShareDialog extends EscapeDialog
 {
+    private final Controller controller;
     private final CardPanel cardPanel;
     private final HyperlinkPanel viewUrlPanel, gistUrlPanel, rawUrlPanel;
-    
+    private final JButton uploadButton;
+
     private final static String VIEWER_PREFIX = "https://vzome.com/app/?url=";
 
     private transient String fileName;
@@ -44,6 +46,7 @@ public class ShareDialog extends EscapeDialog
     public ShareDialog( Frame frame, final Controller controller )
     {
         super( frame, "Share your design", true );
+        this.controller = controller;
         setLocationRelativeTo( frame );
 
         new JFXPanel(); // This should initialize JavaFX
@@ -74,85 +77,43 @@ public class ShareDialog extends EscapeDialog
             } );
             buttons .add( cancel );
 
-            JButton build = new JButton( "Upload" );
-            build .setActionCommand( "upload" );
-            build .addActionListener( new ActionListener()
+            uploadButton = new JButton( "Upload" );
+            this .getRootPane() .setDefaultButton( uploadButton );
+            uploadButton .requestFocusInWindow();
+            uploadButton .setActionCommand( "upload" );
+            uploadButton .addActionListener( new ActionListener()
             {
                 @Override
                 public void actionPerformed( ActionEvent e )
                 {
-                    Properties props = new Properties();
-                    props .setProperty( "resourceDomain", "github.com" );
-                    props .setProperty( "resourcePath", "/login/oauth/authorize" );
-                    props .setProperty( "authnPath", "/login/oauth/access_token" );
-                    props .setProperty( "clientId", controller.getProperty( "githubClientId" ) );
-                    props .setProperty( "clientSecret", controller.getProperty( "githubClientSecret" ) );
-                    props .setProperty( "scope", "gist" );
-
-                    GistFile gistFile = new GistFile();
-                    gistFile .setContent( xml );
-                    Gist gist = new Gist();
-                    gist .setDescription( "Shared from vZome for vZome Online (https://vzome.com/app)" );
-                    gist .setFiles( Collections.singletonMap( fileName, gistFile ) );
-                    gist .setPublic( true );
-
-                    new JFXPanel(); // This should initialize JavaFX
-                    Platform.runLater( new Runnable()
-                    { 
-                        @Override
-                        public void run()
-                        {
-                            String oauthToken = new OAuthLogin() .getToken( props );
-                            GistService service = new GistService();
-                            service .getClient() .setOAuth2Token( oauthToken );
-                            try {
-                                Gist completedGist = service.createGist( gist );
-                                SwingUtilities.invokeLater( new Runnable()
-                                {
-                                    @Override
-                                    public void run()
-                                    {
-                                        String gistUrl = completedGist .getUrl();
-                                        String rawUrl = completedGist .getFiles() .get( fileName ) .getRawUrl();
-                                        viewUrlPanel .setUrl( VIEWER_PREFIX + rawUrl );
-                                        gistUrlPanel .setUrl( gistUrl );
-                                        rawUrlPanel .setUrl( rawUrl );
-                                        cardPanel .showCard( "results" );
-                                    }
-                                });
-                            }
-                            catch (IOException e1)
-                            {
-                                // TODO Auto-generated catch block
-                                e1.printStackTrace();
-                                SwingUtilities.invokeLater( new Runnable()
-                                {
-                                    @Override
-                                    public void run()
-                                    {
-                                        cardPanel .showCard( "error" );
-                                    }
-                                });
-                            }
-                        }
-                    });
+                    doUpload();
                 }
             } );
-            buttons .add( build );
+            buttons .add( uploadButton );
 
             loginPanel .add( help, BorderLayout.NORTH );
             loginPanel .add( buttons, BorderLayout .SOUTH );
         }
 
-        viewUrlPanel = new HyperlinkPanel( "View design in vZome Online" );
-        gistUrlPanel = new HyperlinkPanel( "View gist page" );
-        rawUrlPanel = new HyperlinkPanel( "View gist raw content" );
+        viewUrlPanel = new HyperlinkPanel( "View design in vZome Online", controller );
+        gistUrlPanel = new HyperlinkPanel( "View gist page", controller );
+        rawUrlPanel = new HyperlinkPanel( "View gist raw content", controller );
         JPanel resultsPanel = new JPanel();
         {
-            resultsPanel .setLayout( new FlowLayout() );
-            resultsPanel .add( viewUrlPanel );
-            resultsPanel .add( gistUrlPanel );
-            resultsPanel .add( rawUrlPanel );
+            JLabel help = new JLabel();
+            help .setBorder( BorderFactory.createEmptyBorder( 15, 15, 15, 15 ) );
+            help .setText( "<html>Your vZome file has uploaded successfully.</html>" );
+
+            JPanel urlsPanel = new JPanel();
+            urlsPanel .setLayout( new FlowLayout() );
+            urlsPanel .add( viewUrlPanel );
+            urlsPanel .add( gistUrlPanel );
+            urlsPanel .add( rawUrlPanel );
+            
+            resultsPanel .setLayout( new BorderLayout() );
+            resultsPanel .add( help, BorderLayout.NORTH );
+            resultsPanel .add( urlsPanel, BorderLayout.CENTER );
+            this .getRootPane() .setDefaultButton( viewUrlPanel .getCopyButton() );
         }
 
         Container content = this .getContentPane();
@@ -167,13 +128,76 @@ public class ShareDialog extends EscapeDialog
         this .setResizable( false );
     }
 
+    private void doUpload()
+    {
+        Properties props = new Properties();
+        props .setProperty( "resourceDomain", "github.com" );
+        props .setProperty( "resourcePath", "/login/oauth/authorize" );
+        props .setProperty( "authnPath", "/login/oauth/access_token" );
+        props .setProperty( "clientId", controller.getProperty( "githubClientId" ) );
+        props .setProperty( "clientSecret", controller.getProperty( "githubClientSecret" ) );
+        props .setProperty( "scope", "gist" );
+
+        GistFile gistFile = new GistFile();
+        gistFile .setContent( xml );
+        Gist gist = new Gist();
+        gist .setDescription( "Shared from vZome for vZome Online (https://vzome.com/app)" );
+        gist .setFiles( Collections.singletonMap( fileName, gistFile ) );
+        gist .setPublic( true );
+
+        Platform.runLater( new Runnable()
+        { 
+            @Override
+            public void run()
+            {
+                if ( token == null )
+                    token = new OAuthLogin() .getToken( props );
+                GistService service = new GistService();
+                service .getClient() .setOAuth2Token( token );
+                try {
+                    Gist completedGist = service.createGist( gist );
+                    SwingUtilities.invokeLater( new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            String gistUrl = completedGist .getHtmlUrl();
+                            String rawUrl = completedGist .getFiles() .get( fileName ) .getRawUrl();
+                            viewUrlPanel .setUrl( VIEWER_PREFIX + rawUrl );
+                            gistUrlPanel .setUrl( gistUrl );
+                            rawUrlPanel .setUrl( rawUrl );
+                            cardPanel .showCard( "results" );
+                            getRootPane() .setDefaultButton( viewUrlPanel .getCopyButton() );
+                            viewUrlPanel .getCopyButton() .requestFocusInWindow();
+                        }
+                    });
+                }
+                catch (IOException e1)
+                {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                    SwingUtilities.invokeLater( new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            cardPanel .showCard( "error" );
+                        }
+                    });
+                }
+            }
+        });
+    }
+
     @Override
     public void setVisible( boolean visible )
     {
         if ( visible ) {
             if ( token != null ) {                
-                // TODO try the upload
+                doUpload();
             } else {
+                this .getRootPane() .setDefaultButton( uploadButton );
+                uploadButton .requestFocusInWindow();
                 cardPanel .showCard( "login" );
             }
         }
