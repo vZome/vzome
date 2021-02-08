@@ -771,7 +771,12 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
         case "Share":
             enable = controller .getProperty( "window.file" ) != null;
-            break;
+            // We're doing this one immediately, because we need the listener attached if
+            //  it is later enabled.  It is surprising that this has not been an issue for
+            //  anything else!
+            control .addActionListener( this .localActions );
+            control .setEnabled( enable );
+            return control;
 
         default:
             if ( command .startsWith( "export." ) ) {
@@ -816,7 +821,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             case "save":
             case "saveDefault":
             case "close":
-            case "Share":
             case "snapshot.2d":
             case "showToolsPanel":
             case "setItemColor":
