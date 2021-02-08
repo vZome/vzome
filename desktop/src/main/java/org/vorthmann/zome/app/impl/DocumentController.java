@@ -33,6 +33,7 @@ import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 import javax.vecmath.Point3f;
 
+import org.apache.commons.lang3.ObjectUtils.Null;
 import org.vorthmann.j3d.MouseTool;
 import org.vorthmann.j3d.MouseToolDefault;
 import org.vorthmann.j3d.MouseToolFilter;
@@ -1283,9 +1284,14 @@ public class DocumentController extends DefaultController implements Scene.Provi
             // App controller will set topDocument, or remove the document.
             firePropertyChange( "visible", null, value );
         } else if ( "name".equals( cmd ) ) {
-            this .properties .setProperty( "window.file", (String) value );
+            String oldValue = this .properties .getProperty( "window.file" );
+            if ( value == null )
+                this .properties .remove( "window.file" );
+            else
+                this .properties .setProperty( "window.file", (String) value );
             // App controller is listening, will change its map
-            firePropertyChange( "name", null, value );
+            firePropertyChange( "name", oldValue, value );
+            firePropertyChange( "window.file", oldValue, value );
         } else if ( "backgroundColor".equals( cmd ) ) {
             sceneLighting .setProperty( cmd, value );
         } else if ( "lastObjectColor".equals( cmd ) ) {
