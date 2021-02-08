@@ -19,6 +19,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -40,6 +41,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.ToolTipManager;
 
+import org.apache.commons.lang3.ObjectUtils.Null;
 import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.Platform;
 import org.vorthmann.ui.Controller;
@@ -224,10 +226,16 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     break;
 
                 case "Share":
+                    String windowName = mController .getProperty( "window.file" );
+                    if ( windowName == null ) {
+                        JOptionPane .showMessageDialog( DocumentFrame.this, "You must save your model before you can share it.",
+                                "Command Failure", JOptionPane .ERROR_MESSAGE );
+                        return;
+                    }
                     if ( shareDialog == null )
                         shareDialog = new ShareDialog( DocumentFrame.this, mController );
-                    shareDialog .setFileData( mFile .getName(), mController .getProperty( "vZome-xml" ) );
-                    shareDialog .setVisible( true );
+                    Path filePath = new File( windowName ) .toPath();
+                    shareDialog .setFileData( filePath .getFileName() .toString(), mController .getProperty( "vZome-xml" ) );
                     break;
 
                 case "saveDefault":
@@ -762,7 +770,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             break;
 
         case "Share":
-            enable = this .mFile != null;
+            enable = controller .getProperty( "window.file" ) != null;
             break;
 
         default:
@@ -985,5 +993,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 	public void makeUnnamed()
 	{
 		this .mFile = null;
+		this .mController .setProperty( "name", null );
 	}
 }

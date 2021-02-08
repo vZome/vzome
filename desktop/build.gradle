@@ -62,9 +62,8 @@ sourceSets {
 }
 
 dependencies {
-    // runtime files('/Library/Java/JavaVirtualMachines/jdk1.8.0_211.jdk/Contents/Home/lib/ext/jfxrt.jar')
-    compile group: 'com.microsoft.alm', name: 'oauth2-useragent', version: '0.11.3'
-    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.9'
+    compile group: 'com.github.scribejava', name: 'scribejava-apis', version: '8.1.0'
+    compile group: 'com.github.scribejava', name: 'scribejava-httpclient-okhttp', version: '8.1.0'
     compile group: 'org.eclipse.mylyn.github', name: 'org.eclipse.egit.github.core', version: '2.1.5'
 
     compile group: 'java3d', name: 'vecmath', version:'1.6.0-final'

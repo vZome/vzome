@@ -74,8 +74,19 @@ public class SymmetryToolbarsPanel extends JPanel
             firstToolbar .add( newToolButton( symmController, transformFactory ) );
 		}                
 
-        button = makeEditButton( enabler, "Share", "Share as a Github gist" );
-        topRow .add( button, BorderLayout.EAST );
+        AbstractButton shareButton = makeEditButton( enabler, "Share", "Share as a Github gist\nfor vZome Online" );
+        topRow .add( shareButton, BorderLayout.EAST );
+        controller .addPropertyListener( new PropertyChangeListener()
+        {
+            @Override
+            public void propertyChange( PropertyChangeEvent evt )
+            {
+                if ( "window.file" .equals( evt .getPropertyName() ) )
+                {
+                    shareButton .setEnabled( evt .getNewValue() != null );
+                }
+            }
+        });
 
         this .secondToolbar = new JToolBar();
         secondToolbar .setFloatable( false );
