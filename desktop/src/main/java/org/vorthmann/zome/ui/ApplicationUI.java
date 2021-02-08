@@ -601,6 +601,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                 + "Ezra Bradford\n"
                 + "Sam Vandervelde\n"
                 + "Jacob Rus\n"
+                + "Nan Ma\n"
                 + "Dan Duddy\n"
                 + "Walt Venable\n"
                 + "Will Ackel\n"

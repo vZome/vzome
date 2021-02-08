@@ -52,7 +52,8 @@ macAppBundle {
     bundleJRE = 'true'
     jreHome = '/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home'
     javaProperties.putAll jvmArgs
-    javaProperties.put 'java.ext.dirs', '.'
+    // Commented out this line, now that I need to use SSL (from jre/lib/ext/sunjce_provider.jar?) for gist sharing
+    // javaProperties.put 'java.ext.dirs', '.'
     arguments.addAll vzomeArgs
     bundleExtras = [ CFBundleDocumentTypes: [ [
         CFBundleTypeExtensions: [ project.appName ],
