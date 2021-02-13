@@ -9,6 +9,7 @@ import {
 
 import App from './App';
 import Article from './Article';
+import BHallBasic from './BHallBasic';
 
 render(
   <Router>
@@ -18,6 +19,9 @@ render(
       </Route>
       <Route path="/app/fivecell">
         <Article />
+      </Route>
+      <Route path="/app/bhall/basic">
+        <BHallBasic />
       </Route>
     </Switch>
   </Router>,
