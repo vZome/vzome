@@ -2,7 +2,7 @@
 import { combineReducers } from 'redux'
 import undoable, { ActionCreators as Undo } from 'redux-undo'
 
-import { goldenField, vZomeJava } from 'react-vzome'
+import { goldenField, vZomeJava } from '@vzome/react-vzome'
 import * as mesh from './mesh'
 import { reducer as cameraReducer, initialState as cameraDefault, cameraDefined } from './camera'
 import * as dbugger from './dbugger'

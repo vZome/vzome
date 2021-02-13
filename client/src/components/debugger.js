@@ -17,7 +17,7 @@ import FastForwardRoundedIcon from '@material-ui/icons/FastForwardRounded'
 
 import * as designFns from '../bundles/designs'
 import * as dbugger from '../bundles/dbugger'
-import { vZomeJava } from 'react-vzome'
+import { vZomeJava } from '@vzome/react-vzome'
 
 const drawerWidth = 500
 

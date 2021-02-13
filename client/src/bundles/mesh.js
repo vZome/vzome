@@ -1,5 +1,5 @@
 
-import { createInstance } from 'react-vzome'
+import { createInstance } from '@vzome/react-vzome'
 
 const OBJECT_SELECTED = 'OBJECT_SELECTED'
 const OBJECT_DESELECTED = 'OBJECT_DESELECTED'

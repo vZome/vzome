@@ -1,5 +1,5 @@
 
-import { vZomeJava } from 'react-vzome'
+import { vZomeJava } from '@vzome/react-vzome'
 
 
 export const shaperDefined = ( name, shaper ) => ({ type: 'SHAPER_DEFINED', payload: { name, shaper } } )

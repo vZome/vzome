@@ -5,8 +5,9 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 
+import { UrlViewer } from '@vzome/react-vzome'
+
 import VZomeAppBar from './components/appbar.js'
-import { UrlViewer } from 'react-vzome'
 
 const useStyles = makeStyles( (theme) => ({
   paper: {
