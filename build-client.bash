@@ -12,12 +12,12 @@ banner() {
   echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
 }
 
-banner 'Transpiling Java sources with JSweet'
-./gradlew core:jsweet -x compileJava && exit $?
+# banner 'Transpiling Java sources with JSweet'
+# ./gradlew core:jsweet -x compileJava && exit $?
 
-pushd client
+# pushd client
 
-source ./cheerpj.bash || exit $?
+# source ./cheerpj.bash || exit $?
 
 banner 'Preparing the distribution folder with NPM'
 npm install || exit $?
