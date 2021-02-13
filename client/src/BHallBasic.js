@@ -7,7 +7,7 @@ import Link from '@material-ui/core/Link'
 import Divider from '@material-ui/core/Divider';
 
 import VZomeAppBar from './components/appbar.js'
-import { UrlViewer } from 'react-vzome'
+import { UrlViewer } from '@vzome/react-vzome'
 
 const useStyles = makeStyles( (theme) => ({
   paper: {

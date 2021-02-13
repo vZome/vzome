@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { selectionToggled } from '../bundles/mesh'
 import * as planes from '../bundles/planes'
 import * as designs from '../bundles/designs'
-import { DesignCanvas, BuildPlane, MeshGeometry } from 'react-vzome'
+import { DesignCanvas, BuildPlane, MeshGeometry } from '@vzome/react-vzome'
 
 const select = ( state ) =>
 {
