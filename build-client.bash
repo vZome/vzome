@@ -15,7 +15,7 @@ banner() {
 # banner 'Transpiling Java sources with JSweet'
 # ./gradlew core:jsweet -x compileJava && exit $?
 
-# pushd client
+pushd client
 
 # source ./cheerpj.bash || exit $?
 
