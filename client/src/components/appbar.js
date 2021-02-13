@@ -42,8 +42,8 @@ const VZomeAppBar = ( { article=false } ) =>
               <UndoRedoButtons/>
               <DesignsSelect/>
               <OpenButton className={classes.open}/>
+              <AboutButton/>
             </> }
-            <AboutButton/>
         </Toolbar>
       </AppBar>
     </div>
