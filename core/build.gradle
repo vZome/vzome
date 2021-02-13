@@ -492,6 +492,12 @@ jsweet {
 
         'com/vzome/core/edits/*.java',
 
+        // This gets us past javac, but of course introduces >800 ANTLR-related errors
+        //  in the TypeScript phase.  We don't want to transpile ANTLR itself, so we
+        //  need to shim to the ANTLR-generated JavaScript parser, instead.
+        // Probably this is a good time to write a JSweet extension to handle the shimming.
+        // 'com/vzome/core/antlr/generated/*.java',
+
         'com/vzome/core/zomic/*.java',
         'com/vzome/core/zomic/parser/ErrorHandler.java',
         'com/vzome/core/zomic/program/*.java',
@@ -550,7 +556,8 @@ jsweet {
         'com/vzome/core/edits/DodecagonSymmetry.java',
         'com/vzome/core/edits/GhostSymmetry24Cell.java',
         'com/vzome/core/edits/Symmetry4d.java',
-        'com/vzome/core/edits/Run*Script.java',
+        'com/vzome/core/edits/RunPythonScript.java',
+        'com/vzome/core/edits/RunZomodScript.java',
         'com/vzome/core/edits/Validate2Manifold.java',
         'com/vzome/core/edits/RealizeMetaParts.java',
         'com/vzome/core/edits/ReplaceWithShape.java'
