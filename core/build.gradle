@@ -8,6 +8,7 @@ ext.antlr4 = [
     // Simplify multiple IDE integration by putting destinationDir under src/main/java
     // Some IDEs don't corectly read multiple source folders from build.gradle.
     destinationDir: "src/main/java/com/vzome/core/antlr/generated",
+    javascriptDest: "src/main/javascript/generated",
     grammarpackage:               "com.vzome.core.antlr.generated"
 ]
   
@@ -240,7 +241,8 @@ task compileAntlrGrammars(type: JavaExec , dependsOn: makeAntlrOutputDir) {
     // Also, changing the args when invoking Antlr will change the files it generates which affects the outputs collection.
     def grammars = fileTree(antlr4.antlrSource).include('**/*.g4')
     //def pkg = antlr4.grammarpackage.replaceAll("\\.", "/")
-    def target = file("${antlr4.destinationDir}") ///${pkg}")
+    // def target = file("${antlr4.destinationDir}") ///${pkg}")
+    def target = file("${antlr4.javascriptDest}") ///${pkg}")
     inputs.files grammars
     outputs.dir target
 
@@ -249,7 +251,7 @@ task compileAntlrGrammars(type: JavaExec , dependsOn: makeAntlrOutputDir) {
     // Antlr command line args are at https://theantlrguy.atlassian.net/wiki/display/ANTLR4/ANTLR+Tool+Command+Line+Options
     args = ["-o", target,
             "-lib", target,
-            // "-Dlanguage=JavaScript",  // enabled this just as an experiment
+            "-Dlanguage=JavaScript",  // enabled this just as an experiment
             //"-listener",      //"-listener" is the default
             //"-no-visitor",    //"-no-visitor" is the default
             "-package", antlr4.grammarpackage,
@@ -490,6 +492,10 @@ jsweet {
 
         'com/vzome/core/edits/*.java',
 
+        'com/vzome/core/zomic/*.java',
+        'com/vzome/core/zomic/parser/ErrorHandler.java',
+        'com/vzome/core/zomic/program/*.java',
+
         'com/vzome/core/kinds/DefaultFieldApplication.java',
         'com/vzome/core/kinds/GoldenFieldApplication.java',
 
@@ -511,15 +517,17 @@ jsweet {
         'com/vzome/core/kinds/AbstractSymmetryPerspective.java',
         'com/vzome/core/kinds/OctahedralSymmetryPerspective.java',
         'com/vzome/core/kinds/IcosahedralSymmetryPerspective.java',
+        'com/vzome/core/model/RenderedObject.java',
+        'com/vzome/core/parts/StrutGeometry.java',
+        'com/vzome/core/parts/FastDefaultStrutGeometry.java',
         'com/vzome/core/render/Colors.java',
+        'com/vzome/core/render/RenderedManifestation.java',
+        'com/vzome/core/render/ZomicEventHandler.java',
+        'com/vzome/core/render/AbstractZomicEventHandler.java',
         'com/vzome/core/viewing/AbstractShapes.java',
         'com/vzome/core/viewing/OctahedralShapes.java',
         'com/vzome/core/viewing/ExportedVEFShapes.java',
-        'com/vzome/core/viewing/ExportedVEFStrutGeometry.java',
-        'com/vzome/core/parts/StrutGeometry.java',
-        'com/vzome/core/parts/FastDefaultStrutGeometry.java',
-        'com/vzome/core/model/RenderedObject.java',
-        'com/vzome/core/render/RenderedManifestation.java'
+        'com/vzome/core/viewing/ExportedVEFStrutGeometry.java'
     ]
     excludes = [
         
@@ -535,11 +543,7 @@ jsweet {
         'com/vzome/core/algebra/*Impl.java',
         'com/vzome/core/algebra/AlgebraicFields.java',
 
-        'com/vzome/core/commands/ZomicVirtualMachine.java',
-        'com/vzome/core/commands/CommandExecuteZomicScript.java',
         'com/vzome/core/commands/CommandExecutePythonScript.java',
-
-    //     'com/vzome/core/model/*Impl.java',
 
         'com/vzome/core/edits/AffineHeptagon.java',
         'com/vzome/core/edits/HeptagonSubdivision.java',
