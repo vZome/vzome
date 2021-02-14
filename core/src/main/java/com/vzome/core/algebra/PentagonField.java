@@ -6,6 +6,12 @@ package com.vzome.core.algebra;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vzome.core.math.symmetry.IcosahedralSymmetry;
+import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.zomic.ZomicASTCompiler;
+import com.vzome.core.zomic.parser.ErrorHandler;
+import com.vzome.core.zomic.program.Walk;
+
 public final class PentagonField extends AbstractAlgebraicField
 {
     public static final String FIELD_NAME = "golden";
@@ -171,5 +177,26 @@ public final class PentagonField extends AbstractAlgebraicField
             ones = Integer .parseInt( string );
         }
         return createAlgebraicNumber( ones, phis, div, 0 );
+    }
+
+    @Override
+    public Walk compileScript( String script, String language, ErrorHandler errors, Symmetry symmetry )
+    {
+        switch ( language ) {
+
+        case "zomic":
+            try {
+                ZomicASTCompiler compiler = new ZomicASTCompiler( (IcosahedralSymmetry) symmetry );
+                return compiler .compile( script, errors );
+            } catch ( ClassCastException e ) {
+                errors .parseError( 0, 0, "Tried to compile Zomic with non-icosahedral symmetry" );
+                return null;
+            }
+
+        // TODO: handle "zomod"
+        default:
+            errors .parseError( 0, 0, "Zomic is the only script language supported." );
+            return null;
+        }
     }
 }

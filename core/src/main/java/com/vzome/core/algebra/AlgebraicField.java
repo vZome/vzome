@@ -2,6 +2,9 @@
 package com.vzome.core.algebra;
 
 import com.vzome.core.math.RealVector;
+import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.zomic.parser.ErrorHandler;
+import com.vzome.core.zomic.program.Walk;
 
 public interface AlgebraicField
 {
@@ -219,4 +222,6 @@ public interface AlgebraicField
     boolean scale4dRoots();
     
     boolean doubleFrameVectors();
+
+    Walk compileScript( String script, String language, ErrorHandler errors, Symmetry symmetry );
 }

@@ -8,6 +8,8 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.zomic.parser.ErrorHandler;
+import com.vzome.core.zomic.program.Walk;
 
 
 /**
@@ -371,4 +373,9 @@ public class IcosahedralSymmetry extends AbstractSymmetry
 		}
 		return 0;
 	}
+
+    public Walk compileScript( String script, String language, ErrorHandler errors )
+    {
+        return this .mField .compileScript( script, language, errors, this );
+    }
 }

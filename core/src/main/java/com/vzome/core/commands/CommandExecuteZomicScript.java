@@ -10,7 +10,6 @@ import com.vzome.core.construction.ConstructionList;
 import com.vzome.core.construction.Point;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.zomic.Interpreter;
-import com.vzome.core.zomic.ZomicASTCompiler;
 import com.vzome.core.zomic.ZomicException;
 import com.vzome.core.zomic.parser.ErrorHandler;
 import com.vzome.core.zomic.program.Walk;
@@ -70,11 +69,7 @@ public class CommandExecuteZomicScript extends AbstractCommand
         String script = (String) attrs .get( SCRIPT_ATTR );
         ArrayList<String> errors = new ArrayList<>();
 		ErrorHandler errorHandler = new ErrorHandler.Default( errors );
-//        Parser parser = new Parser( (IcosahedralSymmetry) symmetry );
-//		ZomicStatement program = parser .parse(
-//            new ByteArrayInputStream( script .getBytes() ), errorHandler, "" );
-        ZomicASTCompiler compiler = new ZomicASTCompiler(symmetry);
-        Walk program = compiler.compile( script, errorHandler );
+        Walk program = this .symmetry .compileScript( script, "zomic", errorHandler );
         if ( !errors.isEmpty() ) {
             throw new Failure( errors.get(0) );
 		}

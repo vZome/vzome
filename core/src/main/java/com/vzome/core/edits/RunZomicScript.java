@@ -22,7 +22,6 @@ import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.zomic.Interpreter;
-import com.vzome.core.zomic.ZomicASTCompiler;
 import com.vzome.core.zomic.ZomicException;
 import com.vzome.core.zomic.parser.ErrorHandler;
 import com.vzome.core.zomic.program.Walk;
@@ -73,11 +72,7 @@ public class RunZomicScript extends ChangeManifestations
     {
         ArrayList<String> errors = new ArrayList<>();
 		ErrorHandler errorHandler = new ErrorHandler.Default( errors );
-//        Parser parser = new Parser( symm );
-//        ZomicStatement program = parser .parse(
-//            new ByteArrayInputStream( script .getBytes() ), errorHandler, "" );
-		ZomicASTCompiler compiler = new ZomicASTCompiler(symm);
-        Walk program = compiler.compile( script, errorHandler );
+        Walk program = this .symm .compileScript( script, "zomic", errorHandler );
         if ( errors.size() > 0 )
             throw new Failure( errors .get(0) );
         return program;

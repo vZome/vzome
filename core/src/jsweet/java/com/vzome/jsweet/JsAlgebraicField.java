@@ -11,6 +11,9 @@ import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
+import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.zomic.parser.ErrorHandler;
+import com.vzome.core.zomic.program.Walk;
 
 import def.js.Function;
 import def.js.Object;
@@ -473,6 +476,13 @@ public class JsAlgebraicField implements AlgebraicField
             result .setComponent( dim, createAlgebraicNumberFromTD( nums[dim] ) );
         }
         return result;
+    }
+
+    @Override
+    public Walk compileScript( String script, String language, ErrorHandler errors, Symmetry symmetry )
+    {
+        Function f = (Function) this.delegate .$get( "compileScript" );
+        return (Walk) f.$apply( any( script ), any( language ), any( errors ), any( symmetry ) );
     }
 
     
