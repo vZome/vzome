@@ -1,6 +1,6 @@
 {
   "name": "@vzome/react-vzome",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "author": "Scott Vorthmann <scott@vorthmann.org> (http://vzome.com)",
   "description": "React components for rendering interactive 3D content from vZome files",
   "homepage": "https://vzome.com/app",
@@ -34,7 +34,7 @@
     "web-vitals": "^0.2.4"
   },
   "dependencies": {
-    "drei": "3.1.0",
+    "drei": "0.0.70",
     "react-three-fiber": "^4.2.21",
     "three": "^0.124.0"
   },

@@ -39,7 +39,7 @@ export const Demo = () =>
         </DesignCanvas>
       </div>
       <div style={viewerStyle}>
-        <UrlViewer url={"/models/C240.vZome"} />
+        <UrlViewer url={"/models/jk-Deltoid.vZome"} />
       </div>
     </div>
   )
