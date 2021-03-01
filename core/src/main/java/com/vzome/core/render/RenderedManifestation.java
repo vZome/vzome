@@ -196,7 +196,10 @@ public class RenderedManifestation implements RenderedObject
     @JsonGetter( "position" )
     public RealVector getLocation()
     {
-        return getEmbedding() .embedInR3( this .location );
+        if ( this .location != null )
+            return getEmbedding() .embedInR3( this .location );
+        else
+            return new RealVector( 0d, 0d, 0d );
     }
 
     @JsonIgnore

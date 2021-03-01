@@ -27,6 +27,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
+import com.vzome.core.algebra.RootTwoField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.commands.CommandSymmetry;
@@ -62,7 +63,7 @@ public class FieldApplicationTest
         // preserve insertion order for consistent test result
         Collection<FieldApplication> result = new ArrayList<>();
         result.add( new GoldenFieldApplication( new PentagonField() ) );
-        result.add( new RootTwoFieldApplication());
+        result.add( new RootTwoFieldApplication( new RootTwoField() ) );
         result.add( new RootThreeFieldApplication());
         result.add( new HeptagonFieldApplication());
         result.add( new SqrtPhiFieldApplication());
