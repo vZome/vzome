@@ -444,7 +444,10 @@ jsweet {
 
     bundle = true
 
-	outDir = new File('client/public/jsweet')
+	outDir = new File( 'react-library/jsweetOut/js' )
+
+    // The TS compile seems to fail when I set this!  Bug in the Gradle plugin?
+	// tsOut = new File( 'react-library/jsweetOut/ts' )
 
 	targetVersion = 'ES6'
     tsOnly = false
@@ -492,6 +495,7 @@ jsweet {
 
         'com/vzome/core/kinds/DefaultFieldApplication.java',
         'com/vzome/core/kinds/GoldenFieldApplication.java',
+        'com/vzome/core/kinds/RootTwoFieldApplication.java',
 
         'com/vzome/api/Tool.java',
         'com/vzome/api/InputBehaviors.java',

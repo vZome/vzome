@@ -6,6 +6,9 @@ import octahedral from './octahedral/index.js'
 import octahedralFast from './octahedralFast/index.js'
 import octahedralRealistic from './octahedralRealistic/index.js'
 import tiny from './tiny/index.js'
+import rootTwo from './rootTwo/index.js'
+import rootTwoBig from './rootTwoBig/index.js'
+import rootTwoSmall from './rootTwoSmall/index.js'
 
 const shapes = {
   'default': defaultShapes,
@@ -15,6 +18,9 @@ const shapes = {
   octahedralFast,
   octahedralRealistic,
   tiny,
+  rootTwo,
+  rootTwoBig,
+  rootTwoSmall,
 }
 
 export default shapes

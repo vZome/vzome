@@ -1,5 +1,6 @@
 
 import goldenField from '../fields/golden'
+import root2Field from '../fields/root2'
 import Adapter from './adapter'
 import { JavaDomElement, JsProperties } from './wrappers'
 
@@ -9,7 +10,7 @@ import groupResources from '../resources/com/vzome/core/math/symmetry/index.js'
 import { com } from '../jsweet/bundle'
 import { java } from '../jsweet/j4ts-2.0.0/bundle'
 
-const fields = { [goldenField.name]: goldenField }
+const fields = { [goldenField.name]: goldenField, [root2Field.name]: root2Field }
 
 // Copied from core/src/main/resources/com/vzome/core/editor/defaultPrefs.properties
 const defaults = {
@@ -265,7 +266,11 @@ export const init = async () =>
   const properties = new JsProperties( defaults )
   const colors = new vzomePkg.core.render.Colors( properties )
   const gfield = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
-  const fieldApps = { golden: new vzomePkg.core.kinds.GoldenFieldApplication( gfield ) }
+  const r2field = new vzomePkg.jsweet.JsAlgebraicField( root2Field )
+  const fieldApps = {
+    golden: new vzomePkg.core.kinds.GoldenFieldApplication( gfield ),
+    rootTwo: new vzomePkg.core.kinds.RootTwoFieldApplication( r2field ),
+  }
 
   // This object implements the UndoableEdit.Context interface
   const editContext = {
