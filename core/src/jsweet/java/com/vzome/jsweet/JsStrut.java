@@ -51,25 +51,36 @@ public class JsStrut extends JsManifestation implements Strut
         return this .getOffset();
     }
 
-    
-    
-    
-    
     @Override
-    public int compareTo(Strut other)
-    {
-        throw new RuntimeException( "unimplemented" );
+    public int compareTo( Strut other ) {
+        if ( this == other ) {
+            return 0;
+        }
+        if (other.equals(this)) { // intentionally throws a NullPointerException if other is null
+            return 0;
+        }
+        AlgebraicVector thisFirst = this.getCanonicalLesserEnd();
+        AlgebraicVector thisLast = this.getCanonicalGreaterEnd();
+        AlgebraicVector otherFirst = other.getCanonicalLesserEnd();
+        AlgebraicVector otherLast = other.getCanonicalGreaterEnd();
+        int comparison = thisFirst.compareTo( otherFirst );
+        // A strut from J to K should be considered equal to a strut from K to J.
+        return ( comparison  == 0 ) 
+            ? thisLast.compareTo( otherLast )
+            : comparison;
     }
-
-    @Override
+    
     public AlgebraicVector getCanonicalLesserEnd()
     {
-        throw new RuntimeException( "unimplemented" );
+        AlgebraicVector m_end1 = this .getLocation();
+        AlgebraicVector m_end2 = this .getEnd();
+        return (m_end1.compareTo(m_end2) < 0) ? m_end1 : m_end2;
     }
 
-    @Override
     public AlgebraicVector getCanonicalGreaterEnd()
     {
-        throw new RuntimeException( "unimplemented" );
+        AlgebraicVector m_end1 = this .getLocation();
+        AlgebraicVector m_end2 = this .getEnd();
+        return (m_end1.compareTo(m_end2) > 0) ? m_end1 : m_end2;
     }
 }

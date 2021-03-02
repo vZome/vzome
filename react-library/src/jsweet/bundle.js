@@ -1,7 +1,4 @@
-
-import { java, javaemul } from './j4ts-2.0.0/bundle'
-
-
+import { java, javaemul } from "./j4ts-2.0.0/bundle"
 /* Generated from Java with JSweet 2.3.7 - http://www.jsweet.org */
 export var com;
 (function (com) {
@@ -53,8 +50,8 @@ export var com;
                         return this.geometries;
                     }
                     /*private*/ getGeometry(name) {
-                        for (let index1017 = this.geometries.iterator(); index1017.hasNext();) {
-                            let shapes = index1017.next();
+                        for (let index1689 = this.geometries.iterator(); index1689.hasNext();) {
+                            let shapes = index1689.next();
                             {
                                 if ( /* equals */((o1, o2) => { if (o1 && o1.equals) {
                                     return o1.equals(o2);
@@ -333,8 +330,8 @@ export var com;
                     ;
                     addColor(name, color) {
                         this.mColors.put(name, color);
-                        for (let index1018 = this.mListeners.iterator(); index1018.hasNext();) {
-                            let next = index1018.next();
+                        for (let index1690 = this.mListeners.iterator(); index1690.hasNext();) {
+                            let next = index1690.next();
                             {
                                 next.colorAdded(name, color);
                             }
@@ -342,8 +339,8 @@ export var com;
                     }
                     setColor(name, color) {
                         this.mColors.put(name, color);
-                        for (let index1019 = this.mListeners.iterator(); index1019.hasNext();) {
-                            let next = index1019.next();
+                        for (let index1691 = this.mListeners.iterator(); index1691.hasNext();) {
+                            let next = index1691.next();
                             {
                                 next.colorChanged(name, color);
                             }
@@ -621,7 +618,10 @@ export var com;
                         return this.mOrientation;
                     }
                     getLocation() {
-                        return this.getEmbedding().embedInR3(this.location);
+                        if (this.location != null)
+                            return this.getEmbedding().embedInR3(this.location);
+                        else
+                            return new com.vzome.core.math.RealVector(0.0, 0.0, 0.0);
                     }
                     getLocationAV() {
                         return this.location;
@@ -850,8 +850,8 @@ export var com;
                         let poly = new com.vzome.core.math.Polyhedron(panel.getZoneVector().getField());
                         poly.setPanel(true);
                         let arity = 0;
-                        for (let index1020 = panel.iterator(); index1020.hasNext();) {
-                            let gv = index1020.next();
+                        for (let index1692 = panel.iterator(); index1692.hasNext();) {
+                            let gv = index1692.next();
                             {
                                 arity++;
                                 poly.addVertex(gv);
@@ -1138,8 +1138,8 @@ export var com;
                             }
                             ;
                         }
-                        for (let index1021 = this.prototypeFaces.iterator(); index1021.hasNext();) {
-                            let prototypeFace = index1021.next();
+                        for (let index1693 = this.prototypeFaces.iterator(); index1693.hasNext();) {
+                            let prototypeFace = index1693.next();
                             {
                                 let face = result.newFace();
                                 face.addAll(prototypeFace);
@@ -1192,8 +1192,8 @@ export var com;
                     projectImage(source, wFirst) {
                         let result = this.field.origin(this.basis[0].dimension());
                         let pos = wFirst ? 0 : this.basis.length - 1;
-                        for (let index1022 = 0; index1022 < this.basis.length; index1022++) {
-                            let unitVector = this.basis[index1022];
+                        for (let index1694 = 0; index1694 < this.basis.length; index1694++) {
+                            let unitVector = this.basis[index1694];
                             {
                                 let scalar = source.getComponent(pos);
                                 result = result.plus(unitVector.scale(scalar));
@@ -1291,15 +1291,15 @@ export var com;
                             ;
                             this.evilTwin.isEvil = true;
                             this.evilTwin.m_vertexList = (new java.util.ArrayList());
-                            for (let index1023 = this.m_vertexList.iterator(); index1023.hasNext();) {
-                                let vertex = index1023.next();
+                            for (let index1695 = this.m_vertexList.iterator(); index1695.hasNext();) {
+                                let vertex = index1695.next();
                                 {
                                     this.evilTwin.addVertex(reflection.timesColumn(vertex));
                                 }
                             }
                             this.evilTwin.m_faces = (new java.util.HashSet());
-                            for (let index1024 = this.m_faces.iterator(); index1024.hasNext();) {
-                                let face = index1024.next();
+                            for (let index1696 = this.m_faces.iterator(); index1696.hasNext();) {
+                                let face = index1696.next();
                                 {
                                     let mirrorFace = ((o) => { if (o.clone != undefined) {
                                         return o.clone();
@@ -1493,8 +1493,8 @@ export var com;
                     }
                     getTriangleFaces() {
                         let result = (new java.util.ArrayList());
-                        for (let index1025 = this.m_faces.iterator(); index1025.hasNext();) {
-                            let face = index1025.next();
+                        for (let index1697 = this.m_faces.iterator(); index1697.hasNext();) {
+                            let face = index1697.next();
                             {
                                 result.addAll(face.getTriangles());
                             }
@@ -1504,11 +1504,11 @@ export var com;
                     getTriangles() {
                         let index = 0;
                         let result = (new java.util.ArrayList());
-                        for (let index1026 = this.m_faces.iterator(); index1026.hasNext();) {
-                            let face = index1026.next();
+                        for (let index1698 = this.m_faces.iterator(); index1698.hasNext();) {
+                            let face = index1698.next();
                             {
-                                for (let index1027 = face.getTriangles().iterator(); index1027.hasNext();) {
-                                    let triangle = index1027.next();
+                                for (let index1699 = face.getTriangles().iterator(); index1699.hasNext();) {
+                                    let triangle = index1699.next();
                                     {
                                         result.add(index++);
                                         result.add(index++);
@@ -1521,14 +1521,14 @@ export var com;
                     }
                     getTriangleVertices() {
                         let result = (new java.util.ArrayList());
-                        for (let index1028 = this.m_faces.iterator(); index1028.hasNext();) {
-                            let face = index1028.next();
+                        for (let index1700 = this.m_faces.iterator(); index1700.hasNext();) {
+                            let face = index1700.next();
                             {
-                                for (let index1029 = face.getTriangles().iterator(); index1029.hasNext();) {
-                                    let triangle = index1029.next();
+                                for (let index1701 = face.getTriangles().iterator(); index1701.hasNext();) {
+                                    let triangle = index1701.next();
                                     {
-                                        for (let index1030 = 0; index1030 < triangle.vertices.length; index1030++) {
-                                            let index = triangle.vertices[index1030];
+                                        for (let index1702 = 0; index1702 < triangle.vertices.length; index1702++) {
+                                            let index = triangle.vertices[index1702];
                                             {
                                                 let vertex = this.m_vertexList.get(index);
                                                 result.add(vertex.toRealVector());
@@ -1756,8 +1756,8 @@ export var com;
                             let vertices3d = (s => { let a = []; while (s-- > 0)
                                 a.push(null); return a; })(stack2d.size());
                             let i = 0;
-                            for (let index1031 = stack2d.iterator(); index1031.hasNext();) {
-                                let point2d = index1031.next();
+                            for (let index1703 = stack2d.iterator(); index1703.hasNext();) {
+                                let point2d = index1703.next();
                                 {
                                     let point3d = xyTo3dMap.get(point2d.toString(com.vzome.core.algebra.AlgebraicField.VEF_FORMAT));
                                     vertices3d[i++] = point3d;
@@ -1770,8 +1770,8 @@ export var com;
                             let mapX = (maxAxis + 1) % 3;
                             let mapY = (maxAxis + 2) % 3;
                             let map = (new java.util.HashMap());
-                            for (let index1032 = points3d.iterator(); index1032.hasNext();) {
-                                let point3d = index1032.next();
+                            for (let index1704 = points3d.iterator(); index1704.hasNext();) {
+                                let point3d = index1704.next();
                                 {
                                     let point2d = new com.vzome.core.algebra.AlgebraicVector(point3d.getComponent(mapX), point3d.getComponent(mapY));
                                     keySet.add(point2d);
@@ -1848,8 +1848,8 @@ export var com;
                          */
                         static getLowest2dPoint(points2d) {
                             let lowest = null;
-                            for (let index1033 = points2d.iterator(); index1033.hasNext();) {
-                                let point2d = index1033.next();
+                            for (let index1705 = points2d.iterator(); index1705.hasNext();) {
+                                let point2d = index1705.next();
                                 {
                                     if (lowest == null) {
                                         lowest = point2d;
@@ -2450,8 +2450,8 @@ export var com;
                             }
                         }
                         /*private*/ findHalfEdge(tail, head) {
-                            for (let index1034 = this.faces.iterator(); index1034.hasNext();) {
-                                let face = index1034.next();
+                            for (let index1706 = this.faces.iterator(); index1706.hasNext();) {
+                                let face = index1706.next();
                                 {
                                     let he = face.findEdge(tail, head);
                                     if (he != null) {
@@ -2554,16 +2554,16 @@ export var com;
                          */
                         triangulate() {
                             this.newFaces.clear();
-                            for (let index1035 = this.faces.iterator(); index1035.hasNext();) {
-                                let face = index1035.next();
+                            for (let index1707 = this.faces.iterator(); index1707.hasNext();) {
+                                let face = index1707.next();
                                 {
                                     if (face.mark === com.vzome.core.math.convexhull.Face.VISIBLE) {
                                         face.triangulate(this.newFaces);
                                     }
                                 }
                             }
-                            for (let index1036 = this.newFaces.iterator(); index1036.hasNext();) {
-                                let face = index1036.next();
+                            for (let index1708 = this.newFaces.iterator(); index1708.hasNext();) {
+                                let face = index1708.next();
                                 {
                                     this.faces.add(face);
                                 }
@@ -2853,8 +2853,8 @@ export var com;
                          */
                         getNumEdges() {
                             let count = 0;
-                            for (let index1037 = this.faces.iterator(); index1037.hasNext();) {
-                                let face = index1037.next();
+                            for (let index1709 = this.faces.iterator(); index1709.hasNext();) {
+                                let face = index1709.next();
                                 {
                                     count += face.numVertices();
                                 }
@@ -2876,8 +2876,8 @@ export var com;
                             let allFaces = (s => { let a = []; while (s-- > 0)
                                 a.push(null); return a; })(this.faces.size());
                             let k = 0;
-                            for (let index1038 = this.faces.iterator(); index1038.hasNext();) {
-                                let face = index1038.next();
+                            for (let index1710 = this.faces.iterator(); index1710.hasNext();) {
+                                let face = index1710.next();
                                 {
                                     allFaces[k] = (s => { let a = []; while (s-- > 0)
                                         a.push(0); return a; })(face.numVertices());
@@ -2927,8 +2927,8 @@ export var com;
                                 }
                                 ;
                             }
-                            for (let index1039 = this.faces.iterator(); index1039.hasNext();) {
-                                let face = index1039.next();
+                            for (let index1711 = this.faces.iterator(); index1711.hasNext();) {
+                                let face = index1711.next();
                                 {
                                     let indices = (s => { let a = []; while (s-- > 0)
                                         a.push(0); return a; })(face.numVertices());
@@ -3003,8 +3003,8 @@ export var com;
                                     vtxNext = vtx.next;
                                     let maxDist = 0;
                                     let maxFace = null;
-                                    for (let index1040 = newFaces.iterator(); index1040.hasNext();) {
-                                        let newFace = index1040.next();
+                                    for (let index1712 = newFaces.iterator(); index1712.hasNext();) {
+                                        let newFace = index1712.next();
                                         {
                                             if (newFace.mark === com.vzome.core.math.convexhull.Face.VISIBLE) {
                                                 let dist = newFace.distanceToPlane(vtx.pnt).evaluate();
@@ -3158,8 +3158,8 @@ export var com;
                             newFaces.clear();
                             let hedgeSidePrev = null;
                             let hedgeSideBegin = null;
-                            for (let index1041 = horizon.iterator(); index1041.hasNext();) {
-                                let horizonHe = index1041.next();
+                            for (let index1713 = horizon.iterator(); index1713.hasNext();) {
+                                let horizonHe = index1713.next();
                                 {
                                     let hedgeSide = this.addAdjoiningFace(eyeVtx, horizonHe);
                                     if (this.debug) {
@@ -3209,8 +3209,8 @@ export var com;
                             this.calculateHorizon(eyeVtx.pnt, null, eyeVtx.face, horizon);
                             this.newFaces.clear();
                             this.addNewFaces(this.newFaces, eyeVtx, horizon);
-                            for (let index1042 = this.newFaces.iterator(); index1042.hasNext();) {
-                                let face = index1042.next();
+                            for (let index1714 = this.newFaces.iterator(); index1714.hasNext();) {
+                                let face = index1714.next();
                                 {
                                     if (face.mark === com.vzome.core.math.convexhull.Face.VISIBLE) {
                                         while ((this.doAdjacentMerge(face, QuickHull3D.NONCONVEX_WRT_LARGER_FACE))) { }
@@ -3218,8 +3218,8 @@ export var com;
                                     }
                                 }
                             }
-                            for (let index1043 = this.newFaces.iterator(); index1043.hasNext();) {
-                                let face = index1043.next();
+                            for (let index1715 = this.newFaces.iterator(); index1715.hasNext();) {
+                                let face = index1715.next();
                                 {
                                     if (face.mark === com.vzome.core.math.convexhull.Face.NON_CONVEX) {
                                         face.mark = com.vzome.core.math.convexhull.Face.VISIBLE;
@@ -3325,8 +3325,8 @@ export var com;
                         }
                         checkFaces(ps) {
                             let convex = true;
-                            for (let index1044 = this.faces.iterator(); index1044.hasNext();) {
-                                let face = index1044.next();
+                            for (let index1716 = this.faces.iterator(); index1716.hasNext();) {
+                                let face = index1716.next();
                                 {
                                     if (face.mark === com.vzome.core.math.convexhull.Face.VISIBLE) {
                                         if (!this.checkFaceConvexity(face, ps)) {
@@ -3364,8 +3364,8 @@ export var com;
                             for (let i = 0; i < this.numPoints; i++) {
                                 {
                                     let pnt = this.pointBuffer[i].pnt;
-                                    for (let index1045 = this.faces.iterator(); index1045.hasNext();) {
-                                        let face = index1045.next();
+                                    for (let index1717 = this.faces.iterator(); index1717.hasNext();) {
+                                        let face = index1717.next();
                                         {
                                             if (face.mark === com.vzome.core.math.convexhull.Face.VISIBLE) {
                                                 let dist = face.distanceToPlane(pnt);
@@ -3792,8 +3792,8 @@ export var com;
                     projectImage(source, wFirst) {
                         let result = this.field.origin(this.basis[0].dimension());
                         let pos = wFirst ? 0 : this.basis.length - 1;
-                        for (let index1046 = 0; index1046 < this.basis.length; index1046++) {
-                            let unitVector = this.basis[index1046];
+                        for (let index1718 = 0; index1718 < this.basis.length; index1718++) {
+                            let unitVector = this.basis[index1718];
                             {
                                 let scalar = source.getComponent(pos);
                                 result = result.plus(unitVector.scale(scalar));
@@ -5111,8 +5111,8 @@ export var com;
                             }
                             let canonicalOrbit = this.getSpecialOrbit(symmetry.Symmetry.SpecialOrbit.BLACK);
                             if (canonicalOrbit == null)
-                                for (let index1047 = orbits.iterator(); index1047.hasNext();) {
-                                    let dir = index1047.next();
+                                for (let index1719 = orbits.iterator(); index1719.hasNext();) {
+                                    let dir = index1719.next();
                                     {
                                         let candidate = dir.getAxis$com_vzome_core_algebra_AlgebraicVector(vector);
                                         if (candidate != null) {
@@ -5124,8 +5124,8 @@ export var com;
                                 let zone = canonicalOrbit.getAxis$com_vzome_core_math_RealVector(vector.toRealVector());
                                 let orientation = zone.getOrientation();
                                 let sense = zone.getSense();
-                                for (let index1048 = orbits.iterator(); index1048.hasNext();) {
-                                    let orbit = index1048.next();
+                                for (let index1720 = orbits.iterator(); index1720.hasNext();) {
+                                    let orbit = index1720.next();
                                     {
                                         let candidate = orbit.getCanonicalAxis(sense, orientation);
                                         if (com.vzome.core.algebra.AlgebraicVectors.areParallel(candidate.normal(), vector)) {
@@ -5240,8 +5240,8 @@ export var com;
                          */
                         getDirectionNames() {
                             let list = (new java.util.ArrayList());
-                            for (let index1049 = this.mDirectionList.iterator(); index1049.hasNext();) {
-                                let dir = index1049.next();
+                            for (let index1721 = this.mDirectionList.iterator(); index1721.hasNext();) {
+                                let dir = index1721.next();
                                 {
                                     if (!dir.isAutomatic())
                                         list.add(dir.getName());
@@ -5271,8 +5271,8 @@ export var com;
                             while ((!newPerms.isEmpty())) {
                                 {
                                     let perm = newPerms.remove(0);
-                                    for (let index1050 = 0; index1050 < knownPerms.length; index1050++) {
-                                        let knownPerm = knownPerms[index1050];
+                                    for (let index1722 = 0; index1722 < knownPerms.length; index1722++) {
+                                        let knownPerm = knownPerms[index1722];
                                         {
                                             if (knownPerm != null) {
                                                 let composition = perm.compose(knownPerm);
@@ -5350,8 +5350,8 @@ export var com;
                          */
                         computeOrbitDots() {
                             this.dotLocator = new com.vzome.core.math.symmetry.OrbitDotLocator(this, this.getOrbitTriangle());
-                            for (let index1051 = this.mDirectionList.iterator(); index1051.hasNext();) {
-                                let orbit = index1051.next();
+                            for (let index1723 = this.mDirectionList.iterator(); index1723.hasNext();) {
+                                let orbit = index1723.next();
                                 {
                                     this.dotLocator.locateOrbitDot(orbit);
                                 }
@@ -5448,8 +5448,8 @@ export var com;
                             return this.symmetry['getAxis$com_vzome_core_math_RealVector$java_util_Set'](vector, this);
                         }
                         getDirection(name) {
-                            for (let index1052 = this.iterator(); index1052.hasNext();) {
-                                let dir = index1052.next();
+                            for (let index1724 = this.iterator(); index1724.hasNext();) {
+                                let dir = index1724.next();
                                 {
                                     if ( /* equals */((o1, o2) => { if (o1 && o1.equals) {
                                         return o1.equals(o2);
@@ -5541,8 +5541,8 @@ export var com;
                             return naming.getAxis(name);
                         }
                         getName(axis) {
-                            for (let index1053 = this.mNamings.values().iterator(); index1053.hasNext();) {
-                                let naming = index1053.next();
+                            for (let index1725 = this.mNamings.values().iterator(); index1725.hasNext();) {
+                                let naming = index1725.next();
                                 {
                                     if (naming.getDirection().equals(axis.getDirection()))
                                         return naming.getName$com_vzome_core_math_symmetry_Axis(axis);
@@ -5790,8 +5790,8 @@ export var com;
                             return this.mName;
                         }
                         getAxis$com_vzome_core_algebra_AlgebraicVector(vector) {
-                            for (let index1054 = this.zoneVectors.values().iterator(); index1054.hasNext();) {
-                                let axis = index1054.next();
+                            for (let index1726 = this.zoneVectors.values().iterator(); index1726.hasNext();) {
+                                let axis = index1726.next();
                                 {
                                     let normal = axis.normal();
                                     if (com.vzome.core.algebra.AlgebraicVectors.areParallel(normal, vector)) {
@@ -5844,8 +5844,8 @@ export var com;
                                         break;
                                     }
                                     let reverseSense = (closestSense + 1) % 2;
-                                    for (let index1055 = 0; index1055 < incidentOrientations.length; index1055++) {
-                                        let i = incidentOrientations[index1055];
+                                    for (let index1727 = 0; index1727 < incidentOrientations.length; index1727++) {
+                                        let i = incidentOrientations[index1727];
                                         {
                                             let neighbor = this.getCanonicalAxis(reverseSense, i);
                                             if (checked.contains(neighbor))
@@ -5872,8 +5872,8 @@ export var com;
                         getAxisBruteForce(vector) {
                             let closestAxis = null;
                             let maxCosine = -1.0;
-                            for (let index1056 = this.iterator(); index1056.hasNext();) {
-                                let axis = index1056.next();
+                            for (let index1728 = this.iterator(); index1728.hasNext();) {
+                                let axis = index1728.next();
                                 {
                                     let axisV = axis.normal().toRealVector();
                                     let cosine = vector.dot(axisV) / (vector.length() * axisV.length());
@@ -6976,8 +6976,8 @@ export var com;
                         let panels = (new java.util.ArrayList());
                         let lastBall = null;
                         let lastVertex = null;
-                        for (let index1057 = model.iterator(); index1057.hasNext();) {
-                            let man = index1057.next();
+                        for (let index1729 = model.iterator(); index1729.hasNext();) {
+                            let man = index1729.next();
                             {
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0)) {
                                     lastBall = man.getLocation();
@@ -6989,8 +6989,8 @@ export var com;
                                     vertices.add(man.getEnd());
                                 }
                                 else if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0)) {
-                                    for (let index1058 = man.iterator(); index1058.hasNext();) {
-                                        let vertex = index1058.next();
+                                    for (let index1730 = man.iterator(); index1730.hasNext();) {
+                                        let vertex = index1730.next();
                                         {
                                             lastVertex = vertex;
                                             vertices.add(vertex);
@@ -7003,8 +7003,8 @@ export var com;
                         let sortedVertexList = (new java.util.ArrayList(vertices));
                         vertices = null;
                         let mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-                        for (let index1059 = model.iterator(); index1059.hasNext();) {
-                            let man = index1059.next();
+                        for (let index1731 = model.iterator(); index1731.hasNext();) {
+                            let man = index1731.next();
                             {
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0)) {
                                     let ballJson = mapper.createObjectNode();
@@ -7042,8 +7042,8 @@ export var com;
                         generator.writeFieldName("vertices");
                         generator.writeStartArray();
                         let objectWriter = mapper.writerWithView("com.vzome.core.algebra.AlgebraicNumber.Views.TrailingDivisor");
-                        for (let index1060 = sortedVertexList.iterator(); index1060.hasNext();) {
-                            let algebraicVector = index1060.next();
+                        for (let index1732 = sortedVertexList.iterator(); index1732.hasNext();) {
+                            let algebraicVector = index1732.next();
                             {
                                 algebraicVector = algebraicVector.minus(origin);
                                 generator.writeObject(mapper.readTree(objectWriter.writeValueAsString(algebraicVector)));
@@ -7070,15 +7070,15 @@ export var com;
                         let vertices = (new java.util.ArrayList());
                         {
                             let verticesNode = node.get("vertices");
-                            for (let index1061 = verticesNode.iterator(); index1061.hasNext();) {
-                                let vectorNode = index1061.next();
+                            for (let index1733 = verticesNode.iterator(); index1733.hasNext();) {
+                                let vectorNode = index1733.next();
                                 {
                                     let dimension = vectorNode.size();
                                     let nums = (s => { let a = []; while (s-- > 0)
                                         a.push(null); return a; })(dimension);
                                     let i = 0;
-                                    for (let index1062 = vectorNode.iterator(); index1062.hasNext();) {
-                                        let numberNode = index1062.next();
+                                    for (let index1734 = vectorNode.iterator(); index1734.hasNext();) {
+                                        let numberNode = index1734.next();
                                         {
                                             nums[i++] = (mapper.treeToValue(numberNode, [].constructor));
                                         }
@@ -7102,8 +7102,8 @@ export var com;
                                 })(vertices));
                             }
                             catch (e) {
-                                for (let index1063 = collection.iterator(); index1063.hasNext();) {
-                                    let ballNode = index1063.next();
+                                for (let index1735 = collection.iterator(); index1735.hasNext();) {
+                                    let ballNode = index1735.next();
                                     {
                                         let vertexNode = ballNode.get("vertex");
                                         let i = vertexNode.asInt();
@@ -7117,8 +7117,8 @@ export var com;
                         }
                         collection = node.get("struts");
                         if (collection != null) {
-                            for (let index1064 = collection.iterator(); index1064.hasNext();) {
-                                let strutNode = index1064.next();
+                            for (let index1736 = collection.iterator(); index1736.hasNext();) {
+                                let strutNode = index1736.next();
                                 {
                                     if (strutNode.has("start")) {
                                         let start = (mapper.treeToValue(strutNode.get("start"), Number));
@@ -7141,8 +7141,8 @@ export var com;
                         }
                         collection = node.get("panels");
                         if (collection != null) {
-                            for (let index1065 = collection.iterator(); index1065.hasNext();) {
-                                let panelNode = index1065.next();
+                            for (let index1737 = collection.iterator(); index1737.hasNext();) {
+                                let panelNode = index1737.next();
                                 {
                                     let verticesNode = panelNode.get("vertices");
                                     let indices = (mapper.treeToValue(verticesNode, [].constructor));
@@ -7210,8 +7210,8 @@ export var com;
                         let faceNodes = (new java.util.ArrayList());
                         let lastBall = null;
                         let lastVertex = null;
-                        for (let index1066 = model.iterator(); index1066.hasNext();) {
-                            let man = index1066.next();
+                        for (let index1738 = model.iterator(); index1738.hasNext();) {
+                            let man = index1738.next();
                             {
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0)) {
                                     lastBall = man.getLocation();
@@ -7223,8 +7223,8 @@ export var com;
                                     vertices.add(man.getEnd());
                                 }
                                 else if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0)) {
-                                    for (let index1067 = man.iterator(); index1067.hasNext();) {
-                                        let vertex = index1067.next();
+                                    for (let index1739 = man.iterator(); index1739.hasNext();) {
+                                        let vertex = index1739.next();
                                         {
                                             lastVertex = vertex;
                                             vertices.add(vertex);
@@ -7237,8 +7237,8 @@ export var com;
                         let sortedVertexList = (new java.util.ArrayList(vertices));
                         vertices = null;
                         let mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-                        for (let index1068 = model.iterator(); index1068.hasNext();) {
-                            let man = index1068.next();
+                        for (let index1740 = model.iterator(); index1740.hasNext();) {
+                            let man = index1740.next();
                             {
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0)) {
                                     vertexIndices.add(sortedVertexList.indexOf(man.getLocation()));
@@ -7267,8 +7267,8 @@ export var com;
                         generator.writeFieldName("vertices");
                         generator.writeStartArray();
                         let objectWriter = mapper.writerWithView("com.vzome.core.algebra.AlgebraicNumber.Views.TrailingDivisor");
-                        for (let index1069 = sortedVertexList.iterator(); index1069.hasNext();) {
-                            let algebraicVector = index1069.next();
+                        for (let index1741 = sortedVertexList.iterator(); index1741.hasNext();) {
+                            let algebraicVector = index1741.next();
                             {
                                 algebraicVector = algebraicVector.minus(origin);
                                 generator.writeObject(mapper.readTree(objectWriter.writeValueAsString(algebraicVector)));
@@ -7297,15 +7297,15 @@ export var com;
                         let vertices = (new java.util.ArrayList());
                         {
                             let verticesNode = node.get("vertices");
-                            for (let index1070 = verticesNode.iterator(); index1070.hasNext();) {
-                                let vectorNode = index1070.next();
+                            for (let index1742 = verticesNode.iterator(); index1742.hasNext();) {
+                                let vectorNode = index1742.next();
                                 {
                                     let dimension = vectorNode.size();
                                     let nums = (s => { let a = []; while (s-- > 0)
                                         a.push(null); return a; })(dimension);
                                     let i = 0;
-                                    for (let index1071 = vectorNode.iterator(); index1071.hasNext();) {
-                                        let numberNode = index1071.next();
+                                    for (let index1743 = vectorNode.iterator(); index1743.hasNext();) {
+                                        let numberNode = index1743.next();
                                         {
                                             nums[i++] = (mapper.treeToValue(numberNode, [].constructor));
                                         }
@@ -7321,8 +7321,8 @@ export var com;
                         }
                         ;
                         let collection = node.get("edges");
-                        for (let index1072 = collection.iterator(); index1072.hasNext();) {
-                            let strutNode = index1072.next();
+                        for (let index1744 = collection.iterator(); index1744.hasNext();) {
+                            let strutNode = index1744.next();
                             {
                                 let ends = (mapper.treeToValue(strutNode, [].constructor));
                                 let p1 = new com.vzome.core.construction.FreePoint(vertices.get(ends[0]));
@@ -7333,8 +7333,8 @@ export var com;
                             }
                         }
                         collection = node.get("faces");
-                        for (let index1073 = collection.iterator(); index1073.hasNext();) {
-                            let panelNode = index1073.next();
+                        for (let index1745 = collection.iterator(); index1745.hasNext();) {
+                            let panelNode = index1745.next();
                             {
                                 let indices = (mapper.treeToValue(panelNode, [].constructor));
                                 let points = (java.util.Arrays.stream(indices).mapToObj(((vertices) => {
@@ -8859,8 +8859,8 @@ export var com;
                     getXml(result, attributes) {
                         if (attributes == null)
                             return;
-                        for (let index1074 = attributes.keySet().iterator(); index1074.hasNext();) {
-                            let key = index1074.next();
+                        for (let index1746 = attributes.keySet().iterator(); index1746.hasNext();) {
+                            let key = index1746.next();
                             {
                                 if ( /* equals */((o1, o2) => { if (o1 && o1.equals) {
                                     return o1.equals(o2);
@@ -9493,8 +9493,8 @@ export var com;
                         initialize(selection) {
                             if (this.color == null) {
                                 let last = null;
-                                for (let index1075 = selection.iterator(); index1075.hasNext();) {
-                                    let man = index1075.next();
+                                for (let index1747 = selection.iterator(); index1747.hasNext();) {
+                                    let man = index1747.next();
                                     {
                                         if (man != null && man.isRendered()) {
                                             last = man;
@@ -9607,8 +9607,8 @@ export var com;
                         }
                         static getMostDistantPoint(manifestations) {
                             let centroids = (new java.util.ArrayList());
-                            for (let index1076 = manifestations.iterator(); index1076.hasNext();) {
-                                let man = index1076.next();
+                            for (let index1748 = manifestations.iterator(); index1748.hasNext();) {
+                                let man = index1748.next();
                                 {
                                     centroids.add(man.getCentroid());
                                 }
@@ -10302,8 +10302,8 @@ export var com;
                     }
                     getXml(doc) {
                         let result = doc.createElement("Tools");
-                        for (let index1077 = this.values().iterator(); index1077.hasNext();) {
-                            let tool = index1077.next();
+                        for (let index1749 = this.values().iterator(); index1749.hasNext();) {
+                            let tool = index1749.next();
                             if (!tool.isPredefined()) {
                                 let toolElem = doc.createElement("Tool");
                                 com.vzome.xml.DomUtils.addAttribute(toolElem, "id", tool.getId());
@@ -10413,8 +10413,8 @@ export var com;
                         }
                         else if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0)) {
                             let vs = (new java.util.ArrayList());
-                            for (let index1078 = man.iterator(); index1078.hasNext();) {
-                                let v = index1078.next();
+                            for (let index1750 = man.iterator(); index1750.hasNext();) {
+                                let v = index1750.next();
                                 {
                                     vs.add(this.getVertex(v));
                                 }
@@ -10459,8 +10459,8 @@ export var com;
                         this.selection = selection;
                     }
                     notifyListeners() {
-                        for (let index1079 = this.listeners.iterator(); index1079.hasNext();) {
-                            let listener = index1079.next();
+                        for (let index1751 = this.listeners.iterator(); index1751.hasNext();) {
+                            let listener = index1751.next();
                             {
                                 listener.selectionChanged(this.selection.size(), this.balls, this.struts, this.panels);
                             }
@@ -10805,8 +10805,8 @@ export var com;
                         let styleName = symmetryPerspective.getDefaultGeometry().getName();
                         this.orbits = new com.vzome.core.math.symmetry.OrbitSet(this.symmetry);
                         if (symmXml == null) {
-                            for (let index1080 = this.symmetry.getOrbitSet().iterator(); index1080.hasNext();) {
-                                let orbit = index1080.next();
+                            for (let index1752 = this.symmetry.getOrbitSet().iterator(); index1752.hasNext();) {
+                                let orbit = index1752.next();
                                 {
                                     if (symmetryPerspective.orbitIsStandard(orbit) || allowNonstandard)
                                         this.orbits.add(orbit);
@@ -10864,8 +10864,8 @@ export var com;
                                 }
                                 ;
                             }
-                            for (let index1081 = this.symmetry.getOrbitSet().iterator(); index1081.hasNext();) {
-                                let orbit = index1081.next();
+                            for (let index1753 = this.symmetry.getOrbitSet().iterator(); index1753.hasNext();) {
+                                let orbit = index1753.next();
                                 {
                                     if (this.orbits.contains(orbit))
                                         continue;
@@ -10886,13 +10886,13 @@ export var com;
                     }
                     createToolFactories(tools) {
                         {
-                            let array1083 = /* Enum.values */ function () { let result = []; for (let val in com.vzome.api.Tool.Kind) {
+                            let array1755 = /* Enum.values */ function () { let result = []; for (let val in com.vzome.api.Tool.Kind) {
                                 if (!isNaN(val)) {
                                     result.push(parseInt(val, 10));
                                 }
                             } return result; }();
-                            for (let index1082 = 0; index1082 < array1083.length; index1082++) {
-                                let kind = array1083[index1082];
+                            for (let index1754 = 0; index1754 < array1755.length; index1754++) {
+                                let kind = array1755[index1754];
                                 {
                                     let list = this.symmetryPerspective.createToolFactories(kind, tools);
                                     this.toolFactoryLists.put(kind, list);
@@ -11030,8 +11030,8 @@ export var com;
                         let result = doc.createElement("SymmetrySystem");
                         com.vzome.xml.DomUtils.addAttribute(result, "name", this.getSymmetry().getName());
                         com.vzome.xml.DomUtils.addAttribute(result, "renderingStyle", this.shapes.getName());
-                        for (let index1084 = this.orbits.iterator(); index1084.hasNext();) {
-                            let dir = index1084.next();
+                        for (let index1756 = this.orbits.iterator(); index1756.hasNext();) {
+                            let dir = index1756.next();
                             {
                                 let dirElem = doc.createElement("Direction");
                                 if (dir.isAutomatic())
@@ -11590,8 +11590,8 @@ export var com;
                     hashCode() {
                         let prime = 31;
                         let result = 1;
-                        for (let index1085 = 0; index1085 < this.matrix.length; index1085++) {
-                            let m = this.matrix[index1085];
+                        for (let index1757 = 0; index1757 < this.matrix.length; index1757++) {
+                            let m = this.matrix[index1757];
                             {
                                 result = prime * result + java.util.Arrays.hashCode(m);
                             }
@@ -11622,8 +11622,8 @@ export var com;
                      */
                     toString() {
                         let buf = new java.lang.StringBuilder();
-                        for (let index1086 = 0; index1086 < this.matrix.length; index1086++) {
-                            let m = this.matrix[index1086];
+                        for (let index1758 = 0; index1758 < this.matrix.length; index1758++) {
+                            let m = this.matrix[index1758];
                             {
                                 buf.append(java.util.Arrays.toString(m));
                                 buf.append(", ");
@@ -11894,8 +11894,8 @@ export var com;
                         let v0 = null;
                         let v1 = null;
                         let normal = null;
-                        for (let index1087 = vectors.iterator(); index1087.hasNext();) {
-                            let vector = index1087.next();
+                        for (let index1759 = vectors.iterator(); index1759.hasNext();) {
+                            let vector = index1759.next();
                             {
                                 if (v0 == null) {
                                     v0 = vector;
@@ -11953,8 +11953,8 @@ export var com;
                             throw new java.lang.IllegalArgumentException("Normal vector cannot be the origin");
                         }
                         let v0 = null;
-                        for (let index1088 = vectors.iterator(); index1088.hasNext();) {
-                            let vector = index1088.next();
+                        for (let index1760 = vectors.iterator(); index1760.hasNext();) {
+                            let vector = index1760.next();
                             {
                                 if (v0 == null) {
                                     v0 = vector;
@@ -12005,8 +12005,8 @@ export var com;
                     static getCentroid(vectors) {
                         let field = vectors[0].getField();
                         let sum = new com.vzome.core.algebra.AlgebraicVector(field, vectors[0].dimension());
-                        for (let index1089 = 0; index1089 < vectors.length; index1089++) {
-                            let vector = vectors[index1089];
+                        for (let index1761 = 0; index1761 < vectors.length; index1761++) {
+                            let vector = vectors[index1761];
                             {
                                 sum = sum.plus(vector);
                             }
@@ -12036,8 +12036,8 @@ export var com;
                     static getMostDistantFromOrigin(vectors) {
                         let mostDistant = (new java.util.TreeSet());
                         let maxDistanceSquared = 0.0;
-                        for (let index1090 = vectors.iterator(); index1090.hasNext();) {
-                            let vector = index1090.next();
+                        for (let index1762 = vectors.iterator(); index1762.hasNext();) {
+                            let vector = index1762.next();
                             {
                                 let magnitudeSquared = AlgebraicVectors.getMagnitudeSquared(vector).evaluate();
                                 if (magnitudeSquared >= maxDistanceSquared) {
@@ -12397,8 +12397,8 @@ export var com;
                         return new AlgebraicVector(result);
                     }
                     isOrigin() {
-                        for (let index1091 = 0; index1091 < this.coordinates.length; index1091++) {
-                            let coordinate = this.coordinates[index1091];
+                        for (let index1763 = 0; index1763 < this.coordinates.length; index1763++) {
+                            let coordinate = this.coordinates[index1763];
                             {
                                 if (!coordinate.isZero()) {
                                     return false;
@@ -12724,8 +12724,8 @@ export var com;
                         let out = new java.io.StringWriter();
                         let exporter = new VefVectorExporter(out, polyhedron.getField());
                         let vertexList = polyhedron.getVertexList();
-                        for (let index1092 = polyhedron.getFaceSet().iterator(); index1092.hasNext();) {
-                            let face = index1092.next();
+                        for (let index1764 = polyhedron.getFaceSet().iterator(); index1764.hasNext();) {
+                            let face = index1764.next();
                             {
                                 let vertices = (new java.util.ArrayList(face.size()));
                                 for (let i = 0; i < face.size(); i++) {
@@ -12756,8 +12756,8 @@ export var com;
                         this.output.println$java_lang_Object("\n" + this.sortedVertexList.size());
                         {
                             let buf = new java.lang.StringBuffer();
-                            for (let index1093 = this.sortedVertexList.iterator(); index1093.hasNext();) {
-                                let vector = index1093.next();
+                            for (let index1765 = this.sortedVertexList.iterator(); index1765.hasNext();) {
+                                let vector = index1765.next();
                                 {
                                     VefVectorExporter.appendVector(buf, vector, this.scale);
                                     buf.append("\n");
@@ -12768,8 +12768,8 @@ export var com;
                         }
                         ;
                         this.output.println$java_lang_Object("\n" + this.strutEnds.size());
-                        for (let index1094 = this.strutEnds.iterator(); index1094.hasNext();) {
-                            let ends = index1094.next();
+                        for (let index1766 = this.strutEnds.iterator(); index1766.hasNext();) {
+                            let ends = index1766.next();
                             {
                                 this.output.print(this.sortedVertexList.indexOf(ends[0]) + " ");
                                 this.output.println$java_lang_Object(this.sortedVertexList.indexOf(ends[1]));
@@ -12777,12 +12777,12 @@ export var com;
                         }
                         this.output.println$java_lang_Object("\n");
                         this.output.println$java_lang_Object("\n" + this.panelVertices.size());
-                        for (let index1095 = this.panelVertices.iterator(); index1095.hasNext();) {
-                            let corners = index1095.next();
+                        for (let index1767 = this.panelVertices.iterator(); index1767.hasNext();) {
+                            let corners = index1767.next();
                             {
                                 this.output.print(corners.length + "  ");
-                                for (let index1096 = 0; index1096 < corners.length; index1096++) {
-                                    let corner = corners[index1096];
+                                for (let index1768 = 0; index1768 < corners.length; index1768++) {
+                                    let corner = corners[index1768];
                                     {
                                         this.output.print(this.sortedVertexList.indexOf(corner) + " ");
                                     }
@@ -12793,8 +12793,8 @@ export var com;
                         this.output.println$java_lang_Object("\n");
                         this.output.println$java_lang_Object("\n" + this.ballLocations.size());
                         let i = 0;
-                        for (let index1097 = this.ballLocations.iterator(); index1097.hasNext();) {
-                            let ball = index1097.next();
+                        for (let index1769 = this.ballLocations.iterator(); index1769.hasNext();) {
+                            let ball = index1769.next();
                             {
                                 this.output.print(this.sortedVertexList.indexOf(ball) + " ");
                                 if (++i % 10 === 0) {
@@ -13480,6 +13480,7 @@ export var com;
         })(api = vzome.api || (vzome.api = {}));
     })(vzome = com.vzome || (com.vzome = {}));
 })(com || (com = {}));
+
 (function (java) {
     var util;
     (function (util) {
@@ -16202,8 +16203,8 @@ export var com;
                             map = (s => { let a = []; while (s-- > 0)
                                 a.push(0); return a; })(ORDER);
                             let starts = [[0, 1, 2], [15, 46, 32], [16, 47, 30], [17, 45, 31]];
-                            for (let index1098 = 0; index1098 < starts.length; index1098++) {
-                                let start = starts[index1098];
+                            for (let index1770 = 0; index1770 < starts.length; index1770++) {
+                                let start = starts[index1770];
                                 {
                                     for (let j = 0; j < start.length; j++) {
                                         {
@@ -16222,8 +16223,8 @@ export var com;
                             map = (s => { let a = []; while (s-- > 0)
                                 a.push(0); return a; })(ORDER);
                             let cycles = [[0, 3, 6, 9, 12], [30, 42, 39, 36, 33], [2, 21, 29, 55, 4], [5, 24, 17, 58, 7], [8, 27, 20, 46, 10], [11, 15, 23, 49, 13], [1, 14, 18, 26, 52], [16, 50, 57, 38, 40], [19, 53, 45, 41, 43], [22, 56, 48, 44, 31], [25, 59, 51, 32, 34], [28, 47, 54, 35, 37]];
-                            for (let index1099 = 0; index1099 < cycles.length; index1099++) {
-                                let cycle = cycles[index1099];
+                            for (let index1771 = 0; index1771 < cycles.length; index1771++) {
+                                let cycle = cycles[index1771];
                                 {
                                     for (let j = 0; j < cycle.length; j++) {
                                         {
@@ -16446,8 +16447,8 @@ export var com;
                             map = (s => { let a = []; while (s-- > 0)
                                 a.push(0); return a; })(OctahedralSymmetry.ORDER);
                             let cycles = [[0, 4, 8], [1, 11, 17], [2, 16, 22], [3, 21, 5], [6, 20, 14], [7, 13, 9], [10, 12, 18], [19, 15, 23]];
-                            for (let index1100 = 0; index1100 < cycles.length; index1100++) {
-                                let cycle = cycles[index1100];
+                            for (let index1772 = 0; index1772 < cycles.length; index1772++) {
+                                let cycle = cycles[index1772];
                                 {
                                     for (let j = 0; j < cycle.length; j++) {
                                         {
@@ -16461,8 +16462,8 @@ export var com;
                             map = (s => { let a = []; while (s-- > 0)
                                 a.push(0); return a; })(OctahedralSymmetry.ORDER);
                             cycles = [[0, 5], [1, 8], [4, 9], [15, 20], [12, 19], [16, 23], [2, 17], [13, 10], [21, 6], [22, 3], [7, 14], [11, 18]];
-                            for (let index1101 = 0; index1101 < cycles.length; index1101++) {
-                                let cycle = cycles[index1101];
+                            for (let index1773 = 0; index1773 < cycles.length; index1773++) {
+                                let cycle = cycles[index1773];
                                 {
                                     for (let j = 0; j < cycle.length; j++) {
                                         {
@@ -16702,11 +16703,11 @@ export var com;
                             this.__zones = (new java.util.HashSet());
                             this.delegate = delegate;
                             this.normal = normal;
-                            for (let index1102 = delegate.iterator(); index1102.hasNext();) {
-                                let dir = index1102.next();
+                            for (let index1774 = delegate.iterator(); index1774.hasNext();) {
+                                let dir = index1774.next();
                                 {
-                                    for (let index1103 = dir.iterator(); index1103.hasNext();) {
-                                        let axis = index1103.next();
+                                    for (let index1775 = dir.iterator(); index1775.hasNext();) {
+                                        let axis = index1775.next();
                                         {
                                             if (axis.normal().dot(this.normal).isZero())
                                                 this.__zones.add(axis);
@@ -16729,8 +16730,8 @@ export var com;
                             }
                             let maxCosine = -1.0;
                             let closest = null;
-                            for (let index1104 = this.__zones.iterator(); index1104.hasNext();) {
-                                let axis = index1104.next();
+                            for (let index1776 = this.__zones.iterator(); index1776.hasNext();) {
+                                let axis = index1776.next();
                                 {
                                     let axisV = axis.normal().toRealVector();
                                     let cosine = vector.dot(axisV) / (vector.length() * axisV.length());
@@ -17232,14 +17233,14 @@ export var com;
                         }
                         getConnectorPolyhedron() {
                             let result = new com.vzome.core.math.Polyhedron(this.__parent.mSymmetry.getField());
-                            for (let index1105 = this.vertices.iterator(); index1105.hasNext();) {
-                                let vertex = index1105.next();
+                            for (let index1777 = this.vertices.iterator(); index1777.hasNext();) {
+                                let vertex = index1777.next();
                                 {
                                     result.addVertex(vertex);
                                 }
                             }
-                            for (let index1106 = this.faces.iterator(); index1106.hasNext();) {
-                                let prototypeFace = index1106.next();
+                            for (let index1778 = this.faces.iterator(); index1778.hasNext();) {
+                                let prototypeFace = index1778.next();
                                 {
                                     let face = result.newFace();
                                     face.addAll(prototypeFace);
@@ -17543,8 +17544,8 @@ export var com;
                      */
                     addFace(index, verts) {
                         let face = this.polyhedron.newFace();
-                        for (let index1107 = 0; index1107 < verts.length; index1107++) {
-                            let i = verts[index1107];
+                        for (let index1779 = 0; index1779 < verts.length; index1779++) {
+                            let i = verts[index1779];
                             face.add(i);
                         }
                         this.polyhedron.addFace(face);
@@ -17721,8 +17722,8 @@ export var com;
                      */
                     endFile(tokens) {
                         if (this.noBallsSection) {
-                            for (let index1108 = 0; index1108 < this.mVertices.length; index1108++) {
-                                let vertex = this.mVertices[index1108];
+                            for (let index1780 = 0; index1780 < this.mVertices.length; index1780++) {
+                                let vertex = this.mVertices[index1780];
                                 {
                                     this.mEffects.constructionAdded(vertex);
                                 }
@@ -17773,8 +17774,8 @@ export var com;
                         return result;
                     }
                     getXml$org_w3c_dom_Element$java_lang_String(result, vertexChildName) {
-                        for (let index1109 = 0; index1109 < this.mVertices.length; index1109++) {
-                            let vertex = this.mVertices[index1109];
+                        for (let index1781 = 0; index1781 < this.mVertices.length; index1781++) {
+                            let vertex = this.mVertices[index1781];
                             {
                                 let child = result.getOwnerDocument().createElement(vertexChildName);
                                 com.vzome.xml.DomUtils.addAttribute(child, "at", vertex.getVectorExpression$int(com.vzome.core.algebra.AlgebraicField.ZOMIC_FORMAT));
@@ -17797,8 +17798,8 @@ export var com;
                      * @return {boolean}
                      */
                     is3d() {
-                        for (let index1110 = 0; index1110 < this.mVertices.length; index1110++) {
-                            let algebraicVector = this.mVertices[index1110];
+                        for (let index1782 = 0; index1782 < this.mVertices.length; index1782++) {
+                            let algebraicVector = this.mVertices[index1782];
                             {
                                 if (algebraicVector.dimension() !== 3)
                                     return false;
@@ -19703,8 +19704,8 @@ export var com;
                         getDetailXml(doc) {
                             let result = this.getXml(doc);
                             let effects = doc.createElement("effects");
-                            for (let index1111 = this.mItems.iterator(); index1111.hasNext();) {
-                                let se = index1111.next();
+                            for (let index1783 = this.mItems.iterator(); index1783.hasNext();) {
+                                let se = index1783.next();
                                 {
                                     if (se != null) {
                                         let effect = se.getXml(doc);
@@ -19851,8 +19852,8 @@ export var com;
                         if (symmetry != null && symmetry instanceof com.vzome.core.math.symmetry.IcosahedralSymmetry) {
                             if (total !== 2)
                                 return false;
-                            for (let index1112 = selection.iterator(); index1112.hasNext();) {
-                                let man = index1112.next();
+                            for (let index1784 = selection.iterator(); index1784.hasNext();) {
+                                let man = index1784.next();
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0)) {
                                     let zone = symmetry['getAxis$com_vzome_core_algebra_AlgebraicVector'](man.getOffset());
                                     if (zone == null)
@@ -20361,7 +20362,18 @@ export var com;
                  * @return {number}
                  */
                 compareTo(other) {
-                    throw new java.lang.RuntimeException("unimplemented");
+                    if (this === other) {
+                        return 0;
+                    }
+                    if ( /* equals */((o1, o2) => { if (o1 && o1.equals) {
+                        return o1.equals(o2);
+                    }
+                    else {
+                        return o1 === o2;
+                    } })(other, this)) {
+                        return 0;
+                    }
+                    return this.getLocation().compareTo(other.getLocation());
                 }
             }
             jsweet.JsBall = JsBall;
@@ -20428,21 +20440,33 @@ export var com;
                  * @return {number}
                  */
                 compareTo(other) {
-                    throw new java.lang.RuntimeException("unimplemented");
+                    if (this === other) {
+                        return 0;
+                    }
+                    if ( /* equals */((o1, o2) => { if (o1 && o1.equals) {
+                        return o1.equals(o2);
+                    }
+                    else {
+                        return o1 === o2;
+                    } })(other, this)) {
+                        return 0;
+                    }
+                    let thisFirst = this.getCanonicalLesserEnd();
+                    let thisLast = this.getCanonicalGreaterEnd();
+                    let otherFirst = other.getCanonicalLesserEnd();
+                    let otherLast = other.getCanonicalGreaterEnd();
+                    let comparison = thisFirst.compareTo(otherFirst);
+                    return (comparison === 0) ? thisLast.compareTo(otherLast) : comparison;
                 }
-                /**
-                 *
-                 * @return {com.vzome.core.algebra.AlgebraicVector}
-                 */
                 getCanonicalLesserEnd() {
-                    throw new java.lang.RuntimeException("unimplemented");
+                    let m_end1 = this.getLocation();
+                    let m_end2 = this.getEnd();
+                    return (m_end1.compareTo(m_end2) < 0) ? m_end1 : m_end2;
                 }
-                /**
-                 *
-                 * @return {com.vzome.core.algebra.AlgebraicVector}
-                 */
                 getCanonicalGreaterEnd() {
-                    throw new java.lang.RuntimeException("unimplemented");
+                    let m_end1 = this.getLocation();
+                    let m_end2 = this.getEnd();
+                    return (m_end1.compareTo(m_end2) > 0) ? m_end1 : m_end2;
                 }
             }
             jsweet.JsStrut = JsStrut;
@@ -20882,8 +20906,8 @@ export var com;
                          *
                          */
                         endEdges() {
-                            for (let index1113 = this.mUsedPoints.iterator(); index1113.hasNext();) {
-                                let point = index1113.next();
+                            for (let index1785 = this.mUsedPoints.iterator(); index1785.hasNext();) {
+                                let point = index1785.next();
                                 {
                                     this.mEffects.constructionAdded(point);
                                 }
@@ -22027,8 +22051,8 @@ export var com;
                         }
                         let v0 = null;
                         let v1 = null;
-                        for (let index1114 = intersections.iterator(); index1114.hasNext();) {
-                            let v = index1114.next();
+                        for (let index1786 = intersections.iterator(); index1786.hasNext();) {
+                            let v = index1786.next();
                             {
                                 if (v0 == null) {
                                     v0 = v;
@@ -22065,8 +22089,8 @@ export var com;
                         let start = null;
                         let offset = null;
                         let n = 0;
-                        for (let index1115 = projections.iterator(); index1115.hasNext();) {
-                            let v = index1115.next();
+                        for (let index1787 = projections.iterator(); index1787.hasNext();) {
+                            let v = index1787.next();
                             {
                                 if (n === 0) {
                                     start = v;
@@ -22985,8 +23009,8 @@ export var com;
                     transform(params, transform, effects) {
                         let output = new com.vzome.core.construction.ConstructionList();
                         effects.constructionAdded(transform);
-                        for (let index1116 = 0; index1116 < params.length; index1116++) {
-                            let param = params[index1116];
+                        for (let index1788 = 0; index1788 < params.length; index1788++) {
+                            let param = params[index1788];
                             {
                                 let result = transform.transform$com_vzome_core_construction_Construction(param);
                                 if (result == null)
@@ -23224,9 +23248,9 @@ export var com;
                     apply(parameters, attrs, effects) {
                         let points = (new java.util.ArrayList());
                         {
-                            let array1118 = parameters.getConstructions();
-                            for (let index1117 = 0; index1117 < array1118.length; index1117++) {
-                                let param = array1118[index1117];
+                            let array1790 = parameters.getConstructions();
+                            for (let index1789 = 0; index1789 < array1790.length; index1789++) {
+                                let param = array1790[index1789];
                                 {
                                     if (param != null && param instanceof com.vzome.core.construction.Point) {
                                         points.add(param);
@@ -23245,8 +23269,8 @@ export var com;
                             }
                             else {
                                 let base = null;
-                                for (let index1119 = points.iterator(); index1119.hasNext();) {
-                                    let point = index1119.next();
+                                for (let index1791 = points.iterator(); index1791.hasNext();) {
+                                    let point = index1791.next();
                                     {
                                         if (base == null) {
                                             base = point.getLocation();
@@ -23332,8 +23356,8 @@ export var com;
                             throw new commands.Command.Failure("Select two or more balls to compute their centroid.");
                         let params = parameters.getConstructions();
                         let verticesList = (new java.util.ArrayList());
-                        for (let index1120 = 0; index1120 < params.length; index1120++) {
-                            let param = params[index1120];
+                        for (let index1792 = 0; index1792 < params.length; index1792++) {
+                            let param = params[index1792];
                             {
                                 if (param != null && param instanceof com.vzome.core.construction.Point) {
                                     verticesList.add(param);
@@ -23791,8 +23815,8 @@ export var com;
                                 throw new Error('invalid overload');
                         }
                         selectGroup(group) {
-                            for (let index1121 = group.iterator(); index1121.hasNext();) {
-                                let next = index1121.next();
+                            for (let index1793 = group.iterator(); index1793.hasNext();) {
+                                let next = index1793.next();
                                 {
                                     if (next != null && next instanceof com.vzome.core.model.Group)
                                         this.selectGroup(next);
@@ -23802,8 +23826,8 @@ export var com;
                             }
                         }
                         unselectGroup(group) {
-                            for (let index1122 = group.iterator(); index1122.hasNext();) {
-                                let next = index1122.next();
+                            for (let index1794 = group.iterator(); index1794.hasNext();) {
+                                let next = index1794.next();
                                 {
                                     if (next != null && next instanceof com.vzome.core.model.Group)
                                         this.unselectGroup(next);
@@ -23823,8 +23847,8 @@ export var com;
                         }
                         getLastSelectedManifestation() {
                             let last = null;
-                            for (let index1123 = this.mSelection.iterator(); index1123.hasNext();) {
-                                let man = index1123.next();
+                            for (let index1795 = this.mSelection.iterator(); index1795.hasNext();) {
+                                let man = index1795.next();
                                 {
                                     last = man;
                                 }
@@ -23833,8 +23857,8 @@ export var com;
                         }
                         getLastSelectedConnector() {
                             let last = null;
-                            for (let index1124 = this.getSelectedConnectors().iterator(); index1124.hasNext();) {
-                                let connector = index1124.next();
+                            for (let index1796 = this.getSelectedConnectors().iterator(); index1796.hasNext();) {
+                                let connector = index1796.next();
                                 {
                                     last = connector;
                                 }
@@ -23843,8 +23867,8 @@ export var com;
                         }
                         getLastSelectedStrut() {
                             let last = null;
-                            for (let index1125 = this.getSelectedStruts().iterator(); index1125.hasNext();) {
-                                let strut = index1125.next();
+                            for (let index1797 = this.getSelectedStruts().iterator(); index1797.hasNext();) {
+                                let strut = index1797.next();
                                 {
                                     last = strut;
                                 }
@@ -23853,8 +23877,8 @@ export var com;
                         }
                         getLastSelectedPanel() {
                             let last = null;
-                            for (let index1126 = this.getSelectedPanels().iterator(); index1126.hasNext();) {
-                                let panel = index1126.next();
+                            for (let index1798 = this.getSelectedPanels().iterator(); index1798.hasNext();) {
+                                let panel = index1798.next();
                                 {
                                     last = panel;
                                 }
@@ -23863,8 +23887,8 @@ export var com;
                         }
                         unselectAll() {
                             let anySelected = false;
-                            for (let index1127 = this.mSelection.iterator(); index1127.hasNext();) {
-                                let man = index1127.next();
+                            for (let index1799 = this.mSelection.iterator(); index1799.hasNext();) {
+                                let man = index1799.next();
                                 {
                                     anySelected = true;
                                     this.unselect$com_vzome_core_model_Manifestation(man);
@@ -23877,8 +23901,8 @@ export var com;
                         }
                         unselectConnectors() {
                             let anySelected = false;
-                            for (let index1128 = this.getSelectedConnectors().iterator(); index1128.hasNext();) {
-                                let connector = index1128.next();
+                            for (let index1800 = this.getSelectedConnectors().iterator(); index1800.hasNext();) {
+                                let connector = index1800.next();
                                 {
                                     anySelected = true;
                                     this.unselect$com_vzome_core_model_Manifestation(connector);
@@ -23891,8 +23915,8 @@ export var com;
                         }
                         unselectStruts() {
                             let anySelected = false;
-                            for (let index1129 = this.getSelectedStruts().iterator(); index1129.hasNext();) {
-                                let strut = index1129.next();
+                            for (let index1801 = this.getSelectedStruts().iterator(); index1801.hasNext();) {
+                                let strut = index1801.next();
                                 {
                                     anySelected = true;
                                     this.unselect$com_vzome_core_model_Manifestation(strut);
@@ -23905,8 +23929,8 @@ export var com;
                         }
                         unselectPanels() {
                             let anySelected = false;
-                            for (let index1130 = this.getSelectedPanels().iterator(); index1130.hasNext();) {
-                                let panel = index1130.next();
+                            for (let index1802 = this.getSelectedPanels().iterator(); index1802.hasNext();) {
+                                let panel = index1802.next();
                                 {
                                     anySelected = true;
                                     this.unselect$com_vzome_core_model_Manifestation(panel);
@@ -24381,8 +24405,8 @@ export var com;
                         }
                         else {
                             let numSegs = 0;
-                            for (let index1131 = parameters.iterator(); index1131.hasNext();) {
-                                let cons = index1131.next();
+                            for (let index1803 = parameters.iterator(); index1803.hasNext();) {
+                                let cons = index1803.next();
                                 {
                                     if (cons != null && cons instanceof com.vzome.core.construction.Segment) {
                                         let seg = cons;
@@ -24429,11 +24453,11 @@ export var com;
                                 reflections[mirror] = this.symm.reflect(mirror, prototype);
                             ;
                         }
-                        for (let index1132 = 0; index1132 < this.mRoots.length; index1132++) {
-                            let outerRoot = this.mRoots[index1132];
+                        for (let index1804 = 0; index1804 < this.mRoots.length; index1804++) {
+                            let outerRoot = this.mRoots[index1804];
                             {
-                                for (let index1133 = 0; index1133 < this.mRoots.length; index1133++) {
-                                    let innerRoot = this.mRoots[index1133];
+                                for (let index1805 = 0; index1805 < this.mRoots.length; index1805++) {
+                                    let innerRoot = this.mRoots[index1805];
                                     {
                                         let vertex = outerRoot.rightMultiply(prototype);
                                         vertex = innerRoot.leftMultiply(vertex);
@@ -24749,8 +24773,8 @@ export var com;
                         let center = this.setSymmetry(attributes);
                         let params = parameters.getConstructions();
                         let output = new com.vzome.core.construction.ConstructionList();
-                        for (let index1134 = 0; index1134 < params.length; index1134++) {
-                            let param = params[index1134];
+                        for (let index1806 = 0; index1806 < params.length; index1806++) {
+                            let param = params[index1806];
                             {
                                 output.addConstruction(param);
                             }
@@ -24865,20 +24889,20 @@ export var com;
                         let rightRoots = this.mRight.getRoots();
                         let params = parameters.getConstructions();
                         let output = new com.vzome.core.construction.ConstructionList();
-                        for (let index1135 = 0; index1135 < params.length; index1135++) {
-                            let param = params[index1135];
+                        for (let index1807 = 0; index1807 < params.length; index1807++) {
+                            let param = params[index1807];
                             {
                                 output.addConstruction(param);
                             }
                         }
-                        for (let index1136 = 0; index1136 < leftRoots.length; index1136++) {
-                            let leftRoot = leftRoots[index1136];
+                        for (let index1808 = 0; index1808 < leftRoots.length; index1808++) {
+                            let leftRoot = leftRoots[index1808];
                             {
-                                for (let index1137 = 0; index1137 < rightRoots.length; index1137++) {
-                                    let rightRoot = rightRoots[index1137];
+                                for (let index1809 = 0; index1809 < rightRoots.length; index1809++) {
+                                    let rightRoot = rightRoots[index1809];
                                     {
-                                        for (let index1138 = 0; index1138 < params.length; index1138++) {
-                                            let param = params[index1138];
+                                        for (let index1810 = 0; index1810 < params.length; index1810++) {
+                                            let param = params[index1810];
                                             {
                                                 let result = null;
                                                 if (param != null && param instanceof com.vzome.core.construction.Point) {
@@ -24986,8 +25010,8 @@ export var com;
                         let output = new com.vzome.core.construction.ConstructionList();
                         let center = attributes.get(com.vzome.core.commands.CommandTransform.SYMMETRY_CENTER_ATTR_NAME);
                         let params = parameters.getConstructions();
-                        for (let index1139 = 0; index1139 < params.length; index1139++) {
-                            let param = params[index1139];
+                        for (let index1811 = 0; index1811 < params.length; index1811++) {
+                            let param = params[index1811];
                             {
                                 output.addConstruction(param);
                             }
@@ -25100,8 +25124,8 @@ export var com;
                      *
                      */
                     perform() {
-                        for (let index1140 = this.mManifestations.iterator(); index1140.hasNext();) {
-                            let m = index1140.next();
+                        for (let index1812 = this.mManifestations.iterator(); index1812.hasNext();) {
+                            let m = index1812.next();
                             {
                                 if (m.isRendered()) {
                                     if (this.mSelection.manifestationSelected(m))
@@ -25226,8 +25250,8 @@ export var com;
                      */
                     perform() {
                         if (this.mReplace) {
-                            for (let index1141 = this.mSelection.iterator(); index1141.hasNext();) {
-                                let man = index1141.next();
+                            for (let index1813 = this.mSelection.iterator(); index1813.hasNext();) {
+                                let man = index1813.next();
                                 {
                                     this.unselect$com_vzome_core_model_Manifestation$boolean(man, true);
                                 }
@@ -25367,8 +25391,8 @@ export var com;
                      */
                     perform() {
                         let whichManifestationSet = (this.strutAction === com.vzome.core.editor.api.ActionEnum.SELECT || this.panelAction === com.vzome.core.editor.api.ActionEnum.SELECT) ? this.editor.getRealizedModel() : this.mSelection;
-                        for (let index1142 = whichManifestationSet.iterator(); index1142.hasNext();) {
-                            let man = index1142.next();
+                        for (let index1814 = whichManifestationSet.iterator(); index1814.hasNext();) {
+                            let man = index1814.next();
                             {
                                 if (man.isRendered()) {
                                     if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0)) {
@@ -25516,8 +25540,8 @@ export var com;
                      */
                     perform() {
                         let whichManifestationSet = (this.ballAction === com.vzome.core.editor.api.ActionEnum.SELECT || this.strutAction === com.vzome.core.editor.api.ActionEnum.SELECT || this.panelAction === com.vzome.core.editor.api.ActionEnum.SELECT) ? this.editor.getRealizedModel() : this.mSelection;
-                        for (let index1143 = whichManifestationSet.iterator(); index1143.hasNext();) {
-                            let man = index1143.next();
+                        for (let index1815 = whichManifestationSet.iterator(); index1815.hasNext();) {
+                            let man = index1815.next();
                             {
                                 if (man.isRendered()) {
                                     if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0)) {
@@ -25609,8 +25633,8 @@ export var com;
                      *
                      */
                     perform() {
-                        for (let index1144 = this.realizedModel.iterator(); index1144.hasNext();) {
-                            let m = index1144.next();
+                        for (let index1816 = this.realizedModel.iterator(); index1816.hasNext();) {
+                            let m = index1816.next();
                             {
                                 if (m.isRendered()) {
                                     if (!this.mSelection.manifestationSelected(m))
@@ -25661,8 +25685,8 @@ export var com;
                         let panels = (new java.util.HashSet());
                         let struts = (new java.util.HashSet());
                         let balls = (new java.util.HashSet());
-                        for (let index1145 = this.mSelection.iterator(); index1145.hasNext();) {
-                            let man = index1145.next();
+                        for (let index1817 = this.mSelection.iterator(); index1817.hasNext();) {
+                            let man = index1817.next();
                             {
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0))
                                     struts.add(man);
@@ -25672,12 +25696,12 @@ export var com;
                                     panels.add(man);
                             }
                         }
-                        for (let index1146 = balls.iterator(); index1146.hasNext();) {
-                            let ball = index1146.next();
+                        for (let index1818 = balls.iterator(); index1818.hasNext();) {
+                            let ball = index1818.next();
                             {
                                 let loc = ball.getLocation();
-                                for (let index1147 = model.iterator(); index1147.hasNext();) {
-                                    let man = index1147.next();
+                                for (let index1819 = model.iterator(); index1819.hasNext();) {
+                                    let man = index1819.next();
                                     {
                                         if (!man.isRendered())
                                             continue;
@@ -25688,8 +25712,8 @@ export var com;
                                         }
                                         else if (this.withPanels && (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0)) && !panels.contains(man)) {
                                             let panel = man;
-                                            for (let index1148 = panel.iterator(); index1148.hasNext();) {
-                                                let vertex = index1148.next();
+                                            for (let index1820 = panel.iterator(); index1820.hasNext();) {
+                                                let vertex = index1820.next();
                                                 {
                                                     if (loc.equals(vertex)) {
                                                         this.select$com_vzome_core_model_Manifestation(panel);
@@ -25702,13 +25726,13 @@ export var com;
                                 }
                             }
                         }
-                        for (let index1149 = struts.iterator(); index1149.hasNext();) {
-                            let strut = index1149.next();
+                        for (let index1821 = struts.iterator(); index1821.hasNext();) {
+                            let strut = index1821.next();
                             {
                                 let loc = strut.getLocation();
                                 let end = strut.getEnd();
-                                for (let index1150 = model.iterator(); index1150.hasNext();) {
-                                    let man = index1150.next();
+                                for (let index1822 = model.iterator(); index1822.hasNext();) {
+                                    let man = index1822.next();
                                     {
                                         if (!man.isRendered())
                                             continue;
@@ -25722,14 +25746,14 @@ export var com;
                             }
                         }
                         if (this.withPanels) {
-                            for (let index1151 = panels.iterator(); index1151.hasNext();) {
-                                let panel = index1151.next();
+                            for (let index1823 = panels.iterator(); index1823.hasNext();) {
+                                let panel = index1823.next();
                                 {
-                                    for (let index1152 = panel.iterator(); index1152.hasNext();) {
-                                        let loc = index1152.next();
+                                    for (let index1824 = panel.iterator(); index1824.hasNext();) {
+                                        let loc = index1824.next();
                                         {
-                                            for (let index1153 = model.iterator(); index1153.hasNext();) {
-                                                let man = index1153.next();
+                                            for (let index1825 = model.iterator(); index1825.hasNext();) {
+                                                let man = index1825.next();
                                                 {
                                                     if (man.isRendered()) {
                                                         if ((man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0)) && !balls.contains(man)) {
@@ -25774,8 +25798,8 @@ export var com;
                      *
                      */
                     perform() {
-                        for (let index1154 = this.mSelection.iterator(); index1154.hasNext();) {
-                            let man = index1154.next();
+                        for (let index1826 = this.mSelection.iterator(); index1826.hasNext();) {
+                            let man = index1826.next();
                             {
                                 this.unselect$com_vzome_core_model_Manifestation$boolean(man, true);
                             }
@@ -25877,38 +25901,38 @@ export var com;
                             this.plan(new ChangeManifestations.ColorManifestation(this, m, color));
                         }
                         hideConnectors() {
-                            for (let index1155 = com.vzome.core.editor.api.Manifestations.getVisibleConnectors(this.mManifestations).iterator(); index1155.hasNext();) {
-                                let connector = index1155.next();
+                            for (let index1827 = com.vzome.core.editor.api.Manifestations.getVisibleConnectors(this.mManifestations).iterator(); index1827.hasNext();) {
+                                let connector = index1827.next();
                                 this.hideManifestation(connector);
                             }
                         }
                         showConnectors() {
-                            for (let index1156 = com.vzome.core.editor.api.Manifestations.getHiddenConnectors(this.mManifestations).iterator(); index1156.hasNext();) {
-                                let connector = index1156.next();
+                            for (let index1828 = com.vzome.core.editor.api.Manifestations.getHiddenConnectors(this.mManifestations).iterator(); index1828.hasNext();) {
+                                let connector = index1828.next();
                                 this.showManifestation(connector);
                             }
                         }
                         hideStruts() {
-                            for (let index1157 = com.vzome.core.editor.api.Manifestations.getVisibleStruts(this.mManifestations).iterator(); index1157.hasNext();) {
-                                let strut = index1157.next();
+                            for (let index1829 = com.vzome.core.editor.api.Manifestations.getVisibleStruts(this.mManifestations).iterator(); index1829.hasNext();) {
+                                let strut = index1829.next();
                                 this.hideManifestation(strut);
                             }
                         }
                         showStruts() {
-                            for (let index1158 = com.vzome.core.editor.api.Manifestations.getHiddenStruts(this.mManifestations).iterator(); index1158.hasNext();) {
-                                let strut = index1158.next();
+                            for (let index1830 = com.vzome.core.editor.api.Manifestations.getHiddenStruts(this.mManifestations).iterator(); index1830.hasNext();) {
+                                let strut = index1830.next();
                                 this.showManifestation(strut);
                             }
                         }
                         hidePanels() {
-                            for (let index1159 = com.vzome.core.editor.api.Manifestations.getVisiblePanels(this.mManifestations).iterator(); index1159.hasNext();) {
-                                let panel = index1159.next();
+                            for (let index1831 = com.vzome.core.editor.api.Manifestations.getVisiblePanels(this.mManifestations).iterator(); index1831.hasNext();) {
+                                let panel = index1831.next();
                                 this.hideManifestation(panel);
                             }
                         }
                         showPanels() {
-                            for (let index1160 = com.vzome.core.editor.api.Manifestations.getHiddenPanels(this.mManifestations).iterator(); index1160.hasNext();) {
-                                let panel = index1160.next();
+                            for (let index1832 = com.vzome.core.editor.api.Manifestations.getHiddenPanels(this.mManifestations).iterator(); index1832.hasNext();) {
+                                let panel = index1832.next();
                                 this.showManifestation(panel);
                             }
                         }
@@ -26244,8 +26268,8 @@ export var com;
                         let closure = this.mSymmetry.subgroup(com.vzome.core.math.symmetry.Symmetry.TETRAHEDRAL);
                         let params = parameters.getConstructions();
                         let output = new com.vzome.core.construction.ConstructionList();
-                        for (let index1161 = 0; index1161 < params.length; index1161++) {
-                            let param = params[index1161];
+                        for (let index1833 = 0; index1833 < params.length; index1833++) {
+                            let param = params[index1833];
                             {
                                 output.addConstruction(param);
                             }
@@ -26358,8 +26382,8 @@ export var com;
                         let rotate = new com.vzome.core.commands.CommandRotate();
                         for (let i = 1; i < order; i++) {
                             {
-                                for (let index1162 = parameters.iterator(); index1162.hasNext();) {
-                                    let param = index1162.next();
+                                for (let index1834 = parameters.iterator(); index1834.hasNext();) {
+                                    let param = index1834.next();
                                     {
                                         output.addConstruction(param);
                                     }
@@ -26368,8 +26392,8 @@ export var com;
                             }
                             ;
                         }
-                        for (let index1163 = parameters.iterator(); index1163.hasNext();) {
-                            let param = index1163.next();
+                        for (let index1835 = parameters.iterator(); index1835.hasNext();) {
+                            let param = index1835.next();
                             {
                                 output.addConstruction(param);
                             }
@@ -26408,8 +26432,8 @@ export var com;
                         let panel0 = null;
                         let panel1 = null;
                         let nPanels = 0;
-                        for (let index1164 = this.mSelection.iterator(); index1164.hasNext();) {
-                            let man = index1164.next();
+                        for (let index1836 = this.mSelection.iterator(); index1836.hasNext();) {
+                            let man = index1836.next();
                             {
                                 this.unselect$com_vzome_core_model_Manifestation(man);
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0)) {
@@ -26444,12 +26468,12 @@ export var com;
                         if (com.vzome.core.algebra.AlgebraicVectors.areParallel(panel0['getNormal$'](), panel1['getNormal$']())) {
                             let vertices = (new java.util.ArrayList());
                             {
-                                let array1166 = [panel0, panel1];
-                                for (let index1165 = 0; index1165 < array1166.length; index1165++) {
-                                    let panel = array1166[index1165];
+                                let array1838 = [panel0, panel1];
+                                for (let index1837 = 0; index1837 < array1838.length; index1837++) {
+                                    let panel = array1838[index1837];
                                     {
-                                        for (let index1167 = panel.iterator(); index1167.hasNext();) {
-                                            let v = index1167.next();
+                                        for (let index1839 = panel.iterator(); index1839.hasNext();) {
+                                            let v = index1839.next();
                                             {
                                                 vertices.add(v);
                                             }
@@ -26470,8 +26494,8 @@ export var com;
                     }
                     /*private*/ static polygonFromPanel(panel) {
                         let vertices = (new java.util.ArrayList(panel.getVertexCount()));
-                        for (let index1168 = panel.iterator(); index1168.hasNext();) {
-                            let vector = index1168.next();
+                        for (let index1840 = panel.iterator(); index1840.hasNext();) {
+                            let vector = index1840.next();
                             {
                                 vertices.add(new com.vzome.core.construction.FreePoint(vector));
                             }
@@ -26560,8 +26584,8 @@ export var com;
                         let inputs = (new java.util.ArrayList());
                         if (this.joinMode !== JoinPoints.JoinModeEnum.ALL_POSSIBLE)
                             this.setOrderedSelection(true);
-                        for (let index1169 = this.mSelection.iterator(); index1169.hasNext();) {
-                            let man = index1169.next();
+                        for (let index1841 = this.mSelection.iterator(); index1841.hasNext();) {
+                            let man = index1841.next();
                             {
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0)) {
                                     inputs.add(man.getFirstConstruction());
@@ -26678,8 +26702,8 @@ export var com;
                         let SCALE_DOWN = this.mManifestations.getField()['createAlgebraicNumber$int$int$int$int'](1, 0, 2, -3);
                         this.unselectConnectors();
                         this.unselectStruts();
-                        for (let index1170 = com.vzome.core.editor.api.Manifestations.getPanels$java_lang_Iterable(this.mSelection).iterator(); index1170.hasNext();) {
-                            let panel = index1170.next();
+                        for (let index1842 = com.vzome.core.editor.api.Manifestations.getPanels$java_lang_Iterable(this.mSelection).iterator(); index1842.hasNext();) {
+                            let panel = index1842.next();
                             {
                                 this.unselect$com_vzome_core_model_Manifestation(panel);
                                 let centroid = panel.getCentroid();
@@ -26980,8 +27004,8 @@ export var com;
                         let s1 = null;
                         let success = false;
                         this.setOrderedSelection(true);
-                        for (let index1171 = this.mSelection.iterator(); index1171.hasNext();) {
-                            let man = index1171.next();
+                        for (let index1843 = this.mSelection.iterator(); index1843.hasNext();) {
+                            let man = index1843.next();
                             {
                                 if (success) {
                                     this.recordSelected(man);
@@ -27047,8 +27071,8 @@ export var com;
                      *
                      */
                     perform() {
-                        for (let index1172 = this.mManifestations.iterator(); index1172.hasNext();) {
-                            let m = index1172.next();
+                        for (let index1844 = this.mManifestations.iterator(); index1844.hasNext();) {
+                            let m = index1844.next();
                             {
                                 if (m.isHidden()) {
                                     this.showManifestation(m);
@@ -27122,8 +27146,8 @@ export var com;
                         let errorMsg = new java.lang.StringBuilder();
                         errorMsg.append("The Polar Zonohedron command requires either of the following selections:\n\n1) Two non-collinear struts with a common end point.\n   The first strut must have more than 2-fold rotational symmetry.\n   The second strut will be rotated around the first.\n\n2) Any three or more struts having a common end point.\n");
                         let struts = (new java.util.ArrayList());
-                        for (let index1173 = this.mSelection.iterator(); index1173.hasNext();) {
-                            let man = index1173.next();
+                        for (let index1845 = this.mSelection.iterator(); index1845.hasNext();) {
+                            let man = index1845.next();
                             {
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0)) {
                                     struts.add(man);
@@ -27303,8 +27327,8 @@ export var com;
                         }
                         this.redo();
                         this.select$com_vzome_core_model_Manifestation(this.manifestConstruction(new com.vzome.core.construction.FreePoint(common)));
-                        for (let index1174 = struts.iterator(); index1174.hasNext();) {
-                            let strut = index1174.next();
+                        for (let index1846 = struts.iterator(); index1846.hasNext();) {
+                            let strut = index1846.next();
                             {
                                 this.select$com_vzome_core_model_Manifestation(strut);
                                 let start = strut.getLocation();
@@ -27345,16 +27369,16 @@ export var com;
                      */
                     perform() {
                         let inputs = (new java.util.ArrayList());
-                        for (let index1175 = this.mSelection.iterator(); index1175.hasNext();) {
-                            let man = index1175.next();
+                        for (let index1847 = this.mSelection.iterator(); index1847.hasNext();) {
+                            let man = index1847.next();
                             {
                                 this.unselect$com_vzome_core_model_Manifestation(man);
                                 inputs.add(man);
                             }
                         }
                         this.redo();
-                        for (let index1176 = inputs.iterator(); index1176.hasNext();) {
-                            let m = index1176.next();
+                        for (let index1848 = inputs.iterator(); index1848.hasNext();) {
+                            let m = index1848.next();
                             {
                                 if (!m.isRendered())
                                     continue;
@@ -27736,8 +27760,8 @@ export var com;
                      *
                      */
                     perform() {
-                        for (let index1177 = this.mSelection.iterator(); index1177.hasNext();) {
-                            let man = index1177.next();
+                        for (let index1849 = this.mSelection.iterator(); index1849.hasNext();) {
+                            let man = index1849.next();
                             {
                                 this.unselect$com_vzome_core_model_Manifestation(man);
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0)) {
@@ -27796,8 +27820,8 @@ export var com;
                         let s0 = null;
                         let s1 = null;
                         let qty = 0;
-                        for (let index1178 = this.mSelection.iterator(); index1178.hasNext();) {
-                            let man = index1178.next();
+                        for (let index1850 = this.mSelection.iterator(); index1850.hasNext();) {
+                            let man = index1850.next();
                             {
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0)) {
                                     switch ((qty)) {
@@ -27877,8 +27901,8 @@ export var com;
                      */
                     perform() {
                         let verticesList = (new java.util.ArrayList());
-                        for (let index1179 = this.mSelection.iterator(); index1179.hasNext();) {
-                            let man = index1179.next();
+                        for (let index1851 = this.mSelection.iterator(); index1851.hasNext();) {
+                            let man = index1851.next();
                             {
                                 this.unselect$com_vzome_core_model_Manifestation(man);
                                 let construction = man.toConstruction();
@@ -27946,8 +27970,8 @@ export var com;
                         let p0 = null;
                         let p1 = null;
                         let p2 = null;
-                        for (let index1180 = this.mSelection.iterator(); index1180.hasNext();) {
-                            let man = index1180.next();
+                        for (let index1852 = this.mSelection.iterator(); index1852.hasNext();) {
+                            let man = index1852.next();
                             {
                                 this.unselect$com_vzome_core_model_Manifestation(man);
                                 if ((man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0)) && (p2 == null)) {
@@ -28041,24 +28065,24 @@ export var com;
                         this.redo();
                     }
                     selectBoundedManifestations() {
-                        for (let index1181 = this.getConnectors().iterator(); index1181.hasNext();) {
-                            let connector = index1181.next();
+                        for (let index1853 = this.getConnectors().iterator(); index1853.hasNext();) {
+                            let connector = index1853.next();
                             {
                                 if (this.boundaryContains$com_vzome_core_model_Connector(connector)) {
                                     this.select$com_vzome_core_model_Manifestation(connector);
                                 }
                             }
                         }
-                        for (let index1182 = this.getStruts().iterator(); index1182.hasNext();) {
-                            let strut = index1182.next();
+                        for (let index1854 = this.getStruts().iterator(); index1854.hasNext();) {
+                            let strut = index1854.next();
                             {
                                 if (this.boundaryContains$com_vzome_core_model_Strut(strut)) {
                                     this.select$com_vzome_core_model_Manifestation(strut);
                                 }
                             }
                         }
-                        for (let index1183 = this.getPanels().iterator(); index1183.hasNext();) {
-                            let panel = index1183.next();
+                        for (let index1855 = this.getPanels().iterator(); index1855.hasNext();) {
+                            let panel = index1855.next();
                             {
                                 if (this.boundaryContains$com_vzome_core_model_Panel(panel)) {
                                     this.select$com_vzome_core_model_Manifestation(panel);
@@ -28089,8 +28113,8 @@ export var com;
                         return this.boundaryContains$com_vzome_core_algebra_AlgebraicVector(strut.getLocation()) && this.boundaryContains$com_vzome_core_algebra_AlgebraicVector(strut.getEnd());
                     }
                     /*private*/ boundaryContains$com_vzome_core_model_Panel(panel) {
-                        for (let index1184 = panel.iterator(); index1184.hasNext();) {
-                            let vertex = index1184.next();
+                        for (let index1856 = panel.iterator(); index1856.hasNext();) {
+                            let vertex = index1856.next();
                             {
                                 if (!this.boundaryContains$com_vzome_core_algebra_AlgebraicVector(vertex)) {
                                     return false;
@@ -28167,8 +28191,8 @@ export var com;
                         this.unselectAll();
                         let opposite = (this.axis.getSense() + 1) % 2;
                         let oppositeAxis = this.orbit.getAxis$int$int(opposite, this.axis.getOrientation());
-                        for (let index1185 = this.getStruts().iterator(); index1185.hasNext();) {
-                            let strut = index1185.next();
+                        for (let index1857 = this.getStruts().iterator(); index1857.hasNext();) {
+                            let strut = index1857.next();
                             {
                                 let strutAxis = this.symmetry.getAxis(strut.getOffset());
                                 if (strutAxis != null && strutAxis.getOrbit().equals(this.orbit)) {
@@ -28229,8 +28253,8 @@ export var com;
                     }
                     getSelectedVertexSet(unselectAll) {
                         let vertexSet = (new java.util.HashSet());
-                        for (let index1186 = this.mSelection.iterator(); index1186.hasNext();) {
-                            let man = index1186.next();
+                        for (let index1858 = this.mSelection.iterator(); index1858.hasNext();) {
+                            let man = index1858.next();
                             {
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0)) {
                                     vertexSet.add(man.getLocation());
@@ -28240,8 +28264,8 @@ export var com;
                                     vertexSet.add(man.getEnd());
                                 }
                                 else if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0)) {
-                                    for (let index1187 = man.iterator(); index1187.hasNext();) {
-                                        let vertex = index1187.next();
+                                    for (let index1859 = man.iterator(); index1859.hasNext();) {
+                                        let vertex = index1859.next();
                                         {
                                             vertexSet.add(vertex);
                                         }
@@ -28276,8 +28300,8 @@ export var com;
                         let errorMsg = "Affine pentagon command requires two selected struts with a common vertex.";
                         let strut1 = null;
                         let strut2 = null;
-                        for (let index1188 = this.mSelection.iterator(); index1188.hasNext();) {
-                            let man = index1188.next();
+                        for (let index1860 = this.mSelection.iterator(); index1860.hasNext();) {
+                            let man = index1860.next();
                             {
                                 this.unselect$com_vzome_core_model_Manifestation(man);
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0)) {
@@ -28338,8 +28362,8 @@ export var com;
                         ;
                         let p1 = null;
                         let p2 = null;
-                        for (let index1189 = this.mManifestations.iterator(); index1189.hasNext();) {
-                            let m = index1189.next();
+                        for (let index1861 = this.mManifestations.iterator(); index1861.hasNext();) {
+                            let m = index1861.next();
                             {
                                 if (m != null && (m["__interfaces"] != null && m["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0 || m.constructor != null && m.constructor["__interfaces"] != null && m.constructor["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0)) {
                                     let loc = m.getLocation();
@@ -28520,8 +28544,8 @@ export var com;
                     perform() {
                         let s1 = null;
                         let s2 = null;
-                        for (let index1190 = this.mSelection.iterator(); index1190.hasNext();) {
-                            let man = index1190.next();
+                        for (let index1862 = this.mSelection.iterator(); index1862.hasNext();) {
+                            let man = index1862.next();
                             {
                                 this.unselect$com_vzome_core_model_Manifestation(man);
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0))
@@ -28651,8 +28675,8 @@ export var com;
                             this.setOrderedSelection(true);
                         }
                         this.colorMapper.initialize(this.getRenderedSelection());
-                        for (let index1191 = this.getRenderedSelection().iterator(); index1191.hasNext();) {
-                            let man = index1191.next();
+                        for (let index1863 = this.getRenderedSelection().iterator(); index1863.hasNext();) {
+                            let man = index1863.next();
                             {
                                 this.plan(new MapToColor.ColorMapManifestation(this, man, this.colorMapper.apply$com_vzome_core_model_Manifestation(man)));
                                 this.unselect$com_vzome_core_model_Manifestation$boolean(man, true);
@@ -28761,8 +28785,8 @@ export var com;
                     }
                     /*private*/ initialize(color) {
                         this.color = color;
-                        for (let index1192 = this.mSelection.iterator(); index1192.hasNext();) {
-                            let m = index1192.next();
+                        for (let index1864 = this.mSelection.iterator(); index1864.hasNext();) {
+                            let m = index1864.next();
                             {
                                 if (m.isRendered())
                                     this.colorManifestation(m, color);
@@ -28942,8 +28966,8 @@ export var com;
                             return;
                         let offset = null;
                         let pointFound = false;
-                        for (let index1193 = this.mSelection.iterator(); index1193.hasNext();) {
-                            let man = index1193.next();
+                        for (let index1865 = this.mSelection.iterator(); index1865.hasNext();) {
+                            let man = index1865.next();
                             {
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0)) {
                                     let nextPoint = man.getFirstConstruction();
@@ -29023,16 +29047,16 @@ export var com;
                      */
                     perform() {
                         let inputs = (new java.util.ArrayList());
-                        for (let index1194 = this.mSelection.iterator(); index1194.hasNext();) {
-                            let man = index1194.next();
+                        for (let index1866 = this.mSelection.iterator(); index1866.hasNext();) {
+                            let man = index1866.next();
                             {
                                 inputs.add(man);
                                 this.unselect$com_vzome_core_model_Manifestation(man);
                             }
                         }
                         this.redo();
-                        for (let index1195 = inputs.iterator(); index1195.hasNext();) {
-                            let man = index1195.next();
+                        for (let index1867 = inputs.iterator(); index1867.hasNext();) {
+                            let man = index1867.next();
                             {
                                 this.deleteManifestation(man);
                             }
@@ -29077,8 +29101,8 @@ export var com;
                         let s1 = null;
                         let s2 = null;
                         let s3 = null;
-                        for (let index1196 = this.mSelection.iterator(); index1196.hasNext();) {
-                            let man = index1196.next();
+                        for (let index1868 = this.mSelection.iterator(); index1868.hasNext();) {
+                            let man = index1868.next();
                             {
                                 this.unselect$com_vzome_core_model_Manifestation(man);
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0)) {
@@ -29095,8 +29119,8 @@ export var com;
                             throw new com.vzome.core.commands.Command.Failure("three struts required");
                         this.redo();
                         let transform = new com.vzome.core.construction.ChangeOfBasis(s1, s2, s3, this.center, true);
-                        for (let index1197 = this.mManifestations.iterator(); index1197.hasNext();) {
-                            let m = index1197.next();
+                        for (let index1869 = this.mManifestations.iterator(); index1869.hasNext();) {
+                            let m = index1869.next();
                             {
                                 if (!m.isRendered())
                                     continue;
@@ -29147,8 +29171,8 @@ export var com;
                         let strut1 = null;
                         let strut2 = null;
                         let strut3 = null;
-                        for (let index1198 = this.mSelection.iterator(); index1198.hasNext();) {
-                            let man = index1198.next();
+                        for (let index1870 = this.mSelection.iterator(); index1870.hasNext();) {
+                            let man = index1870.next();
                             {
                                 this.unselect$com_vzome_core_model_Manifestation(man);
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0)) {
@@ -29301,8 +29325,8 @@ export var com;
                      */
                     perform() {
                         this.unselectAll();
-                        for (let index1199 = this.getVisibleStruts$java_util_function_Predicate((strut) => { return this.isAutomaticStrut(strut); }).iterator(); index1199.hasNext();) {
-                            let strut = index1199.next();
+                        for (let index1871 = this.getVisibleStruts$java_util_function_Predicate((strut) => { return this.isAutomaticStrut(strut); }).iterator(); index1871.hasNext();) {
+                            let strut = index1871.next();
                             {
                                 this.select$com_vzome_core_model_Manifestation(strut);
                             }
@@ -29384,8 +29408,8 @@ export var com;
                                 this.vector2 = lastStrut.getEnd();
                             }
                             else {
-                                for (let index1200 = this.getSelectedConnectors().iterator(); index1200.hasNext();) {
-                                    let ball = index1200.next();
+                                for (let index1872 = this.getSelectedConnectors().iterator(); index1872.hasNext();) {
+                                    let ball = index1872.next();
                                     {
                                         this.vector1 = this.vector2;
                                         this.vector2 = ball.getLocation();
@@ -29398,29 +29422,29 @@ export var com;
                         }
                         this.unselectAll();
                         let balls = (new java.util.TreeSet());
-                        for (let index1201 = this.getVisibleConnectors$java_util_function_Predicate((ball) => { return this.isCollinearWith(ball); }).iterator(); index1201.hasNext();) {
-                            let ball = index1201.next();
+                        for (let index1873 = this.getVisibleConnectors$java_util_function_Predicate((ball) => { return this.isCollinearWith(ball); }).iterator(); index1873.hasNext();) {
+                            let ball = index1873.next();
                             {
                                 balls.add(ball);
                             }
                         }
                         let struts = (new java.util.TreeSet());
-                        for (let index1202 = this.getVisibleStruts$().iterator(); index1202.hasNext();) {
-                            let strut = index1202.next();
+                        for (let index1874 = this.getVisibleStruts$().iterator(); index1874.hasNext();) {
+                            let strut = index1874.next();
                             {
                                 if (this.isCollinearWith$com_vzome_core_model_Strut(strut)) {
                                     struts.add(strut);
                                 }
                             }
                         }
-                        for (let index1203 = struts.iterator(); index1203.hasNext();) {
-                            let strut = index1203.next();
+                        for (let index1875 = struts.iterator(); index1875.hasNext();) {
+                            let strut = index1875.next();
                             {
                                 this.select$com_vzome_core_model_Manifestation(strut);
                             }
                         }
-                        for (let index1204 = balls.iterator(); index1204.hasNext();) {
-                            let ball = index1204.next();
+                        for (let index1876 = balls.iterator(); index1876.hasNext();) {
+                            let ball = index1876.next();
                             {
                                 this.select$com_vzome_core_model_Manifestation(ball);
                             }
@@ -29429,14 +29453,14 @@ export var com;
                         if (com.vzome.core.editor.api.ChangeSelection.logger_$LI$().isLoggable(level)) {
                             let sb = new java.lang.StringBuilder("Selected:\n");
                             let indent = "  ";
-                            for (let index1205 = struts.iterator(); index1205.hasNext();) {
-                                let strut = index1205.next();
+                            for (let index1877 = struts.iterator(); index1877.hasNext();) {
+                                let strut = index1877.next();
                                 {
                                     sb.append(indent).append(strut.toString()).append("\n");
                                 }
                             }
-                            for (let index1206 = balls.iterator(); index1206.hasNext();) {
-                                let ball = index1206.next();
+                            for (let index1878 = balls.iterator(); index1878.hasNext();) {
+                                let ball = index1878.next();
                                 {
                                     sb.append(indent).append(ball.toString()).append("\n");
                                 }
@@ -29572,8 +29596,8 @@ export var com;
                         if (this.mCommand.ordersSelection())
                             this.setOrderedSelection(true);
                         let constrsBefore = new com.vzome.core.construction.ConstructionList();
-                        for (let index1207 = this.mSelection.iterator(); index1207.hasNext();) {
-                            let man = index1207.next();
+                        for (let index1879 = this.mSelection.iterator(); index1879.hasNext();) {
+                            let man = index1879.next();
                             {
                                 if (CommandEdit.logger_$LI$().isLoggable(java.util.logging.Level.FINER)) {
                                     CommandEdit.logger_$LI$().finer("----------- manifestation: " + man.toString());
@@ -29647,14 +29671,14 @@ export var com;
                         }
                         else
                             this.fail("Too many objects in the selection.");
-                        for (let index1208 = news.iterator(); index1208.hasNext();) {
-                            let c = index1208.next();
+                        for (let index1880 = news.iterator(); index1880.hasNext();) {
+                            let c = index1880.next();
                             {
                                 this.manifestConstruction(c);
                             }
                         }
-                        for (let index1209 = selectionAfter.iterator(); index1209.hasNext();) {
-                            let cons = index1209.next();
+                        for (let index1881 = selectionAfter.iterator(); index1881.hasNext();) {
+                            let cons = index1881.next();
                             {
                                 if (cons.failed()) {
                                     CommandEdit.logBugAccommodation("failed construction");
@@ -29775,8 +29799,8 @@ export var com;
                             }
                             if (selectedBefore.size() > (this.mManifestations.size() / 2 | 0)) {
                                 let toUnselect = (new java.util.ArrayList());
-                                for (let index1210 = this.mManifestations.iterator(); index1210.hasNext();) {
-                                    let m = index1210.next();
+                                for (let index1882 = this.mManifestations.iterator(); index1882.hasNext();) {
+                                    let m = index1882.next();
                                     {
                                         if (!selectedBefore.contains(m))
                                             toUnselect.add(m);
@@ -29784,8 +29808,8 @@ export var com;
                                 }
                                 let edit = new com.vzome.core.edits.SelectAll(this.mEditorModel);
                                 context.performAndRecord(edit);
-                                for (let index1211 = toUnselect.iterator(); index1211.hasNext();) {
-                                    let m = index1211.next();
+                                for (let index1883 = toUnselect.iterator(); index1883.hasNext();) {
+                                    let m = index1883.next();
                                     {
                                         edit = new com.vzome.core.edits.SelectManifestation(this.mEditorModel, m);
                                         context.performAndRecord(edit);
@@ -29795,8 +29819,8 @@ export var com;
                             else {
                                 let edit = new com.vzome.core.edits.DeselectAll(this.mEditorModel);
                                 context.performAndRecord(edit);
-                                for (let index1212 = selectedBefore.iterator(); index1212.hasNext();) {
-                                    let m = index1212.next();
+                                for (let index1884 = selectedBefore.iterator(); index1884.hasNext();) {
+                                    let m = index1884.next();
                                     {
                                         edit = new com.vzome.core.edits.SelectManifestation(this.mEditorModel, m);
                                         context.performAndRecord(edit);
@@ -30053,8 +30077,8 @@ export var com;
                      */
                     perform() {
                         let inputs = (new java.util.ArrayList());
-                        for (let index1213 = this.mSelection.iterator(); index1213.hasNext();) {
-                            let man = index1213.next();
+                        for (let index1885 = this.mSelection.iterator(); index1885.hasNext();) {
+                            let man = index1885.next();
                             {
                                 if (this.deleteInputs && this.tool.needsInput()) {
                                     super.unselect$com_vzome_core_model_Manifestation$boolean(man, true);
@@ -30073,8 +30097,8 @@ export var com;
                         this.redo();
                         this.tool.prepare(this);
                         if (this.tool.needsInput()) {
-                            for (let index1214 = inputs.iterator(); index1214.hasNext();) {
-                                let man = index1214.next();
+                            for (let index1886 = inputs.iterator(); index1886.hasNext();) {
+                                let man = index1886.next();
                                 {
                                     let c = man.toConstruction();
                                     c.setColor(man.getColor());
@@ -30083,8 +30107,8 @@ export var com;
                             }
                         }
                         else {
-                            for (let index1215 = this.mManifestations.iterator(); index1215.hasNext();) {
-                                let man = index1215.next();
+                            for (let index1887 = this.mManifestations.iterator(); index1887.hasNext();) {
+                                let man = index1887.next();
                                 {
                                     this.tool.performSelect(man, this);
                                 }
@@ -30235,13 +30259,13 @@ export var com;
                      *
                      */
                     perform() {
-                        for (let index1216 = this.mSelection.iterator(); index1216.hasNext();) {
-                            let man = index1216.next();
+                        for (let index1888 = this.mSelection.iterator(); index1888.hasNext();) {
+                            let man = index1888.next();
                             super.unselect$com_vzome_core_model_Manifestation$boolean(man, true);
                         }
                         this.redo();
-                        for (let index1217 = this.tool.getParameters().iterator(); index1217.hasNext();) {
-                            let con = index1217.next();
+                        for (let index1889 = this.tool.getParameters().iterator(); index1889.hasNext();) {
+                            let con = index1889.next();
                             {
                                 let man = this.manifestConstruction(con);
                                 this.select$com_vzome_core_model_Manifestation(man);
@@ -30328,8 +30352,8 @@ export var com;
                         this.center = null;
                         this.maxRadiusSquared = null;
                         let vectors = (new java.util.ArrayList());
-                        for (let index1218 = this.mSelection.iterator(); index1218.hasNext();) {
-                            let man = index1218.next();
+                        for (let index1890 = this.mSelection.iterator(); index1890.hasNext();) {
+                            let man = index1890.next();
                             {
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0)) {
                                     vectors.add(man.getLocation());
@@ -30430,8 +30454,8 @@ export var com;
                         let p2 = null;
                         let p3 = null;
                         let p4 = null;
-                        for (let index1219 = this.mSelection.iterator(); index1219.hasNext();) {
-                            let man = index1219.next();
+                        for (let index1891 = this.mSelection.iterator(); index1891.hasNext();) {
+                            let man = index1891.next();
                             {
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0)) {
                                     if (p1 == null) {
@@ -30584,8 +30608,8 @@ export var com;
                         this.redo();
                         let vertices = hull3d.getVertices$();
                         let pointMap = (new java.util.HashMap(vertices.length));
-                        for (let index1220 = 0; index1220 < vertices.length; index1220++) {
-                            let vertex = vertices[index1220];
+                        for (let index1892 = 0; index1892 < vertices.length; index1892++) {
+                            let vertex = vertices[index1892];
                             {
                                 let point = new com.vzome.core.construction.FreePoint(vertex);
                                 pointMap.put(vertex, point);
@@ -30593,8 +30617,8 @@ export var com;
                             }
                         }
                         let faces = hull3d.getFaces$();
-                        for (let index1221 = 0; index1221 < faces.length; index1221++) {
-                            let face = faces[index1221];
+                        for (let index1893 = 0; index1893 < faces.length; index1893++) {
+                            let face = faces[index1893];
                             {
                                 let points = (s => { let a = []; while (s-- > 0)
                                     a.push(null); return a; })(face.length);
@@ -30672,8 +30696,8 @@ export var com;
                             a.push(null); return a; })(hull2d.length);
                         let p = 0;
                         let pointMap = (new java.util.HashMap(hull2d.length));
-                        for (let index1222 = 0; index1222 < hull2d.length; index1222++) {
-                            let vertex = hull2d[index1222];
+                        for (let index1894 = 0; index1894 < hull2d.length; index1894++) {
+                            let vertex = hull2d[index1894];
                             {
                                 let point = new com.vzome.core.construction.FreePoint(vertex);
                                 pointMap.put(vertex, point);
@@ -30952,8 +30976,8 @@ export var com;
                      * @param {com.vzome.core.editor.api.ChangeManifestations} applyTool
                      */
                     performEdit(c, applyTool) {
-                        for (let index1223 = 0; index1223 < this.transforms.length; index1223++) {
-                            let transform = this.transforms[index1223];
+                        for (let index1895 = 0; index1895 < this.transforms.length; index1895++) {
+                            let transform = this.transforms[index1895];
                             {
                                 let result = transform.transform$com_vzome_core_construction_Construction(c);
                                 if (result == null)
@@ -31042,8 +31066,8 @@ export var com;
                         let p1 = null;
                         let p2 = null;
                         let p3 = null;
-                        for (let index1224 = this.mSelection.iterator(); index1224.hasNext();) {
-                            let man = index1224.next();
+                        for (let index1896 = this.mSelection.iterator(); index1896.hasNext();) {
+                            let man = index1896.next();
                             {
                                 this.unselect$com_vzome_core_model_Manifestation(man);
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0)) {
@@ -31341,8 +31365,8 @@ export var com;
                         if (this.mSelection.size() === 0)
                             this.bookmarkedConstructions.add(new com.vzome.core.construction.FreePoint(this.mManifestations.getField().origin(3)));
                         else
-                            for (let index1225 = this.mSelection.iterator(); index1225.hasNext();) {
-                                let man = index1225.next();
+                            for (let index1897 = this.mSelection.iterator(); index1897.hasNext();) {
+                                let man = index1897.next();
                                 {
                                     let result = duper.duplicateConstruction(man);
                                     this.bookmarkedConstructions.add(result);
@@ -31367,8 +31391,8 @@ export var com;
                             edit.manifestConstruction(new com.vzome.core.construction.FreePoint(this.mManifestations.getField().origin(3)));
                         }
                         else
-                            for (let index1226 = this.bookmarkedConstructions.iterator(); index1226.hasNext();) {
-                                let con = index1226.next();
+                            for (let index1898 = this.bookmarkedConstructions.iterator(); index1898.hasNext();) {
+                                let con = index1898.next();
                                 {
                                     edit.manifestConstruction(con);
                                 }
@@ -31527,8 +31551,8 @@ export var com;
                         let p = c;
                         let loc = p.getLocation();
                         let duper = new com.vzome.core.editor.Duplicator(applyTool, loc);
-                        for (let index1227 = this.bookmarkedSelection.iterator(); index1227.hasNext();) {
-                            let man = index1227.next();
+                        for (let index1899 = this.bookmarkedSelection.iterator(); index1899.hasNext();) {
+                            let man = index1899.next();
                             {
                                 duper.duplicateManifestation(man);
                             }
@@ -31758,8 +31782,8 @@ export var com;
                     checkSelection(prepareTool) {
                         let center = null;
                         if (!this.isAutomatic())
-                            for (let index1228 = this.mSelection.iterator(); index1228.hasNext();) {
-                                let man = index1228.next();
+                            for (let index1900 = this.mSelection.iterator(); index1900.hasNext();) {
+                                let man = index1900.next();
                                 {
                                     if (prepareTool)
                                         this.unselect$com_vzome_core_model_Manifestation(man);
@@ -31839,8 +31863,8 @@ export var com;
                          * @return {boolean}
                          */
                         bindParameters(selection) {
-                            for (let index1229 = selection.iterator(); index1229.hasNext();) {
-                                let man = index1229.next();
+                            for (let index1901 = selection.iterator(); index1901.hasNext();) {
+                                let man = index1901.next();
                                 this.center = man;
                             }
                             return true;
@@ -31889,8 +31913,8 @@ export var com;
                     checkSelection(prepareTool) {
                         let center = null;
                         let axis = null;
-                        for (let index1230 = this.mSelection.iterator(); index1230.hasNext();) {
-                            let man = index1230.next();
+                        for (let index1902 = this.mSelection.iterator(); index1902.hasNext();) {
+                            let man = index1902.next();
                             {
                                 if (prepareTool)
                                     this.unselect$com_vzome_core_model_Manifestation(man);
@@ -32123,8 +32147,8 @@ export var com;
                          */
                         bindParameters(selection) {
                             let symmetry = this.getSymmetry();
-                            for (let index1231 = selection.iterator(); index1231.hasNext();) {
-                                let man = index1231.next();
+                            for (let index1903 = selection.iterator(); index1903.hasNext();) {
+                                let man = index1903.next();
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0)) {
                                     let axisStrut = man;
                                     let vector = axisStrut.getOffset();
@@ -32231,8 +32255,8 @@ export var com;
                         let correct = true;
                         let hasPanels = false;
                         if (!this.isAutomatic())
-                            for (let index1232 = this.mSelection.iterator(); index1232.hasNext();) {
-                                let man = index1232.next();
+                            for (let index1904 = this.mSelection.iterator(); index1904.hasNext();) {
+                                let man = index1904.next();
                                 {
                                     if (prepareTool)
                                         this.unselect$com_vzome_core_model_Manifestation(man);
@@ -32482,8 +32506,8 @@ export var com;
                         let index = 0;
                         let correct = true;
                         let center = null;
-                        for (let index1233 = this.mSelection.iterator(); index1233.hasNext();) {
-                            let man = index1233.next();
+                        for (let index1905 = this.mSelection.iterator(); index1905.hasNext();) {
+                            let man = index1905.next();
                             {
                                 if (prepareTool)
                                     this.unselect$com_vzome_core_model_Manifestation(man);
@@ -32606,8 +32630,8 @@ export var com;
                     perform() {
                         let plane = null;
                         let line = null;
-                        for (let index1234 = this.mSelection.iterator(); index1234.hasNext();) {
-                            let man = index1234.next();
+                        for (let index1906 = this.mSelection.iterator(); index1906.hasNext();) {
+                            let man = index1906.next();
                             {
                                 this.unselect$com_vzome_core_model_Manifestation(man);
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0)) {
@@ -32773,8 +32797,8 @@ export var com;
                             axis = new com.vzome.core.construction.SegmentJoiningPoints(center, p2);
                         }
                         else
-                            for (let index1235 = this.mSelection.iterator(); index1235.hasNext();) {
-                                let man = index1235.next();
+                            for (let index1907 = this.mSelection.iterator(); index1907.hasNext();) {
+                                let man = index1907.next();
                                 {
                                     if (prepareTool)
                                         this.unselect$com_vzome_core_model_Manifestation(man);
@@ -32923,8 +32947,8 @@ export var com;
                         let p2 = null;
                         let correct = true;
                         if (!this.isAutomatic())
-                            for (let index1236 = this.mSelection.iterator(); index1236.hasNext();) {
-                                let man = index1236.next();
+                            for (let index1908 = this.mSelection.iterator(); index1908.hasNext();) {
+                                let man = index1908.next();
                                 {
                                     if (prepareTool)
                                         this.unselect$com_vzome_core_model_Manifestation(man);
@@ -33116,8 +33140,8 @@ export var com;
                         let center = null;
                         let axisStrut = null;
                         let correct = true;
-                        for (let index1237 = this.mSelection.iterator(); index1237.hasNext();) {
-                            let man = index1237.next();
+                        for (let index1909 = this.mSelection.iterator(); index1909.hasNext();) {
+                            let man = index1909.next();
                             {
                                 if (prepareTool)
                                     this.unselect$com_vzome_core_model_Manifestation(man);
@@ -33288,8 +33312,8 @@ export var com;
                          */
                         bindParameters(selection) {
                             let symmetry = this.getSymmetry();
-                            for (let index1238 = selection.iterator(); index1238.hasNext();) {
-                                let man = index1238.next();
+                            for (let index1910 = selection.iterator(); index1910.hasNext();) {
+                                let man = index1910.next();
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0)) {
                                     let axisStrut = man;
                                     let vector = axisStrut.getOffset();
@@ -33369,8 +33393,8 @@ export var com;
                         let center = null;
                         let correct = true;
                         let hasPanels = false;
-                        for (let index1239 = this.mSelection.iterator(); index1239.hasNext();) {
-                            let man = index1239.next();
+                        for (let index1911 = this.mSelection.iterator(); index1911.hasNext();) {
+                            let man = index1911.next();
                             {
                                 if (prepareTool)
                                     this.unselect$com_vzome_core_model_Manifestation(man);
@@ -33493,8 +33517,8 @@ export var com;
                             let symmetry = this.getSymmetry();
                             let offset1 = null;
                             let offset2 = null;
-                            for (let index1240 = selection.iterator(); index1240.hasNext();) {
-                                let man = index1240.next();
+                            for (let index1912 = selection.iterator(); index1912.hasNext();) {
+                                let man = index1912.next();
                                 if (man != null && (man["__interfaces"] != null && man["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0 || man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0)) {
                                     let strut = man;
                                     if (offset1 == null)
@@ -33563,8 +33587,7 @@ export var com;
         })(core = vzome.core || (vzome.core = {}));
     })(vzome = com.vzome || (com.vzome = {}));
 })(com || (com = {}));
-try {
-com.vzome.core.editor.CommandEdit.loadAndPerformLgger_$LI$();
+try { com.vzome.core.editor.CommandEdit.loadAndPerformLgger_$LI$();
 com.vzome.core.editor.CommandEdit.logger_$LI$();
 com.vzome.core.commands.CommandTetrahedralSymmetry.ATTR_SIGNATURE_$LI$();
 com.vzome.core.commands.CommandQuaternionSymmetry.LEFT_SYMMETRY_GROUP_ATTR_NAME_$LI$();
@@ -33636,7 +33659,4 @@ com.vzome.core.render.Colors.HIGHLIGHT_MAC_$LI$();
 com.vzome.core.render.Colors.HIGHLIGHT_$LI$();
 com.vzome.core.render.Colors.PANEL_$LI$();
 com.vzome.core.render.Colors.BACKGROUND_$LI$();
-    
-} catch (error) {
-    console.log( error )
-}
+} catch (error) {console.log( error )}
