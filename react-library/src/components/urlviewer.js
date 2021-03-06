@@ -66,7 +66,7 @@ const UrlViewer = props =>
       vZome.interpret( vZome.Step.DONE, parseAndPerformEdit, meshAdapter, edits.firstElementChild, [], record )
       setMesh( meshAdapter )
     }
-    parseUrl();
+    parseUrl()
   }, [url] )
   return (
     <DesignCanvas {...{ lighting, camera }} >

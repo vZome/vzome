@@ -1,14 +1,11 @@
 
-import goldenField from '../fields/golden'
-import root2Field from '../fields/root2'
-import Adapter from './adapter'
-import { JavaDomElement, JsProperties } from './wrappers'
+import goldenField from '../fields/golden.js'
+import root2Field from '../fields/root2.js'
+import Adapter from './adapter.js'
+import { JavaDomElement, JsProperties } from './wrappers.js'
 
-import allShapes from '../resources/com/vzome/core/parts/index.js'
-import groupResources from '../resources/com/vzome/core/math/symmetry/index.js'
-
-import { com } from '../jsweet/bundle'
-import { java } from '../jsweet/j4ts-2.0.0/bundle'
+import { com } from '../jsweet/bundle.js'
+import { java } from '../jsweet/j4ts-2.0.0/bundle.js'
 
 const fields = { [goldenField.name]: goldenField, [root2Field.name]: root2Field }
 
@@ -111,7 +108,7 @@ const matrix2quat = ( m ) =>
   return q.map( x => x * 0.5 / Math.sqrt(t) )
 }
 
-export const init = async () =>
+export const init = async ( groupResources, allShapes ) =>
 {
   const vzomePkg = com.vzome
   const util = java.util
@@ -419,13 +416,8 @@ export const init = async () =>
   ) )
 
   // now we are finally ready to shape instances
-  // store.dispatch( shapers.shaperDefined( shaperName, shaper ) )
-  // store.dispatch( { type: PARSER_READY, payload: parser } )
-
   return { parser, shaper, shaperName, commands, gridPoints }
 }
-
-export const coreState = init()
 
 const embedShape = ( shape ) =>
 {
