@@ -4,6 +4,9 @@ import root2Field from '../fields/root2.js'
 import Adapter from './adapter.js'
 import { JavaDomElement, JsProperties } from './wrappers.js'
 
+import allShapes from '../resources/com/vzome/core/parts/index.js'
+import groupResources from '../resources/com/vzome/core/math/symmetry/index.js'
+
 import { com } from '../jsweet/bundle.js'
 import { java } from '../jsweet/j4ts-2.0.0/bundle.js'
 
@@ -108,7 +111,7 @@ const matrix2quat = ( m ) =>
   return q.map( x => x * 0.5 / Math.sqrt(t) )
 }
 
-export const init = async ( groupResources, allShapes ) =>
+export const init = async () =>
 {
   const vzomePkg = com.vzome
   const util = java.util
