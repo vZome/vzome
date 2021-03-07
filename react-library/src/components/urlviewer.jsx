@@ -50,7 +50,7 @@ const UrlViewer = props =>
   const [ resolver, setResolver ] = useState( null )
   useEffect( () => {
     async function parseUrl() {
-      const { parser } = await vZome.coreState  // Must wait for the vZome code to initialize
+      const { parser } = await vZome.init()  // Must wait for the vZome code to initialize
       const text = await fetchModel( url )
       if ( !text )
         return;
