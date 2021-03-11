@@ -7,6 +7,7 @@ import Box from '@material-ui/core/Box'
 
 import AboutButton from './about'
 import OpenButton from './folder'
+import ShareButton from './share'
 import VZomeLogo from './logo'
 import DesignsSelect from './designs'
 import UndoRedoButtons from './undoredo'
@@ -42,6 +43,7 @@ const VZomeAppBar = ( { article=false } ) =>
               <UndoRedoButtons/>
               <DesignsSelect/>
               <OpenButton className={classes.open}/>
+              <ShareButton/>
               <AboutButton/>
             </> }
         </Toolbar>
