@@ -14,12 +14,13 @@ export const designReducer = combineReducers( {
   dbugger: undoable( dbugger.reducer ),
   camera: cameraReducer,
   name: ( state="", action ) => state, // name cannot be changed (YET), so a constant reducer is fine
+  text: ( state="", action ) => state, // text cannot be changed (YET), so a constant reducer is fine
   success: ( state="", action ) => state, // success cannot be changed, so a constant reducer is fine
   fieldName: ( state="", action ) => state, // fieldName cannot be changed, so a constant reducer is fine
   shaperName: ( state="", action ) => state, // shaperName cannot be changed (YET!), so a constant reducer is fine
 })
 
-export const initializeDesign = ( field, name, shaperName ) => ({
+export const initializeDesign = ( field, name, shaperName, text ) => ({
   mesh: {
     past: [],
     present: mesh.justOrigin( field ),
@@ -31,6 +32,7 @@ export const initializeDesign = ( field, name, shaperName ) => ({
   camera: cameraDefault,
   shaperName,
   name,
+  text,
 })
 
 const emptyState = {
@@ -64,6 +66,8 @@ export const loadedDesign = ( id, design ) => ( { type: 'LOADED_DESIGN', payload
 export const selectDesign = ( state, id ) => state.designs.data[ id ] || state.designs.data[ state.designs.current ]
 
 export const selectDesignName = ( state, id ) => selectDesign( state, id ).name
+
+export const selectText = ( state, id ) => selectDesign( state, id ).text
 
 export const selectMesh = ( state, id ) => selectDesign( state, id ).mesh.present
 
@@ -164,12 +168,15 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
     if ( !edits ) {
       throw new Error( `XML parsing failed` )
     }
-    const name = url.split( '\\' ).pop().split( '/' ).pop()
+    const name = decodeURI( url.split( '\\' ).pop().split( '/' ).pop() )
+
+    console.log( `Opening ${url}`)
+    console.log( text )
 
     // We don't want to dispatch all the edits, which can trigger tons of
     //  overhead and re-rendering.  Instead, we'll build up a design locally
     //  by calling the designReducer manually.
-    let design = initializeDesign( field, name, shaper.shapesName )
+    let design = initializeDesign( field, name, shaper.shapesName, text )
     // Each call to designReducer may create an element in the history
     //  (if it has any changes to the mesh),
     //  so we want to be judicious in when we do it.
