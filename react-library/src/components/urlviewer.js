@@ -4,6 +4,8 @@ import { MeshGeometry } from './geometry'
 import DesignCanvas from './designcanvas'
 import Adapter, { createInstance } from '../core/adapter'
 import * as vZome from '../core/legacyjava'
+import Fab from '@material-ui/core/Fab'
+import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded'
 
 const aspectRatio = window.innerWidth / window.innerHeight // TODO: this is totally static!
 const convertFOV = (fovX) => ( fovX / aspectRatio ) * 180 / Math.PI  // converting radians to degrees
@@ -42,18 +44,35 @@ export const fetchModel = ( path ) =>
     });
 }
 
+// from https://www.bitdegree.org/learn/javascript-download
+export const download = ( url, xml ) =>
+{
+  const name = url.split( '\\' ).pop().split( '/' ).pop()
+  const blob = new Blob([xml], {type : 'application/xml'});
+  const element = document.createElement( 'a' )
+  const blobURI = URL.createObjectURL( blob )
+  element.setAttribute( 'href', blobURI )
+  element.setAttribute( 'download', `${name}` )
+  element.style.display = 'none'
+  document.body.appendChild( element )
+  element.click()
+  document.body.removeChild( element )
+}
+
 const UrlViewer = props =>
 {
   const { url, lighting } = props
   const [ camera, setCamera ] = useState( props.camera )
   const [ mesh, setMesh ] = useState( null )
   const [ resolver, setResolver ] = useState( null )
+  const [ xml, setXml ] = useState( null )
   useEffect( () => {
     async function parseUrl() {
       const { parser } = await vZome.coreState  // Must wait for the vZome code to initialize
       const text = await fetchModel( url )
       if ( !text )
         return;
+      setXml( text )
       const { edits, camera, field, parseAndPerformEdit, targetEdit, shaper } = parser( text ) || {}
       if ( !edits )
         return;
@@ -69,9 +88,17 @@ const UrlViewer = props =>
     parseUrl();
   }, [url] )
   return (
-    <DesignCanvas {...{ lighting, camera }} >
-      { mesh && <MeshGeometry shown={mesh.shown} selected={mesh.selected} resolver={resolver.shaper} />}
-    </DesignCanvas>
+    <div style={ { display: 'flex', height: '100%' } }>
+      <DesignCanvas {...{ lighting, camera }} >
+        { mesh && <MeshGeometry shown={mesh.shown} selected={mesh.selected} resolver={resolver.shaper} /> }
+      </DesignCanvas>
+      { xml &&
+        <Fab color="primary" size="small" aria-label="download"
+            style={ { position: 'absolute' } }
+            onClick={() => download( url, xml ) } >
+          <GetAppRoundedIcon fontSize='small'/>
+        </Fab> }
+    </div>
   )
 }
 
