@@ -179,6 +179,15 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
 	}
     
     @Override
+    public double[] embedInR3Double( AlgebraicVector v )
+    {
+        double[] dv = super.embedInR3Double( v );
+        Double x = dv[0] + ( dv[1] / sigmaX2 );
+        Double y = dv[1] * skewFactor;
+        return new double[] { x, y, dv[2] };
+    }
+    
+    @Override
     public boolean isTrivial()
     {
     	return false; // signals the POV-Ray exporter to generate the tranform
