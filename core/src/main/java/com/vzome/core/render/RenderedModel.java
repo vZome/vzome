@@ -418,6 +418,14 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
             return new RealVector( 0d, 0d, 0d );
 	}
 
+    public double[] renderVectorDouble( AlgebraicVector av )
+    {
+        if ( av != null )
+            return getEmbedding() .embedInR3Double( av );
+        else
+            return new double[] { 0d, 0d, 0d };
+    }
+
 	public Embedding getEmbedding()
 	{
 		return this .orbitSource .getSymmetry();

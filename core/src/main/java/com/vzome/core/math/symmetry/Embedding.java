@@ -7,6 +7,8 @@ public interface Embedding
 {
 	RealVector embedInR3( AlgebraicVector v );
 	
+	double[] embedInR3Double( AlgebraicVector v );
+	
 	boolean isTrivial();
 	
 	public class Trivial implements Embedding
@@ -15,6 +17,14 @@ public interface Embedding
         public RealVector embedInR3( AlgebraicVector v )
         {
             return v .toRealVector();
+        }
+
+        // An array of 3 doubles is used when high precision (double) vector values are needed
+        // without the need to manipulate them, thus no operators as in the RealVector class 
+        @Override
+        public double[] embedInR3Double( AlgebraicVector v )
+        {
+            return v .to3dDoubleVector();
         }
 
         @Override

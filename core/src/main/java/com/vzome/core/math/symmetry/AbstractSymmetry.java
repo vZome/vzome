@@ -512,6 +512,12 @@ public abstract class AbstractSymmetry implements Symmetry
     }
 
     @Override
+    public double[] embedInR3Double( AlgebraicVector v )
+    {
+        return v .to3dDoubleVector();
+    }
+
+    @Override
     @JsonIgnore
     public boolean isTrivial()
     {
@@ -525,6 +531,7 @@ public abstract class AbstractSymmetry implements Symmetry
         return this .principalReflection; // may be null, that's OK for the legacy case (which is broken)
     }
     
+    @Override
     public AlgebraicVector[] getOrbitTriangle()
     {
         AlgebraicVector blueVertex = this .getSpecialOrbit( SpecialOrbit.BLUE ) .getPrototype();
