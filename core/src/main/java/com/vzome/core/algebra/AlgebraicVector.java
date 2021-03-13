@@ -139,6 +139,13 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
         return new RealVector( this .coordinates[ 0 ] .evaluate(), this .coordinates[ 1 ] .evaluate(), this .coordinates[ 2 ] .evaluate() );
     }
 
+    // An array of 3 doubles is used when high precision (double) vector values are needed
+    // without the need to manipulate them, thus no operators as in the RealVector class 
+    public final double[] to3dDoubleVector()
+    {
+        return new double[] { this .coordinates[ 0 ] .evaluate(), this .coordinates[ 1 ] .evaluate(), this .coordinates[ 2 ] .evaluate() };
+    }
+
     /**
      * @return A String with no extended characters so it's suitable for writing
      * to an 8 bit stream such as System.out or an ASCII text log file in Windows.
