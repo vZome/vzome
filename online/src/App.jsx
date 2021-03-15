@@ -6,12 +6,12 @@ import { makeStyles } from '@material-ui/core/styles'
 
 import './App.css'
 
-import DesignEditor from './components/designeditor.js'
-import ErrorAlert from './components/alert.js'
-import Spinner from './components/spinner.js'
-import VZomeAppBar from './components/appbar.js'
-import Debugger from './components/debugger.js'
-import createBundleStore from './bundles'
+import DesignEditor from './components/designeditor.jsx'
+import ErrorAlert from './components/alert.jsx'
+import Spinner from './components/spinner.jsx'
+import VZomeAppBar from './components/appbar.jsx'
+import Debugger from './components/debugger.jsx'
+import createBundleStore from './bundles/index.jsx'
 
 const queryParams = new URLSearchParams( window.location.search );
 const profile = queryParams.get( "profile" ) || queryParams.get( "editMode" )

@@ -1,6 +1,6 @@
 
 import { goldenField } from '@vzome/react-vzome'
-import buildStrut from '../commands/buildstrut'
+import buildStrut from '../commands/buildstrut.js'
 
 export const doStartGridHover = position =>
 {

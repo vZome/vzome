@@ -8,9 +8,9 @@ import MenuItem from '@material-ui/core/MenuItem'
 import Divider from '@material-ui/core/Divider';
 import { connect } from 'react-redux'
 
-import UrlDialog from './webloader'
-import { fetchFileText, fetchUrlText } from '../bundles/files'
-import { openDesign } from '../bundles/designs'
+import UrlDialog from './webloader.jsx'
+import { fetchFileText, fetchUrlText } from '../bundles/files.js'
+import { openDesign } from '../bundles/designs.js'
 
 const openDesignUrl = url => openDesign( fetchUrlText( url ), url )
 

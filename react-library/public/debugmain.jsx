@@ -1,10 +1,7 @@
 import React from 'react'
 import { render } from 'react-dom'
 
-import { DesignCanvas, UrlViewer, ShapedGeometry } from 'react-vzome-viewer'
-
-import dodec from './models/dodecahedron/converted'
-// import logo from './models/logo'
+import { UrlViewer } from '../src/index.js'
 
 // const convertLegacyFormat = rawDesign => ({
 //   ...rawDesign,
@@ -17,9 +14,9 @@ import dodec from './models/dodecahedron/converted'
 // })
 
 const viewerStyle = {
-  height: "400px",
+  height: "700px",
   minHeight: "400px",
-  maxHeight: "60vh",
+  maxHeight: "80vh",
   marginLeft: "15%",
   marginRight: "15%",
   marginTop: "15px",
@@ -34,12 +31,7 @@ export const Demo = () =>
   return (
     <div>
       <div style={viewerStyle}>
-        <DesignCanvas>
-          <ShapedGeometry {...dodec} />
-        </DesignCanvas>
-      </div>
-      <div style={viewerStyle}>
-        <UrlViewer url={"/models/jk-Deltoid.vZome"} />
+        <UrlViewer url={"/models/affineDodec.vZome"} />
       </div>
     </div>
   )

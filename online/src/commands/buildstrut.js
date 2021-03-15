@@ -1,6 +1,6 @@
 
-import * as mesh from '../bundles/mesh'
-import * as designs from '../bundles/designs'
+import * as mesh from '../bundles/mesh.js'
+import * as designs from '../bundles/designs.js'
 import { createInstance } from '@vzome/react-vzome'
 
 export default ( start, end ) => ( dispatch, getState ) =>

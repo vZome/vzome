@@ -10,7 +10,7 @@ import SkipPreviousRoundedIcon from '@material-ui/icons/SkipPreviousRounded'
 import UndoRoundedIcon from '@material-ui/icons/UndoRounded'
 import RedoRoundedIcon from '@material-ui/icons/RedoRounded'
 
-import * as designFns from '../bundles/designs'
+import * as designFns from '../bundles/designs.js'
 
 const UndoRedoButtons = ({ doUndoAll, doUndo, doRedo, doRedoAll, canUndo, canRedo, redoAllIndex }) =>
 {

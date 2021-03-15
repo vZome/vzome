@@ -5,12 +5,12 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
 
-import AboutButton from './about'
-import OpenButton from './folder'
-import ShareButton from './share'
-import VZomeLogo from './logo'
-import DesignsSelect from './designs'
-import UndoRedoButtons from './undoredo'
+import AboutButton from './about.jsx'
+import OpenButton from './folder.jsx'
+import ShareButton from './share.jsx'
+import VZomeLogo from './logo.jsx'
+import DesignsSelect from './designs.jsx'
+import UndoRedoButtons from './undoredo.jsx'
 
 const useStyles = makeStyles((theme) => ({
   root: {

@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect } from 'react'
-import { MeshGeometry } from './geometry'
-import DesignCanvas from './designcanvas'
-import Adapter, { createInstance } from '../core/adapter'
-import * as vZome from '../core/legacyjava'
+import { MeshGeometry } from './geometry.jsx'
+import DesignCanvas from './designcanvas.jsx'
+import Adapter, { createInstance } from '../core/adapter.js'
+import * as vZome from '../core/legacyjava.js'
 import Fab from '@material-ui/core/Fab'
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded'
 

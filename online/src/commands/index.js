@@ -1,8 +1,8 @@
 
-import centroid from './centroid'
-import shortred from './shortred'
-import buildstrut from './buildstrut'
-import { allSelected, allDeselected } from '../bundles/mesh'
+import centroid from './centroid.js'
+import shortred from './shortred.js'
+import buildstrut from './buildstrut.js'
+import { allSelected, allDeselected } from '../bundles/mesh.js'
 
 const COMMANDS_DEFINED = 'COMMANDS_DEFINED'
 

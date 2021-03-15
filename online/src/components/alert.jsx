@@ -1,6 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { clearAlert } from '../bundles/alerts'
+import { clearAlert } from '../bundles/alerts.js'
 import { Alert, AlertTitle } from '@material-ui/lab';
 import Snackbar from '@material-ui/core/Snackbar';
 
