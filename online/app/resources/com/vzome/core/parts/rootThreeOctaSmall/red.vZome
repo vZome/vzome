@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="rootThree" version="3.0 alpha 7" xmlns:vzome="http://tns.vorthmann.org/vZome/4.0.0/">
+  <Viewing>
+    <ViewModel near="1.2679670904273868" far="1014.3736572265631" width="228.234072875977" distance="507.18682861328125"
+    stereoAngle="0.0" parallel="false">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.2562878925729609" y="0.9624084357583955" z="0.08992507382030769"/>
+      <LookDirection x="-0.9661792375085992" y="-0.2523188633386798" z="-0.05322473307367465"/>
+    </ViewModel>
+    <ViewModel near="0.10000000149011612" far="80.0" width="18.0" distance="40.0" stereoAngle="0.0" parallel="false"
+    name="default">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0" y="1.0" z="0.0"/>
+      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="octahedral" renderingStyle="small octahedra">
+    <Direction name="blue" available="true" snap="true" render="true" color="0,118,149">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="red" available="true" snap="true" build="true" render="true" color="175,0,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="yellow" available="true" snap="true" render="true" color="240,160,0">
+      <LengthModel scale="5" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="green" available="true" snap="true" render="true" color="0,141,54">
+      <LengthModel scale="4" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="brown" available="true" render="true" color="107,53,26">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+  </SymmetrySystem>
+  <EditHistory editNumber="206">
+    <StrutCreation anchor="0 0 0 0 0 0" symm="octahedral" dir="blue" index="0" len="0 6"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 6 0 0 0 0"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 6 0 0 0 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandSymmetry">
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </CommandEdit>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 6"/>
+    <SelectManifestation point="0 6 0 0 0 0"/>
+    <SelectManifestation point="0 0 0 6 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 6"/>
+    <SelectManifestation point="0 6 0 0 0 0"/>
+    <SelectManifestation point="0 0 0 6 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 6 0 0 0 0"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 0 6 0 0"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 0 0 0 0 6"/>
+    <EndBlock/>
+    <CommandEdit command="CommandHide">
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </CommandEdit>
+    <StrutCreation anchor="0 0 0 0 0 0" symm="octahedral" dir="red" index="0" len="0 9"/>
+    <StrutCreation anchor="0 0 0 6 0 0" symm="octahedral" dir="red" index="0" len="0 9"/>
+    <StrutCreation anchor="0 0 0 0 0 -6" symm="octahedral" dir="red" index="0" len="0 9"/>
+    <StrutCreation anchor="0 0 0 0 0 6" symm="octahedral" dir="red" index="0" len="0 9"/>
+    <StrutCreation anchor="0 0 0 -6 0 0" symm="octahedral" dir="red" index="0" len="0 9"/>
+    <BeginBlock/>
+    <SelectManifestation point="27/2 9 0 9/2 0 0"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="27/2 9 0 9/2 0 0"/>
+    <DeselectAll/>
+    <EndBlock/>
+    <StrutCreation anchor="0 0 0 0 0 0" symm="octahedral" dir="red" index="0" len="0 81"/>
+    <SymmetryAxisChange start="0 0 0 0 0 0" end="243/2 81 0 81/2 0 0"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="243/2 81 0 81/2 0 0"/>
+    <CommandEdit command="CommandHide"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 6 0 0 0 0"/>
+    <SelectManifestation point="0 0 0 6 0 0"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="27/2 9 0 9/2 0 0"/>
+    <DeselectAll/>
+    <EndBlock/>
+    <StrutCreation anchor="0 0 0 0 0 0" symm="octahedral" dir="red" index="0" len="0 3"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="27/2 9 0 9/2 0 0"/>
+    <CommandEdit command="CommandHide"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="9/2 3 0 3/2 0 0"/>
+    <CommandEdit command="CommandHide"/>
+    <SelectManifestation point="27/2 9 0 9/2 0 0"/>
+    <CommandEdit command="CommandHide"/>
+    <BeginBlock/>
+    <SelectManifestation startSegment="0 0 0 0 0 6" endSegment="27/2 9 0 9/2 0 6"/>
+    <SelectManifestation startSegment="0 0 0 -6 0 0" endSegment="27/2 9 0 -3/2 0 0"/>
+    <SelectManifestation startSegment="0 0 0 0 0 -6" endSegment="27/2 9 0 9/2 0 -6"/>
+    <SelectManifestation startSegment="0 0 0 6 0 0" endSegment="27/2 9 0 21/2 0 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandHide"/>
+    <BeginBlock/>
+    <SelectManifestation point="9/2 3 0 3/2 0 0"/>
+    <SelectManifestation point="27/2 9 0 9/2 0 -6"/>
+    <SelectManifestation point="27/2 9 0 -3/2 0 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <SelectManifestation point="27/2 9 0 -3/2 0 0"/>
+    <SelectManifestation point="27/2 9 0 9/2 0 6"/>
+    <SelectManifestation point="9/2 3 0 3/2 0 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <SelectManifestation point="9/2 3 0 3/2 0 0"/>
+    <SelectManifestation point="27/2 9 0 9/2 0 6"/>
+    <SelectManifestation point="27/2 9 0 21/2 0 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <SelectManifestation point="27/2 9 0 21/2 0 0"/>
+    <SelectManifestation point="27/2 9 0 9/2 0 -6"/>
+    <SelectManifestation point="9/2 3 0 3/2 0 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <SelectManifestation point="27/2 9 0 9/2 0 -6"/>
+    <SelectManifestation point="27/2 9 0 21/2 0 0"/>
+    <SelectManifestation point="27/2 9 0 9/2 0 6"/>
+    <SelectManifestation point="27/2 9 0 -3/2 0 0"/>
+    <SelectManifestation>
+      <polygonVertex at="27/2 9 0 -3/2 0 0"/>
+      <polygonVertex at="27/2 9 0 9/2 0 6"/>
+      <polygonVertex at="9/2 3 0 3/2 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="27/2 9 0 -3/2 0 0"/>
+      <polygonVertex at="27/2 9 0 9/2 0 6"/>
+      <polygonVertex at="9/2 3 0 3/2 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="27/2 9 0 21/2 0 0"/>
+      <polygonVertex at="27/2 9 0 9/2 0 -6"/>
+      <polygonVertex at="9/2 3 0 3/2 0 0"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <CommandEdit command="CommandCentralSymmetry"/>
+    <CommandEdit command="CommandTranslate"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="243/2 81 0 81/2 0 0"/>
+    <SelectManifestation point="108 72 0 30 0 0"/>
+    <SelectManifestation point="108 72 0 36 0 -6"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <SelectManifestation point="108 72 0 36 0 -6"/>
+    <SelectManifestation point="108 72 0 42 0 0"/>
+    <SelectManifestation point="243/2 81 0 81/2 0 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <SelectManifestation point="243/2 81 0 81/2 0 0"/>
+    <SelectManifestation point="108 72 0 42 0 0"/>
+    <SelectManifestation point="108 72 0 36 0 6"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <SelectManifestation point="108 72 0 36 0 6"/>
+    <SelectManifestation point="108 72 0 30 0 0"/>
+    <SelectManifestation point="243/2 81 0 81/2 0 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="108 72 0 36 0 6"/>
+    <SelectManifestation point="108 72 0 42 0 0"/>
+    <SelectManifestation point="27/2 9 0 21/2 0 0"/>
+    <SelectManifestation point="27/2 9 0 9/2 0 6"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <SelectManifestation point="108 72 0 42 0 0"/>
+    <SelectManifestation point="108 72 0 36 0 -6"/>
+    <SelectManifestation point="27/2 9 0 9/2 0 -6"/>
+    <SelectManifestation point="27/2 9 0 21/2 0 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="27/2 9 0 -3/2 0 0"/>
+    <SelectManifestation point="27/2 9 0 9/2 0 -6"/>
+    <SelectManifestation point="108 72 0 36 0 -6"/>
+    <SelectManifestation point="108 72 0 30 0 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="108 72 0 30 0 0"/>
+    <SelectManifestation point="108 72 0 36 0 6"/>
+    <SelectManifestation point="27/2 9 0 9/2 0 6"/>
+    <SelectManifestation point="27/2 9 0 -3/2 0 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="108 72 0 36 0 -6"/>
+      <polygonVertex at="108 72 0 42 0 0"/>
+      <polygonVertex at="243/2 81 0 81/2 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="243/2 81 0 81/2 0 0"/>
+      <polygonVertex at="108 72 0 42 0 0"/>
+      <polygonVertex at="108 72 0 36 0 6"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="108 72 0 36 0 6"/>
+      <polygonVertex at="108 72 0 30 0 0"/>
+      <polygonVertex at="243/2 81 0 81/2 0 0"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <CommandEdit command="CommandHide"/>
+    <SelectManifestation>
+      <polygonVertex at="243/2 81 0 81/2 0 0"/>
+      <polygonVertex at="108 72 0 30 0 0"/>
+      <polygonVertex at="108 72 0 36 0 -6"/>
+    </SelectManifestation>
+    <CommandEdit command="CommandHide"/>
+    <SelectManifestation point="9/2 3 0 3/2 0 0"/>
+    <CommandEdit command="CommandCentralSymmetry"/>
+    <CommandEdit command="CommandTranslate"/>
+    <BeginBlock/>
+    <SelectManifestation point="108 72 0 42 0 0"/>
+    <SelectManifestation point="108 72 0 36 0 6"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <SelectManifestation point="108 72 0 36 0 6"/>
+    <SelectManifestation point="108 72 0 30 0 0"/>
+    <SelectManifestation point="117 78 0 39 0 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <SelectManifestation point="117 78 0 39 0 0"/>
+    <SelectManifestation point="108 72 0 30 0 0"/>
+    <SelectManifestation point="108 72 0 36 0 -6"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <SelectManifestation point="108 72 0 36 0 -6"/>
+    <SelectManifestation point="108 72 0 42 0 0"/>
+    <SelectManifestation point="117 78 0 39 0 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="117 78 0 39 0 0"/>
+      <polygonVertex at="108 72 0 42 0 0"/>
+      <polygonVertex at="108 72 0 36 0 6"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="108 72 0 36 0 6"/>
+      <polygonVertex at="108 72 0 30 0 0"/>
+      <polygonVertex at="117 78 0 39 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation point="117 78 0 39 0 0"/>
+    <SelectManifestation point="243/2 81 0 81/2 0 0"/>
+    <SelectManifestation>
+      <polygonVertex at="117 78 0 39 0 0"/>
+      <polygonVertex at="108 72 0 30 0 0"/>
+      <polygonVertex at="108 72 0 36 0 -6"/>
+    </SelectManifestation>
+    <SelectManifestation point="108 72 0 36 0 -6"/>
+    <SelectManifestation point="108 72 0 42 0 0"/>
+    <SelectManifestation point="108 72 0 36 0 6"/>
+    <SelectManifestation point="108 72 0 30 0 0"/>
+    <SelectManifestation>
+      <polygonVertex at="108 72 0 42 0 0"/>
+      <polygonVertex at="108 72 0 36 0 -6"/>
+      <polygonVertex at="27/2 9 0 9/2 0 -6"/>
+      <polygonVertex at="27/2 9 0 21/2 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="27/2 9 0 21/2 0 0"/>
+      <polygonVertex at="27/2 9 0 9/2 0 -6"/>
+      <polygonVertex at="9/2 3 0 3/2 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="9/2 3 0 3/2 0 0"/>
+      <polygonVertex at="27/2 9 0 9/2 0 6"/>
+      <polygonVertex at="27/2 9 0 21/2 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="108 72 0 36 0 6"/>
+      <polygonVertex at="108 72 0 42 0 0"/>
+      <polygonVertex at="27/2 9 0 21/2 0 0"/>
+      <polygonVertex at="27/2 9 0 9/2 0 6"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="108 72 0 30 0 0"/>
+      <polygonVertex at="108 72 0 36 0 6"/>
+      <polygonVertex at="27/2 9 0 9/2 0 6"/>
+      <polygonVertex at="27/2 9 0 -3/2 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="27/2 9 0 -3/2 0 0"/>
+      <polygonVertex at="27/2 9 0 9/2 0 6"/>
+      <polygonVertex at="9/2 3 0 3/2 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="9/2 3 0 3/2 0 0"/>
+      <polygonVertex at="27/2 9 0 9/2 0 -6"/>
+      <polygonVertex at="27/2 9 0 -3/2 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="27/2 9 0 -3/2 0 0"/>
+      <polygonVertex at="27/2 9 0 9/2 0 -6"/>
+      <polygonVertex at="108 72 0 36 0 -6"/>
+      <polygonVertex at="108 72 0 30 0 0"/>
+    </SelectManifestation>
+    <InvertSelection/>
+    <EndBlock/>
+    <CommandEdit command="CommandHide"/>
+    <SelectManifestation point="243/2 81 0 81/2 0 0"/>
+  </EditHistory>
+  <notes>
+    <page title="How to save notes">
+      <ViewModel near="0.2718281786416199" far="217.46253967285156" width="48.9290714263916" distance="108.73126983642578"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.0" y="1.0" z="0.0"/>
+        <LookDirection x="0.0" y="0.0" z="-1.0"/>
+      </ViewModel>
+      <content xml:space="preserve">You can create as many pages as you like, using the '+' buttons in either direction.
+
+For now, only the text and the view of the model are different from one page to the next.  In the next update, each page will allow a different model entirely.
+
+Eventually there will be a 'vZome Player' application that will display the pages.
+</content>
+    </page>
+  </notes>
+</vzome:vZome>

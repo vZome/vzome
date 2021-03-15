@@ -1,0 +1,98 @@
+
+// move to the center of the strut
+size -99 yellow +0
+
+// adjust to the parts scale
+scale -5
+
+symmetry through center
+{
+
+branch {				label unit.start
+// move to strut origin
+from save scale { scale +5
+size -99 yellow -0 }
+	yellow +0
+	size 2 blue +2
+	short blue -7		label p0
+	rotate around yellow -0
+	short blue -7		label p1
+	rotate around yellow -0
+	short blue -7		label p2
+	rotate around yellow -0
+						label unit.face
+						label p2
+						label p1
+						label p0
+						label unit.end
+}
+
+symmetry around yellow +0
+branch {
+label unit.start
+
+// "near" half of antiprism join
+branch {
+	repeat 2 yellow -0
+	short blue +2		label tri_base_l
+	blue -7				label tri_base_r
+}
+branch{
+	repeat 2 yellow +0
+	short blue -12		label tri_tip
+}
+
+// move to strut origin
+from save scale { scale +5
+size -99 yellow -0 }
+
+branch {
+	long yellow +0
+	short blue +2		label rect_base_l
+	branch{
+		repeat 3
+		size -2 purple -35
+		size -1 purple -35  label tip_top_l
+	}
+	blue -7				label rect_base_r
+	branch{
+		repeat 3
+		size -2 purple 21
+		size -1 purple 21  label tip_top_r
+	}
+}
+
+branch {
+	yellow +0
+	size 2 blue +2		label tip_base_l
+	short blue -7		label tip_base_r
+}
+
+ //faces
+
+			label unit.face // tip sides
+	label tip_base_l
+	label tip_base_r
+	label tip_top_r
+	label tip_top_l
+
+			label unit.face // tip sides
+	label tip_top_l
+	label tip_top_r
+	label rect_base_r
+	label rect_base_l
+
+			label unit.face // triangle
+	label tri_base_l
+	label tri_base_r
+	label tri_tip
+
+			label unit.face // rectangle
+	label rect_base_l
+	label rect_base_r
+	label tri_base_r
+	label tri_base_l
+
+label unit.end
+}
+}
