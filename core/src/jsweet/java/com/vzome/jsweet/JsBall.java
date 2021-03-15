@@ -27,13 +27,15 @@ public class JsBall extends JsManifestation implements Connector
         return new FreePoint( getLocation() );
     }
 
-    
-    
-    
-
     @Override
     public int compareTo( Connector other )
     {
-        throw new RuntimeException( "unimplemented" );
+        if ( this == other ) {
+            return 0;
+        }
+        if ( other .equals( this ) ) { // intentionally throws a NullPointerException if other is null
+            return 0;
+        }
+        return this .getLocation() .compareTo( other .getLocation() );
     }
 }
