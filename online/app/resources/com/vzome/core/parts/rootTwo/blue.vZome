@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome field="rootTwo" version="3.0 alpha 7" xmlns:vzome="http://tns.vorthmann.org/vZome/4.0.0/">
+  <Viewing>
+    <ViewModel near="0.2509290541846909" far="200.74324035644534" width="45.16722908020021" distance="100.37162017822266"
+    stereoAngle="0.0" parallel="false">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.09554605521470595" y="0.9942302433360247" z="-0.04875627722559677"/>
+      <LookDirection x="-0.9699826228593074" y="-0.10399540612572593" z="-0.21981507422314145"/>
+    </ViewModel>
+    <ViewModel near="0.10000000149011612" far="80.0" width="18.0" distance="40.0" stereoAngle="0.0" parallel="false"
+    name="default">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0" y="1.0" z="0.0"/>
+      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="octahedral" renderingStyle="ornate">
+    <Direction name="blue" available="true" snap="true" build="true" render="true" color="0,118,149">
+      <LengthModel scale="9" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="yellow" available="true" snap="true" render="true" color="240,160,0">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="green" available="true" snap="true" render="true" color="0,141,54">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+    <Direction name="brown" available="true" snap="true" render="true" color="107,53,26">
+      <LengthModel scale="3" taus="0" ones="1" divisor="1"/>
+    </Direction>
+  </SymmetrySystem>
+  <EditHistory editNumber="67">
+    <StrutCreation anchor="0 0 0 0 0 0" symm="octahedral" dir="yellow" index="13" len="2 0"/>
+    <StrutCreation anchor="-2 0 2 0 2 0" symm="octahedral" dir="blue" index="6" len="4 0"/>
+    <StrutCreation anchor="-2 0 2 0 2 0" symm="octahedral" dir="blue" index="4" len="4 0"/>
+    <SelectManifestation point="-2 0 2 0 6 0"/>
+    <CommandEdit command="CommandSymmetry">
+      <Symmetry name="octahedral" attrName="symmetry.group"/>
+    </CommandEdit>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-2 0 6 0 2 0"/>
+    <SelectManifestation point="-6 0 2 0 2 0"/>
+    <SelectManifestation point="-2 0 2 0 6 0"/>
+    <DeselectAll/>
+    <EndBlock/>
+    <StrutCreation anchor="0 0 0 0 0 0" symm="octahedral" dir="blue" index="0" len="0 32"/>
+    <SymmetryAxisChange start="0 0 0 0 0 0" end="0 32 0 0 0 0"/>
+    <SelectManifestation startSegment="0 0 0 0 0 0" endSegment="0 32 0 0 0 0"/>
+    <CommandEdit command="CommandHide"/>
+    <BeginBlock/>
+    <SelectManifestation point="-6 0 2 0 2 0"/>
+    <SelectManifestation point="-6 0 2 0 -2 0"/>
+    <SelectManifestation point="-6 0 -2 0 -2 0"/>
+    <SelectManifestation point="-6 0 -2 0 2 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandTranslate"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-6 32 -2 0 2 0"/>
+    <SelectManifestation point="-6 32 2 0 2 0"/>
+    <SelectManifestation point="6 0 2 0 2 0"/>
+    <SelectManifestation point="6 0 -2 0 2 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <SelectManifestation point="-6 32 2 0 -2 0"/>
+    <SelectManifestation point="6 0 2 0 -2 0"/>
+    <SelectManifestation point="6 0 2 0 2 0"/>
+    <SelectManifestation point="-6 32 2 0 2 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <SelectManifestation point="6 0 -2 0 -2 0"/>
+    <SelectManifestation point="6 0 2 0 -2 0"/>
+    <SelectManifestation point="-6 32 2 0 -2 0"/>
+    <SelectManifestation point="-6 32 -2 0 -2 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <SelectManifestation point="6 0 -2 0 2 0"/>
+    <SelectManifestation point="6 0 -2 0 -2 0"/>
+    <SelectManifestation point="-6 32 -2 0 -2 0"/>
+    <SelectManifestation point="-6 32 -2 0 2 0"/>
+    <EndBlock/>
+    <CommandEdit command="CommandPolygon"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="6 0 -2 0 -2 0"/>
+      <polygonVertex at="6 0 2 0 -2 0"/>
+      <polygonVertex at="-6 32 2 0 -2 0"/>
+      <polygonVertex at="-6 32 -2 0 -2 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="6 0 -2 0 2 0"/>
+      <polygonVertex at="6 0 -2 0 -2 0"/>
+      <polygonVertex at="-6 32 -2 0 -2 0"/>
+      <polygonVertex at="-6 32 -2 0 2 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-6 32 -2 0 2 0"/>
+      <polygonVertex at="-6 32 2 0 2 0"/>
+      <polygonVertex at="6 0 2 0 2 0"/>
+      <polygonVertex at="6 0 -2 0 2 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-6 32 2 0 -2 0"/>
+      <polygonVertex at="6 0 2 0 -2 0"/>
+      <polygonVertex at="6 0 2 0 2 0"/>
+      <polygonVertex at="-6 32 2 0 2 0"/>
+    </SelectManifestation>
+    <SelectManifestation point="-6 32 2 0 2 0"/>
+    <SelectManifestation point="-6 32 2 0 -2 0"/>
+    <SelectManifestation point="0 32 0 0 0 0"/>
+    <SelectManifestation point="-6 32 -2 0 -2 0"/>
+    <SelectManifestation point="-6 32 -2 0 2 0"/>
+    <InvertSelection/>
+    <EndBlock/>
+    <CommandEdit command="CommandHide"/>
+    <SelectManifestation point="0 32 0 0 0 0"/>
+  </EditHistory>
+  <notes>
+    <page title="How to save notes">
+      <ViewModel near="0.2718281786416199" far="217.46253967285156" width="48.9290714263916" distance="108.73126983642578"
+      stereoAngle="0.0" parallel="false">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.0" y="1.0" z="0.0"/>
+        <LookDirection x="0.0" y="0.0" z="-1.0"/>
+      </ViewModel>
+      <content xml:space="preserve">You can create as many pages as you like, using the '+' buttons in either direction.
+
+For now, only the text and the view of the model are different from one page to the next.  In the next update, each page will allow a different model entirely.
+
+Eventually there will be a 'vZome Player' application that will display the pages.
+</content>
+    </page>
+  </notes>
+</vzome:vZome>

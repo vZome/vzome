@@ -15,7 +15,7 @@ function gcd( a, b )
 function simplify3( v0, v1, v2 )
 {
   if ((v0|0) !== v0 || (v1|0) !== v1 || (v2|0) !== v2)
-    throw new TypeError('simplify3 operates only on integers.')
+    throw new TypeError( `simplify3 operates only on integers... ${v0} ${v1} ${v2}` )
   let s0 = (v0>0)-(v0<0), s1 = (v1>0)-(v1<0), s2 = (v2>0)-(v2<0) // signs
   v0 *= s0
   v1 *= s1

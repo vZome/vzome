@@ -7,7 +7,7 @@ import { JavaDomElement, JsProperties } from './wrappers'
 import allShapes from '../resources/com/vzome/core/parts/index.js'
 import groupResources from '../resources/com/vzome/core/math/symmetry/index.js'
 
-import { com } from '../jsweet/bundle'
+import { com } from '../jsweet/transpiled-java'
 import { java } from '../jsweet/j4ts-2.0.0/bundle'
 
 const fields = { [goldenField.name]: goldenField, [root2Field.name]: root2Field }
