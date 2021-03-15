@@ -1,15 +1,6 @@
 
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
-import { exportTriggered } from '../bundles/cheerpj'
-import Modal from 'react-bootstrap/Modal'
-import Button from 'react-bootstrap/Button'
-import Tab from 'react-bootstrap/Tab'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import Nav from 'react-bootstrap/Nav'
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger'
-import Tooltip from 'react-bootstrap/Tooltip'
 
 const formats = [
   {

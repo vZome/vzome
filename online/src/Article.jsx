@@ -7,7 +7,7 @@ import Link from '@material-ui/core/Link'
 
 import { UrlViewer } from '@vzome/react-vzome'
 
-import VZomeAppBar from './components/appbar.js'
+import VZomeAppBar from './components/appbar.jsx'
 
 const useStyles = makeStyles( (theme) => ({
   paper: {

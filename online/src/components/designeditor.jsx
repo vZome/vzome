@@ -2,9 +2,9 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import { selectionToggled } from '../bundles/mesh'
-import * as planes from '../bundles/planes'
-import * as designs from '../bundles/designs'
+import { selectionToggled } from '../bundles/mesh.js'
+import * as planes from '../bundles/planes.js'
+import * as designs from '../bundles/designs.js'
 import { DesignCanvas, BuildPlane, MeshGeometry } from '@vzome/react-vzome'
 
 const select = ( state ) =>

@@ -1,8 +1,8 @@
 
-import * as designs from '../bundles/designs'
+import * as designs from '../bundles/designs.js'
 // import { ActionCreators } from 'redux-undo';
-import * as mesh from './mesh'
-import { showAlert } from './alerts'
+import * as mesh from './mesh.js'
+import { showAlert } from './alerts.js'
 import { vZomeJava, Adapter } from '@vzome/react-vzome'
 
 export const reducer = ( state = {}, action ) =>

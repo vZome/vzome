@@ -1,14 +1,14 @@
 
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 
-import * as alerts from './alerts'
-import * as camera from './camera'
-import * as lighting from './lighting'
-import * as progress from './progress'
-import * as commands from '../commands'
-import * as workingPlane from './planes'
-import * as designs from './designs'
-import * as shapers from './shapers'
+import * as alerts from './alerts.js'
+import * as camera from './camera.js'
+import * as lighting from './lighting.js'
+import * as progress from './progress.js'
+import * as commands from '../commands/index.js'
+import * as workingPlane from './planes.js'
+import * as designs from './designs.js'
+import * as shapers from './shapers.js'
 
 const createBundleStore = ( profile, middleware ) =>
 {

@@ -1,14 +1,14 @@
 
-import goldenField from '../fields/golden'
-import root2Field from '../fields/root2'
-import Adapter from './adapter'
-import { JavaDomElement, JsProperties } from './wrappers'
+import goldenField from '../fields/golden.js'
+import root2Field from '../fields/root2.js'
+import Adapter from './adapter.js'
+import { JavaDomElement, JsProperties } from './wrappers.js'
 
 import allShapes from '../resources/com/vzome/core/parts/index.js'
 import groupResources from '../resources/com/vzome/core/math/symmetry/index.js'
 
-import { com } from '../jsweet/transpiled-java'
-import { java } from '../jsweet/j4ts-2.0.0/bundle'
+import { com } from '../jsweet/transpiled-java.js'
+import { java } from '../jsweet/j4ts-2.0.0/bundle.js'
 
 const fields = { [goldenField.name]: goldenField, [root2Field.name]: root2Field }
 

@@ -4,10 +4,10 @@ import undoable, { ActionCreators as Undo } from 'redux-undo'
 
 import { goldenField, vZomeJava } from '@vzome/react-vzome'
 import * as mesh from './mesh'
-import { reducer as cameraReducer, initialState as cameraDefault, cameraDefined } from './camera'
-import * as dbugger from './dbugger'
-import * as shapers from './shapers'
-import { showAlert } from './alerts'
+import { reducer as cameraReducer, initialState as cameraDefault, cameraDefined } from './camera.js'
+import * as dbugger from './dbugger.js'
+import * as shapers from './shapers.js'
+import { showAlert } from './alerts.js'
 
 export const designReducer = combineReducers( {
   mesh: undoable( mesh.reducer ),

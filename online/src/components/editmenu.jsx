@@ -1,8 +1,8 @@
 
 import React from 'react'
 import { connect } from 'react-redux'
-import { commandTriggered } from '../commands'
-import * as designs from '../bundles/models'
+import { commandTriggered } from '../commands/index.js'
+import * as designs from '../bundles/models.js'
 import { ActionCreators as UndoActionCreators } from 'redux-undo'
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';

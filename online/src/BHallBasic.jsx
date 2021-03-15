@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 import Divider from '@material-ui/core/Divider';
 
-import VZomeAppBar from './components/appbar.js'
+import VZomeAppBar from './components/appbar.jsx'
 import { UrlViewer } from '@vzome/react-vzome'
 
 const useStyles = makeStyles( (theme) => ({

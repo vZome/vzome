@@ -2,7 +2,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import * as designFns from '../bundles/designs'
+import * as designFns from '../bundles/designs.js'
 
 import { makeStyles, withStyles } from '@material-ui/core/styles'
 import MenuItem from '@material-ui/core/MenuItem'
