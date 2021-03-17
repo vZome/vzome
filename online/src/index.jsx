@@ -14,14 +14,14 @@ import BHallBasic from './BHallBasic.jsx';
 render(
   <Router>
     <Switch>
-      <Route path="/app" exact>
-        <App />
-      </Route>
       <Route path="/app/fivecell">
         <Article />
       </Route>
       <Route path="/app/bhall/basic">
         <BHallBasic />
+      </Route>
+      <Route path="/">
+        <App />
       </Route>
     </Switch>
   </Router>,
