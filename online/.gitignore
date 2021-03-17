@@ -10,6 +10,8 @@
 
 # production
 /build
+/app
+app.tgz
 
 # misc
 .DS_Store
