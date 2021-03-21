@@ -434,10 +434,10 @@ export const init = async () =>
 
 export const coreState = init()
 
-const embedShape = ( shape ) =>
+const embedShape = ( shape, embedding ) =>
 {
   const vertices = shape.getVertexList().toArray().map( av => {
-    const { x, y, z } = av.toRealVector()
+    const { x, y, z } = embedding.embedInR3( av )
     return { x, y, z }
   })
   const faces = shape.getTriangleFaces().toArray()
@@ -465,7 +465,7 @@ const shaperFactory = ( vzomePkg, orbitSource ) => shapes => instance =>
   // is the shape new?
   const shapeId = rm.getShapeId().toString()
   if ( ! shapes[ shapeId ] ) {
-    shapes[ shapeId ] = embedShape( rm.getShape() )
+    shapes[ shapeId ] = embedShape( rm.getShape(), orbitSource.getSymmetry() )
   }
 
   // get shape, orientation, color, and position from rm
