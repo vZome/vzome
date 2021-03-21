@@ -41,7 +41,7 @@
     "@material-ui/icons": "^4.9.1",
     "drei": "0.0.70",
     "react-three-fiber": "^4.2.21",
-    "three": "^0.124.0"
+    "three": "^0.125.0"
   },
   "scripts": {
     "build": "rollup -c",
