@@ -174,11 +174,12 @@ const origin = dimensions =>
 }
 
 
-export default {
+const field = {
 
   name: 'golden',
 
   order: 2,
+  scalarTerm: 1,
 
   zero: [ 0, 0, 1 ],
   one: [ 1, 0, 1 ],
@@ -207,3 +208,5 @@ export default {
     return [ x, y, z ]
   }
 }
+
+export default field

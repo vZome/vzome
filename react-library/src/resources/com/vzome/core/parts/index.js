@@ -9,6 +9,7 @@ import tiny from './tiny/index.js'
 import rootTwo from './rootTwo/index.js'
 import rootTwoBig from './rootTwoBig/index.js'
 import rootTwoSmall from './rootTwoSmall/index.js'
+import heptagonAntiprism from './heptagonAntiprism/index.js'
 
 const shapes = {
   'default': defaultShapes,
@@ -21,6 +22,7 @@ const shapes = {
   rootTwo,
   rootTwoBig,
   rootTwoSmall,
+  'heptagon/antiprism': heptagonAntiprism,
 }
 
 export default shapes

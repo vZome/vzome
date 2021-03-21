@@ -4,7 +4,6 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.AbstractSymmetry;
 import com.vzome.core.math.symmetry.Axis;
@@ -62,7 +61,7 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
 		// Breaking the bad pattern of orbit initialization in the AbstractSymmetry constructor,
 		//   we are just initializing matrices, here.
 		
-        HeptagonField hf = (HeptagonField) this .mField;
+        AlgebraicField hf = this .mField;
 
         AlgebraicNumber one = hf .one();
         AlgebraicNumber s = hf .getAffineScalar().reciprocal(); // reciprocal of sigma

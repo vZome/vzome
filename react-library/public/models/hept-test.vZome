@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="44" coreVersion="7.0" edition="vZome" field="heptagon" version="7.0">
+  <EditHistory editNumber="16" lastStickyEdit="-1">
+    <StrutCreation anchor="0 0 0 0 0 0 0 0 0" index="0" len="0 2 1" symm="heptagonal antiprism corrected"/>
+    <StrutCreation anchor="0 2 1 0 0 0 0 0 0" index="2" len="0 2 1" outbound="false" symm="heptagonal antiprism corrected"/>
+    <BeginBlock/>
+    <SelectManifestation point="-1 4 1 0 -2 -1 0 0 0"/>
+    <SelectManifestation endSegment="-1 4 1 0 -2 -1 0 0 0" startSegment="0 2 1 0 0 0 0 0 0"/>
+    <SelectManifestation point="0 2 1 0 0 0 0 0 0"/>
+    <EndBlock/>
+    <ApplyTool name="symmetry.builtin/heptagonal antiprism around origin" selectInputs="true"/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 2 1 0 2 1 0 0 0" dir="red" index="0" len="0 2 1" symm="heptagonal antiprism corrected"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="0 2 1 0 2 1 0 2 1" startSegment="0 2 1 0 2 1 0 0 0"/>
+    <SelectManifestation point="0 2 1 0 2 1 0 2 1"/>
+    <EndBlock/>
+    <ApplyTool name="symmetry.builtin/heptagonal antiprism around origin" selectInputs="true"/>
+    <DeselectAll/>
+  </EditHistory>
+  <notes/>
+  <sceneModel ambientLight="41,41,41" background="178,205,230">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="108.73126983642578" far="217.46253967285156" near="0.27182817459106445" parallel="false" stereoAngle="0.0" width="48.92906951904297">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.06685438007116318" y="0.48726993799209595" z="0.8706890344619751"/>
+      <LookDirection x="0.06157898157835007" y="0.868962824344635" z="-0.4910321533679962"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="heptagonal antiprism corrected" renderingStyle="heptagonal antiprism">
+    <Direction color="197,3,20" name="red"/>
+    <Direction color="6,96,141" name="blue"/>
+    <Direction color="2,130,53" name="green"/>
+  </SymmetrySystem>
+  <OtherSymmetries>
+    <SymmetrySystem name="octahedral" renderingStyle="octahedra">
+      <Direction color="6,96,141" name="blue"/>
+      <Direction color="2,130,53" name="green"/>
+      <Direction color="245,163,1" name="yellow"/>
+    </SymmetrySystem>
+    <SymmetrySystem name="heptagonal antiprism" renderingStyle="heptagonal antiprism">
+      <Direction color="197,3,20" name="red"/>
+      <Direction color="6,96,141" name="blue"/>
+      <Direction color="2,130,53" name="green"/>
+    </SymmetrySystem>
+  </OtherSymmetries>
+  <Tools/>
+</vzome:vZome>

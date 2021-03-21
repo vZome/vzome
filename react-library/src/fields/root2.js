@@ -119,6 +119,7 @@ const field = {
   name: 'rootTwo',
 
   order: 2,
+  scalarTerm: 1,
 
   zero: [ 0, 0, 1 ],
   one: [ 1, 0, 1 ],

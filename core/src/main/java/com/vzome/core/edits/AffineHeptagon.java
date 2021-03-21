@@ -3,7 +3,6 @@ package com.vzome.core.edits;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
@@ -50,9 +49,11 @@ public class AffineHeptagon extends ChangeManifestations
         }
 
         AlgebraicField field = strut1.getLocation().getField();
-        if (!(field instanceof HeptagonField)) {
-            fail("Affine heptagon command requires a Heptagon field.");
-        }
+        
+        // TODO: test this without the class dependency
+//        if (!(field instanceof HeptagonField)) {
+//            fail("Affine heptagon command requires a Heptagon field.");
+//        }
 
         redo();  // Get the unselects out of the way, in case anything needs to be re-selected later
 
