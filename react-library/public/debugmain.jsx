@@ -31,7 +31,7 @@ export const Demo = () =>
   return (
     <div>
       <div style={viewerStyle}>
-        <UrlViewer url={"/models/affineDodec.vZome"} />
+        <UrlViewer url={"/models/hept-test.vZome"} />
       </div>
     </div>
   )

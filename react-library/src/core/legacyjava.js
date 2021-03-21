@@ -1,6 +1,7 @@
 
 import goldenField from '../fields/golden.js'
 import root2Field from '../fields/root2.js'
+import heptagonField from '../fields/heptagon.js'
 import Adapter from './adapter.js'
 import { JavaDomElement, JsProperties } from './wrappers.js'
 
@@ -10,7 +11,11 @@ import groupResources from '../resources/com/vzome/core/math/symmetry/index.js'
 import { com } from '../jsweet/transpiled-java.js'
 import { java } from '../jsweet/j4ts-2.0.0/bundle.js'
 
-const fields = { [goldenField.name]: goldenField, [root2Field.name]: root2Field }
+const fields = {
+  [goldenField.name]: goldenField,
+  [root2Field.name]: root2Field,
+  [heptagonField.name]: heptagonField
+}
 
 // Copied from core/src/main/resources/com/vzome/core/editor/defaultPrefs.properties
 const defaults = {
@@ -267,9 +272,11 @@ export const init = async () =>
   const colors = new vzomePkg.core.render.Colors( properties )
   const gfield = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
   const r2field = new vzomePkg.jsweet.JsAlgebraicField( root2Field )
+  const heptfield = new vzomePkg.jsweet.JsAlgebraicField( heptagonField )
   const fieldApps = {
     golden: new vzomePkg.core.kinds.GoldenFieldApplication( gfield ),
     rootTwo: new vzomePkg.core.kinds.RootTwoFieldApplication( r2field ),
+    heptagon: new vzomePkg.core.kinds.HeptagonFieldApplication( heptfield ),
   }
 
   // This object implements the UndoableEdit.Context interface

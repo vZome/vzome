@@ -430,12 +430,13 @@ public class AlgebraicNumberTest
 
         AlgebraicNumber rho = field .createAlgebraicNumber( new int[]{ 0, 1, 0 } );
         AlgebraicNumber sigma = field .createAlgebraicNumber( new int[]{ 0, 0, 1 } );
+        AlgebraicNumber sigma_4 = sigma .times( sigma ) .times( sigma ) .times( sigma );
         AlgebraicNumber sigma_5 = field .createAlgebraicNumber( new int[]{ 6, 11, 14 } );
-
         assertEquals( rho .plus( sigma ), rho .times( sigma ) );
         assertEquals( field .one() .plus( sigma ), rho .times( rho ) );
         assertEquals( field .one() .plus( rho ) .plus( sigma ), sigma .times( sigma ) );
-        assertEquals( sigma .times( sigma ) .times( sigma ) .times( sigma ) .times( sigma ), sigma_5 );
+        assertEquals( sigma_4 .times( sigma ), sigma_5 );
+        assertEquals( sigma_4, sigma_5 .dividedBy( sigma ) );
     }
 
     @Test
