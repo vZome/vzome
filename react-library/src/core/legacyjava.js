@@ -520,7 +520,7 @@ export const interpret = ( action, parseAndPerform, adapter, editElement, stack=
     if ( editElement.nodeName === "Branch" ) {
       const branchAdapter = adapter.clone()
       stack.push( { branch: editElement, adapter } )
-      recordSnapshot && recordSnapshot( branchAdapter, editElement.firstElementChild, stack )
+      recordSnapshot && recordSnapshot( branchAdapter, editElement.id, editElement.firstElementChild, stack )
       editElement = editElement.firstElementChild // this assumes there are no empty branches
       adapter = branchAdapter
       return Step.IN
@@ -528,7 +528,7 @@ export const interpret = ( action, parseAndPerform, adapter, editElement, stack=
       adapter = adapter.clone()  // each command builds on the last
       parseAndPerform( editElement, adapter )
       if ( editElement.nextElementSibling ) {
-        recordSnapshot && recordSnapshot( adapter, editElement.nextElementSibling )
+        recordSnapshot && recordSnapshot( adapter, editElement.id, editElement.nextElementSibling )
         editElement = editElement.nextElementSibling
         return Step.OVER
       } else {
@@ -539,11 +539,11 @@ export const interpret = ( action, parseAndPerform, adapter, editElement, stack=
         if ( top ) {
           adapter = top.adapter.clone()  // overwrite and discard the prior value
           editElement = top.branch.nextElementSibling
-          recordSnapshot && recordSnapshot( adapter, editElement, stack )
+          recordSnapshot && recordSnapshot( adapter, editElement.id, editElement, stack )
           return Step.OUT
         } else {
           // at the end of the editHistory
-          recordSnapshot && recordSnapshot( adapter, null )
+          recordSnapshot && recordSnapshot( adapter, editElement.id, null )
           return Step.DONE
         }
       }
@@ -638,7 +638,7 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
     const viewing = vZomeRoot.getChildElement( "Viewing" )
     const camera = viewing && parseViewXml( viewing )
     const edits = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement )
-    // TODO: use editNumber
+    // Note: I'm adding one so that this matches the assigned ID of the next edit to do
     const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
 
     return { edits, camera, field, parseAndPerformEdit, targetEdit, shaper }

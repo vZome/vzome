@@ -50,11 +50,15 @@ export const useVZomeUrl = ( url, defaultCamera ) =>
       setCamera( { ...camera, fov: convertFOV( 0.75 ) } )
       setResolver( { shaper } )
       let meshAdapter = new Adapter( originShown( field ), new Map(), new Map() )
-      const record = ( adapter ) => {
-        meshAdapter = adapter
+      let targetMesh = null
+      const record = ( adapter, id ) => {
+        if ( !targetMesh && id === targetEdit ) {
+          targetMesh = meshAdapter // record the prior state
+        }
+        meshAdapter = adapter // will record where we failed, if we don't reach targetEdit
       } // yup, overwrite every time
       vZome.interpret( vZome.Step.DONE, parseAndPerformEdit, meshAdapter, edits.firstElementChild, [], record )
-      setMesh( meshAdapter )
+      setMesh( targetMesh || meshAdapter )
     }
     parseUrl();
   }, [url] )
