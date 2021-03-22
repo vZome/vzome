@@ -4,6 +4,7 @@ import * as designs from '../bundles/designs.js'
 import * as mesh from './mesh.js'
 import { showAlert } from './alerts.js'
 import { vZomeJava, Adapter } from '@vzome/react-vzome'
+import { ActionCreators as UndoActionCreators } from 'redux-undo'
 
 export const reducer = ( state = {}, action ) =>
 {
@@ -37,13 +38,6 @@ export const sourceLoaded = ( source, parseAndPerformEdit, targetEdit ) => ({ ty
 
 export const reachedEdit = ( element, branchStack ) => ( { type: 'EDIT_REACHED', payload: { element, branchStack } } )
 
-    // console.log( `target is ${targetEdit}, currentEdit is ${currentEdit}` )
-    // while ( currentEdit > targetEdit ) {
-    //   design = designs.designReducer( design, ActionCreators.undo() )
-    //   --currentEdit
-    // }
-    // console.log( `target is ${targetEdit}, currentEdit is ${currentEdit}` )
-
 export const debug = ( designName, action ) => ( dispatch, getState ) =>
 {
   let design = designs.selectDesign( getState(), designName ) // the starting point only
@@ -54,9 +48,16 @@ export const debug = ( designName, action ) => ( dispatch, getState ) =>
   let editElement = dbugger.currentElement
   let stack = dbugger.branchStack.slice() // only modified when stepping in or out
 
-  const recordSnapshot = ( adapter, editElement, stack ) =>
+  let targetPast = -1   // if we reach the targetEdit, this will get set to at least zero
+
+  const recordSnapshot = ( adapter, id, editElement, stack ) =>
   {
     const { shown, selected, hidden, groups } = adapter
+    if ( id === dbugger.targetEdit ) {
+      targetPast = design.dbugger.past.length
+      console.log( targetPast )
+      // This is where we will undo back to
+    }
     design = designs.designReducer( design, mesh.meshChanged( shown, selected, hidden, groups ) )
     design = designs.designReducer( design, reachedEdit( editElement, stack ) )
   }
@@ -67,6 +68,9 @@ export const debug = ( designName, action ) => ( dispatch, getState ) =>
     console.log( error )
     dispatch( showAlert( `Unable to parse vZome design file: ${designName};\n ${error.message}` ) )
     design.success = false
+  }
+  if ( targetPast >= 0 ) {
+    design = designs.designReducer( design, UndoActionCreators.jumpToPast( targetPast ) )
   }
   dispatch( designs.loadedDesign( designName, design ) )
 }
