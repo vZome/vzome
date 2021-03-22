@@ -1,21 +1,28 @@
-import * as THREE from 'three'
+import { BufferGeometry, Vector3, Float32BufferAttribute } from 'three'
 import React, { useMemo } from 'react'
 
-const computeNormal = ( vertices, face ) => {
-  const v0 = vertices[ face.vertices[0] ]
-  const v1 = vertices[ face.vertices[1] ]
-  const v2 = vertices[ face.vertices[2] ]
-  const e1 = new THREE.Vector3().subVectors( v1, v0 )
-  const e2 = new THREE.Vector3().subVectors( v2, v0 )
-  return new THREE.Vector3().crossVectors( e1, e2 )
-}
 
 const createGeometry = ( { vertices, faces } ) =>
 {
-  var geometry = new THREE.Geometry();
-  geometry.vertices = vertices.map( v => new THREE.Vector3( v.x, v.y, v.z ) )
-  geometry.faces = faces.map( f => new THREE.Face3( f.vertices[0], f.vertices[1], f.vertices[2], computeNormal( vertices, f ) ) )
-  geometry.computeBoundingSphere();
+  const computeNormal = ( [ v0, v1, v2 ] ) => {
+    const e1 = new Vector3().subVectors( v1, v0 )
+    const e2 = new Vector3().subVectors( v2, v0 )
+    return new Vector3().crossVectors( e1, e2 ).normalize()
+  }
+  let positions = []
+  let normals = []
+  faces.forEach( face => {
+    const corners = face.vertices.map( i => vertices[ i ] )
+    const { x:nx, y:ny, z:nz } = computeNormal( corners )
+    corners.forEach( ( { x, y, z } ) => {
+      positions.push( x, y, z )
+      normals.push( nx, ny, nz )
+    })
+  } )
+  const geometry = new BufferGeometry()
+  geometry.setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) )
+  geometry.setAttribute( 'normal', new Float32BufferAttribute( normals, 3 ) )
+  geometry.computeBoundingSphere()
   return geometry
 }
 
@@ -73,42 +80,15 @@ export const SortedGeometry = ( { sortedInstances, highlightBall, handleClick, o
 
 export const ShapedGeometry = ( { shapes, instances, highlightBall, handleClick, onHover } ) =>
 {
-  const filterInstances = ( shape, instances ) => instances.filter( instance => instance.shapeId === shape.id )
-  const sortByShape = () => Object.values( shapes ).map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
-  const sortedInstances = useMemo( sortByShape, [ shapes, instances ] )  // When !preRendered, instances will change every render
+  const sortedInstances = useInstanceSorter( shapes, instances )
   return (
     <SortedGeometry {...{ sortedInstances, highlightBall, handleClick, onHover }} />
   )
 }
 
-const shapeInstance = ( instance, selected, shapedInstances, resolve ) =>
+const useInstanceSorter = ( shapes, instances ) =>
 {
-  // TODO: handle undefined result from resolve
-  let shapedInstance = shapedInstances[ instance.id ]
-  if ( shapedInstance && ( instance.color === shapedInstance.color ) ) {
-    return { ...shapedInstance, selected }
-  }
-  shapedInstance = resolve( instance )
-  // everything except selected state will go into shapedInstances
-  shapedInstance = { ...shapedInstance, vectors: instance.vectors }
-  shapedInstances[ instance.id ] = shapedInstance
-  return { ...shapedInstance, selected }
+  const filterInstances = ( shape, instances ) => instances.filter( instance => instance.shapeId === shape.id )
+  const sortByShape = () => Object.values( shapes ).map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
+  return useMemo( sortByShape, [ shapes, instances ] )
 }
-
-export const MeshGeometry = ({ shown, selected, resolver, highlightBall, handleClick, onHover }) =>
-{
-  // resolver won't be available until the JSweet init has dispatched ORBITS_INITIALIZED
-  const shapes = useMemo( () => ( {} ), [resolver] )
-  const shapedInstances = useMemo( () => ({}), [] )
-  if ( resolver ) {
-    const resolve = resolver( shapes )
-    const instances = []
-    shown.forEach( instance => instances.push( shapeInstance( instance, false, shapedInstances, resolve ) ) )
-    selected.forEach( instance => instances.push( shapeInstance( instance, true, shapedInstances, resolve ) ) )
-    return (
-      <ShapedGeometry {...{ shapes, instances, highlightBall, handleClick, onHover }} />
-    )
-  } else
-    return null
-}
-
