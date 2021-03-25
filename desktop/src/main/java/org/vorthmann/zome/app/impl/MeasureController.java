@@ -183,23 +183,31 @@ public class MeasureController extends DefaultController implements SelectionSum
 
         // second visual separator needs unique key since measurements is a map, so use one space
         this .measurements .put( " ", " " );
-        // we can't use AlgebraicNumber math unless the two struts are in the same orbit 
-        // but we can still show approximated decimal values
-        double length1 = Math.sqrt(AlgebraicVectors.getMagnitudeSquared(v1).evaluate());
-        double length2 = Math.sqrt(AlgebraicVectors.getMagnitudeSquared(v2).evaluate());
-        Double ratio = length1/length2;
-        String inequality = "equal"; 
-        if(length1 != length2) {
-            inequality = name1 + " " + (length1 > length2 ? ">" : "<") + " " + name2;
+        // We can't use AlgebraicNumber math unless the two struts are in the same orbit 
+        // but we can still show approximated decimal values.
+        // Be sure to include any embedding in the calculation.
+        Double len1 = ss.getSymmetry().embedInR3(v1).length();
+        Double len2 = ss.getSymmetry().embedInR3(v2).length();
+        // RealVector is using floats instead of doubles internally,
+        // so we are only getting floating point precision for these lengths.
+        // TODO: If we ever change RealVector back to doubles, then replace these too. 
+        float length1 = len1.floatValue();
+        float length2 = len2.floatValue();
+        Float ratio = length1/length2;
+        String comparison = "equal";
+        // subtract and compare the difference to an acceptable delta 
+        // instead of comparing floating point numbers directly
+        if(Math.abs(length1 - length2) > 0.000001) {
+            comparison = name1 + " " + (length1 > length2 ? ">" : "<") + " " + name2;
         }
-        this .measurements .put( "relative strut lengths", inequality);
-        if(length1 != length2) {
-            Double recip = 1/ratio;
+        this .measurements .put( "relative strut lengths", comparison);
+        if(!comparison.equals( "equal") ) {
+            Float recip = 1.0f/ratio;
             this .measurements .put( n1n2 + " (approx)", fourPlaces .format(ratio));
             this .measurements .put( n2n1 + " (approx)", fourPlaces .format(recip));
             if(sameOrbit) {
-                // if the two struts are in the same orbit, we can show the exact ratios as AlgebraicNumbers. 
-                // Sine axis.getLength() returns a length relative to the normal of the axis 
+                // If the two struts are in the same orbit, we can show the exact ratios as AlgebraicNumbers. 
+                // Since axis.getLength() returns a length relative to the normal of the axis 
                 // instead of an absolute length, this part only makes sense 
                 // when both struts are in the same orbit (i.e. both blue)
                 AlgebraicNumber exactLength1 = axis1 .getLength( v1 );
