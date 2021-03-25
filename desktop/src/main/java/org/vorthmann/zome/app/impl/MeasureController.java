@@ -18,6 +18,7 @@ import com.vzome.core.editor.api.Manifestations;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Selection;
 import com.vzome.core.math.symmetry.Axis;
+import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
@@ -160,12 +161,22 @@ public class MeasureController extends DefaultController implements SelectionSum
         OrbitSource ss = ((EditorModelImpl) editorModel).getSymmetrySystem();
         Axis axis1 = ss .getAxis( v1 );
         Axis axis2 = ss .getAxis( v2 );
-        boolean sameOrbit = axis1 .getDirection().equals(axis2 .getDirection());
-        String name1 = axis1.getDirection().getName();
-        String name2 = axis2.getDirection().getName();
+        Direction dir1 = axis1.getDirection();
+        Direction dir2 = axis2.getDirection();
+        boolean sameOrbit = dir1.equals(dir2);
+        String name1 = dir1.getName();
+        String name2 = dir2.getName();
+        final String auto = "auto";
+        if(dir1.isAutomatic()) {
+            name1 = auto + name1;
+        }
+        if(dir2.isAutomatic()) {
+            name2 = auto + name2;
+        }
         if(sameOrbit) {
-            name1 += "1";
-            name2 += "2";
+            // append subscripted numbers since auto direction names are numeric
+            name1 += "\u2081"; // subscripted 1
+            name2 += "\u2082"; // subscripted 2
         }
         String n1n2 = name1 + " / " + name2;
         String n2n1 = name2 + " / " + name1;
