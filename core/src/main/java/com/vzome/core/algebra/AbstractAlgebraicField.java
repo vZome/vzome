@@ -33,23 +33,28 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
 
     void normalize( BigRational[] factors ) {}
 
+    @Override
     public final int getOrder() { return order; }
 
+    @Override
     public final int getNumIrrationals()
     {
         return order - 1;
     }
     
+    @Override
     public boolean scale4dRoots()
     {
         return false;
     }
     
+    @Override
     public boolean doubleFrameVectors()
     {
         return false;
     }
 
+    @Override
     public String getIrrational( int which )
     {
         return this .getIrrational( which, DEFAULT_FORMAT );
@@ -115,6 +120,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         return this .smallSeries .nearestAlgebraicNumber( target );
     }
     
+    @Override
     public AlgebraicVector nearestAlgebraicVector( RealVector target )
     {
         initSmallSeries(); // initialze smallSeries on first use;
@@ -124,6 +130,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
                 this .smallSeries .nearestAlgebraicNumber( target.z ) );
     }
 
+    @Override
     public String getName()
     {
         return this.name;
@@ -154,9 +161,8 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * or for two fields of the same class to not be equal.
      * For example RootTwoField equals SqrtField(2)
      * but SqrtField(2) does not equal SqrtField(3).
-     * Similarly, PolygonField(4) does equal SqrtField(2)
-     * but PolygonField(6) does not equal SqrtField(3) though they share 
-     * the same irrational coefficient, but they are of different order.
+     * Similarly, PolygonField(4) equals SqrtField(2)
+     * and PolygonField(6) equals SqrtField(3).
      * 
      * @param obj
      * @return 
@@ -227,6 +233,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * @param terms
      * @return
      */
+    @Override
     public final AlgebraicNumber createAlgebraicNumber( int[] terms )
     {
         return createAlgebraicNumber( terms, 1 );
@@ -237,6 +244,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * @param trailingDivisorForm numerators trailed by a common denominator for all numerators
      * @return
      */
+    @Override
     public final AlgebraicNumber createAlgebraicNumberFromTD( int[] trailingDivisorForm )
     {
         int n = trailingDivisorForm .length;
@@ -259,6 +267,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * @param denominator is a common denominator for all numerators
      * @return
      */
+    @Override
     public final AlgebraicNumber createAlgebraicNumber( int[] numerators, int denominator )
     {
         BigRational[] brs = new BigRational[ numerators .length ];
@@ -268,6 +277,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         return createAlgebraicNumber( brs );
     }
 
+    @Override
     public final AlgebraicNumber createAlgebraicNumber( int ones, int irrat, int denominator, int scalePower )
     {
         BigRational[] factors = new BigRational[ this .getOrder() ];
@@ -294,16 +304,19 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * 
      * @return An AlgebraicNumber which evaluates to the golden ratio, or null if not possible in this field.
      */
+    @Override
     public AlgebraicNumber getGoldenRatio()
     {
         return null;
     }
 
+    @Override
     public final AlgebraicNumber createPower( int power )
     {
         return this .createPower( power, 1 );
     }
 
+    @Override
     public final AlgebraicNumber createPower( int power, int irr )
     {
         if ( power == 0 || irr == 0 )
@@ -358,6 +371,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * @param wholeNumber becomes the numerator with 1 as the denominator
      * @return AlgebraicNumber
      */
+    @Override
     public final AlgebraicNumber createRational( long wholeNumber )
     {
         return createRational( wholeNumber, 1 );
@@ -368,6 +382,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * @param denominator
      * @return AlgebraicNumber
      */
+    @Override
     public final AlgebraicNumber createRational( long numerator, long denominator )
     {
         return createRational( new BigRational( numerator, denominator) );
@@ -388,6 +403,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * This base class returns one, which is the scalar for an affine square and works in any field. 
      * Derived classes should override this method if they can be used to generate any other affine polygon.
      */
+    @Override
     public AlgebraicNumber getAffineScalar() {
         return one;
     }
@@ -400,6 +416,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * When {@code n >= getOrder()}, an IndexOutOfBoundsException will be thrown.
      * @return an AlgebraicNumber with the factor specified by {@code n} set to one.
      */
+    @Override
     public final AlgebraicNumber getUnitTerm(int n) {
         if(n < 0) {
             return zero();
@@ -420,6 +437,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * @param wFirst
      * @return
      */
+    @Override
     public final AlgebraicVector projectTo3d( AlgebraicVector source, boolean wFirst )
     {
         if ( source .dimension() == 3 )
@@ -432,11 +450,13 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         }
     }
 
+    @Override
     public final AlgebraicVector origin( int dims )
     {
         return new AlgebraicVector( this, dims );
     }
 
+    @Override
     public final AlgebraicVector basisVector( int dims, int axis )
     {
         AlgebraicVector result = origin( dims );
@@ -488,11 +508,13 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
 
     public final static int VEF_FORMAT = 3; // (3,4)
 
+    @Override
     public AlgebraicNumber zero()
     {
         return this .zero;
     }
 
+    @Override
     public AlgebraicNumber one()
     {
         return this .one;
@@ -521,6 +543,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * 
      * @return an AlgebraicVector
      */
+    @Override
     public AlgebraicVector createVector( int[][] nums )
     {
         int dims = nums.length;
@@ -564,6 +587,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * generates the 3 dimensional vector (-φ, 2 +3φ, 4 +5φ) having all integer terms. 
      * @return an AlgebraicVector
      */
+    @Override
     public AlgebraicVector createIntegerVector( int[][] nums )
     {
         final int dims = nums.length;
@@ -581,6 +605,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * generates the 3 dimensional vector (-φ, 1 +3φ/2, 2 +5φ/2). 
      * @return an AlgebraicVector
      */
+    @Override
     public AlgebraicVector createIntegerVectorFromTDs( int[][] nums )
     {
         final int dims = nums.length;
@@ -602,6 +627,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * @param data integer coordinates, in row-major order, complete with denominators.
      * @return
      */
+    @Override
     public AlgebraicMatrix createMatrix( int[][][] data )
     {
 		AlgebraicVector col1 = createVector( new int[][]{ data[0][0], data[1][0], data[2][0] } );
@@ -688,11 +714,13 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         }
     }
 
+    @Override
     public AlgebraicNumber parseLegacyNumber( String val )
     {
         throw new IllegalStateException( "This field does not support vZome 2.x files." );
     }
     
+    @Override
     public AlgebraicNumber parseVefNumber( String string, boolean isRational )
     {
         BigRational[] factors = new BigRational[ this.order ];
@@ -731,6 +759,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         return new AlgebraicNumberImpl( this, factors );
     }
 
+    @Override
     public AlgebraicNumber parseNumber( String nums )
     {
         StringTokenizer tokens = new StringTokenizer( nums, " " );
@@ -751,6 +780,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         return createAlgebraicNumber( rats );
     }
 
+    @Override
     public AlgebraicVector parseVector( String nums )
     {
         StringTokenizer tokens = new StringTokenizer( nums, " " );
@@ -766,6 +796,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         return new AlgebraicVector( coords );
     }
 
+    @Override
     public AlgebraicMatrix identityMatrix( int dims )
     {
         AlgebraicVector[] columns = new AlgebraicVector[ dims ];
@@ -783,6 +814,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * For example, in the field for sqrt(phi), there is only one
      * multiplier, since the other irrational is just the square of that one.
      */
+    @Override
     public int getNumMultipliers()
     {
         return this .getNumIrrationals(); // the right value for any order-2 field, and for some higher order fields, also
