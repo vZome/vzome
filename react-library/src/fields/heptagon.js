@@ -31,7 +31,7 @@ function reciprocal( x )
   const A1 = A*A + A*B + 2*A*C - B*B - B*C
   const B1 = C*C - A*B - B*B
   const C1 = B*B + B*C - A*C - C*C
-  const determinant = A*A1 - B*B1 + C*C1
+  const determinant = A*A1 + B*B1 + C*C1
   return simplify4( D*A1, D*B1, D*C1, determinant )
 }
 

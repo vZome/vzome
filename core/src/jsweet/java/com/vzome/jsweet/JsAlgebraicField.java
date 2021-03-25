@@ -273,7 +273,7 @@ public class JsAlgebraicField implements AlgebraicField
         }
         int[] factors = this .zero() .toTrailingDivisor(); // makes a copy
         factors[ n ] = 1;
-        return createAlgebraicNumber( factors );
+        return new JsAlgebraicNumber( this, factors );
     }
 
     /**
