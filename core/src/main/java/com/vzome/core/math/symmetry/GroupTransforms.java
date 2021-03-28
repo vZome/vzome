@@ -18,10 +18,12 @@ public class GroupTransforms
     public AlgebraicField field;
     public int dim; // Number of dimensions in which the group operates e.g. E8 -> 8
     public int order; // Order of the group e.g. H4 -> 14400
+    public AlgebraicMatrix simplexVerts;
     public AlgebraicMatrix[] transforms;
     public boolean[] parities; // parities[i] stores whether transforms[i] is a reflection
     public int[][] adjacencies; // adjacencies[i][j] stores the index of the j-th reflection of transforms[i]
     public AlgebraicMatrix[] generators; // Matrices which generate the Coxeter group
+    public boolean[][] commutes; // commutes[i][j] stores whether generators i and j commute
     
     public GroupTransforms ( AlgebraicMatrix simplexVerts, int order )
 	throws NullPointerException, IllegalArgumentException, ZomicException
@@ -40,7 +42,8 @@ public class GroupTransforms
 
 	if (this .dim != 3 && this .dim != 4)
 	    throw new IllegalArgumentException("At the moment, only 3D and 4D are supported.");
-	
+
+	this .simplexVerts = simplexVerts;
 	this .transforms = new AlgebraicMatrix[ order ];
 	this .parities = new boolean[ order ];
 	this .generators = new AlgebraicMatrix[ dim ];
@@ -162,7 +165,7 @@ public class GroupTransforms
 			this .transforms[ numTransforms ] = newTransform;
 			this .adjacencies[ thisTransform ][ i ] = numTransforms;
 			this .adjacencies[ numTransforms ][ i ] = thisTransform;
-			this .parities[ numTransforms ] = nextParity;
+			this .parities[ numTransforms ] = !parities[thisTransform];
 			numTransforms++;
 			nextLayerEmpty = false;
 			
@@ -175,16 +178,121 @@ public class GroupTransforms
 	    if (nextLayerEmpty)
 		break;
 
-	    // Move everything one layer up (with opposite parity)
+	    // Move everything one layer up
 	    lastLayer = thisLayer;
 	    thisLayer = nextLayer;
 	    nextLayer = numTransforms;
-	    nextParity = !nextParity;
 	    
 	}
 
 	if (numTransforms < this .order)
 	    throw new ZomicException("Not enough transformations were generated to match the given group order.");
+
+	// Find commuting matrices
+	for (int i = 0; i < this .dim; i++){
+	    AlgebraicMatrix g_i = this .generators[ i ];
+	    for (int j = 0; j < this .dim; j++){
+		AlgebraicMatrix g_j = this .generators[ j ];
+		commutes[i][j] = g_i .times(g_j) .equals(g_j .times(g_i));
+	    }
+	}
+
+    }
+   
+    public void buildNonSnub( AlgebraicVector edgeScales, boolean[] renderEdges)
+	throws NullPointerException, IllegalArgumentException
+    {
+
+	if (edgeScales == null)
+	    throw new NullPointerException("edgeScales must be non-null");
+
+	if (renderEdges == null)
+	    throw new NullPointerException("renderEdges must be non-null");
+
+	if (edgeScales.dimension() != this .dim)
+	    throw new IllegalArgumentException("edgeScales is the wrong length");
+
+	if (renderEdges.length != this .dim)
+	    throw new IllegalArgumentException("renderEdges is the wrong length");
+	
+	// TODO: ensure edgeScales is in the same field
+      
+	AlgebraicVector initVertex = this .simplexVerts .timesColumn(edgeScales);
+	AlgebraicVector[] vertices = new AlgebraicVector[this .order];
+
+	for ( int i = 0; i < this .order; i++ ) {
+	    vertices[ i ] = this .transforms[ i ] .timesColumn(initVertex);
+	    // TODO: Add vertex at position vertices[ i ]
+	}
+
+	for ( int j = 0; j < this .dim; j++ ) {
+	    if ( renderEdges[ j ] ) {
+		for ( int i1 = 0; i1 < this .order; i1++ ) {
+		    
+		    AlgebraicVector p1 = vertices[ i1 ];
+		    int i2 = this .adjacencies[ i1 ][ j ];
+		    AlgebraicVector p2 = vertices[ i2 ];
+		    
+		    if ( i1 < i2 ) {
+			// TODO: Add edge between p1 and p2
+		    }
+		    
+		}
+	    }
+	}
+	
+    }
+
+    public void buildSnub( AlgebraicVector edgeScales )
+	throws NullPointerException, IllegalArgumentException
+    {
+
+	if (edgeScales == null)
+	    throw new NullPointerException("edgeScales must be non-null");
+
+	if (edgeScales.dimension() != this .dim)
+	    throw new IllegalArgumentException("edgeScales is the wrong length");
+
+	for (int i = 0; i < this.dim; i++){
+	    if (edgeScales .getComponent(i) .isZero()){
+		boolean[] renderEdges = new boolean[ this .dim ];
+		for (int j = 0; j < this.dim; j++)
+		    renderEdges[ j ] = true;
+		this .buildNonSnub(edgeScales, renderEdges);
+		return;
+	    }
+	}
+	
+	// TODO: ensure edgeScales is in the same field
+	
+	AlgebraicVector initVertex = this .simplexVerts .timesColumn(edgeScales);
+	AlgebraicVector[] vertices = new AlgebraicVector[this .order];
+
+	for ( int i = 0; i < this .order; i++ ) {
+	    if ( this .parities[ i ] ) {
+		vertices[ i ] = this .transforms[ i ] .timesColumn(initVertex);
+		// TODO: Add vertex at position vertices[ i ]
+	    }
+	}
+
+	for ( int j1 = 0; j1 < this .dim; j1++ ) {
+	    for ( int j2 = j1+1; j2 < this .dim; j2++ ) {
+		for ( int i1 = 0; i1 < this .order; i1++ ) {
+			
+		    AlgebraicVector p1 = vertices[ i1 ];
+		    int i2 = this .adjacencies[ this .adjacencies[ i1 ][ j1 ] ][ j2 ];
+		    AlgebraicVector p2 = vertices[ i2 ];
+		    // TODO: Add edge between p1 and p2
+
+		    if (!commutes[ j1 ][ j2 ]) {
+			int i3 = this .adjacencies[ this .adjacencies[ i1 ][ j2 ] ][ j1 ];
+			AlgebraicVector p3 = vertices[ i3 ];
+			// TODO: Add edge between p1 and p3
+		    }
+			
+		}
+	    }
+	}
 	
     }
     
