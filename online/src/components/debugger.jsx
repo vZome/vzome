@@ -71,7 +71,6 @@ const Debugger = ( { data, current, branches, designName, doDebug } )  =>
       }}
     >
       <Toolbar />
-      <div className={classes.drawerContainer}>
         <Toolbar variant='dense'>
           <Tooltip title="Step in" aria-label="step-in">
             <IconButton color="secondary" aria-label="step-in" onClick={()=>doDebug(designName, vZomeJava.Step.IN)}>
@@ -94,14 +93,15 @@ const Debugger = ( { data, current, branches, designName, doDebug } )  =>
             </IconButton>
           </Tooltip>
         </Toolbar>
-        <TreeView className={classes.treeview} selected={current} expanded={expanded}
-          defaultCollapseIcon={<ExpandMoreIcon />}
-          defaultExpanded={ expanded }
-          defaultExpandIcon={<ChevronRightIcon />}
-        >
-          {renderTree( data, '' ) }
-        </TreeView>
-      </div>
+        <div className={classes.drawerContainer}>
+          <TreeView className={classes.treeview} selected={current} expanded={expanded}
+            defaultCollapseIcon={<ExpandMoreIcon />}
+            defaultExpanded={ expanded }
+            defaultExpandIcon={<ChevronRightIcon />}
+          >
+            {renderTree( data, '' ) }
+          </TreeView>
+        </div>
     </Drawer>
   )
 }

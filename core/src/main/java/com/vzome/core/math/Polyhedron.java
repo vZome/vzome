@@ -77,9 +77,7 @@ public class Polyhedron implements Cloneable
             
             this .evilTwin .m_faces = new HashSet<Face>();
             for ( Face face : m_faces ) {
-                Face mirrorFace = (Face) face .clone();
-                Collections .reverse( mirrorFace );
-                this .evilTwin .addFace( mirrorFace );
+                this .evilTwin .addFace( face .createReverse() );
             }
         }
         return this .evilTwin;
@@ -228,6 +226,15 @@ public class Polyhedron implements Cloneable
         //        private AlgebraicVector mNormal;
 
         private Face(){}
+
+        public Face createReverse()
+        {
+            ArrayList<Integer> vertices = (ArrayList<Integer>) this .clone();
+            Collections .reverse( vertices );
+            Face mirrorFace = new Face();
+            mirrorFace .addAll( vertices );
+            return mirrorFace;
+        }
 
         @JsonIgnore
         public int getVertex( int index )
