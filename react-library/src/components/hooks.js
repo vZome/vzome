@@ -86,10 +86,22 @@ export const useInstanceShaper = ( shown, selected, shaper ) =>
   const shapeInstances = () =>
   {
     if ( shaper ) {
-      const instances = []
-      shown.forEach( instance => instances.push( { ...shapeInstance( instance ), selected: false } ) )
-      selected.forEach( instance => instances.push( { ...shapeInstance( instance ), selected: true } ) )
-      return { shapes, instances }
+      try {
+        const instances = []
+        const tryToShape = ( instance, selected ) => {
+          try {
+            instances.push( { ...shapeInstance( instance ), selected } )
+          } catch (error) {
+            console.log( `Failed to shape instance: ${instance.id}` );
+          }
+        }
+        shown.forEach( instance => tryToShape( instance, false ) )
+        selected.forEach( instance => tryToShape( instance, true ) )
+        return { shapes, instances }
+      } catch (error) {
+        console.log( 'Caught an odd error while shaping' )
+        return {}
+      }
     } else
       return {}
   }
