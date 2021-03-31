@@ -41,12 +41,20 @@ export const useVZomeUrl = ( url, defaultCamera ) =>
     async function parseUrl() {
       const { parser } = await vZome.coreState  // Must wait for the vZome code to initialize
       const text = await fetchModel( url )
-      if ( !text )
-        return;
+      if ( !text ) {
+        console.log( `Unable to fetch model file from ${url}`)
+        return
+      }
       setXml( text )
       const { edits, camera, field, parseAndPerformEdit, targetEdit, shaper } = parser( text ) || {}
-      if ( !edits )
-        return;
+      if ( !edits ) {
+        console.log( `Unable to parse XML from ${url}`)
+        return
+      }
+      if ( field.unknown ) {
+        console.log( `Field ${field.name} is not implemented.`)
+        return
+      }
       setCamera( { ...camera, fov: convertFOV( 0.75 ) } )
       setResolver( { shaper } )
       let meshAdapter = new Adapter( originShown( field ), new Map(), new Map() )
