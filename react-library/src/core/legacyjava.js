@@ -302,7 +302,7 @@ export const init = async () =>
 
     const fieldApp = fieldApps[ fieldName ]
     if ( ! fieldApp )
-      throw new Error( `Field "${fieldName}" is not supported yet.` )
+      return {}
     const field = fieldApp.getField()
 
     const originPoint = new vzomePkg.core.construction.FreePoint( field.origin( 3 ) )
@@ -633,7 +633,7 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
     const fieldName = vZomeRoot.getAttribute( "field" )
 
     const { shaper, parseAndPerformEdit } = createDocument( fieldName, namespace, vZomeRoot )
-    const field = fields[ fieldName ]
+    const field = fields[ fieldName ] || { name: fieldName, unknown: true }
     
     const viewing = vZomeRoot.getChildElement( "Viewing" )
     const camera = viewing && parseViewXml( viewing )

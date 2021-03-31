@@ -23,12 +23,12 @@ export const designReducer = combineReducers( {
 export const initializeDesign = ( field, name, shaperName, text ) => ({
   mesh: {
     past: [],
-    present: mesh.justOrigin( field ),
+    present: field && mesh.justOrigin( field ),
     future: [],
   },
   // TODO: initialize dbugger?
   success: true,
-  fieldName: field.name,
+  fieldName: field && field.name,
   camera: cameraDefault,
   shaperName,
   name,
@@ -71,7 +71,10 @@ export const selectText = ( state, id ) => selectDesign( state, id ).text
 
 export const selectMesh = ( state, id ) => selectDesign( state, id ).mesh.present
 
-export const selectDebugger = ( state, id ) => selectDesign( state, id ).dbugger.present
+export const selectDebugger = ( state, id ) => {
+  const design = selectDesign( state, id )
+  return design && design.dbugger && design.dbugger.present // No dbugger if the field was unknown
+}
 
 export const selectCamera = ( state, id ) => selectDesign( state, id ).camera
 
@@ -165,13 +168,26 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
   try {
     const text = await textPromise
     const { edits, camera, field, parseAndPerformEdit, targetEdit, shaper } = parser( text ) || {}
-    if ( !edits ) {
-      throw new Error( `XML parsing failed` )
-    }
+
     const name = decodeURI( url.split( '\\' ).pop().split( '/' ).pop() )
+    const failure = message => {
+      console.log( message )
+      let design = initializeDesign( null, name, null, text )
+      dispatch( loadingDesign( name, design ) )
+      dispatch( loadedDesign( name, design ) )
+      dispatch( showAlert( message + ' Use the download button to save this file, then try opening it with desktop vZome.' ) )
+    }
+
+    if ( !edits ) {
+      failure( `Unable to parse XML from ${url}` )
+      return
+    }
+    if ( field.unknown ) {
+      failure( `Field "${field.name}" is not implemented.` )
+      return
+    }
 
     console.log( `Opening ${url}`)
-    console.log( text )
 
     // We don't want to dispatch all the edits, which can trigger tons of
     //  overhead and re-rendering.  Instead, we'll build up a design locally

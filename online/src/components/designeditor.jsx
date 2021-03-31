@@ -58,7 +58,6 @@ const DesignEditor = ( props ) =>
 {
   const { startGridHover, stopGridHover, workingPlane } = props
   const { mesh, resolver } = props
-  const { shown, selected } = mesh
   const { selectionToggler, shapeClick, bkgdClick, startBallHover, stopBallHover, clickable } = props
   const focus = workingPlane && workingPlane.enabled && workingPlane.buildingStruts && workingPlane.position
   const atFocus = id => focus && ( id === JSON.stringify(focus) )
@@ -86,10 +85,10 @@ const DesignEditor = ( props ) =>
 
   return (
     <DesignCanvas {...props} >
-      <MeshGeometry {...{ shown, selected, resolver }} />
+      { mesh && <MeshGeometry {...{ shown: mesh.shown, selected: mesh.selected, resolver }} /> }
 
-      {workingPlane && workingPlane.enabled &&
-          <BuildPlane config={workingPlane} {...{ startGridHover, stopGridHover }} />}
+      { workingPlane && workingPlane.enabled &&
+          <BuildPlane config={workingPlane} {...{ startGridHover, stopGridHover }} /> }
     </DesignCanvas>
   )
 }

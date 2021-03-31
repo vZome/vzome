@@ -110,6 +110,9 @@ const Debugger = ( { data, current, branches, designName, doDebug } )  =>
 const select = ( state ) =>
 {
   const dbugger = state.designs && designFns.selectDebugger( state )
+  if ( ! dbugger ) {
+    return {} // document had an unknown field, or couldn't parse
+  }
   return {
     data: dbugger.source,
     current: dbugger && dbugger.currentElement && dbugger.currentElement.id,
