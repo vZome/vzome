@@ -19,6 +19,7 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
+import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
@@ -131,8 +132,8 @@ public class Application implements AlgebraicField.Registry
         this.fieldAppSuppliers.put( "golden",   () -> new GoldenFieldApplication( new PentagonField() ) );
         this.fieldAppSuppliers.put( "rootTwo",  () -> new RootTwoFieldApplication( new RootTwoField() ) );
         this.fieldAppSuppliers.put( "heptagon", () -> new HeptagonFieldApplication( new HeptagonField() ) );
-        this.fieldAppSuppliers.put( "rootThree", RootThreeFieldApplication::new);
-        this.fieldAppSuppliers.put( "dodecagon", RootThreeFieldApplication::new);
+        this.fieldAppSuppliers.put( "rootThree", () -> new RootThreeFieldApplication( new RootThreeField() ) );
+        this.fieldAppSuppliers.put( "dodecagon", () -> new RootThreeFieldApplication( new RootThreeField() ) );
         this.fieldAppSuppliers.put( "snubDodec", SnubDodecFieldApplication::new);
         this.fieldAppSuppliers.put( "sqrtPhi",   SqrtPhiFieldApplication::new);
     }
