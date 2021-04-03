@@ -279,7 +279,7 @@ export const init = async () =>
   const fieldApps = {
     golden: new vzomePkg.core.kinds.GoldenFieldApplication( gfield ),
     rootTwo: new vzomePkg.core.kinds.RootTwoFieldApplication( r2field ),
-    rootThree: new vzomePkg.core.kinds.RootTwoFieldApplication( r3field ),
+    rootThree: new vzomePkg.core.kinds.RootThreeFieldApplication( r3field ),
     heptagon: new vzomePkg.core.kinds.HeptagonFieldApplication( heptfield ),
   }
 
