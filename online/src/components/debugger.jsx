@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux'
 
 import { makeStyles } from '@material-ui/core/styles'
-import Drawer from '@material-ui/core/Drawer'
 import Toolbar from '@material-ui/core/Toolbar'
+import Grid from '@material-ui/core/Grid'
 import TreeView from '@material-ui/lab/TreeView'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
@@ -19,23 +19,14 @@ import * as designFns from '../bundles/designs.js'
 import * as dbugger from '../bundles/dbugger.js'
 import { vZomeJava } from '@vzome/react-vzome'
 
-const drawerWidth = 500
-
 const useStyles = makeStyles((theme) => ({
-  drawer: {
-    width: drawerWidth,
-    flexShrink: 0,
-  },
-  drawerPaper: {
-    width: drawerWidth,
-  },
-  drawerContainer: {
-    overflow: 'auto',
-    flexGrow: 1,
+  debuggerSource: {
+    display: 'flex',
+    flexDirection: 'column',
+    maxHeight: '850px'  // This is a horrible hack, but I haven't found anything else to control the expanded tree item height
   },
   treeview: {
-    height: 110,
-    flexGrow: 1,
+    overflow: 'auto',
   },
 }))
 
@@ -70,15 +61,9 @@ const Debugger = ( { data, current, branches, designName, doDebug } )  =>
     return null
 
   return (
-    <Drawer
-      className={classes.drawer}
-      variant="permanent"
-      classes={{
-        paper: classes.drawerPaper,
-      }}
-    >
-      <Toolbar />
-        <Toolbar variant='dense'>
+    <Grid container direction='column'>
+      <Grid item>
+        <Toolbar id="debugger-tools" variant='dense'>
           <Tooltip title="Step in" aria-label="step-in">
             <IconButton color="secondary" aria-label="step-in" onClick={()=>doDebug(designName, vZomeJava.Step.IN)}>
               <GetAppRoundedIcon/>
@@ -100,17 +85,18 @@ const Debugger = ( { data, current, branches, designName, doDebug } )  =>
             </IconButton>
           </Tooltip>
         </Toolbar>
-        <div className={classes.drawerContainer}>
-          <TreeView className={classes.treeview} selected={current} expanded={expanded}
-            defaultCollapseIcon={<ExpandMoreIcon />}
-            defaultExpanded={ expanded }
-            defaultExpandIcon={<ChevronRightIcon />}
-          >
-            {renderTree( data, '' ) }
-          </TreeView>
-        </div>
-        <div style={{ flex: 0, minHeight: '70px' }}>{xml}</div>
-    </Drawer>
+      </Grid>
+      <Grid item id="debugger-source" className={classes.debuggerSource}>
+        <TreeView className={classes.treeview} selected={current} expanded={expanded}
+          defaultCollapseIcon={<ExpandMoreIcon />}
+          defaultExpanded={ expanded }
+          defaultExpandIcon={<ChevronRightIcon />}
+        >
+          {renderTree( data, '' ) }
+        </TreeView>
+      </Grid>
+      <Grid item style={{ flex: 0, minHeight: '70px' }}>{xml}</Grid>
+    </Grid>
   )
 }
 

@@ -43,10 +43,10 @@ const metadata = {
       "parts": "6 short blues, 12 medium blues, 6 long blues, and 20 medium yellows.",
       "description": ""
     },
-    "3exes1" :{
-      "parts": "I think we are not using this one.",
-      "description": ""
-    },
+    // "3exes1" :{
+    //   "parts": "I think we are not using this one.",
+    //   "description": ""
+    // },
     "Tulip": {
       "parts": "5 short blues, 5 medium reds, 10 long reds, 15 short yellows, and 26 balls.",
       "description": ""
