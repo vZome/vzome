@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux'
 
 import { makeStyles } from '@material-ui/core/styles'
@@ -42,6 +42,13 @@ const useStyles = makeStyles((theme) => ({
 const Debugger = ( { data, current, branches, designName, doDebug } )  =>
 {
   const classes = useStyles();
+  const [ xml, setXml ] = useState( '' )
+
+  const onLabelClick = element => event =>
+  {
+    event.preventDefault()
+    setXml( element.outerHTML )
+  }
 
   const renderTree = ( element ) => {
     const children = []
@@ -51,7 +58,7 @@ const Debugger = ( { data, current, branches, designName, doDebug } )  =>
       child = child.nextElementSibling
     }
     return (
-      <TreeItem key={element.id} nodeId={element.id} label={element.nodeName}>
+      <TreeItem key={element.id} nodeId={element.id} label={element.nodeName} onLabelClick={onLabelClick(element)}>
         { children.length > 0 ? children.map( child => renderTree( child ) ) : null }
       </TreeItem>
     )
@@ -102,6 +109,7 @@ const Debugger = ( { data, current, branches, designName, doDebug } )  =>
             {renderTree( data, '' ) }
           </TreeView>
         </div>
+        <div style={{ flex: 0, minHeight: '70px' }}>{xml}</div>
     </Drawer>
   )
 }
