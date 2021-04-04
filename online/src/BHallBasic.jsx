@@ -55,10 +55,6 @@ const metadata = {
       "parts": "5 long reds, 5 medium yellows, and 10 balls.",
       "description": ""
     },
-    "redDiamonds": {
-      "parts": "20 short reds, 20 long reds, and 36 balls.",
-      "description": ""
-    },
     "4triangles2": {
       "parts": "12 medium blues, 12 long blues, and 16 balls.",
       "description": ""
@@ -75,6 +71,10 @@ const metadata = {
     },
     "lotta_triangles": {
       "parts": "60 medium blues, 60 medium yellows, and 42 balls.",
+      "description": ""
+    },
+    "redDiamonds": {
+      "parts": "20 short reds, 20 long reds, and 36 balls.",
       "description": ""
     },
     "doubleSpiral": {
@@ -144,6 +144,7 @@ const Article = () =>
             Brian was able to create a number of beautiful and interesting designs,
             all constructible with fairly small Zometool sets.
             Here are a few of them for your enjoyment; try constructing them with Zometool!
+            Note that they are organized into three sections, by difficulty.
           </Typography>
           <Typography gutterBottom color='secondary' >
             The panels are not images; you can use your mouse to rotate, pan, and zoom.
