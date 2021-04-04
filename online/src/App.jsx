@@ -28,7 +28,7 @@ const store = createBundleStore( profile, [ thunk ] );
 */
 const useStyles = makeStyles((theme) => ({
   debugDebuggerGrid: {
-    // height: '700px',  // uncomment this to debug the Debugger grid layout; see above
+    height: '750px',  // uncomment this to debug the Debugger grid layout; see above
   },
 }))
 

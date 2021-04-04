@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux'
 
-import { makeStyles } from '@material-ui/core/styles'
+import { withStyles, makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import Grid from '@material-ui/core/Grid'
 import TreeView from '@material-ui/lab/TreeView'
@@ -14,16 +14,42 @@ import RedoRoundedIcon from '@material-ui/icons/RedoRounded'
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded'
 import PublishRoundedIcon from '@material-ui/icons/PublishRounded'
 import FastForwardRoundedIcon from '@material-ui/icons/FastForwardRounded'
+import Table from '@material-ui/core/Table'
+import TableBody from '@material-ui/core/TableBody'
+import TableCell from '@material-ui/core/TableCell'
+import TableContainer from '@material-ui/core/TableContainer'
+import TableHead from '@material-ui/core/TableHead'
+import TableRow from '@material-ui/core/TableRow'
+import Paper from '@material-ui/core/Paper'
 
 import * as designFns from '../bundles/designs.js'
 import * as dbugger from '../bundles/dbugger.js'
 import { vZomeJava } from '@vzome/react-vzome'
 
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: theme.palette.common.black,
+    color: theme.palette.common.white,
+  },
+  body: {
+    fontSize: 14,
+  },
+}))(TableCell);
+
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+}))(TableRow);
+
 const useStyles = makeStyles((theme) => ({
   debuggerSource: {
+    flex: '1 1 auto',
     display: 'flex',
     flexDirection: 'column',
-    maxHeight: '850px'  // This is a horrible hack, but I haven't found anything else to control the expanded tree item height
+    maxHeight: '720px'  // This is a horrible hack, but I haven't found anything else to control the expanded tree item height
   },
   treeview: {
     overflow: 'auto',
@@ -33,12 +59,12 @@ const useStyles = makeStyles((theme) => ({
 const Debugger = ( { data, current, branches, designName, doDebug } )  =>
 {
   const classes = useStyles();
-  const [ xml, setXml ] = useState( '' )
+  const [ element, setElement ] = useState( null )
 
   const onLabelClick = element => event =>
   {
     event.preventDefault()
-    setXml( element.outerHTML )
+    setElement( element )
   }
 
   const renderTree = ( element ) => {
@@ -95,7 +121,29 @@ const Debugger = ( { data, current, branches, designName, doDebug } )  =>
           {renderTree( data, '' ) }
         </TreeView>
       </Grid>
-      <Grid item style={{ flex: 0, minHeight: '70px' }}>{xml}</Grid>
+      <Grid item style={{ flex: 0, height: '100px' }}>
+        <TableContainer component={Paper}>
+          <Table size="small" aria-label="command attributes">
+            <TableHead>
+              <TableRow>
+                <StyledTableCell>Name</StyledTableCell>
+                <StyledTableCell>Value</StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {element && element.getAttributeNames().map( name => (
+                ( name !== 'id' ) &&
+                <StyledTableRow key={name}>
+                  <StyledTableCell component="th" scope="row">
+                    {name}
+                  </StyledTableCell>
+                  <StyledTableCell>{element.getAttribute( name )}</StyledTableCell>
+                </StyledTableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Grid>
     </Grid>
   )
 }
