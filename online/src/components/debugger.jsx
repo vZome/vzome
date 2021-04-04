@@ -21,6 +21,7 @@ import TableContainer from '@material-ui/core/TableContainer'
 import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
+import Typography from '@material-ui/core/Typography'
 
 import * as designFns from '../bundles/designs.js'
 import * as dbugger from '../bundles/dbugger.js'
@@ -56,6 +57,93 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+const useTreeItemStyles = makeStyles((theme) => ({
+  root: {
+    color: theme.palette.text.secondary,
+    '&:hover > $content': {
+      backgroundColor: theme.palette.action.hover,
+    },
+    '&:focus > $content': {
+      backgroundColor: `var(--tree-view-bg-color, ${theme.palette.grey[400]})`,
+      color: 'var(--tree-view-color)',
+    },
+    '&$selected > $content': {
+      backgroundColor: '#ab003c',
+      color: theme.palette.common.white,
+    },
+    '&:focus > $content $label, &:hover > $content $label, &$selected > $content $label': {
+      backgroundColor: 'transparent',
+    },
+  },
+  content: {
+    color: theme.palette.text.secondary,
+    borderTopRightRadius: theme.spacing(2),
+    borderBottomRightRadius: theme.spacing(2),
+    paddingRight: theme.spacing(1),
+    fontWeight: theme.typography.fontWeightMedium,
+    '$expanded > &': {
+      fontWeight: theme.typography.fontWeightRegular,
+    },
+  },
+  group: {
+    marginLeft: 0,
+    '& $content': {
+      paddingLeft: theme.spacing(2),
+    },
+  },
+  expanded: {},
+  selected: {},
+  label: {
+    fontWeight: 'inherit',
+    color: 'inherit',
+  },
+  labelRoot: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0.5, 0),
+  },
+  labelIcon: {
+    marginRight: theme.spacing(1),
+  },
+  labelText: {
+    fontWeight: 'inherit',
+    flexGrow: 1,
+  },
+}));
+
+function StyledTreeItem(props) {
+  const classes = useTreeItemStyles();
+  const { labelText, labelInfo, color, bgColor, ...other } = props;
+
+  return (
+    <TreeItem
+      label={
+        <div className={classes.labelRoot}>
+          <Typography variant="body2" className={classes.labelText}>
+            {labelText}
+          </Typography>
+          <Typography variant="caption" color="inherit">
+            {labelInfo}
+          </Typography>
+        </div>
+      }
+      style={{
+        '--tree-view-color': color,
+        '--tree-view-bg-color': bgColor,
+      }}
+      classes={{
+        root: classes.root,
+        content: classes.content,
+        expanded: classes.expanded,
+        selected: classes.selected,
+        group: classes.group,
+        label: classes.label,
+      }}
+      {...other}
+    />
+  );
+}
+
 const Debugger = ( { data, current, branches, designName, doDebug } )  =>
 {
   const classes = useStyles();
@@ -75,9 +163,9 @@ const Debugger = ( { data, current, branches, designName, doDebug } )  =>
       child = child.nextElementSibling
     }
     return (
-      <TreeItem key={element.id} nodeId={element.id} label={element.nodeName} onLabelClick={onLabelClick(element)}>
+      <StyledTreeItem key={element.id} nodeId={element.id} labelText={element.nodeName} onLabelClick={onLabelClick(element)}>
         { children.length > 0 ? children.map( child => renderTree( child ) ) : null }
-      </TreeItem>
+      </StyledTreeItem>
     )
   }
 
