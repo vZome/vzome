@@ -32,7 +32,7 @@ public class Axis
      * relative to mSense==PLUS, but probably a specific reflection.
      * Each zone is oriented, and the inbound and outbound axes DO have opposite normals.
      * 
-     * Typical group, where getZoneInversion() == null:
+     * Typical group, where getPrincipalReflection() == null:
      * 
      *    sense    outbound        normal
      *  --------+------------+------------------
