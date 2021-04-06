@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react'
-import Adapter, { createInstance } from '../core/adapter.js'
-import * as vZome from '../core/legacyjava.js'
+import { createInstance } from '../core/adapter.js'
+import { parse, interpret, Step } from '../core/api.js'
 
 const aspectRatio = window.innerWidth / window.innerHeight // TODO: this is totally static!
 const convertFOV = (fovX) => ( fovX / aspectRatio ) * 180 / Math.PI  // converting radians to degrees
@@ -36,18 +36,17 @@ export const useVZomeUrl = ( url, defaultCamera ) =>
   const [ camera, setCamera ] = useState( defaultCamera )
   const [ mesh, setMesh ] = useState( null )
   const [ shapeRenderer, setShapeRenderer ] = useState( null )
-  const [ xml, setXml ] = useState( null )
+  const [ text, setText ] = useState( null )
   useEffect( () => {
     async function parseUrl() {
-      const { parser } = await vZome.coreState  // Must wait for the vZome code to initialize
       const text = await fetchModel( url )
       if ( !text ) {
         console.log( `Unable to fetch model file from ${url}`)
         return
       }
-      setXml( text )
-      const { edits, camera, field, parseAndPerformEdit, targetEdit, shapeRenderer } = parser( text ) || {}
-      if ( !edits ) {
+      setText( text )
+      const { firstEdit, camera, field, targetEdit, shapeRenderer } = await parse( text ) || {}
+      if ( !firstEdit ) {
         console.log( `Unable to parse XML from ${url}`)
         return
       }
@@ -57,20 +56,20 @@ export const useVZomeUrl = ( url, defaultCamera ) =>
       }
       setCamera( { ...camera, fov: convertFOV( 0.75 ) } )
       setShapeRenderer( shapeRenderer )
-      let meshAdapter = new Adapter( originShown( field ), new Map(), new Map() )
+      let latestMesh = { shown: originShown( field ), selected: new Map(), hidden: new Map(), groups: [] }
       let targetMesh = null
-      const record = ( adapter, id ) => {
+      const record = ( mesh, id ) => {
         if ( !targetMesh && id === targetEdit ) {
-          targetMesh = meshAdapter // record the prior state
+          targetMesh = latestMesh // record the prior state
         }
-        meshAdapter = adapter // will record where we failed, if we don't reach targetEdit
+        latestMesh = mesh // will record where we failed, if we don't reach targetEdit
       } // yup, overwrite every time
-      vZome.interpret( vZome.Step.DONE, parseAndPerformEdit, meshAdapter, edits.firstElementChild, [], record )
-      setMesh( targetMesh || meshAdapter )
+      interpret( Step.DONE, latestMesh, firstEdit, [], record )
+      setMesh( targetMesh || latestMesh )
     }
     parseUrl();
   }, [url] )
-  return [ mesh, camera, shapeRenderer, xml ]
+  return [ mesh, camera, shapeRenderer, text ]
 }
 
 export const useInstanceShaper = ( shown, selected, shaper ) =>

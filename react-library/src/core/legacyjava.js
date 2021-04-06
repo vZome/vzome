@@ -354,17 +354,72 @@ export const init = async () =>
 
     const shapeRenderer = createShapeRenderer( orbitSource )
 
-    const parseAndPerformEdit = ( xmlElement, adapter ) =>
+    const parseAndPerformEdit = ( xmlElement, mesh ) =>
     {
       const wrappedElement = new JavaDomElement( xmlElement )
-      // Note that we do not do editor.setAdapter( adapter ) yet.  This means that we cannot
+      // Note that we do not do editor.setAdapter() yet.  This means that we cannot
       //  deal with edits that have side-effects in their constructors!
       const edit = editFactory( editor, toolFactories, toolsModel )( wrappedElement )
       if ( ! edit )   // Null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit.
         return false  //  Not indicating failure, just indicating nothing to record in history
-      editor.setAdapter( adapter )
+      const { shown, selected, hidden, groups } = mesh
+      editor.setAdapter( new Adapter( shown, selected, hidden, groups ) )
       edit.loadAndPerform( wrappedElement, format, editContext )
       return true
+    }
+
+    /*
+      STATUS:
+          This approach is working OK, as far as producing valid JSON goes.  Obviously,
+          The branch JSON is wrong.  More problematic is that the branch is already
+          unpacked in the history.  This needs more thought.
+
+          Another thing to consider is whether to simply convert the DOM elements to
+          Javascript objects during the parse, effectively normalizing the edits.
+          As an optimization, the DOM element could be retained.  When the converted
+          JSON file is loaded a second time, the DOM elements would have to be reconstructed.
+
+          Perhaps I should focus on "native" (non-legacy) edits first, so the interpreter
+          is not biased towards DOM as it is today.  (See the createEdit API below.)
+    */
+    const serializeLegacyEdit = domElement =>
+    {
+      const editType = domElement.nodeName
+      const result = { editType }
+      if ( editType === "Branch" ) {
+        result.edits = []
+        return result
+      }
+      // not a branch, if we got here
+      domElement.getAttributeNames().forEach( name => {
+        if ( name !== 'id' ) result[ name ] = domElement.getAttribute( name )
+      })
+      if ( domElement.textContent ) {
+        const text = domElement.textContent.trim()
+        if ( !! text )
+          result.textContent = text
+      }
+      if ( domElement.firstElementChild ) {
+        console.log( `Nested XML: ${domElement.nodeName} ${domElement.firstElementChild.outerHTML}` );
+      }
+      return result
+    }
+
+    const createEdit = ( domElement ) =>
+    {
+      const isBranch = () => domElement.nodeName === "Branch"
+      const name = () => domElement.nodeName
+      const id = () => domElement.id
+      const nextSibling = () => domElement.nextElementSibling && createEdit( domElement.nextElementSibling )
+      const firstChild = () => domElement.firstElementChild && createEdit( domElement.firstElementChild )
+      const getAttributeNames = () => domElement.getAttributeNames()
+      const getAttribute = name => domElement.getAttribute( name )
+      const perform = mesh => parseAndPerformEdit( domElement, mesh )
+      const serialize = () => serializeLegacyEdit( domElement )
+      return {
+        nextSibling, firstChild, isBranch, id, perform,   // these are for the interpreter
+        name, getAttributeNames, getAttribute, serialize, // these are for the debugger UI
+      }
     }
 
     const configureAndPerformEdit = ( className, config, adapter ) =>
@@ -377,14 +432,13 @@ export const init = async () =>
       edit.perform()
     }
 
-    return { shapeRenderer, parseAndPerformEdit, configureAndPerformEdit }
+    return { shapeRenderer, createEdit, configureAndPerformEdit }
   }
 
   // Discover all the legacy edit classes and register as commands
   const commands = {}
   for ( const name of Object.keys( vzomePkg.core.edits ) )
     commands[ name ] = legacyCommandFactory( documentFactory, name )
-  // store.dispatch( commandsDefined( commands ) )
 
   // Prepare the orbitSource for resolveShapes
   const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
@@ -486,99 +540,6 @@ const assignIds = ( element, id=':' ) => {
   return element
 }
 
-export const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
-
-export const interpret = ( action, parseAndPerform, adapter, editElement, stack=[], recordSnapshot ) =>
-{
-  const step = () =>
-  {
-    if ( ! editElement )
-      return Step.DONE
-    if ( editElement.nodeName === "Branch" ) {
-      const branchAdapter = adapter.clone()
-      stack.push( { branch: editElement, adapter } )
-      recordSnapshot && recordSnapshot( branchAdapter, editElement.id, editElement.firstElementChild, stack )
-      editElement = editElement.firstElementChild // this assumes there are no empty branches
-      adapter = branchAdapter
-      return Step.IN
-    } else {
-      adapter = adapter.clone()  // each command builds on the last
-      parseAndPerform( editElement, adapter )
-      if ( editElement.nextElementSibling ) {
-        recordSnapshot && recordSnapshot( adapter, editElement.id, editElement.nextElementSibling )
-        editElement = editElement.nextElementSibling
-        return Step.OVER
-      } else {
-        let top
-        do {
-          top = stack.pop()
-        } while ( top && ! top.branch.nextElementSibling )
-        if ( top ) {
-          adapter = top.adapter.clone()  // overwrite and discard the prior value
-          editElement = top.branch.nextElementSibling
-          recordSnapshot && recordSnapshot( adapter, editElement.id, editElement, stack )
-          return Step.OUT
-        } else {
-          // at the end of the editHistory
-          recordSnapshot && recordSnapshot( adapter, editElement.id, null )
-          return Step.DONE
-        }
-      }
-    }
-  }
-
-  const conTinue = () =>
-  {
-    let stepped
-    do {
-      stepped = stepOut()
-    } while ( stepped !== Step.DONE );
-  }
-
-  const stepOver = () =>
-  {
-    const stepped = step()
-    switch ( stepped ) {
-
-      case Step.IN:
-        stepOut()
-        return Step.OVER
-    
-      default:
-        return stepped
-    }
-  }
-
-  const stepOut = () =>
-  {
-    let stepped
-    do {
-      stepped = stepOver()
-    } while ( stepped !== Step.OUT && stepped !== Step.DONE )
-    return stepped
-  }
-
-  switch ( action ) {
-
-    case Step.IN:
-      step()
-      break;
-  
-    case Step.OVER:
-      stepOver()
-      break;
-  
-    case Step.OUT:
-      stepOut()
-      break;
-  
-    case Step.DONE:
-    default:
-      conTinue()
-      break;
-  }
-}
-
 export const parseViewXml = ( viewingElement ) =>
 {
   const parseVector = ( element, name ) =>
@@ -609,16 +570,17 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
     const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
     const fieldName = vZomeRoot.getAttribute( "field" )
 
-    const { shapeRenderer, parseAndPerformEdit } = createDocument( fieldName, namespace, vZomeRoot )
+    const { shapeRenderer, createEdit } = createDocument( fieldName, namespace, vZomeRoot )
     const field = fields[ fieldName ] || { name: fieldName, unknown: true }
-    
+
     const viewing = vZomeRoot.getChildElement( "Viewing" )
     const camera = viewing && parseViewXml( viewing )
     const edits = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement )
     // Note: I'm adding one so that this matches the assigned ID of the next edit to do
     const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
+    const firstEdit = createEdit( edits.firstElementChild )
 
-    return { edits, camera, field, parseAndPerformEdit, targetEdit, shapeRenderer }
+    return { firstEdit, camera, field, targetEdit, shapeRenderer }
   } catch (error) {
     console.log( `%%%%%%%%%%%%%%%%%%% legacyjava.js parser failed: ${error}` )
     return null
