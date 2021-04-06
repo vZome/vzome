@@ -229,6 +229,7 @@ public class Polyhedron implements Cloneable
 
         public Face createReverse()
         {
+            @SuppressWarnings("unchecked")
             ArrayList<Integer> vertices = (ArrayList<Integer>) this .clone();
             Collections .reverse( vertices );
             Face mirrorFace = new Face();
