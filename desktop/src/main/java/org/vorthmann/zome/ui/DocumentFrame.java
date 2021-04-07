@@ -85,7 +85,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
     private Controller lessonController;
     
-    private JDialog polytopesDialog, importScaleDialog;
+    private JDialog polytopesDialog, newPolytopesDialog, importScaleDialog;
     
     private ShareDialog shareDialog;
 
@@ -309,6 +309,18 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         errors .reportError( Controller.USER_ERROR_CODE, new Object[]{ e1 } );
                     }
                     polytopesDialog .setVisible( true );
+                    break;
+                
+                case "showNewPolytopesDialog":
+                    Controller newPolytopesController = mController .getSubController( "newPolytopes" );
+                    if ( newPolytopesDialog == null )
+                        newPolytopesDialog = new NewPolytopesDialog( DocumentFrame.this, newPolytopesController );
+                    try {
+                    	    newPolytopesController .actionPerformed( DocumentFrame.this, "setQuaternion" );
+                    } catch ( Exception e1 ) {
+                        errors .reportError( Controller.USER_ERROR_CODE, new Object[]{ e1 } );
+                    }
+                    newPolytopesDialog .setVisible( true );
                     break;
                 
                 case "showPythonWindow":
@@ -826,6 +838,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             case "setItemColor":
             case "setBackgroundColor":
             case "showPolytopesDialog":
+            case "showNewPolytopesDialog":
             case "showZomicWindow":
             case "showZomodWindow":
             case "showPythonWindow":

@@ -406,10 +406,12 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        menu .add( enableIf( isEditor, createMenuItem( "Generate Polytope...", "showPolytopesDialog", KeyEvent.VK_P, COMMAND_OPTION ) ) );
+        menu .add( enableIf( isEditor, createMenuItem( "Generate Polytope...", "showPolytopesDialog") ) );
+        
+	menu .add( enableIf( isEditor, createMenuItem( "Generate Polytope (New)...", "showNewPolytopesDialog", KeyEvent.VK_P, COMMAND_OPTION ) ) );
         
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+	
         menu .add( enableIf( isEditor, createMenuItem( "Validate Paneled Surface", "Validate2Manifold" ) ) );
 
         super .add( menu );

@@ -2,7 +2,6 @@ package com.vzome.core.math.symmetry;
 
 import java.lang.NullPointerException;
 import java.lang.IllegalArgumentException;
-import com.vzome.core.zomic.ZomicException;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -26,7 +25,7 @@ public class GroupTransforms
     public boolean[][] commutes; // commutes[i][j] stores whether generators i and j commute
     
     public GroupTransforms ( AlgebraicMatrix simplexVerts, int order )
-	throws NullPointerException, IllegalArgumentException, ZomicException
+	throws NullPointerException, IllegalArgumentException
     {
 
 	if ( simplexVerts == null )
@@ -160,7 +159,7 @@ public class GroupTransforms
 		    if (newTransformNew){
 			
 			if ( numTransforms >= this .order )
-			    throw new ZomicException("The transformations generated exceed the given group order.");
+			    throw new IllegalArgumentException("The transformations generated exceed the given group order.");
 
 			this .transforms[ numTransforms ] = newTransform;
 			this .adjacencies[ thisTransform ][ i ] = numTransforms;
@@ -186,7 +185,7 @@ public class GroupTransforms
 	}
 
 	if (numTransforms < this .order)
-	    throw new ZomicException("Not enough transformations were generated to match the given group order.");
+	    throw new IllegalArgumentException("Not enough transformations were generated to match the given group order.");
 
 	// Find commuting matrices
 	for (int i = 0; i < this .dim; i++){

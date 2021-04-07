@@ -188,6 +188,8 @@ public class DocumentController extends DefaultController implements Scene.Provi
         this .addSubController( "bookmark", new ToolFactoryController( this .documentModel .getBookmarkFactory() ) );
         
         this .addSubController( "polytopes", new PolytopesController( this .documentModel ) );
+
+	this .addSubController( "newPolytopes", new NewPolytopesController( this .documentModel ) );
         
         this .addSubController( "undoRedo", new UndoRedoController( this .documentModel .getHistoryModel() ) );
                 
