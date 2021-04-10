@@ -1,6 +1,5 @@
-import { BufferGeometry, Vector3, Float32BufferAttribute } from 'three'
-import React, { useMemo } from 'react'
-
+import { BufferGeometry, Vector3, Float32BufferAttribute, Matrix4 } from 'three'
+import React, { useMemo, useRef, useLayoutEffect } from 'react'
 
 const createGeometry = ( { vertices, faces } ) =>
 {
@@ -28,6 +27,12 @@ const createGeometry = ( { vertices, faces } ) =>
 
 const Instance = ( { id, vectors, position, rotation, geometry, color, selected, highlightBall=()=>{}, onClick, onHover } ) =>
 {
+  const ref = useRef()
+  useLayoutEffect( () => {
+    const m = new Matrix4()
+    m.set( ...rotation )
+    ref.current.applyMatrix4( m )
+  }, [rotation] )
   const handleHoverIn = ( e ) =>
   {
     e.stopPropagation()
@@ -48,8 +53,8 @@ const Instance = ( { id, vectors, position, rotation, geometry, color, selected,
   const emissive = selected? "#bbbbbb" : highlightBall( id )? "#884444" : "black"
   // TODO: cache materials
   return (
-    <group position={ position } quaternion={ rotation }>
-      <mesh geometry={geometry} onPointerOver={handleHoverIn} onPointerOut={handleHoverOut} onClick={handleClick}>
+    <group position={ position } >
+      <mesh matrixAutoUpdate={false} ref={ ref } geometry={geometry} onPointerOver={handleHoverIn} onPointerOut={handleHoverOut} onClick={handleClick}>
         <meshLambertMaterial attach="material" color={color} emissive={emissive} />
       </mesh>
     </group>

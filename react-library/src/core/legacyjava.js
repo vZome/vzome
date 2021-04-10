@@ -71,51 +71,24 @@ const defaults = {
 
 // Initialization
 
-const makeQuaternions = ( matrices ) =>
+// We are using matrices, not quaternions, because these matrices
+//  may not be orthogonal, in the case of a symmetry that has a
+//  non-trivial embedding, e.g. heptagonal antiprism.
+// The embedding must be applied after the "rotation".
+const makeFloatMatrices = ( matrices ) =>
 {
   return matrices.map( am => {
-    let m = [[],[],[]]
+    let m = []
     for ( let i = 0; i < 3; i++) {
       for ( let j = 0; j < 3; j++) {
         const an = am.getElement( i, j );
-        m[ i ][ j ] = an.evaluate()
+        m[ i*4 + j ] = an.evaluate()
       }
     }
-    return matrix2quat( m )
+    m[ 3 ] = m[ 7 ] = m[ 11 ] = m[ 12 ] = m[ 13 ] = m[ 14 ] = 0
+    m[ 15 ] = 1
+    return m
   });
-}
-
-// Due to Mike Day, Insomniac Games
-//   https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2015/01/matrix-to-quat.pdf
-const matrix2quat = ( m ) =>
-{
-  const [ [ m00, m10, m20 ],
-          [ m01, m11, m21 ],
-          [ m02, m12, m22 ],
-        ] = m
-  let t
-  let q
-  if (m22 < 0) {
-    if (m00 > m11) {
-      t = 1 + m00 - m11 - m22
-      q = [ t, m01 + m10, m20 + m02, m12 - m21 ]
-    }
-    else {
-      t = 1 - m00 + m11 - m22
-      q = [ m01 + m10, t, m12 + m21, m20 - m02 ]
-    }
-  }
-  else {
-    if (m00 < -m11) {
-      t = 1 - m00 - m11 + m22
-      q = [ m20 + m02, m12 + m21, t, m01 - m10 ]
-    }
-    else {
-      t = 1 + m00 + m11 + m22
-      q = [ m12 - m21, m20 - m02, m01 - m10, t ]
-    }
-  }
-  return q.map( x => x * 0.5 / Math.sqrt(t) )
 }
 
 export const init = async () =>
@@ -345,7 +318,7 @@ export const init = async () =>
     }
 
     // This has no analogue in Java DocumentModel
-    orbitSource.quaternions = makeQuaternions( orbitSource.getSymmetry().getMatrices() )
+    orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
     const orbitSetField = {
       __interfaces: [ "com.vzome.core.math.symmetry.OrbitSet.Field" ],
       getGroup: name => symmetrySystems[ name ].getOrbits(),
@@ -411,7 +384,7 @@ export const init = async () =>
   // Prepare the orbitSource for resolveShapes
   const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, editContext, colors, true )
-  orbitSource.quaternions = makeQuaternions( orbitSource.getSymmetry().getMatrices() )
+  orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
   const shaper = shaperFactory( vzomePkg, orbitSource )
   const shaperName = orbitSource.getShapes().getName()
 
@@ -475,8 +448,8 @@ const shaperFactory = ( vzomePkg, orbitSource ) => shapes => instance =>
   // get shape, orientation, color, and position from rm
   const positionAV = rm.getLocationAV() || jsAF.origin( 3 )
   const { x, y, z } = orbitSource.getSymmetry().embedInR3( positionAV )
-  const quatIndex = rm.getStrutZone()
-  const rotation = ( quatIndex && (quatIndex >= 0) && orbitSource.quaternions[ quatIndex ] ) || [0,0,0,1]
+  const zoneIndex = rm.getStrutZone()
+  const rotation = ( zoneIndex && (zoneIndex >= 0) && orbitSource.orientations[ zoneIndex ] ) || [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
   const finalColor = rm.getColor().getRGB()
 
   return { id, position: [ x, y, z ], rotation, color: finalColor, shapeId }
