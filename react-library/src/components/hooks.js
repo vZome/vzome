@@ -35,7 +35,7 @@ export const useVZomeUrl = ( url, defaultCamera ) =>
 {
   const [ camera, setCamera ] = useState( defaultCamera )
   const [ mesh, setMesh ] = useState( null )
-  const [ resolver, setResolver ] = useState( null )
+  const [ shapeRenderer, setShapeRenderer ] = useState( null )
   const [ xml, setXml ] = useState( null )
   useEffect( () => {
     async function parseUrl() {
@@ -46,7 +46,7 @@ export const useVZomeUrl = ( url, defaultCamera ) =>
         return
       }
       setXml( text )
-      const { edits, camera, field, parseAndPerformEdit, targetEdit, shaper } = parser( text ) || {}
+      const { edits, camera, field, parseAndPerformEdit, targetEdit, shapeRenderer } = parser( text ) || {}
       if ( !edits ) {
         console.log( `Unable to parse XML from ${url}`)
         return
@@ -56,7 +56,7 @@ export const useVZomeUrl = ( url, defaultCamera ) =>
         return
       }
       setCamera( { ...camera, fov: convertFOV( 0.75 ) } )
-      setResolver( { shaper } )
+      setShapeRenderer( shapeRenderer )
       let meshAdapter = new Adapter( originShown( field ), new Map(), new Map() )
       let targetMesh = null
       const record = ( adapter, id ) => {
@@ -70,7 +70,7 @@ export const useVZomeUrl = ( url, defaultCamera ) =>
     }
     parseUrl();
   }, [url] )
-  return [ mesh, camera, resolver, xml ]
+  return [ mesh, camera, shapeRenderer, xml ]
 }
 
 export const useInstanceShaper = ( shown, selected, shaper ) =>

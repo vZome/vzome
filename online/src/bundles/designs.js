@@ -82,10 +82,10 @@ export const selectSource = ( state, id ) => selectDebugger( state, id ).source
 
 export const selectField = ( state, id ) => state.fields[ selectDesign( state, id ).fieldName ]
 
-export const selectShaper = ( state, id ) =>
+export const selectShapeRenderer = ( state, id ) =>
 {
   const shaperName = selectDesign( state, id ).shaperName || "solid connectors"
-  return state.shapers[ shaperName ]
+  return state.shapeRenderers[ shaperName ]
 }
 
 export const reducer = ( state = addNewModel( emptyState, goldenField ), action ) =>
@@ -167,7 +167,7 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
   const { parser } = await vZomeJava.coreState  // Must wait for the vZome code to initialize
   try {
     const text = await textPromise
-    const { edits, camera, field, parseAndPerformEdit, targetEdit, shaper } = parser( text ) || {}
+    const { edits, camera, field, parseAndPerformEdit, targetEdit, shapeRenderer } = parser( text ) || {}
 
     const name = decodeURI( url.split( '\\' ).pop().split( '/' ).pop() )
     const failure = message => {
@@ -192,7 +192,7 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
     // We don't want to dispatch all the edits, which can trigger tons of
     //  overhead and re-rendering.  Instead, we'll build up a design locally
     //  by calling the designReducer manually.
-    let design = initializeDesign( field, name, shaper.shapesName, text )
+    let design = initializeDesign( field, name, shapeRenderer.name, text )
     // Each call to designReducer may create an element in the history
     //  (if it has any changes to the mesh),
     //  so we want to be judicious in when we do it.
@@ -200,7 +200,7 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
     //  more careful about that.
     
     // TODO: skip this dispatch if we already have a shaper for shapesName, in getState().shapers
-    dispatch( shapers.shaperDefined( shaper.shapesName, shaper ) ) // outside the design
+    dispatch( shapers.shaperDefined( shapeRenderer.name, shapeRenderer ) ) // outside the design
 
     design = designReducer( design, cameraDefined( camera ) )
     design = designReducer( design, dbugger.sourceLoaded( edits, parseAndPerformEdit, targetEdit ) ) // recorded in history

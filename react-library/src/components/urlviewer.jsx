@@ -1,15 +1,33 @@
 
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
+import { Matrix4 } from 'three'
 import { ShapedGeometry } from './geometry.jsx'
 import DesignCanvas from './designcanvas.jsx'
 import { useInstanceShaper, useVZomeUrl } from './hooks.js'
 import Fab from '@material-ui/core/Fab'
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded'
 
-export const MeshGeometry = ({ shown, selected, resolver, highlightBall, handleClick, onHover }) =>
+export const MeshGeometry = ({ shown, selected, shapeRenderer, highlightBall, handleClick, onHover }) =>
 {
-  const { shapes, instances } = useInstanceShaper( shown, selected, resolver )
-  return ( instances && <ShapedGeometry {...{ shapes, instances, highlightBall, handleClick, onHover }} /> ) || null
+  const { shaper, embedding } = shapeRenderer || {}
+  const { shapes, instances } = useInstanceShaper( shown, selected, shaper )
+  const ref = useRef()
+  useEffect( () => {
+    if ( embedding ) {
+      const m = new Matrix4()
+      m.set( ...embedding )
+      m.transpose()
+      ref.current.matrix.identity()  // Required, or applyMatrix4() changes will accumulate
+      // This imperative approach is required because I was unable to decompose the
+      //   embedding matrix (a shear) into a scale and rotation.
+      ref.current.applyMatrix4( m )
+    }
+  }, [embedding] )
+  return ( instances &&
+    <group matrixAutoUpdate={false} ref={ref}>
+      <ShapedGeometry {...{ shapes, instances, highlightBall, handleClick, onHover }} />
+    </group>
+  ) || null
 }
 
 // from https://www.bitdegree.org/learn/javascript-download
@@ -30,11 +48,11 @@ export const download = ( url, xml ) =>
 export const UrlViewer = props =>
 {
   const { url, lighting } = props
-  const [ mesh, camera, resolver, xml ] = useVZomeUrl( url, props.camera )
+  const [ mesh, camera, shapeRenderer, xml ] = useVZomeUrl( url, props.camera )
   return (
     <div style={ { display: 'flex', height: '100%' } }>
       <DesignCanvas {...{ lighting, camera }} >
-        { mesh && <MeshGeometry shown={mesh.shown} selected={mesh.selected} resolver={resolver.shaper} /> }
+        { mesh && <MeshGeometry shown={mesh.shown} selected={mesh.selected} shapeRenderer={shapeRenderer} /> }
       </DesignCanvas>
       { xml &&
         <Fab color="primary" size="small" aria-label="download"
