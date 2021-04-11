@@ -1,16 +1,23 @@
 
-import goldenField from '../fields/golden'
-import root2Field from '../fields/root2'
-import Adapter from './adapter'
-import { JavaDomElement, JsProperties } from './wrappers'
+import goldenField from '../fields/golden.js'
+import root2Field from '../fields/root2.js'
+import root3Field from '../fields/root3.js'
+import heptagonField from '../fields/heptagon.js'
+import Adapter from './adapter.js'
+import { JavaDomElement, JsProperties } from './wrappers.js'
 
 import allShapes from '../resources/com/vzome/core/parts/index.js'
 import groupResources from '../resources/com/vzome/core/math/symmetry/index.js'
 
-import { com } from '../jsweet/bundle'
-import { java } from '../jsweet/j4ts-2.0.0/bundle'
+import { com } from '../jsweet/transpiled-java.js'
+import { java } from '../jsweet/j4ts-2.0.0/bundle.js'
 
-const fields = { [goldenField.name]: goldenField, [root2Field.name]: root2Field }
+const fields = {
+  [goldenField.name]: goldenField,
+  [root2Field.name]: root2Field,
+  [root3Field.name]: root3Field,
+  [heptagonField.name]: heptagonField
+}
 
 // Copied from core/src/main/resources/com/vzome/core/editor/defaultPrefs.properties
 const defaults = {
@@ -64,51 +71,24 @@ const defaults = {
 
 // Initialization
 
-const makeQuaternions = ( matrices ) =>
+// We are using matrices, not quaternions, because these matrices
+//  may not be orthogonal, in the case of a symmetry that has a
+//  non-trivial embedding, e.g. heptagonal antiprism.
+// The embedding must be applied after the "rotation".
+const makeFloatMatrices = ( matrices ) =>
 {
   return matrices.map( am => {
-    let m = [[],[],[]]
+    let m = []
     for ( let i = 0; i < 3; i++) {
       for ( let j = 0; j < 3; j++) {
         const an = am.getElement( i, j );
-        m[ i ][ j ] = an.evaluate()
+        m[ i*4 + j ] = an.evaluate()
       }
     }
-    return matrix2quat( m )
+    m[ 3 ] = m[ 7 ] = m[ 11 ] = m[ 12 ] = m[ 13 ] = m[ 14 ] = 0
+    m[ 15 ] = 1
+    return m
   });
-}
-
-// Due to Mike Day, Insomniac Games
-//   https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2015/01/matrix-to-quat.pdf
-const matrix2quat = ( m ) =>
-{
-  const [ [ m00, m10, m20 ],
-          [ m01, m11, m21 ],
-          [ m02, m12, m22 ],
-        ] = m
-  let t
-  let q
-  if (m22 < 0) {
-    if (m00 > m11) {
-      t = 1 + m00 - m11 - m22
-      q = [ t, m01 + m10, m20 + m02, m12 - m21 ]
-    }
-    else {
-      t = 1 - m00 + m11 - m22
-      q = [ m01 + m10, t, m12 + m21, m20 - m02 ]
-    }
-  }
-  else {
-    if (m00 < -m11) {
-      t = 1 - m00 - m11 + m22
-      q = [ m20 + m02, m12 + m21, t, m01 - m10 ]
-    }
-    else {
-      t = 1 + m00 + m11 + m22
-      q = [ m12 - m21, m20 - m02, m01 - m10, t ]
-    }
-  }
-  return q.map( x => x * 0.5 / Math.sqrt(t) )
 }
 
 export const init = async () =>
@@ -267,9 +247,13 @@ export const init = async () =>
   const colors = new vzomePkg.core.render.Colors( properties )
   const gfield = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
   const r2field = new vzomePkg.jsweet.JsAlgebraicField( root2Field )
+  const r3field = new vzomePkg.jsweet.JsAlgebraicField( root3Field )
+  const heptfield = new vzomePkg.jsweet.JsAlgebraicField( heptagonField )
   const fieldApps = {
     golden: new vzomePkg.core.kinds.GoldenFieldApplication( gfield ),
     rootTwo: new vzomePkg.core.kinds.RootTwoFieldApplication( r2field ),
+    rootThree: new vzomePkg.core.kinds.RootThreeFieldApplication( r3field ),
+    heptagon: new vzomePkg.core.kinds.HeptagonFieldApplication( heptfield ),
   }
 
   // This object implements the UndoableEdit.Context interface
@@ -288,6 +272,12 @@ export const init = async () =>
     // We will do our own edit recording, so this is just perform
     performAndRecord: edit => edit.perform()
   }
+  
+  const createShapeRenderer = orbitSource => ({
+    name: orbitSource.getShapes().getName(),
+    shaper: shaperFactory( vzomePkg, orbitSource ),
+    embedding: orbitSource.getEmbedding(),
+  })
 
   const documentFactory = ( fieldName, namespace, xml ) =>
   {
@@ -295,7 +285,7 @@ export const init = async () =>
 
     const fieldApp = fieldApps[ fieldName ]
     if ( ! fieldApp )
-      throw new Error( `Field "${fieldName}" is not supported yet.` )
+      return {}
     const field = fieldApp.getField()
 
     const originPoint = new vzomePkg.core.construction.FreePoint( field.origin( 3 ) )
@@ -334,7 +324,7 @@ export const init = async () =>
     }
 
     // This has no analogue in Java DocumentModel
-    orbitSource.quaternions = makeQuaternions( orbitSource.getSymmetry().getMatrices() )
+    orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
     const orbitSetField = {
       __interfaces: [ "com.vzome.core.math.symmetry.OrbitSet.Field" ],
       getGroup: name => symmetrySystems[ name ].getOrbits(),
@@ -362,8 +352,7 @@ export const init = async () =>
     const toolsXml = xml && xml.getChildElement( "Tools" )
     toolsXml && toolsModel.loadFromXml( toolsXml )
 
-    const shaper = shaperFactory( vzomePkg, orbitSource )
-    shaper.shapesName = orbitSource.getShapes().getName()
+    const shapeRenderer = createShapeRenderer( orbitSource )
 
     const parseAndPerformEdit = ( xmlElement, adapter ) =>
     {
@@ -388,7 +377,7 @@ export const init = async () =>
       edit.perform()
     }
 
-    return { shaper, parseAndPerformEdit, configureAndPerformEdit }
+    return { shapeRenderer, parseAndPerformEdit, configureAndPerformEdit }
   }
 
   // Discover all the legacy edit classes and register as commands
@@ -400,9 +389,8 @@ export const init = async () =>
   // Prepare the orbitSource for resolveShapes
   const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, editContext, colors, true )
-  orbitSource.quaternions = makeQuaternions( orbitSource.getSymmetry().getMatrices() )
-  const shaper = shaperFactory( vzomePkg, orbitSource )
-  const shaperName = orbitSource.getShapes().getName()
+  orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
+  const shapeRenderer = createShapeRenderer( orbitSource )
 
   const blue = [ [0,0,1], [0,0,1], [1,0,1] ]
   const yellow = [ [0,0,1], [1,0,1], [1,1,1] ]
@@ -418,19 +406,15 @@ export const init = async () =>
       await Promise.all( Object.entries( shapes ).map( ([ key, value ]) => injectResource( `com/vzome/core/parts/${family}/${key}.vef`, value ) ) )
   ) )
 
-  // now we are finally ready to shape instances
-  // store.dispatch( shapers.shaperDefined( shaperName, shaper ) )
-  // store.dispatch( { type: PARSER_READY, payload: parser } )
-
-  return { parser, shaper, shaperName, commands, gridPoints }
+  return { parser, shapeRenderer, commands, gridPoints }
 }
 
 export const coreState = init()
 
-const embedShape = ( shape ) =>
+const realizeShape = ( shape ) =>
 {
   const vertices = shape.getVertexList().toArray().map( av => {
-    const { x, y, z } = av.toRealVector()
+    const { x, y, z } = av.toRealVector() // embedding.embedInR3( av )
     return { x, y, z }
   })
   const faces = shape.getTriangleFaces().toArray()
@@ -458,15 +442,15 @@ const shaperFactory = ( vzomePkg, orbitSource ) => shapes => instance =>
   // is the shape new?
   const shapeId = rm.getShapeId().toString()
   if ( ! shapes[ shapeId ] ) {
-    shapes[ shapeId ] = embedShape( rm.getShape() )
+    shapes[ shapeId ] = realizeShape( rm.getShape() )
   }
 
   // get shape, orientation, color, and position from rm
   const positionAV = rm.getLocationAV() || jsAF.origin( 3 )
-  const { x, y, z } = orbitSource.getSymmetry().embedInR3( positionAV )
-  const quatIndex = rm.getStrutZone()
-  const rotation = ( quatIndex && (quatIndex >= 0) && orbitSource.quaternions[ quatIndex ] ) || [0,0,0,1]
-  const finalColor = rm.getColor().getRGB()
+  const { x, y, z } = positionAV.toRealVector() // orbitSource.getSymmetry().embedInR3( positionAV )
+  const zoneIndex = rm.getStrutZone()
+  const rotation = ( zoneIndex && (zoneIndex >= 0) && orbitSource.orientations[ zoneIndex ] ) || [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
+  let finalColor = rm.getColor().getRGB()
 
   return { id, position: [ x, y, z ], rotation, color: finalColor, shapeId }
 }
@@ -513,7 +497,7 @@ export const interpret = ( action, parseAndPerform, adapter, editElement, stack=
     if ( editElement.nodeName === "Branch" ) {
       const branchAdapter = adapter.clone()
       stack.push( { branch: editElement, adapter } )
-      recordSnapshot && recordSnapshot( branchAdapter, editElement.firstElementChild, stack )
+      recordSnapshot && recordSnapshot( branchAdapter, editElement.id, editElement.firstElementChild, stack )
       editElement = editElement.firstElementChild // this assumes there are no empty branches
       adapter = branchAdapter
       return Step.IN
@@ -521,7 +505,7 @@ export const interpret = ( action, parseAndPerform, adapter, editElement, stack=
       adapter = adapter.clone()  // each command builds on the last
       parseAndPerform( editElement, adapter )
       if ( editElement.nextElementSibling ) {
-        recordSnapshot && recordSnapshot( adapter, editElement.nextElementSibling )
+        recordSnapshot && recordSnapshot( adapter, editElement.id, editElement.nextElementSibling )
         editElement = editElement.nextElementSibling
         return Step.OVER
       } else {
@@ -532,11 +516,11 @@ export const interpret = ( action, parseAndPerform, adapter, editElement, stack=
         if ( top ) {
           adapter = top.adapter.clone()  // overwrite and discard the prior value
           editElement = top.branch.nextElementSibling
-          recordSnapshot && recordSnapshot( adapter, editElement, stack )
+          recordSnapshot && recordSnapshot( adapter, editElement.id, editElement, stack )
           return Step.OUT
         } else {
           // at the end of the editHistory
-          recordSnapshot && recordSnapshot( adapter, null )
+          recordSnapshot && recordSnapshot( adapter, editElement.id, null )
           return Step.DONE
         }
       }
@@ -625,16 +609,16 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
     const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
     const fieldName = vZomeRoot.getAttribute( "field" )
 
-    const { shaper, parseAndPerformEdit } = createDocument( fieldName, namespace, vZomeRoot )
-    const field = fields[ fieldName ]
+    const { shapeRenderer, parseAndPerformEdit } = createDocument( fieldName, namespace, vZomeRoot )
+    const field = fields[ fieldName ] || { name: fieldName, unknown: true }
     
     const viewing = vZomeRoot.getChildElement( "Viewing" )
     const camera = viewing && parseViewXml( viewing )
     const edits = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement )
-    // TODO: use editNumber
+    // Note: I'm adding one so that this matches the assigned ID of the next edit to do
     const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
 
-    return { edits, camera, field, parseAndPerformEdit, targetEdit, shaper }
+    return { edits, camera, field, parseAndPerformEdit, targetEdit, shapeRenderer }
   } catch (error) {
     console.log( `%%%%%%%%%%%%%%%%%%% legacyjava.js parser failed: ${error}` )
     return null

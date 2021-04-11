@@ -57,3 +57,5 @@ react-vzome-*.tgz
 launch.json
 build.properties
 react-library/jsweetOut
+transpiled-java.js
+react-library/.snowpack

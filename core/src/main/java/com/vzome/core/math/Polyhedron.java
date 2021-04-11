@@ -42,7 +42,7 @@ public class Polyhedron implements Cloneable
     
     private boolean isPanel = false;
 
-    private final UUID guid = UUID .randomUUID();
+    private UUID guid = UUID .randomUUID();
 
     public Polyhedron( AlgebraicField field )
     {
@@ -68,6 +68,7 @@ public class Polyhedron implements Cloneable
                 e.printStackTrace();
             }
             this .evilTwin .isEvil = true;
+            this .evilTwin .guid = UUID .randomUUID();
             
             this .evilTwin .m_vertexList = new ArrayList<>();
             // this loop should preserve the order, and thus indices for the faces below
@@ -77,9 +78,7 @@ public class Polyhedron implements Cloneable
             
             this .evilTwin .m_faces = new HashSet<Face>();
             for ( Face face : m_faces ) {
-                Face mirrorFace = (Face) face .clone();
-                Collections .reverse( mirrorFace );
-                this .evilTwin .addFace( mirrorFace );
+                this .evilTwin .addFace( face .createReverse() );
             }
         }
         return this .evilTwin;
@@ -228,6 +227,16 @@ public class Polyhedron implements Cloneable
         //        private AlgebraicVector mNormal;
 
         private Face(){}
+
+        public Face createReverse()
+        {
+            @SuppressWarnings("unchecked")
+            ArrayList<Integer> vertices = (ArrayList<Integer>) this .clone();
+            Collections .reverse( vertices );
+            Face mirrorFace = new Face();
+            mirrorFace .addAll( vertices );
+            return mirrorFace;
+        }
 
         @JsonIgnore
         public int getVertex( int index )

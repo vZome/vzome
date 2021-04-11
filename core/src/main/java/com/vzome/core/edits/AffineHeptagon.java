@@ -3,7 +3,6 @@ package com.vzome.core.edits;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
@@ -34,9 +33,9 @@ public class AffineHeptagon extends ChangeManifestations
             unselect(man);
             if (man instanceof Strut) {
                 if (strut1 == null) {
-                    strut1 = Strut.class.cast(man);
+                    strut1 = (Strut) man;
                 } else if (strut2 == null) {
-                    strut2 = Strut.class.cast(man);
+                    strut2 = (Strut) man;
                 } else {
                     // too many struts
                     fail(errorMsg);
@@ -50,16 +49,18 @@ public class AffineHeptagon extends ChangeManifestations
         }
 
         AlgebraicField field = strut1.getLocation().getField();
-        if (!(field instanceof HeptagonField)) {
-            fail("Affine heptagon command requires a Heptagon field.");
-        }
+        
+        // TODO: test this without the class dependency
+//        if (!(field instanceof HeptagonField)) {
+//            fail("Affine heptagon command requires a Heptagon field.");
+//        }
 
         redo();  // Get the unselects out of the way, in case anything needs to be re-selected later
 
         // Before we start, be sure the balls at both ends of both struts have not been deleted or hidden.
         // It's safe to restore them all without testing if they already exist.
-        Segment s1 = Segment.class.cast(strut1.getFirstConstruction());
-        Segment s2 = Segment.class.cast(strut2.getFirstConstruction());
+        Segment s1 = (Segment) strut1.getFirstConstruction();
+        Segment s2 = (Segment) strut2.getFirstConstruction();
         manifestConstruction( new SegmentEndPoint(s1, true) );
         manifestConstruction( new SegmentEndPoint(s1, false) );
         manifestConstruction( new SegmentEndPoint(s2, true) );
@@ -108,12 +109,12 @@ public class AffineHeptagon extends ChangeManifestations
             if (man instanceof Connector) {
                 AlgebraicVector loc = man.getLocation();
                 if (loc.equals(v0)) {
-                    c0 = Connector.class.cast(man);
+                    c0 = (Connector) man;
                 } else if (loc.equals(v1)) {
-                    c1 = Connector.class.cast(man);
+                    c1 = (Connector) man;
                     p1 = (Point) man.getFirstConstruction();
                 } else if (loc.equals(v2)) {
-                    c2 = Connector.class.cast(man);
+                    c2 = (Connector) man;
                     p2 = (Point) man.getFirstConstruction();
                 }
             }

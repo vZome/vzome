@@ -1,6 +1,8 @@
 package org.vorthmann.zome.app.impl;
 
-import static com.vzome.controller.ControllerTesting.*;
+import static com.vzome.controller.ControllerTesting.assertPropertyValue;
+import static com.vzome.controller.ControllerTesting.doActions;
+import static com.vzome.controller.ControllerTesting.getSubController;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -9,9 +11,10 @@ import java.util.Properties;
 import org.junit.Test;
 import org.vorthmann.ui.Controller;
 
+import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
+import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.render.Colors;
 
@@ -20,7 +23,7 @@ public class LengthPanelControllersTest
     @Test
     public void testSwitchOrbit() 
     {
-        FieldApplication app = new HeptagonFieldApplication();
+        FieldApplication app = new HeptagonFieldApplication( new HeptagonField() );
         SymmetryPerspective perspective = app .getDefaultSymmetryPerspective();
         SymmetrySystem system = new SymmetrySystem( null, perspective, null, new Colors( new Properties() ), true );
 

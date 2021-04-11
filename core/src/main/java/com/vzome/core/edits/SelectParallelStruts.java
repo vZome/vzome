@@ -76,9 +76,16 @@ public class SelectParallelStruts extends ChangeManifestations
         }
         unselectAll();
 
-        int opposite = ( axis .getSense() + 1 ) % 2;
-        Axis oppositeAxis = orbit. getAxis( opposite, axis .getOrientation() );
-
+        // The logic for getting oppositeAxis is copied from Direction.getAxis(AlgebraicVector)
+        // TODO: We should probably have a symmetry method to ensure that we get the opposite axis correctly 
+        // instead of duplicating this code, or worse yet, forgetting to copy it
+        // and not considering the principalReflection when applicable (e.g. any antiprism symmetry). 
+        Axis oppositeAxis = symmetry.getSymmetry().getPrincipalReflection() == null
+            // the traditional way... anti-parallel means just flip the sense
+            ? orbit.getAxis( (( axis .getSense() + 1 ) % 2), axis .getOrientation() )
+            // anti-parallel mean flip inbound to outbound or vice-versa
+            : orbit.getAxis( axis .getSense(), axis .getOrientation(), ! axis .isOutbound() );
+            
         for (Strut strut : getStruts()) {
             Axis strutAxis = symmetry.getAxis(strut .getOffset());
             if (strutAxis != null && strutAxis.getOrbit().equals(orbit)) {

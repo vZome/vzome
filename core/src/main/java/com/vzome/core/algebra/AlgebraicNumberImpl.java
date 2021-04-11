@@ -125,18 +125,22 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         return Arrays.equals( factors, other.factors );
     }
     
+    @Override
     public boolean greaterThan(AlgebraicNumber other) {
         return compareTo(other) > 0;
     }
 
+    @Override
     public boolean lessThan(AlgebraicNumber other) {
         return compareTo(other) < 0;
     }
 
+    @Override
     public boolean greaterThanOrEqualTo(AlgebraicNumber other) {
         return compareTo(other) >= 0;
     }
 
+    @Override
     public boolean lessThanOrEqualTo(AlgebraicNumber other) {
         return compareTo(other) <= 0;
     }
@@ -173,6 +177,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         return a.lessThanOrEqualTo(b) ? a : b;
     }
 
+    @Override
     public AlgebraicField getField()
     {
         return this .field;
@@ -183,6 +188,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @param n is the value to be added
      * @return this + n
      */
+    @Override
     public AlgebraicNumber plus( int n )
     {
         return n == 0 ? this : this.plus(field.createRational(n));
@@ -194,6 +200,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @param den is the denominator of the rational value to be added
      * @return this + (num / den)
      */
+    @Override
     public AlgebraicNumber plus( int num, int den )
     {
         return this.plus(field.createRational(num, den));
@@ -224,6 +231,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @param n is the value to be multiplied
      * @return this * n
      */
+    @Override
     public AlgebraicNumber times( int n )
     {
         switch(n) {
@@ -244,6 +252,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @param den is the denominator of the rational value to be multiplied
      * @return this * (num / den)
      */
+    @Override
     public AlgebraicNumber times( int num, int den )
     {
         return this.times(field.createRational(num, den));
@@ -266,6 +275,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @param n is the value to be subtracted
      * @return this - n
      */
+    @Override
     public AlgebraicNumber minus( int n )
     {
         return n == 0 ? this : this.minus(field.createRational(n));
@@ -277,6 +287,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @param den is the denominator of the rational value to be subtracted
      * @return this - (num / den)
      */
+    @Override
     public AlgebraicNumber minus( int num, int den )
     {
         return this.minus(field.createRational(num, den));
@@ -301,6 +312,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @param divisor
      * @return this / divisor
      */
+    @Override
     public AlgebraicNumber dividedBy( int divisor )
     {
         return divisor == 1 ? this : this.dividedBy(field.createRational(divisor));
@@ -312,11 +324,13 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @param den is the denominator of the divisor
      * @return this / (num / den)
      */
+    @Override
     public AlgebraicNumber dividedBy( int num, int den )
     {
         return this.dividedBy(field.createRational(num, den));
     }
 
+    @Override
     public AlgebraicNumber dividedBy( AlgebraicNumber that )
     {
         // Division is not commutative so don't be tempted to optimize for the case when this.isOne()
@@ -325,6 +339,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         return this .times( that .reciprocal() );
     }
 
+    @Override
     public double evaluate()
     {
         if(doubleValue == null) {
@@ -357,6 +372,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
     // isRational() is not currently used enough 
     // to warrant caching it in a private field like isZero and isOne
     // so just calculate it
+    @Override
     public boolean isRational()
     {
         for( int i = 1; i < factors.length; i++ ) {
@@ -371,6 +387,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
     @Override
     public boolean isOne()      { return isOne; }
     
+    @Override
     public int signum() {
         if(signum == null) {
             signum = Double.valueOf( Math.signum(evaluate()) ).intValue();
@@ -405,6 +422,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * {@code ZOMIC_FORMAT      // 4 3}<br>
      * {@code VEF_FORMAT        // (3,4)}<br>
      */
+    @Override
     public void getNumberExpression( StringBuffer buf, int format )
     {
         if(toString[format] == null) {
@@ -427,6 +445,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * {@code VEF_FORMAT        // (3,4)}
      * @return 
      */
+    @Override
     public String toString( int format )
     {
         if(toString[format] == null) {
@@ -443,6 +462,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         return this .toString( AlgebraicField .DEFAULT_FORMAT );
     }
     
+    @Override
     public int[] toTrailingDivisor()
     {
         BigInteger divisor = this .getDivisor();

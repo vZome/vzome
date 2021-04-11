@@ -508,6 +508,10 @@ jsweet {
         'com/vzome/core/kinds/DefaultFieldApplication.java',
         'com/vzome/core/kinds/GoldenFieldApplication.java',
         'com/vzome/core/kinds/RootTwoFieldApplication.java',
+        'com/vzome/core/kinds/RootThreeFieldApplication.java',
+        'com/vzome/core/kinds/HeptagonFieldApplication.java',
+
+        'com/vzome/fields/heptagon/HeptagonalAntiprismSymmetry.java',
 
         'com/vzome/api/Tool.java',
         'com/vzome/api/InputBehaviors.java',
@@ -536,6 +540,7 @@ jsweet {
         'com/vzome/core/render/AbstractZomicEventHandler.java',
         'com/vzome/core/viewing/AbstractShapes.java',
         'com/vzome/core/viewing/OctahedralShapes.java',
+        'com/vzome/core/viewing/DodecagonalShapes.java',
         'com/vzome/core/viewing/ExportedVEFShapes.java',
         'com/vzome/core/viewing/ExportedVEFStrutGeometry.java'
     ]
@@ -557,8 +562,6 @@ jsweet {
 
         'com/vzome/core/zomic/ZomicASTCompiler.java',
 
-        'com/vzome/core/edits/AffineHeptagon.java',
-        'com/vzome/core/edits/HeptagonSubdivision.java',
         'com/vzome/core/edits/DodecagonSymmetry.java',
         'com/vzome/core/edits/GhostSymmetry24Cell.java',
         'com/vzome/core/edits/Symmetry4d.java',

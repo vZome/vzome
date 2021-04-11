@@ -4,16 +4,17 @@ import del from 'rollup-plugin-delete';
 import pkg from './package.json';
 import url from '@rollup/plugin-url';
 
-export default {
+const config = {
     input: pkg.source,
     output: [
-        { file: pkg.browser, format: 'umd', sourcemap: true, name: 'react-vzome' },
-        { file: pkg.module, format: 'esm', sourcemap: true }
+        { file: pkg.browser, format: 'umd', name: 'react-vzome' },
+        { file: pkg.module, format: 'esm' }
     ],
     plugins: [
         external(),
         babel({
-            exclude: 'node_modules/**'
+            exclude: 'node_modules/**',
+            babelHelpers: "bundled"
         }),
         del({ targets: ['dist/*'] }),
         url({
@@ -21,5 +22,11 @@ export default {
             limit: 46000
         }),
     ],
-    external: Object.keys(pkg.peerDependencies || {}),
+    external: [
+        'react', 'react-dom',
+        'three', 'react-three-fiber', 'drei', 'three/examples/jsm/controls/TrackballControls',
+        '@material-ui/core/Fab', '@material-ui/icons/GetAppRounded'
+    ]
 };
+
+export default config

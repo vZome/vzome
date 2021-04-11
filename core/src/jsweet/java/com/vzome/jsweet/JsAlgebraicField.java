@@ -53,6 +53,13 @@ public class JsAlgebraicField implements AlgebraicField
     }
 
     @Override
+    public AlgebraicNumber getAffineScalar()
+    {
+        int scalar = this.delegate .$get( "scalarTerm" );
+        return this .getUnitTerm( scalar );
+    }
+
+    @Override
     public int getNumIrrationals()
     {
         return getOrder() - 1;
@@ -269,7 +276,7 @@ public class JsAlgebraicField implements AlgebraicField
         }
         int[] factors = this .zero() .toTrailingDivisor(); // makes a copy
         factors[ n ] = 1;
-        return createAlgebraicNumber( factors );
+        return new JsAlgebraicNumber( this, factors );
     }
 
     /**
@@ -518,12 +525,6 @@ public class JsAlgebraicField implements AlgebraicField
 
     @Override
     public AlgebraicVector nearestAlgebraicVector(RealVector target)
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public AlgebraicNumber getAffineScalar()
     {
         throw new RuntimeException( "unimplemented" );
     }

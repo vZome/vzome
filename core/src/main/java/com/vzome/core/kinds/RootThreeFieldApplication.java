@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.List;
 
 import com.vzome.api.Tool;
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandSymmetry;
 import com.vzome.core.editor.ToolsModel;
@@ -39,9 +39,9 @@ import com.vzome.core.viewing.ExportedVEFShapes;
  */
 public class RootThreeFieldApplication extends DefaultFieldApplication
 {
-    public RootThreeFieldApplication()
+    public RootThreeFieldApplication( AlgebraicField field )
     {
-        super( new RootThreeField() );
+        super( field );
         
         OctahedralSymmetryPerspective octahedralPerspective = (OctahedralSymmetryPerspective) super .getDefaultSymmetryPerspective();
         
@@ -55,7 +55,7 @@ public class RootThreeFieldApplication extends DefaultFieldApplication
         octahedralPerspective .setDefaultGeometry( defaultShapes );
     }
 
-    private final SymmetryPerspective dodecagonalPerspective = new AbstractSymmetryPerspective(new DodecagonalSymmetry( getField() ))
+    private final SymmetryPerspective dodecagonalPerspective = new AbstractSymmetryPerspective( new DodecagonalSymmetry( getField() ))
     {
         {
             AbstractShapes defaultShapes = new ExportedVEFShapes( null, "dodecagon3d", "prisms", symmetry );

@@ -11,9 +11,9 @@ import org.junit.Test;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.HeptagonField;
-import com.vzome.core.editor.api.Shapes;
-import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
+import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
@@ -114,7 +114,7 @@ public class RenderedModelTest
 	@Test
 	public void testZoneConsistency()
 	{
-		HeptagonFieldApplication app = new HeptagonFieldApplication();
+		HeptagonFieldApplication app = new HeptagonFieldApplication( new HeptagonField() );
 		HeptagonField field = (HeptagonField) app .getField();
 		AlgebraicVector origin = field .origin( 3 );
 
