@@ -42,7 +42,7 @@ public class Polyhedron implements Cloneable
     
     private boolean isPanel = false;
 
-    private final UUID guid = UUID .randomUUID();
+    private UUID guid = UUID .randomUUID();
 
     public Polyhedron( AlgebraicField field )
     {
@@ -68,6 +68,7 @@ public class Polyhedron implements Cloneable
                 e.printStackTrace();
             }
             this .evilTwin .isEvil = true;
+            this .evilTwin .guid = UUID .randomUUID();
             
             this .evilTwin .m_vertexList = new ArrayList<>();
             // this loop should preserve the order, and thus indices for the faces below

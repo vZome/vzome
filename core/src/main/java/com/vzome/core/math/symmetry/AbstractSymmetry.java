@@ -4,11 +4,11 @@
 package com.vzome.core.math.symmetry;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -349,7 +349,7 @@ public abstract class AbstractSymmetry implements Symmetry
      *
      */
     @Override
-    public Axis getAxis( RealVector vector, Set<Direction> dirMask )
+    public Axis getAxis( RealVector vector, Collection<Direction> dirMask )
     {
         if ( RealVector .ORIGIN .equals( vector ) ) {
             return null;

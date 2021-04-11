@@ -272,6 +272,12 @@ export const init = async () =>
     // We will do our own edit recording, so this is just perform
     performAndRecord: edit => edit.perform()
   }
+  
+  const createShapeRenderer = orbitSource => ({
+    name: orbitSource.getShapes().getName(),
+    shaper: shaperFactory( vzomePkg, orbitSource ),
+    embedding: orbitSource.getEmbedding(),
+  })
 
   const documentFactory = ( fieldName, namespace, xml ) =>
   {
@@ -346,8 +352,7 @@ export const init = async () =>
     const toolsXml = xml && xml.getChildElement( "Tools" )
     toolsXml && toolsModel.loadFromXml( toolsXml )
 
-    const shaper = shaperFactory( vzomePkg, orbitSource )
-    shaper.shapesName = orbitSource.getShapes().getName()
+    const shapeRenderer = createShapeRenderer( orbitSource )
 
     const parseAndPerformEdit = ( xmlElement, adapter ) =>
     {
@@ -372,7 +377,7 @@ export const init = async () =>
       edit.perform()
     }
 
-    return { shaper, parseAndPerformEdit, configureAndPerformEdit }
+    return { shapeRenderer, parseAndPerformEdit, configureAndPerformEdit }
   }
 
   // Discover all the legacy edit classes and register as commands
@@ -385,8 +390,7 @@ export const init = async () =>
   const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, editContext, colors, true )
   orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
-  const shaper = shaperFactory( vzomePkg, orbitSource )
-  const shaperName = orbitSource.getShapes().getName()
+  const shapeRenderer = createShapeRenderer( orbitSource )
 
   const blue = [ [0,0,1], [0,0,1], [1,0,1] ]
   const yellow = [ [0,0,1], [1,0,1], [1,1,1] ]
@@ -402,19 +406,15 @@ export const init = async () =>
       await Promise.all( Object.entries( shapes ).map( ([ key, value ]) => injectResource( `com/vzome/core/parts/${family}/${key}.vef`, value ) ) )
   ) )
 
-  // now we are finally ready to shape instances
-  // store.dispatch( shapers.shaperDefined( shaperName, shaper ) )
-  // store.dispatch( { type: PARSER_READY, payload: parser } )
-
-  return { parser, shaper, shaperName, commands, gridPoints }
+  return { parser, shapeRenderer, commands, gridPoints }
 }
 
 export const coreState = init()
 
-const embedShape = ( shape, embedding ) =>
+const realizeShape = ( shape ) =>
 {
   const vertices = shape.getVertexList().toArray().map( av => {
-    const { x, y, z } = embedding.embedInR3( av )
+    const { x, y, z } = av.toRealVector() // embedding.embedInR3( av )
     return { x, y, z }
   })
   const faces = shape.getTriangleFaces().toArray()
@@ -442,15 +442,15 @@ const shaperFactory = ( vzomePkg, orbitSource ) => shapes => instance =>
   // is the shape new?
   const shapeId = rm.getShapeId().toString()
   if ( ! shapes[ shapeId ] ) {
-    shapes[ shapeId ] = embedShape( rm.getShape(), orbitSource.getSymmetry() )
+    shapes[ shapeId ] = realizeShape( rm.getShape() )
   }
 
   // get shape, orientation, color, and position from rm
   const positionAV = rm.getLocationAV() || jsAF.origin( 3 )
-  const { x, y, z } = orbitSource.getSymmetry().embedInR3( positionAV )
+  const { x, y, z } = positionAV.toRealVector() // orbitSource.getSymmetry().embedInR3( positionAV )
   const zoneIndex = rm.getStrutZone()
   const rotation = ( zoneIndex && (zoneIndex >= 0) && orbitSource.orientations[ zoneIndex ] ) || [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
-  const finalColor = rm.getColor().getRGB()
+  let finalColor = rm.getColor().getRGB()
 
   return { id, position: [ x, y, z ], rotation, color: finalColor, shapeId }
 }
@@ -609,7 +609,7 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
     const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
     const fieldName = vZomeRoot.getAttribute( "field" )
 
-    const { shaper, parseAndPerformEdit } = createDocument( fieldName, namespace, vZomeRoot )
+    const { shapeRenderer, parseAndPerformEdit } = createDocument( fieldName, namespace, vZomeRoot )
     const field = fields[ fieldName ] || { name: fieldName, unknown: true }
     
     const viewing = vZomeRoot.getChildElement( "Viewing" )
@@ -618,7 +618,7 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
     // Note: I'm adding one so that this matches the assigned ID of the next edit to do
     const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
 
-    return { edits, camera, field, parseAndPerformEdit, targetEdit, shaper }
+    return { edits, camera, field, parseAndPerformEdit, targetEdit, shapeRenderer }
   } catch (error) {
     console.log( `%%%%%%%%%%%%%%%%%%% legacyjava.js parser failed: ${error}` )
     return null

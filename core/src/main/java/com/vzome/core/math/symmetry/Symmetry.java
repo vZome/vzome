@@ -3,8 +3,8 @@
 
 package com.vzome.core.math.symmetry;
 
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
@@ -38,7 +38,7 @@ public interface Symmetry extends Iterable<Direction>, Embedding
     
     Axis getAxis( AlgebraicVector vector, OrbitSet orbits );
 
-    Axis getAxis( RealVector vector, Set<Direction> filter );
+    Axis getAxis( RealVector vector, Collection<Direction> filter );
     
     int getMapping( int from, int to );
 

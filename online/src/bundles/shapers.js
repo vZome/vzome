@@ -2,17 +2,17 @@
 import { vZomeJava } from '@vzome/react-vzome'
 
 
-export const shaperDefined = ( name, shaper ) => ({ type: 'SHAPER_DEFINED', payload: { name, shaper } } )
+export const shaperDefined = ( name, shapeRenderer ) => ({ type: 'SHAPER_DEFINED', payload: { name, shapeRenderer } } )
 
 export const reducer = ( state = {}, action ) =>
 {
   switch ( action.type ) {
 
     case 'SHAPER_DEFINED': {
-      const { name, shaper } = action.payload
+      const { name, shapeRenderer } = action.payload
       return {
         ...state,
-        [ name ]: shaper
+        [ name ]: shapeRenderer
       }
     }
 
@@ -23,7 +23,7 @@ export const reducer = ( state = {}, action ) =>
 
 export const init = async ( window, store ) =>
 {
-  const { shaper, shaperName } = await vZomeJava.coreState
-  store.dispatch( shaperDefined( shaperName, shaper ) )
+  const { shapeRenderer } = await vZomeJava.coreState
+  store.dispatch( shaperDefined( shapeRenderer.name, shapeRenderer ) )
 }
 
