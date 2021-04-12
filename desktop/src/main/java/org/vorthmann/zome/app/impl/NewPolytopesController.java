@@ -26,6 +26,10 @@ import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.math.symmetry.WythoffConstruction;
 
+/**
+ * @author Aresh Pourkavoos
+ */
+
 public class NewPolytopesController extends DefaultController
 {
     private final DocumentModel model;

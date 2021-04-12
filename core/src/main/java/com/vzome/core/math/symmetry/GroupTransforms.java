@@ -11,6 +11,10 @@ import com.vzome.core.algebra.AlgebraicMatrix;
 // Finds and stores transformation matrices for every element of a Coxeter group,
 // as well as their parities (rotation/reflection) and adjacencies (related by a generator)
 
+/**
+ * @author Aresh Pourkavoos
+ */
+
 public class GroupTransforms
 {
 
