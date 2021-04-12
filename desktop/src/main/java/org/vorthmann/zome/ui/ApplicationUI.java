@@ -589,7 +589,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
 
                 + "Committers:\n\n" 
                 + "Scott Vorthmann\n" 
-                + "David Hall\n" + "\n"
+                + "David Hall\n"
                 + "Aresh Pourkavoos\n" + "\n"
 
                 + "Contributors:\n\n"
