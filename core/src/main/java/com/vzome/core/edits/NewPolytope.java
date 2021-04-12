@@ -1,6 +1,3 @@
-
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.edits;
 
 import java.util.HashMap;
