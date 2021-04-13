@@ -45,18 +45,6 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
-const useStyles = makeStyles((theme) => ({
-  debuggerSource: {
-    flex: '1 1 auto',
-    display: 'flex',
-    flexDirection: 'column',
-    maxHeight: '720px'  // This is a horrible hack, but I haven't found anything else to control the expanded tree item height
-  },
-  treeview: {
-    overflow: 'auto',
-  },
-}))
-
 const useTreeItemStyles = makeStyles((theme) => ({
   root: {
     color: theme.palette.text.secondary,
@@ -146,7 +134,6 @@ function StyledTreeItem(props) {
 
 const Debugger = ( { data, current, branches, designName, doDebug } )  =>
 {
-  const classes = useStyles();
   const [ element, setElement ] = useState( null )
 
   const onLabelClick = element => event =>
@@ -174,9 +161,14 @@ const Debugger = ( { data, current, branches, designName, doDebug } )  =>
   if ( !data )
     return null
 
+  // I don't know why this styling works to fill the vertical space, without letting
+  //  the TreeView force everything to overflow, but it works.  I found it in
+  //  this JSFiddle:  https://jsfiddle.net/sgxpqc6b/9/
+  //  from a comment on this post:  https://www.whitebyte.info/programming/css/how-to-make-a-div-take-the-remaining-height
+  //  Note that I had to add an extra div around the TreeView.
   return (
-    <Grid container direction='column'>
-      <Grid item>
+    <Grid container direction='column' style={{ display: 'table', height: '100%' }}>
+      <Grid item style={{ display: 'table-row' }}>
         <Toolbar id="debugger-tools" variant='dense'>
           <Tooltip title="Step in" aria-label="step-in">
             <IconButton color="secondary" aria-label="step-in" onClick={()=>doDebug(designName, vZomeJava.Step.IN)}>
@@ -200,16 +192,19 @@ const Debugger = ( { data, current, branches, designName, doDebug } )  =>
           </Tooltip>
         </Toolbar>
       </Grid>
-      <Grid item id="debugger-source" className={classes.debuggerSource}>
-        <TreeView className={classes.treeview} selected={current} expanded={expanded}
-          defaultCollapseIcon={<ExpandMoreIcon />}
-          defaultExpanded={ expanded }
-          defaultExpandIcon={<ChevronRightIcon />}
-        >
-          {renderTree( data, '' ) }
-        </TreeView>
+      <Grid item id="debugger-source" style={{ display: 'table-row', height: '100%' }}>
+        <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+          <TreeView style={{ overflow: 'auto', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}
+            selected={current} expanded={expanded}
+            defaultCollapseIcon={<ExpandMoreIcon />}
+            defaultExpanded={ expanded }
+            defaultExpandIcon={<ChevronRightIcon />}
+          >
+            {renderTree( data, '' ) }
+          </TreeView>
+        </div>
       </Grid>
-      <Grid item style={{ flex: 0, height: '100px' }}>
+      <Grid item style={{ display: 'table-row' }}>
         <TableContainer component={Paper}>
           <Table size="small" aria-label="command attributes">
             <TableHead>
