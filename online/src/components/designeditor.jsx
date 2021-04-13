@@ -12,7 +12,7 @@ const select = ( state ) =>
   const { lighting } = state
   const mesh = state.designs && designs.selectMesh( state )
   const camera = ( state.designs && designs.selectCamera( state ) ) || state.camera
-  const resolver = state.designs && designs.selectShaper( state )
+  const shapeRenderer = state.designs && designs.selectShapeRenderer( state )
   // const shown = mesh && new Map( mesh.shown )
   // if ( workingPlane && workingPlane.enabled && workingPlane.endPt ) {
   //   const { position, endPt, buildingStruts } = workingPlane
@@ -28,7 +28,7 @@ const select = ( state ) =>
   return {
     camera,
     lighting,
-    resolver,
+    shapeRenderer,
     mesh,
     clickable: !!state.designs,
   }
@@ -57,8 +57,7 @@ const isLeftMouseButton = e =>
 const DesignEditor = ( props ) =>
 {
   const { startGridHover, stopGridHover, workingPlane } = props
-  const { mesh, resolver } = props
-  const { shown, selected } = mesh
+  const { mesh, shapeRenderer } = props
   const { selectionToggler, shapeClick, bkgdClick, startBallHover, stopBallHover, clickable } = props
   const focus = workingPlane && workingPlane.enabled && workingPlane.buildingStruts && workingPlane.position
   const atFocus = id => focus && ( id === JSON.stringify(focus) )
@@ -86,10 +85,10 @@ const DesignEditor = ( props ) =>
 
   return (
     <DesignCanvas {...props} >
-      <MeshGeometry {...{ shown, selected, resolver }} />
+      { mesh && <MeshGeometry {...{ shown: mesh.shown, selected: mesh.selected, shapeRenderer }} /> }
 
-      {workingPlane && workingPlane.enabled &&
-          <BuildPlane config={workingPlane} {...{ startGridHover, stopGridHover }} />}
+      { workingPlane && workingPlane.enabled &&
+          <BuildPlane config={workingPlane} {...{ startGridHover, stopGridHover }} /> }
     </DesignCanvas>
   )
 }

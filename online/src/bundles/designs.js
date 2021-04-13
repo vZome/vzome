@@ -23,12 +23,12 @@ export const designReducer = combineReducers( {
 export const initializeDesign = ( field, name, shaperName, text ) => ({
   mesh: {
     past: [],
-    present: mesh.justOrigin( field ),
+    present: field && mesh.justOrigin( field ),
     future: [],
   },
   // TODO: initialize dbugger?
   success: true,
-  fieldName: field.name,
+  fieldName: field && field.name,
   camera: cameraDefault,
   shaperName,
   name,
@@ -71,7 +71,10 @@ export const selectText = ( state, id ) => selectDesign( state, id ).text
 
 export const selectMesh = ( state, id ) => selectDesign( state, id ).mesh.present
 
-export const selectDebugger = ( state, id ) => selectDesign( state, id ).dbugger.present
+export const selectDebugger = ( state, id ) => {
+  const design = selectDesign( state, id )
+  return design && design.dbugger && design.dbugger.present // No dbugger if the field was unknown
+}
 
 export const selectCamera = ( state, id ) => selectDesign( state, id ).camera
 
@@ -79,10 +82,10 @@ export const selectSource = ( state, id ) => selectDebugger( state, id ).source
 
 export const selectField = ( state, id ) => state.fields[ selectDesign( state, id ).fieldName ]
 
-export const selectShaper = ( state, id ) =>
+export const selectShapeRenderer = ( state, id ) =>
 {
   const shaperName = selectDesign( state, id ).shaperName || "solid connectors"
-  return state.shapers[ shaperName ]
+  return state.shapeRenderers[ shaperName ]
 }
 
 export const reducer = ( state = addNewModel( emptyState, goldenField ), action ) =>
@@ -164,19 +167,32 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
   const { parser } = await vZomeJava.coreState  // Must wait for the vZome code to initialize
   try {
     const text = await textPromise
-    const { edits, camera, field, parseAndPerformEdit, targetEdit, shaper } = parser( text ) || {}
-    if ( !edits ) {
-      throw new Error( `XML parsing failed` )
-    }
+    const { edits, camera, field, parseAndPerformEdit, targetEdit, shapeRenderer } = parser( text ) || {}
+
     const name = decodeURI( url.split( '\\' ).pop().split( '/' ).pop() )
+    const failure = message => {
+      console.log( message )
+      let design = initializeDesign( null, name, null, text )
+      dispatch( loadingDesign( name, design ) )
+      dispatch( loadedDesign( name, design ) )
+      dispatch( showAlert( message + ' Use the download button to save this file, then try opening it with desktop vZome.' ) )
+    }
+
+    if ( !edits ) {
+      failure( `Unable to parse XML from ${url}` )
+      return
+    }
+    if ( field.unknown ) {
+      failure( `Field "${field.name}" is not implemented.` )
+      return
+    }
 
     console.log( `Opening ${url}`)
-    console.log( text )
 
     // We don't want to dispatch all the edits, which can trigger tons of
     //  overhead and re-rendering.  Instead, we'll build up a design locally
     //  by calling the designReducer manually.
-    let design = initializeDesign( field, name, shaper.shapesName, text )
+    let design = initializeDesign( field, name, shapeRenderer.name, text )
     // Each call to designReducer may create an element in the history
     //  (if it has any changes to the mesh),
     //  so we want to be judicious in when we do it.
@@ -184,7 +200,7 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
     //  more careful about that.
     
     // TODO: skip this dispatch if we already have a shaper for shapesName, in getState().shapers
-    dispatch( shapers.shaperDefined( shaper.shapesName, shaper ) ) // outside the design
+    dispatch( shapers.shaperDefined( shapeRenderer.name, shapeRenderer ) ) // outside the design
 
     design = designReducer( design, cameraDefined( camera ) )
     design = designReducer( design, dbugger.sourceLoaded( edits, parseAndPerformEdit, targetEdit ) ) // recorded in history

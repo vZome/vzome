@@ -35,20 +35,28 @@ export const useVZomeUrl = ( url, defaultCamera ) =>
 {
   const [ camera, setCamera ] = useState( defaultCamera )
   const [ mesh, setMesh ] = useState( null )
-  const [ resolver, setResolver ] = useState( null )
+  const [ shapeRenderer, setShapeRenderer ] = useState( null )
   const [ xml, setXml ] = useState( null )
   useEffect( () => {
     async function parseUrl() {
       const { parser } = await vZome.coreState  // Must wait for the vZome code to initialize
       const text = await fetchModel( url )
-      if ( !text )
-        return;
+      if ( !text ) {
+        console.log( `Unable to fetch model file from ${url}`)
+        return
+      }
       setXml( text )
-      const { edits, camera, field, parseAndPerformEdit, targetEdit, shaper } = parser( text ) || {}
-      if ( !edits )
-        return;
+      const { edits, camera, field, parseAndPerformEdit, targetEdit, shapeRenderer } = parser( text ) || {}
+      if ( !edits ) {
+        console.log( `Unable to parse XML from ${url}`)
+        return
+      }
+      if ( field.unknown ) {
+        console.log( `Field ${field.name} is not implemented.`)
+        return
+      }
       setCamera( { ...camera, fov: convertFOV( 0.75 ) } )
-      setResolver( { shaper } )
+      setShapeRenderer( shapeRenderer )
       let meshAdapter = new Adapter( originShown( field ), new Map(), new Map() )
       let targetMesh = null
       const record = ( adapter, id ) => {
@@ -62,7 +70,7 @@ export const useVZomeUrl = ( url, defaultCamera ) =>
     }
     parseUrl();
   }, [url] )
-  return [ mesh, camera, resolver, xml ]
+  return [ mesh, camera, shapeRenderer, xml ]
 }
 
 export const useInstanceShaper = ( shown, selected, shaper ) =>
@@ -86,10 +94,22 @@ export const useInstanceShaper = ( shown, selected, shaper ) =>
   const shapeInstances = () =>
   {
     if ( shaper ) {
-      const instances = []
-      shown.forEach( instance => instances.push( { ...shapeInstance( instance ), selected: false } ) )
-      selected.forEach( instance => instances.push( { ...shapeInstance( instance ), selected: true } ) )
-      return { shapes, instances }
+      try {
+        const instances = []
+        const tryToShape = ( instance, selected ) => {
+          try {
+            instances.push( { ...shapeInstance( instance ), selected } )
+          } catch (error) {
+            console.log( `Failed to shape instance: ${instance.id}` );
+          }
+        }
+        shown.forEach( instance => tryToShape( instance, false ) )
+        selected.forEach( instance => tryToShape( instance, true ) )
+        return { shapes, instances }
+      } catch (error) {
+        console.log( 'Caught an odd error while shaping' )
+        return {}
+      }
     } else
       return {}
   }

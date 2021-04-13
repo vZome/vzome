@@ -14,7 +14,6 @@ import UndoRedoButtons from './undoredo.jsx'
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
     zIndex: theme.zIndex.drawer + 1,
   },
   title: {
@@ -31,7 +30,7 @@ const VZomeAppBar = ( { article=false } ) =>
   const classes = useStyles()
 
   return (
-    <div className={classes.root}>
+    <div id="appbar" className={classes.root}>
       <AppBar position="static">
         <Toolbar>
           <VZomeLogo/>

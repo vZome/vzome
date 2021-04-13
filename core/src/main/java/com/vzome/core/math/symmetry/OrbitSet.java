@@ -3,15 +3,20 @@
 
 package com.vzome.core.math.symmetry;
 
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.math.RealVector;
 
-public class OrbitSet extends TreeSet<Direction> implements Set<Direction>
-{    
+public class OrbitSet implements Iterable<Direction>
+{
+    private final Map<String, Direction> contents = new HashMap<>();
+    
     public interface Field
     {
         OrbitSet getGroup( String name );
@@ -20,6 +25,7 @@ public class OrbitSet extends TreeSet<Direction> implements Set<Direction>
     }
     
     private final Symmetry symmetry;
+    private transient Direction lastAdded = null;
     
     public OrbitSet( Symmetry symmetry )
     {
@@ -34,7 +40,7 @@ public class OrbitSet extends TreeSet<Direction> implements Set<Direction>
 
     public Axis getAxis( RealVector vector )
     {
-        return symmetry .getAxis( vector, this );
+        return symmetry .getAxis( vector, this .contents .values() );
     }
     
     public Direction getDirection( String name )
@@ -64,5 +70,71 @@ public class OrbitSet extends TreeSet<Direction> implements Set<Direction>
             }
             return i2-i1;
         }
+    }
+
+    @Override
+    public Iterator<Direction> iterator()
+    {
+        return this.contents.values().iterator();
+    }
+
+    public boolean remove( Direction orbit )
+    {
+        String key = orbit .toString();
+        boolean hadOne = this .contents .containsKey( key );
+        this .contents .remove( orbit .toString() );
+        return hadOne;
+    }
+
+    public boolean add( Direction orbit )
+    {
+        String key = orbit .toString();
+        boolean hadOne = this .contents .containsKey( key );
+        this .contents .put( orbit .toString(), orbit );
+        if ( ! hadOne )
+            this .lastAdded = orbit;
+        return ! hadOne;
+    }
+
+    public boolean contains( Direction orbit )
+    {
+        return this .contents .containsKey( orbit .toString() );
+    }
+
+    public int size()
+    {
+        return this .contents .size();
+    }
+
+    public void clear()
+    {
+        this .contents .clear();
+    }
+
+    public void addAll( OrbitSet orbits )
+    {
+        this .contents .putAll( orbits .contents );
+    }
+
+    public void retainAll( OrbitSet allOrbits )
+    {
+        List<String> badKeys = new ArrayList<String>();
+        for ( String key : this .contents .keySet() ) {
+            if ( ! allOrbits .contents .containsKey( key ) )
+                badKeys .add( key );
+        }
+        for ( String key : badKeys ) {
+            this .contents .remove( key );
+        }
+    }
+
+    public boolean isEmpty()
+    {
+        return this .contents .isEmpty();
+    }
+
+    public Direction last()
+    {
+        return this .lastAdded ;
     }
 }
