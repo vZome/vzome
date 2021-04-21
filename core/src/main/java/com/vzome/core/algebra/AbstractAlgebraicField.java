@@ -490,14 +490,25 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
             }
         }
         int rank = Fields .gaussJordanReduction( representation, reciprocal );
-        if(rank != length) {
-            // TODO: What should we do here?
-            System.err.println((new Throwable()).getStackTrace()[0].getMethodName() 
-                    + " expects matrix rank to be " + length + ", but it is " + rank + "."); 
-        }
         BigRational[] reciprocalFactors = new BigRational[ length ];
         System.arraycopy(reciprocal[ 0 ], 0, reciprocalFactors, 0, length);
-        return reciprocalFactors;
+        return (rank == length) 
+                ? reciprocalFactors 
+                : onReciprocalRankDeficient(rank, reciprocal, reciprocalFactors);
+    }
+    
+    /**
+     * Subclasses can overloading this method to handle special cases. (e.g. SqrtField of a perfect square)
+     * @param rank
+     * @param reciprocal
+     * @param reciprocalFactors
+     * @throws IllegalStateException
+     */
+    protected BigRational[] onReciprocalRankDeficient(int rank, BigRational[][] reciprocal, BigRational[] reciprocalFactors) {
+        String msg = this.getName() + " expects reciprocal matrix to be full rank (" + reciprocal.length + "), but it is " + rank + ".";
+        System.err.println(msg);
+        throw new IllegalStateException(msg);
+        // A subclass could return reciprocalFactors or perform some normalization or reduction instead of throwing an exception
     }
 
     public final static int DEFAULT_FORMAT = 0; // 4 + 3φ
