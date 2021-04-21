@@ -569,11 +569,13 @@ public class ApplicationController extends DefaultController
         return modelApp .getLights();
     }
     
+    @Override
     protected void runScript( String script, File file )
     {
         this .ui .runScript( script, file );
     }
 
+    @Override
     protected void openApplication( File file )
     {
         String script = this .getProperty( "export.script" );

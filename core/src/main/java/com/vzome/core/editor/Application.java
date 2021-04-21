@@ -191,6 +191,7 @@ public class Application implements AlgebraicField.Registry
         return result;
     }
     
+    @Override
     public AlgebraicField getField( String name )
     {
         return this .getDocumentKind( name ) .getField();
