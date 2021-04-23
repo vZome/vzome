@@ -28,6 +28,10 @@ public class AlgebraicFieldTest {
         fields.add (new RootThreeField());
         fields.add (new HeptagonField());
         fields.add (new SnubDodecField());
+        fields.add( new PlasticNumberField() );
+        fields.add( new PlasticPhiField() );
+        fields.add( new SuperGoldenField() );
+        fields.add( new EdPeggField() );
     }
     
     @Test
@@ -51,6 +55,7 @@ public class AlgebraicFieldTest {
         goldenFields.add(new PentagonField());
         goldenFields.add(new SnubDodecField());
         goldenFields.add(new SqrtPhiField());
+        goldenFields.add( new PlasticPhiField() );
         
         for(AlgebraicField field : goldenFields) {
             String fieldName = field.getName();

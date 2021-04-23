@@ -147,4 +147,14 @@ public abstract class ParameterizedField<T extends Object> extends AbstractAlgeb
     public double getCoefficient(int i) {
         return coefficients[i];
     }
+    
+    @Override
+    public void defineMultiplier(StringBuffer buf, int i) {
+        // This is used by the POVRayExporter. 
+        if(i > 0 && i < coefficients.length) {
+            buf.append( getIrrational(i, EXPRESSION_FORMAT) )
+                .append(" = ")
+                .append(coefficients[i]);
+        }
+    }
 }
