@@ -98,7 +98,7 @@ export const useInstanceShaper = ( shown, selected, shaper ) =>
         const instances = []
         const tryToShape = ( instance, selected ) => {
           try {
-            instances.push( { ...shapeInstance( instance ), selected } )
+            instance && instances.push( { ...shapeInstance( instance ), selected } )
           } catch (error) {
             console.log( `Failed to shape instance: ${instance.id}` );
           }
