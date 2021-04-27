@@ -13,7 +13,7 @@ export const MeshGeometry = ({ shown, selected, shapeRenderer, highlightBall, ha
   const { shapes, instances } = useInstanceShaper( shown, selected, shaper )
   const ref = useRef()
   useEffect( () => {
-    if ( embedding ) {
+    if ( embedding && ref.current && ref.current.matrix ) {
       const m = new Matrix4()
       m.set( ...embedding )
       m.transpose()
