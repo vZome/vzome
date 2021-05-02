@@ -272,9 +272,16 @@ public class DocumentController extends DefaultController implements Scene.Provi
         else
             this .documentModel .addPropertyChangeListener( this .articleChanges );
 
+        int maxOrientations = 0;
+        for ( SymmetryPerspective perspective : this .documentModel .getFieldApplication() .getSymmetryPerspectives() ) {
+            int order = perspective .getSymmetry() .getChiralOrder();
+            if ( order > maxOrientations )
+                maxOrientations = order;
+        }
+
         sceneLighting = this .documentModel .getSceneLighting();
 
-        cameraController = new CameraController( document .getCamera(), sceneLighting );
+        cameraController = new CameraController( document .getCamera(), sceneLighting, maxOrientations );
         this .addSubController( "camera", cameraController );
         this .articleModeZoom = this .cameraController .getZoomScroller();
 
@@ -294,7 +301,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
         mRequireShift = "true".equals( app.getProperty( "multiselect.with.shift" ) );
         showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
 
-        thumbnails = new ThumbnailRendererImpl( sceneLighting );
+        thumbnails = new ThumbnailRendererImpl( sceneLighting, maxOrientations );
         this .addSubController( "thumbnails", (Controller) thumbnails );
         thumbnails .setFactory( app .getJ3dFactory() );
 
@@ -312,13 +319,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
             this .currentSnapshot = mRenderedModel;  // Not too sure if this is necessary
         }
 
-        int max = 0;
-        for ( SymmetryPerspective perspective : this .documentModel .getFieldApplication() .getSymmetryPerspectives() ) {
-            int order = perspective .getSymmetry() .getChiralOrder();
-            if ( order > max )
-                max = order;
-        }
-        this .mainScene = new Scene( this .sceneLighting, this .drawOutlines, max );
+        this .mainScene = new Scene( this .sceneLighting, this .drawOutlines, maxOrientations );
         if ( this .mainScene instanceof PropertyChangeListener )
             this .addPropertyListener( (PropertyChangeListener) this .mainScene );
 
