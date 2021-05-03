@@ -723,18 +723,21 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
                         String actionName = key.toString();
                         String menuText = customMenuItems.getProperty(actionName).trim();
                         if(!menuText.isEmpty()) {
-                            Logger.getLogger( getClass().getName() ) .log( Level.INFO, "custom menu item: " + menuText );
-                            Logger.getLogger( getClass().getName() ) .log( Level.INFO, "          action:   " + actionName );
-                            // also note that we're swapping keys for elements
+                            // Swapping keys for elements
                             // as we move from the Properties collection to the sortedMenuCommands
                             sortedMenuCommands.put(menuText, actionName);
                         }
                     }
                     if (! sortedMenuCommands.isEmpty() ) {
                         JMenu menu = new JMenu("Custom");
+                        StringBuilder logMsg = new StringBuilder();
                         for (String label : sortedMenuCommands.keySet()) {
                             JMenuItem menuItem = null;
                             String command = sortedMenuCommands.get(label);
+                            logMsg .append("\n  ")
+                                .append(command)
+                                .append(" = ")
+                                .append(label);
                             int caretPos = label.indexOf("^");
                             if(caretPos > -1 && caretPos < label.length()-1) {
                                 int key = label.charAt(caretPos + 1);
@@ -748,6 +751,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
                             }
                             menu.add(menuItem);
                         }
+                        Logger.getLogger( getClass().getName() ) .log( Level.INFO, "custom menu items: " + logMsg.toString() );
                         return menu;
                     }
                 }
