@@ -173,6 +173,10 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             menu .add( submenu );
             submenu .setEnabled( fullPower && canSave );
         }
+        
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        menu .add( enableIf( canSave, createMenuItem( "Share as Github Gist...", "Share" ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -569,9 +573,12 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu .add( createMenuItem( "Main Website", "browse-https://vzome.com" ) );
         menu .add( createMenuItem( "Blog", "browse-https://vzome.com/blog" ) );
         menu .add( createMenuItem( "Facebook Page", "browse-https://www.facebook.com/vZome" ) );
-        menu .add( createMenuItem( "YouTube Channel", "browse-https://www.youtube.com/c/Vzome" ) );
+        menu .add( createMenuItem( "Twitter Page", "browse-https://twitter.com/vZome" ) );
+        menu .add( createMenuItem( "Discord Server", "browse-https://discord.com/invite/vhyFsNAFPS" ) );
+        menu .add( createMenuItem( "vZome Tips YouTube Channel", "browse-https://www.youtube.com/c/Vzome" ) );
         {
-            JMenu submenu3d = new JMenu( "Online Documentation..." );
+            JMenu submenu3d = new JMenu( "Misc. Online Documentation..." );
+            submenu3d .add( createMenuItem( "Sharing vZome Files Online", "browse-https://youtu.be/YrkWWQE1LvA" ) );
             submenu3d .add( createMenuItem( "The Direction (Orbit) Triangle", "browse-https://vzome.com/blog/2019/07/vzome-icosahedral-orbits/" ) );
             submenu3d .add( createMenuItem( "Capturing Vector Graphics", "browse-https://vzome.com/blog/2018/12/capturing-vector-graphics/" ) );
             submenu3d .add( createMenuItem( "Toolbars for Diehards", "browse-https://vzome.com/blog/2018/12/toolbars-for-diehards/" ) );
