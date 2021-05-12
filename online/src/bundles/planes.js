@@ -64,8 +64,8 @@ series.forEach( x => {
 const initialState = {
   position: [ goldenField.zero, goldenField.zero, goldenField.zero ],
   endPt: undefined,
-  quaternion: goldenField.quaternions[ 0 ],
-  size: goldenField.times( [5,0,1], goldenField.goldenRatio ),
+  quaternion: null, //goldenField.quaternions[ 0 ],
+  size: goldenField.times( [5n,0n,1n], goldenField.goldenRatio ),
   grid: [],
   color: "#00aacc",
   enabled: false,

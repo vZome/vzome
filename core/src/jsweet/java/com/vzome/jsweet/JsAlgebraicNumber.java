@@ -126,25 +126,13 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     @Override
     public boolean isZero()
     {
-        for ( int i = 0; i < factors.length-1; i++ ) {
-            if ( factors[ i ] != 0 )
-                return false;
-        }
-        return true;
+        return this .equals( this.field .zero() );
     }
 
     @Override
     public boolean isOne()
     {
-        if ( factors[ 0 ] != 1 )
-            return false;
-        if ( factors[ factors.length-1 ] != 1 )
-            return false;
-        for ( int i = 1; i < factors.length-1; i++ ) {
-            if ( factors[ i ] != 0 )
-                return false;
-        }
-        return true;
+        return this .equals( this.field .one() );
     }
 
     @Override

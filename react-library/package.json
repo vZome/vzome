@@ -1,6 +1,6 @@
 {
   "name": "@vzome/react-vzome",
-  "version": "0.9.17",
+  "version": "0.9.18",
   "author": "Scott Vorthmann <scott@vorthmann.org> (http://vzome.com)",
   "description": "React components for rendering interactive 3D content from vZome files",
   "homepage": "https://vzome.com/app",
