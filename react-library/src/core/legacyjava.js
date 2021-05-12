@@ -446,10 +446,10 @@ export const init = async () =>
   orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
   const shapeRenderer = createShapeRenderer( orbitSource )
 
-  const blue = [ [0,0,1], [0,0,1], [1,0,1] ]
-  const yellow = [ [0,0,1], [1,0,1], [1,1,1] ]
-  const red = [ [1,0,1], [0,0,1], [0,1,1] ]
-  const green = [ [1,0,1], [1,0,1], [0,0,1] ]
+  const blue = [ [0n,0n,1n], [0n,0n,1n], [1n,0n,1n] ]
+  const yellow = [ [0n,0n,1n], [1n,0n,1n], [1n,1n,1n] ]
+  const red = [ [1n,0n,1n], [0n,0n,1n], [0n,1n,1n] ]
+  const green = [ [1n,0n,1n], [1n,0n,1n], [0n,0n,1n] ]
   const gridPoints = vzomePkg.jsweet.JsAdapter.getZoneGrid( orbitSource, blue )
   // store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
 
