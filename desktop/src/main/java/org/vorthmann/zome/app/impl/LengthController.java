@@ -185,7 +185,7 @@ public class LengthController extends DefaultController
     {
         this .field = field;
         this .multiplier = 0;
-        this .standardUnitFactor = field .createPower( 0 );
+        this .standardUnitFactor = field .one();
         this .unitFactor = standardUnitFactor;
         this .fixedFactor = factor;
         this .currentScales = new ScaleController[ field .getNumMultipliers() ];

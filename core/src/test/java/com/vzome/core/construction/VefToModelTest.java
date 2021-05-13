@@ -57,7 +57,7 @@ public class VefToModelTest
         try {
             for(AlgebraicField field : fields ) {
                 effects.clear();
-                AlgebraicNumber scale = field.createPower(0);
+                AlgebraicNumber scale = field.one();
                 assertTrue(scale.isOne());
                 VefToModel parser = new VefToModel(projection, effects, scale, offset);
                 parser.parseVEF(vefData, field);
@@ -584,7 +584,7 @@ public class VefToModelTest
         final int[][] factors = new int[][] { {1,1, 2,1}, {3,1, 4,1}, {5,1, 6,1} };
         for(AlgebraicField field : fields ) {
             effects.clear();
-            AlgebraicNumber scale = field.createPower(0);
+            AlgebraicNumber scale = field.one();
             assertTrue(scale.isOne());
             VefToModel parser = new VefToModel(projection, effects, scale, offset);
             parser.parseVEF(vefData, field);

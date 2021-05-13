@@ -61,7 +61,7 @@ public class Polytope4d extends ChangeManifestations
         else
             for (int i = 0; i < this .edgeScales .length; i++)
             {
-                this .edgeScales[ i ] = this .field .createPower( 0 );
+                this .edgeScales[ i ] = this .field .one();
             }
     }
     
