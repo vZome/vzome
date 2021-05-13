@@ -54,7 +54,7 @@ public class PerspectiveProjection implements Projection
         }
         AlgebraicNumber numerator = denom .reciprocal(); // do the matrix inversion once
         
-        result .setComponent( 0, field .createPower( 0 ) );
+        result .setComponent( 0, field .one());
         result .setComponent( 1, source .getComponent( 1 ) .times( numerator ) );
         result .setComponent( 2, source .getComponent( 2 ) .times( numerator ) );
         result .setComponent( 3, source .getComponent( 3 ) .times( numerator ) );

@@ -470,7 +470,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     public AlgebraicNumber getUnitLength()
     {
         if ( unitLength == null)
-            return mSymmetryGroup .getField() .createPower( 0 );
+            return mSymmetryGroup .getField() .one();
         else
             return unitLength;
     }
