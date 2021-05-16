@@ -307,17 +307,25 @@ public class ApplicationController extends DefaultController
             Path filePath = file .toPath();
             String path = filePath .toAbsolutePath() .toString();
 
-            int pos = path .toLowerCase() .lastIndexOf( ".vzome." );
-            if( pos > 0 ) {
+            String lowerPath = path .toLowerCase();
+            int pos = lowerPath .lastIndexOf( ".vzome." );
+            if( pos > 0 && ! lowerPath .endsWith( ".vzome" ) ) {
                 /*
                  * This allows the user to select a file named "foo.vzome.png" that they can preview,
                  * as a "proxy" that will actually attempt to open the corresponding vzome file.
                  * 
                  * Note that such a "proxy" image file with a ".vome.png" extension is generated automatically 
                  * upon saving a vZome file by adding "save.exports=capture.png" to .vZome.prefs.
+                 *
+                 * On Windows, there is a pattern for saving a copy of an existing file that triggers a
+                 * duplicate extension, like "whatever.vzome.vZome", so we want to exclude that case.
                  */
                 path = path.substring( 0, pos += 6 );
                 file = Paths .get( path ) .toFile();
+                if ( ! file.exists() ) {
+                    this .mErrors .reportError( "File does not exist: " + path, new Object[]{} );
+                    return;
+                }
             }
 
             docProps .setProperty( "window.title", path );
