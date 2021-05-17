@@ -3,16 +3,13 @@
  */
 package com.vzome.core.viewing;
 
-import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Set;
@@ -41,20 +38,17 @@ public class ExportedVEFShapes extends AbstractShapes
 
     private static final String NODE_MODEL = "connector";
 
-    private final File prefsFolder;
-
     private final AbstractShapes fallback;
 
     private final Properties colors = new Properties();
     
-    private static final Map<String, String> INJECTED = new HashMap<String, String>();
-
     private static final Logger logger = Logger.getLogger( "com.vzome.core.viewing.shapes" );
 
     public static void injectShapeVEF( String key, String vef )
     {
-        key = key .replace( "--", "/" );
-        INJECTED .put( key, vef );
+        // TODO replace this mechanism in Unity with a custom ResourceLoader
+//        key = key .replace( "--", "/" );
+//        ResourceLoader.injectResource( key, vef );
     }
 
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm )
@@ -80,19 +74,18 @@ public class ExportedVEFShapes extends AbstractShapes
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm, AbstractShapes fallback )
     {
         super( pkgName, name, alias, symm );
-        this .prefsFolder = prefsFolder;
         this .fallback = fallback;
 
         String colorProps = MODEL_PREFIX + pkgName + "/colors.properties";
-        try {
-            ClassLoader cl = this .getClass() .getClassLoader(); // NOTE: this may break Oculus
-            InputStream inputStream = cl .getResourceAsStream( colorProps );
-            if ( inputStream != null )
+        String resource = ResourceLoader.loadStringResource( colorProps );
+        if ( resource != null )
+            try {
+                InputStream inputStream = new ByteArrayInputStream( resource .getBytes() );
                 this .colors .load( inputStream );
-        } catch ( IOException ioe ) {
-            if ( logger .isLoggable( Level.FINE ) )
-                logger .fine( "problem with shape color properties: " + colorProps );
-        }
+            } catch ( IOException ioe ) {
+                if ( logger .isLoggable( Level.FINE ) )
+                    logger .fine( "problem with shape color properties: " + colorProps );
+            }
     }
 
     @Override
@@ -127,44 +120,12 @@ public class ExportedVEFShapes extends AbstractShapes
 
     protected String loadVefData( String name )
     {
-        if ( INJECTED .containsKey( mPkgName + "-" + name ) )
-            return INJECTED .get( mPkgName + "-" + name );
+        // TODO get Unity to work again, with the new ResourceLoader
+//        if ( INJECTED .containsKey( mPkgName + "-" + name ) )
+//            return INJECTED .get( mPkgName + "-" + name );
         
         String script = mPkgName + "/" + name + ".vef";
-        
-        if ( ResourceLoader.hasInjectedResource( MODEL_PREFIX + script ) )
-            return ResourceLoader.getInjectedResource( MODEL_PREFIX + script );
-
-        File shapeFile = new File( this .prefsFolder, "Shapes/" + script );
-        InputStream stream = null;
-        try {
-            if ( shapeFile .exists() )
-                stream = new FileInputStream( shapeFile );
-            else {
-                script = MODEL_PREFIX + script;
-                stream = this .getClass() .getClassLoader() .getResourceAsStream( script );
-                if ( stream == null )
-                    return null; // avoid the NPE!
-            }
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] buf = new byte[1024];
-            int num;
-            while ( ( num = stream .read( buf, 0, 1024 )) > 0 )
-                out .write( buf, 0, num );
-            return new String( out .toByteArray() );
-
-        } catch (Exception e) {
-            logger .fine( "Failure loading VEF data from " + shapeFile );
-        } finally {
-            if ( stream != null )
-                try {
-                    stream .close();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-        }
-        return null;
+        return ResourceLoader.loadStringResource( MODEL_PREFIX + script );
     }
 
     @Override
