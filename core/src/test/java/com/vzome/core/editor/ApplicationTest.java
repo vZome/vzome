@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
+import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.math.Projection;
 import com.vzome.core.model.ColoredMeshJson;
 
@@ -77,13 +78,13 @@ public class ApplicationTest {
                 "  } ]\n" + 
                 "}";
         Application application = new Application( false, null, new Properties() );
-        ColoredMeshJson.Events events = new ColoredMeshJson.Events()
+        ConstructionChanges events = new ConstructionChanges()
         {    
             @Override
-            public void constructionAdded( Construction c, Color color )
-            {
-                // TODO Auto-generated method stub
-            }
+            public void constructionAdded( Construction c, Color color ) {}
+
+            @Override
+            public void constructionAdded(Construction c) {}
         };
         try {
             AlgebraicField field = application .getField( "golden" );
