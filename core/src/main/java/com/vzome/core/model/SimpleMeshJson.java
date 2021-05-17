@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.construction.Construction;
+import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
@@ -116,12 +116,7 @@ public class SimpleMeshJson
         generator.close();
     }
     
-    public interface Events
-    {
-        void constructionAdded( Construction c );
-    }
-
-    public static void parse( String json, AlgebraicVector offset, Projection projection, Events events, AlgebraicField.Registry registry ) throws IOException
+    public static void parse( String json, AlgebraicVector offset, Projection projection, ConstructionChanges events, AlgebraicField.Registry registry ) throws IOException
     {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper .readTree( json );

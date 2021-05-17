@@ -608,5 +608,11 @@ public class VefToModelTest
         {
             add( c );
         }
+
+        @Override
+        public void constructionAdded( Construction c, Color color )
+        {
+            add( c );
+        }
     }
 }

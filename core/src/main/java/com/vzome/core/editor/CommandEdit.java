@@ -21,6 +21,7 @@ import com.vzome.core.commands.CommandHide;
 import com.vzome.core.commands.CommandObliquePentagon;
 import com.vzome.core.commands.CommandTransform;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
@@ -360,6 +361,12 @@ public class CommandEdit extends ChangeManifestations
     {
         @Override
         public void constructionAdded( Construction c )
+        {
+            add( c );
+        }
+
+        @Override
+        public void constructionAdded( Construction c, Color color )
         {
             add( c );
         }
