@@ -57,7 +57,7 @@ public class ChangeOfBasis extends Transformation
         if ( mOld != null ) // new, six-segment form
         {
             // first, find the common vertex of each basis
-            AlgebraicVector oldCommon = findCommonVertex( mOld );
+            AlgebraicVector oldCommon = findCommonVertex( mOld[ 0 ], mOld[ 1 ] );
             // now, orient each offset
             AlgebraicVector[] offsets = new AlgebraicVector[3];
             for ( int i = 0; i < offsets.length; i++ ) {
@@ -67,7 +67,7 @@ public class ChangeOfBasis extends Transformation
             }
             AlgebraicMatrix oldMatrix = new AlgebraicMatrix( offsets );
 
-            AlgebraicVector newCommon = findCommonVertex( mNew );
+            AlgebraicVector newCommon = findCommonVertex( mNew[ 0 ], mNew[ 1 ] );
             for ( int i = 0; i < offsets.length; i++ ) {
                 offsets[ i ] = mNew[ i ] .getOffset() .scale( scale );
                 if ( newCommon .equals( mNew[ i ] .getEnd() ) )
@@ -96,18 +96,18 @@ public class ChangeOfBasis extends Transformation
             return setStateVariables( transform, loc, false );
         }
     }
-    
-    private static AlgebraicVector findCommonVertex( Segment[] basis )
+        
+    public static AlgebraicVector findCommonVertex( Segment s1, Segment s2 )
     {
-        AlgebraicVector common = basis[0] .getStart();
-        if ( common .equals( basis[1] .getStart() )
-        ||   common .equals( basis[1] .getEnd() ) )
+        AlgebraicVector common = s1 .getStart();
+        if ( common .equals( s2 .getStart() )
+        ||   common .equals( s2 .getEnd() ) )
             return common;
         else
         {
-            common = basis[0] .getEnd();
-            if ( common .equals( basis[1] .getStart() )
-            ||   common .equals( basis[1] .getEnd() ) )
+            common = s1 .getEnd();
+            if ( common .equals( s2 .getStart() )
+            ||   common .equals( s2 .getEnd() ) )
                 return common;
             else
                 return null;
