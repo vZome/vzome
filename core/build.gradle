@@ -486,8 +486,7 @@ jsweet {
         'com/vzome/core/model/Strut.java',
         'com/vzome/core/model/Panel.java',
         'com/vzome/core/model/RealizedModel.java',
-        'com/vzome/core/model/SimpleMeshJson.java',
-        'com/vzome/core/model/ColoredMeshJson.java',
+        'com/vzome/core/model/JsonImportEvents.java',
 
         'com/vzome/core/editor/api/*.java',
 
@@ -550,6 +549,8 @@ jsweet {
 
     //     'com/vzome/core/model/*Impl.java',
 
+        'com/vzome/core/edits/ImportSimpleMeshJson.java',
+        'com/vzome/core/edits/ImportColoredMeshJson.java',
         'com/vzome/core/edits/DodecagonSymmetry.java',
         'com/vzome/core/edits/GhostSymmetry24Cell.java',
         'com/vzome/core/edits/Symmetry4d.java',

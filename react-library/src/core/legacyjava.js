@@ -224,7 +224,9 @@ export const init = async () =>
       return new vzomePkg.core.editor.CommandEdit( null, editor )
   }
 
-  const injectResource = async ( path, url ) =>
+  const resources = {}
+
+  const loadAndInjectResource = async ( path, url ) =>
   {
     const response = await fetch( url )
     if ( ! response.ok ) {
@@ -237,12 +239,18 @@ export const init = async () =>
       // HTML from a 404, just skip it
       return
     }
-    vzomePkg.xml.ResourceLoader.injectResource( path, text )
+    resources[ path ] = text
     console.log( `injected resource ${path}` )
   }
 
+  // Now we can setup the ResourceLoader; we must do this before initializing the fieldApps,
+  //  since they need the colors.properties to create the ExportedVEFShapes.
+  vzomePkg.xml.ResourceLoader.setResourceLoader( {
+    loadTextResource: path => resources[ path ]
+  } )
+
   // Initialize the field application
-  await Promise.all( Object.entries( groupResources ).map( ([ key, value ]) => injectResource( `com/vzome/core/math/symmetry/${key}.vef`, value ) ) )
+  await Promise.all( Object.entries( groupResources ).map( ([ key, value ]) => loadAndInjectResource( `com/vzome/core/math/symmetry/${key}.vef`, value ) ) )
   const properties = new JsProperties( defaults )
   const colors = new vzomePkg.core.render.Colors( properties )
   const gfield = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
@@ -456,8 +464,9 @@ export const init = async () =>
   const parser = createParser( documentFactory )
 
   await Promise.all( Object.entries( allShapes ).map(
-    async ([ family, shapes ]) =>
-      await Promise.all( Object.entries( shapes ).map( ([ key, value ]) => injectResource( `com/vzome/core/parts/${family}/${key}.vef`, value ) ) )
+    async ([ family, shapes ]) => {
+      await Promise.all( Object.entries( shapes ).map( ([ key, value ]) => loadAndInjectResource( `com/vzome/core/parts/${family}/${key}.vef`, value ) ) )
+    }
   ) )
 
   return { parser, shapeRenderer, commands, gridPoints }
