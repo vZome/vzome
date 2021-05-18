@@ -48,6 +48,7 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.Snapshot.SnapshotAction;
+import com.vzome.core.editor.api.Context;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.UndoableEdit;
@@ -79,7 +80,7 @@ import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 import com.vzome.xml.DomSerializer;
 
-public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
+public class DocumentModel implements Snapshot .Recorder, Context
 {
     private final RealizedModelImpl mRealizedModel;
 
@@ -185,7 +186,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             else
                 xml = null;
         }
-        FieldApplication.SymmetryPerspective symmPerspective = kind .getDefaultSymmetryPerspective();
+        SymmetryPerspective symmPerspective = kind .getDefaultSymmetryPerspective();
         if ( xml != null ) {
             String symmName = xml .getAttribute( "name" );	
             symmPerspective = kind .getSymmetryPerspective( symmName );
@@ -194,8 +195,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         this .tools = new ToolsModel( this, this .originPoint );
 
         // Initialize the default SymmetrySystems from the FieldApplication
-        Collection<FieldApplication.SymmetryPerspective> symms = kind .getSymmetryPerspectives();
-        for ( FieldApplication.SymmetryPerspective symmPerspective1 : symms )
+        Collection<SymmetryPerspective> symms = kind .getSymmetryPerspectives();
+        for ( SymmetryPerspective symmPerspective1 : symms )
         {
             SymmetrySystem osm = new SymmetrySystem( null, symmPerspective1, this, app .getColors(), true );
             this .symmetrySystems .put( osm .getName(), osm );

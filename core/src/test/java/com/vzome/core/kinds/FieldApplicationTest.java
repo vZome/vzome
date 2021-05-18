@@ -35,7 +35,7 @@ import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.commands.CommandSymmetry;
 import com.vzome.core.commands.CommandTauDivision;
 import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
+import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.generic.Utilities;

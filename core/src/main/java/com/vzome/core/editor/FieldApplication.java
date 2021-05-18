@@ -1,51 +1,15 @@
 package com.vzome.core.editor;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import com.vzome.api.Tool;
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.commands.Command;
-import com.vzome.core.editor.api.Shapes;
-import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetries4D;
-import com.vzome.core.math.symmetry.Symmetry;
 
 public interface FieldApplication extends Symmetries4D
 {
-	public interface SymmetryPerspective
-	{
-		List<Shapes> getGeometries();
-		
-		Shapes getDefaultGeometry();
-		
-		String getName();
-		
-		Symmetry getSymmetry();
-
-		List<Tool.Factory> createToolFactories( Tool.Kind kind, ToolsModel model );
-		
-		List<Tool> predefineTools( Tool.Kind kind, ToolsModel model );
-
-		/**
-		 * These commands should all be symmetry-DEPENDANT. 
-		 * Contrast with {@code FieldApplication.getLegacyCommand(action) }.
-		 * @param action
-		 * @return
-		 */
-		Command getLegacyCommand( String action );
-
-		String getModelResourcePath();
-
-        boolean orbitIsStandard( Direction orbit );
-
-        boolean orbitIsBuildDefault( Direction orbit );
-
-        AlgebraicNumber getOrbitUnitLength( Direction orbit );
-	}
-	
 	AlgebraicField getField();
 	
 	Collection<SymmetryPerspective> getSymmetryPerspectives();

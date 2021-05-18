@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.editor.Application;
 import com.vzome.core.editor.FieldApplication;
+import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
-import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.render.Colors;
 

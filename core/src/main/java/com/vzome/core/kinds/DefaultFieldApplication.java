@@ -17,6 +17,7 @@ import com.vzome.core.commands.CommandMirrorSymmetry;
 import com.vzome.core.commands.CommandPolygon;
 import com.vzome.core.commands.CommandTranslate;
 import com.vzome.core.editor.FieldApplication;
+import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.math.symmetry.A4Group;
 import com.vzome.core.math.symmetry.B4Group;

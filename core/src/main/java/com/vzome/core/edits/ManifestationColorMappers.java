@@ -20,7 +20,7 @@ import com.vzome.core.editor.api.Manifestations.ManifestationIterator;
 import com.vzome.core.edits.ColorMappers.ColorMapper;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.math.symmetry.SpecialOrbit;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -774,9 +774,9 @@ public class ManifestationColorMappers {
 
         protected NearestSpecialOrbitColorMap(OrbitSource symm) {
             super(symm);
-            specialOrbits.add( symm.getSymmetry().getSpecialOrbit( Symmetry.SpecialOrbit.BLUE ) );
-            specialOrbits.add( symm.getSymmetry().getSpecialOrbit( Symmetry.SpecialOrbit.YELLOW ) );
-            specialOrbits.add( symm.getSymmetry().getSpecialOrbit( Symmetry.SpecialOrbit.RED ) );
+            specialOrbits.add( symm.getSymmetry().getSpecialOrbit( SpecialOrbit.BLUE ) );
+            specialOrbits.add( symm.getSymmetry().getSpecialOrbit( SpecialOrbit.YELLOW ) );
+            specialOrbits.add( symm.getSymmetry().getSpecialOrbit( SpecialOrbit.RED ) );
         }
 
         @Override

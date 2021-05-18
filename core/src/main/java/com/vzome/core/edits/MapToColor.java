@@ -14,6 +14,7 @@ import com.vzome.core.construction.Color;
 import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.SideEffect;
 import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.edits.ManifestationColorMappers.ManifestationColorMapper;
 import com.vzome.core.model.Manifestation;

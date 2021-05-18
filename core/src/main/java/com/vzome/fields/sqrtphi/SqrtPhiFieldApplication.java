@@ -12,6 +12,7 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.commands.CommandUniformH4Polytope;
+import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.kinds.AbstractSymmetryPerspective;
 import com.vzome.core.kinds.DefaultFieldApplication;

@@ -14,6 +14,7 @@ import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
+import com.vzome.core.editor.api.Context;
 import com.vzome.core.editor.api.ImplicitSymmetryParameters;
 import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.model.Manifestation;
