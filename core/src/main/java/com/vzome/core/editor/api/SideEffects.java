@@ -67,15 +67,6 @@ public abstract class SideEffects extends UndoableEdit
             BUG_ACCOMMODATION_LOGGER .warning( "ACCOMMODATION: " + accommodation );
     }
     
-    public interface SideEffect
-    {
-        public void undo();
-        
-        public Element getXml( Document doc );
-
-        public void redo();
-    }
-    
     @Override
     public boolean isVisible()
     {

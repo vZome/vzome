@@ -9,6 +9,7 @@ import com.vzome.core.math.symmetry.AbstractSymmetry;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Permutation;
+import com.vzome.core.math.symmetry.SpecialOrbit;
 import com.vzome.core.math.symmetry.Symmetry;
 
 public class HeptagonalAntiprismSymmetry extends AbstractSymmetry

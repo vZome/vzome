@@ -22,12 +22,10 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.AbstractCommand;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Color;
-import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
+import com.vzome.core.editor.api.Context;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Shapes;
-import com.vzome.core.editor.api.UndoableEdit;
-import com.vzome.core.editor.api.UndoableEdit.Context;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
@@ -55,8 +53,8 @@ public class SymmetrySystem implements OrbitSource
     private final Context context;
     private EditorModel editor;
 
-    public SymmetrySystem( Element symmXml, FieldApplication.SymmetryPerspective symmetryPerspective,
-            UndoableEdit.Context context, Colors colors, boolean allowNonstandard )
+    public SymmetrySystem( Element symmXml, SymmetryPerspective symmetryPerspective,
+            Context context, Colors colors, boolean allowNonstandard )
     {
         this .symmetryPerspective = symmetryPerspective;
         this .context = context;

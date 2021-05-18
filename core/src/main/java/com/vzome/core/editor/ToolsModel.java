@@ -14,6 +14,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.vzome.core.construction.Point;
+import com.vzome.core.editor.api.Context;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.xml.DomUtils;
@@ -24,7 +25,7 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 	private EditorModel editor;
 	private int lastId = 0;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
-	private final UndoableEdit.Context context;
+	private final Context context;
 	private final Point originPoint;
 	
 	// These are used only during deserialization
@@ -33,7 +34,7 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
     private final Map<String, Boolean> toolSelectInputs = new HashMap<>();
     private final Set<String> hiddenTools = new HashSet<>();
     
-	public ToolsModel( UndoableEdit.Context context, Point originPoint )
+	public ToolsModel( Context context, Point originPoint )
 	{
 		super();
 		this .context = context;
@@ -118,7 +119,7 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 		return this .get( id );
 	}
 
-	public UndoableEdit.Context getContext()
+	public Context getContext()
 	{
 		return this .context;
 	}

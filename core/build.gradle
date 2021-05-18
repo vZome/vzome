@@ -514,6 +514,7 @@ jsweet {
         'com/vzome/core/editor/SelectToolParameters.java',
         'com/vzome/core/editor/FieldApplication.java',
         'com/vzome/core/editor/SymmetrySystem.java',
+        'com/vzome/core/editor/SymmetryPerspective.java',
         'com/vzome/core/editor/SelectionSummary.java',
         'com/vzome/core/kinds/AbstractSymmetryPerspective.java',
         'com/vzome/core/kinds/OctahedralSymmetryPerspective.java',
