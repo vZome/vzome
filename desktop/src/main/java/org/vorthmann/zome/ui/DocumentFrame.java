@@ -41,7 +41,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.ToolTipManager;
 
-import org.apache.commons.lang3.ObjectUtils.Null;
 import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.Platform;
 import org.vorthmann.ui.Controller;
