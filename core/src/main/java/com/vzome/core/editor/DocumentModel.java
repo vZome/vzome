@@ -862,12 +862,13 @@ public class DocumentModel implements Snapshot .Recorder, Context
 
     // TODO move all the parameters inside this object!
 
-    public Exporter3d getStructuredExporter( String format, Camera camera, Colors colors, Lights lights, RenderedModel mRenderedModel )
+    public Exporter3d getStructuredExporter( String format, Camera camera, Colors colors, Lights lights )
     {
         if ( format.equals( "partgeom" ) )
-            return new PartGeometryExporter( camera, colors, lights, mRenderedModel, editorModel .getSelection() );
+            // the rendered model must be set before export
+            return new PartGeometryExporter( camera, colors, lights, this .renderedModel, this .editorModel .getSelection() );
         else
-            return null;
+            return this .app .getExporter( format );
     }
 
     public LessonModel getLesson()

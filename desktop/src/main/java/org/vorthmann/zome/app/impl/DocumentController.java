@@ -33,7 +33,6 @@ import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 import javax.vecmath.Point3f;
 
-import org.apache.commons.lang3.ObjectUtils.Null;
 import org.vorthmann.j3d.MouseTool;
 import org.vorthmann.j3d.MouseToolDefault;
 import org.vorthmann.j3d.MouseToolFilter;
@@ -876,11 +875,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
                         exporter.doExport( file, file.getParentFile(), out, size.height, size.width );
                     }
                     else {
-                        exporter = this .mApp .getExporter( format );
-                        if ( exporter == null ) {
-                            // currently just "partgeom"
-                            exporter = documentModel .getStructuredExporter( format, cameraController .getView(), colors, sceneLighting, mRenderedModel );
-                        }
+                        exporter = documentModel .getStructuredExporter( format, cameraController .getView(), colors, sceneLighting );
                         if ( exporter != null )
                             exporter .doExport( documentModel, file, file.getParentFile(), out, size.height, size.width );
                     }
