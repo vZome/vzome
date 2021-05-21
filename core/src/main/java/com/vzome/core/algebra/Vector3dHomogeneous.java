@@ -1,6 +1,4 @@
 
-//(c) Copyright 2013, Scott Vorthmann.
-
 package com.vzome.core.algebra;
 
 public class Vector3dHomogeneous

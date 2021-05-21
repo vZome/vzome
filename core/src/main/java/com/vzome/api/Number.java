@@ -1,6 +1,4 @@
 
-//(c) Copyright 2011, Scott Vorthmann.
-
 package com.vzome.api;
 
 import com.vzome.core.algebra.AlgebraicField;

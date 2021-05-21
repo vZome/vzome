@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.commands;
 
 import com.vzome.core.algebra.AlgebraicNumber;

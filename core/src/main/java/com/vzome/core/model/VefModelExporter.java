@@ -1,6 +1,4 @@
 
-//(c) Copyright 2010, Scott Vorthmann.
-
 package com.vzome.core.model;
 
 import java.io.Writer;

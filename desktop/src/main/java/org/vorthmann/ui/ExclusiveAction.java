@@ -1,7 +1,4 @@
 
-
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package org.vorthmann.ui;
 
 import java.awt.Component;

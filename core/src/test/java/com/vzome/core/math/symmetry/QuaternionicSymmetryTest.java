@@ -1,6 +1,4 @@
 
-//(c) Copyright 2015, Scott Vorthmann.
-
 package com.vzome.core.math.symmetry;
 
 import static org.junit.Assert.assertEquals;

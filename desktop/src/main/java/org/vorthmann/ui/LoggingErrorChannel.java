@@ -1,6 +1,4 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package org.vorthmann.ui;
 
 import java.util.logging.Level;

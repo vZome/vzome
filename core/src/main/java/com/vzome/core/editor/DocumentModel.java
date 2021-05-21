@@ -1,6 +1,4 @@
 
-//(c) Copyright 2011, Scott Vorthmann.
-
 package com.vzome.core.editor;
 
 import java.beans.PropertyChangeEvent;
@@ -394,7 +392,7 @@ public class DocumentModel implements Snapshot .Recorder, Context
         case "shapes":
             ShapesJsonExporter ojex = new ShapesJsonExporter();
             try {
-                ojex .doExport( this, null, null, out, 0, 0 );
+                ojex .exportDocument( this, null, out, 0, 0 );
             } catch (Exception e) {
                 // TODO fail better here
                 e.printStackTrace();
@@ -849,7 +847,6 @@ public class DocumentModel implements Snapshot .Recorder, Context
      * 
      * POV-Ray is a bit of a special case, but only because the .pov language supports coordinate values as expressions,
      * and supports enough modeling that the different strut shapes can be defined, and so on.
-     * OpenGL and WebGL (Web3d/json) could as well, since I can control how the data is stored and rendered.
      * 
      * The POV-Ray export reuses shapes, etc. just as vZome does, so really works just with the RenderedManifestations
      * (except when the Manifestation is available for structured coordinate expressions).  Again, any rendering exporter
