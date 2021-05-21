@@ -5,7 +5,7 @@
     {
       "name":             "online",
 
-      "type": "chrome",
+      "type": "pwa-chrome",
       "request": "launch",
       "url": "http://localhost:8080/app/?debug=true",
       "pathMapping": {
@@ -16,7 +16,7 @@
     {
       "name":             "react-vzome",
 
-      "type": "chrome",
+      "type": "pwa-chrome",
       "request": "launch",
       "url": "http://localhost:8080/",
       "pathMapping": {
