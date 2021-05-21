@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+
+    {
+      "name":             "online",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8080/app/?debug=true",
+      "pathMapping": {
+        "/app": "${workspaceFolder}/online/src",
+        "/@vzome/react-vzome": "${workspaceFolder}/react-library/src",
+      }
+    },
+    {
+      "name":             "react-vzome",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8080/",
+      "pathMapping": {
+        "/": "${workspaceFolder}/react-library/src",
+      }
+    }
+  ]
+}
