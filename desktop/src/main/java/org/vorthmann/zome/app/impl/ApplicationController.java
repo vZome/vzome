@@ -175,8 +175,6 @@ public class ApplicationController extends DefaultController
 
         try {
             DocumentModel document = this .modelApp .loadDocument( bytes );
-            // a RenderedModel that only creates panels
-            document .setRenderedModel( new RenderedModel( symmetry ) .withColorPanels( false ) ); 
             document .finishLoading( false, false );
             result = document .getRenderedModel();
             this .symmetryModels .put( path, result );
