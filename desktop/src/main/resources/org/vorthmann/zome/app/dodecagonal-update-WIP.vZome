@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" coreVersion="7.0" field="rootThree">
+  <EditHistory editNumber="236" lastStickyEdit="79">
+    <StrutCreation anchor="0 0 0 0 0 0" index="0" len="0 6" symm="octahedral"/>
+    <StrutCreation anchor="0 0 0 0 0 0" index="0" len="0 18" symm="octahedral"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 18 0 0 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation point="0 18 0 0 0 0"/>
+    <EndBlock/>
+    <DodecagonSymmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="11" len="0 6" symm="dodecagonal"/>
+    <StrutCreation anchor="9 6 0 -3 0 0" dir="green" index="11" len="6 0" symm="dodecagonal"/>
+    <SelectManifestation point="15 9 -3 -3 0 0"/>
+    <DodecagonSymmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 0" index="7" len="18 0" symm="octahedral"/>
+    <SelectManifestation point="0 0 -18 0 0 0"/>
+    <DodecagonSymmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="7" len="3 0" symm="octahedral"/>
+    <StrutCreation anchor="3/2 0 -3 -3/2 0 0" dir="red" index="7" len="3 0" symm="octahedral"/>
+    <StrutCreation anchor="3 0 -6 -3 0 0" dir="red" index="7" len="1 0" symm="octahedral"/>
+    <StrutCreation anchor="7/2 0 -7 -7/2 0 0" dir="red" index="7" len="1 0" symm="octahedral"/>
+    <StrutCreation anchor="4 0 -8 -4 0 0" dir="red" index="7" len="1 0" symm="octahedral"/>
+    <StrutCreation anchor="9/2 0 -9 -9/2 0 0" dir="red" index="7" len="1/3 0" symm="octahedral"/>
+    <SelectManifestation point="14/3 0 -28/3 -14/3 0 0"/>
+    <DodecagonSymmetry/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 0" index="4" len="0 6" symm="octahedral"/>
+    <SelectManifestation point="0 0 0 0 0 6"/>
+    <CentralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      <Symmetry attrName="symmetry.group" name="octahedral"/>
+    </CentralSymmetry>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 -18 0 0 0"/>
+    <SelectManifestation point="-14/3 0 -28/3 -14/3 0 0"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      <Symmetry attrName="symmetry.group" name="octahedral"/>
+    </Polygon>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 -6"/>
+    <SelectManifestation point="-14/3 0 -28/3 -14/3 0 0"/>
+    <SelectManifestation point="-9 0 0 -9 0 0"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      <Symmetry attrName="symmetry.group" name="octahedral"/>
+    </Polygon>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-9 0 0 -9 0 0"/>
+    <SelectManifestation point="-14/3 0 -28/3 -14/3 0 0"/>
+    <SelectManifestation point="0 0 0 0 0 6"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      <Symmetry attrName="symmetry.group" name="octahedral"/>
+    </Polygon>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-14/3 0 -28/3 -14/3 0 0"/>
+    <SelectManifestation point="0 0 -18 0 0 0"/>
+    <SelectManifestation point="0 0 0 0 0 6"/>
+    <EndBlock/>
+    <Polygon>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      <Symmetry attrName="symmetry.group" name="octahedral"/>
+    </Polygon>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="-9 0 0 -9 0 0"/>
+      <polygonVertex at="-14/3 0 -28/3 -14/3 0 0"/>
+      <polygonVertex at="0 0 0 0 0 6"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-14/3 0 -28/3 -14/3 0 0"/>
+      <polygonVertex at="0 0 -18 0 0 0"/>
+      <polygonVertex at="0 0 0 0 0 6"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 0 0 -6"/>
+      <polygonVertex at="-14/3 0 -28/3 -14/3 0 0"/>
+      <polygonVertex at="-9 0 0 -9 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-14/3 0 -28/3 -14/3 0 0"/>
+      <polygonVertex at="0 0 -18 0 0 0"/>
+      <polygonVertex at="0 0 0 0 0 6"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="-9 0 0 -9 0 0"/>
+    <SelectManifestation point="0 0 -18 0 0 0"/>
+    <EndBlock/>
+    <NewCentroid/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 0 0 -6"/>
+      <polygonVertex at="0 0 -18 0 0 0"/>
+      <polygonVertex at="-14/3 0 -28/3 -14/3 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation point="0 0 -18 0 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 0 0 -6"/>
+      <polygonVertex at="0 0 -18 0 0 0"/>
+      <polygonVertex at="-14/3 0 -28/3 -14/3 0 0"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Delete/>
+    <Branch>
+      <BeginBlock/>
+      <SelectManifestation point="0 0 -18 0 0 0"/>
+      <SelectManifestation point="-9/2 0 -9 -9/2 0 0"/>
+      <SelectManifestation point="0 0 0 0 0 -6"/>
+      <EndBlock/>
+      <Polygon/>
+      <ApplyTool name="symmetry.builtin/dodecagonal antiprism around origin" selectInputs="true"/>
+      <StrutCreation anchor="12 6 12 6 0 0" index="7" len="0 9" symm="dodecagonal"/>
+      <BookmarkTool name="tool-0"/>
+    </Branch>
+    <BeginBlock/>
+    <SelectManifestation point="-14/3 0 -28/3 -14/3 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation point="-9/2 0 -9 -9/2 0 0"/>
+    <SelectManifestation point="-9 0 0 -9 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation point="-9 0 0 -9 0 0"/>
+    <EndBlock/>
+    <ApplyTool name="symmetry.builtin/dodecagonal antiprism around origin" selectInputs="true"/>
+    <Delete/>
+    <SelectManifestation point="-9/2 0 -9 -9/2 0 0"/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="28/3 14/3 14/3 0 0 0"/>
+    <SelectManifestation point="28/3 14/3 -14/3 0 0 0"/>
+    <EndBlock/>
+    <NewCentroid/>
+    <SelectManifestation point="28/3 14/3 0 0 0 0"/>
+    <ApplyTool name="symmetry.builtin/dodecagonal antiprism around origin" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-28/3 -14/3 14/3 0 0 0"/>
+    <SelectManifestation point="-28/3 -14/3 0 0 0 0"/>
+    <SelectManifestation point="0 0 0 0 0 6"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 6"/>
+    <SelectManifestation point="-28/3 -14/3 14/3 0 0 0"/>
+    <EndBlock/>
+    <JoinPoints closedLoop="false" joinMode="ALL_TO_LAST"/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 6" dir="122" index="0" len="0 1" symm="dodecagonal"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 0 0 6"/>
+    <SelectManifestation point="-28/3 -14/3 0 0 0 0"/>
+    <EndBlock/>
+    <JoinPoints closedLoop="false"/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 6" dir="123" index="0" len="0 1" symm="dodecagonal"/>
+    <StrutCreation anchor="-28/3 -14/3 0 0 0 0" dir="123" index="0" len="1 0" sense="minus" symm="dodecagonal"/>
+    <StrutCreation anchor="-28/3 -14/3 14/3 0 0 0" dir="122" index="0" len="1 0" sense="minus" symm="dodecagonal"/>
+    <StrutCreation anchor="0 0 0 0 0 6" dir="122" index="0" len="1 0" symm="dodecagonal"/>
+    <StrutCreation anchor="0 0 0 0 0 6" dir="123" index="0" len="1 0" symm="dodecagonal"/>
+    <BeginBlock/>
+    <SelectManifestation point="-28/27 -14/27 14/27 0 0 16/3"/>
+    <SelectManifestation point="-28/27 -14/27 0 0 0 16/3"/>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="-28/3 -14/3 14/3 0 0 0" startSegment="0 0 0 0 0 6"/>
+    <SelectManifestation endSegment="-28/3 -14/3 0 0 0 0" startSegment="0 0 0 0 0 6"/>
+    <EndBlock/>
+    <Delete/>
+    <StrutCreation anchor="-28/3 -14/3 14/3 0 0 0" index="9" len="1 0" symm="dodecagonal"/>
+    <StrutCreation anchor="-28/3 -14/3 0 0 0 0" index="3" len="1 0" symm="dodecagonal"/>
+    <BeginBlock/>
+    <SelectManifestation point="-238/27 -350/81 14/3 -14/81 2/3 0"/>
+    <SelectManifestation point="-238/27 -350/81 0 0 2/3 0"/>
+    <SelectManifestation point="-14/27 -28/81 0 14/81 -2/3 6"/>
+    <SelectManifestation point="-14/27 -28/81 0 14/81 -2/3 6"/>
+    <SelectManifestation point="-14/27 -28/81 0 0 -2/3 6"/>
+    <SelectManifestation point="-14/27 -28/81 0 0 -2/3 6"/>
+    <SelectManifestation point="-14/27 -28/81 0 0 -2/3 6"/>
+    <SelectManifestation point="-14/27 -28/81 0 0 -2/3 6"/>
+    <DeselectAll/>
+    <SelectManifestation point="-14/27 -28/81 0 14/81 -2/3 6"/>
+    <EndBlock/>
+    <ApplyTool name="mirror.builtin/reflection through XY plane" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-14/27 -28/81 0 0 -2/3 6"/>
+    <EndBlock/>
+    <ApplyTool name="mirror.builtin/reflection through XY plane" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-238/27 -350/81 14/3 -14/81 2/3 0"/>
+    <SelectManifestation point="-28/3 -14/3 11/3 0 0 0"/>
+    <SelectManifestation point="-28/3 -14/3 1 0 0 0"/>
+    <SelectManifestation point="-238/27 -350/81 0 0 2/3 0"/>
+    <EndBlock/>
+    <ApplyTool name="mirror.builtin/reflection through XY plane" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-14/27 -28/81 0 14/81 -2/3 6"/>
+    <SelectManifestation point="-14/27 -28/81 0 0 -2/3 6"/>
+    <SelectManifestation point="-238/27 -350/81 14/3 -14/81 2/3 0"/>
+    <SelectManifestation point="-28/3 -14/3 11/3 0 0 0"/>
+    <SelectManifestation point="-28/3 -14/3 1 0 0 0"/>
+    <SelectManifestation point="-238/27 -350/81 0 0 2/3 0"/>
+    <SelectManifestation point="-14/27 -28/81 0 0 2/3 -6"/>
+    <SelectManifestation point="-14/27 -28/81 0 14/81 2/3 -6"/>
+    <EndBlock/>
+    <StrutCreation anchor="-238/27 -350/81 0 0 -2/3 0" index="1" len="1 0" symm="dodecagonal"/>
+    <BeginBlock/>
+    <SelectManifestation point="-238/27 -350/81 14/3 -14/81 -2/3 0"/>
+    <SelectManifestation point="-238/27 -350/81 0 0 -2/3 0"/>
+    <EndBlock/>
+    <ApplyTool name="symmetry.builtin/dodecagonal antiprism around origin" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectAll/>
+    <EndBlock/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale up"/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale up"/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale up"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="-42 -28 0 14 0 0"/>
+      <polygonVertex at="-42 -28 0 0 0 0"/>
+      <polygonVertex at="0 0 0 0 54 0"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 0 54 0"/>
+    <SelectManifestation point="-28/9 -14/9 14/9 0 54 -2"/>
+    <SelectManifestation point="-28/9 -14/9 0 0 54 -2"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="-28/9 -14/9 0 0 54 -2"/>
+    <SelectManifestation point="-28/9 -14/9 -14/9 0 54 -2"/>
+    <SelectManifestation point="0 0 0 0 54 0"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 0 54 0"/>
+      <polygonVertex at="-28/9 -14/9 14/9 0 54 -2"/>
+      <polygonVertex at="-28/9 -14/9 0 0 54 -2"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 -54 0"/>
+    <SelectManifestation point="-28/9 -14/9 -14/9 0 -54 2"/>
+    <SelectManifestation point="-28/9 -14/9 14/9 0 -54 2"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 0 54 0"/>
+      <polygonVertex at="-28/9 -14/9 14/9 0 54 -2"/>
+      <polygonVertex at="-28/9 -14/9 0 0 54 -2"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-28/9 -14/9 0 0 54 -2"/>
+      <polygonVertex at="-28/9 -14/9 -14/9 0 54 -2"/>
+      <polygonVertex at="0 0 0 0 54 0"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="-28/9 -14/9 14/9 0 54 -2"/>
+    <SelectManifestation point="-28/9 -14/9 -14/9 0 54 -2"/>
+    <SelectManifestation point="0 0 0 0 54 0"/>
+    <EndBlock/>
+    <Polygon/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 0 -54 0"/>
+      <polygonVertex at="-28/9 -14/9 -14/9 0 -54 2"/>
+      <polygonVertex at="-28/9 -14/9 14/9 0 -54 2"/>
+    </SelectManifestation>
+    <ApplyTool name="symmetry.builtin/dodecagonal antiprism around origin" selectInputs="true"/>
+    <SelectManifestation endSegment="0 0 0 0 54 0" startSegment="0 0 0 0 0 0"/>
+    <MapToColor blue="20" colorMapper="CopyLastSelectedColor" green="3" red="197"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="54 0 0 0 0 0" startSegment="0 0 0 0 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="162 0 0 0 0 0" startSegment="0 0 0 0 0 0"/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="54 27 -27 0 0 0" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <DeselectAll/>
+  </EditHistory>
+  <notes/>
+  <sceneModel ambientLight="41,41,41" background="178,205,230">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="162.20799255371094" far="324.41595458984375" near="0.4055199921131134" parallel="false" stereoAngle="0.0" width="72.99360656738281">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0019608878064900637" y="0.9645466208457947" z="0.26390746235847473"/>
+      <LookDirection x="-0.04581000655889511" y="0.26371636986732483" z="-0.9635124802589417"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="dodecagonal" renderingStyle="prisms">
+    <Direction color="255,255,255" name="123" prototype="-14/27 -28/81 0 0 -2/3 0"/>
+    <Direction color="255,255,255" name="122" prototype="-14/27 -28/81 0 14/81 -2/3 0"/>
+    <Direction color="197,3,20" name="red"/>
+    <Direction color="255,255,255" name="0" prototype="28/27 -52/81 0 -28/81 -28/27 0"/>
+    <Direction color="255,255,255" name="118" prototype="1 -2/3 0 -1/3 -1 0"/>
+    <Direction color="2,130,53" name="green"/>
+    <Direction color="6,96,141" name="blue"/>
+    <Direction color="255,255,255" name="1" prototype="26/27 -56/81 0 -26/81 -28/27 0"/>
+    <Direction color="255,255,255" name="121" prototype="0 -28/81 0 0 392/729 196/729"/>
+  </SymmetrySystem>
+  <OtherSymmetries>
+    <SymmetrySystem name="octahedral" renderingStyle="small octahedra">
+      <Direction color="0,118,149" name="blue"/>
+      <Direction color="255,255,255" name="120" prototype="-3/2 0 0 -1/2 0 0"/>
+      <Direction color="255,255,255" name="119" prototype="-1 1/3 1 -1/3 -1 0"/>
+      <Direction color="0,141,54" name="green"/>
+      <Direction color="255,255,255" name="116" prototype="28/27 -52/81 0 -28/81 -28/27 0"/>
+      <Direction color="255,255,255" name="115" prototype="26/27 -56/81 0 -26/81 -28/27 0"/>
+      <Direction color="107,53,26" name="brown"/>
+      <Direction color="255,255,255" name="117" prototype="1 -2/3 0 -1/3 -1 0"/>
+      <Direction color="240,160,0" name="yellow"/>
+      <Direction color="175,0,0" name="red"/>
+      <Direction color="255,255,255" name="125" prototype="14/27 28/81 0 0 2/3 0"/>
+      <Direction color="255,255,255" name="124" prototype="-14/27 -28/81 0 14/81 -2/3 0"/>
+    </SymmetrySystem>
+  </OtherSymmetries>
+  <Tools>
+    <Tool id="tool-0" label="bookmark 0" selectInputs="true"/>
+  </Tools>
+</vzome:vZome>
