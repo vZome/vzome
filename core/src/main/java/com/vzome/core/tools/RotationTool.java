@@ -57,7 +57,12 @@ public class RotationTool extends SymmetryTool
 
         public Factory( ToolsModel tools, Symmetry symmetry )
         {
-            this( tools, symmetry, ID, LABEL, TOOLTIP );
+            this( tools, symmetry, false );
+        }
+
+        public Factory( ToolsModel tools, Symmetry symmetry, boolean useSymmetryName )
+        {
+            this( tools, symmetry, (useSymmetryName ? symmetry.getName() + ' ' : "") + ID, LABEL, TOOLTIP );
         }
 
         public Factory( ToolsModel tools, Symmetry symmetry, String id, String label, String tooltip )
