@@ -13,7 +13,14 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.BorderFactory;
@@ -22,9 +29,21 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.eclipse.egit.github.core.Gist;
-import org.eclipse.egit.github.core.GistFile;
-import org.eclipse.egit.github.core.service.GistService;
+import org.eclipse.egit.github.core.Blob;
+import org.eclipse.egit.github.core.Commit;
+import org.eclipse.egit.github.core.CommitUser;
+import org.eclipse.egit.github.core.Reference;
+import org.eclipse.egit.github.core.Repository;
+import org.eclipse.egit.github.core.RepositoryCommit;
+import org.eclipse.egit.github.core.Tree;
+import org.eclipse.egit.github.core.TreeEntry;
+import org.eclipse.egit.github.core.TypedResource;
+import org.eclipse.egit.github.core.User;
+import org.eclipse.egit.github.core.client.GitHubClient;
+import org.eclipse.egit.github.core.service.CommitService;
+import org.eclipse.egit.github.core.service.DataService;
+import org.eclipse.egit.github.core.service.RepositoryService;
+import org.eclipse.egit.github.core.service.UserService;
 import org.vorthmann.ui.CardPanel;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.zome.app.impl.GitHubApi;
@@ -42,9 +61,13 @@ public class ShareDialog extends EscapeDialog
     private final JLabel codeLabel;
     private final JButton loginButton;
 
-    private final static String VIEWER_PREFIX = "https://vzome.com/app/?url=";
+    private final static String VIEWER_PREFIX = "https://vzome.com/app/embed.py?url=";
+    private static final String REPO_NAME = "vzome-sharing";
+    private static final String BRANCH_NAME = "master";
 
-    private transient String fileName, xml, deviceCode, loginUrl;
+    private transient String fileName, png, xml, deviceCode, loginUrl;
+    private Repository repo;
+    private DataService dataService;
 
     public ShareDialog( Frame frame, final Controller controller )
     {
@@ -59,9 +82,10 @@ public class ShareDialog extends EscapeDialog
             JLabel help = new JLabel();
             help .setBorder( BorderFactory.createEmptyBorder( 15, 15, 15, 15 ) );
             help .setText( "<html>"
-                            + "vZome can upload a file to Github as a <i>gist</i>, if you have a Github account."
-                            + " (Accounts are free.)<br/><br/>Gists are available through public URLs, and include a <i>raw</i> URL for download,"
-                            + " so they can be used to share through vZome Online."
+                            + "vZome can upload a file to Github repository named 'vzome-sharing', if you have a Github account."
+                            + " (Accounts are free.)<br/><br/>Once vZome has created the 'vzome-sharing' repository,"
+                            + " enable GitHub Pages in the Settings for the repository,"
+                            + " so you uploaded files can be shared through vZome Online."
                           +"</html>" );
 
             codeLabel = new JLabel();
@@ -136,13 +160,13 @@ public class ShareDialog extends EscapeDialog
     }
     
     /**
-     * Runs on the background thread started in setVisible, NOT the EDT.
+     * Runs on the background thread started in setFileData, NOT the EDT.
      */
     private void getDeviceCode() throws InterruptedException, ExecutionException, IOException
     {
         String clientId = controller .getProperty( "githubClientId" );
         String clientSecret = controller .getProperty( "githubClientSecret" );
-        String scope = "gist";
+        String scope = "repo";
         
         final OAuth20Service service = new ServiceBuilder(clientId)
                 .debug()
@@ -174,49 +198,172 @@ public class ShareDialog extends EscapeDialog
         doUpload();
     }
     
+    private static final String MARKDOWN_BOILERPLATE =
+        "[vZome Online (immediate)][1] - this link works as soon as vZome has pushed the files to Github; it can be shared immediately, but it will not show a preview image when auto-expanded in Twitter, Discord, Facebook, etc.\n" + 
+        "\n" + 
+        "[vZome Online (embeddable)][2] - this link may not work initially, since Github Pages may not be ready for a few minutes.  Once ready, this link is *great* for sharing on social media, since it will display the design title and a preview image.  Note that Github Pages only supports 20 updates in an hour, so you may have to wait up to an hour if you have shared more than 20 designs quickly.\n" + 
+        "\n" + 
+        "[Github Source][3] - view this content as source in Github.  Feel free to edit `README.md` (this content), if you want to modify and share the page.\n" + 
+        "\n" + 
+        "[Github Pages][4] - view this content as rendered in Github Pages.  Remember there may be a delay before changes appear here; see above.\n" + 
+        "\n" + 
+        "![Image]("
+        ;
+    
     /**
      * Runs on the background thread started in setVisible, NOT the EDT.
      */
     private void doUpload()
     {
-        GistFile gistFile = new GistFile();
-        gistFile .setContent( xml );
-        Gist gist = new Gist();
-        gist .setDescription( "Shared from vZome for vZome Online (https://vzome.com/app)" );
-        gist .setFiles( Collections.singletonMap( fileName, gistFile ) );
-        gist .setPublic( true );
-        GistService service = new GistService();
-        String token = controller .getProperty( "githubAccessToken" );
-        service .getClient() .setOAuth2Token( token );
         try {
-            Gist completedGist = service.createGist( gist );
-            String gistUrl = completedGist .getHtmlUrl();
-            String rawUrl = completedGist .getFiles() .get( fileName ) .getRawUrl();
+            // initialize github client
+            GitHubClient client = new GitHubClient();
+            String token = controller .getProperty( "githubAccessToken" );
+            client .setOAuth2Token( token );
+
+            // create needed services
+            RepositoryService repositoryService = new RepositoryService( client );
+            CommitService commitService = new CommitService( client );
+            dataService = new DataService( client );
+            UserService userService = new UserService(client);
+            User user = userService .getUser();
+            String username = user .getLogin();
+
+            List<Repository> repositories = repositoryService .getRepositories();
+            Repository repository = repositories .stream() .filter( r -> r.getName() .equals( REPO_NAME ) ) .findFirst() .orElse( null );
+            Tree baseTree = null;
+            String baseCommitSha = null;
+            if ( repository == null ) {
+                // Create the repo the first time
+                repository = new Repository() .setName( REPO_NAME ) .setDefaultBranch( BRANCH_NAME ) .setPrivate( false );
+                repository = repositoryService .createRepository( repository );
+            } else {
+                this .repo = repository;
+                // set up for a non-root commit
+                baseCommitSha = repositoryService .getBranches(repository) .get(0) .getCommit() .getSha();
+                RepositoryCommit baseCommit = commitService .getCommit( repository, baseCommitSha );
+                String baseTreeSha = baseCommit .getSha();
+                baseTree = dataService .getTree( repository, baseTreeSha );
+            }
+
+            // prepare the timestamp path
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern( "yyyy/MM/dd/HH-mm-ss" );
+            String path = formatter .format( LocalDateTime.now() );
+            String vZomePath = path + "/" + URLEncoder.encode( fileName, StandardCharsets.UTF_8.toString() );
+
+            Collection<TreeEntry> entries = new ArrayList<TreeEntry>();
+
+            this .addFile( entries, vZomePath, this.xml, Blob.ENCODING_UTF8 );
+            
+            String designName = this .fileName;
+            int index = designName .toLowerCase() .lastIndexOf( ".vZome" .toLowerCase() );
+            if ( index > 0 )
+                designName = designName .substring( 0, index );
+            String imageFileName = designName + ".png";
+            this .addFile( entries, path + "/" + imageFileName, png, Blob.ENCODING_BASE64 );
+
+            String rawUrl = "https://raw.githubusercontent.com/" + username + "/" + REPO_NAME + "/master/" + vZomePath;
+            String quickUrl = "https://vzome.com/app/?url=" + rawUrl;
+            String slowUrl  = VIEWER_PREFIX + "https://" + username + ".github.io/" + REPO_NAME + "/" + vZomePath;
+            String gitUrl   = "https://github.com/" + username + "/" + REPO_NAME + "/tree/master/" + path + "/";
+            String pagesUrl = "https://" + username + ".github.io/" + REPO_NAME + "/" + path + "/";
+            
+            String markdown = "### " + designName + "\n\n" + MARKDOWN_BOILERPLATE + imageFileName + ")\n\n";
+            markdown += "[1]: " + quickUrl + "\n";
+            markdown += "[2]: " + slowUrl + "\n";
+            markdown += "[3]: " + gitUrl + "\n";
+            markdown += "[4]: " + pagesUrl + "\n";
+            this .addFile( entries, path + "/README.md", markdown, Blob.ENCODING_UTF8 );                
+
+            Tree newTree = dataService.createTree( repository, entries, (baseTree==null)? null : baseTree.getSha() );
+
+            // create commit
+            Commit commit = new Commit();
+            commit.setMessage( "shared from vZome" );
+            commit.setTree( newTree );
+            
+            //Due to an error with github api we have to do this
+            Calendar now = Calendar.getInstance();
+            String email = controller .getProperty( "githubEmail" );
+            if ( email == null || "" .equals( email ) )
+                email = "vZomeUser@example.com";
+            CommitUser author = new CommitUser();
+            author.setName( username );
+            author.setEmail( email );
+            author.setDate( now.getTime() );
+            commit.setAuthor( author );
+            commit.setCommitter( author );
+            
+            if ( baseCommitSha != null ) {
+                List<Commit> listOfCommits = new ArrayList<Commit>();
+                listOfCommits .add( new Commit() .setSha(baseCommitSha) );
+                commit .setParents( listOfCommits );
+            }
+            Commit newCommit = dataService .createCommit( repository, commit );
+            
+            // create resource
+            TypedResource commitResource = new TypedResource();
+            commitResource .setType( TypedResource.TYPE_COMMIT );
+            commitResource .setSha( newCommit .getSha() );
+            commitResource .setUrl( newCommit .getUrl() );
+
+            // get master reference and update it
+            Reference reference = dataService.getReference( repository, "heads/" + BRANCH_NAME );
+            reference .setObject( commitResource );
+            dataService .editReference( repository, reference, true );
+            
             SwingUtilities .invokeLater( new Runnable()
             {
                 @Override
                 public void run()
                 {
                     viewUrlPanel .setUrl( VIEWER_PREFIX + rawUrl );
-                    gistUrlPanel .setUrl( gistUrl );
+                    gistUrlPanel .setUrl( gitUrl );
                     rawUrlPanel .setUrl( rawUrl );
                     cardPanel .showCard( "results" );
                     getRootPane() .setDefaultButton( viewUrlPanel .getCopyButton() );
                     viewUrlPanel .getCopyButton() .requestFocusInWindow();
                 }
             });
-        }
-        catch (IOException e1)
-        {
-            e1.printStackTrace();
-//            cardPanel .showCard( "error" );
+            
+        } catch (Exception e) {
+            // TODO: handle exception
+            e .printStackTrace();
         }
     }
+    
+    private void addFile( Collection<TreeEntry> entries, String path, String content, String encoding ) throws IOException
+    {
+        // create new blob with data
+        Blob blob = new Blob();
+        blob.setContent( content ) .setEncoding( encoding );
+        String blobSha = this.dataService .createBlob( this.repo, blob );
 
-    public void setFileData( String fileName, String xml )
+        // create new tree entry
+        TreeEntry treeEntry = new TreeEntry();
+        treeEntry .setPath( path );
+        treeEntry .setMode( TreeEntry.MODE_BLOB );
+        treeEntry .setType( TreeEntry.TYPE_BLOB );
+        treeEntry .setSha( blobSha );
+        treeEntry .setSize( blob.getContent().length() );
+
+        entries.add( treeEntry );
+
+    }
+
+    public void setFileData( String fileName, String xml, String png )
     {
         this.fileName = fileName;
         this.xml = xml;
+        this.png = png;
+        
+        if ( this.repo == null )
+        {
+            
+        }
+        else {
+            
+        }
         String token = controller .getProperty( "githubAccessToken" );
         new Thread( new Runnable()
         {
@@ -235,15 +382,15 @@ public class ShareDialog extends EscapeDialog
             }
         }).start();
 
-        if ( token == null ) {
+//        if ( token == null ) {
             this .loginButton .setEnabled( false );
             this .getRootPane() .setDefaultButton( this .loginButton );
             this .cardPanel .showCard( "login" );
-        } else {
-            this .cardPanel .showCard( "results" );
-            getRootPane() .setDefaultButton( this .viewUrlPanel .getCopyButton() );
-            this .viewUrlPanel .getCopyButton() .requestFocusInWindow();
-        }
+//        } else {
+//            this .cardPanel .showCard( "results" );
+//            getRootPane() .setDefaultButton( this .viewUrlPanel .getCopyButton() );
+//            this .viewUrlPanel .getCopyButton() .requestFocusInWindow();
+//        }
         this .setVisible( true );
     }
 }

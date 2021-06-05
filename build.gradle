@@ -44,6 +44,9 @@ subprojects {
     // this one is for javax.media.jai
     maven { url 'http://repository.springsource.com/maven/bundles/external' }
 
+    // For EGit
+    maven { url 'https://repo.eclipse.org/content/groups/releases' }
+
     ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR downloads for JOGL
       url "http://jogamp.org/deployment"
       layout "pattern", {
