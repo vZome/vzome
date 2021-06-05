@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.zomic;
 
 import com.vzome.core.math.symmetry.Axis;

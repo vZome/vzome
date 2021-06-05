@@ -1,6 +1,4 @@
 
-//(c) Copyright 2007, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.algebra;
 
 public class SnubDodecField extends AbstractAlgebraicField

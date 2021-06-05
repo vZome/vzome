@@ -1,6 +1,4 @@
 
-//(c) Copyright 2014, Scott Vorthmann.
-
 package org.vorthmann.zome.render.jogl;
 
 import java.awt.Component;

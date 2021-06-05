@@ -1,3 +1,4 @@
+
 package org.vorthmann.zome.app.impl;
 
 import java.awt.Component;
@@ -872,12 +873,12 @@ public class DocumentController extends DefaultController implements Scene.Provi
                     String format = command .substring( "export." .length() ) .toLowerCase();
                     Exporter3d exporter = documentModel .getNaiveExporter( format, cameraController .getView(), colors, sceneLighting, currentSnapshot );
                     if ( exporter != null ) {
-                        exporter.doExport( file, file.getParentFile(), out, size.height, size.width );
+                        exporter.doExport( file, out, size.height, size.width );
                     }
                     else {
                         exporter = documentModel .getStructuredExporter( format, cameraController .getView(), colors, sceneLighting );
                         if ( exporter != null )
-                            exporter .doExport( documentModel, file, file.getParentFile(), out, size.height, size.width );
+                            exporter .exportDocument( documentModel, file, out, size.height, size.width );
                     }
                 }
                 catch (Exception e) {

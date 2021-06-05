@@ -1,4 +1,3 @@
-//(c) Copyright 2006, Scott Vorthmann
 
 package com.vzome.core.editor.api;
 

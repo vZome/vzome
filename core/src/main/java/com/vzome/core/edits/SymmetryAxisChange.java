@@ -1,6 +1,4 @@
 
-//(c) Copyright 2006, Scott Vorthmann
-
 package com.vzome.core.edits;
 
 import java.util.Map;

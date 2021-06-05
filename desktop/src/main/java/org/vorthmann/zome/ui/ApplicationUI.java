@@ -95,7 +95,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
             }
         }
 
-        // If no FileHandler was pre-configured, then initialze our own default
+        // If no FileHandler was pre-configured, then initialize our own default
         if (fh == null) {
             Path logsFolder = Platform.logsFolder();
             try {
