@@ -39,7 +39,7 @@ public class SqrtPhiField  extends ParameterizedField<Integer>
     @Override
     public void defineMultiplier( StringBuffer buf, int w )
     {
-        buf .append( "phi = " );
+        buf .append( "phi = " ); // note that phi is not the first irrational in this field
         buf .append( PentagonField.PHI_VALUE );
     }
 
@@ -80,8 +80,8 @@ public class SqrtPhiField  extends ParameterizedField<Integer>
 
      */
     @Override
-    protected void initializeMultiplierMatrix() {
-        short[][][] mm = {
+    protected void initializeMultiplicationTensor() {
+        short[][][] tensor = {
             { // 1
               { 1, 0, 0, 0, },
               { 0, 0, 0, 1, },
@@ -107,7 +107,7 @@ public class SqrtPhiField  extends ParameterizedField<Integer>
               { 1, 0, 1, 0, },
             },
         };
-        multiplierMatrix = mm;
+        multiplicationTensor = tensor;
     }
 
     @Override

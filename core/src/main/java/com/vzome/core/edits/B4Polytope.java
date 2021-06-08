@@ -91,7 +91,7 @@ public class B4Polytope extends ChangeManifestations
         AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
         for (int i = 0; i < edgeScales .length; i++)
         {
-            edgeScales[ i ] = field .createPower( 0 );
+            edgeScales[ i ] = field .one();
         }
 
         CoxeterGroup group = new B4Group( field );

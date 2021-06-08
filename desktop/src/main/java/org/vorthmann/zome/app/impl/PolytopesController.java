@@ -47,7 +47,7 @@ public class PolytopesController extends DefaultController
         this .defaultScaleFactor = field .createPower( Direction .USER_SCALE + 2 );
         for (int i = 0; i < edgeScales.length; i++)
         {
-            edgeScales[ i ] = field .createPower( 0 );
+            edgeScales[ i ] = field .one();
         }
         // TODO: get the list from the field itself
         if ( null == document .getFieldApplication() .getQuaternionSymmetry( "H_4" ) ) {
