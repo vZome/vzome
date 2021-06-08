@@ -89,6 +89,17 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         boolean hasIcosahedral = symmetries .contains( "icosahedral" );
 
+        boolean hasAntiprism = false;
+        for (String symmName : symmetries) {
+            if (symmName.startsWith("antiprism")) {
+                hasAntiprism = true;
+                if("antiprism".equals(initSystem)) {
+                    initSystem = symmName;
+                }
+                break;
+            }
+        }
+
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% File menu
 
         JMenu menu = new JMenu( "File" );
@@ -450,6 +461,14 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             group.add( rbMenuItem );
             // DISABLED until the symmetry group has been properly implemented
             // menu.add( rbMenuItem );
+        }
+        if ( hasAntiprism ) {
+            // we don't specify the general antiprism's nSides here because setSymmetrySystem() will handle it.
+            rbMenuItem = actions .setMenuAction( "setSymmetry.antiprism", controller, new JRadioButtonMenuItem( "Antiprism System" ) );
+            rbMenuItem .setSelected( initSystem.startsWith("antiprism") );
+            rbMenuItem .setEnabled( fullPower );
+            group.add( rbMenuItem );
+            menu.add( rbMenuItem );        
         }
 
         rbMenuItem = actions .setMenuAction( "setSymmetry.octahedral", controller, new JRadioButtonMenuItem( "Octahedral System" ) );

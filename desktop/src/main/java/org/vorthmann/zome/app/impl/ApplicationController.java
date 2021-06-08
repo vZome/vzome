@@ -31,10 +31,12 @@ import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.Command.FailureChannel;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.math.symmetry.AntiprismSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Scene;
+import com.vzome.core.viewing.AntiprismTrackball;
 import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.RenderingViewer;
 
@@ -165,19 +167,29 @@ public class ApplicationController extends DefaultController
 
     public RenderedModel getSymmetryModel( String path, Symmetry symmetry )
     {
-        RenderedModel result = this .symmetryModels .get( path );
-        // The cache does not care if the symmetry matches.
-        if ( result != null )
+        String key = path;
+        if(symmetry instanceof AntiprismSymmetry) {
+            // Create distinct keys for antiprism symmetries.
+            // Otherwise, the cache does not care if the symmetry matches.
+            key = path + "@" + symmetry.getName();
+        }
+        RenderedModel result = this .symmetryModels .get( key );
+        if ( result != null ) {
             return result;
-
+        }
+        
         ClassLoader cl = this .getClass() .getClassLoader();
         InputStream bytes = cl.getResourceAsStream( path );
+        
+        if(symmetry instanceof AntiprismSymmetry) {
+            bytes = AntiprismTrackball.getTrackballModelStream(bytes, (AntiprismSymmetry)symmetry);
+        }
 
         try {
             DocumentModel document = this .modelApp .loadDocument( bytes );
             document .finishLoading( false, false );
             result = document .getRenderedModel();
-            this .symmetryModels .put( path, result );
+            this .symmetryModels .put( key, result );
             return result;
         } catch ( Exception e ) {
             throw new RuntimeException( e );
@@ -191,6 +203,7 @@ public class ApplicationController extends DefaultController
             if ( action .equals( "showAbout" ) 
                     || action .equals( "openURL" ) 
                     || action .equals( "quit" )
+                    || action .equals( "new-polygon" )
                     || action .startsWith( "browse-" )
                     )
             {

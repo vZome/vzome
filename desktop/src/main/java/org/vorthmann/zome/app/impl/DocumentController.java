@@ -46,6 +46,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
+import com.vzome.core.algebra.PolygonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Color;
@@ -302,7 +303,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
         showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
 
         thumbnails = new ThumbnailRendererImpl( sceneLighting, maxOrientations );
-        this .addSubController( "thumbnails", (Controller) thumbnails );
+        this .addSubController( "thumbnails", thumbnails );
         thumbnails .setFactory( app .getJ3dFactory() );
 
         mApp = app;
@@ -321,7 +322,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
 
         this .mainScene = new Scene( this .sceneLighting, this .drawOutlines, maxOrientations );
         if ( this .mainScene instanceof PropertyChangeListener )
-            this .addPropertyListener( (PropertyChangeListener) this .mainScene );
+            this .addPropertyListener( this .mainScene );
 
         partsController = new PartsController( this .documentModel .getSymmetrySystem() );
         this .addSubController( "parts", partsController );
@@ -447,7 +448,14 @@ public class DocumentController extends DefaultController implements Scene.Provi
      */
     private void setSymmetrySystem( String symmetryName )
     {
+        if("antiprism".equals(symmetryName)) {
+            symmetryName = symmetryName + ((PolygonField) this.documentModel.getField()).polygonSides();
+        }
+        
         SymmetrySystem symmetrySystem = (SymmetrySystem) this .documentModel .getSymmetrySystem( symmetryName );
+        if(symmetrySystem == null) {
+            throw new IllegalStateException("Unable to get SymmetrySystem '" + symmetryName + "'.");
+        }
         symmetryName = symmetrySystem .getName(); // in case it was null before
         this .documentModel .setSymmetrySystem( symmetrySystem );
         
