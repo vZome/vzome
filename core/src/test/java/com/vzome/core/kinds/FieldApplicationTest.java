@@ -29,6 +29,7 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.PolygonField;
+import com.vzome.core.algebra.PolygonFieldTest;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
 import com.vzome.core.commands.Command;
@@ -71,7 +72,7 @@ public class FieldApplicationTest
         result.add( new HeptagonFieldApplication( new HeptagonField() ) );
         result.add( new SqrtPhiFieldApplication());
         result.add( new SnubDodecFieldApplication());
-        for(int nSides = PolygonField.MIN_SIDES; nSides < 64 /* PolygonFieldTest.MAX_SIDES */; nSides++) {
+        for(int nSides = PolygonField.MIN_SIDES; nSides < PolygonFieldTest.MAX_SIDES; nSides++) {
             result.add( new PolygonFieldApplication(nSides));
         }
         return result;
