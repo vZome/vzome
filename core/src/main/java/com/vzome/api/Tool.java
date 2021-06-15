@@ -4,7 +4,7 @@ import java.beans.PropertyChangeListener;
 
 public interface Tool
 {
-	public enum Kind { SYMMETRY, TRANSFORM, LINEAR_MAP };
+	public enum Kind { SYMMETRY, TRANSFORM, CHORD_RATIO, LINEAR_MAP };
 	
 	public interface Factory
 	{

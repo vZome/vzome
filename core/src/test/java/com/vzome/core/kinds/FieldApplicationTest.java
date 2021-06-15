@@ -498,31 +498,31 @@ public class FieldApplicationTest
             String source = appName + "." + name;
             switch(name) {
             case "octahedral":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 4, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 4, 1, 1);
                 break;
                 
             case "icosahedral":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 4, 7);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 4, 7, 1);
                 break;
                 
             case "dodecagonal":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 4, 4, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 4, 4, 1, 0);
                 break;
                 
             case "pentagonal":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1, 0);
                 break;
                 
             case "heptagonal antiprism":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1, 0);
                 break;
                 
             case "heptagonal antiprism corrected":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1, 0);
                 break;
                 
             case "synestructics":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 4, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 4, 1, 0);
                 break;
                 
             default:
@@ -531,7 +531,7 @@ public class FieldApplicationTest
         }
     }
     
-    private void verifyToolFactoryCounts(String source, Tool.Kind kind, List<Tool.Factory> toolFactoryList, int symmetryCount, int transformCount, int linearMapCount)
+    private void verifyToolFactoryCounts(String source, Tool.Kind kind, List<Tool.Factory> toolFactoryList, int symmetryCount, int transformCount, int linearMapCount, int chordRatioCount)
     {
         String msg = source + "\t" + kind;
         logToolFactoryList(msg, toolFactoryList);
@@ -546,6 +546,10 @@ public class FieldApplicationTest
             
         case LINEAR_MAP:
             assertEquals(msg, linearMapCount, toolFactoryList.size());
+            break;
+
+        case CHORD_RATIO:
+            assertEquals(msg, chordRatioCount, toolFactoryList.size());
             break;
 
         default:

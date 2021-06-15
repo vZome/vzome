@@ -27,6 +27,7 @@ import com.vzome.core.math.symmetry.F4Group;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction;
 import com.vzome.core.tools.BookmarkTool;
+import com.vzome.core.tools.ChordRatioTool;
 import com.vzome.core.tools.InversionTool;
 import com.vzome.core.tools.LinearMapTool;
 import com.vzome.core.tools.MirrorTool;
@@ -119,7 +120,8 @@ public class DefaultFieldApplication implements FieldApplication
         toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
         toolFactories .put( "ProjectionTool", new ProjectionTool.Factory( tools ) );
 	    toolFactories .put( "BookmarkTool", new BookmarkTool.Factory( tools ) );
-	    toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null, false ) );
+        toolFactories .put( "ChordRatioTool", new ChordRatioTool.Factory( tools, null ) );
+        toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null, false ) );
 	
 	    // These tool factories have to be available for loading legacy documents.
 	    

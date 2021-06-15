@@ -65,9 +65,17 @@ public class SymmetryToolbarsPanel extends JPanel
         String[] transformFactories = symmController .getCommandList( "transformToolFactories" );
         for ( String transformFactory : transformFactories ) {
             firstToolbar .add( newToolButton( symmController, transformFactory ) );
-		}                
+        }                
         
         firstToolbar .addSeparator();
+
+        String[] chordRatioFactories = symmController .getCommandList( "chordRatioToolFactories" );
+        for ( String chordFactorFactory : chordRatioFactories ) {
+            firstToolbar .add( newToolButton( symmController, chordFactorFactory ) );
+        }                
+        if(chordRatioFactories.length > 0) {
+            firstToolbar .addSeparator();
+        }
 
         String[] linearMapFactories = symmController .getCommandList( "linearMapToolFactories" );
         for ( String transformFactory : linearMapFactories ) {
@@ -124,15 +132,25 @@ public class SymmetryToolbarsPanel extends JPanel
         for ( String builtInSymmetryTool : builtInSymmetryTools ) {
             addTool( toolsController .getSubController( builtInSymmetryTool ) );
 		}
-        
-        secondToolbar .addSeparator();
+        if(builtInSymmetryTools.length > 0) {
+            secondToolbar .addSeparator();
+        }
 
         String[] builtInTransformTools = symmController .getCommandList( "builtInTransformTools" );
         for ( String builtInTransformTool : builtInTransformTools ) {
             addTool( toolsController .getSubController( builtInTransformTool ) );
-		}
-       
-        secondToolbar .addSeparator();
+        }
+        if(builtInTransformTools.length > 0) {
+            secondToolbar .addSeparator();
+        }
+
+        String[] builtInChordRatioTools = symmController .getCommandList( "builtInChordRatioTools" );
+        for ( String builtInChordRatioTool : builtInChordRatioTools ) {
+            addTool( toolsController .getSubController( builtInChordRatioTool ) );
+        }
+        if(builtInChordRatioTools.length > 0) {
+            secondToolbar .addSeparator();
+        }
 	}
 
 	private static final String TOOLTIP_PREFIX = "<html><b>";

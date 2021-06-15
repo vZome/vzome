@@ -8,6 +8,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.math.symmetry.OctahedralSymmetry;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
+import com.vzome.core.tools.ChordRatioTool;
 import com.vzome.core.tools.InversionTool;
 import com.vzome.core.tools.LinearMapTool;
 import com.vzome.core.tools.MirrorTool;
@@ -52,7 +53,11 @@ public final class OctahedralSymmetryPerspective extends AbstractSymmetryPerspec
             result .add( new ProjectionTool.Factory( tools ) );
 			break;
 
-		case LINEAR_MAP:
+        case CHORD_RATIO:
+            result.add(new ChordRatioTool.Factory(tools, this.symmetry));
+            break;
+
+        case LINEAR_MAP:
 			result .add( new LinearMapTool.Factory( tools, this .symmetry, false ) );
 			break;
 
@@ -66,6 +71,7 @@ public final class OctahedralSymmetryPerspective extends AbstractSymmetryPerspec
 	public List<Tool> predefineTools( Tool.Kind kind, ToolsModel tools )
 	{
 		List<Tool> result = new ArrayList<>();
+		boolean isGolden = this .symmetry.getField().getGoldenRatio() != null;
 		switch ( kind ) {
 
 		case SYMMETRY:
@@ -82,6 +88,18 @@ public final class OctahedralSymmetryPerspective extends AbstractSymmetryPerspec
 			result .add( new RotationTool.Factory( tools, this .symmetry ) .createPredefinedTool( "rotate around green through origin" ) );
 			result .add( new TranslationTool.Factory( tools ) .createPredefinedTool( "b1 move along +X" ) );
 			break;
+
+        case CHORD_RATIO:
+            result.add(new ChordRatioTool.Factory(tools, this .symmetry).createPredefinedTool("parallelagram"));
+            if(isGolden) {
+                result.add(new ChordRatioTool.Factory(tools, this .symmetry).createPredefinedTool("affine pentagon"));
+            }
+            result.add(new ChordRatioTool.Factory(tools, this .symmetry).createPredefinedTool("affine hexagon"));
+            if(isGolden) {
+                result.add(new ChordRatioTool.Factory(tools, this .symmetry).createPredefinedTool("affine decagon"));
+            }
+            result.add(new ChordRatioTool.Factory(tools, this .symmetry).createPredefinedTool("parabola"));
+            break;
 
 		default:
 			break;
