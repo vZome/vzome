@@ -236,7 +236,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     Path filePath = new File( windowName ) .toPath();
                     String xml = mController .getProperty( "vZome-xml" );
                     String pngEncoded = mController .getProperty( "png-base64" );
-                    shareDialog .setFileData( filePath .getFileName() .toString(), xml, pngEncoded );
+                    shareDialog .startUpload( filePath .getFileName() .toString(), xml, pngEncoded );
                     break;
 
                 case "saveDefault":
