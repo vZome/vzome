@@ -368,7 +368,14 @@ public class PolygonField extends ParameterizedField<Integer> {
     
     @Override
     protected BigRational[] prepareAlgebraicNumberTerms(BigRational[] terms) {
-        if (goldenRatio != null && terms.length == 2 && getOrder() > 2 ) {
+        int nonNullTerms = 0; // can't just use terms.length() since some may be null as when reading VEFShapes
+        for(int i = 0; i < terms.length; i++) {
+            if(terms[i] == null) {
+                break;
+            }
+            nonNullTerms++;
+        }
+        if (goldenRatio != null && nonNullTerms == 2 && getOrder() > 2 ) {
             AlgebraicNumber scaleUnits = goldenDenominator.times(createRational(terms[0]));
             AlgebraicNumber scaledPhis = goldenNumerator.times(createRational(terms[1]));
             return ((AlgebraicNumberImpl)(scaleUnits.plus(scaledPhis))).getFactors();
