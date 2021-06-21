@@ -342,4 +342,10 @@ public class ChordRatioTool extends TransformationTool {
         return CATEGORY;
     }
 
+    @Override
+    public String getOverlayText() {
+        return (reps > 1)
+            ? Integer.toString(reps)
+            : super.getOverlayText();
+    }
 }
