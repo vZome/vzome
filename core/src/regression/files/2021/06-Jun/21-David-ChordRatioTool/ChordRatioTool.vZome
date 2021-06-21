@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="DEV" coreVersion="7.0" edition="vZome" field="golden" version="7.0">
+  <EditHistory editNumber="73" lastStickyEdit="42">
+    <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="8" len="1 1"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="45" len="1 2"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="-2 -3 1 2 0 0" startSegment="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="2 3 0 0 1 1" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <BookmarkTool name="tool-0"/>
+    <DeselectAll/>
+    <ApplyTool name="tool-0" selectInputs="true"/>
+    <ApplyTool name="chord ratio transformation.builtin/parallelagram" selectInputs="true"/>
+    <DeselectAll/>
+    <ApplyTool name="tool-0" selectInputs="true"/>
+    <ApplyTool name="chord ratio transformation.builtin/affine pentagon" selectInputs="true"/>
+    <DeselectAll/>
+    <ApplyTool name="tool-0" selectInputs="true"/>
+    <ApplyTool name="chord ratio transformation.builtin/affine hexagon" selectInputs="true"/>
+    <DeselectAll/>
+    <ApplyTool name="tool-0" selectInputs="true"/>
+    <ApplyTool name="chord ratio transformation.builtin/affine decagon" selectInputs="true"/>
+    <DeselectAll/>
+    <ApplyTool name="tool-0" selectInputs="true"/>
+    <ApplyTool name="chord ratio transformation.builtin/parabola" selectInputs="true"/>
+    <ApplyTool name="chord ratio transformation.builtin/parabola" selectInputs="true"/>
+    <ApplyTool name="chord ratio transformation.builtin/parabola" selectInputs="true"/>
+    <ApplyTool name="chord ratio transformation.builtin/parabola" selectInputs="true"/>
+    <ApplyTool name="chord ratio transformation.builtin/parabola" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="2 3 0 0 1 1" startSegment="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="-2 -3 1 2 0 0" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <ApplyTool name="chord ratio transformation.builtin/parabola" selectInputs="true"/>
+    <ApplyTool name="chord ratio transformation.builtin/parabola" selectInputs="true"/>
+    <ApplyTool name="chord ratio transformation.builtin/parabola" selectInputs="true"/>
+    <ApplyTool name="chord ratio transformation.builtin/parabola" selectInputs="true"/>
+    <ApplyTool name="chord ratio transformation.builtin/parabola" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="-2 -3 1 2 0 0" startSegment="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="-2 -3 1 2 0 0" startSegment="-2 -3 2 4 1 1"/>
+    <EndBlock/>
+    <ChordRatioTool chordRatio="0 1" name="tool-1"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="-2 -3 1 2 0 0" startSegment="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="2 3 0 0 1 1" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <ApplyTool name="tool-1" selectInputs="true"/>
+    <ApplyTool name="tool-1" selectInputs="true"/>
+    <ApplyTool name="tool-1" selectInputs="true"/>
+    <ApplyTool name="tool-1" selectInputs="true"/>
+    <DeselectAll/>
+    <StrutCreation anchor="0 0 0 0 0 0" index="39" len="2 4"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="-1 -2 -2 -3 1 1" startSegment="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="2 3 0 0 1 1" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <ApplyTool name="tool-1" selectInputs="true"/>
+    <ApplyTool name="tool-1" selectInputs="true"/>
+    <ApplyTool name="tool-1" selectInputs="true"/>
+    <ApplyTool name="tool-1" selectInputs="true"/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="-1 -2 -2 -3 1 1" startSegment="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="-2 -3 1 2 0 0" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <ApplyTool name="tool-1" selectInputs="true"/>
+    <ApplyTool name="tool-1" selectInputs="true"/>
+    <ApplyTool name="tool-1" selectInputs="true"/>
+    <ApplyTool name="tool-1" selectInputs="true"/>
+    <Polygon/>
+    <DeselectAll/>
+  </EditHistory>
+  <notes/>
+  <sceneModel ambientLight="41,41,41" background="175,200,220">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="307.6243591308594" far="615.2479248046875" near="0.7690609693527222" parallel="false" stereoAngle="0.0" width="138.43099975585938">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.4323677122592926" y="0.45438048243522644" z="0.7788437604904175"/>
+      <LookDirection x="0.13665258884429932" y="0.8867940306663513" z="-0.4414987862110138"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
+    <Direction color="0,141,54" name="green"/>
+    <Direction color="154,117,74" name="sand"/>
+    <Direction color="30,30,30" name="black"/>
+    <Direction color="255,51,143" name="rose"/>
+    <Direction color="18,205,148" name="turquoise"/>
+    <Direction color="255,255,255" name="57" prototype="-1 1 6 -3 -12 8"/>
+    <Direction color="255,255,255" name="56" prototype="1 0 -2 2 6 -3"/>
+    <Direction color="255,255,255" name="59" prototype="2 -1 -15 10 30 -18"/>
+    <Direction color="108,0,198" name="purple"/>
+    <Direction color="255,255,255" name="58" prototype="2 -1 -12 8 25 -15"/>
+    <Direction color="220,76,0" name="orange"/>
+    <Direction color="107,53,26" name="brown"/>
+    <Direction color="0,118,149" name="blue"/>
+    <Direction color="18,73,48" name="spruce"/>
+    <Direction color="175,0,0" name="red"/>
+    <Direction color="255,126,106" name="coral"/>
+    <Direction color="117,0,50" name="maroon"/>
+    <Direction color="240,160,0" name="yellow"/>
+    <Direction color="230,245,62" name="sulfur"/>
+    <Direction color="116,195,0" name="apple"/>
+    <Direction color="136,37,0" name="cinnamon"/>
+    <Direction color="0,0,153" name="navy"/>
+    <Direction color="255,255,255" name="63" prototype="-2 1 -18 12 25 -15"/>
+    <Direction color="175,135,255" name="lavender"/>
+    <Direction color="255,255,255" name="60" prototype="1 -1 6 -3 -6 4"/>
+    <Direction color="255,255,255" name="62" prototype="-2 1 -15 10 20 -12"/>
+    <Direction color="100,113,0" name="olive"/>
+    <Direction color="255,255,255" name="61" prototype="1 -1 8 -4 -9 6"/>
+  </SymmetrySystem>
+  <OtherSymmetries>
+    <SymmetrySystem name="octahedral" renderingStyle="trapezoids">
+      <Direction color="0,118,149" name="blue"/>
+      <Direction color="175,135,255" name="lavender"/>
+      <Direction color="18,205,148" name="turquoise"/>
+      <Direction color="30,30,30" name="black"/>
+      <Direction color="0,141,54" name="green"/>
+      <Direction color="100,113,0" name="olive"/>
+      <Direction color="117,0,50" name="maroon"/>
+      <Direction color="107,53,26" name="brown"/>
+      <Direction color="240,160,0" name="yellow"/>
+      <Direction color="175,0,0" name="red"/>
+      <Direction color="108,0,198" name="purple"/>
+    </SymmetrySystem>
+  </OtherSymmetries>
+  <Tools>
+    <Tool id="tool-0" label="bookmark 0" selectInputs="true"/>
+    <Tool id="tool-1" label="chord ratio transformation 1" selectInputs="true"/>
+  </Tools>
+</vzome:vZome>
