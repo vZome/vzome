@@ -378,7 +378,7 @@ public class PolygonField extends ParameterizedField<Integer> {
         if (goldenRatio != null && nonNullTerms == 2 && getOrder() > 2 ) {
             AlgebraicNumber scaleUnits = goldenDenominator.times(createRational(terms[0]));
             AlgebraicNumber scaledPhis = goldenNumerator.times(createRational(terms[1]));
-            return ((AlgebraicNumberImpl)(scaleUnits.plus(scaledPhis))).getFactors();
+            return ((AlgebraicNumberImpl)(scaleUnits.plus(scaledPhis)).dividedBy(goldenDenominator)).getFactors();
         }
         return super.prepareAlgebraicNumberTerms(terms);
     }
