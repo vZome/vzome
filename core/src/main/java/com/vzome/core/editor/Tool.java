@@ -34,16 +34,19 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
         this .deleteInputs = false;
     }
 
+    @Override
     public boolean isSelectInputs()
     {
         return this.selectInputs;
     }
     
+    @Override
     public boolean isDeleteInputs()
     {
         return this.deleteInputs;
     }
 
+    @Override
     public void setInputBehaviors( boolean selectInputs, boolean deleteInputs )
     {
         this.selectInputs = selectInputs;
@@ -172,6 +175,12 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
         return this .label;
     }
 
+    @Override
+    public String getOverlayText() 
+    { 
+        return null; 
+    }
+    
     @Override
     public void setLabel( String label )
     {

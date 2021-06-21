@@ -16,9 +16,9 @@ public interface Tool
 
 		String getToolTip();
 
-		String getLabel();
-
-		String getId();
+        String getLabel();
+        
+        String getId();
 	}
 
 	public interface Source
@@ -37,6 +37,8 @@ public interface Tool
 	public String getCategory();
 	
 	public String getLabel();
+	
+	public String getOverlayText();
 
 	public void setLabel( String label );
 	

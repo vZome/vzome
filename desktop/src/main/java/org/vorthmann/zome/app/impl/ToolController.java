@@ -82,8 +82,11 @@ public class ToolController extends DefaultController
         case "label":
             return this .tool .getLabel();
 
-		case "kind":
-			return this .tool .getCategory();
+        case "kind":
+            return this .tool .getCategory();
+
+        case "overlayText":
+            return this .tool .getOverlayText();
 
 		case "predefined":
 			return Boolean .toString( this .tool .isPredefined() );
@@ -112,7 +115,7 @@ public class ToolController extends DefaultController
 
 		case "label":
 			this .tool .setLabel( (String) value );
-			this .firePropertyChange( "label", null, (String) value );
+			this .firePropertyChange( "label", null, value );
 			return;
 
 		default:

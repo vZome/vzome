@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
 
 import org.vorthmann.ui.Controller;
 
@@ -163,9 +164,14 @@ public class SymmetryToolbarsPanel extends JPanel
 			return;
 		String label = controller .getProperty( "label" );
 		String kind = controller .getProperty( "kind" );
+		String overlayText = controller .getProperty( "overlayText" );
         String iconPath = "/icons/tools/small/" + kind + ".png";
         String tooltip = TOOLTIP_PREFIX + label + TOOLTIP_SUFFIX;
         JButton button = this .factory .makeIconButton( tooltip, iconPath );
+        if(overlayText != null) {
+            button.setVerticalTextPosition(SwingConstants.CENTER);
+            button.setText (overlayText);
+        }
 		button .setActionCommand( "apply" );
 		button .addActionListener( new ControllerActionListener(controller) );
 		button .addMouseListener( new MouseAdapter()
