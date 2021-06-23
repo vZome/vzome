@@ -1,6 +1,7 @@
 package org.vorthmann.zome.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -169,6 +170,18 @@ public class SymmetryToolbarsPanel extends JPanel
         String tooltip = TOOLTIP_PREFIX + label + TOOLTIP_SUFFIX;
         JButton button = this .factory .makeIconButton( tooltip, iconPath );
         if(overlayText != null) {
+            final int len = overlayText.length(); 
+            if( len == 4 || len == 5 ) {
+                // adjust the max size for overlayText with 4 or 5 chars such as "1/√3"
+                // since 3 chars work as-is and longer text should be truncated anyway
+                final int margin = 12; // DJH: 12 is the smallest margin that worked on my PC
+                int strWidth = margin + button.getFontMetrics(button.getFont()).stringWidth(overlayText);
+                Dimension pref = button.getMaximumSize();
+                if( pref.width < strWidth) {
+                    pref.width = strWidth;
+                    button.setMaximumSize(pref);
+                }
+            }
             button.setVerticalTextPosition(SwingConstants.CENTER);
             button.setText (overlayText);
         }
