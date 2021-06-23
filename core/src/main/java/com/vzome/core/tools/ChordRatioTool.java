@@ -205,6 +205,9 @@ public class ChordRatioTool extends TransformationTool {
         if(strut1 == null) {
             return "Fewer than 2 struts are selected";
         }
+        // save the input parameters so that selectParams will work
+        addParameter(strut1.getFirstConstruction());
+        addParameter(strut2.getFirstConstruction());
         return null;
     }
 
