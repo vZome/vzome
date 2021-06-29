@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -925,7 +926,13 @@ public class DocumentController extends DefaultController implements Scene.Provi
         }
     }
 
-    private void captureImageFile( final File file, final String extension, final AnimationCaptureController animation )
+    /**
+     * 
+     * @param dest a File or OutputStream
+     * @param extension
+     * @param animation
+     */
+    private void captureImageFile( final Object dest, final String extension, final AnimationCaptureController animation )
     {
         String maxSizeStr = getProperty( "max.image.size" );
         final int maxSize = ( maxSizeStr != null )? Integer .parseInt( maxSizeStr ) :
@@ -1007,10 +1014,10 @@ public class DocumentController extends DefaultController implements Scene.Provi
                     ImageWriter writer = ImageIO.getImageWritersByFormatName( format ) .next();
                     ImageWriteParam iwParam = writer .getDefaultWriteParam();
                     this.setImageCompression(format, iwParam);
-                    File thisFile = ( animation != null ) ? animation .nextFile() : file;
+                    Object thisDest = ( animation != null ) ? animation .nextFile() : dest;
                     
                     // A try-with-resources block closes the resource even if an exception occurs
-                    try (ImageOutputStream ios = ImageIO.createImageOutputStream( thisFile )) {
+                    try (ImageOutputStream ios = ImageIO.createImageOutputStream( thisDest )) {
                         writer .setOutput( ios );
                         writer .write( null, new IIOImage( image, null, null), iwParam );
                         writer .dispose(); // disposing of the writer doesn't close ios
@@ -1021,8 +1028,10 @@ public class DocumentController extends DefaultController implements Scene.Provi
                         // ios.close();
                     }
 
-                    if ( animation == null )
-                        openApplication( file );
+                    if ( animation == null ) {
+                        if ( dest instanceof File )
+                            openApplication( (File) dest );
+                    }
                     else if ( ! animation .finished() ) {
                         // queue up the next capture in the sequence
                         EventQueue .invokeLater( new Runnable(){
@@ -1195,6 +1204,19 @@ public class DocumentController extends DefaultController implements Scene.Provi
                 return null;
             }
             
+        case "png-base64": {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            captureImageFile( byteArrayOutputStream, "png", null );
+            String encoded = Base64.getEncoder() .encodeToString( byteArrayOutputStream .toByteArray() );
+            try {
+                byteArrayOutputStream .close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return encoded;
+        }
+
         case "field.label": {
             String name = this .documentModel .getField() .getName();
             return super.getProperty( "field.label." + name ); // defer to app controller

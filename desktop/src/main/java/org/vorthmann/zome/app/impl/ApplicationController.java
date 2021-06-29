@@ -493,6 +493,17 @@ public class ApplicationController extends DefaultController
     public void setModelProperty( String name, Object value )
     {
         this .properties .setProperty( name, value .toString() );
+        if ( "githubAccessToken" .equals( name ) ) {
+            userPreferences .setProperty( "githubAccessToken", value .toString() );
+            FileWriter writer;
+            try {
+                writer = new FileWriter( preferencesFile );
+                userPreferences .store( writer, "" );
+                writer .close();
+            } catch ( IOException e ) {
+                logger.fine(e.toString());
+            }
+        }
     }
 
     @Override
