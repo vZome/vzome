@@ -187,7 +187,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        menu .add( enableIf( canSave, createMenuItem( "Share as Github Gist...", "Share" ) ) );
+        menu .add( enableIf( canSave, createMenuItem( "Share using GitHub...", "Share" ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

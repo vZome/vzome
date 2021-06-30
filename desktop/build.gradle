@@ -101,6 +101,7 @@ sourceSets {
             // listed alphabetically
             include '**/*.gif'
             include '**/*.jpg'
+            include '**/*.md'
             include '**/*.pdf'
             include '**/*.png'
             include '**/*.properties'

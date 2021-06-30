@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Desktop;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -50,6 +51,7 @@ import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.DeviceAuthorization;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import com.vzome.xml.ResourceLoader;
 
 public class ShareDialog extends EscapeDialog
 {
@@ -62,6 +64,9 @@ public class ShareDialog extends EscapeDialog
     private final JLabel codeLabel;
     private final JButton authzButton;
     private final JLabel errorLabel;
+    private final HyperlinkPanel viewUrlPanel, githubUrlPanel;
+    
+    private final String readmeBoilerplate;
    
     // Services
     private final OAuth20Service oAuthService;
@@ -79,6 +84,9 @@ public class ShareDialog extends EscapeDialog
     
     // Inputs
     private transient String fileName, png, xml;
+    
+    // Outputs
+    private transient String embedUrl;
     
     /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      * First, the code that runs on the Swing event dispatcher thread...
@@ -109,8 +117,8 @@ public class ShareDialog extends EscapeDialog
         this .userService = new UserService(client);
         this .commitService = new CommitService( client );
         this .dataService = new DataService( client );
-
-        setLocationRelativeTo( frame );
+        
+        this .readmeBoilerplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubReadmeBoilerplate.md" );
 
         JPanel loginPanel = new JPanel();
         {
@@ -163,6 +171,23 @@ public class ShareDialog extends EscapeDialog
 //            progressBar .setIndeterminate( true );
 //            uploadPanel .add( progressBar, BorderLayout.CENTER );
         }
+        
+        JPanel resultsPanel = new JPanel();
+        {
+            JLabel help = new JLabel();
+            help .setBorder( BorderFactory.createEmptyBorder( 15, 15, 15, 15 ) );
+            help .setText( "<html>Your vZome file has uploaded successfully.</html>" );
+            this .viewUrlPanel = new HyperlinkPanel( "View design in vZome Online", controller );
+            this .githubUrlPanel = new HyperlinkPanel( "View GitHub folder", controller, false );
+            JPanel linksPanel = new JPanel();
+            linksPanel .setLayout( new FlowLayout() );
+            linksPanel .add( this .viewUrlPanel );
+            linksPanel .add( this .githubUrlPanel );
+            resultsPanel .setLayout( new BorderLayout() );
+            resultsPanel .add( help, BorderLayout.NORTH );
+            resultsPanel .add( linksPanel, BorderLayout.CENTER );
+            this .getRootPane() .setDefaultButton( viewUrlPanel .getCopyButton() );
+        }
 
         JPanel errorPanel = new JPanel();
         {
@@ -176,14 +201,16 @@ public class ShareDialog extends EscapeDialog
         Container content = this .getContentPane();
 
         this .cardPanel = new CardPanel();
-        this .cardPanel .add( "authz",  loginPanel );
-        this .cardPanel .add( "upload", uploadPanel );
-        this .cardPanel .add( "error",  errorPanel );
+        this .cardPanel .add( "authz",   loginPanel );
+        this .cardPanel .add( "upload",  uploadPanel );
+        this .cardPanel .add( "success", resultsPanel );
+        this .cardPanel .add( "error",   errorPanel );
         this .cardPanel .showCard( "authz" );
         content .add( this .cardPanel );
         
         this .setSize( new Dimension( 450, 250 ) );
         this .setResizable( false );
+        this .setLocationRelativeTo( frame );
     }
     
     private void updateDialog()
@@ -197,12 +224,11 @@ public class ShareDialog extends EscapeDialog
         else if ( this.gitUrl != null )
         {
             // the terminal success state
-            try {
-                setVisible( false );
-                Desktop .getDesktop() .browse( new URI( this.gitUrl ) );
-            } catch (IOException | URISyntaxException e1) {
-                e1.printStackTrace();
-            }
+            this .viewUrlPanel .setUrl( this .embedUrl );
+            this .githubUrlPanel .setUrl( this .gitUrl );
+            cardPanel .showCard( "success" );
+            getRootPane() .setDefaultButton( this .viewUrlPanel .getCopyButton() );
+            this .viewUrlPanel .getCopyButton() .requestFocusInWindow();
         }
         else if ( this.repo != null || this.authToken != null )
         {
@@ -337,19 +363,6 @@ public class ShareDialog extends EscapeDialog
         }
     }
     
-    private static final String MARKDOWN_BOILERPLATE =
-        "Your vZome design has successfully uploaded to GitHub.  You may now share it using the links below.\n\n" +
-        "[vZome Online (immediate)][1] - this link works as soon as vZome has pushed the files to Github; it can be shared immediately, but it will not show a preview image when auto-expanded in Twitter, Discord, Facebook, etc.\n" + 
-        "\n" + 
-        "[vZome Online (embeddable)][2] - this link may not work initially, since Github Pages may not be ready for a few minutes.  Once ready, this link is *great* for sharing on social media, since it will display the design title and a preview image.  Note that Github Pages only supports 20 updates in an hour, so you may have to wait up to an hour if you have shared more than 20 designs quickly.\n" + 
-        "\n" + 
-        "[Github Source][3] - view this content as source in Github.  Feel free to edit `README.md` (this content), if you want to modify and share the page.\n" + 
-        "\n" + 
-        "[Github Pages][4] - view this content as rendered in Github Pages.  Remember there may be a delay before changes appear here; see above.\n" + 
-        "\n" + 
-        "![Image]("
-        ;
-
     private void doUpload()
     {
         String username = null;
@@ -367,33 +380,40 @@ public class ShareDialog extends EscapeDialog
 
             Tree baseTree = dataService .getTree( this .repo, baseTreeSha );
 
+            // Encode the name to avoid problems with spaces, etc.
+            String designName = this .fileName;
+            int index = designName .toLowerCase() .lastIndexOf( ".vZome" .toLowerCase() );
+            if ( index > 0 )
+                designName = designName .substring( 0, index );
+            String encodedName = URLEncoder.encode( designName, StandardCharsets.UTF_8.toString() );
+            
             // prepare the timestamp path
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern( "yyyy/MM/dd/HH-mm-ss" );
-            String path = formatter .format( LocalDateTime.now() );
-            String vZomePath = path + "/" + URLEncoder.encode( fileName, StandardCharsets.UTF_8.toString() );
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern( "yyyy/MM/dd/HH-mm-ss-" );
+            String path = formatter .format( LocalDateTime.now() ) + encodedName;
+            String vZomePath = path + "/" + this .fileName;
 
             Collection<TreeEntry> entries = new ArrayList<TreeEntry>();
 
             this .addFile( entries, vZomePath, this.xml, Blob.ENCODING_UTF8 );
             
-            String designName = this .fileName;
-            int index = designName .toLowerCase() .lastIndexOf( ".vZome" .toLowerCase() );
-            if ( index > 0 )
-                designName = designName .substring( 0, index );
             String imageFileName = designName + ".png";
             this .addFile( entries, path + "/" + imageFileName, png, Blob.ENCODING_BASE64 );
 
             String rawUrl = "https://raw.githubusercontent.com/" + username + "/" + REPO_NAME + "/" + BRANCH_NAME + "/" + vZomePath;
-            String quickUrl = "https://vzome.com/app/?url=" + rawUrl;
-            String slowUrl  = VIEWER_PREFIX + "https://" + username + ".github.io/" + REPO_NAME + "/" + vZomePath;
+            String pagesRawUrl = "https://" + username + ".github.io/" + REPO_NAME + "/" + vZomePath;
+            
+            String quickUrl = "https://vzome.com/app/?url=" + URLEncoder.encode( rawUrl, StandardCharsets.UTF_8.toString() );
+            String slowUrl  = VIEWER_PREFIX + URLEncoder.encode( pagesRawUrl, StandardCharsets.UTF_8.toString() );
             String gitUrl   = "https://github.com/" + username + "/" + REPO_NAME + "/tree/" + BRANCH_NAME + "/" + path + "/";
             String pagesUrl = "https://" + username + ".github.io/" + REPO_NAME + "/" + path + "/";
             
-            String markdown = "### " + designName + "\n\n" + MARKDOWN_BOILERPLATE + imageFileName + ")\n\n";
-            markdown += "[1]: " + quickUrl + "\n";
-            markdown += "[2]: " + slowUrl + "\n";
-            markdown += "[3]: " + gitUrl + "\n";
-            markdown += "[4]: " + pagesUrl + "\n";
+            String markdown = this.readmeBoilerplate + "(<" + imageFileName + ">)\n\n\n";
+            markdown += "[quick]: <" + quickUrl + ">\n";
+            markdown += "[embed]: <" + slowUrl + ">\n";
+            markdown += "[source]: <" + gitUrl + ">\n";
+            markdown += "[pages]: <" + pagesUrl + ">\n";
+            markdown += "[raw]: <" + rawUrl + ">\n";
+            markdown += "[rawPages]: <" + pagesRawUrl + ">\n";
             this .addFile( entries, path + "/README.md", markdown, Blob.ENCODING_UTF8 );                
 
             Tree newTree = dataService .createTree( this .repo, entries, (baseTree==null)? null : baseTree.getSha() );
@@ -433,6 +453,8 @@ public class ShareDialog extends EscapeDialog
             reference .setObject( commitResource );
             dataService .editReference( this .repo, reference, true );
             this .gitUrl = gitUrl;
+            this .embedUrl = slowUrl;
+            controller .setProperty( "clipboard", slowUrl );
         }
         catch (Exception e) {
             e .printStackTrace();
