@@ -55,7 +55,6 @@ import com.vzome.xml.ResourceLoader;
 
 public class ShareDialog extends EscapeDialog
 {
-    private static final String VIEWER_PREFIX = "https://vzome.com/app/embed.py?url=";
     private static final String REPO_NAME = "vzome-sharing";
     private static final String BRANCH_NAME = "main";
 
@@ -389,23 +388,32 @@ public class ShareDialog extends EscapeDialog
             
             // prepare the timestamp path
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern( "yyyy/MM/dd/HH-mm-ss-" );
-            String path = formatter .format( LocalDateTime.now() ) + encodedName;
-            String vZomePath = path + "/" + this .fileName;
+            String timestampPath = formatter .format( LocalDateTime.now() );
+            String path = timestampPath + encodedName + "/";
 
             Collection<TreeEntry> entries = new ArrayList<TreeEntry>();
 
-            this .addFile( entries, vZomePath, this.xml, Blob.ENCODING_UTF8 );
+            this .addFile( entries, path + this .fileName, this.xml, Blob.ENCODING_UTF8 );
             
             String imageFileName = designName + ".png";
-            this .addFile( entries, path + "/" + imageFileName, png, Blob.ENCODING_BASE64 );
+            this .addFile( entries, path + imageFileName, png, Blob.ENCODING_BASE64 );
 
-            String rawUrl = "https://raw.githubusercontent.com/" + username + "/" + REPO_NAME + "/" + BRANCH_NAME + "/" + vZomePath;
-            String pagesRawUrl = "https://" + username + ".github.io/" + REPO_NAME + "/" + vZomePath;
-            
-            String quickUrl = "https://vzome.com/app/?url=" + URLEncoder.encode( rawUrl, StandardCharsets.UTF_8.toString() );
-            String slowUrl  = VIEWER_PREFIX + URLEncoder.encode( pagesRawUrl, StandardCharsets.UTF_8.toString() );
-            String gitUrl   = "https://github.com/" + username + "/" + REPO_NAME + "/tree/" + BRANCH_NAME + "/" + path + "/";
-            String pagesUrl = "https://" + username + ".github.io/" + REPO_NAME + "/" + path + "/";
+            String baseUrl = "https://raw.githubusercontent.com/" + username + "/" + REPO_NAME + "/" + BRANCH_NAME + "/" + timestampPath;
+            String rawUrl = baseUrl + encodedName + "/" + this .fileName;
+
+            String pagesBaseUrl = "https://" + username + ".github.io/" + REPO_NAME + "/" + timestampPath;
+            String pagesRawUrl = pagesBaseUrl + encodedName + "/" + this .fileName;
+
+            // I'm cheating a bit here, not encoding the entire rawUrl and pagesRawUrl, so that the
+            //  quickUrl and slowUrl are not so hideous.  It doesn't seem to matter, as long as
+            //  the path and name are encoded (or doubly encoded) correctly.
+            String encodedRawTail = URLEncoder.encode( encodedName,    StandardCharsets.UTF_8.toString() )
+                            + "/" + URLEncoder.encode( this .fileName, StandardCharsets.UTF_8.toString() );
+
+            String quickUrl = "https://vzome.com/app/?url=" + baseUrl + encodedRawTail;
+            String slowUrl  = "https://vzome.com/app/embed.py?url=" + pagesBaseUrl + encodedRawTail;
+            String gitUrl   = "https://github.com/" + username + "/" + REPO_NAME + "/tree/" + BRANCH_NAME + "/" + path;
+            String pagesUrl = "https://" + username + ".github.io/" + REPO_NAME + "/" + path;
             
             String markdown = this.readmeBoilerplate + "(<" + imageFileName + ">)\n\n\n";
             markdown += "[quick]: <" + quickUrl + ">\n";
@@ -414,7 +422,7 @@ public class ShareDialog extends EscapeDialog
             markdown += "[pages]: <" + pagesUrl + ">\n";
             markdown += "[raw]: <" + rawUrl + ">\n";
             markdown += "[rawPages]: <" + pagesRawUrl + ">\n";
-            this .addFile( entries, path + "/README.md", markdown, Blob.ENCODING_UTF8 );                
+            this .addFile( entries, path + "README.md", markdown, Blob.ENCODING_UTF8 );                
 
             Tree newTree = dataService .createTree( this .repo, entries, (baseTree==null)? null : baseTree.getSha() );
 
