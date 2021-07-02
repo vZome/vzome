@@ -401,27 +401,18 @@ public class ShareDialog extends EscapeDialog
             String baseUrl = "https://raw.githubusercontent.com/" + username + "/" + REPO_NAME + "/" + BRANCH_NAME + "/" + timestampPath;
             String rawUrl = baseUrl + encodedName + "/" + this .fileName;
 
-            String pagesBaseUrl = "https://" + username + ".github.io/" + REPO_NAME + "/" + timestampPath;
-            String pagesRawUrl = pagesBaseUrl + encodedName + "/" + this .fileName;
-
-            // I'm cheating a bit here, not encoding the entire rawUrl and pagesRawUrl, so that the
-            //  quickUrl and slowUrl are not so hideous.  It doesn't seem to matter, as long as
+            // I'm cheating a bit here, not encoding the entire rawUrl, so that the
+            //  embedUrl is not so hideous.  It doesn't seem to matter, as long as
             //  the path and name are encoded (or doubly encoded) correctly.
             String encodedRawTail = URLEncoder.encode( encodedName,    StandardCharsets.UTF_8.toString() )
                             + "/" + URLEncoder.encode( this .fileName, StandardCharsets.UTF_8.toString() );
 
-            String quickUrl = "https://vzome.com/app/?url=" + baseUrl + encodedRawTail;
-            String slowUrl  = "https://vzome.com/app/embed.py?url=" + pagesBaseUrl + encodedRawTail;
+            String embedUrl  = "https://vzome.com/app/embed.py?url=" + baseUrl + encodedRawTail;
             String gitUrl   = "https://github.com/" + username + "/" + REPO_NAME + "/tree/" + BRANCH_NAME + "/" + path;
-            String pagesUrl = "https://" + username + ".github.io/" + REPO_NAME + "/" + path;
             
             String markdown = this.readmeBoilerplate + "(<" + imageFileName + ">)\n\n\n";
-            markdown += "[quick]: <" + quickUrl + ">\n";
-            markdown += "[embed]: <" + slowUrl + ">\n";
-            markdown += "[source]: <" + gitUrl + ">\n";
-            markdown += "[pages]: <" + pagesUrl + ">\n";
+            markdown += "[embed]: <" + embedUrl + ">\n";
             markdown += "[raw]: <" + rawUrl + ">\n";
-            markdown += "[rawPages]: <" + pagesRawUrl + ">\n";
             this .addFile( entries, path + "README.md", markdown, Blob.ENCODING_UTF8 );                
 
             Tree newTree = dataService .createTree( this .repo, entries, (baseTree==null)? null : baseTree.getSha() );
@@ -461,8 +452,8 @@ public class ShareDialog extends EscapeDialog
             reference .setObject( commitResource );
             dataService .editReference( this .repo, reference, true );
             this .gitUrl = gitUrl;
-            this .embedUrl = slowUrl;
-            controller .setProperty( "clipboard", slowUrl );
+            this .embedUrl = embedUrl;
+            controller .setProperty( "clipboard", embedUrl );
         }
         catch (Exception e) {
             e .printStackTrace();
