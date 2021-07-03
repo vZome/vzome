@@ -258,7 +258,11 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         float aspectRatio = (float) imageHeight / (float) imageWidth;
         if ( maxSize > 0 ) {
             imageWidth = maxSize;
-            imageHeight = (int) (imageWidth * aspectRatio);  // This was hardcoded, now is correct.
+            if ( imageHeight > 0 ) {
+                imageHeight = (int) (imageWidth * aspectRatio);  // This was hardcoded, now is correct.
+            } else {
+                imageHeight = (int) (imageWidth * 4 / 5);  // This was hardcoded, now is correct.
+            }
         }
         
         GLProfile glprofile = GLProfile .getDefault();
