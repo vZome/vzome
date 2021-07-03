@@ -1,4 +1,3 @@
-//(c) Copyright 2006, Scott Vorthmann
 
 package com.vzome.core.editor.api;
 
@@ -28,20 +27,6 @@ public abstract class UndoableEdit
     public abstract Element getXml( Document doc );
 
     public abstract void loadAndPerform( Element xml, XmlSaveFormat format, Context context ) throws Command.Failure;
-
-    //    public interface History
-    //    {
-    //        void performAndRecord( UndoableEdit edit );
-    //    }
-    //    
-    public interface Context
-    {
-        UndoableEdit createEdit( Element xml );
-        
-        Command createLegacyCommand( String cmdName ) throws Command.Failure;
-
-        void performAndRecord( UndoableEdit edit );
-    }
 
     /**
      * True when this edit must cause a persistent history branch.

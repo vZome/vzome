@@ -1,4 +1,3 @@
-//(c) Copyright 2011, Scott Vorthmann.
 
 package org.vorthmann.ui;
 

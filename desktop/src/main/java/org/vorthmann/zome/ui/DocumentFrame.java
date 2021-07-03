@@ -41,7 +41,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.ToolTipManager;
 
-import org.apache.commons.lang3.ObjectUtils.Null;
 import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.Platform;
 import org.vorthmann.ui.Controller;
@@ -235,7 +234,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     if ( shareDialog == null )
                         shareDialog = new ShareDialog( DocumentFrame.this, mController );
                     Path filePath = new File( windowName ) .toPath();
-                    shareDialog .setFileData( filePath .getFileName() .toString(), mController .getProperty( "vZome-xml" ) );
+                    String xml = mController .getProperty( "vZome-xml" );
+                    String pngEncoded = mController .getProperty( "png-base64" );
+                    shareDialog .startUpload( filePath .getFileName() .toString(), xml, pngEncoded );
                     break;
 
                 case "saveDefault":
@@ -490,7 +491,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     //                    snapshotButton .setPreferredSize( dim );
                     //                    snapshotButton .setMaximumSize( dim );
                     //                }
-                    articleButtonsPanel .add( snapshotButton );
+                    if ( controller .propertyIsTrue( "enable.article.creation" ) )
+                        articleButtonsPanel .add( snapshotButton );
                     snapshotButton .setActionCommand( "takeSnapshot" );
                     snapshotButton .addActionListener( new ActionListener()
                     {

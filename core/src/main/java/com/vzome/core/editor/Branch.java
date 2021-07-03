@@ -1,6 +1,4 @@
 
-//(c) Copyright 2010, Scott Vorthmann.
-
 package com.vzome.core.editor;
 
 import java.util.ArrayList;
@@ -15,6 +13,7 @@ import org.w3c.dom.NodeList;
 
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.editor.api.Context;
 import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.commands.XmlSaveFormat;
 
@@ -63,7 +62,7 @@ public class Branch extends UndoableEdit
 
                 UndoableEdit edit = context .createEdit( editElem );
                 addEdit( edit );
-                edit. loadAndPerform(editElem, format, new UndoableEdit.Context()
+                edit. loadAndPerform(editElem, format, new Context()
                 {
                     @Override
                     public void performAndRecord( UndoableEdit edit )

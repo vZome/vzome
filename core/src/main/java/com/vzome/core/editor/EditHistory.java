@@ -18,8 +18,8 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.editor.api.ChangeSelection;
+import com.vzome.core.editor.api.Context;
 import com.vzome.core.editor.api.UndoableEdit;
-import com.vzome.core.editor.api.UndoableEdit.Context;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.model.Manifestation;
 import com.vzome.xml.DomSerializer;
@@ -619,7 +619,7 @@ public class EditHistory implements Iterable<UndoableEdit>
 
             try {
                 EditHistory .this .listener .showCommand( xml, num );
-                realized. loadAndPerform(xml, format, new UndoableEdit.Context()
+                realized. loadAndPerform(xml, format, new Context()
                 {
                     @Override
                     public void performAndRecord( UndoableEdit edit )

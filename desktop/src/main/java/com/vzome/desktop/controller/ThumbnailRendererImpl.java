@@ -1,6 +1,4 @@
 
-//(c) Copyright 2011, Scott Vorthmann.
-
 package com.vzome.desktop.controller;
 
 import java.awt.image.RenderedImage;

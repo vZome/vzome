@@ -28,6 +28,8 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
+import com.vzome.core.algebra.PolygonField;
+import com.vzome.core.algebra.PolygonFieldTest;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
 import com.vzome.core.commands.Command;
@@ -35,7 +37,7 @@ import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.commands.CommandSymmetry;
 import com.vzome.core.commands.CommandTauDivision;
 import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
+import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.generic.Utilities;
@@ -70,6 +72,9 @@ public class FieldApplicationTest
         result.add( new HeptagonFieldApplication( new HeptagonField() ) );
         result.add( new SqrtPhiFieldApplication());
         result.add( new SnubDodecFieldApplication());
+        for(int nSides = PolygonField.MIN_SIDES; nSides < PolygonFieldTest.MAX_SIDES; nSides++) {
+            result.add( new PolygonFieldApplication(nSides));
+        }
         return result;
     }
     
@@ -98,6 +103,10 @@ public class FieldApplicationTest
                 names.add(name);
                 
                 assertSame(appName + "." + name, perspective, app.getSymmetryPerspective(name));
+                
+                if(name.startsWith("antiprism")) {
+                    assertEquals( "antiprism" + (((PolygonField)(perspective.getSymmetry().getField())).polygonSides()), name);
+                }
                 
                 testGetLegacyCommand(perspective, appName);
                 testGeometries(perspective, appName);
@@ -215,18 +224,26 @@ public class FieldApplicationTest
             break;
 
         default:
+            if(name.startsWith("antiprism") ) {
+                if(appName.startsWith("polygon")) {
+                    addTo(testNames, "red", "blue", "green", "yellow");
+                } else {
+                    fail("unexpected FieldApplication name: " + name);
+                }
+                break;
+            }
             fail(appName + " has an unexpected perspective name: " + name);
         }
 
         final Symmetry symmetry = perspective.getSymmetry();
         final String msg = "Expected " + appName + " " + symmetry.getName();
 
-        int nExpected = symmetry.getDirectionNames().length;
-        assertTrue(msg + " to have at least 2 directions" , nExpected >= 2);
-        if(nExpected != testNames.size()) {
+        int nDirections = symmetry.getDirectionNames().length;
+        assertTrue(msg + " to have at least 3 directions" , nDirections >= 3);
+        if(testNames.size() != nDirections) {
             // list the actual directions for comparison to testNames
             listDirections(appName, symmetry);
-            assertEquals(msg, nExpected, testNames.size());
+            assertEquals(msg, testNames.size(), nDirections);
         }
 
         for(String dirName : testNames) {
@@ -239,6 +256,9 @@ public class FieldApplicationTest
         for( Direction dir : symmetry) {
             String symDirName = symmetry.getName() + " " + dir.getName();
             String msg = appName + " " + symDirName;
+            // No automatic directions will have been added to these symmetries 
+            assertFalse(msg, dir.isAutomatic());
+
             AlgebraicVector vProto = dir.getPrototype();
             AlgebraicVector vPlus0 = dir.getAxis(Symmetry.PLUS, 0).normal();
             AlgebraicNumber quadranceProto = vProto.dot(vProto);
@@ -265,9 +285,6 @@ public class FieldApplicationTest
             default:
                 // Verify that all other predefined directions
                 // are oriented so that vProto equals vPlus0.
-                if(dir.isAutomatic()) {
-                   System.out.println("I don't know if automatic directions even matter... DJH?"); 
-                }
                 assertEquals(symDirName, vProto, vPlus0);
                 break;
             }
@@ -323,7 +340,11 @@ public class FieldApplicationTest
             break;
             
         default:
-            fail("unexpected FieldApplication name: " + name);
+            if(name.startsWith("polygon")) {
+                noop();
+            } else {
+                fail("unexpected FieldApplication name: " + name);
+            }
             break;
         }
     }
@@ -371,6 +392,10 @@ public class FieldApplicationTest
             break;
             
         default:
+            if(name.startsWith("antiprism") ) {
+                assertTrue(perspective.getLegacyCommand("axialsymm") instanceof CommandAxialSymmetry);
+                break;
+            }
             fail(appName + " has an unexpected perspective name: " + name);
         }
     }
@@ -482,7 +507,17 @@ public class FieldApplicationTest
             break;
             
         default:
-            fail("unexpected FieldApplication name: " + name);
+            if(name.startsWith("polygon")) {
+                if(name.equals("polygon5")) {
+                    assertTrue(name, toolFactories .get( "SymmetryTool") instanceof IcosahedralToolFactory);
+                    assertTrue(name, toolFactories .get( "AxialStretchTool") instanceof AxialStretchTool.Factory);
+                } else {
+                    assertTrue(name, toolFactories .get( "SymmetryTool") instanceof OctahedralToolFactory);
+                    assertNull(name, toolFactories .get( "AxialStretchTool"));
+                }
+            } else {
+                fail("unexpected FieldApplication name: " + name);
+            }
             break;
         }
     }
@@ -526,6 +561,10 @@ public class FieldApplicationTest
                 break;
                 
             default:
+                if(name.startsWith("antiprism") ) {
+                    verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1);
+                    break;                    
+                }
                 fail(appName + " has an unexpected perspective name: " + name);
             }
         }
@@ -615,8 +654,20 @@ public class FieldApplicationTest
                 assertNotNull(msg, qSymm);
                 break;
                 
+            case "polygon5": // TODO: eventually, this should be any 5N-gon
+                if(qsName == "H_4") {
+                    assertNotNull(msg, qSymm);
+                } else {
+                    assertNull(msg, qSymm);
+                }
+                break;
+                
             default:
-                fail("unexpected FieldApplication name: " + appName);
+                if(appName.startsWith("polygon")) { // except polygon5 above
+                    assertNull(msg, qSymm);
+                } else {
+                    fail("unexpected FieldApplication name: " + appName);
+                }
                 break;
             }
         }

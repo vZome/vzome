@@ -60,7 +60,7 @@ public class POVRayExporter extends Exporter3d
     }
 
     @Override
-	public void doExport( File povFile, File directory, Writer writer, int height, int width ) throws IOException
+	public void doExport( File povFile, Writer writer, int height, int width ) throws IOException
 	{
 	    output = new PrintWriter( writer );
 	    
@@ -217,7 +217,7 @@ public class POVRayExporter extends Exporter3d
 		{
 		    filename = filename .substring( 0, index );
 		}
-		File file = new File( directory, filename + ".ini" );
+		File file = new File( povFile .getParentFile(), filename + ".ini" );
 		output = new PrintWriter( new FileWriter( file ) );
 		output .println( "+W" + 600 );  // TODO fix these values!
         output .println( "+H" + 600 );
@@ -338,13 +338,6 @@ public class POVRayExporter extends Exporter3d
     public String getFileExtension()
     {
         return "pov";
-    }
-
-    @Override
-    public void doExport( File directory, Writer writer, int height, int width )
-            throws Exception
-    {
-        throw new IllegalStateException( "POV exporter only supports 5-argument doExport()" );
     }
 }
 

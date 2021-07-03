@@ -31,12 +31,12 @@ public class AxialSymmetryToolFactory extends RotationTool.Factory
 	 */
     public AxialSymmetryToolFactory( ToolsModel tools, Symmetry symmetry, boolean useSymmetryName )
     {
-        super( tools, symmetry, symmetry.getName() + ' ' + ID, LABEL, TOOLTIP );
+        super( tools, symmetry, (useSymmetryName ? symmetry.getName() + ' ' : "") + ID, LABEL, TOOLTIP );
     }
     
 	public AxialSymmetryToolFactory( ToolsModel tools, Symmetry symmetry )
 	{
-		super( tools, symmetry, ID, LABEL, TOOLTIP );
+	    this( tools, symmetry, false );
 	}
 
 	@Override

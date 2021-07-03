@@ -95,6 +95,10 @@ public class AlgebraicFields {
             break;
 
         default:
+            if(fieldName.startsWith(PolygonField.FIELD_PREFIX)) {
+                int nSides = Integer.parseInt(fieldName.substring(PolygonField.FIELD_PREFIX.length()));
+                coefficients = PolygonField.getFieldCoefficients(nSides);
+            }
             break;
         }
         return coefficients;

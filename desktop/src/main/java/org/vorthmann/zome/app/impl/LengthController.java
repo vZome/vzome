@@ -1,6 +1,4 @@
 
-//(c) Copyright 2007, Scott Vorthmann.  All rights reserved.
-
 package org.vorthmann.zome.app.impl;
 
 import java.awt.event.MouseWheelEvent;
@@ -185,7 +183,7 @@ public class LengthController extends DefaultController
     {
         this .field = field;
         this .multiplier = 0;
-        this .standardUnitFactor = field .createPower( 0 );
+        this .standardUnitFactor = field .one();
         this .unitFactor = standardUnitFactor;
         this .fixedFactor = factor;
         this .currentScales = new ScaleController[ field .getNumMultipliers() ];

@@ -43,7 +43,11 @@
       <content xml:space="preserve">
 To introduce you to vZome, we are going to go through the steps to build a simple dodecahedron.  To do this, you won't be editing this document that you're reading.  Use the "New Model..." command from the "File" menu to create a new document where you will build your dodecahedron.  You will want to switch back and forth between reading the pages of this article, and performing the instructions in your dodecahedron model document.
 
-Now proceed to the next page of this article, by clicking on the 2nd thumbnail to the left.  (The thumbnail images will fill in only on the first visit, sorry.)
+Now proceed to the next page of this article, by clicking on the 2nd thumbnail to the left.  (The thumbnail images may not fill in, sorry.)
+
+As you continue to navigate through these pages, remember that all subsequent instructions here should be performed in your new dodecahedron document.
+
+Also, notice that the main view in this article is not just an image; you can drag your mouse to rotate the 3d model, and use your scroll wheel to zoom in and out.
 </content>
     </page>
     <page snapshot="1" title="the starting ball">
@@ -53,7 +57,9 @@ Now proceed to the next page of this article, by clicking on the 2nd thumbnail t
         <LookDirection x="0.0" y="0.0" z="-1.0"/>
       </ViewModel>
       <content xml:space="preserve">
-Every new vZome document starts with nothing but a single ball.  Your first step will be to make a yellow strut.  Start by setting the strut direction to yellow, by clicking on the yellow circle in the triangle on the right side of your other window.  If the yellow direction was already selected (with a black dot), you'll have to click twice, so the yellow dot has a circle around it.
+Every new vZome document starts with nothing but a single ball.  Your first step will be to make a yellow strut.  Start by setting the strut direction to yellow, by clicking on the yellow circle in the "strut directions" triangle on the right side of your other window.  If the yellow direction was already selected (with a black dot), you'll have to click twice, so the yellow dot has a circle around it.
+
+Next, click on the checkbox labeled "single", just above the direction triangle.  This means you will only build yellow struts.
 
 Next, click on the "y2" button in the "strut size" panel below the triangle.
 
@@ -83,7 +89,7 @@ Now, click once on the new ball at the end of the yellow strut.  This will selec
       <content xml:space="preserve">
 Most vZome model manipulation commands require a selection of some sort.
 
-With this ball selected, use the "icosahedral around origin" symmetry tool, the first button in the third section of the toolbar at the top of the editor window.
+With this ball selected, use the "icosahedral around origin" symmetry tool, the first button in the third section of the lower toolbar at the top of the editor window.
 </content>
     </page>
     <page snapshot="4" title="twenty balls">
@@ -93,11 +99,11 @@ With this ball selected, use the "icosahedral around origin" symmetry tool, the 
         <LookDirection x="0.0" y="0.0" z="-1.0"/>
       </ViewModel>
       <content xml:space="preserve">
-Since you had a ball selected that lay on a threefold symmetry axis, you now see twenty balls.  You can see that these form the vertices of a dodecahedron.
+Since you had a ball selected that lies on a threefold symmetry axis, you now see twenty balls.  You can see that these form the vertices of a dodecahedron.
 
 To create an edge of the dodecahedron, you need to select only two balls.  First, deselect everything by clicking on the background.
 
-Then, click on two balls that would form the endpoints of an edge.
+Then, click on two balls that would form the endpoints of an edge... two balls that are as close as possible to each other.
 </content>
     </page>
     <page snapshot="5" title="edge endpoints">
@@ -107,7 +113,7 @@ Then, click on two balls that would form the endpoints of an edge.
         <LookDirection x="0.0" y="0.0" z="-1.0"/>
       </ViewModel>
       <content xml:space="preserve">
-With two balls thus selected, you can apply either of the "Connect balls..." tools, the first two in second section of the toolbar.
+With two balls thus selected, you can apply any of the "Connect balls..." tools, the first four in second section of the lower toolbar.
 </content>
     </page>
     <page snapshot="6" title="edge strut">
@@ -137,7 +143,7 @@ Having created all the dodecahedron's edges, you can guess that the next action 
         <LookDirection x="-0.10442228630754223" y="-0.052320013393880385" z="-0.9931558801722769"/>
       </ViewModel>
       <content xml:space="preserve">
-Now select the original ball and the yellow scaffolding strut, and apply the "delete" tool, the very first button in the toolbar.
+Now select the original ball and the yellow scaffolding strut, and apply the "delete" tool, the very first button in the toolbar, showing a big red X.
 </content>
     </page>
     <page snapshot="0" title="enjoy your dodecahedron">
@@ -147,6 +153,7 @@ Now select the original ball and the yellow scaffolding strut, and apply the "de
         <LookDirection x="-0.49606426227747497" y="-0.05106502209409383" z="-0.8667829089279719"/>
       </ViewModel>
       <content xml:space="preserve">
+You are now ready to start your vZome journey!
 </content>
     </page>
   </notes>

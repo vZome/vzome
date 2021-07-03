@@ -25,7 +25,7 @@ public class HistoryExporter extends Exporter3d
     }
 
     @Override
-    public void doExport( DocumentModel document, File file, File parentFile, Writer writer, int height, int width ) throws Exception
+    public void exportDocument( DocumentModel document, File file, Writer writer, int height, int width ) throws Exception
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory .newInstance();
         factory .setNamespaceAware( true );

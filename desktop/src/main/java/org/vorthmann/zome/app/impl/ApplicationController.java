@@ -31,10 +31,12 @@ import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.Command.FailureChannel;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.math.symmetry.AntiprismSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Scene;
+import com.vzome.core.viewing.AntiprismTrackball;
 import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.RenderingViewer;
 
@@ -165,21 +167,29 @@ public class ApplicationController extends DefaultController
 
     public RenderedModel getSymmetryModel( String path, Symmetry symmetry )
     {
-        RenderedModel result = this .symmetryModels .get( path );
-        // The cache does not care if the symmetry matches.
-        if ( result != null )
+        String key = path;
+        if(symmetry instanceof AntiprismSymmetry) {
+            // Create distinct keys for antiprism symmetries.
+            // Otherwise, the cache does not care if the symmetry matches.
+            key = path + "@" + symmetry.getName();
+        }
+        RenderedModel result = this .symmetryModels .get( key );
+        if ( result != null ) {
             return result;
-
+        }
+        
         ClassLoader cl = this .getClass() .getClassLoader();
         InputStream bytes = cl.getResourceAsStream( path );
+        
+        if(symmetry instanceof AntiprismSymmetry) {
+            bytes = AntiprismTrackball.getTrackballModelStream(bytes, (AntiprismSymmetry)symmetry);
+        }
 
         try {
             DocumentModel document = this .modelApp .loadDocument( bytes );
-            // a RenderedModel that only creates panels
-            document .setRenderedModel( new RenderedModel( symmetry ) .withColorPanels( false ) ); 
             document .finishLoading( false, false );
             result = document .getRenderedModel();
-            this .symmetryModels .put( path, result );
+            this .symmetryModels .put( key, result );
             return result;
         } catch ( Exception e ) {
             throw new RuntimeException( e );
@@ -193,6 +203,7 @@ public class ApplicationController extends DefaultController
             if ( action .equals( "showAbout" ) 
                     || action .equals( "openURL" ) 
                     || action .equals( "quit" )
+                    || action .equals( "new-polygon" )
                     || action .startsWith( "browse-" )
                     )
             {
@@ -307,17 +318,25 @@ public class ApplicationController extends DefaultController
             Path filePath = file .toPath();
             String path = filePath .toAbsolutePath() .toString();
 
-            int pos = path .toLowerCase() .lastIndexOf( ".vzome." );
-            if( pos > 0 ) {
+            String lowerPath = path .toLowerCase();
+            int pos = lowerPath .lastIndexOf( ".vzome." );
+            if( pos > 0 && ! lowerPath .endsWith( ".vzome" ) ) {
                 /*
                  * This allows the user to select a file named "foo.vzome.png" that they can preview,
                  * as a "proxy" that will actually attempt to open the corresponding vzome file.
                  * 
                  * Note that such a "proxy" image file with a ".vome.png" extension is generated automatically 
                  * upon saving a vZome file by adding "save.exports=capture.png" to .vZome.prefs.
+                 *
+                 * On Windows, there is a pattern for saving a copy of an existing file that triggers a
+                 * duplicate extension, like "whatever.vzome.vZome", so we want to exclude that case.
                  */
                 path = path.substring( 0, pos += 6 );
                 file = Paths .get( path ) .toFile();
+                if ( ! file.exists() ) {
+                    this .mErrors .reportError( "File does not exist: " + path, new Object[]{} );
+                    return;
+                }
             }
 
             docProps .setProperty( "window.title", path );
@@ -459,6 +478,7 @@ public class ApplicationController extends DefaultController
                 case "rootTwo":
                 case "rootThree":
                 case "heptagon":
+                case "sqrtPhi":
                     return "true"; // these are enabled for everyone
 
                 default:
@@ -473,6 +493,17 @@ public class ApplicationController extends DefaultController
     public void setModelProperty( String name, Object value )
     {
         this .properties .setProperty( name, value .toString() );
+        if ( "githubAccessToken" .equals( name ) ) {
+            userPreferences .setProperty( "githubAccessToken", value .toString() );
+            FileWriter writer;
+            try {
+                writer = new FileWriter( preferencesFile );
+                userPreferences .store( writer, "" );
+                writer .close();
+            } catch ( IOException e ) {
+                logger.fine(e.toString());
+            }
+        }
     }
 
     @Override
@@ -562,11 +593,13 @@ public class ApplicationController extends DefaultController
         return modelApp .getLights();
     }
     
+    @Override
     protected void runScript( String script, File file )
     {
         this .ui .runScript( script, file );
     }
 
+    @Override
     protected void openApplication( File file )
     {
         String script = this .getProperty( "export.script" );

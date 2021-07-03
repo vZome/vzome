@@ -216,8 +216,8 @@ public class MeasureController extends DefaultController implements SelectionSum
                 AlgebraicNumber exactRecip = exactRatio.reciprocal();
                 this .measurements .put( n1n2, exactRatio.toString());
                 this .measurements .put( n2n1, exactRecip.toString());
-                System.out.println( n1n2 + " = " + exactRatio.toString());
-                System.out.println( n2n1 + " = " + exactRecip.toString());
+//                System.out.println( n1n2 + " = " + exactRatio.toString());
+//                System.out.println( n2n1 + " = " + exactRecip.toString());
             }
         }
 	}
