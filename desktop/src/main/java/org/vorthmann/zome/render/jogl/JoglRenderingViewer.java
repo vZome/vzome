@@ -261,7 +261,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
             if ( imageHeight > 0 ) {
                 imageHeight = (int) (imageWidth * aspectRatio);  // This was hardcoded, now is correct.
             } else {
-                imageHeight = (int) (imageWidth * 4 / 5);  // This was hardcoded, now is correct.
+                imageHeight = imageWidth * 4 / 5;
             }
         }
         
