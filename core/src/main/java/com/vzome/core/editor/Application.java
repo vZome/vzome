@@ -1,6 +1,4 @@
 
-//(c) Copyright 2013, Scott Vorthmann.
-
 package com.vzome.core.editor;
 
 import java.io.IOException;
@@ -19,6 +17,7 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
+import com.vzome.core.algebra.PolygonField;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
 import com.vzome.core.commands.Command;
@@ -33,25 +32,24 @@ import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters.HistoryExporter;
 import com.vzome.core.exporters.OffExporter;
 import com.vzome.core.exporters.POVRayExporter;
+import com.vzome.core.exporters.PartGeometryExporter;
 import com.vzome.core.exporters.PartsListExporter;
 import com.vzome.core.exporters.PdbExporter;
 import com.vzome.core.exporters.PlyExporter;
-import com.vzome.core.exporters.RulerExporter;
 import com.vzome.core.exporters.STEPExporter;
-import com.vzome.core.exporters.SecondLifeExporter;
 import com.vzome.core.exporters.SegExporter;
 import com.vzome.core.exporters.ShapesJsonExporter;
 import com.vzome.core.exporters.SimpleMeshJsonExporter;
 import com.vzome.core.exporters.StlExporter;
 import com.vzome.core.exporters.VRMLExporter;
 import com.vzome.core.exporters.VefExporter;
-import com.vzome.core.exporters.WebviewJsonExporter;
 import com.vzome.core.exporters2d.PDFExporter;
 import com.vzome.core.exporters2d.PostScriptExporter;
 import com.vzome.core.exporters2d.SVGExporter;
 import com.vzome.core.exporters2d.SnapshotExporter;
 import com.vzome.core.kinds.GoldenFieldApplication;
 import com.vzome.core.kinds.HeptagonFieldApplication;
+import com.vzome.core.kinds.PolygonFieldApplication;
 import com.vzome.core.kinds.RootThreeFieldApplication;
 import com.vzome.core.kinds.RootTwoFieldApplication;
 import com.vzome.core.kinds.SnubDodecFieldApplication;
@@ -107,16 +105,12 @@ public class Application implements AlgebraicField.Registry
 
         this .exporters .put( "pov", new POVRayExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "dae", new DaeExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "json", new WebviewJsonExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "step", new STEPExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "vrml", new VRMLExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "off", new OffExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "2life", new SecondLifeExporter( null, this .mColors, this .mLights, null ) );
-        Exporter3d vefExporter = new VefExporter( null, this .mColors, this .mLights, null );
-        this .exporters .put( "vef", vefExporter );
-        this .exporters .put( "partgeom", vefExporter ); // need this here just to find the extension in DocumentController.getProperty()
+        this .exporters .put( "vef", new VefExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "partgeom", new PartGeometryExporter( null, this .mColors, this .mLights, null, null ) ); // need this here just to find the extension in DocumentController.getProperty()
         this .exporters .put( "partslist", new PartsListExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "size", new RulerExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "stl", new StlExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "dxf", new DxfExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "pdb", new PdbExporter( null, this .mColors, this .mLights, null ) );
@@ -191,6 +185,7 @@ public class Application implements AlgebraicField.Registry
         return result;
     }
     
+    @Override
     public AlgebraicField getField( String name )
     {
         return this .getDocumentKind( name ) .getField();
@@ -202,6 +197,17 @@ public class Application implements AlgebraicField.Registry
         if( supplier != null ) {
             return supplier.get();
         }
+        
+        // Parameterized FieldApplications are generated on demand
+        if(name.startsWith(PolygonField.FIELD_PREFIX)) {
+            int nSides = Integer.parseInt(name.substring(PolygonField.FIELD_PREFIX.length()));
+            return new PolygonFieldApplication(nSides);
+        }
+//        if(name.startsWith(SqrtField.FIELD_PREFIX)) {
+//            int nSides = Integer.parseInt(name.substring(SqrtField.FIELD_PREFIX.length()));
+//            return new SqrtFieldApplication(nSides);
+//        }
+
         // maybe because default.field is invalid in your prefs file?
         String msg = "Unknown Application Type " + name;
         failures.reportFailure(new Failure(msg));

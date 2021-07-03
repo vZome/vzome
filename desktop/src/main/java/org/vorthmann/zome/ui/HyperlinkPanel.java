@@ -32,6 +32,11 @@ public class HyperlinkPanel extends JPanel
 
     public HyperlinkPanel( String label, Controller controller )
     {
+        this( label, controller, true );
+    }
+
+    public HyperlinkPanel( String label, Controller controller, boolean showButton )
+    {
         super();
         setLayout( new BorderLayout() );
         JLabel hyperlink = new JLabel( label );
@@ -39,7 +44,13 @@ public class HyperlinkPanel extends JPanel
         hyperlink .setPreferredSize( new Dimension( 250, 30 ) );
         this .add( hyperlink, BorderLayout.CENTER );
         copyButton = new JButton( "Copy URL" );
-        this .add( copyButton, BorderLayout.EAST );
+        if ( showButton )
+            this .add( copyButton, BorderLayout.EAST );
+        else {
+            JPanel spacer = new JPanel();
+            spacer .setMinimumSize( new Dimension( 150, 20 ) );
+            this .add( spacer, BorderLayout.EAST );
+        }
         copyButton .addActionListener( new ActionListener()
         {
             @Override

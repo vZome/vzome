@@ -1,6 +1,4 @@
 
-//(c) Copyright 2006, Scott Vorthmann
-
 package org.vorthmann.ui;
 
 import java.awt.Dimension;

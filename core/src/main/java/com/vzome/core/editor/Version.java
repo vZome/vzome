@@ -1,6 +1,4 @@
 
-//(c) Copyright 2014, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.editor;
 
 public interface Version

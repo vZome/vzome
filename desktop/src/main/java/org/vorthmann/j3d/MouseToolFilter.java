@@ -1,6 +1,4 @@
 
-//(c) Copyright 2011, Scott Vorthmann.
-
 package org.vorthmann.j3d;
 
 import java.awt.event.MouseEvent;

@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package org.vorthmann.zome.ui;
 
 import java.awt.FileDialog;

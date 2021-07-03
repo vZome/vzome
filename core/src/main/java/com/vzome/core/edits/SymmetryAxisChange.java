@@ -1,6 +1,4 @@
 
-//(c) Copyright 2006, Scott Vorthmann
-
 package com.vzome.core.edits;
 
 import java.util.Map;
@@ -13,6 +11,7 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Segment;
+import com.vzome.core.editor.api.Context;
 import com.vzome.core.editor.api.ImplicitSymmetryParameters;
 import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.model.Manifestation;

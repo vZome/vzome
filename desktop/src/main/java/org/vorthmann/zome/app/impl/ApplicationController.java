@@ -31,10 +31,12 @@ import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.Command.FailureChannel;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.math.symmetry.AntiprismSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Scene;
+import com.vzome.core.viewing.AntiprismTrackball;
 import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.RenderingViewer;
 
@@ -165,21 +167,29 @@ public class ApplicationController extends DefaultController
 
     public RenderedModel getSymmetryModel( String path, Symmetry symmetry )
     {
-        RenderedModel result = this .symmetryModels .get( path );
-        // The cache does not care if the symmetry matches.
-        if ( result != null )
+        String key = path;
+        if(symmetry instanceof AntiprismSymmetry) {
+            // Create distinct keys for antiprism symmetries.
+            // Otherwise, the cache does not care if the symmetry matches.
+            key = path + "@" + symmetry.getName();
+        }
+        RenderedModel result = this .symmetryModels .get( key );
+        if ( result != null ) {
             return result;
-
+        }
+        
         ClassLoader cl = this .getClass() .getClassLoader();
         InputStream bytes = cl.getResourceAsStream( path );
+        
+        if(symmetry instanceof AntiprismSymmetry) {
+            bytes = AntiprismTrackball.getTrackballModelStream(bytes, (AntiprismSymmetry)symmetry);
+        }
 
         try {
             DocumentModel document = this .modelApp .loadDocument( bytes );
-            // a RenderedModel that only creates panels
-            document .setRenderedModel( new RenderedModel( symmetry ) .withColorPanels( false ) ); 
             document .finishLoading( false, false );
             result = document .getRenderedModel();
-            this .symmetryModels .put( path, result );
+            this .symmetryModels .put( key, result );
             return result;
         } catch ( Exception e ) {
             throw new RuntimeException( e );
@@ -193,6 +203,7 @@ public class ApplicationController extends DefaultController
             if ( action .equals( "showAbout" ) 
                     || action .equals( "openURL" ) 
                     || action .equals( "quit" )
+                    || action .equals( "new-polygon" )
                     || action .startsWith( "browse-" )
                     )
             {
@@ -467,6 +478,7 @@ public class ApplicationController extends DefaultController
                 case "rootTwo":
                 case "rootThree":
                 case "heptagon":
+                case "sqrtPhi":
                     return "true"; // these are enabled for everyone
 
                 default:
@@ -481,6 +493,17 @@ public class ApplicationController extends DefaultController
     public void setModelProperty( String name, Object value )
     {
         this .properties .setProperty( name, value .toString() );
+        if ( "githubAccessToken" .equals( name ) ) {
+            userPreferences .setProperty( "githubAccessToken", value .toString() );
+            FileWriter writer;
+            try {
+                writer = new FileWriter( preferencesFile );
+                userPreferences .store( writer, "" );
+                writer .close();
+            } catch ( IOException e ) {
+                logger.fine(e.toString());
+            }
+        }
     }
 
     @Override
@@ -570,11 +593,13 @@ public class ApplicationController extends DefaultController
         return modelApp .getLights();
     }
     
+    @Override
     protected void runScript( String script, File file )
     {
         this .ui .runScript( script, file );
     }
 
+    @Override
     protected void openApplication( File file )
     {
         String script = this .getProperty( "export.script" );

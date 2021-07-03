@@ -1,6 +1,4 @@
 
-//(c) Copyright 2007, Scott Vorthmann.  All rights reserved.
-
 package org.vorthmann.zome.app.impl;
 
 import java.beans.PropertyChangeEvent;
@@ -113,6 +111,12 @@ public class SymmetryController extends DefaultController
         this .addSubController( "snapOrbits", snapController );
         buildController = new OrbitSetController( buildOrbits, availableOrbits, this .symmetrySystem, true );
         this .addSubController( "buildOrbits", buildController );
+        if ( parent .propertyIsTrue( "single.orbit" ) )
+            try {
+                buildController .doAction( "oneAtATime" );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         renderController = new OrbitSetController( renderOrbits, this .symmetrySystem .getOrbits(), this .symmetrySystem, false );
         this .addSubController( "renderOrbits", renderController );
 

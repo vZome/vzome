@@ -77,7 +77,7 @@ public class ExporterTest {
 
         public String exportPartGeometry() {
             StringWriter out = new StringWriter();
-            PartGeometryExporter exporter = (PartGeometryExporter) doc.getStructuredExporter("partgeom", null, null, null, doc.getRenderedModel() );
+            PartGeometryExporter exporter = (PartGeometryExporter) doc.getStructuredExporter("partgeom", null, null, null );
             try {
                 exporter.doExport(null, new PrintWriter( out ), 0, 0 );
             } catch (IOException ex) {

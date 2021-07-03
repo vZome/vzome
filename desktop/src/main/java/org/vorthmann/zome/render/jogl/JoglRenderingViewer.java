@@ -1,6 +1,4 @@
 
-//(c) Copyright 2014, Scott Vorthmann.
-
 package org.vorthmann.zome.render.jogl;
 
 import java.awt.Component;
@@ -260,7 +258,11 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         float aspectRatio = (float) imageHeight / (float) imageWidth;
         if ( maxSize > 0 ) {
             imageWidth = maxSize;
-            imageHeight = (int) (imageWidth * aspectRatio);  // This was hardcoded, now is correct.
+            if ( imageHeight > 0 ) {
+                imageHeight = (int) (imageWidth * aspectRatio);  // This was hardcoded, now is correct.
+            } else {
+                imageHeight = imageWidth * 4 / 5;
+            }
         }
         
         GLProfile glprofile = GLProfile .getDefault();

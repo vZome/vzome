@@ -276,7 +276,7 @@ public class CommandUniformH4Polytope extends CommandTransform
         if ( rightQuat != null )
             proj = new QuaternionProjection( field, leftQuat, rightQuat );
         
-//      proj = new PerspectiveProjection( field, field .add( field .createPower( 3 ), field .createPower( 0 ) ) );
+//      proj = new PerspectiveProjection( field, field .add( field .createPower( 3 ), field .one() ) );
 //        proj = new PerspectiveProjection( field, field .subtract( field .createPower( 5 ), field .createPower( 3 ) ) );
 //        proj = new PerspectiveProjection( field, field .createPower( 4 ) );
         

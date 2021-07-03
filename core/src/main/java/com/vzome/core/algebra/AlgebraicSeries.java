@@ -61,6 +61,7 @@ public class AlgebraicSeries
         }
     }
     
+    @Override
     public String toString()
     {
         String result = "";
