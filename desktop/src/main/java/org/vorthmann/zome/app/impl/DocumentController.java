@@ -232,7 +232,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
                 {
                     // contents of old "renderSnapshot" action
                     RenderedModel newSnapshot = (RenderedModel) change .getNewValue();
-                    if ( newSnapshot != currentSnapshot )
+                    if ( newSnapshot != null && newSnapshot != currentSnapshot )
                     {
                         synchronized ( newSnapshot ) {
                             RenderedModel .renderChange( currentSnapshot, newSnapshot, mainScene );

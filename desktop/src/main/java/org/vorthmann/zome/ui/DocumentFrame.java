@@ -491,7 +491,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     //                    snapshotButton .setPreferredSize( dim );
                     //                    snapshotButton .setMaximumSize( dim );
                     //                }
-                    articleButtonsPanel .add( snapshotButton );
+                    if ( controller .propertyIsTrue( "enable.article.creation" ) )
+                        articleButtonsPanel .add( snapshotButton );
                     snapshotButton .setActionCommand( "takeSnapshot" );
                     snapshotButton .addActionListener( new ActionListener()
                     {
