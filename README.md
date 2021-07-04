@@ -1,3 +1,11 @@
+## vZome Online Development Workflow
+
+See [react-library/README.md](react-library/README.md)
+
+## vZome desktop Development Workflow
+
+See [desktop/README.md](desktop/README.md)
+
 vZome will now build and run from the gradle command line with either Java 8 or Java 9.
 
 I have not tried using Java 9 in Eclipse or NetBeans yet. Nor have I researched or evaluated the behavior of Windows launch4J with Java 9.
