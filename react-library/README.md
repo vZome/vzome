@@ -66,7 +66,18 @@ END
 
 ssh ${DREAMHOST_USER}@${DREAMHOST_SERVER} './install-vzome-online.bash'
 ```
+On the Dreamhost server, the `install-vzome-online.bash` script contains:
+```
+#!/bin/bash
 
+cd vzome.com || exit $?
+
+rm -f app.tar
+
+gunzip app.tgz || exit $?
+
+tar xvf app.tar || exit $?
+```
 
 ## History
 
