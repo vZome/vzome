@@ -1,6 +1,4 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.tools;
 
 import java.util.ArrayList;
@@ -10,11 +8,11 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.editor.AbstractToolFactory;
-import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.Duplicator;
-import com.vzome.core.editor.Selection;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Manifestation;
 
 public class BookmarkTool extends Tool
@@ -68,9 +66,8 @@ public class BookmarkTool extends Tool
     public void perform() throws Command.Failure
     {
         Duplicator duper = new Duplicator( null, null );
-        if ( mSelection .isEmpty() ) {
+        if ( mSelection .size() == 0 )
             bookmarkedConstructions .add( new FreePoint( this .mManifestations .getField() .origin( 3 ) ) );
-        }
         else
             for (Manifestation man : mSelection) {
                 Construction result = duper .duplicateConstruction( man );

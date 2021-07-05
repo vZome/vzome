@@ -6,13 +6,15 @@ import java.util.Collection;
 import java.util.List;
 
 import com.vzome.api.Tool;
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.RootTwoField;
+import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.math.symmetry.AbstractSymmetry;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OctahedralSymmetry;
+import com.vzome.core.math.symmetry.SpecialOrbit;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
 import com.vzome.core.tools.InversionTool;
@@ -38,9 +40,9 @@ import com.vzome.core.viewing.ExportedVEFShapes;
  */
 public class RootTwoFieldApplication extends DefaultFieldApplication
 {
-    public RootTwoFieldApplication()
+    public RootTwoFieldApplication( AlgebraicField field )
     {
-        super( new RootTwoField() );
+        super( field );
 
         OctahedralSymmetryPerspective octahedralPerspective = (OctahedralSymmetryPerspective) super .getDefaultSymmetryPerspective();
 

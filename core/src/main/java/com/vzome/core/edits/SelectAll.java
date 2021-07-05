@@ -1,26 +1,34 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.edits;
 
 
-import com.vzome.core.editor.ChangeSelection;
-import com.vzome.core.editor.EditorModel;
+import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.editor.api.ChangeSelection;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
+import com.vzome.core.model.RealizedModel;
 
 public class SelectAll extends ChangeSelection
 {
-    public SelectAll( EditorModel editor )
+    private final RealizedModel realizedModel;
+
+    @Override
+    public void perform() throws Failure
     {
-        super( editor .getSelection() );
-        
-        for (Manifestation m : editor .getRealizedModel() ) {
-            if ( m .getRenderedObject() != null )
+        for ( Manifestation m : this.realizedModel ) {
+            if ( m .isRendered() )
             {
                 if ( ! this .mSelection .manifestationSelected( m ) )
                     select( m, true );
             }
         }
+        super.perform();
+    }
+
+    public SelectAll( EditorModel editor )
+    {
+        super( editor .getSelection() );
+        this .realizedModel = editor .getRealizedModel();
     }
     
     @Override

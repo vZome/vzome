@@ -2,7 +2,7 @@ package com.vzome.core.edits;
 
 import java.util.function.Function;
 
-import com.vzome.core.model.Color;
+import com.vzome.core.construction.Color;
 
 /**
  * @author David Hall
@@ -18,14 +18,11 @@ public class ColorMappers {
             return false;
         }
 
-        public default String getName() {
-            Class<?> cls = getClass();
-            if(cls.isAnonymousClass()) {
-                throw new IllegalStateException("Anonymous implementations must override "
-                        + ColorMapper.class.getSimpleName()
-                        + ".getName() so that the result is not derived from the class name.");
-            }
-            return cls.getSimpleName();
-        }
+        /**
+         * We had a default implementation here, using reflection, but that gave me problems
+         * when transpiled to JavaScript with JSweet.  Now each class simply implements the method.
+         * @return
+         */
+        public String getName();
     }
 }

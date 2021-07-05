@@ -1,14 +1,12 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.math.symmetry;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -349,7 +347,7 @@ public abstract class AbstractSymmetry implements Symmetry
      *
      */
     @Override
-    public Axis getAxis( RealVector vector, Set<Direction> dirMask )
+    public Axis getAxis( RealVector vector, Collection<Direction> dirMask )
     {
         if ( RealVector .ORIGIN .equals( vector ) ) {
             return null;
@@ -512,6 +510,12 @@ public abstract class AbstractSymmetry implements Symmetry
     }
 
     @Override
+    public double[] embedInR3Double( AlgebraicVector v )
+    {
+        return v .to3dDoubleVector();
+    }
+
+    @Override
     @JsonIgnore
     public boolean isTrivial()
     {
@@ -525,6 +529,7 @@ public abstract class AbstractSymmetry implements Symmetry
         return this .principalReflection; // may be null, that's OK for the legacy case (which is broken)
     }
     
+    @Override
     public AlgebraicVector[] getOrbitTriangle()
     {
         AlgebraicVector blueVertex = this .getSpecialOrbit( SpecialOrbit.BLUE ) .getPrototype();
@@ -540,7 +545,7 @@ public abstract class AbstractSymmetry implements Symmetry
         for ( Direction orbit : mDirectionList ) {
             dotLocator .locateOrbitDot( orbit );
         }
-        return dotLocator .getDebuggerOutput(); // stop logging new orbits
+        return null; // dotLocator .getDebuggerOutput(); // stop logging new orbits
     }
 
     @Override

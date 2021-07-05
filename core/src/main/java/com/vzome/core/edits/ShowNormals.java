@@ -1,6 +1,4 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.edits;
 
 
@@ -11,11 +9,10 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Manifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.Manifestations;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
 
 
 public class ShowNormals extends ChangeManifestations
@@ -49,9 +46,9 @@ public class ShowNormals extends ChangeManifestations
         redo();
     }
     
-    public ShowNormals( Selection selection, RealizedModel realized )
+    public ShowNormals( EditorModel editor )
     {
-        super( selection, realized );
+        super( editor );
     }
 
     @Override

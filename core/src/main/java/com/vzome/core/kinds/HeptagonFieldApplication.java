@@ -6,9 +6,10 @@ import java.util.Collection;
 import java.util.List;
 
 import com.vzome.api.Tool;
-import com.vzome.core.algebra.HeptagonField;
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
+import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
 import com.vzome.core.tools.LinearMapTool;
@@ -33,9 +34,9 @@ import com.vzome.fields.heptagon.HeptagonalAntiprismSymmetry;
  */
 public class HeptagonFieldApplication extends DefaultFieldApplication
 {
-	public HeptagonFieldApplication()
+	public HeptagonFieldApplication( AlgebraicField field )
 	{
-		super( new HeptagonField() );
+		super( field );
 	}
 
     private final SymmetryPerspective correctedAntiprismPerspective = new HeptagonalSymmetryPerspective(true);

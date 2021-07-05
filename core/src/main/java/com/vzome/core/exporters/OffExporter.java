@@ -7,10 +7,11 @@ import java.io.Writer;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.generic.ArrayComparator;
-import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -18,10 +19,8 @@ import com.vzome.core.model.Strut;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.Camera;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import com.vzome.core.viewing.Lights;
 
 
 public class OffExporter extends Exporter3d
@@ -31,7 +30,7 @@ public class OffExporter extends Exporter3d
 	public OffExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
 	{
 	    super( scene, colors, lights, model );
-		FORMAT .setMaximumFractionDigits( 16 );
+		FORMAT .setMinimumFractionDigits( 16 ); // https://github.com/vZome/vzome/issues/313
 	}
 
     @Override
@@ -79,10 +78,10 @@ public class OffExporter extends Exporter3d
 
         output .println( "# Vertices.  Each line is the XYZ coordinates of one vertex." );
         for(AlgebraicVector vector : sortedVertexList) {
-            RealVector rv = mModel .renderVector( vector );
-            output.print(FORMAT.format(rv.x) + " ");
-            output.print(FORMAT.format(rv.y) + " ");
-            output.print(FORMAT.format(rv.z) + "\n");
+            double[] dv = mModel .renderVectorDouble( vector );
+            output.print(FORMAT.format(dv[0]) + " ");   // x
+            output.print(FORMAT.format(dv[1]) + " ");   // y
+            output.print(FORMAT.format(dv[2]) + "\n");  // z
         }
 
         output .println();

@@ -1,57 +1,69 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<vzome:vZome field="golden" version="3.0 beta 3 + DEV" xmlns:vzome="http://tns.vorthmann.org/vZome/5.0.0/">
-  <EditHistory editNumber="25">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" coreVersion="7.0" field="golden">
+  <EditHistory editNumber="63" lastStickyEdit="37">
     <LoadVEF scale="3 5">vZome VEF 6 field golden 9 (0,0) (-126,205) (2,-3) (-126,205) (0,0) (-24,40) (0,0) (-24,40)
       (0,0) (-128,208) (0,0) (-82,134) (0,0) (102,-164) (-2,4) (102,-164) (0,0) (-2,4) (-2,4) (44,-70) (0,0) (2,-3)
       (2,-3) (-54,89) (0,0) (104,-168) (0,0) (48,-76) (0,0) (0,0) (0,0) (-10,18) (0,0) (0,1) (0,1) (0,1) 0 4 3
-      0 1 2 6 3 4 5 6 2 0 3 5 6 7 3 8 4 3 0 </LoadVEF>
+      0 1 2 6 3 4 5 6 2 0 3 5 6 7 3 8 4 3 0 
+</LoadVEF>
     <SelectManifestation point="0 0 0 0 0 0"/>
-    <Hide/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
     <SelectManifestation>
       <polygonVertex at="3 5 3 5 3 5"/>
       <polygonVertex at="2 4 2 4 10 2"/>
       <polygonVertex at="18 -4 2 4 18 -4"/>
     </SelectManifestation>
-    <CentralSymmetry/>
+    <CentralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </CentralSymmetry>
     <SelectManifestation>
       <polygonVertex at="3 5 3 5 3 5"/>
       <polygonVertex at="2 4 2 4 10 2"/>
       <polygonVertex at="18 -4 2 4 18 -4"/>
     </SelectManifestation>
     <Symmetry>
-      <Symmetry name="octahedral" attrName="symmetry.group"/>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      <Symmetry attrName="symmetry.group" name="octahedral"/>
     </Symmetry>
-    <setItemColor red="255" green="204" blue="0"/>
+    <setItemColor blue="0" green="204" red="255"/>
     <SelectManifestation>
       <polygonVertex at="-15 17 1 1 -15 17"/>
       <polygonVertex at="0 8 0 0 0 8"/>
       <polygonVertex at="-16 16 0 0 -8 14"/>
     </SelectManifestation>
-    <CentralSymmetry/>
+    <CentralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </CentralSymmetry>
     <SelectManifestation>
       <polygonVertex at="-15 17 1 1 -15 17"/>
       <polygonVertex at="0 8 0 0 0 8"/>
       <polygonVertex at="-16 16 0 0 -8 14"/>
     </SelectManifestation>
     <Symmetry>
-      <Symmetry name="octahedral" attrName="symmetry.group"/>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      <Symmetry attrName="symmetry.group" name="octahedral"/>
     </Symmetry>
-    <setItemColor red="0" green="153" blue="51"/>
+    <setItemColor blue="51" green="153" red="0"/>
     <SelectManifestation>
       <polygonVertex at="1 1 1 1 -3 13"/>
       <polygonVertex at="16 -8 0 0 12 4"/>
       <polygonVertex at="0 0 0 0 4 10"/>
     </SelectManifestation>
-    <CentralSymmetry/>
+    <CentralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </CentralSymmetry>
     <SelectManifestation>
       <polygonVertex at="1 1 1 1 -3 13"/>
       <polygonVertex at="16 -8 0 0 12 4"/>
       <polygonVertex at="0 0 0 0 4 10"/>
     </SelectManifestation>
     <Symmetry>
-      <Symmetry name="octahedral" attrName="symmetry.group"/>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      <Symmetry attrName="symmetry.group" name="octahedral"/>
     </Symmetry>
-    <setItemColor red="0" green="141" blue="187"/>
+    <setItemColor blue="187" green="141" red="0"/>
     <SelectManifestation>
       <polygonVertex at="18 -4 2 4 18 -4"/>
       <polygonVertex at="2 4 2 4 10 2"/>
@@ -61,9 +73,10 @@
       <polygonVertex at="-15 17 1 1 -15 17"/>
     </SelectManifestation>
     <Symmetry>
-      <Symmetry name="octahedral" attrName="symmetry.group"/>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      <Symmetry attrName="symmetry.group" name="octahedral"/>
     </Symmetry>
-    <setItemColor red="255" green="255" blue="255"/>
+    <setItemColor blue="255" green="255" red="255"/>
     <SelectManifestation>
       <polygonVertex at="18 -4 2 4 18 -4"/>
       <polygonVertex at="2 4 2 4 10 2"/>
@@ -72,10 +85,127 @@
       <polygonVertex at="-16 16 0 0 -8 14"/>
       <polygonVertex at="-15 17 1 1 -15 17"/>
     </SelectManifestation>
-    <CentralSymmetry/>
+    <CentralSymmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </CentralSymmetry>
     <Symmetry>
-      <Symmetry name="octahedral" attrName="symmetry.group"/>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      <Symmetry attrName="symmetry.group" name="octahedral"/>
     </Symmetry>
-    <setItemColor red="102" green="102" blue="102"/>
+    <setItemColor blue="102" green="102" red="102"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="1 1 1 1 -3 13"/>
+      <polygonVertex at="16 -8 0 0 12 4"/>
+      <polygonVertex at="0 0 0 0 4 10"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="3 5 3 5 3 5"/>
+      <polygonVertex at="2 4 2 4 10 2"/>
+      <polygonVertex at="18 -4 2 4 18 -4"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-15 17 1 1 -15 17"/>
+      <polygonVertex at="0 8 0 0 0 8"/>
+      <polygonVertex at="-16 16 0 0 -8 14"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ShowVertices/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 0 4 10"/>
+    <SelectManifestation point="3 5 3 5 3 5"/>
+    <SelectManifestation point="0 8 0 0 0 8"/>
+    <EndBlock/>
+    <Branch>
+      <Delete/>
+      <StrutCreation anchor="3 5 3 5 3 5" dir="yellow" index="0" len="1 1" symm="octahedral"/>
+      <SelectManifestation endSegment="4 7 4 7 4 7" startSegment="3 5 3 5 3 5"/>
+      <RotationTool corrected="true" full="true" name="tool-0" symmetry="octahedral"/>
+    </Branch>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation point="3 5 3 5 3 5"/>
+    <SelectManifestation point="0 0 0 0 4 10"/>
+    <SelectManifestation point="0 8 0 0 0 8"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 4 10"/>
+    <EndBlock/>
+    <ApplyTool name="tool-0" selectInputs="true"/>
+    <DeselectAll/>
+    <StrutCreation anchor="4 10 0 0 0 0" index="0" len="2 2" symm="octahedral"/>
+    <BeginBlock/>
+    <SelectManifestation point="6 12 0 0 0 0"/>
+    <SelectManifestation endSegment="6 12 0 0 0 0" startSegment="4 10 0 0 0 0"/>
+    <EndBlock/>
+    <ApplyTool name="tool-0" selectInputs="true"/>
+    <BeginBlock/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <setItemColor blue="0" green="0" red="0"/>
   </EditHistory>
+  <notes/>
+  <sceneModel ambientLight="41,41,41" background="178,205,230">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="175.71783447265625" far="351.4358215332031" near="0.4392945170402527" parallel="false" stereoAngle="0.0" width="79.07300567626953">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.0" y="1.0" z="0.0"/>
+      <LookDirection x="0.0" y="0.0" z="-1.0"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="octahedral" renderingStyle="octahedra">
+    <Direction color="18,205,148" name="turquoise"/>
+    <Direction color="30,30,30" name="black"/>
+    <Direction color="0,141,54" name="green"/>
+    <Direction color="240,160,0" name="yellow"/>
+    <Direction color="0,118,149" name="blue"/>
+    <Direction color="255,255,255" name="57" prototype="40 -24 0 0 22 -14"/>
+    <Direction color="175,135,255" name="lavender"/>
+    <Direction color="255,255,255" name="56" prototype="-1 0 -1 0 17 -10"/>
+    <Direction color="255,255,255" name="55" prototype="-80 50 3408 -2106 144 -88"/>
+    <Direction color="255,255,255" name="58" prototype="24 -15 0 1 24 -15"/>
+    <Direction color="100,113,0" name="olive"/>
+    <Direction color="117,0,50" name="maroon"/>
+    <Direction color="107,53,26" name="brown"/>
+    <Direction color="175,0,0" name="red"/>
+    <Direction color="108,0,198" name="purple"/>
+  </SymmetrySystem>
+  <OtherSymmetries>
+    <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
+      <Direction color="6,96,141" name="blue"/>
+      <Direction color="2,130,53" name="green"/>
+      <Direction color="187,144,85" name="sand"/>
+      <Direction color="12,84,55" name="spruce"/>
+      <Direction color="197,3,20" name="red"/>
+      <Direction color="254,124,123" name="coral"/>
+      <Direction color="36,35,38" name="black"/>
+      <Direction color="141,2,41" name="maroon"/>
+      <Direction color="245,163,1" name="yellow"/>
+      <Direction color="218,225,83" name="sulfur"/>
+      <Direction color="251,94,160" name="rose"/>
+      <Direction color="53,181,179" name="turquoise"/>
+      <Direction color="255,255,255" name="19" prototype="22 -14 -942 582 -40 24"/>
+      <Direction color="129,191,30" name="apple"/>
+      <Direction color="144,56,14" name="cinnamon"/>
+      <Direction color="113,64,178" name="purple"/>
+      <Direction color="236,89,1" name="orange"/>
+      <Direction color="52,48,136" name="navy"/>
+      <Direction color="255,255,255" name="20" prototype="-22 14 40 -24 -942 582"/>
+      <Direction color="105,54,1" name="brown"/>
+      <Direction color="144,127,227" name="lavender"/>
+      <Direction color="116,104,1" name="olive"/>
+    </SymmetrySystem>
+  </OtherSymmetries>
+  <Tools>
+    <Tool id="tool-0" label="axial symmetry 0" selectInputs="true"/>
+  </Tools>
 </vzome:vZome>

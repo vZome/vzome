@@ -24,7 +24,7 @@ public class RealVector
         FORMAT .setMinimumFractionDigits( 1 );
     }
 
-    public final double x, y, z;
+    public final float x, y, z;
 
     public RealVector()
     {
@@ -38,9 +38,9 @@ public class RealVector
     {
         super();
 
-        this .x = x;
-        this .y = y;
-        this .z = z;
+        this .x = (float) x;
+        this .y = (float) y;
+        this .z = (float) z;
     }
 
     /**
@@ -131,9 +131,9 @@ public class RealVector
 
     public void write( FloatBuffer buf, int offset )
     {
-        buf .put( offset, (float) x );
-        buf .put( offset+1, (float) y );
-        buf .put( offset+2, (float) z );
+        buf .put( offset, x );
+        buf .put( offset+1, y );
+        buf .put( offset+2, z );
         //	    System .out .println( x + "   " + y + "   " + z );
     }
 
@@ -163,15 +163,15 @@ public class RealVector
     // For picking, where we want to avoid unnecessary object creation
     public void addTo( float[] addend, float[] sum )
     {
-        sum[ 0 ] = (float) (addend[ 0 ] + this.x);
-        sum[ 1 ] = (float) (addend[ 1 ] + this.y);
-        sum[ 2 ] = (float) (addend[ 2 ] + this.z);
+        sum[ 0 ] = (addend[ 0 ] + this.x);
+        sum[ 1 ] = (addend[ 1 ] + this.y);
+        sum[ 2 ] = (addend[ 2 ] + this.z);
     }
 
     public void toArray( float[] output )
     {
-        output[ 0 ] = (float) this.x;
-        output[ 1 ] = (float) this.y;
-        output[ 2 ] = (float) this.z;
+        output[ 0 ] = this.x;
+        output[ 1 ] = this.y;
+        output[ 2 ] = this.z;
     }
 }

@@ -21,9 +21,22 @@ public class AxialSymmetryToolFactory extends RotationTool.Factory
     		"achieve more symmetries.<br>" +
 		"</p>";
 	
+	/**
+	 * Used for the throwaway factories used to create predefined tools.
+	 * Using the symmetry name in the factory ID prevents collisions across
+	 * symmetries for common tools.
+	 * @param tools
+	 * @param symmetry
+	 * @param useSymmetryName
+	 */
+    public AxialSymmetryToolFactory( ToolsModel tools, Symmetry symmetry, boolean useSymmetryName )
+    {
+        super( tools, symmetry, (useSymmetryName ? symmetry.getName() + ' ' : "") + ID, LABEL, TOOLTIP );
+    }
+    
 	public AxialSymmetryToolFactory( ToolsModel tools, Symmetry symmetry )
 	{
-		super( tools, symmetry, ID, LABEL, TOOLTIP );
+	    this( tools, symmetry, false );
 	}
 
 	@Override

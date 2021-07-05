@@ -19,6 +19,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -69,7 +70,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
     private LessonPanel lessonPanel;
     
-    private JFrame zomicFrame, pythonFrame;
+    private JFrame zomicFrame, zomodFrame, pythonFrame;
 
     private JButton snapshotButton;
 
@@ -84,6 +85,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     private Controller lessonController;
     
     private JDialog polytopesDialog, importScaleDialog;
+    
+    private ShareDialog shareDialog;
 
 	private final boolean developerExtras;
 	
@@ -221,6 +224,21 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     }
                     break;
 
+                case "Share":
+                    String windowName = mController .getProperty( "window.file" );
+                    if ( windowName == null ) {
+                        JOptionPane .showMessageDialog( DocumentFrame.this, "You must save your model before you can share it.",
+                                "Command Failure", JOptionPane .ERROR_MESSAGE );
+                        return;
+                    }
+                    if ( shareDialog == null )
+                        shareDialog = new ShareDialog( DocumentFrame.this, mController );
+                    Path filePath = new File( windowName ) .toPath();
+                    String xml = mController .getProperty( "vZome-xml" );
+                    String pngEncoded = mController .getProperty( "png-base64" );
+                    shareDialog .startUpload( filePath .getFileName() .toString(), xml, pngEncoded );
+                    break;
+
                 case "saveDefault":
                     // this is basically "save a copy...", with a hard-coded file path.
                     String fieldName = mController.getProperty( "field.name" );
@@ -302,14 +320,23 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     pythonFrame .pack();
                     pythonFrame .setVisible( true );
                     break;
-                
+                    
                 case "showZomicWindow":
                     if ( zomicFrame == null ) {
                         zomicFrame = new JFrame( "Zomic Scripting" );
-                        zomicFrame .setContentPane( new ZomicEditorPanel( zomicFrame, mController ) );
+                        zomicFrame .setContentPane( new ZomicEditorPanel( zomicFrame, mController, false ) );
                     }
                     zomicFrame .pack();
                     zomicFrame .setVisible( true );
+                    break;
+
+                case "showZomodWindow":
+                    if ( zomodFrame == null ) {
+                        zomodFrame = new JFrame( "Zomod Scripting" );
+                        zomodFrame .setContentPane( new ZomicEditorPanel( zomicFrame, mController, true ) );
+                    }
+                    zomodFrame .pack();
+                    zomodFrame .setVisible( true );
                     break;
                 
                 case "setItemColor":
@@ -464,7 +491,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     //                    snapshotButton .setPreferredSize( dim );
                     //                    snapshotButton .setMaximumSize( dim );
                     //                }
-                    articleButtonsPanel .add( snapshotButton );
+                    if ( controller .propertyIsTrue( "enable.article.creation" ) )
+                        articleButtonsPanel .add( snapshotButton );
                     snapshotButton .setActionCommand( "takeSnapshot" );
                     snapshotButton .addActionListener( new ActionListener()
                     {
@@ -743,6 +771,15 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             enable = this .canSave;
             break;
 
+        case "Share":
+            enable = controller .getProperty( "window.file" ) != null;
+            // We're doing this one immediately, because we need the listener attached if
+            //  it is later enabled.  It is surprising that this has not been an issue for
+            //  anything else!
+            control .addActionListener( this .localActions );
+            control .setEnabled( enable );
+            return control;
+
         default:
             if ( command .startsWith( "export." ) ) {
                 enable = this .canSave;
@@ -792,6 +829,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             case "setBackgroundColor":
             case "showPolytopesDialog":
             case "showZomicWindow":
+            case "showZomodWindow":
             case "showPythonWindow":
             case "rZomeOrbits":
             case "predefinedOrbits":
@@ -961,5 +999,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 	public void makeUnnamed()
 	{
 		this .mFile = null;
+		this .mController .setProperty( "name", null );
 	}
 }

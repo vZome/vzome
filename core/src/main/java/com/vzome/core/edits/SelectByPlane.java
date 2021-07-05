@@ -5,7 +5,7 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Bivector3d;
 import com.vzome.core.algebra.Vector3d;
 import com.vzome.core.commands.Command;
-import com.vzome.core.editor.EditorModel;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 
@@ -26,7 +26,7 @@ public class SelectByPlane extends SelectByBoundary
 
     public SelectByPlane( EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editor );
     }
 
     @Override

@@ -1,6 +1,4 @@
 
-//(c) Copyright 2011, Scott Vorthmann.
-
 package org.vorthmann.zome.ui;
 
 import java.awt.BorderLayout;
@@ -211,6 +209,9 @@ public class PartsPanel extends JPanel
          */
         @Override
         public int compareTo(PartsTableRow that) {
+            if ( this == that ) {
+                return 0; // just an optimization
+            }
             int comparison = this.partClassGroupingOrder.compareTo(that.partClassGroupingOrder);
             if (comparison != 0)
                 return comparison;
@@ -246,15 +247,17 @@ public class PartsPanel extends JPanel
          * @return
          */
         private static PartGroupingOrderEnum getPartGroupingOrder(Class<? extends Manifestation> partClass, boolean isAggregate ) {
-            if(partClass.equals(Connector.class) && isAggregate ) {
-                return PartGroupingOrderEnum.BALLS_TOTAL;
+            if(Connector.class.isAssignableFrom(partClass)) {
+                return isAggregate 
+                        ? PartGroupingOrderEnum.BALLS_TOTAL
+                        : PartGroupingOrderEnum.TEMP;
             } 
-            else if(partClass.equals(Strut.class)) {
+            else if(Strut.class.isAssignableFrom(partClass)) {
                 return isAggregate 
                         ? PartGroupingOrderEnum.STRUTS_TOTAL
                         : PartGroupingOrderEnum.STRUTS;
             } 
-            else if(partClass.equals(Panel.class)) {
+            else if(Panel.class.isAssignableFrom(partClass)) {
                 return isAggregate 
                         ? PartGroupingOrderEnum.PANELS_TOTAL
                         : PartGroupingOrderEnum.PANELS;

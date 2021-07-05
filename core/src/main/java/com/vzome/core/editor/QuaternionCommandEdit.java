@@ -1,9 +1,8 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.editor;
 
 import com.vzome.core.commands.AbstractCommand;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 
 /**

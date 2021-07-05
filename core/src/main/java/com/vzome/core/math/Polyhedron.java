@@ -17,7 +17,6 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.construction.Polygon;
 import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.math.Polyhedron.Face.Triangle;
 import com.vzome.core.math.symmetry.Direction;
@@ -43,7 +42,7 @@ public class Polyhedron implements Cloneable
     
     private boolean isPanel = false;
 
-    private final UUID guid = UUID .randomUUID();
+    private UUID guid = UUID .randomUUID();
 
     public Polyhedron( AlgebraicField field )
     {
@@ -69,6 +68,7 @@ public class Polyhedron implements Cloneable
                 e.printStackTrace();
             }
             this .evilTwin .isEvil = true;
+            this .evilTwin .guid = UUID .randomUUID();
             
             this .evilTwin .m_vertexList = new ArrayList<>();
             // this loop should preserve the order, and thus indices for the faces below
@@ -78,9 +78,7 @@ public class Polyhedron implements Cloneable
             
             this .evilTwin .m_faces = new HashSet<Face>();
             for ( Face face : m_faces ) {
-                Face mirrorFace = (Face) face .clone();
-                Collections .reverse( mirrorFace );
-                this .evilTwin .addFace( mirrorFace );
+                this .evilTwin .addFace( face .createReverse() );
             }
         }
         return this .evilTwin;
@@ -136,7 +134,6 @@ public class Polyhedron implements Cloneable
 
     public void addFace( Face face )
     {
-        face .computeNormal( m_vertexList );
         face .canonicallyOrder(); // so the contains comparison works
         if ( ! m_faces .contains( face ) ) {
             m_faces .add( face );
@@ -218,9 +215,28 @@ public class Polyhedron implements Cloneable
     @SuppressWarnings("serial")
     public class Face extends ArrayList<Integer> implements Cloneable
     {
-        private AlgebraicVector mNormal;
+        // Note: computing normals in the AlgebraicField can be expensive and failure-prone,
+        //  particularly if you don't have arbitrary precision rational numbers.
+        //  Working with automatic struts in Javascript (without any port of BigRational),
+        //  I actually saw overflow errors, caught when trying to simplify the resulting rationals.
+        //  For this reason, I'm disabling normal computation entirely.
+        //  This is fine in Java, because ShapeAndInstances already did its own normal computation
+        //  in floating point, and the Javascript rendering does the same.
+        //  There is simply no reason to compute the normals here.
+        //
+        //        private AlgebraicVector mNormal;
 
         private Face(){}
+
+        public Face createReverse()
+        {
+            @SuppressWarnings("unchecked")
+            ArrayList<Integer> vertices = (ArrayList<Integer>) this .clone();
+            Collections .reverse( vertices );
+            Face mirrorFace = new Face();
+            mirrorFace .addAll( vertices );
+            return mirrorFace;
+        }
 
         @JsonIgnore
         public int getVertex( int index )
@@ -237,14 +253,12 @@ public class Polyhedron implements Cloneable
         public class Triangle
         {
             public int[] vertices = new int[3];
-            public RealVector normal;
             
-            public Triangle( int v0, int v1, int v2, RealVector normal )
+            public Triangle( int v0, int v1, int v2 )
             {
                 this .vertices[ 0 ] = v0;
                 this .vertices[ 1 ] = v1;
                 this .vertices[ 2 ] = v2;
-                this .normal = normal;
             }
         }
         
@@ -265,7 +279,7 @@ public class Polyhedron implements Cloneable
                 }
                 else
                 {
-                    Triangle triangle = new Triangle( v0, v1, index, this .mNormal .toRealVector() );
+                    Triangle triangle = new Triangle( v0, v1, index );
                     result .add( triangle );
                     v1 = index;
                 }
@@ -273,10 +287,11 @@ public class Polyhedron implements Cloneable
             return result;
         }
         
-        void computeNormal( List<AlgebraicVector> vertices )
+        // Still used by exporters
+        public AlgebraicVector getNormal( List<AlgebraicVector> vertices )
         {
             // TODO: Don't depend on the first three vertices to be non-collinear
-            mNormal = AlgebraicVectors.getNormal(
+            return AlgebraicVectors.getNormal(
                     vertices .get( getVertex( 0 ) ), 
                     vertices .get( getVertex( 1 ) ), 
                     vertices .get( getVertex( 2 ) ) ); 
@@ -326,12 +341,6 @@ public class Polyhedron implements Cloneable
                 if ( ! get(i) .equals( otherFace .get(i)) )
                     return false;
             return true;
-        }
-
-        @JsonIgnore
-        public AlgebraicVector getNormal()
-        {
-            return mNormal;
         }
     }
     
@@ -384,20 +393,20 @@ public class Polyhedron implements Cloneable
     }
 
     @JsonProperty( "polygons" )
-    @JsonView( Polygon.Views.Polygons.class )
+    @JsonView( Views.Polygons.class )
     public Set<Face> getFaceSet(){
         return m_faces;
     }
 
     @JsonProperty( "id" )
-    @JsonView( Polygon.Views.Triangles.class )
+    @JsonView( Views.Triangles.class )
     public UUID getGuid()
     {
         return this .guid;
     }
 
     @JsonProperty( "faces" )
-    @JsonView( Polygon.Views.Triangles.class )
+    @JsonView( Views.Triangles.class )
     public List<Face.Triangle> getTriangleFaces()
     {
         ArrayList<Face.Triangle> result = new ArrayList<>();
@@ -410,7 +419,10 @@ public class Polyhedron implements Cloneable
     // These views will be used for JSON serialization
     public static class Views {
         public interface UnityMesh{}
+        public interface Triangles{}
+        public interface Polygons{}
     }
+
 
     @JsonProperty( "triangles" )
     @JsonView( Views.UnityMesh.class )
@@ -441,21 +453,6 @@ public class Polyhedron implements Cloneable
                     AlgebraicVector vertex = this .m_vertexList .get( index );
                     result .add( vertex .toRealVector() );
                 }
-            }
-        }
-        return result;
-    }
-
-    @JsonProperty( "normals" )
-    @JsonView( Views.UnityMesh.class )
-    public List<RealVector> getNormals()
-    {
-        ArrayList<RealVector> result = new ArrayList<>();
-        for ( Face face : m_faces ) {
-            for ( Triangle triangle : face .getTriangles() ) {
-                result .add( triangle .normal );
-                result .add( triangle .normal );
-                result .add( triangle .normal );
             }
         }
         return result;

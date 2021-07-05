@@ -7,17 +7,19 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.vecmath.Matrix4d;
-import javax.vecmath.Quat4d;
+import javax.vecmath.Quat4f;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.construction.Polygon;
+import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.construction.Color;
 import com.vzome.core.math.Polyhedron;
-import com.vzome.core.model.Color;
+import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -33,14 +35,14 @@ import com.vzome.core.model.Strut;
  */
 public class JsonMapper
 {
-    private static class RealTrianglesView implements AlgebraicNumber.Views.Real, Polygon.Views.Triangles {}
+    private static class RealTrianglesView implements AlgebraicNumber.Views.Real, Polyhedron.Views.Triangles {}
 
     // Keep things simple for the client code: all real numbers, all faces triangulated
     private final ObjectMapper objectMapper;
     private final ObjectWriter objectWriter;
 
     private final Set<String> shapeIds = new HashSet<>();
-    private Map<AlgebraicMatrix,Quat4d> rotations = new HashMap<>();
+    private Map<AlgebraicMatrix,ObjectNode> rotations = new HashMap<>();
     
     public JsonMapper()
     {
@@ -64,7 +66,25 @@ public class JsonMapper
         if ( ! this .shapeIds .contains( shapeId ) )
         {
             this .shapeIds .add( shapeId );
-            ObjectNode node = (ObjectNode) this .asTreeWithView( shape );
+            ObjectNode node = this .objectMapper .createObjectNode();
+            node .put( "id", shape .getGuid() .toString() );
+
+            ArrayNode arrayNode = this .objectMapper .createArrayNode();
+            for ( AlgebraicVector vector : shape .getVertexList() ) {
+                arrayNode .add( this .getVectorNode( vector .toRealVector() ) );
+            }
+            node .set( "vertices", arrayNode );
+
+            arrayNode = this .objectMapper .createArrayNode();
+            for ( Polyhedron.Face.Triangle triangle : shape .getTriangleFaces() ) {
+                ObjectNode tNode = this .objectMapper .createObjectNode();
+                tNode .set( "vertices", this .objectMapper .valueToTree( triangle .vertices ) );
+                // Sending normals bloats the JSON to the point where it is untenable for CheerpJ cjStringJavaToJs
+                // tNode .set( "normal", this .getVectorNode( triangle .normal ) );
+                arrayNode .add( tNode );
+            }
+            node .set( "faces", arrayNode );
+            
             return node;
         }
         else
@@ -73,69 +93,96 @@ public class JsonMapper
     
     public ObjectNode getObjectNode( RenderedManifestation rm )
     {
-        Manifestation man = rm .getManifestation();
-        Polyhedron shape = rm .getShape();
-        String shapeId = shape .getGuid() .toString();
-        if ( man instanceof Strut )
-        {
+        try {
+            Manifestation man = rm .getManifestation();
+            Polyhedron shape = rm .getShape();
+            String shapeId = shape .getGuid() .toString();
+            if ( man instanceof Strut )
+            {
 
-            ObjectNode node = this .objectMapper .createObjectNode();
-            node .put( "shape", shapeId );
+                ObjectNode node = this .objectMapper .createObjectNode();
+                node .put( "shape", shapeId );
 
-            node .put( "color", rm .getColor() .toWebString() );
+                node .put( "color", rm .getColor() .toWebString() );
 
-            node .set( "position", this .asTreeWithView( rm .getLocation() ) );
+                node .set( "position", this .getLocation( rm ) );
 
-            Quat4d quaternion = getQuaternion( rm .getOrientation() );
-            node .set( "rotation", this .asTreeWithView( quaternion ) );
+                ObjectNode quaternion = getQuaternionNode( rm .getOrientation() );
+                node .set( "rotation", quaternion );
 
-            return node;
+                return node;
+            }
+            else if ( man instanceof Connector )
+            {
+                ObjectNode node = this .objectMapper .createObjectNode();
+                node .put( "shape", shapeId );
+
+                Color color = rm .getColor();
+                if ( color == null )
+                    color = Color.WHITE;
+                node .put( "color", color .toWebString() );
+
+                node .set( "position", this .getLocation( rm ) );
+
+                return node;
+            }
+            else if ( man instanceof Panel )
+            {
+                ObjectNode node = this .objectMapper .createObjectNode();
+                node .put( "shape", shapeId );
+
+                Color color = rm .getColor();
+                if ( color == null )
+                    color = Color.WHITE;
+                node .put( "color", color .toWebString() );
+
+                node .set( "position", this .getLocation( rm ) );
+
+                return node;
+            }
+            else
+                return null;
+        } catch (RuntimeException e) {
+            System.err.println( e .getMessage() );
+            e .printStackTrace();
+            throw e;
         }
-        else if ( man instanceof Connector )
-        {
-            ObjectNode node = this .objectMapper .createObjectNode();
-            node .put( "shape", shapeId );
-
-            Color color = rm .getColor();
-            if ( color == null )
-                color = Color.WHITE;
-            node .put( "color", color .toWebString() );
-
-            node .set( "position", this .asTreeWithView( rm .getLocation() ) );
-
-            return node;
-        }
-        else if ( man instanceof Panel )
-        {
-            ObjectNode node = this .objectMapper .createObjectNode();
-            node .put( "shape", shapeId );
-
-            Color color = rm .getColor();
-            if ( color == null )
-                color = Color.WHITE;
-            node .put( "color", color .toWebString() );
-
-            node .set( "position", this .asTreeWithView( rm .getLocation() ) );
-
-            return node;
-        }
-        else
-            return null;
+    }
+    
+    private ObjectNode getVectorNode( RealVector vector )
+    {
+        ObjectNode node = this .objectMapper .createObjectNode();
+        node .put( "x", vector .x );
+        node .put( "y", vector .y );
+        node .put( "z", vector .z );
+        return node;
+    }
+    
+    private ObjectNode getLocation( RenderedManifestation rm )
+    {
+        return getVectorNode( rm .getLocation() );
     }
 
+    @Deprecated
+    /**
+     * This doesn't work with CheerpJ for some reason.
+     * @param object
+     * @return
+     */
     private JsonNode asTreeWithView( Object object )
     {
         try {
-            return objectMapper .readTree( objectWriter .writeValueAsString( object ) );
+            String str = objectWriter .writeValueAsString( object );
+            return objectMapper .readTree( str );
         } catch (IOException e) {
             e .printStackTrace();
             return objectMapper .createObjectNode();
         }
     }
 
-    private Quat4d getQuaternion( AlgebraicMatrix orientation )
+    public ObjectNode getQuaternionNode( AlgebraicMatrix orientation )
     {
-        Quat4d result = this .rotations .get( orientation );
+        ObjectNode result = this .rotations .get( orientation );
         if ( result == null ) {
             Matrix4d matrix = new Matrix4d();
             for ( int i = 0; i < 3; i++) {
@@ -144,8 +191,13 @@ public class JsonMapper
                     matrix .setElement( i, j, value );
                 }
             }
-            result = new Quat4d();
-            matrix .get( result );
+            Quat4f quat = new Quat4f();
+            matrix .get( quat );
+            result = this .objectMapper .createObjectNode();
+            result .put( "x", quat .x );
+            result .put( "y", quat .y );
+            result .put( "z", quat .z );
+            result .put( "w", quat .w );
             this .rotations .put( orientation, result );
         }
         return result;

@@ -3,16 +3,13 @@
  */
 package com.vzome.core.viewing;
 
-import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Set;
@@ -22,16 +19,15 @@ import java.util.logging.Logger;
 
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.editor.Application;
+import com.vzome.core.construction.Color;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.VefParser;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.model.Color;
 import com.vzome.core.parts.StrutGeometry;
 import com.vzome.core.render.Colors;
+import com.vzome.xml.ResourceLoader;
 
 /**
  * @author vorth
@@ -44,20 +40,17 @@ public class ExportedVEFShapes extends AbstractShapes
 
     private static final String NODE_MODEL = "connector";
 
-    private final File prefsFolder;
-
     private final AbstractShapes fallback;
 
     private final Properties colors = new Properties();
     
-    private static final Map<String, String> INJECTED = new HashMap<String, String>();
-
     private final boolean isSnub;
 
     public static void injectShapeVEF( String key, String vef )
     {
-        key = key .replace( "--", "/" );
-        INJECTED .put( key, vef );
+        // TODO replace this mechanism in Unity with a custom ResourceLoader
+//        key = key .replace( "--", "/" );
+//        ResourceLoader.injectResource( key, vef );
     }
 
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm )
@@ -67,7 +60,7 @@ public class ExportedVEFShapes extends AbstractShapes
 
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm, boolean useZomic )
     {
-        this( prefsFolder, pkgName, name, null, symm, new ScriptedShapes( prefsFolder, pkgName, name, (IcosahedralSymmetry) symm ) );
+        this( prefsFolder, pkgName, name, null, symm, new OctahedralShapes( pkgName, name, symm ) );
     }
 
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm )
@@ -88,20 +81,19 @@ public class ExportedVEFShapes extends AbstractShapes
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm, AbstractShapes fallback, boolean isSnub )
     {
         super( pkgName, name, alias, symm );
-        this .prefsFolder = prefsFolder;
         this .fallback = fallback;
         this .isSnub = isSnub;
 
         String colorProps = MODEL_PREFIX + pkgName + "/colors.properties";
-        try {
-            ClassLoader cl = Application.class .getClassLoader();
-            InputStream in = cl .getResourceAsStream( colorProps );
-            if ( in != null )
-                this .colors .load( in );
-        } catch ( IOException ioe ) {
-            if ( LOGGER .isLoggable( Level.FINE ) )
-                LOGGER .fine( "problem with shape color properties: " + colorProps );
-        }
+        String resource = ResourceLoader.loadStringResource( colorProps );
+        if ( resource != null )
+            try {
+                InputStream inputStream = new ByteArrayInputStream( resource .getBytes() );
+                this .colors .load( inputStream );
+            } catch ( IOException ioe ) {
+                if ( LOGGER .isLoggable( Level.FINE ) )
+                    LOGGER .fine( "problem with shape color properties: " + colorProps );
+            }
     }
 
     @Override
@@ -137,46 +129,12 @@ public class ExportedVEFShapes extends AbstractShapes
 
     protected String loadVefData( String name )
     {
-        if ( INJECTED .containsKey( mPkgName + "-" + name ) )
-            return INJECTED .get( mPkgName + "-" + name );
+        // TODO get Unity to work again, with the new ResourceLoader
+//        if ( INJECTED .containsKey( mPkgName + "-" + name ) )
+//            return INJECTED .get( mPkgName + "-" + name );
         
         String script = mPkgName + "/" + name + ".vef";
-        File shapeFile = new File( this .prefsFolder, "Shapes/" + script );
-        InputStream stream = null;
-        try {
-            if ( shapeFile .exists() ) {
-                if(LOGGER.isLoggable(Level.INFO)) {
-                    LOGGER.info("Using custom shape file: " + shapeFile.getAbsolutePath());
-                }
-                stream = new FileInputStream( shapeFile );
-            } else {
-                if(LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine("No custom shape file found at " + shapeFile.getAbsolutePath());
-                }
-                script = MODEL_PREFIX + script;
-                stream = Thread.currentThread() .getContextClassLoader().getResourceAsStream( script );
-                if ( stream == null )
-                    return null; // avoid the NPE!
-            }
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] buf = new byte[1024];
-            int num;
-            while ( ( num = stream .read( buf, 0, 1024 )) > 0 )
-                out .write( buf, 0, num );
-            return new String( out .toByteArray() );
-
-        } catch (Exception e) {
-            LOGGER .fine( "Failure loading VEF data from " + shapeFile );
-        } finally {
-            if ( stream != null )
-                try {
-                    stream .close();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-        }
-        return null;
+        return ResourceLoader.loadStringResource( MODEL_PREFIX + script );
     }
 
     @Override

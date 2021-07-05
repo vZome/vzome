@@ -34,7 +34,7 @@ import com.vzome.api.Application;
 import com.vzome.api.Exporter;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
-import com.vzome.xml.DomUtils;
+import com.vzome.xml.DomSerializer;
 
 
 /**
@@ -59,7 +59,7 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
             doc .appendChild( tester .collectResults() );
 
             out = new FileOutputStream( args[2] );
-            DomUtils .serialize( doc, out );
+            DomSerializer .serialize( doc, out );
             out .close();
             System.exit( tester .exitCode );
         } catch ( Exception e ) {

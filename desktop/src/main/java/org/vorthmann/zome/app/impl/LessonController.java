@@ -1,6 +1,4 @@
 
-//(c) Copyright 2007, Scott Vorthmann.  All rights reserved.
-
 package org.vorthmann.zome.app.impl;
 
 import java.awt.event.MouseEvent;
@@ -20,37 +18,37 @@ import com.vzome.desktop.controller.CameraController;
 public class LessonController extends DefaultController
 {
     private final LessonModel model;
-    
+
     private final CameraController vpm;
-    
+
     private boolean listening = true;
-        
+
     public LessonController( LessonModel model, CameraController vpm )
     {
-    	this .model = model;
+        this .model = model;
         this .vpm = vpm;
-//        pages .add( new PageController( "How to save notes", DEFAULT_CONTENT, vpm .getView() ) );
+        //        pages .add( new PageController( "How to save notes", DEFAULT_CONTENT, vpm .getView() ) );
         model .addPropertyChangeListener( new PropertyChangeListener()
         {	
             @Override
-			public void propertyChange( PropertyChangeEvent change )
-			{
+            public void propertyChange( PropertyChangeEvent change )
+            {
                 firePropertyChange( change ); // forward to the view
-			}
-		} );
+            }
+        } );
     }
-    
+
     @Override
     public void doAction( String action ) throws Exception
     {
         if ( ! listening )
             // guard against events that originate here
             return;
-        
+
         if ( "duplicatePage" .equals( action ) )
         {
             // this is the duplicate button in article mode
-        	model .duplicatePage( this.vpm .getView() );
+            model .duplicatePage( this.vpm .getView() );
             setProperty( "edited", "true" );
         }
         else if ( "deletePage" .equals( action ) )
@@ -85,19 +83,19 @@ public class LessonController extends DefaultController
         }
         else if ( "previousPage" .equals( action ) )
         {
-        	model .goToPreviousPage();
+            model .goToPreviousPage();
         }
         else if ( "nextPage" .equals( action ) )
         {
-        	model .goToNextPage();
+            model .goToNextPage();
         }
         else if ( "lastPage" .equals( action ) )
         {
-        	model .goToLastPage();
+            model .goToLastPage();
         }
         else if ( "setView" .equals( action ) )
         {
-        	model .setView( vpm .getView() );
+            model .setView( vpm .getView() );
             setProperty( "edited", "true" );
         }
         else if ( action .startsWith( "usePageView-" ) )
@@ -117,7 +115,7 @@ public class LessonController extends DefaultController
         }
         else if ( "restoreSnapshot" .equals( action ) )
         {
-        	model .refresh();
+            model .refresh();
         }
         else if ( action .startsWith( "insertUpdateEvent" ) )
         {
@@ -155,7 +153,7 @@ public class LessonController extends DefaultController
         else
             super.doAction( action );
     }
-    
+
     @Override
     public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
     {
@@ -163,15 +161,15 @@ public class LessonController extends DefaultController
         boolean[] result = new boolean[ menu.length ];
         boolean samePage = model .onPage( item .intValue() );
         for ( int i = 0; i < result.length; i++ ) {
-			if ( menu[ i ] .startsWith( "usePageView-" ) )
-				result[ i ] = ! samePage;
-			else if ( "setView" .equals( menu[ i ] ) )
-				result[ i ] = samePage;
-			else if ( menu[ i ] .startsWith( "copyPageView-" ) )
-				result[ i ] = true;
-			else
-				result[ i ] = true;
-		}
+            if ( menu[ i ] .startsWith( "usePageView-" ) )
+                result[ i ] = ! samePage;
+            else if ( "setView" .equals( menu[ i ] ) )
+                result[ i ] = samePage;
+            else if ( menu[ i ] .startsWith( "copyPageView-" ) )
+                result[ i ] = true;
+            else
+                result[ i ] = true;
+        }
         return result;
     }
 
@@ -186,22 +184,22 @@ public class LessonController extends DefaultController
 
         if ( "onLastPage" .equals( propName ) )
             return Boolean .toString( model .onLastPage() );
-        
+
         if ( "num.pages" .equals( propName ) )
             return Integer .toString( model. size() );
-        
+
         if ( "page.num" .equals( propName ) )
             return Integer .toString( model .getPageNum() );
-        
+
         if ( "title" .equals( propName ) )
             return model .getTitle();
 
         if ( "content" .equals( propName ) )
             return model .getContent();
-        
+
         return super.getProperty( propName );
     }
-    
+
     public DocumentController getEditorController()
     {
         return (DocumentController) this .mNextController;
@@ -218,7 +216,7 @@ public class LessonController extends DefaultController
                 {
                     for (int i = 0; i < model .size(); i++)
                     {
-                    	model .updateThumbnail( i, recorder, renderer );
+                        model .updateThumbnail( i, recorder, renderer );
                     }
                 }
                 return null;

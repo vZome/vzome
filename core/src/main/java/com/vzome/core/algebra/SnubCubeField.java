@@ -49,7 +49,7 @@ public class SnubCubeField  extends ParameterizedField<Integer> {
     }
 
     @Override
-    protected void initializeMultiplierMatrix() {
+    protected void initializeMultiplicationTensor() {
         short[][][] mm = {
             { // 1
                 {1, 0, 0,},
@@ -68,7 +68,7 @@ public class SnubCubeField  extends ParameterizedField<Integer> {
             },
         };
 
-        multiplierMatrix = mm;
+        multiplicationTensor = mm;
     }
 
     @Override

@@ -45,7 +45,7 @@ public class CommandUniformH4Polytope extends CommandTransform
             symm = new H4Symmetry( field );
             h4Symms .put( field, symm );
         }
-        this .mRoots = format .getQuaternionicSymmetry( "H_4" ) .getRoots();
+        this .mRoots = ((XmlSymmetryFormat) format) .getQuaternionicSymmetry( "H_4" ) .getRoots();
     }
     
     private final Map<AlgebraicField, H4Symmetry> h4Symms = new HashMap<>();
@@ -219,7 +219,7 @@ public class CommandUniformH4Polytope extends CommandTransform
     public void getXml( Element result, AttributeMap attributes )
     {
         if ( quaternionVector != null )
-        	DomUtils .addAttribute( result, "quaternion", quaternionVector .toString() );        
+            DomUtils .addAttribute( result, "quaternion", quaternionVector .toParsableString() );        
         super .getXml( result, attributes );
     }
 
@@ -276,7 +276,7 @@ public class CommandUniformH4Polytope extends CommandTransform
         if ( rightQuat != null )
             proj = new QuaternionProjection( field, leftQuat, rightQuat );
         
-//      proj = new PerspectiveProjection( field, field .add( field .createPower( 3 ), field .createPower( 0 ) ) );
+//      proj = new PerspectiveProjection( field, field .add( field .createPower( 3 ), field .one() ) );
 //        proj = new PerspectiveProjection( field, field .subtract( field .createPower( 5 ), field .createPower( 3 ) ) );
 //        proj = new PerspectiveProjection( field, field .createPower( 4 ) );
         

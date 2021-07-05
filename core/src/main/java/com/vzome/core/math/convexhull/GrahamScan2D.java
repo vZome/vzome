@@ -3,6 +3,7 @@ package com.vzome.core.math.convexhull;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -45,20 +47,24 @@ public class GrahamScan2D {
             fail("Cannot generate a 2d convex hull from non-coplanar points");
         }
 
+        // JSweet hates maps keyed by objects, so we'll construct this collection
+        //   separately, and let the xyTo3dMap use strings as keys.
+        Collection<AlgebraicVector> keySet = new ArrayList<>();
+        
         // Map each 3d point to a 2d projection and rotate it to the XY plane if necessary.
         // Since the 3d points are coplanar, it will be a 1:1 mapping
         // Later, we'll need to map 2d back to 3d so the 2d vector will be the key
-        Map<AlgebraicVector, AlgebraicVector> xyTo3dMap = map3dToXY(points, normal);
+        Map<String, AlgebraicVector> xyTo3dMap = map3dToXY( points, normal, keySet );
         
         // calculate the 2d convex hull
-        Deque<AlgebraicVector> stack2d = getHull2d(xyTo3dMap.keySet());
+        Deque<AlgebraicVector> stack2d = getHull2d( keySet );
 
         // map the 2d convex hull back to the original 3d points
         AlgebraicVector[] vertices3d = new AlgebraicVector[stack2d.size()];
         
         int i = 0;
         for(AlgebraicVector point2d : stack2d) {
-            AlgebraicVector point3d = xyTo3dMap.get(point2d);
+            AlgebraicVector point3d = xyTo3dMap.get( point2d.toString( AlgebraicField.VEF_FORMAT ) );
             // order vertices3d so the normal will point away from the origin 
             // to make it consistent with the 3d convex hull algorithm
             vertices3d[i++] = point3d;
@@ -66,21 +72,23 @@ public class GrahamScan2D {
         return vertices3d;
     }
     
-    private static Map<AlgebraicVector, AlgebraicVector> map3dToXY(Collection<AlgebraicVector> points3d, AlgebraicVector normal) {
+    private static Map<String, AlgebraicVector> map3dToXY( Collection<AlgebraicVector> points3d, AlgebraicVector normal, Collection<AlgebraicVector> keySet )
+    {
         int maxAxis = AlgebraicVectors.getMaxComponentIndex(normal);
         // preserve the right hand rule relationship of the 2 retained axes
         int mapX = (maxAxis + 1) % 3;
         int mapY = (maxAxis + 2) % 3;
         
-        Map<AlgebraicVector, AlgebraicVector> map = new HashMap<>();
+        Map<String, AlgebraicVector> map = new HashMap<>();
         for(AlgebraicVector point3d : points3d) {
             AlgebraicVector point2d = new AlgebraicVector(point3d.getComponent(mapX), point3d.getComponent(mapY));
-            map.put(point2d, point3d);
+            keySet .add( point2d );
+            map.put( point2d.toString( AlgebraicField.VEF_FORMAT ), point3d );
         }
         return map;
     }
 
-    private static Deque<AlgebraicVector> getHull2d(Set<AlgebraicVector> points2d) {
+    private static Deque<AlgebraicVector> getHull2d(Collection<AlgebraicVector> points2d) {
         List<AlgebraicVector> sortedPoints2d = getSortedPoints(points2d);
         Deque<AlgebraicVector> stack2d = new ArrayDeque<>();
         stack2d.push(sortedPoints2d.get(0));
@@ -117,10 +125,10 @@ public class GrahamScan2D {
      *  1) in increasing order of the angle they and the lowest point make with the x-axis.
      *  2) by increasing distance from the lowest point.
      */
-    private static List<AlgebraicVector> getSortedPoints(Set<AlgebraicVector> points2d) {
+    private static List<AlgebraicVector> getSortedPoints(Collection<AlgebraicVector> points2d) {
         AlgebraicVector lowest = getLowest2dPoint(points2d);
         List<AlgebraicVector> list = new ArrayList<>(points2d);
-        list.sort(new Comparator<AlgebraicVector>() {
+        Collections.sort( list, new Comparator<AlgebraicVector>() {
             @Override
             public int compare(AlgebraicVector a, AlgebraicVector b) {
                 if(a.equals(b)) {

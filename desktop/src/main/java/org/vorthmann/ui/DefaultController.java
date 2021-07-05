@@ -2,7 +2,6 @@
 
 package org.vorthmann.ui;
 
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
@@ -10,7 +9,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -228,36 +226,13 @@ public class DefaultController implements Controller
 
     protected void openApplication( File file )
     {
-        String script = this .getProperty( "export.script" );
-        if ( script != null )
-        {
-            try {
-                Runtime .getRuntime() .exec( script + " " + file .getAbsolutePath(),
-                        null, file .getParentFile() );
-            } catch ( IOException e ) {
-                System .err .println( "Runtime.exec() failed on " + file .getAbsolutePath() );
-                e .printStackTrace();
-            }        }
-        else
-            try {
-                if ( Desktop .isDesktopSupported() ) {
-                    // DH - The test for file.exists() shouldn't be needed if this method is invoked in the proper sequence
-                    // so I think it should be omitted eventually so the exceptions will be thrown
-                    // but I'm leaving it here for now as a debugging aid.
-                    if( ! file .exists() ) {
-                        System .err .println( file .getAbsolutePath() + " does not exist." );
-                        //                    return;
-                    }
-                    Desktop desktop = Desktop .getDesktop();
-                    System .err .println( "Opening app for  " + file .getAbsolutePath() + " in thread: " + Thread.currentThread() );
-                    desktop .open( file );
-                }
-            } catch ( IOException | IllegalArgumentException e ) {
-                System .err .println( "Desktop.open() failed on " + file .getAbsolutePath() );
-                if ( ! file .exists() ) {
-                    System .err .println( "File does not exist." );
-                }
-                e.printStackTrace();
-            }
+        if ( this .mNextController != null )
+            this .mNextController .openApplication( file );
+    }
+    
+    protected void runScript( String script, File file )
+    {
+        if ( this .mNextController != null )
+            this .mNextController .runScript( script, file );
     }
 }

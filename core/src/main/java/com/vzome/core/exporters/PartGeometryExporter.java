@@ -1,6 +1,4 @@
 
-//(c) Copyright 2007, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.exporters;
 
 import java.io.File;
@@ -14,7 +12,7 @@ import java.util.TreeSet;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.generic.ArrayComparator;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;

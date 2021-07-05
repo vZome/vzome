@@ -1,6 +1,5 @@
 package com.vzome.core.kinds;
 
-import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.SnubCubeField;
@@ -11,13 +10,12 @@ import com.vzome.core.viewing.ExportedVEFShapes;
 
 public class SnubCubeFieldApplication extends DefaultFieldApplication {
 
-    public SnubCubeFieldApplication() {
-        super(new SnubCubeField());
+    public SnubCubeFieldApplication( SnubCubeField field ) {
+        super( field );
 
         OctahedralSymmetryPerspective symmPerspective = (OctahedralSymmetryPerspective) super.getDefaultSymmetryPerspective();
         symmPerspective.setModelResourcePath("org/vorthmann/zome/app/snubCubeTrackball-vef.vZome");
         AbstractSymmetry symm = symmPerspective.getSymmetry();
-        AlgebraicField field = this.getField();
         
         // According to the comment at the top of com.vzome.core.math.symmetry.Direction,
         // the X component of these vectors should equal one and the others should be between 0 and 1.

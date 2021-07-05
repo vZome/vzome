@@ -1,0 +1,85 @@
+
+// move to the center of the strut
+from size -99 yellow +0
+
+// adjust to the parts scale
+scale -5
+
+label unit.start
+
+branch { 
+
+// move to strut origin
+from save scale { scale +5
+size -99 yellow -0 }
+
+// "near" prism base
+	long yellow +0
+	from short blue +2
+label base_1_1
+	blue -7 rotate around yellow -0
+label base_1_2
+	blue -7 rotate around yellow -0
+label base_1_3
+	blue -7 rotate around yellow -0
+
+}
+
+reflect through center
+
+
+branch { 
+
+
+// move to strut origin
+from save scale { scale +5
+size -99 yellow -0 }
+
+// "far" prism base
+	long yellow +0
+	from short blue +2
+label base_2_1
+	blue -7 rotate around yellow -0
+label base_2_2
+	blue -7 rotate around yellow -0
+label base_2_3
+	blue -7 rotate around yellow -0
+
+}
+
+
+{  //faces
+
+			label unit.face // near antiprism 1
+	label base_1_1
+	label base_1_2
+	label base_2_3
+
+			label unit.face // near antiprism 2
+	label base_1_2
+	label base_1_3
+	label base_2_1
+	
+			label unit.face // near antiprism 3
+	label base_1_3
+	label base_1_1
+	label base_2_2
+	
+			label unit.face // far antiprism 1
+	label base_2_2
+	label base_2_1
+	label base_1_3
+	
+			label unit.face // far antiprism 2
+	label base_2_3
+	label base_2_2
+	label base_1_1
+	
+			label unit.face // far antiprism 3
+	label base_2_1
+	label base_2_3
+	label base_1_2
+	
+}
+
+label unit.end

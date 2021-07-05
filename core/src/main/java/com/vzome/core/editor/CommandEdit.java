@@ -21,12 +21,19 @@ import com.vzome.core.commands.CommandHide;
 import com.vzome.core.commands.CommandObliquePentagon;
 import com.vzome.core.commands.CommandTransform;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.ChangeSelection;
+import com.vzome.core.editor.api.Context;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.LegacyEditorModel;
+import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.edits.AffinePentagon;
 import com.vzome.core.edits.DeselectAll;
 import com.vzome.core.edits.SelectAll;
@@ -45,8 +52,6 @@ import com.vzome.xml.DomUtils;
  */
 public class CommandEdit extends ChangeManifestations
 {
-    public static final String UNKNOWN_COMMAND = "unknown.command";
-
 	private EditorModel mEditorModel;
 	
     private AbstractCommand mCommand;
@@ -58,7 +63,7 @@ public class CommandEdit extends ChangeManifestations
 
 	public CommandEdit( AbstractCommand cmd, EditorModel editor )
     {
-        super( editor .mSelection, editor .getRealizedModel() );
+        super( editor );
         mEditorModel = editor;  // only needed to set symmetry axis/center
         mCommand = cmd;
     }
@@ -117,10 +122,8 @@ public class CommandEdit extends ChangeManifestations
             if ( isHide )
                 hideManifestation( man );
             else {
-                Iterator<Construction> cs = man .getConstructions();
-                if ( ! cs .hasNext() )
-                    throw new Command.Failure( "No construction for this manifestation" );
-                constrsBefore .add( cs .next() );  // yes, just using the first one
+                Construction construction = man .getFirstConstruction();
+                constrsBefore .add( construction );  // yes, just using the first one
             }
         }
 
@@ -132,10 +135,10 @@ public class CommandEdit extends ChangeManifestations
 
         if ( mAttrs == null )
             mAttrs = new AttributeMap();
-        Segment symmAxis = mEditorModel .getSymmetrySegment();
+        Segment symmAxis = ((LegacyEditorModel) mEditorModel) .getSymmetrySegment();
         if ( symmAxis != null )
             mAttrs .put( CommandTransform .SYMMETRY_AXIS_ATTR_NAME, symmAxis );
-        mAttrs .put( CommandTransform .SYMMETRY_CENTER_ATTR_NAME, mEditorModel .getCenterPoint() );
+        mAttrs .put( CommandTransform .SYMMETRY_CENTER_ATTR_NAME, ((LegacyEditorModel) mEditorModel) .getCenterPoint() );
         mAttrs .put( Command.FIELD_ATTR_NAME, this .mManifestations .getField() );
 
         // TODO do we really need to do it this way?  Or can we use the other NewConstructions() class?
@@ -146,7 +149,7 @@ public class CommandEdit extends ChangeManifestations
         Object[][] signature = mCommand .getParameterSignature();
         int actualsLen = constrsBefore .size();
         if ( ( signature.length == actualsLen )
-                || ( signature.length==1 && signature[0][0] .equals( Command.GENERIC_PARAM_NAME ) ) )
+                || ( signature.length==1 && signature[0][0] .equals( Command.GENERIC_PARAM_NAME ) ) ) {
             try {
                 // command specifically applies to a collection of constructions (like a Transformation)
                 selectionAfter = mCommand .apply( constrsBefore, mAttrs, news );
@@ -154,15 +157,24 @@ public class CommandEdit extends ChangeManifestations
                 undo();  // NEW SELECTION BUG: undo the redo above
                 throw f;
             }
-        else if ( signature.length > actualsLen )
+        }
+        else if ( signature.length > actualsLen ) {
             fail( "Too few objects in the selection." );
+        }
         else if ( signature.length == 1 ) {
             // parallel applications
             ConstructionList partial;
             selectionAfter = new ConstructionList();
             for ( int i = 0; i < actualsLen; i++ ) {
                 Construction param = constrsBefore .get( i );
-                if ( ((Class<?>) signature[0][1]) .isAssignableFrom( param .getClass() ) ) {
+                Class<?> formalClass = ((Class<?>) signature[0][1]);
+                
+                // Can't do this in JSweet, so we'll work around it.
+//              if ( ((Class<?>) signature[0][1]) .isAssignableFrom( param .getClass() ) ) {
+
+                if ( ( formalClass == Point.class && param instanceof Point )
+                  || ( formalClass == Segment.class && param instanceof Segment ) ) // for CommandMidpoint
+                {
                     ConstructionList single = new ConstructionList();
                     single .addConstruction( param );
                     partial = mCommand .apply( single, mAttrs, news );
@@ -182,8 +194,8 @@ public class CommandEdit extends ChangeManifestations
             // here we accommodate model files that include failed edits in their history
             if ( cons .failed() )
             {
-                logBugAccommodation( "failed construction" );
-                mEditorModel .addFailedConstruction( cons );
+                CommandEdit.logBugAccommodation( "failed construction" ); // weird qualification, but it passes JSweet
+                ((LegacyEditorModel) mEditorModel) .addFailedConstruction( cons );
                 continue;
             }
             Manifestation man = manifestConstruction( cons );
@@ -209,13 +221,7 @@ public class CommandEdit extends ChangeManifestations
             cmdName = xml .getAttribute( "command" );
         if ( cmdName .equals( "CommandIcosahedralSymmetry" ) )
             cmdName = "CommandSymmetry";
-        try {
-            Class<?> clazz = Class .forName( "com.vzome.core.commands." + cmdName );
-            mCommand = (AbstractCommand) clazz.getConstructor().newInstance();
-        } catch ( Exception e ) {
-            loadAndPerformLgger .log( Level.SEVERE, "error creating command: " + xml .getLocalName(), e );
-            throw new Failure( UNKNOWN_COMMAND );
-        }
+        this.mCommand = (AbstractCommand) context .createLegacyCommand( cmdName );
 
         if ( format .selectionsNotSaved() )
         {
@@ -257,11 +263,11 @@ public class CommandEdit extends ChangeManifestations
                         if ( attrName .equals( CommandTransform .SYMMETRY_CENTER_ATTR_NAME ) )
                         {
                             Point c = new FreePoint( ((Point) value) .getLocation() .projectTo3d( true ) );
-                            context .performAndRecord( new SymmetryCenterChange( mEditorModel, c ) );
+                            context .performAndRecord( new SymmetryCenterChange( (LegacyEditorModel) mEditorModel, c ) );
                         }
                         else if ( attrName .equals( CommandTransform .SYMMETRY_AXIS_ATTR_NAME ) )
                         {
-                            context .performAndRecord( new SymmetryAxisChange( mEditorModel, (Segment) value ) );
+                            context .performAndRecord( new SymmetryAxisChange( (LegacyEditorModel) mEditorModel, (Segment) value ) );
                             if ( ! mCommand .attributeIs3D( attrName ) )
                             {
                                 AlgebraicVector vector = ((Segment) value) .getOffset();
@@ -286,9 +292,9 @@ public class CommandEdit extends ChangeManifestations
                         //  see below for the actual creation
                         if ( c != null ) {
                             
-                            if ( mEditorModel .hasFailedConstruction( c ) )
+                            if ( ((LegacyEditorModel) mEditorModel) .hasFailedConstruction( c ) )
                             {
-                                logBugAccommodation( "skip selecting a failed construction" );
+                                CommandEdit.logBugAccommodation( "skip selecting a failed construction" ); // weird qualification, but it passes JSweet
                                 continue;
                             }
                             
@@ -336,7 +342,7 @@ public class CommandEdit extends ChangeManifestations
             // TODO work out a more generic migration technique
             if ( mCommand instanceof CommandObliquePentagon )
             {
-                UndoableEdit edit = new AffinePentagon( mSelection, mManifestations );
+                UndoableEdit edit = new AffinePentagon( mEditorModel );
                 context .performAndRecord( edit );
                 return;
             }
@@ -356,6 +362,12 @@ public class CommandEdit extends ChangeManifestations
     {
         @Override
         public void constructionAdded( Construction c )
+        {
+            add( c );
+        }
+
+        @Override
+        public void constructionAdded( Construction c, Color color )
         {
             add( c );
         }

@@ -4,14 +4,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicMatrix;
-import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.Polyhedron;
-import com.vzome.core.math.RealVector;
-import com.vzome.core.math.symmetry.Embedding;
-import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.opengl.InstancedGeometry;
 
 public class SymmetryRendering implements RenderingChanges
@@ -20,53 +15,12 @@ public class SymmetryRendering implements RenderingChanges
     private final float[] embedding;
     private final Map<Polyhedron, InstancedGeometry> geometries = new HashMap<Polyhedron, InstancedGeometry>();
     private final float globalScale;
-    private final OrbitSource orbits;
     
     public SymmetryRendering( OrbitSource orbits, float globalScale )
     {
-        this .orbits = orbits;
         this .globalScale = globalScale;
-
-        Symmetry symmetry = orbits .getSymmetry();
-        AlgebraicField field = symmetry .getField();
-        int order = symmetry .getChiralOrder();
-        this .orientations = new float[order][];
-        for ( int orientation = 0; orientation < order; orientation++ )
-        {
-            float[] asFloats = new float[ 16 ];
-            AlgebraicMatrix transform = symmetry .getMatrix( orientation );
-            for ( int i = 0; i < 3; i++ )
-            {
-                AlgebraicVector columnSelect = field .basisVector( 3, i );
-                AlgebraicVector columnI = transform .timesColumn( columnSelect );
-                RealVector colRV = columnI .toRealVector();
-                asFloats[ i*4+0 ] = (float) colRV.x;
-                asFloats[ i*4+1 ] = (float) colRV.y;
-                asFloats[ i*4+2 ] = (float) colRV.z;
-                asFloats[ i*4+3 ] = 0f;
-            }
-            asFloats[ 12 ] = 0f;
-            asFloats[ 13 ] = 0f;
-            asFloats[ 14 ] = 0f;
-            asFloats[ 15 ] = 1f;
-            this .orientations[ orientation ] = asFloats;
-        }
-
-        Embedding embedding = orbits .getSymmetry();
-        this .embedding = new float[ 16 ];
-        for ( int i = 0; i < 3; i++ )
-        {
-            AlgebraicVector columnSelect = field .basisVector( 3, i );
-            RealVector colRV = embedding .embedInR3( columnSelect );
-            this .embedding[ i*4+0 ] = (float) colRV.x;
-            this .embedding[ i*4+1 ] = (float) colRV.y;
-            this .embedding[ i*4+2 ] = (float) colRV.z;
-            this .embedding[ i*4+3 ] = 0f;
-        }
-        this .embedding[ 12 ] = 0f;
-        this .embedding[ 13 ] = 0f;
-        this .embedding[ 14 ] = 0f;
-        this .embedding[ 15 ] = 1f;
+        this .orientations = orbits .getOrientations();
+        this .embedding = orbits .getEmbedding();
     }
 
     public SymmetryRendering( RenderedModel renderedModel, float globalScale )
@@ -111,7 +65,7 @@ public class SymmetryRendering implements RenderingChanges
             Collection<RenderedManifestation> instances = shapesAndInstances .getInstances();
             Polyhedron shape = null;
             for ( RenderedManifestation rm : instances ) {
-                rm .resetAttributes( this .orbits, shapes, false, true );
+                rm .resetAttributes( false, true );
                 shape = rm .getShape(); // they are all the same shape!
             }
             ShapeAndInstances newShapesAndInstances = this .getShapeAndInstances( shape );

@@ -4,12 +4,12 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.AbstractSymmetry;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Permutation;
+import com.vzome.core.math.symmetry.SpecialOrbit;
 import com.vzome.core.math.symmetry.Symmetry;
 
 public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
@@ -62,7 +62,7 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
 		// Breaking the bad pattern of orbit initialization in the AbstractSymmetry constructor,
 		//   we are just initializing matrices, here.
 		
-        HeptagonField hf = (HeptagonField) this .mField;
+        AlgebraicField hf = this .mField;
 
         AlgebraicNumber one = hf .one();
         AlgebraicNumber s = hf .getAffineScalar().reciprocal(); // reciprocal of sigma
@@ -177,6 +177,15 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
         Double y = rv.y * skewFactor;
 		return new RealVector( x, y, rv.z );
 	}
+    
+    @Override
+    public double[] embedInR3Double( AlgebraicVector v )
+    {
+        double[] dv = super.embedInR3Double( v );
+        Double x = dv[0] + ( dv[1] / sigmaX2 );
+        Double y = dv[1] * skewFactor;
+        return new double[] { x, y, dv[2] };
+    }
     
     @Override
     public boolean isTrivial()

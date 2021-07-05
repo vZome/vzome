@@ -1,9 +1,7 @@
 
-//(c) Copyright 2007, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.algebra;
 
-public class SnubDodecField extends AlgebraicField
+public class SnubDodecField extends AbstractAlgebraicField
 {
     public static final String FIELD_NAME = "snubDodec";
     

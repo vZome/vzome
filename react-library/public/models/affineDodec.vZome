@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" coreVersion="7.0" field="golden">
+  <EditHistory editNumber="65" lastStickyEdit="-1">
+    <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="green" index="16" len="4 6"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="-1 -1 -5 -8 -2 -3" grouping="2.1.1" startSegment="0 0 0 0 0 0"/>
+    <SelectManifestation endSegment="1 2 0 0 2 3" grouping="2.1.1" startSegment="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectAll grouping="2.1.1"/>
+    <EndBlock/>
+    <Centroid grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Centroid>
+    <Hide grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <StrutCreation anchor="1 2 -5 -8 1 2" dir="yellow" index="0" len="1 2"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="4 7 -5 -8 0 0" grouping="2.1.1" startSegment="1 2 -5 -8 1 2"/>
+    <SelectManifestation endSegment="1 2 -5 -8 1 2" grouping="2.1.1" startSegment="0 0 -8 -13 -1 -2"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation endSegment="4 7 -5 -8 0 0" grouping="2.1.1" startSegment="1 2 -5 -8 1 2"/>
+    <SelectManifestation endSegment="1 2 -5 -8 1 2" grouping="2.1.1" startSegment="1 2 0 0 2 3"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation endSegment="5 8 -8 -13 -3 -5" grouping="2.1.1" startSegment="4 7 -5 -8 0 0"/>
+    <SelectManifestation endSegment="6 10 0 0 0 0" grouping="2.1.1" startSegment="4 7 -5 -8 0 0"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation endSegment="8 13 0 0 -3 -5" grouping="2.1.1" startSegment="6 10 0 0 0 0"/>
+    <SelectManifestation endSegment="4 7 3 5 1 2" grouping="2.1.1" startSegment="6 10 0 0 0 0"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation endSegment="8 13 0 0 -3 -5" grouping="2.1.1" startSegment="6 10 0 0 0 0"/>
+    <SelectManifestation endSegment="4 7 3 5 1 2" grouping="2.1.1" startSegment="1 2 0 0 2 3"/>
+    <SelectManifestation endSegment="8 13 0 0 -3 -5" grouping="2.1.1" startSegment="6 10 0 0 0 0"/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation endSegment="5 8 5 8 -1 -2" grouping="2.1.1" startSegment="4 7 3 5 1 2"/>
+    <SelectManifestation endSegment="4 7 3 5 1 2" grouping="2.1.1" startSegment="1 2 0 0 2 3"/>
+    <EndBlock/>
+    <AffinePentagon/>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation grouping="2.1.1" point="-1 -1 -5 -8 -2 -3"/>
+    <SelectManifestation grouping="2.1.1" point="8 13 0 0 -3 -5"/>
+    <EndBlock/>
+    <Centroid grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Centroid>
+    <SymmetryCenterChange new="7/2 6 -5/2 -4 -5/2 -4"/>
+    <Hide grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <SelectAll grouping="2.1.1"/>
+    <CentralSymmetry grouping="2.1.1">
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </CentralSymmetry>
+    <BeginBlock/>
+    <DeselectAll grouping="2.1.1"/>
+    <SelectManifestation point="5 8 5 8 -1 -2"/>
+    <SelectManifestation point="2 4 -10 -16 -4 -6"/>
+    <EndBlock/>
+    <NewCentroid/>
+    <SelectManifestation point="7/2 6 -5/2 -4 -5/2 -4"/>
+    <Delete/>
+  </EditHistory>
+  <notes/>
+  <sceneModel ambientLight="41,41,41" background="178,205,230">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="223.3811492919922" far="446.76229858398466" near="0.5584528815515771" parallel="false" stereoAngle="0.0" width="100.52151718139652">
+      <LookAtPoint x="13.20820393249937" y="-8.97213595499958" z="-8.97213595499958"/>
+      <UpDirection x="-0.201777833330859" y="0.8728919429707268" z="-0.4442357053109231"/>
+      <LookDirection x="0.6988081232645718" y="-0.1894951510073737" z="-0.6897527053982024"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
+    <Direction color="0,118,149" name="blue"/>
+    <Direction color="175,0,0" name="red"/>
+    <Direction color="240,160,0" name="yellow"/>
+    <Direction color="0,141,54" name="green"/>
+    <Direction color="220,76,0" name="orange"/>
+    <Direction color="108,0,198" name="purple"/>
+    <Direction color="30,30,30" name="black"/>
+    <Direction color="175,135,255" name="lavender"/>
+    <Direction color="100,113,0" name="olive"/>
+    <Direction color="117,0,50" name="maroon"/>
+    <Direction color="255,51,143" name="rose"/>
+    <Direction color="0,0,153" name="navy"/>
+    <Direction color="18,205,148" name="turquoise"/>
+    <Direction color="255,126,106" name="coral"/>
+    <Direction color="230,245,62" name="sulfur"/>
+    <Direction color="187,144,85" name="sand"/>
+    <Direction color="129,191,30" name="apple"/>
+    <Direction color="144,56,14" name="cinnamon"/>
+    <Direction color="12,84,55" name="spruce"/>
+    <Direction color="105,54,1" name="brown"/>
+  </SymmetrySystem>
+  <Tools/>
+</vzome:vZome>

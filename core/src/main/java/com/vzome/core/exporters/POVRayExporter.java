@@ -13,18 +13,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.vecmath.Matrix4d;
-import javax.vecmath.Tuple3d;
-import javax.vecmath.Vector3d;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.construction.Color;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
-import com.vzome.core.model.Color;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
@@ -49,7 +48,7 @@ public class POVRayExporter extends Exporter3d
     
     public void mapViewToWorld( Camera view, Vector3f vector )
     {
-        Matrix4d viewTrans = new Matrix4d();
+        Matrix4f viewTrans = new Matrix4f();
         view .getViewTransform( viewTrans );
         viewTrans .invert();
         viewTrans .transform( vector );
@@ -61,11 +60,11 @@ public class POVRayExporter extends Exporter3d
     }
 
     @Override
-	public void doExport( File povFile, File directory, Writer writer, int height, int width ) throws IOException
+	public void doExport( File povFile, Writer writer, int height, int width ) throws IOException
 	{
 	    output = new PrintWriter( writer );
 	    
-		Vector3d lookDir = new Vector3d(), upDir = new Vector3d(), rightDir = new Vector3d();
+		Vector3f lookDir = new Vector3f(), upDir = new Vector3f(), rightDir = new Vector3f();
 		mScene .getViewOrientation( lookDir, upDir );
 		rightDir .cross( lookDir, upDir );
 		FORMAT .setMaximumFractionDigits( 8 );
@@ -113,7 +112,7 @@ public class POVRayExporter extends Exporter3d
 		for ( int i = 0; i<3; i++ ) {
 			Color color = mLights .getDirectionalLight( i, dir );
 			mapViewToWorld( mScene, dir );
-			output .print( "light_source { -light_distance * " + printTuple3d( new Vector3d( dir ) ) );
+			output .print( "light_source { -light_distance * " + printTuple3d( new Vector3f( dir ) ) );
 			output .print( " " );
 			printColor( color );
 			output .println( " * multiplier_light_" + (i+1) + " }" );
@@ -218,7 +217,7 @@ public class POVRayExporter extends Exporter3d
 		{
 		    filename = filename .substring( 0, index );
 		}
-		File file = new File( directory, filename + ".ini" );
+		File file = new File( povFile .getParentFile(), filename + ".ini" );
 		output = new PrintWriter( new FileWriter( file ) );
 		output .println( "+W" + 600 );  // TODO fix these values!
         output .println( "+H" + 600 );
@@ -234,7 +233,7 @@ public class POVRayExporter extends Exporter3d
         return "color_" + color .toString() .replace( ',', '_' );
     }
    
-    private String printTuple3d( Tuple3d t )
+    private String printTuple3d( Tuple3f t )
     {
     	StringBuilder buf = new StringBuilder( "<" );
     	buf .append( FORMAT.format(t.x) );
@@ -339,13 +338,6 @@ public class POVRayExporter extends Exporter3d
     public String getFileExtension()
     {
         return "pov";
-    }
-
-    @Override
-    public void doExport( File directory, Writer writer, int height, int width )
-            throws Exception
-    {
-        throw new IllegalStateException( "POV exporter only supports 5-argument doExport()" );
     }
 }
 

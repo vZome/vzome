@@ -95,7 +95,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
             }
         }
 
-        // If no FileHandler was pre-configured, then initialze our own default
+        // If no FileHandler was pre-configured, then initialize our own default
         if (fh == null) {
             Path logsFolder = Platform.logsFolder();
             try {
@@ -365,6 +365,10 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                 mController .actionPerformed( this, "openURL-" + str );
             break;
 
+        case "new-polygon":
+            newPolygon();
+            break;
+
         case "quit":
             quit();
             break;
@@ -392,6 +396,29 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
         }
     }
 
+    private void newPolygon() {
+        // A PolygonField with more sides than this can be invoked directly from the custom menu: e.g new-polygon96
+        int max = 60; // but this is the most we'll allow via this dialog 
+        String limit = "The number must be between 4 and " + max + ".";
+        String msg = "Enter the number of sides for the polygon field.\n\n" + limit;
+        String str = JOptionPane .showInputDialog( null, msg, "Create a new design in a polygon field", JOptionPane.PLAIN_MESSAGE );
+        if ( str != null ) {
+            int nSides = 0;
+            try {
+                nSides = Integer.parseInt(str.trim());
+                if( nSides < 4 || nSides > max) { 
+                    throw new IllegalArgumentException(limit);
+                }
+            } catch (IllegalArgumentException e) {
+                JOptionPane .showMessageDialog( null, e.getMessage() + "\n\n" + limit, "Invalid Numeric Value", JOptionPane.ERROR_MESSAGE );
+                nSides = -1;
+            }
+            if(nSides >= 4 ) {
+                mController .actionPerformed( this, "new-polygon" + nSides );
+            }
+        }
+    }
+    
     public static Properties loadBuildProperties()
     {
         String defaultRsrc = "build.properties";
@@ -525,6 +552,43 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
         }
     }
 
+    @Override
+    public void runScript( String script, File file )
+    {
+        try {
+            Runtime .getRuntime() .exec( script + " " + file .getAbsolutePath(),
+                    null, file .getParentFile() );
+        } catch ( IOException e ) {
+            System .err .println( "Runtime.exec() failed on " + file .getAbsolutePath() );
+            e .printStackTrace();
+        }
+    }
+
+    @Override
+    public void openApplication( File file )
+    {
+        try {
+            if ( Desktop .isDesktopSupported() ) {
+                // DH - The test for file.exists() shouldn't be needed if this method is invoked in the proper sequence
+                // so I think it should be omitted eventually so the exceptions will be thrown
+                // but I'm leaving it here for now as a debugging aid.
+                if( ! file .exists() ) {
+                    System .err .println( file .getAbsolutePath() + " does not exist." );
+                    //                    return;
+                }
+                Desktop desktop = Desktop .getDesktop();
+                System .err .println( "Opening app for  " + file .getAbsolutePath() + " in thread: " + Thread.currentThread() );
+                desktop .open( file );
+            }
+        } catch ( IOException | IllegalArgumentException e ) {
+            System .err .println( "Desktop.open() failed on " + file .getAbsolutePath() );
+            if ( ! file .exists() ) {
+                System .err .println( "File does not exist." );
+            }
+            e.printStackTrace();
+        }
+    }
+
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // These next three methods may be invoked by the mac Adapter.
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -566,6 +630,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                 + "Ezra Bradford\n"
                 + "Sam Vandervelde\n"
                 + "Jacob Rus\n"
+                + "Nan Ma\n"
                 + "Dan Duddy\n"
                 + "Walt Venable\n"
                 + "Will Ackel\n"

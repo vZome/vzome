@@ -11,12 +11,14 @@ import org.vorthmann.ui.DefaultController;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
-import com.vzome.core.editor.EditorModel;
-import com.vzome.core.editor.Manifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.EditorModelImpl;
 import com.vzome.core.editor.SelectionSummary;
-import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.Manifestations;
+import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.math.symmetry.Axis;
+import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
@@ -39,7 +41,7 @@ public class MeasureController extends DefaultController implements SelectionSum
 	    this .renderedModel = renderedModel;
 	    this .selection = model .getSelection();
 	    this .editorModel = model; // allow run time access to the current editorModel.symmetrySystem
-	    model .addSelectionSummaryListener( this );
+	    ((EditorModelImpl) model) .addSelectionSummaryListener( this );
         this .twoPlaces .setMaximumFractionDigits( 2 );
         this .fourPlaces .setMaximumFractionDigits( 4 );
 	}
@@ -156,38 +158,56 @@ public class MeasureController extends DefaultController implements SelectionSum
 	{
         AlgebraicVector v1 = s1.getOffset();
         AlgebraicVector v2 = s2.getOffset();
-        SymmetrySystem ss = editorModel.getSymmetrySystem();
+        OrbitSource ss = ((EditorModelImpl) editorModel).getSymmetrySystem();
         Axis axis1 = ss .getAxis( v1 );
         Axis axis2 = ss .getAxis( v2 );
-        boolean sameOrbit = axis1 .getDirection().equals(axis2 .getDirection());
-        String name1 = axis1.getDirection().getName();
-        String name2 = axis2.getDirection().getName();
+        Direction dir1 = axis1.getDirection();
+        Direction dir2 = axis2.getDirection();
+        boolean sameOrbit = dir1.equals(dir2);
+        String name1 = dir1.getName();
+        String name2 = dir2.getName();
+        final String auto = "auto";
+        if(dir1.isAutomatic()) {
+            name1 = auto + name1;
+        }
+        if(dir2.isAutomatic()) {
+            name2 = auto + name2;
+        }
         if(sameOrbit) {
-            name1 += "1";
-            name2 += "2";
+            // append subscripted numbers since auto direction names are numeric
+            name1 += "\u2081"; // subscripted 1
+            name2 += "\u2082"; // subscripted 2
         }
         String n1n2 = name1 + " / " + name2;
         String n2n1 = name2 + " / " + name1;
 
         // second visual separator needs unique key since measurements is a map, so use one space
         this .measurements .put( " ", " " );
-        // we can't use AlgebraicNumber math unless the two struts are in the same orbit 
-        // but we can still show approximated decimal values
-        double length1 = Math.sqrt(AlgebraicVectors.getMagnitudeSquared(v1).evaluate());
-        double length2 = Math.sqrt(AlgebraicVectors.getMagnitudeSquared(v2).evaluate());
-        Double ratio = length1/length2;
-        String inequality = "equal"; 
-        if(length1 != length2) {
-            inequality = name1 + " " + (length1 > length2 ? ">" : "<") + " " + name2;
+        // We can't use AlgebraicNumber math unless the two struts are in the same orbit 
+        // but we can still show approximated decimal values.
+        // Be sure to include any embedding in the calculation.
+        Double len1 = ss.getSymmetry().embedInR3(v1).length();
+        Double len2 = ss.getSymmetry().embedInR3(v2).length();
+        // RealVector is using floats instead of doubles internally,
+        // so we are only getting floating point precision for these lengths.
+        // TODO: If we ever change RealVector back to doubles, then replace these too. 
+        float length1 = len1.floatValue();
+        float length2 = len2.floatValue();
+        Float ratio = length1/length2;
+        String comparison = "equal";
+        // subtract and compare the difference to an acceptable delta 
+        // instead of comparing floating point numbers directly
+        if(Math.abs(length1 - length2) > 0.000001) {
+            comparison = name1 + " " + (length1 > length2 ? ">" : "<") + " " + name2;
         }
-        this .measurements .put( "relative strut lengths", inequality);
-        if(length1 != length2) {
-            Double recip = 1/ratio;
+        this .measurements .put( "relative strut lengths", comparison);
+        if(!comparison.equals( "equal") ) {
+            Float recip = 1.0f/ratio;
             this .measurements .put( n1n2 + " (approx)", fourPlaces .format(ratio));
             this .measurements .put( n2n1 + " (approx)", fourPlaces .format(recip));
             if(sameOrbit) {
-                // if the two struts are in the same orbit, we can show the exact ratios as AlgebraicNumbers. 
-                // Sine axis.getLength() returns a length relative to the normal of the axis 
+                // If the two struts are in the same orbit, we can show the exact ratios as AlgebraicNumbers. 
+                // Since axis.getLength() returns a length relative to the normal of the axis 
                 // instead of an absolute length, this part only makes sense 
                 // when both struts are in the same orbit (i.e. both blue)
                 AlgebraicNumber exactLength1 = axis1 .getLength( v1 );
@@ -196,8 +216,8 @@ public class MeasureController extends DefaultController implements SelectionSum
                 AlgebraicNumber exactRecip = exactRatio.reciprocal();
                 this .measurements .put( n1n2, exactRatio.toString());
                 this .measurements .put( n2n1, exactRecip.toString());
-                System.out.println( n1n2 + " = " + exactRatio.toString());
-                System.out.println( n2n1 + " = " + exactRecip.toString());
+//                System.out.println( n1n2 + " = " + exactRatio.toString());
+//                System.out.println( n2n1 + " = " + exactRecip.toString());
             }
         }
 	}

@@ -1,6 +1,4 @@
 
-//(c) Copyright 2007, Scott Vorthmann.  All rights reserved.
-
 package org.vorthmann.zome.app.impl;
 
 import java.beans.PropertyChangeEvent;
@@ -17,14 +15,15 @@ import org.vorthmann.ui.DefaultController;
 import com.vzome.api.Tool;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.construction.Color;
 import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.model.Color;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.render.Shapes;
 import com.vzome.desktop.controller.CameraController;
 
 public class SymmetryController extends DefaultController
@@ -112,6 +111,12 @@ public class SymmetryController extends DefaultController
         this .addSubController( "snapOrbits", snapController );
         buildController = new OrbitSetController( buildOrbits, availableOrbits, this .symmetrySystem, true );
         this .addSubController( "buildOrbits", buildController );
+        if ( parent .propertyIsTrue( "single.orbit" ) )
+            try {
+                buildController .doAction( "oneAtATime" );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         renderController = new OrbitSetController( renderOrbits, this .symmetrySystem .getOrbits(), this .symmetrySystem, false );
         this .addSubController( "renderOrbits", renderController );
 
@@ -290,7 +295,7 @@ public class SymmetryController extends DefaultController
 
     // TODO: Can we get rid of this?  It is only needed by PreviewStrut.
     //   We should be able to accomplish the sync with PropertyChangeListeners
-    public RenderedModel.OrbitSource getOrbitSource()
+    public OrbitSource getOrbitSource()
     {
         return this .symmetrySystem;
     }

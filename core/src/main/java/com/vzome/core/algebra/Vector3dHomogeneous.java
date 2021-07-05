@@ -1,6 +1,4 @@
 
-//(c) Copyright 2013, Scott Vorthmann.
-
 package com.vzome.core.algebra;
 
 public class Vector3dHomogeneous
@@ -19,7 +17,7 @@ public class Vector3dHomogeneous
 
 	public Vector3dHomogeneous( AlgebraicNumber e1, AlgebraicNumber e2, AlgebraicNumber e3, AlgebraicField field )
 	{
-		this( e1, e1, e1, field .createPower( 0 ), field );
+		this( e1, e1, e1, field .one(), field );
 	}
 
 	public Vector3dHomogeneous( AlgebraicVector v, AlgebraicField field )

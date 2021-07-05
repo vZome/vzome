@@ -1,10 +1,6 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.tools;
 
-
-import java.util.EnumSet;
 
 import org.w3c.dom.Element;
 
@@ -20,14 +16,14 @@ import com.vzome.core.construction.SegmentEndPoint;
 import com.vzome.core.construction.SymmetryTransformation;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.editor.AbstractToolFactory;
-import com.vzome.core.editor.Selection;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Permutation;
+import com.vzome.core.math.symmetry.SpecialOrbit;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.math.symmetry.Symmetry.SpecialOrbit;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
@@ -59,7 +55,12 @@ public class RotationTool extends SymmetryTool
 
         public Factory( ToolsModel tools, Symmetry symmetry )
         {
-            this( tools, symmetry, ID, LABEL, TOOLTIP );
+            this( tools, symmetry, false );
+        }
+
+        public Factory( ToolsModel tools, Symmetry symmetry, boolean useSymmetryName )
+        {
+            this( tools, symmetry, (useSymmetryName ? symmetry.getName() + ' ' : "") + ID, LABEL, TOOLTIP );
         }
 
         public Factory( ToolsModel tools, Symmetry symmetry, String id, String label, String tooltip )
@@ -139,9 +140,9 @@ public class RotationTool extends SymmetryTool
         this .fullRotation = full;
         this .corrected = true;
         if ( full )
-            this .setInputBehaviors( EnumSet.of( InputBehaviors.SELECT ) );
+            this .setInputBehaviors( true, false );
         else
-            this .setInputBehaviors( EnumSet.of( InputBehaviors.DELETE ) );
+            this .setInputBehaviors( false, true );
         ;
     }
 

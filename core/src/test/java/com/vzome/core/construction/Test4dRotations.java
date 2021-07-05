@@ -1,6 +1,4 @@
 
-//(c) Copyright 2015, Scott Vorthmann.
-
 package com.vzome.core.construction;
 
 import static org.junit.Assert.assertEquals;

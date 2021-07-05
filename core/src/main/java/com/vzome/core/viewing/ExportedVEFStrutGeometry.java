@@ -15,7 +15,7 @@ import com.vzome.core.parts.StrutGeometry;
 
 public class ExportedVEFStrutGeometry implements StrutGeometry
 {
-    private static final Logger LOGGER = Logger.getLogger( new Throwable().getStackTrace()[0].getClassName() );
+    private static final Logger LOGGER = Logger.getLogger( "com.vzome.core.viewing.ExportedVEFStrutGeometry" );
     
     @JsonProperty( "vertices" )
     public final List<AlgebraicVector> prototypeVertices;  // the polyhedron from which others are derived

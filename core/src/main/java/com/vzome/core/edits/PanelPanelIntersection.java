@@ -12,19 +12,19 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.PolygonPolygonProjectionToSegment;
 import com.vzome.core.construction.Segment;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
 
 /**
  * @author David Hall
  */
 public class PanelPanelIntersection extends ChangeManifestations {
 
-    public PanelPanelIntersection(Selection selection, RealizedModel realized) {
-        super(selection, realized);
+    public PanelPanelIntersection( EditorModel editor )
+    {
+        super( editor );
     }
 
     @Override

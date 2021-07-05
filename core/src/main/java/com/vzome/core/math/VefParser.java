@@ -1,18 +1,12 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.math;
 
-import java.math.BigInteger;
 import java.util.NoSuchElementException;
-import java.util.Stack;
 import java.util.StringTokenizer;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicFields;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.BigRational;
 
 public abstract class VefParser
 {
@@ -103,8 +97,11 @@ public abstract class VefParser
         // most common, so check this first
         if (fieldName.equals(field .getName()) )
             return true;
-        if (AlgebraicFields.haveSameInitialCoefficients(field, fieldName) )
-            return true;
+        
+        //  I'm disabling this as unimportant, and very hard to work around.
+//        if (AlgebraicFields.haveSameInitialCoefficients(field, fieldName) )
+//            return true;
+
         // any field that returns a non-null goldenRatio is expected to be able 
         // to map a pair of golden field terms to the coresponding terms in that field
         // by overriding prepareAlgebraicNumberTerms().
@@ -202,7 +199,7 @@ public abstract class VefParser
                     try {
                         for (int tokNum = 0; tokNum < this.dimension; tokNum++) {
                             token = tokens.nextToken();
-                            AlgebraicNumber coord = parseIntegralNumber(token);
+                            AlgebraicNumber coord = this .field .parseVefNumber( token, isRational );
                             scaleVector.setComponent(tokNum, coord); // format is W X Y Z
                         }
                     } catch (NoSuchElementException e) {
@@ -210,7 +207,7 @@ public abstract class VefParser
                     }
                 }
                 else {
-                    AlgebraicNumber scale = parseIntegralNumber( token );
+                    AlgebraicNumber scale = this .field .parseVefNumber( token, isRational );
                     for (int i = 0; i < this.dimension; i++) {
                         scaleVector.setComponent(i, scale);
                     }
@@ -232,7 +229,7 @@ public abstract class VefParser
             try {
                 for (int tokNum = 0; tokNum < this.dimension; tokNum++) {
                     token = tokens.nextToken();
-                    AlgebraicNumber coord = parseIntegralNumber(token);
+                    AlgebraicNumber coord = this .field .parseVefNumber( token, isRational );
                     parsedOffset.setComponent(tokNum, coord); // format is W X Y Z
                 }
             } catch (NoSuchElementException e) {
@@ -264,7 +261,7 @@ public abstract class VefParser
                 } catch ( NoSuchElementException e1 ) {
                     throw new IllegalStateException( "VEF format error: not enough vertices in list" );
                 }
-                AlgebraicNumber coord = parseIntegralNumber( token ) .times( scaleVector.getComponent(tokNum) );
+                AlgebraicNumber coord = this .field .parseVefNumber( token, isRational ) .times( scaleVector.getComponent(tokNum) );
                 
                 // I think this is the right way to deal with VERSION_W_FIRST and the concomitant
                 //  "incorrect" quaternion multiplication used for projection.  All that is necessary
@@ -366,69 +363,5 @@ public abstract class VefParser
     
     protected void endFile( StringTokenizer tokens )
     {
-    }
-    
-    private AlgebraicNumber parseIntegralNumber( String string )
-    {
-        BigRational[] factors = new BigRational[this.field.getOrder()];
-        // if the field is declared as rational, then we won't allow the irrational syntax using parenthesis
-        // if the field is NOT declared as rational, then we will still allow the rational format as shorthand with no parenthesis
-        // or we will allow any order N string representation where N <= field.getOrder().
-        if( (!isRational) &&  string.startsWith("(") && string.endsWith(")") ) {
-            // strip "(" and ")", tokenize on ","
-            StringTokenizer tokens = new StringTokenizer(string.substring(1, string.length() - 1), ",");
-            // The tokens get pushed into the factors array in reverse order 
-            // from the string representation so the last token becomes the 0th factor.
-            // For example, with an order 2 field, the factors for "(3,-2)" are parsed to a 2 element array as {-2, 3}
-            // With an order 6 field such as the snubDodec, the factors for "(0,0,0,0,3,-2)" are parsed to a 6 element array: {-2, 3, 0, 0, 0, 0}
-            // When a field needs more factors than are supplied, the factors that are provided must still be parsed into the begining of the array:
-            // With an order 6 field, if only 2 factors are provided, "(3,-2)" must still be parsed into a 6 element array as {-2, 3, 0, 0, 0, 0}
-            // Since VEF version 7 no longer requires that all factors be provided, we need to push the factors onto a stack
-            // and pop them off to reverse the order as they are inserted into the begining of the factors array.
-            Stack<BigRational> stack = new Stack<>();
-            while(tokens.hasMoreElements()) {
-                if(stack.size() >= field.getOrder()) {
-                    throw new RuntimeException( "VEF format error: \"" + string + "\" has too many factors for " + field.getName() + " field" );
-                }
-                stack.push( parseRationalNumber( tokens.nextToken() ) );
-            }
-            int i = 0;
-            while(! stack.empty() ) {
-               factors[i++] = stack.pop();
-            }
-            return this.field.createAlgebraicNumber(factors);
-        } else {
-            // format >= 7 supports the rational numeric format which expects no irrational factors,
-            // so there are no parentheses or commas, but still allows the optional "/" if a denominator is specified.
-            factors[0] = parseRationalNumber( string );
-            // count on createAlgebraicNumber to set all of the null irrational factors to zero
-        }
-        return this.field.createAlgebraicNumber(factors);
-    }
-
-    private BigRational parseRationalNumber( String coord )
-    {
-        BigInteger num = BigInteger.ZERO;
-        BigInteger denom = BigInteger.ONE;
-        int slash = coord .indexOf( '/' );
-        if ( slash > 0 ) {
-            try {
-                num = new BigInteger( coord .substring( 0, slash ) );
-            } catch ( NumberFormatException e ) {
-                throw new RuntimeException( "VEF format error: rational numerator (\"" + coord + "\") must be an integer", e );
-            }
-            try {
-                denom = new BigInteger( coord .substring( slash+1 ) );
-            } catch ( NumberFormatException e ) {
-                throw new RuntimeException( "VEF format error: rational denominator (\"" + coord + "\") must be an integer", e );
-            }
-        } else {
-            try {
-                num = new BigInteger( coord );
-            } catch ( NumberFormatException e ) {
-                throw new RuntimeException( "VEF format error: coordinate value (\"" + coord + "\") must be an integer or rational", e );
-            }
-        }
-        return new BigRational( num, denom );
     }
 }

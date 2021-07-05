@@ -51,7 +51,7 @@ public abstract class Exporter3d
 	/**
 	 * This is what most subclasses override.
 	 */
-	public abstract void doExport( File directory, Writer writer, int height, int width ) throws Exception;
+	public abstract void doExport( File file, Writer writer, int height, int width ) throws Exception;
 
     public abstract String getFileExtension();
     
@@ -71,23 +71,14 @@ public abstract class Exporter3d
     /**
      * Subclasses can override this if they need to export history or the lesson model.
      */
-    public void doExport( DocumentModel doc, File file, File parentFile, Writer writer, int height, int width ) throws Exception
+    public void exportDocument( DocumentModel doc, File file, Writer writer, int height, int width ) throws Exception
     {
         mScene = doc .getCamera();
         mModel = doc .getRenderedModel();
-        this .doExport( file, parentFile, writer, height, width );
+        this .doExport( file, writer, height, width );
         mScene = null;
         mModel = null;
     }
-
-    /**
-     *  Subclasses can override this if they want to write multiple files into the same directory, using variations on the filename.
-     */
-    public void doExport( File file, File parentFile, Writer out, int height, int width ) throws Exception
-    {
-        this .doExport( parentFile, out, height, width );
-    }
-    
 }
 
 

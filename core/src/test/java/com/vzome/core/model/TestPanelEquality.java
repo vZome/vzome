@@ -1,6 +1,4 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.model;
 
 import static org.junit.Assert.assertEquals;
@@ -36,7 +34,7 @@ public class TestPanelEquality
         list .add( b );
         list .add( c );
         list .add( d );
-        Panel p0 = new Panel( list );
+        Panel p0 = new PanelImpl( list );
 		assertFalse(p0 .equals( null ) );
 		
         list = new ArrayList<>();
@@ -44,7 +42,7 @@ public class TestPanelEquality
         list .add( a );
         list .add( b );
         list .add( c );
-        Panel p1 = new Panel( list );
+        Panel p1 = new PanelImpl( list );
         assertEquals( p0, p1 );
         assertEquals( p0.hashCode(), p1.hashCode() );
 		
@@ -53,7 +51,7 @@ public class TestPanelEquality
         list .add( c );
         list .add( b );
         list .add( a );
-        Panel p2 = new Panel( list );
+        Panel p2 = new PanelImpl( list );
         assertTrue( p0 .equals( p2 ) );
         assertTrue( p0.hashCode() == p2.hashCode() );
 		
@@ -62,7 +60,7 @@ public class TestPanelEquality
         list .add( b );
         list .add( a );
 		// fewer elements in list this time shouldn't be equal
-        Panel p3 = new Panel( list );
+        Panel p3 = new PanelImpl( list );
         assertFalse(p0 .equals( p3 ) );
 		// hashCode() is not required to match unless equals() returns true
     }

@@ -1,6 +1,7 @@
 
 package com.vzome.core.render;
 
+import com.vzome.core.editor.api.Shapes;
 
 public class TransparentRendering implements RenderingChanges
 {

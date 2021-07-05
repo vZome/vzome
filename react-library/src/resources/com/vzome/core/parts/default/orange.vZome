@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="DEV" coreVersion="7.0" edition="vZome" field="golden" version="7.0">
+  <EditHistory editNumber="103" lastStickyEdit="-1">
+    <LoadVEF projection="Quaternion" quaternion="1 0 0 0 0 0 0 0" scale="1 0">vZome VEF 6 field golden
+scale (1/2,0)
+
+15
+(0,0)  (-2,7)  (4,0)  (1,-2) 
+(0,0)  (0,5)  (2,4)  (1,-2) 
+(0,0)  (2,1)  (4,0)  (1,-2) 
+(0,0)  (4,-5)  (0,2)  (1,-2) 
+(0,0)  (2,-3)  (2,-2)  (1,-2) 
+(0,0)  (0,1)  (0,2)  (1,-2) 
+(0,0)  (2,1)  (4,0)  (-1,2) 
+(0,0)  (-2,7)  (4,0)  (-1,2) 
+(0,0)  (0,5)  (2,4)  (-1,2) 
+(0,0)  (3,-4)  (0,1)  (0,0) 
+(0,0)  (-1,6)  (4,1)  (0,0) 
+(0,0)  (0,1)  (0,2)  (-1,2) 
+(0,0)  (2,-3)  (2,-2)  (-1,2) 
+(0,0)  (4,-5)  (0,2)  (-1,2) 
+(0,0)  (2,2)  (4,2)  (0,0) 
+
+
+
+0
+
+
+
+10
+6 0 1 2 3 4 5
+4 1 8 6 2
+3 3 9 4
+3 8 10 7
+5 5 11 7 10 0
+4 12 11 5 4
+6 6 8 7 11 12 13
+5 13 9 3 2 6
+3 10 1 0
+3 12 9 13
+
+
+
+8
+ 6 7 2 1 10 8 0 14
+
+tip 14
+</LoadVEF>
+    <BeginBlock/>
+    <AdjustSelectionByClass balls="SELECT" panels="IGNORE" struts="IGNORE"/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <DeselectAll/>
+    <SelectAll/>
+    <EndBlock/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale up"/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale up"/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale up"/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale up"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="15/2 25/2 11 18 1/2 1"/>
+    <SelectManifestation point="15/2 25/2 11 18 -1/2 -1"/>
+    <SelectManifestation point="13/2 11 23/2 37/2 0 0"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="11/2 19/2 10 16 -1/2 -1"/>
+      <polygonVertex at="15/2 25/2 11 18 -1/2 -1"/>
+      <polygonVertex at="13/2 21/2 10 16 -1/2 -1"/>
+      <polygonVertex at="5/2 7/2 3 5 -1/2 -1"/>
+      <polygonVertex at="1/2 1/2 2 3 -1/2 -1"/>
+      <polygonVertex at="3/2 5/2 3 5 -1/2 -1"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Delete/>
+    <SelectManifestation>
+      <polygonVertex at="13/2 21/2 10 16 1/2 1"/>
+      <polygonVertex at="15/2 25/2 11 18 1/2 1"/>
+      <polygonVertex at="11/2 19/2 10 16 1/2 1"/>
+      <polygonVertex at="3/2 5/2 3 5 1/2 1"/>
+      <polygonVertex at="1/2 1/2 2 3 1/2 1"/>
+      <polygonVertex at="5/2 7/2 3 5 1/2 1"/>
+    </SelectManifestation>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="1/2 1/2 2 3 1/2 1"/>
+      <polygonVertex at="3/2 5/2 3 5 1/2 1"/>
+      <polygonVertex at="3/2 5/2 3 5 -1/2 -1"/>
+      <polygonVertex at="1/2 1/2 2 3 -1/2 -1"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="1/2 1/2 2 3 1/2 1"/>
+      <polygonVertex at="3/2 2 3/2 5/2 0 0"/>
+      <polygonVertex at="5/2 7/2 3 5 1/2 1"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="5/2 7/2 3 5 -1/2 -1"/>
+      <polygonVertex at="3/2 2 3/2 5/2 0 0"/>
+      <polygonVertex at="1/2 1/2 2 3 -1/2 -1"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ShowVertices/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="1/2 1/2 2 3 -1/2 -1"/>
+    <SelectManifestation point="3/2 5/2 3 5 -1/2 -1"/>
+    <SelectManifestation point="5/2 7/2 3 5 -1/2 -1"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <SelectManifestation point="5/2 7/2 3 5 -1/2 -1"/>
+    <SelectManifestation point="3/2 5/2 3 5 -1/2 -1"/>
+    <SelectManifestation point="11/2 19/2 10 16 -1/2 -1"/>
+    <SelectManifestation point="13/2 21/2 10 16 -1/2 -1"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <SelectManifestation point="13/2 21/2 10 16 -1/2 -1"/>
+    <SelectManifestation point="11/2 19/2 10 16 -1/2 -1"/>
+    <SelectManifestation point="15/2 25/2 11 18 -1/2 -1"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="15/2 25/2 11 18 1/2 1"/>
+    <SelectManifestation point="11/2 19/2 10 16 1/2 1"/>
+    <SelectManifestation point="13/2 21/2 10 16 1/2 1"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <SelectManifestation point="13/2 21/2 10 16 1/2 1"/>
+    <SelectManifestation point="11/2 19/2 10 16 1/2 1"/>
+    <SelectManifestation point="3/2 5/2 3 5 1/2 1"/>
+    <SelectManifestation point="5/2 7/2 3 5 1/2 1"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <SelectManifestation point="5/2 7/2 3 5 1/2 1"/>
+    <SelectManifestation point="3/2 5/2 3 5 1/2 1"/>
+    <SelectManifestation point="1/2 1/2 2 3 1/2 1"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="1/2 1/2 2 3 1/2 1"/>
+    <SelectManifestation point="1/2 1/2 2 3 -1/2 -1"/>
+    <SelectManifestation point="3/2 2 3/2 5/2 0 0"/>
+    <EndBlock/>
+    <Polygon/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectManifestation point="1/2 1/2 2 3 -1/2 -1"/>
+    <SelectManifestation point="1/2 1/2 2 3 1/2 1"/>
+    <SelectManifestation point="3/2 2 3/2 5/2 0 0"/>
+    <SelectManifestation point="3/2 5/2 3 5 1/2 1"/>
+    <SelectManifestation point="5/2 7/2 3 5 1/2 1"/>
+    <SelectManifestation point="5/2 7/2 3 5 -1/2 -1"/>
+    <SelectManifestation point="3/2 5/2 3 5 -1/2 -1"/>
+    <EndBlock/>
+    <Delete/>
+    <SelectAll/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale down"/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale down"/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale down"/>
+    <ApplyTool deleteInputs="true" name="scaling.builtin/scale down"/>
+    <DeselectAll/>
+    <ApplyTool name="bookmark.builtin/ball at origin" selectInputs="true"/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <Delete/>
+    <SelectManifestation point="1 2 2 3 0 0"/>
+  </EditHistory>
+  <notes/>
+  <sceneModel ambientLight="41,41,41" background="178,205,230">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="32.10074996948242" far="64.20149993896504" near="0.08025187611955215" parallel="false" stereoAngle="0.0" width="14.445337486267078">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.7392637990235289" y="0.6660416795299" z="0.09938569606480073"/>
+      <LookDirection x="0.08116384196626096" y="0.23463305143071195" z="-0.9686897139608595"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
+    <Direction color="6,96,141" name="blue"/>
+    <Direction color="197,3,20" name="red"/>
+    <Direction color="245,163,1" name="yellow"/>
+    <Direction color="2,130,53" name="green"/>
+    <Direction color="236,89,1" name="orange"/>
+    <Direction color="113,64,178" name="purple"/>
+    <Direction color="36,35,38" name="black"/>
+    <Direction color="144,127,227" name="lavender"/>
+    <Direction color="116,104,1" name="olive"/>
+    <Direction color="141,2,41" name="maroon"/>
+    <Direction color="251,94,160" name="rose"/>
+    <Direction color="52,48,136" name="navy"/>
+    <Direction color="53,181,179" name="turquoise"/>
+    <Direction color="254,124,123" name="coral"/>
+    <Direction color="218,225,83" name="sulfur"/>
+    <Direction color="187,144,85" name="sand"/>
+    <Direction color="129,191,30" name="apple"/>
+    <Direction color="144,56,14" name="cinnamon"/>
+    <Direction color="12,84,55" name="spruce"/>
+    <Direction color="105,54,1" name="brown"/>
+  </SymmetrySystem>
+  <Tools/>
+</vzome:vZome>

@@ -9,7 +9,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.vzome.core.model.Color;
+import com.vzome.core.construction.Color;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.viewing.Lights;
 import com.vzome.opengl.Renderer;
 
@@ -103,10 +104,10 @@ public class Scene implements RenderingChanges, PropertyChangeListener
 	@Override
 	public void manifestationAdded( RenderedManifestation rm )
 	{
-	    String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+	    String symmetryName = rm .getOrbitSource() .getSymmetry() .getName();
 	    SymmetryRendering symmetryRendering = this .symmetries .get( symmetryName );
 	    if ( symmetryRendering == null ) {
-	        symmetryRendering = new SymmetryRendering( rm .getModel() .getOrbitSource(), MODEL_SCALE_FACTOR );
+	        symmetryRendering = new SymmetryRendering( rm .getOrbitSource(), MODEL_SCALE_FACTOR );
 	        this .symmetries .put( symmetryName, symmetryRendering );
 	    }
 	    this .symmetries .get( symmetryName ) .manifestationAdded( rm );
@@ -141,7 +142,7 @@ public class Scene implements RenderingChanges, PropertyChangeListener
 	@Override
 	public void glowChanged( RenderedManifestation rm )
 	{
-        String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+        String symmetryName = rm .getOrbitSource() .getSymmetry() .getName();
         this .symmetries .get( symmetryName ) .glowChanged( rm );
         this .forceRender();
     }
@@ -149,7 +150,7 @@ public class Scene implements RenderingChanges, PropertyChangeListener
 	@Override
 	public void colorChanged( RenderedManifestation rm )
 	{
-        String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+        String symmetryName = rm .getOrbitSource() .getSymmetry() .getName();
         this .symmetries .get( symmetryName ) .colorChanged( rm );
         this .forceRender();
     }
@@ -157,7 +158,7 @@ public class Scene implements RenderingChanges, PropertyChangeListener
 	@Override
 	public void locationChanged( RenderedManifestation rm )
 	{
-        String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+        String symmetryName = rm .getOrbitSource() .getSymmetry() .getName();
         this .symmetries .get( symmetryName ) .locationChanged( rm );
         this .forceRender();
     }
@@ -165,7 +166,7 @@ public class Scene implements RenderingChanges, PropertyChangeListener
 	@Override
 	public void orientationChanged( RenderedManifestation rm )
 	{
-        String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+        String symmetryName = rm .getOrbitSource() .getSymmetry() .getName();
         this .symmetries .get( symmetryName ) .orientationChanged( rm );
         this .forceRender();
     }
@@ -173,7 +174,7 @@ public class Scene implements RenderingChanges, PropertyChangeListener
 	@Override
 	public void shapeChanged( RenderedManifestation rm )
 	{
-        String symmetryName = rm .getModel() .getOrbitSource() .getSymmetry() .getName();
+        String symmetryName = rm .getOrbitSource() .getSymmetry() .getName();
         this .symmetries .get( symmetryName ) .shapeChanged( rm );
         this .forceRender();
     }

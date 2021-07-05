@@ -19,7 +19,7 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
     private final AlgebraicNumber[] coordinates;
     private final AlgebraicField field;
 
-    public AlgebraicVector( AlgebraicNumber... n )
+    public AlgebraicVector( AlgebraicNumber[] n )
     {
         coordinates = new AlgebraicNumber[ n.length ];
         System.arraycopy(n, 0, coordinates, 0, n.length);
@@ -33,6 +33,48 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
             coordinates[ i ] = field .zero();
         }
         this .field = field;
+    }
+    
+    // NOTE: JSweet says it handles varargs, but I got runtime errors until I remove the varargs constructor here
+    
+    public AlgebraicVector( AlgebraicNumber n1 )
+    {
+        this( n1 .getField(), 1 );
+        this .coordinates[ 0 ] = n1;
+    }
+    
+    public AlgebraicVector( AlgebraicNumber n1, AlgebraicNumber n2 )
+    {
+        this( n1 .getField(), 2 );
+        this .coordinates[ 0 ] = n1;
+        this .coordinates[ 1 ] = n2;
+    }
+    
+    public AlgebraicVector( AlgebraicNumber n1, AlgebraicNumber n2, AlgebraicNumber n3 )
+    {
+        this( n1 .getField(), 3 );
+        this .coordinates[ 0 ] = n1;
+        this .coordinates[ 1 ] = n2;
+        this .coordinates[ 2 ] = n3;
+    }
+    
+    public AlgebraicVector( AlgebraicNumber n1, AlgebraicNumber n2, AlgebraicNumber n3, AlgebraicNumber n4 )
+    {
+        this( n1 .getField(), 4 );
+        this .coordinates[ 0 ] = n1;
+        this .coordinates[ 1 ] = n2;
+        this .coordinates[ 2 ] = n3;
+        this .coordinates[ 3 ] = n4;
+    }
+    
+    public AlgebraicVector( AlgebraicNumber n1, AlgebraicNumber n2, AlgebraicNumber n3, AlgebraicNumber n4, AlgebraicNumber n5 )
+    {
+        this( n1 .getField(), 5 );
+        this .coordinates[ 0 ] = n1;
+        this .coordinates[ 1 ] = n2;
+        this .coordinates[ 2 ] = n3;
+        this .coordinates[ 3 ] = n4;
+        this .coordinates[ 4 ] = n5;
     }
 
     @Override
@@ -95,6 +137,13 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
     public final RealVector toRealVector()
     {
         return new RealVector( this .coordinates[ 0 ] .evaluate(), this .coordinates[ 1 ] .evaluate(), this .coordinates[ 2 ] .evaluate() );
+    }
+
+    // An array of 3 doubles is used when high precision (double) vector values are needed
+    // without the need to manipulate them, thus no operators as in the RealVector class 
+    public final double[] to3dDoubleVector()
+    {
+        return new double[] { this .coordinates[ 0 ] .evaluate(), this .coordinates[ 1 ] .evaluate(), this .coordinates[ 2 ] .evaluate() };
     }
 
     /**
@@ -230,12 +279,12 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
             if ( wFirst )
                 return this;
             else
-                return new AlgebraicVector( this .coordinates[ 1 ], this .coordinates[ 2 ], this .coordinates[ 3 ], this .coordinates[ 0 ] );
+                return new AlgebraicVector( new AlgebraicNumber[] { this .coordinates[ 1 ], this .coordinates[ 2 ], this .coordinates[ 3 ], this .coordinates[ 0 ] } );
         }
         if ( wFirst )
-            return new AlgebraicVector( this .field .zero(), this .coordinates[ 0 ], this .coordinates[ 1 ], this .coordinates[ 2 ] );
+            return new AlgebraicVector( new AlgebraicNumber[] { this .field .zero(), this .coordinates[ 0 ], this .coordinates[ 1 ], this .coordinates[ 2 ] } );
         else // the older usage
-            return new AlgebraicVector( this .coordinates[ 0 ], this .coordinates[ 1 ], this .coordinates[ 2 ], this .field .zero() );
+            return new AlgebraicVector( new AlgebraicNumber[] { this .coordinates[ 0 ], this .coordinates[ 1 ], this .coordinates[ 2 ], this .field .zero() } );
     }
 
     public AlgebraicVector projectTo3d( boolean wFirst )
@@ -243,9 +292,9 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
         if ( dimension() == 3 )
             return this;
         if ( wFirst )
-            return new AlgebraicVector( this .coordinates[ 1 ], this .coordinates[ 2 ], this .coordinates[ 3 ] );
+            return new AlgebraicVector( new AlgebraicNumber[] { this .coordinates[ 1 ], this .coordinates[ 2 ], this .coordinates[ 3 ] } );
         else
-            return new AlgebraicVector( this .coordinates[ 0 ], this .coordinates[ 1 ], this .coordinates[ 2 ] );
+            return new AlgebraicVector( new AlgebraicNumber[] { this .coordinates[ 0 ], this .coordinates[ 1 ], this .coordinates[ 2 ] } );
     }
 
     /**

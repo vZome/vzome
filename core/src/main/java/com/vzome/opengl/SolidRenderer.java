@@ -167,6 +167,7 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
         OpenGlUtilities.checkGLError( gl, "vertex shader attributes");
     }
 
+    @Override
     public void setLights( float[][] lightDirections, float[][] lightColors, float[] ambientLight )
     {
         gl.glUseProgram( programId );
@@ -184,6 +185,7 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
         }
     }
 
+    @Override
     public void setView( float[] modelView, float[] projection, float near, float fogFront, float far, boolean perspective )
     {
         gl .glUseProgram( programId );
@@ -197,6 +199,7 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
         gl .glUniform1i( u_Perspective, perspective? 1 : 0 );
     }
     
+    @Override
     public void clear( float[] background )
     {
         gl.glUseProgram( programId );
@@ -209,6 +212,7 @@ public class SolidRenderer implements InstancedGeometry.BufferStorage, Renderer
         gl .glUniform4f( u_FogColor, background[0], background[1], background[2], background[3] );
     }
     
+    @Override
     public void renderSymmetry( SymmetryRendering symmetryRendering )
     {
         gl.glUseProgram( programId );

@@ -1,21 +1,19 @@
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
 
 package com.vzome.core.edits;
 
 
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
 public class HeptagonSubdivision extends ChangeManifestations
 {
@@ -32,7 +30,7 @@ public class HeptagonSubdivision extends ChangeManifestations
                     p1 = nextPoint;
                 else {
                     Segment segment = new SegmentJoiningPoints( p1, nextPoint );
-                    HeptagonField field = (HeptagonField) segment .getField();
+                    AlgebraicField field = segment .getField();
                     AlgebraicNumber scaleFactor = field .getAffineScalar() .reciprocal();
                     AlgebraicVector offset = segment .getOffset();
                     AlgebraicVector off2 = offset .scale( scaleFactor );
@@ -54,9 +52,9 @@ public class HeptagonSubdivision extends ChangeManifestations
         redo();
     }
 
-    public HeptagonSubdivision( Selection selection, RealizedModel realized )
+    public HeptagonSubdivision( EditorModel editor )
     {
-        super( selection, realized );
+        super( editor );
     }
 
     @Override

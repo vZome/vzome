@@ -1,9 +1,7 @@
 
-//(c) Copyright 2007, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.algebra;
 
-public class HeptagonField extends AlgebraicField
+public class HeptagonField extends AbstractAlgebraicField
 {
     public static final String FIELD_NAME = "heptagon";
     

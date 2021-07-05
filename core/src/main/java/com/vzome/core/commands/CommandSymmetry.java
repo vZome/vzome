@@ -53,7 +53,7 @@ public class CommandSymmetry extends CommandTransform
     {
         if ( ! attributes .containsKey( SYMMETRY_GROUP_ATTR_NAME ) )
         {
-            Symmetry icosahedralSymmetry = format .parseSymmetry( "icosahedral" );
+            Symmetry icosahedralSymmetry = ((XmlSymmetryFormat) format) .parseSymmetry( "icosahedral" );
             attributes .put( SYMMETRY_GROUP_ATTR_NAME, icosahedralSymmetry );
         }
         super .setFixedAttributes( attributes, format );

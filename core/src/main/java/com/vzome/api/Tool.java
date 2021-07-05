@@ -1,7 +1,6 @@
 package com.vzome.api;
 
 import java.beans.PropertyChangeListener;
-import java.util.EnumSet;
 
 public interface Tool
 {
@@ -26,12 +25,8 @@ public interface Tool
 	{
 		Tool getPredefinedTool( String id );
 	}
-
-	public enum InputBehaviors { DELETE, SELECT };
-	
-	public enum OutputBehaviors { CREATE, SELECT };
-	
-	public void apply( EnumSet<InputBehaviors> inputAction, EnumSet<OutputBehaviors> outputAction );
+		
+	public void apply( boolean selectInputs, boolean deleteInputs, boolean createOutputs, boolean selectOutputs );
 
 	public void selectParameters();
 
@@ -44,10 +39,12 @@ public interface Tool
 	public String getLabel();
 
 	public void setLabel( String label );
+	
+	public boolean isSelectInputs();
+	
+	public boolean isDeleteInputs();
 
-    public EnumSet<InputBehaviors> getInputBehaviors();
-
-    public void setInputBehaviors( EnumSet<InputBehaviors> inputBehaviors );
+    public void setInputBehaviors( boolean selectInputs, boolean deleteInputs );
 
     boolean isHidden();
 

@@ -1,10 +1,9 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.model;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("serial")
 public class Group extends ArrayList<GroupElement> implements GroupElement
 {
     private Group mContainer;

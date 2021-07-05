@@ -2,7 +2,6 @@ package com.vzome.core.editor;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -14,9 +13,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.vzome.api.Tool.InputBehaviors;
-import com.vzome.api.Tool.OutputBehaviors;
 import com.vzome.core.construction.Point;
+import com.vzome.core.editor.api.Context;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.xml.DomUtils;
 
 @SuppressWarnings("serial")
@@ -25,15 +25,16 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 	private EditorModel editor;
 	private int lastId = 0;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
-	private final UndoableEdit.Context context;
+	private final Context context;
 	private final Point originPoint;
 	
 	// These are used only during deserialization
     private final Map<String, String> toolLabels = new HashMap<>();
-    private final Map<String, EnumSet<InputBehaviors>> toolInputBehaviors = new HashMap<>();
+    private final Map<String, Boolean> toolDeleteInputs = new HashMap<>();
+    private final Map<String, Boolean> toolSelectInputs = new HashMap<>();
     private final Set<String> hiddenTools = new HashSet<>();
     
-	public ToolsModel( UndoableEdit.Context context, Point originPoint )
+	public ToolsModel( Context context, Point originPoint )
 	{
 		super();
 		this .context = context;
@@ -67,10 +68,10 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 		switch ( className ) {
 
         case "ToolApplied":
-            return new ApplyTool( this, null, EnumSet.noneOf( InputBehaviors.class ), EnumSet.noneOf( OutputBehaviors.class ), false );
+            return new ApplyTool( this, null, false, false, false, false, false );
 
         case "ApplyTool":
-            return new ApplyTool( this, null, EnumSet.noneOf( InputBehaviors.class ), EnumSet.noneOf( OutputBehaviors.class ), true );
+            return new ApplyTool( this, null, false, false, false, false, true );
         
 		case "SelectToolParameters":
 		    return new SelectToolParameters( this, null );
@@ -80,9 +81,9 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 		}
 	}
 
-	public void applyTool( Tool tool, EnumSet<InputBehaviors> inputAction, EnumSet<OutputBehaviors> outputAction )
+	public void applyTool( Tool tool, boolean selectInputs, boolean deleteInputs, boolean createOutputs, boolean selectOutputs )
 	{
-		UndoableEdit edit = new ApplyTool( this, tool, inputAction, outputAction, true );
+		UndoableEdit edit = new ApplyTool( this, tool, selectInputs, deleteInputs, createOutputs, selectOutputs, true );
         this .getContext() .performAndRecord( edit );
 	}	
 
@@ -118,7 +119,7 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 		return this .get( id );
 	}
 
-	public UndoableEdit.Context getContext()
+	public Context getContext()
 	{
 		return this .context;
 	}
@@ -138,10 +139,9 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
         		DomUtils .addAttribute( toolElem, "label", tool .getLabel() );
         		if ( tool .isHidden() )
         		    DomUtils .addAttribute( toolElem, "hidden", "true" );
-        		EnumSet<InputBehaviors> inputBehaviors = tool .getInputBehaviors();
-        		if ( inputBehaviors .contains( InputBehaviors.SELECT ) )
+        		if ( tool .isSelectInputs() )
         		    toolElem .setAttribute( "selectInputs", "true" );
-        		if ( inputBehaviors .contains( InputBehaviors.DELETE ) )
+        		if ( tool .isDeleteInputs() )
         		    toolElem .setAttribute( "deleteInputs", "true" );
         		result .appendChild( toolElem );
         	}
@@ -160,14 +160,12 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
                 String label = toolElem .getAttribute( "label" );
                 this .toolLabels .put( id, label );
 
-                EnumSet<InputBehaviors> inputBehaviors = EnumSet.noneOf( InputBehaviors.class );
                 String value = toolElem .getAttribute( "selectInputs" );
                 if ( value != null && value .equals( "true" ) )
-                    inputBehaviors .add( InputBehaviors .SELECT );
+                    toolSelectInputs .put( id, Boolean.parseBoolean( value ) );
                 value = toolElem .getAttribute( "deleteInputs" );
                 if ( value != null && value .equals( "true" ) )
-                    inputBehaviors .add( InputBehaviors .DELETE );
-                this .toolInputBehaviors .put( id, inputBehaviors );
+                    toolDeleteInputs .put( id, Boolean.parseBoolean( value ) );
                 
                 String hiddenStr = toolElem .getAttribute( "hidden" );
                 if ( hiddenStr != null && hiddenStr .equals( "true" ) )
@@ -183,9 +181,13 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
         String label = this .toolLabels .get( id );
         if ( label != null ) // be careful not to override the defaults for legacy commands with no serialized maps
             tool .setLabel( label );
-        EnumSet<InputBehaviors> behaviors = this .toolInputBehaviors .get( id );
-        if ( behaviors != null ) // be careful not to override the defaults for legacy commands with no serialized maps
-            tool .setInputBehaviors( behaviors );
+
+        // be careful not to override the defaults for legacy commands with no serialized maps
+        if ( this .toolDeleteInputs .containsKey( id ) || this .toolSelectInputs .containsKey( id ) ) {
+            // the map only ever contains "true" values; see loadFromXml() above
+            tool .setInputBehaviors( this .toolSelectInputs .containsKey( id ), this .toolDeleteInputs .containsKey( id ) );
+        }
+
         tool .setHidden( this .hiddenTools .contains( id ) );
     }
 

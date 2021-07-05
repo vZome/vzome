@@ -1,12 +1,15 @@
 package com.vzome.core.generic;
 
+import java.util.ArrayList;
+
+import org.junit.Test;
+
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.model.Strut;
-import java.util.ArrayList;
-import org.junit.Test;
+import com.vzome.core.model.StrutImpl;
 
 /**
  * @author David Hall Tests the Strut implementation of Comparable interface.
@@ -45,20 +48,20 @@ public class ComparableStrutTest extends ComparableTest<Strut> {
         AlgebraicVector h = new AlgebraicVector(t, u, v);
         AlgebraicVector i = new AlgebraicVector(t, u, u);
 		
-        Strut sa = new Strut( ORIGIN, a );
-        Strut sb = new Strut( ORIGIN, b );
-        Strut sc = new Strut( ORIGIN, c );
-        Strut sd = new Strut( ORIGIN, d );
+        Strut sa = new StrutImpl( ORIGIN, a );
+        Strut sb = new StrutImpl( ORIGIN, b );
+        Strut sc = new StrutImpl( ORIGIN, c );
+        Strut sd = new StrutImpl( ORIGIN, d );
 		
-        Strut se = new Strut( e, ORIGIN );
-        Strut sf = new Strut( f, ORIGIN );
-        Strut sg = new Strut( g, ORIGIN );
-        Strut sh = new Strut( h, ORIGIN );
-        Strut si = new Strut( i, ORIGIN );
+        Strut se = new StrutImpl( e, ORIGIN );
+        Strut sf = new StrutImpl( f, ORIGIN );
+        Strut sg = new StrutImpl( g, ORIGIN );
+        Strut sh = new StrutImpl( h, ORIGIN );
+        Strut si = new StrutImpl( i, ORIGIN );
         
-        Strut X_AXIS = new Strut( ORIGIN, PLUS_X );
-        Strut Y_AXIS = new Strut( ORIGIN, PLUS_Y );
-        Strut Z_AXIS = new Strut( ORIGIN, PLUS_Z );
+        Strut X_AXIS = new StrutImpl( ORIGIN, PLUS_X );
+        Strut Y_AXIS = new StrutImpl( ORIGIN, PLUS_Y );
+        Strut Z_AXIS = new StrutImpl( ORIGIN, PLUS_Z );
         
         list .add( sa );
         list .add( sb );

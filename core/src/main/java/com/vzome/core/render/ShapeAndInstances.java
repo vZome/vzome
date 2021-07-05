@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.construction.Color;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
-import com.vzome.core.model.Color;
 import com.vzome.opengl.InstancedGeometry;
 
 /**
@@ -100,13 +100,13 @@ public class ShapeAndInstances implements InstancedGeometry
         for (int i = 0; i < this .vertexCount; i++) {
             RealVector vector = vertices.get(i);
             vector = vector .scale( globalScale );
-            this .verticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX] = (float) vector.x;
-            this .verticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 1] = (float) vector.y;
-            this .verticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 2] = (float) vector.z;
+            this .verticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX] = vector.x;
+            this .verticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 1] = vector.y;
+            this .verticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 2] = vector.z;
             vector = normals.get(i);
-            normalsArray[i * ShapeAndInstances.COORDS_PER_VERTEX] = (float) vector.x;
-            normalsArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 1] = (float) vector.y;
-            normalsArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 2] = (float) vector.z;
+            normalsArray[i * ShapeAndInstances.COORDS_PER_VERTEX] = vector.x;
+            normalsArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 1] = vector.y;
+            normalsArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 2] = vector.z;
         }
 
         this .lineVertexCount = lineVertices .size();
@@ -114,9 +114,9 @@ public class ShapeAndInstances implements InstancedGeometry
         for (int i = 0; i < this .lineVertexCount; i++) {
             RealVector vector = lineVertices .get(i);
             vector = vector .scale( globalScale );
-            lineVerticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX] = (float) vector.x;
-            lineVerticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 1] = (float) vector.y;
-            lineVerticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 2] = (float) vector.z;
+            lineVerticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX] = vector.x;
+            lineVerticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 1] = vector.y;
+            lineVerticesArray[i * ShapeAndInstances.COORDS_PER_VERTEX + 2] = vector.z;
         }
 
         this .verticesBuffer = ByteBuffer.allocateDirect( this .verticesArray .length * 4 ) .order(ByteOrder.nativeOrder())
@@ -194,10 +194,10 @@ public class ShapeAndInstances implements InstancedGeometry
                 int zone = part .getStrutZone();
                 if ( zone < 0 )
                     zone = 0;
-                float orientationAndGlow = part .getGlow() + (float) zone;
-                offsets[i * 4 + 0] = globalScale * (float) rv .x;
-                offsets[i * 4 + 1] = globalScale * (float) rv .y;
-                offsets[i * 4 + 2] = globalScale * (float) rv .z;
+                float orientationAndGlow = part .getGlow() + zone;
+                offsets[i * 4 + 0] = globalScale * rv .x;
+                offsets[i * 4 + 1] = globalScale * rv .y;
+                offsets[i * 4 + 2] = globalScale * rv .z;
                 offsets[i * 4 + 3] = orientationAndGlow;
 
                 float[] rgba = new float[4];

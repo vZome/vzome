@@ -5,11 +5,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.render.JsonMapper;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderingChanges;
-import com.vzome.core.render.Shapes;
 
 class Renderer implements RenderingChanges
 {    

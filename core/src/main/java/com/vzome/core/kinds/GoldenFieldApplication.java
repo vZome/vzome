@@ -5,17 +5,18 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.vzome.api.Tool.Factory;
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandTauDivision;
 import com.vzome.core.commands.CommandUniformH4Polytope;
+import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.math.symmetry.AbstractSymmetry;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
+import com.vzome.core.math.symmetry.WythoffConstruction;
 import com.vzome.core.tools.AxialStretchTool;
 import com.vzome.core.tools.IcosahedralToolFactory;
 import com.vzome.core.viewing.AbstractShapes;
@@ -34,9 +35,9 @@ public class GoldenFieldApplication extends DefaultFieldApplication
 {        
     private final IcosahedralSymmetryPerspective icosahedralPerspective;
 
-    public GoldenFieldApplication()
+    public GoldenFieldApplication( AlgebraicField field )
     {
-        super( new PentagonField() );
+        super( field );
 
         this.icosahedralPerspective = new IcosahedralSymmetryPerspective(this.getField());
         
@@ -122,7 +123,7 @@ public class GoldenFieldApplication extends DefaultFieldApplication
     private CommandUniformH4Polytope h4Builder = null;
     
     @Override
-    public void constructPolytope( String groupName, int index, int edgesToRender, AlgebraicNumber[] edgeScales, Listener listener )
+    public void constructPolytope( String groupName, int index, int edgesToRender, AlgebraicNumber[] edgeScales, WythoffConstruction.Listener listener )
     {
         switch ( groupName ) {
 

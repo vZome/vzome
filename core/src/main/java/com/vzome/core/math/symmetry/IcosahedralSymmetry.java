@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.math.symmetry;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -95,15 +93,15 @@ public class IcosahedralSymmetry extends AbstractSymmetry
      */
     private void createBlueAxes( Direction dir, int prototype, int rotated, AlgebraicVector xyz )
     {
-    	int orientation = 0;
-    	boolean[] reflect = { false, false, false };
+        int orientation = 0;
+        boolean[] reflect = { false, false, false };
         for ( int i = 0; i < 3; i++ ){
-        	for ( int k = 0; k < 2; k++ ) {
-        		for ( int l = 0; l < 2; l++ ) {
-        			int unit = mOrientations[ orientation ] .mapIndex( prototype );
-        			if ( dir .getAxis( PLUS, unit ) == null ) {
-        				int rot = mOrientations[ orientation ] .mapIndex( rotated );
-        				int rotation = getMapping( unit, rot );
+            for ( int k = 0; k < 2; k++ ) {
+                for ( int l = 0; l < 2; l++ ) {
+                    int unit = mOrientations[ orientation ] .mapIndex( prototype );
+                    if ( dir .getAxis( PLUS, unit ) == null ) {
+                        int rot = mOrientations[ orientation ] .mapIndex( rotated );
+                        int rotation = getMapping( unit, rot );
                         AlgebraicVector norm = mField .origin( 3 );
                         for ( int m = 0; m < 3; m++ ) {
                             int offset = ((m+3-i)%3);
@@ -114,19 +112,18 @@ public class IcosahedralSymmetry extends AbstractSymmetry
                                 norm .setComponent( m, xyz .getComponent( offset ) );
                             }
                         }
-        				dir .createAxis( unit, rotation, norm );
-        				dir .createAxis( rot, rotation, norm );
-        			}
-        			orientation = mOrientations[ 45 ] .mapIndex( orientation ); // around Y
+                        dir .createAxis( unit, rotation, norm );
+                        dir .createAxis( rot, rotation, norm );
+                    }
+                    orientation = mOrientations[ 45 ] .mapIndex( orientation ); // around Y
                     reflect[0] = ! reflect[0]; reflect[2] = ! reflect[2];
-        		}
-        		orientation = mOrientations[ 15 ] .mapIndex( orientation ); // around X
+                }
+                orientation = mOrientations[ 15 ] .mapIndex( orientation ); // around X
                 reflect[1] = ! reflect[1]; reflect[2] = ! reflect[2];
-        	}
-        	orientation = mOrientations[ 1 ] .mapIndex( orientation );
+            }
+            orientation = mOrientations[ 1 ] .mapIndex( orientation );
         }
     }
-    
     
     @Override
     public String getName()

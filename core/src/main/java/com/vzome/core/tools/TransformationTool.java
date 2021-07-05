@@ -1,16 +1,15 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.tools;
 
 import java.util.Arrays;
 
+import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Transformation;
-import com.vzome.core.editor.ChangeManifestations;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
+import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.model.Manifestation;
 
 public abstract class TransformationTool extends Tool
@@ -71,7 +70,12 @@ public abstract class TransformationTool extends Tool
             Construction result = transform .transform( c );
             if ( result == null )
                 continue;
-            applyTool .manifestConstruction( result );
+            Color color = c .getColor();
+            result .setColor( color ); // just for consistency
+            Manifestation m = applyTool .manifestConstruction( result );
+            if ( m != null )  // not sure why, but this happens
+                if ( color != null ) // This can be true in the Javascript world
+                    applyTool .colorManifestation( m, c .getColor() );
         }
         applyTool .redo();
     }

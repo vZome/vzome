@@ -4,7 +4,7 @@ import java.awt.event.MouseEvent;
 
 import javax.vecmath.AxisAngle4d;
 import javax.vecmath.Matrix4d;
-import javax.vecmath.Quat4d;
+import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3d;
 
 
@@ -114,7 +114,7 @@ public abstract class Trackball extends MouseToolDefault {
 		Matrix4d y = new Matrix4d();
         y.set( yAngle );
         x .mul( y );
-        Quat4d q = new Quat4d();
+        Quat4f q = new Quat4f();
         x .get( q );
 
         trackballRolled( q );
@@ -124,5 +124,5 @@ public abstract class Trackball extends MouseToolDefault {
      * Subclasses can override and not call super, to own the events.
      * @param roll
      */
-    protected abstract void trackballRolled( Quat4d roll );
+    protected abstract void trackballRolled( Quat4f roll );
 }

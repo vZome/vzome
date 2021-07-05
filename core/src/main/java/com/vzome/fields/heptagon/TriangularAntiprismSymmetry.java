@@ -40,7 +40,16 @@ public class TriangularAntiprismSymmetry extends OctahedralSymmetry
     	SHEAR .transform( v3d );
 		return new RealVector( v3d.x, v3d.y, v3d.z );
 	}
-    
+
+	@Override
+	public double[] embedInR3Double( AlgebraicVector v )
+    {
+        double[] dv = super.embedInR3Double( v );
+        Vector3d v3d = new Vector3d( dv[0], dv[1], dv[2] );
+        SHEAR .transform( v3d );
+        return new double[] { v3d.x, v3d.y, v3d.z };
+    }
+
     @Override
     public boolean isTrivial()
     {

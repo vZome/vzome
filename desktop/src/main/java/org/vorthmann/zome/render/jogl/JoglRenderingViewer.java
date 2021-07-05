@@ -1,13 +1,11 @@
 
-//(c) Copyright 2014, Scott Vorthmann.
-
 package org.vorthmann.zome.render.jogl;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
-import javax.vecmath.Matrix4d;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 
 import com.jogamp.opengl.GL2;
@@ -22,9 +20,9 @@ import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.math.Ray;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.awt.AWTGLReadBufferUtil;
+import com.vzome.core.construction.Color;
 import com.vzome.core.math.Line;
 import com.vzome.core.math.RealVector;
-import com.vzome.core.model.Color;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Lights;
@@ -163,16 +161,16 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     // These are RenderingViewer methods
     
     @Override
-    public void setViewTransformation( Matrix4d trans )
+    public void setViewTransformation( Matrix4f trans )
     {
-        Matrix4d copy = new Matrix4d();
+        Matrix4f copy = new Matrix4f();
         copy .invert( trans );
         int i = 0;
         // JOGL requires column-major order
         for ( int column = 0; column < 4; column++ )
             for ( int row = 0; row < 4; row++ )
             {
-                this .modelView[ i ] = (float) copy .getElement( row, column );
+                this .modelView[ i ] = copy .getElement( row, column );
                 ++i;
             }
         this .cameraChanged  = true;
@@ -257,9 +255,14 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         
         int imageWidth = this .width;
         int imageHeight = this .height;
+        float aspectRatio = (float) imageHeight / (float) imageWidth;
         if ( maxSize > 0 ) {
             imageWidth = maxSize;
-            imageHeight = imageWidth * 4 / 5;
+            if ( imageHeight > 0 ) {
+                imageHeight = (int) (imageWidth * aspectRatio);  // This was hardcoded, now is correct.
+            } else {
+                imageHeight = imageWidth * 4 / 5;
+            }
         }
         
         GLProfile glprofile = GLProfile .getDefault();

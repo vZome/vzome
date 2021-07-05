@@ -1,6 +1,4 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.edits;
 
 
@@ -17,9 +15,9 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Point;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.EditorModel;
-import com.vzome.core.editor.ManifestConstructions;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.ManifestConstructions;
 import com.vzome.core.math.PerspectiveProjection;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
@@ -38,14 +36,14 @@ public abstract class ImportMesh extends ChangeManifestations
 
     public ImportMesh( EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editor );
         this.editor = editor;
     }
 
     @Override
     public void configure( Map<String, Object> params )
     {
-        AlgebraicField field = editor .getKind() .getField();
+        AlgebraicField field = this .mManifestations .getField();
         meshData = (String) params .get( "vef" );
         projection = (Projection) params .get( "projection" );
         scale = (AlgebraicNumber) params .get( "scale" );
@@ -92,8 +90,11 @@ public abstract class ImportMesh extends ChangeManifestations
         if ( scale != null )
             DomUtils .addAttribute( element, "scale", scale .toString( AlgebraicField.ZOMIC_FORMAT ) );
         if ( projection != null ) {
-            DomUtils .addAttribute( element, "projection", projection.getProjectionName() );
-            projection.getXmlAttributes(element);
+            String name = projection.getProjectionName();
+            if ( ! "".equals( name ) ) {
+                DomUtils .addAttribute( element, "projection", projection.getProjectionName() );
+                projection.getXmlAttributes(element);
+            }
         }
         Node textNode = element .getOwnerDocument() .createTextNode( XmlSaveFormat .escapeNewlines( meshData ) );
         element .appendChild( textNode );
@@ -120,7 +121,7 @@ public abstract class ImportMesh extends ChangeManifestations
             setProjection( projectionName, field );
         }
         if( projection != null ) {
-            projection.setXmlAttributes(xml, format);
+            projection.setXmlAttributes(xml);
         }
     }
     

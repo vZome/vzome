@@ -27,11 +27,11 @@ public class SymmetrySnapper implements CameraController.Snapper
             return;
         Embedding embedding = orbitSet .getSymmetry();
         RealVector rv = embedding .embedInR3( axis .normal() );
-        lookDir .set( (float) rv.x, (float) rv.y, (float) rv.z );
+        lookDir .set( rv.x, rv.y, rv.z );
         vector = new RealVector( upDir .x, upDir .y, upDir .z );
         axis = orbitSet .getAxis( vector );
         rv = embedding .embedInR3( axis .normal() );
-        upDir .set( (float) rv.x, (float) rv.y, (float) rv.z );
+        upDir .set( rv.x, rv.y, rv.z );
         
         Vector3f cross = new Vector3f();
         cross .cross( lookDir, upDir );

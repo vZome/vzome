@@ -1,5 +1,6 @@
 package org.vorthmann.zome.ui;
 
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -40,13 +41,17 @@ public class SymmetryToolbarsPanel extends JPanel
 
         this .setLayout( new GridLayout( 2, 1 ) );
         
+        JPanel topRow = new JPanel();
+        topRow .setLayout( new BorderLayout() );
+        this .add( topRow );
+        
 		JToolBar firstToolbar = new JToolBar();
 		firstToolbar .setFloatable( false );
 		firstToolbar .setOrientation( JToolBar.HORIZONTAL );
 //        firstToolbar .setToolTipText( "Click on objects to select them, and enable creation of new tools accordingly." );
 		JScrollPane firstScroller = new JScrollPane( firstToolbar, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED );
         firstScroller .setBorder( null );
-        this .add( firstScroller );
+        topRow .add( firstScroller, BorderLayout.WEST );
 
         AbstractButton button;
 
@@ -68,6 +73,20 @@ public class SymmetryToolbarsPanel extends JPanel
         for ( String transformFactory : linearMapFactories ) {
             firstToolbar .add( newToolButton( symmController, transformFactory ) );
 		}                
+
+        AbstractButton shareButton = makeEditButton( enabler, "Share", "Share using Github and vZome Online" );
+        topRow .add( shareButton, BorderLayout.EAST );
+        controller .addPropertyListener( new PropertyChangeListener()
+        {
+            @Override
+            public void propertyChange( PropertyChangeEvent evt )
+            {
+                if ( "window.file" .equals( evt .getPropertyName() ) )
+                {
+                    shareButton .setEnabled( evt .getNewValue() != null );
+                }
+            }
+        });
 
         this .secondToolbar = new JToolBar();
         secondToolbar .setFloatable( false );

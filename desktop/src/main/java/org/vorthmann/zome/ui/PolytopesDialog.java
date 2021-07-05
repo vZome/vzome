@@ -1,6 +1,4 @@
 
-//(c) Copyright 2013, Scott Vorthmann.
-
 package org.vorthmann.zome.ui;
 
 import java.awt.BorderLayout;
@@ -182,6 +180,7 @@ public class PolytopesDialog extends EscapeDialog
         } );
         buttons .add( build );
         setSize( new Dimension( 120 + quaternionPanel.totalLabelWidth(), 350 ) ); // adjust width to the number of irrationals
+        setResizable( false );
     }
 
     @Override

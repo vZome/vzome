@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vzome:vZome xmlns:vzome="http://tns.vorthmann.org/vZome/2.0.2/">
+   <editHistory editNumber="18">
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="2"/>
+         </attr>
+         <attr name="length">
+            <GoldenNumber value="4phi+2"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="blue" index="0"/>
+         </attr>
+         <attr name="length">
+            <GoldenNumber value="4phi+2"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="yellow" index="9"/>
+         </attr>
+         <attr name="length">
+            <GoldenNumber value="phi+1"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="yellow" index="5"/>
+         </attr>
+         <attr name="length">
+            <GoldenNumber value="phi+1"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="8"/>
+         </attr>
+         <attr name="length">
+            <GoldenNumber value="4phi+2"/>
+         </attr>
+         <point x="4phi+2" y="0" z="0" w="0"/>
+         <point x="2phi+1" y="2phi+1" z="2phi+1" w="0"/>
+         <point x="0" y="0" z="4phi+2" w="0"/>
+         <point x="2phi+1" y="-2phi-1" z="2phi+1" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="23"/>
+         </attr>
+         <attr name="length">
+            <GoldenNumber value="-2phi+4"/>
+         </attr>
+         <point x="8phi+4" y="0" z="4phi+2" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="icosahedral" dir="green" index="38"/>
+         </attr>
+         <attr name="length">
+            <GoldenNumber value="-2phi+4"/>
+         </attr>
+         <point x="4phi+2" y="0" z="8phi+4" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandTetrahedralSymmetry>
+         <attr name="symmetry.center">
+            <point x="0" y="0" z="0" w="0"/>
+         </attr>
+         <point x="6phi-2" y="0" z="6phi+8" w="0"/>
+         <point x="6phi+8" y="0" z="6phi-2" w="0"/>
+         <point x="6phi+3" y="-2phi-1" z="6phi+3" w="0"/>
+         <point x="6phi+3" y="2phi+1" z="6phi+3" w="0"/>
+      </CommandTetrahedralSymmetry>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="octahedral" dir="blue" index="0"/>
+         </attr>
+         <attr name="length">
+            <GoldenNumber value="68phi+42"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandTranslate>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="68phi+42" y="0" z="0" w="0"/>
+            </segment>
+         </attr>
+         <point x="-6phi-8" y="6phi-2" z="0" w="0"/>
+         <point x="-6phi-8" y="0" z="6phi-2" w="0"/>
+         <point x="-6phi-8" y="-6phi+2" z="0" w="0"/>
+         <point x="-6phi-8" y="0" z="-6phi+2" w="0"/>
+      </CommandTranslate>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="octahedral" dir="blue" index="5"/>
+         </attr>
+         <attr name="length">
+            <GoldenNumber value="68phi+42"/>
+         </attr>
+         <point x="68phi+42" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandBuildAnchoredSegment>
+         <attr name="axis">
+            <Axis symm="octahedral" dir="green" index="0"/>
+         </attr>
+         <attr name="length">
+            <GoldenNumber value="68phi+42"/>
+         </attr>
+         <point x="0" y="0" z="0" w="0"/>
+      </CommandBuildAnchoredSegment>
+      <CommandTranslate>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="68phi+42" y="0" z="68phi+42" w="0"/>
+            </segment>
+         </attr>
+         <point x="-6phi-3" y="2phi+1" z="-6phi-3" w="0"/>
+         <point x="-6phi-8" y="0" z="-6phi+2" w="0"/>
+         <point x="-6phi-3" y="-2phi-1" z="-6phi-3" w="0"/>
+         <point x="-6phi+2" y="0" z="-6phi-8" w="0"/>
+      </CommandTranslate>
+      <CommandPolygon>
+         <point x="6phi+8" y="0" z="6phi-2" w="0"/>
+         <point x="6phi+3" y="2phi+1" z="6phi+3" w="0"/>
+         <point x="62phi+39" y="2phi+1" z="62phi+39" w="0"/>
+         <point x="62phi+44" y="0" z="62phi+34" w="0"/>
+      </CommandPolygon>
+      <CommandPolygon>
+         <point x="62phi+34" y="0" z="62phi+44" w="0"/>
+         <point x="62phi+39" y="2phi+1" z="62phi+39" w="0"/>
+         <point x="6phi+3" y="2phi+1" z="6phi+3" w="0"/>
+         <point x="6phi-2" y="0" z="6phi+8" w="0"/>
+      </CommandPolygon>
+      <CommandPolygon>
+         <point x="6phi-2" y="0" z="6phi+8" w="0"/>
+         <point x="6phi+3" y="-2phi-1" z="6phi+3" w="0"/>
+         <point x="62phi+39" y="-2phi-1" z="62phi+39" w="0"/>
+         <point x="62phi+34" y="0" z="62phi+44" w="0"/>
+      </CommandPolygon>
+      <CommandPolygon>
+         <point x="62phi+44" y="0" z="62phi+34" w="0"/>
+         <point x="62phi+39" y="-2phi-1" z="62phi+39" w="0"/>
+         <point x="6phi+3" y="-2phi-1" z="6phi+3" w="0"/>
+         <point x="6phi+8" y="0" z="6phi-2" w="0"/>
+      </CommandPolygon>
+      <CommandMarkStrut>
+         <attr name="symmetry.axis.segment">
+            <segment>
+               <start x="0" y="0" z="0" w="0"/>
+               <end x="68phi+42" y="0" z="68phi+42" w="0"/>
+            </segment>
+         </attr>
+      </CommandMarkStrut>
+   </editHistory>
+</vzome:vZome>

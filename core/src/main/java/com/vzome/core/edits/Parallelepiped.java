@@ -7,17 +7,16 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class Parallelepiped extends ChangeManifestations
 {
-	public Parallelepiped( Selection selection, RealizedModel realized )
-	{
-		super( selection, realized );
+	public Parallelepiped( EditorModel editor )
+    {
+        super( editor );
 	}
 
 	@Override
@@ -36,11 +35,11 @@ public class Parallelepiped extends ChangeManifestations
             unselect( man );
             if ( man instanceof Strut ) {
                 if ( strut1 == null ) {
-                    strut1 = Strut.class.cast(man);
+                    strut1 = (Strut)(man);
                 } else if ( strut2 == null ) {
-                    strut2 = Strut.class.cast(man);
+                    strut2 = (Strut)(man);
                 } else if ( strut3 == null ) {
-                	strut3 = Strut.class.cast(man);
+                	strut3 = (Strut)(man);
                 } else
                     fail( errorMsg );
             } else
@@ -53,9 +52,9 @@ public class Parallelepiped extends ChangeManifestations
 
         // first, find the offsets and the endpoint vectors: v1, v2, v3
         // Reverse the offset direction(s) if necessary so the two offsets have a common starting point at v0
-        Segment s1 = Segment.class.cast(strut1.getFirstConstruction());
-        Segment s2 = Segment.class.cast(strut2.getFirstConstruction());
-        Segment s3 = Segment.class.cast(strut3.getFirstConstruction());
+        Segment s1 = (Segment)(strut1.getFirstConstruction());
+        Segment s2 = (Segment)(strut2.getFirstConstruction());
+        Segment s3 = (Segment)(strut3.getFirstConstruction());
         AlgebraicVector offset1 = s1 .getOffset();
         AlgebraicVector offset2 = s2 .getOffset();
         AlgebraicVector offset3 = s3 .getOffset();

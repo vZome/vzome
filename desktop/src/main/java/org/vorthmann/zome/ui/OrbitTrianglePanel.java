@@ -14,15 +14,15 @@ import java.util.Properties;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import com.vzome.core.construction.Color;
 import com.vzome.core.editor.Application;
 import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
+import com.vzome.core.editor.SymmetryPerspective;
+import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.model.Color;
 import com.vzome.core.render.Colors;
-import com.vzome.core.render.RenderedModel.OrbitSource;
 
 public class OrbitTrianglePanel extends JPanel
 {

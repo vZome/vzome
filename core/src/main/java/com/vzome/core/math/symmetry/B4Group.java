@@ -1,12 +1,9 @@
 
-//(c) Copyright 2007, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.math.symmetry;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.RootTwoField;
 
 public class B4Group implements CoxeterGroup
 {
@@ -62,7 +59,7 @@ public class B4Group implements CoxeterGroup
         WEIGHTS[ 3 ] .setComponent( AlgebraicVector.W4, half );
         
 
-        if ( field instanceof RootTwoField ) {
+        if ( field .scale4dRoots() ) {
             AlgebraicNumber scale = field .createPower( 1 );
             ROOTS[ 3 ] = ROOTS[ 3 ] .scale( scale );
             WEIGHTS[ 3 ] = WEIGHTS[ 3 ] .scale( scale );

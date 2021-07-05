@@ -1,6 +1,4 @@
 
-//(c) Copyright 2011, Scott Vorthmann.
-
 package com.vzome.api;
 
 import java.io.File;
@@ -14,11 +12,11 @@ import java.util.Properties;
 import com.vzome.core.commands.Command;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
+import com.vzome.core.editor.SymmetryPerspective;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.render.Colors;
-import com.vzome.core.render.Shapes;
 
 public class Application
 {

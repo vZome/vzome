@@ -6,12 +6,12 @@ import java.util.List;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandSymmetry;
-import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
+import com.vzome.core.editor.SymmetryPerspective;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OctahedralSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.render.Shapes;
 
 public abstract class AbstractSymmetryPerspective implements SymmetryPerspective
 {

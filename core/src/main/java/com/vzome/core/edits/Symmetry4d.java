@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.edits;
 
 import java.util.ArrayList;
@@ -20,12 +18,11 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.PolygonRotated4D;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentRotated4D;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.EditorModel;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 
 /**
  * This is a modern replacement for CommandQuaternionSymmetry, which is a legacy command.
@@ -45,14 +42,14 @@ public class Symmetry4d extends ChangeManifestations
 
     public Symmetry4d( EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
-        this .left = editor .getKind() .getQuaternionSymmetry( "H_4" );
+        super( editor );
+        this .left = ((SymmetryAware) editor) .get4dSymmetries() .getQuaternionSymmetry( "H_4" );
         this .right = this .left;
     }
 
-    public Symmetry4d( Selection selection, RealizedModel realized, QuaternionicSymmetry left, QuaternionicSymmetry right )
+    public Symmetry4d( EditorModel editor, QuaternionicSymmetry left, QuaternionicSymmetry right )
     {
-        super( selection, realized );
+        super( editor );
         this .left = left;
         this .right = right;
     }

@@ -1,10 +1,6 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.tools;
 
-
-import java.util.EnumSet;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
@@ -14,9 +10,9 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PointToPointTranslation;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.editor.AbstractToolFactory;
-import com.vzome.core.editor.Selection;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 
@@ -25,7 +21,7 @@ public class TranslationTool extends TransformationTool
     public TranslationTool( String id, ToolsModel tools )
     {
         super( id, tools );
-        this .setInputBehaviors( EnumSet.of( InputBehaviors.DELETE ) );
+        this .setInputBehaviors( false, true );
     }
     
 	private static final String ID = "translation";

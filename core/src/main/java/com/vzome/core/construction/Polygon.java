@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.construction;
 
 import java.util.Arrays;
@@ -16,12 +14,6 @@ import com.vzome.xml.DomUtils;
 
 public abstract class Polygon extends Construction
 {
-    // These views will be used for JSON serialization in other classes
-    public static class Views {
-        public interface Triangles{}
-        public interface Polygons{}
-    }
-
     @Override
 	public String toString() {
 		return "polygon " + Arrays.toString(mVertices);
@@ -101,4 +93,8 @@ public abstract class Polygon extends Construction
         return AlgebraicVectors.getCentroid( mVertices );
     }
 
+    public AlgebraicVector[] getVertices()
+    {
+        return Arrays .copyOf( this.mVertices, this.mVertices.length );
+    }
 }

@@ -1,6 +1,4 @@
 
-//(c) Copyright 2007, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.edits;
 
 
@@ -15,14 +13,13 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.symmetry.B4Group;
 import com.vzome.core.math.symmetry.CoxeterGroup;
 import com.vzome.core.math.symmetry.WythoffConstruction;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.xml.DomUtils;
 
 /**
@@ -37,15 +34,15 @@ public class B4Polytope extends ChangeManifestations
     private Segment symmAxis;
 	private final AlgebraicField field;
 
-    public B4Polytope( Selection selection, RealizedModel realized )
+    public B4Polytope( EditorModel editorModel )
     {
-        this( selection, realized, realized .getField(), null, 0 );
+        this( editorModel, null, 0 );
     }
 
-    public B4Polytope( Selection selection, RealizedModel realized, AlgebraicField field, Segment symmAxis, int index )
+    public B4Polytope( EditorModel editorModel, Segment symmAxis, int index )
     {
-        super( selection, realized );
-        this.field = field;
+        super( editorModel );
+        this.field = mManifestations .getField();
 
         this.index = index;
         this.symmAxis = symmAxis;
@@ -94,7 +91,7 @@ public class B4Polytope extends ChangeManifestations
         AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
         for (int i = 0; i < edgeScales .length; i++)
         {
-            edgeScales[ i ] = field .createPower( 0 );
+            edgeScales[ i ] = field .one();
         }
 
         CoxeterGroup group = new B4Group( field );

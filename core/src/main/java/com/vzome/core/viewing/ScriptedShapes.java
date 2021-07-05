@@ -31,7 +31,7 @@ public class ScriptedShapes extends AbstractShapes
 
     public ScriptedShapes( File prefsFolder, String pkgName, String name, IcosahedralSymmetry symm, AbstractShapes fallback )
     {
-        super( pkgName, name, symm );
+        super( pkgName, name, null, symm );
         this.fallback = fallback;
     }
     
@@ -50,8 +50,7 @@ public class ScriptedShapes extends AbstractShapes
     protected Polyhedron buildConnectorShape( String pkgName )
     {
         String prefix = ZomicStrutGeometry.SCRIPT_PREFIX + pkgName + "/";
-        InputStream nodeScript = Thread.currentThread()
-                .getContextClassLoader().getResourceAsStream(
+        InputStream nodeScript = this .getClass() .getClassLoader() .getResourceAsStream(
                         prefix + NODE_SCRIPT );
         if ( nodeScript == null )
             throw new IllegalStateException( "missing script: " + prefix
