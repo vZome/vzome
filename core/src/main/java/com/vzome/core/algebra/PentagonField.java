@@ -114,6 +114,7 @@ public final class PentagonField extends AbstractAlgebraicField
         }
     }
 
+    @Override
     public List<Integer> recurrence( List<Integer> input )
     {        
         ArrayList<Integer> output = new ArrayList<>();
