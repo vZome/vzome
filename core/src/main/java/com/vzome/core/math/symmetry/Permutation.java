@@ -28,7 +28,7 @@ public class Permutation extends Object {
 		}
 		m_map = map;
 		int unit = 0;
-		for ( int i = 0; i < 20; i++ ) {
+		for ( int i = 0; i < m_map.length; i++ ) {
 		    unit = m_map[ unit ];
 		    if ( unit == 0 ) {
 		        m_order = i+1;
