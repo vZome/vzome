@@ -546,6 +546,8 @@ jsweet {
     ]
     excludes = [
         
+        'com/vzome/core/math/symmetry/AntiprismSymmetry.java',
+        
         'com/vzome/core/algebra/BigRational.java',
         'com/vzome/core/algebra/RootThreeField.java',
         'com/vzome/core/algebra/AbstractAlgebraicField.java',
@@ -557,6 +559,7 @@ jsweet {
         'com/vzome/core/algebra/AlgebraicSeries.java',
         'com/vzome/core/algebra/*Impl.java',
         'com/vzome/core/algebra/AlgebraicFields.java',
+        'com/vzome/core/algebra/PolygonField.java',
 
         'com/vzome/core/commands/CommandExecutePythonScript.java',
 
