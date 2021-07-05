@@ -1265,7 +1265,9 @@ public class DocumentController extends DefaultController implements Scene.Provi
             }
             else if ( propName .startsWith( "exportExtension." ) ) {
                 String format = propName .substring( "exportExtension." .length() );
-                return this .mApp .getExporter( format .toLowerCase() ) .getFileExtension();
+                // handle null exporter so that typo in custom menu doesn't throw NPE 
+                Exporter3d exporter = this .mApp .getExporter( format .toLowerCase() );
+                return exporter == null ? "" : exporter .getFileExtension();
             }
 
             String result = this .properties .getProperty( propName );
