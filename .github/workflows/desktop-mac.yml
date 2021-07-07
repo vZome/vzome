@@ -44,8 +44,8 @@ jobs:
     - name: Archive MacOS build
       uses: actions/upload-artifact@v2
       with:
-        name: vZome-7.1.${{ github.run_number }}-MacOSX
-        path: desktop/platform/mac/build/distributions/vZome-*-MacOSX.zip
+        name: vZome-MacOSX-7.1.${{ github.run_number }}
+        path: desktop/platform/mac/build/macApp/vZome-*.app
     - name: Archive Linux build
       uses: actions/upload-artifact@v2
       with:
