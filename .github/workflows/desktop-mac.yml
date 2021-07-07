@@ -44,10 +44,10 @@ jobs:
     - name: Archive MacOS build
       uses: actions/upload-artifact@v2
       with:
-        name: mac-desktop-zip
+        name: vZome-7.1.${{ github.run_number }}-MacOSX
         path: desktop/platform/mac/build/distributions/vZome-*-MacOSX.zip
     - name: Archive Linux build
       uses: actions/upload-artifact@v2
       with:
-        name: linux-desktop-zip
+        name: vZome-Linux-7.1.${{ github.run_number }}
         path: desktop/build/distributions/vZome-Linux-*.zip
