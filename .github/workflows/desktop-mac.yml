@@ -1,6 +1,6 @@
 # This is a basic workflow that is manually triggered
 
-name: Desktop build
+name: MacOS desktop build
 
 on:
   workflow_dispatch:
@@ -17,8 +17,17 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "greet"
-  greet:
+  build:
     runs-on: macos-latest
+
+    env:
+      BUILD_NUMBER: ${{ github.run_number }}
+      GIT_COMMIT: ${{ github.sha }}
+      # TODO connect these to secrets
+      # NOTE: They have nothing to do with running this GitHub Action;
+      #   they are for vZome to make runtime API calls to GitHub.
+      GITHUB_CLIENT_SECRET: ''
+      GITHUB_CLIENT_ID: ''
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -31,4 +40,14 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew clean createAppZip zipWin64Distribution distZip
+      run: ./gradlew clean distZip createAppZip
+    - name: Archive MacOS build
+      uses: actions/upload-artifact@v2
+      with:
+        name: mac-desktop-zip
+        path: desktop/platform/mac/build/distributions/vZome-*-MacOSX.zip
+    - name: Archive Linux build
+      uses: actions/upload-artifact@v2
+      with:
+        name: linux-desktop-zip
+        path: desktop/build/distributions/vZome-Linux-*.zip
