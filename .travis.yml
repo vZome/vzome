@@ -2,8 +2,7 @@ language: java
 jdk:
 - oraclejdk8
 script:
-- "./gradlew :server:build"
+- "./gradlew test regression"
 branches:
   only:
   - master
-  - server
