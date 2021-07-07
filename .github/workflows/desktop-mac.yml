@@ -4,30 +4,20 @@ name: MacOS desktop build
 
 on:
   workflow_dispatch:
-    # Inputs the workflow accepts.
-    inputs:
-      name:
-        # Friendly description to be shown in the UI instead of 'name'
-        description: 'Person to greet'
-        # Default value if no value is explicitly provided
-        default: 'World'
-        # Input has to be provided for the workflow to run
-        required: true
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+env:
+  BUILD_NUMBER: ${{ github.run_number }}
+  GIT_COMMIT: ${{ github.sha }}
+  # TODO connect these to secrets
+  # NOTE: They have nothing to do with running this GitHub Action;
+  #   they are for vZome to make runtime API calls to GitHub.
+  GITHUB_CLIENT_SECRET: ''
+  GITHUB_CLIENT_ID: ''
+
+
 jobs:
-  # This workflow contains a single job called "greet"
-  build:
+  build-macos:
     runs-on: macos-latest
-
-    env:
-      BUILD_NUMBER: ${{ github.run_number }}
-      GIT_COMMIT: ${{ github.sha }}
-      # TODO connect these to secrets
-      # NOTE: They have nothing to do with running this GitHub Action;
-      #   they are for vZome to make runtime API calls to GitHub.
-      GITHUB_CLIENT_SECRET: ''
-      GITHUB_CLIENT_ID: ''
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -40,12 +30,27 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew clean distZip createAppZip
+      run: ./gradlew clean createAppZip
     - name: Archive MacOS build
       uses: actions/upload-artifact@v2
       with:
         name: vZome-MacOSX-7.1.${{ github.run_number }}
         path: desktop/platform/mac/build/macApp/vZome-*.app
+
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 8
+      uses: actions/setup-java@v2
+      with:
+        java-version: '8'
+        distribution: 'adopt'
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Build with Gradle
+      run: ./gradlew clean distZip
     - name: Archive Linux build
       uses: actions/upload-artifact@v2
       with:
