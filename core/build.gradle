@@ -176,6 +176,9 @@ test {
 		}
 	}
 	testLogging {
+
+            events 'started', 'passed'
+
 		// Only set showStandardStreams=true from the gradle command line.
 		//  using -P"testLogging.showStandardStreams"
 		// Otherwise, it normally defaults to false which is correct for the NetBeans IDE.
