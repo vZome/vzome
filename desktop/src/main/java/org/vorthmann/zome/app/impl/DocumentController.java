@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -46,6 +47,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
+import com.vzome.core.algebra.PolygonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Color;
@@ -230,7 +232,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
                 {
                     // contents of old "renderSnapshot" action
                     RenderedModel newSnapshot = (RenderedModel) change .getNewValue();
-                    if ( newSnapshot != currentSnapshot )
+                    if ( newSnapshot != null && newSnapshot != currentSnapshot )
                     {
                         synchronized ( newSnapshot ) {
                             RenderedModel .renderChange( currentSnapshot, newSnapshot, mainScene );
@@ -302,7 +304,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
         showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
 
         thumbnails = new ThumbnailRendererImpl( sceneLighting, maxOrientations );
-        this .addSubController( "thumbnails", (Controller) thumbnails );
+        this .addSubController( "thumbnails", thumbnails );
         thumbnails .setFactory( app .getJ3dFactory() );
 
         mApp = app;
@@ -321,7 +323,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
 
         this .mainScene = new Scene( this .sceneLighting, this .drawOutlines, maxOrientations );
         if ( this .mainScene instanceof PropertyChangeListener )
-            this .addPropertyListener( (PropertyChangeListener) this .mainScene );
+            this .addPropertyListener( this .mainScene );
 
         partsController = new PartsController( this .documentModel .getSymmetrySystem() );
         this .addSubController( "parts", partsController );
@@ -447,7 +449,14 @@ public class DocumentController extends DefaultController implements Scene.Provi
      */
     private void setSymmetrySystem( String symmetryName )
     {
+        if("antiprism".equals(symmetryName)) {
+            symmetryName = symmetryName + ((PolygonField) this.documentModel.getField()).polygonSides();
+        }
+        
         SymmetrySystem symmetrySystem = (SymmetrySystem) this .documentModel .getSymmetrySystem( symmetryName );
+        if(symmetrySystem == null) {
+            throw new IllegalStateException("Unable to get SymmetrySystem '" + symmetryName + "'.");
+        }
         symmetryName = symmetrySystem .getName(); // in case it was null before
         this .documentModel .setSymmetrySystem( symmetrySystem );
         
@@ -917,7 +926,13 @@ public class DocumentController extends DefaultController implements Scene.Provi
         }
     }
 
-    private void captureImageFile( final File file, final String extension, final AnimationCaptureController animation )
+    /**
+     * 
+     * @param dest a File or OutputStream
+     * @param extension
+     * @param animation
+     */
+    private void captureImageFile( final Object dest, final String extension, final AnimationCaptureController animation )
     {
         String maxSizeStr = getProperty( "max.image.size" );
         final int maxSize = ( maxSizeStr != null )? Integer .parseInt( maxSizeStr ) :
@@ -999,10 +1014,10 @@ public class DocumentController extends DefaultController implements Scene.Provi
                     ImageWriter writer = ImageIO.getImageWritersByFormatName( format ) .next();
                     ImageWriteParam iwParam = writer .getDefaultWriteParam();
                     this.setImageCompression(format, iwParam);
-                    File thisFile = ( animation != null ) ? animation .nextFile() : file;
+                    Object thisDest = ( animation != null ) ? animation .nextFile() : dest;
                     
                     // A try-with-resources block closes the resource even if an exception occurs
-                    try (ImageOutputStream ios = ImageIO.createImageOutputStream( thisFile )) {
+                    try (ImageOutputStream ios = ImageIO.createImageOutputStream( thisDest )) {
                         writer .setOutput( ios );
                         writer .write( null, new IIOImage( image, null, null), iwParam );
                         writer .dispose(); // disposing of the writer doesn't close ios
@@ -1013,8 +1028,10 @@ public class DocumentController extends DefaultController implements Scene.Provi
                         // ios.close();
                     }
 
-                    if ( animation == null )
-                        openApplication( file );
+                    if ( animation == null ) {
+                        if ( dest instanceof File )
+                            openApplication( (File) dest );
+                    }
                     else if ( ! animation .finished() ) {
                         // queue up the next capture in the sequence
                         EventQueue .invokeLater( new Runnable(){
@@ -1187,6 +1204,19 @@ public class DocumentController extends DefaultController implements Scene.Provi
                 return null;
             }
             
+        case "png-base64": {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            captureImageFile( byteArrayOutputStream, "png", null );
+            String encoded = Base64.getEncoder() .encodeToString( byteArrayOutputStream .toByteArray() );
+            try {
+                byteArrayOutputStream .close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return encoded;
+        }
+
         case "field.label": {
             String name = this .documentModel .getField() .getName();
             return super.getProperty( "field.label." + name ); // defer to app controller
@@ -1235,7 +1265,9 @@ public class DocumentController extends DefaultController implements Scene.Provi
             }
             else if ( propName .startsWith( "exportExtension." ) ) {
                 String format = propName .substring( "exportExtension." .length() );
-                return this .mApp .getExporter( format .toLowerCase() ) .getFileExtension();
+                // handle null exporter so that typo in custom menu doesn't throw NPE 
+                Exporter3d exporter = this .mApp .getExporter( format .toLowerCase() );
+                return exporter == null ? "" : exporter .getFileExtension();
             }
 
             String result = this .properties .getProperty( propName );

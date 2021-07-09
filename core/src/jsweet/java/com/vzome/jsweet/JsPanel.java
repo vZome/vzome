@@ -87,6 +87,12 @@ public class JsPanel extends JsManifestation implements Panel
         return ((JsAlgebraicField) this .field) .createVectorFromTDs( this .vectors[ 0 ] );
     }
 
+    @Override
+    public int getVertexCount()
+    {
+        return this.vectors.length;
+    }
+
     
     
     
@@ -96,12 +102,6 @@ public class JsPanel extends JsManifestation implements Panel
 
     @Override
     public Iterator<AlgebraicVector> getVertices()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public int getVertexCount()
     {
         throw new RuntimeException( "unimplemented" );
     }

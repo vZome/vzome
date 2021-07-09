@@ -17,6 +17,7 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
+import com.vzome.core.algebra.PolygonField;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
 import com.vzome.core.commands.Command;
@@ -48,6 +49,7 @@ import com.vzome.core.exporters2d.SVGExporter;
 import com.vzome.core.exporters2d.SnapshotExporter;
 import com.vzome.core.kinds.GoldenFieldApplication;
 import com.vzome.core.kinds.HeptagonFieldApplication;
+import com.vzome.core.kinds.PolygonFieldApplication;
 import com.vzome.core.kinds.RootThreeFieldApplication;
 import com.vzome.core.kinds.RootTwoFieldApplication;
 import com.vzome.core.kinds.SnubDodecFieldApplication;
@@ -195,6 +197,17 @@ public class Application implements AlgebraicField.Registry
         if( supplier != null ) {
             return supplier.get();
         }
+        
+        // Parameterized FieldApplications are generated on demand
+        if(name.startsWith(PolygonField.FIELD_PREFIX)) {
+            int nSides = Integer.parseInt(name.substring(PolygonField.FIELD_PREFIX.length()));
+            return new PolygonFieldApplication(nSides);
+        }
+//        if(name.startsWith(SqrtField.FIELD_PREFIX)) {
+//            int nSides = Integer.parseInt(name.substring(SqrtField.FIELD_PREFIX.length()));
+//            return new SqrtFieldApplication(nSides);
+//        }
+
         // maybe because default.field is invalid in your prefs file?
         String msg = "Unknown Application Type " + name;
         failures.reportFailure(new Failure(msg));

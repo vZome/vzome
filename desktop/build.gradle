@@ -64,7 +64,7 @@ sourceSets {
 dependencies {
     compile group: 'com.github.scribejava', name: 'scribejava-apis', version: '8.1.0'
     compile group: 'com.github.scribejava', name: 'scribejava-httpclient-okhttp', version: '8.1.0'
-    compile group: 'org.eclipse.mylyn.github', name: 'org.eclipse.egit.github.core', version: '2.1.5'
+    compile group: 'org.eclipse.mylyn.github', name: 'org.eclipse.egit.github.core', version: '5.12.0.202106021050-rc1'
 
     compile group: 'java3d', name: 'vecmath', version:'1.6.0-final'
 
@@ -101,6 +101,7 @@ sourceSets {
             // listed alphabetically
             include '**/*.gif'
             include '**/*.jpg'
+            include '**/*.md'
             include '**/*.pdf'
             include '**/*.png'
             include '**/*.properties'

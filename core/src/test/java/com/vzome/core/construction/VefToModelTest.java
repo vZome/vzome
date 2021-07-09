@@ -519,6 +519,39 @@ public class VefToModelTest
             assertEquals( expected, v1 ); 
         } 
     } 
+
+    @Test 
+    public void testQuaternionProjectionOf3DVector() 
+    { 
+        final AlgebraicField field = new RootTwoField(); 
+        final String vefData = "vZome VEF 9 field rootTwo " +
+                "dimension 3 " + 
+                "1 " + 
+                "(1,2) (3,4) (5,6) ";
+        
+        AlgebraicNumber scale = field .one(); 
+        Projection projection = null;
+        while(true) {
+            NewConstructions effects = new NewConstructions(); 
+            VefToModel parser = new VefToModel( projection, effects, scale, null ); 
+            parser .parseVEF( vefData, field ); 
+ 
+            Point p0 = (Point) effects .get( 0 ); 
+            AlgebraicVector v0 = p0 .getLocation(); 
+            if(projection == null) {
+                AlgebraicVector expected = field .createVector( new int[][] {{2,1,1,1}, {4,1,3,1}, {6,1,5,1}} ).scale(scale); 
+                assertEquals( expected, v0 );
+                AlgebraicVector quaternion = field .createVector( new int[][] {{2,1,0,1}, {2,1,1,1}, {2,1,2,1}, {2,1,3,1}} ); 
+                Assert.assertNotEquals(quaternion.inflateTo4d(true), quaternion.inflateTo4d(false)); 
+                projection = new QuaternionProjection(field, null, quaternion ); 
+
+            } else {
+                AlgebraicVector expected = field .createVector( new int[][] {{-2,1,-2,1}, {20,1,14,1}, {6,1,6,1}} ).scale(scale); 
+                assertEquals( expected, v0 );
+                break;
+            }
+        }
+    } 
  
     @Test
     public void testVefParseBigInteger()
@@ -596,7 +629,7 @@ public class VefToModelTest
         }
         assertEquals(fields.length, testsPassed);
     }
-    
+
     private static class NewConstructions extends ArrayList<Construction> implements ConstructionChanges
     {
         private static final long serialVersionUID = 1L;

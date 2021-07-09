@@ -139,20 +139,6 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
         contentArea .setDocument( content );
     }
 
-    protected static JButton createButton( String actionCommand, ActionListener listener )
-    {
-        String iconPath = "/org/vorthmann/zome/ui/" + actionCommand + ".gif";
-        JButton button = new JButton();
-        java.net.URL imgURL = LessonPanel.class .getResource( iconPath );
-        if ( imgURL != null )
-            button .setIcon( new ImageIcon( imgURL ) );
-        else
-            logger  .warning( "Couldn't find resource: " + iconPath );
-        button .addActionListener( listener );
-        button .setActionCommand( actionCommand );
-        return button;
-    }
-
     // DocumentListener methods
     
     private class TextEvents implements DocumentListener

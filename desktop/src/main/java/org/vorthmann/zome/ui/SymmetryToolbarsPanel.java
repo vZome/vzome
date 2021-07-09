@@ -84,7 +84,7 @@ public class SymmetryToolbarsPanel extends JPanel
             firstToolbar .add( newToolButton( symmController, transformFactory ) );
 		}                
 
-        AbstractButton shareButton = makeEditButton( enabler, "Share", "Share as a Github gist\nfor vZome Online" );
+        AbstractButton shareButton = makeEditButton( enabler, "Share", "Share using Github and vZome Online" );
         topRow .add( shareButton, BorderLayout.EAST );
         controller .addPropertyListener( new PropertyChangeListener()
         {
