@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" coreVersion="7.0" field="snubCube">
-  <EditHistory editNumber="69" lastStickyEdit="-1">
+  <EditHistory editNumber="119" lastStickyEdit="-1">
     <SelectManifestation point="0 0 0 0 0 0 0 0 0"/>
     <Delete/>
     <LoadVEF scale="1 0 0">vZome VEF 6 field snubCube
@@ -830,6 +830,80 @@
     <EndBlock/>
     <ApplyTool name="octahedral.builtin/octahedral around origin" selectInputs="true"/>
     <setItemColor blue="149" green="118" red="0"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 0 0 0 9/4 3 15/4"/>
+      <polygonVertex at="-3/16 -3/8 -9/16 3/16 3/8 9/16 15/8 21/8 27/8"/>
+      <polygonVertex at="-3/16 -3/8 -9/16 3/16 0 3/16 9/4 3 27/8"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="3/4 3/2 9/4 3/4 3/2 9/4 3/4 3/2 9/4"/>
+      <polygonVertex at="9/16 9/8 27/16 9/16 9/8 27/16 9/8 15/8 21/8"/>
+      <polygonVertex at="15/16 27/16 9/4 9/16 9/8 27/16 15/16 27/16 9/4"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 0 0 0 9/4 3 15/4"/>
+      <polygonVertex at="3/8 9/16 9/16 0 0 0 33/16 45/16 27/8"/>
+      <polygonVertex at="3/16 3/8 9/16 3/16 3/8 9/16 15/8 21/8 27/8"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="3/2 9/4 9/4 0 0 0 3/2 9/4 9/4"/>
+      <polygonVertex at="21/16 33/16 9/4 3/16 3/8 9/16 21/16 33/16 9/4"/>
+      <polygonVertex at="9/8 27/16 27/16 0 0 0 27/16 39/16 21/8"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ShowVertices/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="9/16 9/8 27/16 9/16 9/8 27/16 9/8 15/8 21/8"/>
+    <SelectManifestation point="15/16 27/16 9/4 9/16 9/8 27/16 15/16 27/16 9/4"/>
+    <SelectManifestation point="3/16 3/8 9/16 3/16 3/8 9/16 15/8 21/8 27/8"/>
+    <SelectManifestation point="3/8 9/16 9/16 0 0 0 33/16 45/16 27/8"/>
+    <SelectManifestation point="9/8 27/16 27/16 0 0 0 27/16 39/16 21/8"/>
+    <SelectManifestation point="21/16 33/16 9/4 3/16 3/8 9/16 21/16 33/16 9/4"/>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="9/4 3 15/4 0 0 0 0 0 0"/>
+      <polygonVertex at="33/16 45/16 27/8 3/8 9/16 9/16 0 0 0"/>
+      <polygonVertex at="15/8 21/8 27/8 3/16 3/8 9/16 3/16 3/8 9/16"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 9/4 3 15/4 0 0 0"/>
+      <polygonVertex at="0 0 0 33/16 45/16 27/8 3/8 9/16 9/16"/>
+      <polygonVertex at="3/16 3/8 9/16 15/8 21/8 27/8 3/16 3/8 9/16"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ShowVertices/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 33/16 45/16 27/8 3/8 9/16 9/16"/>
+    <SelectManifestation point="3/16 3/8 9/16 15/8 21/8 27/8 3/16 3/8 9/16"/>
+    <DeselectAll/>
+    <SelectManifestation point="15/8 21/8 27/8 3/16 3/8 9/16 3/16 3/8 9/16"/>
+    <SelectManifestation point="33/16 45/16 27/8 3/8 9/16 9/16 0 0 0"/>
+    <SelectManifestation point="0 0 0 33/16 45/16 27/8 3/8 9/16 9/16"/>
+    <SelectManifestation point="3/16 3/8 9/16 15/8 21/8 27/8 3/16 3/8 9/16"/>
+    <EndBlock/>
+    <Delete/>
+    <StrutCreation anchor="9/4 3 15/4 0 0 0 0 0 0" index="0" len="1 1 1" symm="octahedral"/>
+    <StrutCreation anchor="0 0 0 9/4 3 15/4 0 0 0" index="5" len="1 1 1" symm="octahedral"/>
+    <StrutCreation anchor="0 0 0 0 0 0 9/4 3 15/4" index="4" len="1 1 1" symm="octahedral"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 0 0 0 9/4 3 15/4"/>
+    <SelectManifestation point="3/2 9/4 9/4 0 0 0 3/2 9/4 9/4"/>
+    <SelectManifestation point="3/4 3/2 9/4 3/4 3/2 9/4 3/4 3/2 9/4"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="3/4 3/2 9/4 3/4 3/2 9/4 3/4 3/2 9/4" startSegment="3/2 9/4 9/4 0 0 0 3/2 9/4 9/4"/>
+    <SelectManifestation endSegment="3/4 3/2 9/4 3/4 3/2 9/4 3/4 3/2 9/4" startSegment="3/2 9/4 9/4 0 0 0 3/2 9/4 9/4"/>
+    <AdjustSelectionByClass balls="SELECT" panels="IGNORE" struts="IGNORE"/>
+    <AdjustSelectionByClass balls="IGNORE" panels="IGNORE" struts="SELECT"/>
+    <EndBlock/>
+    <setItemColor blue="0" green="0" red="0"/>
   </EditHistory>
   <notes/>
   <sceneModel ambientLight="41,41,41" background="175,200,220">
@@ -837,15 +911,28 @@
     <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
     <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
   </sceneModel>
+  <Viewing>
+    <ViewModel distance="214.62225341796875" far="429.24444580078125" near="0.5365555882453918" parallel="false" stereoAngle="0.0" width="96.58000946044922">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.1490323543548584" y="0.9129769802093506" z="-0.3798210620880127"/>
+      <LookDirection x="-0.17935562133789062" y="-0.40269777178764343" z="-0.8975881934165955"/>
+    </ViewModel>
+  </Viewing>
   <SymmetrySystem name="octahedral" renderingStyle="octahedra">
-    <Direction color="0,118,149" name="blue"/>
+    <Direction color="57,122,31" name="snubTriangleMid"/>
+    <Direction color="87,188,48" name="snubTriangle"/>
+    <Direction color="204,204,0" name="snubVertex"/>
     <Direction color="0,141,54" name="green"/>
     <Direction color="240,160,0" name="yellow"/>
+    <Direction color="0,118,149" name="blue"/>
+    <Direction color="33,99,166" name="snubSquareMid"/>
     <Direction color="51,153,255" name="snubSquare"/>
-    <Direction color="87,188,48" name="snubTriangle"/>
+    <Direction color="255,255,255" name="69" prototype="0 -3/4 3/4 0 0 0 3/4 -3/4 0"/>
+    <Direction color="255,255,255" name="71" prototype="-3/4 -3/2 3/4 -3/4 -3/2 3/4 -3/2 -3/2 3/2"/>
+    <Direction color="255,255,255" name="70" prototype="-3/2 -3/4 3/4 -3/4 0 3/4 -3/2 -3/4 3/4"/>
     <Direction color="228,225,199" name="snubDiagonal"/>
     <Direction color="216,216,208" name="snubFaceNormal"/>
-    <Direction color="204,204,0" name="snubVertex"/>
   </SymmetrySystem>
+  <OtherSymmetries/>
   <Tools/>
 </vzome:vZome>
