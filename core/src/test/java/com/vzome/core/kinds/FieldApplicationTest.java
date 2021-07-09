@@ -562,7 +562,7 @@ public class FieldApplicationTest
                 
             default:
                 if(name.startsWith("antiprism") ) {
-                    verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1);
+                    verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1, 0);
                     break;                    
                 }
                 fail(appName + " has an unexpected perspective name: " + name);
