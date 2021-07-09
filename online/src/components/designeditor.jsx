@@ -44,44 +44,44 @@ const boundEventActions = {
   bkgdClick: planes.doBackgroundClick,
 }
 
-const isLeftMouseButton = e =>
-{
-  e = e || window.event;
-  if ( "which" in e )  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
-    return e.which === 1
-  else if ( "button" in e )  // IE, Opera 
-    return e.button === 0
-  return false
-}
+// const isLeftMouseButton = e =>
+// {
+//   e = e || window.event;
+//   if ( "which" in e )  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+//     return e.which === 1
+//   else if ( "button" in e )  // IE, Opera 
+//     return e.button === 0
+//   return false
+// }
 
 const DesignEditor = ( props ) =>
 {
   const { startGridHover, stopGridHover, workingPlane } = props
   const { mesh, shapeRenderer } = props
-  const { selectionToggler, shapeClick, bkgdClick, startBallHover, stopBallHover, clickable } = props
-  const focus = workingPlane && workingPlane.enabled && workingPlane.buildingStruts && workingPlane.position
-  const atFocus = id => focus && ( id === JSON.stringify(focus) )
-  const handleClick = clickable && (( id, vectors, selected ) =>
-  {
-    if ( workingPlane ) {
-      if ( vectors.length === 1 )
-        shapeClick( focus, vectors[ 0 ] )
-    }
-    else {
-      selectionToggler( id, selected )
-    }
-  })
-  const handleBackgroundClick = ( e ) =>
-  {
-    workingPlane && isLeftMouseButton( e ) && bkgdClick()
-  }
-  const onHover = ( vectors, inbound ) =>
-  {
-    if ( workingPlane && vectors.length === 1 ) {
-      const position = vectors[ 0 ]
-      inbound? startBallHover( position ) : stopBallHover( position )
-    }
-  }
+  // const { selectionToggler, shapeClick, bkgdClick, startBallHover, stopBallHover, clickable } = props
+  // const focus = workingPlane && workingPlane.enabled && workingPlane.buildingStruts && workingPlane.position
+  // const atFocus = id => focus && ( id === JSON.stringify(focus) )
+  // const handleClick = clickable && (( id, vectors, selected ) =>
+  // {
+  //   if ( workingPlane ) {
+  //     if ( vectors.length === 1 )
+  //       shapeClick( focus, vectors[ 0 ] )
+  //   }
+  //   else {
+  //     selectionToggler( id, selected )
+  //   }
+  // })
+  // const handleBackgroundClick = ( e ) =>
+  // {
+  //   workingPlane && isLeftMouseButton( e ) && bkgdClick()
+  // }
+  // const onHover = ( vectors, inbound ) =>
+  // {
+  //   if ( workingPlane && vectors.length === 1 ) {
+  //     const position = vectors[ 0 ]
+  //     inbound? startBallHover( position ) : stopBallHover( position )
+  //   }
+  // }
 
   return (
     <DesignCanvas {...props} >
