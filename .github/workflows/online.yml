@@ -23,4 +23,13 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: ./build-online.bash
+    - run: npm install
+    - run: npm run build
+    - run: rm -rf app
+    - run: mv build app
+    - name: Archive vZome Online build
+      uses: actions/upload-artifact@v2
+      with:
+        name: online-app
+        path: app
+
