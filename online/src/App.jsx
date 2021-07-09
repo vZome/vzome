@@ -2,7 +2,6 @@ import React from 'react'
 import { Provider } from 'react-redux'
 // import logger from 'redux-logger'
 import thunk from 'redux-thunk'
-import { makeStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 
 import './App.css'
