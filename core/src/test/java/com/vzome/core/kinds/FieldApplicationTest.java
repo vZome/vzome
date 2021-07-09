@@ -32,6 +32,7 @@ import com.vzome.core.algebra.PolygonField;
 import com.vzome.core.algebra.PolygonFieldTest;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
+import com.vzome.core.algebra.SnubCubeField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.commands.CommandSymmetry;
@@ -72,7 +73,7 @@ public class FieldApplicationTest
         result.add( new RootThreeFieldApplication(new RootThreeField() ) );
         result.add( new HeptagonFieldApplication( new HeptagonField() ) );
         result.add( new SqrtPhiFieldApplication());
-        result.add( new SnubCubeFieldApplication());
+        result.add( new SnubCubeFieldApplication( new SnubCubeField() ) );
         result.add( new SnubDodecFieldApplication());
         for(int nSides = PolygonField.MIN_SIDES; nSides < PolygonFieldTest.MAX_SIDES; nSides++) {
             result.add( new PolygonFieldApplication(nSides));

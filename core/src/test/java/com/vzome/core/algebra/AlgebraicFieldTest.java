@@ -114,19 +114,6 @@ public class AlgebraicFieldTest {
     }
     
     @Test
-    public void testGetCoefficients() {
-        System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
-        int pass = 0;
-        for(AlgebraicField field : fields) {
-            double[] coefficients = field.getCoefficients();
-            assertNotNull(field.getName(), coefficients);
-            assertEquals(field.getName(), field.getOrder(), coefficients.length);
-            pass++;
-        }
-        assertEquals(fields.size(), pass);
-    }
-
-    @Test
     public void testOrder() {
         System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
         int pass = 0;
