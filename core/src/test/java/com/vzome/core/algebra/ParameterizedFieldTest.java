@@ -29,7 +29,7 @@ public class ParameterizedFieldTest {
 //        TEST_FIELDS.add( new SqrtField(2) );
 //        TEST_FIELDS.add( new SqrtField(3) );
 //        TEST_FIELDS.add( new SqrtField(6) );
-//        TEST_FIELDS.add( new SnubCubeField() );
+        TEST_FIELDS.add( new SnubCubeField() );
         TEST_FIELDS.add( new PlasticNumberField() );
         TEST_FIELDS.add( new PlasticPhiField() );
         TEST_FIELDS.add( new SuperGoldenField() );
