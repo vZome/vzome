@@ -21,6 +21,7 @@ import java.text.NumberFormat;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -1196,6 +1197,9 @@ public class DocumentController extends DefaultController implements Scene.Provi
         case "field.name":
             return this .documentModel .getField() .getName();
 
+        case "field.hasGoldenRatio":
+            return Boolean.toString( documentModel.getField().getGoldenRatio() != null  );
+            
         case "vZome-xml":
             try ( ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
                 documentModel .serialize( out, properties );
@@ -1376,6 +1380,22 @@ public class DocumentController extends DefaultController implements Scene.Provi
                 result[ i ] = field .getIrrational( i+1 );
             }
             return result;
+        }
+        
+        case "field.polygon.factors":
+        {
+            AlgebraicField field = this .documentModel .getField();
+            if(field instanceof PolygonField) {
+                int nSides = ((PolygonField)field).polygonSides();
+                List<Integer> factors = PolygonField.factors(nSides);
+                String[] result = new String[ factors.size() ];
+                for(int i = 0; i < result.length; i++) {
+                    result[i] = factors.get(i).toString();
+                }
+                return result;
+            } else {
+                return new String[] {};
+            }
         }
 
         default:
