@@ -2,17 +2,19 @@ package com.vzome.core.algebra;
 
 import static com.vzome.core.generic.Utilities.getSourceCodeLine;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
 
+import com.vzome.core.editor.Application;
 import com.vzome.core.generic.Utilities;
 import com.vzome.fields.sqrtphi.SqrtPhiField;
 
@@ -20,18 +22,54 @@ import com.vzome.fields.sqrtphi.SqrtPhiField;
  * @author David Hall
  */
 public class AlgebraicFieldTest {
-    private final static Set<AlgebraicField> fields = new HashSet<>();
+    // LinkedHashSet preserves insertion order to ensure that fields are tested in a predictable sequence
+    private final static Set<AlgebraicField> fields = new LinkedHashSet<>();
     
     static {
         fields.add (new PentagonField());
         fields.add (new RootTwoField());
         fields.add (new RootThreeField());
         fields.add (new HeptagonField());
+        fields.add (new SqrtPhiField());
         fields.add (new SnubDodecField());
+        fields.add (new SnubCubeField());
     }
     
     @Test
+    public void testApplicationDocumentKinds()
+    {
+        // This test ensures that all supported document kinds are included in this test suite and vise versa.
+        // AlgebraicFieldTest and FieldApplicationTest have similar but not identical tests.
+        // Note that this test will need to be tweaked when we add parameterized fields like PolygonField and SqrtField.
+        System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
+        Application app = new Application(false, null, null);
+        for(AlgebraicField field: fields) {
+            String testFieldName = field.getName();
+            assertNotNull("Application should contain test field " + testFieldName, app.getDocumentKind(testFieldName));
+        }
+        assertEquals("Application should contain an alias for dodecagon", "rootThree", app.getDocumentKind("dodecagon").getField().getName());
+        for(String fieldName: app.getFieldNames()) {
+            switch(fieldName) {
+            case "dodecagon":
+                // rootThree has an alias
+                fieldName = "rootThree";
+                break;
+            }
+            boolean found = false;
+            for(AlgebraicField testField: fields) {
+                String testName = testField.getName();
+                if(testName.equals(fieldName)) {
+                    found = true;
+                    break;
+                }
+            }
+            assertTrue("Test fields should contain " + fieldName, found);
+        }
+    }    
+    
+    @Test
     public void testEquality() {
+        System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
         AlgebraicField[] f = fields.toArray( new AlgebraicField[fields.size()] );
         for(int j = 0; j < f.length; j++) {
             for(int k = 0; k < f.length; k++) {
@@ -77,17 +115,19 @@ public class AlgebraicFieldTest {
     
     @Test
     public void testOrder() {
+        System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
         int pass = 0;
         for(AlgebraicField field : fields) {
             assertTrue(field.getOrder() >= 2);
             pass++;
         }
         assertEquals(fields.size(), pass);
-	}    
+    }
 
 	@Test
 	public void testReciprocal()
 	{
+	    System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
 		for( AlgebraicField field : fields ) {
 			try {
 				field .zero() .reciprocal() .evaluate();
@@ -97,10 +137,55 @@ public class AlgebraicFieldTest {
 			}
 		}
 	}
+	
+	@Test
+	public void testDefineMultiplier() {
+	    System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
+	    int pass = 0;
+	    for(AlgebraicField field : fields) {
+            System.out.println(field.getName());
+            final int mults = field.getNumMultipliers();
+            final int irrats = field.getNumIrrationals();
+            assertTrue(mults <= irrats);
+            for(int i = 1; i <= mults; i++) {
+                StringBuffer buf = new StringBuffer();
+                field.defineMultiplier(buf, i);
+                final String declaration = buf.toString();
+                
+                switch(field.getName()) {
+                case "golden":
+                    assertEquals(declaration, "phi = ( 1 + sqrt(5) ) / 2");
+                    break;
+                    
+                case "rootTwo":
+                case "rootThree":
+                    assertTrue(declaration.isEmpty());
+                    break;
+                    
+                default:
+                    assertFalse(declaration.isEmpty());
+                    break;                        
+                }
+                if(!declaration.isEmpty()) {
+                    if(!declaration.matches("[a-z]+ = .*")) {
+                        String msg = "Expected alphanumeric variable name but found: " + declaration + ". " 
+                                + field.getName() 
+                                + ".getNumMultipliers() should probably be returning less than " + i;
+                        fail(msg);
+                    }
+                }
+                System.out.println("\t" + declaration);
+            }
+	        pass++;
+	    }
+	    assertTrue("Did we test any?", pass > 0);
+        assertEquals(fields.size(), pass);
+	}
 
     @Test
     public void testGaussJordanReduction()
     {
+        System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
         int[][] matrix = {
             // first column is not a pivot column.
             // rows == columns

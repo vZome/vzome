@@ -709,6 +709,10 @@ public class DocumentController extends DefaultController implements Scene.Provi
             }
             break;
             
+            case "show.vZome-xml":   // invoked from custom menu
+                System.out.println(getProperty("vZome-xml"));
+                break;
+                
             default:
                 if ( action.startsWith( "setSymmetry." ) ) {
                     String system = action.substring( "setSymmetry.".length() );
