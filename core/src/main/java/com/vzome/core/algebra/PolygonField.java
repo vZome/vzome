@@ -144,6 +144,24 @@ public class PolygonField extends ParameterizedField<Integer> {
         return factors;
     }
 
+    public static List<Integer> factors(int n) {
+        List<Integer> factors = new ArrayList<>();
+        int sqrt = Double.valueOf(Math.sqrt(n)).intValue();
+        for(int factor = 2; factor <= sqrt; factor++) {
+            int q = n/factor;
+            if(q * factor == n) {
+                factors.add(factor);
+                if(q >= factor) {
+                    // avoid duplicates when n is a perfect square
+                    factors.add(q);
+                }
+            }
+        }
+        factors.sort(null);
+        factors.add(n);
+        return factors;
+    }
+
     public static short[][][] getNormalizedMultiplicationTensor(int nSides) {
     	short[][][] tensor = getExtendedMultiplicationTensor(nSides);
     	if(isPrime(nSides) || isPowerOfTwo(nSides)) {
