@@ -32,10 +32,12 @@ import com.vzome.core.algebra.PolygonField;
 import com.vzome.core.algebra.PolygonFieldTest;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
+import com.vzome.core.algebra.SnubCubeField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.commands.CommandSymmetry;
 import com.vzome.core.commands.CommandTauDivision;
+import com.vzome.core.editor.Application;
 import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.ToolsModel;
@@ -71,12 +73,45 @@ public class FieldApplicationTest
         result.add( new RootThreeFieldApplication(new RootThreeField() ) );
         result.add( new HeptagonFieldApplication( new HeptagonField() ) );
         result.add( new SqrtPhiFieldApplication());
+        result.add( new SnubCubeFieldApplication( new SnubCubeField() ) );
         result.add( new SnubDodecFieldApplication());
         for(int nSides = PolygonField.MIN_SIDES; nSides < PolygonFieldTest.MAX_SIDES; nSides++) {
             result.add( new PolygonFieldApplication(nSides));
         }
         return result;
     }
+    
+    @Test
+    public void testApplicationDocumentKinds()
+    {
+        // This test ensures that all supported document kinds are included in this test suite and vise versa.
+        // AlgebraicFieldTest and FieldApplicationTest have similar but not identical tests.
+        // Note that this test will need to be tweaked when we add parameterized fields like PolygonField and SqrtField.
+        System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
+        Application app = new Application(false, null, null);
+        for(FieldApplication testApp: getTestFieldApplications()) {
+            String testAppName = testApp.getName();
+            assertNotNull("Application should contain test app " + testAppName, app.getDocumentKind(testAppName));
+        }
+        assertEquals("Application should contain an alias for dodecagon", "rootThree", app.getDocumentKind("dodecagon").getField().getName());
+        for(String fieldName: app.getFieldNames()) {
+            switch(fieldName) {
+            case "dodecagon":
+                // rootThree has an alias
+                fieldName = "rootThree";
+                break;
+            }
+            boolean found = false;
+            for(FieldApplication testApp: getTestFieldApplications()) {
+                String testName = testApp.getName();
+                if(testName.equals(fieldName)) {
+                    found = true;
+                    break;
+                }
+            }
+            assertTrue("Test applications should contain " + fieldName, found);
+        }
+    }    
     
     @Test
     public void testFieldApplications()
@@ -161,6 +196,18 @@ public class FieldApplicationTest
 
             case "rootThree":
                 addTo(testNames,"red", "brown");
+                break;
+                
+            case "snubCube":
+                addTo(testNames, 
+                        "snubSquare",
+                        "snubTriangle",
+                        "snubDiagonal",
+                        "snubFaceNormal",
+                        "snubVertex",
+                        "snubSquareMid",
+                        "snubTriangleMid"
+                );
                 break;
 
             case "sqrtPhi":
@@ -335,6 +382,10 @@ public class FieldApplicationTest
             noop();
             break;
             
+        case "snubCube":
+            noop();
+            break;
+            
         case "snubDodec":
             assertTrue(app.getLegacyCommand("tauDivide") instanceof CommandTauDivision);
             break;
@@ -351,7 +402,8 @@ public class FieldApplicationTest
 
     private void testGetLegacyCommand(SymmetryPerspective perspective, String appName)
     {
-        assertTrue(perspective.getLegacyCommand("octasymm") instanceof CommandSymmetry);
+        Object octasymmCommand = perspective.getLegacyCommand("octasymm");
+        assertTrue(octasymmCommand == null || octasymmCommand instanceof CommandSymmetry);
         assertNull("getLegacyCommand('???')", perspective.getLegacyCommand("???")); // shouldn't throw any exceptions
         
         String name = perspective.getName();
@@ -501,6 +553,10 @@ public class FieldApplicationTest
             assertTrue(toolFactories .get( "SymmetryTool") instanceof OctahedralToolFactory);
             break;
             
+        case "snubCube":
+            assertTrue(toolFactories .get( "SymmetryTool") instanceof OctahedralToolFactory);
+            break;
+
         case "snubDodec":
             assertTrue(toolFactories .get( "SymmetryTool") instanceof IcosahedralToolFactory);
             assertTrue(toolFactories .get( "AxialStretchTool") instanceof AxialStretchTool.Factory);
@@ -648,6 +704,10 @@ public class FieldApplicationTest
                 } else {
                     assertNull(msg, qSymm);
                 }
+                break;
+                
+            case "snubCube":
+                assertNull(msg, qSymm);
                 break;
                 
             case "snubDodec":

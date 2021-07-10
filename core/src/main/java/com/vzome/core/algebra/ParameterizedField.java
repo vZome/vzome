@@ -76,6 +76,30 @@ public abstract class ParameterizedField<T extends Object> extends AbstractAlgeb
     protected abstract void initializeLabels();
     
     @Override
+    public void defineMultiplier(StringBuffer buf, int i) {
+        if(i > getNumMultipliers()) {
+            buf .append( "" );
+        } else {
+            String varName = getIrrational(i, AlgebraicField.EXPRESSION_FORMAT);
+            // This method used used by the POVRayExporter
+            // to define a set of named constants.
+            // I suspect that POVRay prefers alphanumeric variable names,
+            // so for the common case where our EXPRESSION_FORMAT looks like "sqrt(phi)",
+            // we'll try to make the variable name alphanumeric.
+            // Derived class can override this method to handle other odd cases.
+            if(varName.matches("sqrt\\(.+\\)") ) {
+                varName = varName.replace("sqrt(", "sqrt").replace(")", "");
+            }
+            if(varName.contains("^") ) {
+                System.err.println("WARNING: " + getName() + ".getNumMultipliers() should probably be returning less than " + i);
+            }
+            buf .append( varName );
+            buf .append( " = " );
+            buf .append( getCoefficient(i) );
+        }
+    }
+    
+    @Override
     protected BigRational[] multiply( BigRational[] v1, BigRational[] v2 )
     {
         int order = getOrder();

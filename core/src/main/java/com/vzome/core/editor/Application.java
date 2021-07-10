@@ -20,6 +20,7 @@ import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.PolygonField;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
+import com.vzome.core.algebra.SnubCubeField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
@@ -52,6 +53,7 @@ import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.kinds.PolygonFieldApplication;
 import com.vzome.core.kinds.RootThreeFieldApplication;
 import com.vzome.core.kinds.RootTwoFieldApplication;
+import com.vzome.core.kinds.SnubCubeFieldApplication;
 import com.vzome.core.kinds.SnubDodecFieldApplication;
 import com.vzome.core.render.Colors;
 import com.vzome.core.viewing.Lights;
@@ -128,6 +130,7 @@ public class Application implements AlgebraicField.Registry
         this.fieldAppSuppliers.put( "heptagon", () -> new HeptagonFieldApplication( new HeptagonField() ) );
         this.fieldAppSuppliers.put( "rootThree", () -> new RootThreeFieldApplication( new RootThreeField() ) );
         this.fieldAppSuppliers.put( "dodecagon", () -> new RootThreeFieldApplication( new RootThreeField() ) );
+        this.fieldAppSuppliers.put( "snubCube", () -> new SnubCubeFieldApplication( new SnubCubeField() ) );
         this.fieldAppSuppliers.put( "snubDodec", SnubDodecFieldApplication::new);
         this.fieldAppSuppliers.put( "sqrtPhi",   SqrtPhiFieldApplication::new);
     }

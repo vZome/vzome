@@ -92,6 +92,13 @@ public final class OctahedralSymmetryPerspective extends AbstractSymmetryPerspec
 	@Override
 	public String getModelResourcePath()
 	{
-		return "org/vorthmann/zome/app/octahedral-vef.vZome";
-	}
+        return modelResourcePath;
+    }
+
+    private String modelResourcePath = "org/vorthmann/zome/app/octahedral-vef.vZome";
+
+    public void setModelResourcePath(String resourcePath)
+    {
+        this.modelResourcePath = resourcePath;
+    }
 }
