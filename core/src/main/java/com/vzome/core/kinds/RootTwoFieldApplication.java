@@ -6,19 +6,16 @@ import java.util.Collection;
 import java.util.List;
 
 import com.vzome.api.Tool;
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.RootTwoField;
-import com.vzome.core.commands.Command;
-import com.vzome.core.commands.CommandAxialSymmetry;
-import com.vzome.core.commands.CommandSymmetry;
-import com.vzome.core.commands.CommandTetrahedralSymmetry;
+import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.math.symmetry.AbstractSymmetry;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OctahedralSymmetry;
+import com.vzome.core.math.symmetry.SpecialOrbit;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.render.Shapes;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
 import com.vzome.core.tools.InversionTool;
 import com.vzome.core.tools.LinearMapTool;
@@ -43,13 +40,13 @@ import com.vzome.core.viewing.ExportedVEFShapes;
  */
 public class RootTwoFieldApplication extends DefaultFieldApplication
 {
-    public RootTwoFieldApplication()
+    public RootTwoFieldApplication( AlgebraicField field )
     {
-        super( new RootTwoField() );
+        super( field );
 
         OctahedralSymmetryPerspective octahedralPerspective = (OctahedralSymmetryPerspective) super .getDefaultSymmetryPerspective();
 
-        AbstractSymmetry symmetry = (AbstractSymmetry) octahedralPerspective .getSymmetry();
+        AbstractSymmetry symmetry = octahedralPerspective .getSymmetry();
 
         symmetry .createZoneOrbit( "yellow", 0, 4, new int[][] { {1,1, 0,1}, {1,1, 0,1}, {1,1, 0,1} }, true );
         symmetry .createZoneOrbit( "green",  1, 8, new int[][] { {0,1, 1,2}, {0,1, 1,2}, {0,1, 0,1} }, true );
@@ -72,78 +69,8 @@ public class RootTwoFieldApplication extends DefaultFieldApplication
      * field is just the Integers!
      */
 
-    private final SymmetryPerspective synestructicsPerspective = new SymmetryPerspective()
+    private final Symmetry synestructicsSymmetry = new OctahedralSymmetry( getField(), "orange" )
     {
-        private final OctahedralSymmetry symmetry = new OctahedralSymmetry( getField(), "orange", "Synestructics" )
-        {
-            @Override
-            public String getName()
-            {
-                return "synestructics";
-            }
-
-            @Override
-            public Direction getSpecialOrbit( SpecialOrbit which )
-            {
-                switch ( which ) {
-
-                case BLUE:
-                    return this .getDirection( "orange" );
-
-                case RED:
-                    return this .getDirection( "magenta" );
-
-                case YELLOW:
-                    return this .getDirection( "yellow" );
-
-                default:
-                    return null; // TODO pick/define an orbit that needs no correction
-                }
-            }
-
-            @Override
-            protected AlgebraicVector[] getOrbitTriangle()
-            {
-                AlgebraicVector magentaVertex = this .getDirection( "magenta" ) .getPrototype();
-                AlgebraicVector orangeVertex = this .getDirection( "orange" ) .getPrototype();
-                AlgebraicVector yellowVertex = this .getDirection( "yellow" ) .getPrototype();
-                return new AlgebraicVector[] { magentaVertex, orangeVertex, yellowVertex };
-            }
-
-            @Override
-            protected void createOtherOrbits()
-            {
-                AlgebraicVector v = new AlgebraicVector( this .mField .one(), this .mField .one(), this .mField .one() );
-                createZoneOrbit( "yellow", 0, 4, v, true );
-
-                AlgebraicNumber sqrt2 = this .mField .createPower( 1 );
-                AlgebraicNumber half = this .mField .createRational( 1, 2 );
-                v = new AlgebraicVector( sqrt2, sqrt2, this .mField .zero() ) .scale( half );
-                createZoneOrbit( "magenta", 1, 8, v, true );
-
-                v = new AlgebraicVector( this .mField .one(), this .mField .one(), this .mField .one() .plus( this .mField .one() ) );
-                createZoneOrbit( "brown", 0, NO_ROTATION, v, true );
-            }
-        };
-        {
-            symmetry .computeOrbitDots();
-        }
-
-        private final AbstractShapes defaultShapes = new ExportedVEFShapes( null, "rootTwoSmall", "small octahedra", symmetry, null );
-        private final AbstractShapes smallOctaShapes = new ExportedVEFShapes( null, "rootTwoSmall", "small octahedra", symmetry, defaultShapes );
-        private final AbstractShapes synestructicsShapes = new ExportedVEFShapes( null, "rootTwo", "Synestructics", symmetry, defaultShapes );
-        private final AbstractShapes ornateShapes = new ExportedVEFShapes( null, "rootTwoBig", "ornate", symmetry, defaultShapes );
-
-        private final Command octasymm = new CommandSymmetry( symmetry );
-        private final Command tetrasymm = new CommandTetrahedralSymmetry( symmetry );
-        private final Command axialsymm = new CommandAxialSymmetry( symmetry );
-
-        @Override
-        public Symmetry getSymmetry()
-        {
-            return this .symmetry;
-        }
-
         @Override
         public String getName()
         {
@@ -151,15 +78,59 @@ public class RootTwoFieldApplication extends DefaultFieldApplication
         }
 
         @Override
-        public List<Shapes> getGeometries()
+        public Direction getSpecialOrbit( SpecialOrbit which )
         {
-            return Arrays.asList( defaultShapes, smallOctaShapes, synestructicsShapes, ornateShapes );
+            switch ( which ) {
+
+            case BLUE:
+                return this .getDirection( this. frameColor );
+
+            case RED:
+                return this .getDirection( "magenta" );
+
+            case YELLOW:
+                return this .getDirection( "yellow" );
+
+            default:
+                return null; // TODO pick/define an orbit that needs no correction
+            }
         }
 
         @Override
-        public Shapes getDefaultGeometry()
+        public AlgebraicVector[] getOrbitTriangle()
         {
-            return this .defaultShapes;
+            AlgebraicVector magentaVertex = this .getDirection( "magenta" ) .getPrototype();
+            AlgebraicVector orangeVertex = this .getDirection( this. frameColor ) .getPrototype();
+            AlgebraicVector yellowVertex = this .getDirection( "yellow" ) .getPrototype();
+            return new AlgebraicVector[] { magentaVertex, orangeVertex, yellowVertex };
+        }
+
+        @Override
+        protected void createOtherOrbits()
+        {
+            AlgebraicVector v = new AlgebraicVector( this .mField .one(), this .mField .one(), this .mField .one() );
+            createZoneOrbit( "yellow", 0, 4, v, true );
+
+            AlgebraicNumber sqrt2 = this .mField .createPower( 1 );
+            AlgebraicNumber half = this .mField .createRational( 1, 2 );
+            v = new AlgebraicVector( sqrt2, sqrt2, this .mField .zero() ) .scale( half );
+            createZoneOrbit( "magenta", 1, 8, v, true );
+
+            v = new AlgebraicVector( this .mField .one(), this .mField .one(), this .mField .one() .plus( this .mField .one() ) );
+            createZoneOrbit( "brown", 0, NO_ROTATION, v, true );
+        }
+    };
+    
+    private final SymmetryPerspective synestructicsPerspective = new AbstractSymmetryPerspective(synestructicsSymmetry)
+    {
+        {
+            AbstractShapes defaultShapes = new ExportedVEFShapes( null, "rootTwoSmall", "small octahedra", symmetry, null );
+            AbstractShapes synestructicsShapes = new ExportedVEFShapes( null, "rootTwo", "Synestructics", symmetry, defaultShapes );
+            AbstractShapes ornateShapes = new ExportedVEFShapes( null, "rootTwoBig", "ornate", symmetry, defaultShapes );
+            // this is the order they will appear in the menu
+            setDefaultGeometry(defaultShapes);
+            addShapes(synestructicsShapes);
+            addShapes(ornateShapes);
         }
 
         @Override
@@ -218,18 +189,6 @@ public class RootTwoFieldApplication extends DefaultFieldApplication
                 break;
             }
             return result;
-        }
-
-        @Override
-        public Command getLegacyCommand( String action )
-        {
-            switch ( action ) {
-            case "octasymm"     : return octasymm;
-            case "tetrasymm"    : return tetrasymm;
-            case "axialsymm"    : return axialsymm;
-            default:
-                return null;
-            }
         }
 
         @Override

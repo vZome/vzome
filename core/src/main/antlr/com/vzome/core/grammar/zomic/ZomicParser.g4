@@ -177,10 +177,10 @@ explicit_size_expr
 	;
 
 named_size_expr
-	:	SHORT		# SizeShort
+	:	 SHORT		# SizeShort
 	| 	LONG		# SizeLong
 	|	MEDIUM		# SizeMedium
-	|				# SizeMedium // default is MEDIUM
+	|				    # SizeMedium // default is MEDIUM
 	;
 
 

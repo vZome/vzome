@@ -12,6 +12,8 @@ import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -24,19 +26,20 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
-import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.ui.CardPanel;
 import org.vorthmann.ui.Controller;
+import org.vorthmann.zome.app.impl.DocumentController;
+import org.vorthmann.zome.app.impl.PickingController;
 
-import com.vzome.desktop.controller.Controller3d;
+import com.vzome.desktop.controller.RenderingViewer;
 
 public class ModelPanel extends JPanel implements PropertyChangeListener, SymmetryToolbarsPanel.ButtonFactory
 {
     private static final String TOOLTIP_PREFIX = "<html><b>";
     private static final String TOOLTIP_SUFFIX = "</b><br><br><p>Right-click to configure this tool.</p></html>";
 
-    private final Component monocularCanvas; //, leftEyeCanvas, rightEyeCanvas;
-    private MouseListener monocularClicks; //, leftEyeClicks, rightEyeClicks;
+    private final Component monocularCanvas;
+    private MouseListener monocularClicks;
     private final JToolBar oldToolBar, bookmarkBar;
     private final JScrollPane bookmarkScroller;
     private final boolean isEditor;
@@ -46,8 +49,9 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
     private final CardPanel toolbarCards;
     private final Collection<SymmetryToolbarsPanel> toolBarPanels = new ArrayList<SymmetryToolbarsPanel>();
     private final ToolConfigDialog bookmarkConfigDialog;
+    private final Map<String,JButton> bookmarkButtons = new HashMap<>(); // to support hiding bookmarks
 
-    public ModelPanel( Controller3d controller, J3dComponentFactory factory, ControlActions enabler, boolean isEditor, boolean fullPower )
+    public ModelPanel( Controller controller, RenderingViewer viewer, ControlActions enabler, boolean isEditor, boolean fullPower )
     {
         super( new BorderLayout() );
         this .controller = controller;
@@ -55,9 +59,6 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
         this .isEditor = isEditor;
 
         this .bookmarkConfigDialog = new ToolConfigDialog( (JFrame) this.getParent(), true );
-
-        //        Controller leftController = controller .getSubController( "leftEyePicking" );
-        //        Controller rightController = controller .getSubController( "rightEyePicking" );
 
         controller .addPropertyListener( this );
 
@@ -74,27 +75,14 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
         mMonocularPanel = new JPanel( new BorderLayout() );
 
         mMonocularPanel .setPreferredSize( new Dimension( 2000, 2000 ) );
-        // This rendering component should be the only sticky one (first argument),
-        //  so that picking works correctly for this canvas.
-        monocularCanvas = factory .createRenderingComponent( true, false, controller );
-        // createRenderingComponent must precede this getSubController
-        Controller monoController = controller .getSubController( "monocularPicking" );
+        monocularCanvas = viewer .getCanvas();
+        ((DocumentController) controller) .attachViewer( viewer, monocularCanvas );
+
+        Controller monoController = new PickingController( viewer, (DocumentController) controller );
+        controller .addSubController( "monocularPicking", monoController );
         mMonocularPanel .add( monocularCanvas, BorderLayout.CENTER );
 
         monoStereoPanel .add( mMonocularPanel, "mono" );
-        //        JPanel stereoPanel = new JPanel();
-        //        {
-        //            GridLayout grid = new GridLayout( 1, 2 );
-        //            stereoPanel .setLayout( grid );
-        //            leftEyeCanvas = ( (J3dComponentFactory) controller ) .createJ3dComponent( "mainViewer-leftEye" );
-        //            stereoPanel .add( leftEyeCanvas );
-        //            rightEyeCanvas = ( (J3dComponentFactory) controller ) .createJ3dComponent( "mainViewer-rightEye" );
-        //            stereoPanel .add( rightEyeCanvas );
-        //        }
-        //        monoStereoPanel .add( stereoPanel, "stereo" );
-        //        if ( showStereo )
-        //            monoStereoCardLayout .show( monoStereoPanel, "stereo" );
-        //        else
         monoStereoCardLayout .show( monoStereoPanel, "mono" );
         cameraController .addPropertyListener( new PropertyChangeListener()
         {
@@ -165,6 +153,12 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
                             String id = (String) evt .getOldValue();
                             for (SymmetryToolbarsPanel panel : toolBarPanels ) {
                                 panel .hideTool( id );
+                            }
+                            JButton button = bookmarkButtons .remove( id );
+                            if ( button != null ) { // may be null during deserialization
+                                bookmarkBar .remove( button );
+                                bookmarkBar .revalidate();
+                                bookmarkBar .repaint();
                             }
                             break;
 
@@ -266,7 +260,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
         String tooltip = TOOLTIP_PREFIX + name + TOOLTIP_SUFFIX;
         JButton button = makeIconButton( tooltip, iconPath );
         button .setActionCommand( "apply" );
-        button .addActionListener( controller );
+        button .addActionListener( new ControllerActionListener( controller ) );
         button .addMouseListener( new MouseAdapter()
         {
             @Override
@@ -303,6 +297,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
                 }
             }
         });
+        bookmarkButtons .put( controller .getProperty( "id" ), button );
         bookmarkBar .add( button );
     }
 
@@ -313,7 +308,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
                 + "</b><br><br>A selection bookmark lets you re-create<br>any selection at a later time.</html>";
         final JButton button = makeIconButton( html, iconPath );
         button .setActionCommand( "createTool" );
-        button .addActionListener( buttonController );
+        button .addActionListener( new ControllerActionListener(buttonController) );
         button .setEnabled( buttonController != null && buttonController .propertyIsTrue( "enabled" ) );
         if ( buttonController != null )
             buttonController .addPropertyListener( new PropertyChangeListener()
@@ -474,15 +469,25 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
 
             this .addSeparator();
 
+            if(controller .propertyIsTrue( "create.strut.prototype" )) {
+                // DJH - pretty much nobody will use these commands, 
+                // so only add them to the menu if it's enabled in the prefs file.
+                this .add( setMenuAction( "CreateStrutAxisPlus0", new JMenuItem( "Create Strut AxisPlus0" ) ) );
+                this .add( setMenuAction( "CreateStrutPrototype", new JMenuItem( "Create Strut Prototype" ) ) );
+            }
+
             this .add( setMenuAction( "setBuildOrbitAndLength", new JMenuItem( "Build With This" ) ) );
             this .add( enabler .setMenuAction( "showProperties-"+key, this .controller, new JMenuItem( "Show Properties" ) ) );
+
+            // This is only for manual testing of the StrutMove edit, needed for VR grabbing.
+//            this .add( setMenuAction( "testMoveAndRotate", new JMenuItem( "Move and Rotate" ) ) );
         }
 
         private JMenuItem setMenuAction( String action, JMenuItem control )
         {
             control .setEnabled( true );
             control .setActionCommand( action );
-            control .addActionListener( this .controller );
+            control .addActionListener( new ControllerActionListener( this .controller ) );
             return control;
         }
     }

@@ -1,16 +1,12 @@
 
-//(c) Copyright 2007, Scott Vorthmann.  All rights reserved.
-
 package org.vorthmann.zome.app.impl;
 
-import java.math.BigInteger;
 import java.util.StringTokenizer;
 
 import org.vorthmann.ui.DefaultController;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.algebra.BigRational;
 
 public class NumberController extends DefaultController
 {
@@ -27,11 +23,10 @@ public class NumberController extends DefaultController
     @Override
     public String[] getCommandList( String listName )
     {
-        int order = this .field .getOrder();
-
         switch ( listName ) {
 
         case "labels":
+            int order = this .field .getOrder();
             // first label should always be "1", last should always be "/"
             String[] result = new String[ order + 1 ];
             result[ 0 ] = "1";
@@ -41,12 +36,10 @@ public class NumberController extends DefaultController
             return result;
 
         case "values":
-            BigInteger divisor = value .getDivisor();
-            result = new String[ order + 1 ];
-            result[ order ] = divisor .toString();
-            BigRational[] factors = value .getFactors();
-            for( int i = 0; i < order; i++ )
-                result[ i ] = factors[ i ] .times( new BigRational( divisor, BigInteger.ONE ) ) .toString();
+            int[] td = value .toTrailingDivisor();
+            result = new String[ td .length ];
+            for( int i = 0; i < td .length; i++ )
+                result[ i ] = Integer .toString( td[ i ] );
             return result;
 
 		default:

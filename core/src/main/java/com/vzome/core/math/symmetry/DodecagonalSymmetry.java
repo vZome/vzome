@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.math.symmetry;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -18,9 +16,9 @@ public class DodecagonalSymmetry extends AbstractSymmetry
 	public final Permutation IDENTITY = new Permutation( this, null );
 
     
-    public DodecagonalSymmetry( AlgebraicField field, String defaultStyle )
+    public DodecagonalSymmetry( AlgebraicField field)
     {
-        super( ORDER, field, "blue", defaultStyle );
+        super( ORDER, field, "blue" );
     }
     
     @Override
@@ -74,7 +72,7 @@ public class DodecagonalSymmetry extends AbstractSymmetry
     protected void createOtherOrbits()
     {
         createZoneOrbit( "green", 0, NO_ROTATION, new int[][]{ {1,1, 1,2}, {1,2, 0,1}, {0,1, 0,1} }, true );
-        createZoneOrbit( "red",   0, NO_ROTATION, new int[][]{ {0,1, 0,1}, {0,1 ,0,1}, {1,1, 0,1} }, true );
+        createZoneOrbit( "red",   0, 1, new int[][]{ {0,1, 0,1}, {0,1 ,0,1}, {1,1, 0,1} }, true );
     }
     
     @Override
@@ -94,6 +92,12 @@ public class DodecagonalSymmetry extends AbstractSymmetry
         default:
             return null;
         }
+    }
+
+    @Override
+    public Axis getPreferredAxis()
+    {
+        return this .getDirection( "red" ) .getAxis( 0, 0 );
     }
 
     @Override

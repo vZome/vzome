@@ -1,3 +1,13 @@
+## vZome Online Development Workflow
+
+See [react-library/README.md](react-library/README.md)
+
+## vZome desktop Development Workflow
+
+See [desktop/README.md](desktop/README.md)
+
+---
+
 vZome will now build and run from the gradle command line with either Java 8 or Java 11.
 
 The project works in both Eclipse 2018-12 and NetBeans IDE 10.0 (Build incubator-netbeans-release-380-on-20181217).

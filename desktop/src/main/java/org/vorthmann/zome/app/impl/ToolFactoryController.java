@@ -1,6 +1,5 @@
 package org.vorthmann.zome.app.impl;
 
-import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -53,16 +52,16 @@ public class ToolFactoryController extends DefaultController implements Property
 	}
 
 	@Override
-	public void doAction( String action, ActionEvent e ) throws Exception
+	public void doAction( String action ) throws Exception
 	{
-		switch ( e .getActionCommand() ) {
+		switch ( action ) {
 
 		case "createTool":
 			factory .createTool();
 			break;
 
 		default:
-			super .doAction( action, e);
+			super .doAction( action );
 		}
 	}
 }

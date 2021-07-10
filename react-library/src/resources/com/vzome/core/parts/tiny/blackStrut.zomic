@@ -1,0 +1,90 @@
+
+
+
+from size -99 black +0
+
+symmetry through center
+branch{
+
+label unit.start
+
+branch {
+
+from size -99 black -0
+scale -5
+
+  branch {
+     short red 0			label tip.bottom
+     short blue -9			label tip.top
+  }
+
+  long black +0
+  short red -5					label frustum.top.left
+  blue +9						label frustum.bottom.left
+  short blue +11				label frustum.bottom.right
+  blue -9						label frustum.top.right
+  short blue -11
+
+}
+
+  short red -5					label joint.top.left
+  blue +9						label joint.bottom.left
+  short blue +11				label joint.bottom.right
+  blue -9						label joint.top.right
+
+scale +5
+
+
+{  //faces
+
+			label unit.face // frustum bottom
+	label frustum.bottom.right
+	label frustum.bottom.left
+	label tip.bottom
+	
+			label unit.face // frustum right
+	label frustum.bottom.right
+	label tip.bottom
+	label tip.top
+	label frustum.top.right
+	
+			label unit.face // frustum left
+	label frustum.top.left
+	label tip.top
+	label tip.bottom
+	label frustum.bottom.left
+	
+			label unit.face // frustum top
+	label frustum.top.right
+	label tip.top
+	label frustum.top.left
+	
+			label unit.face // rail top
+	label joint.top.left
+	label joint.top.right
+	label frustum.top.right
+	label frustum.top.left
+	
+			label unit.face // rail bottom
+	label joint.bottom.right
+	label joint.bottom.left
+	label frustum.bottom.left
+	label frustum.bottom.right
+	
+			label unit.face // rail right
+	label joint.top.right
+	label joint.bottom.right
+	label frustum.bottom.right
+	label frustum.top.right
+	
+			label unit.face // rail left
+	label joint.bottom.left
+	label joint.top.left
+	label frustum.top.left
+	label frustum.bottom.left
+	
+}
+
+label unit.end
+
+}

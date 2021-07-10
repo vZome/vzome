@@ -1,6 +1,4 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.edits;
 
 
@@ -9,11 +7,10 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.PolygonVertex;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentEndPoint;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 
@@ -32,7 +29,7 @@ public class ShowVertices extends ChangeManifestations
             // but how does this affect backward compatability?
             if ( man instanceof Strut )
             {
-                Segment s = (Segment) man .getConstructions() .next();
+                Segment s = (Segment) man .getFirstConstruction();
                 SegmentEndPoint start = new SegmentEndPoint( s, true );
                 manifestConstruction( start );
                 SegmentEndPoint end = new SegmentEndPoint( s, false );
@@ -40,7 +37,7 @@ public class ShowVertices extends ChangeManifestations
             }
             else if ( man instanceof Panel )
             {
-                Polygon polygon = (Polygon) ((Panel) man) .getConstructions() .next();
+                Polygon polygon = (Polygon) ((Panel) man) .getFirstConstruction();
                 for (int i = 0; i < polygon.getVertexCount(); i++) {
                     PolygonVertex v = new PolygonVertex( polygon, i );
                     select( manifestConstruction( v ) );
@@ -50,9 +47,9 @@ public class ShowVertices extends ChangeManifestations
         redo();
     }
     
-    public ShowVertices( Selection selection, RealizedModel realized )
+    public ShowVertices( EditorModel editor )
     {
-        super( selection, realized );
+        super( editor );
     }
 
     @Override

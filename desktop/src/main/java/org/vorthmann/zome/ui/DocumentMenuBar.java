@@ -89,7 +89,18 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         boolean hasIcosahedral = symmetries .contains( "icosahedral" );
 
-        // ----------------------------------------- File menu
+        boolean hasAntiprism = false;
+        for (String symmName : symmetries) {
+            if (symmName.startsWith("antiprism")) {
+                hasAntiprism = true;
+                if("antiprism".equals(initSystem)) {
+                    initSystem = symmName;
+                }
+                break;
+            }
+        }
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% File menu
 
         JMenu menu = new JMenu( "File" );
 
@@ -109,41 +120,49 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         }
         else
         {
-            menu.add( createMenuItem( "New Model...", "new", KeyEvent.VK_N, COMMAND ) );
+            menu .add( createMenuItem( "New Model...", "new", KeyEvent.VK_N, COMMAND ) );
         }
-        menu.add( createMenuItem( "Open...", "open", KeyEvent.VK_O, COMMAND ) );
-        menu.add( createMenuItem( "Open URL...", "openURL" ) );
-        menu.add( createMenuItem( "Open As New Model...", "newFromTemplate" ) );
+        menu .add( createMenuItem( "Open...", "open", KeyEvent.VK_O, COMMAND ) );
+        menu .add( createMenuItem( "Open URL...", "openURL" ) );
+        menu .add( createMenuItem( "Open As New Model...", "newFromTemplate" ) );
         if ( developerExtras )
-            menu.add( createMenuItem( "Open Deferred...", "openDeferringRedo" ) );
-        menu.addSeparator();
-        menu.add( createMenuItem( "Close", "close", KeyEvent.VK_W, COMMAND ) );
+            menu .add( createMenuItem( "Open Deferred...", "openDeferringRedo" ) );
+
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        menu .add( createMenuItem( "Close", "close", KeyEvent.VK_W, COMMAND ) );
         menu .add( enableIf( canSave, createMenuItem( "Save...", "save", KeyEvent.VK_S, COMMAND ) ) );
         menu .add( enableIf( canSave, createMenuItem( "Save As...", "saveAs" ) ) );
         menu .add( enableIf( canSave, createMenuItem( "Save Template...", "saveDefault" ) ) );
 
-        menu.addSeparator();
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        importVEFItem = createMenuItem( "Import vZome VEF...", "LoadVEF/Quaternion" );
-        menu .add( importVEFItem );
+        JMenu submenu = new JMenu( "Import 3D Mesh..." );
+        submenu .add( createMenuItem( "Simple Mesh JSON", "ImportSimpleMeshJson/Quaternion" ) );
+        submenu .add( createMenuItem( "Color Mesh JSON", "ImportColoredMeshJson/Quaternion" ) );
+        importVEFItem = createMenuItem( "vZome VEF", "LoadVEF/Quaternion" );
+        submenu .add( importVEFItem );
+        menu .add( submenu );
 
-        JMenu submenu = new JMenu( "Export 3D Rendering..." );
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        submenu = new JMenu( "Export 3D Rendering..." );
         submenu .add( createMenuItem( "Collada DAE", "export.dae" ) );
         submenu .add( createMenuItem( "POV-Ray", "export.pov" ) );
-        submenu .add( createMenuItem( "Observable shapes JSON", "export.shapes" ) );
+        submenu .add( createMenuItem( "vZome Shapes JSON", "export.shapes" ) );
         submenu .add( createMenuItem( "VRML", "export.vrml" ) );
-        menu.add( submenu );
+        menu .add( submenu );
         submenu .setEnabled( fullPower && canSave );
 
         submenu = new JMenu( "Export 3D Panels..." );
-        submenu .add( createMenuItem( "StL", "export.StL" ) );
+        submenu .add( createMenuItem( "StL (mm)", "export.StL" ) );
         submenu .add( createMenuItem( "OFF", "export.off" ) );
         submenu .add( createMenuItem( "PLY", "export.ply" ) );
-        menu.add( submenu );
-        submenu = new JMenu( "Export 3D Struts..." );
+        menu .add( submenu );
+        submenu = new JMenu( "Export 3D Mesh..." );
+        submenu .add( createMenuItem( "Simple Mesh JSON", "export.mesh" ) );
+        submenu .add( createMenuItem( "Color Mesh JSON", "export.cmesh" ) );
         submenu .add( createMenuItem( "AutoCAD DXF", "export.dxf" ) );
-        submenu .add( createMenuItem( "vZome VEF", "export.vef" ) );
-        submenu .add( createMenuItem( "Observable vZome JSON", "export.vson" ) );
         if ( controller .userHasEntitlement( "export.pdb" ) )
         {
             submenu .add( createMenuItem( "PDB", "export.pdb" ) );
@@ -152,7 +171,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         {
             submenu .add( createMenuItem( "Mark Stock .seg", "export.seg" ) );
         }
-        menu.add( submenu );
+        menu .add( submenu );
         submenu .setEnabled( fullPower && canSave );
 
         if ( developerExtras )
@@ -162,11 +181,15 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             submenu .add( createMenuItem( "vZome history detail", "export.history" ) );
             submenu .add( createMenuItem( "bill of materials", "export.partslist" ) );
             submenu .add( createMenuItem( "STEP", "export.step" ) );
-            menu.add( submenu );
+            menu .add( submenu );
             submenu .setEnabled( fullPower && canSave );
         }
+        
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        menu.addSeparator();
+        menu .add( enableIf( canSave, createMenuItem( "Share using GitHub...", "Share" ) ) );
+
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         submenu = new JMenu( "Capture Image..." );
         submenu .add( createMenuItem( "JPEG", "capture.jpg" ) );
@@ -185,7 +208,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         submenu .add( enableIf( isEditor, createMenuItem( "Customize...", "snapshot.2d" ) ) );
         menu .add( submenu );
 
-        menu.addSeparator();
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         menu.add( createMenuItem( "Quit", "quit", KeyEvent.VK_Q, COMMAND ) );
 
         super .add( menu );
@@ -200,9 +224,6 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         if ( developerExtras )
         {
             menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            menu .add( withAccelerator( KeyEvent.VK_B, COMMAND_SHIFT, withAction( "undoRedo", "undoToBreakpoint", new JMenuItem( "Undo To Breakpoint" ) ) ) );
-            menu .add( withAccelerator( KeyEvent.VK_B, COMMAND_OPTION, withAction( "undoRedo", "redoToBreakpoint", new JMenuItem( "Redo To Breakpoint" ) ) ) );
-            menu .add( withAccelerator( KeyEvent.VK_B, COMMAND, withAction( "undoRedo", "setBreakpoint", new JMenuItem( "Set Breakpoint" ) ) ) );
             menu .add( withAction( new JMenuItem( "Redo to Edit Number..." ), new ActionListener()
             {
                 @Override
@@ -210,7 +231,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
                 {
                     String number = JOptionPane.showInputDialog( null, "Enter the edit number.", "Set Edit Number",
                             JOptionPane.PLAIN_MESSAGE );
-                    controller .getSubController( "undoRedo" ) .actionPerformed( new ActionEvent( DocumentMenuBar.this, ActionEvent.ACTION_PERFORMED, "redoUntilEdit." + number ) );
+                    controller .getSubController( "undoRedo" ) .actionPerformed( DocumentMenuBar.this, "redoUntilEdit." + number );
                 }
             } ) );
         }
@@ -230,8 +251,6 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         submenu.add( enableIf( isEditor, createMenuItem( "Struts", ( "AdjustSelectionByClass/selectStruts" ) ) ) );
         submenu.add( enableIf( isEditor, createMenuItem( "Panels", ( "AdjustSelectionByClass/selectPanels" ) ) ) );
         submenu.add( enableIf( isEditor, createMenuItem( "Automatic Struts", ( "SelectAutomaticStruts" ) ) ) );
-        //		submenu.add( enableIf( isEditor, createMenuItem( "All Collinear", ( "SelectCollinear" ) ) ) );
-        //      submenu.add( enableIf( isEditor, createMenuItem( "Parallel Struts", ( "SelectParallelStruts" ) ) ) );
         menu.add(submenu);
 
         submenu = new JMenu("Deselect...");
@@ -260,7 +279,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu .add( this .setColorMenuItem );
         final String MAP_TO_COLOR = "MapToColor/";
         {
-            JMenu submenu2 = new JMenu("Set Transparency...");
+            JMenu submenu2 = new JMenu("Set Opacity...");
             final String MAP_TO_TRANSPARENCY = MAP_TO_COLOR + "TransparencyMapper@";
             submenu2 .add( enableIf( isEditor, createMenuItem( "Opaque", MAP_TO_TRANSPARENCY + "255" ) ) );
             submenu2 .add( enableIf( isEditor, createMenuItem( "95%", MAP_TO_TRANSPARENCY + "242" ) ) );
@@ -303,7 +322,9 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         super .add( menu );
 
+        
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Construct menu
+        
         menu = new JMenu( "Construct" );
 
         menu.add( enableIf( isEditor, createMenuItem( "Loop Balls", "JoinPoints/CLOSED_LOOP", KeyEvent.VK_J, COMMAND ) ) );
@@ -359,7 +380,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         super .add( menu );
 
 
-        // ----------------------------------------- Tools menu
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Tools menu
 
         menu = new JMenu( "Tools" );
 
@@ -371,7 +392,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             showToolsMenuItem = enableIf( isEditor, createMenuItem( "Show Tools Panel", "showToolsPanel" ) );
             showToolsMenuItem .setEnabled( fullPower );
             menu .add( showToolsMenuItem );
-            menu .addSeparator();
+
+            menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         }
         else
             this .showToolsMenuItem = null;
@@ -393,18 +415,22 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         }
         menu.add( enableIf( isEditor, createMenuItem( "Point Reflection", "pointsymm" ) ) );
 
-        menu .addSeparator();
-        menu.add( enableIf( isEditor, createMenuItem( "Replace With Panels", "ReplaceWithShape", symmetryController, KeyEvent .CHAR_UNDEFINED, 0 ) ) );
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        menu .addSeparator();
+        menu.add( enableIf( isEditor, createMenuItem( "Replace With Panels", "ReplaceWithShape", controller, KeyEvent .CHAR_UNDEFINED, 0 ) ) );
+
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         menu .add( enableIf( isEditor, createMenuItem( "Generate Polytope...", "showPolytopesDialog", KeyEvent.VK_P, COMMAND_OPTION ) ) );
-        menu .addSeparator();
+        
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         menu .add( enableIf( isEditor, createMenuItem( "Validate Paneled Surface", "Validate2Manifold" ) ) );
 
         super .add( menu );
 
 
-        // ----------------------------------------- System menu
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% System menu
 
         menu = new JMenu( "System" );
         ButtonGroup group = new ButtonGroup();
@@ -436,6 +462,14 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             // DISABLED until the symmetry group has been properly implemented
             // menu.add( rbMenuItem );
         }
+        if ( hasAntiprism ) {
+            // we don't specify the general antiprism's nSides here because setSymmetrySystem() will handle it.
+            rbMenuItem = actions .setMenuAction( "setSymmetry.antiprism", controller, new JRadioButtonMenuItem( "Antiprism System" ) );
+            rbMenuItem .setSelected( initSystem.startsWith("antiprism") );
+            rbMenuItem .setEnabled( fullPower );
+            group.add( rbMenuItem );
+            menu.add( rbMenuItem );        
+        }
 
         rbMenuItem = actions .setMenuAction( "setSymmetry.octahedral", controller, new JRadioButtonMenuItem( "Octahedral System" ) );
         rbMenuItem .setSelected( "octahedral".equals( initSystem ) );
@@ -460,7 +494,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             menu.add( rbMenuItem );
         }
 
-        menu.addSeparator();
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         if ( developerExtras )
         {
@@ -510,7 +544,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         super.add( menu );
 
-        // ----------------------------------------- Scripting menu
+        
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Scripting menu
 
         menu = new JMenu( "Scripting" );
         menu .setEnabled( fullPower );
@@ -524,14 +559,15 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         super .add( menu );
 
 
-        // ----------------------------------------- Custom menu
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Custom menu
+
         menu = getCustomMenu( symmetryController );
         if(menu != null) {
             super .add( menu );
         }
 
 
-        // ----------------------------------------- Help menu
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Help menu
         menu = new JMenu( "Help" );
         menu .add( createMenuItem( "Quick Start...", "openResource-org/vorthmann/zome/content/welcomeDodec.vZome" ) );
         {
@@ -549,29 +585,40 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             submenu3d .add( createMenuItem( "Blue-tip Struts", "newFromResource-org/vorthmann/zome/print3d/blueStruts/struts-template-enlarged.vZome" ) );
             menu.add( submenu3d );
         }
-        menu .addSeparator(); 
-        menu .add( createMenuItem( "Main Website", "browse-http://vzome.com" ) );
-        menu .add( createMenuItem( "Blog", "browse-http://vzome.com/blog" ) );
-        menu .add( createMenuItem( "Facebook Page", "browse-https://www.facebook.com/vZome" ) );
-        menu .add( createMenuItem( "YouTube Channel", "browse-https://www.youtube.com/channel/UCzTSn23jkvtorewseJk5Uyg" ) );
+
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        menu .add( createMenuItem( "vZome Online (web app)...", "browse-https://vzome.com/app" ) );
+        menu .add( createMenuItem( "vZome Home...", "browse-https://vzome.com" ) );
+        menu .add( createMenuItem( "Sharing vZome Files Online...", "browse-https://vorth.github.io/vzome-sharing/" ) );
+        menu .add( createMenuItem( "vZome Tips on YouTube...", "browse-https://www.youtube.com/c/Vzome" ) );
         {
-            JMenu submenu3d = new JMenu( "Online Documentation..." );
-            submenu3d .add( createMenuItem( "The Direction (Orbit) Triangle", "browse-http://vzome.com/blog/2019/07/vzome-icosahedral-orbits/" ) );
-            submenu3d .add( createMenuItem( "Capturing Vector Graphics", "browse-http://vzome.com/blog/2018/12/capturing-vector-graphics/" ) );
-            submenu3d .add( createMenuItem( "Toolbars for Diehards", "browse-http://vzome.com/blog/2018/12/toolbars-for-diehards/" ) );
-            submenu3d .add( createMenuItem( "Content Workflows", "browse-http://vzome.com/blog/2018/02/vzome-content-workflows/" ) );
+            JMenu submenu3d = new JMenu( "Social Media" );
+            submenu3d .add( createMenuItem( "Blog...", "browse-https://vzome.com/blog" ) );
+            submenu3d .add( createMenuItem( "Facebook Page...", "browse-https://www.facebook.com/vZome" ) );
+            submenu3d .add( createMenuItem( "Twitter Page...", "browse-https://twitter.com/vZome" ) );
+            submenu3d .add( createMenuItem( "Discord Server...", "browse-https://discord.com/invite/vhyFsNAFPS" ) );
             menu.add( submenu3d );
         }
         {
-            JMenu submenu3d = new JMenu( "Other Links..." );
-            submenu3d .add( createMenuItem( "GitHub Source", "browse-https://github.com/vZome/vzome" ) );
-            submenu3d .add( createMenuItem( "Logo T-Shirt", "browse-http://www.neatoshop.com/product/vZome-tetrahedron" ) );
-            submenu3d .add( createMenuItem( "3D-Printed Parts at Shapeways", "browse-http://www.shapeways.com/shops/vzome" ) );
-            submenu3d .add( createMenuItem( "Models on SketchFab", "browse-https://sketchfab.com/scottvorthmann" ) );
-            submenu3d .add( createMenuItem( "Observable Notebooks", "browse-https://observablehq.com/collection/@vorth/vzome" ) );
+            JMenu submenu3d = new JMenu( "Misc. Online Documentation" );
+            submenu3d .add( createMenuItem( "The Direction (Orbit) Triangle...", "browse-https://vzome.com/blog/2019/07/vzome-icosahedral-orbits/" ) );
+            submenu3d .add( createMenuItem( "Capturing Vector Graphics...", "browse-https://vzome.com/blog/2018/12/capturing-vector-graphics/" ) );
+            submenu3d .add( createMenuItem( "Toolbars for Diehards...", "browse-https://vzome.com/blog/2018/12/toolbars-for-diehards/" ) );
+            submenu3d .add( createMenuItem( "Content Workflows...", "browse-https://vzome.com/blog/2018/02/vzome-content-workflows/" ) );
             menu.add( submenu3d );
         }
-        menu .addSeparator(); 
+        {
+            JMenu submenu3d = new JMenu( "Other Links" );
+            submenu3d .add( createMenuItem( "GitHub Source...", "browse-https://github.com/vZome/vzome" ) );
+            submenu3d .add( createMenuItem( "Logo T-Shirt...", "browse-https://www.neatoshop.com/product/vZome-tetrahedron" ) );
+            submenu3d .add( createMenuItem( "3D-Printed Parts at Shapeways...", "browse-https://www.shapeways.com/shops/vzome" ) );
+            submenu3d .add( createMenuItem( "Models on SketchFab...", "browse-https://sketchfab.com/scottvorthmann" ) );
+            submenu3d .add( createMenuItem( "Observable Notebooks...", "browse-https://observablehq.com/collection/@vorth/vzome" ) );
+            menu.add( submenu3d );
+        }
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
         menu .add( createMenuItem( "About vZome...", "showAbout" ) );
         super .add( menu );
     }
@@ -624,7 +671,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             subc = subc .getSubController( controllerName );
         if ( subc != null ) {
             menuItem .setEnabled( true );
-            menuItem .addActionListener( subc );
+            menuItem .addActionListener( new ControllerActionListener( subc ) );
         }
         else
             menuItem .setEnabled( false );
@@ -699,18 +746,21 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
                         String actionName = key.toString();
                         String menuText = customMenuItems.getProperty(actionName).trim();
                         if(!menuText.isEmpty()) {
-                            Logger.getLogger( getClass().getName() ) .log( Level.INFO, "custom menu item: " + menuText );
-                            Logger.getLogger( getClass().getName() ) .log( Level.INFO, "          action:   " + actionName );
-                            // also note that we're swapping keys for elements
+                            // Swapping keys for elements
                             // as we move from the Properties collection to the sortedMenuCommands
                             sortedMenuCommands.put(menuText, actionName);
                         }
                     }
                     if (! sortedMenuCommands.isEmpty() ) {
                         JMenu menu = new JMenu("Custom");
+                        StringBuilder logMsg = new StringBuilder();
                         for (String label : sortedMenuCommands.keySet()) {
                             JMenuItem menuItem = null;
                             String command = sortedMenuCommands.get(label);
+                            logMsg .append("\n  ")
+                                .append(command)
+                                .append(" = ")
+                                .append(label);
                             int caretPos = label.indexOf("^");
                             if(caretPos > -1 && caretPos < label.length()-1) {
                                 int key = label.charAt(caretPos + 1);
@@ -724,6 +774,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
                             }
                             menu.add(menuItem);
                         }
+                        Logger.getLogger( getClass().getName() ) .log( Level.INFO, "custom menu items: " + logMsg.toString() );
                         return menu;
                     }
                 }

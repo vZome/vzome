@@ -2,11 +2,10 @@
 package org.vorthmann.zome.app.impl;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
-import javax.vecmath.Quat4d;
+import javax.vecmath.Quat4f;
 
 import org.vorthmann.j3d.CanvasTool;
 import org.vorthmann.j3d.MouseTool;
@@ -109,7 +108,7 @@ public class StrutBuilderController extends DefaultController implements CanvasT
     }
     
     @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
+    public void doAction( String action ) throws Exception
     {
         switch ( action ) {
 
@@ -132,7 +131,7 @@ public class StrutBuilderController extends DefaultController implements CanvasT
         }
 
         default:
-            super .doAction( action, e );
+            super .doAction( action );
         }
     }
     
@@ -195,7 +194,7 @@ public class StrutBuilderController extends DefaultController implements CanvasT
         this .previewStrutRoll = new LeftMouseDragAdapter( new Trackball()
         {
             @Override
-            protected void trackballRolled( Quat4d roll )
+            protected void trackballRolled( Quat4f roll )
             {
                 previewStrut .trackballRolled( roll );
             }

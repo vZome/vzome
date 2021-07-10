@@ -50,6 +50,8 @@ public interface OpenGlShim {
 	
 	void glEnableDepth();
 	
+	void glEnableBackFaceCulling();
+	
 	void glClear( float r, float g, float b, float alpha );
 
 	void glVertexAttribDivisor(int mPositionParam, int i);
@@ -83,4 +85,8 @@ public interface OpenGlShim {
 	void multiplyMV(float[] lightPosInEyeSpace, float[] view, float[] mlightposinworldspace );
 
     void glPolygonOffset(float f, float g);
+
+    void glEnableBlending();
+
+    void glEnableMSAA();
 }

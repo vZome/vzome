@@ -1,9 +1,7 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.algebra;
 
-public class RootThreeField extends AlgebraicField
+public class RootThreeField extends AbstractAlgebraicField
 {
     public static final String FIELD_NAME = "rootThree";
     

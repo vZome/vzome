@@ -1,14 +1,12 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.math.symmetry;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -37,24 +35,20 @@ public abstract class AbstractSymmetry implements Symmetry
 
     protected final AlgebraicField mField;
 
-    protected final String defaultStyle;
-
     private AlgebraicMatrix principalReflection = null;
 
     private OrbitDotLocator dotLocator;
 
-    protected AbstractSymmetry( int order, AlgebraicField field, String frameColor, String defaultStyle )
+    protected AbstractSymmetry( int order, AlgebraicField field, String frameColor )
     {
-        this( order, field, frameColor, defaultStyle, null );
+        this( order, field, frameColor, null );
     }
 
-    protected AbstractSymmetry( int order, AlgebraicField field, String frameColor, String defaultStyle, AlgebraicMatrix principalReflection )
+    protected AbstractSymmetry( int order, AlgebraicField field, String frameColor, AlgebraicMatrix principalReflection )
     {
         mField = field;
 
         this.principalReflection = principalReflection;
-
-        this .defaultStyle = defaultStyle;
 
         mOrientations = new Permutation[ order ];
         mMatrices = new AlgebraicMatrix[ order ];
@@ -126,13 +120,6 @@ public abstract class AbstractSymmetry implements Symmetry
     protected abstract void createOtherOrbits();
 
     protected abstract void createInitialPermutations();
-
-    @Override
-    @JsonIgnore
-    public String getDefaultStyle()
-    {
-        return this .defaultStyle;
-    }
 
     @Override
     @JsonIgnore
@@ -360,7 +347,7 @@ public abstract class AbstractSymmetry implements Symmetry
      *
      */
     @Override
-    public Axis getAxis( RealVector vector, Set<Direction> dirMask )
+    public Axis getAxis( RealVector vector, Collection<Direction> dirMask )
     {
         if ( RealVector .ORIGIN .equals( vector ) ) {
             return null;
@@ -523,6 +510,12 @@ public abstract class AbstractSymmetry implements Symmetry
     }
 
     @Override
+    public double[] embedInR3Double( AlgebraicVector v )
+    {
+        return v .to3dDoubleVector();
+    }
+
+    @Override
     @JsonIgnore
     public boolean isTrivial()
     {
@@ -536,7 +529,8 @@ public abstract class AbstractSymmetry implements Symmetry
         return this .principalReflection; // may be null, that's OK for the legacy case (which is broken)
     }
     
-    protected AlgebraicVector[] getOrbitTriangle()
+    @Override
+    public AlgebraicVector[] getOrbitTriangle()
     {
         AlgebraicVector blueVertex = this .getSpecialOrbit( SpecialOrbit.BLUE ) .getPrototype();
         AlgebraicVector redVertex = this .getSpecialOrbit( SpecialOrbit.RED ) .getPrototype();
@@ -544,15 +538,17 @@ public abstract class AbstractSymmetry implements Symmetry
         return new AlgebraicVector[] { blueVertex, redVertex, yellowVertex };
     }
 
+    @Override
     public String computeOrbitDots()
     {
         this.dotLocator = new OrbitDotLocator( this, this .getOrbitTriangle() );
         for ( Direction orbit : mDirectionList ) {
             dotLocator .locateOrbitDot( orbit );
         }
-        return dotLocator .getDebuggerOutput(); // stop logging new orbits
+        return null; // dotLocator .getDebuggerOutput(); // stop logging new orbits
     }
 
+    @Override
     public boolean reverseOrbitTriangle()
     {
         return false;

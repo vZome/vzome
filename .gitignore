@@ -2,6 +2,7 @@
 node_modules
 .gradle/
 .idea/
+.jsweet/
 .nb-gradle/
 .settings/
 bin/
@@ -13,6 +14,7 @@ jre/
 nbproject/
 node_modules/
 repos/
+Shapes/
 target/
 temp/
 
@@ -31,3 +33,29 @@ testOut.xml
 Thumbs.db
 _eclipse_workspace
 vZome.code-workspace
+oculus/Assets/Oculus/Platform/Plugins/MacOSX
+MacOSX.meta
+oculus/Assets/Oculus/VR/Plugins/MacOSX
+oculus/Assets/Oculus/LipSync
+oculus/Assets/Oculus/SampleFramework
+oculus/Assets/Oculus/VR/AudioClips
+oculus/Assets/Oculus
+oculus/.vscode
+*.jar
+*.jar.js
+client/app.tgz
+client/app
+client/src/jsweet
+
+core/src/main/antlr/com/vzome/core/grammar/zomic/.antlr
+client/public/resources
+client/.vscode
+.tsc-rootfile.js
+react-vzome-viewer/dist
+.eslintcache
+react-vzome-*.tgz
+launch.json
+build.properties
+react-library/jsweetOut
+transpiled-java.js
+react-library/.snowpack

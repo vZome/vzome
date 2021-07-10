@@ -3,7 +3,6 @@ package com.vzome.core.edits;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
@@ -11,11 +10,10 @@ import com.vzome.core.construction.SegmentEndPoint;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.construction.TransformedPoint;
 import com.vzome.core.construction.Translation;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 /**
@@ -35,9 +33,9 @@ public class AffineHeptagon extends ChangeManifestations
             unselect(man);
             if (man instanceof Strut) {
                 if (strut1 == null) {
-                    strut1 = Strut.class.cast(man);
+                    strut1 = (Strut) man;
                 } else if (strut2 == null) {
-                    strut2 = Strut.class.cast(man);
+                    strut2 = (Strut) man;
                 } else {
                     // too many struts
                     fail(errorMsg);
@@ -51,16 +49,18 @@ public class AffineHeptagon extends ChangeManifestations
         }
 
         AlgebraicField field = strut1.getLocation().getField();
-        if (!(field instanceof HeptagonField)) {
-            fail("Affine heptagon command requires a Heptagon field.");
-        }
+        
+        // TODO: test this without the class dependency
+//        if (!(field instanceof HeptagonField)) {
+//            fail("Affine heptagon command requires a Heptagon field.");
+//        }
 
         redo();  // Get the unselects out of the way, in case anything needs to be re-selected later
 
         // Before we start, be sure the balls at both ends of both struts have not been deleted or hidden.
         // It's safe to restore them all without testing if they already exist.
-        Segment s1 = Segment.class.cast(strut1.getConstructions().next());
-        Segment s2 = Segment.class.cast(strut2.getConstructions().next());
+        Segment s1 = (Segment) strut1.getFirstConstruction();
+        Segment s2 = (Segment) strut2.getFirstConstruction();
         manifestConstruction( new SegmentEndPoint(s1, true) );
         manifestConstruction( new SegmentEndPoint(s1, false) );
         manifestConstruction( new SegmentEndPoint(s2, true) );
@@ -109,13 +109,13 @@ public class AffineHeptagon extends ChangeManifestations
             if (man instanceof Connector) {
                 AlgebraicVector loc = man.getLocation();
                 if (loc.equals(v0)) {
-                    c0 = Connector.class.cast(man);
+                    c0 = (Connector) man;
                 } else if (loc.equals(v1)) {
-                    c1 = Connector.class.cast(man);
-                    p1 = (Point) man.getConstructions().next();
+                    c1 = (Connector) man;
+                    p1 = (Point) man.getFirstConstruction();
                 } else if (loc.equals(v2)) {
-                    c2 = Connector.class.cast(man);
-                    p2 = (Point) man.getConstructions().next();
+                    c2 = (Connector) man;
+                    p2 = (Point) man.getFirstConstruction();
                 }
             }
         }
@@ -172,9 +172,9 @@ public class AffineHeptagon extends ChangeManifestations
         redo();
     }
 
-    public AffineHeptagon( Selection selection, RealizedModel realized )
+    public AffineHeptagon( EditorModel editorModel )
     {
-        super( selection, realized );
+        super( editorModel );
     }
 
     @Override

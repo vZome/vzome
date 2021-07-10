@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" coreVersion="7.0" field="golden">
+  <EditHistory editNumber="117" lastStickyEdit="-1">
+    <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="2" len="13 21"/>
+    <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="2" len="8 13"/>
+    <StrutCreation anchor="13 21 0 0 21 34" index="51" len="2 4"/>
+    <BeginBlock/>
+    <SelectManifestation point="12 19 2 3 22 35"/>
+    <SelectManifestation endSegment="12 19 2 3 22 35" startSegment="13 21 0 0 21 34"/>
+    <EndBlock/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <StrutCreation anchor="13 21 0 0 21 34" dir="yellow" index="39" len="1 1"/>
+    <StrutCreation anchor="12 19 -1 -2 22 36" dir="red" index="30" len="1 2"/>
+    <StrutCreation anchor="10 16 -2 -4 22 36" index="53" len="2 4"/>
+    <StrutCreation anchor="8 13 -3 -5 21 34" dir="red" index="47" len="1 2"/>
+    <StrutCreation anchor="7 11 -3 -5 19 31" dir="yellow" index="2" len="1 1"/>
+    <StrutCreation anchor="7 11 -4 -6 21 34" index="40" len="2 4"/>
+    <StrutCreation anchor="6 10 -5 -8 23 37" dir="yellow" index="39" len="1 1"/>
+    <StrutCreation anchor="5 8 -6 -10 24 39" dir="red" index="30" len="1 2"/>
+    <StrutCreation anchor="3 5 -7 -12 24 39" index="53" len="2 4"/>
+    <StrutCreation anchor="1 2 -8 -13 23 37" dir="red" index="47" len="1 2"/>
+    <StrutCreation anchor="7 11 -4 -6 21 34" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="8 13 -3 -5 21 34" dir="yellow" index="2" len="1 1"/>
+    <StrutCreation anchor="8 13 -4 -6 23 37" index="11" len="2 4"/>
+    <StrutCreation anchor="10 16 -2 -4 22 36" dir="yellow" index="2" len="1 1"/>
+    <StrutCreation anchor="6 10 -5 -8 23 37" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="8 13 -4 -6 23 37" index="40" len="2 4"/>
+    <StrutCreation anchor="7 12 -5 -8 25 40" index="11" len="2 4"/>
+    <StrutCreation anchor="10 16 -3 -5 24 39" index="40" len="2 4"/>
+    <StrutCreation anchor="10 16 -3 -5 24 39" dir="red" index="0" len="1 2"/>
+    <StrutCreation anchor="12 19 -1 -2 22 36" dir="yellow" index="2" len="1 1"/>
+    <StrutCreation anchor="13 21 0 0 21 34" dir="yellow" index="2" len="1 1"/>
+    <StrutCreation anchor="13 21 -1 -1 23 37" dir="yellow" index="39" len="1 1"/>
+    <StrutCreation anchor="13 21 0 0 21 34" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="13 21 -1 -1 23 37" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="14 23 0 0 23 37" dir="yellow" index="2" len="1 1"/>
+    <StrutCreation anchor="12 19 -2 -3 24 39" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="14 23 -1 -1 25 40" dir="yellow" index="39" len="1 1"/>
+    <StrutCreation anchor="10 16 -3 -5 24 39" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="11 18 -3 -5 26 42" dir="red" index="0" len="1 2"/>
+    <StrutCreation anchor="9 15 -4 -7 26 42" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="11 18 -3 -5 26 42" index="40" len="2 4"/>
+    <StrutCreation anchor="13 21 -2 -3 26 42" index="40" len="2 4"/>
+    <StrutCreation anchor="12 20 -3 -5 28 45" dir="red" index="30" len="1 2"/>
+    <StrutCreation anchor="0 0 -8 -13 21 34" dir="yellow" index="2" len="1 1"/>
+    <StrutCreation anchor="0 0 -9 -14 23 37" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="1 2 -8 -13 23 37" dir="yellow" index="2" len="1 1"/>
+    <StrutCreation anchor="1 2 -9 -14 25 40" dir="yellow" index="39" len="1 1"/>
+    <StrutCreation anchor="0 0 -10 -16 26 42" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="1 2 -9 -14 25 40" index="11" len="2 4"/>
+    <StrutCreation anchor="3 5 -7 -12 24 39" dir="yellow" index="2" len="1 1"/>
+    <StrutCreation anchor="5 8 -6 -10 24 39" dir="yellow" index="2" len="1 1"/>
+    <StrutCreation anchor="6 10 -5 -8 23 37" dir="yellow" index="2" len="1 1"/>
+    <StrutCreation anchor="6 10 -6 -9 25 40" dir="yellow" index="39" len="1 1"/>
+    <StrutCreation anchor="5 8 -7 -11 26 42" dir="red" index="30" len="1 2"/>
+    <BeginBlock/>
+    <SelectManifestation point="1 2 -10 -16 28 45"/>
+    <SelectManifestation endSegment="1 2 -10 -16 28 45" startSegment="0 0 -10 -16 26 42"/>
+    <EndBlock/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <StrutCreation anchor="6 10 -6 -9 25 40" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="7 12 -5 -8 25 40" dir="yellow" index="2" len="1 1"/>
+    <StrutCreation anchor="10 17 -4 -7 28 45" dir="yellow" index="39" len="1 1"/>
+    <StrutCreation anchor="9 15 -5 -9 29 47" index="40" len="2 4"/>
+    <StrutCreation anchor="7 12 -6 -9 27 43" index="11" len="2 4"/>
+    <StrutCreation anchor="9 15 -4 -7 26 42" dir="yellow" index="2" len="1 1"/>
+    <StrutCreation anchor="5 8 -7 -11 26 42" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="7 12 -6 -9 27 43" dir="yellow" index="39" len="1 1"/>
+    <StrutCreation anchor="3 5 -8 -13 26 42" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="6 10 -7 -11 28 45" dir="red" index="30" len="1 2"/>
+    <StrutCreation anchor="1 2 -9 -14 25 40" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="2 4 -9 -14 27 43" index="11" len="2 4"/>
+    <StrutCreation anchor="4 7 -8 -13 28 45" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="6 10 -7 -11 28 45" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="5 9 -8 -13 30 48" dir="red" index="0" len="1 2"/>
+    <StrutCreation anchor="5 9 -8 -13 30 48" dir="yellow" index="2" len="1 1"/>
+    <StrutCreation anchor="5 9 -9 -14 32 51" dir="red" index="0" len="1 2"/>
+    <StrutCreation anchor="7 12 -8 -12 32 51" dir="yellow" index="17" len="1 1"/>
+    <BeginBlock/>
+    <SelectManifestation point="8 14 -6 -11 31 50"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <StrutCreation anchor="6 10 -7 -11 28 45" index="11" len="2 4"/>
+    <StrutCreation anchor="9 15 -5 -8 28 45" dir="yellow" index="39" len="1 1"/>
+    <StrutCreation anchor="7 12 -7 -11 30 48" index="11" len="2 4"/>
+    <StrutCreation anchor="8 13 -6 -10 29 47" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="9 15 -5 -8 28 45" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="10 17 -4 -7 28 45" dir="yellow" index="2" len="1 1"/>
+    <StrutCreation anchor="10 17 -5 -8 30 48" dir="yellow" index="39" len="1 1"/>
+    <StrutCreation anchor="2 4 -9 -14 27 43" dir="red" index="30" len="1 2"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 -10 -16 26 42"/>
+    <SelectManifestation endSegment="0 0 -10 -16 26 42" startSegment="1 2 -9 -14 25 40"/>
+    <EndBlock/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <StrutCreation anchor="1 2 -9 -14 25 40" index="40" len="2 4"/>
+    <StrutCreation anchor="7 12 -8 -12 32 51" index="11" len="2 4"/>
+    <StrutCreation anchor="9 15 -6 -10 31 50" dir="yellow" index="2" len="1 1"/>
+    <StrutCreation anchor="7 12 -8 -12 32 51" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="9 15 -7 -11 33 53" dir="red" index="2" len="1 2"/>
+    <StrutCreation anchor="8 14 -8 -12 34 54" index="11" len="2 4"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectNeighbors/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <BeginBlock/>
+    <SelectAll/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <EndBlock/>
+    <Symmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Symmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation endSegment="14 23 -8 -13 18 29" startSegment="13 21 -6 -10 17 28"/>
+    <EndBlock/>
+    <SelectManifestation endSegment="14 23 -8 -13 18 29" startSegment="13 21 -6 -10 17 28"/>
+  </EditHistory>
+  <notes/>
+  <sceneModel ambientLight="41,41,41" background="43,56,66">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="391.06719970703125" far="782.1344604492188" near="0.977668046951294" parallel="false" stereoAngle="0.0" width="175.98025512695312">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.39057645201683044" y="0.7147260904312134" z="0.5801863074302673"/>
+      <LookDirection x="-0.3000956177711487" y="0.4969651401042938" z="-0.8142289519309998"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="tiny connectors">
+    <Direction color="0,118,149" name="blue"/>
+    <Direction color="175,0,0" name="red"/>
+    <Direction color="240,160,0" name="yellow"/>
+    <Direction color="0,141,54" name="green"/>
+    <Direction color="220,76,0" name="orange"/>
+    <Direction color="108,0,198" name="purple"/>
+    <Direction color="30,30,30" name="black"/>
+    <Direction color="175,135,255" name="lavender"/>
+    <Direction color="100,113,0" name="olive"/>
+    <Direction color="117,0,50" name="maroon"/>
+    <Direction color="255,51,143" name="rose"/>
+    <Direction color="0,0,153" name="navy"/>
+    <Direction color="18,205,148" name="turquoise"/>
+    <Direction color="255,126,106" name="coral"/>
+    <Direction color="230,245,62" name="sulfur"/>
+    <Direction color="154,117,74" name="sand"/>
+    <Direction color="116,195,0" name="apple"/>
+    <Direction color="136,37,0" name="cinnamon"/>
+    <Direction color="18,73,48" name="spruce"/>
+    <Direction color="107,53,26" name="brown"/>
+  </SymmetrySystem>
+  <OtherSymmetries>
+    <SymmetrySystem name="octahedral" renderingStyle="trapezoids">
+      <Direction color="6,96,141" name="blue"/>
+      <Direction color="245,163,1" name="yellow"/>
+      <Direction color="2,130,53" name="green"/>
+      <Direction color="144,127,227" name="lavender"/>
+      <Direction color="116,104,1" name="olive"/>
+      <Direction color="141,2,41" name="maroon"/>
+      <Direction color="105,54,1" name="brown"/>
+      <Direction color="197,3,20" name="red"/>
+      <Direction color="113,64,178" name="purple"/>
+      <Direction color="36,35,38" name="black"/>
+      <Direction color="53,181,179" name="turquoise"/>
+    </SymmetrySystem>
+  </OtherSymmetries>
+  <Tools/>
+</vzome:vZome>

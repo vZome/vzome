@@ -1,6 +1,4 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.tools;
 
 
@@ -9,14 +7,15 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.commands.XmlSymmetryFormat;
 import com.vzome.core.construction.MatrixTransformation;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.SymmetryTransformation;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.editor.AbstractToolFactory;
-import com.vzome.core.editor.Selection;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.OctahedralSymmetry;
@@ -115,7 +114,7 @@ public class SymmetryTool extends TransformationTool
 	            {
 	                if ( center != null )
 	                    return "No unique symmetry center selected";
-	                center = (Point) ((Connector) man) .getConstructions() .next();
+	                center = (Point) ((Connector) man) .getFirstConstruction();
 	            }
 	            else if ( man instanceof Strut )
 	            {
@@ -203,13 +202,20 @@ public class SymmetryTool extends TransformationTool
 	                    break;
 
 	                default:
+	                    // TODO: Test this with the RootTwo.synestructicsSymmetry
+	                    // and if that's broke, then make this more generalized so it does work 
 	                    return "selected alignment strut is not an octahedral axis.";
 	                }
 	                orientation = symmetry .getMatrix( blueIndex );
 	            }
 	            if ( prepareTool ) {
 	                AlgebraicMatrix inverse = orientation .inverse();
-	                OctahedralSymmetry octa = new OctahedralSymmetry( symmetry .getField(), null, null );
+                    // Only make a new OctahedralSymmetry if necessary
+	                // TODO: When would it be necessary?
+	                // Maybe when loading a legacy file - Dunno - DJH ???
+	                OctahedralSymmetry octa = (symmetry instanceof OctahedralSymmetry) 
+	                        ? (OctahedralSymmetry) symmetry
+	                        : new OctahedralSymmetry( symmetry .getField() );
 	                int order = octa .getChiralOrder();
 	                this .transforms = new Transformation[ order-1 ];
 	                for ( int i = 0; i < order-1; i++ ) {
@@ -278,7 +284,7 @@ public class SymmetryTool extends TransformationTool
     protected void setXmlAttributes( Element element, XmlSaveFormat format ) throws Failure
     {
         String symmName = element .getAttribute( "symmetry" );
-        this.symmetry = format .parseSymmetry( symmName );
+        this.symmetry = ((XmlSymmetryFormat) format) .parseSymmetry( symmName );
         super .setXmlAttributes( element, format );
     }
 }

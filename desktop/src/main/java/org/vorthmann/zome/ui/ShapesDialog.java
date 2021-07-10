@@ -1,6 +1,4 @@
 
-//(c) Copyright 2007, Scott Vorthmann.  All rights reserved.
-
 package org.vorthmann.zome.ui;
 
 import java.awt.Container;
@@ -32,7 +30,7 @@ public class ShapesDialog extends EscapeDialog
             content .add( radioButton );
             group .add( radioButton );
             radioButton .setActionCommand( "setStyle." + styles[ i ] );
-            radioButton .addActionListener( controller );
+            radioButton .addActionListener( new ControllerActionListener(controller) );
         }
 
         setSize( new Dimension( 250, 250 ) );

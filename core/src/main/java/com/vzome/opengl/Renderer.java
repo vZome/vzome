@@ -6,7 +6,7 @@ public interface Renderer
 {
     void setLights( float[][] lightDirections, float[][] lightColors, float[] ambientLight );
 
-    void setView( float[] modelView, float[] projection, float fogFront, float fogBack );
+    void setView( float[] modelView, float[] projection, float near, float fogFront, float far, boolean perspective );
 
     void clear( float[] background );
 

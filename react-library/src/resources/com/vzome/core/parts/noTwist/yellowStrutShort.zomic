@@ -1,0 +1,76 @@
+
+// move to the center of the strut
+size -99 yellow +0
+
+// adjust to the parts scale
+scale -6
+
+label unit.start
+
+
+branch {
+
+// move to strut origin
+from save scale { scale +6
+size -99 yellow -0 }
+
+ long yellow 0
+
+ long blue 0
+
+ long red 1
+
+size 2 red +4
+
+label y10
+ repeat 2 purple -21
+
+label y11
+repeat 2 purple +35
+
+label y12
+
+
+}
+
+rotate around blue 13
+
+branch {
+
+// move to strut origin
+from save scale { scale +6
+size -99 yellow -0 }
+
+ long yellow 0
+ long blue 0
+ long red 1
+size 2 red +4
+
+label y20
+ repeat 2 purple -21
+label y21
+repeat 2 purple +35
+label y22
+
+}
+
+
+			label unit.face
+	label y12
+	label y11
+	label y22
+	label y21
+
+			label unit.face
+	label y11
+	label y10
+	label y20
+	label y22
+	
+			label unit.face
+	label y10
+	label y12
+	label y21
+	label y20
+
+label unit.end

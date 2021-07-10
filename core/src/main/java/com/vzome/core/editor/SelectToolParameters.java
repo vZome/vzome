@@ -1,6 +1,4 @@
 
-//(c) Copyright 2011, Scott Vorthmann.
-
 package com.vzome.core.editor;
 
 import org.w3c.dom.Element;
@@ -8,6 +6,7 @@ import org.w3c.dom.Element;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
+import com.vzome.core.editor.api.ChangeManifestations;
 import com.vzome.core.model.Manifestation;
 
 public class SelectToolParameters extends ChangeManifestations
@@ -17,7 +16,7 @@ public class SelectToolParameters extends ChangeManifestations
 
 	SelectToolParameters( ToolsModel tools, Tool tool )
 	{
-		super( tools .getEditorModel() .getSelection(), tools .getEditorModel() .getRealizedModel() );
+		super( tools .getEditorModel() );
 		this.tools = tools;
 		this .tool = tool;
 	}

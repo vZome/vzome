@@ -69,7 +69,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
         public void contentsChanged( ListDataEvent lde )
         {
             String action = "elementChanged-" + lde .getIndex0();
-            PagelistPanel .this .controller .actionPerformed( new ActionEvent( PagelistPanel.this, ActionEvent.ACTION_PERFORMED, action ) );
+            PagelistPanel .this .controller .actionPerformed( PagelistPanel.this, action );
         }
         @Override
         public void intervalAdded( ListDataEvent lde )
@@ -77,7 +77,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
             if ( moving )
             {
                 String action = "elementMoved-" + startIndex + ">" + lde .getIndex0();
-                PagelistPanel .this .controller .actionPerformed( new ActionEvent( PagelistPanel.this, ActionEvent.ACTION_PERFORMED, action ) );
+                PagelistPanel .this .controller .actionPerformed( PagelistPanel.this, action );
             }
         }
         @Override
@@ -185,6 +185,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
         controller .addPropertyListener( this );
                 
         this .controller = controller;
+        ControllerActionListener actionListener = new ControllerActionListener( controller );
 
         this.isEditor = controller .userHasEntitlement( "lesson.edit" ) && ! controller .propertyIsTrue( "reader.preview" );
 
@@ -193,7 +194,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
         if ( this .isEditor )
         {
             JMenuItem menuItem = createMenuItem( "Save Current View to Page", "setView" );
-            menuItem .addActionListener( this.controller );
+            menuItem .addActionListener( actionListener );
             pageviewPopupMenu .add( menuItem );
         }
 
@@ -203,7 +204,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
             @Override
             public void actionPerformed( ActionEvent ae )
             {
-                controller .actionPerformed( new ActionEvent( PagelistPanel.this, ActionEvent.ACTION_PERFORMED, "usePageView-" + popupItem ) );
+                controller .actionPerformed( PagelistPanel.this, "usePageView-" + popupItem );
             }
         } );
         pageviewPopupMenu .add( menuItem );
@@ -214,7 +215,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
             @Override
             public void actionPerformed( ActionEvent ae )
             {
-                controller .actionPerformed( new ActionEvent( PagelistPanel.this, ActionEvent.ACTION_PERFORMED, "copyPageView-" + popupItem ) );
+                controller .actionPerformed( PagelistPanel.this, "copyPageView-" + popupItem );
             }
         } );
         pageviewPopupMenu .add( menuItem );
@@ -222,12 +223,6 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
         MouseListener pageviewPopup = new ContextualMenuMouseListener( controller, pageviewPopupMenu );
 
         listModel = new DefaultListModel<>();
-        int initialCount = Integer .parseInt( controller .getProperty( "num.pages" ) );
-        for ( int i = 0; i < initialCount; i++ )
-        {
-            ImageIcon icon = new ImageIcon( new BufferedImage( 80, 70, BufferedImage .TYPE_INT_RGB ) );
-            listModel .addElement( icon );
-        }
         
         ListMoves moves = new ListMoves();
         listModel .addListDataListener( moves );
@@ -236,9 +231,6 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
         list = isEditor 
                 ? new ReorderableJList<>( listModel, moves, ImageIcon.class ) 
                 : new JList<>( listModel );
-        list .setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
-        list .setSelectedIndex( 0 );
-        list .setVisibleRowCount( 12 );
         list .addMouseListener( pageviewPopup );
         JScrollPane listScrollPane = new JScrollPane( list );
         
@@ -252,11 +244,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
             {
                 if ( lse .getValueIsAdjusting() )
                     return;
-                int selected = list .getSelectedIndex();
-                if ( selected < 0 )
-                    return;
-                String action = "elementSelected-" + selected;
-                PagelistPanel .this .controller .actionPerformed( new ActionEvent( PagelistPanel.this, ActionEvent.ACTION_PERFORMED, action ) );
+                syncController();
             }
         } );
         list .addMouseListener( new MouseAdapter()
@@ -267,11 +255,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
             {
                 if ( SwingUtilities.isRightMouseButton( e ) )
                     return;
-                int selected = list .getSelectedIndex();
-                if ( selected < 0 )
-                    return;
-                String action = "elementSelected-" + selected;
-                PagelistPanel .this .controller .actionPerformed( new ActionEvent( PagelistPanel.this, ActionEvent.ACTION_PERFORMED, action ) );
+                syncController();
             }
         });
         add( listScrollPane, BorderLayout.CENTER );
@@ -280,12 +264,12 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
         {
             addButton = new JButton( dupeString );
             addButton.setActionCommand( "duplicatePage" );
-            addButton.addActionListener( controller );
+            addButton.addActionListener( actionListener );
             addButton.setEnabled( true );
 
             removeButton = new JButton( remString );
             removeButton.setActionCommand( "deletePage" );
-            removeButton.addActionListener( controller );
+            removeButton.addActionListener( actionListener );
             removeButton.setEnabled( controller .propertyIsTrue( "has.pages" ) );
 
             // Create a panel that uses BoxLayout.
@@ -296,6 +280,32 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
             buttonPane .setBorder( BorderFactory.createEmptyBorder( 5, 5, 5, 5 ) );
             add( buttonPane, BorderLayout.PAGE_END );
         }
+        list .setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+        list .setVisibleRowCount( 12 );
+        
+        // The controller is not initialized when this constructor runs, so we defer this.
+        SwingUtilities .invokeLater( new Runnable()
+        {    
+            @Override
+            public void run() {
+                int initialCount = Integer .parseInt( controller .getProperty( "num.pages" ) );
+                for ( int i = 0; i < initialCount; i++ )
+                {
+                    ImageIcon icon = new ImageIcon( new BufferedImage( 80, 70, BufferedImage .TYPE_INT_RGB ) );
+                    listModel .addElement( icon );
+                }
+                list .setSelectedIndex( 0 );
+            }
+        });
+    }
+    
+    private void syncController()
+    {
+        int selected = this .list .getSelectedIndex();
+        if ( selected < 0 )
+            return;
+        String action = "elementSelected-" + selected;
+        this .controller .actionPerformed( PagelistPanel.this, action );
     }
     
     @Override
@@ -341,9 +351,9 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
 
             ImageIcon icon = new ImageIcon( iconImage );
             if ( num >= listModel .size() )
-            	listModel .insertElementAt( icon, num );
+                listModel .insertElementAt( icon, num );
             else
-            	listModel .setElementAt( icon, num );
+                listModel .setElementAt( icon, num );
         }
    }
 }

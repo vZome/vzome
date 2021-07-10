@@ -1,6 +1,4 @@
 
-//(c) Copyright 2015, Scott Vorthmann.
-
 package com.vzome.core.math.symmetry;
 
 import static org.junit.Assert.assertEquals;
@@ -19,7 +17,7 @@ public class SymmetryTest
     @Test
     public void testAxisIncidence()
     {
-        IcosahedralSymmetry symm = new IcosahedralSymmetry( new PentagonField(), null );
+        IcosahedralSymmetry symm = new IcosahedralSymmetry( new PentagonField() );
         
         assertTrue( Arrays.equals( new int[]{ 22, 50, 19 }, symm .getIncidentOrientations( 10 ) ) );
         assertTrue( Arrays.equals( new int[]{ 20, 52, 17 }, symm .getIncidentOrientations( 44 ) ) );
@@ -29,7 +27,7 @@ public class SymmetryTest
     public void testGetAxis()
     {
         RealVector vector = new RealVector( 0.1, 0.1, 3.0 ); // should be orientation -47
-        IcosahedralSymmetry symm = new IcosahedralSymmetry( new PentagonField(), null );
+        IcosahedralSymmetry symm = new IcosahedralSymmetry( new PentagonField() );
         
         Direction orbit = symm .getDirection( "red" );
         Axis axis = orbit .getAxis( vector );
@@ -135,7 +133,7 @@ public class SymmetryTest
     @Test
     public void testGetAxis2()
     {
-        IcosahedralSymmetry symm = new IcosahedralSymmetry( new PentagonField(), null );
+        IcosahedralSymmetry symm = new IcosahedralSymmetry( new PentagonField() );
         
         Direction orbit = symm .getDirection( "turquoise" );
         Axis expected = orbit .getAxis( Symmetry.MINUS, 23 );
@@ -148,7 +146,7 @@ public class SymmetryTest
     @Test
     public void testTetrahedral()
     {
-        IcosahedralSymmetry symm = new IcosahedralSymmetry( new PentagonField(), null );
+        IcosahedralSymmetry symm = new IcosahedralSymmetry( new PentagonField() );
         
         Axis greenZone = symm .getDirection( "green" ) .getAxis( Symmetry.MINUS, 23 );
         Axis blueZone = symm .getDirection( "blue" ) .getAxis( Symmetry.PLUS, 31 );

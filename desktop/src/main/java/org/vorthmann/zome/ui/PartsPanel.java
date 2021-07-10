@@ -1,6 +1,4 @@
 
-//(c) Copyright 2011, Scott Vorthmann.
-
 package org.vorthmann.zome.ui;
 
 import java.awt.BorderLayout;
@@ -30,6 +28,7 @@ import javax.swing.table.TableColumn;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.zome.app.impl.PartsController.PartInfo;
 
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -42,15 +41,6 @@ public class PartsPanel extends JPanel
     private final JTable bomTable;
     private final PartsTableModel partsTableModel;
     private Point popupTriggerLocation = null;
-
-    public class PartsPanelActionEvent extends ActionEvent {
-        private static final long serialVersionUID = 1L;
-        public final PartsTableRow row;
-        public PartsPanelActionEvent(ActionEvent e, PartsTableRow row) {
-            super(e.getSource(), e.getID(), e.getActionCommand(), e.getWhen(), e.getModifiers());
-            this.row = row;
-        }
-    }
 
     public PartsPanel( Controller controller )
     {
@@ -99,9 +89,41 @@ public class PartsPanel extends JPanel
 
     private void handleContextMenuEvent( ActionEvent e )
     {
-        int rowAtPoint = bomTable.rowAtPoint(popupTriggerLocation);
-        PartsTableRow row = partsTableModel.getRow(rowAtPoint);
-        controller .actionPerformed( new PartsPanelActionEvent(e, row) );
+        int rowAtPoint = bomTable .rowAtPoint( popupTriggerLocation );
+        PartsTableRow row = partsTableModel .getRow( rowAtPoint );
+        PartInfo partInfo = row .partInfo;
+        String cmd = e .getActionCommand() .toLowerCase();
+        switch( row .partClassGroupingOrder )
+        {
+        case BALLS_TOTAL:
+            controller .actionPerformed( this, "AdjustSelectionByClass/" + cmd + "Balls" );
+            break;
+
+        case STRUTS_TOTAL:
+            controller .actionPerformed( this, "AdjustSelectionByClass/" + cmd + "Struts" );
+            break;
+
+        case PANELS_TOTAL:
+            controller .actionPerformed( this, "AdjustSelectionByClass/" + cmd + "Panels" );
+            break;
+
+        case STRUTS:
+        {
+            String tail = "/" + partInfo.orbitStr;
+            tail += "/" + partInfo.strutLength.toString( AlgebraicField .ZOMIC_FORMAT );
+            controller .actionPerformed( this, "AdjustSelectionByOrbitLength/" + cmd + "SimilarStruts" + tail );
+        }
+        break;
+
+        case PANELS:
+        {
+            controller .actionPerformed( this, "AdjustSelectionByOrbitLength/" + cmd + "SimilarPanels" + "/" + partInfo .orbitStr );
+        }
+        break;
+
+        default:
+            break;
+        }
     }
 
     /**
@@ -187,6 +209,9 @@ public class PartsPanel extends JPanel
          */
         @Override
         public int compareTo(PartsTableRow that) {
+            if ( this == that ) {
+                return 0; // just an optimization
+            }
             int comparison = this.partClassGroupingOrder.compareTo(that.partClassGroupingOrder);
             if (comparison != 0)
                 return comparison;
@@ -222,15 +247,17 @@ public class PartsPanel extends JPanel
          * @return
          */
         private static PartGroupingOrderEnum getPartGroupingOrder(Class<? extends Manifestation> partClass, boolean isAggregate ) {
-            if(partClass.equals(Connector.class) && isAggregate ) {
-                return PartGroupingOrderEnum.BALLS_TOTAL;
+            if(Connector.class.isAssignableFrom(partClass)) {
+                return isAggregate 
+                        ? PartGroupingOrderEnum.BALLS_TOTAL
+                        : PartGroupingOrderEnum.TEMP;
             } 
-            else if(partClass.equals(Strut.class)) {
+            else if(Strut.class.isAssignableFrom(partClass)) {
                 return isAggregate 
                         ? PartGroupingOrderEnum.STRUTS_TOTAL
                         : PartGroupingOrderEnum.STRUTS;
             } 
-            else if(partClass.equals(Panel.class)) {
+            else if(Panel.class.isAssignableFrom(partClass)) {
                 return isAggregate 
                         ? PartGroupingOrderEnum.PANELS_TOTAL
                         : PartGroupingOrderEnum.PANELS;

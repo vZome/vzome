@@ -19,12 +19,14 @@ public abstract class Exporter3d
     //    so actual ball diameter = .6958
     public static final double RZOME_BLUE_DIAMETER_INCHES = 0.6958d;
     
-    public static final double RZOME_BLUE_DIAMETER_CM = 1.768d;
+    public static final double RZOME_BLUE_DIAMETER_CM = 1.7673d;
     
     public static final double RZOME_INCH_SCALING = RZOME_BLUE_DIAMETER_INCHES / VZOME_BLUE_DIAMETER;
     
     public static final double RZOME_CM_SCALING = RZOME_BLUE_DIAMETER_CM / VZOME_BLUE_DIAMETER;
-	
+    
+    public static final double RZOME_MM_SCALING = RZOME_CM_SCALING * 10d;
+    
     // This scale factor corresponds to a vZome model that uses a long blue as the radius of a ball.
     //  norm squared of diameter in vZome: 1967.87  => diameter == 44.36
 	static final double VZOME_STRUT_MODEL_BALL_DIAMETER = 44.36d;
@@ -49,7 +51,7 @@ public abstract class Exporter3d
 	/**
 	 * This is what most subclasses override.
 	 */
-	public abstract void doExport( File directory, Writer writer, int height, int width ) throws Exception;
+	public abstract void doExport( File file, Writer writer, int height, int width ) throws Exception;
 
     public abstract String getFileExtension();
     
@@ -69,23 +71,14 @@ public abstract class Exporter3d
     /**
      * Subclasses can override this if they need to export history or the lesson model.
      */
-    public void doExport( DocumentModel doc, File file, File parentFile, Writer writer, int height, int width ) throws Exception
+    public void exportDocument( DocumentModel doc, File file, Writer writer, int height, int width ) throws Exception
     {
         mScene = doc .getCamera();
         mModel = doc .getRenderedModel();
-        this .doExport( file, parentFile, writer, height, width );
+        this .doExport( file, writer, height, width );
         mScene = null;
         mModel = null;
     }
-
-    /**
-     *  Subclasses can override this if they want to write multiple files into the same directory, using variations on the filename.
-     */
-    public void doExport( File file, File parentFile, Writer out, int height, int width ) throws Exception
-    {
-        this .doExport( parentFile, out, height, width );
-    }
-    
 }
 
 

@@ -37,8 +37,8 @@ dependencies {
 //    I have commented out the buildDir sharing in the main project.  I've also added resourcesDir here,
 //    but I'm not sure it had any effect.  The mac-6.0.jar still seems to have some vzome-core
 //    resources.
-sourceSets.main.output.classesDir 'build/classes'
-sourceSets.main.output.resourcesDir 'build/resources'
+// sourceSets.main.output.classesDir 'build/classes'
+// sourceSets.main.output.resourcesDir 'build/resources'
 
 
 // for the 'macappbundle' Gradle plugin
@@ -50,8 +50,10 @@ macAppBundle {
     creatorCode = 'vZ60'
     icon = 'vZome-6.icns'
     bundleJRE = 'true'
+    jreHome = '/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home'
     javaProperties.putAll jvmArgs
-    javaProperties.put 'java.ext.dirs', '.'
+    // Commented out this line, now that I need to use SSL (from jre/lib/ext/sunjce_provider.jar?) for gist sharing
+    // javaProperties.put 'java.ext.dirs', '.'
     arguments.addAll vzomeArgs
     bundleExtras = [ CFBundleDocumentTypes: [ [
         CFBundleTypeExtensions: [ project.appName ],
@@ -61,19 +63,21 @@ macAppBundle {
         LSTypeIsPackage: 'false'
     ] ] ]
     // now make sure we add '-Xmx3048M', which does not work as in either javaProperties or arguments
-    generatePlist << {
-        def parser = new XmlParser( false, false, true )
-        parser .setFeature( "http://apache.org/xml/features/nonvalidating/load-external-dtd", false )
-        def plistFile = getPlistFile()
-        def plist = parser.parse( plistFile )
+    generatePlist {
+        doLast {
+            def parser = new XmlParser( false, false, true )
+            parser .setFeature( "http://apache.org/xml/features/nonvalidating/load-external-dtd", false )
+            def plistFile = getPlistFile()
+            def plist = parser.parse( plistFile )
 
-        plist.dict.array[0].appendNode(
-            new groovy.xml.QName("string"),
-            [:],
-            '-Xmx3048M'
-        )
-        def writer = new FileWriter( plistFile )
-        groovy.xml.XmlUtil .serialize( plist, writer )
+            plist.dict.array[0].appendNode(
+                new groovy.xml.QName("string"),
+                [:],
+                '-Xmx3048M'
+            )
+            def writer = new FileWriter( plistFile )
+            groovy.xml.XmlUtil .serialize( plist, writer )
+        }
     }
 }
 // the macAppBundle extension adds this unwanted dependency

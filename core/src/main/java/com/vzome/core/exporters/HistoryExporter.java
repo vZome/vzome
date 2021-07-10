@@ -11,11 +11,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.Lights;
+import com.vzome.xml.DomSerializer;
 
 public class HistoryExporter extends Exporter3d
 {
@@ -25,7 +25,7 @@ public class HistoryExporter extends Exporter3d
     }
 
     @Override
-    public void doExport( DocumentModel document, File file, File parentFile, Writer writer, int height, int width ) throws Exception
+    public void exportDocument( DocumentModel document, File file, Writer writer, int height, int width ) throws Exception
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory .newInstance();
         factory .setNamespaceAware( true );
@@ -35,7 +35,7 @@ public class HistoryExporter extends Exporter3d
         Element modelXml = document .getDetailsXml( dom );
         dom .appendChild( modelXml );
 
-        DomUtils .serialize( dom, writer );
+        DomSerializer .serialize( dom, writer );
     }
 
     @Override

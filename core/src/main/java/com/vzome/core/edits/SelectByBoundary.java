@@ -3,17 +3,17 @@ package com.vzome.core.edits;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public abstract class SelectByBoundary extends ChangeManifestations {
     
-    public SelectByBoundary(Selection selection, RealizedModel realized) {
-        super(selection, realized);
+    public SelectByBoundary( EditorModel editor )
+    {
+        super( editor );
     }
 
     public abstract String usage();

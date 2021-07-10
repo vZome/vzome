@@ -4,17 +4,16 @@
 package com.vzome.desktop.controller;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
-import javax.vecmath.Matrix4d;
-import javax.vecmath.Point3d;
-import javax.vecmath.Quat4d;
-import javax.vecmath.Vector3d;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Point3f;
+import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
 import org.vorthmann.j3d.MouseTool;
@@ -23,9 +22,12 @@ import org.vorthmann.j3d.Trackball;
 import org.vorthmann.ui.DefaultController;
 import org.vorthmann.zome.app.impl.TrackballRenderingViewer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 
@@ -33,14 +35,14 @@ import com.vzome.core.viewing.Lights;
  * In this camera model, the view frustum shape is generally held constant
  * as other parameters are varied.
  */
-public class CameraController extends DefaultController implements Controller3d
+public class CameraController extends DefaultController implements Scene.Provider
 {
     /**
      * The original frustum.
      */
-    public static final double ORIG_WIDTH = 18f, ORIG_DISTANCE = 40f;
+    public static final float ORIG_WIDTH = 18f, ORIG_DISTANCE = 40f;
 
-    public static final double DEFAULT_STEREO_ANGLE = Math .PI * 5d / 360d;
+    public static final float DEFAULT_STEREO_ANGLE = (float) (Math .PI * 5f / 360f);
 
     protected static final Vector3f ORIG_LOOK = new Vector3f(0,0,-1);
 
@@ -54,10 +56,12 @@ public class CameraController extends DefaultController implements Controller3d
 
     private final Camera initialCamera;
 
-    private RenderingChanges scene;
+    private Scene scene;
     private RenderedModel symmetryModel;
 
-    private final Lights sceneLighting;
+    protected final Lights sceneLighting;
+
+    private final int maxOrientations;
 
     public interface Snapper
     {
@@ -68,9 +72,7 @@ public class CameraController extends DefaultController implements Controller3d
     {
         int MONOCULAR = 0; int LEFT_EYE = 1; int RIGHT_EYE = 2;
 
-        void setEye( int eye );
-
-        void setViewTransformation( Matrix4d trans, int eye );
+        void setViewTransformation( Matrix4f trans );
 
         void setPerspective( double fov, double aspectRatio, double near, double far );
 
@@ -89,7 +91,7 @@ public class CameraController extends DefaultController implements Controller3d
         updateViewersProjection();
     }
 
-    public void getViewOrientation( Vector3d lookDir, Vector3d upDir )
+    public void getViewOrientation( Vector3f lookDir, Vector3f upDir )
     {
         model .getViewOrientation( lookDir, upDir );
     }
@@ -105,10 +107,11 @@ public class CameraController extends DefaultController implements Controller3d
         mViewers .remove( viewer );
     }
 
-    public CameraController( Camera init, Lights sceneLighting )
+    public CameraController( Camera init, Lights sceneLighting, int maxOrientations )
     {
         model = init;
         this.sceneLighting = sceneLighting;
+        this.maxOrientations = maxOrientations;
         initialCamera = new Camera( model );
     }
 
@@ -143,22 +146,12 @@ public class CameraController extends DefaultController implements Controller3d
     {
         if ( mViewers .size() == 0 )
             return;
-        Matrix4d trans = new Matrix4d();
+        Matrix4f trans = new Matrix4f();
 
-        model .getViewTransform( trans, 0d );
+        model .getViewTransform( trans );
         trans .invert();
         for ( int i = 0; i < mViewers .size(); i++ )
-            mViewers .get( i ) .setViewTransformation( trans, Viewer .MONOCULAR );
-
-        model .getStereoViewTransform( trans, Viewer .LEFT_EYE );
-        trans .invert();
-        for ( int i = 0; i < mViewers .size(); i++ )
-            mViewers .get( i ) .setViewTransformation( trans, Viewer .LEFT_EYE );
-
-        model .getStereoViewTransform( trans, Viewer .RIGHT_EYE );
-        trans .invert();
-        for ( int i = 0; i < mViewers .size(); i++ )
-            mViewers .get( i ) .setViewTransformation( trans, Viewer .RIGHT_EYE );
+            mViewers .get( i ) .setViewTransformation( trans );
     }
 
     private void updateViewersProjection()
@@ -182,12 +175,12 @@ public class CameraController extends DefaultController implements Controller3d
     }
 
 
-    public void getWorldRotation( Quat4d q )
+    public void getWorldRotation( Quat4f q )
     {
-        Vector3d axis = new Vector3d( q.x, q.y, q.z );
+        Vector3f axis = new Vector3f( q.x, q.y, q.z );
 
-        Matrix4d viewTrans = new Matrix4d();
-        model .getViewTransform( viewTrans, 0d );
+        Matrix4f viewTrans = new Matrix4f();
+        model .getViewTransform( viewTrans );
         viewTrans .invert();
 
         // now map the axis back to world coordinates
@@ -198,8 +191,8 @@ public class CameraController extends DefaultController implements Controller3d
 
     public void mapViewToWorld( Vector3f vector )
     {
-        Matrix4d viewTrans = new Matrix4d();
-        model .getViewTransform( viewTrans, 0d );
+        Matrix4f viewTrans = new Matrix4f();
+        model .getViewTransform( viewTrans );
         viewTrans .invert();
         viewTrans .transform( vector );
     }
@@ -216,13 +209,13 @@ public class CameraController extends DefaultController implements Controller3d
         updateViewersTransformation();
     }
 
-    public void setLookAtPoint( Point3d lookAt )
+    public void setLookAtPoint( Point3f lookAt )
     {
         model .setLookAtPoint( lookAt );
         updateViewersTransformation();
     }
 
-    public void addViewpointRotation( Quat4d rotation )
+    public void addViewpointRotation( Quat4f rotation )
     {
         model .addViewpointRotation( rotation );
         updateViewersTransformation();
@@ -288,7 +281,7 @@ public class CameraController extends DefaultController implements Controller3d
     }
 
     @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
+    public void doAction( String action ) throws Exception
     {
         if ( action .equals( "toggleSnap" ) )
         {
@@ -306,7 +299,7 @@ public class CameraController extends DefaultController implements Controller3d
             if ( ! wasStereo )
                 model .setStereoAngle( CameraController.DEFAULT_STEREO_ANGLE );
             else
-                model .setStereoAngle( 0d );
+                model .setStereoAngle( 0f );
             updateViewersTransformation();
             updateViewersProjection();
             firePropertyChange( "stereo", wasStereo, !wasStereo );
@@ -342,7 +335,7 @@ public class CameraController extends DefaultController implements Controller3d
             saveBaselineView();
         }
         else
-            super .doAction( action, e );
+            super .doAction( action );
     }
 
     public MouseTool getTrackball( double speed )
@@ -367,9 +360,9 @@ public class CameraController extends DefaultController implements Controller3d
             }
 
             @Override
-            public void trackballRolled( Quat4d roll )
+            public void trackballRolled( Quat4f roll )
             {
-                Quat4d copy = new Quat4d( roll );
+                Quat4f copy = new Quat4f( roll );
 
                 getWorldRotation( copy );
 
@@ -441,21 +434,21 @@ public class CameraController extends DefaultController implements Controller3d
             return Float .toString(  model .getViewDistance() );
 
         case "lookAtPoint":
-            Point3d lookAt = model .getLookAtPoint();
+            Point3f lookAt = model .getLookAtPoint();
             return lookAt.toString();
 
         case "lookDir":
         {
-            Vector3d lookDir = new Vector3d();
-            Vector3d upDir = new Vector3d();
+            Vector3f lookDir = new Vector3f();
+            Vector3f upDir = new Vector3f();
             model .getViewOrientation(lookDir, upDir);
             return lookDir.toString();
         }
 
         case "upDir":
         {
-            Vector3d lookDir = new Vector3d();
-            Vector3d upDir = new Vector3d();
+            Vector3f lookDir = new Vector3f();
+            Vector3f upDir = new Vector3f();
             model .getViewOrientation(lookDir, upDir);
             return upDir.toString();
         }
@@ -475,7 +468,19 @@ public class CameraController extends DefaultController implements Controller3d
                 return super.getProperty( "trackball.showIcosahedralLabels" );
             else
                 return "false";
-            
+        
+        case "json":
+            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectWriter objectWriter = objectMapper .writer();
+            try {
+                return objectWriter .writeValueAsString( model );
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                Logger .getLogger( "com.vzome.desktop.controller" )
+                    .severe( String.format( "CameraController.getProperty(json): %s", e.getMessage() ) );
+                return null;
+            }
+
         default:
             return super .getProperty( propName );
         }
@@ -518,8 +523,7 @@ public class CameraController extends DefaultController implements Controller3d
         return this .copied != null;
     }
 
-    @Override
-    public void attachViewer( RenderingViewer viewer, RenderingChanges scene, Component canvas )
+    public void attachViewer( CameraController.Viewer viewer, Component canvas )
     {
         MouseTool trackball = this .getTrackball( 0.04d );
         
@@ -530,10 +534,6 @@ public class CameraController extends DefaultController implements Controller3d
 
         this .addViewer( new TrackballRenderingViewer( viewer ) );
 
-        this .scene = scene;
-        for ( RenderedManifestation rm : this .symmetryModel )
-            this .scene .manifestationAdded( rm );
-
         updateViewersTransformation();
         updateViewersProjection();
     }
@@ -541,11 +541,13 @@ public class CameraController extends DefaultController implements Controller3d
     public void setSymmetry( RenderedModel model, Snapper snapper )
     {
         this .symmetryModel = model;
-        if ( scene != null ) {
+        if ( this .scene == null )
+            // Lazy scene creation
+            this .scene = new Scene( this .sceneLighting, false, this .maxOrientations );
+        else
             scene .reset();
-            for ( RenderedManifestation rm : symmetryModel )
-                scene .manifestationAdded( rm );
-        }
+        for ( RenderedManifestation rm : symmetryModel )
+            scene .manifestationAdded( rm );
         this .snapper = snapper;
         if ( snapping ) {
             saveBaselineView(); // might have been zooming
@@ -555,8 +557,8 @@ public class CameraController extends DefaultController implements Controller3d
     }
 
     @Override
-    public Lights getSceneLighting()
+    public Scene getScene()
     {
-        return this.sceneLighting;
+        return this.scene;
     }
 }

@@ -1,6 +1,4 @@
 
-//(c) Copyright 2011, Scott Vorthmann.
-
 package com.vzome.core.math;
 
 import org.w3c.dom.Element;
@@ -8,7 +6,7 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.xml.DomUtils;
 
 public class PerspectiveProjection implements Projection
 {
@@ -54,7 +52,7 @@ public class PerspectiveProjection implements Projection
         }
         AlgebraicNumber numerator = denom .reciprocal(); // do the matrix inversion once
         
-        result .setComponent( 0, field .createPower( 0 ) );
+        result .setComponent( 0, field .one());
         result .setComponent( 1, source .getComponent( 1 ) .times( numerator ) );
         result .setComponent( 2, source .getComponent( 2 ) .times( numerator ) );
         result .setComponent( 3, source .getComponent( 3 ) .times( numerator ) );
@@ -64,14 +62,17 @@ public class PerspectiveProjection implements Projection
     @Override
     public void getXmlAttributes(Element element) {
         if (cameraDist != null) {
-            XmlSaveFormat.serializeNumber(element, "cameraDist", cameraDist);
+            DomUtils .addAttribute( element, "cameraDist", cameraDist .toString( AlgebraicField .ZOMIC_FORMAT ) );
         }
     }
 
     @Override
-    public void setXmlAttributes(Element xml, XmlSaveFormat format)
+    public void setXmlAttributes( Element xml )
     {
-        cameraDist = format.parseNumber(xml, "cameraDist");
+        String nums = xml .getAttribute( "cameraDist" );
+        if ( nums == null || nums .isEmpty() )
+            return;
+        cameraDist = this .field .parseNumber( nums );
     }
 
     @Override

@@ -1,9 +1,8 @@
 
 package org.vorthmann.zome.ui;
 
+import java.awt.Desktop;
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -12,6 +11,7 @@ import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystemNotFoundException;
@@ -37,7 +37,7 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.SplashScreen;
 import org.vorthmann.zome.app.impl.ApplicationController;
 
-import com.vzome.desktop.controller.Controller3d;
+import com.vzome.dap.DapAdapter;
 
 /**
  * Top-level UI class for vZome.
@@ -62,9 +62,11 @@ import com.vzome.desktop.controller.Controller3d;
  * @author vorth
  *
  */
-public final class ApplicationUI implements ActionListener, PropertyChangeListener
+public final class ApplicationUI implements ApplicationController.UI, PropertyChangeListener
 {
     private ApplicationController mController;
+
+    private DapAdapter debugger;
 
     private Controller.ErrorChannel errors;
 
@@ -93,7 +95,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
             }
         }
 
-        // If no FileHandler was pre-configured, then initialze our own default
+        // If no FileHandler was pre-configured, then initialize our own default
         if (fh == null) {
             Path logsFolder = Platform.logsFolder();
             try {
@@ -307,6 +309,18 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
 
             if ( splash != null )
                 splash .dispose();
+            
+            String debugPortStr = ui .mController .getProperty( "debug.adapter.port" );
+            if ( debugPortStr != null ) {
+                try {
+                    ui .debugger = new DapAdapter(); // inert unless we start the server
+                    Integer debugPort = Integer .parseInt( debugPortStr );
+                    ui .debugger .startServer( debugPort, ui .mController );
+                } catch ( NumberFormatException e ) {
+                    if ( logger .isLoggable( Level .WARNING ) )
+                        logger .warning( "debug.adapter.port not an integer; debugger not listening" );
+                }
+            }
         }
     }
 
@@ -316,7 +330,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
         switch ( evt .getPropertyName() ) {
 
         case "newDocument":
-            Controller3d controller = (Controller3d) evt. getNewValue();
+            Controller controller = (Controller) evt. getNewValue();
             DocumentFrame window = new DocumentFrame( controller, this .mController .getJ3dFactory() );
             window .setVisible( true );
             window .setAppUI( new PropertyChangeListener() {
@@ -336,10 +350,8 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
     }
 
     @Override
-    public void actionPerformed( ActionEvent event )
+    public void doAction( String action )
     {
-        String action = event. getActionCommand();
-
         switch ( action ) {
 
         case "showAbout":
@@ -350,7 +362,11 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
             String str = JOptionPane .showInputDialog( null, "Enter the URL for an online .vZome file.", "Open URL",
                     JOptionPane.PLAIN_MESSAGE );
             if ( str != null )
-                mController .actionPerformed( new ActionEvent( this, ActionEvent.ACTION_PERFORMED, "openURL-" + str ) );
+                mController .actionPerformed( this, "openURL-" + str );
+            break;
+
+        case "new-polygon":
+            newPolygon();
             break;
 
         case "quit":
@@ -358,12 +374,51 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
             break;
 
         default:
-            JOptionPane .showMessageDialog( null,
-                    "No handler for action: \"" + action + "\"",
-                    "Error Performing Action", JOptionPane.ERROR_MESSAGE );
+            if ( action .startsWith( "browse-" ) )
+            {
+                String url = action .substring( "browse-" .length() );
+                if ( Desktop.isDesktopSupported() && Desktop.getDesktop() .isSupported( Desktop.Action.BROWSE ) ) {
+                    try {
+                        Desktop.getDesktop() .browse( new URI( url ) );
+                    } catch (IOException | URISyntaxException e) {
+                        e .printStackTrace();
+                        JOptionPane .showMessageDialog( null,
+                                "Sorry, I am unable to launch the browser.",
+                                "Error Performing Action", JOptionPane.ERROR_MESSAGE );
+                    }
+                }
+            }
+            else {
+                JOptionPane .showMessageDialog( null,
+                        "No handler for action: \"" + action + "\"",
+                        "Error Performing Action", JOptionPane.ERROR_MESSAGE );
+            }
         }
     }
 
+    private void newPolygon() {
+        // A PolygonField with more sides than this can be invoked directly from the custom menu: e.g new-polygon96
+        int max = 60; // but this is the most we'll allow via this dialog 
+        String limit = "The number must be between 4 and " + max + ".";
+        String msg = "Enter the number of sides for the polygon field.\n\n" + limit;
+        String str = JOptionPane .showInputDialog( null, msg, "Create a new design in a polygon field", JOptionPane.PLAIN_MESSAGE );
+        if ( str != null ) {
+            int nSides = 0;
+            try {
+                nSides = Integer.parseInt(str.trim());
+                if( nSides < 4 || nSides > max) { 
+                    throw new IllegalArgumentException(limit);
+                }
+            } catch (IllegalArgumentException e) {
+                JOptionPane .showMessageDialog( null, e.getMessage() + "\n\n" + limit, "Invalid Numeric Value", JOptionPane.ERROR_MESSAGE );
+                nSides = -1;
+            }
+            if(nSides >= 4 ) {
+                mController .actionPerformed( this, "new-polygon" + nSides );
+            }
+        }
+    }
+    
     public static Properties loadBuildProperties()
     {
         String defaultRsrc = "build.properties";
@@ -497,6 +552,43 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
         }
     }
 
+    @Override
+    public void runScript( String script, File file )
+    {
+        try {
+            Runtime .getRuntime() .exec( script + " " + file .getAbsolutePath(),
+                    null, file .getParentFile() );
+        } catch ( IOException e ) {
+            System .err .println( "Runtime.exec() failed on " + file .getAbsolutePath() );
+            e .printStackTrace();
+        }
+    }
+
+    @Override
+    public void openApplication( File file )
+    {
+        try {
+            if ( Desktop .isDesktopSupported() ) {
+                // DH - The test for file.exists() shouldn't be needed if this method is invoked in the proper sequence
+                // so I think it should be omitted eventually so the exceptions will be thrown
+                // but I'm leaving it here for now as a debugging aid.
+                if( ! file .exists() ) {
+                    System .err .println( file .getAbsolutePath() + " does not exist." );
+                    //                    return;
+                }
+                Desktop desktop = Desktop .getDesktop();
+                System .err .println( "Opening app for  " + file .getAbsolutePath() + " in thread: " + Thread.currentThread() );
+                desktop .open( file );
+            }
+        } catch ( IOException | IllegalArgumentException e ) {
+            System .err .println( "Desktop.open() failed on " + file .getAbsolutePath() );
+            if ( ! file .exists() ) {
+                System .err .println( "File does not exist." );
+            }
+            e.printStackTrace();
+        }
+    }
+
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // These next three methods may be invoked by the mac Adapter.
     //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -538,6 +630,7 @@ public final class ApplicationUI implements ActionListener, PropertyChangeListen
                 + "Ezra Bradford\n"
                 + "Sam Vandervelde\n"
                 + "Jacob Rus\n"
+                + "Nan Ma\n"
                 + "Dan Duddy\n"
                 + "Walt Venable\n"
                 + "Will Ackel\n"

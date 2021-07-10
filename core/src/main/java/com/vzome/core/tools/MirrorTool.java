@@ -1,6 +1,4 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.tools;
 
 
@@ -17,10 +15,14 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.editor.AbstractToolFactory;
-import com.vzome.core.editor.Selection;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
+import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.Selection;
+import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.SpecialOrbit;
+import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -65,9 +67,13 @@ public class MirrorTool extends TransformationTool
         }
     }
 
+    protected final OrbitSource symmSys;
+    
     public MirrorTool( String id, ToolsModel tools )
     {
         super( id, tools );
+        // symmSys may be null for some test cases, but shouldn't be otherwise
+        symmSys = ((SymmetryAware) tools.getEditorModel()).getSymmetrySystem();
     }
 
     @Override
@@ -83,6 +89,17 @@ public class MirrorTool extends TransformationTool
             AlgebraicField field = originPoint .getField();
             AlgebraicVector zAxis = field .basisVector( 3, AlgebraicVector .Z ) .scale( field .createPower( Direction.USER_SCALE ) );
             Point p2 = new FreePoint( zAxis );
+            axis = new SegmentJoiningPoints( center, p2 );
+            this .addParameter( axis );
+        }
+        else if ( this .getId() .equals( "mirror.builtin/reflection through red plane" ) )
+        {
+            center = originPoint;
+            this .addParameter( center );
+            // this is intended to be used by antiprism symmetries which only have one red axis
+            // and it's not the XY plane. Initially, that's only the SqrtPhiField.
+            AlgebraicVector redAxis = symmSys.getSymmetry().getSpecialOrbit(SpecialOrbit.RED).getAxis(Symmetry.PLUS, 0).normal();
+            Point p2 = new FreePoint( redAxis );
             axis = new SegmentJoiningPoints( center, p2 );
             this .addParameter( axis );
         }
@@ -111,7 +128,7 @@ public class MirrorTool extends TransformationTool
                         else
                             return "Only one center ball may be selected";
                     }
-                    center = (Point) ((Connector) man) .getConstructions() .next();
+                    center = (Point) ((Connector) man) .getFirstConstruction();
                 }
                 else if ( man instanceof Strut )
                 {
@@ -122,7 +139,7 @@ public class MirrorTool extends TransformationTool
                         else
                             return "Only one mirror axis strut may be selected";
                     }
-                    axis = (Segment) ((Strut) man) .getConstructions() .next();
+                    axis = (Segment) ((Strut) man) .getFirstConstruction();
                 }
                 else if ( man instanceof Panel )
                 {
@@ -133,7 +150,7 @@ public class MirrorTool extends TransformationTool
                         else
                             return "Only one mirror panel may be selected";
                     }
-                    mirrorPanel = (Polygon) ((Panel) man) .getConstructions() .next();
+                    mirrorPanel = (Polygon) ((Panel) man) .getFirstConstruction();
                 }
             }
         if ( center == null ) {
@@ -155,9 +172,17 @@ public class MirrorTool extends TransformationTool
                 return "mirror tool requires a single panel,\n"
                 + "or a single strut and a single center ball";
         }
-        else
-            return "mirror tool requires a single panel,\n"
+        else {
+            String msg = "mirror tool requires a single panel,\n"
             + "or a single strut and a single center ball";
+            if ( prepareTool ) {
+                // tool will fail when it's used,
+                // so let's fail now to avoid finding the bug later.
+                throw new IllegalStateException("Failed to prepare tool: " + msg);
+            } else {
+                return msg;
+            }
+        }
 
         if ( prepareTool ) {
             this .transforms = new Transformation[ 1 ];

@@ -8,15 +8,17 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
-import com.vzome.core.editor.ChangeSelection;
-import com.vzome.core.editor.EditorModel;
-import com.vzome.core.editor.SymmetrySystem;
-import com.vzome.core.math.DomUtils;
+import com.vzome.core.editor.api.ActionEnum;
+import com.vzome.core.editor.api.ChangeSelection;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
+import com.vzome.xml.DomUtils;
 
 /**
  * @author David Hall
@@ -29,7 +31,7 @@ public class AdjustSelectionByOrbitLength extends ChangeSelection
 {
     private Direction orbit;
     private AlgebraicNumber length;
-    private SymmetrySystem symmetry;
+    private OrbitSource symmetry;
     private ActionEnum strutAction = ActionEnum.IGNORE;
     private ActionEnum panelAction = ActionEnum.IGNORE;
     private final EditorModel editor;
@@ -41,7 +43,7 @@ public class AdjustSelectionByOrbitLength extends ChangeSelection
     public AdjustSelectionByOrbitLength( EditorModel editor )
     {
         super( editor .getSelection() );
-        this.symmetry = editor .getSymmetrySystem();
+        this.symmetry = ((SymmetryAware) editor) .getSymmetrySystem();
         this.editor = editor;
     }
 
@@ -106,7 +108,7 @@ public class AdjustSelectionByOrbitLength extends ChangeSelection
                 : mSelection;
 
         for (Manifestation man : whichManifestationSet) {
-            if (man.getRenderedObject() != null) {
+            if ( man.isRendered() ) {
                 if (man instanceof Strut) {
                     AlgebraicVector offset = ((Strut) man).getOffset();
                     Axis zone = symmetry.getAxis(offset);
@@ -153,7 +155,7 @@ public class AdjustSelectionByOrbitLength extends ChangeSelection
     protected void setXmlAttributes( Element xml, XmlSaveFormat format )
             throws Failure
     {
-        this .symmetry = this .editor .getSymmetrySystem( xml .getAttribute( "symmetry" ) );
+        this .symmetry = ((SymmetryAware) this .editor) .getSymmetrySystem( xml .getAttribute( "symmetry" ) );
         length = format.parseNumber(xml, "length");
         orbit = symmetry.getOrbits().getDirection(xml.getAttribute("orbit"));
         if(xml.getLocalName().equals("SelectSimilarSize")) {

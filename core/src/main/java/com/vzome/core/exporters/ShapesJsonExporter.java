@@ -9,21 +9,17 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.JsonMapper;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Camera;
-import com.vzome.core.viewing.Lights;
 
 
 public class ShapesJsonExporter extends Exporter3d
 {
     private final JsonMapper mapper = new JsonMapper();
     
-    public ShapesJsonExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
+    public ShapesJsonExporter()
     {
-        super( scene, colors, lights, model );
+        super( null, null, null, null );
     }
 
     @Override
@@ -32,7 +28,7 @@ public class ShapesJsonExporter extends Exporter3d
         ArrayList<JsonNode> shapes = new ArrayList<>();
         ArrayList<JsonNode> instances = new ArrayList<>();
 
-        for (RenderedManifestation rm : mModel) {
+        for ( RenderedManifestation rm : mModel ) {
             ObjectNode node = mapper .getObjectNode( rm );
             if ( node != null ) {
                 ObjectNode shapeNode = mapper .getShapeNode( rm .getShape() );
@@ -46,7 +42,7 @@ public class ShapesJsonExporter extends Exporter3d
             }
         }
 
-        JsonFactory factory = new JsonFactory();
+        JsonFactory factory = new JsonFactory() .disable( JsonGenerator.Feature.AUTO_CLOSE_TARGET );
         JsonGenerator generator = factory.createGenerator( writer );
         generator .useDefaultPrettyPrinter();
         generator .setCodec( mapper .getObjectMapper() );

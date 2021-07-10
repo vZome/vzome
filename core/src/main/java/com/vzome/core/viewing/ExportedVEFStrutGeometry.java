@@ -3,17 +3,20 @@ package com.vzome.core.viewing;
 
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
-import com.vzome.core.math.RealVector;
 import com.vzome.core.parts.StrutGeometry;
 
 public class ExportedVEFStrutGeometry implements StrutGeometry
 {
+    private static final Logger LOGGER = Logger.getLogger( "com.vzome.core.viewing.ExportedVEFStrutGeometry" );
+    
     @JsonProperty( "vertices" )
     public final List<AlgebraicVector> prototypeVertices;  // the polyhedron from which others are derived
 
@@ -46,14 +49,11 @@ public class ExportedVEFStrutGeometry implements StrutGeometry
     {
         AlgebraicVector tipVertex = prototypeVector .scale( length );
         AlgebraicVector midpoint = tipVertex .scale( this .field .createRational( 1, 2 ) );
-        if ( field .getName() .equals( "snubDodec" ) )
+        if ( field .getName() .equals( "snubDodec" ) && LOGGER.isLoggable(Level.FINE) )
         {
-            RealVector rproto = prototypeVector .toRealVector();
-            System .out .println( "proto length = " + rproto .length() );
-            double lend = length .evaluate();
-            System .out .println( "strut length = " + lend );
-            RealVector rtip = tipVertex .toRealVector();
-            System .out .println( "tip length = " + rtip .length() );
+            LOGGER.fine( "proto length = " + prototypeVector .toRealVector() .length() );
+            LOGGER.fine( "strut length = " + length .evaluate() );
+            LOGGER.fine( "tip length = " + tipVertex .toRealVector() .length() );
         }
         Polyhedron result = new Polyhedron( field );
         for ( int i = 0; i < prototypeVertices .size(); i ++ )

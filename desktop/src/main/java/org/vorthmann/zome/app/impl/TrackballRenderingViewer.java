@@ -1,12 +1,11 @@
 package org.vorthmann.zome.app.impl;
 
-import javax.vecmath.Matrix3d;
-import javax.vecmath.Matrix4d;
-import javax.vecmath.Vector3d;
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Vector3f;
 
 import com.vzome.core.viewing.Camera;
 import com.vzome.desktop.controller.CameraController;
-import com.vzome.desktop.controller.CameraController.Viewer;
 
 /**
  * A CameraController.Viewer that only changes rotations.
@@ -20,17 +19,17 @@ public class TrackballRenderingViewer implements CameraController.Viewer
 {
 	private final CameraController.Viewer delegate;
 	
-	private final Vector3d translation;
+	private final Vector3f translation;
 
 	public TrackballRenderingViewer( CameraController.Viewer delegate )
 	{
 		this .delegate = delegate;
 		
-		this .translation = new Vector3d();
-		Matrix4d matrix = new Matrix4d();
+		this .translation = new Vector3f();
+		Matrix4f matrix = new Matrix4f();
 		Camera defaultCamera = new Camera();
 		defaultCamera .setMagnification( 1.0f );
-		defaultCamera .getViewTransform( matrix, 0d );
+		defaultCamera .getViewTransform( matrix );
 		matrix .get( translation ); // save the default translation to apply on every update below
 
 		// set the perspective view just once
@@ -41,22 +40,17 @@ public class TrackballRenderingViewer implements CameraController.Viewer
 	}
 
 	@Override
-	public void setViewTransformation( Matrix4d trans, int eye )
+	public void setViewTransformation( Matrix4f trans )
 	{
-		if ( eye == Viewer .MONOCULAR ) {
-			Matrix3d justRotation3d = new Matrix3d();
-			trans .get( justRotation3d );
-			justRotation3d .invert(); // to match the invert() in the caller
-			Matrix4d finalTransform = new Matrix4d();
-			finalTransform .set( this .translation );
-			finalTransform .setRotation( justRotation3d );
-			finalTransform .invert(); // to match the invert() in the caller
-			this .delegate .setViewTransformation( finalTransform, Viewer .MONOCULAR );
-		}
+	    Matrix3f justRotation3d = new Matrix3f();
+	    trans .get( justRotation3d );
+	    justRotation3d .invert(); // to match the invert() in the caller
+	    Matrix4f finalTransform = new Matrix4f();
+	    finalTransform .set( this .translation );
+	    finalTransform .setRotation( justRotation3d );
+	    finalTransform .invert(); // to match the invert() in the caller
+	    this .delegate .setViewTransformation( finalTransform );
 	}
-
-	@Override
-	public void setEye(int eye) {}
 
 	@Override
 	public void setPerspective( double fov, double aspectRatio, double near, double far ) {}

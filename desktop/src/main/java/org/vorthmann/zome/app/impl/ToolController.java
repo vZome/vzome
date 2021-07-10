@@ -1,14 +1,10 @@
 package org.vorthmann.zome.app.impl;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
-import java.util.EnumSet;
 
 import org.vorthmann.ui.DefaultController;
 
 import com.vzome.api.Tool;
-import com.vzome.api.Tool.InputBehaviors;
-import com.vzome.api.Tool.OutputBehaviors;
 
 public class ToolController extends DefaultController
 {
@@ -24,19 +20,16 @@ public class ToolController extends DefaultController
 	}
 
 	@Override
-	public void doAction( String action, ActionEvent e ) throws Exception
+	public void doAction( String action ) throws Exception
 	{
-        EnumSet<InputBehaviors> inputBehaviors = this .tool .getInputBehaviors();
+        boolean selectInputs = this .tool .isSelectInputs();
+        boolean deleteInputs = this .tool .isDeleteInputs();
 		switch ( action ) {
 
 		case "apply":
 			// TODO use the checkbox modes, override with key modifiers
-			EnumSet<OutputBehaviors> outputBehaviors = EnumSet.noneOf(OutputBehaviors.class);
-			if ( !justSelect )
-				outputBehaviors .add( OutputBehaviors.CREATE );
-			if ( selectOutputs )
-				outputBehaviors .add( OutputBehaviors.SELECT );
-			this .tool .apply( inputBehaviors, outputBehaviors );
+			boolean createOutputs = ! justSelect;
+			this .tool .apply( selectInputs, deleteInputs, createOutputs, selectOutputs );
 			break;
 
         case "hideTool":
@@ -48,25 +41,12 @@ public class ToolController extends DefaultController
             break;
 
 		case "selectInputs":
-			if ( inputBehaviors .contains( InputBehaviors.SELECT ) )
-			    inputBehaviors .remove( InputBehaviors.SELECT );
-			else
-			    inputBehaviors .add( InputBehaviors.SELECT );
-			this .tool .setInputBehaviors( inputBehaviors );
+			this .tool .setInputBehaviors( !selectInputs, deleteInputs );
 			break;
 
 		case "deleteInputs":
-		    boolean deleteInputs;
-            if ( inputBehaviors .contains( InputBehaviors.DELETE ) ) {
-                inputBehaviors .remove( InputBehaviors.DELETE );
-                deleteInputs = false;
-            }
-            else {
-                inputBehaviors .add( InputBehaviors.DELETE );
-                inputBehaviors .remove( InputBehaviors.SELECT );
-                deleteInputs = true;
-            }
-            this .tool .setInputBehaviors( inputBehaviors );
+		    deleteInputs = ! deleteInputs;
+            this .tool .setInputBehaviors( selectInputs && !deleteInputs, deleteInputs );
 			if ( deleteInputs ) {
                 this .firePropertyChange( "selectInputs", null, "false" );
 			}
@@ -87,7 +67,7 @@ public class ToolController extends DefaultController
 			break;
 
 		default:
-			super .doAction( action, e );
+			super .doAction( action );
 		}
 	}
 
@@ -109,10 +89,10 @@ public class ToolController extends DefaultController
 			return Boolean .toString( this .tool .isPredefined() );
 
 		case "selectInputs":
-			return Boolean .toString( this .tool .getInputBehaviors() .contains( InputBehaviors.SELECT ) );
+			return Boolean .toString( this .tool .isSelectInputs() );
 
 		case "deleteInputs":
-			return Boolean .toString( this .tool .getInputBehaviors() .contains( InputBehaviors.DELETE ) );
+			return Boolean .toString( this .tool .isDeleteInputs() );
 
 		case "selectOutputs":
 			return Boolean .toString( this .selectOutputs );
@@ -148,7 +128,7 @@ public class ToolController extends DefaultController
 			switch ( menu[ i ] ) {
 
 			case "selectInputs":
-				result[ i ] = ! this .tool .getInputBehaviors() .contains( InputBehaviors.DELETE );
+				result[ i ] = ! this .tool .isDeleteInputs();
 				break;
 
 			case "selectOutputs":

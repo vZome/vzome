@@ -1,9 +1,6 @@
 
-//(c) Copyright 2013, Scott Vorthmann.
-
 package org.vorthmann.zome.app.impl;
 
-import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,10 +18,10 @@ import com.vzome.core.algebra.Quaternion;
 import com.vzome.core.algebra.VefVectorExporter;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.math.symmetry.WythoffConstruction;
 
 public class PolytopesController extends DefaultController
@@ -40,7 +37,7 @@ public class PolytopesController extends DefaultController
     private AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
     private final AlgebraicField field;
     private final AlgebraicNumber defaultScaleFactor;
-    private final FieldApplication fieldApp;
+    private final Symmetries4D fieldApp;
 
     public PolytopesController( DocumentModel document )
     {
@@ -50,7 +47,7 @@ public class PolytopesController extends DefaultController
         this .defaultScaleFactor = field .createPower( Direction .USER_SCALE + 2 );
         for (int i = 0; i < edgeScales.length; i++)
         {
-            edgeScales[ i ] = field .createPower( 0 );
+            edgeScales[ i ] = field .one();
         }
         // TODO: get the list from the field itself
         if ( null == document .getFieldApplication() .getQuaternionSymmetry( "H_4" ) ) {
@@ -63,7 +60,7 @@ public class PolytopesController extends DefaultController
     }
 
     @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
+    public void doAction( String action ) throws Exception
     {
         switch ( action ) {
 
@@ -81,7 +78,7 @@ public class PolytopesController extends DefaultController
             Segment strut = model .getSelectedSegment();
             if ( strut != null ) {
                 AlgebraicVector vector = strut .getOffset();
-                SymmetrySystem symm = model .getSymmetrySystem();
+                OrbitSource symm = model .getSymmetrySystem();
                 Axis zone = symm .getAxis( vector );
                 AlgebraicNumber len = zone .getLength( vector );
                 len = zone .getOrbit() .getLengthInUnits( len );
@@ -130,7 +127,7 @@ public class PolytopesController extends DefaultController
             renderEdge[ edge ] = ! state;
         }
         else
-            super.doAction( action, e );
+            super.doAction( action );
     }
     
     private static int encodeBits( boolean[] bits )

@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.edits;
 
 
@@ -8,14 +6,11 @@ import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.ChangeOfBasis;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
-import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.Transformation;
-import com.vzome.core.construction.TransformedPoint;
-import com.vzome.core.construction.TransformedPolygon;
-import com.vzome.core.construction.TransformedSegment;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.EditorModel;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.ImplicitSymmetryParameters;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
 
@@ -23,10 +18,10 @@ public class AffineTransformAll extends ChangeManifestations
 {
     private Point center;
     
-    public AffineTransformAll( EditorModel editor )
+    public AffineTransformAll( EditorModel editorModel )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
-        this.center = editor .getCenterPoint();
+        super( editorModel );
+        this.center = ((ImplicitSymmetryParameters) editorModel) .getCenterPoint();
     }
     
     @Override
@@ -38,11 +33,11 @@ public class AffineTransformAll extends ChangeManifestations
             if ( man instanceof Strut )
             {
                 if ( s1 == null )
-                    s1 = (Segment) man .getConstructions() .next();
+                    s1 = (Segment) man .getFirstConstruction();
                 else if ( s2 == null )
-                    s2 = (Segment) man .getConstructions() .next();
+                    s2 = (Segment) man .getFirstConstruction();
                 else if ( s3 == null )
-                    s3 = (Segment) man .getConstructions() .next();
+                    s3 = (Segment) man .getFirstConstruction();
             }
         }
         if ( s3 == null || s2 == null || s1 == null )
@@ -55,19 +50,10 @@ public class AffineTransformAll extends ChangeManifestations
 
         // now apply it to all objects
         for (Manifestation m : mManifestations) {
-            if ( m .getRenderedObject() == null )
+            if ( ! m .isRendered() )
                 continue;
-            Construction c = m .getConstructions() .next();
-            Construction result = null;
-            if ( c instanceof Point ) {
-                result = new TransformedPoint( transform, (Point) c );
-            } else if ( c instanceof Segment ) {
-                result = new TransformedSegment( transform, (Segment) c );
-            } else if ( c instanceof Polygon ) {
-                result = new TransformedPolygon( transform, (Polygon) c );
-            } else {
-                // TODO handle other constructions 
-            }
+            Construction c = m .getFirstConstruction();
+            Construction result = transform .transform( c );
             select( manifestConstruction( result ) );
         }
         redo();

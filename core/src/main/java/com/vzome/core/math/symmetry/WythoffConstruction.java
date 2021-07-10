@@ -1,18 +1,11 @@
 
-//(c) Copyright 2007, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.math.symmetry;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.PentagonField;
-
 
 public class WythoffConstruction
 {
@@ -139,37 +132,6 @@ public class WythoffConstruction
             out .println( numEdges );
             out .println( vefEdges .toString() );
             out .close();
-        }
-    }
-    
-    public static void main( String[] args )
-    {
-        String groupName = args[ 0 ];
-        AlgebraicField field = new PentagonField();
-        CoxeterGroup group = new B4Group( field );
-        if ( "B4" .equals( groupName ) )
-            group = new B4Group( field );
-        else if ( "A4" .equals( groupName ) )
-            group = new A4Group( field );
-        else if ( "F4" .equals( groupName ) )
-            group = new F4Group( field );
-        int index = Integer .parseInt( args[ 1 ], 2 );
-        VefPrinter listener = new VefPrinter( field );
-        AlgebraicNumber[] scales = new AlgebraicNumber[4];
-        for (int i = 0; i < scales.length; i++)
-        {
-            scales[ i ] = field .createPower( i );
-        }
-        constructPolytope( group, index, index, scales, group, listener );
-
-        String wythoff = Integer .toBinaryString( index );
-        try {
-            PrintWriter out = new PrintWriter( new FileWriter( new File( groupName + "_" + wythoff + ".vef" ) ) );
-            listener .print( out );
-            out .close();
-        } catch ( IOException e ) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
     }
 }

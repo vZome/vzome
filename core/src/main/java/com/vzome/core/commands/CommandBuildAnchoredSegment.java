@@ -22,7 +22,7 @@ public class CommandBuildAnchoredSegment extends AbstractCommand
     @Override
     public void getXml( Element xml, AttributeMap attributes )
     {
-        XmlSaveFormat .serializeAxis( xml, "symm", "dir", "index", "sense", (Axis) attributes .get( "axis" ) );
+        XmlSymmetryFormat .serializeAxis( xml, "symm", "dir", "index", "sense", (Axis) attributes .get( "axis" ) );
         XmlSaveFormat .serializeNumber( xml, "len", (AlgebraicNumber) attributes .get( "length" ) );
     }
 
@@ -34,7 +34,7 @@ public class CommandBuildAnchoredSegment extends AbstractCommand
         if ( format .commandEditsCompacted() )
         {
             // attrs will be empty but for fixed attributes
-            attrs .put( "axis", format .parseAxis( xml, "symm", "dir", "index", "sense" ) );
+            attrs .put( "axis", ((XmlSymmetryFormat) format) .parseAxis( xml, "symm", "dir", "index", "sense" ) );
             attrs .put( "length", format .parseNumber( xml, "len" ) );
         }
         return attrs;
@@ -46,8 +46,8 @@ public class CommandBuildAnchoredSegment extends AbstractCommand
 
     private static final Object[][] PARAM_SIGNATURE = new Object[][]{ { "start", Point.class } };
 
-    private static final Object[][] ATTR_SIGNATURE = new Object[][]{ { AXIS_ATTR, Axis.class },
-            														{ LENGTH_ATTR, int[].class } };
+//    private static final Object[][] ATTR_SIGNATURE = new Object[][]{ { AXIS_ATTR, Axis.class },
+//            														{ LENGTH_ATTR, int[].class } };
 
     @Override
     public Object[][] getParameterSignature()
@@ -58,7 +58,7 @@ public class CommandBuildAnchoredSegment extends AbstractCommand
     @Override
     public Object[][] getAttributeSignature()
     {
-        return ATTR_SIGNATURE;
+        return null;
     }
     
     @Override

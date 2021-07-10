@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.edits;
 
 import java.util.HashSet;
@@ -8,8 +6,8 @@ import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
-import com.vzome.core.editor.ChangeSelection;
-import com.vzome.core.editor.EditorModel;
+import com.vzome.core.editor.api.ChangeSelection;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -46,7 +44,7 @@ public class SelectNeighbors extends ChangeSelection
         for (Connector ball : balls) {
             AlgebraicVector loc = ball .getLocation();
             for (Manifestation man : model) {
-                if ( man .getRenderedObject() == null )
+                if ( ! man .isRendered() )
                     continue;  // hidden!
                 if ( man instanceof Strut && ! struts .contains( man ) ) {
                     Strut strut = (Strut) man;
@@ -70,7 +68,7 @@ public class SelectNeighbors extends ChangeSelection
             AlgebraicVector loc = strut .getLocation();
             AlgebraicVector end = strut .getEnd();
             for (Manifestation man : model) {
-                if ( man .getRenderedObject() == null )
+                if ( ! man .isRendered() )
                     continue;  // hidden!
                 if ( man instanceof Connector && ! balls .contains( man ) ) {
                     AlgebraicVector bloc = man .getLocation();
@@ -83,7 +81,7 @@ public class SelectNeighbors extends ChangeSelection
                 for (Panel panel : panels) {
                 for (AlgebraicVector loc : panel) {
                     for (Manifestation man : model) {
-                        if ( man .getRenderedObject() != null ) {// if not hidden!
+                        if ( man .isRendered() ) {// if not hidden!
                             if ( man instanceof Connector && ! balls .contains( man ) ) {
                                 AlgebraicVector bloc = man .getLocation();
                                 if ( bloc .equals( loc ) ) {

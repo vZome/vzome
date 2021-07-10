@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.editor;
 
 import java.util.Map;
@@ -9,6 +7,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.editor.api.Context;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.commands.XmlSaveFormat;
 
 /**
@@ -16,7 +17,7 @@ import com.vzome.core.commands.XmlSaveFormat;
  * @author Scott Vorthmann
  *
  */
-public class BeginBlock implements UndoableEdit
+public class BeginBlock extends UndoableEdit
 {
     public BeginBlock( EditorModel editor )
     {
@@ -44,7 +45,7 @@ public class BeginBlock implements UndoableEdit
     @Override
     public boolean isVisible()
     {
-    	return false;
+        return false;
     }
 
     @Override

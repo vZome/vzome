@@ -1,6 +1,7 @@
 package com.vzome.core.math.symmetry;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicVector;
@@ -25,6 +26,11 @@ public class PlaneOrbitSet extends OrbitSet
                     this .zones .add( axis );
             }
         }
+	}
+	
+	public Iterator<Axis> zones()
+	{
+	    return this.zones .iterator();
 	}
 
 	@Override

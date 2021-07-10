@@ -20,6 +20,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -41,6 +42,8 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
     private final JButton scaleUp, scaleDown, superShortScale, shortScale, mediumScale, longScale;
     
     private final JRadioButton[] multiplierButtons;
+
+    private JComboBox<String> multiplierCombo;
 
     private final JCheckBox halfCheckbox;
 
@@ -72,7 +75,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
     @Override
     public void actionPerformed( ActionEvent e )
     {
-        controller .actionPerformed( e );
+        controller .actionPerformed( e .getSource(), e .getActionCommand() );
         renderLength();
     }
 
@@ -89,7 +92,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
             this .controller .addPropertyListener( this );
             this .controller .getMouseTool() .attach( this );
         }
-        lengthDialog = new LengthDialog( frame, controller .getSubController( "unit" ), "Custom Unit Strut Length", controller );
+        lengthDialog = new LengthDialog( frame, controller .getSubController( "unit" ), "Custom Unit Strut Length", new ControllerActionListener(controller) );
         boolean value = "true" .equals( controller .getProperty( "showStrutScales" ) );
         lengthDisplay .setVisible( value );
         switchOrbit();
@@ -113,6 +116,23 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                 scalarPanel .add( new Label( "Scale by: " ), BorderLayout.WEST );
                 if ( labels .length == 1 ) {
                     scalarPanel .add( new Label( labels[ 0 ] ), BorderLayout.CENTER );
+                } else if ( labels .length > 3 ) {
+                    // only 3 radio buttons will fit so use a combo box instead
+                    multiplierCombo = new JComboBox<>(labels);
+                    // works fine without setting the initial selected index to 0 
+                    // but if we decide to, then do it before attaching any ActionListener
+                    // multiplierCombo.setSelectedIndex(0); 
+                    multiplierCombo.setActionCommand("setMultiplier.");
+                    ActionListener actionListener = this;
+                    multiplierCombo.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            JComboBox<?> source = (JComboBox<?>) e.getSource();
+                            String command = e.getActionCommand() + source.getSelectedIndex();                  
+                            actionListener.actionPerformed( new ActionEvent(source, e.getID(), command, e.getWhen(), e.getModifiers()) );
+                        }
+                    });
+                    scalarPanel.add(multiplierCombo);
                 } else {
                     JPanel scalarButtonsPanel = new JPanel();
                     scalarPanel .add( scalarButtonsPanel, BorderLayout.CENTER );
@@ -259,7 +279,7 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
                         public void actionPerformed( ActionEvent e )
                         {
                             // Tell the LengthController to push the custom unit to the NumberController
-                            initialController .actionPerformed( new ActionEvent( e .getSource(), e .getID(), "setCustomUnit" ) );
+                            initialController .actionPerformed( e .getSource(), "setCustomUnit" );
                             // ... then update the dialog
                             lengthDialog .syncFromModel();
                             lengthDialog .setVisible( true );
@@ -336,12 +356,17 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
         emitSliderEvents = false;
         scaleSlider .setValue( Integer .parseInt( controller .getProperty( "scale" ) ) );
         emitSliderEvents = true;
-        
-        if ( multiplierButtons[ 0 ] != null ) {
-            String multiplierStr = controller .getProperty( "multiplier" );
-            int multiplier = Integer .parseInt( multiplierStr );
-            for ( int j = 0; j < multiplierButtons.length; j++ ) {
-                multiplierButtons[ j ] .setSelected( j == multiplier );
+
+        String multiplierStr = controller.getProperty("multiplier");
+        if(!multiplierStr.isEmpty()) {
+            int multiplier = Integer.parseInt(multiplierStr);
+            if (multiplierButtons[0] != null) {
+                for (int j = 0; j < multiplierButtons.length; j++) {
+                    multiplierButtons[j].setSelected(j == multiplier);
+                }
+            }
+            if (multiplierCombo != null) {
+                multiplierCombo.setSelectedIndex(multiplier);
             }
         }
 

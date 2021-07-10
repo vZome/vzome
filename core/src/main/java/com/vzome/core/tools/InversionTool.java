@@ -1,6 +1,4 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.tools;
 
 
@@ -8,9 +6,9 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PointReflection;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.editor.AbstractToolFactory;
-import com.vzome.core.editor.Selection;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 
@@ -72,7 +70,7 @@ public class InversionTool extends TransformationTool
         		{
         			if ( center != null )
         				return "more than one center selected";
-        			center = (Point) ((Connector) man) .getConstructions() .next();
+        			center = (Point) ((Connector) man) .getFirstConstruction();
         		}
         		else if ( ! prepareTool )
         			return "panel or strut selected";

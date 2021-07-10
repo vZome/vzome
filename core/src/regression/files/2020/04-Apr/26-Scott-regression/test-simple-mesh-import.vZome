@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="dev" coreVersion="7.0" edition="vZome" field="golden" version="7.0">
+  <EditHistory editNumber="10" lastStickyEdit="-1">
+    <ImportSimpleMeshJson projection="Quaternion" quaternion="1 0 0 0 0 0 0 0" scale="1 2">{
+  "field" : "golden",
+  "vertices" : [ [ [ -4, -6 ], [ -2, -3 ], [ -1, -2 ] ], [ [ -4, -6 ], [ 0, 0 ], [ 0, 0 ] ], [ [ -3, -4 ], [ -4, -7 ], [ -3, -5 ] ], [ [ -3, -4 ], [ -2, -3 ], [ -3, -5 ] ], [ [ -3, -4 ], [ 0, 0 ], [ -2, -3 ] ], [ [ -2, -3 ], [ -3, -5 ], [ -5, -8 ] ], [ [ -2, -3 ], [ -3, -5 ], [ -1, -2 ] ], [ [ -2, -3 ], [ -1, -2 ], [ 0, 0 ] ], [ [ -1, -1 ], [ -5, -8 ], [ -4, -7 ] ], [ [ -1, -1 ], [ -5, -8 ], [ -2, -3 ] ], [ [ -1, -1 ], [ -3, -5 ], [ -3, -5 ] ], [ [ -1, -1 ], [ -1, -2 ], [ -4, -7 ] ], [ [ -1, -1 ], [ -1, -2 ], [ -2, -3 ] ], [ [ 0, 0 ], [ -2, -3 ], [ -1, -2 ] ], [ [ 0, 0 ], [ 0, 0 ], [ 0, 0 ] ], [ [ 0, 1 ], [ -3, -5 ], [ -5, -8 ] ], [ [ 0, 1 ], [ -3, -5 ], [ -1, -2 ] ], [ [ 1, 2 ], [ -4, -7 ], [ -3, -5 ] ], [ [ 1, 2 ], [ -2, -3 ], [ -3, -5 ] ], [ [ 1, 2 ], [ 0, 0 ], [ -2, -3 ] ] ],
+  "edges" : [ [ 6, 0 ], [ 12, 7 ], [ 6, 7 ], [ 6, 13 ], [ 13, 14 ], [ 10, 17 ], [ 0, 1 ], [ 18, 13 ], [ 10, 18 ], [ 10, 5 ], [ 10, 16 ], [ 7, 14 ], [ 10, 6 ], [ 12, 19 ], [ 10, 8 ], [ 10, 12 ], [ 10, 15 ], [ 10, 11 ], [ 4, 1 ], [ 18, 19 ], [ 3, 0 ], [ 12, 4 ], [ 10, 9 ], [ 7, 1 ], [ 10, 3 ], [ 19, 14 ], [ 3, 4 ], [ 10, 2 ] ],
+  "faces" : [ [ 10, 3, 0, 6 ], [ 1, 7, 6, 0 ], [ 14, 13, 18, 19 ], [ 14, 7, 6, 13 ], [ 14, 19, 12, 7 ], [ 10, 12, 19, 18 ], [ 10, 12, 4, 3 ], [ 1, 4, 12, 7 ], [ 10, 6, 7, 12 ], [ 10, 18, 13, 6 ], [ 1, 0, 3, 4 ] ]
+}
+</ImportSimpleMeshJson>
+    <BeginBlock/>
+    <SelectAll/>
+    <SelectManifestation point="-1 -1 -5 -8 -4 -7"/>
+    <SelectManifestation point="-1 -1 -5 -8 -4 -7"/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 0 0 0"/>
+      <polygonVertex at="0 0 -2 -3 -1 -2"/>
+      <polygonVertex at="1 2 -2 -3 -3 -5"/>
+      <polygonVertex at="1 2 0 0 -2 -3"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool name="tetrahedral.builtin/tetrahedral around origin" selectInputs="true"/>
+    <DeselectAll/>
+  </EditHistory>
+  <notes/>
+  <sceneModel ambientLight="41,41,41" background="178,205,230">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="108.73126983642578" far="217.46253967285156" near="0.2718281786416199" parallel="false" stereoAngle="0.0" width="48.9290714263916">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.7579960479130579" y="0.6458600366755689" z="-0.0911416719926818"/>
+      <LookDirection x="-0.039529536653816026" y="-0.18496239884568091" z="-0.9819502669408389"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="solid connectors">
+    <Direction color="6,96,141" name="blue"/>
+    <Direction color="197,3,20" name="red"/>
+    <Direction color="245,163,1" name="yellow"/>
+    <Direction color="2,130,53" name="green"/>
+    <Direction color="236,89,1" name="orange"/>
+    <Direction color="113,64,178" name="purple"/>
+    <Direction color="36,35,38" name="black"/>
+    <Direction color="144,127,227" name="lavender"/>
+    <Direction color="116,104,1" name="olive"/>
+    <Direction color="141,2,41" name="maroon"/>
+    <Direction color="251,94,160" name="rose"/>
+    <Direction color="52,48,136" name="navy"/>
+    <Direction color="53,181,179" name="turquoise"/>
+    <Direction color="254,124,123" name="coral"/>
+    <Direction color="218,225,83" name="sulfur"/>
+    <Direction color="187,144,85" name="sand"/>
+    <Direction color="129,191,30" name="apple"/>
+    <Direction color="144,56,14" name="cinnamon"/>
+    <Direction color="12,84,55" name="spruce"/>
+    <Direction color="105,54,1" name="brown"/>
+  </SymmetrySystem>
+  <Tools/>
+</vzome:vZome>

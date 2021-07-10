@@ -1,14 +1,11 @@
 
-//(c) Copyright 2014, Scott Vorthmann.
-
 package org.vorthmann.zome.render.jogl;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.Collection;
 
-import javax.vecmath.Matrix4d;
+import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 
 import com.jogamp.opengl.GL2;
@@ -23,11 +20,11 @@ import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.math.Ray;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.awt.AWTGLReadBufferUtil;
+import com.vzome.core.construction.Color;
 import com.vzome.core.math.Line;
 import com.vzome.core.math.RealVector;
-import com.vzome.core.render.Color;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderingChanges;
+import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.RenderingViewer;
 import com.vzome.opengl.OutlineRenderer;
@@ -50,7 +47,9 @@ import com.vzome.opengl.SolidRenderer;
  */
 public class JoglRenderingViewer implements RenderingViewer, GLEventListener
 {
-    private final JoglScene scene;
+    private final Scene scene;
+    private final Component canvas;
+    
     private JoglOpenGlShim glShim;
     private Renderer outlines = null;
     private Renderer solids = null;
@@ -66,16 +65,15 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     private float[] ambientLight;
     private int width;
     private int height;
-    private boolean forceRender = true;
+    private boolean cameraChanged = true;
     private float fogFront;
 
-    public JoglRenderingViewer( Lights lights, JoglScene scene, GLAutoDrawable drawable )
+    public JoglRenderingViewer( Scene scene, GLAutoDrawable drawable )
     {
         this .scene = scene;
+        this .canvas = (Component) drawable;
 
-        if ( drawable == null )
-            return;
-
+        Lights lights = scene .getLighting();
         int num = lights .size();
         this .lightDirections = new float[num][];
         this .lightColors = new float[num][];
@@ -108,12 +106,12 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
             return; // still initializing
         
         this .solids .setLights( this .lightDirections, this .lightColors, this .ambientLight );
-        this .solids .setView( this .modelView, this .projection, this .fogFront, this .far );
+        this .solids .setView( this .modelView, this .projection, this .near, this .fogFront, this .far, this .fovX != 0f );
         // OutlineRenderer doesn't currently use lights, but calling setLights() doesn't hurt and is consistent with captureImage()
         this .outlines .setLights( this .lightDirections, this .lightColors, this .ambientLight );
-        this .outlines .setView( this.modelView, projection, this .fogFront, this .far );
-        this .scene .render( this .solids, this .outlines, this .forceRender );
-        this .forceRender = false;
+        this .outlines .setView( this.modelView, projection, this .near, this .fogFront, this .far, this .fovX != 0f );
+        this .scene .render( this .solids, this .outlines, this .cameraChanged );
+        this .cameraChanged = false;
     }
     
     private void setProjection()
@@ -128,7 +126,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         }
         float diff = ( this .far - this .near )/5; // offset from near and far by 20%
         this .fogFront = near + 2 * diff;
-        this .forceRender  = true;
+        this .cameraChanged  = true;
     }
 
     // These are GLEventListener methods
@@ -138,8 +136,9 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     {
         this .glShim = new JoglOpenGlShim( drawable .getGL() .getGL2() );
         boolean useVBOs = true;  // this context will rendered many, many times
-        this .solids = new SolidRenderer( this .glShim, useVBOs );
-        this .outlines = new OutlineRenderer( this .glShim, useVBOs );
+        int maxOrientations = this .scene .getMaxOrientations();
+        this .solids = new SolidRenderer( this .glShim, useVBOs, maxOrientations );
+        this .outlines = new OutlineRenderer( this .glShim, useVBOs, maxOrientations );
         // store the scene geometry
     }
 
@@ -162,22 +161,19 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     // These are RenderingViewer methods
     
     @Override
-    public void setEye( int eye ) {}
-
-    @Override
-    public void setViewTransformation( Matrix4d trans, int eye )
+    public void setViewTransformation( Matrix4f trans )
     {
-        Matrix4d copy = new Matrix4d();
+        Matrix4f copy = new Matrix4f();
         copy .invert( trans );
         int i = 0;
         // JOGL requires column-major order
         for ( int column = 0; column < 4; column++ )
             for ( int row = 0; row < 4; row++ )
             {
-                this .modelView[ i ] = (float) copy .getElement( row, column );
+                this .modelView[ i ] = copy .getElement( row, column );
                 ++i;
             }
-        this .forceRender  = true;
+        this .cameraChanged  = true;
     }
 
     @Override
@@ -252,19 +248,6 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     }
     
     @Override
-    public Collection<RenderedManifestation> pickCube()
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public RenderingChanges getRenderingChanges()
-    {
-        return this .scene;
-    }
-
-    @Override
     public void captureImage( int maxSize, boolean withAlpha, ImageCapture capture )
     {
         // Key parts of this copied from TestGLOffscreenAutoDrawableBug1044AWT in the Github jogl repo,
@@ -272,9 +255,14 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         
         int imageWidth = this .width;
         int imageHeight = this .height;
+        float aspectRatio = (float) imageHeight / (float) imageWidth;
         if ( maxSize > 0 ) {
             imageWidth = maxSize;
-            imageHeight = imageWidth * 4 / 5;
+            if ( imageHeight > 0 ) {
+                imageHeight = (int) (imageWidth * aspectRatio);  // This was hardcoded, now is correct.
+            } else {
+                imageHeight = imageWidth * 4 / 5;
+            }
         }
         
         GLProfile glprofile = GLProfile .getDefault();
@@ -293,14 +281,15 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         final GL2 gl2 = context .getGL() .getGL2();
         JoglOpenGlShim shim = new JoglOpenGlShim( gl2 );
         boolean useVBOs = false;  // this context will be discarded after a single rendering
+        int maxOrientations = this .scene .getMaxOrientations();
         
-        Renderer tempSolids = new SolidRenderer( shim, useVBOs  );
+        Renderer tempSolids = new SolidRenderer( shim, useVBOs, maxOrientations );
         tempSolids .setLights( this .lightDirections, this .lightColors, this .ambientLight );
-        tempSolids .setView( this .modelView, this .projection, this .fogFront, this .far );
-        Renderer tempOutlines = new OutlineRenderer( shim, useVBOs );
+        tempSolids .setView( this .modelView, this .projection, this .near, this .fogFront, this .far, this .fovX != 0f );
+        Renderer tempOutlines = new OutlineRenderer( shim, useVBOs, maxOrientations );
         // OutlineRenderer doesn't currently use lights, but calling setLights() doesn't hurt anything
         tempOutlines .setLights( this .lightDirections, this .lightColors, this .ambientLight );
-        tempOutlines .setView( this .modelView, this .projection, this .fogFront, this .far );
+        tempOutlines .setView( this .modelView, this .projection, this .near, this .fogFront, this .far, this .fovX != 0f );
         this .scene .render( tempSolids, tempOutlines, true );
 
         final AWTGLReadBufferUtil agb = new AWTGLReadBufferUtil( glprofile, withAlpha );
@@ -311,5 +300,11 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         context .destroy();
         drawable .setRealized( false );
         System.out.println( "Done!" );
+    }
+
+    @Override
+    public Component getCanvas()
+    {
+        return this .canvas;
     }
 }

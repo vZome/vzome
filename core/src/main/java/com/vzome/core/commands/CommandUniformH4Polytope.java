@@ -22,11 +22,11 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
-import com.vzome.core.math.DomUtils;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction;
+import com.vzome.xml.DomUtils;
 
 /**
  * @author Scott Vorthmann
@@ -45,7 +45,7 @@ public class CommandUniformH4Polytope extends CommandTransform
             symm = new H4Symmetry( field );
             h4Symms .put( field, symm );
         }
-        this .mRoots = format .getQuaternionicSymmetry( "H_4" ) .getRoots();
+        this .mRoots = ((XmlSymmetryFormat) format) .getQuaternionicSymmetry( "H_4" ) .getRoots();
     }
     
     private final Map<AlgebraicField, H4Symmetry> h4Symms = new HashMap<>();
@@ -219,7 +219,7 @@ public class CommandUniformH4Polytope extends CommandTransform
     public void getXml( Element result, AttributeMap attributes )
     {
         if ( quaternionVector != null )
-        	DomUtils .addAttribute( result, "quaternion", quaternionVector .toString() );        
+            DomUtils .addAttribute( result, "quaternion", quaternionVector .toParsableString() );        
         super .getXml( result, attributes );
     }
 
@@ -276,7 +276,7 @@ public class CommandUniformH4Polytope extends CommandTransform
         if ( rightQuat != null )
             proj = new QuaternionProjection( field, leftQuat, rightQuat );
         
-//      proj = new PerspectiveProjection( field, field .add( field .createPower( 3 ), field .createPower( 0 ) ) );
+//      proj = new PerspectiveProjection( field, field .add( field .createPower( 3 ), field .one() ) );
 //        proj = new PerspectiveProjection( field, field .subtract( field .createPower( 5 ), field .createPower( 3 ) ) );
 //        proj = new PerspectiveProjection( field, field .createPower( 4 ) );
         

@@ -11,9 +11,14 @@ wrapper() {
    gradleVersion = '5.6.4' //version required
 }
 
-// these environment variables are available during a Jenkins build
+// These environment variables are automatically available during a Jenkins build
 ext.buildNumber = System.getenv( "BUILD_NUMBER" ) ?: 'dev'
 ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
+
+// These environment variables must be configured in the Jenkins job explicitly.
+ext.githubClientId = System.getenv( "GITHUB_CLIENT_ID" )
+ext.githubClientSecret = System.getenv( "GITHUB_CLIENT_SECRET" )
+
 ext.appName = 'vZome'
 ext.edition = appName
 
@@ -36,17 +41,23 @@ subprojects {
     mavenLocal()
     mavenCentral()
     
+    // This is for the JSweet compiler
+    maven { url "http://repository.jsweet.org/artifactory/libs-release-local" }
+    maven { url "http://repository.jsweet.org/artifactory/libs-snapshot-local" }
+
     // this one is for javax.media.jai
     maven { url 'http://repository.springsource.com/maven/bundles/external' }
-    
-    ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR downloads for java3d/*
-    // This failed due to issues mentioned here:
-    //   https://discuss.gradle.org/t/gradle-fails-to-download-a-dependency-if-http-head-is-not-supported-by-a-web-server/9885/3
-    //   https://discuss.gradle.org/t/use-github-releases-as-dependency-repository-plugin/15944/7
-    //  url "https://github.com/hharrison/"
-    //  patternLayout {
-    //    artifact "[organization]-core/releases/downloads/[revision]/[artifact].[ext]"
-    
+
+    // For EGit
+    maven { url 'https://repo.eclipse.org/content/groups/releases' }
+
+    ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR downloads for JOGL
+      url "http://jogamp.org/deployment"
+      layout "pattern", {
+        artifact "[revision]/jar/[artifact].[ext]"
+      }
+    }
+    ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR download for vecmath
       url "http://jogamp.org/deployment"
       patternLayout {
         artifact "[organization]/[revision]/[artifact].[ext]"
@@ -72,4 +83,3 @@ project(':server') {
         compile project(':desktop')
     }
 }
-

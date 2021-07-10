@@ -1,10 +1,6 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.tools;
 
-
-import java.util.EnumSet;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command;
@@ -17,9 +13,9 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.editor.AbstractToolFactory;
-import com.vzome.core.editor.Selection;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
@@ -65,7 +61,7 @@ public class ProjectionTool extends TransformationTool
 	public ProjectionTool( String id, ToolsModel tools )
     {
         super( id, tools );
-        this .setInputBehaviors( EnumSet.of( InputBehaviors.DELETE ) );
+        this .setInputBehaviors( false, true );
     }
 
     @Override

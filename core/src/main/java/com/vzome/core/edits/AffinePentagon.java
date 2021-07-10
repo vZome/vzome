@@ -1,14 +1,10 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.edits;
 
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.AlgebraicFields;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
@@ -17,11 +13,10 @@ import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.construction.TransformedPoint;
 import com.vzome.core.construction.Translation;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.Selection;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.Strut;
 
 public class AffinePentagon extends ChangeManifestations
@@ -36,9 +31,9 @@ public class AffinePentagon extends ChangeManifestations
             unselect( man );
             if ( man instanceof Strut ) {
                 if ( strut1 == null ) {
-                    strut1 = Strut.class.cast(man);
+                    strut1 = (Strut) man;
                 } else if ( strut2 == null ) {
-                    strut2 = Strut.class.cast(man);
+                    strut2 = (Strut) man;
                 }
             }
         }
@@ -53,14 +48,14 @@ public class AffinePentagon extends ChangeManifestations
         // I'm not going to enable it in the menu yet.
         // TODO: I plan to replace this command with a more generalized AffinePolygon command 
         // and I'll add the new command to the menu at that time 
-        if (! AlgebraicFields.haveSameInitialCoefficients(field, PentagonField.FIELD_NAME) ) {
-            fail("Affine pentagon command requires a Pentagon field or subField.");
-        }
+//        if (! AlgebraicFields.haveSameInitialCoefficients(field, "golden" ) ) {
+//            fail("Affine pentagon command requires a Pentagon field or subField.");
+//        }
 
         // Before we start, be sure the balls at the ends of each strut have not been deleted or hidden.
         // Restore them just in case. No need to test if they already exist.
-        Segment s1 = Segment.class.cast(strut1.getConstructions().next());
-        Segment s2 = Segment.class.cast(strut2.getConstructions().next());
+        Segment s1 = (Segment) strut1.getFirstConstruction();
+        Segment s2 = (Segment) strut2.getFirstConstruction();
         manifestConstruction(new SegmentEndPoint(s1, true));
         manifestConstruction(new SegmentEndPoint(s1, false));
         manifestConstruction(new SegmentEndPoint(s2, true));
@@ -100,9 +95,9 @@ public class AffinePentagon extends ChangeManifestations
             if ( m instanceof Connector ) {
                 AlgebraicVector loc = m .getLocation();
                 if ( loc .equals( v1 ) )
-                    p1 = (Point) m .getConstructions() .next();
+                    p1 = (Point) m .getFirstConstruction();
                 else if ( loc .equals( v2 ) )
-                    p2 = (Point) m .getConstructions() .next();
+                    p2 = (Point) m .getFirstConstruction();
             }
         }
 
@@ -141,9 +136,9 @@ public class AffinePentagon extends ChangeManifestations
         redo();
     }
         
-    public AffinePentagon( Selection selection, RealizedModel realized )
+    public AffinePentagon( EditorModel editorModel )
     {
-        super( selection, realized );
+        super( editorModel );
     }
 
     @Override

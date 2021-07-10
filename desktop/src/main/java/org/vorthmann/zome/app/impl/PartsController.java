@@ -1,23 +1,22 @@
 
-//(c) Copyright 2013, Scott Vorthmann.
-
 package org.vorthmann.zome.app.impl;
 
 import org.vorthmann.ui.DefaultController;
 
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.construction.Color;
+import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
-import com.vzome.core.render.Color;
+import com.vzome.core.model.StrutImpl;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderedModel.OrbitSource;
 import com.vzome.core.render.RenderingChanges;
-import com.vzome.core.render.Shapes;
 
 import java.util.StringTokenizer;
 
@@ -126,7 +125,7 @@ public class PartsController extends DefaultController implements RenderingChang
 
         private PartInfo(Strut strut, OrbitSource orbits, AlgebraicNumber length) {
             // Don't maintain any reference to the strut.
-            Direction orbit = strut.getRenderedObject().getStrutOrbit();
+            Direction orbit = ((RenderedManifestation) ((StrutImpl) strut).getRenderedObject()) .getStrutOrbit();
             orbitStr = orbit.getName();
             rgbColor = orbits.getColor( orbit ).getRGB();
             StringBuffer buf = new StringBuffer();

@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.edits;
 
 import java.util.Map;
@@ -13,11 +11,11 @@ import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
-import com.vzome.core.editor.ChangeSelection;
-import com.vzome.core.editor.EditorModel;
-import com.vzome.core.math.DomUtils;
+import com.vzome.core.editor.api.ChangeSelection;
+import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
+import com.vzome.xml.DomUtils;
 
 public class SelectManifestation extends ChangeSelection
 {
@@ -54,7 +52,7 @@ public class SelectManifestation extends ChangeSelection
         {
             // must record the construction for save, because if this gets undone, there's no
             //  guarantee that the manifestation will have any constructions!
-            construction = this.mManifestation .getFirstConstruction();
+            construction = this.mManifestation .toConstruction();
         }
     }
 
@@ -67,7 +65,7 @@ public class SelectManifestation extends ChangeSelection
         {
             // must record the construction for save, because if this gets undone, there's no
             //  guarantee that the manifestation will have any constructions!
-            construction = this.mManifestation .getFirstConstruction();
+            construction = this.mManifestation .toConstruction();
         }
     }
     

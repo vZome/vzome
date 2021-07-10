@@ -1,12 +1,13 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.algebra;
 
-public final class PentagonField extends AlgebraicField
+import java.util.ArrayList;
+import java.util.List;
+
+public final class PentagonField extends AbstractAlgebraicField
 {
     public static final String FIELD_NAME = "golden";
-    
+
     /**
      * 
      * @return the coefficients of this AlgebraicField class. 
@@ -16,25 +17,31 @@ public final class PentagonField extends AlgebraicField
     public static double[] getFieldCoefficients() {
         return new double[] { 1.0d, PHI_VALUE };
     }
-    
+
     @Override
     public double[] getCoefficients() {
         return getFieldCoefficients();
     }
-    
+
     public PentagonField()
     {
         super( FIELD_NAME, 2 );
     };
 
     public static final double PHI_VALUE = ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
-    
+
     // I haven't dug into why this is true, at the moment
     //
     public static final double B1_LENGTH = 2d * PHI_VALUE * PHI_VALUE * PHI_VALUE;
 
     private static final int ONES_PLACE = 0, PHIS_PLACE = 1;
     
+    @Override
+    public boolean doubleFrameVectors()
+    {
+        return true;
+    }
+
     @Override
     double evaluateNumber( BigRational[] factors )
     {
@@ -44,20 +51,20 @@ public final class PentagonField extends AlgebraicField
     @Override
     public final BigRational[] multiply( BigRational[] v1, BigRational[] v2 )
     {
-    	BigRational phis = v1[PHIS_PLACE] .times( v2[ONES_PLACE] ) .plus( v1[ONES_PLACE] .times( v2[PHIS_PLACE] ) ) .plus( v1[PHIS_PLACE] .times( v2[PHIS_PLACE] ) );
-    	BigRational ones = v1[ONES_PLACE] .times( v2[ONES_PLACE] ) .plus( v1[PHIS_PLACE] .times( v2[PHIS_PLACE] ) );
-    	
-    	return new BigRational[]{ ones, phis };
+        BigRational phis = v1[PHIS_PLACE] .times( v2[ONES_PLACE] ) .plus( v1[ONES_PLACE] .times( v2[PHIS_PLACE] ) ) .plus( v1[PHIS_PLACE] .times( v2[PHIS_PLACE] ) );
+        BigRational ones = v1[ONES_PLACE] .times( v2[ONES_PLACE] ) .plus( v1[PHIS_PLACE] .times( v2[PHIS_PLACE] ) );
+
+        return new BigRational[]{ ones, phis };
     }
 
     @Override
     protected BigRational[] reciprocal( BigRational[] v2 )
     {
         BigRational denominator = v2[0].times(v2[0]) .plus( v2[0].times(v2[1]) ) .minus( v2[1].times(v2[1]) );
-        
+
         BigRational ones = v2[1] .plus( v2[0] ) .dividedBy( denominator );
         BigRational phis = v2[1] .negate() .dividedBy( denominator );
-        
+
         return new BigRational[]{ ones, phis };
     }
 
@@ -66,7 +73,7 @@ public final class PentagonField extends AlgebraicField
     {
         buf.append( "phi = ( 1 + sqrt(5) ) / 2" );
     }
-    
+
     /**
      * scalar for an affine pentagon
      * @return 
@@ -92,13 +99,34 @@ public final class PentagonField extends AlgebraicField
     BigRational[] scaleBy( BigRational[] factors, int whichIrrational )
     {
         switch (whichIrrational) {
-            case 0:
-                return factors;
-            case 1:
-                return new BigRational[]{ factors[ 1 ], factors[ 0 ] .plus( factors[ 1 ] ) };
-            default:
-                throw new IllegalArgumentException(whichIrrational + " is not a valid irrational in this field");
+        case 0:
+            return factors;
+        case 1:
+            return new BigRational[]{ factors[ 1 ], factors[ 0 ] .plus( factors[ 1 ] ) };
+        default:
+            throw new IllegalArgumentException(whichIrrational + " is not a valid irrational in this field");
         }
+    }
+
+    @Override
+    public List<Integer> recurrence( List<Integer> input )
+    {        
+        ArrayList<Integer> output = new ArrayList<>();
+        for ( int item : input )
+        {
+            switch ( item ) {
+
+            case 0:
+                output .add( 1 );
+                break;
+
+            default:
+                output .add( 0 );
+                output .add( 1 );
+                break;
+            }
+        }
+        return output;
     }
 
     @Override
@@ -119,7 +147,7 @@ public final class PentagonField extends AlgebraicField
             div = Integer .parseInt( string .substring( closeParen+2 ) );
             string = string .substring( 1, closeParen );
         }
-        
+
         int phis = 0;
         int phiIndex = string .indexOf( "phi" );
         if ( phiIndex >= 0 ) {
@@ -132,7 +160,7 @@ public final class PentagonField extends AlgebraicField
                 phis = Integer .parseInt( part );
             string = string .substring( phiIndex+3 );
         }
-        
+
         int ones;
         if ( string .length() == 0 )
             ones = 0;

@@ -5,11 +5,16 @@ apply plugin: 'application'
 
 description = 'vzome-desktop'
 
+def injectionKeys = [
+    'version', 'edition', 'buildNumber', 'gitCommit',
+    'githubClientId', 'githubClientSecret'
+]
+
 task recordBuildProperties {
     def propsFile = file( "$buildDir/buildPropsResource/build.properties" )
     ext.outputDir = propsFile .getParentFile()
     doFirst {
-        writeProjectProperties( [ 'version', 'edition', 'buildNumber', 'gitCommit' ], propsFile )
+        writeProjectProperties( injectionKeys, propsFile )
         println " recorded desktop build properties in $propsFile"
     }
 }
@@ -57,22 +62,38 @@ sourceSets {
 }
 
 dependencies {
-//    compile group: 'com.vzome.core', name: 'vzome-core', version:'0.16.0'
-//    compile group: 'java3d', name: 'j3dcore', version:'1.6.0-final'
-//    compile group: 'java3d', name: 'j3dutils', version:'1.6.0-final'
+    compile group: 'com.github.scribejava', name: 'scribejava-apis', version: '8.1.0'
+    compile group: 'com.github.scribejava', name: 'scribejava-httpclient-okhttp', version: '8.1.0'
+    compile group: 'org.eclipse.mylyn.github', name: 'org.eclipse.egit.github.core', version: '5.12.0.202106021050-rc1'
+
     compile group: 'java3d', name: 'vecmath', version:'1.6.0-final'
-    compile group: 'org.jogamp.gluegen', name: 'gluegen-rt-main', version:'2.3.2'
-    compile group: 'org.jogamp.jogl', name: 'jogl-all-main', version:'2.3.2'
+
+    compile group: 'org.jogamp', name: 'gluegen-rt', version:'v2.4.0-rc-20200307'
+    compile group: 'org.jogamp', name: 'gluegen-rt-natives-linux-aarch64', version:'v2.4.0-rc-20200307'
+    compile group: 'org.jogamp', name: 'gluegen-rt-natives-linux-amd64', version:'v2.4.0-rc-20200307'
+    compile group: 'org.jogamp', name: 'gluegen-rt-natives-linux-armv6hf', version:'v2.4.0-rc-20200307'
+    compile group: 'org.jogamp', name: 'gluegen-rt-natives-linux-i586', version:'v2.4.0-rc-20200307'
+    compile group: 'org.jogamp', name: 'gluegen-rt-natives-macosx-universal', version:'v2.4.0-rc-20200307'
+    compile group: 'org.jogamp', name: 'gluegen-rt-natives-windows-amd64', version:'v2.4.0-rc-20200307'
+    compile group: 'org.jogamp', name: 'gluegen-rt-natives-windows-i586', version:'v2.4.0-rc-20200307'
+
+    compile group: 'org.jogamp', name: 'jogl-all', version:'v2.4.0-rc-20200307'
+    compile group: 'org.jogamp', name: 'jogl-all-natives-linux-aarch64', version:'v2.4.0-rc-20200307'
+    compile group: 'org.jogamp', name: 'jogl-all-natives-linux-amd64', version:'v2.4.0-rc-20200307'
+    compile group: 'org.jogamp', name: 'jogl-all-natives-linux-armv6hf', version:'v2.4.0-rc-20200307'
+    compile group: 'org.jogamp', name: 'jogl-all-natives-linux-i586', version:'v2.4.0-rc-20200307'
+    compile group: 'org.jogamp', name: 'jogl-all-natives-macosx-universal', version:'v2.4.0-rc-20200307'
+    compile group: 'org.jogamp', name: 'jogl-all-natives-windows-amd64', version:'v2.4.0-rc-20200307'
+    compile group: 'org.jogamp', name: 'jogl-all-natives-windows-i586', version:'v2.4.0-rc-20200307'
+
     compile group: 'javax.media.jai', name: 'com.springsource.javax.media.jai.core', version:'1.1.3'
+    compile group: 'org.eclipse.lsp4j', name: 'org.eclipse.lsp4j.debug', version: '0.8.1'
     
     testCompile group: 'junit', name: 'junit', version:'4.12'
 }
 
 sourceSets {
     main {
-        java {
-            exclude 'org/vorthmann/zome/render/java3d/**' 
-        }
         resources {
             // The convention-based default built-in srcDir is 'src/main/resources' 
             // Append any additional SrcDir entries here...
@@ -80,6 +101,7 @@ sourceSets {
             // listed alphabetically
             include '**/*.gif'
             include '**/*.jpg'
+            include '**/*.md'
             include '**/*.pdf'
             include '**/*.png'
             include '**/*.properties'

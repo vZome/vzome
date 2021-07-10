@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.edits;
 
 import java.util.List;
@@ -11,31 +9,35 @@ import org.w3c.dom.Node;
 
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.VefVectorExporter;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.Segment;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.EditorModel;
 import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.Shapes;
+import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.VefToPolyhedron;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.model.HasRenderedObject;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.model.VefModelExporter;
-import com.vzome.core.render.Color;
+import com.vzome.core.model.RenderedObject;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.render.Shapes;
 
 public class ReplaceWithShape extends ChangeManifestations
 {
@@ -51,19 +53,19 @@ public class ReplaceWithShape extends ChangeManifestations
 
     private EditorModel editor;
 
-    private void replace( Manifestation man, RenderedManifestation rm, Polyhedron shape )
+    private void replace( Manifestation man, RenderedObject renderedObject, Polyhedron shape )
     {
         if ( man instanceof Panel )
             return;
-        if (rm != null) {
-            AlgebraicMatrix orientation = rm .getOrientation();
+        if (renderedObject != null) {
+            AlgebraicMatrix orientation = renderedObject .getOrientation();
             List<AlgebraicVector> vertexList = shape .getVertexList();
             for (Polyhedron.Face face : shape .getFaceSet()) {
                 Point[] vertices = new Point[ face .size() ];
                 for ( int i = 0; i < vertices.length; i++ ) {
                     int vertexIndex = face .getVertex( i );
                     AlgebraicVector vertex = vertexList .get( vertexIndex );
-                    vertices[ i ] = transformVertex( vertex, rm .getLocationAV(), orientation );
+                    vertices[ i ] = transformVertex( vertex, renderedObject .getLocationAV(), orientation );
                 }
                 Polygon polygon = new PolygonFromVertices( vertices );
                 Manifestation panel = this .manifestConstruction( polygon );
@@ -79,9 +81,9 @@ public class ReplaceWithShape extends ChangeManifestations
         if ( this .symmetryShapes != null ) {
             // selection-based
             String[] tokens = this .symmetryShapes .split( ":" );
-            SymmetrySystem symmetrySystem = this .editor .getSymmetrySystem( tokens[ 0 ] );
-            Shapes shapes = symmetrySystem .getStyle( tokens[1] );
-            RenderedModel model = new RenderedModel( symmetrySystem .getSymmetry() .getField(), new RenderedModel.OrbitSource() {
+            OrbitSource symmetrySystem = ((SymmetryAware) this .editor) .getSymmetrySystem( tokens[ 0 ] );
+            Shapes shapes = ((SymmetrySystem) symmetrySystem) .getStyle( tokens[1] );
+            RenderedModel model = new RenderedModel( symmetrySystem .getSymmetry() .getField(), new OrbitSource() {
                 
                 @Override
                 public Symmetry getSymmetry() {
@@ -109,6 +111,17 @@ public class ReplaceWithShape extends ChangeManifestations
                 public Axis getAxis( AlgebraicVector vector ) {
                     return symmetrySystem .getAxis( vector );
                 }
+
+                @Override
+                public String getName() {
+                    return symmetrySystem .getName();
+                }
+
+                @Override
+                public Color getVectorColor( AlgebraicVector vector )
+                {
+                    return symmetrySystem .getVectorColor( vector );
+                }
             } );
             if ( this .ballOrStrut != null ) {
                 // pick-based
@@ -132,7 +145,7 @@ public class ReplaceWithShape extends ChangeManifestations
                 unselect( man );
             }
             redo();
-            this .replace( this .ballOrStrut, this .ballOrStrut .getRenderedObject(), this .shape );
+            this .replace( this .ballOrStrut, ((HasRenderedObject) this .ballOrStrut) .getRenderedObject(), this .shape );
         }
         super .perform();
     }
@@ -148,7 +161,7 @@ public class ReplaceWithShape extends ChangeManifestations
 
     public ReplaceWithShape( EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
+        super( editor );
         this.editor = editor;
     }
 
@@ -158,7 +171,7 @@ public class ReplaceWithShape extends ChangeManifestations
         Manifestation m = (Manifestation) props .get( "picked" );
         if ( m != null ) {
             // pick-based edit
-            this .symmetryShapes = m .getRenderedObject() .getSymmetryShapes();
+            this .symmetryShapes = ((HasRenderedObject) m) .getRenderedObject() .getSymmetryShapes();
             this .ballOrStrut = m;
         }
         else
@@ -171,7 +184,7 @@ public class ReplaceWithShape extends ChangeManifestations
     {
         if ( this .ballOrStrut != null ) {
             // pick-based
-            Construction construction = this .ballOrStrut .getConstructions() .next();
+            Construction construction = this .ballOrStrut .getFirstConstruction();
             if ( construction instanceof Point )
                 XmlSaveFormat .serializePoint( element, "point", (Point) construction );
             else
@@ -180,7 +193,7 @@ public class ReplaceWithShape extends ChangeManifestations
         if ( this .shape != null ) {
             // legacy format, which fails to use correct orientations after a symmetry change
             if ( this .vef == null ) {
-                this .vef = VefModelExporter .exportPolyhedron( this .shape );
+                this .vef = VefVectorExporter .exportPolyhedron( this .shape );
             }
             Node textNode = element .getOwnerDocument() .createTextNode( XmlSaveFormat .escapeNewlines( this .vef ) );
             element .appendChild( textNode );

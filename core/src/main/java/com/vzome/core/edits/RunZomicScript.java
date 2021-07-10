@@ -1,6 +1,4 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.edits;
 
 import java.util.ArrayList;
@@ -10,11 +8,14 @@ import org.w3c.dom.Element;
 
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.core.commands.XmlSymmetryFormat;
 import com.vzome.core.commands.ZomicVirtualMachine;
 import com.vzome.core.construction.Point;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.EditorModel;
-import com.vzome.core.editor.ManifestConstructions;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.ImplicitSymmetryParameters;
+import com.vzome.core.editor.api.ManifestConstructions;
+import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -34,9 +35,9 @@ public class RunZomicScript extends ChangeManifestations
 
     public RunZomicScript( EditorModel editor )
     {
-        super( editor .getSelection(), editor .getRealizedModel() );
-        this.origin = editor .getCenterPoint();
-		this.symm = (IcosahedralSymmetry) editor .getSymmetrySystem() .getSymmetry();
+        super( editor );
+        this.origin = ((ImplicitSymmetryParameters) editor) .getCenterPoint();
+		this.symm = (IcosahedralSymmetry) ((SymmetryAware) editor) .getSymmetrySystem() .getSymmetry();
     }
     
     @Override
@@ -62,7 +63,7 @@ public class RunZomicScript extends ChangeManifestations
             throws Failure
     {
         programText = xml .getTextContent();
-        this .symm = (IcosahedralSymmetry) format .parseSymmetry( "icosahedral" );
+        this .symm = (IcosahedralSymmetry) ((XmlSymmetryFormat) format) .parseSymmetry( "icosahedral" );
         zomicProgram = parseScript( programText );
     }
     
@@ -88,7 +89,7 @@ public class RunZomicScript extends ChangeManifestations
 		for (Manifestation man : mSelection) {
 			if ( man instanceof Connector )
 			{
-				Point nextPoint = (Point) ((Connector) man) .getConstructions() .next();
+				Point nextPoint = (Point) ((Connector) man) .getFirstConstruction();
 				if ( ! pointFound )
 				{
 					pointFound = true;

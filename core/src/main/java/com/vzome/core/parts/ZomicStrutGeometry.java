@@ -89,7 +89,7 @@ public class ZomicStrutGeometry implements StrutGeometry
     public ZomicStrutGeometry( String geom, Direction dir, Symmetry symmetry )
             throws IllegalStateException
     {
-        this( geom, dir, symmetry .getField() .createPower( 0 ), symmetry .getField() .createPower( 1 ), symmetry );
+        this( geom, dir, symmetry .getField() .one(), symmetry .getField() .createPower( 1 ), symmetry );
     }
 
 	@Override

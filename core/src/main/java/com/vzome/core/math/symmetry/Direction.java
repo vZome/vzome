@@ -80,7 +80,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     
     private final Axis[][][] zoneNames;
     
-    private final Map<AlgebraicVector, Axis> zoneVectors = new HashMap<>();
+    private final Map<String, Axis> zoneVectors = new HashMap<>();
     
     private final Symmetry mSymmetryGroup;
     
@@ -387,46 +387,46 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     
     private final void recordZone( Direction dir, int orientation, int sense, int rotation, Permutation rotPerm, AlgebraicVector normal, boolean outbound )
     {
-    	Axis zone =  zoneVectors .get( normal );
-    	if ( zone == null )
-    	{
-    		// vector never seen before
-    		zone = new Axis( this, orientation, sense, rotation, rotPerm, normal, outbound );
-        	this .zoneVectors .put( normal, zone );
-    		if ( logger .isLoggable( Level.FINER ) )
-    			logger .finer( "creating zone " + zone .toString() + " " + normal .toString() );
-    	}
-    	else 
-    	{
-    		// known vector, but maybe we have a better name for the zone
-    		if ( outbound && ! zone .isOutbound() ) 
-    		{
-    			// always upgrade from inbound to outbound, regardless of sense
-    			String oldName = zone .toString();
+        Axis zone =  zoneVectors .get( normal .toString() );
+        if ( zone == null )
+        {
+            // vector never seen before
+            zone = new Axis( this, orientation, sense, rotation, rotPerm, normal, outbound );
+            this .zoneVectors .put( normal .toString(), zone );
+            if ( logger .isLoggable( Level.FINER ) )
+                logger .finer( "creating zone " + zone .toString() + " " + normal .toString() );
+        }
+        else 
+        {
+            // known vector, but maybe we have a better name for the zone
+            if ( outbound && ! zone .isOutbound() ) 
+            {
+                // always upgrade from inbound to outbound, regardless of sense
+                String oldName = zone .toString();
                 zone .rename( sense, orientation, true );
-    			if ( logger .isLoggable( Level.FINER ) )
-        			logger .finer( "zone " + oldName + " upgraded to " + zone .toString() );
-    		} 
-    		else if ( zone .isOutbound() && ! outbound )
-    		{
-    			// never downgrade from outbound to inbound, regardless of sense
-    			if ( logger .isLoggable( Level.FINEST ) )
-        			logger .finest( "zone " + zone .toString() + " aliased as " + ( ( sense == Axis.MINUS )? "-" : "" ) + orientation + ( outbound? "" : "i" ) );
-    		}
-    		else if ( sense == Axis.PLUS && ( zone .getSense() == Axis.MINUS ) )
-    		{
-    			// both outbound or both inbound, but upgrade from MINUS to PLUS
-    			String oldName = zone .toString();
+                if ( logger .isLoggable( Level.FINER ) )
+                    logger .finer( "zone " + oldName + " upgraded to " + zone .toString() );
+            } 
+            else if ( zone .isOutbound() && ! outbound )
+            {
+                // never downgrade from outbound to inbound, regardless of sense
+                if ( logger .isLoggable( Level.FINEST ) )
+                    logger .finest( "zone " + zone .toString() + " aliased as " + ( ( sense == Axis.MINUS )? "-" : "" ) + orientation + ( outbound? "" : "i" ) );
+            }
+            else if ( sense == Axis.PLUS && ( zone .getSense() == Axis.MINUS ) )
+            {
+                // both outbound or both inbound, but upgrade from MINUS to PLUS
+                String oldName = zone .toString();
                 zone .rename( sense, orientation, outbound );
-    			if ( logger .isLoggable( Level.FINER ) )
-        			logger .finer( "zone " + oldName + " upgraded to " + zone .toString() );
-    		}
-    		else {
-    			if ( logger .isLoggable( Level.FINEST ) )
-        			logger .finest( "zone " + zone .toString() + " aliased as " + ( ( sense == Axis.MINUS )? "-" : "" ) + orientation + ( outbound? "" : "i" ) );
-    		}
-    	}
-    	zoneNames[ outbound? 1 : 0 ][ sense ][ orientation ] = zone;
+                if ( logger .isLoggable( Level.FINER ) )
+                    logger .finer( "zone " + oldName + " upgraded to " + zone .toString() );
+            }
+            else {
+                if ( logger .isLoggable( Level.FINEST ) )
+                    logger .finest( "zone " + zone .toString() + " aliased as " + ( ( sense == Axis.MINUS )? "-" : "" ) + orientation + ( outbound? "" : "i" ) );
+            }
+        }
+        zoneNames[ outbound? 1 : 0 ][ sense ][ orientation ] = zone;
     }
 
     @Override
@@ -470,7 +470,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     public AlgebraicNumber getUnitLength()
     {
         if ( unitLength == null)
-            return mSymmetryGroup .getField() .createPower( 0 );
+            return mSymmetryGroup .getField() .one();
         else
             return unitLength;
     }

@@ -11,8 +11,9 @@ import org.junit.Test;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.HeptagonField;
-import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
+import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
@@ -20,6 +21,7 @@ import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.model.Strut;
+import com.vzome.core.model.StrutImpl;
 
 /**
  * While creating HeptagonalAntiprismSymmetry, with inbound/outbound zones,
@@ -112,7 +114,7 @@ public class RenderedModelTest
 	@Test
 	public void testZoneConsistency()
 	{
-		HeptagonFieldApplication app = new HeptagonFieldApplication();
+		HeptagonFieldApplication app = new HeptagonFieldApplication( new HeptagonField() );
 		HeptagonField field = (HeptagonField) app .getField();
 		AlgebraicVector origin = field .origin( 3 );
 
@@ -140,42 +142,42 @@ public class RenderedModelTest
 	    assertNotNull( expected );
 	    checker .setExpectedZone( expected );
 	    // Scaling the normal just to rock the boat... works either way.
-	    Strut strut = new Strut( field .origin( 3 ), expected .normal() .scale( field .createPower( 2 ) ) );
+	    Strut strut = new StrutImpl( field .origin( 3 ), expected .normal() .scale( field .createPower( 2 ) ) );
 		model .manifestationAdded( strut ); // the original bug: the strut did not map back to the expected Axis
 
 	    rv = new RealVector( 3d, 6d, 1d );
 	    expected = oneOrbit .getAxis( rv );
 	    assertNotNull( expected );
 	    checker .setExpectedZone( expected );
-	    strut = new Strut( origin, expected .normal() );
+	    strut = new StrutImpl( origin, expected .normal() );
 		model .manifestationAdded( strut );
 
 	    rv = new RealVector( -3d, -6d, -1d );
 	    expected = oneOrbit .getAxis( rv );
 	    assertNotNull( expected );
 	    checker .setExpectedZone( expected );
-	    strut = new Strut( origin, expected .normal() );
+	    strut = new StrutImpl( origin, expected .normal() );
 		model .manifestationAdded( strut );
 
 	    rv = new RealVector( -3d, -6d, 1d );
 	    expected = oneOrbit .getAxis( rv );
 	    assertNotNull( expected );
 	    checker .setExpectedZone( expected );
-	    strut = new Strut( origin, expected .normal() );
+	    strut = new StrutImpl( origin, expected .normal() );
 		model .manifestationAdded( strut );
 
 	    rv = new RealVector( -6d, -3d, 1d );
 	    expected = oneOrbit .getAxis( rv );
 	    assertNotNull( expected );
 	    checker .setExpectedZone( expected );
-	    strut = new Strut( origin, expected .normal() );
+	    strut = new StrutImpl( origin, expected .normal() );
 		model .manifestationAdded( strut );
 
 	    rv = new RealVector( -3d, 1d, -6d );
 	    expected = oneOrbit .getAxis( rv );
 	    assertNotNull( expected );
 	    checker .setExpectedZone( expected );
-	    strut = new Strut( origin, expected .normal() );
+	    strut = new StrutImpl( origin, expected .normal() );
 		model .manifestationAdded( strut );
 	}
 }

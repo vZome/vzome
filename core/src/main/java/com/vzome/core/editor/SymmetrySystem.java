@@ -1,6 +1,4 @@
 
-//(c) Copyright 2011, Scott Vorthmann.
-
 package com.vzome.core.editor;
 
 import java.util.HashMap;
@@ -21,19 +19,19 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.AbstractCommand;
 import com.vzome.core.commands.Command;
-import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
-import com.vzome.core.editor.UndoableEdit.Context;
-import com.vzome.core.math.DomUtils;
+import com.vzome.core.construction.Color;
+import com.vzome.core.editor.api.Context;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.render.Color;
 import com.vzome.core.render.Colors;
-import com.vzome.core.render.RenderedModel.OrbitSource;
-import com.vzome.core.render.Shapes;
+import com.vzome.xml.DomUtils;
 
 public class SymmetrySystem implements OrbitSource
 {
@@ -42,9 +40,9 @@ public class SymmetrySystem implements OrbitSource
 
     private final Symmetry symmetry;
     private final OrbitSet orbits;
-    private final Map<Direction, Color> orbitColors = new HashMap<>();
+    private final Map<String, Color> orbitColors = new HashMap<>();
     private Shapes shapes;
-    private Map<AlgebraicVector,Axis> vectorToAxis = new HashMap<>();
+    private Map<String,Axis> vectorToAxis = new HashMap<>();
     private boolean noKnownDirections = false;
 
     private final SymmetryPerspective symmetryPerspective;
@@ -53,8 +51,8 @@ public class SymmetrySystem implements OrbitSource
     private final Context context;
     private EditorModel editor;
 
-    public SymmetrySystem( Element symmXml, FieldApplication.SymmetryPerspective symmetryPerspective,
-            UndoableEdit.Context context, Colors colors, boolean allowNonstandard )
+    public SymmetrySystem( Element symmXml, SymmetryPerspective symmetryPerspective,
+            Context context, Colors colors, boolean allowNonstandard )
     {
         this .symmetryPerspective = symmetryPerspective;
         this .context = context;
@@ -63,11 +61,11 @@ public class SymmetrySystem implements OrbitSource
         orbits = new OrbitSet( symmetry );
         if ( symmXml == null ) 
         {
-            for (Direction dir : symmetry .getOrbitSet()) {
-                if ( dir .isStandard() || allowNonstandard )  // reader
-                    orbits .add( dir );
-                Color color = colors .getColor( Colors.DIRECTION + dir .getName() );
-                orbitColors .put( dir, color );
+            for ( Direction orbit : symmetry .getOrbitSet() ) {
+                if ( symmetryPerspective .orbitIsStandard( orbit ) || allowNonstandard )  // reader
+                    orbits .add( orbit );
+                Color color = colors .getColor( Colors.DIRECTION + orbit .getName() );
+                orbitColors .put( orbit.getName(), color );
             }
         }
         else
@@ -79,19 +77,19 @@ public class SymmetrySystem implements OrbitSource
                 if ( node instanceof Element ) {
                     Element dirElem = (Element) node;
                     String name = dirElem .getAttribute( "name" );
-                    Direction dir = null;
+                    Direction orbit = null;
                     String nums = dirElem .getAttribute( "prototype" );
                     if ( nums != null && ! nums .isEmpty() )
                     {
                         AlgebraicVector prototype = symmetry .getField() .parseVector( nums );
                         try {
-                            dir = symmetry .createNewZoneOrbit( name, 0, Symmetry.NO_ROTATION, prototype );
+                            orbit = symmetry .createNewZoneOrbit( name, 0, Symmetry.NO_ROTATION, prototype );
                         } catch ( IllegalStateException e )
                         {
                             System.err.println( "Integer overflow happened while creating orbit: " + name );
                             continue;
                         }
-                        dir .setAutomatic( true );
+                        orbit .setAutomatic( true );
                         try {
                             int autoNum = Integer .parseInt( name );
                             if ( autoNum >= NEXT_NEW_AXIS )
@@ -105,28 +103,27 @@ public class SymmetrySystem implements OrbitSource
                     }
                     else
                     {
-                        dir = symmetry .getDirection( name );
-                        if ( dir == null )
+                        orbit = symmetry .getDirection( name );
+                        if ( orbit == null )
                             continue;
                     }
-                    orbits .add( dir );
+                    orbits .add( orbit );
 
                     String str = dirElem .getAttribute( "color" );
                     if ( str != null && ! str .isEmpty() ) {
                         Color color = Color .parseColor( str );
-                        orbitColors .put( dir, color );
-                        //                        colors .addColor( Colors.DIRECTION + name, color );
+                        orbitColors .put( orbit .getName(), color );
                     }
                 }
             }
             // fill in the orbits that might be newer than what the file had
-            for (Direction dir : symmetry .getOrbitSet()) {
-                if ( orbits .contains( dir ) )
+            for (Direction orbit : symmetry .getOrbitSet()) {
+                if ( orbits .contains( orbit ) )
                     continue;
-                if ( dir .isStandard() || allowNonstandard )  // reader
-                    orbits .add( dir );
-                Color color = colors .getColor( Colors.DIRECTION + dir .getName() );
-                orbitColors .put( dir, color );
+                if ( orbit .isStandard() || allowNonstandard )  // reader
+                    orbits .add( orbit );
+                Color color = colors .getColor( Colors.DIRECTION + orbit .getName() );
+                orbitColors .put( orbit .getName(), color );
             }
         }
         this .setStyle( styleName );
@@ -146,10 +143,6 @@ public class SymmetrySystem implements OrbitSource
             List<Tool.Factory> list = this .symmetryPerspective .createToolFactories( kind, tools );
             // toolFactoryLists manifest to the Controller automatically
             this .toolFactoryLists .put( kind, list );
-            for ( Tool.Factory factory : list ) {
-                tools .getEditorModel() .addSelectionSummaryListener( (SelectionSummary.Listener) factory );
-            }
-
             List<Tool> toolList = this .symmetryPerspective .predefineTools( kind, tools );
             this .toolLists .put( kind, toolList );
         }
@@ -167,20 +160,20 @@ public class SymmetrySystem implements OrbitSource
         if ( vector .isOrigin() ) {
             return null;
         }
-        Axis line = this .vectorToAxis .get( vector );
+        Axis line = this .vectorToAxis .get( vector.toString() );
         if ( line != null )
             return line;
         if ( ! this .noKnownDirections )
         {
             line = this .symmetry .getAxis( vector, this .orbits );
             if ( line != null ) {
-                this .vectorToAxis .put( vector, line );
+                this .vectorToAxis .put( vector.toString(), line );
                 return line;
             }
         }
         Direction dir = this .createAnonymousOrbit( vector );
         line = dir .getAxis( vector );
-        this .vectorToAxis .put( vector, line );
+        this .vectorToAxis .put( vector.toString(), line );
         return line;
     }
 
@@ -229,19 +222,19 @@ public class SymmetrySystem implements OrbitSource
             vector = shortVector;
 
         String colorName = "" + NEXT_NEW_AXIS++;  // we want it easy to keep these unique when loading files (see above)
-        Direction dir = symm .createNewZoneOrbit( colorName, 0, Symmetry.NO_ROTATION, vector );
-        dir .setAutomatic( true );
-        orbits .add( dir );
-        this .orbitColors .put( dir, Color.WHITE );
-        return dir;
+        Direction orbit = symm .createNewZoneOrbit( colorName, 0, Symmetry.NO_ROTATION, vector );
+        orbit .setAutomatic( true );
+        orbits .add( orbit );
+        this .orbitColors .put( orbit .getName(), Color.WHITE );
+        return orbit;
     }
 
-    public Color getColor( AlgebraicVector vector ) {
+    public Color getVectorColor( AlgebraicVector vector ) {
         if( vector.isOrigin() ) {
             return Color.WHITE;
         }
         // try to get from cache
-        Axis line = this .vectorToAxis .get( vector );
+        Axis line = this .vectorToAxis .get( vector.toString() );
         if(line == null) {
             // calculate
             line = this .symmetry .getAxis( vector, this .orbits );
@@ -256,9 +249,13 @@ public class SymmetrySystem implements OrbitSource
     @Override
     public Color getColor( Direction orbit )
     {
+        if ( orbit == null )
+            return Color.WHITE;
         Color shapeColor = this .shapes .getColor( orbit ); // usually null, but see ExportedVEFShapes
         if ( shapeColor == null ) // the usual case
-            shapeColor = orbitColors .get( orbit );
+            shapeColor = orbitColors .get( orbit .getName() );
+        if ( shapeColor == null )
+            return Color.WHITE;
         return shapeColor;
     }
 
@@ -399,5 +396,20 @@ public class SymmetrySystem implements OrbitSource
     public String getModelResourcePath()
     {
         return this .symmetryPerspective .getModelResourcePath();
+    }
+
+    public boolean orbitIsStandard( Direction orbit )
+    {
+        return this .symmetryPerspective .orbitIsStandard( orbit );
+    }
+
+    public boolean orbitIsBuildDefault( Direction orbit )
+    {
+        return this .symmetryPerspective .orbitIsBuildDefault( orbit );
+    }
+
+    public AlgebraicNumber getOrbitUnitLength( Direction orbit )
+    {
+        return this .symmetryPerspective .getOrbitUnitLength( orbit );
     }
 }

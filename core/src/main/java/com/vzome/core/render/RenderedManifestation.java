@@ -6,10 +6,14 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.construction.Color;
+import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
@@ -18,19 +22,18 @@ import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
+import com.vzome.core.model.RenderedObject;
 import com.vzome.core.model.Strut;
 
 /**
  * @author Scott Vorthmann
  *
  */
-public class RenderedManifestation
+public class RenderedManifestation implements RenderedObject
 {
     private final Manifestation mManifestation;
 
     private Polyhedron mShape;
-
-    private RenderedModel model;
 
     private Color color = null;
 
@@ -60,9 +63,12 @@ public class RenderedManifestation
     
     private static final Logger logger = Logger.getLogger( "com.vzome.core.render.RenderedManifestation" );
 
-    public RenderedManifestation( Manifestation m )
+    private OrbitSource orbitSource;
+
+    public RenderedManifestation( Manifestation m, OrbitSource orbitSource )
     {
         mManifestation = m;
+        this.orbitSource = orbitSource;
         if ( m != null )
             location = m .getLocation();
         this .fixedLocation = location;
@@ -76,19 +82,10 @@ public class RenderedManifestation
         return this .mManifestation .toString();
     }
 
+    @JsonGetter( "id" )
     public UUID getGuid()
     {
         return guid;
-    }
-
-    public void setModel( RenderedModel model )
-    {
-        this .model = model;
-    }
-
-    public RenderedModel getModel()
-    {
-        return this .model;
     }
 
     public void setGraphicsObject( Object go )
@@ -96,35 +93,41 @@ public class RenderedManifestation
         mGraphicsObject = go;
     }
 
+    @JsonIgnore
     public Object getGraphicsObject()
     {
         return mGraphicsObject;
     }
-
 
     public void setGlow( float glow )
     {
         mGlow = glow;
     }
 
-
+    @JsonIgnore
     public float getGlow()
     {
         return mGlow;
     }
-
 
     public void setTransparency( float trans )
     {
         mTransparency = trans;
     }
 
-
+    @JsonIgnore
     public float getTransparency()
     {
         return mTransparency;
     }
 
+    @JsonGetter( "shape" )
+    public UUID getShapeId()
+    {
+        return this .mShape .getGuid();
+    }
+    
+    @JsonIgnore
     public Polyhedron getShape()
     {
         return mShape;
@@ -135,19 +138,28 @@ public class RenderedManifestation
         mPickable = value;
     }
 
+    @JsonIgnore
     public boolean isPickable()
     {
         return mPickable;
     }
 
+    @JsonIgnore
     public Manifestation getManifestation()
     {
         return mManifestation;
     }
 
+    @JsonIgnore
     public Color getColor()
     {
         return this.color;
+    }
+
+    @JsonGetter( "color" )
+    public String getColorWeb()
+    {
+        return this.color.toWebString();
     }
 
     public void setColor( Color color )
@@ -160,6 +172,7 @@ public class RenderedManifestation
         mOrientation = m;
     }
 
+    @JsonIgnore
     public AlgebraicMatrix getOrientation()
     {
         return mOrientation;
@@ -180,19 +193,25 @@ public class RenderedManifestation
     //        return mAxis;
     //    }
 
+    @JsonGetter( "position" )
     public RealVector getLocation()
     {
-        return this .model .renderVector( this .location );
+        if ( this .location != null )
+            return getEmbedding() .embedInR3( this .location );
+        else
+            return new RealVector( 0d, 0d, 0d );
     }
 
+    @JsonIgnore
     public AlgebraicVector getLocationAV()
     {
         return this .location;
     }
 
+    @JsonIgnore
     public Embedding getEmbedding()
     {
-        return this .model .getEmbedding();
+        return this .orbitSource .getSymmetry();
     }
 
     @Override
@@ -245,7 +264,7 @@ public class RenderedManifestation
 
     public RenderedManifestation copy()
     {
-        RenderedManifestation copy = new RenderedManifestation( null );
+        RenderedManifestation copy = new RenderedManifestation( null, this .orbitSource );
         copy .location = this .location;
         copy .fixedLocation = this .fixedLocation;
         copy .color = this .color;
@@ -266,21 +285,25 @@ public class RenderedManifestation
         this .strutLength = length;
     }
 
+    @JsonIgnore
     public int getStrutZone()
     {
         return this .strutZone;
     }
 
+    @JsonIgnore
     public int getStrutSense()
     {
         return this .strutSense;
     }
 
+    @JsonIgnore
     public AlgebraicNumber getStrutLength()
     {
         return this .strutLength;
     }
 
+    @JsonIgnore
     public Direction getStrutOrbit()
     {
         return this .strutOrbit;
@@ -303,32 +326,32 @@ public class RenderedManifestation
         }
     }
 
+    @JsonIgnore
     public String getSymmetryShapes()
     {
-        SymmetrySystem symmetrySystem = (SymmetrySystem) this .model .getOrbitSource();
-        return symmetrySystem .getName() + ":" + symmetrySystem .getStyle() .getName();
+        return this .orbitSource .getName() + ":" + this .orbitSource .getShapes() .getName();
     }
 
-    public void resetAttributes( RenderedModel.OrbitSource orbitSource, Shapes shapes, boolean oneSidedPanels, boolean colorPanels )
+    public void resetAttributes( boolean oneSidedPanels, boolean colorPanels )
     {
         if ( this .mManifestation instanceof Panel ) {
-            resetPanelAttributes(orbitSource, oneSidedPanels, colorPanels);
+            resetPanelAttributes( oneSidedPanels, colorPanels );
         }
-        else if ( shapes == null ) {
+        else if ( this .orbitSource .getShapes() == null ) {
             return; // rendering a symmetry model with panels only
         }
         else if ( this .mManifestation instanceof Connector ) {
-            this .resetConnectorAttributes( orbitSource, shapes, (Connector) this .mManifestation );
+            this .resetConnectorAttributes( (Connector) this .mManifestation );
         }
         else if ( this .mManifestation instanceof Strut ) {
             Strut strut = (Strut) this .mManifestation;
-            this .resetStrutAttributes( orbitSource, shapes, strut );
+            this .resetStrutAttributes( strut );
         }
         else 
             throw new UnsupportedOperationException( "only strut, ball, and panel shapes currently supported" );
     }
 
-    private void resetPanelAttributes( RenderedModel.OrbitSource orbitSource, boolean oneSidedPanels, boolean colorPanels )
+    private void resetPanelAttributes( boolean oneSidedPanels, boolean colorPanels )
     {
         Panel panel = (Panel) this .mManifestation;
         Polyhedron shape = makePanelPolyhedron( panel, oneSidedPanels );
@@ -342,12 +365,13 @@ public class RenderedManifestation
             return;
 
         this .setOrientation( orbitSource .getSymmetry() .getField() .identityMatrix( 3 ) );
-        this .setColor( Color.WHITE );
 
         try {
             Axis axis = orbitSource .getAxis( normal );
-            if ( axis == null )
+            if ( axis == null ) {
+                this .setColor( Color.WHITE );
                 return;
+            }
 
             // This lets the Panel represent Planes better.
             panel .setZoneVector( axis .normal() );
@@ -355,8 +379,11 @@ public class RenderedManifestation
             Direction orbit = axis .getDirection();
 
             Color color = this .mManifestation .getColor();
-            if ( color == null )
-                color = orbitSource .getColor( orbit ) .getPastel();
+            if ( color == null ) {
+                color = orbitSource .getColor( orbit );
+                if ( color != null )
+                    color = color .getPastel();
+            }
             this .setColor( color );
         } catch ( IllegalStateException e ) {
             if ( logger .isLoggable( Level.WARNING ) )
@@ -364,8 +391,9 @@ public class RenderedManifestation
         }
     }
 
-    protected void resetStrutAttributes( RenderedModel.OrbitSource orbitSource, Shapes shapes, Strut strut )
+    protected void resetStrutAttributes( Strut strut )
     {
+        Shapes shapes = orbitSource .getShapes();
         AlgebraicVector offset = strut .getOffset();
         if ( offset .isOrigin() )
             return; // should catch this earlier
@@ -425,8 +453,9 @@ public class RenderedManifestation
         this .setColor( color );
     }
 
-    protected void resetConnectorAttributes( RenderedModel.OrbitSource orbitSource, Shapes shapes, Connector m )
+    protected void resetConnectorAttributes( Connector m )
     {
+        Shapes shapes = orbitSource .getShapes();
         this .mShape = shapes .getConnectorShape();
         Color color = this .getManifestation() .getColor();
         if ( color == null )
@@ -459,5 +488,16 @@ public class RenderedManifestation
         if ( ! oneSided )
             poly .addFace( back );
         return poly;
+    }
+
+    public void setOrbitSource( OrbitSource orbitSource )
+    {
+        this.orbitSource = orbitSource;
+    }
+
+    @JsonIgnore
+    public OrbitSource getOrbitSource()
+    {
+        return this.orbitSource;
     }
 }

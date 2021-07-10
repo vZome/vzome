@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.math.symmetry;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -8,7 +6,6 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.PentagonField;
 
 
 /**
@@ -24,13 +21,9 @@ public class IcosahedralSymmetry extends AbstractSymmetry
 
 	private Axis preferredAxis;
     
-	public static void main(String[] args) {
-		new IcosahedralSymmetry( new PentagonField(), "" );
-	}
-	
-    public IcosahedralSymmetry( AlgebraicField field, String defaultStyle )
+    public IcosahedralSymmetry( AlgebraicField field )
     {
-        super( 60, field, "blue", defaultStyle );
+        super( 60, field, "blue" );
         
         for ( int i = 0; i < this.INCIDENCES.length; i++ ) {
             this .INCIDENCES[ i ][ 0 ] = getPermutation( i ) .mapIndex( 30 );
@@ -100,15 +93,15 @@ public class IcosahedralSymmetry extends AbstractSymmetry
      */
     private void createBlueAxes( Direction dir, int prototype, int rotated, AlgebraicVector xyz )
     {
-    	int orientation = 0;
-    	boolean[] reflect = { false, false, false };
+        int orientation = 0;
+        boolean[] reflect = { false, false, false };
         for ( int i = 0; i < 3; i++ ){
-        	for ( int k = 0; k < 2; k++ ) {
-        		for ( int l = 0; l < 2; l++ ) {
-        			int unit = mOrientations[ orientation ] .mapIndex( prototype );
-        			if ( dir .getAxis( PLUS, unit ) == null ) {
-        				int rot = mOrientations[ orientation ] .mapIndex( rotated );
-        				int rotation = getMapping( unit, rot );
+            for ( int k = 0; k < 2; k++ ) {
+                for ( int l = 0; l < 2; l++ ) {
+                    int unit = mOrientations[ orientation ] .mapIndex( prototype );
+                    if ( dir .getAxis( PLUS, unit ) == null ) {
+                        int rot = mOrientations[ orientation ] .mapIndex( rotated );
+                        int rotation = getMapping( unit, rot );
                         AlgebraicVector norm = mField .origin( 3 );
                         for ( int m = 0; m < 3; m++ ) {
                             int offset = ((m+3-i)%3);
@@ -119,19 +112,18 @@ public class IcosahedralSymmetry extends AbstractSymmetry
                                 norm .setComponent( m, xyz .getComponent( offset ) );
                             }
                         }
-        				dir .createAxis( unit, rotation, norm );
-        				dir .createAxis( rot, rotation, norm );
-        			}
-        			orientation = mOrientations[ 45 ] .mapIndex( orientation ); // around Y
+                        dir .createAxis( unit, rotation, norm );
+                        dir .createAxis( rot, rotation, norm );
+                    }
+                    orientation = mOrientations[ 45 ] .mapIndex( orientation ); // around Y
                     reflect[0] = ! reflect[0]; reflect[2] = ! reflect[2];
-        		}
-        		orientation = mOrientations[ 15 ] .mapIndex( orientation ); // around X
+                }
+                orientation = mOrientations[ 15 ] .mapIndex( orientation ); // around X
                 reflect[1] = ! reflect[1]; reflect[2] = ! reflect[2];
-        	}
-        	orientation = mOrientations[ 1 ] .mapIndex( orientation );
+            }
+            orientation = mOrientations[ 1 ] .mapIndex( orientation );
         }
     }
-    
     
     @Override
     public String getName()
@@ -139,32 +131,13 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         return "icosahedral";
     }
 
-    /**
-     * Make a rational vector with unit denominators from an integer vector.
-     * @param canonical
-     * @return
-     */
-    protected AlgebraicVector rationalVector( int[] integers )
-    {
-        AlgebraicVector result = mField .origin( 3 );
-        for (int i = 0; i < 3; i++)
-        {
-            int[] factors = new int[ integers.length / 3 ];
-            for (int j = 0; j < factors.length; j++) {
-				factors[ j ] = integers[ i * factors.length + j ];
-			}
-            result .setComponent( i, mField .createAlgebraicNumber( factors ) );
-        }
-        return result;
-    }
-    
     @Override
-    protected AlgebraicVector[] getOrbitTriangle()
+    public AlgebraicVector[] getOrbitTriangle()
     {
-        AlgebraicNumber twice = this .getField() .createRational( 2 );
+        AlgebraicNumber twice = mField .createRational( 2 );
         AlgebraicVector blueVertex = this .getDirection( "blue" ) .getPrototype() .scale( twice );
         AlgebraicVector redVertex = this .getDirection( "red" ) .getPrototype();
-        AlgebraicNumber phiInv = this .getField() .createPower( -1 );
+        AlgebraicNumber phiInv = mField.getGoldenRatio().reciprocal();
         AlgebraicVector yellowVertex = this .getDirection( "yellow" ) .getPrototype() .scale( phiInv );
         return new AlgebraicVector[] { blueVertex, redVertex, yellowVertex };
     }

@@ -1,4 +1,3 @@
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
 
 package org.vorthmann.zome.app.impl;
 
@@ -7,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.beans.PropertyChangeEvent;
@@ -23,6 +21,8 @@ import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.LeftMouseDragAdapter;
 
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.construction.Color;
+import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
@@ -30,8 +30,6 @@ import com.vzome.core.math.symmetry.DodecagonalSymmetry;
 import com.vzome.core.math.symmetry.OctahedralSymmetry;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.render.Color;
-import com.vzome.core.render.RenderedModel.OrbitSource;
 
 public class OrbitSetController extends DefaultController implements PropertyChangeListener
 {
@@ -133,7 +131,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
     }
 
     @Override
-    public void doAction( String action, ActionEvent e ) throws Exception
+    public void doAction( String action ) throws Exception
     {
         if ( action .equals( "refreshDots" ) )
         {
@@ -144,7 +142,7 @@ public class OrbitSetController extends DefaultController implements PropertyCha
                 || action .equals( "short" ) || action .equals( "medium" ) || action .equals( "long" )
                 || action .startsWith( "adjustScale." ) || action .equals( "scaleUp" ) || action .equals( "scaleDown" ) )
         {
-            getSubController( "currentLength" ) .actionPerformed( e );
+            getSubController( "currentLength" ) .actionPerformed( null, action );
             return;
         }
         if ( action .equals( "setNoDirections" ) )

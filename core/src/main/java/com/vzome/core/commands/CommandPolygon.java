@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.commands;
 
 import java.util.ArrayList;
@@ -33,6 +31,12 @@ public class CommandPolygon extends AbstractCommand
         return ATTR_SIGNATURE;
     }
     
+    @Override
+    public boolean ordersSelection()
+    {
+        return true;
+    }
+
     @Override
     public ConstructionList apply( ConstructionList parameters, AttributeMap attrs, ConstructionChanges effects ) throws Failure
     {

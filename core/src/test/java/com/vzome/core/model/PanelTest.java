@@ -35,7 +35,7 @@ public class PanelTest {
         list.add(b);
         list.add(c);
         list.add(d);
-        Panel panel = new Panel(list);
+        Panel panel = new PanelImpl(list);
 
         int expected = list.size();
         assertTrue(expected >= 3);
@@ -67,7 +67,7 @@ public class PanelTest {
         list.add(p);
         list.add(q);
         list.add(r);
-        Panel p0 = new Panel(list);
+        Panel p0 = new PanelImpl(list);
 
         int size = list.size();
         assertTrue(size >= 3);
@@ -78,7 +78,7 @@ public class PanelTest {
 //        list.add(1, list.remove(0)); // swap first two
         list.add(2, list.remove(1)); // swap last two
         
-        Panel p1 = new Panel(list);
+        Panel p1 = new PanelImpl(list);
         assertEquals(size, list.size());
         
         AlgebraicVector n1 = p1.getNormal();

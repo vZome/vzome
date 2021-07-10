@@ -1,10 +1,7 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package org.vorthmann.zome.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -68,33 +65,6 @@ public class ToolsPanel extends JPanel implements PropertyChangeListener
         add( scroller, BorderLayout .CENTER );
     }
 
-
-    protected static Component createButton( String action, ActionListener listener )
-    {
-        int delim = action .indexOf( "." );
-        String group = action .substring( 0, delim );
-        delim = action .indexOf( "/" );
-        String name = action .substring( delim + 1 );
-        String iconPath = "/icons/tools/" + group + ".png";
-        JButton button = new JButton();
-        java.net.URL imgURL = LessonPanel.class .getResource( iconPath );
-        if ( imgURL != null )
-            button .setIcon( new ImageIcon( imgURL ) );
-        else {
-            button .setText( name );
-            logger .warning( "Couldn't find resource: " + iconPath );
-        }
-        button .addActionListener( listener );
-        button .setActionCommand( action );
-        Dimension dim = new Dimension( 55, 52 );
-        button .setMinimumSize( dim );
-        button .setPreferredSize( dim );
-        button .setMaximumSize( dim );
-        button .setToolTipText( name );
-        
-        return button;
-    }
-
     @Override
     public void propertyChange( PropertyChangeEvent evt )
     {
@@ -103,7 +73,28 @@ public class ToolsPanel extends JPanel implements PropertyChangeListener
             if ( evt .getOldValue() == null )
             {
                 String idAndName = (String) evt .getNewValue(); // will be "group.N/label"
-                Component button = createButton( idAndName, controller );
+
+                int delim = idAndName .indexOf( "." );
+                String group = idAndName .substring( 0, delim );
+                delim = idAndName .indexOf( "/" );
+                String name = idAndName .substring( delim + 1 );
+                String iconPath = "/icons/tools/" + group + ".png";
+                JButton button = new JButton();
+                java.net.URL imgURL = LessonPanel.class .getResource( iconPath );
+                if ( imgURL != null )
+                    button .setIcon( new ImageIcon( imgURL ) );
+                else {
+                    button .setText( name );
+                    logger .warning( "Couldn't find resource: " + iconPath );
+                }
+                button .addActionListener( new ControllerActionListener(controller) );
+                button .setActionCommand( idAndName );
+                Dimension dim = new Dimension( 55, 52 );
+                button .setMinimumSize( dim );
+                button .setPreferredSize( dim );
+                button .setMaximumSize( dim );
+                button .setToolTipText( name );
+
                 instances .add( button );
                 scroller .revalidate();
             }

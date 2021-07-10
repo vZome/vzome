@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.edits;
 
 import java.util.HashMap;
@@ -17,15 +15,14 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
-import com.vzome.core.editor.ChangeManifestations;
-import com.vzome.core.editor.EditorModel;
-import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.Selection;
-import com.vzome.core.math.DomUtils;
+import com.vzome.core.editor.api.ChangeManifestations;
+import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.QuaternionProjection;
+import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.math.symmetry.WythoffConstruction;
-import com.vzome.core.model.RealizedModel;
+import com.vzome.xml.DomUtils;
 
 public class Polytope4d extends ChangeManifestations
 {
@@ -39,17 +36,17 @@ public class Polytope4d extends ChangeManifestations
     private int edgesToRender = 0xF;
     private AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
     private String renderGroupName;
-    private final FieldApplication fieldApp;
+    private Symmetries4D symmetries;
 
-    private Polytope4d( Selection selection, RealizedModel realized,
-            FieldApplication fieldApp,
+    private Polytope4d( EditorModel editor,
+            Symmetries4D symmetries,
             AlgebraicVector quaternion, int index, String groupName,
             int edgesToRender, AlgebraicNumber[] edgeScales,
             String renderGroupName )
     {
-        super( selection, realized );
-        this.fieldApp = fieldApp;
-        this.field = fieldApp .getField();
+        super( editor );
+        this.symmetries = symmetries;
+        this.field = editor .getRealizedModel() .getField();
 
         this.index = index;
         this.quaternion = quaternion;
@@ -62,20 +59,19 @@ public class Polytope4d extends ChangeManifestations
         else
             for (int i = 0; i < this .edgeScales .length; i++)
             {
-                this .edgeScales[ i ] = this .field .createPower( 0 );
+                this .edgeScales[ i ] = this .field .one();
             }
     }
     
     public Polytope4d( EditorModel editor )
     {
-        this( editor .getSelection(), editor .getRealizedModel(), editor .getKind(), null, 0, null );
+        this( editor, ((SymmetryAware) editor) .get4dSymmetries(), null, 0, null );
     }
 
-    public Polytope4d( Selection selection, RealizedModel realized,
-            FieldApplication fieldApp,
+    public Polytope4d( EditorModel editor, Symmetries4D symmetries,
             Segment symmAxis, int index, String groupName )
     {
-        this( selection, realized, fieldApp,
+        this( editor, symmetries,
                 ( symmAxis == null )? null : symmAxis .getOffset() .inflateTo4d(),
                         index, groupName, index, null, groupName );
     }
@@ -161,7 +157,7 @@ public class Polytope4d extends ChangeManifestations
             this.proj = new Projection .Default( field );
         else
             this.proj = new QuaternionProjection( field, null, quaternion .scale( field .createPower( -5 ) ) );
-        this .fieldApp .constructPolytope( groupName, this.index, this .edgesToRender, this .edgeScales, new WythoffListener() );
+        this .symmetries .constructPolytope( groupName, this.index, this .edgesToRender, this .edgeScales, new WythoffListener() );
         redo();
     }
 
@@ -169,7 +165,7 @@ public class Polytope4d extends ChangeManifestations
     private class WythoffListener implements WythoffConstruction.Listener
     {
         private int numVertices = 0;
-        Map<AlgebraicVector, Point> vertices = new HashMap<>();
+        Map<String, Point> vertices = new HashMap<>();
 
         @Override
         public Object addEdge( Object p1, Object p2 )
@@ -188,7 +184,7 @@ public class Polytope4d extends ChangeManifestations
         @Override
         public Object addVertex( AlgebraicVector vertex )
         {
-            Point p = vertices .get( vertex );
+            Point p = vertices .get( vertex.toString() );
             if ( p == null )
             {
                 AlgebraicVector projected = vertex;
@@ -200,7 +196,7 @@ public class Polytope4d extends ChangeManifestations
                 p = new FreePoint( projected );
                 p .setIndex( numVertices++ );
                 manifestConstruction( p );
-                vertices .put( vertex, p );
+                vertices .put( vertex.toString(), p );
             }
             return p;
         }

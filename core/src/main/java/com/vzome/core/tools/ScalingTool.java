@@ -1,10 +1,6 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.tools;
 
-
-import java.util.EnumSet;
 
 import org.w3c.dom.Element;
 
@@ -22,9 +18,9 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.construction.Transformation;
 import com.vzome.core.editor.AbstractToolFactory;
-import com.vzome.core.editor.Selection;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
+import com.vzome.core.editor.api.Selection;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
@@ -131,7 +127,7 @@ public class ScalingTool extends SymmetryTool
     {
         super( id, symmetry, tools );
         this .scaleFactor = null;
-        this .setInputBehaviors( EnumSet.of( InputBehaviors.DELETE ) );
+        this .setInputBehaviors( false, true );
     }
 
     void setScaleFactor( AlgebraicNumber scaleFactor )
@@ -173,7 +169,7 @@ public class ScalingTool extends SymmetryTool
                     correct = false;
                     break;
                 }
-                center = (Point) ((Connector) man) .getConstructions() .next();
+                center = (Point) ((Connector) man) .getFirstConstruction();
             }
             else if ( man instanceof Strut )
             {
@@ -183,9 +179,9 @@ public class ScalingTool extends SymmetryTool
                     break;
                 }
                 if ( s1 == null )
-                    s1 = (Segment) ((Strut) man) .getConstructions() .next();
+                    s1 = (Segment) ((Strut) man) .getFirstConstruction();
                 else
-                    s2 = (Segment) ((Strut) man) .getConstructions() .next();
+                    s2 = (Segment) ((Strut) man) .getFirstConstruction();
             }
             else if ( man instanceof Panel )
                 hasPanels = true;

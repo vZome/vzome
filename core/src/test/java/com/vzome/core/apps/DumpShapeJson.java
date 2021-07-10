@@ -5,11 +5,11 @@ import java.util.Properties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.construction.Polygon;
 import com.vzome.core.editor.Application;
 import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
-import com.vzome.core.render.Shapes;
+import com.vzome.core.editor.SymmetryPerspective;
+import com.vzome.core.editor.api.Shapes;
+import com.vzome.core.math.Polyhedron;
 
 public class DumpShapeJson
 {
@@ -47,5 +47,5 @@ public class DumpShapeJson
     //  Fortunately, the mechanism uses "isAssignableFrom", so you can have
     //  a view class that extends others or implements interfaces.
     
-	private static class View implements AlgebraicNumber.Views.Rational, Polygon.Views.Polygons {}
+	private static class View implements AlgebraicNumber.Views.Rational, Polyhedron.Views.Polygons {}
 }

@@ -1,10 +1,8 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.math.symmetry;
 
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
@@ -17,14 +15,7 @@ import com.vzome.core.math.RealVector;
  */
 public interface Symmetry extends Iterable<Direction>, Embedding
 {
-	public enum SpecialOrbit {
-	    BLUE,    // used for orbit dots
-	    RED,     // used for orbit dots and in RotationTool, for the default rotation axis
-	    YELLOW,  // used for orbit dots
-	    BLACK    // if defined, used for orbit finding in getAxis
-    }
-
-    int PLUS = Axis.PLUS, MINUS = Axis.MINUS;
+	int PLUS = Axis.PLUS, MINUS = Axis.MINUS;
 	
 	int NO_ROTATION = -1;
     
@@ -38,7 +29,7 @@ public interface Symmetry extends Iterable<Direction>, Embedding
     
     Axis getAxis( AlgebraicVector vector, OrbitSet orbits );
 
-    Axis getAxis( RealVector vector, Set<Direction> filter );
+    Axis getAxis( RealVector vector, Collection<Direction> filter );
     
     int getMapping( int from, int to );
 
@@ -69,8 +60,6 @@ public interface Symmetry extends Iterable<Direction>, Embedding
     
     Direction createNewZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector vector );
 
-    String getDefaultStyle();
-
     public abstract int[] getIncidentOrientations( int orientation );
 
     public abstract Direction getSpecialOrbit( SpecialOrbit which );
@@ -83,6 +72,8 @@ public interface Symmetry extends Iterable<Direction>, Embedding
 	 * @return {@link AlgebraicMatrix}
 	 */
 	public abstract AlgebraicMatrix getPrincipalReflection();
+	
+	public AlgebraicVector[] getOrbitTriangle();
 	
 	/**
 	 * Compute the orbit triangle dots for all existing orbits,

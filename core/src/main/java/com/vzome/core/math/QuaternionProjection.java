@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.math;
 
 import org.w3c.dom.Element;
@@ -8,7 +6,7 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Quaternion;
-import com.vzome.core.commands.XmlSaveFormat;
+import com.vzome.xml.DomUtils;
 
 public class QuaternionProjection implements Projection
 {
@@ -83,10 +81,19 @@ public class QuaternionProjection implements Projection
     }
 
     @Override
-    public void setXmlAttributes( Element xml, XmlSaveFormat format )
+    public void setXmlAttributes( Element xml )
     {
-        this.setQuaternion(format .parseRationalVector( xml, LEFT_QUATERNION_ATTRIBUTENAME ), LEFT );
-        this.setQuaternion(format .parseRationalVector( xml,RIGHT_QUATERNION_ATTRIBUTENAME ), RIGHT);
+        this.setQuaternion( parseRationalVector( xml, LEFT_QUATERNION_ATTRIBUTENAME ), LEFT );
+        this.setQuaternion( parseRationalVector( xml,RIGHT_QUATERNION_ATTRIBUTENAME ), RIGHT);
+    }
+
+    private AlgebraicVector parseRationalVector( Element xml, String attrName )
+    {
+        String nums = xml .getAttribute( attrName );
+        if ( nums == null || nums .isEmpty() )
+            return null;
+        AlgebraicVector loc = this .field .parseVector( nums );
+        return loc;
     }
 
     @Override

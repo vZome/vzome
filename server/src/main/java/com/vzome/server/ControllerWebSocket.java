@@ -1,8 +1,6 @@
 package com.vzome.server;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -23,20 +21,23 @@ import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.ui.Controller;
 import org.vorthmann.zome.app.impl.ApplicationController;
+import org.vorthmann.zome.app.impl.DocumentController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.vzome.desktop.controller.Controller3d;
+import com.vzome.core.render.Scene;
+import com.vzome.desktop.controller.JsonClientRendering;
+import com.vzome.desktop.controller.RenderingViewer;
 
-public class ControllerWebSocket implements WebSocketListener
+public class ControllerWebSocket implements WebSocketListener, JsonClientRendering.EventDispatcher
 {
     private static final Logger LOG = Log.getLogger( ControllerWebSocket.class );
     private Session outbound;
     private final ThrottledQueue queue = new ThrottledQueue( 200, 1000 ); // 40 gets/second
-    private Controller3d docController;
+    private DocumentController docController;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ObjectWriter objectWriter = objectMapper .writer();
 
@@ -57,15 +58,20 @@ public class ControllerWebSocket implements WebSocketListener
         }
     }
 
-    private void publish( String key, String value )
+    public void dispatchEvent( String type, JsonNode payload )
     {
-        ObjectNode wrapper = this .objectMapper .createObjectNode();
-        wrapper .put( key, value );
-        try {
-            this .queue .add( this .objectWriter .writeValueAsString( wrapper ) );
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        ObjectNode event = this .objectMapper .createObjectNode();
+        event .put( "type", type );
+        event .set( "payload", payload );
+        publish( event );
+    }
+
+    private void dispatchEvent( String type, String payload )
+    {
+        ObjectNode event = this .objectMapper .createObjectNode();
+        event .put( "type", type );
+        event .put( "payload", payload );
+        publish( event );
     }
 
     public void onWebSocketConnect( Session session )
@@ -84,52 +90,46 @@ public class ControllerWebSocket implements WebSocketListener
             }
         } );
         LOG.info( "WebSocket Connect: {}", session );
-        publish( "info", "You are now connected to " + this.getClass().getName() );
+        dispatchEvent( "info", "You are now connected to " + this.getClass().getName() );
 
         String urlStr = session .getUpgradeRequest() .getQueryString();
         try {
             urlStr = URLDecoder.decode( urlStr, "UTF-8");
-            publish( "info", "Opening " + urlStr );
+            dispatchEvent( "info", "Opening " + urlStr );
         } catch (UnsupportedEncodingException e1) {
             e1.printStackTrace();
-            publish( "error", e1 .getMessage() );
+            dispatchEvent( "LOAD_FAILED", e1 .getMessage() );
             return;
         }
+        
+        // NOTE: THIS CODE IS NOW UNTESTED.  I have attempted alignment with the
+        //  new approach in the client app, at least for event dispatch, but the client
+        //  app is no longer using websockets to talk to a server.
 
-        docController = (Controller3d) APP .getSubController( urlStr );
+        docController = (DocumentController) APP .getSubController( urlStr );
         if ( docController != null ) {
-            publish( "error", "Document already in use: " + urlStr );
+            dispatchEvent( "LOAD_FAILED", "Document already in use: " + urlStr );
             this .docController = null; // prevent action on the document
         } else {
-            APP .doAction( "openURL-" + urlStr, null );
-            this .docController = (Controller3d) APP .getSubController( urlStr );
+            APP .doAction( "openURL-" + urlStr );
+            this .docController = (DocumentController) APP .getSubController( urlStr );
             if ( this .docController == null ) {
-                publish( "error", "Document load FAILURE: " + urlStr );
+                dispatchEvent( "LOAD_FAILED", "Document load FAILURE: " + urlStr );
                 return;
             }
             String bkgdColor = docController .getProperty( "backgroundColor" );
             if ( bkgdColor != null ) {
-                ObjectNode wrapper = this .objectMapper .createObjectNode();
-                wrapper .put( "render", "background" );
-                wrapper .put( "color", bkgdColor );
-                publish( wrapper );
+                dispatchEvent( "BACKGROUND_SET", bkgdColor );
             }
             consumer.start();
-            RemoteClientRendering clientRendering = new RemoteClientRendering( new RemoteClientRendering.JsonSink() {
-                
-                @Override
-                public void sendJson( JsonNode node ) {
-                    publish( node );
-                }
-            } );
-            this .docController .attachViewer( clientRendering, clientRendering, null );
+            JsonClientRendering clientRendering = new JsonClientRendering( this, false );
+            this .docController .getModel() .getRenderedModel() .addListener( clientRendering );
             try {
                 this .docController .actionPerformed( this, "finish.load" );
-                publish( "render", "flush" );
-                publish( "info", "Document load SUCCESS" );
+                dispatchEvent( "MODEL_LOADED", "" );
             } catch ( Exception e ) {
                 e.printStackTrace();
-                publish( "error", "Document load unknown FAILURE}" );
+                dispatchEvent( "LOAD_FAILED", "Document load unknown FAILURE}" );
             }
         }
     }
@@ -193,18 +193,25 @@ public class ControllerWebSocket implements WebSocketListener
         props .setProperty( "entitlement.model.edit", "true" );
         props .setProperty( "keep.alive", "true" );
 
-        APP = new ApplicationController( new ActionListener()
+        APP = new ApplicationController( new ApplicationController.UI()
         {	
             @Override
-            public void actionPerformed( ActionEvent e )
+            public void doAction( String action )
             {
-                System .out .println( "UI event: " + e .toString() );
+                System .out .println( "UI event: " + action );
             }
+
+            @Override
+            public void runScript( String script, File file )
+            {}
+
+            @Override
+            public void openApplication( File file )
+            {}
         }, props, new J3dComponentFactory()
         {
             @Override
-            public Component createRenderingComponent( boolean isSticky,
-                    boolean isOffScreen, Controller3d controller )
+            public RenderingViewer createRenderingViewer( Scene scene )
             {
                 // Should never be called
                 return null;
@@ -252,6 +259,10 @@ public class ControllerWebSocket implements WebSocketListener
         defHolder.setInitParameter( "resourceBase",resourceBase );
         defHolder.setInitParameter("dirAllowed","true");
         context.addServlet(defHolder,"/");
+
+        // add exporter servlet
+        
+        context.addServlet( new ServletHolder( new ExporterServlet() ), "/exporter/*" );
 
         try
         {

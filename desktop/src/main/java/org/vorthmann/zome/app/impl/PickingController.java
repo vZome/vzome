@@ -1,6 +1,5 @@
 package org.vorthmann.zome.app.impl;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 
 import org.vorthmann.ui.Controller;
@@ -28,6 +27,7 @@ public class PickingController extends DefaultController implements Controller
 	private final DocumentController delegate;
 	
 	private transient Manifestation pickedManifestation;
+    private RenderedManifestation pickedRM;
 
 	public PickingController( RenderingViewer viewer, DocumentController delegate )
 	{
@@ -36,7 +36,7 @@ public class PickingController extends DefaultController implements Controller
 	}
 
 	@Override
-	public void doAction( String action, ActionEvent e ) throws Exception
+	public void doAction( String action ) throws Exception
 	{
         switch ( action ) {
 
@@ -47,16 +47,22 @@ public class PickingController extends DefaultController implements Controller
         case "setWorkingPlaneAxis":
         case "setWorkingPlane":
         case "lookAtThis":
-        case "setBuildOrbitAndLength":
         case "SelectCollinear":
         case "SelectParallelStruts":
         case "AdjustSelectionByOrbitLength/selectSimilarStruts":
 		case "ReplaceWithShape":
-        	this .delegate .doManifestationAction( this .pickedManifestation, action );
-        	break;
+            this .delegate .doManifestationAction( this .pickedManifestation, action );
+            break;
+            
+        case "setBuildOrbitAndLength":
+        case "CreateStrutAxisPlus0":
+        case "CreateStrutPrototype":
+        case "testMoveAndRotate":
+            this .delegate .doManifestationAction( this .pickedRM, action );
+            break;
             
 		default:
-			this .delegate .doAction( action, e );
+			this .delegate .doAction( action );
 		}
 
 		this .pickedManifestation = null;
@@ -65,10 +71,10 @@ public class PickingController extends DefaultController implements Controller
 	@Override
 	public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
 	{
-        RenderedManifestation rm = this .viewer .pickManifestation( e );
+        pickedRM = this .viewer .pickManifestation( e );
         pickedManifestation = null;
-        if ( rm != null && rm.isPickable() )
-        	pickedManifestation = rm.getManifestation();
+        if ( pickedRM != null && pickedRM.isPickable() )
+        	pickedManifestation = pickedRM.getManifestation();
 
         boolean[] result = this .delegate .enableContextualCommands( menu, e );
         for ( int i = 0; i < menu.length; i++ ) {
@@ -91,6 +97,9 @@ public class PickingController extends DefaultController implements Controller
             case "SelectParallelStruts":
             case "AdjustSelectionByOrbitLength/selectSimilarStruts":
             case "setBuildOrbitAndLength":
+            case "CreateStrutAxisPlus0":
+            case "CreateStrutPrototype":
+            case "testMoveAndRotate":
                 result[ i ] = pickedManifestation instanceof Strut;
                 break;
 

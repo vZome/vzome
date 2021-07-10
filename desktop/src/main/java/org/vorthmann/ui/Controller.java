@@ -1,12 +1,8 @@
 
-//(c) Copyright 2006, Scott Vorthmann
-
 package org.vorthmann.ui;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -30,7 +26,7 @@ import org.vorthmann.j3d.MouseTool;
  * @author vorth
  *
  */
-public interface Controller extends ActionListener
+public interface Controller
 {
     // TODO replace ErrorChannel with JDK logging
     public interface ErrorChannel
@@ -54,9 +50,6 @@ public interface Controller extends ActionListener
     String[] getCommandList( String listName );
 
     boolean[] enableContextualCommands( String[] menu, MouseEvent e );
-
-    @Override
-    void actionPerformed( ActionEvent e );
 
     void actionPerformed( Object source, String action );
 

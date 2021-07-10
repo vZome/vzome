@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package org.vorthmann.zome.ui;
 
 import java.awt.BorderLayout;
@@ -42,7 +40,7 @@ public class Snapshot2dFrame extends JFrame
             @Override
             public void actionPerformed( ActionEvent ae )
             {
-                controller .actionPerformed( ae );
+                controller .actionPerformed( ae .getSource(), ae .getActionCommand() );
                 snapshotPanel .repaint();
             }
         };
@@ -140,7 +138,7 @@ public class Snapshot2dFrame extends JFrame
     public void setPanelSize( Dimension dims )
     {
         snapshotPanel .setPreferredSize( dims );
-        controller .actionPerformed( new ActionEvent( this, ActionEvent.ACTION_PERFORMED, "refresh.2d" ) );
+        controller .actionPerformed( this, "refresh.2d" );
     }
 
     @Override

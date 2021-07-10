@@ -1,0 +1,94 @@
+
+
+// adjust to the parts scale
+scale -5
+
+symmetry through center
+{
+symmetry around blue +0
+branch{
+	label unit.start
+branch{
+
+    branch { short red 0
+          label tip_bottom
+    }
+
+    branch {
+		long blue +0 short red +4
+	label base_bottom_right
+	}
+save scale { scale +5
+size -99 blue +0 }
+
+	branch {
+	short red +4
+	label join_bottom_right
+	}
+}
+save all {
+reflect through 8
+
+    branch { short red 0
+          label tip_top
+    }
+
+    branch {
+		long blue +0
+		short red +4
+	label base_top_right
+	}
+save scale { scale +5
+size -99 blue +0 }
+
+	branch {
+	short red +4
+	label join_top_right
+	}
+}
+save all {
+reflect through 14
+    branch {
+		long blue +0
+		short red +4
+	label base_bottom_left
+	}
+save scale { scale +5
+size -99 blue +0 }
+
+	branch {
+	short red +4
+	label join_bottom_left
+	}
+}
+
+	label unit.face
+	label tip_bottom
+	label base_bottom_right
+	label base_bottom_left
+
+	label unit.face
+	label base_top_right
+	label base_bottom_right
+	label tip_bottom
+	label tip_top
+
+	label unit.face
+	label base_bottom_right
+	label base_top_right
+	label join_top_right
+	label join_bottom_right
+
+	label unit.face
+	label base_bottom_left
+	label base_bottom_right
+	label join_bottom_right
+	label join_bottom_left
+
+	label unit.end
+}
+
+repeat 2
+save scale { scale +5
+size -99 blue +0 }
+}
