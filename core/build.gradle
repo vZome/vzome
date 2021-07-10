@@ -549,6 +549,7 @@ jsweet {
         'com/vzome/core/algebra/*Impl.java',
         'com/vzome/core/algebra/AlgebraicFields.java',
         'com/vzome/core/algebra/PolygonField.java',
+        'com/vzome/core/algebra/SnubCubeField.java',
 
         'com/vzome/core/commands/ZomicVirtualMachine.java',
         'com/vzome/core/commands/CommandExecuteZomicScript.java',
