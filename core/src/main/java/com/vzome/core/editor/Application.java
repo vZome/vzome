@@ -142,7 +142,7 @@ public class Application implements AlgebraicField.Registry
         // See the note in getDocumentKind() before adding them here so they show up in the main memu
 //        this.fieldAppSuppliers.put( "superGolden", () -> { return new DefaultFieldApplication ( new SuperGoldenField()); } );
 //        this.fieldAppSuppliers.put( "plasticNumber", () -> { return new DefaultFieldApplication ( new PlasticNumberField()); } );
-//        this.fieldAppSuppliers.put( "plasticPhi", () -> { return new DefaultFieldApplication ( new PlasticPhiField()); } );
+//        this.fieldAppSuppliers.put( "plasticPhi", () -> { return new PlasticPhiFieldApplication ( new PlasticPhiField()); } );
 //        this.fieldAppSuppliers.put( "edPegg", () -> { return new DefaultFieldApplication ( new EdPeggField()); } );
     }
 
@@ -231,6 +231,7 @@ public class Application implements AlgebraicField.Registry
         case "plasticNumber":
             return new DefaultFieldApplication ( new PlasticNumberField() );
         case "plasticPhi":
+            // TODO: Eventually return new PlasticPhiFieldApplication ( new PlasticPhiField() );
             return new DefaultFieldApplication ( new PlasticPhiField() );
         case "edPegg": 
             return new DefaultFieldApplication ( new EdPeggField() );

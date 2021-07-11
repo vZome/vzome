@@ -81,6 +81,7 @@ public class FieldApplicationTest
         result.add( new SnubDodecFieldApplication());
         result.add( new DefaultFieldApplication ( new PlasticNumberField() ) );
         result.add( new DefaultFieldApplication ( new PlasticPhiField() ) );
+//        result.add( new PlasticPhiFieldApplication ( new PlasticPhiField() ) ); // TODO: Tweak the test cases when this is fully imllemented
         result.add( new DefaultFieldApplication ( new SuperGoldenField() ) );
         result.add( new DefaultFieldApplication ( new EdPeggField() ) );
         for(int nSides = PolygonField.MIN_SIDES; nSides < PolygonFieldTest.MAX_SIDES; nSides++) {
