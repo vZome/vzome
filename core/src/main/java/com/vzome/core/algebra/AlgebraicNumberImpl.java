@@ -31,6 +31,82 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
 
     private Integer hashCode;	// initialized on first use
 
+    public static AlgebraicNumberFactory FACTORY = new AlgebraicNumberFactory()
+    {
+        @Override
+        public BigRational zero()
+        {
+            return BigRationalImpl.ZERO;
+        }
+        
+        @Override
+        public BigRational one()
+        {
+            return BigRationalImpl.ONE;
+        }
+                
+        @Override
+        public BigRational createBigRational( long numerator, long denominator )
+        {
+            return new BigRationalImpl( numerator, denominator );
+        }
+
+        @Override
+        public AlgebraicNumber createAlgebraicNumber( AlgebraicField field, int[] numerators, int divisor )
+        {
+            BigRational[] brs = new BigRational[ numerators .length ];
+            for ( int j = 0; j < numerators.length; j++ ) {
+                brs[ j ] = new BigRationalImpl( numerators[ j ], divisor );
+            }
+            return new AlgebraicNumberImpl( field, brs );
+        }
+
+        @Override
+        public AlgebraicNumber createAlgebraicNumberFromTD( AlgebraicField field, int[] trailingDivisorForm )
+        {
+            int n = trailingDivisorForm .length;
+            int denominator = 1;
+            if ( n == field .getOrder() + 1 ) {
+                --n;
+                denominator = trailingDivisorForm[ n ];
+            }
+            BigRational[] brs = new BigRational[ n ];
+            for ( int j = 0; j < n; j++ ) {
+                brs[ j ] = new BigRationalImpl( trailingDivisorForm[ j ], denominator );
+            }
+            return new AlgebraicNumberImpl( field, brs );
+        }
+
+        @Override
+        public AlgebraicNumber createAlgebraicNumberFromPairs( AlgebraicField field, int[] pairs )
+        {
+            BigRational[] brs = new BigRational[ pairs .length / 2 ];
+            for ( int j = 0; j < brs.length; j++ ) {
+                brs[ j ] = new BigRationalImpl( pairs[ j*2 ], pairs[ j*2+1 ] );
+            }
+            return new AlgebraicNumberImpl( field, brs );
+        }
+
+        @Override
+        public AlgebraicNumber createRational( AlgebraicField field, long numerator, long denominator )
+        {
+            return new AlgebraicNumberImpl( field, new BigRationalImpl( numerator, denominator ) );
+        }
+
+        @Override
+        public boolean isPrime( int n )
+        {
+            final int certainty = 100; // same value as nextProbablePrime()
+            return BigInteger.valueOf(n).isProbablePrime(certainty);
+        }
+
+        @Override
+        public int nextPrime( int prime )
+        {
+            return BigInteger.valueOf( prime ).nextProbablePrime() .intValue();
+        }
+    };
+    
     /**
      * This non-varargs constructor does not call normalize(), 
      * so it can safely be called from within the base AlgebraicField constructor
@@ -50,19 +126,18 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         isOne = isOne(this.factors);
     }
 
-    public AlgebraicNumberImpl( AlgebraicField field, BigRational[] factors )
+    public AlgebraicNumberImpl( AlgebraicField field, BigRational[] givenFactors )
     {
-        if ( factors.length > field .getOrder() )
-            throw new IllegalStateException( factors.length + " is too many factors for field \"" + field.getName() + "\"" );
+        if ( givenFactors.length > field .getOrder() )
+            throw new IllegalStateException( givenFactors.length + " is too many factors for field \"" + field.getName() + "\"" );
         this .field = (AbstractAlgebraicField) field;
-        BigRational[] newFactors = this .field .prepareAlgebraicNumberTerms(factors);
         this .factors = new BigRational[ field .getOrder() ];
-        for ( int i = 0; i < newFactors.length; i++ ) {
-            this .factors[ i ] = newFactors[ i ] == null 
+        for ( int i = 0; i < givenFactors.length; i++ ) {
+            this .factors[ i ] = givenFactors[ i ] == null 
                     ? BigRationalImpl.ZERO
-                            : newFactors[ i ];
+                            : givenFactors[ i ];
         }
-        for ( int i = newFactors.length; i < this.factors.length; i++ ) {
+        for ( int i = givenFactors.length; i < this.factors.length; i++ ) {
             this .factors[ i ] = BigRationalImpl.ZERO;
         }
         this .field .normalize(this.factors);

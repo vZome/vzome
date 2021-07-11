@@ -25,7 +25,7 @@ public class PolygonFieldTest {
         String msg = "Expected an IllegalArgumentException for a parameter less than MIN_SIDES.";
         boolean caught = false;
         try {
-            new PolygonField(PolygonField.MIN_SIDES - 1, BigRationalImpl.FACTORY );
+            new PolygonField(PolygonField.MIN_SIDES - 1, AlgebraicNumberImpl.FACTORY );
             fail(msg);
         }
         catch(IllegalArgumentException ex) {
@@ -35,7 +35,7 @@ public class PolygonFieldTest {
         
         caught = false;
         try {
-            new PolygonField( PolygonField.MIN_SIDES, BigRationalImpl.FACTORY ).getNormalizerMatrix(PolygonField.MIN_SIDES - 1);
+            new PolygonField( PolygonField.MIN_SIDES, AlgebraicNumberImpl.FACTORY ).getNormalizerMatrix(PolygonField.MIN_SIDES - 1);
             fail(msg);
         }
         catch(IllegalArgumentException ex) {
@@ -48,7 +48,7 @@ public class PolygonFieldTest {
     public void testHighOrderPolygonFieldConstructor() {
         System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
         long t0 = System.currentTimeMillis();
-        PolygonField field = new PolygonField(2*3*5*7, BigRationalImpl.FACTORY );
+        PolygonField field = new PolygonField(2*3*5*7, AlgebraicNumberImpl.FACTORY );
         long t1 = System.currentTimeMillis();
         assertNotNull(field);
         System.out.println(field.getName() + " is order " + field.getOrder() + ".\nIts constructor takes " + (t1-t0) + " msec.");
@@ -78,11 +78,11 @@ public class PolygonFieldTest {
         System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
         for(int nSides = PolygonField.MIN_SIDES; nSides <= MAX_SIDES; nSides++ ) {
             int nSecondary = PolygonField.secondaryDiagonalCount(nSides);
-            if(PolygonField.isPowerOfTwo(nSides) || PolygonField.isPrime(nSides)) {
+            if(PolygonField.isPowerOfTwo(nSides) || AlgebraicNumberImpl.FACTORY.isPrime(nSides)) {
                 assertEquals(0, nSecondary);
                 continue;
             }
-            PolygonField field = new PolygonField(nSides, BigRationalImpl.FACTORY );
+            PolygonField field = new PolygonField(nSides, AlgebraicNumberImpl.FACTORY );
             System.out.println(field.getName());
             assertEquals(nSides, field.polygonSides().intValue());
             for(int i = field.getOrder(); i < field.diagonalCount(); i++) {
@@ -111,7 +111,7 @@ public class PolygonFieldTest {
             int nDiags = PolygonField.diagonalCount(nSides);
             int nSecondary = PolygonField.secondaryDiagonalCount(nSides);
             System.out.print("\n" + nSides + "-gon: " + nDiags + " diagonals");
-            short[][] result = new PolygonField( nSides, BigRationalImpl.FACTORY ).getNormalizerMatrix(nSides);
+            short[][] result = new PolygonField( nSides, AlgebraicNumberImpl.FACTORY ).getNormalizerMatrix(nSides);
             if(nSecondary == 0) {
                 System.out.println();
                 assertNull(result);

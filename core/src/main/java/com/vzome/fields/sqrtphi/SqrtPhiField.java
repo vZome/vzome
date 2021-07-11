@@ -1,8 +1,7 @@
 package com.vzome.fields.sqrtphi;
 
 import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.algebra.BigRational;
-import com.vzome.core.algebra.BigRationalFactory;
+import com.vzome.core.algebra.AlgebraicNumberFactory;
 import com.vzome.core.algebra.ParameterizedField;
 import com.vzome.core.algebra.PentagonField;
 
@@ -49,7 +48,7 @@ public class SqrtPhiField  extends ParameterizedField<Integer>
         return getFieldCoefficients();
     }
     
-    public SqrtPhiField( BigRationalFactory factory ) {
+    public SqrtPhiField( AlgebraicNumberFactory factory ) {
         super( FIELD_NAME, 4, 0, factory );
     }
 
@@ -119,11 +118,12 @@ public class SqrtPhiField  extends ParameterizedField<Integer>
     }
     
     @Override
-    protected BigRational[] prepareAlgebraicNumberTerms(BigRational[] terms) {
-        return (terms.length == 2)
-            // remap [ units, phis ] to [ units, 0, phis, 0 ]
-            ? new BigRational[] { terms[0], numberFactory .zero(), terms[1], numberFactory .zero() }
-            : super.prepareAlgebraicNumberTerms(terms);
+    protected int[] convertGoldenNumberPairs( int[] pairs )
+    {
+        // remap [ units, phis ] to [ units, 0, phis, 0 ]
+        return ( pairs.length == 4 )
+            ? new int[] { pairs[0], pairs[1], 0, 1, pairs[2], pairs[3], 0, 1 }
+            : super.convertGoldenNumberPairs( pairs );
     }
     
     @Override

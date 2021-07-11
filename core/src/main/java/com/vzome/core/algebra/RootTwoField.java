@@ -22,7 +22,7 @@ public class RootTwoField extends AbstractAlgebraicField
     
     public RootTwoField()
     {
-        super( FIELD_NAME, 2, BigRationalImpl.FACTORY );
+        super( FIELD_NAME, 2, AlgebraicNumberImpl.FACTORY );
     };
     
     @Override

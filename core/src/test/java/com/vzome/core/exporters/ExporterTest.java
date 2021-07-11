@@ -14,8 +14,8 @@ import org.junit.Test;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicNumberImpl;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.BigRationalImpl;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.RootThreeField;
@@ -654,7 +654,7 @@ public class ExporterTest {
             new RootTwoField(),
             new RootThreeField(),
             new HeptagonField(),
-            new SnubDodecField( BigRationalImpl.FACTORY ),
+            new SnubDodecField( AlgebraicNumberImpl.FACTORY ),
         };
         final String[] expectations = new String[]{
             "(0,0) (3/5,7/5) (0,0) (0,0)",      // 1D: 0 X 0 0

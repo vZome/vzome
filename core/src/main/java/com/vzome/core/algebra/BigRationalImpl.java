@@ -30,29 +30,6 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
     public final static BigRationalImpl ZERO = new BigRationalImpl(0);
     public final static BigRationalImpl ONE = new BigRationalImpl(1);
     
-    public final static BigRationalFactory FACTORY = new BigRationalFactory() {
-        
-        @Override
-        public BigRational zero() {
-            return ZERO;
-        }
-        
-        @Override
-        public BigRational one() {
-            return ONE;
-        }
-        
-        @Override
-        public BigRational createBigRational( String fraction ) {
-            return new BigRationalImpl( fraction );
-        }
-        
-        @Override
-        public BigRational createBigRational(long numerator, long denominator) {
-            return new BigRationalImpl( numerator, denominator );
-        }
-    };
-
     private final long num;
     private final long den;
     private final BigInteger bigNum;  	// the big numerator

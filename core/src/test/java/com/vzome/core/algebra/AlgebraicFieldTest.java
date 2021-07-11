@@ -30,9 +30,9 @@ public class AlgebraicFieldTest {
         fields.add (new RootTwoField());
         fields.add (new RootThreeField());
         fields.add (new HeptagonField());
-        fields.add (new SqrtPhiField( BigRationalImpl.FACTORY ));
-        fields.add (new SnubDodecField( BigRationalImpl.FACTORY ));
-        fields.add (new SnubCubeField( BigRationalImpl.FACTORY ));
+        fields.add (new SqrtPhiField( AlgebraicNumberImpl.FACTORY ));
+        fields.add (new SnubDodecField( AlgebraicNumberImpl.FACTORY ));
+        fields.add (new SnubCubeField( AlgebraicNumberImpl.FACTORY ));
     }
     
     @Test
@@ -87,8 +87,8 @@ public class AlgebraicFieldTest {
         System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
         List<AlgebraicField> goldenFields = new ArrayList<>();
         goldenFields.add(new PentagonField());
-        goldenFields.add(new SnubDodecField( BigRationalImpl.FACTORY ));
-        goldenFields.add(new SqrtPhiField( BigRationalImpl.FACTORY ));
+        goldenFields.add(new SnubDodecField( AlgebraicNumberImpl.FACTORY ));
+        goldenFields.add(new SqrtPhiField( AlgebraicNumberImpl.FACTORY ));
         
         for(AlgebraicField field : goldenFields) {
             String fieldName = field.getName();

@@ -12,7 +12,7 @@ public abstract class ParameterizedField<T extends Object> extends AbstractAlgeb
     protected short[][][] multiplicationTensor;
     protected String[][] irrationalLabels;
     
-    public ParameterizedField( String name, int order, T operand, BigRationalFactory factory ) {
+    public ParameterizedField( String name, int order, T operand, AlgebraicNumberFactory factory ) {
         super( name, order, factory );
         this.operand = operand;
         // These arrays are allocated here, but all non-zero values will be initialized in the derived classes.

@@ -15,7 +15,7 @@ import javax.vecmath.Vector3f;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
-import com.vzome.core.algebra.BigRationalImpl;
+import com.vzome.core.algebra.AlgebraicNumberImpl;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.PolygonField;
@@ -133,9 +133,9 @@ public class Application implements AlgebraicField.Registry
         this.fieldAppSuppliers.put( "heptagon", () -> new HeptagonFieldApplication( new HeptagonField() ) );
         this.fieldAppSuppliers.put( "rootThree", () -> new RootThreeFieldApplication( new RootThreeField() ) );
         this.fieldAppSuppliers.put( "dodecagon", () -> new RootThreeFieldApplication( new RootThreeField() ) );
-        this.fieldAppSuppliers.put( "snubCube", () -> new SnubCubeFieldApplication( new SnubCubeField( BigRationalImpl.FACTORY ) ) );
-        this.fieldAppSuppliers.put( "snubDodec", () -> new SnubDodecFieldApplication( new SnubDodecField( BigRationalImpl.FACTORY ) ) );
-        this.fieldAppSuppliers.put( "sqrtPhi", () -> new SqrtPhiFieldApplication( new SqrtPhiField( BigRationalImpl.FACTORY ) ) );
+        this.fieldAppSuppliers.put( "snubCube", () -> new SnubCubeFieldApplication( new SnubCubeField( AlgebraicNumberImpl.FACTORY ) ) );
+        this.fieldAppSuppliers.put( "snubDodec", () -> new SnubDodecFieldApplication( new SnubDodecField( AlgebraicNumberImpl.FACTORY ) ) );
+        this.fieldAppSuppliers.put( "sqrtPhi", () -> new SqrtPhiFieldApplication( new SqrtPhiField( AlgebraicNumberImpl.FACTORY ) ) );
     }
 
     public DocumentModel loadDocument( InputStream bytes ) throws Exception
@@ -207,7 +207,7 @@ public class Application implements AlgebraicField.Registry
         // Parameterized FieldApplications are generated on demand
         if(name.startsWith(PolygonField.FIELD_PREFIX)) {
             int nSides = Integer.parseInt(name.substring(PolygonField.FIELD_PREFIX.length()));
-            PolygonField field = new PolygonField( nSides, BigRationalImpl.FACTORY );
+            PolygonField field = new PolygonField( nSides, AlgebraicNumberImpl.FACTORY );
             return new PolygonFieldApplication( field );
         }
 //        if(name.startsWith(SqrtField.FIELD_PREFIX)) {

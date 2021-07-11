@@ -25,7 +25,7 @@ public final class PentagonField extends AbstractAlgebraicField
 
     public PentagonField()
     {
-        super( FIELD_NAME, 2, BigRationalImpl.FACTORY );
+        super( FIELD_NAME, 2, AlgebraicNumberImpl.FACTORY );
     };
 
     public static final double PHI_VALUE = ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;

@@ -234,20 +234,20 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     
 
     @Override
-    public AlgebraicNumber times(int n)
+    public AlgebraicNumber timesInt(int n)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicNumber.timesInt" );
     }
 
     @Override
     public AlgebraicNumber times(int num, int den)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicNumber.times" );
     }
 
     @Override
     public boolean isRational()
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicNumber.isRational" );
     }
 }

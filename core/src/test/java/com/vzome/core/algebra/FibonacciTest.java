@@ -148,7 +148,7 @@ public class FibonacciTest {
             new RootTwoField(),
             new RootThreeField(),
             new HeptagonField(),
-            new SnubDodecField( BigRationalImpl.FACTORY )
+            new SnubDodecField( AlgebraicNumberImpl.FACTORY )
         };
 
         for (AlgebraicField field : fields) {

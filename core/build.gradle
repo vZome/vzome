@@ -539,7 +539,7 @@ jsweet {
         'com/vzome/core/algebra/RootTwoField.java',
         'com/vzome/core/algebra/PentagonField.java',
         'com/vzome/core/algebra/HeptagonField.java',
-        'com/vzome/core/algebra/AlgebraicSeries.java',
+        // 'com/vzome/core/algebra/AlgebraicSeries.java',
         'com/vzome/core/algebra/*Impl.java',
         'com/vzome/core/algebra/AlgebraicFields.java',
 

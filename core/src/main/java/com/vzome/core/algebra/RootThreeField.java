@@ -26,7 +26,7 @@ public class RootThreeField extends AbstractAlgebraicField
     
     public RootThreeField()
     {
-        super( FIELD_NAME, 2, BigRationalImpl.FACTORY );
+        super( FIELD_NAME, 2, AlgebraicNumberImpl.FACTORY );
     };
     
     @Override

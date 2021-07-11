@@ -3,7 +3,6 @@ package com.vzome.core.algebra;
 import static java.lang.Math.PI;
 import static java.lang.Math.sin;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,14 +126,14 @@ public class PolygonField extends ParameterizedField<Integer>
         return (n != 0) && ( (n & -n) == n );
     }
 
-    public static boolean isPrime(int n) {
-        final int certainty = 100; // same value as nextProbablePrime()
-        return BigInteger.valueOf(n).isProbablePrime(certainty);
+    public boolean isPrime(int n)
+    {
+        return this.numberFactory.isPrime( n );
     }
 
-    public static List<Integer> distinctPrimeFactors(int n) {
+    private List<Integer> distinctPrimeFactors(int n) {
         List<Integer> factors = new ArrayList<>();
-        for(int prime = 2; prime <= n; prime = BigInteger.valueOf(prime).nextProbablePrime().intValue()) {
+        for(int prime = 2; prime <= n; prime = numberFactory.nextPrime( prime ) ) {
             if(n % prime == 0) {
                 factors.add(prime);
             }
@@ -346,13 +345,13 @@ public class PolygonField extends ParameterizedField<Integer>
      * so I'm going to leave them as public static methods.
      */
 
-    public PolygonField( int polygonSides, BigRationalFactory factory ) {
+    public PolygonField( int polygonSides, AlgebraicNumberFactory factory ) {
         this( FIELD_PREFIX + polygonSides, polygonSides, factory );
     }
 
     // this protected c'tor is intended to allow PentagonField and HeptagonField classes to be refactored
     // so they are derived from PolygonField and still maintain their original legacy names
-    protected PolygonField(String name, int polygonSides, BigRationalFactory factory ) {
+    protected PolygonField(String name, int polygonSides, AlgebraicNumberFactory factory ) {
         super( name, getOrder(polygonSides), polygonSides, factory );
         isEven = polygonSides % 2 == 0;
         final boolean isGolden = polygonSides % 5 == 0;
@@ -367,23 +366,27 @@ public class PolygonField extends ParameterizedField<Integer>
             goldenDenominator = goldenNumerator = goldenRatio = null;
         }
     }
+    
+    // SV: This pattern is problematic for decoupling from BigRational.
+    //     It also represents a tight coupling between AAF and ANI, which is bad.
+    //     The correct pattern is to deal with this problem when parsing VEF, rather than inside the ANI constructor.
 
-    @Override
-    protected BigRational[] prepareAlgebraicNumberTerms(BigRational[] terms) {
-        int nonNullTerms = 0; // can't just use terms.length() since some may be null as when reading VEFShapes
-        for(int i = 0; i < terms.length; i++) {
-            if(terms[i] == null) {
-                break;
-            }
-            nonNullTerms++;
-        }
-        if (goldenRatio != null && nonNullTerms == 2 && getOrder() > 2 ) {
-            AlgebraicNumber scaleUnits = goldenDenominator.times(createRational(terms[0]));
-            AlgebraicNumber scaledPhis = goldenNumerator.times(createRational(terms[1]));
-            return ((AlgebraicNumberImpl)(scaleUnits.plus(scaledPhis)).dividedBy(goldenDenominator)).getFactors();
-        }
-        return super.prepareAlgebraicNumberTerms(terms);
-    }
+//    @Override
+//    protected BigRational[] prepareAlgebraicNumberTerms(BigRational[] terms) {
+//        int nonNullTerms = 0; // can't just use terms.length() since some may be null as when reading VEFShapes
+//        for(int i = 0; i < terms.length; i++) {
+//            if(terms[i] == null) {
+//                break;
+//            }
+//            nonNullTerms++;
+//        }
+//        if (goldenRatio != null && nonNullTerms == 2 && getOrder() > 2 ) {
+//            AlgebraicNumber scaleUnits = goldenDenominator.times(createRational(terms[0]));
+//            AlgebraicNumber scaledPhis = goldenNumerator.times(createRational(terms[1]));
+//            return ((AlgebraicNumberImpl)(scaleUnits.plus(scaledPhis)).dividedBy(goldenDenominator)).getFactors();
+//        }
+//        return super.prepareAlgebraicNumberTerms(terms);
+//    }
 
     public int diagonalCount() {
         return diagonalCount(polygonSides());
@@ -495,17 +498,15 @@ public class PolygonField extends ParameterizedField<Integer>
      */
     public AlgebraicNumber getUnitDiagonal(int n) {
         if(n >= getOrder() && n < diagonalCount()) {
-            // This is safe since AlgebraicNumber is immutable 
-            // and getFactors() returns a copy of its factors rather than the actual array
-            BigRational[] terms = ((AlgebraicNumberImpl) zero).getFactors();
+            int[] terms = this .zero() .toTrailingDivisor(); // makes a copy
             int row = n - getOrder();
             for(int i = 0; i < getOrder(); i++) {
                 int term = normalizerMatrix[row][i];
-                if(term != 0) {
-                    terms[i] = this .numberFactory .createBigRational( term, 1 );
+                if ( term != 0 ) {
+                    terms[i] = term;
                 }
             }
-            return createAlgebraicNumber(terms);
+            return createAlgebraicNumberFromTD( terms );
         }
         return super.getUnitTerm(n);
     }
