@@ -45,10 +45,9 @@ import com.vzome.core.viewing.OctahedralShapes;
  */
 public class SqrtPhiFieldApplication extends DefaultFieldApplication
 {
-	public SqrtPhiFieldApplication()
+	public SqrtPhiFieldApplication( AlgebraicField field )
 	{
-		super( new SqrtPhiField() );
-		AlgebraicField field = this .getField();
+		super( field );
 
 		OctahedralSymmetryPerspective octahedralPerspective = (OctahedralSymmetryPerspective) super .getDefaultSymmetryPerspective();
 		OctahedralSymmetry symm = octahedralPerspective .getSymmetry();

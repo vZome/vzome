@@ -44,7 +44,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         factors = new BigRational[ field .getOrder() ];
         factors[ 0 ] = units;
         for ( int i = 1; i < factors.length; i++ ) {
-            factors[ i ] = BigRational.ZERO;
+            factors[ i ] = BigRationalImpl.ZERO;
         }
         isZero = isZero(this.factors);
         isOne = isOne(this.factors);
@@ -59,11 +59,11 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         this .factors = new BigRational[ field .getOrder() ];
         for ( int i = 0; i < newFactors.length; i++ ) {
             this .factors[ i ] = newFactors[ i ] == null 
-                    ? BigRational.ZERO
+                    ? BigRationalImpl.ZERO
                             : newFactors[ i ];
         }
         for ( int i = newFactors.length; i < this.factors.length; i++ ) {
-            this .factors[ i ] = BigRational.ZERO;
+            this .factors[ i ] = BigRationalImpl.ZERO;
         }
         this .field .normalize(this.factors);
         isZero = isZero(this.factors);
@@ -78,8 +78,8 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
     {
         BigInteger lcm = BigInteger.ONE;
         for (BigRational factor : this.factors) {
-            if(! factor.isWhole() ) {
-                BigInteger aDivisor = factor.getDenominator();
+            if(! ((BigRationalImpl) factor).isWhole() ) {
+                BigInteger aDivisor = ((BigRationalImpl) factor).getDenominator();
                 lcm = lcm .multiply( aDivisor ) .abs() .divide( lcm .gcd( aDivisor ) );
             }
         }
@@ -230,7 +230,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @return this * n
      */
     @Override
-    public AlgebraicNumber times( int n )
+    public AlgebraicNumber timesInt( int n )
     {
         switch(n) {
         case 0:
@@ -468,7 +468,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         int[] result = new int[ order + 1 ];
         result[ order ] = divisor .intValueExact();
         for ( int i = 0; i < order; i++ ) {
-            result[ i ] = this .factors[ i ] .times( new BigRational( divisor, BigInteger.ONE ) ) .getNumerator() .intValueExact();
+            result[ i ] = ((BigRationalImpl) this .factors[ i ] .times( new BigRationalImpl( divisor, BigInteger.ONE ) )) .getNumerator() .intValueExact();
         }
         return result;
     }

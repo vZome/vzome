@@ -25,7 +25,7 @@ public class PolygonFieldTest {
         String msg = "Expected an IllegalArgumentException for a parameter less than MIN_SIDES.";
         boolean caught = false;
         try {
-            new PolygonField(PolygonField.MIN_SIDES - 1);
+            new PolygonField(PolygonField.MIN_SIDES - 1, BigRationalImpl.FACTORY );
             fail(msg);
         }
         catch(IllegalArgumentException ex) {
@@ -35,7 +35,7 @@ public class PolygonFieldTest {
         
         caught = false;
         try {
-            PolygonField.getNormalizerMatrix(PolygonField.MIN_SIDES - 1);
+            new PolygonField( PolygonField.MIN_SIDES, BigRationalImpl.FACTORY ).getNormalizerMatrix(PolygonField.MIN_SIDES - 1);
             fail(msg);
         }
         catch(IllegalArgumentException ex) {
@@ -48,7 +48,7 @@ public class PolygonFieldTest {
     public void testHighOrderPolygonFieldConstructor() {
         System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
         long t0 = System.currentTimeMillis();
-        PolygonField field = new PolygonField(2*3*5*7);
+        PolygonField field = new PolygonField(2*3*5*7, BigRationalImpl.FACTORY );
         long t1 = System.currentTimeMillis();
         assertNotNull(field);
         System.out.println(field.getName() + " is order " + field.getOrder() + ".\nIts constructor takes " + (t1-t0) + " msec.");
@@ -82,24 +82,24 @@ public class PolygonFieldTest {
                 assertEquals(0, nSecondary);
                 continue;
             }
-            PolygonField field = new PolygonField(nSides);
+            PolygonField field = new PolygonField(nSides, BigRationalImpl.FACTORY );
             System.out.println(field.getName());
             assertEquals(nSides, field.polygonSides().intValue());
             for(int i = field.getOrder(); i < field.diagonalCount(); i++) {
                 System.out.print("  " + (i == 0 ? "1" : field.getIrrational(i)) + "\t= ");
                 AlgebraicNumber n = field.getUnitDiagonal(i);
                 System.out.println(n);
-                BigRational sum = BigRational.ZERO;
+                BigRationalImpl sum = BigRationalImpl.ZERO;
                 for(BigRational term : ((AlgebraicNumberImpl) n).getFactors()) {
                     if(!term.isZero()) {
-                        sum = sum.plus(term.abs());
-                        if(sum.compareTo(BigRational.ONE) == 1) {
+                        sum = (BigRationalImpl) sum.plus(((BigRationalImpl) term).abs());
+                        if(sum.compareTo(BigRationalImpl.ONE) == 1) {
                             // we don't care about the actual sum, just that it's greater than 1.
                             break;
                         }
                     }
                 }
-                assertTrue(sum.compareTo(BigRational.ONE) == 1);
+                assertTrue(sum.compareTo(BigRationalImpl.ONE) == 1);
             }
         }       
     }
@@ -111,7 +111,7 @@ public class PolygonFieldTest {
             int nDiags = PolygonField.diagonalCount(nSides);
             int nSecondary = PolygonField.secondaryDiagonalCount(nSides);
             System.out.print("\n" + nSides + "-gon: " + nDiags + " diagonals");
-            short[][] result = PolygonField.getNormalizerMatrix(nSides);
+            short[][] result = new PolygonField( nSides, BigRationalImpl.FACTORY ).getNormalizerMatrix(nSides);
             if(nSecondary == 0) {
                 System.out.println();
                 assertNull(result);

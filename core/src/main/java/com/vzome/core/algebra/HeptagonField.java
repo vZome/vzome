@@ -22,7 +22,7 @@ public class HeptagonField extends AbstractAlgebraicField
 
     public HeptagonField()
     {
-        super( FIELD_NAME, 3 );
+        super( FIELD_NAME, 3, BigRationalImpl.FACTORY );
     };
     
     // specified to more precision than a double can retain so that values are as exact as possible: within one ulp().

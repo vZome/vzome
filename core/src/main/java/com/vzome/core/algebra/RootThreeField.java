@@ -22,11 +22,11 @@ public class RootThreeField extends AbstractAlgebraicField
 
     public static final double ROOT_3 = Math.sqrt( 3d );
     
-    private static final BigRational THREE = new BigRational( 3 );
+    private static final BigRational THREE = new BigRationalImpl( 3 );
     
     public RootThreeField()
     {
-        super( FIELD_NAME, 2 );
+        super( FIELD_NAME, 2, BigRationalImpl.FACTORY );
     };
     
     @Override

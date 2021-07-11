@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  *   -  unless either numerator or denominator equals Long.MIN_VALUE in which case they will both be big.
  *   -  A denominator of 0 will throw an IllegalArgumentException. 
  */
-public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigRationalElement<BigInteger, BigRationalImpl>
+public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
 {
     // indices into arrays used by reduce() and various c'tors 
     private final static int NUM = 0;
@@ -29,6 +29,29 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
 
     public final static BigRationalImpl ZERO = new BigRationalImpl(0);
     public final static BigRationalImpl ONE = new BigRationalImpl(1);
+    
+    public final static BigRationalFactory FACTORY = new BigRationalFactory() {
+        
+        @Override
+        public BigRational zero() {
+            return ZERO;
+        }
+        
+        @Override
+        public BigRational one() {
+            return ONE;
+        }
+        
+        @Override
+        public BigRational createBigRational( String fraction ) {
+            return new BigRationalImpl( fraction );
+        }
+        
+        @Override
+        public BigRational createBigRational(long numerator, long denominator) {
+            return new BigRationalImpl( numerator, denominator );
+        }
+    };
 
     private final long num;
     private final long den;
@@ -693,9 +716,9 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
     @Override
     public boolean isOne()      { return this.isOne; }
     public boolean isWhole()    { return this.isWhole; }
-    @Override
+
     public boolean isBig()      { return bigNum != null; }
-    @Override
+
     public boolean notBig()     { return bigNum == null; }
 
     public int signum()     { return signum; }
@@ -849,11 +872,11 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
      * @param n is the value to be multiplied
      * @return this * n
      */
-    public BigRationalImpl times( int n )
+    public BigRationalImpl timesInt( int n )
     {
         return n == 1 ? this : n == 0 ? ZERO : canMultiplyInteger
                 ? new BigRationalImpl( num * n )
-                        : this.times( new BigRationalImpl( n ) );
+                        : (BigRationalImpl) this.times( new BigRationalImpl( n ) );
     }
 
     /**
@@ -862,9 +885,9 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
      * @param den is the denominator of the fraction to be multiplied
      * @return this * (num / den)
      */
-    public BigRationalImpl times( int num, int den )
+    public BigRationalImpl timesRational( int num, int den )
     {
-        return this.times( new BigRationalImpl( num, den ) );
+        return (BigRationalImpl) this.times( new BigRationalImpl( num, den ) );
     }
 
     /**
@@ -872,7 +895,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
      * @return this * that
      */
     @Override
-    public BigRationalImpl times( BigRationalImpl that )
+    public BigRational times( BigRational that )
     {
         // multiplication IS commutative
         if ( this.isOne() ) {
@@ -884,12 +907,13 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
         if ( this.isZero() || that.isZero() ) {
             return ZERO;
         }
-        if( this.notBig() && that.notBig() ) {
+        BigRationalImpl bigThat = (BigRationalImpl) that;
+        if( this.notBig() && bigThat.notBig() ) {
             // cross multiply but switch to big if we generate an overflow
             boolean[] overflow = { false };
-            long n = multiplyAndCheck(this.num, that.num, overflow);
+            long n = multiplyAndCheck(this.num, bigThat.num, overflow);
             if(!overflow[0]) {
-                long d = multiplyAndCheck(this.den, that.den, overflow);
+                long d = multiplyAndCheck(this.den, bigThat.den, overflow);
                 if(!overflow[0]) {
                     return new BigRationalImpl( n, d );
                 }
@@ -898,8 +922,8 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
         // one or both is big or else the long math overflowed, but the big may still be less than the long after we do the math and reduce
         // so use getNumerator() and getDenominator() to make them both BigIntegers
         // then cross multiply and reduce in the c'tor
-        BigInteger n = this.getNumerator().multiply(that.getNumerator());
-        BigInteger d = this.getDenominator().multiply(that.getDenominator());
+        BigInteger n = this.getNumerator().multiply(bigThat.getNumerator());
+        BigInteger d = this.getDenominator().multiply(bigThat.getDenominator());
         return new BigRationalImpl( n, d );
     }
 
@@ -914,7 +938,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
                 ? this 
                 : canAddInteger
                     ? new BigRationalImpl( num + n )
-                    : this.plus( new BigRationalImpl( n ) );
+                    : (BigRationalImpl) this.plus( new BigRationalImpl( n ) );
     }
 
     /**
@@ -925,7 +949,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
      */
     public BigRationalImpl plus( int num, int den )
     {
-        return this.plus( new BigRationalImpl( num, den ) );
+        return (BigRationalImpl) this.plus( new BigRationalImpl( num, den ) );
     }
 
     /**
@@ -934,7 +958,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
      * @return this + that
      */
     @Override
-    public BigRationalImpl plus( BigRationalImpl that )
+    public BigRational plus( BigRational that )
     {
         // addition IS commutative
         if (this.isZero()) {
@@ -944,21 +968,22 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
             return this;
         }
 
-        if( this.notBig() && that.notBig() ) {
+        BigRationalImpl bigThat = (BigRationalImpl) that;
+        if( this.notBig() && bigThat.notBig() ) {
             // cross multiply longs but fall through to big if we generate an overflow
             boolean[] overflow = { false };
-            if(this.den == that.den) {
+            if(this.den == bigThat.den) {
                 // just add numerators and use their common denominator
-                long n = addAndCheck(this.num, that.num, overflow);
+                long n = addAndCheck(this.num, bigThat.num, overflow);
                 if(!overflow[0]) {
                     return new BigRationalImpl( n, this.den );
                 }
             } else {
                 // different denominators
-                long n1 = multiplyAndCheck(this.num, that.den, overflow);
-                long n2 = multiplyAndCheck(that.num, this.den, overflow);
+                long n1 = multiplyAndCheck(this.num, bigThat.den, overflow);
+                long n2 = multiplyAndCheck(bigThat.num, this.den, overflow);
                 long n = addAndCheck(n1, n2, overflow);
-                long d = multiplyAndCheck(this.den, that.den, overflow);
+                long d = multiplyAndCheck(this.den, bigThat.den, overflow);
                 if(!overflow[0]) {
                     return new BigRationalImpl( n, d );
                 }
@@ -966,18 +991,18 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
         }
 
         // one or both is big or the long math generated an overflow so use getNumerator() and getDenominator() to make them both BigIntegers
-        if (this.getDenominator().equals(that.getDenominator())) {
+        if (this.getDenominator().equals(bigThat.getDenominator())) {
             // just add numerators and use their common denominator
             BigInteger n1 = this.getNumerator();
-            BigInteger n2 = that.getNumerator();
+            BigInteger n2 = bigThat.getNumerator();
             return new BigRationalImpl(n1.add(n2), this.getDenominator());
         }
         // different denominators
         BigInteger d1 = this.getDenominator();
-        BigInteger d2 = that.getDenominator();
+        BigInteger d2 = bigThat.getDenominator();
         BigInteger d = d1.multiply(d2);
         BigInteger n1 = this.getNumerator().multiply(d2);
-        BigInteger n2 = that.getNumerator().multiply(d1);
+        BigInteger n2 = bigThat.getNumerator().multiply(d1);
         BigInteger n = n1.add(n2);
         return new BigRationalImpl(n, d);
     }
@@ -985,7 +1010,6 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
     /**
      * @return numerator as BigInteger even if it can be held in a long.
      */
-    @Override
     public BigInteger getNumerator()
     {
         return bigNum == null 
@@ -996,7 +1020,6 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
     /**
      * @return denominator as BigInteger even if it can be held in a long.
      */
-    @Override
     public BigInteger getDenominator()
     {
         return bigDen == null 
@@ -1028,7 +1051,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
             ? this 
             : canAddInteger
                 ? new BigRationalImpl( num - n )
-                : this.plus( new BigRationalImpl( -n ) );
+                : (BigRationalImpl) this.plus( new BigRationalImpl( -n ) );
     }
 
     /**
@@ -1039,7 +1062,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
      */
     public BigRationalImpl minus( int num, int den )
     {
-        return this.minus( new BigRationalImpl( num, den ) );
+        return (BigRationalImpl) this.minus( new BigRationalImpl( num, den ) );
     }
 
     /**
@@ -1048,7 +1071,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
      * @return this - that
      */
     @Override
-    public BigRationalImpl minus( BigRationalImpl that )
+    public BigRational minus( BigRational that )
     {
         return this.plus(that.negate());
     }
@@ -1078,7 +1101,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
         // since the constructor will throw the exception
         return d == 1 
                 ? this 
-                        : this.times( new BigRationalImpl( 1, d ) );
+                        : (BigRationalImpl) this.times( new BigRationalImpl( 1, d ) );
     }
 
     /**
@@ -1090,15 +1113,14 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, Fields.BigR
      */
     public BigRationalImpl dividedBy( long num, long den )
     {
-        return this.dividedBy( new BigRationalImpl( num, den ) );
+        return (BigRationalImpl) this.dividedBy( new BigRationalImpl( num, den ) );
     }
 
     /**
      * @param that
      * @return this / that
      */
-    @Override
-    public BigRationalImpl dividedBy( BigRationalImpl that )
+    public BigRational dividedBy( BigRational that )
     {
         // division IS NOT commutative
         return that.isOne() 

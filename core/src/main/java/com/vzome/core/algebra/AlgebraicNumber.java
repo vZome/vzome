@@ -53,7 +53,7 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
      * @param n is the value to be multiplied
      * @return this * n
      */
-    public AlgebraicNumber times( int n );
+    public AlgebraicNumber timesInt( int n );
 
     /**
      * 

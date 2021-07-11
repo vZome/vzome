@@ -10,7 +10,8 @@ import java.util.List;
 /**
  * @author David Hall
  */
-public class PolygonField extends ParameterizedField<Integer> {
+public class PolygonField extends ParameterizedField<Integer>
+{
     /**
      * 
      * @param nSides
@@ -30,7 +31,7 @@ public class PolygonField extends ParameterizedField<Integer> {
         }
         return coefficients;
     }
-    
+
     /**
      * 
      * @param nSides
@@ -74,63 +75,63 @@ public class PolygonField extends ParameterizedField<Integer> {
             diagLengths[1] = ( 1.0d + Math.sqrt( 5.0d ) ) / 2.0d;
             break;
 
-//        default:
-//            // No difference found between sqrt(2) and coefficients[1] of PolygonField(4)
-//            // or any other PolygonFields
-//            break;
+            //        default:
+            //            // No difference found between sqrt(2) and coefficients[1] of PolygonField(4)
+            //            // or any other PolygonFields
+            //            break;
         }
         return diagLengths;
     }
 
     public static final String FIELD_PREFIX = "polygon";
-    
+
     public static int getOrder(int nSides) {
-    	return primaryDiagonalCount(nSides);
+        return primaryDiagonalCount(nSides);
     }
-    
+
     public static int diagonalCount(int nSides) {
-    	return nSides/2;
+        return nSides/2;
     }
 
     // generates the sequence described at https://oeis.org/A055034
     public static int primaryDiagonalCount(int nSides) {
-    	// as long as nSides is an int, the result can safely be cast down to an int
-    	// but we need a long to hold 2 * nSides without overflowing
-    	return (int) (eulerTotient(2L * nSides) / 2L);
+        // as long as nSides is an int, the result can safely be cast down to an int
+        // but we need a long to hold 2 * nSides without overflowing
+        return (int) (eulerTotient(2L * nSides) / 2L);
     }
-    
+
     public static int secondaryDiagonalCount(int nSides) {
-    	return diagonalCount(nSides) - primaryDiagonalCount(nSides);
+        return diagonalCount(nSides) - primaryDiagonalCount(nSides);
     }
-    
+
     // returns the number of positive integers <= n and coprime to n
     // The result will always be less than or equal to n when n is positive. 
     // This function is also known as eulerPhi() or simply phi(),
     // but since we use phi for the golden ratio, I'll call it eulerTotient()
     // It generates the sequence described at https://oeis.org/A000010
     public static long eulerTotient(long n) {
-       long result = n; 
-       for(long i=2; i*i <= n; i++) { 
+        long result = n; 
+        for(long i=2; i*i <= n; i++) { 
             if (n % i == 0) result -= result / i; 
             while (n % i == 0) {
-            	n /= i;
+                n /= i;
             }
-       } 
-       if (n > 1) {
-    	   result -= result / n; 
-       }
-       return result; 
+        } 
+        if (n > 1) {
+            result -= result / n; 
+        }
+        return result; 
     }
-    
+
     public static boolean isPowerOfTwo(int n) {
-    	return (n != 0) && ( (n & -n) == n );
+        return (n != 0) && ( (n & -n) == n );
     }
-    
+
     public static boolean isPrime(int n) {
-    	final int certainty = 100; // same value as nextProbablePrime()
-    	return BigInteger.valueOf(n).isProbablePrime(certainty);
+        final int certainty = 100; // same value as nextProbablePrime()
+        return BigInteger.valueOf(n).isProbablePrime(certainty);
     }
-    
+
     public static List<Integer> distinctPrimeFactors(int n) {
         List<Integer> factors = new ArrayList<>();
         for(int prime = 2; prime <= n; prime = BigInteger.valueOf(prime).nextProbablePrime().intValue()) {
@@ -144,68 +145,69 @@ public class PolygonField extends ParameterizedField<Integer> {
         return factors;
     }
 
-    public static short[][][] getNormalizedMultiplicationTensor(int nSides) {
-    	short[][][] tensor = getExtendedMultiplicationTensor(nSides);
-    	if(isPrime(nSides) || isPowerOfTwo(nSides)) {
-    		return tensor;
-    	}
-    	// copy the truncated tensor to result
-    	int length = primaryDiagonalCount(nSides);
-    	short[][][] result = new short[length][length][length];
-    	for(int i = 0; i < length; i++) {
-        	for(int j = 0; j < length; j++) {
-    			for(int k = 0; k < length; k++) {
-    				result[i][j][k] = tensor[i][j][k];
-        		}
-        	}
-    	}
-    	// apply normalizer matrix to result
-    	short[][] normalizerMatrix = getNormalizerMatrix(nSides);
-    	int n = 0;
-    	for(int term = length; term < diagonalCount(nSides); term++) {
-    		for(int r = 0; r < length; r++) {
-	    		for(int c = 0; c < length; c++) {
-        			short omit = tensor[term][r][c];
-        			if(omit != 0) {
-        				for(int t = 0; t < length; t++) {
-        					short alt = normalizerMatrix[n][t];
-    						if(alt != 0) {
-            					int adjust = omit * alt;
-    							// This is the same as using 
-            					// result[t][r][c] += adjust; 
-    							// except that when using the += operator, the cast to short is implicit and thus may be overlooked.
-    							result[t][r][c] = (short)(result[t][r][c] + adjust); // cast assumes no overflow or underflow
-	        				}
-        				}
-        			}
-        		}
-    		}
-    		n++;
-    	}
-    	return result;
+    public short[][][] getNormalizedMultiplicationTensor(int nSides) {
+        short[][][] tensor = getExtendedMultiplicationTensor(nSides);
+        if(isPrime(nSides) || isPowerOfTwo(nSides)) {
+            return tensor;
+        }
+        // copy the truncated tensor to result
+        int length = primaryDiagonalCount(nSides);
+        short[][][] result = new short[length][length][length];
+        for(int i = 0; i < length; i++) {
+            for(int j = 0; j < length; j++) {
+                for(int k = 0; k < length; k++) {
+                    result[i][j][k] = tensor[i][j][k];
+                }
+            }
+        }
+        // apply normalizer matrix to result
+        short[][] normalizerMatrix = getNormalizerMatrix(nSides);
+        int n = 0;
+        for(int term = length; term < diagonalCount(nSides); term++) {
+            for(int r = 0; r < length; r++) {
+                for(int c = 0; c < length; c++) {
+                    short omit = tensor[term][r][c];
+                    if(omit != 0) {
+                        for(int t = 0; t < length; t++) {
+                            short alt = normalizerMatrix[n][t];
+                            if(alt != 0) {
+                                int adjust = omit * alt;
+                                // This is the same as using 
+                                // result[t][r][c] += adjust; 
+                                // except that when using the += operator, the cast to short is implicit and thus may be overlooked.
+                                result[t][r][c] = (short)(result[t][r][c] + adjust); // cast assumes no overflow or underflow
+                            }
+                        }
+                    }
+                }
+            }
+            n++;
+        }
+        return result;
     }
-    
-    public static short[][] getNormalizerMatrix(int nSides) {
-    	if(nSides < MIN_SIDES) {
-    		throw new IllegalArgumentException("nSides = " + nSides + " but must be greater than or equal to " + MIN_SIDES);
-    	}
-    	final int nSecondaryDiags = secondaryDiagonalCount(nSides);
-    	if(nSecondaryDiags == 0) { // same effect as isPrime(nSides) || isPowerOfTwo(nSides)
-        	return null;
-    	}
+
+    public short[][] getNormalizerMatrix(int nSides)
+    {
+        if(nSides < MIN_SIDES) {
+            throw new IllegalArgumentException("nSides = " + nSides + " but must be greater than or equal to " + MIN_SIDES);
+        }
+        final int nSecondaryDiags = secondaryDiagonalCount(nSides);
+        if(nSecondaryDiags == 0) { // same effect as isPrime(nSides) || isPowerOfTwo(nSides)
+            return null;
+        }
         final int nPrimaryDiags = primaryDiagonalCount(nSides);
         final int nDiags = nPrimaryDiags + nSecondaryDiags; // equivalent to diagonalCount(nSides);
-    	
-    	List<Integer> primeFactors = distinctPrimeFactors(nSides);
-    	
-    	if(primeFactors.get(0) == 2) {
-    	    primeFactors.remove(0);
-    	}
-    	
-    	final int nEquations = primeFactors.stream().mapToInt(prime -> nDiags/prime).sum();
-    	
-    	BigRational[][] primaryDiags = new BigRational[nEquations][nPrimaryDiags];
-    	BigRational[][] secondaryDiags = new BigRational[nEquations][nSecondaryDiags];
+
+        List<Integer> primeFactors = distinctPrimeFactors(nSides);
+
+        if(primeFactors.get(0) == 2) {
+            primeFactors.remove(0);
+        }
+
+        final int nEquations = primeFactors.stream().mapToInt(prime -> nDiags/prime).sum();
+
+        BigRational[][] primaryDiags = new BigRational[nEquations][nPrimaryDiags];
+        BigRational[][] secondaryDiags = new BigRational[nEquations][nSecondaryDiags];
         int equationRow = 0;
         for(int factor : primeFactors) {
             final int period = nSides / factor;
@@ -220,7 +222,7 @@ public class PolygonField extends ParameterizedField<Integer> {
                 terms[step] = 1;
                 for(int mid = period-parity; mid < nDiags; mid += period) {
                     terms[mid + step + parity] = 
-                    terms[mid - step] = n;
+                            terms[mid - step] = n;
                     n *= -1;
                 }
                 // split the array of terms into the two matrices
@@ -229,10 +231,10 @@ public class PolygonField extends ParameterizedField<Integer> {
                 for(int t = 0; t < terms.length; t++) {
                     int term = terms[t];
                     if(t < nSecondaryDiags) {
-                        secondaryDiags[equationRow][t] = new BigRational(term);
+                        secondaryDiags[equationRow][t] = numberFactory .createBigRational(term,1);
                     } else {
                         term *= -1; // negate these since we're moving them across the "equal sign"
-                        primaryDiags[equationRow][t-nSecondaryDiags] = new BigRational(term);
+                        primaryDiags[equationRow][t-nSecondaryDiags] = numberFactory .createBigRational(term,1);
                     }
                 }
                 equationRow++;
@@ -240,7 +242,7 @@ public class PolygonField extends ParameterizedField<Integer> {
         }
 
         int rank = Fields.gaussJordanReduction(secondaryDiags, primaryDiags);
-        
+
         if(rank != nSecondaryDiags) {
             throw new IllegalStateException("System of equations has unexpected rank: " + rank);            
         }
@@ -262,11 +264,11 @@ public class PolygonField extends ParameterizedField<Integer> {
         }
         return results;
     }
-    
+
     public static short[][][] getExtendedMultiplicationTensor(int nSides) {
         int nDiags = diagonalCount(nSides);
         short[][][] tensor = new short[nDiags][nDiags][nDiags];
-    	
+
         // initialize everything to 0
         for (int i = 0; i < nDiags; i++) {
             for (int j = 0; j < nDiags; j++) {
@@ -275,7 +277,7 @@ public class PolygonField extends ParameterizedField<Integer> {
                 }
             }
         }
-            
+
         // initialize all of the \<->\ SouthEasterly diagonal paths
         for (int layer = 0; layer < nDiags; layer++) {
             int midWay = layer/2;
@@ -308,7 +310,7 @@ public class PolygonField extends ParameterizedField<Integer> {
         }
         return tensor;
     }
-    
+
     public static String subscriptString(int i) {
         // https://stackoverflow.com/questions/17908593/how-to-find-the-unicode-of-the-subscript-alphabet
         return Integer.toString(i)
@@ -328,12 +330,12 @@ public class PolygonField extends ParameterizedField<Integer> {
     }
 
     public final static int MIN_SIDES = 4;
-    
+
     private final boolean isEven;
     private final AlgebraicNumber goldenRatio;
     private final AlgebraicNumber goldenDenominator;
     private final AlgebraicNumber goldenNumerator;
-    
+
     /*
      * Much of the class initialization is done by having member methods call comparable static methods
      * for various steps in the process. This is a bit unususal and isn't necessary at all. 
@@ -343,15 +345,15 @@ public class PolygonField extends ParameterizedField<Integer> {
      * also helps with documenting and explaining the logic that makes this class tick 
      * so I'm going to leave them as public static methods.
      */
-    
-    public PolygonField(int polygonSides) {
-        this( FIELD_PREFIX + polygonSides, polygonSides);
+
+    public PolygonField( int polygonSides, BigRationalFactory factory ) {
+        this( FIELD_PREFIX + polygonSides, polygonSides, factory );
     }
 
     // this protected c'tor is intended to allow PentagonField and HeptagonField classes to be refactored
     // so they are derived from PolygonField and still maintain their original legacy names
-    protected PolygonField(String name, int polygonSides) {
-        super( name, getOrder(polygonSides), polygonSides);
+    protected PolygonField(String name, int polygonSides, BigRationalFactory factory ) {
+        super( name, getOrder(polygonSides), polygonSides, factory );
         isEven = polygonSides % 2 == 0;
         final boolean isGolden = polygonSides % 5 == 0;
         if (isGolden) {
@@ -365,7 +367,7 @@ public class PolygonField extends ParameterizedField<Integer> {
             goldenDenominator = goldenNumerator = goldenRatio = null;
         }
     }
-    
+
     @Override
     protected BigRational[] prepareAlgebraicNumberTerms(BigRational[] terms) {
         int nonNullTerms = 0; // can't just use terms.length() since some may be null as when reading VEFShapes
@@ -391,7 +393,7 @@ public class PolygonField extends ParameterizedField<Integer> {
     public double[] getCoefficients() {
         return getFieldCoefficients(polygonSides());
     }
-    
+
     @Override
     public AlgebraicNumber getAffineScalar()
     {
@@ -408,77 +410,77 @@ public class PolygonField extends ParameterizedField<Integer> {
 
     @Override
     protected void initializeLabels() {
-    	int nSides = polygonSides();
-    	if(irrationalLabels.length != diagonalCount(nSides)) {
-    		String[] unitLabels = irrationalLabels[0];
-    		irrationalLabels = new String[diagonalCount(nSides)][unitLabels.length];
-    		irrationalLabels[0] = unitLabels; // retain the default labels for units
-    	}
+        int nSides = polygonSides();
+        if(irrationalLabels.length != diagonalCount(nSides)) {
+            String[] unitLabels = irrationalLabels[0];
+            irrationalLabels = new String[diagonalCount(nSides)][unitLabels.length];
+            irrationalLabels[0] = unitLabels; // retain the default labels for units
+        }
         // odd-gons are labeled with the same lower case Greek letters as
         // Peter Steinbach uses in "Sections Beyond Golden"
         // See http://archive.bridgesmathart.org/2000/bridges2000-35.pdf
         switch(polygonSides()) {
-            case 4:
-                irrationalLabels[1] = new String[]{ "\u221A" + "2", "sqrtTwo" };
-                break;
+        case 4:
+            irrationalLabels[1] = new String[]{ "\u221A" + "2", "sqrtTwo" };
+            break;
 
-            case 5:
-                irrationalLabels[1] = new String[]{ "\u03C6", "phi" };
-                break;
+        case 5:
+            irrationalLabels[1] = new String[]{ "\u03C6", "phi" };
+            break;
 
-            case 6:
-                irrationalLabels[1] = new String[]{ "\u221A" + "3", "sqrtThree" };
-                irrationalLabels[2] = new String[]{ "\u03B2", "beta" };
-                break;
+        case 6:
+            irrationalLabels[1] = new String[]{ "\u221A" + "3", "sqrtThree" };
+            irrationalLabels[2] = new String[]{ "\u03B2", "beta" };
+            break;
 
-            case 7:
-                irrationalLabels[1] = new String[]{ "\u03C1", "rho" };
-                irrationalLabels[2] = new String[]{ "\u03C3", "sigma" };
-                break;
+        case 7:
+            irrationalLabels[1] = new String[]{ "\u03C1", "rho" };
+            irrationalLabels[2] = new String[]{ "\u03C3", "sigma" };
+            break;
 
-            case 9:
-                irrationalLabels[1] = new String[]{ "\u03B1", "alpha" };
-                irrationalLabels[2] = new String[]{ "\u03B2", "beta" };
-                irrationalLabels[3] = new String[]{ "\u03B3", "gamma" };
-                break;
+        case 9:
+            irrationalLabels[1] = new String[]{ "\u03B1", "alpha" };
+            irrationalLabels[2] = new String[]{ "\u03B2", "beta" };
+            irrationalLabels[3] = new String[]{ "\u03B3", "gamma" };
+            break;
 
-            case 11:
-                irrationalLabels[1] = new String[]{ "\u03B8", "theta"  };
-                irrationalLabels[2] = new String[]{ "\u03BA", "kappa"  };
-                irrationalLabels[3] = new String[]{ "\u03BB", "lambda" };
-                irrationalLabels[4] = new String[]{ "\u03BC", "mu"     };
-                break;
+        case 11:
+            irrationalLabels[1] = new String[]{ "\u03B8", "theta"  };
+            irrationalLabels[2] = new String[]{ "\u03BA", "kappa"  };
+            irrationalLabels[3] = new String[]{ "\u03BB", "lambda" };
+            irrationalLabels[4] = new String[]{ "\u03BC", "mu"     };
+            break;
 
-            case 13:
-            	// See https://nbviewer.jupyter.org/github/vorth/ipython/blob/master/triskaidecagons/Triskaidecagons.ipynb
-                irrationalLabels[1] = new String[]{ "\u03B1", "alpha" };
-                irrationalLabels[2] = new String[]{ "\u03B2", "beta" };
-                irrationalLabels[3] = new String[]{ "\u03B3", "gamma" };
-                irrationalLabels[4] = new String[]{ "\u03B4", "delta" };
-                irrationalLabels[5] = new String[]{ "\u03B5", "epsilon" };
-                break;
+        case 13:
+            // See https://nbviewer.jupyter.org/github/vorth/ipython/blob/master/triskaidecagons/Triskaidecagons.ipynb
+            irrationalLabels[1] = new String[]{ "\u03B1", "alpha" };
+            irrationalLabels[2] = new String[]{ "\u03B2", "beta" };
+            irrationalLabels[3] = new String[]{ "\u03B3", "gamma" };
+            irrationalLabels[4] = new String[]{ "\u03B4", "delta" };
+            irrationalLabels[5] = new String[]{ "\u03B5", "epsilon" };
+            break;
 
-            default:
-                final String alphabet = "abcdefghijklmnopqrstuvwxyz";
-                int length = irrationalLabels.length;
-                if(length-1 <= alphabet.length()) {
-                    for(int i = 1; i < length; i++) {
-                        String name = alphabet.substring(i-1, i);
-                        irrationalLabels[i] = new String[]{ name, "d[" + i + "]" };
-                    }
+        default:
+            final String alphabet = "abcdefghijklmnopqrstuvwxyz";
+            int length = irrationalLabels.length;
+            if(length-1 <= alphabet.length()) {
+                for(int i = 1; i < length; i++) {
+                    String name = alphabet.substring(i-1, i);
+                    irrationalLabels[i] = new String[]{ name, "d[" + i + "]" };
                 }
-                else {
-                    // The article "Proof by Picture: Products and Reciprocals of Diagonal Length Ratios in the Regular Polygon"
-                    // at http://forumgeom.fau.edu/FG2006volume6/FG200610.pdf uses one-based indexing for the diagonals,
-                    // with d[1] representing the polygon edge. 
-                    // I am going to use zero-based indexing with d[0] representing the unit length polygon edge
-                    // so it corresponds to our coefficients and multiplicationTensor indices.
-                    // irrationalLabels[0] remains unchanged from the default (blank).
-                    for(int i = 1; i < irrationalLabels.length; i++) {
-                        irrationalLabels[i] = new String[]{ "d" + subscriptString(i), "d[" + i + "]" };
-                    }
+            }
+            else {
+                // The article "Proof by Picture: Products and Reciprocals of Diagonal Length Ratios in the Regular Polygon"
+                // at http://forumgeom.fau.edu/FG2006volume6/FG200610.pdf uses one-based indexing for the diagonals,
+                // with d[1] representing the polygon edge. 
+                // I am going to use zero-based indexing with d[0] representing the unit length polygon edge
+                // so it corresponds to our coefficients and multiplicationTensor indices.
+                // irrationalLabels[0] remains unchanged from the default (blank).
+                for(int i = 1; i < irrationalLabels.length; i++) {
+                    irrationalLabels[i] = new String[]{ "d" + subscriptString(i), "d[" + i + "]" };
                 }
-                break;
+            }
+            break;
         }
     }
 
@@ -500,14 +502,14 @@ public class PolygonField extends ParameterizedField<Integer> {
             for(int i = 0; i < getOrder(); i++) {
                 int term = normalizerMatrix[row][i];
                 if(term != 0) {
-                    terms[i] = new BigRational(term);
+                    terms[i] = this .numberFactory .createBigRational( term, 1 );
                 }
             }
             return createAlgebraicNumber(terms);
         }
         return super.getUnitTerm(n);
     }
-    
+
     @Override
     public AlgebraicNumber getGoldenRatio()
     {
@@ -521,11 +523,11 @@ public class PolygonField extends ParameterizedField<Integer> {
             String name = getIrrational(i, EXPRESSION_FORMAT);
             // reformat generated irrational names like d[1] to look like d_1
             buf.append( name.replace( "[", "_" ).replace( "]", "" ) )
-                .append(" = ")
-                .append(coefficients[i]);
+            .append(" = ")
+            .append(coefficients[i]);
         }
     }
-    
+
     @Override
     protected void initializeCoefficients() {
         double[] temp = getCoefficients();
@@ -536,14 +538,14 @@ public class PolygonField extends ParameterizedField<Integer> {
 
     @Override
     protected void initializeMultiplicationTensor() {
-    	multiplicationTensor = getNormalizedMultiplicationTensor(polygonSides());
+        multiplicationTensor = getNormalizedMultiplicationTensor(polygonSides());
     }
 
     protected short[][] normalizerMatrix;
-    
+
     @Override
     protected void initializeNormalizer() {
-    	normalizerMatrix = getNormalizerMatrix(polygonSides());
+        normalizerMatrix = getNormalizerMatrix(polygonSides());
     }
 
     public Integer polygonSides() {
@@ -558,33 +560,33 @@ public class PolygonField extends ParameterizedField<Integer> {
         return !isEven;
     }
 
-//    unicode for double struck alphabet is at https://www.w3.org/TR/xml-entity-names/double-struck.html
-//    
-//    public static final String[] GREEK_ALPHABET = {
-//            "\u03B1", // alpha
-//            "\u03B2", // beta
-//            "\u03B3", // gamma
-//            "\u03B4", // delta
-//            "\u03B5", // epsilon
-//            "\u03B6", // zeta
-//            "\u03B7", // eta
-//            "\u03B8", // theta
-//            "\u03B9", // iota
-//            "\u03BA", // kappa
-//            "\u03BB", // lambda
-//            "\u03BC", // mu
-//            "\u03BD", // nu
-//            "\u03BE", // xi
-//            "\u03BF", // omicron
-//          //  "\u03C0", // pi            // To avoid confusion, don't use pi (3.1415...) as the name of an irrational factor
-//            "\u03C1", // rho
-//          //  "\u03C2", // 'final_sigma' // Not to be confused with the actual lower case letter 'stigma' (with a 't' in it) @ "\u03DB".
-//            "\u03C3", // sigma
-//            "\u03C4", // tau
-//            "\u03C5", // upsilon
-//            "\u03C6", // phi
-//            "\u03C7", // chi
-//            "\u03C8", // psi
-//            "\u03C9", // omega
-//          };
+    //    unicode for double struck alphabet is at https://www.w3.org/TR/xml-entity-names/double-struck.html
+    //    
+    //    public static final String[] GREEK_ALPHABET = {
+    //            "\u03B1", // alpha
+    //            "\u03B2", // beta
+    //            "\u03B3", // gamma
+    //            "\u03B4", // delta
+    //            "\u03B5", // epsilon
+    //            "\u03B6", // zeta
+    //            "\u03B7", // eta
+    //            "\u03B8", // theta
+    //            "\u03B9", // iota
+    //            "\u03BA", // kappa
+    //            "\u03BB", // lambda
+    //            "\u03BC", // mu
+    //            "\u03BD", // nu
+    //            "\u03BE", // xi
+    //            "\u03BF", // omicron
+    //          //  "\u03C0", // pi            // To avoid confusion, don't use pi (3.1415...) as the name of an irrational factor
+    //            "\u03C1", // rho
+    //          //  "\u03C2", // 'final_sigma' // Not to be confused with the actual lower case letter 'stigma' (with a 't' in it) @ "\u03DB".
+    //            "\u03C3", // sigma
+    //            "\u03C4", // tau
+    //            "\u03C5", // upsilon
+    //            "\u03C6", // phi
+    //            "\u03C7", // chi
+    //            "\u03C8", // psi
+    //            "\u03C9", // omega
+    //          };
 }

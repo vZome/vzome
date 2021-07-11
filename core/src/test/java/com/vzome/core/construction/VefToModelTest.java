@@ -18,6 +18,7 @@ import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicNumberImpl;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.BigRational;
+import com.vzome.core.algebra.BigRationalImpl;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.RootThreeField;
@@ -48,7 +49,7 @@ public class VefToModelTest
             new RootTwoField(), 
             new RootThreeField(), 
             new HeptagonField(), 
-            new SnubDodecField(),
+            new SnubDodecField( BigRationalImpl.FACTORY ),
         };
 
         int testsPassed = 0;
@@ -215,7 +216,7 @@ public class VefToModelTest
             new RootTwoField(),
             new RootThreeField(),
             new HeptagonField(),
-            new SnubDodecField(),
+            new SnubDodecField( BigRationalImpl.FACTORY ),
        };
 
         int testsPassed = 0;
@@ -280,7 +281,7 @@ public class VefToModelTest
             new RootTwoField(),                     // order 2
             new RootThreeField(),                   // order 2
             new HeptagonField(),                    // order 3
-            new SnubDodecField(),                   // order 6
+            new SnubDodecField( BigRationalImpl.FACTORY ),                   // order 6
        };
 
         int testsPassed = 0;
@@ -601,13 +602,13 @@ public class VefToModelTest
         
         final AlgebraicField[] fields = { 
         	new PentagonField(), 
-            new SnubDodecField(),
+            new SnubDodecField( BigRationalImpl.FACTORY ),
         };
 
         int[] terms = new int[] {2, 3};
         double r = new RootTwoField(). createAlgebraicNumber( terms ).evaluate();
         double p = new PentagonField(). createAlgebraicNumber( terms ).evaluate();
-        double d = new SnubDodecField().createAlgebraicNumber( terms ).evaluate();
+        double d = new SnubDodecField( BigRationalImpl.FACTORY ).createAlgebraicNumber( terms ).evaluate();
         assertEquals(p, d, 0.0D);
         assertFalse(p == r);
 

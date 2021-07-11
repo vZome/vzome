@@ -534,22 +534,14 @@ jsweet {
         'com/vzome/core/render/RenderedManifestation.java'
     ]
     excludes = [
-        
-        'com/vzome/core/math/symmetry/AntiprismSymmetry.java',
-        
-        'com/vzome/core/algebra/BigRational.java',
+                
         'com/vzome/core/algebra/RootThreeField.java',
-        'com/vzome/core/algebra/AbstractAlgebraicField.java',
         'com/vzome/core/algebra/RootTwoField.java',
-        'com/vzome/core/algebra/SnubDodecField.java',
         'com/vzome/core/algebra/PentagonField.java',
-        'com/vzome/core/algebra/ParameterizedField.java',
         'com/vzome/core/algebra/HeptagonField.java',
         'com/vzome/core/algebra/AlgebraicSeries.java',
         'com/vzome/core/algebra/*Impl.java',
         'com/vzome/core/algebra/AlgebraicFields.java',
-        'com/vzome/core/algebra/PolygonField.java',
-        'com/vzome/core/algebra/SnubCubeField.java',
 
         'com/vzome/core/commands/ZomicVirtualMachine.java',
         'com/vzome/core/commands/CommandExecuteZomicScript.java',

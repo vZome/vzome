@@ -32,8 +32,8 @@ public class SnubCubeField  extends ParameterizedField<Integer> {
         return getFieldCoefficients();
     }
     
-    public SnubCubeField() {
-        super(FIELD_NAME, 3, 0);
+    public SnubCubeField( BigRationalFactory factory ) {
+        super( FIELD_NAME, 3, 0, factory );
     }
 
     @Override

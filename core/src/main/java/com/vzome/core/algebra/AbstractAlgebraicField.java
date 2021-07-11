@@ -83,13 +83,16 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
 
     private AlgebraicSeries smallSeries;
 
+    protected final BigRationalFactory numberFactory;
+
     // Eclipse says that rawtypes is unnecessary here, but without it,
     // Netbeans and the gradle command line both generate the rawtypes warning 
     @SuppressWarnings({"unchecked", "rawtypes"})  
-	public AbstractAlgebraicField( String name, int order )
+	public AbstractAlgebraicField( String name, int order, BigRationalFactory factory )
     {
         this.name = name;
         this.order = order;
+        this.numberFactory = factory;
         // Since derived class constructors are not fully initialized,
         // it's possible that they may not be able to perform some operations including multiply.
         // Specifically, reciprocal() depends on scaleBy()
@@ -97,8 +100,8 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         // depends on the constructor being fully executed beforehand.
         // Also, normalize() may not work for some AlgebraicNumbers with non-zero irrational factors
         // although createRational() can safely be called at this point.
-        zero = this .createRational( BigRational.ZERO );
-        one = this .createRational( BigRational.ONE );
+        zero = this .createRational( factory.zero() );
+        one = this .createRational( factory.one() );
         positivePowers = new ArrayList[ order-1 ];
         negativePowers = new ArrayList[ order-1 ];
     }
@@ -254,7 +257,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         }
         BigRational[] brs = new BigRational[ n ];
         for ( int j = 0; j < n; j++ ) {
-            brs[ j ] = new BigRational( trailingDivisorForm[ j ], denominator );
+            brs[ j ] = this .numberFactory .createBigRational( trailingDivisorForm[ j ], denominator );
         }
         return createAlgebraicNumber( brs );
     }
@@ -271,7 +274,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     {
         BigRational[] brs = new BigRational[ numerators .length ];
         for ( int j = 0; j < numerators.length; j++ ) {
-            brs[ j ] = new BigRational( numerators[ j ], denominator );
+            brs[ j ] = this .numberFactory .createBigRational( numerators[ j ], denominator );
         }
         return createAlgebraicNumber( brs );
     }
@@ -280,10 +283,10 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     public final AlgebraicNumber createAlgebraicNumber( int ones, int irrat, int denominator, int scalePower )
     {
         BigRational[] factors = new BigRational[ this .getOrder() ];
-        factors[ 0 ] = new BigRational( ones, denominator );
-        factors[ 1 ] = new BigRational( irrat, denominator );
+        factors[ 0 ] = this .numberFactory .createBigRational( ones, denominator );
+        factors[ 1 ] = this .numberFactory .createBigRational( irrat, denominator );
         for ( int i = 2; i < factors.length; i++ ) {
-            factors[ i ] = new BigRational( 0 );
+            factors[ i ] = this .numberFactory .createBigRational( 0, 1 );
         }
         if ( scalePower != 0 ) {
             AlgebraicNumber multiplier = this .createPower( scalePower );
@@ -384,7 +387,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     @Override
     public final AlgebraicNumber createRational( long numerator, long denominator )
     {
-        return createRational( new BigRational( numerator, denominator) );
+        return createRational( this .numberFactory .createBigRational( numerator, denominator) );
     }
     
     /**
@@ -423,7 +426,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         // This is safe since AlgebraicNumber is immutable 
         // and getFactors() returns a copy of its factors rather than the actual array
         BigRational[] factors = ((AlgebraicNumberImpl) zero) .getFactors();
-        factors[n] = BigRational.ONE;
+        factors[n] = this.numberFactory.one();
         return createAlgebraicNumber(factors);
     }
 
@@ -485,7 +488,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         // create an identity matrix
         for ( int j = 0; j < length; j++ ) {
             for ( int i = 0; i < length; i++ ) {
-                reciprocal[ j ][ i ] = ( i == j ) ? BigRational.ONE : BigRational.ZERO;
+                reciprocal[ j ][ i ] = ( i == j ) ? this.numberFactory.one() : this.numberFactory.zero();
             }
         }
         int rank = Fields .gaussJordanReduction( representation, reciprocal );
@@ -573,7 +576,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
             for (int f = 0; f < nFactors; f++) {
                 int numerator   = nums[c][(f*2)  ];
                 int denominator = nums[c][(f*2)+1];
-                factors[f] = new BigRational(numerator, denominator);
+                factors[f] = this .numberFactory .createBigRational(numerator, denominator);
             }
             coords[c] = createAlgebraicNumber(factors);
         }
@@ -753,7 +756,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
                 if(stack.size() >= this .getOrder()) {
                     throw new RuntimeException( "VEF format error: \"" + string + "\" has too many factors for " + this.getName() + " field" );
                 }
-                stack.push( new BigRational( tokens.nextToken() ) );
+                stack.push( this .numberFactory .createBigRational( tokens.nextToken() ) );
             }
             int i = 0;
             while(! stack.empty() ) {
@@ -763,7 +766,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         } else {
             // format >= 7 supports the rational numeric format which expects no irrational factors,
             // so there are no parentheses or commas, but still allows the optional "/" if a denominator is specified.
-            factors[0] = new BigRational( string );
+            factors[0] = this .numberFactory .createBigRational( string );
             // count on createAlgebraicNumber to set all of the null irrational factors to zero
         }
         return new AlgebraicNumberImpl( this, factors );
@@ -785,7 +788,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     {
         BigRational[] rats = new BigRational[ this .getOrder() ];
         for ( int i = 0; i < rats.length; i++ ) {
-            rats[ i ] = new BigRational( tokenizer .nextToken() );
+            rats[ i ] = this .numberFactory .createBigRational( tokenizer .nextToken() );
         }
         return createAlgebraicNumber( rats );
     }

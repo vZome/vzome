@@ -23,29 +23,29 @@ public class ParameterizedFieldTest {
         TEST_FIELDS.add( new RootTwoField() );
         TEST_FIELDS.add( new RootThreeField() );
         TEST_FIELDS.add( new HeptagonField() );
-        TEST_FIELDS.add( new SnubDodecField() );
-        TEST_FIELDS.add( new SqrtPhiField() );
+        TEST_FIELDS.add( new SnubDodecField( BigRationalImpl.FACTORY ) );
+        TEST_FIELDS.add( new SqrtPhiField( BigRationalImpl.FACTORY ) );
 //        TEST_FIELDS.add( new SnubDodecahedronField() );
 //        TEST_FIELDS.add( new SqrtField(2) );
 //        TEST_FIELDS.add( new SqrtField(3) );
 //        TEST_FIELDS.add( new SqrtField(6) );
-        TEST_FIELDS.add( new SnubCubeField() );
+        TEST_FIELDS.add( new SnubCubeField( BigRationalImpl.FACTORY ) );
 //        TEST_FIELDS.add( new PlasticNumberField() );
 //        TEST_FIELDS.add( new SuperGoldenField() );
 //        TEST_FIELDS.add( new EdPeggField() );
         for(int nSides = PolygonField.MIN_SIDES; nSides <= PolygonFieldTest.MAX_SIDES; nSides++) {
-            TEST_FIELDS.add( new PolygonField(nSides) );
+            TEST_FIELDS.add( new PolygonField(nSides, BigRationalImpl.FACTORY ) );
         }
     }
     
     @Test
     public void testHaveSameInitialCoefficients() {
-        PolygonField polyField = new PolygonField(5); 
+        PolygonField polyField = new PolygonField(5, BigRationalImpl.FACTORY ); 
         PentagonField pentField = new PentagonField(); 
         assertTrue(AlgebraicFields.haveSameInitialCoefficients(polyField, PentagonField.FIELD_NAME));
         assertTrue(AlgebraicFields.haveSameInitialCoefficients(pentField, PolygonField.FIELD_PREFIX + "5"));
 
-        polyField = new PolygonField(7); 
+        polyField = new PolygonField(7, BigRationalImpl.FACTORY ); 
         HeptagonField heptField = new HeptagonField(); 
         assertTrue(AlgebraicFields.haveSameInitialCoefficients(polyField, HeptagonField.FIELD_NAME));
         assertTrue(AlgebraicFields.haveSameInitialCoefficients(heptField, PolygonField.FIELD_PREFIX + "7"));

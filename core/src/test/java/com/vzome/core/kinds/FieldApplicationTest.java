@@ -26,6 +26,7 @@ import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.BigRationalImpl;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.PolygonField;
@@ -33,6 +34,7 @@ import com.vzome.core.algebra.PolygonFieldTest;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
 import com.vzome.core.algebra.SnubCubeField;
+import com.vzome.core.algebra.SnubDodecField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.commands.CommandSymmetry;
@@ -59,6 +61,7 @@ import com.vzome.core.tools.ProjectionTool;
 import com.vzome.core.tools.RotationTool;
 import com.vzome.core.tools.ScalingTool;
 import com.vzome.core.tools.TranslationTool;
+import com.vzome.fields.sqrtphi.SqrtPhiField;
 import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;
 
 public class FieldApplicationTest
@@ -72,11 +75,12 @@ public class FieldApplicationTest
         result.add( new RootTwoFieldApplication( new RootTwoField() ) );
         result.add( new RootThreeFieldApplication(new RootThreeField() ) );
         result.add( new HeptagonFieldApplication( new HeptagonField() ) );
-        result.add( new SqrtPhiFieldApplication());
-        result.add( new SnubCubeFieldApplication( new SnubCubeField() ) );
-        result.add( new SnubDodecFieldApplication());
+        result.add( new SqrtPhiFieldApplication( new SqrtPhiField( BigRationalImpl.FACTORY )));
+        result.add( new SnubCubeFieldApplication( new SnubCubeField( BigRationalImpl.FACTORY ) ) );
+        result.add( new SnubDodecFieldApplication( new SnubDodecField( BigRationalImpl.FACTORY ) ));
         for(int nSides = PolygonField.MIN_SIDES; nSides < PolygonFieldTest.MAX_SIDES; nSides++) {
-            result.add( new PolygonFieldApplication(nSides));
+            PolygonField field = new PolygonField( nSides, BigRationalImpl.FACTORY );
+            result.add( new PolygonFieldApplication( field ));
         }
         return result;
     }
