@@ -361,12 +361,22 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu.add( enableIf( isEditor, createMenuItem( "Parallelepiped", "Parallelepiped", KeyEvent.VK_P, COMMAND_SHIFT ) ) );
+
+        // AffinePentagon and AffineHeptagon commands are no longer needed in the menu 
+        // since the ChordRatio submenu now provides similar but not identical functionality.
+        // We do need to keep the command for deserializing legacy documents. 
+        // Since the selection afterwards is slightly different, 
+        // we can't just redirect the legacy commands to the new ones. 
         if ( isGolden ) {
             menu.add( enableIf( isEditor, createMenuItem( "\u03C6 Divide", ( "tauDivide" ) ) ) );
-            menu.add( enableIf( isEditor, createMenuItem( "Affine Pentagon", ( "AffinePentagon" ) ) ) );
+//            menu.add( enableIf( isEditor, createMenuItem( "Affine Pentagon", ( "AffinePentagon" ) ) ) );
         } else if ( isHeptagon ) {
             menu.add( enableIf( isEditor, createMenuItem( "1/\u03C3/\u03C1 Subdivisions", ( "HeptagonSubdivision" ) ) ) );
-            menu.add( enableIf( isEditor, createMenuItem( "Affine Heptagon", ( "AffineHeptagon" ) ) ) );
+//            menu.add( enableIf( isEditor, createMenuItem( "Affine Heptagon", ( "AffineHeptagon" ) ) ) );
+        }
+        if(isEditor) {
+            menu.add( getChordRatioMenu() );
+            menu.add( createMenuItem( "Parabolic Chord", "ChordRatio/parabola" ) );
         }
 
         if ( developerExtras ) {
@@ -621,6 +631,35 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         
         menu .add( createMenuItem( "About vZome...", "showAbout" ) );
         super .add( menu );
+    }
+    
+    private JMenu getChordRatioMenu() {
+        boolean hasGoldenRatio = controller.propertyIsTrue("field.hasGoldenRatio");
+        JMenu menu = new JMenu("Affine Polygons...");
+        menu.add( createMenuItem( "Triangle", "ChordRatio/3" ) );
+        menu.add( createMenuItem( "Quadrilateral", "ChordRatio/4" ) );
+        if(hasGoldenRatio) {
+            menu.add( createMenuItem( "5-gon", "ChordRatio/5" ) );
+            menu.add( createMenuItem( "Pentagram", "ChordRatio/pentagram" ) );
+        }
+        menu.add( createMenuItem( "6-gon", "ChordRatio/6" ) );
+        String[] factors = controller.getCommandList("field.polygon.factors");
+        boolean has10 = false;
+        for(int i = 0; i < factors.length; i++) {
+            String factor = factors[i];
+            int f = Integer.parseInt(factor);
+            if(f > 6) {
+                menu.add( createMenuItem( factor + "-gon", "ChordRatio/" + factor ) );
+                has10 = has10 || (f == 10);
+            }
+        }
+        if(hasGoldenRatio && !has10) {
+            // this should only be true for polygon5
+            // so everything will still be in increasing order
+            menu.add( createMenuItem( "10-gon", "ChordRatio/10" ) );
+        }
+
+        return menu;
     }
 
     @Override
