@@ -30,9 +30,10 @@ public class ParameterizedFieldTest {
 //        TEST_FIELDS.add( new SqrtField(3) );
 //        TEST_FIELDS.add( new SqrtField(6) );
         TEST_FIELDS.add( new SnubCubeField() );
-//        TEST_FIELDS.add( new PlasticNumberField() );
-//        TEST_FIELDS.add( new SuperGoldenField() );
-//        TEST_FIELDS.add( new EdPeggField() );
+        TEST_FIELDS.add( new PlasticNumberField() );
+        TEST_FIELDS.add( new PlasticPhiField() );
+        TEST_FIELDS.add( new SuperGoldenField() );
+        TEST_FIELDS.add( new EdPeggField() );
         for(int nSides = PolygonField.MIN_SIDES; nSides <= PolygonFieldTest.MAX_SIDES; nSides++) {
             TEST_FIELDS.add( new PolygonField(nSides) );
         }

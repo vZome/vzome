@@ -33,6 +33,10 @@ public class AlgebraicFieldTest {
         fields.add (new SqrtPhiField());
         fields.add (new SnubDodecField());
         fields.add (new SnubCubeField());
+        fields.add( new PlasticNumberField() );
+        fields.add( new PlasticPhiField() );
+        fields.add( new SuperGoldenField() );
+        fields.add( new EdPeggField() );
     }
     
     @Test
@@ -89,6 +93,7 @@ public class AlgebraicFieldTest {
         goldenFields.add(new PentagonField());
         goldenFields.add(new SnubDodecField());
         goldenFields.add(new SqrtPhiField());
+        goldenFields.add( new PlasticPhiField() );
         
         for(AlgebraicField field : goldenFields) {
             String fieldName = field.getName();
@@ -167,7 +172,8 @@ public class AlgebraicFieldTest {
                     break;                        
                 }
                 if(!declaration.isEmpty()) {
-                    if(!declaration.matches("[a-z]+ = .*")) {
+                    // allow uppercase names too for PlasticNumberField
+                    if(!declaration.matches("[A-Za-z]+ = .*")) {
                         String msg = "Expected alphanumeric variable name but found: " + declaration + ". " 
                                 + field.getName() 
                                 + ".getNumMultipliers() should probably be returning less than " + i;

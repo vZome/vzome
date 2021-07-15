@@ -171,4 +171,5 @@ public abstract class ParameterizedField<T extends Object> extends AbstractAlgeb
     public double getCoefficient(int i) {
         return coefficients[i];
     }
+    
 }
