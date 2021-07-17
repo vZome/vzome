@@ -166,6 +166,12 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
 {
   try {
     const text = await textPromise
+    if ( !text ) {
+      const message = `Unable to retrieve XML from ${url}`
+      console.log( message )
+      dispatch( showAlert( message ) )
+      return
+    }
 
     const name = decodeURI( url.split( '\\' ).pop().split( '/' ).pop() )
     const failure = message => {
@@ -178,12 +184,12 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
 
     const { firstEdit, camera, field, targetEdit, shapeRenderer } = await parse( text ) || {}
 
-    if ( !firstEdit ) {
-      failure( `Unable to parse XML from ${url}` )
-      return
-    }
     if ( field.unknown ) {
       failure( `Field "${field.name}" is not implemented.` )
+      return
+    }
+    if ( !firstEdit ) {
+      failure( `Unable to parse XML from ${url}` )
       return
     }
 

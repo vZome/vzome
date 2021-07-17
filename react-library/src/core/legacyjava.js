@@ -587,7 +587,7 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
     const edits = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement )
     // Note: I'm adding one so that this matches the assigned ID of the next edit to do
     const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
-    const firstEdit = createEdit( edits.firstElementChild )
+    const firstEdit = createEdit && createEdit( edits.firstElementChild )
 
     return { firstEdit, camera, field, targetEdit, shapeRenderer }
   } catch (error) {
