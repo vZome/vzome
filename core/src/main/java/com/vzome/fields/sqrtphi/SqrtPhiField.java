@@ -3,7 +3,6 @@ package com.vzome.fields.sqrtphi;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicNumberFactory;
 import com.vzome.core.algebra.ParameterizedField;
-import com.vzome.core.algebra.PentagonField;
 
 /**
  * @author David Hall
@@ -11,7 +10,9 @@ import com.vzome.core.algebra.PentagonField;
 public class SqrtPhiField  extends ParameterizedField<Integer>
 {
     public static final String FIELD_NAME = "sqrtPhi";
-    
+    public static final double PHI_VALUE = ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
+    public static final double SQRT_PHI_VALUE = Math.sqrt( PHI_VALUE );
+
     /**
      * 
      * @param radicand
@@ -21,12 +22,11 @@ public class SqrtPhiField  extends ParameterizedField<Integer>
      * Note that this method provides no validation of the parameter.
      */
     public static double[] getFieldCoefficients() {
-        final double PHI_VALUE = PentagonField.PHI_VALUE; // ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
         return new double[] {
                 1.0d,
-                Math.sqrt(PHI_VALUE),
+                SQRT_PHI_VALUE,
                 PHI_VALUE,
-                PHI_VALUE * Math.sqrt(PHI_VALUE)
+                PHI_VALUE * SQRT_PHI_VALUE
         };
     }
     
@@ -39,8 +39,8 @@ public class SqrtPhiField  extends ParameterizedField<Integer>
     @Override
     public void defineMultiplier( StringBuffer buf, int w )
     {
-        buf .append( "phi = " ); // note that phi is not the first irrational in this field
-        buf .append( PentagonField.PHI_VALUE );
+        buf .append( "sqrtphi = " ); // note that phi is not the first irrational in this field
+        buf .append( SQRT_PHI_VALUE );
     }
 
     @Override

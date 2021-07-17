@@ -262,7 +262,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @return this + n
      */
     @Override
-    public AlgebraicNumber plus( int n )
+    public AlgebraicNumber plusInt( int n )
     {
         return n == 0 ? this : this.plus(field.createRational(n));
     }
@@ -274,7 +274,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @return this + (num / den)
      */
     @Override
-    public AlgebraicNumber plus( int num, int den )
+    public AlgebraicNumber plusRational( int num, int den )
     {
         return this.plus(field.createRational(num, den));
     }
@@ -326,7 +326,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @return this * (num / den)
      */
     @Override
-    public AlgebraicNumber times( int num, int den )
+    public AlgebraicNumber timesRational( int num, int den )
     {
         return this.times(field.createRational(num, den));
     }
@@ -349,7 +349,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @return this - n
      */
     @Override
-    public AlgebraicNumber minus( int n )
+    public AlgebraicNumber minusInt( int n )
     {
         return n == 0 ? this : this.minus(field.createRational(n));
     }
@@ -361,7 +361,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @return this - (num / den)
      */
     @Override
-    public AlgebraicNumber minus( int num, int den )
+    public AlgebraicNumber minusRational( int num, int den )
     {
         return this.minus(field.createRational(num, den));
     }
@@ -386,7 +386,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @return this / divisor
      */
     @Override
-    public AlgebraicNumber dividedBy( int divisor )
+    public AlgebraicNumber dividedByInt( int divisor )
     {
         return divisor == 1 ? this : this.dividedBy(field.createRational(divisor));
     }
@@ -398,7 +398,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @return this / (num / den)
      */
     @Override
-    public AlgebraicNumber dividedBy( int num, int den )
+    public AlgebraicNumber dividedByRational( int num, int den )
     {
         return this.dividedBy(field.createRational(num, den));
     }

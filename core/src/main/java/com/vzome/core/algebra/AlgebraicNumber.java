@@ -30,7 +30,7 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
      * @param n is the value to be added
      * @return this + n
      */
-    public AlgebraicNumber plus( int n );
+    public AlgebraicNumber plusInt( int n );
 
     /**
      * 
@@ -38,7 +38,7 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
      * @param den is the denominator of the rational value to be added
      * @return this + (num / den)
      */
-    public AlgebraicNumber plus( int num, int den );
+    public AlgebraicNumber plusRational( int num, int den );
 
     /**
      * 
@@ -61,7 +61,7 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
      * @param den is the denominator of the rational value to be multiplied
      * @return this * (num / den)
      */
-    public AlgebraicNumber times( int num, int den );
+    public AlgebraicNumber timesRational( int num, int den );
 
     @Override
     public AlgebraicNumber times( AlgebraicNumber that );
@@ -71,7 +71,7 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
      * @param n is the value to be subtracted
      * @return this - n
      */
-    public AlgebraicNumber minus( int n );
+    public AlgebraicNumber minusInt( int n );
 
     /**
      * 
@@ -79,7 +79,7 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
      * @param den is the denominator of the rational value to be subtracted
      * @return this - (num / den)
      */
-    public AlgebraicNumber minus( int num, int den );
+    public AlgebraicNumber minusRational( int num, int den );
 
     /**
      * 
@@ -94,7 +94,7 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
      * @param divisor
      * @return this / divisor
      */
-    public AlgebraicNumber dividedBy( int divisor );
+    public AlgebraicNumber dividedByInt( int divisor );
 
     /**
      * 
@@ -102,7 +102,7 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
      * @param den is the denominator of the divisor
      * @return this / (num / den)
      */
-    public AlgebraicNumber dividedBy( int num, int den );
+    public AlgebraicNumber dividedByRational( int num, int den );
 
     public AlgebraicNumber dividedBy( AlgebraicNumber that );
 

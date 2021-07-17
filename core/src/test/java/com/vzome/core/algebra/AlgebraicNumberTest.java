@@ -128,11 +128,11 @@ public class AlgebraicNumberTest
             for(AlgebraicNumber n : numbers) {
                 // first, test with fractions as numerator and denominator args
                 AlgebraicNumber r = field.createRational(numerator, denominator);
-                assertEquals("add rat", n. plus(r), n. plus(numerator, denominator));
-                assertEquals("sub rat", n.minus(r), n.minus(numerator, denominator));
-                assertEquals("mul rat", n.times(r), n.times(numerator, denominator));
+                assertEquals("add rat", n. plus(r), n. plusRational(numerator, denominator));
+                assertEquals("sub rat", n.minus(r), n.minusRational(numerator, denominator));
+                assertEquals("mul rat", n.times(r), n.timesRational(numerator, denominator));
                 try {
-                    assertEquals("div rat", n.dividedBy(r), n.dividedBy(numerator, denominator));
+                    assertEquals("div rat", n.dividedBy(r), n.dividedByRational(numerator, denominator));
                     assertNotEquals("Expected no divide by zero exception.", 0, numerator);
                 } catch( IllegalArgumentException ex) {
                     assertEquals("Expected divide by zero exception.", 0, numerator);
@@ -150,11 +150,11 @@ public class AlgebraicNumberTest
 //                }
                 // and again with integers
                 r = field.createRational(numerator);
-                assertEquals("add int", n. plus(r), n. plus(numerator));
-                assertEquals("sub int", n.minus(r), n.minus(numerator));
+                assertEquals("add int", n. plus(r), n. plusInt(numerator));
+                assertEquals("sub int", n.minus(r), n.minusInt(numerator));
                 assertEquals("mul int", n.times(r), n.timesInt(numerator));
                 try {
-                    assertEquals("div int", n.dividedBy(r), n.dividedBy(numerator));
+                    assertEquals("div int", n.dividedBy(r), n.dividedByInt(numerator));
                     assertNotEquals("Expected no divide by zero exception.", 0, numerator);
                 } catch( IllegalArgumentException ex) {
                     assertEquals("Expected divide by zero exception.", 0, numerator);

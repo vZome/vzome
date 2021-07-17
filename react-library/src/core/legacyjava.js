@@ -4,7 +4,7 @@ import root2Field from '../fields/root2.js'
 import root3Field from '../fields/root3.js'
 import heptagonField from '../fields/heptagon.js'
 import Adapter from './adapter.js'
-import { JavaDomElement, JsProperties } from './wrappers.js'
+import { algebraicNumberFactory, JavaDomElement, JsProperties } from './wrappers.js'
 
 import allShapes from '../resources/com/vzome/core/parts/index.js'
 import groupResources from '../resources/com/vzome/core/math/symmetry/index.js'
@@ -257,11 +257,13 @@ export const init = async () =>
   const r2field = new vzomePkg.jsweet.JsAlgebraicField( root2Field )
   const r3field = new vzomePkg.jsweet.JsAlgebraicField( root3Field )
   const heptfield = new vzomePkg.jsweet.JsAlgebraicField( heptagonField )
+  const sqrtPhiField = new vzomePkg.fields.sqrtphi.SqrtPhiField( algebraicNumberFactory )
   const fieldApps = {
     golden: new vzomePkg.core.kinds.GoldenFieldApplication( gfield ),
     rootTwo: new vzomePkg.core.kinds.RootTwoFieldApplication( r2field ),
     rootThree: new vzomePkg.core.kinds.RootThreeFieldApplication( r3field ),
     heptagon: new vzomePkg.core.kinds.HeptagonFieldApplication( heptfield ),
+    sqrtPhi: new vzomePkg.fields.sqrtphi.SqrtPhiFieldApplication( sqrtPhiField ),
   }
 
   // This object implements the UndoableEdit.Context interface
@@ -619,7 +621,7 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
     const fieldName = vZomeRoot.getAttribute( "field" )
 
     const { shapeRenderer, parseAndPerformEdit } = createDocument( fieldName, namespace, vZomeRoot )
-    const field = fields[ fieldName ] || { name: fieldName, unknown: true }
+    const field = fields[ fieldName ] || { name: fieldName }
     
     const viewing = vZomeRoot.getChildElement( "Viewing" )
     const camera = viewing && parseViewXml( viewing )

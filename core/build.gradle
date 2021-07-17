@@ -502,6 +502,7 @@ jsweet {
         'com/vzome/core/kinds/HeptagonFieldApplication.java',
 
         'com/vzome/fields/heptagon/HeptagonalAntiprismSymmetry.java',
+        'com/vzome/fields/sqrtphi/*.java',
 
         'com/vzome/api/Tool.java',
         'com/vzome/api/InputBehaviors.java',
@@ -539,15 +540,12 @@ jsweet {
         'com/vzome/core/algebra/RootTwoField.java',
         'com/vzome/core/algebra/PentagonField.java',
         'com/vzome/core/algebra/HeptagonField.java',
-        // 'com/vzome/core/algebra/AlgebraicSeries.java',
         'com/vzome/core/algebra/*Impl.java',
         'com/vzome/core/algebra/AlgebraicFields.java',
 
         'com/vzome/core/commands/ZomicVirtualMachine.java',
         'com/vzome/core/commands/CommandExecuteZomicScript.java',
         'com/vzome/core/commands/CommandExecutePythonScript.java',
-
-    //     'com/vzome/core/model/*Impl.java',
 
         'com/vzome/core/edits/ImportSimpleMeshJson.java',
         'com/vzome/core/edits/ImportColoredMeshJson.java',
