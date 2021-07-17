@@ -15,11 +15,16 @@ import javax.vecmath.Vector3f;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.EdPeggField;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
+import com.vzome.core.algebra.PlasticNumberField;
+import com.vzome.core.algebra.PlasticPhiField;
 import com.vzome.core.algebra.PolygonField;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
+import com.vzome.core.algebra.SnubCubeField;
+import com.vzome.core.algebra.SuperGoldenField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.XmlSaveFormat;
@@ -47,11 +52,13 @@ import com.vzome.core.exporters2d.PDFExporter;
 import com.vzome.core.exporters2d.PostScriptExporter;
 import com.vzome.core.exporters2d.SVGExporter;
 import com.vzome.core.exporters2d.SnapshotExporter;
+import com.vzome.core.kinds.DefaultFieldApplication;
 import com.vzome.core.kinds.GoldenFieldApplication;
 import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.kinds.PolygonFieldApplication;
 import com.vzome.core.kinds.RootThreeFieldApplication;
 import com.vzome.core.kinds.RootTwoFieldApplication;
+import com.vzome.core.kinds.SnubCubeFieldApplication;
 import com.vzome.core.kinds.SnubDodecFieldApplication;
 import com.vzome.core.render.Colors;
 import com.vzome.core.viewing.Lights;
@@ -128,8 +135,15 @@ public class Application implements AlgebraicField.Registry
         this.fieldAppSuppliers.put( "heptagon", () -> new HeptagonFieldApplication( new HeptagonField() ) );
         this.fieldAppSuppliers.put( "rootThree", () -> new RootThreeFieldApplication( new RootThreeField() ) );
         this.fieldAppSuppliers.put( "dodecagon", () -> new RootThreeFieldApplication( new RootThreeField() ) );
+        this.fieldAppSuppliers.put( "snubCube", () -> new SnubCubeFieldApplication( new SnubCubeField() ) );
         this.fieldAppSuppliers.put( "snubDodec", SnubDodecFieldApplication::new);
         this.fieldAppSuppliers.put( "sqrtPhi",   SqrtPhiFieldApplication::new);
+        // The fields commented out below are only available by the custom menu
+        // See the note in getDocumentKind() before adding them here so they show up in the main memu
+//        this.fieldAppSuppliers.put( "superGolden", () -> { return new DefaultFieldApplication ( new SuperGoldenField()); } );
+//        this.fieldAppSuppliers.put( "plasticNumber", () -> { return new DefaultFieldApplication ( new PlasticNumberField()); } );
+//        this.fieldAppSuppliers.put( "plasticPhi", () -> { return new PlasticPhiFieldApplication ( new PlasticPhiField()); } );
+//        this.fieldAppSuppliers.put( "edPegg", () -> { return new DefaultFieldApplication ( new EdPeggField()); } );
     }
 
     public DocumentModel loadDocument( InputStream bytes ) throws Exception
@@ -207,6 +221,21 @@ public class Application implements AlgebraicField.Registry
 //            int nSides = Integer.parseInt(name.substring(SqrtField.FIELD_PREFIX.length()));
 //            return new SqrtFieldApplication(nSides);
 //        }
+
+        // These fields are only available by the custom menu
+        // unless they are eventually added to this.fieldAppSuppliers in the c'tor.
+        // In that case, they will appear in the main menu and they can be removed here
+        switch(name) {
+        case "superGolden":
+            return new DefaultFieldApplication ( new SuperGoldenField() );
+        case "plasticNumber":
+            return new DefaultFieldApplication ( new PlasticNumberField() );
+        case "plasticPhi":
+            // TODO: Eventually return new PlasticPhiFieldApplication ( new PlasticPhiField() );
+            return new DefaultFieldApplication ( new PlasticPhiField() );
+        case "edPegg": 
+            return new DefaultFieldApplication ( new EdPeggField() );
+        }
 
         // maybe because default.field is invalid in your prefs file?
         String msg = "Unknown Application Type " + name;

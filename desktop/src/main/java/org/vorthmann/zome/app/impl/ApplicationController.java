@@ -438,11 +438,23 @@ public class ApplicationController extends DefaultController
                 case "rootThree":
                     return "\u221A3";
 
+                case "snubCube":
+                    return "Snub Cube";
+
                 case "snubDodec":
                     return "Snub Dodec";
 
                 case "sqrtPhi":
                     return "\u221A\u03C6";
+
+                case "superGolden":
+                    return "Super Golden";
+
+                case "plasticNumber":
+                    return "Plastic Number";
+
+                case "plasticPhi":
+                    return "Plastic \u03C6";
 
                 default:
                     if( fieldName.startsWith("sqrt") ) {

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="DEV" coreVersion="7.0" edition="vZome" field="snubCube" version="7.0">
+  <EditHistory editNumber="13" lastStickyEdit="-1">
+    <StrutCreation anchor="0 0 0 0 0 0 0 0 0" index="4" len="1 0 0" symm="octahedral"/>
+    <StrutCreation anchor="0 0 0 0 0 0 0 0 0" dir="yellow" index="0" len="-1 -1 1" symm="octahedral"/>
+    <StrutCreation anchor="0 0 0 0 0 0 0 0 0" dir="snubFaceNormal" index="18" len="2 3 -2" sense="minus" symm="octahedral"/>
+    <BeginBlock/>
+    <SelectManifestation point="0 0 0 0 0 0 0 0 0"/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Delete/>
+    <SelectAll/>
+    <ApplyTool name="octahedral.builtin/octahedral around origin" selectInputs="true"/>
+    <ConvexHull3d mode="onlyPanels"/>
+    <AdjustSelectionByClass balls="IGNORE" panels="DESELECT" struts="IGNORE"/>
+    <Delete/>
+  </EditHistory>
+  <notes/>
+  <sceneModel ambientLight="41,41,41" background="175,200,220">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="27.907052993774414" far="55.81410598754883" near="0.06976763352405478" parallel="false" stereoAngle="0.0" width="12.558173847198482">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-0.022454986582246695" y="0.9994397057767321" z="-0.024820316164553796"/>
+      <LookDirection x="-0.9116201093025911" y="-0.010277376632036244" z="0.4109052833010236"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="octahedral" renderingStyle="octahedra">
+    <Direction color="0,118,149" name="blue"/>
+    <Direction color="0,141,54" name="green"/>
+    <Direction color="240,160,0" name="yellow"/>
+    <Direction color="51,153,255" name="snubSquare"/>
+    <Direction color="87,188,48" name="snubTriangle"/>
+    <Direction color="178,178,127" name="snubDiagonal"/>
+    <Direction color="216,216,208" name="snubFaceNormal"/>
+    <Direction color="204,204,0" name="snubVertex"/>
+    <Direction color="33,99,166" name="snubSquareMid"/>
+    <Direction color="57,122,31" name="snubTriangleMid"/>
+  </SymmetrySystem>
+  <Tools/>
+</vzome:vZome>
