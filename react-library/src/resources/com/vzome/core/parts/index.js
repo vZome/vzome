@@ -18,6 +18,10 @@ import sqrtPhiOctahedra from './sqrtPhi/octahedra/index.js'
 import sqrtPhiTinyIcosahedra from './sqrtPhi/tinyIcosahedra/index.js'
 import sqrtPhiZome from './sqrtPhi/zome/index.js'
 
+import snubCube from './snubCube/index.js'
+import snubCubeDisdyakisDodec from './snubCube/disdyakisDodec/index.js'
+import snubCubeDual from './snubCube/dual/index.js'
+
 const shapes = {
   'default': defaultShapes,  // default is a keyword in Javascript
   dodecagon3d,
@@ -36,6 +40,9 @@ const shapes = {
   'sqrtPhi/octahedra': sqrtPhiOctahedra,
   'sqrtPhi/tinyIcosahedra': sqrtPhiTinyIcosahedra,
   'sqrtPhi/zome': sqrtPhiZome,
+  snubCube,
+  'snubCube/disdyakisDodec': snubCubeDisdyakisDodec,
+  'snubCube/dual': snubCubeDual,
 }
 
 export default shapes

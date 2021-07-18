@@ -500,6 +500,7 @@ jsweet {
         'com/vzome/core/kinds/RootTwoFieldApplication.java',
         'com/vzome/core/kinds/RootThreeFieldApplication.java',
         'com/vzome/core/kinds/HeptagonFieldApplication.java',
+        'com/vzome/core/kinds/SnubCubeFieldApplication.java',
 
         'com/vzome/fields/heptagon/HeptagonalAntiprismSymmetry.java',
         'com/vzome/fields/sqrtphi/*.java',

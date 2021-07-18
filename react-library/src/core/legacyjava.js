@@ -251,12 +251,14 @@ export const init = async () =>
   const r3field = new vzomePkg.jsweet.JsAlgebraicField( root3Field )
   const heptfield = new vzomePkg.jsweet.JsAlgebraicField( heptagonField )
   const sqrtPhiField = new vzomePkg.fields.sqrtphi.SqrtPhiField( algebraicNumberFactory )
+  const snubCubeField = new vzomePkg.core.algebra.SnubCubeField( algebraicNumberFactory )
   const fieldApps = {
     golden: new vzomePkg.core.kinds.GoldenFieldApplication( gfield ),
     rootTwo: new vzomePkg.core.kinds.RootTwoFieldApplication( r2field ),
     rootThree: new vzomePkg.core.kinds.RootThreeFieldApplication( r3field ),
     heptagon: new vzomePkg.core.kinds.HeptagonFieldApplication( heptfield ),
     sqrtPhi: new vzomePkg.fields.sqrtphi.SqrtPhiFieldApplication( sqrtPhiField ),
+    snubCube: new vzomePkg.core.kinds.SnubCubeFieldApplication( snubCubeField ),
   }
 
   const wrapLegacyField = ( legacyField ) => ({
@@ -269,6 +271,7 @@ export const init = async () =>
     [root3Field.name]: root3Field,
     [heptagonField.name]: heptagonField,
     [sqrtPhiField.getName()]: wrapLegacyField( sqrtPhiField ),
+    [snubCubeField.getName()]: wrapLegacyField( snubCubeField ),
   }
 
   // This object implements the UndoableEdit.Context interface
