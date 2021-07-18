@@ -59,6 +59,11 @@ class JavaAlgebraicNumber
     this[ 'minus$com_vzome_core_algebra_AlgebraicNumber' ] = this.minus
   }
 
+  equals( that )
+  {
+    return this.bigRationals.reduce( (a,c,i) => a && c.equals( that.bigRationals[ i ]), true )
+  }
+
   getField()
   {
     return this.legacyField
@@ -68,7 +73,7 @@ class JavaAlgebraicNumber
   {
     return this.legacyField.evaluateNumber( this.bigRationals )
   }
-
+  
   isZero()
   {
     return this.bigRationals.reduce( ( a, c ) => a && c.isZero(), true )
@@ -129,7 +134,10 @@ class JavaAlgebraicNumber
     return this.times( that.reciprocal() )
   }
 
-  getNumberExpression() {}
+  getNumberExpression( sbuf, format )
+  {
+    return this.legacyField.getNumberExpression( sbuf, this.bigRationals, format )
+  }
 }
 
 class JavaBigRational
@@ -139,6 +147,19 @@ class JavaBigRational
     [ num, denom ] = simplify( [ BigInt(num), BigInt(denom) ] )
     this.num = num
     this.denom = denom
+  }
+
+  equals( that )
+  {
+    return this.num === that.num && this.denom === that.denom
+  }
+
+  toString()
+  {
+    if ( this.denom === 1n )
+      return this.num.toString()
+    else
+      return this.num.toString() + "/" + this.denom.toString()
   }
 
   evaluate()
@@ -154,6 +175,11 @@ class JavaBigRational
   isOne()
   {
     return this.num === 1n && this.denom === 1n
+  }
+
+  isNegative()
+  {
+    return this.num < 0n
   }
 
   negate()

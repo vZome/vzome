@@ -12,13 +12,6 @@ import groupResources from '../resources/com/vzome/core/math/symmetry/index.js'
 import { com } from '../jsweet/transpiled-java.js'
 import { java } from '../jsweet/j4ts-2.0.0/bundle.js'
 
-const fields = {
-  [goldenField.name]: goldenField,
-  [root2Field.name]: root2Field,
-  [root3Field.name]: root3Field,
-  [heptagonField.name]: heptagonField
-}
-
 // Copied from core/src/main/resources/com/vzome/core/editor/defaultPrefs.properties
 const defaults = {
 
@@ -266,6 +259,18 @@ export const init = async () =>
     sqrtPhi: new vzomePkg.fields.sqrtphi.SqrtPhiFieldApplication( sqrtPhiField ),
   }
 
+  const wrapLegacyField = ( legacyField ) => ({
+    origin: () => legacyField.origin( 3 ).getComponents().map( an => an.toTrailingDivisor() )
+  })
+
+  const fields = {
+    [goldenField.name]: goldenField,
+    [root2Field.name]: root2Field,
+    [root3Field.name]: root3Field,
+    [heptagonField.name]: heptagonField,
+    [sqrtPhiField.getName()]: wrapLegacyField( sqrtPhiField ),
+  }
+
   // This object implements the UndoableEdit.Context interface
   const editContext = {
     // Since we are not creating Branch edits, this should never be used
@@ -295,10 +300,11 @@ export const init = async () =>
 
     const fieldApp = fieldApps[ fieldName ]
     if ( ! fieldApp )
-      return {}
-    const field = fieldApp.getField()
+      return { field: { name: fieldName, unknown: true } }
+    const legacyField = fieldApp.getField()
+    const field = fields[ fieldName ]
 
-    const originPoint = new vzomePkg.core.construction.FreePoint( field.origin( 3 ) )
+    const originPoint = new vzomePkg.core.construction.FreePoint( legacyField.origin( 3 ) )
 
     const systemXml = xml && xml.getChildElement( "SymmetrySystem" )
     const symmName = systemXml && systemXml.getAttribute( "name" )
@@ -341,13 +347,13 @@ export const init = async () =>
       getQuaternionSet: name => fieldApp.getQuaternionSymmetry( name )
     }
 
-    const realizedModel = new vzomePkg.jsweet.JsRealizedModel( field )
-    const selection = new vzomePkg.jsweet.JsSelection( field )
+    const realizedModel = new vzomePkg.jsweet.JsRealizedModel( legacyField )
+    const selection = new vzomePkg.jsweet.JsSelection( legacyField )
     const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp, orbitSource, symmetrySystems )
     toolsModel.setEditorModel( editor )
 
     const format = namespace && vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )
-    format && format.initialize( field, orbitSetField, 0, "vZome Online", new util.Properties() )
+    format && format.initialize( legacyField, orbitSetField, 0, "vZome Online", new util.Properties() )
 
     const toolFactories = new util.HashMap()
     for ( const symmetrySystem of Object.values( symmetrySystems ) ) {
@@ -442,7 +448,7 @@ export const init = async () =>
       edit.perform()
     }
 
-    return { shapeRenderer, createEdit, configureAndPerformEdit }
+    return { shapeRenderer, createEdit, configureAndPerformEdit, field }
   }
 
   // Discover all the legacy edit classes and register as commands
@@ -581,8 +587,7 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
     const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
     const fieldName = vZomeRoot.getAttribute( "field" )
 
-    const { shapeRenderer, createEdit } = createDocument( fieldName, namespace, vZomeRoot )
-    const field = fields[ fieldName ] || { name: fieldName, unknown: true }
+    const { shapeRenderer, createEdit, field } = createDocument( fieldName, namespace, vZomeRoot )
 
     const viewing = vZomeRoot.getChildElement( "Viewing" )
     const camera = viewing && parseViewXml( viewing )

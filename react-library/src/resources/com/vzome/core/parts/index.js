@@ -13,8 +13,13 @@ import rootTwoSmall from './rootTwoSmall/index.js'
 import rootThreeOctaSmall from './rootThreeOctaSmall/index.js'
 import heptagonAntiprism from './heptagonAntiprism/index.js'
 
+import sqrtPhiFivefold from './sqrtPhi/fivefold/index.js'
+import sqrtPhiOctahedra from './sqrtPhi/octahedra/index.js'
+import sqrtPhiTinyIcosahedra from './sqrtPhi/tinyIcosahedra/index.js'
+import sqrtPhiZome from './sqrtPhi/zome/index.js'
+
 const shapes = {
-  'default': defaultShapes,
+  'default': defaultShapes,  // default is a keyword in Javascript
   dodecagon3d,
   dodecs,
   lifelike,
@@ -26,7 +31,11 @@ const shapes = {
   rootTwoBig,
   rootTwoSmall,
   rootThreeOctaSmall,
-  'heptagon/antiprism': heptagonAntiprism,
+  'heptagon/antiprism': heptagonAntiprism,  // these must all use the legacy paths
+  'sqrtPhi/fivefold': sqrtPhiFivefold,
+  'sqrtPhi/octahedra': sqrtPhiOctahedra,
+  'sqrtPhi/tinyIcosahedra': sqrtPhiTinyIcosahedra,
+  'sqrtPhi/zome': sqrtPhiZome,
 }
 
 export default shapes
