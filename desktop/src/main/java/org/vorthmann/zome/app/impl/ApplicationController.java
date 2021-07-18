@@ -447,6 +447,15 @@ public class ApplicationController extends DefaultController
                 case "sqrtPhi":
                     return "\u221A\u03C6";
 
+                case "superGolden":
+                    return "Super Golden";
+
+                case "plasticNumber":
+                    return "Plastic Number";
+
+                case "plasticPhi":
+                    return "Plastic \u03C6";
+
                 default:
                     if( fieldName.startsWith("sqrt") ) {
                         return fieldName.replace("sqrt","\u221A");

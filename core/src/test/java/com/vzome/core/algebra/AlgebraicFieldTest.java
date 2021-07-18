@@ -33,6 +33,10 @@ public class AlgebraicFieldTest {
         fields.add (new SqrtPhiField( AlgebraicNumberImpl.FACTORY ));
         fields.add (new SnubDodecField( AlgebraicNumberImpl.FACTORY ));
         fields.add (new SnubCubeField( AlgebraicNumberImpl.FACTORY ));
+        fields.add( new PlasticNumberField( AlgebraicNumberImpl.FACTORY ) );
+        fields.add( new PlasticPhiField( AlgebraicNumberImpl.FACTORY ) );
+        fields.add( new SuperGoldenField( AlgebraicNumberImpl.FACTORY ) );
+        fields.add( new EdPeggField( AlgebraicNumberImpl.FACTORY ) );
     }
     
     @Test
@@ -89,6 +93,7 @@ public class AlgebraicFieldTest {
         goldenFields.add(new PentagonField());
         goldenFields.add(new SnubDodecField( AlgebraicNumberImpl.FACTORY ));
         goldenFields.add(new SqrtPhiField( AlgebraicNumberImpl.FACTORY ));
+        goldenFields.add( new PlasticPhiField( AlgebraicNumberImpl.FACTORY ) );
         
         for(AlgebraicField field : goldenFields) {
             String fieldName = field.getName();
@@ -167,7 +172,8 @@ public class AlgebraicFieldTest {
                     break;                        
                 }
                 if(!declaration.isEmpty()) {
-                    if(!declaration.matches("[a-z]+ = .*")) {
+                    // allow uppercase names too for PlasticNumberField
+                    if(!declaration.matches("[A-Za-z]+ = .*")) {
                         String msg = "Expected alphanumeric variable name but found: " + declaration + ". " 
                                 + field.getName() 
                                 + ".getNumMultipliers() should probably be returning less than " + i;

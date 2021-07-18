@@ -57,13 +57,13 @@ public class SnubCubeFieldApplication extends DefaultFieldApplication {
         // Add custom default shapes instead of just using the default OctahedralShapes
         final AbstractShapes defaultShapes = (AbstractShapes) symmPerspective.getDefaultGeometry();
         // Be careful not to load the snubDodec versions of the ExportedVEFShapes for zones with shared names
-        String resPath = "snubCube/";
+        String resPath = "snubCube";
         final AbstractShapes snubCubeRhShapes = new ExportedVEFShapes(null, resPath, "snub cube right", null, symm, defaultShapes, false);
         final AbstractShapes snubCubeLhShapes = new ExportedVEFShapes(null, resPath,  "snub cube left",  null, symm, defaultShapes, true);
-        resPath = "snubCube/dual/"; // pentagonal icositetrahedron is the dual of the snub cube
+        resPath = "snubCube/dual"; // pentagonal icositetrahedron is the dual of the snub cube
         final AbstractShapes snubDualRhShapes = new ExportedVEFShapes(null, resPath, "snub cube dual right", null, symm, defaultShapes, false);
         final AbstractShapes snubDualLhShapes = new ExportedVEFShapes(null, resPath,  "snub cube dual left",  null, symm, defaultShapes, true);
-        resPath = "snubCube/disdyakisDodec/";
+        resPath = "snubCube/disdyakisDodec";
         final AbstractShapes disdyakisDodec = new ExportedVEFShapes(null, resPath, "disdyakis dodec", null, symm, defaultShapes, false);
         
         // this is the order they will be shown on the dialog

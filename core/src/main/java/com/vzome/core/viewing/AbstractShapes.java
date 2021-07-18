@@ -44,6 +44,17 @@ public abstract class AbstractShapes implements Shapes
     }
 
     @Override
+    public String toString()
+    {
+        return this.getClass().getSimpleName()
+            + "( Symmetry:" + mSymmetry.getName()
+            + ", PkgName:" + mPkgName
+            + ", Name:" + mName 
+            + ( alias == null ? "" : (", Alias:" + alias) )
+            +" )";
+    }
+
+    @Override
     public Color getColor( Direction dir )
     {
         return null;
