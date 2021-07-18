@@ -22,7 +22,7 @@ public class RootTwoField extends AbstractAlgebraicField
     
     public RootTwoField()
     {
-        super( FIELD_NAME, 2 );
+        super( FIELD_NAME, 2, AlgebraicNumberImpl.FACTORY );
     };
     
     @Override
@@ -39,7 +39,7 @@ public class RootTwoField extends AbstractAlgebraicField
     
     public static final double ROOT_2 = Math.sqrt( 2d );
     
-    private static final BigRational TWO = new BigRational( 2 );
+    private static final BigRational TWO = new BigRationalImpl( 2 );
     
     private static final int ONES_PLACE = 0, SQRT2_PLACE = 1;
 

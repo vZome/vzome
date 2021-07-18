@@ -31,8 +31,8 @@ public class EdPeggField extends ParameterizedField<Integer> {
         return getFieldCoefficients();
     }
     
-    public EdPeggField() {
-        super(FIELD_NAME, 3, 0);
+    public EdPeggField( AlgebraicNumberFactory factory ) {
+        super( FIELD_NAME, 3, 0, factory );
     }
 
     @Override

@@ -12,8 +12,8 @@ public abstract class ParameterizedField<T extends Object> extends AbstractAlgeb
     protected short[][][] multiplicationTensor;
     protected String[][] irrationalLabels;
     
-    public ParameterizedField(String name, int order, T operand) {
-        super(name, order);
+    public ParameterizedField( String name, int order, T operand, AlgebraicNumberFactory factory ) {
+        super( name, order, factory );
         this.operand = operand;
         // These arrays are allocated here, but all non-zero values will be initialized in the derived classes.
         coefficients = new double[order];
@@ -105,7 +105,7 @@ public abstract class ParameterizedField<T extends Object> extends AbstractAlgeb
         int order = getOrder();
         BigRational[] result = new BigRational[order];
         for(int i = 0; i < order; i++) {
-            result[i] = BigRational.ZERO;
+            result[i] = numberFactory.zero();
             for (int j = 0; j < order; j++) {
                 for (int k = 0; k < order; k++) {
                     int multiplier = multiplicationTensor[i][j][k];
@@ -115,7 +115,7 @@ public abstract class ParameterizedField<T extends Object> extends AbstractAlgeb
                     if(multiplier != 0) {
                         BigRational product = v1[j]. times( v2[k] );
                         if(multiplier != 1) {
-                            product = product. times( multiplier );
+                            product = product. timesInt( multiplier );
                         }
                         result[i] = result[i].plus(product);
                     }
@@ -134,7 +134,7 @@ public abstract class ParameterizedField<T extends Object> extends AbstractAlgeb
         int order = getOrder();
         BigRational[] result = new BigRational[order];
         for(int i = 0; i < order; i++) {
-            result[i] = BigRational.ZERO;
+            result[i] = numberFactory.zero();
             for (int j = 0; j < order; j++) {
                 int multiplier = multiplicationTensor[i][j][whichIrrational];
                 // We would get the same result if we do the long math even when multiplier is 0 or 1
@@ -144,7 +144,7 @@ public abstract class ParameterizedField<T extends Object> extends AbstractAlgeb
                     if (multiplier == 1) {
                         result[i] = result[i].plus(factors[j]);
                     } else {
-                        result[i] = result[i].plus(factors[j].times( multiplier ));
+                        result[i] = result[i].plus(factors[j].timesInt( multiplier ));
                     }
                 }
             }

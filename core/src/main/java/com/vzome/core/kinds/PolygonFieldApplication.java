@@ -42,12 +42,12 @@ import com.vzome.core.viewing.OctahedralShapes;
  */
 public class PolygonFieldApplication extends DefaultFieldApplication
 {
-    public PolygonFieldApplication(int polygonSides)
+    public PolygonFieldApplication( PolygonField field )
     {
-        super( new PolygonField(polygonSides) );
+        super( field );
         symmetryPerspectives.add( new AntiprismSymmetryPerspective());    
         
-        if(polygonSides == 5) { // TODO: eventually use getField().getGoldenRatio() != null here 
+        if( field .polygonSides() == 5) { // TODO: eventually use getField().getGoldenRatio() != null here 
             // when we eventually generalize icosa symm and strut rendering to work with any 5N-gon.
             // Until then, enable icosa symm only for polygon(5) since it only works in that case for now.
             icosahedralPerspective = new IcosahedralSymmetryPerspective(getField());

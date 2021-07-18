@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicNumberImpl;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.algebra.RootThreeField;
@@ -125,7 +126,7 @@ public class ComparableAlgebraicNumberTest extends ComparableTest<AlgebraicNumbe
             new RootTwoField(),
             new RootThreeField(),
             new HeptagonField(),
-            new SnubDodecField(),
+            new SnubDodecField( AlgebraicNumberImpl.FACTORY ),
         };
 
         int passed = 0;

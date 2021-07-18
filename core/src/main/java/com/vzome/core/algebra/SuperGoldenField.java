@@ -35,8 +35,8 @@ public class SuperGoldenField extends ParameterizedField<Integer> {
         return getFieldCoefficients();
     }
     
-    public SuperGoldenField() {
-        super(FIELD_NAME, 3, 0);
+    public SuperGoldenField( AlgebraicNumberFactory factory ) {
+        super( FIELD_NAME, 3, 0, factory );
     }
 
     @Override

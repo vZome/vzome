@@ -33,8 +33,8 @@ public class PlasticNumberField  extends ParameterizedField<Integer> {
         return getFieldCoefficients();
     }
     
-    public PlasticNumberField() {
-        super(FIELD_NAME, 3, 0);
+    public PlasticNumberField( AlgebraicNumberFactory factory ) {
+        super( FIELD_NAME, 3, 0, factory );
     }
 
     @Override

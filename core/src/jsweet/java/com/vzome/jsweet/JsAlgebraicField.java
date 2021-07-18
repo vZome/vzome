@@ -494,48 +494,48 @@ public class JsAlgebraicField implements AlgebraicField
     
     int[] scaleBy( int[] factors, int whichIrrational )
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.scaleBy" );
     }
 
     @Override
     public void defineMultiplier(StringBuffer instances, int w)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.defineMultiplier" );
     }
 
     @Override
     public String getIrrational(int i, int format)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.getIrrational" );
     }
 
     @Override
     public String getIrrational(int which)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.getIrrational" );
     }
 
     @Override
     public AlgebraicVector nearestAlgebraicVector(RealVector target)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.nearestAlgebraicVector" );
     }
 
     @Override
     public AlgebraicVector createIntegerVector(int[][] nums)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.createIntegerVector" );
     }
 
     @Override
     public AlgebraicMatrix createMatrix(int[][][] data)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.createMatrix" );
     }
 
     @Override
     public int getNumMultipliers()
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.getNumMultipliers" );
     }
 }

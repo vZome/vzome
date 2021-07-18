@@ -70,14 +70,14 @@ public class AlgebraicSeries
         }
         return result;
     }
-    
-    public static void main( String[] args )
-    {
-        PentagonField field = new PentagonField();
-        AlgebraicSeries series = field .generateSeries( 30d );
-        System.out.println( series );
-        AlgebraicNumber best = series .nearestAlgebraicNumber( 13.14159d );
-        System.out.println( best );
-        System.out.println( best .evaluate() );
-    }
+//    
+//    public static void main( String[] args )
+//    {
+//        PentagonField field = new PentagonField();
+//        AlgebraicSeries series = field .generateSeries( 30d );
+//        System.out.println( series );
+//        AlgebraicNumber best = series .nearestAlgebraicNumber( 13.14159d );
+//        System.out.println( best );
+//        System.out.println( best .evaluate() );
+//    }
 }
