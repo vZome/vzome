@@ -1,6 +1,5 @@
 package com.vzome.core.algebra;
 
-import static java.lang.Math.PI;
 import static java.lang.Math.sin;
 
 import java.util.ArrayList;
@@ -11,6 +10,7 @@ import java.util.List;
  */
 public class PolygonField extends ParameterizedField<Integer>
 {
+    private static final double PI = 3.14159265358979323846; // JSweet doesn't know Math.PI
     /**
      * 
      * @param nSides
@@ -203,7 +203,10 @@ public class PolygonField extends ParameterizedField<Integer>
             primeFactors.remove(0);
         }
 
-        final int nEquations = primeFactors.stream().mapToInt(prime -> nDiags/prime).sum();
+        int nEquations = 0;
+        for ( Integer prime : primeFactors ) {
+            nEquations += nDiags / prime.intValue();
+        }
 
         BigRational[][] primaryDiags = new BigRational[nEquations][nPrimaryDiags];
         BigRational[][] secondaryDiags = new BigRational[nEquations][nSecondaryDiags];

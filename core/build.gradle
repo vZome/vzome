@@ -501,6 +501,7 @@ jsweet {
         'com/vzome/core/kinds/RootThreeFieldApplication.java',
         'com/vzome/core/kinds/HeptagonFieldApplication.java',
         'com/vzome/core/kinds/SnubCubeFieldApplication.java',
+        'com/vzome/core/kinds/PolygonFieldApplication.java',
 
         'com/vzome/fields/heptagon/HeptagonalAntiprismSymmetry.java',
         'com/vzome/fields/sqrtphi/*.java',
@@ -526,6 +527,7 @@ jsweet {
         'com/vzome/core/kinds/IcosahedralSymmetryPerspective.java',
         'com/vzome/core/render/Colors.java',
         'com/vzome/core/viewing/AbstractShapes.java',
+        'com/vzome/core/viewing/AntiprismShapes.java',
         'com/vzome/core/viewing/OctahedralShapes.java',
         'com/vzome/core/viewing/DodecagonalShapes.java',
         'com/vzome/core/viewing/ExportedVEFShapes.java',

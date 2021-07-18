@@ -246,32 +246,41 @@ export const init = async () =>
   await Promise.all( Object.entries( groupResources ).map( ([ key, value ]) => loadAndInjectResource( `com/vzome/core/math/symmetry/${key}.vef`, value ) ) )
   const properties = new JsProperties( defaults )
   const colors = new vzomePkg.core.render.Colors( properties )
-  const gfield = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
-  const r2field = new vzomePkg.jsweet.JsAlgebraicField( root2Field )
-  const r3field = new vzomePkg.jsweet.JsAlgebraicField( root3Field )
-  const heptfield = new vzomePkg.jsweet.JsAlgebraicField( heptagonField )
-  const sqrtPhiField = new vzomePkg.fields.sqrtphi.SqrtPhiField( algebraicNumberFactory )
-  const snubCubeField = new vzomePkg.core.algebra.SnubCubeField( algebraicNumberFactory )
-  const fieldApps = {
-    golden: new vzomePkg.core.kinds.GoldenFieldApplication( gfield ),
-    rootTwo: new vzomePkg.core.kinds.RootTwoFieldApplication( r2field ),
-    rootThree: new vzomePkg.core.kinds.RootThreeFieldApplication( r3field ),
-    heptagon: new vzomePkg.core.kinds.HeptagonFieldApplication( heptfield ),
-    sqrtPhi: new vzomePkg.fields.sqrtphi.SqrtPhiFieldApplication( sqrtPhiField ),
-    snubCube: new vzomePkg.core.kinds.SnubCubeFieldApplication( snubCubeField ),
-  }
 
+  const fieldApps = {}
   const wrapLegacyField = ( legacyField ) => ({
     origin: () => legacyField.origin( 3 ).getComponents().map( an => an.toTrailingDivisor() )
   })
-
-  const fields = {
-    [goldenField.name]: goldenField,
-    [root2Field.name]: root2Field,
-    [root3Field.name]: root3Field,
-    [heptagonField.name]: heptagonField,
-    [sqrtPhiField.getName()]: wrapLegacyField( sqrtPhiField ),
-    [snubCubeField.getName()]: wrapLegacyField( snubCubeField ),
+  const addLegacyField = ( fieldClass, appClass ) =>
+  {
+    const legacyField = new fieldClass( algebraicNumberFactory )
+    legacyField.delegate = wrapLegacyField( legacyField )
+    fieldApps[ legacyField.getName() ] = new appClass( legacyField )
+  }
+  const addNewField = ( field, appClass ) =>
+  {
+    const legacyField = new vzomePkg.jsweet.JsAlgebraicField( field )
+    fieldApps[ field.name ] = new appClass( legacyField )
+  }
+  addNewField( goldenField, vzomePkg.core.kinds.GoldenFieldApplication )
+  addNewField( root2Field, vzomePkg.core.kinds.RootTwoFieldApplication )
+  addNewField( root3Field, vzomePkg.core.kinds.RootThreeFieldApplication )
+  addNewField( heptagonField, vzomePkg.core.kinds.HeptagonFieldApplication )
+  addLegacyField( vzomePkg.fields.sqrtphi.SqrtPhiField, vzomePkg.fields.sqrtphi.SqrtPhiFieldApplication )
+  addLegacyField( vzomePkg.core.algebra.SnubCubeField, vzomePkg.core.kinds.SnubCubeFieldApplication )
+  const getFieldApp = name =>
+  {
+    let fieldApp = fieldApps[ name ]
+    if ( ! fieldApp ) {
+      if ( name.startsWith( "polygon" ) ) {
+        const nsides = parseInt( name.replace( /^polygon/, '' ) )
+        const legacyField = new vzomePkg.core.algebra.PolygonField( "polygon"+nsides, nsides, algebraicNumberFactory )
+        legacyField.delegate = wrapLegacyField( legacyField )
+        fieldApp = new vzomePkg.core.kinds.PolygonFieldApplication( legacyField )
+        fieldApps[ legacyField.getName() ] = fieldApp
+      }
+    }
+    return fieldApp
   }
 
   // This object implements the UndoableEdit.Context interface
@@ -301,11 +310,11 @@ export const init = async () =>
   {
     // This reproduces the DocumentModel constructor pretty faithfully
 
-    const fieldApp = fieldApps[ fieldName ]
-    if ( ! fieldApp )
+    const fieldApp = getFieldApp( fieldName )
+    if ( !fieldApp )
       return { field: { name: fieldName, unknown: true } }
     const legacyField = fieldApp.getField()
-    const field = fields[ fieldName ]
+    const field = legacyField.delegate
 
     const originPoint = new vzomePkg.core.construction.FreePoint( legacyField.origin( 3 ) )
 

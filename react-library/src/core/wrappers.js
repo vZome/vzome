@@ -3,9 +3,13 @@ import { simplify, createNumberFromPairs } from '../fields/common'
 
 export const algebraicNumberFactory =
 {
+  __interfaces: [ "com.vzome.core.algebra.AlgebraicNumberFactory" ],
+
   zero: () => new JavaBigRational( 0n, 1n ),
 
   one: () => new JavaBigRational( 1n, 1n ),
+
+  createBigRational: ( num, denom ) => new JavaBigRational( BigInt(num), BigInt(denom) ),
 
   createRational: ( legacyField, num, denom ) =>
     {
@@ -44,7 +48,47 @@ export const algebraicNumberFactory =
         bigRats.push( new JavaBigRational( pairs[ 2*i ], pairs[ 2*i+1 ] ) )
       }
       return new JavaAlgebraicNumber( legacyField, bigRats )
-    }
+    },
+  
+  isPrime: prime =>
+    {
+      const n = 2*prime
+
+      nextPrime:
+      for (let i = 2; i <= n; i++) { // for each i...
+
+        if ( i > prime )
+          return false
+
+        for (let j = 2; j < i; j++) { // look for a divisor..
+          if (i % j === 0) continue nextPrime; // not a prime, go next i
+        }
+
+        // a prime
+        if ( i === prime )
+          return true
+      }
+    },
+  
+  nextPrime: prime =>
+    {
+      const n = 2*prime
+      let sawPrevious = false
+
+      nextPrime:
+      for (let i = 2; i <= n; i++) { // for each i...
+
+        for (let j = 2; j < i; j++) { // look for a divisor..
+          if (i % j === 0) continue nextPrime; // not a prime, go next i
+        }
+
+        // a prime
+        if ( sawPrevious )
+          return i
+        if ( i === prime )
+          sawPrevious = true
+      }
+    },
 }
 
 class JavaAlgebraicNumber
