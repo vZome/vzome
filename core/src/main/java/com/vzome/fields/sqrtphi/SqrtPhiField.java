@@ -7,7 +7,7 @@ import com.vzome.core.algebra.ParameterizedField;
 /**
  * @author David Hall
  */
-public class SqrtPhiField  extends ParameterizedField<Integer>
+public class SqrtPhiField  extends ParameterizedField
 {
     public static final String FIELD_NAME = "sqrtPhi";
     public static final double PHI_VALUE = ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
@@ -48,11 +48,9 @@ public class SqrtPhiField  extends ParameterizedField<Integer>
     }
     
     public SqrtPhiField( AlgebraicNumberFactory factory ) {
-        super( FIELD_NAME, 4, 0, factory );
+        super( FIELD_NAME, 4, factory );
+        initialize();
     }
-
-    @Override
-    protected void validate() {}
 
     @Override
     protected void initializeCoefficients() {

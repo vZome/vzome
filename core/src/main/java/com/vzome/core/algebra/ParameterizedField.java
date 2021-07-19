@@ -5,23 +5,21 @@ import java.util.function.BiConsumer;
 /**
  * @author David Hall
  */
-public abstract class ParameterizedField<T extends Object> extends AbstractAlgebraicField {
+public abstract class ParameterizedField extends AbstractAlgebraicField {
 
-    protected final T operand;
     protected final double[] coefficients;
     protected short[][][] multiplicationTensor;
     protected String[][] irrationalLabels;
     
-    public ParameterizedField( String name, int order, T operand, AlgebraicNumberFactory factory ) {
+    public ParameterizedField( String name, int order, AlgebraicNumberFactory factory ) {
         super( name, order, factory );
-        this.operand = operand;
         // These arrays are allocated here, but all non-zero values will be initialized in the derived classes.
         coefficients = new double[order];
         multiplicationTensor = new short[order][order][order];
         irrationalLabels = new String[order][2];
         irrationalLabels[0] = new String[] {" ", " "}; // units use a space character
-        // overridable methods intentionally called from c'tor. Be sure all member variables are initialized first.
-        initialize();
+        // overridable methods should not be called from c'tor since not all member variables may be initialized.
+        // derived classes should call initialize() in their c'tor.
     }
 
     /**
@@ -49,14 +47,11 @@ public abstract class ParameterizedField<T extends Object> extends AbstractAlgeb
         // In some cases, the coefficients may eventually be determined
         // simply by evaluating the only possible solutions to the multiplicationTensor.
         // The labels are initialized last because they could possibly utilize the other values.
-        validate();
         initializeNormalizer();
         initializeMultiplicationTensor();
         initializeCoefficients();
         initializeLabels();
     }
-
-    protected abstract void validate();
 
     protected void initializeNormalizer() 
     {

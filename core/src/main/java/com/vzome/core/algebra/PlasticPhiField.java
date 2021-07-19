@@ -1,6 +1,6 @@
 package com.vzome.core.algebra;
 
-public class PlasticPhiField extends ParameterizedField<Integer> {
+public class PlasticPhiField extends ParameterizedField {
         public static final String FIELD_NAME = "plasticPhi";
         
         /**
@@ -35,12 +35,10 @@ public class PlasticPhiField extends ParameterizedField<Integer> {
         }
         
         public PlasticPhiField( AlgebraicNumberFactory factory ) {
-            super( FIELD_NAME, 6, 0, factory );
+            super( FIELD_NAME, 6, factory );
+            initialize();
         }
 
-        @Override
-        protected void validate() {}
-        
         @Override
         protected void initializeCoefficients() {
             double[] temp = getCoefficients();
