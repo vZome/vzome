@@ -3,7 +3,7 @@ package com.vzome.core.algebra;
 /**
  * @author David Hall
  */
-public class SnubCubeField  extends ParameterizedField<Integer> {
+public class SnubCubeField  extends ParameterizedField {
     public static final String FIELD_NAME = "snubCube";
     
     /**
@@ -33,12 +33,10 @@ public class SnubCubeField  extends ParameterizedField<Integer> {
     }
     
     public SnubCubeField( AlgebraicNumberFactory factory ) {
-        super( FIELD_NAME, 3, 0, factory );
+        super( FIELD_NAME, 3, factory );
+        initialize();
     }
 
-    @Override
-    protected void validate() {}
-    
     @Override
     protected void initializeCoefficients() {
         double[] temp = getCoefficients();

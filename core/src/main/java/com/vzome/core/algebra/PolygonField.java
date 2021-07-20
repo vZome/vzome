@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @author David Hall
  */
-public class PolygonField extends ParameterizedField<Integer>
+public class PolygonField extends ParameterizedField
 {
     private static final double PI = 3.14159265358979323846; // JSweet doesn't know Math.PI
     /**
@@ -348,6 +348,8 @@ public class PolygonField extends ParameterizedField<Integer>
      * so I'm going to leave them as public static methods.
      */
 
+    private final int polygonSides;
+    
     public PolygonField( int polygonSides, AlgebraicNumberFactory factory ) {
         this( FIELD_PREFIX + polygonSides, polygonSides, factory );
     }
@@ -355,7 +357,10 @@ public class PolygonField extends ParameterizedField<Integer>
     // this protected c'tor is intended to allow PentagonField and HeptagonField classes to be refactored
     // so they are derived from PolygonField and still maintain their original legacy names
     protected PolygonField(String name, int polygonSides, AlgebraicNumberFactory factory ) {
-        super( name, getOrder(polygonSides), polygonSides, factory );
+        super( name, getOrder(polygonSides), factory );
+        this.polygonSides = polygonSides;
+        validate();
+        initialize();
         isEven = polygonSides % 2 == 0;
         final boolean isGolden = polygonSides % 5 == 0;
         if (isGolden) {
@@ -406,7 +411,6 @@ public class PolygonField extends ParameterizedField<Integer>
         return getUnitDiagonal( 2 ); // be sure to use getUnitDiagonal() instead of getUnitTerm()
     }
 
-    @Override
     protected void validate() {
         if (polygonSides() < MIN_SIDES) {
             String msg = "polygon sides = " + polygonSides() + ". It must be at least " + MIN_SIDES + ".";
@@ -553,7 +557,7 @@ public class PolygonField extends ParameterizedField<Integer>
     }
 
     public Integer polygonSides() {
-        return operand;
+        return polygonSides;
     }
 
     public final boolean isEven() {

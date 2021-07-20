@@ -103,8 +103,8 @@ public class ParameterizedFieldTest {
     public void printMultiplicationTensors() {
         System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
         for(AlgebraicField field : TEST_FIELDS) {
-            if(field instanceof ParameterizedField<?>) {
-                ParameterizedFields.printMultiplicationTensor( (ParameterizedField<?>)field );    
+            if(field instanceof ParameterizedField) {
+                ParameterizedFields.printMultiplicationTensor( (ParameterizedField)field );    
             }
         }
     }

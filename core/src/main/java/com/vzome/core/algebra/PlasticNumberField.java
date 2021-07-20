@@ -3,7 +3,7 @@ package com.vzome.core.algebra;
 /**
  * @author David Hall
  */
-public class PlasticNumberField  extends ParameterizedField<Integer> {
+public class PlasticNumberField  extends ParameterizedField {
     public static final String FIELD_NAME = "plasticNumber";
     
     /**
@@ -34,12 +34,10 @@ public class PlasticNumberField  extends ParameterizedField<Integer> {
     }
     
     public PlasticNumberField( AlgebraicNumberFactory factory ) {
-        super( FIELD_NAME, 3, 0, factory );
+        super( FIELD_NAME, 3, factory );
+        initialize();
     }
 
-    @Override
-    protected void validate() {}
-    
     @Override
     protected void initializeCoefficients() {
         double[] temp = getCoefficients();
