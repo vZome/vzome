@@ -1,6 +1,7 @@
 package org.vorthmann.zome.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -15,6 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
 
 import org.vorthmann.ui.Controller;
 
@@ -65,9 +67,17 @@ public class SymmetryToolbarsPanel extends JPanel
         String[] transformFactories = symmController .getCommandList( "transformToolFactories" );
         for ( String transformFactory : transformFactories ) {
             firstToolbar .add( newToolButton( symmController, transformFactory ) );
-		}                
+        }                
         
         firstToolbar .addSeparator();
+
+        String[] chordRatioFactories = symmController .getCommandList( "chordRatioToolFactories" );
+        for ( String chordFactorFactory : chordRatioFactories ) {
+            firstToolbar .add( newToolButton( symmController, chordFactorFactory ) );
+        }                
+        if(chordRatioFactories.length > 0) {
+            firstToolbar .addSeparator();
+        }
 
         String[] linearMapFactories = symmController .getCommandList( "linearMapToolFactories" );
         for ( String transformFactory : linearMapFactories ) {
@@ -124,15 +134,25 @@ public class SymmetryToolbarsPanel extends JPanel
         for ( String builtInSymmetryTool : builtInSymmetryTools ) {
             addTool( toolsController .getSubController( builtInSymmetryTool ) );
 		}
-        
-        secondToolbar .addSeparator();
+        if(builtInSymmetryTools.length > 0) {
+            secondToolbar .addSeparator();
+        }
 
         String[] builtInTransformTools = symmController .getCommandList( "builtInTransformTools" );
         for ( String builtInTransformTool : builtInTransformTools ) {
             addTool( toolsController .getSubController( builtInTransformTool ) );
-		}
-       
-        secondToolbar .addSeparator();
+        }
+        if(builtInTransformTools.length > 0) {
+            secondToolbar .addSeparator();
+        }
+
+        String[] builtInChordRatioTools = symmController .getCommandList( "builtInChordRatioTools" );
+        for ( String builtInChordRatioTool : builtInChordRatioTools ) {
+            addTool( toolsController .getSubController( builtInChordRatioTool ) );
+        }
+        if(builtInChordRatioTools.length > 0) {
+            secondToolbar .addSeparator();
+        }
 	}
 
 	private static final String TOOLTIP_PREFIX = "<html><b>";
@@ -145,9 +165,26 @@ public class SymmetryToolbarsPanel extends JPanel
 			return;
 		String label = controller .getProperty( "label" );
 		String kind = controller .getProperty( "kind" );
+		String overlayText = controller .getProperty( "overlayText" );
         String iconPath = "/icons/tools/small/" + kind + ".png";
         String tooltip = TOOLTIP_PREFIX + label + TOOLTIP_SUFFIX;
         JButton button = this .factory .makeIconButton( tooltip, iconPath );
+        if(overlayText != null) {
+            final int len = overlayText.length(); 
+            if( len == 4 || len == 5 ) {
+                // adjust the max size for overlayText with 4 or 5 chars such as "1/√3"
+                // since 3 chars work as-is and longer text should be truncated anyway
+                final int margin = 12; // DJH: 12 is the smallest margin that worked on my PC
+                int strWidth = margin + button.getFontMetrics(button.getFont()).stringWidth(overlayText);
+                Dimension pref = button.getMaximumSize();
+                if( pref.width < strWidth) {
+                    pref.width = strWidth;
+                    button.setMaximumSize(pref);
+                }
+            }
+            button.setVerticalTextPosition(SwingConstants.CENTER);
+            button.setText (overlayText);
+        }
 		button .setActionCommand( "apply" );
 		button .addActionListener( new ControllerActionListener(controller) );
 		button .addMouseListener( new MouseAdapter()

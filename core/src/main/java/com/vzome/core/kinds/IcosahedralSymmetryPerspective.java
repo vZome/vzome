@@ -16,6 +16,7 @@ import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.tools.AxialStretchTool;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
+import com.vzome.core.tools.ChordRatioTool;
 import com.vzome.core.tools.IcosahedralToolFactory;
 import com.vzome.core.tools.InversionTool;
 import com.vzome.core.tools.LinearMapTool;
@@ -111,6 +112,9 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
             result.add(new TranslationTool.Factory(tools));
             result.add(new ProjectionTool.Factory(tools));
             break;
+        case CHORD_RATIO:
+            result.add(new ChordRatioTool.Factory(tools, icosaSymm));
+            break;
         case LINEAR_MAP:
             result.add(new AxialStretchTool.Factory(tools, icosaSymm, true, true, true));
             result.add(new AxialStretchTool.Factory(tools, icosaSymm, true, false, true));
@@ -143,6 +147,13 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
             result.add(new ScalingTool.Factory(tools, icosaSymm).createPredefinedTool("scale up"));
             result.add(new RotationTool.Factory(tools, icosaSymm).createPredefinedTool("rotate around red through origin"));
             result.add(new TranslationTool.Factory(tools).createPredefinedTool("b1 move along +X"));
+            break;
+        case CHORD_RATIO:
+            result.add(new ChordRatioTool.Factory(tools, icosaSymm).createPredefinedTool("parallelagram"));
+            result.add(new ChordRatioTool.Factory(tools, icosaSymm).createPredefinedTool("affine pentagon"));
+            result.add(new ChordRatioTool.Factory(tools, icosaSymm).createPredefinedTool("affine hexagon"));
+            result.add(new ChordRatioTool.Factory(tools, icosaSymm).createPredefinedTool("affine decagon"));
+            result.add(new ChordRatioTool.Factory(tools, icosaSymm).createPredefinedTool("parabola"));
             break;
         default:
             break;

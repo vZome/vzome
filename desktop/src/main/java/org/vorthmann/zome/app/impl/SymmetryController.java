@@ -70,6 +70,7 @@ public class SymmetryController extends DefaultController
 
     private final Map<String, Controller> symmetryToolFactories = new LinkedHashMap<>();
     private final Map<String, Controller> transformToolFactories = new LinkedHashMap<>();
+    private final Map<String, Controller> chordRatioToolFactories = new LinkedHashMap<>();
     private final Map<String, Controller> linearMapToolFactories = new LinkedHashMap<>();
     private final RenderedModel renderedModel;
 
@@ -175,6 +176,13 @@ public class SymmetryController extends DefaultController
                 this .transformToolFactories .put( factory .getId(), new ToolFactoryController( factory ) );
             return this .transformToolFactories .keySet() .toArray( new String[]{} );
 
+        case "chordRatioToolFactories":
+
+            // This will be called only once, before any relevant getSubController, so it is OK to do creations
+            for ( Tool.Factory factory : this .symmetrySystem .getToolFactories( Tool.Kind.CHORD_RATIO ) )
+                this .chordRatioToolFactories .put( factory .getId(), new ToolFactoryController( factory ) );
+            return this .chordRatioToolFactories .keySet() .toArray( new String[]{} );
+
         case "linearMapToolFactories":
 
             // This will be called only once, before any relevant getSubController, so it is OK to do creations
@@ -190,7 +198,6 @@ public class SymmetryController extends DefaultController
                 toolNames .add( tool .getId() );
             return toolNames .toArray( new String[]{} );
 
-
         case "builtInTransformTools":
 
             // This will be called only once, before any relevant getSubController, so it is OK to do creations
@@ -198,6 +205,14 @@ public class SymmetryController extends DefaultController
             for ( Tool tool : this .symmetrySystem .getPredefinedTools( Tool.Kind.TRANSFORM ) )
                 transformToolNames .add( tool .getId() );
             return transformToolNames .toArray( new String[]{} );
+
+        case "builtInChordRatioTools":
+
+            // This will be called only once, before any relevant getSubController, so it is OK to do creations
+            List<String> chordRatioToolNames = new ArrayList<>();
+            for ( Tool tool : this .symmetrySystem .getPredefinedTools( Tool.Kind.CHORD_RATIO ) )
+                chordRatioToolNames .add( tool .getId() );
+            return chordRatioToolNames .toArray( new String[]{} );
 
         default:
             return super .getCommandList( listName );
@@ -232,6 +247,9 @@ public class SymmetryController extends DefaultController
             if ( result != null )
                 return result;
             result = this .transformToolFactories .get( name );
+            if ( result != null )
+                return result;
+            result = this .chordRatioToolFactories .get( name );
             if ( result != null )
                 return result;
             result = this .linearMapToolFactories .get( name );
