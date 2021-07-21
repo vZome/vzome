@@ -10,7 +10,7 @@
     "redux": "^4.0.4",
     "redux-bundler": "^26.0.0",
     "redux-bundler-react": "^1.2.0",
-    "three": "^0.110.0"
+    "three": "^0.125.0"
   },
   "scripts": {
     "start": "react-scripts start",
