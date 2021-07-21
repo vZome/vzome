@@ -8,18 +8,20 @@ import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded'
 
 const select = ( state ) =>
 {
-  const xml = state.designs && designs.selectText( state )
+  const text = state.designs && designs.selectText( state )
   const name = state.designs && designs.selectDesignName( state )
+  const design = state.designs && designs.selectDesign( state )
   return {
-    xml,
+    text,
     name,
+    design,
   }
 }
 
 // from https://www.bitdegree.org/learn/javascript-download
-export const download = ( name, xml ) =>
+export const download = ( name, text ) =>
 {
-  const blob = new Blob([xml], {type : 'application/xml'});
+  const blob = new Blob( [text], {type : 'application/xml'} );
   const element = document.createElement( 'a' )
   const blobURI = URL.createObjectURL( blob )
   element.setAttribute( 'href', blobURI )
@@ -30,12 +32,23 @@ export const download = ( name, xml ) =>
   document.body.removeChild( element )
 }
 
-function ShareButton( { xml, name } )
+function ShareButton( { text, name, design } )
 {
+  const handleClick = event =>
+  {
+    if ( event.getModifierState( "Alt" ) ) {
+      if ( ! name.endsWith( '.json' ) ) { name += '.json' }
+      const jsonText = designs.serialize( design )
+      download( name, jsonText )
+    } else {
+      download( name, text )
+    }
+  }
+
   return (
     <>
       <Tooltip title="Download vZome file" aria-label="download">
-        <IconButton color="inherit" aria-label="download" onClick={()=>download( name, xml )} disabled={!xml}>
+        <IconButton color="inherit" aria-label="download" onClick={handleClick} disabled={!text}>
           <GetAppRoundedIcon fontSize="large"/>
         </IconButton>
       </Tooltip>

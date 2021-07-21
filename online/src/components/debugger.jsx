@@ -25,7 +25,6 @@ import Typography from '@material-ui/core/Typography'
 
 import * as designFns from '../bundles/designs.js'
 import * as dbugger from '../bundles/dbugger.js'
-import { vZomeJava } from '@vzome/react-vzome'
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -99,7 +98,7 @@ const useTreeItemStyles = makeStyles((theme) => ({
   },
 }));
 
-function StyledTreeItem(props) {
+const StyledTreeItem = props => {
   const classes = useTreeItemStyles();
   const { labelText, labelInfo, color, bgColor, ...other } = props;
 
@@ -132,25 +131,26 @@ function StyledTreeItem(props) {
   );
 }
 
-const Debugger = ( { data, current, branches, designName, doDebug } )  =>
+const Debugger = ( { data, current, branches, designName, stepIn, stepOut, stepOver, run } )  =>
 {
-  const [ element, setElement ] = useState( null )
+  const [ edit, setEdit ] = useState( null )
 
-  const onLabelClick = element => event =>
+  const onLabelClick = edit => event =>
   {
     event.preventDefault()
-    setElement( element )
+    setEdit( edit )
   }
 
-  const renderTree = ( element ) => {
+  const renderTree = ( edit ) => {
+    const id = edit.id()
     const children = []
-    let child = element.firstElementChild
+    let child = edit.firstChild()
     while ( child ) {
       children.push( child )
-      child = child.nextElementSibling
+      child = child.nextSibling()
     }
     return (
-      <StyledTreeItem key={element.id} nodeId={element.id} labelText={element.nodeName} onLabelClick={onLabelClick(element)}>
+      <StyledTreeItem key={id} nodeId={id} labelText={edit.name()} onLabelClick={onLabelClick( edit )}>
         { children.length > 0 ? children.map( child => renderTree( child ) ) : null }
       </StyledTreeItem>
     )
@@ -166,27 +166,35 @@ const Debugger = ( { data, current, branches, designName, doDebug } )  =>
   //  this JSFiddle:  https://jsfiddle.net/sgxpqc6b/9/
   //  from a comment on this post:  https://www.whitebyte.info/programming/css/how-to-make-a-div-take-the-remaining-height
   //  Note that I had to add an extra div around the TreeView.
+
+  const root = {
+    id: () => ':',
+    name: () => 'EditHistory',
+    firstChild: () => data,
+    getAttributeNames: () => []
+  }
+
   return (
     <Grid container direction='column' style={{ display: 'table', height: '100%' }}>
       <Grid item style={{ display: 'table-row' }}>
         <Toolbar id="debugger-tools" variant='dense'>
           <Tooltip title="Step in" aria-label="step-in">
-            <IconButton color="secondary" aria-label="step-in" onClick={()=>doDebug(designName, vZomeJava.Step.IN)}>
+            <IconButton color="secondary" aria-label="step-in" onClick={()=>stepIn( designName )}>
               <GetAppRoundedIcon/>
             </IconButton>
           </Tooltip>
           <Tooltip title="Step over" aria-label="step-over">
-            <IconButton color="secondary" aria-label="step-over" onClick={()=>doDebug(designName, vZomeJava.Step.OVER)}>
+            <IconButton color="secondary" aria-label="step-over" onClick={()=>stepOver( designName )}>
               <RedoRoundedIcon/>
             </IconButton>
           </Tooltip>
           <Tooltip title="Step out" aria-label="step-out">
-            <IconButton color="secondary" aria-label="step-out" onClick={()=>doDebug(designName, vZomeJava.Step.OUT)}>
+            <IconButton color="secondary" aria-label="step-out" onClick={()=>stepOut( designName )}>
               <PublishRoundedIcon/>
             </IconButton>
           </Tooltip>
           <Tooltip title="Continue" aria-label="continue">
-            <IconButton color="secondary" aria-label="continue" onClick={()=>doDebug(designName, vZomeJava.Step.DONE)}>
+            <IconButton color="secondary" aria-label="continue" onClick={()=>run( designName )}>
               <FastForwardRoundedIcon/>
             </IconButton>
           </Tooltip>
@@ -200,7 +208,7 @@ const Debugger = ( { data, current, branches, designName, doDebug } )  =>
             defaultExpanded={ expanded }
             defaultExpandIcon={<ChevronRightIcon />}
           >
-            {renderTree( data, '' ) }
+            {renderTree( root, '' ) }
           </TreeView>
         </div>
       </Grid>
@@ -214,13 +222,13 @@ const Debugger = ( { data, current, branches, designName, doDebug } )  =>
               </TableRow>
             </TableHead>
             <TableBody>
-              {element && element.getAttributeNames().map( name => (
+              {edit && edit.getAttributeNames().map( name => (
                 ( name !== 'id' ) &&
                 <StyledTableRow key={name}>
                   <StyledTableCell component="th" scope="row">
                     {name}
                   </StyledTableCell>
-                  <StyledTableCell>{element.getAttribute( name )}</StyledTableCell>
+                  <StyledTableCell>{edit.getAttribute( name )}</StyledTableCell>
                 </StyledTableRow>
               ))}
             </TableBody>
@@ -240,14 +248,17 @@ const select = ( state ) =>
   }
   return {
     data: dbugger.source,
-    current: dbugger && dbugger.currentElement && dbugger.currentElement.id,
-    branches: dbugger && dbugger.branchStack && dbugger.branchStack.map( ({ branch }) => branch.id ),
+    current: dbugger && dbugger.nextEdit && dbugger.nextEdit.id(),
+    branches: dbugger && dbugger.branchStack && dbugger.branchStack.map( ({ branch }) => branch.id() ),
     designName: dbugger && designFns.selectDesignName( state )
   }
 }
 
 const boundEventActions = {
-  doDebug : dbugger.debug,
+  stepIn : dbugger.stepper.in,
+  stepOver: dbugger.stepper.over,
+  stepOut: dbugger.stepper.out,
+  run: dbugger.stepper.done,
 }
 
 export default connect( select, boundEventActions )( Debugger )

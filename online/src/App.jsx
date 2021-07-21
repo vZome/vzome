@@ -7,6 +7,7 @@ import Grid from '@material-ui/core/Grid'
 import './App.css'
 
 import DesignEditor from './components/designeditor.jsx'
+// import EditMenu from './components/editmenu.jsx'
 import ErrorAlert from './components/alert.jsx'
 import VZomeAppBar from './components/appbar.jsx'
 import Debugger from './components/debugger.jsx'
@@ -36,6 +37,7 @@ const App = () =>
           </div>
         : <DesignEditor/>}
         <ErrorAlert/> 
+        {/* <EditMenu/>  */}
         {/* <Spinner/> */}
     </Provider>
   );

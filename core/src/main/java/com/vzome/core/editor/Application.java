@@ -15,6 +15,7 @@ import javax.vecmath.Vector3f;
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumberImpl;
 import com.vzome.core.algebra.EdPeggField;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
@@ -24,6 +25,7 @@ import com.vzome.core.algebra.PolygonField;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
 import com.vzome.core.algebra.SnubCubeField;
+import com.vzome.core.algebra.SnubDodecField;
 import com.vzome.core.algebra.SuperGoldenField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
@@ -62,6 +64,7 @@ import com.vzome.core.kinds.SnubCubeFieldApplication;
 import com.vzome.core.kinds.SnubDodecFieldApplication;
 import com.vzome.core.render.Colors;
 import com.vzome.core.viewing.Lights;
+import com.vzome.fields.sqrtphi.SqrtPhiField;
 import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;
 import com.vzome.xml.DomParser;
 
@@ -135,9 +138,9 @@ public class Application implements AlgebraicField.Registry
         this.fieldAppSuppliers.put( "heptagon", () -> new HeptagonFieldApplication( new HeptagonField() ) );
         this.fieldAppSuppliers.put( "rootThree", () -> new RootThreeFieldApplication( new RootThreeField() ) );
         this.fieldAppSuppliers.put( "dodecagon", () -> new RootThreeFieldApplication( new RootThreeField() ) );
-        this.fieldAppSuppliers.put( "snubCube", () -> new SnubCubeFieldApplication( new SnubCubeField() ) );
-        this.fieldAppSuppliers.put( "snubDodec", SnubDodecFieldApplication::new);
-        this.fieldAppSuppliers.put( "sqrtPhi",   SqrtPhiFieldApplication::new);
+        this.fieldAppSuppliers.put( "snubCube", () -> new SnubCubeFieldApplication( new SnubCubeField( AlgebraicNumberImpl.FACTORY ) ) );
+        this.fieldAppSuppliers.put( "snubDodec", () -> new SnubDodecFieldApplication( new SnubDodecField( AlgebraicNumberImpl.FACTORY ) ) );
+        this.fieldAppSuppliers.put( "sqrtPhi", () -> new SqrtPhiFieldApplication( new SqrtPhiField( AlgebraicNumberImpl.FACTORY ) ) );
         // The fields commented out below are only available by the custom menu
         // See the note in getDocumentKind() before adding them here so they show up in the main memu
 //        this.fieldAppSuppliers.put( "superGolden", () -> { return new DefaultFieldApplication ( new SuperGoldenField()); } );
@@ -215,7 +218,8 @@ public class Application implements AlgebraicField.Registry
         // Parameterized FieldApplications are generated on demand
         if(name.startsWith(PolygonField.FIELD_PREFIX)) {
             int nSides = Integer.parseInt(name.substring(PolygonField.FIELD_PREFIX.length()));
-            return new PolygonFieldApplication(nSides);
+            PolygonField field = new PolygonField( nSides, AlgebraicNumberImpl.FACTORY );
+            return new PolygonFieldApplication( field );
         }
 //        if(name.startsWith(SqrtField.FIELD_PREFIX)) {
 //            int nSides = Integer.parseInt(name.substring(SqrtField.FIELD_PREFIX.length()));
@@ -227,14 +231,14 @@ public class Application implements AlgebraicField.Registry
         // In that case, they will appear in the main menu and they can be removed here
         switch(name) {
         case "superGolden":
-            return new DefaultFieldApplication ( new SuperGoldenField() );
+            return new DefaultFieldApplication ( new SuperGoldenField( AlgebraicNumberImpl.FACTORY ) );
         case "plasticNumber":
-            return new DefaultFieldApplication ( new PlasticNumberField() );
+            return new DefaultFieldApplication ( new PlasticNumberField( AlgebraicNumberImpl.FACTORY ) );
         case "plasticPhi":
             // TODO: Eventually return new PlasticPhiFieldApplication ( new PlasticPhiField() );
-            return new DefaultFieldApplication ( new PlasticPhiField() );
+            return new DefaultFieldApplication ( new PlasticPhiField( AlgebraicNumberImpl.FACTORY ) );
         case "edPegg": 
-            return new DefaultFieldApplication ( new EdPeggField() );
+            return new DefaultFieldApplication ( new EdPeggField( AlgebraicNumberImpl.FACTORY ) );
         }
 
         // maybe because default.field is invalid in your prefs file?

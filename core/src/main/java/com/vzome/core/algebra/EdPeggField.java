@@ -1,7 +1,7 @@
 package com.vzome.core.algebra;
 
 // This field is based on a suggestion by Ed Pegg
-public class EdPeggField extends ParameterizedField<Integer> {
+public class EdPeggField extends ParameterizedField {
     public static final String FIELD_NAME = "edPegg";
     
     /**
@@ -31,13 +31,11 @@ public class EdPeggField extends ParameterizedField<Integer> {
         return getFieldCoefficients();
     }
     
-    public EdPeggField() {
-        super(FIELD_NAME, 3, 0);
+    public EdPeggField( AlgebraicNumberFactory factory ) {
+        super( FIELD_NAME, 3, factory );
+        initialize();
     }
 
-    @Override
-    protected void validate() {}
-    
     @Override
     protected void initializeCoefficients() {
         double[] temp = getCoefficients();

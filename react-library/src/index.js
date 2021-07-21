@@ -4,7 +4,7 @@ import BuildPlane from './components/buildplane.jsx'
 import { ShapedGeometry } from './components/geometry.jsx'
 import { UrlViewer, MeshGeometry } from './components/urlviewer.jsx'
 import Adapter, { createInstance } from './core/adapter.js'
-import * as vZomeJava from './core/legacyjava.js'
+import { parse, interpret, Step, getDefaultShaper } from './core/api.js'
 import goldenField from './fields/golden.js'
 import root2Field from './fields/root2.js'
 import root3Field from './fields/root3.js'
@@ -13,7 +13,8 @@ import heptagonField from './fields/heptagon.js'
 // export everything as named exports
 export {
   DesignCanvas, BuildPlane, ShapedGeometry, MeshGeometry, UrlViewer,
-  createInstance, Adapter, vZomeJava,
+  createInstance, Adapter,
+  parse, interpret, Step, getDefaultShaper,
   goldenField, root2Field, root3Field, heptagonField
 }
 

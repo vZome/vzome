@@ -30,13 +30,13 @@ public class AlgebraicFieldTest {
         fields.add (new RootTwoField());
         fields.add (new RootThreeField());
         fields.add (new HeptagonField());
-        fields.add (new SqrtPhiField());
-        fields.add (new SnubDodecField());
-        fields.add (new SnubCubeField());
-        fields.add( new PlasticNumberField() );
-        fields.add( new PlasticPhiField() );
-        fields.add( new SuperGoldenField() );
-        fields.add( new EdPeggField() );
+        fields.add (new SqrtPhiField( AlgebraicNumberImpl.FACTORY ));
+        fields.add (new SnubDodecField( AlgebraicNumberImpl.FACTORY ));
+        fields.add (new SnubCubeField( AlgebraicNumberImpl.FACTORY ));
+        fields.add( new PlasticNumberField( AlgebraicNumberImpl.FACTORY ) );
+        fields.add( new PlasticPhiField( AlgebraicNumberImpl.FACTORY ) );
+        fields.add( new SuperGoldenField( AlgebraicNumberImpl.FACTORY ) );
+        fields.add( new EdPeggField( AlgebraicNumberImpl.FACTORY ) );
     }
     
     @Test
@@ -91,9 +91,9 @@ public class AlgebraicFieldTest {
         System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
         List<AlgebraicField> goldenFields = new ArrayList<>();
         goldenFields.add(new PentagonField());
-        goldenFields.add(new SnubDodecField());
-        goldenFields.add(new SqrtPhiField());
-        goldenFields.add( new PlasticPhiField() );
+        goldenFields.add(new SnubDodecField( AlgebraicNumberImpl.FACTORY ));
+        goldenFields.add(new SqrtPhiField( AlgebraicNumberImpl.FACTORY ));
+        goldenFields.add( new PlasticPhiField( AlgebraicNumberImpl.FACTORY ) );
         
         for(AlgebraicField field : goldenFields) {
             String fieldName = field.getName();
@@ -423,9 +423,9 @@ public class AlgebraicFieldTest {
     }
     
     private static void verifyGaussJordanReduction(int[][] intMatrix, int[][] intAdjoined, int[][] intExpected, int expectedRank) {
-        final BigRational[][] matrix = BigRational.newMatrix(intMatrix);
-        final BigRational[][] adjoined = BigRational.newMatrix(intAdjoined);
-        final BigRational[][] expected = BigRational.newMatrix(intExpected);
+        final BigRational[][] matrix = BigRationalImpl.newMatrix(intMatrix);
+        final BigRational[][] adjoined = BigRationalImpl.newMatrix(intAdjoined);
+        final BigRational[][] expected = BigRationalImpl.newMatrix(intExpected);
                 
         System.out.println("-----------------------------------------------------");
         System.out.println(getSourceCodeLine(2));

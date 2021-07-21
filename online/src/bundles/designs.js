@@ -2,7 +2,7 @@
 import { combineReducers } from 'redux'
 import undoable, { ActionCreators as Undo } from 'redux-undo'
 
-import { goldenField, vZomeJava } from '@vzome/react-vzome'
+import { goldenField, parse } from '@vzome/react-vzome'
 import * as mesh from './mesh'
 import { reducer as cameraReducer, initialState as cameraDefault, cameraDefined } from './camera.js'
 import * as dbugger from './dbugger.js'
@@ -164,10 +164,14 @@ export const reducer = ( state = addNewModel( emptyState, goldenField ), action 
 
 export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =>
 {
-  const { parser } = await vZomeJava.coreState  // Must wait for the vZome code to initialize
   try {
     const text = await textPromise
-    const { edits, camera, field, parseAndPerformEdit, targetEdit, shapeRenderer } = parser( text ) || {}
+    if ( !text ) {
+      const message = `Unable to retrieve XML from ${url}`
+      console.log( message )
+      dispatch( showAlert( message ) )
+      return
+    }
 
     const name = decodeURI( url.split( '\\' ).pop().split( '/' ).pop() )
     const failure = message => {
@@ -178,12 +182,14 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
       dispatch( showAlert( message + ' Use the download button to save this file, then try opening it with desktop vZome.' ) )
     }
 
-    if ( !edits ) {
-      failure( `Unable to parse XML from ${url}` )
-      return
-    }
+    const { firstEdit, camera, field, targetEdit, shapeRenderer } = await parse( text ) || {}
+
     if ( field.unknown ) {
       failure( `Field "${field.name}" is not implemented.` )
+      return
+    }
+    if ( !firstEdit ) {
+      failure( `Unable to parse XML from ${url}` )
       return
     }
 
@@ -203,13 +209,13 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
     dispatch( shapers.shaperDefined( shapeRenderer.name, shapeRenderer ) ) // outside the design
 
     design = designReducer( design, cameraDefined( camera ) )
-    design = designReducer( design, dbugger.sourceLoaded( edits, parseAndPerformEdit, targetEdit ) ) // recorded in history
+    design = designReducer( design, dbugger.sourceLoaded( firstEdit, targetEdit ) ) // recorded in history
     design = designReducer( design, Undo.clearHistory() )  // kind of a hack so both histories are in sync, with no past
 
     dispatch( loadingDesign( name, design ) )
 
     if ( ! getState().dbuggerEnabled ) {
-      dispatch( dbugger.debug( name, vZomeJava.Step.DONE ) )
+      dispatch( dbugger.stepper.done( name ) )
     }
     else {
       dispatch( loadedDesign( name, design ) )
@@ -219,4 +225,13 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
     console.log( message )
     dispatch( showAlert( `Unable to parse vZome design file: ${url};\n ${error.message}` ) )
   }
+}
+
+export const serialize = ( { camera, fieldName, shaperName, dbugger } ) =>
+{
+  const serializeEdit = dbugr => dbugr.nextEdit && dbugr.nextEdit.serialize()
+  let edits = dbugger.past.map( serializeEdit )
+  edits.push( { ...serializeEdit( dbugger.present ), targetEdit: true } )
+  edits = edits.concat( dbugger.future.map( serializeEdit ) )
+  return JSON.stringify( { edits, camera, fieldName, shaperName }, null, '  ' )
 }

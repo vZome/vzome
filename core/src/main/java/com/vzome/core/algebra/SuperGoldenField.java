@@ -4,7 +4,7 @@ package com.vzome.core.algebra;
 // See https://community.wolfram.com/groups/-/m/t/1286708
 // The Narayana's cows sequence constant is also known as 
 // the Super Golden Ratio at https://en.wikipedia.org/wiki/Supergolden_ratio
-public class SuperGoldenField extends ParameterizedField<Integer> {
+public class SuperGoldenField extends ParameterizedField {
     public static final String FIELD_NAME = "superGolden";
     
     /**
@@ -35,13 +35,11 @@ public class SuperGoldenField extends ParameterizedField<Integer> {
         return getFieldCoefficients();
     }
     
-    public SuperGoldenField() {
-        super(FIELD_NAME, 3, 0);
+    public SuperGoldenField( AlgebraicNumberFactory factory ) {
+        super( FIELD_NAME, 3, factory );
+        initialize();
     }
 
-    @Override
-    protected void validate() {}
-    
     @Override
     protected void initializeCoefficients() {
         double[] temp = getCoefficients();

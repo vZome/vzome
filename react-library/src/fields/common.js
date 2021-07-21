@@ -12,6 +12,33 @@ export function gcd( a, b )
   return a
 }
 
+export function simplify( values )
+{
+  const signs = []
+  const signedValues = []
+  let lastSign
+  let divisor
+  for (let i = 0; i < values.length; i++) {
+    const value = values[ i ];
+    if ( (value|0n) !== value )
+      throw new TypeError( `integer overflow!... ${value}` )
+    lastSign = BigInt( (value>0n)-(value<0n) )
+    signs.push( lastSign )
+    signedValues.push( lastSign * value )
+    divisor = value
+  }
+  for (let i = 0; i < values.length-1; i++) {
+    signs[ i ] = lastSign * signs[ i ]
+    divisor = gcd( signedValues[ i ], divisor )
+  }
+  const result = []
+  for (let i = 0; i < values.length; i++) {
+    let fraction = signedValues[ i ] / divisor
+    result.push( ( i === values.length-1 )? fraction : signs[ i ] * fraction )
+  }
+  return result
+}
+
 export function simplify3( v0, v1, v2 )
 {
   if ((v0|0n) !== v0 || (v1|0n) !== v1 || (v2|0n) !== v2)
@@ -95,6 +122,26 @@ function createNumberFromPairs3( pairs )
   const b2 = BigInt(a2) * BigInt(d0) * BigInt(d1)
   const d = BigInt(d0) * BigInt(d1) * BigInt(d2)
   return simplify4( b0, b1, b2, d )
+}
+
+export function createNumberFromPairs( pairs )
+{
+  const order = pairs.length / 2
+  let result = []
+  for (let i = 0; i < order; i++) {
+    let term = pairs[ 2*i ]
+    for (let j = 0; j < order; j++) {
+      if ( i !== j )
+        term *= pairs[ 2*j + 1 ]
+    }
+    result.push( term )
+  }
+  let divisor = 1n
+  for (let j = 0; j < order; j++) {
+    divisor *= pairs[ 2*j + 1 ]
+  }
+  result.push( divisor )
+  return simplify( result )
 }
 
 function createNumber2( trailingDivisor )

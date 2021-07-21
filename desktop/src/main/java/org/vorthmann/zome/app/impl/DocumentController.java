@@ -105,7 +105,6 @@ public class DocumentController extends DefaultController implements Scene.Provi
     private Lights sceneLighting;
     private MouseTool modelModeMainTrackball;
     private Component modelCanvas;
-    private Dimension canvasSize = new Dimension( 700, 700 );
     private boolean drawNormals = false;
     private boolean drawOutlines = false;
     private boolean showFrameLabels = false;
@@ -409,7 +408,6 @@ public class DocumentController extends DefaultController implements Scene.Provi
     {
     		// This is called on a UI thread!
         this .modelCanvas = canvas;
-        this .canvasSize = canvas .getSize();
         this .imageCaptureViewer = viewer;
         
         // clicks become select or deselect all
@@ -853,7 +851,6 @@ public class DocumentController extends DefaultController implements Scene.Provi
             if ( "capture-animation" .equals( command ) )
             {
                 File dir = file .isDirectory()? file : file .getParentFile();
-                Dimension size = this .canvasSize;
                 String html = readResource( "org/vorthmann/zome/app/animation.html" );
                 File htmlFile = new File( dir, "index.html" );
                 writeFile( html, htmlFile );
@@ -871,7 +868,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
             }
             if ( command.startsWith( "export2d." ) )
             {
-                Dimension size = this .canvasSize;
+                Dimension size = this .modelCanvas .getSize();
                 String format = command .substring( "export2d." .length() ) .toLowerCase();
                 Java2dSnapshot snapshot = documentModel .capture2d( currentSnapshot, size.height, size.width, cameraController .getView(), sceneLighting, false, true );
                 documentModel .export2d( snapshot, format, file, this .drawOutlines, false );
@@ -880,7 +877,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
             }
             if ( command.startsWith( "export." ) )
             {
-                Dimension size = this .canvasSize;
+                Dimension size = this .modelCanvas .getSize();
                 Writer out = null;
                 try {
                     out = new FileWriter( file );

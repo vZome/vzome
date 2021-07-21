@@ -1,6 +1,6 @@
 package com.vzome.core.algebra;
 
-public class PlasticPhiField extends ParameterizedField<Integer> {
+public class PlasticPhiField extends ParameterizedField {
         public static final String FIELD_NAME = "plasticPhi";
         
         /**
@@ -34,13 +34,11 @@ public class PlasticPhiField extends ParameterizedField<Integer> {
             return getFieldCoefficients();
         }
         
-        public PlasticPhiField() {
-            super(FIELD_NAME, 6, 0);
+        public PlasticPhiField( AlgebraicNumberFactory factory ) {
+            super( FIELD_NAME, 6, factory );
+            initialize();
         }
 
-        @Override
-        protected void validate() {}
-        
         @Override
         protected void initializeCoefficients() {
             double[] temp = getCoefficients();
@@ -154,18 +152,18 @@ public class PlasticPhiField extends ParameterizedField<Integer> {
         }
         
         @Override
-        protected BigRational[] prepareAlgebraicNumberTerms(BigRational[] terms) {
+        protected int[] convertGoldenNumberPairs(int[] terms) {
             if (terms.length == 2) {
-                terms = new BigRational[] {
+                terms = new int[] {
                         terms[0],           // units
-                        BigRational.ZERO,   // plastic
+                        0,   // plastic
                         terms[1],           // phis
-                        BigRational.ZERO,   // zero fill the rest...
-                        BigRational.ZERO,
-                        BigRational.ZERO
+                        0,   // zero fill the rest...
+                        0,
+                        0
                 };
             }
-            return super.prepareAlgebraicNumberTerms(terms);
+            return super.convertGoldenNumberPairs(terms);
         }
 
     }

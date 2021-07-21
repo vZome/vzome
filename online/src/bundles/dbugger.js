@@ -1,9 +1,9 @@
 
 import * as designs from '../bundles/designs.js'
 // import { ActionCreators } from 'redux-undo';
-import * as mesh from './mesh.js'
+import * as meshes from './mesh.js'
 import { showAlert } from './alerts.js'
-import { vZomeJava, Adapter } from '@vzome/react-vzome'
+import { interpret, Step } from '@vzome/react-vzome'
 import { ActionCreators as UndoActionCreators } from 'redux-undo'
 
 export const reducer = ( state = {}, action ) =>
@@ -11,21 +11,20 @@ export const reducer = ( state = {}, action ) =>
   switch (action.type) {
 
     case 'SOURCE_LOADED':
-      const { source, parseAndPerformEdit, targetEdit } = action.payload
+      const { firstEdit, targetEdit } = action.payload
       return {
         ...state,
-        source,
-        parseAndPerformEdit,
+        source: firstEdit,
         targetEdit,
-        currentElement: source.firstElementChild,
+        nextEdit: firstEdit,
         branchStack: []
       }
 
     case 'EDIT_REACHED':
-      const { element, branchStack } = action.payload
+      const { edit, branchStack } = action.payload
       return {
         ...state,
-        currentElement: element,
+        nextEdit: edit,
         branchStack: branchStack || state.branchStack
       }
 
@@ -34,36 +33,34 @@ export const reducer = ( state = {}, action ) =>
   }
 }
 
-export const sourceLoaded = ( source, parseAndPerformEdit, targetEdit ) => ({ type: 'SOURCE_LOADED', payload: { source, parseAndPerformEdit, targetEdit } })
+export const sourceLoaded = ( firstEdit, targetEdit ) => ({ type: 'SOURCE_LOADED', payload: { firstEdit, targetEdit } })
 
-export const reachedEdit = ( element, branchStack ) => ( { type: 'EDIT_REACHED', payload: { element, branchStack } } )
+export const reachedEdit = ( edit, branchStack ) => ( { type: 'EDIT_REACHED', payload: { edit, branchStack } } )
 
-export const debug = ( designName, action ) => ( dispatch, getState ) =>
+const debug = action => designName => ( dispatch, getState ) =>
 {
   let design = designs.selectDesign( getState(), designName ) // the starting point only
   const dbugger = designs.selectDebugger( getState(), designName )
-  const { shown, selected, hidden, groups } = designs.selectMesh( getState(), designName )
+  const mesh = designs.selectMesh( getState(), designName )
 
-  let adapter = new Adapter( shown, selected, hidden, groups )
-  let editElement = dbugger.currentElement
+  let edit = dbugger.nextEdit
   let stack = dbugger.branchStack.slice() // only modified when stepping in or out
 
   let targetPast = -1   // if we reach the targetEdit, this will get set to at least zero
 
-  const recordSnapshot = ( adapter, id, editElement, stack ) =>
+  const recordSnapshot = ( mesh, id, edit, stack ) =>
   {
-    const { shown, selected, hidden, groups } = adapter
+    const { shown, selected, hidden, groups } = mesh
     if ( id === dbugger.targetEdit ) {
       targetPast = design.dbugger.past.length
-      console.log( targetPast )
       // This is where we will undo back to
     }
-    design = designs.designReducer( design, mesh.meshChanged( shown, selected, hidden, groups ) )
-    design = designs.designReducer( design, reachedEdit( editElement, stack ) )
+    design = designs.designReducer( design, meshes.meshChanged( shown, selected, hidden, groups ) )
+    design = designs.designReducer( design, reachedEdit( edit, stack ) )
   }
 
   try {
-    vZomeJava.interpret( action, dbugger.parseAndPerformEdit, adapter, editElement, stack, recordSnapshot )
+    interpret( action, mesh, edit, stack, recordSnapshot )
   } catch (error) {
     console.log( error )
     dispatch( showAlert( `Failure interpreting ${designName}: ${error.message}` ) )
@@ -73,4 +70,11 @@ export const debug = ( designName, action ) => ( dispatch, getState ) =>
     design = designs.designReducer( design, UndoActionCreators.jumpToPast( targetPast ) )
   }
   dispatch( designs.loadedDesign( designName, design ) )
+}
+
+export const stepper = {
+  in: debug( Step.IN ),
+  over: debug( Step.OVER ),
+  out: debug( Step.OUT ),
+  done: debug( Step.DONE ),
 }

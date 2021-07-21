@@ -23,30 +23,30 @@ public class ParameterizedFieldTest {
         TEST_FIELDS.add( new RootTwoField() );
         TEST_FIELDS.add( new RootThreeField() );
         TEST_FIELDS.add( new HeptagonField() );
-        TEST_FIELDS.add( new SnubDodecField() );
-        TEST_FIELDS.add( new SqrtPhiField() );
+        TEST_FIELDS.add( new SnubDodecField( AlgebraicNumberImpl.FACTORY ) );
+        TEST_FIELDS.add( new SqrtPhiField( AlgebraicNumberImpl.FACTORY ) );
 //        TEST_FIELDS.add( new SnubDodecahedronField() );
 //        TEST_FIELDS.add( new SqrtField(2) );
 //        TEST_FIELDS.add( new SqrtField(3) );
 //        TEST_FIELDS.add( new SqrtField(6) );
-        TEST_FIELDS.add( new SnubCubeField() );
-        TEST_FIELDS.add( new PlasticNumberField() );
-        TEST_FIELDS.add( new PlasticPhiField() );
-        TEST_FIELDS.add( new SuperGoldenField() );
-        TEST_FIELDS.add( new EdPeggField() );
+        TEST_FIELDS.add( new SnubCubeField( AlgebraicNumberImpl.FACTORY ) );
+        TEST_FIELDS.add( new PlasticNumberField( AlgebraicNumberImpl.FACTORY ) );
+        TEST_FIELDS.add( new PlasticPhiField( AlgebraicNumberImpl.FACTORY ) );
+        TEST_FIELDS.add( new SuperGoldenField( AlgebraicNumberImpl.FACTORY ) );
+        TEST_FIELDS.add( new EdPeggField( AlgebraicNumberImpl.FACTORY ) );
         for(int nSides = PolygonField.MIN_SIDES; nSides <= PolygonFieldTest.MAX_SIDES; nSides++) {
-            TEST_FIELDS.add( new PolygonField(nSides) );
+            TEST_FIELDS.add( new PolygonField(nSides, AlgebraicNumberImpl.FACTORY ) );
         }
     }
     
     @Test
     public void testHaveSameInitialCoefficients() {
-        PolygonField polyField = new PolygonField(5); 
+        PolygonField polyField = new PolygonField(5, AlgebraicNumberImpl.FACTORY ); 
         PentagonField pentField = new PentagonField(); 
         assertTrue(AlgebraicFields.haveSameInitialCoefficients(polyField, PentagonField.FIELD_NAME));
         assertTrue(AlgebraicFields.haveSameInitialCoefficients(pentField, PolygonField.FIELD_PREFIX + "5"));
 
-        polyField = new PolygonField(7); 
+        polyField = new PolygonField(7, AlgebraicNumberImpl.FACTORY ); 
         HeptagonField heptField = new HeptagonField(); 
         assertTrue(AlgebraicFields.haveSameInitialCoefficients(polyField, HeptagonField.FIELD_NAME));
         assertTrue(AlgebraicFields.haveSameInitialCoefficients(heptField, PolygonField.FIELD_PREFIX + "7"));
@@ -103,8 +103,8 @@ public class ParameterizedFieldTest {
     public void printMultiplicationTensors() {
         System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
         for(AlgebraicField field : TEST_FIELDS) {
-            if(field instanceof ParameterizedField<?>) {
-                ParameterizedFields.printMultiplicationTensor( (ParameterizedField<?>)field );    
+            if(field instanceof ParameterizedField) {
+                ParameterizedFields.printMultiplicationTensor( (ParameterizedField)field );    
             }
         }
     }

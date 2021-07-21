@@ -48,16 +48,16 @@ export const download = ( url, xml ) =>
 export const UrlViewer = props =>
 {
   const { url, lighting } = props
-  const [ mesh, camera, shapeRenderer, xml ] = useVZomeUrl( url, props.camera )
+  const [ mesh, camera, shapeRenderer, text ] = useVZomeUrl( url, props.camera )
   return (
     <div style={ { display: 'flex', height: '100%' } }>
       <DesignCanvas {...{ lighting, camera }} >
         { mesh && <MeshGeometry shown={mesh.shown} selected={mesh.selected} shapeRenderer={shapeRenderer} /> }
       </DesignCanvas>
-      { xml &&
+      { text &&
         <Fab color="primary" size="small" aria-label="download"
             style={ { position: 'absolute' } }
-            onClick={() => download( url, xml ) } >
+            onClick={() => download( url, text ) } >
           <GetAppRoundedIcon fontSize='small'/>
         </Fab> }
     </div>

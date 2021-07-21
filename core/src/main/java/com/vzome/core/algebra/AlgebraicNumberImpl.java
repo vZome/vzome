@@ -31,6 +31,82 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
 
     private Integer hashCode;	// initialized on first use
 
+    public static AlgebraicNumberFactory FACTORY = new AlgebraicNumberFactory()
+    {
+        @Override
+        public BigRational zero()
+        {
+            return BigRationalImpl.ZERO;
+        }
+        
+        @Override
+        public BigRational one()
+        {
+            return BigRationalImpl.ONE;
+        }
+                
+        @Override
+        public BigRational createBigRational( long numerator, long denominator )
+        {
+            return new BigRationalImpl( numerator, denominator );
+        }
+
+        @Override
+        public AlgebraicNumber createAlgebraicNumber( AlgebraicField field, int[] numerators, int divisor )
+        {
+            BigRational[] brs = new BigRational[ numerators .length ];
+            for ( int j = 0; j < numerators.length; j++ ) {
+                brs[ j ] = new BigRationalImpl( numerators[ j ], divisor );
+            }
+            return new AlgebraicNumberImpl( field, brs );
+        }
+
+        @Override
+        public AlgebraicNumber createAlgebraicNumberFromTD( AlgebraicField field, int[] trailingDivisorForm )
+        {
+            int n = trailingDivisorForm .length;
+            int denominator = 1;
+            if ( n == field .getOrder() + 1 ) {
+                --n;
+                denominator = trailingDivisorForm[ n ];
+            }
+            BigRational[] brs = new BigRational[ n ];
+            for ( int j = 0; j < n; j++ ) {
+                brs[ j ] = new BigRationalImpl( trailingDivisorForm[ j ], denominator );
+            }
+            return new AlgebraicNumberImpl( field, brs );
+        }
+
+        @Override
+        public AlgebraicNumber createAlgebraicNumberFromPairs( AlgebraicField field, int[] pairs )
+        {
+            BigRational[] brs = new BigRational[ pairs .length / 2 ];
+            for ( int j = 0; j < brs.length; j++ ) {
+                brs[ j ] = new BigRationalImpl( pairs[ j*2 ], pairs[ j*2+1 ] );
+            }
+            return new AlgebraicNumberImpl( field, brs );
+        }
+
+        @Override
+        public AlgebraicNumber createRational( AlgebraicField field, long numerator, long denominator )
+        {
+            return new AlgebraicNumberImpl( field, new BigRationalImpl( numerator, denominator ) );
+        }
+
+        @Override
+        public boolean isPrime( int n )
+        {
+            final int certainty = 100; // same value as nextProbablePrime()
+            return BigInteger.valueOf(n).isProbablePrime(certainty);
+        }
+
+        @Override
+        public int nextPrime( int prime )
+        {
+            return BigInteger.valueOf( prime ).nextProbablePrime() .intValue();
+        }
+    };
+    
     /**
      * This non-varargs constructor does not call normalize(), 
      * so it can safely be called from within the base AlgebraicField constructor
@@ -44,26 +120,25 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         factors = new BigRational[ field .getOrder() ];
         factors[ 0 ] = units;
         for ( int i = 1; i < factors.length; i++ ) {
-            factors[ i ] = BigRational.ZERO;
+            factors[ i ] = BigRationalImpl.ZERO;
         }
         isZero = isZero(this.factors);
         isOne = isOne(this.factors);
     }
 
-    public AlgebraicNumberImpl( AlgebraicField field, BigRational[] factors )
+    public AlgebraicNumberImpl( AlgebraicField field, BigRational[] givenFactors )
     {
-        if ( factors.length > field .getOrder() )
-            throw new IllegalStateException( factors.length + " is too many factors for field \"" + field.getName() + "\"" );
+        if ( givenFactors.length > field .getOrder() )
+            throw new IllegalStateException( givenFactors.length + " is too many factors for field \"" + field.getName() + "\"" );
         this .field = (AbstractAlgebraicField) field;
-        BigRational[] newFactors = this .field .prepareAlgebraicNumberTerms(factors);
         this .factors = new BigRational[ field .getOrder() ];
-        for ( int i = 0; i < newFactors.length; i++ ) {
-            this .factors[ i ] = newFactors[ i ] == null 
-                    ? BigRational.ZERO
-                            : newFactors[ i ];
+        for ( int i = 0; i < givenFactors.length; i++ ) {
+            this .factors[ i ] = givenFactors[ i ] == null 
+                    ? BigRationalImpl.ZERO
+                            : givenFactors[ i ];
         }
-        for ( int i = newFactors.length; i < this.factors.length; i++ ) {
-            this .factors[ i ] = BigRational.ZERO;
+        for ( int i = givenFactors.length; i < this.factors.length; i++ ) {
+            this .factors[ i ] = BigRationalImpl.ZERO;
         }
         this .field .normalize(this.factors);
         isZero = isZero(this.factors);
@@ -78,8 +153,8 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
     {
         BigInteger lcm = BigInteger.ONE;
         for (BigRational factor : this.factors) {
-            if(! factor.isWhole() ) {
-                BigInteger aDivisor = factor.getDenominator();
+            if(! ((BigRationalImpl) factor).isWhole() ) {
+                BigInteger aDivisor = ((BigRationalImpl) factor).getDenominator();
                 lcm = lcm .multiply( aDivisor ) .abs() .divide( lcm .gcd( aDivisor ) );
             }
         }
@@ -187,7 +262,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @return this + n
      */
     @Override
-    public AlgebraicNumber plus( int n )
+    public AlgebraicNumber plusInt( int n )
     {
         return n == 0 ? this : this.plus(field.createRational(n));
     }
@@ -199,7 +274,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @return this + (num / den)
      */
     @Override
-    public AlgebraicNumber plus( int num, int den )
+    public AlgebraicNumber plusRational( int num, int den )
     {
         return this.plus(field.createRational(num, den));
     }
@@ -230,7 +305,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @return this * n
      */
     @Override
-    public AlgebraicNumber times( int n )
+    public AlgebraicNumber timesInt( int n )
     {
         switch(n) {
         case 0:
@@ -251,7 +326,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @return this * (num / den)
      */
     @Override
-    public AlgebraicNumber times( int num, int den )
+    public AlgebraicNumber timesRational( int num, int den )
     {
         return this.times(field.createRational(num, den));
     }
@@ -274,7 +349,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @return this - n
      */
     @Override
-    public AlgebraicNumber minus( int n )
+    public AlgebraicNumber minusInt( int n )
     {
         return n == 0 ? this : this.minus(field.createRational(n));
     }
@@ -286,7 +361,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @return this - (num / den)
      */
     @Override
-    public AlgebraicNumber minus( int num, int den )
+    public AlgebraicNumber minusRational( int num, int den )
     {
         return this.minus(field.createRational(num, den));
     }
@@ -311,7 +386,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @return this / divisor
      */
     @Override
-    public AlgebraicNumber dividedBy( int divisor )
+    public AlgebraicNumber dividedByInt( int divisor )
     {
         return divisor == 1 ? this : this.dividedBy(field.createRational(divisor));
     }
@@ -323,7 +398,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * @return this / (num / den)
      */
     @Override
-    public AlgebraicNumber dividedBy( int num, int den )
+    public AlgebraicNumber dividedByRational( int num, int den )
     {
         return this.dividedBy(field.createRational(num, den));
     }
@@ -468,7 +543,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         int[] result = new int[ order + 1 ];
         result[ order ] = divisor .intValueExact();
         for ( int i = 0; i < order; i++ ) {
-            result[ i ] = this .factors[ i ] .times( new BigRational( divisor, BigInteger.ONE ) ) .getNumerator() .intValueExact();
+            result[ i ] = ((BigRationalImpl) this .factors[ i ] .times( new BigRationalImpl( divisor, BigInteger.ONE ) )) .getNumerator() .intValueExact();
         }
         return result;
     }
