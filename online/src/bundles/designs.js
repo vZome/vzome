@@ -16,7 +16,7 @@ export const designReducer = combineReducers( {
   name: ( state="", action ) => state, // name cannot be changed (YET), so a constant reducer is fine
   text: ( state="", action ) => state, // text cannot be changed (YET), so a constant reducer is fine
   success: ( state="", action ) => state, // success cannot be changed, so a constant reducer is fine
-  fieldName: ( state="", action ) => state, // fieldName cannot be changed, so a constant reducer is fine
+  field: ( state="", action ) => state, // field cannot be changed, so a constant reducer is fine
   shaperName: ( state="", action ) => state, // shaperName cannot be changed (YET!), so a constant reducer is fine
 })
 
@@ -28,9 +28,9 @@ export const initializeDesign = ( field, name, shaperName, text ) => ({
   },
   // TODO: initialize dbugger?
   success: true,
-  fieldName: field && field.name,
   camera: cameraDefault,
   shaperName,
+  field,
   name,
   text,
 })
@@ -80,11 +80,11 @@ export const selectCamera = ( state, id ) => selectDesign( state, id ).camera
 
 export const selectSource = ( state, id ) => selectDebugger( state, id ).source
 
-export const selectField = ( state, id ) => state.fields[ selectDesign( state, id ).fieldName ]
+export const selectField = ( state, id ) => selectDesign( state, id ).field
 
 export const selectShapeRenderer = ( state, id ) =>
 {
-  const shaperName = selectDesign( state, id ).shaperName || "solid connectors"
+  const shaperName = selectDesign( state, id ).shaperName || "default"
   return state.shapeRenderers[ shaperName ]
 }
 
@@ -227,11 +227,11 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
   }
 }
 
-export const serialize = ( { camera, fieldName, shaperName, dbugger } ) =>
+export const serialize = ( { camera, field, shaperName, dbugger } ) =>
 {
   const serializeEdit = dbugr => dbugr.nextEdit && dbugr.nextEdit.serialize()
   let edits = dbugger.past.map( serializeEdit )
   edits.push( { ...serializeEdit( dbugger.present ), targetEdit: true } )
   edits = edits.concat( dbugger.future.map( serializeEdit ) )
-  return JSON.stringify( { edits, camera, fieldName, shaperName }, null, '  ' )
+  return JSON.stringify( { edits, camera, field: field.name, shaperName }, null, '  ' )
 }

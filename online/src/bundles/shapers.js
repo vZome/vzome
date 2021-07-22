@@ -1,7 +1,4 @@
 
-import { getDefaultShaper } from '@vzome/react-vzome'
-
-
 export const shaperDefined = ( name, shapeRenderer ) => ({ type: 'SHAPER_DEFINED', payload: { name, shapeRenderer } } )
 
 export const reducer = ( state = {}, action ) =>
@@ -20,10 +17,3 @@ export const reducer = ( state = {}, action ) =>
       return state
   }
 }
-
-export const init = async ( window, store ) =>
-{
-  const shapeRenderer = await getDefaultShaper()
-  store.dispatch( shaperDefined( shapeRenderer.name, shapeRenderer ) )
-}
-

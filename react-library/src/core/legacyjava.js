@@ -472,12 +472,10 @@ export const init = async () =>
   for ( const name of Object.keys( vzomePkg.core.edits ) )
     commands[ name ] = legacyCommandFactory( documentFactory, name )
 
-  // Prepare the orbitSource for resolveShapes
+  // Prepare the gridPoints
   const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, editContext, colors, true )
-  orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
-  const shapeRenderer = createShapeRenderer( orbitSource )
-
+  // orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
   const blue = [ [0n,0n,1n], [0n,0n,1n], [1n,0n,1n] ]
   const yellow = [ [0n,0n,1n], [1n,0n,1n], [1n,1n,1n] ]
   const red = [ [1n,0n,1n], [0n,0n,1n], [0n,1n,1n] ]
@@ -493,7 +491,7 @@ export const init = async () =>
     }
   ) )
 
-  return { parser, shapeRenderer, commands, gridPoints }
+  return { parser, commands, gridPoints }
 }
 
 export const coreState = init()
@@ -501,7 +499,7 @@ export const coreState = init()
 const realizeShape = ( shape ) =>
 {
   const vertices = shape.getVertexList().toArray().map( av => {
-    const { x, y, z } = av.toRealVector() // embedding.embedInR3( av )
+    const { x, y, z } = av.toRealVector()  // this is too early to do embedding, which is done later, globally
     return { x, y, z }
   })
   const faces = shape.getTriangleFaces().toArray()

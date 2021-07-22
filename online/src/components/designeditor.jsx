@@ -1,11 +1,11 @@
 
-import React from 'react'
+import React, { useState } from 'react'
 import { connect } from 'react-redux'
 
 import { selectionToggled } from '../bundles/mesh.js'
 import * as planes from '../bundles/planes.js'
 import * as designs from '../bundles/designs.js'
-import { DesignCanvas, BuildPlane, MeshGeometry } from '@vzome/react-vzome'
+import { DesignCanvas, BuildPlane, MeshGeometry, getDefaultRenderer } from '@vzome/react-vzome'
 
 const select = ( state ) =>
 {
@@ -13,6 +13,7 @@ const select = ( state ) =>
   const mesh = state.designs && designs.selectMesh( state )
   const camera = ( state.designs && designs.selectCamera( state ) ) || state.camera
   const shapeRenderer = state.designs && designs.selectShapeRenderer( state )
+  const field = state.designs && designs.selectField( state )
   // const shown = mesh && new Map( mesh.shown )
   // if ( workingPlane && workingPlane.enabled && workingPlane.endPt ) {
   //   const { position, endPt, buildingStruts } = workingPlane
@@ -30,6 +31,7 @@ const select = ( state ) =>
     lighting,
     shapeRenderer,
     mesh,
+    field,
     clickable: !!state.designs,
   }
 }
@@ -57,7 +59,15 @@ const boundEventActions = {
 const DesignEditor = ( props ) =>
 {
   const { startGridHover, stopGridHover, workingPlane } = props
-  const { mesh, shapeRenderer } = props
+  const [ defaultRenderers ] = useState( {} )
+  let { mesh, shapeRenderer, field } = props
+  if ( !shapeRenderer ) {
+    shapeRenderer = defaultRenderers[ field.name ]
+  }
+  if ( !shapeRenderer ) {
+    shapeRenderer = getDefaultRenderer( field )
+    defaultRenderers[ field.name ] = shapeRenderer
+  }
   // const { selectionToggler, shapeClick, bkgdClick, startBallHover, stopBallHover, clickable } = props
   // const focus = workingPlane && workingPlane.enabled && workingPlane.buildingStruts && workingPlane.position
   // const atFocus = id => focus && ( id === JSON.stringify(focus) )
