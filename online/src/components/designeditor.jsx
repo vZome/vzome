@@ -12,7 +12,7 @@ const select = ( state ) =>
   const { lighting } = state
   const mesh = state.designs && designs.selectMesh( state )
   const camera = ( state.designs && designs.selectCamera( state ) ) || state.camera
-  const shapeRenderer = state.designs && designs.selectShapeRenderer( state )
+  const renderer = state.designs && designs.selectRenderer( state )
   const field = state.designs && designs.selectField( state )
   // const shown = mesh && new Map( mesh.shown )
   // if ( workingPlane && workingPlane.enabled && workingPlane.endPt ) {
@@ -29,7 +29,7 @@ const select = ( state ) =>
   return {
     camera,
     lighting,
-    shapeRenderer,
+    renderer,
     mesh,
     field,
     clickable: !!state.designs,
@@ -60,13 +60,13 @@ const DesignEditor = ( props ) =>
 {
   const { startGridHover, stopGridHover, workingPlane } = props
   const [ defaultRenderers ] = useState( {} )
-  let { mesh, shapeRenderer, field } = props
-  if ( !shapeRenderer ) {
-    shapeRenderer = defaultRenderers[ field.name ]
+  let { mesh, renderer, field } = props
+  if ( !renderer ) {
+    renderer = defaultRenderers[ field.name ]
   }
-  if ( !shapeRenderer ) {
-    shapeRenderer = getDefaultRenderer( field )
-    defaultRenderers[ field.name ] = shapeRenderer
+  if ( !renderer ) {
+    renderer = getDefaultRenderer( field )
+    defaultRenderers[ field.name ] = renderer
   }
   // const { selectionToggler, shapeClick, bkgdClick, startBallHover, stopBallHover, clickable } = props
   // const focus = workingPlane && workingPlane.enabled && workingPlane.buildingStruts && workingPlane.position
@@ -95,7 +95,7 @@ const DesignEditor = ( props ) =>
 
   return (
     <DesignCanvas {...props} >
-      { mesh && <MeshGeometry {...{ shown: mesh.shown, selected: mesh.selected, shapeRenderer }} /> }
+      { mesh && <MeshGeometry {...{ shown: mesh.shown, selected: mesh.selected, renderer }} /> }
 
       { workingPlane && workingPlane.enabled &&
           <BuildPlane config={workingPlane} {...{ startGridHover, stopGridHover }} /> }

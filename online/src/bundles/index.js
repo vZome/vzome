@@ -8,7 +8,7 @@ import * as progress from './progress.js'
 import * as commands from '../commands/index.js'
 import * as workingPlane from './planes.js'
 import * as designs from './designs.js'
-import * as shapeRenderers from './shapers.js'
+import * as renderers from './renderers.js'
 
 const createBundleStore = ( profile, middleware ) =>
 {
@@ -16,11 +16,11 @@ const createBundleStore = ( profile, middleware ) =>
   switch ( profile ) {
 
     case "plane":
-      bundles = { ...bundles, designs, shapeRenderers, workingPlane }
+      bundles = { ...bundles, designs, renderers, workingPlane }
       break;
 
     default:
-      bundles = { ...bundles, designs, shapeRenderers, commands, alerts, progress }
+      bundles = { ...bundles, designs, renderers, commands, alerts, progress }
       break;
   }
   const names = Object.keys( bundles )

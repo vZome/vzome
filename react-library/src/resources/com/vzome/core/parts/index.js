@@ -22,6 +22,10 @@ import snubCube from './snubCube/index.js'
 import snubCubeDisdyakisDodec from './snubCube/disdyakisDodec/index.js'
 import snubCubeDual from './snubCube/dual/index.js'
 
+import defaultNew from './default.json'
+
+export { defaultNew }
+
 const shapes = {
   'default': defaultShapes,  // default is a keyword in Javascript
   dodecagon3d,

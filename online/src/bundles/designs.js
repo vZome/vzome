@@ -6,7 +6,7 @@ import { goldenField, parse } from '@vzome/react-vzome'
 import * as mesh from './mesh'
 import { reducer as cameraReducer, initialState as cameraDefault, cameraDefined } from './camera.js'
 import * as dbugger from './dbugger.js'
-import * as shapers from './shapers.js'
+import * as renderers from './renderers.js'
 import { showAlert } from './alerts.js'
 
 export const designReducer = combineReducers( {
@@ -17,10 +17,10 @@ export const designReducer = combineReducers( {
   text: ( state="", action ) => state, // text cannot be changed (YET), so a constant reducer is fine
   success: ( state="", action ) => state, // success cannot be changed, so a constant reducer is fine
   field: ( state="", action ) => state, // field cannot be changed, so a constant reducer is fine
-  shaperName: ( state="", action ) => state, // shaperName cannot be changed (YET!), so a constant reducer is fine
+  rendererName: ( state="", action ) => state, // rendererName cannot be changed (YET!), so a constant reducer is fine
 })
 
-export const initializeDesign = ( field, name, shaperName, text ) => ({
+export const initializeDesign = ( field, name, rendererName, text ) => ({
   mesh: {
     past: [],
     present: field && mesh.justOrigin( field ),
@@ -29,7 +29,7 @@ export const initializeDesign = ( field, name, shaperName, text ) => ({
   // TODO: initialize dbugger?
   success: true,
   camera: cameraDefault,
-  shaperName,
+  rendererName,
   field,
   name,
   text,
@@ -82,10 +82,10 @@ export const selectSource = ( state, id ) => selectDebugger( state, id ).source
 
 export const selectField = ( state, id ) => selectDesign( state, id ).field
 
-export const selectShapeRenderer = ( state, id ) =>
+export const selectRenderer = ( state, id ) =>
 {
-  const shaperName = selectDesign( state, id ).shaperName || "default"
-  return state.shapeRenderers[ shaperName ]
+  const rendererName = selectDesign( state, id ).rendererName || "default"
+  return state.renderers[ rendererName ]
 }
 
 export const reducer = ( state = addNewModel( emptyState, goldenField ), action ) =>
@@ -182,7 +182,7 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
       dispatch( showAlert( message + ' Use the download button to save this file, then try opening it with desktop vZome.' ) )
     }
 
-    const { firstEdit, camera, field, targetEdit, shapeRenderer } = await parse( text ) || {}
+    const { firstEdit, camera, field, targetEdit, renderer } = await parse( text ) || {}
 
     if ( field.unknown ) {
       failure( `Field "${field.name}" is not implemented.` )
@@ -198,15 +198,15 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
     // We don't want to dispatch all the edits, which can trigger tons of
     //  overhead and re-rendering.  Instead, we'll build up a design locally
     //  by calling the designReducer manually.
-    let design = initializeDesign( field, name, shapeRenderer.name, text )
+    let design = initializeDesign( field, name, renderer.name, text )
     // Each call to designReducer may create an element in the history
     //  (if it has any changes to the mesh),
     //  so we want to be judicious in when we do it.
     // Each call to dispatch, on the other hand, triggers rendering, so we want to be even
     //  more careful about that.
     
-    // TODO: skip this dispatch if we already have a shaper for shapesName, in getState().shapers
-    dispatch( shapers.shaperDefined( shapeRenderer.name, shapeRenderer ) ) // outside the design
+    // TODO: skip this dispatch if we already have a renderer for shapesName, in getState().renderers
+    dispatch( renderers.rendererDefined( renderer.name, renderer ) ) // outside the design
 
     design = designReducer( design, cameraDefined( camera ) )
     design = designReducer( design, dbugger.sourceLoaded( firstEdit, targetEdit ) ) // recorded in history
@@ -227,11 +227,11 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
   }
 }
 
-export const serialize = ( { camera, field, shaperName, dbugger } ) =>
+export const serialize = ( { camera, field, rendererName, dbugger } ) =>
 {
   const serializeEdit = dbugr => dbugr.nextEdit && dbugr.nextEdit.serialize()
   let edits = dbugger.past.map( serializeEdit )
   edits.push( { ...serializeEdit( dbugger.present ), targetEdit: true } )
   edits = edits.concat( dbugger.future.map( serializeEdit ) )
-  return JSON.stringify( { edits, camera, field: field.name, shaperName }, null, '  ' )
+  return JSON.stringify( { edits, camera, field: field.name, rendererName }, null, '  ' )
 }

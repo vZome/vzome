@@ -56,5 +56,5 @@ public class PartsJsonConverter
     //  Fortunately, the mechanism uses "isAssignableFrom", so you can have
     //  a view class that extends others or implements interfaces.
     
-    private static class View implements AlgebraicNumber.Views.Rational, Polyhedron.Views.Polygons {}
+    private static class View implements AlgebraicNumber.Views.Real, Polyhedron.Views.Triangles {}
 }
