@@ -29,6 +29,11 @@ public class FastDefaultStrutGeometry implements StrutGeometry
     
     private final Axis mAxis;
     
+    public boolean getFast()
+    {
+        return true;
+    }
+    
     public FastDefaultStrutGeometry( Direction dir )
     {
         mAxis = dir .getAxis( Symmetry.PLUS, 0 );

@@ -304,7 +304,7 @@ export const init = async () =>
     performAndRecord: edit => edit.perform()
   }
   
-  const createShapeRenderer = orbitSource => ({
+  const createRenderer = orbitSource => ({
     name: orbitSource.getShapes().getName(),
     shaper: shaperFactory( vzomePkg, orbitSource ),
     embedding: orbitSource.getEmbedding(),
@@ -384,7 +384,7 @@ export const init = async () =>
     const toolsXml = xml && xml.getChildElement( "Tools" )
     toolsXml && toolsModel.loadFromXml( toolsXml )
 
-    const shapeRenderer = createShapeRenderer( orbitSource )
+    const renderer = createRenderer( orbitSource )
 
     const parseAndPerformEdit = ( xmlElement, mesh ) =>
     {
@@ -464,7 +464,7 @@ export const init = async () =>
       edit.perform()
     }
 
-    return { shapeRenderer, createEdit, configureAndPerformEdit, field }
+    return { renderer, createEdit, configureAndPerformEdit, field }
   }
 
   // Discover all the legacy edit classes and register as commands
@@ -472,12 +472,10 @@ export const init = async () =>
   for ( const name of Object.keys( vzomePkg.core.edits ) )
     commands[ name ] = legacyCommandFactory( documentFactory, name )
 
-  // Prepare the orbitSource for resolveShapes
+  // Prepare the gridPoints
   const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, editContext, colors, true )
-  orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
-  const shapeRenderer = createShapeRenderer( orbitSource )
-
+  // orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
   const blue = [ [0n,0n,1n], [0n,0n,1n], [1n,0n,1n] ]
   const yellow = [ [0n,0n,1n], [1n,0n,1n], [1n,1n,1n] ]
   const red = [ [1n,0n,1n], [0n,0n,1n], [0n,1n,1n] ]
@@ -493,7 +491,7 @@ export const init = async () =>
     }
   ) )
 
-  return { parser, shapeRenderer, commands, gridPoints }
+  return { parser, commands, gridPoints }
 }
 
 export const coreState = init()
@@ -501,7 +499,7 @@ export const coreState = init()
 const realizeShape = ( shape ) =>
 {
   const vertices = shape.getVertexList().toArray().map( av => {
-    const { x, y, z } = av.toRealVector() // embedding.embedInR3( av )
+    const { x, y, z } = av.toRealVector()  // this is too early to do embedding, which is done later, globally
     return { x, y, z }
   })
   const faces = shape.getTriangleFaces().toArray()
@@ -603,7 +601,7 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
     const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
     const fieldName = vZomeRoot.getAttribute( "field" )
 
-    const { shapeRenderer, createEdit, field } = createDocument( fieldName, namespace, vZomeRoot )
+    const { renderer, createEdit, field } = createDocument( fieldName, namespace, vZomeRoot )
 
     const viewing = vZomeRoot.getChildElement( "Viewing" )
     const camera = viewing && parseViewXml( viewing )
@@ -612,7 +610,7 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
     const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
     const firstEdit = createEdit && createEdit( edits.firstElementChild )
 
-    return { firstEdit, camera, field, targetEdit, shapeRenderer }
+    return { firstEdit, camera, field, targetEdit, renderer }
   } catch (error) {
     console.log( `%%%%%%%%%%%%%%%%%%% legacyjava.js parser failed: ${error}` )
     return null

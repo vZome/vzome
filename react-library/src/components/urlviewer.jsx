@@ -7,9 +7,9 @@ import { useInstanceShaper, useVZomeUrl } from './hooks.js'
 import Fab from '@material-ui/core/Fab'
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded'
 
-export const MeshGeometry = ({ shown, selected, shapeRenderer, highlightBall, handleClick, onHover }) =>
+export const MeshGeometry = ({ shown, selected, renderer, highlightBall, handleClick, onHover }) =>
 {
-  const { shaper, embedding } = shapeRenderer || {}
+  const { shaper, embedding } = renderer || {}
   const { shapes, instances } = useInstanceShaper( shown, selected, shaper )
   const ref = useRef()
   useEffect( () => {
@@ -48,11 +48,11 @@ export const download = ( url, xml ) =>
 export const UrlViewer = props =>
 {
   const { url, lighting } = props
-  const [ mesh, camera, shapeRenderer, text ] = useVZomeUrl( url, props.camera )
+  const [ mesh, camera, renderer, text ] = useVZomeUrl( url, props.camera )
   return (
     <div style={ { display: 'flex', height: '100%' } }>
       <DesignCanvas {...{ lighting, camera }} >
-        { mesh && <MeshGeometry shown={mesh.shown} selected={mesh.selected} shapeRenderer={shapeRenderer} /> }
+        { mesh && <MeshGeometry shown={mesh.shown} selected={mesh.selected} renderer={renderer} /> }
       </DesignCanvas>
       { text &&
         <Fab color="primary" size="small" aria-label="download"

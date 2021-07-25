@@ -1,18 +1,19 @@
 
-import React from 'react'
+import React, { useState } from 'react'
 import { connect } from 'react-redux'
 
 import { selectionToggled } from '../bundles/mesh.js'
 import * as planes from '../bundles/planes.js'
 import * as designs from '../bundles/designs.js'
-import { DesignCanvas, BuildPlane, MeshGeometry } from '@vzome/react-vzome'
+import { DesignCanvas, BuildPlane, MeshGeometry, getDefaultRenderer } from '@vzome/react-vzome'
 
 const select = ( state ) =>
 {
   const { lighting } = state
   const mesh = state.designs && designs.selectMesh( state )
   const camera = ( state.designs && designs.selectCamera( state ) ) || state.camera
-  const shapeRenderer = state.designs && designs.selectShapeRenderer( state )
+  const renderer = state.designs && designs.selectRenderer( state )
+  const field = state.designs && designs.selectField( state )
   // const shown = mesh && new Map( mesh.shown )
   // if ( workingPlane && workingPlane.enabled && workingPlane.endPt ) {
   //   const { position, endPt, buildingStruts } = workingPlane
@@ -28,8 +29,9 @@ const select = ( state ) =>
   return {
     camera,
     lighting,
-    shapeRenderer,
+    renderer,
     mesh,
+    field,
     clickable: !!state.designs,
   }
 }
@@ -57,7 +59,15 @@ const boundEventActions = {
 const DesignEditor = ( props ) =>
 {
   const { startGridHover, stopGridHover, workingPlane } = props
-  const { mesh, shapeRenderer } = props
+  const [ defaultRenderers ] = useState( {} )
+  let { mesh, renderer, field } = props
+  if ( !renderer ) {
+    renderer = defaultRenderers[ field.name ]
+  }
+  if ( !renderer ) {
+    renderer = getDefaultRenderer( field )
+    defaultRenderers[ field.name ] = renderer
+  }
   // const { selectionToggler, shapeClick, bkgdClick, startBallHover, stopBallHover, clickable } = props
   // const focus = workingPlane && workingPlane.enabled && workingPlane.buildingStruts && workingPlane.position
   // const atFocus = id => focus && ( id === JSON.stringify(focus) )
@@ -85,7 +95,7 @@ const DesignEditor = ( props ) =>
 
   return (
     <DesignCanvas {...props} >
-      { mesh && <MeshGeometry {...{ shown: mesh.shown, selected: mesh.selected, shapeRenderer }} /> }
+      { mesh && <MeshGeometry {...{ shown: mesh.shown, selected: mesh.selected, renderer }} /> }
 
       { workingPlane && workingPlane.enabled &&
           <BuildPlane config={workingPlane} {...{ startGridHover, stopGridHover }} /> }
