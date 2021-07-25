@@ -48,6 +48,8 @@ public class ShapesJsonExporter extends Exporter3d
         generator .setCodec( mapper .getObjectMapper() );
 
         generator .writeStartObject();
+        generator .writeObjectField( "lights", this .mLights );
+        generator .writeObjectField( "camera", this .mScene );
         generator .writeObjectField( "shapes", shapes );
         generator .writeObjectField( "instances", instances );
         generator .writeEndObject();

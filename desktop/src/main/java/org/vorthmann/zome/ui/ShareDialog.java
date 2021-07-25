@@ -82,7 +82,7 @@ public class ShareDialog extends EscapeDialog
     private transient String gitUrl, error; // marks success or failure state
     
     // Inputs
-    private transient String fileName, png, xml;
+    private transient String fileName, png, xml, shapesJson;
     
     // Outputs
     private transient String embedUrl;
@@ -274,11 +274,12 @@ public class ShareDialog extends EscapeDialog
         }
     }
 
-    public void startUpload( String fileName, String xml, String png )
+    public void startUpload( String fileName, String xml, String png, String shapesJson )
     {
         this.fileName = fileName;
         this.xml = xml;
         this.png = png;
+        this.shapesJson = shapesJson;
         
         // Initialize the transient, file-specific state
         this.error = null;
@@ -397,6 +398,9 @@ public class ShareDialog extends EscapeDialog
             
             String imageFileName = designName + ".png";
             this .addFile( entries, path + imageFileName, png, Blob.ENCODING_BASE64 );
+
+            String shapesFileName = designName + ".shapes.json";
+            this .addFile( entries, path + shapesFileName, shapesJson, Blob.ENCODING_UTF8 );
 
             String baseUrl = "https://raw.githubusercontent.com/" + username + "/" + REPO_NAME + "/" + BRANCH_NAME + "/" + timestampPath;
             String rawUrl = baseUrl + encodedName + "/" + this .fileName;
