@@ -8,16 +8,24 @@ import { reducer as cameraReducer, initialState as cameraDefault, cameraDefined 
 import * as dbugger from './dbugger.js'
 import * as renderers from './renderers.js'
 import { showAlert } from './alerts.js'
+import { fetchUrlText } from '../bundles/files.js'
+import { convertFOV } from './camera.js'
+
+const identityReducer = ( state="", action ) => state
 
 export const designReducer = combineReducers( {
   mesh: undoable( mesh.reducer ),
   dbugger: undoable( dbugger.reducer ),
   camera: cameraReducer,
-  name: ( state="", action ) => state, // name cannot be changed (YET), so a constant reducer is fine
-  text: ( state="", action ) => state, // text cannot be changed (YET), so a constant reducer is fine
-  success: ( state="", action ) => state, // success cannot be changed, so a constant reducer is fine
-  field: ( state="", action ) => state, // field cannot be changed, so a constant reducer is fine
-  rendererName: ( state="", action ) => state, // rendererName cannot be changed (YET!), so a constant reducer is fine
+  // These cannot be changed (YET), so a constant reducer is fine
+  lighting: identityReducer, 
+  embedding: identityReducer, 
+  name: identityReducer,
+  text: identityReducer,
+  success: identityReducer,
+  field: identityReducer,
+  rendererName: identityReducer,
+  preview: identityReducer,
 })
 
 export const initializeDesign = ( field, name, rendererName, text ) => ({
@@ -69,6 +77,8 @@ export const selectDesignName = ( state, id ) => selectDesign( state, id ).name
 
 export const selectText = ( state, id ) => selectDesign( state, id ).text
 
+export const selectPreview = ( state, id ) => selectDesign( state, id ).preview
+
 export const selectMesh = ( state, id ) => selectDesign( state, id ).mesh.present
 
 export const selectDebugger = ( state, id ) => {
@@ -77,6 +87,10 @@ export const selectDebugger = ( state, id ) => {
 }
 
 export const selectCamera = ( state, id ) => selectDesign( state, id ).camera
+
+export const selectLighting = ( state, id ) => selectDesign( state, id ).lighting
+
+export const selectEmbedding = ( state, id ) => selectDesign( state, id ).embedding
 
 export const selectSource = ( state, id ) => selectDebugger( state, id ).source
 
@@ -162,9 +176,58 @@ export const reducer = ( state = addNewModel( emptyState, goldenField ), action 
   }
 }
 
+const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
+
+const q2m = ({ x, y, z, w }) =>
+{
+  const q = [ w, x, y, z ]
+  const q01 = q[0]*q[1], q02 = q[0]*q[2], q03 = q[0]*q[3]
+  const q11 = q[1]*q[1], q12 = q[1]*q[2], q13 = q[1]*q[3]
+  const q21 = q12, q22 = q[2]*q[2], q23 = q[2]*q[3]
+  const q31 = q13, q32 = q23, q33 = q[3]*q[3]
+  
+  return [1-2*(q22+q33), 2*(q12-q03), 2*(q13+q02), 0,
+          2*(q21+q03), 1-2*(q33+q11), 2*(q23-q01), 0,
+          2*(q31-q02), 2*(q32+q01), 1-2*(q11+q22), 0,
+          0, 0, 0, 1 ]
+};
+
+const convertPreview = preview =>
+{
+  let i = 0
+  let { lights, camera, shapes, instances, embedding } = preview
+  instances = instances.map( ({ position, rotationMatrix=IDENTITY_MATRIX, color, shape }) => {
+    const id = "id_" + i++
+    const { x, y, z } = position
+    return { id, position: [ x, y, z ], rotation: rotationMatrix, color, shapeId: shape }
+  })
+  const dlights = lights.directionalLights.map( ({ direction, color }) => {
+    const { x, y, z } = direction
+    return { direction: [ x, y, z ], color }
+  })
+  const { lookAtPoint, upDirection, lookDirection, viewDistance, fieldOfView, near, far } = camera
+  const lookAt = [ ...Object.values( lookAtPoint ) ]
+  const up = [ ...Object.values( upDirection ) ]
+  const lookDir = [ ...Object.values( lookDirection ) ]
+  camera = {
+    near, far, up, lookAt,
+    fov: convertFOV( fieldOfView ),
+    position: lookAt.map( (e,i) => e - viewDistance * lookDir[ i ] ),
+  }
+  return { lighting: { ...lights, directionalLights: dlights }, camera, shapes, instances, embedding }
+}
+
 export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =>
 {
   try {
+    const name = decodeURI( url.split( '\\' ).pop().split( '/' ).pop() )
+    if ( ! name.endsWith( ".vZome" ) ) {
+      const message = `Unrecognized file name: ${url}`
+      console.log( message )
+      dispatch( showAlert( message ) )
+      return
+    }
+
     const text = await textPromise
     if ( !text ) {
       const message = `Unable to retrieve XML from ${url}`
@@ -173,7 +236,19 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
       return
     }
 
-    const name = decodeURI( url.split( '\\' ).pop().split( '/' ).pop() )
+    const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" )
+    const previewText = await fetchUrlText( previewUrl )
+    if ( previewText ) {
+      let design = initializeDesign( null, name, null, text )
+      design.preview = convertPreview( JSON.parse( previewText ) )
+      design.camera = design.preview.camera
+      design.lighting = design.preview.lighting
+      design.embedding = design.preview.embedding
+      dispatch( loadingDesign( name, design ) )
+      dispatch( loadedDesign( name, design ) )
+      return
+    }
+
     const failure = message => {
       console.log( message )
       let design = initializeDesign( null, name, null, text )
@@ -182,7 +257,7 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
       dispatch( showAlert( message + ' Use the download button to save this file, then try opening it with desktop vZome.' ) )
     }
 
-    const { firstEdit, camera, field, targetEdit, renderer } = await parse( text ) || {}
+    const { firstEdit, camera, field, targetEdit, renderer, lighting } = await parse( text ) || {}
 
     if ( field.unknown ) {
       failure( `Field "${field.name}" is not implemented.` )
@@ -199,6 +274,8 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
     //  overhead and re-rendering.  Instead, we'll build up a design locally
     //  by calling the designReducer manually.
     let design = initializeDesign( field, name, renderer.name, text )
+    design.lighting = lighting
+    design.embedding = renderer.embedding
     // Each call to designReducer may create an element in the history
     //  (if it has any changes to the mesh),
     //  so we want to be judicious in when we do it.

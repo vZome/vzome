@@ -109,6 +109,9 @@ public class JsonMapper
 
                 ObjectNode quaternion = getQuaternionNode( rm .getOrientation() );
                 node .set( "rotation", quaternion );
+                
+                ArrayNode matrix = getMatrix( rm .getOrientation() );
+                node .set( "rotationMatrix", matrix );
 
                 return node;
             }
@@ -160,7 +163,10 @@ public class JsonMapper
     
     private ObjectNode getLocation( RenderedManifestation rm )
     {
-        return getVectorNode( rm .getLocation() );
+        AlgebraicVector location = rm .getLocationAV();
+        if ( location == null )
+            location = rm .getShape() .getField() .origin( 3 );
+        return getVectorNode( location .toRealVector() ); // DON'T embed!
     }
 
     @Deprecated
@@ -178,6 +184,22 @@ public class JsonMapper
             e .printStackTrace();
             return objectMapper .createObjectNode();
         }
+    }
+
+    public ArrayNode getMatrix( AlgebraicMatrix orientation )
+    {
+        ArrayNode arrayNode = this .objectMapper .createArrayNode();
+        for ( int i = 0; i < 3; i++) {
+            for ( int j = 0; j < 3; j++) {
+                arrayNode .add( (float) orientation .getElement( i, j ) .evaluate() );
+            }
+            arrayNode .add( 0f );
+        }
+        arrayNode .add( 0f );
+        arrayNode .add( 0f );
+        arrayNode .add( 0f );
+        arrayNode .add( 1f );
+        return arrayNode;
     }
 
     public ObjectNode getQuaternionNode( AlgebraicMatrix orientation )
