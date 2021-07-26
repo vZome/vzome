@@ -1,5 +1,6 @@
 import { BufferGeometry, Vector3, Float32BufferAttribute, Matrix4 } from 'three'
 import React, { useMemo, useRef, useLayoutEffect } from 'react'
+import { useInstanceSorter, useEmbedding } from './hooks.js'
 
 const createGeometry = ( { vertices, faces } ) =>
 {
@@ -27,6 +28,7 @@ const createGeometry = ( { vertices, faces } ) =>
 
 const Instance = ( { id, vectors, position, rotation, geometry, color, selected, highlightBall=()=>{}, onClick, onHover } ) =>
 {
+  // debugger
   const ref = useRef()
   useLayoutEffect( () => {
     const m = new Matrix4()
@@ -63,6 +65,7 @@ const Instance = ( { id, vectors, position, rotation, geometry, color, selected,
 
 const InstancedShape = ( { instances, shape, onClick, onHover, highlightBall } ) =>
 {
+  // debugger
   const geometry = useMemo( () => createGeometry( shape ), [ shape ] )
   return (
     <>
@@ -83,17 +86,13 @@ export const SortedGeometry = ( { sortedInstances, highlightBall, handleClick, o
   )
 }
 
-export const ShapedGeometry = ( { shapes, instances, highlightBall, handleClick, onHover } ) =>
+export const ShapedGeometry = ( { shapes, instances, embedding, highlightBall, handleClick, onHover } ) =>
 {
   const sortedInstances = useInstanceSorter( shapes, instances )
-  return (
-    <SortedGeometry {...{ sortedInstances, highlightBall, handleClick, onHover }} />
-  )
-}
-
-const useInstanceSorter = ( shapes, instances ) =>
-{
-  const filterInstances = ( shape, instances ) => instances.filter( instance => instance.shapeId === shape.id )
-  const sortByShape = () => Object.values( shapes ).map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
-  return useMemo( sortByShape, [ shapes, instances ] )
+  const ref = useEmbedding( embedding )
+  return ( sortedInstances &&
+    <group matrixAutoUpdate={false} ref={ref}>
+      <SortedGeometry {...{ sortedInstances, highlightBall, handleClick, onHover }} />
+    </group>
+  ) || null
 }

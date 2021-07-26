@@ -91,7 +91,7 @@ public class JsonMapper
             return null; // a known shape, returned earlier
     }
     
-    public ObjectNode getObjectNode( RenderedManifestation rm )
+    public ObjectNode getObjectNode( RenderedManifestation rm, boolean sharedOrientations )
     {
         try {
             Manifestation man = rm .getManifestation();
@@ -107,8 +107,12 @@ public class JsonMapper
 
                 node .set( "position", this .getLocation( rm ) );
 
-                ObjectNode quaternion = getQuaternionNode( rm .getOrientation() );
-                node .set( "rotation", quaternion );
+                if ( sharedOrientations )
+                    node .put( "orientation", rm .getStrutZone() );
+                else {
+                    ObjectNode quaternion = getQuaternionNode( rm .getOrientation() );
+                    node .set( "rotation", quaternion );
+                }
 
                 return node;
             }
@@ -160,7 +164,10 @@ public class JsonMapper
     
     private ObjectNode getLocation( RenderedManifestation rm )
     {
-        return getVectorNode( rm .getLocation() );
+        AlgebraicVector location = rm .getLocationAV();
+        if ( location == null )
+            location = rm .getShape() .getField() .origin( 3 );
+        return getVectorNode( location .toRealVector() ); // DON'T embed!
     }
 
     @Deprecated
@@ -178,6 +185,22 @@ public class JsonMapper
             e .printStackTrace();
             return objectMapper .createObjectNode();
         }
+    }
+
+    public ArrayNode getMatrix( AlgebraicMatrix orientation )
+    {
+        ArrayNode arrayNode = this .objectMapper .createArrayNode();
+        for ( int i = 0; i < 3; i++) {
+            for ( int j = 0; j < 3; j++) {
+                arrayNode .add( (float) orientation .getElement( i, j ) .evaluate() );
+            }
+            arrayNode .add( 0f );
+        }
+        arrayNode .add( 0f );
+        arrayNode .add( 0f );
+        arrayNode .add( 0f );
+        arrayNode .add( 1f );
+        return arrayNode;
     }
 
     public ObjectNode getQuaternionNode( AlgebraicMatrix orientation )

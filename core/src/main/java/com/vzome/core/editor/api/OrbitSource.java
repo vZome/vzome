@@ -47,14 +47,18 @@ public interface OrbitSource
         return embedding;
     }
 
-    default float[][] getOrientations()
+    default float[][] getOrientations( boolean rowMajor )
     {
         Symmetry symmetry = this .getSymmetry();
         AlgebraicField field = symmetry .getField();
         int order = symmetry .getChiralOrder();
-        float[][] orientations = new float[order][];
+        float[][] orientations = new float[order][];        
         for ( int orientation = 0; orientation < order; orientation++ )
         {
+            if ( rowMajor ) {
+                orientations[ orientation ] = symmetry .getMatrix( orientation ) .getRowMajorRealElements();
+                continue;
+            }
             float[] asFloats = new float[ 16 ];
             AlgebraicMatrix transform = symmetry .getMatrix( orientation );
             for ( int i = 0; i < 3; i++ )
@@ -74,5 +78,10 @@ public interface OrbitSource
             orientations[ orientation ] = asFloats;
         }
         return orientations;
+    }
+
+    default float[][] getOrientations()
+    {
+        return getOrientations( false );
     }
 }
