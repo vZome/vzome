@@ -1,6 +1,5 @@
 
-import React, { useRef, useEffect } from 'react'
-import { Matrix4 } from 'three'
+import React from 'react'
 import { ShapedGeometry } from './geometry.jsx'
 import DesignCanvas from './designcanvas.jsx'
 import { useInstanceShaper, useVZomeUrl } from './hooks.js'
@@ -11,22 +10,8 @@ export const MeshGeometry = ({ shown, selected, renderer, highlightBall, handleC
 {
   const { shaper, embedding } = renderer || {}
   const { shapes, instances } = useInstanceShaper( shown, selected, shaper )
-  const ref = useRef()
-  useEffect( () => {
-    if ( embedding && ref.current && ref.current.matrix ) {
-      const m = new Matrix4()
-      m.set( ...embedding )
-      m.transpose()
-      ref.current.matrix.identity()  // Required, or applyMatrix4() changes will accumulate
-      // This imperative approach is required because I was unable to decompose the
-      //   embedding matrix (a shear) into a scale and rotation.
-      ref.current.applyMatrix4( m )
-    }
-  }, [embedding] )
   return ( instances &&
-    <group matrixAutoUpdate={false} ref={ref}>
-      <ShapedGeometry {...{ shapes, instances, highlightBall, handleClick, onHover }} />
-    </group>
+    <ShapedGeometry {...{ shapes, instances, embedding, highlightBall, handleClick, onHover }} />
   ) || null
 }
 

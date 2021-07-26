@@ -571,16 +571,43 @@ const assignIds = ( element, id=':' ) => {
   return element
 }
 
+const parseVector = ( element, name ) =>
+{
+  const child = element.getChildElement( name )
+  const x = parseFloat( child.getAttribute( "x" ) )
+  const y = parseFloat( child.getAttribute( "y" ) )
+  const z = parseFloat( child.getAttribute( "z" ) )
+  return [ x, y, z ]
+}
+
+const parseColor = ( rgbCsv ) =>
+{
+  const [ r, g, b ] = rgbCsv.split( "," ).map( s => parseInt( s ) )
+  const componentToHex = (c) =>
+  {
+    const hex = c.toString( 16 )
+    return hex.length === 1 ? "0" + hex : hex
+  }
+  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b)
+}
+
+export const parseLighting = ( sceneElement ) =>
+{
+  const backgroundColor = parseColor( sceneElement.getAttribute( "background" ) )
+  return {
+    backgroundColor,
+    // TODO: parse these too, in case they change someday
+    ambientColor: '#292929',
+    directionalLights: [ // These are the vZome defaults, for consistency
+      { direction: [ 1, -1, -1 ], color: '#EBEBE4' },
+      { direction: [ -1, 0, 0 ], color: '#E4E4EB' },
+      { direction: [ 0, 0, -1 ], color: '#1E1E1E' },
+    ]
+  }
+}
+
 export const parseViewXml = ( viewingElement ) =>
 {
-  const parseVector = ( element, name ) =>
-  {
-    const child = element.getChildElement( name )
-    const x = parseFloat( child.getAttribute( "x" ) )
-    const y = parseFloat( child.getAttribute( "y" ) )
-    const z = parseFloat( child.getAttribute( "z" ) )
-    return [ x, y, z ]
-  }
   const viewModel = viewingElement.getChildElement( "ViewModel" )
   const distance = parseFloat( viewModel.getAttribute( "distance" ) )
   const near = parseFloat( viewModel.getAttribute( "near" ) )
@@ -605,12 +632,16 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
 
     const viewing = vZomeRoot.getChildElement( "Viewing" )
     const camera = viewing && parseViewXml( viewing )
+
+    const scene = vZomeRoot.getChildElement( "sceneModel" )
+    const lighting = scene && parseLighting( scene )
+
     const edits = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement )
     // Note: I'm adding one so that this matches the assigned ID of the next edit to do
     const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
     const firstEdit = createEdit && createEdit( edits.firstElementChild )
 
-    return { firstEdit, camera, field, targetEdit, renderer }
+    return { firstEdit, camera, field, targetEdit, renderer, lighting }
   } catch (error) {
     console.log( `%%%%%%%%%%%%%%%%%%% legacyjava.js parser failed: ${error}` )
     return null

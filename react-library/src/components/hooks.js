@@ -1,4 +1,5 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useRef } from 'react'
+import { Matrix4 } from 'three'
 import { createInstance } from '../core/adapter.js'
 import { parse, interpret, Step } from '../core/api.js'
 
@@ -113,4 +114,28 @@ export const useInstanceShaper = ( shown, selected, shaper ) =>
       return {}
   }
   return useMemo( shapeInstances, [ shown, selected, shaper ] )
+}
+
+export const useInstanceSorter = ( shapes, instances ) =>
+{
+  const filterInstances = ( shape, instances ) => instances.filter( instance => instance.shapeId === shape.id )
+  const sortByShape = () => Object.values( shapes ).map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
+  return useMemo( sortByShape, [ shapes, instances ] )
+}
+
+export const useEmbedding = embedding =>
+{
+  const ref = useRef()
+  useEffect( () => {
+    if ( embedding && ref.current && ref.current.matrix ) {
+      const m = new Matrix4()
+      m.set( ...embedding )
+      m.transpose()
+      ref.current.matrix.identity()  // Required, or applyMatrix4() changes will accumulate
+      // This imperative approach is required because I was unable to decompose the
+      //   embedding matrix (a shear) into a scale and rotation.
+      ref.current.applyMatrix4( m )
+    }
+  }, [embedding] )
+  return ref
 }
