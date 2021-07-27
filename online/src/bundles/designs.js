@@ -238,8 +238,8 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
     }
 
     const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" )
-    const previewText = await fetchUrlText( previewUrl )
-    if ( previewText ) {
+    fetchUrlText( previewUrl )
+    .then( previewText => {
       let design = initializeDesign( null, name, null, text )
       design.preview = convertPreview( JSON.parse( previewText ) )
       design.camera = design.preview.camera
@@ -247,61 +247,62 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
       design.embedding = design.preview.embedding
       dispatch( loadingDesign( name, design ) )
       dispatch( loadedDesign( name, design ) )
-      return
-    }
+    })
+    .catch( async () => {
 
-    const failure = message => {
-      console.log( message )
-      let design = initializeDesign( null, name, null, text )
+      const failure = message => {
+        console.log( message )
+        let design = initializeDesign( null, name, null, text )
+        dispatch( loadingDesign( name, design ) )
+        dispatch( loadedDesign( name, design ) )
+        dispatch( showAlert( message + ' Use the download button to save this file, then try opening it with desktop vZome.' ) )
+      }
+
+      const { firstEdit, camera, field, targetEdit, renderer, lighting } = await parse( text ) || {}
+
+      if ( field.unknown ) {
+        failure( `Field "${field.name}" is not implemented.` )
+        return
+      }
+      if ( !firstEdit ) {
+        failure( `Unable to parse XML from ${url}` )
+        return
+      }
+
+      console.log( `Opening ${url}`)
+
+      // We don't want to dispatch all the edits, which can trigger tons of
+      //  overhead and re-rendering.  Instead, we'll build up a design locally
+      //  by calling the designReducer manually.
+      let design = initializeDesign( field, name, renderer.name, text )
+      design.lighting = lighting
+      design.embedding = renderer.embedding
+      // Each call to designReducer may create an element in the history
+      //  (if it has any changes to the mesh),
+      //  so we want to be judicious in when we do it.
+      // Each call to dispatch, on the other hand, triggers rendering, so we want to be even
+      //  more careful about that.
+      
+      // TODO: skip this dispatch if we already have a renderer for shapesName, in getState().renderers
+      dispatch( renderers.rendererDefined( renderer.name, renderer ) ) // outside the design
+
+      design = designReducer( design, cameraDefined( camera ) )
+      design = designReducer( design, dbugger.sourceLoaded( firstEdit, targetEdit ) ) // recorded in history
+      design = designReducer( design, Undo.clearHistory() )  // kind of a hack so both histories are in sync, with no past
+
       dispatch( loadingDesign( name, design ) )
-      dispatch( loadedDesign( name, design ) )
-      dispatch( showAlert( message + ' Use the download button to save this file, then try opening it with desktop vZome.' ) )
-    }
 
-    const { firstEdit, camera, field, targetEdit, renderer, lighting } = await parse( text ) || {}
-
-    if ( field.unknown ) {
-      failure( `Field "${field.name}" is not implemented.` )
-      return
-    }
-    if ( !firstEdit ) {
-      failure( `Unable to parse XML from ${url}` )
-      return
-    }
-
-    console.log( `Opening ${url}`)
-
-    // We don't want to dispatch all the edits, which can trigger tons of
-    //  overhead and re-rendering.  Instead, we'll build up a design locally
-    //  by calling the designReducer manually.
-    let design = initializeDesign( field, name, renderer.name, text )
-    design.lighting = lighting
-    design.embedding = renderer.embedding
-    // Each call to designReducer may create an element in the history
-    //  (if it has any changes to the mesh),
-    //  so we want to be judicious in when we do it.
-    // Each call to dispatch, on the other hand, triggers rendering, so we want to be even
-    //  more careful about that.
-    
-    // TODO: skip this dispatch if we already have a renderer for shapesName, in getState().renderers
-    dispatch( renderers.rendererDefined( renderer.name, renderer ) ) // outside the design
-
-    design = designReducer( design, cameraDefined( camera ) )
-    design = designReducer( design, dbugger.sourceLoaded( firstEdit, targetEdit ) ) // recorded in history
-    design = designReducer( design, Undo.clearHistory() )  // kind of a hack so both histories are in sync, with no past
-
-    dispatch( loadingDesign( name, design ) )
-
-    if ( ! getState().dbuggerEnabled ) {
-      dispatch( dbugger.stepper.done( name ) )
-    }
-    else {
-      dispatch( loadedDesign( name, design ) )
-    }
+      if ( ! getState().dbuggerEnabled ) {
+        dispatch( dbugger.stepper.done( name ) )
+      }
+      else {
+        dispatch( loadedDesign( name, design ) )
+      }
+    })
   } catch (error) {
     const message = `Unable to parse vZome design file: ${url};\n ${error.message}`
     console.log( message )
-    dispatch( showAlert( `Unable to parse vZome design file: ${url};\n ${error.message}` ) )
+    dispatch( showAlert( message ) )
   }
 }
 
