@@ -18,7 +18,6 @@ public class SqrtPhiField  extends ParameterizedField
      * @return the coefficients of a SqrtPhiField. 
      * This can be used to determine when two fields have compatible coefficients 
      * without having to generate an instance of the class. 
-     * Note that this method provides no validation of the parameter.
      */
     public static double[] getFieldCoefficients() {
         return new double[] {

@@ -11,7 +11,6 @@ public class PlasticNumberField  extends ParameterizedField {
      * @return the coefficients of a PlasticNumberField. 
      * This can be used to determine when two fields have compatible coefficients 
      * without having to generate an instance of the class. 
-     * Note that this method provides no validation of the parameter.
      */
     public static double[] getFieldCoefficients() {
         final double plasticNumber = 1.32471795724475d; // n + 1 = n^3
