@@ -93,9 +93,11 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         for (String symmName : symmetries) {
             if (symmName.startsWith("antiprism")) {
                 hasAntiprism = true;
-                if("antiprism".equals(initSystem)) {
-                    initSystem = symmName;
-                }
+//                if("antiprism".equals(initSystem)) {
+//                    // this is old code that's aparently unnecessary
+//                    // but I'll leave it here as a comment for now in case I break something by removing it. - DJH
+//                    initSystem = symmName; // effectively appends nSides to initSystem
+//                }
                 break;
             }
         }
@@ -463,8 +465,15 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             // menu.add( rbMenuItem );
         }
         if ( hasAntiprism ) {
-            // we don't specify the general antiprism's nSides here because setSymmetrySystem() will handle it.
-            rbMenuItem = actions .setMenuAction( "setSymmetry.antiprism", controller, new JRadioButtonMenuItem( "Antiprism System" ) );
+            // Specify the antiprism's nSides here since not all code paths go thru setSymmetrySystem()
+            String antiprismName = "antiprism";
+            // AntiprismSymmetry takes a PolygonField in it's c'tor
+            // so no other field is using AntiprismSymmetry at this time,
+            // but I'll add the check anyway in case antiprismSymmetry ever gets generalized to accept other fields
+            if(fieldName.startsWith("polygon")) {
+                antiprismName += fieldName.substring("polygon".length());
+            }
+            rbMenuItem = actions .setMenuAction( "setSymmetry." + antiprismName, controller, new JRadioButtonMenuItem( "Antiprism System" ) );
             rbMenuItem .setSelected( initSystem.startsWith("antiprism") );
             rbMenuItem .setEnabled( fullPower );
             group.add( rbMenuItem );

@@ -527,7 +527,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
                 Scene scene = ((Scene.Provider) mController) .getScene();
                 RenderingViewer viewer = factory3d .createRenderingViewer( scene );
-                modelPanel = new ModelPanel( mController, viewer, (ControlActions) this, this .isEditor, fullPower );
+                modelPanel = new ModelPanel( mController, viewer, this, this .isEditor, fullPower );
                 leftCenterPanel .add( modelPanel, BorderLayout.CENTER );
             }
             outerPanel.add( leftCenterPanel, BorderLayout.CENTER );
