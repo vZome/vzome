@@ -8,7 +8,6 @@ public class PlasticPhiField extends ParameterizedField
          * @return the coefficients of a PlasticPhiField. 
          * This can be used to determine when two fields have compatible coefficients 
          * without having to generate an instance of the class. 
-         * Note that this method provides no validation of the parameter.
          */
         public static double[] getFieldCoefficients() {
             final double plasticNumber = 1.32471795724475d; // n + 1 = n^3
@@ -68,10 +67,10 @@ public class PlasticPhiField extends ParameterizedField
           *  |  1   |   φ    |  p   |   pφ   |  p^2  |  p^2φ
         -----+------+--------+------+--------+-------+-------------
           1  |  1   |   φ    |  p   |   pφ   |  p^2  |  p^2φ
-          p  |  p   |  pφ    | p^2  |  p^2φ  |  1+p  |  φ+pφ 
           φ  |  φ   |  1+φ   | pφ   |  p+pφ  | p^2φ  | p^2+p^2φ
-         p^2 | p^2  |  p^2φ  | 1+p  |  φ+pφ  | p+p^2 | pφ+p^2φ
+          p  |  p   |  pφ    | p^2  |  p^2φ  |  1+p  |  φ+pφ 
          pφ  | pφ   |  p+pφ  | p^2φ |p^2+p^2φ| φ+pφ  | 1+p+φ+pφ
+         p^2 | p^2  |  p^2φ  | 1+p  |  φ+pφ  | p+p^2 | pφ+p^2φ
         p^2φ | p^2φ |p^2+p^2φ| φ+pφ |1+p+φ+pφ|pφ+p^2φ|p+p^2+pφ+p^2φ
 
          */
@@ -165,47 +164,4 @@ public class PlasticPhiField extends ParameterizedField
             }
             return super.convertGoldenNumberPairs(terms);
         }
-
     }
-
-    /*
-    coefficientsMultiplied( plasticNumber ) = 
-    {
-      {     1.00000000000000,     1.32471795724475,     1.75487766624670, },
-      {     1.32471795724475,     1.75487766624670,     2.32471795724477, },
-      {     1.75487766624670,     2.32471795724477,     3.07959562349148, },
-    }
-
-    multiplierMatrix( plasticNumber ) = 
-    {
-      {
-        { 1, 0, 0, },
-        { 0, 0, 1, },
-        { 0, 1, 0, },
-      },
-      {
-        { 0, 1, 0, },
-        { 1, 0, 1, },
-        { 0, 1, 1, },
-      },
-      {
-        { 0, 0, 1, },
-        { 0, 1, 0, },
-        { 1, 0, 1, },
-      },
-    }
-
-    factorsMultiplied( plasticNumber ) = 
-    {
-      { 1,  Φ,  Φ², },
-      { Φ,  Φ², 1+Φ,    },
-      { Φ², 1+Φ,    Φ+Φ²,   },
-    }
-
-    factorsDivided( plasticNumber ) = 
-    {
-      { 1,  -1+Φ²,  1+Φ-Φ², },
-      { Φ,  1,  -1+Φ²,  },
-      { Φ², Φ,  1,  },
-    }
-    */
