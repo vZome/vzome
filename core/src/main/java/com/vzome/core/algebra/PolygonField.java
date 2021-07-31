@@ -2,6 +2,7 @@ package com.vzome.core.algebra;
 
 import static java.lang.Math.sin;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -335,8 +336,6 @@ public class PolygonField extends ParameterizedField
 
     private final boolean isEven;
     private final AlgebraicNumber goldenRatio;
-    private final AlgebraicNumber goldenDenominator;
-    private final AlgebraicNumber goldenNumerator;
 
     /*
      * Much of the class initialization is done by having member methods call comparable static methods
@@ -367,17 +366,104 @@ public class PolygonField extends ParameterizedField
             int n = polygonSides / 5;
             // Note that more than one term of these AlgebraicNumbers may be non-zero, 
             // especially when polygonSides is not prime (e.g. a multiple of 5 that's greater than 5)
-            goldenDenominator = getUnitDiagonal(n - 1); 
-            goldenNumerator = getUnitDiagonal((2 * n) - 1);
+            AlgebraicNumber goldenDenominator = getUnitDiagonal(n - 1); 
+            AlgebraicNumber goldenNumerator = getUnitDiagonal((2 * n) - 1);
+            // we could apply the logic of convertGoldenNumberPairs() here
+            // but this already works and they can be used to cross-check each other.
             goldenRatio = goldenNumerator.dividedBy(goldenDenominator);
         } else {
-            goldenDenominator = goldenNumerator = goldenRatio = null;
+            goldenRatio = null;
         }
     }
     
+    /**
+     * 
+     * u = units numerator  
+     * U = units denominator  
+     * p = phis numerator  
+     * P = phis denominator
+     * ____ = 0,1
+     * COMBO ... see comments inline below
+     * Remapping the 4 element pairs array [u,U, p,P] 
+     * looks like this based on polygonSides:
+     *   5  [  u, U,   p, P] // unchanged
+     *  10  [ COMBO,  ____,   p, P    ... // the two units elements combine all of the input pairs 
+     *  15  [  u, U,  -p,-P,   ____,   p, P    ...
+     *  20  [  u, U,   ____,  -p,-P,   ____,   p, P    ...
+     *  25  [  u, U,   ____,   ____,  -p,-P,   ____,   p, P    ...
+     *  30  [  u, U,   ____,   ____,   ____,  -p,-P,   ____,   p, P    ...
+     *  35  [  u, U,   ____,   ____,   ____,   ____,  -p,-P,   ____,   p, P    ...
+     *  40  [  u, U,   ____,   ____,   ____,   ____,   ____,  -p,-P,   ____,   p, P    ...
+     *  45  [  u, U,   ____,   ____,   ____,   ____,   ____,   ____,  -p,-P,   ____,   p, P    ...
+     * index   0  1    2  3    4  5    6  7    8  9   10 11   12 13   14 15   16 17   18 19
+     */
+    @Override
+    protected int[] convertGoldenNumberPairs( int[] pairs )
+    {
+        if( polygonSides % 5 == 0 && pairs.length == 4 && getOrder() > 2 ) {
+            // remap [ unitNumDen, phiNumDen ] pairs as needed
+            final int u = pairs[0]; // units numerator
+            final int U = pairs[1]; // units denominator
+            final int p = pairs[2]; // phis numerator 
+            final int P = pairs[3]; // phis denominator
+            int[] remapped = new int[2* getOrder()];
+            for(int den = 1; den < remapped.length; den += 2) {
+                // Numerators are already set to 0. 
+                // Set denominators to 1 for all remapped pairs
+                remapped[den] = 1;
+            }
+            // remap phi's numerator and denominator
+            // Each of them maps to 2 terms in the remapped array
+            int i = (polygonSides / 5) * 2;
+            // negate the first numerator
+            remapped[i-4] = -p; // negate phis numerator 
+            remapped[i-3] =  P; // phis denominator
+            // assign the second pair
+            remapped[i+0] =  p; // phis numerator 
+            remapped[i+1] =  P; // phis denominator
+            
+            // remap the unit's numerator and denominator
+            if(polygonSides == 10) {
+                // In this one case, we need to combine unit and phi pairs 
+                // and treat them as the actual fractions they represent, 
+                // but we don't need to reduce the fraction to lowest terms here
+                // since BigRational will eventually do that.
+                // COMBO = u/U - p/P = u*P/U*P - U*p/U*P = ((u*P)-(U*p))/(U*P)
+                int unitsNumerator = (u*P)-(U*p); 
+                int unitsDenominator = U*P;
+                // Undetected integer overflows are possible at this point
+                // although it's unlikely. I'm going to recalculate the num and den
+                // using BigInteger.intValueExact() just like BigRational does.
+                // I'm not sure if JSweet can transpile intValueExact().
+                // If it can't, then that part can be commented out below
+                // and everything will work the just same 
+                // except for the posibility of undetected integer overflows.
+                // We could also implement our own method to check this
+                // if BigInteger can't be used and it's found to be necessary.
+                // This is probably overkill, but here goes...
+                unitsNumerator  = BigInteger.valueOf(u).multiply(BigInteger.valueOf(P))
+                        .subtract(BigInteger.valueOf(U).multiply(BigInteger.valueOf(p)))
+                        .intValueExact();
+                unitsDenominator = BigInteger.valueOf(U).multiply(BigInteger.valueOf(P))
+                        .intValueExact();
+                // Now just store the two parts of the units fraction
+                remapped[0] = unitsNumerator;
+                remapped[1] = unitsDenominator;
+            } else {
+                // no possible conflict with phis
+                remapped[0] = u; // units numerator
+                remapped[1] = U; // units denominator
+            }
+            return remapped;
+        }
+        return pairs; // unchanged
+    }
+
     // SV: This pattern is problematic for decoupling from BigRational.
     //     It also represents a tight coupling between AAF and ANI, which is bad.
     //     The correct pattern is to deal with this problem when parsing VEF, rather than inside the ANI constructor.
+    // DJH: I have reimplemented the same effect in convertGoldenNumberPairs() 
+    //     but I'll leave this here for now as a reminder of the original logic
 
 //    @Override
 //    protected BigRational[] prepareAlgebraicNumberTerms(BigRational[] terms) {

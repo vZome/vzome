@@ -150,18 +150,5 @@ public class PlasticPhiField extends ParameterizedField
         return getUnitTerm(1);
     }
     
-    @Override
-    protected int[] convertGoldenNumberPairs(int[] terms) {
-        if (terms.length == 2) {
-            terms = new int[] {
-                    terms[0],           // units
-                    terms[1],           // phis
-                    0,   // zero fill the rest...
-                    0,
-                    0,
-                    0
-            };
-        }
-        return super.convertGoldenNumberPairs(terms);
-    }
+    // No need to override convertGoldenNumberPairs() as long as phi is the first irrational
 }
