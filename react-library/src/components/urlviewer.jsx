@@ -30,19 +30,28 @@ export const download = ( url, xml ) =>
   document.body.removeChild( element )
 }
 
+export const DesignViewer = props =>
+{
+  const { scene, mesh, renderer, children } = props
+  return (
+    <DesignCanvas {...scene} >
+      { (scene && scene.shapes)? <ShapedGeometry {...scene} />
+        : ( mesh && <MeshGeometry {...{ shown: mesh.shown, selected: mesh.selected, renderer }} /> ) }
+      {children}
+    </DesignCanvas>
+  )
+}
+
 export const UrlViewer = props =>
 {
-  const { url, lighting } = props
-  const [ mesh, camera, renderer, text ] = useVZomeUrl( url, props.camera )
+  const { text, scene, mesh, renderer } = useVZomeUrl( props.url, props.camera )
   return (
     <div style={ { display: 'flex', height: '100%' } }>
-      <DesignCanvas {...{ lighting, camera }} >
-        { mesh && <MeshGeometry shown={mesh.shown} selected={mesh.selected} renderer={renderer} /> }
-      </DesignCanvas>
+      <DesignViewer {...{ scene, mesh, renderer }} />
       { text &&
         <Fab color="primary" size="small" aria-label="download"
             style={ { position: 'absolute' } }
-            onClick={() => download( url, text ) } >
+            onClick={() => download( props.url, text ) } >
           <GetAppRoundedIcon fontSize='small'/>
         </Fab> }
     </div>

@@ -1,10 +1,10 @@
 
-import * as vZomeJava from './legacyjava.js'
+import parserPromise from '../legacy/js2jsweet.js'
 import { defaultNew } from '../resources/com/vzome/core/parts/index.js'
 
 export const parse = async text =>
 {
-  const { parser } = await vZomeJava.coreState
+  const { parser } = await parserPromise
   return parser( text )
 }
 

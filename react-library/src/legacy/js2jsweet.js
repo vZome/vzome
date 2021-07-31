@@ -3,14 +3,14 @@ import goldenField from '../fields/golden.js'
 import root2Field from '../fields/root2.js'
 import root3Field from '../fields/root3.js'
 import heptagonField from '../fields/heptagon.js'
-import Adapter from './adapter.js'
-import { algebraicNumberFactory, JavaDomElement, JsProperties } from './wrappers.js'
+import Adapter from '../core/adapter.js'
+import { algebraicNumberFactory, JavaDomElement, JsProperties } from './jsweet2js.js'
 
 import allShapes from '../resources/com/vzome/core/parts/index.js'
 import groupResources from '../resources/com/vzome/core/math/symmetry/index.js'
 
-import { com } from '../jsweet/transpiled-java.js'
-import { java } from '../jsweet/j4ts-2.0.0/bundle.js'
+import { com } from './transpiled-java.js'
+import { java } from './j4ts-2.0.0/bundle.js'
 
 // Copied from core/src/main/resources/com/vzome/core/editor/defaultPrefs.properties
 const defaults = {
@@ -84,7 +84,7 @@ const makeFloatMatrices = ( matrices ) =>
   });
 }
 
-export const init = async () =>
+const init = async () =>
 {
   const vzomePkg = com.vzome
   const util = java.util
@@ -233,7 +233,6 @@ export const init = async () =>
       return
     }
     resources[ path ] = text
-    console.log( `injected resource ${path}` )
   }
 
   // Now we can setup the ResourceLoader; we must do this before initializing the fieldApps,
@@ -494,8 +493,6 @@ export const init = async () =>
   return { parser, commands, gridPoints }
 }
 
-export const coreState = init()
-
 const realizeShape = ( shape ) =>
 {
   const vertices = shape.getVertexList().toArray().map( av => {
@@ -540,7 +537,7 @@ const shaperFactory = ( vzomePkg, orbitSource ) => shapes => instance =>
   return { id, position: [ x, y, z ], rotation, color: finalColor, shapeId }
 }
 
-export const legacyCommandFactory = ( createEditor, className ) => ( config ) => 
+const legacyCommandFactory = ( createEditor, className ) => ( config ) => 
 {
   const field = undefined // TODO designs.selectField( getState() )
   // TODO const symmetry = designs.selectCurrentSymmetry( getState() )
@@ -591,7 +588,7 @@ const parseColor = ( rgbCsv ) =>
   return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b)
 }
 
-export const parseLighting = ( sceneElement ) =>
+const parseLighting = ( sceneElement ) =>
 {
   const backgroundColor = parseColor( sceneElement.getAttribute( "background" ) )
   return {
@@ -606,7 +603,7 @@ export const parseLighting = ( sceneElement ) =>
   }
 }
 
-export const parseViewXml = ( viewingElement ) =>
+const parseViewXml = ( viewingElement ) =>
 {
   const viewModel = viewingElement.getChildElement( "ViewModel" )
   const distance = parseFloat( viewModel.getAttribute( "distance" ) )
@@ -619,31 +616,30 @@ export const parseViewXml = ( viewingElement ) =>
   return { position, lookAt, up, near, far }
 }
 
-export const createParser = ( createDocument ) => ( xmlText ) =>
+const createParser = ( createDocument ) => ( xmlText ) =>
 {
-  try {
-    const domDoc = new DOMParser().parseFromString( xmlText, "application/xml" );
-    let vZomeRoot = new JavaDomElement( domDoc.firstElementChild )
+  const domDoc = new DOMParser().parseFromString( xmlText, "application/xml" );
+  let vZomeRoot = new JavaDomElement( domDoc.firstElementChild )
 
-    const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
-    const fieldName = vZomeRoot.getAttribute( "field" )
+  const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
+  const fieldName = vZomeRoot.getAttribute( "field" )
 
-    const { renderer, createEdit, field } = createDocument( fieldName, namespace, vZomeRoot )
+  const { renderer, createEdit, field } = createDocument( fieldName, namespace, vZomeRoot )
 
-    const viewing = vZomeRoot.getChildElement( "Viewing" )
-    const camera = viewing && parseViewXml( viewing )
+  const viewing = vZomeRoot.getChildElement( "Viewing" )
+  const camera = viewing && parseViewXml( viewing )
 
-    const scene = vZomeRoot.getChildElement( "sceneModel" )
-    const lighting = scene && parseLighting( scene )
+  const scene = vZomeRoot.getChildElement( "sceneModel" )
+  const lighting = scene && parseLighting( scene )
 
-    const edits = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement )
-    // Note: I'm adding one so that this matches the assigned ID of the next edit to do
-    const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
-    const firstEdit = createEdit && createEdit( edits.firstElementChild )
+  const edits = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement )
+  // Note: I'm adding one so that this matches the assigned ID of the next edit to do
+  const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
+  const firstEdit = createEdit && createEdit( edits.firstElementChild )
 
-    return { firstEdit, camera, field, targetEdit, renderer, lighting }
-  } catch (error) {
-    console.log( `%%%%%%%%%%%%%%%%%%% legacyjava.js parser failed: ${error}` )
-    return null
-  }
+  return { firstEdit, camera, field, targetEdit, renderer, lighting }
 }
+
+const parserPromise = init()
+
+export default parserPromise

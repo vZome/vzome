@@ -5,16 +5,13 @@ import { connect } from 'react-redux'
 import { selectionToggled } from '../bundles/mesh.js'
 import * as planes from '../bundles/planes.js'
 import * as designs from '../bundles/designs.js'
-import { DesignCanvas, ShapedGeometry, BuildPlane, MeshGeometry, getDefaultRenderer } from '@vzome/react-vzome'
+import { DesignViewer, BuildPlane, getDefaultRenderer } from '@vzome/react-vzome'
 
 const select = ( state ) =>
 {
-  const lighting = ( state.designs && designs.selectLighting( state ) ) || state.lighting
-  const camera = ( state.designs && designs.selectCamera( state ) ) || state.camera
-  const preview = ( state.designs && designs.selectPreview( state ) )
+  const scene = ( state.designs && designs.selectScene( state ) ) || state.scene
   const mesh = state.designs && designs.selectMesh( state )
   const renderer = state.designs && designs.selectRenderer( state )
-  const embedding = state.designs && designs.selectEmbedding( state )
   const field = state.designs && designs.selectField( state )
   // const shown = mesh && new Map( mesh.shown )
   // if ( workingPlane && workingPlane.enabled && workingPlane.endPt ) {
@@ -29,10 +26,7 @@ const select = ( state ) =>
   //   }
   // }
   return {
-    camera,
-    lighting,
-    embedding,
-    preview,
+    scene,
     renderer,
     mesh,
     field,
@@ -64,8 +58,7 @@ const DesignEditor = ( props ) =>
 {
   const { startGridHover, stopGridHover, workingPlane } = props
   const [ defaultRenderers ] = useState( {} )
-  let { mesh, renderer, field, embedding, preview } = props
-  const { shapes={}, instances=[] } = preview
+  let { mesh, renderer, field, scene } = props
   if ( !renderer ) {
     renderer = defaultRenderers[ field.name ]
   }
@@ -99,12 +92,10 @@ const DesignEditor = ( props ) =>
   // }
 
   return (
-    <DesignCanvas {...props} >
-      { preview? <ShapedGeometry {...{ shapes, instances, embedding }} />
-        : ( mesh && <MeshGeometry {...{ shown: mesh.shown, selected: mesh.selected, renderer }} /> ) }
+    <DesignViewer {...{ scene, mesh, renderer }} >
       { workingPlane && workingPlane.enabled &&
           <BuildPlane config={workingPlane} {...{ startGridHover, stopGridHover }} /> }
-    </DesignCanvas>
+    </DesignViewer>
   )
 }
 

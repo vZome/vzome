@@ -17,7 +17,7 @@ banner 'Transpiling Java sources with JSweet'
 
 banner 'Patching up the bundle as an ES6 module'
 
-OUTJS='react-library/src/jsweet/transpiled-java.js'
+OUTJS='react-library/src/legacy/transpiled-java.js'
 echo 'import { java, javaemul } from "./j4ts-2.0.0/bundle.js"' > $OUTJS
 
 cat 'react-library/jsweetOut/js/bundle.js' | \
