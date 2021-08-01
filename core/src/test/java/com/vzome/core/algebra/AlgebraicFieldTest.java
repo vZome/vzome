@@ -103,9 +103,13 @@ public class AlgebraicFieldTest {
     @Test
     public void testConvertGoldenNumberPairs() {
         System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
+        boolean testedPolygon10 = false;
         for(AlgebraicField field : TEST_FIELDS) {
+            testedPolygon10 |= field.getName().equals("polygon10");
             testConvertGoldenNumberPairs(field);
         }
+        // be sure we don't remove the special polygon10 code path from the final tests case. 
+        assertTrue("Skipped PolygonField(10) test case", testedPolygon10);
     }
     
     static final double PHI_VALUE = (Math.sqrt(5.0) + 1.0) / 2.0;
@@ -147,6 +151,25 @@ public class AlgebraicFieldTest {
             
             v = field.createVector(new int[][] {{2,1,1,1}});
             assertEquals(msg, golden2, v.getComponent(0));
+            
+            // verify that integer overflow is detected
+            // This overflow can only occur in the 10-gon field 
+            // with very large positive or negative integers.
+            try {
+                v = field.createVector(
+                    new int[][] { {
+                        Integer.MIN_VALUE+2,Integer.MAX_VALUE-3, 
+                        Integer.MAX_VALUE-5,Integer.MAX_VALUE-7
+                    } } );
+                if(field.getName().equals("polygon10")) {
+                    fail("Expected an exception for " + field.getName());
+                }
+            } catch (ArithmeticException e) {
+                if(!field.getName().equals("polygon10")) {
+                    System.out.println(e.getMessage());
+                    fail("Expected NO exception for " + field.getName());
+                }
+            }
             
             // test parseVefNumber()
             AlgebraicNumber num = field.parseVefNumber("(0,0)", false);
