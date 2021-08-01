@@ -184,24 +184,6 @@ public class SnubDodecField extends AbstractAlgebraicField
         return 2; // only two primitive elements, phi and xi
     }
 
-    @Override
-    public void defineMultiplier( StringBuffer buf, int i )
-    {
-        switch (i) {
-            case B:
-                buf .append( "phi = " );
-                buf .append( PHI_VALUE );
-                break;
-            case C:
-                buf .append( "xi = " );
-                buf .append( XI_VALUE );
-                break;
-            default:
-                buf .append( "" );
-                break;
-        }
-    }
-
     /**
      * scalar for an affine pentagon
      * @return 

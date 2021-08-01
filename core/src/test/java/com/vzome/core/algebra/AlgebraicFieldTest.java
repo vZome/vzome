@@ -225,52 +225,6 @@ public class AlgebraicFieldTest {
 		}
 	}
 	
-	@Test
-	public void testDefineMultiplier() {
-	    System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
-	    int pass = 0;
-	    for(AlgebraicField field : TEST_FIELDS) {
-            System.out.println(field.getName());
-            final int mults = field.getNumMultipliers();
-            final int irrats = field.getNumIrrationals();
-            assertTrue(mults <= irrats);
-            for(int i = 1; i <= mults; i++) {
-                StringBuffer buf = new StringBuffer();
-                field.defineMultiplier(buf, i);
-                final String declaration = buf.toString();
-                
-                switch(field.getName()) {
-                case "golden":
-                    assertEquals(declaration, "phi = ( 1 + sqrt(5) ) / 2");
-                    break;
-                    
-                case "rootTwo":
-                case "rootThree":
-                    assertTrue(declaration.isEmpty());
-                    break;
-                    
-                default:
-                    assertFalse(declaration.isEmpty());
-                    break;                        
-                }
-                if(!declaration.isEmpty()) {
-                    // allow uppercase names too for PlasticNumberField
-                    // allow underscore with numeric subscript for high order PolygonFields
-                    if(!declaration.matches("[A-Za-z]+(_[0-9]+)? = .*")) {
-                        String msg = "Expected alphanumeric variable name but found: " + declaration + ". " 
-                                + field.getName() 
-                                + ".getNumMultipliers() should probably be returning less than " + i;
-                        fail(msg);
-                    }
-                }
-                System.out.println("\t" + declaration);
-            }
-	        pass++;
-	    }
-	    assertTrue("Did we test any?", pass > 0);
-        assertEquals(TEST_FIELDS.size(), pass);
-	}
-
     @Test
     public void testGaussJordanReduction()
     {

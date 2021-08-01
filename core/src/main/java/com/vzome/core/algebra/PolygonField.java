@@ -611,18 +611,6 @@ public class PolygonField extends ParameterizedField
     }
 
     @Override
-    public void defineMultiplier(StringBuffer buf, int i) {
-        // This is used by the POVRayExporter. 
-        if(i > 0 && i < coefficients.length) {
-            String name = getIrrational(i, EXPRESSION_FORMAT);
-            // reformat generated irrational names like d[1] to look like d_1
-            buf.append( name.replace( "[", "_" ).replace( "]", "" ) )
-            .append(" = ")
-            .append(coefficients[i]);
-        }
-    }
-
-    @Override
     protected void initializeCoefficients() {
         double[] temp = getCoefficients();
         for(int i = 0; i < coefficients.length; i++) {
