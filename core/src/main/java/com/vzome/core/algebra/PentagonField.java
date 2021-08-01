@@ -72,12 +72,6 @@ public final class PentagonField extends AbstractAlgebraicField
         return new BigRational[]{ ones, phis };
     }
 
-    @Override
-    public void defineMultiplier( StringBuffer buf, int which )
-    {
-        buf.append( "phi = ( 1 + sqrt(5) ) / 2" );
-    }
-
     /**
      * scalar for an affine pentagon
      * @return 

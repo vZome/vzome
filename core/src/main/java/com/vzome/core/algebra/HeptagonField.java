@@ -46,21 +46,6 @@ public class HeptagonField extends AbstractAlgebraicField
         return new BigRational[]{ ones, rhos, sigmas };
     }
 
-    @Override
-    public void defineMultiplier( StringBuffer buf, int i )
-    {
-        if ( i == B )
-        {
-            buf .append( "rho = " );
-            buf .append( RHO_VALUE );
-        }
-        if ( i == C )
-        {
-            buf .append( "sigma = " );
-            buf .append( SIGMA_VALUE );
-        }
-    }
-    
     /**
      * scalar for an affine heptagon
      * @return 
