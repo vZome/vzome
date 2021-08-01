@@ -28,12 +28,6 @@ public class RootThreeField extends AbstractAlgebraicField
     {
         super( FIELD_NAME, 2, AlgebraicNumberImpl.FACTORY );
     };
-    
-    @Override
-    public void defineMultiplier( StringBuffer buf, int i )
-    {
-        buf .append( "" );
-    }
 
     @Override
     public final BigRational[] multiply( BigRational[] first, BigRational[]  second )

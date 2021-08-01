@@ -10,8 +10,6 @@ public interface AlgebraicField
         AlgebraicField getField( String name );
     }
     
-    void defineMultiplier( StringBuffer instances, int w );
-
     int getOrder();
 
     int getNumIrrationals();

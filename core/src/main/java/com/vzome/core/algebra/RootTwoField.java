@@ -30,12 +30,6 @@ public class RootTwoField extends AbstractAlgebraicField
     {
         return true;
     }
-
-    @Override
-    public void defineMultiplier( StringBuffer buf, int which )
-    {
-        buf .append( "" );
-    }
     
     public static final double ROOT_2 = Math.sqrt( 2d );
     

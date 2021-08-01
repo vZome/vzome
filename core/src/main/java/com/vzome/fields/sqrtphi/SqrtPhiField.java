@@ -35,13 +35,6 @@ public class SqrtPhiField  extends ParameterizedField
     }
 
     @Override
-    public void defineMultiplier( StringBuffer buf, int w )
-    {
-        buf .append( "sqrtphi = " ); // note that phi is not the first irrational in this field
-        buf .append( SQRT_PHI_VALUE );
-    }
-
-    @Override
     public double[] getCoefficients() {
         return getFieldCoefficients();
     }
