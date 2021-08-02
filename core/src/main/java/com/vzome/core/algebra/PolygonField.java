@@ -2,7 +2,6 @@ package com.vzome.core.algebra;
 
 import static java.lang.Math.sin;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -424,31 +423,27 @@ public class PolygonField extends ParameterizedField
             
             // remap the unit's numerator and denominator
             if(polygonSides == 10) {
-                // In this one case, we need to combine unit and phi pairs 
-                // and treat them as the actual fractions they represent, 
-                // but we don't need to reduce the fraction to lowest terms here
+                // This is the only case where we have to do any math.
+                // Every other case just remaps the position if the input pairs.
+                // Here, we need to treat unit and phi pairs as the actual fractions 
+                // they represent so we can combine them arithmetically.
+                // We don't need to reduce the resulting fraction to lowest terms here
                 // since BigRational will eventually do that.
+                //
+                // We cast everything to long and store the multiplication results
+                // in a long so we can test for integer overflow ourselves
+                // without resorting to the overhead of BigInteger.intValueExact().
+                // This also avoids any reference to BigInteger for the sake of JSweet.
+                //
+                // Multiplying an int that's cast to a long by another int that's cast to a long
+                // will always fit into a long so we needn't check multiplication for overflows.
+                // Just check the actual subtraction and the size of the final results.
+                //
                 // COMBO = u/U - p/P = u*P/U*P - U*p/U*P = ((u*P)-(U*p))/(U*P)
-                int unitsNumerator = (u*P)-(U*p); 
-                int unitsDenominator = U*P;
-                // Undetected integer overflows are possible at this point
-                // although it's unlikely. I'm going to recalculate the num and den
-                // using BigInteger.intValueExact() just like BigRational does.
-                // I'm not sure if JSweet can transpile intValueExact().
-                // If it can't, then that part can be commented out below
-                // and everything will work the just same 
-                // except for the posibility of undetected integer overflows.
-                // We could also implement our own method to check this
-                // if BigInteger can't be used and it's found to be necessary.
-                // This is probably overkill, but here goes...
-                unitsNumerator  = BigInteger.valueOf(u).multiply(BigInteger.valueOf(P))
-                        .subtract(BigInteger.valueOf(U).multiply(BigInteger.valueOf(p)))
-                        .intValueExact();
-                unitsDenominator = BigInteger.valueOf(U).multiply(BigInteger.valueOf(P))
-                        .intValueExact();
-                // Now just store the two parts of the units fraction
-                remapped[0] = unitsNumerator;
-                remapped[1] = unitsDenominator;
+                // So the numerator is (u*P)-(U*p)
+                // and the denominator is U*P.
+                remapped[0] = safeSubtractToInt( ((long)u * (long)P), ((long)U * (long)p));
+                remapped[1] = safeCastToInt((long)U * (long)P);
             } else {
                 // no possible conflict with phis
                 remapped[0] = u; // units numerator
@@ -459,11 +454,44 @@ public class PolygonField extends ParameterizedField
         return pairs; // unchanged
     }
 
+    /**
+     * @param j
+     * @param k
+     * @return an integer that equals j - k
+     * @throws ArithmeticException if the subtraction causes an integer overflow
+     */
+    private static int safeSubtractToInt(long j, long k) {
+        long result = j - k;
+        // check if the subtraction itself causes the long result to overflow
+        if( (result < 0 && j > 0 && k > 0) || (result > 0 && j < 0 && k < 0) ) {
+            throw new ArithmeticException(j + " - " + k + " exceeds the size of a long."); 
+        }
+        // check if the long result will fit in an int
+        return safeCastToInt(result);
+    }
+        
+    /**
+     * @param n
+     * @return an int that equals n
+     * @throws ArithmeticException if n exceeds the size of an int
+     */
+    private static int safeCastToInt(long n) {
+        if(n > Integer.MAX_VALUE || n < Integer.MIN_VALUE) {
+            throw new ArithmeticException(n + " exceeds the size of an int."); 
+        }
+        return (int)n;
+    }
+
     // SV: This pattern is problematic for decoupling from BigRational.
     //     It also represents a tight coupling between AAF and ANI, which is bad.
     //     The correct pattern is to deal with this problem when parsing VEF, rather than inside the ANI constructor.
     // DJH: I have reimplemented the same effect in convertGoldenNumberPairs() 
-    //     but I'll leave this here for now as a reminder of the original logic
+    //     but I'll leave this here for now as a reminder of the original logic in case we ever come back to it.
+    // Note that this original method works for any golden VEF import into any 5N-gon field
+    // whereas the convertGoldenNumberPairs approach inevitably has a potential integer overflow
+    // but only in in the case of the 10-gon field importing VEF with very large integers.
+    // Given that minute regression, in exchange for supporting N-gon fields online, 
+    // we'll live with the limitation for now. 
 
 //    @Override
 //    protected BigRational[] prepareAlgebraicNumberTerms(BigRational[] terms) {
