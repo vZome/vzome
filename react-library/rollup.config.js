@@ -3,6 +3,7 @@ import external from 'rollup-plugin-peer-deps-external';
 import del from 'rollup-plugin-delete';
 import pkg from './package.json';
 import url from '@rollup/plugin-url';
+import json from "@rollup/plugin-json";
 
 const config = {
     input: pkg.source,
@@ -21,6 +22,7 @@ const config = {
             include: ['**/*.vef'],
             limit: 46000
         }),
+        json(),
     ],
     external: [
         'react', 'react-dom',

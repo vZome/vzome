@@ -27,15 +27,15 @@ export const fetchUrlText = ( path ) =>
   .then( response =>
   {
     if ( !response.ok ) {
-      throw new Error( 'Network response was not ok' );
+      throw new Error( 'Network error during fetch.' );
     }
     return response.text()
   })
-  .catch( error =>
-  {
-    console.error( 'There has been a problem with your fetch operation:', error );
-    return null
-  })
+  // .catch( error =>
+  // {
+  //   console.error( 'There has been a problem with your fetch operation:', error );
+  //   return null
+  // })
 }
 
 // from https://www.bitdegree.org/learn/javascript-download

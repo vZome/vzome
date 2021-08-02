@@ -12,7 +12,6 @@ public class SnubCubeField  extends ParameterizedField {
      * @return the coefficients of a SnubCubeField. 
      * This can be used to determine when two fields have compatible coefficients 
      * without having to generate an instance of the class. 
-     * Note that this method provides no validation of the parameter.
      */
     public static double[] getFieldCoefficients() {
         // Tribonacci constant is a root of x^3 − x^2 − x − 1 and satisfies x + x^(−3) = 2

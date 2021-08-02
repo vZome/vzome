@@ -304,7 +304,7 @@ export const init = async () =>
     performAndRecord: edit => edit.perform()
   }
   
-  const createShapeRenderer = orbitSource => ({
+  const createRenderer = orbitSource => ({
     name: orbitSource.getShapes().getName(),
     shaper: shaperFactory( vzomePkg, orbitSource ),
     embedding: orbitSource.getEmbedding(),
@@ -384,7 +384,7 @@ export const init = async () =>
     const toolsXml = xml && xml.getChildElement( "Tools" )
     toolsXml && toolsModel.loadFromXml( toolsXml )
 
-    const shapeRenderer = createShapeRenderer( orbitSource )
+    const renderer = createRenderer( orbitSource )
 
     const parseAndPerformEdit = ( xmlElement, mesh ) =>
     {
@@ -464,7 +464,7 @@ export const init = async () =>
       edit.perform()
     }
 
-    return { shapeRenderer, createEdit, configureAndPerformEdit, field }
+    return { renderer, createEdit, configureAndPerformEdit, field }
   }
 
   // Discover all the legacy edit classes and register as commands
@@ -472,12 +472,10 @@ export const init = async () =>
   for ( const name of Object.keys( vzomePkg.core.edits ) )
     commands[ name ] = legacyCommandFactory( documentFactory, name )
 
-  // Prepare the orbitSource for resolveShapes
+  // Prepare the gridPoints
   const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, editContext, colors, true )
-  orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
-  const shapeRenderer = createShapeRenderer( orbitSource )
-
+  // orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
   const blue = [ [0n,0n,1n], [0n,0n,1n], [1n,0n,1n] ]
   const yellow = [ [0n,0n,1n], [1n,0n,1n], [1n,1n,1n] ]
   const red = [ [1n,0n,1n], [0n,0n,1n], [0n,1n,1n] ]
@@ -493,7 +491,7 @@ export const init = async () =>
     }
   ) )
 
-  return { parser, shapeRenderer, commands, gridPoints }
+  return { parser, commands, gridPoints }
 }
 
 export const coreState = init()
@@ -501,7 +499,7 @@ export const coreState = init()
 const realizeShape = ( shape ) =>
 {
   const vertices = shape.getVertexList().toArray().map( av => {
-    const { x, y, z } = av.toRealVector() // embedding.embedInR3( av )
+    const { x, y, z } = av.toRealVector()  // this is too early to do embedding, which is done later, globally
     return { x, y, z }
   })
   const faces = shape.getTriangleFaces().toArray()
@@ -573,16 +571,43 @@ const assignIds = ( element, id=':' ) => {
   return element
 }
 
+const parseVector = ( element, name ) =>
+{
+  const child = element.getChildElement( name )
+  const x = parseFloat( child.getAttribute( "x" ) )
+  const y = parseFloat( child.getAttribute( "y" ) )
+  const z = parseFloat( child.getAttribute( "z" ) )
+  return [ x, y, z ]
+}
+
+const parseColor = ( rgbCsv ) =>
+{
+  const [ r, g, b ] = rgbCsv.split( "," ).map( s => parseInt( s ) )
+  const componentToHex = (c) =>
+  {
+    const hex = c.toString( 16 )
+    return hex.length === 1 ? "0" + hex : hex
+  }
+  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b)
+}
+
+export const parseLighting = ( sceneElement ) =>
+{
+  const backgroundColor = parseColor( sceneElement.getAttribute( "background" ) )
+  return {
+    backgroundColor,
+    // TODO: parse these too, in case they change someday
+    ambientColor: '#292929',
+    directionalLights: [ // These are the vZome defaults, for consistency
+      { direction: [ 1, -1, -1 ], color: '#EBEBE4' },
+      { direction: [ -1, 0, 0 ], color: '#E4E4EB' },
+      { direction: [ 0, 0, -1 ], color: '#1E1E1E' },
+    ]
+  }
+}
+
 export const parseViewXml = ( viewingElement ) =>
 {
-  const parseVector = ( element, name ) =>
-  {
-    const child = element.getChildElement( name )
-    const x = parseFloat( child.getAttribute( "x" ) )
-    const y = parseFloat( child.getAttribute( "y" ) )
-    const z = parseFloat( child.getAttribute( "z" ) )
-    return [ x, y, z ]
-  }
   const viewModel = viewingElement.getChildElement( "ViewModel" )
   const distance = parseFloat( viewModel.getAttribute( "distance" ) )
   const near = parseFloat( viewModel.getAttribute( "near" ) )
@@ -603,16 +628,20 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
     const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
     const fieldName = vZomeRoot.getAttribute( "field" )
 
-    const { shapeRenderer, createEdit, field } = createDocument( fieldName, namespace, vZomeRoot )
+    const { renderer, createEdit, field } = createDocument( fieldName, namespace, vZomeRoot )
 
     const viewing = vZomeRoot.getChildElement( "Viewing" )
     const camera = viewing && parseViewXml( viewing )
+
+    const scene = vZomeRoot.getChildElement( "sceneModel" )
+    const lighting = scene && parseLighting( scene )
+
     const edits = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement )
     // Note: I'm adding one so that this matches the assigned ID of the next edit to do
     const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
     const firstEdit = createEdit && createEdit( edits.firstElementChild )
 
-    return { firstEdit, camera, field, targetEdit, shapeRenderer }
+    return { firstEdit, camera, field, targetEdit, renderer, lighting }
   } catch (error) {
     console.log( `%%%%%%%%%%%%%%%%%%% legacyjava.js parser failed: ${error}` )
     return null

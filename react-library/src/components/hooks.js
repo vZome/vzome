@@ -1,4 +1,5 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useRef } from 'react'
+import { Matrix4 } from 'three'
 import { createInstance } from '../core/adapter.js'
 import { parse, interpret, Step } from '../core/api.js'
 
@@ -35,7 +36,7 @@ export const useVZomeUrl = ( url, defaultCamera ) =>
 {
   const [ camera, setCamera ] = useState( defaultCamera )
   const [ mesh, setMesh ] = useState( null )
-  const [ shapeRenderer, setShapeRenderer ] = useState( null )
+  const [ renderer, setRenderer ] = useState( null )
   const [ text, setText ] = useState( null )
   useEffect( () => {
     async function parseUrl() {
@@ -45,7 +46,7 @@ export const useVZomeUrl = ( url, defaultCamera ) =>
         return
       }
       setText( text )
-      const { firstEdit, camera, field, targetEdit, shapeRenderer } = await parse( text ) || {}
+      const { firstEdit, camera, field, targetEdit, renderer } = await parse( text ) || {}
       if ( !firstEdit ) {
         console.log( `Unable to parse XML from ${url}`)
         return
@@ -55,7 +56,7 @@ export const useVZomeUrl = ( url, defaultCamera ) =>
         return
       }
       setCamera( { ...camera, fov: convertFOV( 0.75 ) } )
-      setShapeRenderer( shapeRenderer )
+      setRenderer( renderer )
       let latestMesh = { shown: originShown( field ), selected: new Map(), hidden: new Map(), groups: [] }
       let targetMesh = null
       const record = ( mesh, id ) => {
@@ -69,7 +70,7 @@ export const useVZomeUrl = ( url, defaultCamera ) =>
     }
     parseUrl();
   }, [url] )
-  return [ mesh, camera, shapeRenderer, text ]
+  return [ mesh, camera, renderer, text ]
 }
 
 export const useInstanceShaper = ( shown, selected, shaper ) =>
@@ -113,4 +114,28 @@ export const useInstanceShaper = ( shown, selected, shaper ) =>
       return {}
   }
   return useMemo( shapeInstances, [ shown, selected, shaper ] )
+}
+
+export const useInstanceSorter = ( shapes, instances ) =>
+{
+  const filterInstances = ( shape, instances ) => instances.filter( instance => instance.shapeId === shape.id )
+  const sortByShape = () => Object.values( shapes ).map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
+  return useMemo( sortByShape, [ shapes, instances ] )
+}
+
+export const useEmbedding = embedding =>
+{
+  const ref = useRef()
+  useEffect( () => {
+    if ( embedding && ref.current && ref.current.matrix ) {
+      const m = new Matrix4()
+      m.set( ...embedding )
+      m.transpose()
+      ref.current.matrix.identity()  // Required, or applyMatrix4() changes will accumulate
+      // This imperative approach is required because I was unable to decompose the
+      //   embedding matrix (a shear) into a scale and rotation.
+      ref.current.applyMatrix4( m )
+    }
+  }, [embedding] )
+  return ref
 }

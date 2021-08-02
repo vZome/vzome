@@ -75,9 +75,11 @@ public abstract class Exporter3d
     {
         mScene = doc .getCamera();
         mModel = doc .getRenderedModel();
+        mLights = doc .getSceneLighting();
         this .doExport( file, writer, height, width );
         mScene = null;
         mModel = null;
+        mLights = null;
     }
 }
 

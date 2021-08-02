@@ -48,7 +48,7 @@ public class ApplicationController extends DefaultController
 
     private final UI ui;
 
-    private final Properties userPreferences = new Properties();
+    private final Properties storedConfig = new Properties();
 
     private final Properties properties = new Properties();
 
@@ -56,7 +56,7 @@ public class ApplicationController extends DefaultController
 
     private final com.vzome.core.editor.Application modelApp;
 
-    private final File preferencesFile;
+    private final File configFile;
 
     private int lastUntitled = 0;
 
@@ -91,16 +91,27 @@ public class ApplicationController extends DefaultController
         if ( ! prefsFile .exists() ) {
             prefsFile = new File( prefsFolder, ".vZome.prefs" );
         }
-        this.preferencesFile = prefsFile;
+        Properties userPrefs = new Properties();
         if ( ! prefsFile .exists() ) {
             logger .config( "Used default preferences." );
         } else {
             try {
                 InputStream in = new FileInputStream( prefsFile );
-                userPreferences .load( in );
+                userPrefs .load( in );
                 logger .config( "User Preferences loaded from " + prefsFile .getAbsolutePath() );
             } catch ( Throwable t ) {
                 logger .severe( "problem reading user preferences: " + t.getMessage() );
+            }
+        }
+
+        this.configFile = new File( new File( System.getProperty( "user.home" ) ), ".vZome-config.properties" );
+        if ( this.configFile .exists() ) {
+            try {
+                InputStream in = new FileInputStream( this.configFile );
+                storedConfig .load( in );
+                logger .config( "Stored config loaded from " + this.configFile .getAbsolutePath() );
+            } catch ( Throwable t ) {
+                logger .severe( "problem reading stored config: " + t.getMessage() );
             }
         }
 
@@ -115,9 +126,11 @@ public class ApplicationController extends DefaultController
             logger.severe( "problem reading default preferences: " + defaultRsrc );
         }
 
-        // last-wins, so getProperty() will show command-line args overriding user prefs, which override built-in defaults
+        // last-wins, so getProperty() will show command-line args overriding stored configs,
+        //   which override user prefs, which override built-in defaults
         properties .putAll( defaults );
-        properties .putAll( userPreferences );
+        properties .putAll( userPrefs );
+        properties .putAll( this.storedConfig );
         properties .putAll( commandLineArgs );
 
         // This seems to get rid of the "white-out" problem on David's (Windows) computer.
@@ -212,16 +225,16 @@ public class ApplicationController extends DefaultController
             }
 
             if( "launch".equals(action) ) {
-                String sawWelcome = userPreferences .getProperty( "saw.welcome" );
+                String sawWelcome = this.properties .getProperty( "saw.welcome" );
                 if ( sawWelcome == null )
                 {
-                    String welcome = properties .getProperty( "welcome" );
+                    String welcome = this.properties .getProperty( "welcome" );
                     doAction( "openResource-" + welcome );
-                    userPreferences .setProperty( "saw.welcome", "true" );
+                    this.storedConfig .setProperty( "saw.welcome", "true" );
                     FileWriter writer;
                     try {
-                        writer = new FileWriter( preferencesFile );
-                        userPreferences .store( writer, "" );
+                        writer = new FileWriter( this.configFile );
+                        this.storedConfig .store( writer, "This file is managed by vZome.  Do not edit." );
                         writer .close();
                     } catch ( IOException e ) {
                         logger.fine(e.toString());
@@ -504,13 +517,13 @@ public class ApplicationController extends DefaultController
     @Override
     public void setModelProperty( String name, Object value )
     {
-        this .properties .setProperty( name, value .toString() );
+        this.properties .setProperty( name, value .toString() );
         if ( "githubAccessToken" .equals( name ) ) {
-            userPreferences .setProperty( "githubAccessToken", value .toString() );
+            this.storedConfig .setProperty( name, value .toString() );
             FileWriter writer;
             try {
-                writer = new FileWriter( preferencesFile );
-                userPreferences .store( writer, "" );
+                writer = new FileWriter( this.configFile );
+                this.storedConfig .store( writer, "This file is managed by vZome.  Do not edit." );
                 writer .close();
             } catch ( IOException e ) {
                 logger.fine(e.toString());

@@ -18,7 +18,6 @@ public class SqrtPhiField  extends ParameterizedField
      * @return the coefficients of a SqrtPhiField. 
      * This can be used to determine when two fields have compatible coefficients 
      * without having to generate an instance of the class. 
-     * Note that this method provides no validation of the parameter.
      */
     public static double[] getFieldCoefficients() {
         return new double[] {
@@ -33,13 +32,6 @@ public class SqrtPhiField  extends ParameterizedField
     public int getNumMultipliers()
     {
         return 1; // phi can be achieved by squaring sqrt(phi)
-    }
-
-    @Override
-    public void defineMultiplier( StringBuffer buf, int w )
-    {
-        buf .append( "sqrtphi = " ); // note that phi is not the first irrational in this field
-        buf .append( SQRT_PHI_VALUE );
     }
 
     @Override

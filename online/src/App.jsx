@@ -14,6 +14,7 @@ import Debugger from './components/debugger.jsx'
 import createBundleStore from './bundles/index.js'
 
 const queryParams = new URLSearchParams( window.location.search );
+const editor = queryParams.get( 'editor' ) === 'true'
 const profile = queryParams.get( "profile" ) || queryParams.get( "editMode" )
 const debug = queryParams.get( 'debug' ) === 'true'
 
@@ -35,7 +36,7 @@ const App = () =>
               </Grid>
             </Grid>
           </div>
-        : <DesignEditor/>}
+        : <DesignEditor/> }
         <ErrorAlert/> 
         {/* <EditMenu/>  */}
         {/* <Spinner/> */}

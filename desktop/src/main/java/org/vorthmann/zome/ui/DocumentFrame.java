@@ -236,7 +236,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     Path filePath = new File( windowName ) .toPath();
                     String xml = mController .getProperty( "vZome-xml" );
                     String pngEncoded = mController .getProperty( "png-base64" );
-                    shareDialog .startUpload( filePath .getFileName() .toString(), xml, pngEncoded );
+                    String shapesJson = mController .getProperty( "shapes-json" );
+                    shareDialog .startUpload( filePath .getFileName() .toString(), xml, pngEncoded, shapesJson );
                     break;
 
                 case "saveDefault":
@@ -526,7 +527,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
                 Scene scene = ((Scene.Provider) mController) .getScene();
                 RenderingViewer viewer = factory3d .createRenderingViewer( scene );
-                modelPanel = new ModelPanel( mController, viewer, (ControlActions) this, this .isEditor, fullPower );
+                modelPanel = new ModelPanel( mController, viewer, this, this .isEditor, fullPower );
                 leftCenterPanel .add( modelPanel, BorderLayout.CENTER );
             }
             outerPanel.add( leftCenterPanel, BorderLayout.CENTER );

@@ -1198,6 +1198,9 @@ public class DocumentController extends DefaultController implements Scene.Provi
         case "field.name":
             return this .documentModel .getField() .getName();
 
+        case "shapes-json":
+            return this .documentModel .copyRenderedModel( "shapes" );
+                    
         case "field.hasGoldenRatio":
             return Boolean.toString( documentModel.getField().getGoldenRatio() != null  );
             

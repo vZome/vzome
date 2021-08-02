@@ -17,6 +17,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
@@ -40,6 +41,7 @@ public class ExportedVEFShapes extends AbstractShapes
 
     private static final String NODE_MODEL = "connector";
 
+    @JsonIgnore
     private final AbstractShapes fallback;
 
     private final Properties colors = new Properties();

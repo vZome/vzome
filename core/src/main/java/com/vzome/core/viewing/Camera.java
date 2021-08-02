@@ -248,6 +248,11 @@ public class Camera
         return eyePoint;
     }
     
+    public Vector3f getLookDirection()
+    {
+        return this .mLookDirection;
+    }
+    
     public Point3f getLookAtPoint()
     {
         return mLookAtPoint;

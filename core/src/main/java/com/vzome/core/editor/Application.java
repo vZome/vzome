@@ -57,6 +57,7 @@ import com.vzome.core.exporters2d.SnapshotExporter;
 import com.vzome.core.kinds.DefaultFieldApplication;
 import com.vzome.core.kinds.GoldenFieldApplication;
 import com.vzome.core.kinds.HeptagonFieldApplication;
+import com.vzome.core.kinds.PlasticPhiFieldApplication;
 import com.vzome.core.kinds.PolygonFieldApplication;
 import com.vzome.core.kinds.RootThreeFieldApplication;
 import com.vzome.core.kinds.RootTwoFieldApplication;
@@ -235,8 +236,7 @@ public class Application implements AlgebraicField.Registry
         case "plasticNumber":
             return new DefaultFieldApplication ( new PlasticNumberField( AlgebraicNumberImpl.FACTORY ) );
         case "plasticPhi":
-            // TODO: Eventually return new PlasticPhiFieldApplication ( new PlasticPhiField() );
-            return new DefaultFieldApplication ( new PlasticPhiField( AlgebraicNumberImpl.FACTORY ) );
+            return new PlasticPhiFieldApplication( new PlasticPhiField( AlgebraicNumberImpl.FACTORY ) );
         case "edPegg": 
             return new DefaultFieldApplication ( new EdPeggField( AlgebraicNumberImpl.FACTORY ) );
         }
