@@ -22,7 +22,6 @@ export const designReducer = combineReducers( {
   embedding: identityReducer, 
   name: identityReducer,
   text: identityReducer,
-  success: identityReducer,
   field: identityReducer,
   rendererName: identityReducer,
   preview: identityReducer,
@@ -35,7 +34,6 @@ export const initializeDesign = ( field, name, rendererName, text ) => ({
     future: [],
   },
   // TODO: initialize dbugger?
-  success: true,
   camera: cameraDefault,
   rendererName,
   field,
@@ -248,7 +246,8 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
       dispatch( loadingDesign( name, design ) )
       dispatch( loadedDesign( name, design ) )
     })
-    .catch( async () => {
+    .catch( async error => {
+      console.log( `Preview load of "${previewUrl}" failed due to error: ${error}` )
 
       const failure = message => {
         console.log( message )
