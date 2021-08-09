@@ -1,8 +1,8 @@
 
 import React, { useRef, useMemo } from 'react'
-import { Canvas, useThree, extend, useFrame } from 'react-three-fiber'
+import { Canvas, useThree, extend, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-import { PerspectiveCamera } from 'drei'
+import { PerspectiveCamera } from '@react-three/drei'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
 
 extend({ TrackballControls })
