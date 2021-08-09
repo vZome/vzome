@@ -23,8 +23,12 @@ This gives you two launch profiles, `online` and `react-vzome`.  Using the VS Co
 
 ## Testing the React Component
 
-Periodically, it is a good idea to test the React component on its own.  Use the `react-vzome` launch profile in
-VS Code for this purpose.
+Periodically, it is a good idea to test the React component on its own.
+In the library shell, run `npm run dev`.  (You may find it necessary to do `npm i` first.)
+That will launch the `react-library/public/index.html` page in your default browser.
+
+With the library dev server running, you can use the `react-vzome` launch profile in VS Code
+to debug the client-side code.  This will launch a separate Chrome instance.
 
 ## Shipping a Build
 
@@ -89,3 +93,24 @@ However, that approach does not let me debug effectively.
 I explored Vite, and then settled on Snowpack, but *only for dev*.  I still use CRA to do the build,
 since Snowpack does not really do what I want with dependencies.
 
+## Notes
+
+Any given command may do significant computation, such as computing a convex hull or a 4D polytope.
+That cost is compounded by the new fields of high order, and the arbitrary precision arithmetic.
+The bottom line is that each command really should be performed in a Web Worker;
+there is no other way to guarantee that rendering is not impacted,
+except to break up the processing into small chunks using setTimeout(0),
+and that would be invasive in the legacy Java code.
+
+Web Workers do not share any memory with the main Javascript thread.
+Any necessary data flows as serialized copies in the messages passed back and forth.
+This means that we must take one of two approaches: either the Web Worker is essentially stateless,
+or it maintains the mesh state for every design.  For the stateless approach, the entire mesh would
+have to flow in and out in the messages.  The stateful approach would be more similar to the client-server
+approach I used for the Unity implementation, where only rendering state is stored with the main thread,
+and "render events" would flow back from the Web Worker.
+
+A third approach would be to use offline canvas, essentially moving all the processing *and* rendering
+to the worker.  This sounds pretty attractive, but presents two obstacles at the moment.
+First, offline canvas is only supported in Chromium browsers today.  Second, and more critically,
+it appears that `react-three-fiber` does not support rendering to offscreen canvases.
