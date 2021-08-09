@@ -1,12 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import * as THREE from 'three'
-import { useResource } from 'react-three-fiber'
 
 function BuildPlane( { config, startGridHover, stopGridHover } )
 {
   const { position, quaternion, grid, color, size, field } = config
-  const [ materialRef, material ] = useResource()
-  const [ planeMaterialRef, planeMaterial ] = useResource()
+  const [ material, materialRef ] = useState()
+  const [ planeMaterial, planeMaterialRef ] = useState()
   const rsize = field.embed( size )
   const dotSize = rsize / 24
   const discSize = rsize * 4
