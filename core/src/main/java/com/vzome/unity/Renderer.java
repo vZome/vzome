@@ -38,7 +38,7 @@ class Renderer implements RenderingChanges
     @Override
     public void manifestationAdded( RenderedManifestation rm )
     {
-        ObjectNode node = this .mapper .getObjectNode( rm );
+        ObjectNode node = this .mapper .getObjectNode( rm, false );
         if ( node != null ) {
             Polyhedron shape = rm .getShape();
             ObjectNode shapeNode = this .mapper .getShapeNode( shape );

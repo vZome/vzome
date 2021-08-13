@@ -4,20 +4,13 @@ import root2Field from '../fields/root2.js'
 import root3Field from '../fields/root3.js'
 import heptagonField from '../fields/heptagon.js'
 import Adapter from './adapter.js'
-import { JavaDomElement, JsProperties } from './wrappers.js'
+import { algebraicNumberFactory, JavaDomElement, JsProperties } from './wrappers.js'
 
 import allShapes from '../resources/com/vzome/core/parts/index.js'
 import groupResources from '../resources/com/vzome/core/math/symmetry/index.js'
 
 import { com } from '../jsweet/transpiled-java.js'
 import { java } from '../jsweet/j4ts-2.0.0/bundle.js'
-
-const fields = {
-  [goldenField.name]: goldenField,
-  [root2Field.name]: root2Field,
-  [root3Field.name]: root3Field,
-  [heptagonField.name]: heptagonField
-}
 
 // Copied from core/src/main/resources/com/vzome/core/editor/defaultPrefs.properties
 const defaults = {
@@ -224,7 +217,9 @@ export const init = async () =>
       return new vzomePkg.core.editor.CommandEdit( null, editor )
   }
 
-  const injectResource = async ( path, url ) =>
+  const resources = {}
+
+  const loadAndInjectResource = async ( path, url ) =>
   {
     const response = await fetch( url )
     if ( ! response.ok ) {
@@ -237,23 +232,59 @@ export const init = async () =>
       // HTML from a 404, just skip it
       return
     }
-    vzomePkg.xml.ResourceLoader.injectResource( path, text )
+    resources[ path ] = text
     console.log( `injected resource ${path}` )
   }
 
+  // Now we can setup the ResourceLoader; we must do this before initializing the fieldApps,
+  //  since they need the colors.properties to create the ExportedVEFShapes.
+  vzomePkg.xml.ResourceLoader.setResourceLoader( {
+    loadTextResource: path => resources[ path ]
+  } )
+
   // Initialize the field application
-  await Promise.all( Object.entries( groupResources ).map( ([ key, value ]) => injectResource( `com/vzome/core/math/symmetry/${key}.vef`, value ) ) )
+  await Promise.all( Object.entries( groupResources ).map( ([ key, value ]) => loadAndInjectResource( `com/vzome/core/math/symmetry/${key}.vef`, value ) ) )
   const properties = new JsProperties( defaults )
   const colors = new vzomePkg.core.render.Colors( properties )
-  const gfield = new vzomePkg.jsweet.JsAlgebraicField( goldenField )
-  const r2field = new vzomePkg.jsweet.JsAlgebraicField( root2Field )
-  const r3field = new vzomePkg.jsweet.JsAlgebraicField( root3Field )
-  const heptfield = new vzomePkg.jsweet.JsAlgebraicField( heptagonField )
-  const fieldApps = {
-    golden: new vzomePkg.core.kinds.GoldenFieldApplication( gfield ),
-    rootTwo: new vzomePkg.core.kinds.RootTwoFieldApplication( r2field ),
-    rootThree: new vzomePkg.core.kinds.RootThreeFieldApplication( r3field ),
-    heptagon: new vzomePkg.core.kinds.HeptagonFieldApplication( heptfield ),
+
+  const fieldApps = {}
+  const wrapLegacyField = ( legacyField ) => ({
+    origin: () => legacyField.origin( 3 ).getComponents().map( an => an.toTrailingDivisor() )
+  })
+  const addLegacyField = ( fieldClass, appClass ) =>
+  {
+    const legacyField = new fieldClass( algebraicNumberFactory )
+    legacyField.delegate = wrapLegacyField( legacyField )
+    fieldApps[ legacyField.getName() ] = new appClass( legacyField )
+  }
+  const addNewField = ( field, appClass ) =>
+  {
+    const legacyField = new vzomePkg.jsweet.JsAlgebraicField( field )
+    fieldApps[ field.name ] = new appClass( legacyField )
+  }
+  addNewField( goldenField, vzomePkg.core.kinds.GoldenFieldApplication )
+  addNewField( root2Field, vzomePkg.core.kinds.RootTwoFieldApplication )
+  addNewField( root3Field, vzomePkg.core.kinds.RootThreeFieldApplication )
+  addNewField( heptagonField, vzomePkg.core.kinds.HeptagonFieldApplication )
+  addLegacyField( vzomePkg.fields.sqrtphi.SqrtPhiField, vzomePkg.fields.sqrtphi.SqrtPhiFieldApplication )
+  addLegacyField( vzomePkg.core.algebra.SnubCubeField, vzomePkg.core.kinds.SnubCubeFieldApplication )
+  addLegacyField( vzomePkg.core.algebra.SuperGoldenField, vzomePkg.core.kinds.DefaultFieldApplication )
+  addLegacyField( vzomePkg.core.algebra.PlasticNumberField, vzomePkg.core.kinds.DefaultFieldApplication )
+  addLegacyField( vzomePkg.core.algebra.PlasticPhiField, vzomePkg.core.kinds.DefaultFieldApplication )
+  addLegacyField( vzomePkg.core.algebra.EdPeggField, vzomePkg.core.kinds.DefaultFieldApplication )
+  const getFieldApp = name =>
+  {
+    let fieldApp = fieldApps[ name ]
+    if ( ! fieldApp ) {
+      if ( name.startsWith( "polygon" ) ) {
+        const nsides = parseInt( name.replace( /^polygon/, '' ) )
+        const legacyField = new vzomePkg.core.algebra.PolygonField( "polygon"+nsides, nsides, algebraicNumberFactory )
+        legacyField.delegate = wrapLegacyField( legacyField )
+        fieldApp = new vzomePkg.core.kinds.PolygonFieldApplication( legacyField )
+        fieldApps[ legacyField.getName() ] = fieldApp
+      }
+    }
+    return fieldApp
   }
 
   // This object implements the UndoableEdit.Context interface
@@ -273,7 +304,7 @@ export const init = async () =>
     performAndRecord: edit => edit.perform()
   }
   
-  const createShapeRenderer = orbitSource => ({
+  const createRenderer = orbitSource => ({
     name: orbitSource.getShapes().getName(),
     shaper: shaperFactory( vzomePkg, orbitSource ),
     embedding: orbitSource.getEmbedding(),
@@ -283,12 +314,13 @@ export const init = async () =>
   {
     // This reproduces the DocumentModel constructor pretty faithfully
 
-    const fieldApp = fieldApps[ fieldName ]
-    if ( ! fieldApp )
-      return {}
-    const field = fieldApp.getField()
+    const fieldApp = getFieldApp( fieldName )
+    if ( !fieldApp )
+      return { field: { name: fieldName, unknown: true } }
+    const legacyField = fieldApp.getField()
+    const field = legacyField.delegate
 
-    const originPoint = new vzomePkg.core.construction.FreePoint( field.origin( 3 ) )
+    const originPoint = new vzomePkg.core.construction.FreePoint( legacyField.origin( 3 ) )
 
     const systemXml = xml && xml.getChildElement( "SymmetrySystem" )
     const symmName = systemXml && systemXml.getAttribute( "name" )
@@ -331,13 +363,13 @@ export const init = async () =>
       getQuaternionSet: name => fieldApp.getQuaternionSymmetry( name )
     }
 
-    const realizedModel = new vzomePkg.jsweet.JsRealizedModel( field )
-    const selection = new vzomePkg.jsweet.JsSelection( field )
+    const realizedModel = new vzomePkg.jsweet.JsRealizedModel( legacyField )
+    const selection = new vzomePkg.jsweet.JsSelection( legacyField )
     const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp, orbitSource, symmetrySystems )
     toolsModel.setEditorModel( editor )
 
     const format = namespace && vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )
-    format && format.initialize( field, orbitSetField, 0, "vZome Online", new util.Properties() )
+    format && format.initialize( legacyField, orbitSetField, 0, "vZome Online", new util.Properties() )
 
     const toolFactories = new util.HashMap()
     for ( const symmetrySystem of Object.values( symmetrySystems ) ) {
@@ -352,19 +384,74 @@ export const init = async () =>
     const toolsXml = xml && xml.getChildElement( "Tools" )
     toolsXml && toolsModel.loadFromXml( toolsXml )
 
-    const shapeRenderer = createShapeRenderer( orbitSource )
+    const renderer = createRenderer( orbitSource )
 
-    const parseAndPerformEdit = ( xmlElement, adapter ) =>
+    const parseAndPerformEdit = ( xmlElement, mesh ) =>
     {
       const wrappedElement = new JavaDomElement( xmlElement )
-      // Note that we do not do editor.setAdapter( adapter ) yet.  This means that we cannot
+      // Note that we do not do editor.setAdapter() yet.  This means that we cannot
       //  deal with edits that have side-effects in their constructors!
       const edit = editFactory( editor, toolFactories, toolsModel )( wrappedElement )
       if ( ! edit )   // Null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit.
         return false  //  Not indicating failure, just indicating nothing to record in history
-      editor.setAdapter( adapter )
+      const { shown, selected, hidden, groups } = mesh
+      editor.setAdapter( new Adapter( shown, selected, hidden, groups ) )
       edit.loadAndPerform( wrappedElement, format, editContext )
       return true
+    }
+
+    /*
+      STATUS:
+          This approach is working OK, as far as producing valid JSON goes.  Obviously,
+          The branch JSON is wrong.  More problematic is that the branch is already
+          unpacked in the history.  This needs more thought.
+
+          Another thing to consider is whether to simply convert the DOM elements to
+          Javascript objects during the parse, effectively normalizing the edits.
+          As an optimization, the DOM element could be retained.  When the converted
+          JSON file is loaded a second time, the DOM elements would have to be reconstructed.
+
+          Perhaps I should focus on "native" (non-legacy) edits first, so the interpreter
+          is not biased towards DOM as it is today.  (See the createEdit API below.)
+    */
+    const serializeLegacyEdit = domElement =>
+    {
+      const editType = domElement.nodeName
+      const result = { editType }
+      if ( editType === "Branch" ) {
+        result.edits = []
+        return result
+      }
+      // not a branch, if we got here
+      domElement.getAttributeNames().forEach( name => {
+        if ( name !== 'id' ) result[ name ] = domElement.getAttribute( name )
+      })
+      if ( domElement.textContent ) {
+        const text = domElement.textContent.trim()
+        if ( !! text )
+          result.textContent = text
+      }
+      if ( domElement.firstElementChild ) {
+        console.log( `Nested XML: ${domElement.nodeName} ${domElement.firstElementChild.outerHTML}` );
+      }
+      return result
+    }
+
+    const createEdit = ( domElement ) =>
+    {
+      const isBranch = () => domElement.nodeName === "Branch"
+      const name = () => domElement.nodeName
+      const id = () => domElement.id
+      const nextSibling = () => domElement.nextElementSibling && createEdit( domElement.nextElementSibling )
+      const firstChild = () => domElement.firstElementChild && createEdit( domElement.firstElementChild )
+      const getAttributeNames = () => domElement.getAttributeNames()
+      const getAttribute = name => domElement.getAttribute( name )
+      const perform = mesh => parseAndPerformEdit( domElement, mesh )
+      const serialize = () => serializeLegacyEdit( domElement )
+      return {
+        nextSibling, firstChild, isBranch, id, perform,   // these are for the interpreter
+        name, getAttributeNames, getAttribute, serialize, // these are for the debugger UI
+      }
     }
 
     const configureAndPerformEdit = ( className, config, adapter ) =>
@@ -377,36 +464,34 @@ export const init = async () =>
       edit.perform()
     }
 
-    return { shapeRenderer, parseAndPerformEdit, configureAndPerformEdit }
+    return { renderer, createEdit, configureAndPerformEdit, field }
   }
 
   // Discover all the legacy edit classes and register as commands
   const commands = {}
   for ( const name of Object.keys( vzomePkg.core.edits ) )
     commands[ name ] = legacyCommandFactory( documentFactory, name )
-  // store.dispatch( commandsDefined( commands ) )
 
-  // Prepare the orbitSource for resolveShapes
+  // Prepare the gridPoints
   const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
   const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, editContext, colors, true )
-  orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
-  const shapeRenderer = createShapeRenderer( orbitSource )
-
-  const blue = [ [0,0,1], [0,0,1], [1,0,1] ]
-  const yellow = [ [0,0,1], [1,0,1], [1,1,1] ]
-  const red = [ [1,0,1], [0,0,1], [0,1,1] ]
-  const green = [ [1,0,1], [1,0,1], [0,0,1] ]
+  // orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
+  const blue = [ [0n,0n,1n], [0n,0n,1n], [1n,0n,1n] ]
+  const yellow = [ [0n,0n,1n], [1n,0n,1n], [1n,1n,1n] ]
+  const red = [ [1n,0n,1n], [0n,0n,1n], [0n,1n,1n] ]
+  const green = [ [1n,0n,1n], [1n,0n,1n], [0n,0n,1n] ]
   const gridPoints = vzomePkg.jsweet.JsAdapter.getZoneGrid( orbitSource, blue )
   // store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
 
   const parser = createParser( documentFactory )
 
   await Promise.all( Object.entries( allShapes ).map(
-    async ([ family, shapes ]) =>
-      await Promise.all( Object.entries( shapes ).map( ([ key, value ]) => injectResource( `com/vzome/core/parts/${family}/${key}.vef`, value ) ) )
+    async ([ family, shapes ]) => {
+      await Promise.all( Object.entries( shapes ).map( ([ key, value ]) => loadAndInjectResource( `com/vzome/core/parts/${family}/${key}.vef`, value ) ) )
+    }
   ) )
 
-  return { parser, shapeRenderer, commands, gridPoints }
+  return { parser, commands, gridPoints }
 }
 
 export const coreState = init()
@@ -414,7 +499,7 @@ export const coreState = init()
 const realizeShape = ( shape ) =>
 {
   const vertices = shape.getVertexList().toArray().map( av => {
-    const { x, y, z } = av.toRealVector() // embedding.embedInR3( av )
+    const { x, y, z } = av.toRealVector()  // this is too early to do embedding, which is done later, globally
     return { x, y, z }
   })
   const faces = shape.getTriangleFaces().toArray()
@@ -486,109 +571,43 @@ const assignIds = ( element, id=':' ) => {
   return element
 }
 
-export const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
-
-export const interpret = ( action, parseAndPerform, adapter, editElement, stack=[], recordSnapshot ) =>
+const parseVector = ( element, name ) =>
 {
-  const step = () =>
+  const child = element.getChildElement( name )
+  const x = parseFloat( child.getAttribute( "x" ) )
+  const y = parseFloat( child.getAttribute( "y" ) )
+  const z = parseFloat( child.getAttribute( "z" ) )
+  return [ x, y, z ]
+}
+
+const parseColor = ( rgbCsv ) =>
+{
+  const [ r, g, b ] = rgbCsv.split( "," ).map( s => parseInt( s ) )
+  const componentToHex = (c) =>
   {
-    if ( ! editElement )
-      return Step.DONE
-    if ( editElement.nodeName === "Branch" ) {
-      const branchAdapter = adapter.clone()
-      stack.push( { branch: editElement, adapter } )
-      recordSnapshot && recordSnapshot( branchAdapter, editElement.id, editElement.firstElementChild, stack )
-      editElement = editElement.firstElementChild // this assumes there are no empty branches
-      adapter = branchAdapter
-      return Step.IN
-    } else {
-      adapter = adapter.clone()  // each command builds on the last
-      parseAndPerform( editElement, adapter )
-      if ( editElement.nextElementSibling ) {
-        recordSnapshot && recordSnapshot( adapter, editElement.id, editElement.nextElementSibling )
-        editElement = editElement.nextElementSibling
-        return Step.OVER
-      } else {
-        let top
-        do {
-          top = stack.pop()
-        } while ( top && ! top.branch.nextElementSibling )
-        if ( top ) {
-          adapter = top.adapter.clone()  // overwrite and discard the prior value
-          editElement = top.branch.nextElementSibling
-          recordSnapshot && recordSnapshot( adapter, editElement.id, editElement, stack )
-          return Step.OUT
-        } else {
-          // at the end of the editHistory
-          recordSnapshot && recordSnapshot( adapter, editElement.id, null )
-          return Step.DONE
-        }
-      }
-    }
+    const hex = c.toString( 16 )
+    return hex.length === 1 ? "0" + hex : hex
   }
+  return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b)
+}
 
-  const conTinue = () =>
-  {
-    let stepped
-    do {
-      stepped = stepOut()
-    } while ( stepped !== Step.DONE );
-  }
-
-  const stepOver = () =>
-  {
-    const stepped = step()
-    switch ( stepped ) {
-
-      case Step.IN:
-        stepOut()
-        return Step.OVER
-    
-      default:
-        return stepped
-    }
-  }
-
-  const stepOut = () =>
-  {
-    let stepped
-    do {
-      stepped = stepOver()
-    } while ( stepped !== Step.OUT && stepped !== Step.DONE )
-    return stepped
-  }
-
-  switch ( action ) {
-
-    case Step.IN:
-      step()
-      break;
-  
-    case Step.OVER:
-      stepOver()
-      break;
-  
-    case Step.OUT:
-      stepOut()
-      break;
-  
-    case Step.DONE:
-    default:
-      conTinue()
-      break;
+export const parseLighting = ( sceneElement ) =>
+{
+  const backgroundColor = parseColor( sceneElement.getAttribute( "background" ) )
+  return {
+    backgroundColor,
+    // TODO: parse these too, in case they change someday
+    ambientColor: '#292929',
+    directionalLights: [ // These are the vZome defaults, for consistency
+      { direction: [ 1, -1, -1 ], color: '#EBEBE4' },
+      { direction: [ -1, 0, 0 ], color: '#E4E4EB' },
+      { direction: [ 0, 0, -1 ], color: '#1E1E1E' },
+    ]
   }
 }
 
 export const parseViewXml = ( viewingElement ) =>
 {
-  const parseVector = ( element, name ) =>
-  {
-    const child = element.getChildElement( name )
-    const x = parseFloat( child.getAttribute( "x" ) )
-    const y = parseFloat( child.getAttribute( "y" ) )
-    const z = parseFloat( child.getAttribute( "z" ) )
-    return [ x, y, z ]
-  }
   const viewModel = viewingElement.getChildElement( "ViewModel" )
   const distance = parseFloat( viewModel.getAttribute( "distance" ) )
   const near = parseFloat( viewModel.getAttribute( "near" ) )
@@ -609,16 +628,20 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
     const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
     const fieldName = vZomeRoot.getAttribute( "field" )
 
-    const { shapeRenderer, parseAndPerformEdit } = createDocument( fieldName, namespace, vZomeRoot )
-    const field = fields[ fieldName ] || { name: fieldName, unknown: true }
-    
+    const { renderer, createEdit, field } = createDocument( fieldName, namespace, vZomeRoot )
+
     const viewing = vZomeRoot.getChildElement( "Viewing" )
     const camera = viewing && parseViewXml( viewing )
+
+    const scene = vZomeRoot.getChildElement( "sceneModel" )
+    const lighting = scene && parseLighting( scene )
+
     const edits = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement )
     // Note: I'm adding one so that this matches the assigned ID of the next edit to do
     const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
+    const firstEdit = createEdit && createEdit( edits.firstElementChild )
 
-    return { edits, camera, field, parseAndPerformEdit, targetEdit, shapeRenderer }
+    return { firstEdit, camera, field, targetEdit, renderer, lighting }
   } catch (error) {
     console.log( `%%%%%%%%%%%%%%%%%%% legacyjava.js parser failed: ${error}` )
     return null

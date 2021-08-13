@@ -1,44 +1,43 @@
 package com.vzome.xml;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ResourceLoader
 {
-    private static final Map<String, String> INJECTED_RESOURCES = new HashMap<String, String>();
-    
-    public static void injectResource( String path, String content )
+    private static ResourceLoader RESOURCE_LOADER = new ResourceLoader();
+
+    private static final Logger logger = Logger.getLogger( "com.vzome.xml.ResourceLoader" );
+
+    public static void setResourceLoader( ResourceLoader loader )
     {
-        INJECTED_RESOURCES .put( path, content );
+        RESOURCE_LOADER = loader;
     }
     
-    public static boolean hasInjectedResource( String path )
+    public static String loadStringResource( String path )
     {
-        return INJECTED_RESOURCES .containsKey( path );
+        return RESOURCE_LOADER .loadTextResource( path );
     }
     
-    public static String getInjectedResource( String path )
+    public String loadTextResource( String path )
     {
-        return INJECTED_RESOURCES .get( path );
-    }
-    
-    public static String loadStringResource( String path ) throws IOException
-    {
-        if ( hasInjectedResource( path ) )
-            return getInjectedResource( path );
-        
-        InputStream input = ResourceLoader.class .getClassLoader() .getResourceAsStream( path );
-        if ( input == null )
-            return null; // Should never happen?
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
-        int num;
-        while ( ( num = input .read( buf, 0, 1024 )) > 0 )
-            out .write( buf, 0, num );
-        input .close(); 
-        return new String( out .toByteArray() );
+        try {
+            InputStream input = ResourceLoader.class .getClassLoader() .getResourceAsStream( path );
+            if ( input == null )
+                return null; // Should never happen?
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buf = new byte[1024];
+            int num;
+            while ( ( num = input .read( buf, 0, 1024 )) > 0 )
+                out .write( buf, 0, num );
+            input .close(); 
+            return new String( out .toByteArray() );
+        } catch (Exception e) {
+            if ( logger .isLoggable( Level.FINE ) )
+                logger .fine( "problem loading resource: " + path );
+            return null;
+        }
     }
 }

@@ -125,7 +125,11 @@ public abstract class JsManifestation implements Manifestation
             return new JsBall( field, adapter, vectors );
 
         case 2:
-            return new JsStrut( field, adapter, vectors );
+            JsStrut strut = new JsStrut( field, adapter, vectors );
+            if ( strut .getOffset() .isOrigin() )
+                return null; // consistent with Java implementation
+            else
+                return strut;
 
         default:
             // TODO JsPanel

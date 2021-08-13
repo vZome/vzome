@@ -31,10 +31,12 @@ import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.Command.FailureChannel;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.math.symmetry.AntiprismSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Scene;
+import com.vzome.core.viewing.AntiprismTrackball;
 import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.RenderingViewer;
 
@@ -46,7 +48,7 @@ public class ApplicationController extends DefaultController
 
     private final UI ui;
 
-    private final Properties userPreferences = new Properties();
+    private final Properties storedConfig = new Properties();
 
     private final Properties properties = new Properties();
 
@@ -54,7 +56,7 @@ public class ApplicationController extends DefaultController
 
     private final com.vzome.core.editor.Application modelApp;
 
-    private final File preferencesFile;
+    private final File configFile;
 
     private int lastUntitled = 0;
 
@@ -89,16 +91,27 @@ public class ApplicationController extends DefaultController
         if ( ! prefsFile .exists() ) {
             prefsFile = new File( prefsFolder, ".vZome.prefs" );
         }
-        this.preferencesFile = prefsFile;
+        Properties userPrefs = new Properties();
         if ( ! prefsFile .exists() ) {
             logger .config( "Used default preferences." );
         } else {
             try {
                 InputStream in = new FileInputStream( prefsFile );
-                userPreferences .load( in );
+                userPrefs .load( in );
                 logger .config( "User Preferences loaded from " + prefsFile .getAbsolutePath() );
             } catch ( Throwable t ) {
                 logger .severe( "problem reading user preferences: " + t.getMessage() );
+            }
+        }
+
+        this.configFile = new File( new File( System.getProperty( "user.home" ) ), ".vZome-config.properties" );
+        if ( this.configFile .exists() ) {
+            try {
+                InputStream in = new FileInputStream( this.configFile );
+                storedConfig .load( in );
+                logger .config( "Stored config loaded from " + this.configFile .getAbsolutePath() );
+            } catch ( Throwable t ) {
+                logger .severe( "problem reading stored config: " + t.getMessage() );
             }
         }
 
@@ -113,9 +126,11 @@ public class ApplicationController extends DefaultController
             logger.severe( "problem reading default preferences: " + defaultRsrc );
         }
 
-        // last-wins, so getProperty() will show command-line args overriding user prefs, which override built-in defaults
+        // last-wins, so getProperty() will show command-line args overriding stored configs,
+        //   which override user prefs, which override built-in defaults
         properties .putAll( defaults );
-        properties .putAll( userPreferences );
+        properties .putAll( userPrefs );
+        properties .putAll( this.storedConfig );
         properties .putAll( commandLineArgs );
 
         // This seems to get rid of the "white-out" problem on David's (Windows) computer.
@@ -165,21 +180,29 @@ public class ApplicationController extends DefaultController
 
     public RenderedModel getSymmetryModel( String path, Symmetry symmetry )
     {
-        RenderedModel result = this .symmetryModels .get( path );
-        // The cache does not care if the symmetry matches.
-        if ( result != null )
+        String key = path;
+        if(symmetry instanceof AntiprismSymmetry) {
+            // Create distinct keys for antiprism symmetries.
+            // Otherwise, the cache does not care if the symmetry matches.
+            key = path + "@" + symmetry.getName();
+        }
+        RenderedModel result = this .symmetryModels .get( key );
+        if ( result != null ) {
             return result;
-
+        }
+        
         ClassLoader cl = this .getClass() .getClassLoader();
         InputStream bytes = cl.getResourceAsStream( path );
+        
+        if(symmetry instanceof AntiprismSymmetry) {
+            bytes = AntiprismTrackball.getTrackballModelStream(bytes, (AntiprismSymmetry)symmetry);
+        }
 
         try {
             DocumentModel document = this .modelApp .loadDocument( bytes );
-            // a RenderedModel that only creates panels
-            document .setRenderedModel( new RenderedModel( symmetry ) .withColorPanels( false ) ); 
             document .finishLoading( false, false );
             result = document .getRenderedModel();
-            this .symmetryModels .put( path, result );
+            this .symmetryModels .put( key, result );
             return result;
         } catch ( Exception e ) {
             throw new RuntimeException( e );
@@ -193,6 +216,7 @@ public class ApplicationController extends DefaultController
             if ( action .equals( "showAbout" ) 
                     || action .equals( "openURL" ) 
                     || action .equals( "quit" )
+                    || action .equals( "new-polygon" )
                     || action .startsWith( "browse-" )
                     )
             {
@@ -201,16 +225,16 @@ public class ApplicationController extends DefaultController
             }
 
             if( "launch".equals(action) ) {
-                String sawWelcome = userPreferences .getProperty( "saw.welcome" );
+                String sawWelcome = this.properties .getProperty( "saw.welcome" );
                 if ( sawWelcome == null )
                 {
-                    String welcome = properties .getProperty( "welcome" );
+                    String welcome = this.properties .getProperty( "welcome" );
                     doAction( "openResource-" + welcome );
-                    userPreferences .setProperty( "saw.welcome", "true" );
+                    this.storedConfig .setProperty( "saw.welcome", "true" );
                     FileWriter writer;
                     try {
-                        writer = new FileWriter( preferencesFile );
-                        userPreferences .store( writer, "" );
+                        writer = new FileWriter( this.configFile );
+                        this.storedConfig .store( writer, "This file is managed by vZome.  Do not edit." );
                         writer .close();
                     } catch ( IOException e ) {
                         logger.fine(e.toString());
@@ -307,17 +331,25 @@ public class ApplicationController extends DefaultController
             Path filePath = file .toPath();
             String path = filePath .toAbsolutePath() .toString();
 
-            int pos = path .toLowerCase() .lastIndexOf( ".vzome." );
-            if( pos > 0 ) {
+            String lowerPath = path .toLowerCase();
+            int pos = lowerPath .lastIndexOf( ".vzome." );
+            if( pos > 0 && ! lowerPath .endsWith( ".vzome" ) ) {
                 /*
                  * This allows the user to select a file named "foo.vzome.png" that they can preview,
                  * as a "proxy" that will actually attempt to open the corresponding vzome file.
                  * 
                  * Note that such a "proxy" image file with a ".vome.png" extension is generated automatically 
                  * upon saving a vZome file by adding "save.exports=capture.png" to .vZome.prefs.
+                 *
+                 * On Windows, there is a pattern for saving a copy of an existing file that triggers a
+                 * duplicate extension, like "whatever.vzome.vZome", so we want to exclude that case.
                  */
                 path = path.substring( 0, pos += 6 );
                 file = Paths .get( path ) .toFile();
+                if ( ! file.exists() ) {
+                    this .mErrors .reportError( "File does not exist: " + path, new Object[]{} );
+                    return;
+                }
             }
 
             docProps .setProperty( "window.title", path );
@@ -419,11 +451,23 @@ public class ApplicationController extends DefaultController
                 case "rootThree":
                     return "\u221A3";
 
+                case "snubCube":
+                    return "Snub Cube";
+
                 case "snubDodec":
                     return "Snub Dodec";
 
                 case "sqrtPhi":
                     return "\u221A\u03C6";
+
+                case "superGolden":
+                    return "Super Golden";
+
+                case "plasticNumber":
+                    return "Plastic Number";
+
+                case "plasticPhi":
+                    return "Plastic \u03C6";
 
                 default:
                     if( fieldName.startsWith("sqrt") ) {
@@ -459,6 +503,7 @@ public class ApplicationController extends DefaultController
                 case "rootTwo":
                 case "rootThree":
                 case "heptagon":
+                case "sqrtPhi":
                     return "true"; // these are enabled for everyone
 
                 default:
@@ -472,7 +517,18 @@ public class ApplicationController extends DefaultController
     @Override
     public void setModelProperty( String name, Object value )
     {
-        this .properties .setProperty( name, value .toString() );
+        this.properties .setProperty( name, value .toString() );
+        if ( "githubAccessToken" .equals( name ) ) {
+            this.storedConfig .setProperty( name, value .toString() );
+            FileWriter writer;
+            try {
+                writer = new FileWriter( this.configFile );
+                this.storedConfig .store( writer, "This file is managed by vZome.  Do not edit." );
+                writer .close();
+            } catch ( IOException e ) {
+                logger.fine(e.toString());
+            }
+        }
     }
 
     @Override
@@ -562,11 +618,13 @@ public class ApplicationController extends DefaultController
         return modelApp .getLights();
     }
     
+    @Override
     protected void runScript( String script, File file )
     {
         this .ui .runScript( script, file );
     }
 
+    @Override
     protected void openApplication( File file )
     {
         String script = this .getProperty( "export.script" );

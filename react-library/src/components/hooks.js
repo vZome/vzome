@@ -1,6 +1,7 @@
-import { useMemo, useState, useEffect } from 'react'
-import Adapter, { createInstance } from '../core/adapter.js'
-import * as vZome from '../core/legacyjava.js'
+import { useMemo, useState, useEffect, useRef } from 'react'
+import { Matrix4 } from 'three'
+import { createInstance } from '../core/adapter.js'
+import { parse, interpret, Step } from '../core/api.js'
 
 const aspectRatio = window.innerWidth / window.innerHeight // TODO: this is totally static!
 const convertFOV = (fovX) => ( fovX / aspectRatio ) * 180 / Math.PI  // converting radians to degrees
@@ -35,19 +36,18 @@ export const useVZomeUrl = ( url, defaultCamera ) =>
 {
   const [ camera, setCamera ] = useState( defaultCamera )
   const [ mesh, setMesh ] = useState( null )
-  const [ shapeRenderer, setShapeRenderer ] = useState( null )
-  const [ xml, setXml ] = useState( null )
+  const [ renderer, setRenderer ] = useState( null )
+  const [ text, setText ] = useState( null )
   useEffect( () => {
     async function parseUrl() {
-      const { parser } = await vZome.coreState  // Must wait for the vZome code to initialize
       const text = await fetchModel( url )
       if ( !text ) {
         console.log( `Unable to fetch model file from ${url}`)
         return
       }
-      setXml( text )
-      const { edits, camera, field, parseAndPerformEdit, targetEdit, shapeRenderer } = parser( text ) || {}
-      if ( !edits ) {
+      setText( text )
+      const { firstEdit, camera, field, targetEdit, renderer } = await parse( text ) || {}
+      if ( !firstEdit ) {
         console.log( `Unable to parse XML from ${url}`)
         return
       }
@@ -56,21 +56,21 @@ export const useVZomeUrl = ( url, defaultCamera ) =>
         return
       }
       setCamera( { ...camera, fov: convertFOV( 0.75 ) } )
-      setShapeRenderer( shapeRenderer )
-      let meshAdapter = new Adapter( originShown( field ), new Map(), new Map() )
+      setRenderer( renderer )
+      let latestMesh = { shown: originShown( field ), selected: new Map(), hidden: new Map(), groups: [] }
       let targetMesh = null
-      const record = ( adapter, id ) => {
+      const record = ( mesh, id ) => {
         if ( !targetMesh && id === targetEdit ) {
-          targetMesh = meshAdapter // record the prior state
+          targetMesh = latestMesh // record the prior state
         }
-        meshAdapter = adapter // will record where we failed, if we don't reach targetEdit
+        latestMesh = mesh // will record where we failed, if we don't reach targetEdit
       } // yup, overwrite every time
-      vZome.interpret( vZome.Step.DONE, parseAndPerformEdit, meshAdapter, edits.firstElementChild, [], record )
-      setMesh( targetMesh || meshAdapter )
+      interpret( Step.DONE, latestMesh, firstEdit, [], record )
+      setMesh( targetMesh || latestMesh )
     }
     parseUrl();
   }, [url] )
-  return [ mesh, camera, shapeRenderer, xml ]
+  return [ mesh, camera, renderer, text ]
 }
 
 export const useInstanceShaper = ( shown, selected, shaper ) =>
@@ -98,7 +98,7 @@ export const useInstanceShaper = ( shown, selected, shaper ) =>
         const instances = []
         const tryToShape = ( instance, selected ) => {
           try {
-            instances.push( { ...shapeInstance( instance ), selected } )
+            instance && instances.push( { ...shapeInstance( instance ), selected } )
           } catch (error) {
             console.log( `Failed to shape instance: ${instance.id}` );
           }
@@ -114,4 +114,28 @@ export const useInstanceShaper = ( shown, selected, shaper ) =>
       return {}
   }
   return useMemo( shapeInstances, [ shown, selected, shaper ] )
+}
+
+export const useInstanceSorter = ( shapes, instances ) =>
+{
+  const filterInstances = ( shape, instances ) => instances.filter( instance => instance.shapeId === shape.id )
+  const sortByShape = () => Object.values( shapes ).map( shape => ( { shape, instances: filterInstances( shape, instances ) } ) )
+  return useMemo( sortByShape, [ shapes, instances ] )
+}
+
+export const useEmbedding = embedding =>
+{
+  const ref = useRef()
+  useEffect( () => {
+    if ( embedding && ref.current && ref.current.matrix ) {
+      const m = new Matrix4()
+      m.set( ...embedding )
+      m.transpose()
+      ref.current.matrix.identity()  // Required, or applyMatrix4() changes will accumulate
+      // This imperative approach is required because I was unable to decompose the
+      //   embedding matrix (a shear) into a scale and rotation.
+      ref.current.applyMatrix4( m )
+    }
+  }, [embedding] )
+  return ref
 }

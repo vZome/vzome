@@ -61,6 +61,8 @@ public class CameraController extends DefaultController implements Scene.Provide
 
     protected final Lights sceneLighting;
 
+    private final int maxOrientations;
+
     public interface Snapper
     {
         void snapDirections( Vector3f lookDir, Vector3f upDir );
@@ -105,10 +107,11 @@ public class CameraController extends DefaultController implements Scene.Provide
         mViewers .remove( viewer );
     }
 
-    public CameraController( Camera init, Lights sceneLighting )
+    public CameraController( Camera init, Lights sceneLighting, int maxOrientations )
     {
         model = init;
         this.sceneLighting = sceneLighting;
+        this.maxOrientations = maxOrientations;
         initialCamera = new Camera( model );
     }
 
@@ -540,8 +543,7 @@ public class CameraController extends DefaultController implements Scene.Provide
         this .symmetryModel = model;
         if ( this .scene == null )
             // Lazy scene creation
-            // TODO: what if we don't start with the largest-order symmetry?
-            this .scene = new Scene( this .sceneLighting, false, model .getOrbitSource() .getSymmetry() .getChiralOrder() );
+            this .scene = new Scene( this .sceneLighting, false, this .maxOrientations );
         else
             scene .reset();
         for ( RenderedManifestation rm : symmetryModel )

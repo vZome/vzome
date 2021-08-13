@@ -1,6 +1,4 @@
 
-//(c) Copyright 2013, Scott Vorthmann.
-
 package org.vorthmann.zome.app.impl;
 
 import org.vorthmann.ui.DefaultController;

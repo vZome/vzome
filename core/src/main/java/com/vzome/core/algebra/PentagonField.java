@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.algebra;
 
 import java.util.ArrayList;
@@ -27,7 +25,7 @@ public final class PentagonField extends AbstractAlgebraicField
 
     public PentagonField()
     {
-        super( FIELD_NAME, 2 );
+        super( FIELD_NAME, 2, AlgebraicNumberImpl.FACTORY );
     };
 
     public static final double PHI_VALUE = ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
@@ -62,18 +60,16 @@ public final class PentagonField extends AbstractAlgebraicField
     @Override
     protected BigRational[] reciprocal( BigRational[] v2 )
     {
+        BigRational ones = v2[1] .plus( v2[0] );
+        BigRational phis = v2[1] .negate();
+        
         BigRational denominator = v2[0].times(v2[0]) .plus( v2[0].times(v2[1]) ) .minus( v2[1].times(v2[1]) );
-
-        BigRational ones = v2[1] .plus( v2[0] ) .dividedBy( denominator );
-        BigRational phis = v2[1] .negate() .dividedBy( denominator );
-
+        if ( ! denominator .isOne() ) {
+            BigRational reciprocal = denominator .reciprocal();
+            ones = ones .times( reciprocal );
+            phis = phis .times( reciprocal );
+        }
         return new BigRational[]{ ones, phis };
-    }
-
-    @Override
-    public void defineMultiplier( StringBuffer buf, int which )
-    {
-        buf.append( "phi = ( 1 + sqrt(5) ) / 2" );
     }
 
     /**
@@ -110,6 +106,7 @@ public final class PentagonField extends AbstractAlgebraicField
         }
     }
 
+    @Override
     public List<Integer> recurrence( List<Integer> input )
     {        
         ArrayList<Integer> output = new ArrayList<>();

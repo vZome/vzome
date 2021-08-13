@@ -2,18 +2,19 @@ import React from 'react'
 import { Provider } from 'react-redux'
 // import logger from 'redux-logger'
 import thunk from 'redux-thunk'
-import { makeStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'
 
 import './App.css'
 
 import DesignEditor from './components/designeditor.jsx'
+// import EditMenu from './components/editmenu.jsx'
 import ErrorAlert from './components/alert.jsx'
 import VZomeAppBar from './components/appbar.jsx'
 import Debugger from './components/debugger.jsx'
 import createBundleStore from './bundles/index.js'
 
 const queryParams = new URLSearchParams( window.location.search );
+const editor = queryParams.get( 'editor' ) === 'true'
 const profile = queryParams.get( "profile" ) || queryParams.get( "editMode" )
 const debug = queryParams.get( 'debug' ) === 'true'
 
@@ -35,8 +36,9 @@ const App = () =>
               </Grid>
             </Grid>
           </div>
-        : <DesignEditor/>}
+        : <DesignEditor/> }
         <ErrorAlert/> 
+        {/* <EditMenu/>  */}
         {/* <Spinner/> */}
     </Provider>
   );

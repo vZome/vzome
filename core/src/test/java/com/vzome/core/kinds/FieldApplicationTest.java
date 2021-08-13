@@ -25,17 +25,27 @@ import com.vzome.api.Tool;
 import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicNumberImpl;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.EdPeggField;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
+import com.vzome.core.algebra.PlasticNumberField;
+import com.vzome.core.algebra.PlasticPhiField;
+import com.vzome.core.algebra.PolygonField;
+import com.vzome.core.algebra.PolygonFieldTest;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
+import com.vzome.core.algebra.SnubCubeField;
+import com.vzome.core.algebra.SnubDodecField;
+import com.vzome.core.algebra.SuperGoldenField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.commands.CommandSymmetry;
 import com.vzome.core.commands.CommandTauDivision;
+import com.vzome.core.editor.Application;
 import com.vzome.core.editor.FieldApplication;
-import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
+import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.generic.Utilities;
@@ -55,6 +65,7 @@ import com.vzome.core.tools.ProjectionTool;
 import com.vzome.core.tools.RotationTool;
 import com.vzome.core.tools.ScalingTool;
 import com.vzome.core.tools.TranslationTool;
+import com.vzome.fields.sqrtphi.SqrtPhiField;
 import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;
 
 public class FieldApplicationTest
@@ -68,10 +79,52 @@ public class FieldApplicationTest
         result.add( new RootTwoFieldApplication( new RootTwoField() ) );
         result.add( new RootThreeFieldApplication(new RootThreeField() ) );
         result.add( new HeptagonFieldApplication( new HeptagonField() ) );
-        result.add( new SqrtPhiFieldApplication());
-        result.add( new SnubDodecFieldApplication());
+        result.add( new SqrtPhiFieldApplication( new SqrtPhiField( AlgebraicNumberImpl.FACTORY )));
+        result.add( new SnubCubeFieldApplication( new SnubCubeField( AlgebraicNumberImpl.FACTORY ) ) );
+        result.add( new SnubDodecFieldApplication( new SnubDodecField( AlgebraicNumberImpl.FACTORY ) ));
+        result.add( new DefaultFieldApplication ( new PlasticNumberField( AlgebraicNumberImpl.FACTORY ) ) );
+        result.add( new DefaultFieldApplication ( new PlasticPhiField( AlgebraicNumberImpl.FACTORY ) ) );
+//        result.add( new PlasticPhiFieldApplication ( new PlasticPhiField( AlgebraicNumberImpl.FACTORY ) ) ); // TODO: Tweak the test cases when this is fully imllemented
+        result.add( new DefaultFieldApplication ( new SuperGoldenField( AlgebraicNumberImpl.FACTORY ) ) );
+        result.add( new DefaultFieldApplication ( new EdPeggField( AlgebraicNumberImpl.FACTORY ) ) );
+        for(int nSides = PolygonField.MIN_SIDES; nSides < PolygonFieldTest.MAX_SIDES; nSides++) {
+            PolygonField field = new PolygonField( nSides, AlgebraicNumberImpl.FACTORY );
+            result.add( new PolygonFieldApplication( field ));
+        }
         return result;
     }
+    
+    @Test
+    public void testApplicationDocumentKinds()
+    {
+        // This test ensures that all supported document kinds are included in this test suite and vise versa.
+        // AlgebraicFieldTest and FieldApplicationTest have similar but not identical tests.
+        // Note that this test will need to be tweaked when we add parameterized fields like PolygonField and SqrtField.
+        System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
+        Application app = new Application(false, null, null);
+        for(FieldApplication testApp: getTestFieldApplications()) {
+            String testAppName = testApp.getName();
+            assertNotNull("Application should contain test app " + testAppName, app.getDocumentKind(testAppName));
+        }
+        assertEquals("Application should contain an alias for dodecagon", "rootThree", app.getDocumentKind("dodecagon").getField().getName());
+        for(String fieldName: app.getFieldNames()) {
+            switch(fieldName) {
+            case "dodecagon":
+                // rootThree has an alias
+                fieldName = "rootThree";
+                break;
+            }
+            boolean found = false;
+            for(FieldApplication testApp: getTestFieldApplications()) {
+                String testName = testApp.getName();
+                if(testName.equals(fieldName)) {
+                    found = true;
+                    break;
+                }
+            }
+            assertTrue("Test applications should contain " + fieldName, found);
+        }
+    }    
     
     @Test
     public void testFieldApplications()
@@ -98,6 +151,10 @@ public class FieldApplicationTest
                 names.add(name);
                 
                 assertSame(appName + "." + name, perspective, app.getSymmetryPerspective(name));
+                
+                if(name.startsWith("antiprism")) {
+                    assertEquals( "antiprism" + (((PolygonField)(perspective.getSymmetry().getField())).polygonSides()), name);
+                }
                 
                 testGetLegacyCommand(perspective, appName);
                 testGeometries(perspective, appName);
@@ -152,6 +209,18 @@ public class FieldApplicationTest
 
             case "rootThree":
                 addTo(testNames,"red", "brown");
+                break;
+                
+            case "snubCube":
+                addTo(testNames, 
+                        "snubSquare",
+                        "snubTriangle",
+                        "snubDiagonal",
+                        "snubFaceNormal",
+                        "snubVertex",
+                        "snubSquareMid",
+                        "snubTriangleMid"
+                );
                 break;
 
             case "sqrtPhi":
@@ -215,18 +284,26 @@ public class FieldApplicationTest
             break;
 
         default:
+            if(name.startsWith("antiprism") ) {
+                if(appName.startsWith("polygon")) {
+                    addTo(testNames, "red", "blue", "green", "yellow");
+                } else {
+                    fail("unexpected FieldApplication name: " + name);
+                }
+                break;
+            }
             fail(appName + " has an unexpected perspective name: " + name);
         }
 
         final Symmetry symmetry = perspective.getSymmetry();
         final String msg = "Expected " + appName + " " + symmetry.getName();
 
-        int nExpected = symmetry.getDirectionNames().length;
-        assertTrue(msg + " to have at least 2 directions" , nExpected >= 2);
-        if(nExpected != testNames.size()) {
+        int nDirections = symmetry.getDirectionNames().length;
+        assertTrue(msg + " to have at least 3 directions" , nDirections >= 3);
+        if(testNames.size() != nDirections) {
             // list the actual directions for comparison to testNames
             listDirections(appName, symmetry);
-            assertEquals(msg, nExpected, testNames.size());
+            assertEquals(msg, testNames.size(), nDirections);
         }
 
         for(String dirName : testNames) {
@@ -239,6 +316,9 @@ public class FieldApplicationTest
         for( Direction dir : symmetry) {
             String symDirName = symmetry.getName() + " " + dir.getName();
             String msg = appName + " " + symDirName;
+            // No automatic directions will have been added to these symmetries 
+            assertFalse(msg, dir.isAutomatic());
+
             AlgebraicVector vProto = dir.getPrototype();
             AlgebraicVector vPlus0 = dir.getAxis(Symmetry.PLUS, 0).normal();
             AlgebraicNumber quadranceProto = vProto.dot(vProto);
@@ -265,9 +345,6 @@ public class FieldApplicationTest
             default:
                 // Verify that all other predefined directions
                 // are oriented so that vProto equals vPlus0.
-                if(dir.isAutomatic()) {
-                   System.out.println("I don't know if automatic directions even matter... DJH?"); 
-                }
                 assertEquals(symDirName, vProto, vPlus0);
                 break;
             }
@@ -318,19 +395,44 @@ public class FieldApplicationTest
             noop();
             break;
             
+        case "snubCube":
+            noop();
+            break;
+            
         case "snubDodec":
             assertTrue(app.getLegacyCommand("tauDivide") instanceof CommandTauDivision);
             break;
             
+        case "plasticNumber":
+            noop();
+            break;
+            
+        case "plasticPhi":
+            noop();
+            break;
+            
+        case "superGolden":
+            noop();
+            break;
+            
+        case "edPegg":
+            noop();
+            break;
+            
         default:
-            fail("unexpected FieldApplication name: " + name);
+            if(name.startsWith("polygon")) {
+                noop();
+            } else {
+                fail("unexpected FieldApplication name: " + name);
+            }
             break;
         }
     }
 
     private void testGetLegacyCommand(SymmetryPerspective perspective, String appName)
     {
-        assertTrue(perspective.getLegacyCommand("octasymm") instanceof CommandSymmetry);
+        Object octasymmCommand = perspective.getLegacyCommand("octasymm");
+        assertTrue(octasymmCommand == null || octasymmCommand instanceof CommandSymmetry);
         assertNull("getLegacyCommand('???')", perspective.getLegacyCommand("???")); // shouldn't throw any exceptions
         
         String name = perspective.getName();
@@ -371,6 +473,10 @@ public class FieldApplicationTest
             break;
             
         default:
+            if(name.startsWith("antiprism") ) {
+                assertTrue(perspective.getLegacyCommand("axialsymm") instanceof CommandAxialSymmetry);
+                break;
+            }
             fail(appName + " has an unexpected perspective name: " + name);
         }
     }
@@ -476,13 +582,43 @@ public class FieldApplicationTest
             assertTrue(toolFactories .get( "SymmetryTool") instanceof OctahedralToolFactory);
             break;
             
+        case "snubCube":
+            assertTrue(toolFactories .get( "SymmetryTool") instanceof OctahedralToolFactory);
+            break;
+
         case "snubDodec":
             assertTrue(toolFactories .get( "SymmetryTool") instanceof IcosahedralToolFactory);
             assertTrue(toolFactories .get( "AxialStretchTool") instanceof AxialStretchTool.Factory);
             break;
             
+        case "plasticNumber":
+            noop();
+            break;
+            
+        case "plasticPhi":
+            noop();
+            break;
+
+        case "superGolden":
+            noop();
+            break;
+            
+        case "edPegg":
+            noop();
+            break;
+            
         default:
-            fail("unexpected FieldApplication name: " + name);
+            if(name.startsWith("polygon")) {
+                if(name.equals("polygon5")) {
+                    assertTrue(name, toolFactories .get( "SymmetryTool") instanceof IcosahedralToolFactory);
+                    assertTrue(name, toolFactories .get( "AxialStretchTool") instanceof AxialStretchTool.Factory);
+                } else {
+                    assertTrue(name, toolFactories .get( "SymmetryTool") instanceof OctahedralToolFactory);
+                    assertNull(name, toolFactories .get( "AxialStretchTool"));
+                }
+            } else {
+                fail("unexpected FieldApplication name: " + name);
+            }
             break;
         }
     }
@@ -526,6 +662,10 @@ public class FieldApplicationTest
                 break;
                 
             default:
+                if(name.startsWith("antiprism") ) {
+                    verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1);
+                    break;                    
+                }
                 fail(appName + " has an unexpected perspective name: " + name);
             }
         }
@@ -611,12 +751,44 @@ public class FieldApplicationTest
                 }
                 break;
                 
+            case "snubCube":
+                assertNull(msg, qSymm);
+                break;
+                
             case "snubDodec":
                 assertNotNull(msg, qSymm);
                 break;
                 
+            case "plasticNumber":
+                assertNull(msg, qSymm);
+                break;
+                
+            case "plasticPhi":
+                assertNull(msg, qSymm);
+                break;
+
+            case "superGolden":
+                assertNull(msg, qSymm);
+                break;
+                
+            case "edPegg":
+                assertNull(msg, qSymm);
+                break;
+                
+            case "polygon5": // TODO: eventually, this should be any 5N-gon
+                if(qsName == "H_4") {
+                    assertNotNull(msg, qSymm);
+                } else {
+                    assertNull(msg, qSymm);
+                }
+                break;
+                
             default:
-                fail("unexpected FieldApplication name: " + appName);
+                if(appName.startsWith("polygon")) { // except polygon5 above
+                    assertNull(msg, qSymm);
+                } else {
+                    fail("unexpected FieldApplication name: " + appName);
+                }
                 break;
             }
         }

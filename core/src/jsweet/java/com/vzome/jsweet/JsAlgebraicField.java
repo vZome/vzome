@@ -99,27 +99,6 @@ public class JsAlgebraicField implements AlgebraicField
     }
 
     @Override
-    public AlgebraicNumber createAlgebraicNumberFromTD( int[] trailingDivisorForm )
-    {
-        return new JsAlgebraicNumber( this, trailingDivisorForm );
-    }
-
-    public AlgebraicNumber createAlgebraicNumberFromPairs( int[] pairs )
-    {
-        Function f = (Function) this.delegate .$get( "createRationalFromPairs" );
-        int[] frac = f.$apply( any( pairs ) );
-        return new JsAlgebraicNumber( this, frac );
-    }
-
-    @Override
-    public AlgebraicNumber createRational( long numerator, long denominator )
-    {
-        Function f = (Function) this.delegate .$get( "createRational" );
-        int[] frac = f.$apply( any( numerator ), any( denominator ) );
-        return new JsAlgebraicNumber( this, frac );
-    }
-
-    @Override
     public AlgebraicNumber zero()
     {
         return new JsAlgebraicNumber( this, this.delegate .$get( "zero" ) );
@@ -195,12 +174,6 @@ public class JsAlgebraicField implements AlgebraicField
         return result .setComponent( axis, this .one() );
     }
 
-    @Override
-    public AlgebraicNumber createRational( long wholeNumber )
-    {
-        return this .createRational( wholeNumber, 1 );
-    }
-
     public final AlgebraicNumber createPower( int power )
     {
         return this .createPower( power, 1 );
@@ -272,8 +245,37 @@ public class JsAlgebraicField implements AlgebraicField
             return zero();
         }
         int[] factors = this .zero() .toTrailingDivisor(); // makes a copy
-        factors[ n ] = 1;
+        factors[ n ] = factors[ factors.length - 1 ]; // copies the 1n denominator
         return new JsAlgebraicNumber( this, factors );
+    }
+
+    @Override
+    public AlgebraicNumber createRational( long wholeNumber )
+    {
+        return this .createRational( wholeNumber, 1 );
+    }
+
+    @Override
+    public AlgebraicNumber createAlgebraicNumberFromTD( int[] trailingDivisorForm )
+    {
+        Function f = (Function) this.delegate .$get( "createNumber" );
+        int[] simplified = f.$apply( any( trailingDivisorForm ) );
+        return new JsAlgebraicNumber( this, simplified );
+    }
+
+    public AlgebraicNumber createAlgebraicNumberFromPairs( int[] pairs )
+    {
+        Function f = (Function) this.delegate .$get( "createNumberFromPairs" );
+        int[] simplified = f.$apply( any( pairs ) );
+        return new JsAlgebraicNumber( this, simplified );
+    }
+
+    @Override
+    public AlgebraicNumber createRational( long numerator, long denominator )
+    {
+        Function f = (Function) this.delegate .$get( "createNumberFromPairs" );
+        int[] simplified = f.$apply( any( new long[] { numerator, denominator } ) );
+        return new JsAlgebraicNumber( this, simplified );
     }
 
     /**
@@ -293,10 +295,10 @@ public class JsAlgebraicField implements AlgebraicField
     @Override
     public AlgebraicNumber createAlgebraicNumber( int[] numerators, int denominator )
     {
-        int[] factors = new int[ numerators.length + 1 ];
+        int[] factors = this .zero() .toTrailingDivisor(); // makes a copy
         System .arraycopy( numerators, 0, factors, 0, numerators.length );
         factors[ numerators.length ] = denominator;
-        return new JsAlgebraicNumber( this, factors );
+        return this .createAlgebraicNumberFromTD( factors );
     }
 
     @Override
@@ -492,48 +494,48 @@ public class JsAlgebraicField implements AlgebraicField
     
     int[] scaleBy( int[] factors, int whichIrrational )
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.scaleBy" );
     }
 
     @Override
     public void defineMultiplier(StringBuffer instances, int w)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.defineMultiplier" );
     }
 
     @Override
     public String getIrrational(int i, int format)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.getIrrational" );
     }
 
     @Override
     public String getIrrational(int which)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.getIrrational" );
     }
 
     @Override
     public AlgebraicVector nearestAlgebraicVector(RealVector target)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.nearestAlgebraicVector" );
     }
 
     @Override
     public AlgebraicVector createIntegerVector(int[][] nums)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.createIntegerVector" );
     }
 
     @Override
     public AlgebraicMatrix createMatrix(int[][][] data)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.createMatrix" );
     }
 
     @Override
     public int getNumMultipliers()
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.getNumMultipliers" );
     }
 }

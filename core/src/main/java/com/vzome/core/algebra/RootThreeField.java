@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.algebra;
 
 public class RootThreeField extends AbstractAlgebraicField
@@ -24,18 +22,12 @@ public class RootThreeField extends AbstractAlgebraicField
 
     public static final double ROOT_3 = Math.sqrt( 3d );
     
-    private static final BigRational THREE = new BigRational( 3 );
+    private static final BigRational THREE = new BigRationalImpl( 3 );
     
     public RootThreeField()
     {
-        super( FIELD_NAME, 2 );
+        super( FIELD_NAME, 2, AlgebraicNumberImpl.FACTORY );
     };
-    
-    @Override
-    public void defineMultiplier( StringBuffer buf, int i )
-    {
-        buf .append( "" );
-    }
 
     @Override
     public final BigRational[] multiply( BigRational[] first, BigRational[]  second )

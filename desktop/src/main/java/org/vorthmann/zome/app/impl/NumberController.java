@@ -1,6 +1,4 @@
 
-//(c) Copyright 2007, Scott Vorthmann.  All rights reserved.
-
 package org.vorthmann.zome.app.impl;
 
 import java.util.StringTokenizer;
@@ -25,11 +23,10 @@ public class NumberController extends DefaultController
     @Override
     public String[] getCommandList( String listName )
     {
-        int order = this .field .getOrder();
-
         switch ( listName ) {
 
         case "labels":
+            int order = this .field .getOrder();
             // first label should always be "1", last should always be "/"
             String[] result = new String[ order + 1 ];
             result[ 0 ] = "1";
@@ -41,7 +38,7 @@ public class NumberController extends DefaultController
         case "values":
             int[] td = value .toTrailingDivisor();
             result = new String[ td .length ];
-            for( int i = 0; i < order; i++ )
+            for( int i = 0; i < td .length; i++ )
                 result[ i ] = Integer .toString( td[ i ] );
             return result;
 

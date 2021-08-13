@@ -41,7 +41,6 @@ import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
 import javax.swing.ToolTipManager;
 
-import org.apache.commons.lang3.ObjectUtils.Null;
 import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.Platform;
 import org.vorthmann.ui.Controller;
@@ -235,7 +234,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     if ( shareDialog == null )
                         shareDialog = new ShareDialog( DocumentFrame.this, mController );
                     Path filePath = new File( windowName ) .toPath();
-                    shareDialog .setFileData( filePath .getFileName() .toString(), mController .getProperty( "vZome-xml" ) );
+                    String xml = mController .getProperty( "vZome-xml" );
+                    String pngEncoded = mController .getProperty( "png-base64" );
+                    String shapesJson = mController .getProperty( "shapes-json" );
+                    shareDialog .startUpload( filePath .getFileName() .toString(), xml, pngEncoded, shapesJson );
                     break;
 
                 case "saveDefault":
@@ -502,7 +504,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     //                    snapshotButton .setPreferredSize( dim );
                     //                    snapshotButton .setMaximumSize( dim );
                     //                }
-                    articleButtonsPanel .add( snapshotButton );
+                    if ( controller .propertyIsTrue( "enable.article.creation" ) )
+                        articleButtonsPanel .add( snapshotButton );
                     snapshotButton .setActionCommand( "takeSnapshot" );
                     snapshotButton .addActionListener( new ActionListener()
                     {
@@ -536,7 +539,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
                 Scene scene = ((Scene.Provider) mController) .getScene();
                 RenderingViewer viewer = factory3d .createRenderingViewer( scene );
-                modelPanel = new ModelPanel( mController, viewer, (ControlActions) this, this .isEditor, fullPower );
+                modelPanel = new ModelPanel( mController, viewer, this, this .isEditor, fullPower );
                 leftCenterPanel .add( modelPanel, BorderLayout.CENTER );
             }
             outerPanel.add( leftCenterPanel, BorderLayout.CENTER );

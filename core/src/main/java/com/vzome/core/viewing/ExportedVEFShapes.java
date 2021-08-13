@@ -3,16 +3,13 @@
  */
 package com.vzome.core.viewing;
 
-import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Set;
@@ -20,6 +17,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
@@ -37,24 +35,24 @@ import com.vzome.xml.ResourceLoader;
  */
 public class ExportedVEFShapes extends AbstractShapes
 {
+    private static final Logger LOGGER = Logger.getLogger( "com.vzome.core.viewing.shapes" );
+
     public static final String MODEL_PREFIX = "com/vzome/core/parts/";
 
     private static final String NODE_MODEL = "connector";
 
-    private final File prefsFolder;
-
+    @JsonIgnore
     private final AbstractShapes fallback;
 
     private final Properties colors = new Properties();
     
-    private static final Map<String, String> INJECTED = new HashMap<String, String>();
-
-    private static final Logger logger = Logger.getLogger( "com.vzome.core.viewing.shapes" );
+    private final boolean isSnub;
 
     public static void injectShapeVEF( String key, String vef )
     {
-        key = key .replace( "--", "/" );
-        INJECTED .put( key, vef );
+        // TODO replace this mechanism in Unity with a custom ResourceLoader
+//        key = key .replace( "--", "/" );
+//        ResourceLoader.injectResource( key, vef );
     }
 
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm )
@@ -79,92 +77,82 @@ public class ExportedVEFShapes extends AbstractShapes
 
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm, AbstractShapes fallback )
     {
+        this( prefsFolder, pkgName, name, alias, symm, fallback, false );
+    }
+
+    public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm, AbstractShapes fallback, boolean isSnub )
+    {
         super( pkgName, name, alias, symm );
-        this .prefsFolder = prefsFolder;
         this .fallback = fallback;
+        this .isSnub = isSnub;
 
         String colorProps = MODEL_PREFIX + pkgName + "/colors.properties";
-        try {
-            ClassLoader cl = this .getClass() .getClassLoader(); // NOTE: this may break Oculus
-            InputStream inputStream = cl .getResourceAsStream( colorProps );
-            if ( inputStream != null )
+        String resource = ResourceLoader.loadStringResource( colorProps );
+        if ( resource != null )
+            try {
+                InputStream inputStream = new ByteArrayInputStream( resource .getBytes() );
                 this .colors .load( inputStream );
-        } catch ( IOException ioe ) {
-            if ( logger .isLoggable( Level.FINE ) )
-                logger .fine( "problem with shape color properties: " + colorProps );
-        }
+            } catch ( IOException ioe ) {
+                if ( LOGGER .isLoggable( Level.FINE ) )
+                    LOGGER .fine( "problem with shape color properties: " + colorProps );
+            }
     }
 
     @Override
-    protected Polyhedron buildConnectorShape( String pkgName )
-    {
-        String vefData = loadVefData( NODE_MODEL );
-        if ( vefData != null ) {
+    protected Polyhedron buildConnectorShape(String pkgName) {
+        String vefData = loadVefData(NODE_MODEL);
+        if (vefData != null) {
             VefToShape parser = new VefToShape();
-            parser .parseVEF( vefData, mSymmetry .getField() );
-            return parser .getConnectorPolyhedron();
+            parser.invertSnubBall = isSnub;
+            parser.parseVEF(vefData, mSymmetry.getField());
+            return parser.getConnectorPolyhedron();
         }
-        if ( this .fallback != null )
-            return this .fallback .buildConnectorShape( pkgName );
-        else
-            throw new IllegalStateException( "missing connector shape: " + pkgName );
+        final Level logLevel = Level.FINE;
+        if (LOGGER.isLoggable(logLevel)) {
+            LOGGER.log(logLevel, this.toString() + " has no VEF data for " + NODE_MODEL + " at " + pkgName);
+        }
+        if (this.fallback != null) {
+            if (LOGGER.isLoggable(logLevel)) {
+                LOGGER.log(logLevel, "\t" + NODE_MODEL + " --> fallback to " + fallback.toString());
+            }
+            return this.fallback.buildConnectorShape(pkgName);
+        }
+        throw new IllegalStateException("missing connector shape: " + pkgName);
     }
 
     @Override
-    protected StrutGeometry createStrutGeometry( Direction dir )
-    {
-        String vefData = loadVefData( dir .getName() );
-        if ( vefData != null ) {
-            VefToShape parser = new VefToShape();
-            parser .parseVEF( vefData, mSymmetry .getField() );
-            return parser .getStrutGeometry( dir .getAxis( Symmetry .PLUS, 0 ) .normal() );
+    protected StrutGeometry createStrutGeometry(Direction dir) {
+        // automatic struts don't use VEF so don't waste time trying
+        if (!dir.isAutomatic()) {
+            String vefData = loadVefData(dir.getName());
+            if (vefData != null) {
+                VefToShape parser = new VefToShape();
+                parser.parseVEF(vefData, mSymmetry.getField());
+                return parser.getStrutGeometry(dir.getAxis(Symmetry.PLUS, 0).normal());
+            }
+            // strut uses finer logging level than connector since strut fallback is more common.
+            final Level logLevel = Level.FINER;
+            if (LOGGER.isLoggable(logLevel)) {
+                LOGGER.log(logLevel, this.toString() + " has no VEF data for strut: " + dir.getName());
+            }
+            if (fallback != null) {
+                if (LOGGER.isLoggable(logLevel)) {
+                    LOGGER.log(logLevel, "\t" + dir.getName() + " strut --> fallback to " + fallback.toString());
+                }
+                return this.fallback.createStrutGeometry(dir);
+            }
         }
-        else  if ( this .fallback != null )
-            return this .fallback .createStrutGeometry( dir );
-        else
-            return super .createStrutGeometry( dir );
+        return super.createStrutGeometry(dir);
     }
 
     protected String loadVefData( String name )
     {
-        if ( INJECTED .containsKey( mPkgName + "-" + name ) )
-            return INJECTED .get( mPkgName + "-" + name );
+        // TODO get Unity to work again, with the new ResourceLoader
+//        if ( INJECTED .containsKey( mPkgName + "-" + name ) )
+//            return INJECTED .get( mPkgName + "-" + name );
         
         String script = mPkgName + "/" + name + ".vef";
-        
-        if ( ResourceLoader.hasInjectedResource( MODEL_PREFIX + script ) )
-            return ResourceLoader.getInjectedResource( MODEL_PREFIX + script );
-
-        File shapeFile = new File( this .prefsFolder, "Shapes/" + script );
-        InputStream stream = null;
-        try {
-            if ( shapeFile .exists() )
-                stream = new FileInputStream( shapeFile );
-            else {
-                script = MODEL_PREFIX + script;
-                stream = this .getClass() .getClassLoader() .getResourceAsStream( script );
-                if ( stream == null )
-                    return null; // avoid the NPE!
-            }
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] buf = new byte[1024];
-            int num;
-            while ( ( num = stream .read( buf, 0, 1024 )) > 0 )
-                out .write( buf, 0, num );
-            return new String( out .toByteArray() );
-
-        } catch (Exception e) {
-            logger .fine( "Failure loading VEF data from " + shapeFile );
-        } finally {
-            if ( stream != null )
-                try {
-                    stream .close();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-        }
-        return null;
+        return ResourceLoader.loadStringResource( MODEL_PREFIX + script );
     }
 
     @Override
@@ -213,6 +201,8 @@ public class ExportedVEFShapes extends AbstractShapes
         private List<AlgebraicVector> vertices = new ArrayList<>();
 
         private List< List<Integer> > faces = new ArrayList<>();
+
+        private boolean invertSnubBall = false;
 
         public StrutGeometry getStrutGeometry( AlgebraicVector prototype )
         {
@@ -264,7 +254,8 @@ public class ExportedVEFShapes extends AbstractShapes
         {
             List<Integer> face = new ArrayList<>();
             for ( int i = 0; i < verts.length; i++ ) {
-                int j = verts[i];
+                int n = invertSnubBall ? verts.length - 1 - i : i;
+                int j = verts[n];
                 face .add(j);
             }
             faces .add( face );
@@ -274,6 +265,14 @@ public class ExportedVEFShapes extends AbstractShapes
         protected void addVertex( int index, AlgebraicVector location )
         {
             AlgebraicVector vertex = mSymmetry .getField() .projectTo3d( location, wFirst() );
+            if (invertSnubBall) {
+                // We can generate both left-hand and right-hand versions 
+                // of a snub connector from the same VEF file by negating the vertices 
+                // and reversing the order of the indices on each face.
+                // Struts are mirrored if necessary in RenderedManifestation.resetStrutAttributes()
+                // so don't do it here.
+                vertex = vertex.negate();
+            }
             vertices .add( vertex );
         }
 

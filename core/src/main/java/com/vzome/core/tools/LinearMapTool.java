@@ -1,9 +1,8 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.tools;
 
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.ChangeOfBasis;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
@@ -65,7 +64,28 @@ public class LinearMapTool extends TransformationTool
 		@Override
 		protected boolean bindParameters( Selection selection )
 		{
-			// TODO check for linear independence
+		    // We can be strict here, requiring two sets of coincident struts, since this is called from the UI,
+		    //   only when the countsAreValid() with one basis or two.
+		    // For legacy edits, we don't want to be so strict, since we have always allowed the 3rd strut
+		    //   of each basis to be detached.
+	        int index = 0;
+		    Segment[] segments = new Segment[ 6 ];
+		    for( Manifestation man: selection ) {
+	            if ( man instanceof Strut )
+	                segments[ index++ ] = (Segment) man .getFirstConstruction();
+		    }
+            AlgebraicVector c1 = ChangeOfBasis.findCommonVertex( segments[ 0 ], segments[ 1 ] );
+            AlgebraicVector c2 = ChangeOfBasis.findCommonVertex( segments[ 2 ], segments[ 1 ] );
+            if ( c1 == null || c2 == null || ! c1 .equals( c2 ) )
+                return false;
+            if ( index == 3 )
+                // Only one basis was selected
+                return true;
+            c1 = ChangeOfBasis.findCommonVertex( segments[ 3 ], segments[ 4 ] );
+            c2 = ChangeOfBasis.findCommonVertex( segments[ 5 ], segments[ 4 ] );
+            if ( c1 == null || c2 == null || ! c1 .equals( c2 ) )
+                return false;
+            // TODO: verify linear independence of first 3 segments
 			return true;
 		}
 	}
@@ -116,6 +136,15 @@ public class LinearMapTool extends TransformationTool
             }
         }
 
+        // Note, we are not checking coincidence of the segments in each basis, which means that a failure may
+        //  come later during ChangeOfBasis.mapParamsToState().  However, we are now checking that during
+        //  bindParameters, so it will be impossible for the tool to be created with disjoint bases.
+        //  We cannot check that here, since existing saved edits are more permissive, requiring only the
+        //  first two segments of each basis to be coincident.  (See ChangeOfBasis.mapParamsToState().)
+        
+        // TODO: We also aren't checking for linear independence of the input basis, and we need to, either
+        //   above in bindParameters or here!
+        
         correct = correct && ( ( index == 3) || ( index == 6 ) );
         if ( !correct )
             return "linear map tool requires three adjacent, non-parallel struts (or two sets of three) and a single (optional) center ball";
@@ -125,7 +154,6 @@ public class LinearMapTool extends TransformationTool
                 center = this.originPoint;
             this .transforms = new Transformation[ 1 ];
             if ( index == 6 )
-                // TODO validate linear independence of oldBasis
                 transforms[ 0 ] = new ChangeOfBasis( oldBasis, newBasis, center );
             else
                 transforms[ 0 ] = new ChangeOfBasis( oldBasis[ 0 ], oldBasis[ 1 ], oldBasis[ 2 ], center, originalScaling );

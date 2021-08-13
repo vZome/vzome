@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.editor.api;
 
 import java.util.ArrayList;
@@ -65,15 +63,6 @@ public abstract class SideEffects extends UndoableEdit
     {
         if ( BUG_ACCOMMODATION_LOGGER .isLoggable( Level.WARNING ) )
             BUG_ACCOMMODATION_LOGGER .warning( "ACCOMMODATION: " + accommodation );
-    }
-    
-    public interface SideEffect
-    {
-        public void undo();
-        
-        public Element getXml( Document doc );
-
-        public void redo();
     }
     
     @Override

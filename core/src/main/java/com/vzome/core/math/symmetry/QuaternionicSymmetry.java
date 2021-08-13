@@ -1,9 +1,6 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.math.symmetry;
 
-import java.io.IOException;
 import java.util.StringTokenizer;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -39,22 +36,11 @@ public class QuaternionicSymmetry
     public QuaternionicSymmetry( String name, String rootsResource, AlgebraicField field )
     {
         mName = name;
-        try {
-            String vefData = ResourceLoader.loadStringResource( rootsResource );
-            RootParser parser = new RootParser( field );
-            parser .parseVEF( vefData, field );
-            mRoots = parser .getQuaternions();
-        }
-        catch (IOException exc) {
-            exc.printStackTrace();
-        }
+        String vefData = ResourceLoader.loadStringResource( rootsResource );
+        RootParser parser = new RootParser( field );
+        parser .parseVEF( vefData, field );
+        mRoots = parser .getQuaternions();
     }
-
-//    private QuaternionicSymmetry( AlgebraicVector[] leftGens, AlgebraicVector[] rightGens )
-//    {
-//        // TODO Auto-generated constructor stub
-//        mName = "whatever";
-//    }
 
     public Quaternion[] getRoots()
     {

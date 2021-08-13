@@ -1,6 +1,4 @@
 
-//(c) Copyright 2011, Scott Vorthmann.
-
 package com.vzome.core.editor;
 
 import java.beans.PropertyChangeEvent;
@@ -48,6 +46,7 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.Snapshot.SnapshotAction;
+import com.vzome.core.editor.api.Context;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.UndoableEdit;
@@ -79,7 +78,7 @@ import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 import com.vzome.xml.DomSerializer;
 
-public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
+public class DocumentModel implements Snapshot .Recorder, Context
 {
     private final RealizedModelImpl mRealizedModel;
 
@@ -185,7 +184,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
             else
                 xml = null;
         }
-        FieldApplication.SymmetryPerspective symmPerspective = kind .getDefaultSymmetryPerspective();
+        SymmetryPerspective symmPerspective = kind .getDefaultSymmetryPerspective();
         if ( xml != null ) {
             String symmName = xml .getAttribute( "name" );	
             symmPerspective = kind .getSymmetryPerspective( symmName );
@@ -194,8 +193,8 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         this .tools = new ToolsModel( this, this .originPoint );
 
         // Initialize the default SymmetrySystems from the FieldApplication
-        Collection<FieldApplication.SymmetryPerspective> symms = kind .getSymmetryPerspectives();
-        for ( FieldApplication.SymmetryPerspective symmPerspective1 : symms )
+        Collection<SymmetryPerspective> symms = kind .getSymmetryPerspectives();
+        for ( SymmetryPerspective symmPerspective1 : symms )
         {
             SymmetrySystem osm = new SymmetrySystem( null, symmPerspective1, this, app .getColors(), true );
             this .symmetrySystems .put( osm .getName(), osm );
@@ -393,7 +392,7 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
         case "shapes":
             ShapesJsonExporter ojex = new ShapesJsonExporter();
             try {
-                ojex .doExport( this, null, null, out, 0, 0 );
+                ojex .exportDocument( this, null, out, 0, 0 );
             } catch (Exception e) {
                 // TODO fail better here
                 e.printStackTrace();
@@ -848,7 +847,6 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
      * 
      * POV-Ray is a bit of a special case, but only because the .pov language supports coordinate values as expressions,
      * and supports enough modeling that the different strut shapes can be defined, and so on.
-     * OpenGL and WebGL (Web3d/json) could as well, since I can control how the data is stored and rendered.
      * 
      * The POV-Ray export reuses shapes, etc. just as vZome does, so really works just with the RenderedManifestations
      * (except when the Manifestation is available for structured coordinate expressions).  Again, any rendering exporter
@@ -861,12 +859,13 @@ public class DocumentModel implements Snapshot .Recorder, UndoableEdit .Context
 
     // TODO move all the parameters inside this object!
 
-    public Exporter3d getStructuredExporter( String format, Camera camera, Colors colors, Lights lights, RenderedModel mRenderedModel )
+    public Exporter3d getStructuredExporter( String format, Camera camera, Colors colors, Lights lights )
     {
         if ( format.equals( "partgeom" ) )
-            return new PartGeometryExporter( camera, colors, lights, mRenderedModel, editorModel .getSelection() );
+            // the rendered model must be set before export
+            return new PartGeometryExporter( camera, colors, lights, this .renderedModel, this .editorModel .getSelection() );
         else
-            return null;
+            return this .app .getExporter( format );
     }
 
     public LessonModel getLesson()

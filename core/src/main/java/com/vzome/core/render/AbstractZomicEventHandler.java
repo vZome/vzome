@@ -28,7 +28,7 @@ public abstract class AbstractZomicEventHandler implements ZomicEventHandler
     public AbstractZomicEventHandler( Symmetry symm )
     {
         mSymmetry = symm;
-        mScale = symm .getField() .createPower( 0 );
+        mScale = symm .getField() .one();
         mOrientation = mSymmetry .getPermutation( 0 );
     }
 

@@ -1,6 +1,4 @@
 
-//(c) Copyright 2007, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.math.symmetry;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -62,7 +60,7 @@ public class D4Group implements CoxeterGroup
         ROOTS[ 2 ] = field .basisVector( 4, AlgebraicVector.Z4 ); // ( -1, 0, 0, 1 );
         ROOTS[ 2 ] .setComponent( AlgebraicVector.W4, neg_one );
         ROOTS[ 3 ] = field .basisVector( 4, AlgebraicVector.Z4 ); // ( 1, 0, 0, 1 );
-        ROOTS[ 3 ] .setComponent( AlgebraicVector.W4, field .createPower( 0 ) );
+        ROOTS[ 3 ] .setComponent( AlgebraicVector.W4, field .one() );
 
         AlgebraicVector y = field .basisVector( 4, AlgebraicVector.Y4 );
         AlgebraicNumber half = field .createRational( 1, 2 );

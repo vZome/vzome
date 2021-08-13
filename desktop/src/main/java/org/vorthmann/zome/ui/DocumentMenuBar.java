@@ -89,6 +89,19 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         boolean hasIcosahedral = symmetries .contains( "icosahedral" );
 
+        boolean hasAntiprism = false;
+        for (String symmName : symmetries) {
+            if (symmName.startsWith("antiprism")) {
+                hasAntiprism = true;
+//                if("antiprism".equals(initSystem)) {
+//                    // this is old code that's aparently unnecessary
+//                    // but I'll leave it here as a comment for now in case I break something by removing it. - DJH
+//                    initSystem = symmName; // effectively appends nSides to initSystem
+//                }
+                break;
+            }
+        }
+
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% File menu
 
         JMenu menu = new JMenu( "File" );
@@ -173,6 +186,10 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             menu .add( submenu );
             submenu .setEnabled( fullPower && canSave );
         }
+        
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        menu .add( enableIf( canSave, createMenuItem( "Share using GitHub...", "Share" ) ) );
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -449,6 +466,21 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             // DISABLED until the symmetry group has been properly implemented
             // menu.add( rbMenuItem );
         }
+        if ( hasAntiprism ) {
+            // Specify the antiprism's nSides here since not all code paths go thru setSymmetrySystem()
+            String antiprismName = "antiprism";
+            // AntiprismSymmetry takes a PolygonField in it's c'tor
+            // so no other field is using AntiprismSymmetry at this time,
+            // but I'll add the check anyway in case antiprismSymmetry ever gets generalized to accept other fields
+            if(fieldName.startsWith("polygon")) {
+                antiprismName += fieldName.substring("polygon".length());
+            }
+            rbMenuItem = actions .setMenuAction( "setSymmetry." + antiprismName, controller, new JRadioButtonMenuItem( "Antiprism System" ) );
+            rbMenuItem .setSelected( initSystem.startsWith("antiprism") );
+            rbMenuItem .setEnabled( fullPower );
+            group.add( rbMenuItem );
+            menu.add( rbMenuItem );        
+        }
 
         rbMenuItem = actions .setMenuAction( "setSymmetry.octahedral", controller, new JRadioButtonMenuItem( "Octahedral System" ) );
         rbMenuItem .setSelected( "octahedral".equals( initSystem ) );
@@ -567,26 +599,33 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        menu .add( createMenuItem( "vZome Online (web app)", "browse-https://vzome.com/app" ) );
-        menu .add( createMenuItem( "Main Website", "browse-https://vzome.com" ) );
-        menu .add( createMenuItem( "Blog", "browse-https://vzome.com/blog" ) );
-        menu .add( createMenuItem( "Facebook Page", "browse-https://www.facebook.com/vZome" ) );
-        menu .add( createMenuItem( "YouTube Channel", "browse-https://www.youtube.com/c/Vzome" ) );
+        menu .add( createMenuItem( "vZome Online (web app)...", "browse-https://vzome.com/app" ) );
+        menu .add( createMenuItem( "vZome Home...", "browse-https://vzome.com" ) );
+        menu .add( createMenuItem( "Sharing vZome Files Online...", "browse-https://vorth.github.io/vzome-sharing/" ) );
+        menu .add( createMenuItem( "vZome Tips on YouTube...", "browse-https://www.youtube.com/c/Vzome" ) );
         {
-            JMenu submenu3d = new JMenu( "Online Documentation..." );
-            submenu3d .add( createMenuItem( "The Direction (Orbit) Triangle", "browse-https://vzome.com/blog/2019/07/vzome-icosahedral-orbits/" ) );
-            submenu3d .add( createMenuItem( "Capturing Vector Graphics", "browse-https://vzome.com/blog/2018/12/capturing-vector-graphics/" ) );
-            submenu3d .add( createMenuItem( "Toolbars for Diehards", "browse-https://vzome.com/blog/2018/12/toolbars-for-diehards/" ) );
-            submenu3d .add( createMenuItem( "Content Workflows", "browse-https://vzome.com/blog/2018/02/vzome-content-workflows/" ) );
+            JMenu submenu3d = new JMenu( "Social Media" );
+            submenu3d .add( createMenuItem( "Blog...", "browse-https://vzome.com/blog" ) );
+            submenu3d .add( createMenuItem( "Facebook Page...", "browse-https://www.facebook.com/vZome" ) );
+            submenu3d .add( createMenuItem( "Twitter Page...", "browse-https://twitter.com/vZome" ) );
+            submenu3d .add( createMenuItem( "Discord Server...", "browse-https://discord.com/invite/vhyFsNAFPS" ) );
             menu.add( submenu3d );
         }
         {
-            JMenu submenu3d = new JMenu( "Other Links..." );
-            submenu3d .add( createMenuItem( "GitHub Source", "browse-https://github.com/vZome/vzome" ) );
-            submenu3d .add( createMenuItem( "Logo T-Shirt", "browse-https://www.neatoshop.com/product/vZome-tetrahedron" ) );
-            submenu3d .add( createMenuItem( "3D-Printed Parts at Shapeways", "browse-https://www.shapeways.com/shops/vzome" ) );
-            submenu3d .add( createMenuItem( "Models on SketchFab", "browse-https://sketchfab.com/scottvorthmann" ) );
-            submenu3d .add( createMenuItem( "Observable Notebooks", "browse-https://observablehq.com/collection/@vorth/vzome" ) );
+            JMenu submenu3d = new JMenu( "Misc. Online Documentation" );
+            submenu3d .add( createMenuItem( "The Direction (Orbit) Triangle...", "browse-https://vzome.com/blog/2019/07/vzome-icosahedral-orbits/" ) );
+            submenu3d .add( createMenuItem( "Capturing Vector Graphics...", "browse-https://vzome.com/blog/2018/12/capturing-vector-graphics/" ) );
+            submenu3d .add( createMenuItem( "Toolbars for Diehards...", "browse-https://vzome.com/blog/2018/12/toolbars-for-diehards/" ) );
+            submenu3d .add( createMenuItem( "Content Workflows...", "browse-https://vzome.com/blog/2018/02/vzome-content-workflows/" ) );
+            menu.add( submenu3d );
+        }
+        {
+            JMenu submenu3d = new JMenu( "Other Links" );
+            submenu3d .add( createMenuItem( "GitHub Source...", "browse-https://github.com/vZome/vzome" ) );
+            submenu3d .add( createMenuItem( "Logo T-Shirt...", "browse-https://www.neatoshop.com/product/vZome-tetrahedron" ) );
+            submenu3d .add( createMenuItem( "3D-Printed Parts at Shapeways...", "browse-https://www.shapeways.com/shops/vzome" ) );
+            submenu3d .add( createMenuItem( "Models on SketchFab...", "browse-https://sketchfab.com/scottvorthmann" ) );
+            submenu3d .add( createMenuItem( "Observable Notebooks...", "browse-https://observablehq.com/collection/@vorth/vzome" ) );
             menu.add( submenu3d );
         }
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -718,18 +757,21 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
                         String actionName = key.toString();
                         String menuText = customMenuItems.getProperty(actionName).trim();
                         if(!menuText.isEmpty()) {
-                            Logger.getLogger( getClass().getName() ) .log( Level.INFO, "custom menu item: " + menuText );
-                            Logger.getLogger( getClass().getName() ) .log( Level.INFO, "          action:   " + actionName );
-                            // also note that we're swapping keys for elements
+                            // Swapping keys for elements
                             // as we move from the Properties collection to the sortedMenuCommands
                             sortedMenuCommands.put(menuText, actionName);
                         }
                     }
                     if (! sortedMenuCommands.isEmpty() ) {
                         JMenu menu = new JMenu("Custom");
+                        StringBuilder logMsg = new StringBuilder();
                         for (String label : sortedMenuCommands.keySet()) {
                             JMenuItem menuItem = null;
                             String command = sortedMenuCommands.get(label);
+                            logMsg .append("\n  ")
+                                .append(command)
+                                .append(" = ")
+                                .append(label);
                             int caretPos = label.indexOf("^");
                             if(caretPos > -1 && caretPos < label.length()-1) {
                                 int key = label.charAt(caretPos + 1);
@@ -743,6 +785,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
                             }
                             menu.add(menuItem);
                         }
+                        Logger.getLogger( getClass().getName() ) .log( Level.INFO, "custom menu items: " + logMsg.toString() );
                         return menu;
                     }
                 }

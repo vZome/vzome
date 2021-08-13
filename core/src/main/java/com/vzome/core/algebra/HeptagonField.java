@@ -1,6 +1,4 @@
 
-//(c) Copyright 2007, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.algebra;
 
 public class HeptagonField extends AbstractAlgebraicField
@@ -24,7 +22,7 @@ public class HeptagonField extends AbstractAlgebraicField
 
     public HeptagonField()
     {
-        super( FIELD_NAME, 3 );
+        super( FIELD_NAME, 3, AlgebraicNumberImpl.FACTORY );
     };
     
     // specified to more precision than a double can retain so that values are as exact as possible: within one ulp().
@@ -48,21 +46,6 @@ public class HeptagonField extends AbstractAlgebraicField
         return new BigRational[]{ ones, rhos, sigmas };
     }
 
-    @Override
-    public void defineMultiplier( StringBuffer buf, int i )
-    {
-        if ( i == B )
-        {
-            buf .append( "rho = " );
-            buf .append( RHO_VALUE );
-        }
-        if ( i == C )
-        {
-            buf .append( "sigma = " );
-            buf .append( SIGMA_VALUE );
-        }
-    }
-    
     /**
      * scalar for an affine heptagon
      * @return 

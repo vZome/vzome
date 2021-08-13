@@ -1,3 +1,4 @@
+
 package org.vorthmann.zome.app.impl;
 
 import java.awt.Component;
@@ -17,6 +18,7 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -33,7 +35,6 @@ import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
 import javax.vecmath.Point3f;
 
-import org.apache.commons.lang3.ObjectUtils.Null;
 import org.vorthmann.j3d.MouseTool;
 import org.vorthmann.j3d.MouseToolDefault;
 import org.vorthmann.j3d.MouseToolFilter;
@@ -46,6 +47,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
+import com.vzome.core.algebra.PolygonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Color;
@@ -54,7 +56,7 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.editor.FieldApplication.SymmetryPerspective;
+import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.exporters.Exporter3d;
@@ -102,7 +104,6 @@ public class DocumentController extends DefaultController implements Scene.Provi
     private Lights sceneLighting;
     private MouseTool modelModeMainTrackball;
     private Component modelCanvas;
-    private Dimension canvasSize = new Dimension( 700, 700 );
     private boolean drawNormals = false;
     private boolean drawOutlines = false;
     private boolean showFrameLabels = false;
@@ -232,7 +233,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
                 {
                     // contents of old "renderSnapshot" action
                     RenderedModel newSnapshot = (RenderedModel) change .getNewValue();
-                    if ( newSnapshot != currentSnapshot )
+                    if ( newSnapshot != null && newSnapshot != currentSnapshot )
                     {
                         synchronized ( newSnapshot ) {
                             RenderedModel .renderChange( currentSnapshot, newSnapshot, mainScene );
@@ -274,9 +275,16 @@ public class DocumentController extends DefaultController implements Scene.Provi
         else
             this .documentModel .addPropertyChangeListener( this .articleChanges );
 
+        int maxOrientations = 0;
+        for ( SymmetryPerspective perspective : this .documentModel .getFieldApplication() .getSymmetryPerspectives() ) {
+            int order = perspective .getSymmetry() .getChiralOrder();
+            if ( order > maxOrientations )
+                maxOrientations = order;
+        }
+
         sceneLighting = this .documentModel .getSceneLighting();
 
-        cameraController = new CameraController( document .getCamera(), sceneLighting );
+        cameraController = new CameraController( document .getCamera(), sceneLighting, maxOrientations );
         this .addSubController( "camera", cameraController );
         this .articleModeZoom = this .cameraController .getZoomScroller();
 
@@ -296,8 +304,8 @@ public class DocumentController extends DefaultController implements Scene.Provi
         mRequireShift = "true".equals( app.getProperty( "multiselect.with.shift" ) );
         showFrameLabels = "true" .equals( app.getProperty( "showFrameLabels" ) );
 
-        thumbnails = new ThumbnailRendererImpl( sceneLighting );
-        this .addSubController( "thumbnails", (Controller) thumbnails );
+        thumbnails = new ThumbnailRendererImpl( sceneLighting, maxOrientations );
+        this .addSubController( "thumbnails", thumbnails );
         thumbnails .setFactory( app .getJ3dFactory() );
 
         mApp = app;
@@ -314,15 +322,9 @@ public class DocumentController extends DefaultController implements Scene.Provi
             this .currentSnapshot = mRenderedModel;  // Not too sure if this is necessary
         }
 
-        int max = 0;
-        for ( SymmetryPerspective perspective : this .documentModel .getFieldApplication() .getSymmetryPerspectives() ) {
-            int order = perspective .getSymmetry() .getChiralOrder();
-            if ( order > max )
-                max = order;
-        }
-        this .mainScene = new Scene( this .sceneLighting, this .drawOutlines, max );
+        this .mainScene = new Scene( this .sceneLighting, this .drawOutlines, maxOrientations );
         if ( this .mainScene instanceof PropertyChangeListener )
-            this .addPropertyListener( (PropertyChangeListener) this .mainScene );
+            this .addPropertyListener( this .mainScene );
 
         partsController = new PartsController( this .documentModel .getSymmetrySystem() );
         this .addSubController( "parts", partsController );
@@ -407,7 +409,6 @@ public class DocumentController extends DefaultController implements Scene.Provi
     {
     		// This is called on a UI thread!
         this .modelCanvas = canvas;
-        this .canvasSize = canvas .getSize();
         this .imageCaptureViewer = viewer;
         
         // clicks become select or deselect all
@@ -448,7 +449,14 @@ public class DocumentController extends DefaultController implements Scene.Provi
      */
     private void setSymmetrySystem( String symmetryName )
     {
+        if("antiprism".equals(symmetryName)) {
+            symmetryName = symmetryName + ((PolygonField) this.documentModel.getField()).polygonSides();
+        }
+        
         SymmetrySystem symmetrySystem = (SymmetrySystem) this .documentModel .getSymmetrySystem( symmetryName );
+        if(symmetrySystem == null) {
+            throw new IllegalStateException("Unable to get SymmetrySystem '" + symmetryName + "'.");
+        }
         symmetryName = symmetrySystem .getName(); // in case it was null before
         this .documentModel .setSymmetrySystem( symmetrySystem );
         
@@ -700,6 +708,10 @@ public class DocumentController extends DefaultController implements Scene.Provi
             }
             break;
             
+            case "show.vZome-xml":   // invoked from custom menu
+                System.out.println(getProperty("vZome-xml"));
+                break;
+                
             default:
                 if ( action.startsWith( "setSymmetry." ) ) {
                     String system = action.substring( "setSymmetry.".length() );
@@ -840,7 +852,6 @@ public class DocumentController extends DefaultController implements Scene.Provi
             if ( "capture-animation" .equals( command ) )
             {
                 File dir = file .isDirectory()? file : file .getParentFile();
-                Dimension size = this .canvasSize;
                 String html = readResource( "org/vorthmann/zome/app/animation.html" );
                 File htmlFile = new File( dir, "index.html" );
                 writeFile( html, htmlFile );
@@ -858,7 +869,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
             }
             if ( command.startsWith( "export2d." ) )
             {
-                Dimension size = this .canvasSize;
+                Dimension size = this .modelCanvas .getSize();
                 String format = command .substring( "export2d." .length() ) .toLowerCase();
                 Java2dSnapshot snapshot = documentModel .capture2d( currentSnapshot, size.height, size.width, cameraController .getView(), sceneLighting, false, true );
                 documentModel .export2d( snapshot, format, file, this .drawOutlines, false );
@@ -867,23 +878,19 @@ public class DocumentController extends DefaultController implements Scene.Provi
             }
             if ( command.startsWith( "export." ) )
             {
-                Dimension size = this .canvasSize;
+                Dimension size = this .modelCanvas .getSize();
                 Writer out = null;
                 try {
                     out = new FileWriter( file );
                     String format = command .substring( "export." .length() ) .toLowerCase();
                     Exporter3d exporter = documentModel .getNaiveExporter( format, cameraController .getView(), colors, sceneLighting, currentSnapshot );
                     if ( exporter != null ) {
-                        exporter.doExport( file, file.getParentFile(), out, size.height, size.width );
+                        exporter.doExport( file, out, size.height, size.width );
                     }
                     else {
-                        exporter = this .mApp .getExporter( format );
-                        if ( exporter == null ) {
-                            // currently just "partgeom"
-                            exporter = documentModel .getStructuredExporter( format, cameraController .getView(), colors, sceneLighting, mRenderedModel );
-                        }
+                        exporter = documentModel .getStructuredExporter( format, cameraController .getView(), colors, sceneLighting );
                         if ( exporter != null )
-                            exporter .doExport( documentModel, file, file.getParentFile(), out, size.height, size.width );
+                            exporter .exportDocument( documentModel, file, out, size.height, size.width );
                     }
                 }
                 catch (Exception e) {
@@ -922,7 +929,13 @@ public class DocumentController extends DefaultController implements Scene.Provi
         }
     }
 
-    private void captureImageFile( final File file, final String extension, final AnimationCaptureController animation )
+    /**
+     * 
+     * @param dest a File or OutputStream
+     * @param extension
+     * @param animation
+     */
+    private void captureImageFile( final Object dest, final String extension, final AnimationCaptureController animation )
     {
         String maxSizeStr = getProperty( "max.image.size" );
         final int maxSize = ( maxSizeStr != null )? Integer .parseInt( maxSizeStr ) :
@@ -1004,10 +1017,10 @@ public class DocumentController extends DefaultController implements Scene.Provi
                     ImageWriter writer = ImageIO.getImageWritersByFormatName( format ) .next();
                     ImageWriteParam iwParam = writer .getDefaultWriteParam();
                     this.setImageCompression(format, iwParam);
-                    File thisFile = ( animation != null ) ? animation .nextFile() : file;
+                    Object thisDest = ( animation != null ) ? animation .nextFile() : dest;
                     
                     // A try-with-resources block closes the resource even if an exception occurs
-                    try (ImageOutputStream ios = ImageIO.createImageOutputStream( thisFile )) {
+                    try (ImageOutputStream ios = ImageIO.createImageOutputStream( thisDest )) {
                         writer .setOutput( ios );
                         writer .write( null, new IIOImage( image, null, null), iwParam );
                         writer .dispose(); // disposing of the writer doesn't close ios
@@ -1018,8 +1031,10 @@ public class DocumentController extends DefaultController implements Scene.Provi
                         // ios.close();
                     }
 
-                    if ( animation == null )
-                        openApplication( file );
+                    if ( animation == null ) {
+                        if ( dest instanceof File )
+                            openApplication( (File) dest );
+                    }
                     else if ( ! animation .finished() ) {
                         // queue up the next capture in the sequence
                         EventQueue .invokeLater( new Runnable(){
@@ -1184,6 +1199,9 @@ public class DocumentController extends DefaultController implements Scene.Provi
         case "field.name":
             return this .documentModel .getField() .getName();
 
+        case "shapes-json":
+            return this .documentModel .copyRenderedModel( "shapes" );
+                    
         case "vZome-xml":
             try ( ByteArrayOutputStream out = new ByteArrayOutputStream() ) {
                 documentModel .serialize( out, properties );
@@ -1192,6 +1210,19 @@ public class DocumentController extends DefaultController implements Scene.Provi
                 return null;
             }
             
+        case "png-base64": {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            captureImageFile( byteArrayOutputStream, "png", null );
+            String encoded = Base64.getEncoder() .encodeToString( byteArrayOutputStream .toByteArray() );
+            try {
+                byteArrayOutputStream .close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            return encoded;
+        }
+
         case "field.label": {
             String name = this .documentModel .getField() .getName();
             return super.getProperty( "field.label." + name ); // defer to app controller
@@ -1240,7 +1271,9 @@ public class DocumentController extends DefaultController implements Scene.Provi
             }
             else if ( propName .startsWith( "exportExtension." ) ) {
                 String format = propName .substring( "exportExtension." .length() );
-                return this .mApp .getExporter( format .toLowerCase() ) .getFileExtension();
+                // handle null exporter so that typo in custom menu doesn't throw NPE 
+                Exporter3d exporter = this .mApp .getExporter( format .toLowerCase() );
+                return exporter == null ? "" : exporter .getFileExtension();
             }
 
             String result = this .properties .getProperty( propName );

@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.math.symmetry;
 
 import java.util.Collection;
@@ -17,14 +15,7 @@ import com.vzome.core.math.RealVector;
  */
 public interface Symmetry extends Iterable<Direction>, Embedding
 {
-	public enum SpecialOrbit {
-	    BLUE,    // used for orbit dots
-	    RED,     // used for orbit dots and in RotationTool, for the default rotation axis
-	    YELLOW,  // used for orbit dots
-	    BLACK    // if defined, used for orbit finding in getAxis
-    }
-
-    int PLUS = Axis.PLUS, MINUS = Axis.MINUS;
+	int PLUS = Axis.PLUS, MINUS = Axis.MINUS;
 	
 	int NO_ROTATION = -1;
     

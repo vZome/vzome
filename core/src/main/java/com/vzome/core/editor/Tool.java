@@ -1,6 +1,4 @@
 
-//(c) Copyright 2010, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.editor;
 
 import java.beans.PropertyChangeListener;

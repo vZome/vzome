@@ -1,6 +1,4 @@
 
-//(c) Copyright 2010, Scott Vorthmann.
-
 package org.vorthmann.zome.app.impl;
 
 import java.awt.event.ActionEvent;

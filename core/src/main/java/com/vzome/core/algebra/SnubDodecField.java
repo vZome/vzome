@@ -1,6 +1,4 @@
 
-//(c) Copyright 2007, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.algebra;
 
 public class SnubDodecField extends AbstractAlgebraicField
@@ -29,12 +27,12 @@ public class SnubDodecField extends AbstractAlgebraicField
         return getFieldCoefficients();
     }
 
-    public SnubDodecField( )
+    public SnubDodecField( AlgebraicNumberFactory factory )
     {
-        super( FIELD_NAME, 6 );
+        super( FIELD_NAME, 6, factory );
     };
     
-    public static final double PHI_VALUE = PentagonField.PHI_VALUE; // ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
+    public static final double PHI_VALUE = ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
 
     // specified to more precision than a double can retain so that value is as exact as possible: within one ulp().
     public static final double XI_VALUE = 1.71556149969736783d; // root of x^3 -2x -PHI_VALUE 
@@ -184,24 +182,6 @@ public class SnubDodecField extends AbstractAlgebraicField
     public int getNumMultipliers()
     {
         return 2; // only two primitive elements, phi and xi
-    }
-
-    @Override
-    public void defineMultiplier( StringBuffer buf, int i )
-    {
-        switch (i) {
-            case B:
-                buf .append( "phi = " );
-                buf .append( PHI_VALUE );
-                break;
-            case C:
-                buf .append( "xi = " );
-                buf .append( XI_VALUE );
-                break;
-            default:
-                buf .append( "" );
-                break;
-        }
     }
 
     /**

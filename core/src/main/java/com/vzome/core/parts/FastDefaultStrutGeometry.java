@@ -1,6 +1,4 @@
 
-//(c) Copyright 2005, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.parts;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -30,6 +28,11 @@ public class FastDefaultStrutGeometry implements StrutGeometry
     private AlgebraicVector g2_vector, b2_vector, y2_vector, g2n_vector, y2n_vector;
     
     private final Axis mAxis;
+    
+    public boolean getFast()
+    {
+        return true;
+    }
     
     public FastDefaultStrutGeometry( Direction dir )
     {

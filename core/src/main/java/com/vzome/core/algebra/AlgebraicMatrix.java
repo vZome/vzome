@@ -1,6 +1,4 @@
 
-//(c) Copyright 2015, Scott Vorthmann.
-
 package com.vzome.core.algebra;
 
 import java.util.Arrays;
@@ -38,7 +36,18 @@ public class AlgebraicMatrix
     {
         return this .matrix;
     }
-
+    
+    public float[] getRowMajorRealElements()
+    {
+        float[] result = new float[]{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+        for ( int i = 0; i < 3; i++) {
+            for ( int j = 0; j < 3; j++) {
+                result[ i*4 + j ] = (float) this .getElement( i, j ) .evaluate();
+            }
+        }
+        return result;
+    }
+    
     /**
      * Create a new nXn identity matrix.
      * @param field

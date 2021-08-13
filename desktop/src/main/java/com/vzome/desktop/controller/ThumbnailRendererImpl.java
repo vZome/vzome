@@ -1,6 +1,4 @@
 
-//(c) Copyright 2011, Scott Vorthmann.
-
 package com.vzome.desktop.controller;
 
 import java.awt.image.RenderedImage;
@@ -21,9 +19,9 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
     private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.thumbnails" );
     private J3dComponentFactory rvFactory;
 
-    public ThumbnailRendererImpl( Lights sceneLighting )
+    public ThumbnailRendererImpl( Lights sceneLighting, int maxOrientations )
     {
-        super( new Camera(), sceneLighting );
+        super( new Camera(), sceneLighting, maxOrientations );
     }
     
     public void setFactory( J3dComponentFactory rvFactory )

@@ -1,6 +1,4 @@
 
-//(c) Copyright 2008, Scott Vorthmann.  All rights reserved.
-
 package com.vzome.core.construction;
 
 import java.util.StringTokenizer;
@@ -60,6 +58,17 @@ public class VefToModel extends VefParser
         {
             location = location .scale( scale );
             logger .finest( "scaled = " + location .getVectorExpression( AlgebraicField .VEF_FORMAT ) );
+        }
+        // Several types of projections expect at least 4D vectors (e.g. quaternion, tetrahedron and perspective) 
+        // but the VEF format now supports vectors with other than 4 dimensions; maybe more, maybe fewer.
+        // so use inflateTo4d() to be safe.
+        if(wFirst() && location.dimension() == 3) {
+            // VEF support for 3 dimensions was introduced well after wFirst became the standard
+            // so this should never be called for legacy files.
+            // inflateTo4d() expects at least 3D inputs so 2D will fail if we try to import 2D VEF. 
+            // That's OK for now, but... 
+            // TODO: inflateTo4d() should be made to work with fewer dimensions if we ever want 2D VEF imports.   
+            location = location.inflateTo4d();
         }
         location = mProjection .projectImage( location, wFirst() );
         logger .finest( "projected = " + location .getVectorExpression( AlgebraicField .VEF_FORMAT ) );

@@ -44,7 +44,7 @@ public class JsonClientRendering implements RenderingChanges
         if ( ! this .instanceStreamEnabled )
             return;
 
-        ObjectNode node = this .mapper .getObjectNode( rm );
+        ObjectNode node = this .mapper .getObjectNode( rm, false );
         if ( node != null ) {
             node .put( "id", rm .getGuid() .toString() );
             if ( this .instanceStreamEnabled )

@@ -8,6 +8,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.Point;
@@ -37,6 +38,12 @@ public class TestSimpleExample {
                     add( polygon.getVertex(i) );
                 }
             }
+        }
+
+        @Override
+        public void constructionAdded( Construction c, Color color )
+        {
+            this.constructionAdded( c );
         }
     }
     
