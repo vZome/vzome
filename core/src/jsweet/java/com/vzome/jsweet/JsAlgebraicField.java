@@ -498,12 +498,6 @@ public class JsAlgebraicField implements AlgebraicField
     }
 
     @Override
-    public void defineMultiplier(StringBuffer instances, int w)
-    {
-        throw new RuntimeException( "unimplemented JsAlgebraicField.defineMultiplier" );
-    }
-
-    @Override
     public String getIrrational(int i, int format)
     {
         throw new RuntimeException( "unimplemented JsAlgebraicField.getIrrational" );

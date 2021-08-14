@@ -2,6 +2,7 @@
 package com.vzome.core.algebra;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import java.util.StringTokenizer;
@@ -200,7 +201,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * @param terms
      * @return
      */
-    protected int[] convertGoldenNumberPairs( int[] pairs )
+    protected long[] convertGoldenNumberPairs( long[] pairs )
     {
         return pairs;
     }
@@ -527,7 +528,10 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
                         + " Each dimension of the " + this.getName() + " field is limited to " + getOrder() + " terms."
                         + " Each term consists of a numerator and a denominator." );
             }
-            int[] number = nums[ c ];
+            long[] number = new long[ nums[ c ] .length ];
+            for (int i = 0; i < number.length; i++) {
+                number[ i ] = nums[ c ][ i ];
+            }
             if ( nFactors < getOrder() ) {
                 number = this .convertGoldenNumberPairs( number );
             }
@@ -689,7 +693,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     @Override
     public AlgebraicNumber parseVefNumber( String string, boolean isRational )
     {
-        int[] pairs = new int[ this .getOrder() * 2 ];
+        long[] pairs = new long[ this .getOrder() * 2 ];
         // initialize with zeros
         for ( int i = 0; i < pairs.length; i++ ) {
             pairs[ i ] = ( i%2 == 0 )? 0 : 1;
@@ -749,13 +753,13 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     private AlgebraicNumber parseNumber( StringTokenizer tokens )
     {
         int order = this .getOrder();
-        int[] pairs = new int[ order * 2 ];
+        long[] pairs = new long[ order * 2 ];
         for ( int i = 0; i < order; i++ ) {
             String digit = tokens .nextToken();
             String[] parts = digit.split( "/" );
-            pairs[ i * 2 ] = Integer.parseInt( parts[ 0 ] );
+            pairs[ i * 2 ] = Long.parseLong( parts[ 0 ] );
             if ( parts.length > 1 )
-                pairs[ i * 2 + 1 ] = Integer.parseInt( parts[ 1 ] );
+                pairs[ i * 2 + 1 ] = Long.parseLong( parts[ 1 ] );
             else
                 pairs[ i * 2 + 1 ] = 1;
         }

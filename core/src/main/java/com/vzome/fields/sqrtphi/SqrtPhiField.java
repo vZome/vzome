@@ -107,11 +107,11 @@ public class SqrtPhiField  extends ParameterizedField
     }
     
     @Override
-    protected int[] convertGoldenNumberPairs( int[] pairs )
+    protected long[] convertGoldenNumberPairs( long[] pairs )
     {
         // remap [ units, phis ] to [ units, 0, phis, 0 ]
         return ( pairs.length == 4 )
-            ? new int[] { pairs[0], pairs[1], 0, 1, pairs[2], pairs[3], 0, 1 }
+            ? new long[] { pairs[0], pairs[1], 0, 1, pairs[2], pairs[3], 0, 1 }
             : super.convertGoldenNumberPairs( pairs );
     }
     

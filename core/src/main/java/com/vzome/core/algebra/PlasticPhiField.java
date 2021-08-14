@@ -151,9 +151,9 @@ public class PlasticPhiField extends ParameterizedField
     }
     
     @Override
-    protected int[] convertGoldenNumberPairs(int[] terms) {
+    protected long[] convertGoldenNumberPairs(long[] terms) {
         if (terms.length == 2) {
-            terms = new int[] {
+            terms = new long[] {
                     terms[0],           // units
                     terms[1],           // phis
                     0,   // zero fill the rest...
