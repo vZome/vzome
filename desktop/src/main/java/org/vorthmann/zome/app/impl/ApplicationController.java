@@ -265,10 +265,6 @@ public class ApplicationController extends DefaultController
                     DocumentModel document = modelApp .createDocument( fieldName );
                     String title = "Untitled " + ++lastUntitled;
                     docProps .setProperty( "window.title", title );
-                    docProps .setProperty( "edition", this .properties .getProperty( "edition" ) );
-                    docProps .setProperty( "version", this .properties .getProperty( "version" ) );
-                    docProps .setProperty( "buildNumber", this .properties .getProperty( "buildNumber" ) );
-                    docProps .setProperty( "gitCommit", this .properties .getProperty( "gitCommit" ) );
                     newDocumentController( title, document, docProps );
                 }
             }
@@ -542,6 +538,11 @@ public class ApplicationController extends DefaultController
         props .setProperty( "githubClientId", this .properties .getProperty( "githubClientId" ) );
         props .setProperty( "githubClientSecret", this .properties .getProperty( "githubClientSecret" ) );
         
+//        props .setProperty( "edition", this .properties .getProperty( "edition" ) );
+        props .setProperty( "version", this .properties .getProperty( "version" ) );
+        props .setProperty( "buildNumber", this .properties .getProperty( "buildNumber" ) );
+        props .setProperty( "gitCommit", this .properties .getProperty( "gitCommit" ) );
+
         DocumentController newest = new DocumentController( document, this, props );
         this .registerDocumentController( name, newest );
         // trigger window creation in the UI
