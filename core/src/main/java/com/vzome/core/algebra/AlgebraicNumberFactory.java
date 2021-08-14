@@ -12,7 +12,7 @@ public interface AlgebraicNumberFactory
 
     AlgebraicNumber createAlgebraicNumberFromTD( AlgebraicField field, int[] trailingDivisorForm );
 
-    AlgebraicNumber createAlgebraicNumberFromPairs( AlgebraicField field, int[] pairs );
+    AlgebraicNumber createAlgebraicNumberFromPairs( AlgebraicField field, long[] pairs );
 
     AlgebraicNumber createRational( AlgebraicField field, long numerator, long denominator );
     

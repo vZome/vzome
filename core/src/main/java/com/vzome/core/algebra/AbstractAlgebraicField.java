@@ -201,7 +201,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * @param terms
      * @return
      */
-    protected int[] convertGoldenNumberPairs( int[] pairs )
+    protected long[] convertGoldenNumberPairs( long[] pairs )
     {
         return pairs;
     }
@@ -528,7 +528,10 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
                         + " Each dimension of the " + this.getName() + " field is limited to " + getOrder() + " terms."
                         + " Each term consists of a numerator and a denominator." );
             }
-            int[] pairs = nums[ c ];
+            long[] pairs = new long[ nums[ c ] .length ];
+            for (int i = 0; i < pairs.length; i++) {
+                pairs[ i ] = nums[ c ][ i ];
+            }
             if ( pairs.length == 4 && getOrder() > 2 ) {
                 pairs = this .convertGoldenNumberPairs( pairs );
             }
@@ -690,7 +693,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     @Override
     public AlgebraicNumber parseVefNumber( String string, boolean isRational )
     {
-        int[] pairs = new int[ this .getOrder() * 2 ];
+        long[] pairs = new long[ this .getOrder() * 2 ];
         // The pairs array is pre-initialized with zeros since it's a native type (not Integer)
         // so we can simply set all of the denominators to 1.
         for ( int i = 1; i < pairs.length; i+=2 ) {
@@ -726,8 +729,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
                 pairs[ i++ ] = denomStack .pop();
             }
             if ( i == 4 && getOrder() > 2 ) {
-                pairs = this .convertGoldenNumberPairs( 
-                        new int[] { pairs[0], pairs[1], pairs[2], pairs[3] } );
+                pairs = this .convertGoldenNumberPairs( new long[] { pairs[0], pairs[1], pairs[2], pairs[3] } );
             }
         }
         else {
@@ -755,13 +757,13 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     private AlgebraicNumber parseNumber( StringTokenizer tokens )
     {
         int order = this .getOrder();
-        int[] pairs = new int[ order * 2 ];
+        long[] pairs = new long[ order * 2 ];
         for ( int i = 0; i < order; i++ ) {
             String digit = tokens .nextToken();
             String[] parts = digit.split( "/" );
-            pairs[ i * 2 ] = Integer.parseInt( parts[ 0 ] );
+            pairs[ i * 2 ] = Long.parseLong( parts[ 0 ] );
             if ( parts.length > 1 )
-                pairs[ i * 2 + 1 ] = Integer.parseInt( parts[ 1 ] );
+                pairs[ i * 2 + 1 ] = Long.parseLong( parts[ 1 ] );
             else
                 pairs[ i * 2 + 1 ] = 1;
         }

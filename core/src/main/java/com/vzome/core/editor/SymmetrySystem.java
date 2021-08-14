@@ -81,10 +81,10 @@ public class SymmetrySystem implements OrbitSource
                     String nums = dirElem .getAttribute( "prototype" );
                     if ( nums != null && ! nums .isEmpty() )
                     {
-                        AlgebraicVector prototype = symmetry .getField() .parseVector( nums );
                         try {
+                            AlgebraicVector prototype = symmetry .getField() .parseVector( nums );
                             orbit = symmetry .createNewZoneOrbit( name, 0, Symmetry.NO_ROTATION, prototype );
-                        } catch ( IllegalStateException e )
+                        } catch ( NumberFormatException e )
                         {
                             System.err.println( "Integer overflow happened while creating orbit: " + name );
                             continue;

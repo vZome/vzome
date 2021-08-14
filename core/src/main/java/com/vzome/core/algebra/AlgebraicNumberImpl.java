@@ -78,7 +78,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         }
 
         @Override
-        public AlgebraicNumber createAlgebraicNumberFromPairs( AlgebraicField field, int[] pairs )
+        public AlgebraicNumber createAlgebraicNumberFromPairs( AlgebraicField field, long[] pairs )
         {
             BigRational[] brs = new BigRational[ pairs .length / 2 ];
             for ( int j = 0; j < brs.length; j++ ) {

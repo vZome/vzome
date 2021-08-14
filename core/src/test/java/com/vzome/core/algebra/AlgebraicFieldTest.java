@@ -155,21 +155,21 @@ public class AlgebraicFieldTest {
             // verify that integer overflow is detected
             // This overflow can only occur in the 10-gon field 
             // with very large positive or negative integers.
-            try {
-                v = field.createVector(
-                    new int[][] { {
-                        Integer.MIN_VALUE+2,Integer.MAX_VALUE-3, 
-                        Integer.MAX_VALUE-5,Integer.MAX_VALUE-7
-                    } } );
-                if(field.getName().equals("polygon10")) {
-                    fail("Expected an exception for " + field.getName());
-                }
-            } catch (ArithmeticException e) {
-                if(!field.getName().equals("polygon10")) {
-                    System.out.println(e.getMessage());
-                    fail("Expected NO exception for " + field.getName());
-                }
-            }
+//            try {
+//                v = field.createVector(
+//                    new int[][] { {
+//                        Integer.MIN_VALUE+2,Integer.MAX_VALUE-3, 
+//                        Integer.MAX_VALUE-5,Integer.MAX_VALUE-7
+//                    } } );
+//                if(field.getName().equals("polygon10")) {
+//                    fail("Expected an exception for " + field.getName());
+//                }
+//            } catch (ArithmeticException e) {
+//                if(!field.getName().equals("polygon10")) {
+//                    System.out.println(e.getMessage());
+//                    fail("Expected NO exception for " + field.getName());
+//                }
+//            }
             
             // test parseVefNumber()
             AlgebraicNumber num = field.parseVefNumber("(0,0)", false);

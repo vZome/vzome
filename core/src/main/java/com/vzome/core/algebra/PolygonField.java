@@ -397,15 +397,15 @@ public class PolygonField extends ParameterizedField
      * index   0  1    2  3    4  5    6  7    8  9   10 11   12 13   14 15   16 17   18 19
      */
     @Override
-    protected int[] convertGoldenNumberPairs( int[] pairs )
+    protected long[] convertGoldenNumberPairs( long[] pairs )
     {
         if( polygonSides % 5 == 0 && pairs.length == 4 && getOrder() > 2 ) {
             // remap [ unitNumDen, phiNumDen ] pairs as needed
-            final int u = pairs[0]; // units numerator
-            final int U = pairs[1]; // units denominator
-            final int p = pairs[2]; // phis numerator 
-            final int P = pairs[3]; // phis denominator
-            int[] remapped = new int[2* getOrder()];
+            final long u = pairs[0]; // units numerator
+            final long U = pairs[1]; // units denominator
+            final long p = pairs[2]; // phis numerator 
+            final long P = pairs[3]; // phis denominator
+            long[] remapped = new long[2* getOrder()];
             for(int den = 1; den < remapped.length; den += 2) {
                 // Numerators are already set to 0. 
                 // Set denominators to 1 for all remapped pairs
@@ -442,8 +442,8 @@ public class PolygonField extends ParameterizedField
                 // COMBO = u/U - p/P = u*P/U*P - U*p/U*P = ((u*P)-(U*p))/(U*P)
                 // So the numerator is (u*P)-(U*p)
                 // and the denominator is U*P.
-                remapped[0] = safeSubtractToInt( ((long)u * (long)P), ((long)U * (long)p));
-                remapped[1] = safeCastToInt((long)U * (long)P);
+                remapped[0] = safeSubtract( (u * P), (U * p) );
+                remapped[1] = U * P;
             } else {
                 // no possible conflict with phis
                 remapped[0] = u; // units numerator
@@ -457,34 +457,19 @@ public class PolygonField extends ParameterizedField
     /**
      * @param j
      * @param k
-     * @return an integer that equals j - k
+     * @return a long that equals j - k
      * @throws ArithmeticException if the subtraction causes an integer overflow
      */
-    private static int safeSubtractToInt(long j, long k) {
+    private static long safeSubtract(long j, long k) {
         long result = j - k;
         // check if the subtraction itself causes the long result to overflow
         if( (result < 0 && j > 0 && k > 0) || (result > 0 && j < 0 && k < 0) ) {
             throw new ArithmeticException(j + " - " + k + " exceeds the size of a long."); 
         }
-        // check if the long result will fit in an int
-        return safeCastToInt(result);
-    }
-        
-    /**
-     * @param n
-     * @return an int that equals n
-     * @throws ArithmeticException if n exceeds the size of an int
-     */
-    private static int safeCastToInt(long n) {
-        if(n > Integer.MAX_VALUE || n < Integer.MIN_VALUE) {
-            throw new ArithmeticException(n + " exceeds the size of an int."); 
-        }
-        return (int)n;
+        return result;
     }
 
-    // SV: This pattern is problematic for decoupling from BigRational.
-    //     It also represents a tight coupling between AAF and ANI, which is bad.
-    //     The correct pattern is to deal with this problem when parsing VEF, rather than inside the ANI constructor.
+    
     // DJH: I have reimplemented the same effect in convertGoldenNumberPairs() 
     //     but I'll leave this here for now as a reminder of the original logic in case we ever come back to it.
     // Note that this original method works for any golden VEF import into any 5N-gon field
