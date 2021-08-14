@@ -2,7 +2,6 @@
 package com.vzome.core.algebra;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import java.util.StringTokenizer;
@@ -195,8 +194,9 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     }
 
     /**
-     * This method is intended to allow subclasses to intercept
-     * a pair of terms from the golden field and remap them as needed for that field.
+     * This method is intended to allow subclasses to intercept a 4 element int array 
+     * representing the numerators and denominators of a pair of terms (units and phis) 
+     * from the golden field and remap them as needed for that field.
      * Otherwise, the terms are returned unchanged.
      * @param terms
      * @return
@@ -522,20 +522,20 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
             if ( coordLength % 2 != 0 ) {
                 throw new IllegalStateException( "Vector dimension " + c + " has " + coordLength + " components. An even number is required." );
             }
-            int nFactors = coordLength / 2;
-            if ( nFactors > getOrder() ) {
+            int nTerms = coordLength / 2;
+            if ( nTerms > getOrder() ) {
                 throw new IllegalStateException( "Vector dimension " + c + " has " + (coordLength /2) + " terms." 
                         + " Each dimension of the " + this.getName() + " field is limited to " + getOrder() + " terms."
                         + " Each term consists of a numerator and a denominator." );
             }
-            long[] number = new long[ nums[ c ] .length ];
-            for (int i = 0; i < number.length; i++) {
-                number[ i ] = nums[ c ][ i ];
+            long[] pairs = new long[ nums[ c ] .length ];
+            for (int i = 0; i < pairs.length; i++) {
+                pairs[ i ] = nums[ c ][ i ];
             }
-            if ( nFactors < getOrder() ) {
-                number = this .convertGoldenNumberPairs( number );
+            if ( pairs.length == 4 && getOrder() > 2 ) {
+                pairs = this .convertGoldenNumberPairs( pairs );
             }
-            coords[c] = this.numberFactory .createAlgebraicNumberFromPairs( this, number );
+            coords[c] = this.numberFactory .createAlgebraicNumberFromPairs( this, pairs );
         }
         return new AlgebraicVector( coords );
     }
@@ -694,9 +694,10 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     public AlgebraicNumber parseVefNumber( String string, boolean isRational )
     {
         long[] pairs = new long[ this .getOrder() * 2 ];
-        // initialize with zeros
-        for ( int i = 0; i < pairs.length; i++ ) {
-            pairs[ i ] = ( i%2 == 0 )? 0 : 1;
+        // The pairs array is pre-initialized with zeros since it's a native type (not Integer)
+        // so we can simply set all of the denominators to 1.
+        for ( int i = 1; i < pairs.length; i+=2 ) {
+            pairs[ i ] = 1;
         }
         // if the field is declared as rational, then we won't allow the irrational syntax using parenthesis
         // if the field is NOT declared as rational, then we will still allow the rational format as shorthand with no parenthesis
@@ -726,6 +727,9 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
             while( ! numStack.empty() ) {
                 pairs[ i++ ] = numStack   .pop();
                 pairs[ i++ ] = denomStack .pop();
+            }
+            if ( i == 4 && getOrder() > 2 ) {
+                pairs = this .convertGoldenNumberPairs( new long[] { pairs[0], pairs[1], pairs[2], pairs[3] } );
             }
         }
         else {
