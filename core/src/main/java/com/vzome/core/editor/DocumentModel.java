@@ -742,7 +742,6 @@ public class DocumentModel implements Snapshot .Recorder, Context
         value = editorProps .getProperty( "buildNumber" );
         if ( value != null )
             vZomeRoot .setAttribute( "buildNumber", value );
-        vZomeRoot .setAttribute( "coreVersion", this .coreVersion );
         vZomeRoot .setAttribute( "field", field.getName() );
 
         Element childElement;
