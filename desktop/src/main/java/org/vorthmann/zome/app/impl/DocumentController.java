@@ -870,7 +870,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
                 Dimension size = this .modelCanvas .getSize();
                 String format = command .substring( "export2d." .length() ) .toLowerCase();
                 Java2dSnapshot snapshot = documentModel .capture2d( currentSnapshot, size.height, size.width, cameraController .getView(), sceneLighting, false, true );
-                documentModel .export2d( snapshot, format, file, this .drawOutlines, false );
+                documentModel .export2d( snapshot, format, file, this .drawOutlines, false, true );
                 this .openApplication( file );
                 return;
             }

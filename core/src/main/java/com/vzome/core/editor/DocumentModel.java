@@ -973,12 +973,12 @@ public class DocumentModel implements Snapshot .Recorder, Context
         return snapshot;
     }
 
-    public void export2d( Java2dSnapshot snapshot, String format, File file, boolean doOutlines, boolean monochrome ) throws Exception
+    public void export2d( Java2dSnapshot snapshot, String format, File file, boolean doOutlines, boolean monochrome, boolean showBackground ) throws Exception
     {
         SnapshotExporter exporter = this .app .getSnapshotExporter( format );
         // A try-with-resources block closes the resource even if an exception occurs
         try ( Writer out = new FileWriter( file ) ) {
-            exporter .export( snapshot, out, doOutlines, monochrome );
+            exporter .export( snapshot, out, doOutlines, monochrome, showBackground );
         }
     }
 

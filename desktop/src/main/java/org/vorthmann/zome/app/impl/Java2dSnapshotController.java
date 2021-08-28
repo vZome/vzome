@@ -150,7 +150,7 @@ public class Java2dSnapshotController extends DefaultController
     {
         try {
             String format = command .substring( "export2d." .length() ) .toLowerCase();
-            this .document .export2d( snapshot, format, file, this .outlinePanels, this .monochrome );
+            this .document .export2d( snapshot, format, file, this .outlinePanels, this .monochrome, this .showBackground );
             openApplication( file );
         } catch ( Exception e ) {
             mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ e } );
