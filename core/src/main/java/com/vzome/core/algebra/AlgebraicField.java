@@ -173,15 +173,6 @@ public interface AlgebraicField
     AlgebraicVector createIntegerVector( int[][] nums );
     
     /**
-     * Generates an AlgebraicVector with all AlgebraicNumber terms in "trailing divisor" int array form.
-     * @param nums is a 2 dimensional integer array. The length of nums becomes the number of dimensions in the resulting AlgebraicVector.
-     * For example, {@code (new PentagonField()).createIntegerVectorFromTDs( new int[][]{ {0,-1,1}, {2,3,2}, {4,5,2} } ); } 
-     * generates the 3 dimensional vector (-φ, 1 +3φ/2, 2 +5φ/2). 
-     * @return an AlgebraicVector
-     */
-    AlgebraicVector createIntegerVectorFromTDs( int[][] nums );
-
-    /**
      * Create a 3x3 square matrix from integer data.
      * TODO: Generalize this method to create a matrix with dimensions matching the dimensions of the data array
      * Sample input data for an order-4 field:
@@ -217,4 +208,21 @@ public interface AlgebraicField
     boolean scale4dRoots();
     
     boolean doubleFrameVectors();
+
+    default boolean supportsSubfield( String fieldName )
+    {
+        // most common, so check this first
+        if ( fieldName.equals( this .getName()) )
+            return true;
+        
+        //  I'm disabling this as unimportant, and very hard to work around.
+//        if (AlgebraicFields.haveSameInitialCoefficients(field, fieldName) )
+//            return true;
+
+        // any field that returns a non-null goldenRatio is expected to be able 
+        // to map a pair of golden field terms to the corresponding terms in that field
+        // by overriding AbstractAlgebraicField.convertGoldenNumberPairs().
+        // See SqrtPhiField.prepareAlgebraicNumberTerms() for an example.
+        return fieldName .equals( "golden" ) && this.getGoldenRatio() != null;
+    }
 }

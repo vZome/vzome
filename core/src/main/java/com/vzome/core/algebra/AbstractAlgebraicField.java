@@ -203,7 +203,17 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      */
     protected long[] convertGoldenNumberPairs( long[] pairs )
     {
-        return pairs;
+        if ( pairs.length == 2 * this.order )
+            return pairs;
+        else {
+            // Assume that phi is the first irrational, but we still need to expand to the right length
+            long[] newPairs = new long[ 2 * this.order ];
+            for (int i = 0; i < this.order; i++) {
+                newPairs[ 2*i + 0 ] = ( i >= 2 )? 0 : pairs[ 2*i + 0 ];
+                newPairs[ 2*i + 1 ] = ( i >= 2 )? 1 : pairs[ 2*i + 1 ];
+            }
+            return newPairs;
+        }
     }
     
     /**
@@ -228,6 +238,28 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     @Override
     public final AlgebraicNumber createAlgebraicNumberFromTD( int[] trailingDivisorForm )
     {
+        int terms = trailingDivisorForm.length - 1;
+        if ( terms == 2 && this.getOrder() > 2 ) {
+            
+            // Momentarily switch to rational pairs (not reduced), in order to call convertGoldenNumberPairs
+            //  [ a1, a2, d ] => [ a1, d, a2, d, ... aN, d ]
+            long[] pairs = new long[ 2*terms ];
+            int divisor = trailingDivisorForm[ terms ];
+            for (int i = 0; i < terms; i++) {
+                pairs[ 2*i + 0 ] = trailingDivisorForm[ i ];
+                pairs[ 2*i + 1 ] = divisor;
+            }
+            
+            pairs = this .convertGoldenNumberPairs( pairs );
+            
+            // Now switch back.  Since only zero-valued terms were introduced, we don't need to reduce the fractions.
+            terms = pairs.length/2;
+            trailingDivisorForm = new int[ terms + 1 ];
+            trailingDivisorForm[ terms ] = (int) pairs[ 1 ];
+            for ( int i = 0; i < pairs.length/2; i++ ) {
+                trailingDivisorForm[ i ] = (int) pairs[ 2*i ];
+            }
+        }
         return this.numberFactory .createAlgebraicNumberFromTD( this, trailingDivisorForm );
     }
 
@@ -568,24 +600,6 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         return result;
     }
     
-    /**
-     * Generates an AlgebraicVector with all AlgebraicNumber terms in "trailing divisor" int array form.
-     * @param nums is a 2 dimensional integer array. The length of nums becomes the number of dimensions in the resulting AlgebraicVector.
-     * For example, {@code (new PentagonField()).createIntegerVectorFromTDs( new int[][]{ {0,-1,1}, {2,3,2}, {4,5,2} } ); } 
-     * generates the 3 dimensional vector (-φ, 1 +3φ/2, 2 +5φ/2). 
-     * @return an AlgebraicVector
-     */
-    @Override
-    public AlgebraicVector createIntegerVectorFromTDs( int[][] nums )
-    {
-        final int dims = nums.length;
-        AlgebraicVector result = origin( dims );
-        for (int dim = 0; dim < dims; dim++) {
-            result .setComponent( dim, createAlgebraicNumberFromTD( nums[dim] ) );
-        }
-        return result;
-    }
-
     /**
      * Create a 3x3 square matrix from integer data.
      * TODO: Generalize this method to create a matrix with dimensions matching the dimensions of the data array

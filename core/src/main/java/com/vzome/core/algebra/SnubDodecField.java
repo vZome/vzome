@@ -200,6 +200,8 @@ public class SnubDodecField extends AbstractAlgebraicField
         return getUnitTerm(1);
     }
     
+    // No need to override convertGoldenNumberPairs() as long as phi is the first irrational
+
     @Override
     public String getIrrational( int which, int format )
     {

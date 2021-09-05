@@ -186,6 +186,21 @@ public class AlgebraicFieldTest {
 
             num = field.parseVefNumber("(1,2)", false);
             assertEquals(msg, golden2, num);
+            
+            num = field .createAlgebraicNumberFromTD( new int[]{ 0, 0, 1 } );
+            assertTrue( msg, num.isZero() );
+            
+            num = field .createAlgebraicNumberFromTD( new int[]{ 1, 0, 1 } );
+            assertTrue( msg, num.isOne() );
+            
+            num = field .createAlgebraicNumberFromTD( new int[]{ 0, 1, 1 } );
+            assertEquals( msg, golden, num );
+            
+            num = field .createAlgebraicNumberFromTD( new int[]{ 1, 1, 1 } );
+            assertEquals( msg, golden1, num );
+            
+            num = field .createAlgebraicNumberFromTD( new int[]{ 2, 1, 1 } );
+            assertEquals( msg, golden2, num );
         }
     }
         

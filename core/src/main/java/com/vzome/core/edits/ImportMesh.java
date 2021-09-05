@@ -183,10 +183,11 @@ public abstract class ImportMesh extends ChangeManifestations
             @Override
             public AlgebraicField getField( String name )
             {
-                if ( field .getName() .equals( name ) )
+                if ( field .supportsSubfield( name ) )
                     return field;
-                else
+                else {
                     return null;
+                }
             }
         };
         
@@ -196,7 +197,7 @@ public abstract class ImportMesh extends ChangeManifestations
         try {
             this .parseMeshData( offset, events, registry );
         } catch ( IOException e ) {
-            throw new Failure( "The selected file has incorrect content for this import.\n" + e .getMessage() );
+            throw new Failure( "Incorrect content for this import:\n" + e .getMessage() );
         }
 
         redo();
