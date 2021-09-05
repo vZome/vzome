@@ -473,17 +473,6 @@ public class JsAlgebraicField implements AlgebraicField
         return createAlgebraicNumber( ones, phis, div, 0 );
     }
 
-    @Override
-    public AlgebraicVector createIntegerVectorFromTDs(int[][] nums)
-    {
-        final int dims = nums.length;
-        AlgebraicVector result = origin( dims );
-        for (int dim = 0; dim < dims; dim++) {
-            result .setComponent( dim, createAlgebraicNumberFromTD( nums[dim] ) );
-        }
-        return result;
-    }
-
     
     
     

@@ -136,7 +136,9 @@ public class ColoredMeshJson
         
         String fieldName = ( node .has( "field") )? node .get( "field" ) .asText() : "golden";
         AlgebraicField field = registry .getField( fieldName );
-        // TODO: fail if field is null
+        if ( field == null ) {
+            throw new IOException( "This document cannot import mesh data from field \"" + fieldName + "\"" );
+        }
         
         if ( ! node .has( "vertices" ) ) {
             throw new IOException( "There is no 'vertices' list in the JSON" );
@@ -155,7 +157,7 @@ public class ColoredMeshJson
                 for ( JsonNode numberNode : vectorNode ) {
                     nums[ i++ ] = mapper .treeToValue( numberNode, new int[]{}.getClass() ); // JSweet compiler confused by int[].class
                 }
-                AlgebraicVector vertex = field .createIntegerVectorFromTDs( nums );
+                AlgebraicVector vertex = field .createVectorFromTDs( nums );
                 if ( vertex .dimension() > 3 )
                     vertex = projection .projectImage( vertex, false );
                 if ( offset != null )
