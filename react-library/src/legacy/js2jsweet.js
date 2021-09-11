@@ -97,7 +97,7 @@ const init = async () =>
       const coloredMesh = JSON.parse( this.meshData )
       const field = registry.getField( coloredMesh.field )
       const vertices = coloredMesh.vertices.map( nums => {
-        let vertex = field.createIntegerVectorFromTDs( nums )
+        let vertex = field.createVectorFromTDs( nums )
         if ( vertex.dimension() > 3 )
             vertex = this.projection.projectImage( vertex, false )
         if ( offset != null )
@@ -136,7 +136,7 @@ const init = async () =>
       const simpleMesh = JSON.parse( this.meshData )
       const field = registry.getField( simpleMesh.field || 'golden' )
       const vertices = simpleMesh.vertices.map( nums => {
-        let vertex = field.createIntegerVectorFromTDs( nums )
+        let vertex = field.createVectorFromTDs( nums )
         if ( vertex.dimension() > 3 )
             vertex = this.projection.projectImage( vertex, false )
         if ( offset != null )

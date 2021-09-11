@@ -111,7 +111,7 @@ export const useVZomeUrl = ( url, defaultScene ) =>
             }
             latestMesh = mesh // will record where we failed, if we don't reach targetEdit
           } // yup, overwrite every time
-          interpret( Step.DONE, latestMesh, firstEdit, [], record )
+          await interpret( Step.DONE, latestMesh, firstEdit, [], record )
           setScene( { camera: { ...camera, fov: convertFOV( 0.75 ) }, lighting, embedding: renderer.embedding } )
           setMesh( targetMesh || latestMesh )
           setRenderer( renderer )
