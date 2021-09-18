@@ -83,6 +83,8 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         else if ( symmetry instanceof DodecagonalSymmetry )
             test = new RealVector( 10d, 1d, 1d );
 
+        symmetry .computeOrbitDots();
+        
         orbitDots .clear();
         //        lastOrbit = null;  // cannot do this, we might have a valid value, for example after loading from XML
         boolean lastOrbitChanged = false;

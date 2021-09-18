@@ -152,6 +152,7 @@ public class RotationTool extends SymmetryTool
         Point center = null;
         Segment axisStrut = null;
         boolean correct = true;
+        Axis rotationZone = null;
         for (Manifestation man : mSelection) {
             if ( prepareTool )
                 unselect( man );
@@ -172,18 +173,21 @@ public class RotationTool extends SymmetryTool
                     break;
                 }
                 axisStrut = (Segment) ((Strut) man) .getFirstConstruction();
+                AlgebraicVector vector = axisStrut .getOffset();
+                vector = axisStrut .getField() .projectTo3d( vector, true );
+                rotationZone = symmetry .getAxis( vector );
             }
         }
 
         if ( axisStrut == null )
         {
-            Axis preferredAxis = this .symmetry .getPreferredAxis();
-            if ( preferredAxis != null )
+            rotationZone = this .symmetry .getPreferredAxis();
+            if ( rotationZone != null )
             {
                 AlgebraicField field = symmetry .getField();
                 center = originPoint;
                 this .addParameter( center );
-                axisStrut = new AnchoredSegment( preferredAxis, field .one(), center );
+                axisStrut = new AnchoredSegment( rotationZone, field .one(), center );
                 this .addParameter( axisStrut );
             }
             else if ( this .isPredefined() )
@@ -191,9 +195,10 @@ public class RotationTool extends SymmetryTool
                 center = originPoint;
                 this .addParameter( center );
                 Direction redOrbit = symmetry .getSpecialOrbit( SpecialOrbit.RED );
+                rotationZone = redOrbit .getAxis( Symmetry.PLUS, 1 );
                 AlgebraicField field = symmetry .getField();
                 AlgebraicNumber redScale = redOrbit .getUnitLength() .times( field .createPower( Direction.USER_SCALE ) );
-                axisStrut = new AnchoredSegment( redOrbit .getAxis( Symmetry.PLUS, 1 ), redScale, center );
+                axisStrut = new AnchoredSegment( rotationZone, redScale, center );
                 this .addParameter( axisStrut );
             }
             else if ( isAutomatic() )
@@ -203,7 +208,8 @@ public class RotationTool extends SymmetryTool
                 AlgebraicField field = symmetry .getField();
                 AlgebraicVector zAxis = field .basisVector( 3, AlgebraicVector .Z );
                 AlgebraicNumber len = field .createPower( 2 );  // does not matter
-                axisStrut = new AnchoredSegment( symmetry .getAxis( zAxis ), len, center );
+                rotationZone = symmetry .getAxis( zAxis );
+                axisStrut = new AnchoredSegment( rotationZone, len, center );
                 this .addParameter( axisStrut );
             }
             else
@@ -216,16 +222,13 @@ public class RotationTool extends SymmetryTool
             return "rotation tool requires a single axis strut,\n" +
             "and optionally a separate center point";
 
-        AlgebraicVector vector = axisStrut .getOffset();
-        vector = axisStrut .getField() .projectTo3d( vector, true );
-        Axis axis = symmetry .getAxis( vector );
-        if ( axis == null )
+        if ( rotationZone == null )
             return "selected strut is not an axis of rotation";
-        Permutation perm = axis .getRotationPermutation();
+        Permutation perm = rotationZone .getRotationPermutation();
         if ( perm == null )
             return "selected strut is not an axis of rotation";
         // This can correct for the very old bug in Direction.createAxis() for negative axes.
-        int rotation = this.corrected? perm .mapIndex( 0 ) : axis .getRotation();
+        int rotation = this.corrected? perm .mapIndex( 0 ) : rotationZone .getRotation();
         if ( prepareTool ) {
             if ( this .fullRotation ) {
                 int order = perm .getOrder();
