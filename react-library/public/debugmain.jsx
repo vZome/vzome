@@ -31,7 +31,7 @@ export const Demo = () =>
   return (
     <div>
       <div style={viewerStyle}>
-        <UrlViewer url={"/models/hept-test.vZome"} />
+        <UrlViewer url={"https://raw.githubusercontent.com/vorth/vzome-sharing/main/2021/07/24/12-40-30-Japan-Olympics-logo/Japan-Olympics-logo.vZome"} />
       </div>
     </div>
   )

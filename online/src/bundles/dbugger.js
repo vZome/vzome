@@ -37,7 +37,7 @@ export const sourceLoaded = ( firstEdit, targetEdit ) => ({ type: 'SOURCE_LOADED
 
 export const reachedEdit = ( edit, branchStack ) => ( { type: 'EDIT_REACHED', payload: { edit, branchStack } } )
 
-const debug = action => designName => ( dispatch, getState ) =>
+const debug = action => designName => async ( dispatch, getState ) =>
 {
   let design = designs.selectDesign( getState(), designName ) // the starting point only
   const dbugger = designs.selectDebugger( getState(), designName )
@@ -60,7 +60,7 @@ const debug = action => designName => ( dispatch, getState ) =>
   }
 
   try {
-    interpret( action, mesh, edit, stack, recordSnapshot )
+    await interpret( action, mesh, edit, stack, recordSnapshot )
   } catch (error) {
     console.log( error )
     dispatch( showAlert( `Failure interpreting ${designName}: ${error.message}` ) )

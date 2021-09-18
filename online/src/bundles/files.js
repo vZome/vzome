@@ -18,26 +18,6 @@ export const fetchFileText = selected =>
 }
 
 
-export const fetchUrlText = ( path ) =>
-{
-  // TODO: I should really deploy my own copy of this proxy on Heroku
-  const fetchWithCORS = url => fetch ( url ).catch ( _ => fetch( 'https://cors-anywhere.herokuapp.com/' + url ) )
-
-  return fetchWithCORS( path )
-  .then( response =>
-  {
-    if ( !response.ok ) {
-      throw new Error( 'Network error during fetch.' );
-    }
-    return response.text()
-  })
-  // .catch( error =>
-  // {
-  //   console.error( 'There has been a problem with your fetch operation:', error );
-  //   return null
-  // })
-}
-
 // from https://www.bitdegree.org/learn/javascript-download
 export const download = ( filename, bytes ) =>
 {

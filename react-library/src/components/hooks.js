@@ -12,65 +12,121 @@ const originShown = field =>
   return new Map().set( originBall.id, originBall )
 }
 
-export const fetchModel = ( path ) =>
+export const fetchUrlText = async ( url ) =>
 {
-  // TODO: I should really deploy my own copy of this proxy on Heroku
-  const fetchWithCORS = url => fetch ( url ).catch ( _ => fetch( 'https://cors-anywhere.herokuapp.com/' + url ) )
-
-  return fetchWithCORS( path )
-    .then( response =>
-    {
-      if ( !response.ok ) {
-        throw new Error( 'Network response was not ok' );
-      }
-      return response.text()
-    })
-    .catch( error =>
-    {
-      console.error( 'There has been a problem with your fetch operation:', error );
-      return null
-    });
+  let response
+  try {
+    response = await fetch( url )
+  } catch ( error ) {
+    console.log( `Fetching ${url} failed with "${error}"; trying cors-anywhere` )
+    // TODO: I should really deploy my own copy of this proxy on Heroku
+    response = await fetch( 'https://cors-anywhere.herokuapp.com/' + url )
+  }
+  if ( !response.ok ) {
+    throw new Error( `Failed to fetch "${url}": ${response.statusText}` )
+  }
+  return response.text()
 }
 
-export const useVZomeUrl = ( url, defaultCamera ) =>
+const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
+
+const convertPreview = preview =>
 {
-  const [ camera, setCamera ] = useState( defaultCamera )
+  let i = 0
+  let { lights, camera, shapes, instances, embedding, orientations } = preview
+  instances = instances.map( ({ position, orientation, color, shape }) => {
+    const id = "id_" + i++
+    const { x, y, z } = position
+    const rotation = orientations[ orientation ] || IDENTITY_MATRIX
+    return { id, position: [ x, y, z ], rotation, color, shapeId: shape }
+  })
+  const dlights = lights.directionalLights.map( ({ direction, color }) => {
+    const { x, y, z } = direction
+    return { direction: [ x, y, z ], color }
+  })
+  const { lookAtPoint, upDirection, lookDirection, viewDistance, fieldOfView, near, far } = camera
+  const lookAt = [ ...Object.values( lookAtPoint ) ]
+  const up = [ ...Object.values( upDirection ) ]
+  const lookDir = [ ...Object.values( lookDirection ) ]
+  camera = {
+    near, far, up, lookAt,
+    fov: convertFOV( fieldOfView ),
+    position: lookAt.map( (e,i) => e - viewDistance * lookDir[ i ] ),
+  }
+  return { lighting: { ...lights, directionalLights: dlights }, camera, shapes, instances, embedding }
+}
+
+export const fetchUrlDesign = async ( textPromise, url ) =>
+{
+  const text = await textPromise
+  if ( ! url.endsWith( ".vZome" ) ) {
+    // This is the only case in which we don't resolve the promise with text,
+    //  since there is no point in allowing download of non-vZome text.
+    throw new Error( `Unrecognized file name: ${url}` )
+  }
+  const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" )
+  try {
+    const previewText = await fetchUrlText( previewUrl )
+    const scene = convertPreview( JSON.parse( previewText ) )
+    return { text, scene }
+  } catch (error) {
+    console.log( `Preview load of "${previewUrl}" failed due to error: ${error}` )
+    try {
+      const parsed = await parse( text ) // TODO run this in a worker!
+      if ( ! parsed.firstEdit ) {
+        return { text, error: `Unable to parse XML from ${url}` }
+      }
+      if ( parsed.field.unknown ) {
+        return { text, error: `Field ${parsed.field.name} is not implemented.` }
+      }
+      return { text, parsed }
+    } catch (error) {
+      return { text, error: error.message }
+    }
+  }
+}
+
+export const useVZomeUrl = ( url, defaultScene ) =>
+{
+  const [ scene, setScene ] = useState( defaultScene )
   const [ mesh, setMesh ] = useState( null )
   const [ renderer, setRenderer ] = useState( null )
   const [ text, setText ] = useState( null )
   useEffect( () => {
     async function parseUrl() {
-      const text = await fetchModel( url )
-      if ( !text ) {
-        console.log( `Unable to fetch model file from ${url}`)
-        return
-      }
-      setText( text )
-      const { firstEdit, camera, field, targetEdit, renderer } = await parse( text ) || {}
-      if ( !firstEdit ) {
-        console.log( `Unable to parse XML from ${url}`)
-        return
-      }
-      if ( field.unknown ) {
-        console.log( `Field ${field.name} is not implemented.`)
-        return
-      }
-      setCamera( { ...camera, fov: convertFOV( 0.75 ) } )
-      setRenderer( renderer )
-      let latestMesh = { shown: originShown( field ), selected: new Map(), hidden: new Map(), groups: [] }
-      let targetMesh = null
-      const record = ( mesh, id ) => {
-        if ( !targetMesh && id === targetEdit ) {
-          targetMesh = latestMesh // record the prior state
+      try {
+        const fetched = await fetchUrlDesign( fetchUrlText( url ), url )
+        setText( fetched.text )
+        if ( fetched.error ) {
+          alert( fetched.error )  // TODO: these alerts should just be rejections?  or state?
+        } else if ( fetched.scene ) {
+          setScene( fetched.scene )
+        } else {
+          const { field, targetEdit, firstEdit, renderer, camera, lighting } = fetched.parsed
+          let latestMesh = { shown: originShown( field ), selected: new Map(), hidden: new Map(), groups: [] }
+          let targetMesh = null
+          const record = ( mesh, id ) => {
+            if ( !targetMesh && id === targetEdit ) {
+              targetMesh = latestMesh // record the prior state
+            }
+            latestMesh = mesh // will record where we failed, if we don't reach targetEdit
+          } // yup, overwrite every time
+          await interpret( Step.DONE, latestMesh, firstEdit, [], record )
+          setScene( { camera: { ...camera, fov: convertFOV( 0.75 ) }, lighting, embedding: renderer.embedding } )
+          setMesh( targetMesh || latestMesh )
+          setRenderer( renderer )
         }
-        latestMesh = mesh // will record where we failed, if we don't reach targetEdit
-      } // yup, overwrite every time
-      interpret( Step.DONE, latestMesh, firstEdit, [], record )
-      setMesh( targetMesh || latestMesh )
+      } catch (error) {
+        alert( error.message )  // TODO: these alerts should just be rejections?  or state?
+      }
     }
-    parseUrl();
-  }, [url] )
-  return [ mesh, camera, renderer, text ]
+    parseUrl()
+  }, [ url ] )
+  // We have text if we could find the vZome file,
+  //  and either a scene if there was a 3D preview JSON next to it,
+  //  or mesh and renderer if the XML was parsed successfully
+  //  (in which case we still have a scene, just with no shapes and instances).
+  return { text, scene, mesh, renderer }
 }
 
 export const useInstanceShaper = ( shown, selected, shaper ) =>

@@ -9,8 +9,9 @@ import Divider from '@material-ui/core/Divider';
 import { connect } from 'react-redux'
 
 import UrlDialog from './webloader.jsx'
-import { fetchFileText, fetchUrlText } from '../bundles/files.js'
+import { fetchFileText } from '../bundles/files.js'
 import { openDesign } from '../bundles/designs.js'
+import { fetchUrlText } from '@vzome/react-vzome'
 
 const openDesignUrl = url => openDesign( fetchUrlText( url ), url )
 

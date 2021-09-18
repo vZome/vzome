@@ -2,7 +2,6 @@
 package com.vzome.core.math.symmetry;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
@@ -40,8 +39,6 @@ public interface Symmetry extends Iterable<Direction>, Embedding
 	int inverse(int orientation);
 	
     String[] getDirectionNames();
-
-    Iterator<Direction> getDirections();
     
 	Direction getDirection( String name );
     

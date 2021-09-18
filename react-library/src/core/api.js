@@ -1,10 +1,10 @@
 
-import * as vZomeJava from './legacyjava.js'
+import parserPromise from '../legacy/js2jsweet.js'
 import { defaultNew } from '../resources/com/vzome/core/parts/index.js'
 
 export const parse = async text =>
 {
-  const { parser } = await vZomeJava.coreState
+  const { parser } = await parserPromise
   return parser( text )
 }
 
@@ -74,8 +74,11 @@ export const cloneMesh = ( { shown, selected, hidden, groups=[] } ) =>
 
 export const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
 
-export const interpret = ( action, mesh, edit, stack=[], recordSnapshot ) =>
+export const interpret = async ( action, mesh, edit, stack=[], recordSnapshot ) =>
 {
+  const nextTask = () => {
+      return new Promise( res => setTimeout( res ) )
+  }
   const step = () =>
   {
     if ( ! edit )
@@ -113,21 +116,22 @@ export const interpret = ( action, mesh, edit, stack=[], recordSnapshot ) =>
     }
   }
 
-  const conTinue = () =>
+  const conTinue = async () =>
   {
     let stepped
     do {
-      stepped = stepOut()
+      stepped = await stepOut()
+      await nextTask()
     } while ( stepped !== Step.DONE );
   }
 
-  const stepOver = () =>
+  const stepOver = async () =>
   {
     const stepped = step()
     switch ( stepped ) {
 
       case Step.IN:
-        stepOut()
+        await stepOut()
         return Step.OVER
     
       default:
@@ -135,11 +139,12 @@ export const interpret = ( action, mesh, edit, stack=[], recordSnapshot ) =>
     }
   }
 
-  const stepOut = () =>
+  const stepOut = async () =>
   {
     let stepped
     do {
-      stepped = stepOver()
+      stepped = await stepOver()
+      await nextTask()
     } while ( stepped !== Step.OUT && stepped !== Step.DONE )
     return stepped
   }
@@ -147,20 +152,20 @@ export const interpret = ( action, mesh, edit, stack=[], recordSnapshot ) =>
   switch ( action ) {
 
     case Step.IN:
-      step()
+      await step()
       break;
   
     case Step.OVER:
-      stepOver()
+      await stepOver()
       break;
   
     case Step.OUT:
-      stepOut()
+      await stepOut()
       break;
   
     case Step.DONE:
     default:
-      conTinue()
+      await conTinue()
       break;
   }
 }

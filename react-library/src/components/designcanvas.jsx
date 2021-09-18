@@ -37,7 +37,7 @@ const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
       <group name="Center" position={[0,0,0]} visible={false} />
       <ambientLight color={ambientColor} intensity={1.0} />
       { directionalLights.map( ( { color, direction } ) =>
-        <directionalLight target={centerObject} intensity={1.0} color={color} position={direction.map( x => -x )} /> ) }
+        <directionalLight key={JSON.stringify(direction)} target={centerObject} intensity={1.0} color={color} position={direction.map( x => -x )} /> ) }
     </>
   )
 }
