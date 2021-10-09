@@ -170,7 +170,11 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
          */
 
         if( System.getProperty("os.name").toLowerCase().contains("windows")) {
-            if( "console".compareToIgnoreCase(System.getenv("SESSIONNAME")) != 0) {
+            String sessionName = System.getenv("SESSIONNAME");
+            // Apparently, the sessionName environment variable can be null in some obscure situations.
+            // This can happen in the rare case when Explorer.exe has been killed and restarted manually.
+            // We will allow for that condition to avoid the NPE.
+            if( sessionName != null && "console".compareToIgnoreCase(sessionName) != 0) {
                 logger.info("Java OpenGL (JOGL) is not supported by Windows Terminal Services.");
                 final String msg = "vZome cannot be run under Windows Terminal Services.";
                 logger.severe(msg);
