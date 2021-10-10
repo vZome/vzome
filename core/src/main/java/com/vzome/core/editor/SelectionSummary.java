@@ -74,7 +74,14 @@ public class SelectionSummary implements ManifestationChanges
             // will be called on a different thread while we're in this loop.
 	        balls = struts = panels = 0;
 	        for(Manifestation m : selection) {
-	            manifestationAdded(m);
+	            // A call to manifestationAdded() will be recursive. Don't want that.
+	            // Instead, duplicate the pertinent code.
+	            if ( m instanceof Connector )
+	                ++ balls;
+	            else if ( m instanceof Strut )
+	                ++ struts;
+	            else if ( m instanceof Panel )
+	                ++ panels;
 	        }
             if(LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.warning("SelectionSummary resynced on thread: " + Thread.currentThread() + ". " 
