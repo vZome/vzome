@@ -26,7 +26,7 @@ function App( {structure, workingPlane, doMoveWorkingPlane, doToggleStrutMode, d
     doMoveWorkingPlane( end )
   }
   return (
-    <Canvas camera={{ fov: 50 }} resize={{polyfill}}>
+    <Canvas camera={{ fov: 50 }} resize={{polyfill}} dpr={window.devicePixelRatio}>
       <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} />
       <Scene points={structure.points} segments={structure.segments}
         buildEdge={buildNodeOrEdge}

@@ -71,7 +71,7 @@ const DesignCanvas = ( { lighting, camera, children, handleBackgroundClick=()=>{
 {
   const { fov, position, up, lookAt } = camera || defaultInitialCamera
   return(
-    <Canvas gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
+    <Canvas dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
       <PerspectiveCamera makeDefault {...{fov, position, up}}>
         <Lighting {...(lighting || defaultLighting)} />
       </PerspectiveCamera>
