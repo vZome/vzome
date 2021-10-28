@@ -416,6 +416,16 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                             importScaleDialog = new VefImportDialog( DocumentFrame.this, importScaleController, "Set Scale and Rotation",
                                 new ControllerFileAction( fileDialog, true, cmd, "vef", controller ) );
                         }
+                        try {
+                            // The polytopesController knows how to pre-load the quaternion based on a selected strut.
+                            // TODO: It's probably better to teach the importScaleController how to do it too
+                            // or else make one of them a subcontroller of the other 
+                            // so we don't need to invoke them seperately.
+                            polytopesController = mController .getSubController( "polytopes" );
+                            polytopesController.actionPerformed(DocumentFrame.this, "setQuaternion");
+                        } catch (Exception e1) {
+                            errors.reportError(Controller.USER_ERROR_CODE, new Object[] { e1 });
+                        }
                         importScaleDialog .setVisible( true );
                     }
                     else if ( cmd .startsWith( "setSymmetry." ) )
