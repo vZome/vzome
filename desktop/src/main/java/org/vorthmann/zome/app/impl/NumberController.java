@@ -51,7 +51,6 @@ public class NumberController extends DefaultController
     public void setModelProperty( String property, Object value )
     {
         switch ( property ) {
-
         case "values":
             StringTokenizer values = new StringTokenizer( (String) value );
             int[] inputs = new int[ field .getOrder() ]; // divisor will be the last int
@@ -64,9 +63,35 @@ public class NumberController extends DefaultController
             this .value = field .createAlgebraicNumber( inputs ) .dividedBy( field .createRational( divisor ) );
             return;
 
+        case "zero":
+            setValue( field .zero() );
+            return;
+
+        case "one":
+            setValue( field .one() );
+            return;
+
+        case "negate":
+            setValue( getValue().negate() );
+            return;
+
 		default:
             super .setModelProperty( property, value );
 		}
+    }
+
+    @Override
+    public String getProperty(String property) {
+        switch(property) {
+        case "value":
+            return value.toString();
+            
+        case "evaluate":
+            return String.valueOf(value.evaluate());
+            
+        default:
+            return super.getProperty(property);
+        }
     }
 
     public AlgebraicNumber getValue()

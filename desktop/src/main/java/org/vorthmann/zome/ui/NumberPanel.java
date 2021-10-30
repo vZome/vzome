@@ -1,10 +1,16 @@
 package org.vorthmann.zome.ui;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.text.SimpleAttributeSet;
@@ -12,6 +18,7 @@ import javax.swing.text.StyleConstants;
 
 import org.vorthmann.ui.Controller;
 
+@SuppressWarnings("serial")
 public class NumberPanel extends JPanel
 {
     private final JTextPane[] fields;
@@ -36,6 +43,9 @@ public class NumberPanel extends JPanel
         StyleConstants.setAlignment(fieldAttribs, StyleConstants.ALIGN_RIGHT);
         StyleConstants.setFontSize(fieldAttribs, 14);
 
+        JPopupMenu contextMenu = getContextMenu();
+        setComponentPopupMenu(contextMenu);
+
         int labelsWidthTotal = 0;
         for ( int i = 0; i < values.length; i++ )
         {
@@ -58,11 +68,54 @@ public class NumberPanel extends JPanel
             fields[ i ] .setBorder( BorderFactory .createBevelBorder( BevelBorder .LOWERED ) );
             fields[ i ] .setMaximumSize( maxSize );
             fields[ i ] .setPreferredSize( maxSize );
+            fields[ i ] .setComponentPopupMenu(contextMenu);
             this .add( fields[ i ] );
 
             labelsWidthTotal += (maxSize.width * 2); // leave space for the static text too
         }
         totalLabelWidth = labelsWidthTotal;
+	}
+
+	protected JPopupMenu getContextMenu() {
+	    JPopupMenu popup = new JPopupMenu();
+        popup.add(new JMenuItem(new AbstractAction("Show Decimal Value") {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                String msg = null;
+                try {
+                    syncToModel();
+                    msg = controller.getProperty("value") + " = " + controller.getProperty("evaluate");
+                    System.out.println(msg);
+                }
+                catch(NumberFormatException ex) {
+                    msg = ex.getClass().getSimpleName() + " " + ex.getMessage();
+                }
+                JOptionPane.showMessageDialog( null, msg, "Decimal Value", JOptionPane.PLAIN_MESSAGE );
+            }
+        }));
+        popup.addSeparator();
+	    popup.add(new JMenuItem(new AbstractAction("Reset to Zero") {
+	        @Override
+            public void actionPerformed(ActionEvent ae) {
+                controller.setProperty("zero", null);
+                syncFromModel();
+	        }
+	    }));
+        popup.add(new JMenuItem(new AbstractAction("Set to One") {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                controller.setProperty("one", null);
+                syncFromModel();
+            }
+        }));
+        popup.add(new JMenuItem(new AbstractAction("Negate") {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                controller.setProperty("negate", null);
+                syncFromModel();
+            }
+        }));
+	    return popup;
 	}
 
     public int totalLabelWidth() {
