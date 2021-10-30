@@ -28,6 +28,9 @@ public class TrigTableExporter extends Exporter3d {
     public void doExport(File file, Writer writer, int height, int width) throws Exception {
         try {
             final PolygonField field = (PolygonField) this.mModel.getField();
+            if(field.isOdd()) {
+                throw new IllegalStateException("The " + field.getName() + " field is odd.");
+            }
             final AlgebraicMatrix rotationMatrix = (new AntiprismSymmetry(field)).getRotationMatrix();
             final AlgebraicVector vX = field.basisVector(3, X); // rotation matrix expects 3D even though we only use 2
             final AlgebraicVector v1 = rotationMatrix.timesColumn(vX);
@@ -135,8 +138,8 @@ public class TrigTableExporter extends Exporter3d {
             output.println(buf.toString());
             output .flush();
         }
-        catch(ClassCastException ex) {
-            throw new IllegalArgumentException("Trig exports are only implemented for polygon fields", ex);
+        catch(ClassCastException | IllegalStateException ex) {
+            throw new IllegalArgumentException("Trig exports are only implemented for even polygon fields", ex);
         }
     }
     
