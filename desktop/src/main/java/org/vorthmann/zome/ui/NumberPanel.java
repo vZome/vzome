@@ -97,6 +97,7 @@ public class NumberPanel extends JPanel
 	    popup.add(new JMenuItem(new AbstractAction("Reset to Zero") {
 	        @Override
             public void actionPerformed(ActionEvent ae) {
+	            syncToModel();
                 controller.setProperty("zero", null);
                 syncFromModel();
 	        }
@@ -104,6 +105,7 @@ public class NumberPanel extends JPanel
         popup.add(new JMenuItem(new AbstractAction("Set to One") {
             @Override
             public void actionPerformed(ActionEvent ae) {
+                syncToModel();
                 controller.setProperty("one", null);
                 syncFromModel();
             }
@@ -111,7 +113,16 @@ public class NumberPanel extends JPanel
         popup.add(new JMenuItem(new AbstractAction("Negate") {
             @Override
             public void actionPerformed(ActionEvent ae) {
+                syncToModel();
                 controller.setProperty("negate", null);
+                syncFromModel();
+            }
+        }));
+        popup.add(new JMenuItem(new AbstractAction("Reciprocal") {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                syncToModel();
+                controller.setProperty("reciprocal", null);
                 syncFromModel();
             }
         }));

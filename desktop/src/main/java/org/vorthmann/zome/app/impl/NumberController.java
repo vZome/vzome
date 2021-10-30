@@ -75,6 +75,12 @@ public class NumberController extends DefaultController
             setValue( getValue().negate() );
             return;
 
+        case "reciprocal":
+            if(! getValue().isZero()) {
+                setValue( getValue().reciprocal() );
+            }
+            return;
+
 		default:
             super .setModelProperty( property, value );
 		}
