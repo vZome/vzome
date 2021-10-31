@@ -59,16 +59,26 @@ public class HeptagonField extends AbstractAlgebraicField
     @Override
     public String getIrrational( int which, int format )
     {
-        if ( format == DEFAULT_FORMAT )
-            if ( which == B )
+        if ( format == DEFAULT_FORMAT ) {
+            switch(which) {
+            case A:
+                return "";
+            case B:
                 return "\u03C1";
-            else
+            case C:
                 return "\u03C3";
-        else
-            if ( which == B )
+            }
+        } else {
+            switch(which) {
+            case A:
+                return "";
+            case B:
                 return "rho";
-            else
+            case C:
                 return "sigma";
+            }
+        }
+        throw new IllegalArgumentException( which + " is not a valid irrational in this field" );
     }
 
     @Override
