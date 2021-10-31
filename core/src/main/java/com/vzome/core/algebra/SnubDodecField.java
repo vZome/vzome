@@ -208,7 +208,7 @@ public class SnubDodecField extends AbstractAlgebraicField
         if ( format == DEFAULT_FORMAT ) {
             switch ( which ) {
             case A:
-                return "";
+                return " ";
 
             case B:
                 return "\u03C6";
@@ -228,7 +228,7 @@ public class SnubDodecField extends AbstractAlgebraicField
         } else {
             switch ( which ) {
             case A:
-                return "";
+                return " ";
 
             case B:
                 return "phi";
