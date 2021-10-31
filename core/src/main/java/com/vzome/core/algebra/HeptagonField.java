@@ -62,7 +62,7 @@ public class HeptagonField extends AbstractAlgebraicField
         if ( format == DEFAULT_FORMAT ) {
             switch(which) {
             case A:
-                return "";
+                return " ";
             case B:
                 return "\u03C1";
             case C:
@@ -71,7 +71,7 @@ public class HeptagonField extends AbstractAlgebraicField
         } else {
             switch(which) {
             case A:
-                return "";
+                return " ";
             case B:
                 return "rho";
             case C:
