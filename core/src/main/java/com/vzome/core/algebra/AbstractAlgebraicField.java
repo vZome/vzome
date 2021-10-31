@@ -54,6 +54,51 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     }
 
     @Override
+    public AlgebraicNumber getNumberByName(String name)
+    {
+        switch(name) {
+        case "zero":
+            return zero();
+            
+        case "one":
+            return one();
+            
+        case "phi": case "\u03C6":
+            return getGoldenRatio();
+            
+        case "\u221A5": case "root5": case "sqrt5": case "rootFive":
+            AlgebraicNumber n = getGoldenRatio();
+            return n == null ? null : n.plus(n).minus(one());
+
+        default:
+            // try to match irrational names
+            for(int format=0; format<2; format++) {
+                for(int i=0; i < getOrder(); i++) {
+                    if(getIrrational(i, format).equals(name)) {
+                        return getUnitTerm(i);
+                    }
+                }
+            }
+            // try to parse as a rational number
+            try {
+                String[] parts = name.split( "/" );
+                long numerator = Long.parseLong( parts[0] );
+                switch(parts.length) {
+                case 1:
+                    return createRational(numerator);
+                case 2:
+                    long denominator = Long.parseLong( parts[1] );
+                    return createRational(numerator, denominator);
+                }
+            }
+            catch(NumberFormatException ex) {
+                // This is OK. Just means name isn't a rational number
+            }
+        }
+        return null;
+    }
+
+    @Override
     public String getIrrational( int which )
     {
         return this .getIrrational( which, DEFAULT_FORMAT );

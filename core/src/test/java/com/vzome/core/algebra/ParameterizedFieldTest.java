@@ -92,6 +92,36 @@ public class ParameterizedFieldTest {
     }
 
     @Test
+    public void printNumberByName() {
+        System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
+        String[] names = {
+                "root2","root3","root5","root6","root7","root8","root10",
+                "phi","xi","rho","sigma",
+                "alpha","beta","gamma","delta","epsilon",
+                "theta","kappa","lambda","mu","psi"
+            };
+        for(String name : names) {
+            System.out.println(name);
+            boolean found = false;
+            for(AlgebraicField field : TEST_FIELDS) {
+                AlgebraicNumber n = field.getNumberByName(name);
+                if(n != null) {
+                    found = true;
+                    System.out.print("  " + field.getName() + "\t" + n + "\t" + n.evaluate());
+                    if(name.startsWith("root")) {
+                        AlgebraicNumber sq = n.times(n);
+                        System.out.print("^2 = \t" + sq.evaluate());
+                        double expected = Double.valueOf(name.substring(4));
+                        assertEquals(name, expected, sq.evaluate(), 0.0d);
+                    }
+                    System.out.println();
+                }
+            }
+            assertTrue("found a match for " + name, found);
+        }
+    }
+
+    @Test
     public void printExponentTables() {
         System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
         for(AlgebraicField field : TEST_FIELDS) {

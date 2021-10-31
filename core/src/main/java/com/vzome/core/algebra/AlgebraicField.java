@@ -209,6 +209,8 @@ public interface AlgebraicField
     
     boolean doubleFrameVectors();
 
+    AlgebraicNumber getNumberByName(String name);
+
     default boolean supportsSubfield( String fieldName )
     {
         // most common, so check this first
