@@ -15,7 +15,7 @@ import { UrlViewer } from '../src/index.js'
 
 const viewerStyle = {
   height: "700px",
-  minHeight: "400px",
+  minHeight: "200px",
   maxHeight: "80vh",
   marginLeft: "15%",
   marginRight: "15%",
@@ -26,15 +26,18 @@ const viewerStyle = {
   border: "solid",
 }
 
-export const Demo = () =>
+export const Demo = ( {url, height} ) =>
 {
+  const style = { ...viewerStyle, height }
   return (
-    <div>
-      <div style={viewerStyle}>
-        <UrlViewer url={"https://raw.githubusercontent.com/vorth/vzome-sharing/main/2021/07/24/12-40-30-Japan-Olympics-logo/Japan-Olympics-logo.vZome"} />
-      </div>
+    <div style={style}>
+      <UrlViewer url={url} />
     </div>
   )
 }
 
-render(<Demo/>, document.querySelector('#root'))
+const roots = document.getElementsByClassName( 'vzome' )
+for (let i = 0; i < roots.length; i++ ) {
+  const el = roots[i]
+  render( React.createElement( Demo, { url: el.getAttribute( 'data-url' ), height: el.getAttribute( 'data-height' ) } ), el )
+}

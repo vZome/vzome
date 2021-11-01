@@ -853,8 +853,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 actionListener = this .localActions;
                 break;
 
+            case "capture-wiggle-gif":
             case "capture-animation":
-                actionListener = new ControllerFileAction( fileDialog, false, command, "png", controller );
+                actionListener = new ControllerFileAction( fileDialog, false, command, "gif", controller );
                 break;
 
             default:
