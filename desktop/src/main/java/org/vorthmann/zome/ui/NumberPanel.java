@@ -93,39 +93,44 @@ public class NumberPanel extends JPanel
                 JOptionPane.showMessageDialog( null, msg, "Decimal Value", JOptionPane.PLAIN_MESSAGE );
             }
         }));
-        popup.addSeparator();
-	    popup.add(new JMenuItem(new AbstractAction("Reset to Zero") {
-	        @Override
-            public void actionPerformed(ActionEvent ae) {
-	            syncToModel();
-                controller.setProperty("zero", null);
-                syncFromModel();
-	        }
-	    }));
-        popup.add(new JMenuItem(new AbstractAction("Set to One") {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                syncToModel();
-                controller.setProperty("one", null);
-                syncFromModel();
+        //////////////////////////////////////////////////////////////
+        String[] mathOps = controller .getCommandList( "math.operations" );
+        if(mathOps.length > 0) {
+            popup.addSeparator();
+            for(String label : mathOps) {
+                if(label.equals("seperator")) {
+                    popup.addSeparator();
+                } else {
+                    popup.add(new JMenuItem(new AbstractAction(label) {
+                        @Override
+                        public void actionPerformed(ActionEvent ae) {
+                            syncToModel();
+                            controller.setProperty("math.operation", label);
+                            syncFromModel();
+                        }
+                    }));
+                }
             }
-        }));
-        popup.add(new JMenuItem(new AbstractAction("Negate") {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                syncToModel();
-                controller.setProperty("negate", null);
-                syncFromModel();
+        }
+        //////////////////////////////////////////////////////////////
+        String[] namedValues = controller .getCommandList( "named-values" );
+        if(namedValues.length > 0) {
+            popup.addSeparator();
+            for(String label : namedValues) {
+                if(label.equals("seperator")) {
+                    popup.addSeparator();
+                } else {
+                    popup.add(new JMenuItem(new AbstractAction(label) {
+                        @Override
+                        public void actionPerformed(ActionEvent ae) {
+                            syncToModel();
+                            controller.setProperty("named-value", label);
+                            syncFromModel();
+                        }
+                    }));
+                }
             }
-        }));
-        popup.add(new JMenuItem(new AbstractAction("Reciprocal") {
-            @Override
-            public void actionPerformed(ActionEvent ae) {
-                syncToModel();
-                controller.setProperty("reciprocal", null);
-                syncFromModel();
-            }
-        }));
+        }
 	    return popup;
 	}
 
