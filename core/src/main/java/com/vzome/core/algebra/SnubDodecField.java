@@ -205,11 +205,10 @@ public class SnubDodecField extends AbstractAlgebraicField
     @Override
     public String getIrrational( int which, int format )
     {
-        if ( format == DEFAULT_FORMAT )
-        {
+        if ( format == DEFAULT_FORMAT ) {
             switch ( which ) {
             case A:
-                return "";
+                return " ";
 
             case B:
                 return "\u03C6";
@@ -225,14 +224,12 @@ public class SnubDodecField extends AbstractAlgebraicField
 
             case F:
                 return "\u03C6\u03BE\u00B2";
-
-            default:
-                throw new IllegalArgumentException( which + " is not a valid irrational in this field" );
             }
-        }
-        else
-        {
+        } else {
             switch ( which ) {
+            case A:
+                return " ";
+
             case B:
                 return "phi";
 
@@ -247,12 +244,9 @@ public class SnubDodecField extends AbstractAlgebraicField
 
             case F:
                 return "phi*xi^2";
-
-            default:
-                throw new IllegalArgumentException( which + " is not a valid irrational in this field" );
             }
         }
-    
+        throw new IllegalArgumentException( which + " is not a valid irrational in this field" );    
     }
 
     @Override
