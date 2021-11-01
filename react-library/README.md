@@ -57,6 +57,7 @@ my local Jenkins server, which just performs `./build-online.bash` as above.
 
 Publishing the build to `https://vzome.com/app` is another Jenkins job.
 That job runs:
+
 ```
 #!/bin/bash
 set -x
@@ -71,6 +72,7 @@ END
 ssh ${DREAMHOST_USER}@${DREAMHOST_SERVER} './install-vzome-online.bash'
 ```
 On the Dreamhost server, the `install-vzome-online.bash` script contains:
+
 ```
 #!/bin/bash
 

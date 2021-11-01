@@ -1,7 +1,7 @@
 
 package com.vzome.desktop.controller;
 
-import java.awt.image.RenderedImage;
+import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,13 +57,7 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
         }
 
         RenderingViewer viewer = this .rvFactory .createRenderingViewer( scene );
-        viewer .captureImage( 80, true, new RenderingViewer.ImageCapture()
-        {
-            @Override
-            public void captureImage( RenderedImage image )
-            {
-                callback .thumbnailReady( image );
-            }
-        } );
+        BufferedImage image = viewer .captureImage( 80, true );
+        callback .thumbnailReady( image );
     }
 }

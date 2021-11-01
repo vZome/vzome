@@ -200,7 +200,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         submenu .add( createMenuItem( "BMP", "capture.bmp" ) );
         menu.add( submenu );
 
-        menu .add( createMenuItem( "Capture Animation...", "capture-animation" ) );
+        menu .add( createMenuItem( "Capture Animation...", "capture-wiggle-gif" ) );
 
         submenu = new JMenu( "Capture Vector Drawing..." );
         submenu .add( createMenuItem( "PDF", "export2d.pdf" ) );
