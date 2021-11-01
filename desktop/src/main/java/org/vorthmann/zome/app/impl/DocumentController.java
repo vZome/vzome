@@ -5,7 +5,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.MouseEvent;
-import java.awt.image.RenderedImage;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayOutputStream;
@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,11 +29,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.imageio.IIOImage;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.ImageOutputStream;
 import javax.vecmath.Point3f;
 
 import org.vorthmann.j3d.MouseTool;
@@ -81,6 +77,8 @@ import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.controller.CameraController;
 import com.vzome.desktop.controller.RenderingViewer;
 import com.vzome.desktop.controller.ThumbnailRendererImpl;
+
+import shine.htetaung.giffer.Giffer;
 
 /**
  * @author Scott Vorthmann 2003
@@ -849,20 +847,20 @@ public class DocumentController extends DefaultController implements Scene.Provi
 
             if ( "capture-animation" .equals( command ) )
             {
-                File dir = file .isDirectory()? file : file .getParentFile();
-                String html = readResource( "org/vorthmann/zome/app/animation.html" );
-                File htmlFile = new File( dir, "index.html" );
-                writeFile( html, htmlFile );
-
-                AnimationCaptureController animation = new AnimationCaptureController( this .cameraController, dir );
-                captureImageFile( null, AnimationCaptureController.TYPE, animation );
-                this .openApplication( htmlFile );
+                EventQueue .invokeLater( new FrameGrabber( file, new RedSpinAnimation( this .cameraController ) ) );
                 return;
             }
+
+            if ( "capture-wiggle-gif" .equals( command ) )
+            {
+                EventQueue .invokeLater( new FrameGrabber( file, new WiggleAnimation( this .cameraController ) ) );
+                return;
+            }
+
             if ( command.startsWith( "capture." ) )
             {
                 final String extension = command .substring( "capture.".length() );
-                captureImageFile( file, extension, null );
+                captureImageFile( file, extension );
                 return;
             }
             if ( command.startsWith( "export2d." ) )
@@ -927,20 +925,17 @@ public class DocumentController extends DefaultController implements Scene.Provi
         }
     }
 
+    
     /**
      * 
      * @param dest a File or OutputStream
      * @param extension
      * @param animation
      */
-    private void captureImageFile( final Object dest, final String extension, final AnimationCaptureController animation )
+    void captureImageFile( final File file, final String extension )
     {
         String maxSizeStr = getProperty( "max.image.size" );
-        final int maxSize = ( maxSizeStr != null )? Integer .parseInt( maxSizeStr ) :
-                                ( animation != null )? animation .getImageSize() : -1; // Animation images can't be too big
-        if ( animation != null ) {
-            animation .rotate();
-        }
+        final int maxSize = ( maxSizeStr != null )? Integer .parseInt( maxSizeStr ) : -1;
         String format = extension.toUpperCase();
         // According to https://stackoverflow.com/a/3432532/4568099, regarding the "pinkish orange tint", 
         // Java saves the JPEG as ARGB (still with transparency information). 
@@ -949,106 +944,59 @@ public class DocumentController extends DefaultController implements Scene.Provi
         // the solution is to exclude the alpha data when exporting JPEG.
         boolean withAlpha = ! (format.equals( "BMP" ) || format.equals( "JPG" ));
 
-        imageCaptureViewer .captureImage( maxSize, withAlpha, new RenderingViewer.ImageCapture()
-        {
-            private void setImageCompression(String format, ImageWriteParam iwParam)
-            {
-                if (iwParam.canWriteCompressed()) {
-                    // Ensure that the compressionType we want to use is supported
-                    String[] preferedTypes = null; // Listed in preferred order
-                    switch (format) {
-                        case "BMP":
-                            preferedTypes = new String[]{
-                                "BI_RGB",       // BI_RGB seems to result in a smaller file than BI_BITFIELDS in Windows 10
-                                "BI_BITFIELDS", // OK
-                                // "BI_PNG",    // File is created OK, but can't be opened by default viewer "Photos" in Windows 10
-                                // "BI_JPEG",   // File is created OK, but can't be opened by default viewer "Photos" in Windows 10
-                                // "BI_RLE8",   // IOException: Image can not be encoded with compression type BI_RLE8
-                                // "BI_RLE4",   // IOException: Image can not be encoded with compression type BI_RLE4
-                            };
-                            break;
-
-                        case "GIF":
-                            preferedTypes = new String[]{
-                                "lzw",
-                                "LZW",
-                            };
-                            break;
-
-                        case "JPEG":
-                            preferedTypes = new String[]{
-                                "JPEG",
-                            };
-                            break;
-                    }
-                    if (preferedTypes != null) {
-                        String[] compressionTypes = iwParam.getCompressionTypes();
-                        String chosenType = null;
-                        for (String preferredType : preferedTypes) {
-                            for (String compressionType : compressionTypes) {
-                                if (compressionType.equals(preferredType)) {
-                                    chosenType = preferredType;
-                                    break;
-                                }
-                            }
-                            if (chosenType != null) {
-                                break;
-                            }
-                        }
-                        if (chosenType != null) {
-                            System.out.println(format + " compression set to " + chosenType);
-                            iwParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                            iwParam.setCompressionType(chosenType); // this default is better for BMP, to avoid non-compression
-                            iwParam.setCompressionQuality(.95f);
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void captureImage( final RenderedImage image )
-            {
-                String format = extension.toUpperCase();
-                if ( format.equals( "JPG" ) )
-                    format = "JPEG";
-                try {
-                    ImageWriter writer = ImageIO.getImageWritersByFormatName( format ) .next();
-                    ImageWriteParam iwParam = writer .getDefaultWriteParam();
-                    this.setImageCompression(format, iwParam);
-                    Object thisDest = ( animation != null ) ? animation .nextFile() : dest;
-                    
-                    // A try-with-resources block closes the resource even if an exception occurs
-                    try (ImageOutputStream ios = ImageIO.createImageOutputStream( thisDest )) {
-                        writer .setOutput( ios );
-                        writer .write( null, new IIOImage( image, null, null), iwParam );
-                        writer .dispose(); // disposing of the writer doesn't close ios
-                        // ios is closed automatically by exiting the try-with-resources block
-                        // either normally or due to an exception
-                        // If this code is ever changed to not use the try-with-resources block
-                        // then uncomment the following line so that ios will be explicitly closed
-                        // ios.close();
-                    }
-
-                    if ( animation == null ) {
-                        if ( dest instanceof File )
-                            openApplication( (File) dest );
-                    }
-                    else if ( ! animation .finished() ) {
-                        // queue up the next capture in the sequence
-                        EventQueue .invokeLater( new Runnable(){
-
-                            @Override
-                            public void run() {
-                                captureImageFile( null, extension, animation );
-                            }});
-                    }
-                } catch (Exception e) {
-                    mErrors.reportError( UNKNOWN_ERROR_CODE, new Object[] { e } );
-                }
-            }
-        } );
+        BufferedImage image = imageCaptureViewer .captureImage( maxSize, withAlpha );
+        try {
+            FileImageCapture .captureImage( image, file, extension );
+            this .openApplication( file );
+        } catch (Exception e) {
+            this.mErrors .reportError( DocumentController.UNKNOWN_ERROR_CODE, new Object[] { e } );
+        }
     }
     
+    
+    private class FrameGrabber implements Runnable
+    {
+        private final ArrayList<BufferedImage> imageList;
+        private final AnimationController animation;
+        private final File file;
+        private final int maxSize;
+
+        public FrameGrabber( final File file, final AnimationController animation )
+        {
+            this .file = file;
+            this .animation = animation;
+            this .imageList = new ArrayList<>();
+            this .maxSize = animation .getImageSize();
+        }
+        
+        @Override
+        public void run()
+        {
+            if ( this .animation .finished() ) {
+                Thread bkgdTask = new Thread() // don't tie up the event queue with this!
+                {
+                    public void run()
+                    {
+                        try {
+                            BufferedImage[] images = (BufferedImage[]) imageList .toArray( new BufferedImage[ imageList.size() ] );
+                            Giffer .generateFromBI( images, file .getAbsolutePath(), 0, true );
+                            openApplication( file );
+                        } catch (IOException e) {
+                            mErrors .reportError( DocumentController.UNKNOWN_ERROR_CODE, new Object[] { e } );
+                        }
+                    }
+                };
+                bkgdTask .start();
+            }
+            else {
+                animation .rotate();
+                imageList .add( imageCaptureViewer .captureImage( maxSize, true ) );
+                // queue up the next capture in the sequence
+                EventQueue .invokeLater( this );
+            }
+        }
+    }
+        
     
     private static String readFile( File file ) throws IOException
     {
@@ -1065,40 +1013,40 @@ public class DocumentController extends DefaultController implements Scene.Provi
     }
     
     
-    private static String readResource( String resourcePath )
-    {
-        InputStream stream = null;
-        try {
-            stream = DocumentController.class .getClassLoader() .getResourceAsStream( resourcePath );
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] buf = new byte[1024];
-            int num;
-            while ( ( num = stream .read( buf, 0, 1024 )) > 0 )
-                out .write( buf, 0, num );
-            return new String( out .toByteArray() );
-        } catch (Exception e) {
-            return null;
-        } finally {
-            if ( stream != null )
-                try {
-                    stream .close();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-        }
-    }
+//    private static String readResource( String resourcePath )
+//    {
+//        InputStream stream = null;
+//        try {
+//            stream = DocumentController.class .getClassLoader() .getResourceAsStream( resourcePath );
+//            ByteArrayOutputStream out = new ByteArrayOutputStream();
+//            byte[] buf = new byte[1024];
+//            int num;
+//            while ( ( num = stream .read( buf, 0, 1024 )) > 0 )
+//                out .write( buf, 0, num );
+//            return new String( out .toByteArray() );
+//        } catch (Exception e) {
+//            return null;
+//        } finally {
+//            if ( stream != null )
+//                try {
+//                    stream .close();
+//                } catch (IOException e) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                }
+//        }
+//    }
 
 
-    private static void writeFile( String content, File file ) throws Exception
-    {
-        // A try-with-resources block closes the resource even if an exception occurs
-        try (FileWriter writer = new FileWriter( file )) {
-            writer .write( content );
-        } catch (Exception ex) {
-            throw ex;
-        }
-    }
+//    private static void writeFile( String content, File file ) throws Exception
+//    {
+//        // A try-with-resources block closes the resource even if an exception occurs
+//        try (FileWriter writer = new FileWriter( file )) {
+//            writer .write( content );
+//        } catch (Exception ex) {
+//            throw ex;
+//        }
+//    }
 
 
     @Override
@@ -1210,7 +1158,15 @@ public class DocumentController extends DefaultController implements Scene.Provi
             
         case "png-base64": {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            captureImageFile( byteArrayOutputStream, "png", null );
+            String maxSizeStr = getProperty( "max.image.size" );
+            final int maxSize = ( maxSizeStr != null )? Integer .parseInt( maxSizeStr ) : -1;
+            boolean withAlpha = true;
+            BufferedImage image = imageCaptureViewer .captureImage( maxSize, withAlpha );
+            try {
+                FileImageCapture .captureImage( image, byteArrayOutputStream, "png" );
+            } catch (Exception e) {
+                this.mErrors .reportError( DocumentController.UNKNOWN_ERROR_CODE, new Object[] { e } );
+            }
             String encoded = Base64.getEncoder() .encodeToString( byteArrayOutputStream .toByteArray() );
             try {
                 byteArrayOutputStream .close();
