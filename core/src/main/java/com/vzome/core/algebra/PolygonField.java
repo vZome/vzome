@@ -614,25 +614,25 @@ public class PolygonField extends ParameterizedField
     @Override
     public AlgebraicNumber getNumberByName(String name) {
         switch(name) {
-        case "\u221A2": case "root2": case "sqrt2": case "rootTwo":
+        case "\u221A2": case "root2": case "sqrt2":
             return getRoot2();
 
-        case "\u221A3": case "root3": case "sqrt3": case "rootThree":
+        case "\u221A3": case "root3": case "sqrt3":
             return getRoot3();
 
-        case "\u221A5": case "root5": case "sqrt5": case "rootFive":
+        case "\u221A5": case "root5": case "sqrt5":
             return super.getNumberByName("root5"); // base class handles this one
 
-        case "\u221A6": case "root6": case "sqrt6": case "rootSix":
+        case "\u221A6": case "root6": case "sqrt6":
             return getRoot6();
 
-        case "\u221A7": case "root7": case "sqrt7": case "rootSeven":
+        case "\u221A7": case "root7": case "sqrt7":
             return getRoot7();
 
-        case "\u221A8": case "root8": case "sqrt8": case "rootEight":
-            return getRoot8();
+        case "\u221A8": case "root8": case "sqrt8":
+            return super.getNumberByName("root8"); // base class handles this one
 
-        case "\u221A10": case "root10": case "sqrt10": case "rootTen":
+        case "\u221A10": case "root10": case "sqrt10":
             return getRoot10();
 
         case "rho":
@@ -704,10 +704,11 @@ public class PolygonField extends ParameterizedField
         return null;
     }
 
-    private AlgebraicNumber getRoot8() {
-        AlgebraicNumber n = getRoot2();
-        return n == null ? null : n.times(createRational(2));
-    }
+    // the base class handles root8 but if we were to need it here some day...
+//    private AlgebraicNumber getRoot8() {
+//        AlgebraicNumber n = getRoot2();
+//        return n == null ? null : n.times(createRational(2));
+//    }
 
     private AlgebraicNumber getRoot10() {
         AlgebraicNumber r5 = getNumberByName("root5");

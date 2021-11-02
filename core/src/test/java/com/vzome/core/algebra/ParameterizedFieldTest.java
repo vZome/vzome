@@ -2,6 +2,7 @@ package com.vzome.core.algebra;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +96,7 @@ public class ParameterizedFieldTest {
     public void printNumberByName() {
         System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
         String[] names = {
-                "root2","root3","root5","root6","root7","root8","root10",
+                "sqrt2","sqrt3","sqrt5","sqrt6","sqrt7","sqrt8","sqrt10",
                 "phi","xi","rho","sigma",
                 "alpha","beta","gamma","delta","epsilon",
                 "theta","kappa","lambda","mu","psi"
@@ -108,16 +109,64 @@ public class ParameterizedFieldTest {
                 if(n != null) {
                     found = true;
                     System.out.print("  " + field.getName() + "\t" + n + "\t" + n.evaluate());
-                    if(name.startsWith("root")) {
+                    if(name.startsWith("sqrt")) {
+                        String radicand = name.substring(4);
+                        // verify the aliases
+                        assertEquals(name, n, field.getNumberByName("root" + radicand));
+                        assertEquals(name, n, field.getNumberByName("\u221A" + radicand));
+                        // now square it
                         AlgebraicNumber sq = n.times(n);
                         System.out.print("^2 = \t" + sq.evaluate());
-                        double expected = Double.valueOf(name.substring(4));
+                        double expected = Double.valueOf(radicand);
                         assertEquals(name, expected, sq.evaluate(), 0.0d);
                     }
                     System.out.println();
                 }
             }
             assertTrue("found a match for " + name, found);
+        }
+    }
+
+    @Test
+    public void testGetIrrationalName() {
+        System.out.println(new Throwable().getStackTrace()[0].getMethodName() + " " + Utilities.thisSourceCodeLine());
+        for(AlgebraicField field : TEST_FIELDS) {
+            for(int format = AlgebraicField.DEFAULT_FORMAT; format <= AlgebraicField.EXPRESSION_FORMAT; format++) {
+                assertEquals(field.getName() + " 0th irrational name should be a single space", " ", field.getIrrational(0, format));
+                for(int i=1; i < field.getOrder(); i++) {
+                    String name = field.getIrrational(i, format);
+                    AlgebraicNumber n = field.getUnitTerm(i);    
+                    AlgebraicNumber q = field.getNumberByName(name);
+                    assertEquals(n, q);
+                }
+                try {
+                    int limit = field.getOrder();
+                    if(field instanceof PolygonField) {
+                        limit = ((PolygonField)field).polygonSides();
+                    }
+                    field.getIrrational(limit, format);
+                    fail(field.getName() + ".getIrrational: expected an ArrayIndexOutOfBoundsException for the INDEX parameter");
+                }
+                catch(ArrayIndexOutOfBoundsException ex) {
+                    // success
+                }
+                catch(Exception ex) {
+                    ex.printStackTrace();
+                    fail(field.getName() + ": inconsistent exception class: " + ex.getClass().getSimpleName());
+                }
+            }
+            try {
+                field.getIrrational(0, 2);
+                fail(field.getName() + ".getIrrational: expected an ArrayIndexOutOfBoundsException for the FORMAT parameter");
+            }
+            catch(ArrayIndexOutOfBoundsException ex) {
+                // success
+            }
+            catch(Exception ex) {
+                ex.printStackTrace();
+                fail(field.getName() + ": inconsistent exception class: " + ex.getClass().getSimpleName());
+            }
+
         }
     }
 

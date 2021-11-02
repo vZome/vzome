@@ -66,42 +66,54 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         case "phi": case "\u03C6":
             return getGoldenRatio();
             
-        case "\u221A5": case "root5": case "sqrt5": case "rootFive":
+        case "\u221A5": case "root5": case "sqrt5":
+        {
+            // this allows sqrt5 to behave consistently in any field that supports phi
             AlgebraicNumber n = getGoldenRatio();
             return n == null ? null : n.plus(n).minus(one());
-
+        }
+        case "\u221A8": case "root8": case "sqrt8":
+        {
+            // this allows sqrt8 to behave consistently in any field that supports sqrt2
+            AlgebraicNumber n = getNumberByName("sqrt2");
+            return n == null ? null : n.times(createRational(2));
+        }
         default:
             // try to match irrational names
-            for(int format=0; format<2; format++) {
-                for(int i=0; i < getOrder(); i++) {
+            for(int format = DEFAULT_FORMAT; format <= EXPRESSION_FORMAT; format++) {
+                // start from 1 to skip the rational term
+                for(int i=1; i < getOrder(); i++) {
                     if(getIrrational(i, format).equals(name)) {
                         return getUnitTerm(i);
                     }
                 }
             }
-            // try to parse as a rational number
-            try {
-                String[] parts = name.split( "/" );
-                long numerator = Long.parseLong( parts[0] );
-                switch(parts.length) {
-                case 1:
-                    return createRational(numerator);
-                case 2:
-                    long denominator = Long.parseLong( parts[1] );
-                    return createRational(numerator, denominator);
-                }
-            }
-            catch(NumberFormatException ex) {
-                // This is OK. Just means name isn't a rational number
-            }
+            // DJH: I changed my mind. This method probably shouldn't be parsing anything
+            // and for the initial use case, this is all unnecesary overhead that never returns any result.
+            // I'll just comment it all out for now until we get a use-case where it makes sense.
+//            try {
+//                // try to parse as a rational number
+//                String[] parts = name.split( "/" );
+//                long numerator = Long.parseLong( parts[0] );
+//                switch(parts.length) {
+//                case 1:
+//                    return createRational(numerator);
+//                case 2:
+//                    long denominator = Long.parseLong( parts[1] );
+//                    return createRational(numerator, denominator);
+//                }
+//            }
+//            catch(NumberFormatException ex) {
+//                // This is OK. Just means name isn't a rational number
+//            }
         }
         return null;
     }
 
     @Override
-    public String getIrrational( int which )
+    public String getIrrational( int i )
     {
-        return this .getIrrational( which, DEFAULT_FORMAT );
+        return this .getIrrational( i, DEFAULT_FORMAT );
     }
 
     protected final String name;

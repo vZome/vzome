@@ -14,9 +14,24 @@ public interface AlgebraicField
 
     int getNumIrrationals();
 
+    /**
+     * Returns the label using the specified format for the irrational term with ordinal i. <br>
+     * i=0 refers to the rational term.
+     * @param i  
+     * @param format must be either {@code DEFAULT_FORMAT = 0} or 
+     * {@code EXPRESSION_FORMAT = 1}
+     * @return
+     */
     String getIrrational( int i, int format );
 
-    String getIrrational( int which );
+    /**
+     * Returns the default label for the irrational term with ordinal i.  <br>
+     * i=0 refers to the rational term. <br>
+     * Equivalent to {@code getIrrational( i, DEFAULT_FORMAT )}
+     * @param i
+     * @return
+     */
+    String getIrrational( int i );
     
     AlgebraicVector nearestAlgebraicVector( RealVector target );
 
@@ -209,6 +224,15 @@ public interface AlgebraicField
     
     boolean doubleFrameVectors();
 
+    /**
+     * If the field supports the value having the common name specified,
+     * this method returns an AlgebraicNumber having that value. 
+     * Note that the value may not correspond to a unique term in the AlgebraicField (e.g. {"phi" for @code PolygonField(10)}). <br>
+     * For example, {@code getNumberByName("phi")} 
+     * should return the same value as {@code getGoldenRatio()}
+     * @param name
+     * @return An AlgebraicNumber which evaluates to the specified name, or null if not possible in this field.
+     */
     AlgebraicNumber getNumberByName(String name);
 
     default boolean supportsSubfield( String fieldName )
