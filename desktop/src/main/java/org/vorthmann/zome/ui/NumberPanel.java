@@ -78,6 +78,44 @@ public class NumberPanel extends JPanel
 
 	protected JPopupMenu getContextMenu() {
 	    JPopupMenu popup = new JPopupMenu();
+        String[] mathOps = controller .getCommandList( "math.operations" );
+        if(mathOps.length > 0) {
+            for(String label : mathOps) {
+                if(label.equals("seperator")) {
+                    popup.addSeparator();
+                } else {
+                    popup.add(new JMenuItem(new AbstractAction(label) {
+                        @Override
+                        public void actionPerformed(ActionEvent ae) {
+                            syncToModel();
+                            controller.setProperty("math.operation", label);
+                            syncFromModel();
+                        }
+                    }));
+                }
+            }
+            popup.addSeparator();
+        }
+        //////////////////////////////////////////////////////////////
+        String[] namedValues = controller .getCommandList( "named-values" );
+        if(namedValues.length > 0) {
+            for(String label : namedValues) {
+                if(label.equals("seperator")) {
+                    popup.addSeparator();
+                } else {
+                    popup.add(new JMenuItem(new AbstractAction(label) {
+                        @Override
+                        public void actionPerformed(ActionEvent ae) {
+                            syncToModel();
+                            controller.setProperty("named-value", label);
+                            syncFromModel();
+                        }
+                    }));
+                }
+            }
+            popup.addSeparator();
+        }
+        //////////////////////////////////////////////////////////////
         popup.add(new JMenuItem(new AbstractAction("Show Decimal Value") {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -93,44 +131,6 @@ public class NumberPanel extends JPanel
                 JOptionPane.showMessageDialog( null, msg, "Decimal Value", JOptionPane.PLAIN_MESSAGE );
             }
         }));
-        //////////////////////////////////////////////////////////////
-        String[] mathOps = controller .getCommandList( "math.operations" );
-        if(mathOps.length > 0) {
-            popup.addSeparator();
-            for(String label : mathOps) {
-                if(label.equals("seperator")) {
-                    popup.addSeparator();
-                } else {
-                    popup.add(new JMenuItem(new AbstractAction(label) {
-                        @Override
-                        public void actionPerformed(ActionEvent ae) {
-                            syncToModel();
-                            controller.setProperty("math.operation", label);
-                            syncFromModel();
-                        }
-                    }));
-                }
-            }
-        }
-        //////////////////////////////////////////////////////////////
-        String[] namedValues = controller .getCommandList( "named-values" );
-        if(namedValues.length > 0) {
-            popup.addSeparator();
-            for(String label : namedValues) {
-                if(label.equals("seperator")) {
-                    popup.addSeparator();
-                } else {
-                    popup.add(new JMenuItem(new AbstractAction(label) {
-                        @Override
-                        public void actionPerformed(ActionEvent ae) {
-                            syncToModel();
-                            controller.setProperty("named-value", label);
-                            syncFromModel();
-                        }
-                    }));
-                }
-            }
-        }
 	    return popup;
 	}
 
