@@ -6,7 +6,7 @@
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.57",
-    "@vzome/react-vzome": "^0.9.24",
+    "esbuild": "^0.13.12",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-redux": "^7.2.1",
@@ -15,12 +15,16 @@
     "redux": "^4.0.5",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
-    "redux-undo": "^1.0.1"
+    "redux-undo": "^1.0.1",
+    "@react-three/drei": "^7.3.1",
+    "@react-three/fiber": "^7.0.6",
+    "three": "^0.131.3"
   },
   "homepage": "https://vzome.com/app",
   "scripts": {
-    "start": "snowpack dev",
-    "build": "react-scripts build"
+    "build": "node scripts/prod-build.mjs",
+    "dev": "node scripts/test-app.mjs",
+    "wcdev": "node scripts/test-web-component.mjs"
   },
   "eslintConfig": {
     "extends": "react-app"
