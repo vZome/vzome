@@ -15,7 +15,7 @@ import com.vzome.core.model.Strut;
 
 public class SelectionSummary implements ManifestationChanges
 {
-    private static final Logger LOGGER = Logger.getLogger( new Throwable().getStackTrace()[0].getClassName() );
+    private static final Logger LOGGER = Logger.getLogger( "com.vzome.core.editor.SelectionSummary" );
     
 	private int balls = 0;
 	private int struts = 0;

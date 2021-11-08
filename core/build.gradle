@@ -447,10 +447,10 @@ jsweet {
 
     bundle = true
 
-	outDir = new File( 'react-library/jsweetOut/js' )
+	outDir = new File( 'online/jsweetOut/js' )
 
     // The TS compile seems to fail when I set this!  Bug in the Gradle plugin?
-	// tsOut = new File( 'react-library/jsweetOut/ts' )
+	// tsOut = new File( 'online/jsweetOut/ts' )
 
 	targetVersion = 'ES6'
     tsOnly = false
