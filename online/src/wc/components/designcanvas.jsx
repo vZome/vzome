@@ -44,11 +44,11 @@ const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
 
 const defaultLighting = {
   backgroundColor: '#BBDAED',
-  ambientColor: '#292929',
+  ambientColor: '#393939',
   directionalLights: [ // These are the vZome defaults, for consistency
-    { direction: [ 1, -1, -1 ], color: '#EBEBE4' },
-    { direction: [ -1, 0, 0 ], color: '#E4E4EB' },
-    { direction: [ 0, 0, -1 ], color: '#1E1E1E' },
+    { direction: [ 1, -1, -0.3 ], color: '#FDFDFD' },
+    { direction: [ -1, 0, -0.2 ], color: '#909090' },
+    { direction: [ 0, 0, -1 ], color: '#303030' },
   ]
 }
 
@@ -67,11 +67,15 @@ export const defaultInitialCamera = {
 export const DesignCanvas = ( { lighting, camera, children, handleBackgroundClick=()=>{} } ) =>
 {
   const { fov, position, up, lookAt } = camera || defaultInitialCamera
-  const fovY = useMemo( () => ( fov * window.innerHeight / window.innerWidth ) * 180 / Math.PI, [ fov ] )
+  const fovY = useMemo( () => ( fov * window.innerHeight / window.innerWidth ) * 180 / Math.PI, [ fov ] );
+  const lights = useMemo( () => ({
+    ...defaultLighting,
+    backgroundColor: (lighting && lighting.backgroundColor) || defaultLighting.backgroundColor,
+  }));
   return(
     <Canvas dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
       <PerspectiveCamera makeDefault { ...{ fov: fovY, position, up}}>
-        <Lighting {...(lighting || defaultLighting)} />
+        <Lighting {...(lights)} />
       </PerspectiveCamera>
       <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
       {children}
