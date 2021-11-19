@@ -596,8 +596,8 @@ const parseLighting = ( sceneElement ) =>
     // TODO: parse these too, in case they change someday
     ambientColor: '#292929',
     directionalLights: [ // These are the vZome defaults, for consistency
-      { direction: [ 1, -1, -1 ], color: '#EBEBE4' },
-      { direction: [ -1, 0, 0 ], color: '#E4E4EB' },
+      { direction: [ 1, -1, -0.3 ], color: '#FDFDFD' },
+      { direction: [ -1, 0, 0 ], color: '#808080' },
       { direction: [ 0, 0, -1 ], color: '#1E1E1E' },
     ]
   }
