@@ -63,15 +63,16 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 		return super .put( key, tool );
 	}
 
+	// Create from deserializing
 	public UndoableEdit createEdit( String className )
 	{
 		switch ( className ) {
 
         case "ToolApplied":
-            return new ApplyTool( this, null, false, false, false, false, false );
+            return new ApplyTool( this, null, false, false, false, false, false, true );
 
         case "ApplyTool":
-            return new ApplyTool( this, null, false, false, false, false, true );
+            return new ApplyTool( this, null, false, false, false, false, true, true );
         
 		case "SelectToolParameters":
 		    return new SelectToolParameters( this, null );
@@ -81,9 +82,9 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 		}
 	}
 
-	public void applyTool( Tool tool, boolean selectInputs, boolean deleteInputs, boolean createOutputs, boolean selectOutputs )
+	public void applyTool( Tool tool, boolean selectInputs, boolean deleteInputs, boolean createOutputs, boolean selectOutputs, boolean copyColors )
 	{
-		UndoableEdit edit = new ApplyTool( this, tool, selectInputs, deleteInputs, createOutputs, selectOutputs, true );
+		UndoableEdit edit = new ApplyTool( this, tool, selectInputs, deleteInputs, createOutputs, selectOutputs, true, copyColors );
         this .getContext() .performAndRecord( edit );
 	}	
 

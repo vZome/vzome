@@ -26,7 +26,7 @@ public interface Tool
 		Tool getPredefinedTool( String id );
 	}
 		
-	public void apply( boolean selectInputs, boolean deleteInputs, boolean createOutputs, boolean selectOutputs );
+	public void apply( boolean selectInputs, boolean deleteInputs, boolean createOutputs, boolean selectOutputs, boolean copyColors );
 
 	public void selectParameters();
 

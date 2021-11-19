@@ -149,9 +149,9 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
     }
 
     @Override
-    public void apply( boolean selectInputs, boolean deleteInputs, boolean createOutputs, boolean selectOutputs )
+    public void apply( boolean selectInputs, boolean deleteInputs, boolean createOutputs, boolean selectOutputs, boolean copyColors )
     {
-        this .tools .applyTool( this, selectInputs, deleteInputs, createOutputs, selectOutputs );
+        this .tools .applyTool( this, selectInputs, deleteInputs, createOutputs, selectOutputs, copyColors );
     }
 
     @Override
