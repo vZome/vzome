@@ -63,9 +63,9 @@ public class ShareDialog extends EscapeDialog
     private final JLabel codeLabel;
     private final JButton authzButton;
     private final JLabel errorLabel;
-    private final HyperlinkPanel viewUrlPanel, githubUrlPanel;
+    private final HyperlinkPanel githubUrlPanel;
     
-    private final String readmeBoilerplate;
+    private final String readmeTemplate, postTemplate;
    
     // Services
     private final OAuth20Service oAuthService;
@@ -83,10 +83,7 @@ public class ShareDialog extends EscapeDialog
     
     // Inputs
     private transient String fileName, png, xml, shapesJson;
-    
-    // Outputs
-    private transient String embedUrl;
-    
+        
     /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      * First, the code that runs on the Swing event dispatcher thread...
      *   we cannot do anything time-consuming here, such as contacting Github.
@@ -121,7 +118,9 @@ public class ShareDialog extends EscapeDialog
         this .commitService = new CommitService( client );
         this .dataService = new DataService( client );
         
-        this .readmeBoilerplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubReadmeBoilerplate.md" );
+        this .readmeTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubReadmeTemplate.md" );
+
+        this .postTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubPostTemplate.md" );
 
         JPanel loginPanel = new JPanel();
         {
@@ -179,17 +178,15 @@ public class ShareDialog extends EscapeDialog
         {
             JLabel help = new JLabel();
             help .setBorder( BorderFactory.createEmptyBorder( 15, 15, 15, 15 ) );
-            help .setText( "<html>Your vZome file has uploaded successfully.</html>" );
-            this .viewUrlPanel = new HyperlinkPanel( "View design in vZome Online", controller );
-            this .githubUrlPanel = new HyperlinkPanel( "View GitHub folder", controller, false );
+            help .setText( "<html>Your vZome file has uploaded successfully, and the URL below is copied to the clipboard.</html>" );
+            this .githubUrlPanel = new HyperlinkPanel( "View GitHub Folder", controller, false );
             JPanel linksPanel = new JPanel();
             linksPanel .setLayout( new FlowLayout() );
-            linksPanel .add( this .viewUrlPanel );
             linksPanel .add( this .githubUrlPanel );
             resultsPanel .setLayout( new BorderLayout() );
             resultsPanel .add( help, BorderLayout.NORTH );
             resultsPanel .add( linksPanel, BorderLayout.CENTER );
-            this .getRootPane() .setDefaultButton( viewUrlPanel .getCopyButton() );
+            this .getRootPane() .setDefaultButton( this .githubUrlPanel .getCopyButton() );
         }
 
         JPanel errorPanel = new JPanel();
@@ -227,11 +224,10 @@ public class ShareDialog extends EscapeDialog
         else if ( this.gitUrl != null )
         {
             // the terminal success state
-            this .viewUrlPanel .setUrl( this .embedUrl );
             this .githubUrlPanel .setUrl( this .gitUrl );
             cardPanel .showCard( "success" );
-            getRootPane() .setDefaultButton( this .viewUrlPanel .getCopyButton() );
-            this .viewUrlPanel .getCopyButton() .requestFocusInWindow();
+            getRootPane() .setDefaultButton( this .githubUrlPanel .getCopyButton() );
+            this .githubUrlPanel .getCopyButton() .requestFocusInWindow();
         }
         else if ( this.repo != null || this.authToken != null )
         {
@@ -389,39 +385,72 @@ public class ShareDialog extends EscapeDialog
             int index = designName .toLowerCase() .lastIndexOf( ".vZome" .toLowerCase() );
             if ( index > 0 )
                 designName = designName .substring( 0, index );
-            String encodedName = URLEncoder.encode( designName, StandardCharsets.UTF_8.toString() );
-            
-            // prepare the timestamp path
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern( "yyyy/MM/dd/HH-mm-ss-" );
-            String timestampPath = formatter .format( LocalDateTime.now() );
-            String path = timestampPath + encodedName + "/";
+//            String encodedName = URLEncoder.encode( designName, StandardCharsets.UTF_8.toString() );
+            String title = designName .replaceAll( "-", " " );
 
+            // prepare the substitutions
+            LocalDateTime now = LocalDateTime.now();
+            String time = DateTimeFormatter.ofPattern( "HH-mm-ss" ) .format( now );
+            String date = DateTimeFormatter.ofPattern( "yyyy-MM-dd" ) .format( now );
+            String dateFolder = DateTimeFormatter.ofPattern( "yyyy/MM/dd" ) .format( now );
+            
+            String postSrcPath = "_posts/" + date + "-" + designName + "-" + time + ".md";// e.g. _posts/2021-11-29-sample-vZome-share-08-01-41.md
+            String postPath = dateFolder + "/" + designName + "-" + time + ".html";       // e.g. 2021/11/29/sample-vZome-share-08-01-41.html
+            String assetPath = dateFolder + "/" + time + "-" + designName + "/";          // e.g. 2021/11/29/08-01-41-sample-vZome-share
+
+            String designPath = assetPath + designName + ".vZome"; // e.g. 2021/11/29/08-01-41-sample-vZome-share/sample-vZome-share.vZome
+            String imagePath = assetPath + designName + ".png";    // e.g. 2021/11/29/08-01-41-sample-vZome-share/sample-vZome-share.png
+            
+            // Now generate the content
+            
             Collection<TreeEntry> entries = new ArrayList<TreeEntry>();
 
-            this .addFile( entries, path + this .fileName, this.xml, Blob.ENCODING_UTF8 );
+            this .addFile( entries, designPath, this.xml, Blob.ENCODING_UTF8 );
             
-            String imageFileName = designName + ".png";
-            this .addFile( entries, path + imageFileName, png, Blob.ENCODING_BASE64 );
+            this .addFile( entries, imagePath, png, Blob.ENCODING_BASE64 );
 
-            String shapesFileName = designName + ".shapes.json";
-            this .addFile( entries, path + shapesFileName, shapesJson, Blob.ENCODING_UTF8 );
-
-            String baseUrl = "https://raw.githubusercontent.com/" + username + "/" + repoName + "/" + BRANCH_NAME + "/" + timestampPath;
-            String rawUrl = baseUrl + encodedName + "/" + this .fileName;
-
-            // I'm cheating a bit here, not encoding the entire rawUrl, so that the
-            //  embedUrl is not so hideous.  It doesn't seem to matter, as long as
-            //  the path and name are encoded (or doubly encoded) correctly.
-            String encodedRawTail = URLEncoder.encode( encodedName,    StandardCharsets.UTF_8.toString() )
-                            + "/" + URLEncoder.encode( this .fileName, StandardCharsets.UTF_8.toString() );
-
-            String embedUrl  = "https://vzome.com/app/embed.py?url=" + baseUrl + encodedRawTail;
-            String gitUrl   = "https://github.com/" + username + "/" + repoName + "/tree/" + BRANCH_NAME + "/" + path;
+            this .addFile( entries, assetPath + designName + ".shapes.json", shapesJson, Blob.ENCODING_UTF8 );
             
-            String markdown = this.readmeBoilerplate + "(<" + imageFileName + ">)\n\n\n";
-            markdown += "[embed]: <" + embedUrl + ">\n";
-            markdown += "[raw]: <" + rawUrl + ">\n";
-            this .addFile( entries, path + "README.md", markdown, Blob.ENCODING_UTF8 );                
+            String siteUrl = "https://" + username + ".github.io/" + repoName;
+                     // e.g. https://vorth.github.io/vzome-sharing
+            String repoUrl = "https://github.com/" + username + "/" + repoName;
+                     // e.g. https://github.com/vorth/vzome-sharing
+            this .gitUrl = repoUrl + "/tree/" + BRANCH_NAME + "/" + assetPath;
+                     // e.g. https://github.com/vorth/vzome-sharing/tree/main/2021/11/29/08-01-41-sample-vZome-share/
+            String rawUrl = "https://raw.githubusercontent.com/" + username + "/" + repoName + "/" + BRANCH_NAME + "/" + designPath;
+                     // e.g. https://raw.githubusercontent.com/vorth/vzome-sharing/main/2021/11/29/08-01-41-sample-vZome-share/sample-vZome-share.vZome
+            String postUrl = siteUrl + "/" + postPath;
+                     // e.g. https://vorth.github.io/vzome-sharing/2021/11/29/sample-vZome-share-08-01-41.html
+            String postSrcUrl = repoUrl + "/edit/" + BRANCH_NAME + "/" + postSrcPath;
+                     // e.g. https://github.com/vorth/vzome-sharing/edit/main/_posts/2021-11-29-sample-vZome-share-08-01-41.md
+            
+            // Generate a README for the vZome user to use 
+            String readmeMd = this.readmeTemplate
+                    .replace( "${imageFile}", designName + ".png" )
+                    .replace( "${postUrl}", postUrl )
+                    .replace( "${postSrcUrl}", postSrcUrl )
+                    .replace( "${rawUrl}", rawUrl );
+            this .addFile( entries, assetPath + "README.md", readmeMd, Blob.ENCODING_UTF8 );
+            
+            /*
+             * Generate a design-specific web page, assuming that GitHub Pages is
+             * enabled for the repo.  The "front-matter" format is defined by
+             * Jekyll, and these properties specifically are defined by the Jekyll SEO plugin.
+             *    https://github.com/jekyll/jekyll-seo-tag/tree/master/docs
+             * This guarantees good OpenGraph metadata for embedding in social media.
+             * TODO: let the user define a description (and a title).
+             * See also:
+             *    https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll
+             *    https://jekyllrb.com/
+             */
+            String indexMd = this.postTemplate
+                    .replace( "${title}", title )
+                    .replace( "${siteUrl}", siteUrl )
+                        .replace( "${postPath}", postPath )
+                        .replace( "${imagePath}", imagePath )
+                        .replace( "${designPath}", designPath )
+                    .replace( "${assetsUrl}", this .gitUrl );
+            this .addFile( entries, postSrcPath, indexMd, Blob.ENCODING_UTF8 );
 
             Tree newTree = dataService .createTree( this .repo, entries, (baseTree==null)? null : baseTree.getSha() );
 
@@ -431,14 +460,13 @@ public class ShareDialog extends EscapeDialog
             commit.setTree( newTree );
             
             // Due to an error with github api we have to do this
-            Calendar now = Calendar.getInstance();
             String email = controller .getProperty( "githubEmail" );
             if ( email == null || "" .equals( email ) )
                 email = "vZomeUser@example.com";
             CommitUser author = new CommitUser();
             author .setName( username );
             author .setEmail( email );
-            author .setDate( now.getTime() );
+            author .setDate( Calendar .getInstance() .getTime() );
             commit .setAuthor( author );
             commit .setCommitter( author );
             
@@ -459,9 +487,7 @@ public class ShareDialog extends EscapeDialog
             Reference reference = dataService .getReference( this .repo, "heads/" + BRANCH_NAME );
             reference .setObject( commitResource );
             dataService .editReference( this .repo, reference, true );
-            this .gitUrl = gitUrl;
-            this .embedUrl = embedUrl;
-            controller .setProperty( "clipboard", embedUrl );
+            controller .setProperty( "clipboard", gitUrl );
         }
         catch (Exception e) {
             e .printStackTrace();
