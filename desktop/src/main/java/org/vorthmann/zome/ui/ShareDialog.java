@@ -55,7 +55,7 @@ import com.vzome.xml.ResourceLoader;
 
 public class ShareDialog extends EscapeDialog
 {
-    private static final String REPO_NAME = "vzome-sharing";
+    private static final String DEFAULT_REPO_NAME = "vzome-sharing";
     private static final String BRANCH_NAME = "main";
 
     private final Controller controller;
@@ -77,7 +77,7 @@ public class ShareDialog extends EscapeDialog
 
     // State markers
     private transient DeviceAuthorization deviceAuthorization;
-    private transient String authToken;
+    private transient String authToken, repoName;
     private transient Repository repo;
     private transient String gitUrl, error; // marks success or failure state
     
@@ -99,6 +99,10 @@ public class ShareDialog extends EscapeDialog
         this.controller = controller;
 
         this .authToken = controller .getProperty( "githubAccessToken" );
+        String repoNameOverride = controller .getProperty( "githubRepoName" );
+        if ( repoNameOverride == null || "".equals( repoNameOverride ) )
+            repoNameOverride = DEFAULT_REPO_NAME;
+        this .repoName = repoNameOverride;
         String clientId = controller .getProperty( "githubClientId" );
         String clientSecret = controller .getProperty( "githubClientSecret" );
         String scope = "repo";
@@ -129,7 +133,7 @@ public class ShareDialog extends EscapeDialog
                             + "vZome can upload a file to Github repository named 'vzome-sharing', if you have a Github account."
                             + " (Accounts are free.)<br/><br/>Once you have created the 'vzome-sharing' repository,"
                             + " enable GitHub Pages in the settings for the repository,"
-                            + " so your uploaded files can be shared through vZome Online."
+                            + " so you can share the generated web pages for your uploaded designs."
                           +"</html>" );
 
             codeLabel = new JLabel();
@@ -315,9 +319,9 @@ public class ShareDialog extends EscapeDialog
                 {
                     try {
                         List<Repository> repositories = repositoryService .getRepositories();
-                        repo = repositories .stream() .filter( r -> r.getName() .equals( REPO_NAME ) ) .findFirst() .orElse( null );
+                        repo = repositories .stream() .filter( r -> r.getName() .equals( repoName ) ) .findFirst() .orElse( null );
                         if ( repo == null ) {
-                            error = "Unable to find repository '" + REPO_NAME + "'";
+                            error = "Unable to find repository '" + repoName + "'";
                         }
                     } catch ( IOException e ) {
                         e .printStackTrace();
@@ -402,7 +406,7 @@ public class ShareDialog extends EscapeDialog
             String shapesFileName = designName + ".shapes.json";
             this .addFile( entries, path + shapesFileName, shapesJson, Blob.ENCODING_UTF8 );
 
-            String baseUrl = "https://raw.githubusercontent.com/" + username + "/" + REPO_NAME + "/" + BRANCH_NAME + "/" + timestampPath;
+            String baseUrl = "https://raw.githubusercontent.com/" + username + "/" + repoName + "/" + BRANCH_NAME + "/" + timestampPath;
             String rawUrl = baseUrl + encodedName + "/" + this .fileName;
 
             // I'm cheating a bit here, not encoding the entire rawUrl, so that the
@@ -412,7 +416,7 @@ public class ShareDialog extends EscapeDialog
                             + "/" + URLEncoder.encode( this .fileName, StandardCharsets.UTF_8.toString() );
 
             String embedUrl  = "https://vzome.com/app/embed.py?url=" + baseUrl + encodedRawTail;
-            String gitUrl   = "https://github.com/" + username + "/" + REPO_NAME + "/tree/" + BRANCH_NAME + "/" + path;
+            String gitUrl   = "https://github.com/" + username + "/" + repoName + "/tree/" + BRANCH_NAME + "/" + path;
             
             String markdown = this.readmeBoilerplate + "(<" + imageFileName + ">)\n\n\n";
             markdown += "[embed]: <" + embedUrl + ">\n";
