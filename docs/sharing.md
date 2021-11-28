@@ -1,14 +1,18 @@
+---
+title: Sharing vZome Designs
+
+---
 
 [vZome][vzome] supports sharing designs using [Github Pages][pages].
 In addition to vZome itself, all you need is a [GitHub][github] account (these are free),
 and a GitHub repository named `vzome-sharing` with a `main` branch.
 
-# Simple steps:
+# Simple setup:
 
 1. Log into your GitHub account
-2. Create a public repository named `vzome-sharing` in your account.  In the "Create a new repository" page, click on the "Add a README file" checkbox.
-3. Once the new repository is created, check that the default branch is called `main`, not `master`.  If you have been a GitHub user for a while, your user setting for the default branch name may still be the older `master`.  You can change the default branch name for this repository to `main` under "Settings", under the "Branches" tab on the left.
-4. (OPTIONAL) Go to the "Settings" tab for the repository, and click on "Pages" option on the left.  Select the `main` branch, with the default "/ (root)" folder, and click "Save".  Within a few minutes you should see a green banner that provides a link to the page for the repository; essentially you have just created a website, whose source is the content of the `vzome-sharing` repository.
+2. Fork this [template repository](https://github.com/vZome/vzome-sharing) in your account.  The repo is pre-configured for vZome sharing.
+3. Verify that the default branch is called `main`, not `master`.  If you have been a GitHub user for a while, your user setting for the default branch name may still be the older `master`.  You can change the default branch name for this repository to `main` under "Settings", under the "Branches" tab on the left.
+4. Go to the "Settings" tab for the repository, and click on "Pages" option on the left.  Select the `main` branch, with the default "/ (root)" folder, and click "Save".  Within a few minutes you should see a green banner that provides a link to the page for the repository.
 
 # How it works
 
