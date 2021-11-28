@@ -8,3 +8,8 @@ description: Supplemental information about vZome, a 3D modeling app for Zometoo
 # {{ page.title }}
 
 Please visit the [main vZome web site](https://vzome.com) for general information.
+
+## Sharing vZome Designs
+
+vZome supports [sharing designs via GitHub](./sharing.html).
+
