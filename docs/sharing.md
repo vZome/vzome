@@ -7,14 +7,14 @@ title: Sharing vZome Designs
 In addition to vZome itself, all you need is a [GitHub][github] account (these are free),
 and a GitHub repository named `vzome-sharing` with a `main` branch.
 
-# Simple setup:
+## Simple setup:
 
 1. Log into your GitHub account
 2. Fork this [template repository](https://github.com/vZome/vzome-sharing) in your account.  The repo is pre-configured for vZome sharing; your fork should keep the name `vzome-sharing`.
 3. Verify that the default branch in your new repo is called `main`, not `master`.  If you have been a GitHub user for a while, your user setting for the default branch name may still be the older `master`.  You can change the default branch name to `main` under "Settings", under the "Branches" tab on the left.
 4. Go to the "Settings" tab for the repository, and click on "Pages" option on the left.  Select the `main` branch, with the default "/ (root)" folder, and click "Save".  Within a few minutes you should see a green banner that provides a link to the page for the repository.
 
-# How it works
+## How it works
 
 vZome will publish designs for sharing by adding dated, timestamped folders to your `vzome-sharing` repository.
 [Here is an example][example] of such a folder.
@@ -37,13 +37,13 @@ you new web page is available before you share its link on social media!
 If you share it before the rebuild is complete,
 the link will not get embedded as a preview -- your social media post won't show the title, description, and preview image.
 
-# Customizing the Generated Page
+## Customizing the Generated Page
 
 Since each shared design results in a custom web page dedicated to that design, you are free to edit that page
 (as the `index.md` source file), adding whatever content you like.  You can link to other pages, or even embed vZome design viewers
 from other shared folders.
 
-# Customizing your site
+## Customizing your site
 
 You can also use your `vzome-sharing` repository to build a custom website, which is the intended purpose of GitHub Pages.
 That is how this page you are reading was created.  You probably want to choose a *theme* in the "Pages" settings for your repository,
