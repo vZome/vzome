@@ -7,7 +7,7 @@ description = 'vzome-desktop'
 
 def injectionKeys = [
     'version', 'edition', 'buildNumber', 'gitCommit',
-    'githubClientId', 'githubClientSecret'
+    'githubClientId', 'githubClientSecret', 'githubRepoName'
 ]
 
 task recordBuildProperties {
