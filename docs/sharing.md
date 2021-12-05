@@ -258,7 +258,7 @@ Coming soon.
 [seo]: https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 [yaml]: https://yaml.org/
 [github]: https://github.com/
-[example]: https://github.com/vorth/vzome-sharing/tree/main/2021/11/28/09-50-02-sample-vZome-share
+[example]: https://github.com/vorth/vzome-sharing/tree/main/2021/11/29/08-01-41-sample-vZome-share
 [postsrc]: https://github.com/vorth/vzome-sharing/blob/main/_posts/2021-11-29-sample-vZome-share-08-01-41.md
 [showcase]: https://jekyllrb.com/showcase/
 [markdown]: https://github.github.com/gfm/
