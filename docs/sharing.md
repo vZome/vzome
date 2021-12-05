@@ -228,6 +228,7 @@ It links to your vZome design file, uploaded into the associated assets folder.
 
 Next, notice the `style` attribute.
 This must contain valid CSS for styling the viewer element.
+It is entirely optional, so you can remove it if you are OK with the default style of the viewer.
 Lots of things are possible, here, but you should experiment at least with
 different approaches to `height` and `width`.
 See this [CSS tutorial][css] to learn more.
