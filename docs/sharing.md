@@ -198,7 +198,7 @@ That variable definition must go in the front matter with the others, before the
 The indentation is very important; read about [YAML][yaml], the syntax for front matter, if you're curious.
 
 The [sample post source][postsrc] illustrates how you can also render the description as part of your page
-text, using `{{ page.description }}`.  This is a [Liquid expression][liquid], used to substitute
+text, using `\{\{ page.description \}\}`.  This is a [Liquid expression][liquid], used to substitute
 [variables][variables] by Jekyll.
 
 ### Navigation Links
