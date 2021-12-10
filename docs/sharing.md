@@ -197,7 +197,7 @@ description:
 That variable definition must go in the front matter with the others, before the second `---` separator.
 The indentation is very important; read about [YAML][yaml], the syntax for front matter, if you're curious.
 
-[The sample post source][postsrc] illustrates how you can also render the description as part of your page
+The [sample post source][postsrc] illustrates how you can also render the description as part of your page
 text, using `{{ page.description }}`.  This is a [Liquid expression][liquid], used to substitute
 [variables][variables] by Jekyll.
 
@@ -267,7 +267,7 @@ Coming soon.
 [yaml]: https://yaml.org/
 [github]: https://github.com/
 [example]: https://github.com/vorth/vzome-sharing/tree/main/2021/11/29/08-01-41-sample-vZome-share
-[`postsrc`]: https://github.com/vorth/vzome-sharing/blob/main/_posts/2021-11-29-sample-vZome-share-08-01-41.md
+[postsrc]: https://github.com/vorth/vzome-sharing/blob/main/_posts/2021-11-29-sample-vZome-share-08-01-41.md
 [showcase]: https://jekyllrb.com/showcase/
 [markdown]: https://github.github.com/gfm/
 [css]: https://developer.mozilla.org/en-US/docs/Web/CSS/Tutorials
