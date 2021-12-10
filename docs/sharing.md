@@ -108,8 +108,10 @@ You can add images, links to other web sites (like YouTube)... whatever you like
 You can add a few more `vzome-viewer` elements for other designs you have shared,
 to make a complete article about some topic.  Run with it!
 
+Check out [this example][postsrc] of a customized `index.md` page source file.  In particular,
+note the use of `{{ page.description }}`.
 There are some conventions and mechanisms in `index.md` that you will want to understand before you
-change them; see below for a full explanation.
+change them; [see below](#metadata-for-embedding) for a full explanation.
 
 After you commit your changes to `index.md` (or any other file in the repo),
 the website rebuild may take a few minutes,
@@ -195,6 +197,10 @@ description:
 That variable definition must go in the front matter with the others, before the second `---` separator.
 The indentation is very important; read about [YAML][yaml], the syntax for front matter, if you're curious.
 
+[The sample post source][postsrc] illustrates how you can also render the description as part of your page
+text, using `{{ page.description }}`.  This is a [Liquid expression][liquid], used to substitute
+[variables][variables] by Jekyll.
+
 ### Navigation Links
 After the front matter, you will see a Jekyll comment section:
 {% raw %}
@@ -255,11 +261,13 @@ Coming soon.
 [enable]: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
 [jekyll]: https://jekyllrb.com/
 [fmatter]: https://jekyllrb.com/docs/front-matter/
+[liquid]: https://jekyllrb.com/docs/liquid/
+[variables]: https://jekyllrb.com/docs/variables/
 [seo]: https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 [yaml]: https://yaml.org/
 [github]: https://github.com/
 [example]: https://github.com/vorth/vzome-sharing/tree/main/2021/11/29/08-01-41-sample-vZome-share
-[postsrc]: https://github.com/vorth/vzome-sharing/blob/main/_posts/2021-11-29-sample-vZome-share-08-01-41.md
+[`postsrc`]: https://github.com/vorth/vzome-sharing/blob/main/_posts/2021-11-29-sample-vZome-share-08-01-41.md
 [showcase]: https://jekyllrb.com/showcase/
 [markdown]: https://github.github.com/gfm/
 [css]: https://developer.mozilla.org/en-US/docs/Web/CSS/Tutorials
