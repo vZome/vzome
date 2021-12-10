@@ -109,7 +109,7 @@ You can add a few more `vzome-viewer` elements for other designs you have shared
 to make a complete article about some topic.  Run with it!
 
 Check out [this example][postsrc] of a customized `index.md` page source file.  In particular,
-note the use of `{{ page.description }}`.
+note the use of `{{ "{{" }} page.description }}`.
 There are some conventions and mechanisms in `index.md` that you will want to understand before you
 change them; [see below](#metadata-for-embedding) for a full explanation.
 
