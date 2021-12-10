@@ -69,9 +69,9 @@ GitHub Pages takes a few minutes to generate the custom web page.
 
 ## Customizing the Generated Page
 
-The second link in the `README.md` takes you right into edit mode for `index.md`,
-the source for your custom web page.
-The raw `index.md` content will look something like this:
+The second link in the `README.md` takes you right into edit mode for
+the source for your custom web page, which is a file in a different folder, with the suffix `.md` (for Markdown).
+The raw `.md` file content will look something like this:
 
 {% raw %}
 ```markdown
@@ -99,21 +99,21 @@ layout: vzome
 For the moment, you can ignore everything above the `endcomment` tag.
 Immediately below it, and above the `vzome-viewer` element that actually displays your design,
 is the perfect place to write whatever you want to say about your design.
-The `index.md` file will be interpreted as [Markdown][markdown], so you can do some formatted content,
+The `.md` file will be interpreted as [Markdown][markdown], so you can do some formatted content,
 but you can also simply type, without worrying about line breaks, text fill, or other formatting.
 
-The `index.md` source file is yours to change however you like, just like the rest of the files in
+The `.md` source file is yours to change however you like, just like the rest of the files in
 your entire `vzome-sharing` repo.
 You can add images, links to other web sites (like YouTube)... whatever you like.
 You can add a few more `vzome-viewer` elements for other designs you have shared,
 to make a complete article about some topic.  Run with it!
 
-Check out [this example][postsrc] of a customized `index.md` page source file.  In particular,
+Check out [this example][postsrc] of a customized `.md` page source file.  In particular,
 note the use of `{{ "{{" }} page.description }}`.
-There are some conventions and mechanisms in `index.md` that you will want to understand before you
+There are some conventions and mechanisms in the `.md` file that you will want to understand before you
 change them; [see below](#metadata-for-embedding) for a full explanation.
 
-After you commit your changes to `index.md` (or any other file in the repo),
+After you commit your changes to the `.md` file (or any other file in the repo),
 the website rebuild may take a few minutes,
 and there is a limit on how many times the website will be rebuilt within an hour,
 so **make sure** that your new or modified web page is available before you share its link on social media!
@@ -164,10 +164,10 @@ vZome also creates a new *post* [like this][postsrc], a specially-named Markdown
 (It will create the `_posts` folder, too, so you don't need to worry about that.)
 These files are treated specially by Jekyll, and converted into web pages corresponding to blog posts.
 
-## `index.md` Details
+##  Post Source (`.md`) Details
 
 ### Metadata for Embedding
-Each generated `index.md` file starts with [Jekyll front matter][fmatter]:
+Each vZome-generated `.md` file starts with [Jekyll front matter][fmatter]:
 ```markdown
 ---
 title: Sample vZome Share
@@ -214,7 +214,7 @@ After the front matter, you will see a Jekyll comment section:
 {% endcomment %}
 ```
 {% endraw %}
-This section is there just to help you navigate from the source `index.md` to the other two
+This section is there just to help you navigate from the source `.md` file to the other two
 important places: the actual generated web page, and the supporting assets folder.
 Jekyll will completely ignore this section, since it is marked as a `comment`,
 so none of it will appear in the final web page.
