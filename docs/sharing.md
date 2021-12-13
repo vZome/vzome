@@ -229,6 +229,7 @@ a custom HTML element that renders an interactive 3D viewer for your vZome desig
   <img src="https://vorth.github.io/vzome-sharing/2021/11/29/08-01-41-sample-vZome-share/sample-vZome-share.png" />
 </vzome-viewer>
 ```
+Note: that is all one custom `vzome-viewer` element, with start and end HTML tags, and a nested `img` element.
 The `src` attribute on the main element is the most important thing, here.
 It links to your vZome design file, uploaded into the associated assets folder.
 
@@ -244,6 +245,12 @@ This provides a "fall-back", something to render on the page even when the Javas
 of the `vzome-viewer` failed to load correctly, or when the user has Javascript disabled
 in their browser.
 You will also see the image flash on the generated page initially, as the Javascript is loading.
+
+Remember: this file is all yours, and if you want to render *two or more* vZome designs, you're
+free to copy the `vzome-viewer` and reference other `.vZome` files in your repo.  Be sure to update
+the nested fall-back `img` tag `src` attribute also!
+Finally, if you copy from my examples, remember to change the `vorth.github.io` domain name to
+match your own GitHub Pages site.
 
 The `vzome-viewer` web component will continue to evolve, gaining new features.
 Your generated web pages will pick up these enhancements automatically, giving your readers
