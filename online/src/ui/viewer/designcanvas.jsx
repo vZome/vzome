@@ -4,6 +4,7 @@ import { Canvas, useThree, extend, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { PerspectiveCamera } from '@react-three/drei'
 import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
+import useMeasure from 'react-use-measure';
 
 extend({ TrackballControls })
 const Controls = props => {
@@ -66,15 +67,16 @@ export const defaultInitialCamera = {
 
 export const DesignCanvas = ( { lighting, camera, children, handleBackgroundClick=()=>{} } ) =>
 {
+  const [ ref, bounds ] = useMeasure();
   const { fov, position, up, lookAt } = camera || defaultInitialCamera
-  const fovY = useMemo( () => ( fov * window.innerHeight / window.innerWidth ) * 180 / Math.PI, [ fov ] );
+  const fovY = useMemo( () => ( fov * bounds.height / bounds.width ) * 180 / Math.PI, [ fov, bounds ] );
   const lights = useMemo( () => ({
     ...defaultLighting,
     backgroundColor: (lighting && lighting.backgroundColor) || defaultLighting.backgroundColor,
   }));
   return(
-    <Canvas dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
-      <PerspectiveCamera makeDefault { ...{ fov: fovY, position, up}}>
+    <Canvas ref={ref} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
+      <PerspectiveCamera makeDefault { ...{ fov: fovY, position, up } }>
         <Lighting {...(lights)} />
       </PerspectiveCamera>
       <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
