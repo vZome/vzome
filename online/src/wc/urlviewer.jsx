@@ -21,21 +21,24 @@ export const download = ( url, xml ) =>
   document.body.removeChild( element )
 }
 
-
 export const UrlViewer = props =>
 {
-  const { text, scene } = useVZomeUrl( props.url, props.camera )
+  const { text, scene } = useVZomeUrl( props.url, props.camera, props.worker )
   return (
-    <div style={ { display: 'flex', height: '100%', position: 'relative' } }>
-      <DesignCanvas {...scene} >
-        { (scene && scene.shapes)? <ShapedGeometry {...scene} /> : null }
-      </DesignCanvas>
-      { text &&
-        <IconButton color="inherit" aria-label="download"
-            style={ { position: 'absolute', top: '5px', right: '5px' } }
-            onClick={() => download( props.url, text ) } >
-          <GetAppRoundedIcon fontSize='medium'/>
-        </IconButton> }
-    </div>
+    scene?
+      <div style={ { display: 'flex', height: '100%', position: 'relative' } }>
+        <DesignCanvas {...scene} >
+          { scene.shapes? 
+            <ShapedGeometry embedding={scene.embedding} shapes={scene.shapes} />
+          : null }
+        </DesignCanvas>
+        { text &&
+          <IconButton color="inherit" aria-label="download"
+              style={ { position: 'absolute', top: '5px', right: '5px' } }
+              onClick={() => download( props.url, text ) } >
+            <GetAppRoundedIcon fontSize='medium'/>
+          </IconButton> }
+      </div>
+    : null
   )
 }

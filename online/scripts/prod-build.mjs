@@ -1,7 +1,7 @@
 import esbuild from 'esbuild';
 import { esbuildConfig } from './esbuild-config.mjs';
 
-esbuild.buildSync( { ...esbuildConfig, minify: true, sourcemap: false, outdir: 'dist/modules' } )
+esbuild.buildSync( { ...esbuildConfig, /* minify: true, sourcemap: false,*/ outdir: 'dist/modules' } )
 
 esbuild.buildSync( {
   entryPoints: {
@@ -12,4 +12,16 @@ esbuild.buildSync( {
   minify: true,
   sourcemap: false,
   outdir: 'dist/app'
+} );
+
+esbuild.buildSync( {
+  entryPoints: {
+    'vzome-worker': 'src/wc/legacy/worker.js',
+  },
+  bundle: true,
+  splitting: false,
+  // minify: true,
+  // sourcemap: false,
+  loader: { '.vef': 'dataurl' },
+  outdir: 'dist/modules'
 } );

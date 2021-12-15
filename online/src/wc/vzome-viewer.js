@@ -13,6 +13,7 @@ export class VZomeViewer extends HTMLElement {
   #root;
   #stylesMount;
   #container;
+  #worker;
   constructor() {
     super();
     this.#root = this.attachShadow({ mode: "open" });
@@ -20,6 +21,8 @@ export class VZomeViewer extends HTMLElement {
     this.#root.appendChild(document.createElement("style")).textContent = vZomeViewerCSS;
     this.#stylesMount = document.createElement("div");
     this.#container = this.#root.appendChild( this.#stylesMount );
+
+    this.#worker = new Worker( '/modules/vzome-worker.js' );
   }
 
   connectedCallback() {
@@ -40,7 +43,7 @@ export class VZomeViewer extends HTMLElement {
 
     // TODO: Can we handle canvas resizing using `ResizeObserver` without modifying `vZome` or recreating the element constantly?
     const viewerElement = React.createElement(vZome.UrlViewer, {
-      url: this.src,
+      url: this.src, worker: this.#worker
     });
 
     // We need JSS to inject styles on our shadow root, not on the document head.
@@ -50,7 +53,7 @@ export class VZomeViewer extends HTMLElement {
         ...jssPreset(),
         insertionPoint: this.#container
     });
-    this.#reactElement = React.createElement(StylesProvider, { jss: jss }, [ viewerElement ] );
+    this.#reactElement = React.createElement( StylesProvider, { jss: jss }, [ viewerElement ] );
 
     ReactDOM.render(this.#reactElement, this.#stylesMount);
   }

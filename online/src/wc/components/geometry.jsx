@@ -1,6 +1,6 @@
 import { BufferGeometry, Vector3, Float32BufferAttribute, Matrix4 } from 'three'
 import React, { useMemo, useRef, useLayoutEffect } from 'react'
-import { useInstanceSorter, useEmbedding } from './hooks.js'
+import { useEmbedding } from './hooks.js'
 
 const createGeometry = ( { vertices, faces } ) =>
 {
@@ -63,36 +63,26 @@ const Instance = ( { id, vectors, position, rotation, geometry, color, selected,
   )
 }
 
-const InstancedShape = ( { instances, shape, onClick, onHover, highlightBall } ) =>
+const InstancedShape = ( { shape, onClick, onHover, highlightBall } ) =>
 {
   // debugger
   const geometry = useMemo( () => createGeometry( shape ), [ shape ] )
   return (
     <>
-      { instances.map( instance => 
+      { shape.instances.map( instance => 
         <Instance key={instance.id} {...instance} geometry={geometry} highlightBall={highlightBall} onClick={onClick} onHover={onHover} /> ) }
     </>
   )
 }
 
-export const SortedGeometry = ( { sortedInstances, highlightBall, handleClick, onHover } ) =>
+export const ShapedGeometry = ( { shapes, embedding, highlightBall, handleClick, onHover } ) =>
 {
-  return (
-    <>
-      { sortedInstances.map( ( { shape, instances } ) =>
-        <InstancedShape key={shape.id} shape={shape} instances={instances} highlightBall={highlightBall} onClick={handleClick} onHover={onHover} />
-      ) }
-    </>
-  )
-}
-
-export const ShapedGeometry = ( { shapes, instances, embedding, highlightBall, handleClick, onHover } ) =>
-{
-  const sortedInstances = useInstanceSorter( shapes, instances )
   const ref = useEmbedding( embedding )
-  return ( sortedInstances &&
+  return ( shapes &&
     <group matrixAutoUpdate={false} ref={ref}>
-      <SortedGeometry {...{ sortedInstances, highlightBall, handleClick, onHover }} />
+      { Object.values( shapes ).map( shape =>
+        <InstancedShape key={shape.id} {...{ shape, highlightBall, handleClick, onHover }} />
+      ) }
     </group>
   ) || null
 }
