@@ -1,5 +1,8 @@
 
 import React from 'react'
+import ReactDOM from "react-dom";
+import { StylesProvider, jssPreset } from '@material-ui/styles';
+import { create } from 'jss';
 import { ShapedGeometry } from './geometry.jsx'
 import { DesignCanvas } from './designcanvas.jsx'
 import { useVZomeUrl } from './hooks.js'
@@ -7,10 +10,10 @@ import IconButton from '@material-ui/core/IconButton'
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded'
 
 // from https://www.bitdegree.org/learn/javascript-download
-export const download = ( url, xml ) =>
+const download = ( url, xml ) =>
 {
   const name = url.split( '\\' ).pop().split( '/' ).pop()
-  const blob = new Blob([xml], {type : 'application/xml'});
+  const blob = new Blob( [ xml ], { type : 'application/xml' } );
   const element = document.createElement( 'a' )
   const blobURI = URL.createObjectURL( blob )
   element.setAttribute( 'href', blobURI )
@@ -41,4 +44,28 @@ export const UrlViewer = props =>
       </div>
     : null
   )
+}
+
+export const render = ( worker, container, stylesMount, url ) =>
+{
+  if ( url === null || url === "" ) {
+    ReactDOM.unmountComponentAtNode( container );
+    return null;
+  }
+
+  // TODO: Can we handle canvas resizing using `ResizeObserver` without modifying `vZome` or recreating the element constantly?
+  const viewerElement = React.createElement( UrlViewer, { url, worker } );
+
+  // We need JSS to inject styles on our shadow root, not on the document head.
+  // I found this solution here:
+  //   https://stackoverflow.com/questions/51832583/react-components-material-ui-theme-not-scoped-locally-to-shadow-dom
+  const jss = create({
+      ...jssPreset(),
+      insertionPoint: container
+  });
+  const reactElement = React.createElement( StylesProvider, { jss: jss }, [ viewerElement ] );
+
+  ReactDOM.render( reactElement, stylesMount );
+
+  return reactElement;
 }

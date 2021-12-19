@@ -62,6 +62,8 @@ export const useVZomeUrl = ( url, defaultScene, worker ) =>
       alert( `Unrecognized file name: ${url}` );
       return;
     }
+    worker.postMessage( { type: "returnShapesAndText", url } );
+    console.log( 'Posted returnShapesAndText to the worker!' );
   }, [ url ] )
   // We have text if we could find the vZome file,
   //  and a scene, either because there was a 3D preview JSON next to it,

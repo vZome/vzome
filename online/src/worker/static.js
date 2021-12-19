@@ -6,7 +6,7 @@ const texts = {}
 
 const previews = {}
 
-onmessage = function( e )
+onmessage = async function( e )
 {
   const convertPreview = preview =>
   {
@@ -42,19 +42,23 @@ onmessage = function( e )
   console.log( `Message received from main script: ${JSON.stringify( e.data, null, 2 )}` );
   switch ( e.data.type ) {
 
-    case "fetchShapesAndText":
+    case "fetchShapesAndText": {
       const url = e.data.url;
       // TODO: think about failure cases!  What is the contract for the worker?
-      fetchUrlText( url ) .then( text => texts[ url ] = text );
+      texts[ url ] = fetchUrlText( url ); // save the promise
       const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
-      fetchUrlText( previewUrl ) .then( text => previews[ url ] = JSON.parse( text ) );
+      previews[ url ] = fetchUrlText( previewUrl ) .then( text => JSON.parse( text ) );
       break;
+    }
   
-    case "returnShapesAndText":
+    case "returnShapesAndText": {
       const url = e.data.url;
-      this.postMessage( { type: "text", text: texts[ url ] } );
-      convertPreview( previews[ url] );
+      const text = await texts[ url ];
+      this.postMessage( { type: "text", text } );
+      const preview = await previews[ url ];
+      convertPreview( preview );
       break;
+    }
   
     default:
       break;

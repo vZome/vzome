@@ -9,7 +9,7 @@ import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 
 import VZomeAppBar from './components/appbar.jsx'
-import { UrlViewer } from '../ui/viewer/urlviewer.jsx'
+import { UrlViewer } from '../ui/viewer/index.jsx'
 
 const metadata = {
   easier: {
