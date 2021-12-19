@@ -1,8 +1,6 @@
-import shape from '@material-ui/core/styles/shape';
-import { useMemo, useState, useEffect, useRef } from 'react'
-import { Matrix4 } from 'three'
 
-console.log( `import.meta.url = ${import.meta.url}` );
+import { useState, useEffect, useRef } from 'react'
+import { Matrix4 } from 'three'
 
 export const fetchUrlText = async ( url ) =>
 {
@@ -64,8 +62,6 @@ export const useVZomeUrl = ( url, defaultScene, worker ) =>
       alert( `Unrecognized file name: ${url}` );
       return;
     }
-    worker.postMessage( { type: "fetchShapesAndText", url } );
-    console.log( 'Posted the text to the worker!' );
   }, [ url ] )
   // We have text if we could find the vZome file,
   //  and a scene, either because there was a 3D preview JSON next to it,

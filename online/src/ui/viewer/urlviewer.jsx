@@ -1,8 +1,8 @@
 
 import React from 'react'
-import { ShapedGeometry } from './components/geometry.jsx'
-import { DesignCanvas } from './components/designcanvas.jsx'
-import { useVZomeUrl } from './components/hooks.js'
+import { ShapedGeometry } from './geometry.jsx'
+import { DesignCanvas } from './designcanvas.jsx'
+import { useVZomeUrl } from './hooks.js'
 import IconButton from '@material-ui/core/IconButton'
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded'
 

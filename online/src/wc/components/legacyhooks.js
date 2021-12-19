@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import * as legacy from '../legacy/api'
-import { fetchPreview } from './hooks'
 
 // TODO: can we refactor this away?  Only used on online designs.
 export const fetchUrlDesign = async ( textPromise, url ) =>
@@ -12,7 +11,7 @@ export const fetchUrlDesign = async ( textPromise, url ) =>
     throw new Error( `Unrecognized file name: ${url}` )
   }
   try {
-    const scene = await fetchPreview( url )
+    const scene = {}; //await fetchPreview( url )
     return { text, scene }
   } catch (error) {
     console.log( `Preview load for "${url}" failed due to error: ${error}` )

@@ -11,7 +11,7 @@ import { connect } from 'react-redux'
 import UrlDialog from './webloader.jsx'
 import { fetchFileText } from '../bundles/files.js'
 import { openDesign } from '../bundles/designs.js'
-import { fetchUrlText } from '../../wc/components/hooks.js'
+import { fetchUrlText } from '../../ui/viewer/hooks.js'
 
 const openDesignUrl = url => openDesign( fetchUrlText( url ), url )
 

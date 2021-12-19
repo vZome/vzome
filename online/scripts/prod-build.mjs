@@ -16,7 +16,7 @@ esbuild.buildSync( {
 
 esbuild.buildSync( {
   entryPoints: {
-    'vzome-worker': 'src/wc/legacy/worker.js',
+    'vzome-worker': 'src/worker/viewer.js',
   },
   bundle: true,
   splitting: false,

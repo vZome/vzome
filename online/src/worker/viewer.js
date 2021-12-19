@@ -2,7 +2,11 @@
 
 const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
 
-onmessage = async function( e )
+const texts = {}
+
+const previews = {}
+
+onmessage = function( e )
 {
   const convertPreview = preview =>
   {
@@ -40,11 +44,16 @@ onmessage = async function( e )
 
     case "fetchShapesAndText":
       const url = e.data.url;
-      fetchUrlText( url )
-        .then( text => this.postMessage( { type: "text", text } ) );
+      // TODO: think about failure cases!  What is the contract for the worker?
+      fetchUrlText( url ) .then( text => texts[ url ] = text );
       const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
-      fetchUrlText( previewUrl )
-        .then( text => convertPreview( JSON.parse( text ) ) );
+      fetchUrlText( previewUrl ) .then( text => previews[ url ] = JSON.parse( text ) );
+      break;
+  
+    case "returnShapesAndText":
+      const url = e.data.url;
+      this.postMessage( { type: "text", text: texts[ url ] } );
+      convertPreview( previews[ url] );
       break;
   
     default:

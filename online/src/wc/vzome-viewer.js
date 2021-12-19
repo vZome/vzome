@@ -6,7 +6,7 @@ import ReactDOM from "react-dom";
 import { StylesProvider, jssPreset } from '@material-ui/styles';
 import { create } from 'jss';
 
-import * as vZome from "./urlviewer";
+import * as vZome from "../ui/viewer/urlviewer.jsx";
 import { vZomeViewerCSS } from "./vzome-viewer.css";
 
 export class VZomeViewer extends HTMLElement {
@@ -23,6 +23,10 @@ export class VZomeViewer extends HTMLElement {
     this.#container = this.#root.appendChild( this.#stylesMount );
 
     this.#worker = new Worker( '/modules/vzome-worker.js' );
+    if ( this.hasAttribute( 'src' ) ) {
+      worker.postMessage( { type: "fetchShapesAndText", url: this.getAttribute( 'src' ) } );
+      console.log( 'Posted the text to the worker!' );
+    }
   }
 
   connectedCallback() {

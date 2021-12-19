@@ -1,7 +1,7 @@
 
 import React from 'react'
-import { ShapedGeometry } from './geometry.jsx'
-import { DesignCanvas } from './designcanvas.jsx'
+import { ShapedGeometry } from '../../ui/viewer/geometry.jsx'
+import { DesignCanvas } from '../../ui/viewer/designcanvas.jsx'
 import { useInstanceShaper } from './legacyhooks.js'
 
 export const MeshGeometry = ({ shown, selected, renderer, highlightBall, handleClick, onHover }) =>
