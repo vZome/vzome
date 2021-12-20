@@ -9,7 +9,7 @@ import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 
 import VZomeAppBar from './components/appbar.jsx'
-import { UrlViewer } from '../ui/viewer/index.jsx'
+import { DesignViewer } from '../ui/viewer/index.jsx'
 
 const metadata = {
   easier: {
@@ -110,7 +110,7 @@ const VZomeViewer = ({ name, parts }) =>
     <>
       <Divider />
       <div style={viewerStyle}>
-        <UrlViewer url={`https://vzome.com/bhall/basics/${name}.vZome`}/>
+        <DesignViewer url={`https://vzome.com/bhall/basics/${name}.vZome`}/>
       </div>
       <Typography gutterBottom align='center' variant="h6" >{name}</Typography>
       <Typography gutterBottom align='center' >Build with {parts}</Typography>

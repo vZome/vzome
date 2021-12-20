@@ -5,7 +5,7 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 
-import { UrlViewer } from '../ui/viewer/index.jsx'
+import { DesignViewer } from '../ui/viewer/index.jsx'
 
 import VZomeAppBar from './components/appbar.jsx'
 
@@ -33,7 +33,7 @@ const VZomeViewer = ({ url }) =>
 {
   return (
     <div style={viewerStyle}>
-      <UrlViewer url={url} />
+      <DesignViewer url={url} />
     </div>
   )
 }

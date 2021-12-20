@@ -1,5 +1,6 @@
 // babel workaround
 import "regenerator-runtime/runtime";
+import { loadDesign } from "../ui/viewer/design.js";
 
 import { vZomeViewerCSS } from "./vzome-viewer.css";
 
@@ -7,7 +8,7 @@ export class VZomeViewer extends HTMLElement {
   #root;
   #stylesMount;
   #container;
-  #worker;
+  #design;
   constructor() {
     super();
     this.#root = this.attachShadow({ mode: "open" });
@@ -16,10 +17,15 @@ export class VZomeViewer extends HTMLElement {
     this.#stylesMount = document.createElement("div");
     this.#container = this.#root.appendChild( this.#stylesMount );
 
-    this.#worker = new Worker( '/modules/vzome-worker.js' );
     if ( this.hasAttribute( 'src' ) ) {
-      this.#worker.postMessage( { type: "fetchShapesAndText", url: this.getAttribute( 'src' ) } );
-      console.log( 'Posted the text to the worker!' );
+      const url = this.getAttribute( 'src' );
+      if ( ! url.endsWith( ".vZome" ) ) {
+        // This is the only case in which we don't resolve the promise with text,
+        //  since there is no point in allowing download of non-vZome text.
+        alert( `Unrecognized file name: ${url}` );
+      }
+      else
+        this.#design = loadDesign( url );
     }
   }
 
@@ -35,7 +41,7 @@ export class VZomeViewer extends HTMLElement {
   #render() {
     import( '../ui/viewer/index.jsx' )
       .then( module => {
-        this.#reactElement = module.render( this.#worker, this.#container, this.#stylesMount, this.src );
+        this.#reactElement = module.render( this.#design, this.#container, this.#stylesMount, this.src );
       })
   }
 

@@ -18,57 +18,17 @@ export const fetchUrlText = async ( url ) =>
   return response.text()
 }
 
-export const useVZomeUrl = ( url, defaultScene, worker ) =>
+export const useVZomeDesign = ( design ) =>
 {
-  const [ scene, setScene ] = useState( defaultScene )
-  const [ text, setText ] = useState( null )
-  worker.onmessage = function(e) {
-    console.log( `Message received from worker: ${e.data.type}` );
-    switch ( e.data.type ) {
-
-      case "text":
-        setText( e.data.text )
-        break;
-    
-      case "scene":
-        setScene( { ...scene, ...e.data.scene } );
-        break;
-    
-      case "shape": {
-        const shape = e.data.shape;
-        const shapes = { ...scene.shapes, [shape.id]: { ...shape, instances: [] } };
-        setScene( { ...scene, shapes } );
-        break;
-      }
-
-      case "instance": {
-        const { shapeId } = e.data.instance;
-        const shape = scene.shapes[ shapeId ]
-        const updatedShape = { ...shape, instances: [ ...shape.instances, e.data.instance ] };
-        const shapes = { ...scene.shapes, [shapeId]: updatedShape };  // make a copy
-        setScene( { ...scene, shapes } );
-        break;
-      }
-    
-      default:
-        console.log( `Unknown message type received from worker: ${JSON.stringify(e.data, null, 2)}` );
-        break;
-    }
-  }
+  const [ scene, setScene ] = useState( null )
+  const [ source, setSource ] = useState( null )
   useEffect( () => {
-    if ( ! url.endsWith( ".vZome" ) ) {
-      // This is the only case in which we don't resolve the promise with text,
-      //  since there is no point in allowing download of non-vZome text.
-      alert( `Unrecognized file name: ${url}` );
-      return;
-    }
-    worker.postMessage( { type: "returnShapesAndText", url } );
-    console.log( 'Posted returnShapesAndText to the worker!' );
-  }, [ url ] )
+    design.connectListeners( setSource, setScene );
+  }, [] )
   // We have text if we could find the vZome file,
   //  and a scene, either because there was a 3D preview JSON next to it,
   //  or because we parsed, interpreted, and rendered the vZome file.
-  return { text, scene }
+  return { source, scene }
 }
 
 export const useEmbedding = embedding =>
