@@ -305,7 +305,7 @@ class JavaDomNodeList
 
   item( i )
   {
-    const node = this.nativeNodeList.item( i )
+    const node = this.nativeNodeList[ i ];
     if ( node.nodeType === 1 )
       return new JavaDomElement( node )
     else
@@ -323,12 +323,12 @@ export class JavaDomElement
 
   getAttribute( name )
   {
-    return this.nativeElement.getAttribute && this.nativeElement.getAttribute( name )
+    return this.nativeElement.attributes[ name ];
   }
 
   getLocalName()
   {
-    return this.nativeElement.localName
+    return this.nativeElement.tagName
   }
 
   getTextContent()
@@ -338,28 +338,19 @@ export class JavaDomElement
 
   getChildNodes()
   {
-    return new JavaDomNodeList( this.nativeElement.childNodes )
+    return new JavaDomNodeList( this.nativeElement.children )
   }
 
   getChildElement( name )
   {
-    let target = this.nativeElement.firstElementChild
-    while ( target && name.toLowerCase() !== target.nodeName.toLowerCase() )
-      target = target.nextElementSibling
-    return target && new JavaDomElement( target )
+    const nativeChild = this.nativeElement.children.filter( n => n.tagName === name )[ 0 ];
+    return nativeChild && new JavaDomElement( nativeChild );
   }
 
   getElementsByTagName( name )
   {
-    let target = this.nativeElement.firstElementChild
-    const results = []
-    while ( target ) {
-      if ( name.toLowerCase() === target.nodeName.toLowerCase() ) {
-        results.push( new JavaDomElement( target ) )
-      }
-      target = target.nextElementSibling
-    }
-    return { getLength: () => results.length, item: i => results[ i ] }
+    const results = this.nativeElement.children.filter( n => n.tagName === name );
+    return { getLength: () => results.length, item: i => new JavaDomElement( results[ i ] ) }
   }
 }
 

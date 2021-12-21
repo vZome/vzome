@@ -4,7 +4,7 @@ export const loadDesign = url =>
   let source = { url };
   let scene = {};
 
-  const worker = new Worker( '/modules/vzome-worker-static.js' );
+  const worker = new Worker( '/modules/vzome-worker-static.js', { type: "module" } );
   if ( url ) {
     worker.postMessage( { type: "URL_PROVIDED", payload: url } );
   }

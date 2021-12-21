@@ -19,6 +19,7 @@
     "redux-thunk": "^2.3.0",
     "redux-undo": "^1.0.1",
     "three": "^0.131.3",
+    "txml": "^5.1.1",
     "workbox-cacheable-response": "^6.4.1",
     "workbox-expiration": "^6.4.1",
     "workbox-routing": "^6.4.1",

@@ -45,13 +45,21 @@ onmessage = async function( e )
       // TODO: think about failure cases!  What is the contract for the worker?
       promises.text = fetchUrlText( url ); // save the promise
       const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
-      promises.preview = fetchUrlText( previewUrl ) .then( text => JSON.parse( text ) );
+      promises.preview = fetchUrlText( previewUrl )
+        .then( text => JSON.parse( text ) )
+        .catch( () => {
+          import( './legacy/dynamic.js' )
+            .then( module => {
+              promises.text .then( xml => module .parseAndRender( xml ) );
+            })
+        })
       break;
     }
   
     case "RENDERER_PREPARED": {
-      this.postMessage( { type: "TEXT_FETCHED", payload: await promises.text } );
-      convertPreview( await promises.preview );
+      promises.text .then( text => this.postMessage( { type: "TEXT_FETCHED", payload: text } ) );
+      promises.preview .then( preview => convertPreview( preview ) )
+        .catch( console.log( 'Preview promise was rejected.' ) );
       break;
     }
   

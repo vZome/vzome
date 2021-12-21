@@ -272,6 +272,7 @@ export default class Adapter
 
   showManifestation( vectors )
   {
+    console.log( 'showManifestation' );
     let instance = createInstance( vectors )
     if ( this.shown.has( instance.id ) || this.selected.has( instance.id ) )
       return // idempotent
@@ -282,6 +283,7 @@ export default class Adapter
 
   hideManifestation( vectors )
   {
+    console.log( 'hideManifestation' );
     let instance = createInstance( vectors )
     instance = this.shown.get( instance.id ) || this.selected.get( instance.id ) || this.hidden.get( instance.id ) || instance
     this.selected.delete( instance.id ) || this.shown.delete( instance.id )

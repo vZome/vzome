@@ -9,6 +9,8 @@ import { algebraicNumberFactory, JavaDomElement, JsProperties } from './jsweet2j
 import allShapes from './resources/com/vzome/core/parts/index.js'
 import groupResources from './resources/com/vzome/core/math/symmetry/index.js'
 
+import * as txml from 'txml/dist/txml.mjs';
+
 import { com } from './transpiled-java.js'
 import { java } from './j4ts-2.0.0/bundle.js'
 
@@ -413,40 +415,42 @@ const init = async () =>
           Perhaps I should focus on "native" (non-legacy) edits first, so the interpreter
           is not biased towards DOM as it is today.  (See the createEdit API below.)
     */
-    const serializeLegacyEdit = domElement =>
+    const serializeLegacyEdit = txmlElement =>
     {
-      const editType = domElement.nodeName
+      const editType = txmlElement.nodeName
       const result = { editType }
       if ( editType === "Branch" ) {
         result.edits = []
         return result
       }
       // not a branch, if we got here
-      domElement.getAttributeNames().forEach( name => {
-        if ( name !== 'id' ) result[ name ] = domElement.getAttribute( name )
+      txmlElement.getAttributeNames().forEach( name => {
+        if ( name !== 'id' ) result[ name ] = txmlElement.getAttribute( name )
       })
-      if ( domElement.textContent ) {
-        const text = domElement.textContent.trim()
+      if ( txmlElement.textContent ) {
+        const text = txmlElement.textContent.trim()
         if ( !! text )
           result.textContent = text
       }
-      if ( domElement.firstElementChild ) {
-        console.log( `Nested XML: ${domElement.nodeName} ${domElement.firstElementChild.outerHTML}` );
+      if ( txmlElement.firstElementChild ) {
+        console.log( `Nested XML: ${txmlElement.nodeName} ${txmlElement.firstElementChild.outerHTML}` );
       }
       return result
     }
 
-    const createEdit = ( domElement ) =>
+    const createEdit = ( txmlElement, parent ) =>
     {
-      const isBranch = () => domElement.nodeName === "Branch"
-      const name = () => domElement.nodeName
-      const id = () => domElement.id
-      const nextSibling = () => domElement.nextElementSibling && createEdit( domElement.nextElementSibling )
-      const firstChild = () => domElement.firstElementChild && createEdit( domElement.firstElementChild )
-      const getAttributeNames = () => domElement.getAttributeNames()
-      const getAttribute = name => domElement.getAttribute( name )
-      const perform = mesh => parseAndPerformEdit( domElement, mesh )
-      const serialize = () => serializeLegacyEdit( domElement )
+      const parentElement = parent;
+      const nativeElement = txmlElement;
+      const isBranch = () => txmlElement.tagName === "Branch";
+      const name = () => txmlElement.tagName;
+      const id = () => txmlElement.id;
+      const nextSibling = () => parentElement && createEdit( parentElement.children[ nativeElement.index + 1 ], parentElement );
+      const firstChild = () => ( txmlElement.children.length > 0 ) && createEdit( txmlElement.children[ 0 ], txmlElement );
+      const getAttributeNames = () => txmlElement.attributes.keys();
+      const getAttribute = name => txmlElement.attributes[ name ];
+      const perform = mesh => parseAndPerformEdit( txmlElement, mesh );
+      const serialize = () => serializeLegacyEdit( txmlElement );
       return {
         nextSibling, firstChild, isBranch, id, perform,   // these are for the interpreter
         name, getAttributeNames, getAttribute, serialize, // these are for the debugger UI
@@ -557,15 +561,13 @@ const legacyCommandFactory = ( createEditor, className ) => ( config ) =>
   // dispatch( { type: WORK_FINISHED } )
 }
 
-const assignIds = ( element, id=':' ) => {
-  element.id = id
-  let child = element.firstElementChild
-  let i = 0
-  while ( child ) {
-    assignIds( child, `${id}${i++}:` )
-    child = child.nextElementSibling
-  }
-  return element
+const assignIds = ( txmlElement, id=':' ) => {
+  txmlElement.id = id;
+  txmlElement.children.map( (child,index) => {
+    child.index = index;
+    assignIds( child, `${id}${index}:` )
+  });
+  return txmlElement
 }
 
 const parseVector = ( element, name ) =>
@@ -618,8 +620,11 @@ const parseViewXml = ( viewingElement ) =>
 
 const createParser = ( createDocument ) => ( xmlText ) =>
 {
-  const domDoc = new DOMParser().parseFromString( xmlText, "application/xml" );
-  let vZomeRoot = new JavaDomElement( domDoc.firstElementChild )
+  // const domDoc = new DOMParser().parseFromString( xmlText, "application/xml" );
+
+  const domDoc = txml.parse( xmlText /*, options */ );
+
+  let vZomeRoot = new JavaDomElement( domDoc.filter( n => n.tagName === 'vzome:vZome' )[ 0 ] );
 
   const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
   const fieldName = vZomeRoot.getAttribute( "field" )
@@ -632,10 +637,10 @@ const createParser = ( createDocument ) => ( xmlText ) =>
   const scene = vZomeRoot.getChildElement( "sceneModel" )
   const lighting = scene && parseLighting( scene )
 
-  const edits = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement )
+  const edits = createEdit( assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement ) );
   // Note: I'm adding one so that this matches the assigned ID of the next edit to do
   const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
-  const firstEdit = createEdit && createEdit( edits.firstElementChild )
+  const firstEdit = edits.firstChild()
 
   return { firstEdit, camera, field, targetEdit, renderer, lighting }
 }

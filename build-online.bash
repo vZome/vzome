@@ -17,7 +17,7 @@ banner 'Transpiling Java sources with JSweet'
 
 banner 'Patching up the bundle as an ES6 module'
 
-OUTJS='online/src/wc/legacy/transpiled-java.js'
+OUTJS='online/src/worker/legacy/transpiled-java.js'
 echo 'import { java, javaemul } from "./j4ts-2.0.0/bundle.js"' > $OUTJS
 
 cat 'online/jsweetOut/js/bundle.js' | \
