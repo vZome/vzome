@@ -1,7 +1,9 @@
 
-import parserPromise from './js2jsweet.js'
+import { normalizeRenderedManifestation, parserPromise, realizeShape } from './js2jsweet.js'
 import { defaultNew } from './resources/com/vzome/core/parts/index.js'
 import { createInstance } from './adapter.js'
+
+export { realizeShape, normalizeRenderedManifestation } from './js2jsweet.js'
 
 export const parse = async text =>
 {
@@ -77,9 +79,9 @@ export const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
 
 export const interpret = async ( action, mesh, edit, stack=[], recordSnapshot ) =>
 {
-  const nextTask = () => {
-      return new Promise( res => setTimeout( res ) );
-  }
+  // const nextTask = () => {
+  //     return new Promise( res => setTimeout( res ) );
+  // }
   const step = () =>
   {
     if ( ! edit )
@@ -122,7 +124,7 @@ export const interpret = async ( action, mesh, edit, stack=[], recordSnapshot ) 
     let stepped;
     do {
       stepped = await stepOut();
-      await nextTask();
+      // await nextTask();
     } while ( stepped !== Step.DONE );
   }
 
@@ -145,7 +147,7 @@ export const interpret = async ( action, mesh, edit, stack=[], recordSnapshot ) 
     let stepped;
     do {
       stepped = await stepOver();
-      await nextTask();
+      // await nextTask();
     } while ( stepped !== Step.OUT && stepped !== Step.DONE );
     return stepped;
   }
@@ -239,4 +241,58 @@ export const shapeMesh = ( shapes, shapedInstances, shown, selected, cachingShap
   } else
     console.log( 'no cachingShaper' );
     return {};
+}
+
+export const interpretAndRender = ( design, sceneListener ) =>
+{
+  const shapes = {};
+  const renderingListener = ({
+    manifestationAdded: rm => {
+      const instance = normalizeRenderedManifestation( rm );
+      const { shapeId } = instance;
+      if ( ! shapes[ shapeId ] ) {
+        shapes[ shapeId ] = realizeShape( rm .getShape() );
+        shapes[ shapeId ].instances = {};
+        // sceneListener .shapeAdded( shapes[ shapeId ] );
+      }
+      shapes[ shapeId ].instances[ instance.id ] = instance;
+      // sceneListener .instanceAdded( instance );
+    },
+    manifestationRemoved: rm => {
+      const instance = normalizeRenderedManifestation( rm );
+      const { shapeId } = instance;
+      const shape = shapes[ shapeId ];
+      delete shape.instances[ instance.id ];
+      // sceneListener .instanceRemoved( instance );
+    },
+    glowChanged: rm => {
+      console.log( 'glowChanged' );
+    },
+    colorChanged: rm => {
+      console.log( 'colorChanged' );
+    },
+  });
+  const { targetEdit, firstEdit, renderer, camera, lighting, batchRender } = design;
+  const { embedding } = renderer;
+
+  // WORKAROUND
+  camera.fov = 0.33915263,
+
+  sceneListener.initialized( { lighting, camera, embedding } );
+
+  // Not attached while we're doing batchRender
+  // renderedModel .addListener( renderingListener );
+
+  const record = ( mesh, id ) => {
+    if ( id === targetEdit ) {
+      console.log( `Hit the target edit: ${targetEdit}` );
+    }
+  }
+  const unusedMesh = {};
+  interpret( Step.DONE, unusedMesh, firstEdit, [], record )
+    .then( () => {
+      batchRender( renderingListener );
+      Object.values( shapes ).map( shape => shape.instances = Object.values( shape.instances ) );
+      sceneListener.initialized( { shapes } );
+    } );
 }

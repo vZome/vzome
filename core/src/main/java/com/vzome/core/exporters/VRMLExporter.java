@@ -11,9 +11,7 @@ import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
-import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.construction.Color;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
@@ -31,15 +29,7 @@ public class VRMLExporter extends Exporter3d
 	
 	private static final String PREAMBLE_FILE = "com/vzome/core/exporters/vrml/preamble.wrl";
 	
-	private static final PentagonField FIELD = new PentagonField();
-
-    private static final AlgebraicNumber MODEL_BALL_RADIUS = FIELD .createAlgebraicNumber( 6, 10, 1, 0 );
-    /**
-     * This scale factor is appropriate for making true-to-scale VRML renderings of strut models built
-     *   in vZome with a model ball radius (blue) of one long blue strut.  In other terms, the edges of the
-     *   ball model are short and medium blue struts.
-     */
-    private static final double SCALE = 0.350d / MODEL_BALL_RADIUS .evaluate();
+    private static final double SCALE = 0.350d;
 
     public VRMLExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
     {

@@ -364,10 +364,24 @@ const init = async () =>
       getQuaternionSet: name => fieldApp.getQuaternionSymmetry( name )
     }
 
-    const realizedModel = new vzomePkg.jsweet.JsRealizedModel( legacyField )
-    const selection = new vzomePkg.jsweet.JsSelection( legacyField )
+    const projection = new vzomePkg.core.math.Projection.Default( legacyField );
+    const realizedModel = new vzomePkg.core.model.RealizedModelImpl( legacyField, projection );
+    const renderedModel = new vzomePkg.core.render.RenderedModel( legacyField, orbitSource );
+    realizedModel .addListener( renderedModel );
+
+    const originBall = realizedModel .manifest( originPoint );
+    originBall .addConstruction( originPoint );
+    realizedModel .add( originBall );
+    realizedModel .show( originBall );
+
+    const selection = new vzomePkg.core.editor.SelectionImpl();
     const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp, orbitSource, symmetrySystems )
     toolsModel.setEditorModel( editor )
+
+    selection.addListener( {
+      manifestationAdded: m => renderedModel .setManifestationGlow( m, true ),
+      manifestationRemoved: m => renderedModel .setManifestationGlow( m, false ),
+    } );
 
     const format = namespace && vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )
     format && format.initialize( legacyField, orbitSetField, 0, "vZome Online", new util.Properties() )
@@ -442,10 +456,15 @@ const init = async () =>
     {
       const parentElement = parent;
       const nativeElement = txmlElement;
-      const isBranch = () => txmlElement.tagName === "Branch";
+      const isBranch = () => txmlElement.tagName && txmlElement.tagName === "Branch";
       const name = () => txmlElement.tagName;
       const id = () => txmlElement.id;
-      const nextSibling = () => parentElement && createEdit( parentElement.children[ nativeElement.index + 1 ], parentElement );
+      const nextSibling = () => {
+        if ( !parentElement ) return null;
+        const next = nativeElement.index + 1;
+        if ( next >= parentElement.children.length ) return null;
+        return createEdit( parentElement.children[ next ], parentElement );
+      }
       const firstChild = () => ( txmlElement.children.length > 0 ) && createEdit( txmlElement.children[ 0 ], txmlElement );
       const getAttributeNames = () => txmlElement.attributes.keys();
       const getAttribute = name => txmlElement.attributes[ name ];
@@ -467,7 +486,14 @@ const init = async () =>
       edit.perform()
     }
 
-    return { renderer, createEdit, configureAndPerformEdit, field }
+    const batchRender = renderingListener => {
+      const RM = vzomePkg.core.render.RenderedModel;
+      RM.renderChange( new RM( null, null ), renderedModel, renderingListener );
+    }
+
+    // renderer is not currently used, since the state is in RealizedModelImpl;
+    //  instead, we have batchRender.
+    return { renderer, createEdit, configureAndPerformEdit, field, batchRender };
   }
 
   // Discover all the legacy edit classes and register as commands
@@ -497,15 +523,32 @@ const init = async () =>
   return { parser, commands, gridPoints }
 }
 
-const realizeShape = ( shape ) =>
+export const realizeShape = ( shape ) =>
 {
   const vertices = shape.getVertexList().toArray().map( av => {
     const { x, y, z } = av.toRealVector()  // this is too early to do embedding, which is done later, globally
     return { x, y, z }
   })
-  const faces = shape.getTriangleFaces().toArray()
+  const faces = shape.getTriangleFaces().toArray().map( ({ vertices }) => ({ vertices }) );  // not a no-op, converts to POJS
   const id = shape.getGuid().toString()
   return { id, vertices, faces }
+}
+
+export const normalizeRenderedManifestation = rm =>
+{
+  const id = rm.getGuid().toString();
+  const shapeId = rm.getShapeId().toString();
+  const positionAV = rm.getLocationAV();
+  const { x, y, z } = ( positionAV && positionAV.toRealVector() ) || { x:0, y:0, z:0 };
+  const rotation = rm .getOrientation() .getRowMajorRealElements();
+  const rmc = rm.getColor();
+  const componentToHex = c => {
+    let hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+  }
+  const color = "#" + componentToHex(rmc.getRed()) + componentToHex(rmc.getGreen()) + componentToHex(rmc.getBlue());
+
+  return { id, position: [ x, y, z ], rotation, color, shapeId };
 }
 
 const shaperFactory = ( vzomePkg, orbitSource ) => shapes => instance =>
@@ -629,7 +672,7 @@ const createParser = ( createDocument ) => ( xmlText ) =>
   const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
   const fieldName = vZomeRoot.getAttribute( "field" )
 
-  const { renderer, createEdit, field } = createDocument( fieldName, namespace, vZomeRoot )
+  const { renderer, createEdit, field, batchRender } = createDocument( fieldName, namespace, vZomeRoot )
 
   const viewing = vZomeRoot.getChildElement( "Viewing" )
   const camera = viewing && parseViewXml( viewing )
@@ -642,9 +685,7 @@ const createParser = ( createDocument ) => ( xmlText ) =>
   const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
   const firstEdit = edits.firstChild()
 
-  return { firstEdit, camera, field, targetEdit, renderer, lighting }
+  return { firstEdit, camera, field, targetEdit, renderer, lighting, batchRender }
 }
 
-const parserPromise = init()
-
-export default parserPromise
+export const parserPromise = init()

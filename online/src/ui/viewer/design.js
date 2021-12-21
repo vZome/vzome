@@ -13,6 +13,7 @@ export const loadDesign = url =>
   {
     worker.onmessage = function(e) {
       console.log( `Message received from worker: ${e.data.type}` );
+      // console.log( `payload: ${JSON.stringify( e.data.payload, null, 2 )}` );
       switch ( e.data.type ) {
 
         case "TEXT_FETCHED":
@@ -37,6 +38,17 @@ export const loadDesign = url =>
           const { shapeId } = e.data.payload;
           const shape = scene.shapes[ shapeId ]
           const updatedShape = { ...shape, instances: [ ...shape.instances, e.data.payload ] };
+          const shapes = { ...scene.shapes, [shapeId]: updatedShape };  // make a copy
+          scene = { ...scene, shapes }
+          sceneChanged( scene );
+          break;
+        }
+
+        case "INSTANCE_REMOVED": {
+          const { id, shapeId } = e.data.payload;
+          const shape = scene.shapes[ shapeId ]
+          const instances = shape.instances.filter( instance => instance.id !== id )
+          const updatedShape = { ...shape, instances };
           const shapes = { ...scene.shapes, [shapeId]: updatedShape };  // make a copy
           scene = { ...scene, shapes }
           sceneChanged( scene );

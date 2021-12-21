@@ -1,40 +1,48 @@
 
 
-const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
-
 const promises = {};
+
+const convertPreview = ( preview, sceneListener ) =>
+{
+  let { lights, camera, shapes, instances, embedding, orientations } = preview
+  
+  const dlights = lights.directionalLights.map( ({ direction, color }) => {
+    const { x, y, z } = direction
+    return { direction: [ x, y, z ], color }
+  })
+  const lighting = { ...lights, directionalLights: dlights };
+
+  const { lookAtPoint, upDirection, lookDirection, viewDistance, fieldOfView, near, far } = camera
+  const lookAt = [ ...Object.values( lookAtPoint ) ]
+  const up = [ ...Object.values( upDirection ) ]
+  const lookDir = [ ...Object.values( lookDirection ) ]
+  camera = {
+    near, far, up, lookAt,
+    fov: fieldOfView,
+    position: lookAt.map( (e,i) => e - viewDistance * lookDir[ i ] ),
+  }
+  
+  sceneListener.initialized( { lighting, camera, embedding } );
+
+  shapes.map( shape => sceneListener.shapeAdded( shape ) );
+
+  let i = 0;
+  const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
+  instances.map( ({ position, orientation, color, shape }) => {
+    const id = "id_" + i++;
+    const { x, y, z } = position;
+    const rotation = orientations[ orientation ] || IDENTITY_MATRIX;
+    sceneListener.instanceAdded( { id, position: [ x, y, z ], rotation, color, shapeId: shape } );
+  });
+}
 
 onmessage = async function( e )
 {
-  const convertPreview = preview =>
-  {
-    let { lights, camera, shapes, instances, embedding, orientations } = preview
-    
-    const dlights = lights.directionalLights.map( ({ direction, color }) => {
-      const { x, y, z } = direction
-      return { direction: [ x, y, z ], color }
-    })
-    const { lookAtPoint, upDirection, lookDirection, viewDistance, fieldOfView, near, far } = camera
-    const lookAt = [ ...Object.values( lookAtPoint ) ]
-    const up = [ ...Object.values( upDirection ) ]
-    const lookDir = [ ...Object.values( lookDirection ) ]
-    camera = {
-      near, far, up, lookAt,
-      fov: fieldOfView,
-      position: lookAt.map( (e,i) => e - viewDistance * lookDir[ i ] ),
-    }
-    
-    this.postMessage( { type: "SCENE_INITIALIZED", payload: { lighting: { ...lights, directionalLights: dlights }, camera, embedding } } );
-
-    shapes.map( shape => this.postMessage( { type: "SHAPE_ADDED", payload: shape } ) );
-
-    let i = 0;
-    instances.map( ({ position, orientation, color, shape }) => {
-      const id = "id_" + i++;
-      const { x, y, z } = position;
-      const rotation = orientations[ orientation ] || IDENTITY_MATRIX;
-      this.postMessage( { type: "INSTANCE_ADDED", payload: { id, position: [ x, y, z ], rotation, color, shapeId: shape } } );
-    });
+  const sceneListener = {
+    initialized: payload => this.postMessage( { type: "SCENE_INITIALIZED", payload } ),
+    shapeAdded: payload => this.postMessage( { type: "SHAPE_ADDED", payload } ),
+    instanceAdded: payload => this.postMessage( { type: "INSTANCE_ADDED", payload } ),
+    instanceRemoved: payload => this.postMessage( { type: "INSTANCE_REMOVED", payload } ),
   }
 
   console.log( `Message received from main script: ${e.data.type}` );
@@ -50,20 +58,29 @@ onmessage = async function( e )
         .catch( () => {
           import( './legacy/dynamic.js' )
             .then( module => {
-              promises.text .then( xml => module .parseAndRender( xml ) );
+              promises.xml = promises.text .then( xml => module .parse( xml ) );
             })
         })
       break;
     }
   
     case "RENDERER_PREPARED": {
-      promises.text .then( text => this.postMessage( { type: "TEXT_FETCHED", payload: text } ) );
-      promises.preview .then( preview => convertPreview( preview ) )
-        .catch( console.log( 'Preview promise was rejected.' ) );
+      promises.text
+        .then( text => this.postMessage( { type: "TEXT_FETCHED", payload: text } ) );
+      promises.preview
+        .then( preview => convertPreview( preview, sceneListener ) )
+        .catch( () => {
+          console.log( 'Preview promise was rejected.' );
+          promises.xml .then( design => {            
+            import( './legacy/dynamic.js' )
+              .then( module => module .interpretAndRender( design, sceneListener ) );
+          } );
+         } );
       break;
     }
   
     default:
+      console.log( `Unknown message type ignored: ${e.data.type}` );
       break;
   }
 }

@@ -40,4 +40,6 @@ public interface Manifestation extends GroupElement {
     Color getColor();
     
     void setColor( Color color );
+
+    void setRenderedObject( RenderedObject renderedObject );
 }

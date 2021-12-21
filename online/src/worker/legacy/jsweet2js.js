@@ -350,7 +350,10 @@ export class JavaDomElement
   getElementsByTagName( name )
   {
     const results = this.nativeElement.children.filter( n => n.tagName === name );
-    return { getLength: () => results.length, item: i => new JavaDomElement( results[ i ] ) }
+    return {
+      getLength: () => results.length,
+      item: i => (i < results.length)? new JavaDomElement( results[ i ] ) : null
+    }
   }
 }
 

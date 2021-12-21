@@ -193,11 +193,12 @@ public abstract class ChangeManifestations extends ChangeSelection
         public void redo()
         {
             if ( mShowing ) {
-                if ( mManifestation .isUnnecessary() )
+                if ( mManifestation .isUnnecessary() ) {
+                    mManifestation .addConstruction( mConstruction );
                     mManifestations .add(  mManifestation );
+                }
                 // note the asymmetry... we want to unhide when adding
                 mManifestations .show( mManifestation ); // TODO make this more immediate, call renderer here
-                mManifestation .addConstruction( mConstruction );
             }
             else {
                 mManifestation .removeConstruction( mConstruction );

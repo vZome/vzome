@@ -18,6 +18,7 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.model.Group;
 import com.vzome.core.model.Manifestation;
+import com.vzome.core.model.RenderedObject;
 
 import def.js.Function;
 import def.js.Object;
@@ -165,6 +166,9 @@ public abstract class JsManifestation implements Manifestation
         return group;
     }
     
+    @Override
+    public void setRenderedObject( RenderedObject renderedObject ) {}
+
     
     
     
