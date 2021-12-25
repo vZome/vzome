@@ -37,7 +37,7 @@ public class ConnectorImpl extends ManifestationImpl implements Connector
     public Construction toConstruction()
     {
         Construction first = this .getFirstConstruction();
-        if ( first .is3d() )
+        if ( first != null && first .is3d() )
             return first;
         
         AlgebraicField field = m_center .getField();

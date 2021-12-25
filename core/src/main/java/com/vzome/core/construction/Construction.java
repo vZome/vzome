@@ -130,4 +130,9 @@ public abstract class Construction
     {
         return this .color;
     }
+    
+    public String getSignature()
+    {
+        return "";
+    }
 }

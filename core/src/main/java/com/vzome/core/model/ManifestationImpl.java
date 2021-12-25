@@ -68,6 +68,8 @@ public abstract class ManifestationImpl implements GroupElement, Manifestation, 
      */
     public Construction getFirstConstruction()
     {
+    	if ( mManifests .isEmpty() )
+    		return null;
         return mManifests .iterator() .next();
     }
 

@@ -19,6 +19,11 @@ public abstract class Point extends Construction
         super( field );
     }
     
+    public String getSignature()
+    {
+        return this .mLocation .toString();
+    }
+
     @Override
     public boolean is3d()
     {

@@ -66,7 +66,7 @@ public class PanelImpl extends ManifestationImpl implements Panel
     public Construction toConstruction()
     {
         Construction first = this .getFirstConstruction();
-        if ( first .is3d() )
+        if ( first != null && first .is3d() )
             return first;
 
         AlgebraicField field = mVertices.get( 0 ) .getField();

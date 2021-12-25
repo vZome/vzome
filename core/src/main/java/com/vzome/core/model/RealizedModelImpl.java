@@ -48,7 +48,7 @@ public class RealizedModelImpl implements RealizedModel
         for (Manifestation man : mManifestations .values()) {
             if ( man .isHidden() )
                 continue;
-            Manifestation doppel = other .mManifestations .get( man .getFirstConstruction() .toString() );
+            Manifestation doppel = other .mManifestations .get( man .toConstruction() .getSignature() );
             if ( doppel == null || doppel .isHidden() )
                 result .add( man );
         }
@@ -114,7 +114,7 @@ public class RealizedModelImpl implements RealizedModel
     
     public void add( Manifestation m )
     {
-        String key = m .getFirstConstruction() .toString();
+        String key = m .toConstruction() .getSignature();
         mManifestations .put( key, m );
         if ( logger .isLoggable( Level .FINER ) )
             logger .finer( "add manifestation: " + m .toString() );
@@ -122,7 +122,7 @@ public class RealizedModelImpl implements RealizedModel
     
     public void remove( Manifestation m )
     {
-        String key = m .getFirstConstruction() .toString();
+        String key = m .toConstruction() .getSignature();
         mManifestations .remove( key );
         if ( logger .isLoggable( Level .FINER ) )
             logger .finer( "remove manifestation: " + m .toString() );
@@ -205,7 +205,7 @@ public class RealizedModelImpl implements RealizedModel
     
     public Manifestation findConstruction( Construction c )
     {
-        Manifestation actualMan = mManifestations .get( c .toString() );
+        Manifestation actualMan = mManifestations .get( c .getSignature() );
         if ( actualMan == null )
             actualMan = manifest( c );
         
@@ -214,7 +214,7 @@ public class RealizedModelImpl implements RealizedModel
     
     public Manifestation removeConstruction( Construction c )
     {
-        Manifestation actualMan = mManifestations .get( c .toString() );
+        Manifestation actualMan = mManifestations .get( c .getSignature() );
         if ( actualMan == null )
             return null;
         // This is just bizarre, but it matches the old logic!
@@ -227,7 +227,7 @@ public class RealizedModelImpl implements RealizedModel
      */
     public Manifestation getManifestation( Construction c )
     {
-        return mManifestations .get( c .toString() );
+        return mManifestations .get( c .getSignature() );
     }
 
 	public int size()
@@ -300,19 +300,18 @@ public class RealizedModelImpl implements RealizedModel
      * This records the NEW manifestations produced by manifestConstruction for this edit,
      * to avoid creating colliding manifestations.
      */
-    // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
-    private transient Map<Manifestation, Manifestation> mManifestedNow;  // used only while calling manifest
+    private transient Map<String, Manifestation> mManifestedNow;  // used only while calling manifest
 
     @Override
-    public Manifestation findPerEditManifestation( Manifestation m )
+    public Manifestation findPerEditManifestation( String signature )
     {
-        return this .mManifestedNow .get( m ); // If it weren't for this get, we could use a Set
+        return this .mManifestedNow .get( signature );
     }
 
     @Override
-    public void addPerEditManifestation( Manifestation m )
+    public void addPerEditManifestation( String signature, Manifestation m )
     {
-        this .mManifestedNow .put( m, m );
+        this .mManifestedNow .put( signature, m );
     }
 
     @Override
