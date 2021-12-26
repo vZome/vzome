@@ -24,7 +24,12 @@ const convertPreview = ( preview, sceneListener ) =>
   
   sceneListener.initialized( { lighting, camera, embedding } );
 
-  shapes.map( shape => sceneListener.shapeAdded( shape ) );
+  const shapesDict = {}
+  shapes.map( shape => {
+    shapesDict[ shape.id ] = shape;
+    shape.instances = [];
+  } );
+  // shapes.map( shape => sceneListener.shapeAdded( shape ) );
 
   let i = 0;
   const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
@@ -32,8 +37,11 @@ const convertPreview = ( preview, sceneListener ) =>
     const id = "id_" + i++;
     const { x, y, z } = position;
     const rotation = orientations[ orientation ] || IDENTITY_MATRIX;
-    sceneListener.instanceAdded( { id, position: [ x, y, z ], rotation, color, shapeId: shape } );
+    const instance = { id, position: [ x, y, z ], rotation, color, shapeId: shape };
+    shapesDict[ shape ].instances.push( instance );
+    // sceneListener.instanceAdded( instance );
   });
+  sceneListener.initialized( { shapes: shapesDict } );
 }
 
 onmessage = async function( e )
@@ -69,7 +77,8 @@ onmessage = async function( e )
         .then( text => this.postMessage( { type: "TEXT_FETCHED", payload: text } ) );
       promises.preview
         .then( preview => convertPreview( preview, sceneListener ) )
-        .catch( () => {
+        .catch( error => {
+          console.log( error );
           console.log( 'Preview promise was rejected.' );
           promises.xml .then( design => {            
             import( './legacy/dynamic.js' )
