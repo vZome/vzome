@@ -306,7 +306,7 @@ class JavaDomNodeList
   item( i )
   {
     const node = this.nativeNodeList[ i ];
-    if ( node.nodeType === 1 )
+    if ( node.tagName )
       return new JavaDomElement( node )
     else
       return node

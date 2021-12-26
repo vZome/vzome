@@ -21,7 +21,7 @@ esbuild.buildSync( {
   bundle: true,
   splitting: false,
   // minify: true,
-  // sourcemap: false,
+  sourcemap: true,
   loader: { '.vef': 'dataurl' },
   outdir: 'dist/modules'
 } );
