@@ -2,9 +2,9 @@
 
 const promises = {};
 
-const convertPreview = ( preview, sceneListener ) =>
+const convertScene = preview =>
 {
-  let { lights, camera, shapes, instances, embedding, orientations } = preview
+  let { lights, camera, embedding } = preview
   
   const dlights = lights.directionalLights.map( ({ direction, color }) => {
     const { x, y, z } = direction
@@ -21,9 +21,12 @@ const convertPreview = ( preview, sceneListener ) =>
     fov: fieldOfView,
     position: lookAt.map( (e,i) => e - viewDistance * lookDir[ i ] ),
   }
-  
-  sceneListener.initialized( { lighting, camera, embedding } );
+  return { lighting, camera, embedding };
+}
 
+const convertGeometry = preview =>
+{
+  let { shapes, instances, orientations } = preview
   const shapesDict = {}
   shapes.map( shape => {
     shapesDict[ shape.id ] = shape;
@@ -41,7 +44,7 @@ const convertPreview = ( preview, sceneListener ) =>
     shapesDict[ shape ].instances.push( instance );
     // sceneListener.instanceAdded( instance );
   });
-  sceneListener.initialized( { shapes: shapesDict } );
+  return { shapes: shapesDict }
 }
 
 onmessage = async function( e )
@@ -76,13 +79,22 @@ onmessage = async function( e )
       promises.text
         .then( text => this.postMessage( { type: "TEXT_FETCHED", payload: text } ) );
       promises.preview
-        .then( preview => convertPreview( preview, sceneListener ) )
+        .then( preview => {
+          sceneListener.initialized( convertScene( preview ) );
+          sceneListener.initialized( convertGeometry( preview ) );
+        } )
         .catch( error => {
           console.log( error );
           console.log( 'Preview promise was rejected.' );
           promises.xml .then( design => {            
             import( './legacy/dynamic.js' )
-              .then( module => module .interpretAndRender( design, sceneListener ) );
+              .then( module => {
+                const { renderer, camera, lighting } = design;
+                const { embedding } = renderer;
+                camera.fov = 0.33915263; // WORKAROUND
+                sceneListener.initialized( { lighting, camera, embedding } );
+                sceneListener.initialized( module .interpretAndRender( design ) );
+              });
           } );
          } );
       break;

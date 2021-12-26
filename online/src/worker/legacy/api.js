@@ -77,7 +77,7 @@ export const cloneMesh = ( { shown, selected, hidden, groups=[] } ) =>
 
 export const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
 
-export const interpret = async ( action, mesh, edit, stack=[], recordSnapshot ) =>
+export const interpret = ( action, mesh, edit, stack=[], recordSnapshot ) =>
 {
   // const nextTask = () => {
   //     return new Promise( res => setTimeout( res ) );
@@ -119,22 +119,22 @@ export const interpret = async ( action, mesh, edit, stack=[], recordSnapshot ) 
     }
   }
 
-  const conTinue = async () =>
+  const conTinue = () =>
   {
     let stepped;
     do {
-      stepped = await stepOut();
+      stepped = stepOut();
       // await nextTask();
     } while ( stepped !== Step.DONE );
   }
 
-  const stepOver = async () =>
+  const stepOver = () =>
   {
     const stepped = step();
     switch ( stepped ) {
 
       case Step.IN:
-        await stepOut();
+        stepOut();
         return Step.OVER;
     
       default:
@@ -142,11 +142,11 @@ export const interpret = async ( action, mesh, edit, stack=[], recordSnapshot ) 
     }
   }
 
-  const stepOut = async () =>
+  const stepOut = () =>
   {
     let stepped;
     do {
-      stepped = await stepOver();
+      stepped = stepOver();
       // await nextTask();
     } while ( stepped !== Step.OUT && stepped !== Step.DONE );
     return stepped;
@@ -155,20 +155,20 @@ export const interpret = async ( action, mesh, edit, stack=[], recordSnapshot ) 
   switch ( action ) {
 
     case Step.IN:
-      await step();
+      step();
       break;
   
     case Step.OVER:
-      await stepOver();
+      stepOver();
       break;
   
     case Step.OUT:
-      await stepOut();
+      stepOut();
       break;
   
     case Step.DONE:
     default:
-      await conTinue();
+      conTinue();
       break;
   }
 }
@@ -243,9 +243,11 @@ export const shapeMesh = ( shapes, shapedInstances, shown, selected, cachingShap
     return {};
 }
 
-export const interpretAndRender = ( design, sceneListener ) =>
+export const interpretAndRender = design =>
 {
+  const { targetEdit, firstEdit, batchRender } = design;
   const shapes = {};
+
   const renderingListener = ({
     manifestationAdded: rm => {
       const instance = normalizeRenderedManifestation( rm );
@@ -272,16 +274,6 @@ export const interpretAndRender = ( design, sceneListener ) =>
       console.log( 'colorChanged' );
     },
   });
-  const { targetEdit, firstEdit, renderer, camera, lighting, batchRender } = design;
-  const { embedding } = renderer;
-
-  // WORKAROUND
-  camera.fov = 0.33915263,
-
-  sceneListener.initialized( { lighting, camera, embedding } );
-
-  // Not attached while we're doing batchRender
-  // renderedModel .addListener( renderingListener );
 
   const record = ( mesh, id ) => {
     if ( id === targetEdit ) {
@@ -289,10 +281,8 @@ export const interpretAndRender = ( design, sceneListener ) =>
     }
   }
   const unusedMesh = {};
-  interpret( Step.DONE, unusedMesh, firstEdit, [], record )
-    .then( () => {
-      batchRender( renderingListener );
-      Object.values( shapes ).map( shape => shape.instances = Object.values( shape.instances ) );
-      sceneListener.initialized( { shapes } );
-    } );
+  interpret( Step.DONE, unusedMesh, firstEdit, [], record );
+  batchRender( renderingListener );
+  Object.values( shapes ).map( shape => shape.instances = Object.values( shape.instances ) );
+  return { shapes };
 }
