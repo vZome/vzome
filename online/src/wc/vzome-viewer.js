@@ -1,6 +1,6 @@
 // babel workaround
 import "regenerator-runtime/runtime";
-import { loadDesign } from "../ui/viewer/design.js";
+import { createController } from "../ui/viewer/controller.js";
 
 import { vZomeViewerCSS } from "./vzome-viewer.css";
 
@@ -8,7 +8,7 @@ export class VZomeViewer extends HTMLElement {
   #root;
   #stylesMount;
   #container;
-  #design;
+  #controller;
   constructor() {
     super();
     this.#root = this.attachShadow({ mode: "open" });
@@ -16,6 +16,8 @@ export class VZomeViewer extends HTMLElement {
     this.#root.appendChild(document.createElement("style")).textContent = vZomeViewerCSS;
     this.#stylesMount = document.createElement("div");
     this.#container = this.#root.appendChild( this.#stylesMount );
+
+    this.#controller = createController( { viewOnly: true } );
 
     if ( this.hasAttribute( 'src' ) ) {
       const url = this.getAttribute( 'src' );
@@ -25,7 +27,7 @@ export class VZomeViewer extends HTMLElement {
         alert( `Unrecognized file name: ${url}` );
       }
       else
-        this.#design = loadDesign( url );
+        this.#controller .loadDesign( url );
     }
   }
 
@@ -41,7 +43,7 @@ export class VZomeViewer extends HTMLElement {
   #render() {
     import( '../ui/viewer/index.jsx' )
       .then( module => {
-        this.#reactElement = module.render( this.#design, this.#container, this.#stylesMount, this.src );
+        this.#reactElement = module.render( this.#controller, this.#container, this.#stylesMount, this.src );
       })
   }
 

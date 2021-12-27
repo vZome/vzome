@@ -1,15 +1,12 @@
 
-export const loadDesign = url =>
+export const createController = ( { viewOnly=true } = {} ) =>
 {
-  let source = { url };
+  const worker = new Worker( '/modules/vzome-worker-static.js', { type: "module" } );
+
+  let source = {};
   let scene = {};
 
-  const worker = new Worker( '/modules/vzome-worker-static.js', { type: "module" } );
-  if ( url ) {
-    worker.postMessage( { type: "URL_PROVIDED", payload: url } );
-  }
-
-  const connectListeners = ( sourceChanged, sceneChanged ) =>
+  const connectView = ( sourceChanged, sceneChanged ) =>
   {
     worker.onmessage = function(e) {
       console.log( `Message received from worker: ${e.data.type}` );
@@ -60,10 +57,27 @@ export const loadDesign = url =>
           break;
       }
     }
-    worker.postMessage( { type: "RENDERER_PREPARED" } );
+    worker.postMessage( { type: "VIEW_CONNECTED" } );
   }
 
-  return {
-    connectListeners,
-  };
+  const enableView = () =>
+  {
+    worker.postMessage( { type: "VIEW_CONNECTED" } );
+  }
+
+  const fetchDesignUrl = url =>
+  {
+    if ( url ) {
+      source.url = url;
+      worker.postMessage( { type: "URL_PROVIDED", payload: { url, viewOnly } } );
+    }
+  }
+
+  const fetchDesignFile = file =>
+  {
+    source.url = "file://";
+    worker.postMessage( { type: "FILE_PROVIDED", payload: file } );
+  }
+
+  return { fetchDesignUrl, fetchDesignFile, connectView, enableView };
 }

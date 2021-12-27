@@ -44,7 +44,8 @@ const DialogContent = withStyles((theme) => ({
   },
 }))(MuiDialogContent)
 
-export default function AboutDialog() {
+export const AboutDialog = () =>
+{
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -85,10 +86,8 @@ export default function AboutDialog() {
             on <Link target="_blank" rel="noopener" href="https://www.facebook.com/vZome">Facebook</Link> or <Link target="_blank" rel="noopener" href="https://twitter.com/vZome">Twitter</Link>.
           </Typography>
           <Typography gutterBottom>
-            Not all vZome designs will load successfully yet, unfortunately.
-            It turns out to be a long and painstaking process to port all of the vZome
-            code to the web, and I still have some work to do.
-            If you have a vZome design (in the golden field) that does not load
+            Unfortunately, some vZome designs will not load successfully.
+            If you have a vZome design that does not load
             here, <Link target="_blank" rel="noopener" href="mailto:info@vzome.com">send me the vZome file</Link>,
             and I can prioritize the necessary fixes.
           </Typography>

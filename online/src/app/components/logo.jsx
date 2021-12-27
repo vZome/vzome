@@ -4,7 +4,8 @@ import SvgIcon from '@material-ui/core/SvgIcon'
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 
-export default function VZomeLogo() {
+export const VZomeLogo = () =>
+{
   return (
   <IconButton
     component={Link}

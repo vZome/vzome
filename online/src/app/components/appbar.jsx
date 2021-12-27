@@ -5,11 +5,9 @@ import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
 
-import AboutButton from './about.jsx'
-import OpenButton from './folder.jsx'
-import ShareButton from './share.jsx'
-import VZomeLogo from './logo.jsx'
-import { DesignsSelect } from './designs.jsx'
+import { AboutDialog } from './about.jsx'
+import { OpenMenu } from './folder.jsx'
+import { VZomeLogo } from './logo.jsx'
 // import UndoRedoButtons from './undoredo.jsx'
 
 const useStyles = makeStyles((theme) => ({
@@ -25,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const VZomeAppBar = ( { article=false } ) =>
+export const VZomeAppBar = ( { openUrl, openFile } ) =>
 {
   const classes = useStyles()
 
@@ -37,13 +35,11 @@ export const VZomeAppBar = ( { article=false } ) =>
           <Typography variant="h5" className={classes.title}>
             vZome <Box component="span" fontStyle="oblique">Online</Box>
           </Typography>
-          { article? null :
+          { !!openUrl &&
             <>
               {/* <UndoRedoButtons/> */}
-              <DesignsSelect/>
-              {/* <OpenButton className={classes.open}/>
-              <ShareButton/>
-              <AboutButton/> */}
+              <OpenMenu className={classes.open} openUrl={openUrl} openFile={openFile} />
+              <AboutDialog/>
             </> }
         </Toolbar>
       </AppBar>

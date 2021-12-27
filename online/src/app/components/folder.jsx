@@ -6,16 +6,8 @@ import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import Divider from '@material-ui/core/Divider';
-import { connect } from 'react-redux'
 
 import UrlDialog from './webloader.jsx'
-import { fetchFileText } from '../bundles/files.js'
-import { openDesign } from '../bundles/designs.js'
-import { fetchUrlText } from '../../ui/viewer/hooks.js'
-
-const openDesignUrl = url => openDesign( fetchUrlText( url ), url )
-
-const openDesignFile = file => openDesign( fetchFileText( file ), file.name )
 
 const models = [
   {
@@ -56,13 +48,9 @@ const models = [
   },
 ]
 
-let url = "./models/vZomeLogo.vZome"
-const urlParams = new URLSearchParams( window.location.search );
-if ( urlParams.has( "url" ) ) {
-  url = decodeURI( urlParams.get( "url" ) )
-}
+const url = "/models/vZomeLogo.vZome"
 
-const DesignsMenu = ( { openUrl, openFile } ) =>
+export const OpenMenu = ( { openUrl, openFile } ) =>
 {
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [showDialog, setShowDialog] = React.useState(false)
@@ -80,7 +68,7 @@ const DesignsMenu = ( { openUrl, openFile } ) =>
   const handleSelectModel = model => {
     setAnchorEl(null)
     const { url, key } = model
-    openUrl( url || `./models/${key}.vZome`, key )
+    openUrl( url || `/models/${key}.vZome`, key )
   }
 
   const handleClose = () => {
@@ -125,14 +113,3 @@ const DesignsMenu = ( { openUrl, openFile } ) =>
   )
 }
 
-const select = (state) => ({
-  // TODO make a real selector!
-  enabled: ! state.workingPlane,
-})
-
-const boundEventActions = {
-  openUrl : openDesignUrl,
-  openFile : openDesignFile,
-}
-
-export default connect( select, boundEventActions )( DesignsMenu )

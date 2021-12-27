@@ -1,15 +1,14 @@
 
-import React, { useState } from 'react'
+import React from 'react'
 
 // import { selectionToggled } from '../bundles/mesh.js'
 // import * as planes from '../bundles/planes.js'
-import * as designs from '../bundles/designs.js'
 import { DesignViewer } from '../../ui/viewer/index.jsx'
 import BuildPlane from './buildplane.jsx'
 
-const select = ( state ) =>
-{
-  const scene = ( state.designs && designs.selectScene( state ) ) || state.scene
+// const select = ( state ) =>
+// {
+//   const scene = ( state.designs && designs.selectScene( state ) ) || state.scene
   // const shown = mesh && new Map( mesh.shown )
   // if ( workingPlane && workingPlane.enabled && workingPlane.endPt ) {
   //   const { position, endPt, buildingStruts } = workingPlane
@@ -22,11 +21,11 @@ const select = ( state ) =>
   //       shown.set( previewStrut.id, previewStrut )
   //   }
   // }
-  return {
-    scene,
-    clickable: !!state.designs,
-  }
-}
+  //   return {
+  //     scene,
+  //     clickable: !!state.designs,
+  //   }
+  // }
 
 // const isLeftMouseButton = e =>
 // {
@@ -40,8 +39,7 @@ const select = ( state ) =>
 
 export const DesignEditor = ( props ) =>
 {
-  const { startGridHover, stopGridHover, workingPlane } = props
-  let { design } = props
+  const { controller, startGridHover, stopGridHover, workingPlane } = props
 
   // const { selectionToggler, shapeClick, bkgdClick, startBallHover, stopBallHover, clickable } = props
   // const focus = workingPlane && workingPlane.enabled && workingPlane.buildingStruts && workingPlane.position
@@ -68,11 +66,10 @@ export const DesignEditor = ( props ) =>
   //   }
   // }
 
-  return ( design?
-    <DesignViewer design={design} >
+  return (
+    <DesignViewer controller={controller} >
       { workingPlane && workingPlane.enabled &&
           <BuildPlane config={workingPlane} {...{ startGridHover, stopGridHover }} /> }
     </DesignViewer>
-    : null
   )
 }

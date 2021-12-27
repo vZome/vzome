@@ -18,13 +18,13 @@ export const fetchUrlText = async ( url ) =>
   return response.text()
 }
 
-export const useVZomeDesign = ( design ) =>
+export const useDesignController = ( controller ) =>
 {
   const [ scene, setScene ] = useState( null )
   const [ source, setSource ] = useState( null )
   useEffect( () => {
-    design.connectListeners( setSource, setScene );
-  }, [] )
+    controller && controller.connectView( setSource, setScene );
+  }, [controller] )
   // We have text if we could find the vZome file,
   //  and a scene, either because there was a 3D preview JSON next to it,
   //  or because we parsed, interpreted, and rendered the vZome file.

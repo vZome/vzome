@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux'
 
 import { withStyles, makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -131,7 +130,7 @@ const StyledTreeItem = props => {
   );
 }
 
-const Debugger = ( { data, current, branches, designName, stepIn, stepOut, stepOver, run } )  =>
+export const Debugger = ( { data, current, branches, designName, stepIn, stepOut, stepOver, run } )  =>
 {
   const [ edit, setEdit ] = useState( null )
 
@@ -261,4 +260,3 @@ const boundEventActions = {
   run: dbugger.stepper.done,
 }
 
-export default connect( select, boundEventActions )( Debugger )

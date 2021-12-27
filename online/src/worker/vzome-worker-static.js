@@ -47,7 +47,7 @@ const convertGeometry = preview =>
   return { shapes: shapesDict }
 }
 
-onmessage = async function( e )
+onmessage = function( e )
 {
   const sceneListener = {
     initialized: payload => this.postMessage( { type: "SCENE_INITIALIZED", payload } ),
@@ -60,22 +60,30 @@ onmessage = async function( e )
   switch ( e.data.type ) {
 
     case "URL_PROVIDED": {
-      const url = e.data.payload;
+      const { url, viewOnly } = e.data.payload;
       // TODO: think about failure cases!  What is the contract for the worker?
       promises.text = fetchUrlText( url ); // save the promise
       const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
       promises.preview = fetchUrlText( previewUrl )
         .then( text => JSON.parse( text ) )
         .catch( () => {
-          import( './legacy/dynamic.js' )
-            .then( module => {
-              promises.xml = promises.text .then( xml => module .parse( xml ) );
-            })
+          return import( './legacy/dynamic.js' )
+        })
+        .then( module => {
+          promises.xml = promises.text .then( xml => module .parse( xml ) );
         })
       break;
     }
+
+    case "FILE_PROVIDED": {
+      const file = e.data.payload;
+      // TODO: think about failure cases!  What is the contract for the worker?
+      promises.text = fetchFileText( file ); // save the promise
+      promises.preview = Promise.reject();
+      break;
+    }
   
-    case "RENDERER_PREPARED": {
+    case "VIEW_CONNECTED": {
       promises.text
         .then( text => this.postMessage( { type: "TEXT_FETCHED", payload: text } ) );
       promises.preview
@@ -92,7 +100,7 @@ onmessage = async function( e )
                 const { renderer, camera, lighting } = design;
                 const { embedding } = renderer;
                 camera.fov = 0.33915263; // WORKAROUND
-                sceneListener.initialized( { lighting, camera, embedding } );
+                sceneListener.initialized( { lighting, camera, embedding, shapes: {} } );
                 sceneListener.initialized( module .interpretAndRender( design ) );
               });
           } );
@@ -106,7 +114,7 @@ onmessage = async function( e )
   }
 }
 
-export const fetchUrlText = async ( url ) =>
+const fetchUrlText = async ( url ) =>
 {
   let response
   try {
@@ -121,5 +129,23 @@ export const fetchUrlText = async ( url ) =>
   }
   return response.text()
 }
+
+const fetchFileText = selected =>
+{
+  const temporaryFileReader = new FileReader()
+
+  return new Promise( (resolve, reject) => {
+    temporaryFileReader.onerror = () => {
+      temporaryFileReader.abort()
+      reject( temporaryFileReader.error )
+    }
+
+    temporaryFileReader.onload = () => {
+      resolve( temporaryFileReader.result )
+    }
+    temporaryFileReader.readAsText( selected )
+  })
+}
+
 
 // console.log( 'The worker loaded!' );

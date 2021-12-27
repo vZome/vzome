@@ -5,7 +5,7 @@ import { StylesProvider, jssPreset } from '@material-ui/styles';
 import { create } from 'jss';
 import { ShapedGeometry } from './geometry.jsx'
 import { DesignCanvas } from './designcanvas.jsx'
-import { useVZomeDesign } from './hooks.js'
+import { useDesignController } from './hooks.js'
 import IconButton from '@material-ui/core/IconButton'
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded'
 
@@ -25,9 +25,9 @@ const download = source =>
   document.body.removeChild( element )
 }
 
-export const DesignViewer = ( { design } ) =>
+export const DesignViewer = ( { controller } ) =>
 {
-  const { source, scene } = useVZomeDesign( design );
+  const { source, scene } = useDesignController( controller );
   return (
     <div style={ { display: 'flex', height: '100%', position: 'relative' } }>
       { scene &&
@@ -48,7 +48,7 @@ export const DesignViewer = ( { design } ) =>
   )
 }
 
-export const render = ( design, container, stylesMount, url ) =>
+export const render = ( controller, container, stylesMount, url ) =>
 {
   if ( url === null || url === "" ) {
     ReactDOM.unmountComponentAtNode( container );
@@ -56,7 +56,7 @@ export const render = ( design, container, stylesMount, url ) =>
   }
 
   // TODO: Can we handle canvas resizing using `ResizeObserver` without modifying `vZome` or recreating the element constantly?
-  const viewerElement = React.createElement( DesignViewer, { design } );
+  const viewerElement = React.createElement( DesignViewer, { controller } );
 
   // We need JSS to inject styles on our shadow root, not on the document head.
   // I found this solution here:
