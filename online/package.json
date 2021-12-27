@@ -48,6 +48,7 @@
   },
   "devDependencies": {
     "@snowpack/plugin-webpack": "^2.3.0",
+    "eslint": "^8.5.0",
     "snowpack": "^3.0.13"
   }
 }

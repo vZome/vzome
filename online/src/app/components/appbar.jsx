@@ -9,8 +9,8 @@ import AboutButton from './about.jsx'
 import OpenButton from './folder.jsx'
 import ShareButton from './share.jsx'
 import VZomeLogo from './logo.jsx'
-import DesignsSelect from './designs.jsx'
-import UndoRedoButtons from './undoredo.jsx'
+import { DesignsSelect } from './designs.jsx'
+// import UndoRedoButtons from './undoredo.jsx'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const VZomeAppBar = ( { article=false } ) =>
+export const VZomeAppBar = ( { article=false } ) =>
 {
   const classes = useStyles()
 
@@ -39,16 +39,14 @@ const VZomeAppBar = ( { article=false } ) =>
           </Typography>
           { article? null :
             <>
-              <UndoRedoButtons/>
+              {/* <UndoRedoButtons/> */}
               <DesignsSelect/>
-              <OpenButton className={classes.open}/>
+              {/* <OpenButton className={classes.open}/>
               <ShareButton/>
-              <AboutButton/>
+              <AboutButton/> */}
             </> }
         </Toolbar>
       </AppBar>
     </div>
   )
 }
-
-export default VZomeAppBar

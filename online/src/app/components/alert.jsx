@@ -1,11 +1,10 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import { clearAlert } from '../bundles/alerts.js'
 import { Alert, AlertTitle } from '@material-ui/lab';
 import Snackbar from '@material-ui/core/Snackbar';
 
 
-const ErrorAlert = ( { message, dismissed } ) =>
+export const ErrorAlert = ( { message, dismissed } ) =>
 {
   return (
     <Snackbar open={!!message} onClose={dismissed}
@@ -26,4 +25,3 @@ const boundEventActions = {
   dismissed : clearAlert
 }
 
-export default connect( select, boundEventActions )( ErrorAlert )

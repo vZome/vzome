@@ -1,20 +1,15 @@
 
 import React, { useState } from 'react'
-import { connect } from 'react-redux'
 
-import { selectionToggled } from '../bundles/mesh.js'
-import * as planes from '../bundles/planes.js'
+// import { selectionToggled } from '../bundles/mesh.js'
+// import * as planes from '../bundles/planes.js'
 import * as designs from '../bundles/designs.js'
-import { DesignViewer } from '../../wc/components/designviewer.jsx'
-import BuildPlane from '../../wc/components/buildplane.jsx'
-import { getDefaultRenderer } from '../../wc/legacy/api.js'
+import { DesignViewer } from '../../ui/viewer/index.jsx'
+import BuildPlane from './buildplane.jsx'
 
 const select = ( state ) =>
 {
   const scene = ( state.designs && designs.selectScene( state ) ) || state.scene
-  const mesh = state.designs && designs.selectMesh( state )
-  const renderer = state.designs && designs.selectRenderer( state )
-  const field = state.designs && designs.selectField( state )
   // const shown = mesh && new Map( mesh.shown )
   // if ( workingPlane && workingPlane.enabled && workingPlane.endPt ) {
   //   const { position, endPt, buildingStruts } = workingPlane
@@ -29,21 +24,8 @@ const select = ( state ) =>
   // }
   return {
     scene,
-    renderer,
-    mesh,
-    field,
     clickable: !!state.designs,
   }
-}
-
-const boundEventActions = {
-  selectionToggler : selectionToggled,
-  startGridHover: planes.doStartGridHover,
-  stopGridHover: planes.doStopGridHover,
-  startBallHover: planes.doStartBallHover,
-  stopBallHover: planes.doStopBallHover,
-  shapeClick: planes.doBallClick,
-  bkgdClick: planes.doBackgroundClick,
 }
 
 // const isLeftMouseButton = e =>
@@ -56,18 +38,11 @@ const boundEventActions = {
 //   return false
 // }
 
-const DesignEditor = ( props ) =>
+export const DesignEditor = ( props ) =>
 {
   const { startGridHover, stopGridHover, workingPlane } = props
-  const [ defaultRenderers ] = useState( {} )
-  let { mesh, renderer, field, scene } = props
-  if ( !renderer ) {
-    renderer = defaultRenderers[ field.name ]
-  }
-  if ( !renderer ) {
-    renderer = getDefaultRenderer( field )
-    defaultRenderers[ field.name ] = renderer
-  }
+  let { design } = props
+
   // const { selectionToggler, shapeClick, bkgdClick, startBallHover, stopBallHover, clickable } = props
   // const focus = workingPlane && workingPlane.enabled && workingPlane.buildingStruts && workingPlane.position
   // const atFocus = id => focus && ( id === JSON.stringify(focus) )
@@ -93,12 +68,11 @@ const DesignEditor = ( props ) =>
   //   }
   // }
 
-  return (
-    <DesignViewer {...{ scene, mesh, renderer }} >
+  return ( design?
+    <DesignViewer design={design} >
       { workingPlane && workingPlane.enabled &&
           <BuildPlane config={workingPlane} {...{ startGridHover, stopGridHover }} /> }
     </DesignViewer>
+    : null
   )
 }
-
-export default connect( select, boundEventActions )( DesignEditor )

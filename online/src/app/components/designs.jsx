@@ -1,8 +1,5 @@
 
 import React from 'react'
-import { connect } from 'react-redux'
-
-import * as designFns from '../bundles/designs.js'
 
 import { makeStyles, withStyles } from '@material-ui/core/styles'
 import MenuItem from '@material-ui/core/MenuItem'
@@ -53,13 +50,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const DesignsSelect = ( { designs, current, doSelectModel } ) =>
+export const DesignsSelect = ( { designs, current, switchDesign } ) =>
 {
   const classes = useStyles()
 
   const handleChange = event =>
   {
-    doSelectModel( event.target.value )
+    switchDesign( event.target.value )
   }
 
   if ( ! designs )
@@ -80,19 +77,3 @@ const DesignsSelect = ( { designs, current, doSelectModel } ) =>
     </FormControl>
   )
 }
-
-
-const select = ( state ) =>
-{
-  const { designs } = state
-  return {
-    designs: designs && designs.data,
-    current: designs && designs.current
-  }
-}
-
-const boundEventActions = {
-  doSelectModel: designFns.switchModel,
-}
-
-export default connect( select, boundEventActions )( DesignsSelect )

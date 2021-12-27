@@ -1,7 +1,7 @@
 
 import * as mesh from '../bundles/mesh.js'
 import * as designs from '../bundles/designs.js'
-import { createInstance } from '../../wc/legacy/adapter.js'
+import { createInstance } from '../../worker/legacy/adapter.js'
 
 export default ( start, end ) => ( dispatch, getState ) =>
 {

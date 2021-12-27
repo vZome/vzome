@@ -8,7 +8,7 @@ import Divider from '@material-ui/core/Divider'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 
-import VZomeAppBar from './components/appbar.jsx'
+import { VZomeAppBar } from './components/appbar.jsx'
 import { DesignViewer } from '../ui/viewer/index.jsx'
 
 const metadata = {

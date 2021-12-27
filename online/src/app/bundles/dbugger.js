@@ -3,7 +3,7 @@ import * as designs from '../bundles/designs.js'
 // import { ActionCreators } from 'redux-undo';
 import * as meshes from './mesh.js'
 import { showAlert } from './alerts.js'
-import { interpret, Step } from '../../wc/legacy/api.js'
+import { interpret, Step } from '../../worker/legacy/api.js'
 import { ActionCreators as UndoActionCreators } from 'redux-undo'
 
 export const reducer = ( state = {}, action ) =>

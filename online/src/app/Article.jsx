@@ -7,7 +7,7 @@ import Link from '@material-ui/core/Link'
 
 import { DesignViewer } from '../ui/viewer/index.jsx'
 
-import VZomeAppBar from './components/appbar.jsx'
+import { VZomeAppBar } from './components/appbar.jsx'
 
 const useStyles = makeStyles( (theme) => ({
   paper: {
