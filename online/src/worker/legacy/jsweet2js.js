@@ -333,11 +333,17 @@ export class JavaDomElement
 
   getTextContent()
   {
-    return this.nativeElement.textContent
+    const kids = this.nativeElement.children;
+    if ( kids.length === 1 && ( typeof kids[ 0 ] === 'string' ) )
+      return kids[ 0 ];
+    return null;
   }
 
   getChildNodes()
   {
+    const kids = this.nativeElement.children;
+    if ( kids.length === 1 && ( typeof kids[ 0 ] === 'string' ) )
+      return null;
     return new JavaDomNodeList( this.nativeElement.children )
   }
 

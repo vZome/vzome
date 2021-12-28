@@ -16,3 +16,13 @@
 
  - try module workers
  
+
+ 
+ - implement glowChanged
+ - figure out hybrid state model for editor
+ - fix 5cell Article and BHall usage of SceneViewer (no worker!)
+ - add "edit in vZome Online" gesture to viewer
+ - remove view capability from Online?  must remain backward-compatible
+ - scene instances as object not array? (optimization)
+
+

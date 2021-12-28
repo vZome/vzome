@@ -607,8 +607,10 @@ const legacyCommandFactory = ( createEditor, className ) => ( config ) =>
 const assignIds = ( txmlElement, id=':' ) => {
   txmlElement.id = id;
   txmlElement.children.map( (child,index) => {
-    child.index = index;
-    assignIds( child, `${id}${index}:` )
+    if ( child instanceof Object ) {
+      child.index = index;
+      assignIds( child, `${id}${index}:` )
+    }
   });
   return txmlElement
 }
@@ -666,6 +668,7 @@ const createParser = ( createDocument ) => ( xmlText ) =>
   // const domDoc = new DOMParser().parseFromString( xmlText, "application/xml" );
 
   const domDoc = txml.parse( xmlText /*, options */ );
+  console.log( JSON.stringify( domDoc, null, 2 ) );
 
   let vZomeRoot = new JavaDomElement( domDoc.filter( n => n.tagName === 'vzome:vZome' )[ 0 ] );
 
