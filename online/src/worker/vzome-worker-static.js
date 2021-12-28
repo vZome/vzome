@@ -2,6 +2,8 @@
 
 const promises = {};
 
+let editing = false;
+
 const convertScene = preview =>
 {
   let { lights, camera, embedding } = preview
@@ -62,48 +64,68 @@ onmessage = function( e )
     case "URL_PROVIDED": {
       const { url, viewOnly } = e.data.payload;
       // TODO: think about failure cases!  What is the contract for the worker?
+      editing = !viewOnly;
+      console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${editing? "editing " : "viewing "} ${url}` );
       promises.text = fetchUrlText( url ); // save the promise
-      const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
-      promises.preview = fetchUrlText( previewUrl )
-        .then( text => JSON.parse( text ) )
+
+      if ( viewOnly ) {
+        const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
+        promises.json = fetchUrlText( previewUrl )
+          .then( text => JSON.parse( text ) );
+        // The resolved json promise will be used after the view is connected.
+      } else { // editing
+        promises.json = Promise.reject();
+      }
+
+      // If it is rejected (for either reason), we want to immediately start parsing the xml.
+      promises.json
         .catch( () => {
+          console.log( 'Parsing xml.' );
           return import( './legacy/dynamic.js' )
         })
         .then( module => {
           promises.xml = promises.text .then( xml => module .parse( xml ) );
-        })
+        });
       break;
     }
 
     case "FILE_PROVIDED": {
       const file = e.data.payload;
+      editing = true;
+      console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% editing file ${file.name}` );
       // TODO: think about failure cases!  What is the contract for the worker?
       promises.text = fetchFileText( file ); // save the promise
-      promises.preview = Promise.reject();
+      promises.json = Promise.reject();
+      import( './legacy/dynamic.js' )
+        .then( module => {
+          promises.xml = promises.text .then( xml => module .parse( xml ) );
+        })
       break;
     }
   
     case "VIEW_CONNECTED": {
       promises.text
         .then( text => this.postMessage( { type: "TEXT_FETCHED", payload: text } ) );
-      promises.preview
+
+      promises.json
         .then( preview => {
           sceneListener.initialized( convertScene( preview ) );
           sceneListener.initialized( convertGeometry( preview ) );
-        } )
-        .catch( error => {
-          console.log( error );
-          console.log( 'Preview promise was rejected.' );
-          promises.xml .then( design => {            
-            import( './legacy/dynamic.js' )
-              .then( module => {
-                const { renderer, camera, lighting } = design;
-                const { embedding } = renderer;
-                camera.fov = 0.33915263; // WORKAROUND
-                sceneListener.initialized( { lighting, camera, embedding, shapes: {} } );
-                sceneListener.initialized( module .interpretAndRender( design ) );
-              });
-          } );
+        } );
+
+      promises.json
+        .catch( () => {
+          import( './legacy/dynamic.js' )
+            .then( module => {
+              promises.xml
+                .then( design => {
+                  const { renderer, camera, lighting } = design;
+                  const { embedding } = renderer;
+                  camera.fov = 0.33915263; // WORKAROUND
+                  sceneListener.initialized( { lighting, camera, embedding, shapes: {} } );
+                  sceneListener.initialized( module .interpretAndRender( design ) );
+                } )
+            } )
          } );
       break;
     }

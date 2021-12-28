@@ -22,9 +22,6 @@ import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 
-import * as designFns from '../bundles/designs.js'
-import * as dbugger from '../bundles/dbugger.js'
-
 const StyledTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: theme.palette.common.black,
@@ -239,24 +236,24 @@ export const Debugger = ( { data, current, branches, designName, stepIn, stepOut
 }
 
 
-const select = ( state ) =>
-{
-  const dbugger = state.designs && designFns.selectDebugger( state )
-  if ( ! dbugger ) {
-    return {} // document had an unknown field, or couldn't parse
-  }
-  return {
-    data: dbugger.source,
-    current: dbugger && dbugger.nextEdit && dbugger.nextEdit.id(),
-    branches: dbugger && dbugger.branchStack && dbugger.branchStack.map( ({ branch }) => branch.id() ),
-    designName: dbugger && designFns.selectDesignName( state )
-  }
-}
+// const select = ( state ) =>
+// {
+//   const dbugger = state.designs && designFns.selectDebugger( state )
+//   if ( ! dbugger ) {
+//     return {} // document had an unknown field, or couldn't parse
+//   }
+//   return {
+//     data: dbugger.source,
+//     current: dbugger && dbugger.nextEdit && dbugger.nextEdit.id(),
+//     branches: dbugger && dbugger.branchStack && dbugger.branchStack.map( ({ branch }) => branch.id() ),
+//     designName: dbugger && designFns.selectDesignName( state )
+//   }
+// }
 
-const boundEventActions = {
-  stepIn : dbugger.stepper.in,
-  stepOver: dbugger.stepper.over,
-  stepOut: dbugger.stepper.out,
-  run: dbugger.stepper.done,
-}
+// const boundEventActions = {
+//   stepIn : dbugger.stepper.in,
+//   stepOver: dbugger.stepper.over,
+//   stepOut: dbugger.stepper.out,
+//   run: dbugger.stepper.done,
+// }
 

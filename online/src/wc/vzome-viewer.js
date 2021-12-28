@@ -27,7 +27,7 @@ export class VZomeViewer extends HTMLElement {
         alert( `Unrecognized file name: ${url}` );
       }
       else
-        this.#controller .loadDesign( url );
+        this.#controller .fetchDesignUrl( url );
     }
   }
 

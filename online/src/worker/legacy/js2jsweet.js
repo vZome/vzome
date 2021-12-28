@@ -668,7 +668,6 @@ const createParser = ( createDocument ) => ( xmlText ) =>
   // const domDoc = new DOMParser().parseFromString( xmlText, "application/xml" );
 
   const domDoc = txml.parse( xmlText /*, options */ );
-  console.log( JSON.stringify( domDoc, null, 2 ) );
 
   let vZomeRoot = new JavaDomElement( domDoc.filter( n => n.tagName === 'vzome:vZome' )[ 0 ] );
 
