@@ -5,6 +5,13 @@ export const createController = ( setWaiting, { viewOnly=true } = {} ) =>
 
   let source = {};
   let scene = {};
+  let setCanRedo, setCanUndo;
+
+  const connectHistory = ( canUndoSetter, canRedoSetter ) =>
+  {
+    setCanUndo = canUndoSetter;
+    setCanRedo = canRedoSetter;
+  }
 
   const connectView = ( sourceChanged, sceneChanged ) =>
   {
@@ -55,6 +62,13 @@ export const createController = ( setWaiting, { viewOnly=true } = {} ) =>
         case "SCENE_UPDATED":
           setWaiting( false ); // see "event cycle" in components/folder.jsx
           break;
+        
+        case "PROPERTIES_CHANGED": {
+          const { canUndo, canRedo } = e.data.payload;
+          setCanUndo( canUndo );
+          setCanRedo( canRedo );
+          break;
+        }
       
         default:
           console.log( `Unknown message type received from worker: ${JSON.stringify(e.data, null, 2)}` );
@@ -84,5 +98,10 @@ export const createController = ( setWaiting, { viewOnly=true } = {} ) =>
     worker.postMessage( { type: "FILE_PROVIDED", payload: file } );
   }
 
-  return { fetchDesignUrl, fetchDesignFile, connectView, enableView };
+  const doAction = action =>
+  {
+    worker.postMessage( { type: "ACTION_TRIGGERED", payload: action } );
+  }
+
+  return { fetchDesignUrl, fetchDesignFile, connectHistory, connectView, enableView, doAction };
 }

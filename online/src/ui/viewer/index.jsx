@@ -25,7 +25,7 @@ const download = source =>
   document.body.removeChild( element )
 }
 
-export const DesignViewer = ( { controller } ) =>
+export const DesignViewer = ( { controller, children, children3d } ) =>
 {
   const { source, scene } = useDesignController( controller );
   return (
@@ -35,6 +35,7 @@ export const DesignViewer = ( { controller } ) =>
           { scene.shapes &&
             <ShapedGeometry embedding={scene.embedding} shapes={scene.shapes} />
           }
+          {children3d}
         </DesignCanvas>
       }
       { source && source.text &&
@@ -44,6 +45,7 @@ export const DesignViewer = ( { controller } ) =>
           <GetAppRoundedIcon fontSize='medium'/>
         </IconButton>
       }
+      {children}
     </div>
   )
 }

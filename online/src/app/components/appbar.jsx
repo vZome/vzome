@@ -8,7 +8,6 @@ import Box from '@material-ui/core/Box'
 import { AboutDialog } from './about.jsx'
 import { OpenMenu } from './folder.jsx'
 import { VZomeLogo } from './logo.jsx'
-// import UndoRedoButtons from './undoredo.jsx'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,7 +36,6 @@ export const VZomeAppBar = ( { openUrl, openFile } ) =>
           </Typography>
           { !!openUrl &&
             <>
-              {/* <UndoRedoButtons/> */}
               <OpenMenu className={classes.open} openUrl={openUrl} openFile={openFile} />
               <AboutDialog/>
             </> }

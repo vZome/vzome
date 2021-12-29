@@ -4,6 +4,9 @@
 
 
  - restore undo/redo
+ - generalize the controller to just property changes
+
+
  - restore debugger
 
  - debug "vzome-worker-static.js:91 Uncaught (in promise) TypeError: module.parse is not a function"

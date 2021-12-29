@@ -1,12 +1,10 @@
 import React, { useState } from 'react'
 // import logger from 'redux-logger'
-import Grid from '@material-ui/core/Grid'
 
 import { DesignEditor } from './components/designeditor.jsx'
 // import EditMenu from './components/editmenu.jsx'
 import { ErrorAlert } from './components/alert.jsx'
 import { VZomeAppBar } from './components/appbar.jsx'
-import { Debugger } from './components/debugger.jsx'
 import { Spinner } from './components/spinner.jsx';
 import { useEffect } from 'react'
 import { createController } from '../ui/viewer/controller.js';
@@ -20,6 +18,7 @@ const viewOnly = !!url;
 const App = () =>
 {
   const [ controller, setController ] = useState( null );
+  const [ problem, setProblem ] = useState( null );
   const [ waiting, setWaiting ] = useState( false );
 
   const openUrl = url => {
@@ -30,10 +29,10 @@ const App = () =>
    }
   }
   const openFile = file => {
-    console.log( JSON.stringify( file, null, 2 ) );
     if ( controller && file ) {
       controller. fetchDesignFile( file );
       controller. enableView(); // worker won't send the render events without this
+      setWaiting( true ); // see "event cycle" in components/folder.jsx
     }
   }
   useEffect( () => {
@@ -52,21 +51,10 @@ const App = () =>
       <VZomeAppBar openUrl={ !viewOnly && openUrl } openFile={ !viewOnly && openFile } />
       { viewOnly?
         <DesignViewer controller={controller} />
-      : debug ?
-        <div style={{ flex: '1', height: '100%' }}>
-          <Grid id='debug-main' container spacing={0} style={{ height: '100%' }}>
-            <Grid id='debugger-grid-item' item xs={4}>
-              <Debugger controller={controller}/>
-            </Grid>
-            <Grid item xs={8}>
-              <DesignEditor controller={controller}/>
-            </Grid>
-          </Grid>
-        </div>
       :
-        <DesignEditor controller={controller}/>
+        <DesignEditor controller={controller} debug={debug} />
       }
-      <ErrorAlert/> 
+      <ErrorAlert message={problem} dismissed={() => setProblem(null)} /> 
       {/* <EditMenu/>  */}
       <Spinner visible={waiting} />
     </>

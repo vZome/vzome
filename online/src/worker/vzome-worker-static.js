@@ -1,5 +1,4 @@
 
-
 const promises = {};
 
 let editing = false;
@@ -57,6 +56,7 @@ onmessage = function( e )
     instanceAdded: payload => this.postMessage( { type: "INSTANCE_ADDED", payload } ),
     instanceRemoved: payload => this.postMessage( { type: "INSTANCE_REMOVED", payload } ),
     sceneUpdated: () => this.postMessage( { type: "SCENE_UPDATED" } ),
+    propertiesChanged: payload => this.postMessage( { type: "PROPERTIES_CHANGED", payload } ),
   }
 
   console.log( `Message received from main script: ${e.data.type}` );
@@ -113,6 +113,7 @@ onmessage = function( e )
           sceneListener.initialized( convertScene( preview ) );
           sceneListener.initialized( convertGeometry( preview ) );
           sceneListener.sceneUpdated();
+          sceneListener.propertiesChanged( { canUndo: false, canRedo: false } ); // TODO this is just a stub
         } );
 
       promises.json
@@ -127,9 +128,16 @@ onmessage = function( e )
                   sceneListener.initialized( { lighting, camera, embedding, shapes: {} } );
                   sceneListener.initialized( module .interpretAndRender( design ) );
                   sceneListener.sceneUpdated();
+                  sceneListener.propertiesChanged( { canUndo: false, canRedo: false } ); // TODO this is just a stub
                 } )
             } )
          } );
+      break;
+    }
+
+    case "ACTION_TRIGGERED": {
+      const action = e.data.payload;
+      console.log( `ACTION: ${action}` );
       break;
     }
   

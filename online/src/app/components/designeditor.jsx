@@ -1,10 +1,13 @@
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import Grid from '@material-ui/core/Grid'
 
+import { Debugger } from './debugger.jsx'
+import { DesignViewer } from '../../ui/viewer/index.jsx'
+// import BuildPlane from './buildplane.jsx'
+import { UndoRedoButtons } from './undoredo.jsx'
 // import { selectionToggled } from '../bundles/mesh.js'
 // import * as planes from '../bundles/planes.js'
-import { DesignViewer } from '../../ui/viewer/index.jsx'
-import BuildPlane from './buildplane.jsx'
 
 // const select = ( state ) =>
 // {
@@ -39,7 +42,20 @@ import BuildPlane from './buildplane.jsx'
 
 export const DesignEditor = ( props ) =>
 {
-  const { controller, startGridHover, stopGridHover, workingPlane } = props
+  // const { startGridHover, stopGridHover, workingPlane } = props;
+  const { controller, debug } = props;
+  const [ canUndo, setCanUndo ] = useState( true );
+  const [ canRedo, setCanRedo ] = useState( false );
+  useEffect( () => {
+    controller && controller .connectHistory( setCanUndo, setCanRedo );
+  }, [controller] )
+
+  const doAction = action =>
+  {
+    if ( controller ) {
+      controller .doAction( action );
+    }
+  }
 
   // const { selectionToggler, shapeClick, bkgdClick, startBallHover, stopBallHover, clickable } = props
   // const focus = workingPlane && workingPlane.enabled && workingPlane.buildingStruts && workingPlane.position
@@ -66,10 +82,27 @@ export const DesignEditor = ( props ) =>
   //   }
   // }
 
+  const drawerColumns = debug? 4 : 0;
+  const canvasColumns = 12 - drawerColumns;
+
   return (
-    <DesignViewer controller={controller} >
-      { workingPlane && workingPlane.enabled &&
-          <BuildPlane config={workingPlane} {...{ startGridHover, stopGridHover }} /> }
-    </DesignViewer>
+    <div style={{ flex: '1', height: '100%' }}>
+      <Grid id='editor-main' container spacing={0} style={{ height: '100%' }}>        
+        <Grid id='editor-drawer' item xs={drawerColumns}>
+          { debug && <Debugger controller={controller}/> }
+        </Grid>
+        <Grid id='editor-canvas' item xs={canvasColumns}>
+          <DesignViewer controller={controller} >
+            {/* { workingPlane && workingPlane.enabled &&
+                <BuildPlane config={workingPlane} {...{ startGridHover, stopGridHover }} /> } */}
+            <UndoRedoButtons {...{ canRedo, canUndo,
+              doRedo: () => doAction( "redo" ), 
+              doUndo: () => doAction( "undo" ), 
+              doRedoAll: () => doAction( "redoAll" ), 
+              doUndoAll: () => doAction( "undoAll" ) }} />
+          </DesignViewer>
+        </Grid>
+      </Grid>
+    </div>
   )
 }

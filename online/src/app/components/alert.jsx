@@ -1,5 +1,4 @@
 import React from 'react'
-import { clearAlert } from '../bundles/alerts.js'
 import { Alert, AlertTitle } from '@material-ui/lab';
 import Snackbar from '@material-ui/core/Snackbar';
 
@@ -15,13 +14,5 @@ export const ErrorAlert = ( { message, dismissed } ) =>
       </Alert>
     </Snackbar>
   )
-}
-
-const select = (state) => ({
-  message: state.alerts
-})
-
-const boundEventActions = {
-  dismissed : clearAlert
 }
 
