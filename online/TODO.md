@@ -3,8 +3,6 @@
  - fix recursion bug for https://raw.githubusercontent.com/vorth/vzome-sharing/main/2021/07/08/10-19-38-600cell-vanOss-A/600cell-vanOss-A.vZome
 
 
- - add spinner while waiting for worker
- - fix 5cell Article and BHall usage of SceneViewer (no worker!)
  - restore undo/redo
  - restore debugger
 
@@ -14,6 +12,9 @@
 
  - fix timing violations in UI... React suspense?
 
+ - persistence!
+
+ - 3d "spinner" native to DesignViewer
 
 
  - do I even want Redux in the worker?  undo-redo is pretty clean, but can I expose the "document" state there?
@@ -25,6 +26,7 @@
  - try module workers
  
 
+ - open on last design
  
  - implement glowChanged
  - figure out hybrid state model for editor

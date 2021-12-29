@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
 import Paper from '@material-ui/core/Paper'
@@ -8,8 +8,9 @@ import Divider from '@material-ui/core/Divider'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 
-import { VZomeAppBar } from './components/appbar.jsx'
+import { createController } from '../ui/viewer/controller.js';
 import { DesignViewer } from '../ui/viewer/index.jsx'
+import { VZomeAppBar } from './components/appbar.jsx'
 
 const metadata = {
   easier: {
@@ -106,11 +107,21 @@ const viewerStyle = {
 
 const VZomeViewer = ({ name, parts }) =>
 {
+  const [ controller, setController ] = useState( null );
+
+  useEffect( () => {
+    console.log( 'Creating the controller --------------------------------------------' );
+    const ctrlr = createController( ()=>{}, { viewOnly: true } ); // creates the worker
+    setController( ctrlr );
+    const url = `https://vzome.com/bhall/basics/${name}.vZome`;
+    ctrlr .fetchDesignUrl( url );
+  }, [] );
+
   return (
     <>
       <Divider />
       <div style={viewerStyle}>
-        <DesignViewer url={`https://vzome.com/bhall/basics/${name}.vZome`}/>
+        <DesignViewer controller={controller} />
       </div>
       <Typography gutterBottom align='center' variant="h6" >{name}</Typography>
       <Typography gutterBottom align='center' >Build with {parts}</Typography>

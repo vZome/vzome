@@ -1,12 +1,13 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+
 import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 
+import { createController } from '../ui/viewer/controller.js';
 import { DesignViewer } from '../ui/viewer/index.jsx'
-
 import { VZomeAppBar } from './components/appbar.jsx'
 
 const useStyles = makeStyles( (theme) => ({
@@ -31,9 +32,18 @@ const viewerStyle = {
 
 const VZomeViewer = ({ url }) =>
 {
+  const [ controller, setController ] = useState( null );
+
+  useEffect( () => {
+    console.log( 'Creating the controller --------------------------------------------' );
+    const ctrlr = createController( ()=>{}, { viewOnly: true } ); // creates the worker
+    setController( ctrlr );
+    ctrlr .fetchDesignUrl( url );
+  }, [] );
+
   return (
     <div style={viewerStyle}>
-      <DesignViewer url={url} />
+      <DesignViewer controller={controller} />
     </div>
   )
 }
