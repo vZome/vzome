@@ -7,6 +7,7 @@ import { DesignEditor } from './components/designeditor.jsx'
 import { ErrorAlert } from './components/alert.jsx'
 import { VZomeAppBar } from './components/appbar.jsx'
 import { Debugger } from './components/debugger.jsx'
+import { Spinner } from './components/spinner.jsx';
 import { useEffect } from 'react'
 import { createController } from '../ui/viewer/controller.js';
 import { DesignViewer } from '../ui/viewer/index.jsx'
@@ -19,12 +20,14 @@ const viewOnly = !!url;
 const App = () =>
 {
   const [ controller, setController ] = useState( null );
+  const [ waiting, setWaiting ] = useState( false );
 
   const openUrl = url => {
     if ( controller && url && url.endsWith( ".vZome" ) ) {
       controller. fetchDesignUrl( url );
       controller. enableView(); // worker won't send the render events without this
-    }
+      setWaiting( true ); // see "event cycle" in components/folder.jsx
+   }
   }
   const openFile = file => {
     console.log( JSON.stringify( file, null, 2 ) );
@@ -34,7 +37,8 @@ const App = () =>
     }
   }
   useEffect( () => {
-    const ctrlr = createController( { viewOnly } ); // creates the worker
+    console.log( 'Creating the controller --------------------------------------------' );
+    const ctrlr = createController( setWaiting, { viewOnly } ); // creates the worker
     setController( ctrlr );
     if ( url && url.endsWith( ".vZome" ) ) {
       ctrlr .fetchDesignUrl( url ); // gets the worker started on fetching
@@ -64,7 +68,7 @@ const App = () =>
       }
       <ErrorAlert/> 
       {/* <EditMenu/>  */}
-      {/* <Spinner/> */}
+      <Spinner visible={waiting} />
     </>
   );
 }

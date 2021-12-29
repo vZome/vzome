@@ -1,5 +1,5 @@
 
-export const createController = ( { viewOnly=true } = {} ) =>
+export const createController = ( setWaiting, { viewOnly=true } = {} ) =>
 {
   const worker = new Worker( '/modules/vzome-worker-static.js', { type: "module" } );
 
@@ -51,6 +51,10 @@ export const createController = ( { viewOnly=true } = {} ) =>
           sceneChanged( scene );
           break;
         }
+
+        case "SCENE_UPDATED":
+          setWaiting( false ); // see "event cycle" in components/folder.jsx
+          break;
       
         default:
           console.log( `Unknown message type received from worker: ${JSON.stringify(e.data, null, 2)}` );
@@ -69,6 +73,7 @@ export const createController = ( { viewOnly=true } = {} ) =>
   {
     if ( url ) {
       source.url = url;
+      console.log( `!!!!!!!!!!!!!!!!!!! fetching ${url}` );
       worker.postMessage( { type: "URL_PROVIDED", payload: { url, viewOnly } } );
     }
   }

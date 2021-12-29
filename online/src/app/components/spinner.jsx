@@ -1,6 +1,5 @@
 
 import React from 'react'
-import { connect } from 'react-redux'
 
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -23,10 +22,3 @@ export const Spinner = ( { visible, message } ) =>
     </Backdrop>
   );
 }
-
-const select = ( { progress } ) => ({
-  visible: progress && progress.showing,
-  message: progress && progress.message
-})
-
-export default connect( select )( Spinner )

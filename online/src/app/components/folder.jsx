@@ -48,7 +48,7 @@ const models = [
   },
 ]
 
-const url = "/models/vZomeLogo.vZome"
+// const url = "/models/vZomeLogo.vZome"
 
 export const OpenMenu = ( { openUrl, openFile } ) =>
 {
@@ -59,7 +59,16 @@ export const OpenMenu = ( { openUrl, openFile } ) =>
     setAnchorEl(null)
     ref.current.click()
   }
-  useEffect( () => openUrl( url ), [openUrl] )
+
+  // This can trigger an event cycle involving the "waiting" state,
+  //  if we change to "[openUrl]", causing an endless repetition
+  //  of this effect.
+  // However, as-is, this does not have the desired effect of opening
+  // the default URL, since openUrl will be a no-op until the controller
+  // is created.
+  // I'm taking it out, since an editor really should come up with a new document, anyway.
+  //
+  // useEffect( () => openUrl( url ), [] )
 
   const handleClickOpen = (event) => {
     setAnchorEl( event.currentTarget )

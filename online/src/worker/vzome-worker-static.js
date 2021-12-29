@@ -56,6 +56,7 @@ onmessage = function( e )
     shapeAdded: payload => this.postMessage( { type: "SHAPE_ADDED", payload } ),
     instanceAdded: payload => this.postMessage( { type: "INSTANCE_ADDED", payload } ),
     instanceRemoved: payload => this.postMessage( { type: "INSTANCE_REMOVED", payload } ),
+    sceneUpdated: () => this.postMessage( { type: "SCENE_UPDATED" } ),
   }
 
   console.log( `Message received from main script: ${e.data.type}` );
@@ -74,7 +75,7 @@ onmessage = function( e )
           .then( text => JSON.parse( text ) );
         // The resolved json promise will be used after the view is connected.
       } else { // editing
-        promises.json = Promise.reject();
+        promises.json = Promise.reject( 'Editing, so no .shapes.json needed.' );
       }
 
       // If it is rejected (for either reason), we want to immediately start parsing the xml.
@@ -111,6 +112,7 @@ onmessage = function( e )
         .then( preview => {
           sceneListener.initialized( convertScene( preview ) );
           sceneListener.initialized( convertGeometry( preview ) );
+          sceneListener.sceneUpdated();
         } );
 
       promises.json
@@ -124,6 +126,7 @@ onmessage = function( e )
                   camera.fov = 0.33915263; // WORKAROUND
                   sceneListener.initialized( { lighting, camera, embedding, shapes: {} } );
                   sceneListener.initialized( module .interpretAndRender( design ) );
+                  sceneListener.sceneUpdated();
                 } )
             } )
          } );
