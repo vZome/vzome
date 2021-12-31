@@ -255,17 +255,14 @@ export const interpretAndRender = design =>
       if ( ! shapes[ shapeId ] ) {
         shapes[ shapeId ] = realizeShape( rm .getShape() );
         shapes[ shapeId ].instances = {};
-        // sceneListener .shapeAdded( shapes[ shapeId ] );
       }
       shapes[ shapeId ].instances[ instance.id ] = instance;
-      // sceneListener .instanceAdded( instance );
     },
     manifestationRemoved: rm => {
       const instance = normalizeRenderedManifestation( rm );
       const { shapeId } = instance;
       const shape = shapes[ shapeId ];
       delete shape.instances[ instance.id ];
-      // sceneListener .instanceRemoved( instance );
     },
     glowChanged: rm => {
       console.log( 'glowChanged' );

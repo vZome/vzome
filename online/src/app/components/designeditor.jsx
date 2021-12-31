@@ -1,11 +1,13 @@
 
-import React, { useState, useEffect } from 'react'
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@material-ui/core/Grid'
 
 import { Debugger } from './debugger.jsx'
 import { DesignViewer } from '../../ui/viewer/index.jsx'
 // import BuildPlane from './buildplane.jsx'
 import { UndoRedoButtons } from './undoredo.jsx'
+import { Spinner } from './spinner.jsx'
 // import { selectionToggled } from '../bundles/mesh.js'
 // import * as planes from '../bundles/planes.js'
 
@@ -40,21 +42,17 @@ import { UndoRedoButtons } from './undoredo.jsx'
 //   return false
 // }
 
-export const DesignEditor = ( props ) =>
+export const DesignEditor = ( { debug } ) =>
 {
   // const { startGridHover, stopGridHover, workingPlane } = props;
-  const { controller, debug } = props;
-  const [ canUndo, setCanUndo ] = useState( true );
-  const [ canRedo, setCanRedo ] = useState( false );
-  useEffect( () => {
-    controller && controller .connectHistory( setCanUndo, setCanRedo );
-  }, [controller] )
+  const canUndo = useSelector( state => state.history && state.history.canUndo );
+  const canRedo = useSelector( state => state.history && state.history.canRedo );
+  const waiting = useSelector( state => !!state.waiting );
+  const report = useDispatch();
 
   const doAction = action =>
   {
-    if ( controller ) {
-      controller .doAction( action );
-    }
+    report( { type: 'ACTION_TRIGGERED', payload: action } );
   }
 
   // const { selectionToggler, shapeClick, bkgdClick, startBallHover, stopBallHover, clickable } = props
@@ -89,10 +87,10 @@ export const DesignEditor = ( props ) =>
     <div style={{ flex: '1', height: '100%' }}>
       <Grid id='editor-main' container spacing={0} style={{ height: '100%' }}>        
         <Grid id='editor-drawer' item xs={drawerColumns}>
-          { debug && <Debugger controller={controller}/> }
+          { debug && <Debugger/> }
         </Grid>
         <Grid id='editor-canvas' item xs={canvasColumns}>
-          <DesignViewer controller={controller} >
+          <DesignViewer>
             {/* { workingPlane && workingPlane.enabled &&
                 <BuildPlane config={workingPlane} {...{ startGridHover, stopGridHover }} /> } */}
             <UndoRedoButtons {...{ canRedo, canUndo,
@@ -103,6 +101,7 @@ export const DesignEditor = ( props ) =>
           </DesignViewer>
         </Grid>
       </Grid>
+      <Spinner visible={waiting} />
     </div>
   )
 }

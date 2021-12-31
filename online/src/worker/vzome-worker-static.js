@@ -1,7 +1,6 @@
 
-const promises = {};
-
-let editing = false;
+import { createStore, applyMiddleware } from 'redux';
+import { exposeStore } from 'redux-in-worker';
 
 const convertScene = preview =>
 {
@@ -40,111 +39,12 @@ const convertGeometry = preview =>
   instances.map( ({ position, orientation, color, shape }) => {
     const id = "id_" + i++;
     const { x, y, z } = position;
-    const rotation = orientations[ orientation ] || IDENTITY_MATRIX;
+    const rotation = [ ...( orientations[ orientation ] || IDENTITY_MATRIX ) ];
     const instance = { id, position: [ x, y, z ], rotation, color, shapeId: shape };
     shapesDict[ shape ].instances.push( instance );
     // sceneListener.instanceAdded( instance );
   });
   return { shapes: shapesDict }
-}
-
-onmessage = function( e )
-{
-  const sceneListener = {
-    initialized: payload => this.postMessage( { type: "SCENE_INITIALIZED", payload } ),
-    shapeAdded: payload => this.postMessage( { type: "SHAPE_ADDED", payload } ),
-    instanceAdded: payload => this.postMessage( { type: "INSTANCE_ADDED", payload } ),
-    instanceRemoved: payload => this.postMessage( { type: "INSTANCE_REMOVED", payload } ),
-    sceneUpdated: () => this.postMessage( { type: "SCENE_UPDATED" } ),
-    propertiesChanged: payload => this.postMessage( { type: "PROPERTIES_CHANGED", payload } ),
-  }
-
-  console.log( `Message received from main script: ${e.data.type}` );
-  switch ( e.data.type ) {
-
-    case "URL_PROVIDED": {
-      const { url, viewOnly } = e.data.payload;
-      // TODO: think about failure cases!  What is the contract for the worker?
-      editing = !viewOnly;
-      console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${editing? "editing " : "viewing "} ${url}` );
-      promises.text = fetchUrlText( url ); // save the promise
-
-      if ( viewOnly ) {
-        const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
-        promises.json = fetchUrlText( previewUrl )
-          .then( text => JSON.parse( text ) );
-        // The resolved json promise will be used after the view is connected.
-      } else { // editing
-        promises.json = Promise.reject( 'Editing, so no .shapes.json needed.' );
-      }
-
-      // If it is rejected (for either reason), we want to immediately start parsing the xml.
-      promises.json
-        .catch( () => {
-          console.log( 'Parsing xml.' );
-          return import( './legacy/dynamic.js' )
-        })
-        .then( module => {
-          promises.xml = promises.text .then( xml => module .parse( xml ) );
-        });
-      break;
-    }
-
-    case "FILE_PROVIDED": {
-      const file = e.data.payload;
-      editing = true;
-      console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% editing file ${file.name}` );
-      // TODO: think about failure cases!  What is the contract for the worker?
-      promises.text = fetchFileText( file ); // save the promise
-      promises.json = Promise.reject();
-      import( './legacy/dynamic.js' )
-        .then( module => {
-          promises.xml = promises.text .then( xml => module .parse( xml ) );
-        })
-      break;
-    }
-  
-    case "VIEW_CONNECTED": {
-      promises.text
-        .then( text => this.postMessage( { type: "TEXT_FETCHED", payload: text } ) );
-
-      promises.json
-        .then( preview => {
-          sceneListener.initialized( convertScene( preview ) );
-          sceneListener.initialized( convertGeometry( preview ) );
-          sceneListener.sceneUpdated();
-          sceneListener.propertiesChanged( { canUndo: false, canRedo: false } ); // TODO this is just a stub
-        } );
-
-      promises.json
-        .catch( () => {
-          import( './legacy/dynamic.js' )
-            .then( module => {
-              promises.xml
-                .then( design => {
-                  const { renderer, camera, lighting } = design;
-                  const { embedding } = renderer;
-                  camera.fov = 0.33915263; // WORKAROUND
-                  sceneListener.initialized( { lighting, camera, embedding, shapes: {} } );
-                  sceneListener.initialized( module .interpretAndRender( design ) );
-                  sceneListener.sceneUpdated();
-                  sceneListener.propertiesChanged( { canUndo: false, canRedo: false } ); // TODO this is just a stub
-                } )
-            } )
-         } );
-      break;
-    }
-
-    case "ACTION_TRIGGERED": {
-      const action = e.data.payload;
-      console.log( `ACTION: ${action}` );
-      break;
-    }
-  
-    default:
-      console.log( `Unknown message type ignored: ${e.data.type}` );
-      break;
-  }
 }
 
 const fetchUrlText = async ( url ) =>
@@ -180,5 +80,119 @@ const fetchFileText = selected =>
   })
 }
 
+export const initialState = {};
 
-// console.log( 'The worker loaded!' );
+const reducer = ( state = initialState, event ) =>
+{
+  switch ( event.type ) {
+
+    case 'ALERT_RAISED':
+      return { ...state, problem: event.payload, waiting: false };
+
+    case 'ALERT_DISMISSED':
+      return { ...state, problem: '' };
+
+    case 'FETCH_STARTED': {
+      const { url, viewOnly } = event.payload;
+      return { ...state, waiting: true, editing: !viewOnly };
+    }
+
+    case 'TEXT_FETCHED':
+      return { ...state, source: event.payload };
+
+    case 'SCENE_INITIALIZED': {
+      const { scene } = state;
+      return { ...state, scene: { ...scene, ...event.payload } };
+      break;
+    }
+
+    case 'SCENE_COMPLETED': {
+      const { scene } = state;
+      return { ...state, scene: { ...scene, ...event.payload }, waiting: false };
+      break;
+    }
+
+    default:
+      return state;
+  }
+};
+
+const parseAndInterpret = ( xmlLoading, report ) =>
+{
+  let legacyModule;
+  return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
+
+    .then( ([ module, xml ]) => {
+      legacyModule = module;
+      return module .parse( xml );
+    } )
+
+    .then( design => {
+      const { renderer, camera, lighting } = design;
+      const { embedding } = renderer;
+      camera.fov = 0.33915263; // WORKAROUND
+      report( { type: 'SCENE_INITIALIZED', payload: { lighting, camera, embedding, shapes: {} } } );
+      // the next step may take several seconds, which is why we already reported SCENE_INITIALIZED
+      report( { type: 'SCENE_COMPLETED', payload: legacyModule .interpretAndRender( design ) } );
+      return true; // probably nobody should care about the return value
+    } )
+
+    .catch( error => {
+      console.log( `parseAndInterpret failure: ${error.message}` );
+      report( { type: 'ALERT_RAISED', payload: 'Failed to load vZome model.' } );
+      return false; // probably nobody should care about the return value
+     } );
+}
+
+const fileLoader = store => report => event =>
+{
+  if ( event.type !== 'FILE_PROVIDED' ) {
+    return report( event );
+  }
+  const file = event.payload;
+  const { name } = file;
+  report( { type: 'FETCH_STARTED', payload: { name, viewOnly: false } } );
+  console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% editing ${name}` );
+  const xmlLoading = fetchFileText( file );
+
+  xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { name, text } } ) );
+
+  return parseAndInterpret( xmlLoading, report );
+}
+
+const urlLoader = store => report => event =>
+{
+  if ( event.type !== 'URL_PROVIDED' ) {
+    return report( event );
+  }
+  const { url, viewOnly } = event.payload;
+  const name = url.split( '\\' ).pop().split( '/' ).pop()
+  report( { type: 'FETCH_STARTED', payload: event.payload } );
+  console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${viewOnly? "viewing" : "editing " } ${url}` );
+  const xmlLoading = fetchUrlText( url );
+
+  xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { name, text } } ) );
+
+  if ( viewOnly ) {
+    const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
+    return fetchUrlText( previewUrl )
+      .then( text => JSON.parse( text ) )
+      .then( preview => {
+        report( { type: 'SCENE_INITIALIZED', payload: convertScene( preview ) } );
+        report( { type: 'SCENE_COMPLETED', payload: convertGeometry( preview ) } );
+        return true; // probably nobody should care about the return value
+      })
+      .catch( error => {
+        console.log( error.message );
+        console.log( `Failed to load and parse preview: ${previewUrl}` );
+        return parseAndInterpret( xmlLoading, report );
+      } );
+  }
+  else {
+    return parseAndInterpret( xmlLoading, report );
+  }
+}
+
+const store = createStore( reducer, applyMiddleware( urlLoader, fileLoader ) );
+
+exposeStore( store );

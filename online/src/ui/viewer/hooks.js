@@ -1,35 +1,6 @@
 
-import { useState, useEffect, useRef } from 'react'
-import { Matrix4 } from 'three'
-
-export const fetchUrlText = async ( url ) =>
-{
-  let response
-  try {
-    response = await fetch( url )
-  } catch ( error ) {
-    console.log( `Fetching ${url} failed with "${error}"; trying cors-anywhere` )
-    // TODO: I should really deploy my own copy of this proxy on Heroku
-    response = await fetch( 'https://cors-anywhere.herokuapp.com/' + url )
-  }
-  if ( !response.ok ) {
-    throw new Error( `Failed to fetch "${url}": ${response.statusText}` )
-  }
-  return response.text()
-}
-
-export const useDesignController = ( controller ) =>
-{
-  const [ scene, setScene ] = useState( null )
-  const [ source, setSource ] = useState( null )
-  useEffect( () => {
-    controller && controller.connectView( setSource, setScene );
-  }, [controller] )
-  // We have text if we could find the vZome file,
-  //  and a scene, either because there was a 3D preview JSON next to it,
-  //  or because we parsed, interpreted, and rendered the vZome file.
-  return { source, scene }
-}
+import { useMemo, useEffect, useRef, useLayoutEffect } from 'react';
+import { BufferGeometry, Vector3, Float32BufferAttribute, Matrix4 } from 'three';
 
 export const useEmbedding = embedding =>
 {
@@ -46,4 +17,43 @@ export const useEmbedding = embedding =>
     }
   }, [embedding] )
   return ref
+}
+
+export const useRotation = rotation =>
+{
+  const ref = useRef();
+  useLayoutEffect( () => {
+    const m = new Matrix4()
+    m.set( ...rotation )
+    ref.current.applyMatrix4( m )
+  }, [rotation] );
+  return ref;
+}
+
+export const useGeometry = shape =>
+{
+  const geometry = useMemo( () => {
+    const { vertices, faces } = shape;
+    const computeNormal = ( [ v0, v1, v2 ] ) => {
+      const e1 = new Vector3().subVectors( v1, v0 )
+      const e2 = new Vector3().subVectors( v2, v0 )
+      return new Vector3().crossVectors( e1, e2 ).normalize()
+    }
+    let positions = [];
+    let normals = [];
+    faces.forEach( face => {
+      const corners = face.vertices.map( i => vertices[ i ] )
+      const { x:nx, y:ny, z:nz } = computeNormal( corners )
+      corners.forEach( ( { x, y, z } ) => {
+        positions.push( x, y, z )
+        normals.push( nx, ny, nz )
+      } )
+    } );
+    const geometry = new BufferGeometry();
+    geometry.setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
+    geometry.setAttribute( 'normal', new Float32BufferAttribute( normals, 3 ) );
+    geometry.computeBoundingSphere();
+    return geometry;
+  }, [ shape ] );
+  return geometry;
 }

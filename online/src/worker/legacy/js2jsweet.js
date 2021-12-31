@@ -541,12 +541,14 @@ export const normalizeRenderedManifestation = rm =>
   const positionAV = rm.getLocationAV();
   const { x, y, z } = ( positionAV && positionAV.toRealVector() ) || { x:0, y:0, z:0 };
   const rotation = rm .getOrientation() .getRowMajorRealElements();
-  const rmc = rm.getColor();
   const componentToHex = c => {
     let hex = c.toString(16);
     return hex.length == 1 ? "0" + hex : hex;
   }
-  const color = "#" + componentToHex(rmc.getRed()) + componentToHex(rmc.getGreen()) + componentToHex(rmc.getBlue());
+  let color = "#ffffff";
+  const rmc = rm.getColor();
+  if ( rmc )
+    color = "#" + componentToHex(rmc.getRed()) + componentToHex(rmc.getGreen()) + componentToHex(rmc.getBlue());
 
   return { id, position: [ x, y, z ], rotation, color, shapeId };
 }

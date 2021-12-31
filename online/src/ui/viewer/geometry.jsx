@@ -1,40 +1,12 @@
-import { BufferGeometry, Vector3, Float32BufferAttribute, Matrix4 } from 'three'
-import React, { useMemo, useRef, useLayoutEffect } from 'react'
-import { useEmbedding } from './hooks.js'
 
-const createGeometry = ( { vertices, faces } ) =>
-{
-  const computeNormal = ( [ v0, v1, v2 ] ) => {
-    const e1 = new Vector3().subVectors( v1, v0 )
-    const e2 = new Vector3().subVectors( v2, v0 )
-    return new Vector3().crossVectors( e1, e2 ).normalize()
-  }
-  let positions = []
-  let normals = []
-  faces.forEach( face => {
-    const corners = face.vertices.map( i => vertices[ i ] )
-    const { x:nx, y:ny, z:nz } = computeNormal( corners )
-    corners.forEach( ( { x, y, z } ) => {
-      positions.push( x, y, z )
-      normals.push( nx, ny, nz )
-    })
-  } )
-  const geometry = new BufferGeometry()
-  geometry.setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) )
-  geometry.setAttribute( 'normal', new Float32BufferAttribute( normals, 3 ) )
-  geometry.computeBoundingSphere()
-  return geometry
-}
+import React from 'react'
+import { useEmbedding, useRotation, useGeometry } from './hooks.js'
 
 const Instance = ( { id, vectors, position, rotation, geometry, color, selected, highlightBall=()=>{}, onClick, onHover } ) =>
 {
   // debugger
-  const ref = useRef()
-  useLayoutEffect( () => {
-    const m = new Matrix4()
-    m.set( ...rotation )
-    ref.current.applyMatrix4( m )
-  }, [rotation] )
+  const ref = useRotation( rotation );
+  
   const handleHoverIn = ( e ) =>
   {
     e.stopPropagation()
@@ -65,8 +37,7 @@ const Instance = ( { id, vectors, position, rotation, geometry, color, selected,
 
 const InstancedShape = ( { shape, onClick, onHover, highlightBall } ) =>
 {
-  // debugger
-  const geometry = useMemo( () => createGeometry( shape ), [ shape ] )
+  const geometry = useGeometry( shape );
   return (
     <>
       { shape.instances.map( instance => 
@@ -77,7 +48,7 @@ const InstancedShape = ( { shape, onClick, onHover, highlightBall } ) =>
 
 export const ShapedGeometry = ( { shapes, embedding, highlightBall, handleClick, onHover } ) =>
 {
-  const ref = useEmbedding( embedding )
+  const ref = useEmbedding( embedding );
   return ( shapes &&
     <group matrixAutoUpdate={false} ref={ref}>
       { Object.values( shapes ).map( shape =>

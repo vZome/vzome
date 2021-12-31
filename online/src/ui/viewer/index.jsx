@@ -1,19 +1,21 @@
 
-import React from 'react'
+import React, { useEffect, useState } from 'react';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import ReactDOM from "react-dom";
+
 import { StylesProvider, jssPreset } from '@material-ui/styles';
-import { create } from 'jss';
-import { ShapedGeometry } from './geometry.jsx'
-import { DesignCanvas } from './designcanvas.jsx'
-import { useDesignController } from './hooks.js'
 import IconButton from '@material-ui/core/IconButton'
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded'
+import { create } from 'jss';
+
+import { ShapedGeometry } from './geometry.jsx'
+import { DesignCanvas } from './designcanvas.jsx'
+import { createWorkerStore } from './store.js';
 
 // from https://www.bitdegree.org/learn/javascript-download
 const download = source =>
 {
-  const { url, text } = source;
-  const name = url.split( '\\' ).pop().split( '/' ).pop()
+  const { name, text } = source;
   const blob = new Blob( [ text ], { type : 'application/xml' } );
   const element = document.createElement( 'a' )
   const blobURI = URL.createObjectURL( blob )
@@ -25,9 +27,10 @@ const download = source =>
   document.body.removeChild( element )
 }
 
-export const DesignViewer = ( { controller, children, children3d } ) =>
+export const DesignViewer = ( { children, children3d } ) =>
 {
-  const { source, scene } = useDesignController( controller );
+  const source = useSelector( state => state.source );
+  const scene = useSelector( state => state.scene );
   return (
     <div style={ { display: 'flex', height: '100%', position: 'relative' } }>
       { scene &&
@@ -50,7 +53,7 @@ export const DesignViewer = ( { controller, children, children3d } ) =>
   )
 }
 
-export const render = ( controller, container, stylesMount, url ) =>
+export const renderViewer = ( store, container, stylesMount, url ) =>
 {
   if ( url === null || url === "" ) {
     ReactDOM.unmountComponentAtNode( container );
@@ -58,7 +61,7 @@ export const render = ( controller, container, stylesMount, url ) =>
   }
 
   // TODO: Can we handle canvas resizing using `ResizeObserver` without modifying `vZome` or recreating the element constantly?
-  const viewerElement = React.createElement( DesignViewer, { controller } );
+  const viewerElement = React.createElement( UrlViewer, { store, url } );
 
   // We need JSS to inject styles on our shadow root, not on the document head.
   // I found this solution here:
@@ -73,3 +76,41 @@ export const render = ( controller, container, stylesMount, url ) =>
 
   return reactElement;
 }
+
+// If the worker-store is not injected (as in the web component), it is created here.
+//  This component is used by UrlViewer (below) and by the Online App.
+export const WorkerContext = props =>
+{
+  const [ store ] = useState( props.store || createWorkerStore() );
+  return (
+    <Provider store={store}>
+      {props.children}
+    </Provider>
+  );
+}
+
+export const useVZomeUrl = url =>
+{
+  const report = useDispatch();
+  useEffect( () => !!url && report( { type: 'URL_PROVIDED', payload: { url, viewOnly: true } } ), [] );
+}
+
+// This component has to be separate from UrlViewer because of the useDispatch hook used in
+//  useVZomeUrl above.
+const UrlViewerInner = ({ url }) =>
+{
+  useVZomeUrl( url );
+  return ( <DesignViewer/> );
+}
+
+// This is the component to reuse in a React app rather than the web component.
+//  In that context, the store property can be null, since the WorkerContext
+//  will create a worker-store when none is injected.
+//  It is also used by the web component, but with the worker-store injected so that the
+//  worker can get initialized and loaded while the main context is still fetching
+//  this module.
+export const UrlViewer = props => (
+  <WorkerContext store={props.store} >
+    <UrlViewerInner url={props.url} />
+  </WorkerContext>
+)

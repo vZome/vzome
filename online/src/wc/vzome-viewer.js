@@ -1,14 +1,16 @@
 // babel workaround
 import "regenerator-runtime/runtime";
-import { createController } from "../ui/viewer/controller.js";
 
 import { vZomeViewerCSS } from "./vzome-viewer.css";
+
+import { createWorkerStore } from '../ui/viewer/store.js';
 
 export class VZomeViewer extends HTMLElement {
   #root;
   #stylesMount;
   #container;
-  #controller;
+  #store;
+  #url;
   constructor() {
     super();
     this.#root = this.attachShadow({ mode: "open" });
@@ -17,7 +19,7 @@ export class VZomeViewer extends HTMLElement {
     this.#stylesMount = document.createElement("div");
     this.#container = this.#root.appendChild( this.#stylesMount );
 
-    this.#controller = createController( ()=>{}, { lkj: false, viewOnly: true } );
+    this.#store = createWorkerStore();
 
     if ( this.hasAttribute( 'src' ) ) {
       const url = this.getAttribute( 'src' );
@@ -27,7 +29,10 @@ export class VZomeViewer extends HTMLElement {
         alert( `Unrecognized file name: ${url}` );
       }
       else
-        this.#controller .fetchDesignUrl( url );
+        this.#url = url;
+        // Get the fetch started by the worker before we load the dynamic module below,
+        //  which is pretty big.  I really should make encapsulate the message in a function!
+        this.#store.dispatch( { type: 'URL_PROVIDED', payload: { url, viewOnly: true } } );
     }
   }
 
@@ -43,7 +48,7 @@ export class VZomeViewer extends HTMLElement {
   #render() {
     import( '../ui/viewer/index.jsx' )
       .then( module => {
-        this.#reactElement = module.render( this.#controller, this.#container, this.#stylesMount, this.src );
+        this.#reactElement = module.renderViewer( this.#store, this.#container, this.#stylesMount, this.#url );
       })
   }
 
