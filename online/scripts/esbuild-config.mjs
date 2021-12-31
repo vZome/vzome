@@ -5,6 +5,7 @@ export const esbuildConfig = {
     'vzome-viewer': 'src/wc/index.js',
     'vzome-viewer-dynamic': 'src/ui/viewer/index.jsx',
     'vzome-legacy': 'src/worker/legacy/dynamic.js',
+    'vzome-worker-static': 'src/worker/vzome-worker-static.js',
   },
   bundle: true,
   splitting: true,

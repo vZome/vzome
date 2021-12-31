@@ -20,13 +20,13 @@
  - 3d "spinner" native to DesignViewer
 
 
+ - remove logic from embed.py
+
  - do I even want Redux in the worker?  undo-redo is pretty clean, but can I expose the "document" state there?
 
  - minimize React reconciliation even for the editor... batch up the scene changes per command before setScene
 
  - consider refactoring Java controller classes to isolate those that are JSweet-ready, avoiding DocumentController
-
- - try module workers
  
 
  - open on last design
@@ -37,4 +37,7 @@
  - shape instances as object not array? (optimization)
 
  - implement fog
+ - fix back clipping plane
+ - add camera control with parallel
+ - add full-screen toggle
 

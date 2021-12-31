@@ -17,7 +17,7 @@ export class VZomeViewer extends HTMLElement {
     this.#stylesMount = document.createElement("div");
     this.#container = this.#root.appendChild( this.#stylesMount );
 
-    this.#controller = createController( { viewOnly: true } );
+    this.#controller = createController( ()=>{}, { lkj: false, viewOnly: true } );
 
     if ( this.hasAttribute( 'src' ) ) {
       const url = this.getAttribute( 'src' );

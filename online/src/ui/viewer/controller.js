@@ -5,7 +5,8 @@ export const createController = ( setWaiting, { viewOnly=true } = {} ) =>
 
   let source = {};
   let scene = {};
-  let setCanRedo, setCanUndo;
+  let setCanRedo = () => {}
+  let setCanUndo = () => {}
 
   const connectHistory = ( canUndoSetter, canRedoSetter ) =>
   {

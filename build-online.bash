@@ -31,9 +31,9 @@ cat 'online/jsweetOut/js/bundle.js' | \
 pushd online
 
 banner 'Preparing the distribution folder with NPM'
-npm install || exit $?
+yarn install || exit $?
 rm -rf dist || exit $?
-npm run build || exit $?
+yarn run build || exit $?
 
 pushd dist
 

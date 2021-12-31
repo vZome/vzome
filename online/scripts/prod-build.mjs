@@ -5,23 +5,11 @@ esbuild.buildSync( { ...esbuildConfig, /* minify: true, sourcemap: false,*/ outd
 
 esbuild.buildSync( {
   entryPoints: {
-    'service-worker': 'src/app/service-worker.js',
+    'service-worker': 'src/service-worker.js',
   },
   bundle: true,
   splitting: false,
   minify: true,
   sourcemap: false,
   outdir: 'dist/app'
-} );
-
-esbuild.buildSync( {
-  entryPoints: {
-    'vzome-worker-static': 'src/worker/vzome-worker-static.js',
-  },
-  bundle: true,
-  splitting: false,
-  // minify: true,
-  sourcemap: true,
-  loader: { '.vef': 'dataurl' },
-  outdir: 'dist/modules'
 } );
