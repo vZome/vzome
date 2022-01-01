@@ -61,7 +61,7 @@ export const renderViewer = ( store, container, stylesMount, url ) =>
   }
 
   // TODO: Can we handle canvas resizing using `ResizeObserver` without modifying `vZome` or recreating the element constantly?
-  const viewerElement = React.createElement( UrlViewer, { store, url } );
+  const viewerElement = React.createElement( UrlViewer, { store } );  // I removed the url, since we prefetched it
 
   // We need JSS to inject styles on our shadow root, not on the document head.
   // I found this solution here:
@@ -89,17 +89,19 @@ export const WorkerContext = props =>
   );
 }
 
-export const useVZomeUrl = url =>
+export const useVZomeUrl = ( url, config ) =>
 {
+  const { preview } = config;
   const report = useDispatch();
-  useEffect( () => !!url && report( { type: 'URL_PROVIDED', payload: { url, viewOnly: true } } ), [] );
+  useEffect( () => !!url && report( { type: 'URL_PROVIDED', payload: { url, viewOnly: preview } } ), [] );
 }
 
 // This component has to be separate from UrlViewer because of the useDispatch hook used in
-//  useVZomeUrl above.
-const UrlViewerInner = ({ url }) =>
+//  useVZomeUrl above.  I shouldn't really need to export it, but React (or the dev tools)
+//  got pissy when I didn't.
+export const UrlViewerInner = ({ url }) =>
 {
-  useVZomeUrl( url );
+  useVZomeUrl( url, { preview: true } );
   return ( <DesignViewer/> );
 }
 

@@ -1,28 +1,23 @@
 
 import React from 'react'
 
-import { DesignEditor } from './components/designeditor.jsx'
+import { DesignHistoryInspector } from './components/inspector.jsx'
 import { ErrorAlert } from './components/alert.jsx'
 import { VZomeAppBar } from './components/appbar.jsx'
-import { DesignViewer, WorkerContext, useVZomeUrl } from '../ui/viewer/index.jsx'
+import { WorkerContext, useVZomeUrl } from '../ui/viewer/index.jsx'
 
 const queryParams = new URLSearchParams( window.location.search );
-const debug = queryParams.get( 'debug' ) === 'true';
-const url = queryParams.get( 'url' ); // support for legacy viewer usage
-const viewOnly = !!url;
+const url = queryParams.get( 'url' ); // support for legacy inspector usage
+const oneDesign = !!url;
 
 const App = () =>
 {
-  useVZomeUrl( url );
+  useVZomeUrl( url, { preview: false } );
 
   return (
     <>
-      <VZomeAppBar viewOnly={viewOnly} />
-      { viewOnly?
-        <DesignViewer/>
-      :
-        <DesignEditor debug={debug} />
-      }
+      <VZomeAppBar oneDesign={oneDesign} />
+      <DesignHistoryInspector/>
       <ErrorAlert/> 
     </>
   );

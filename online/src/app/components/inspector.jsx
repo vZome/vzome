@@ -42,11 +42,9 @@ import { Spinner } from './spinner.jsx'
 //   return false
 // }
 
-export const DesignEditor = ( { debug } ) =>
+export const DesignHistoryInspector = ( { debug } ) =>
 {
   // const { startGridHover, stopGridHover, workingPlane } = props;
-  const canUndo = useSelector( state => state.history && state.history.canUndo );
-  const canRedo = useSelector( state => state.history && state.history.canRedo );
   const waiting = useSelector( state => !!state.waiting );
   const report = useDispatch();
 
@@ -80,24 +78,24 @@ export const DesignEditor = ( { debug } ) =>
   //   }
   // }
 
-  const drawerColumns = debug? 4 : 0;
+  const drawerColumns = 3;
   const canvasColumns = 12 - drawerColumns;
 
   return (
     <div style={{ flex: '1', height: '100%' }}>
       <Grid id='editor-main' container spacing={0} style={{ height: '100%' }}>        
         <Grid id='editor-drawer' item xs={drawerColumns}>
-          { debug && <Debugger/> }
+          <Debugger/>
         </Grid>
         <Grid id='editor-canvas' item xs={canvasColumns}>
           <DesignViewer>
             {/* { workingPlane && workingPlane.enabled &&
                 <BuildPlane config={workingPlane} {...{ startGridHover, stopGridHover }} /> } */}
-            <UndoRedoButtons {...{ canRedo, canUndo,
+            {/* <UndoRedoButtons {...{ canRedo, canUndo,
               doRedo: () => doAction( "redo" ), 
               doUndo: () => doAction( "undo" ), 
               doRedoAll: () => doAction( "redoAll" ), 
-              doUndoAll: () => doAction( "undoAll" ) }} />
+              doUndoAll: () => doAction( "undoAll" ) }} /> */}
           </DesignViewer>
         </Grid>
       </Grid>

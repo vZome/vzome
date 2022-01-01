@@ -307,7 +307,7 @@ const init = async () =>
   
   const createRenderer = orbitSource => ({
     name: orbitSource.getShapes().getName(),
-    shaper: shaperFactory( vzomePkg, orbitSource ),
+    // shaper: shaperFactory( vzomePkg, orbitSource ),
     embedding: orbitSource.getEmbedding(),
   })
 
@@ -526,21 +526,22 @@ const init = async () =>
 export const realizeShape = ( shape ) =>
 {
   const vertices = shape.getVertexList().toArray().map( av => {
-    const { x, y, z } = av.toRealVector()  // this is too early to do embedding, which is done later, globally
-    return { x, y, z }
+    const { x, y, z } = av.toRealVector();  // this is too early to do embedding, which is done later, globally
+    return { x, y, z };
   })
   const faces = shape.getTriangleFaces().toArray().map( ({ vertices }) => ({ vertices }) );  // not a no-op, converts to POJS
-  const id = shape.getGuid().toString()
-  return { id, vertices, faces }
+  const id = 's' + shape.getGuid().toString();
+  return { id, vertices, faces, instances: [] };
 }
 
 export const normalizeRenderedManifestation = rm =>
 {
-  const id = rm.getGuid().toString();
-  const shapeId = rm.getShapeId().toString();
+  const id = 'i' + rm.getGuid().toString();
+  const shapeId = 's' + rm.getShapeId().toString();
   const positionAV = rm.getLocationAV();
   const { x, y, z } = ( positionAV && positionAV.toRealVector() ) || { x:0, y:0, z:0 };
   const rotation = rm .getOrientation() .getRowMajorRealElements();
+  const selected = rm .getGlow() > 0.001;
   const componentToHex = c => {
     let hex = c.toString(16);
     return hex.length == 1 ? "0" + hex : hex;
@@ -550,40 +551,7 @@ export const normalizeRenderedManifestation = rm =>
   if ( rmc )
     color = "#" + componentToHex(rmc.getRed()) + componentToHex(rmc.getGreen()) + componentToHex(rmc.getBlue());
 
-  return { id, position: [ x, y, z ], rotation, color, shapeId };
-}
-
-const shaperFactory = ( vzomePkg, orbitSource ) => shapes => instance =>
-{
-  const { id, vectors } = instance
-  const jsAF = orbitSource.getSymmetry().getField()
-
-  const shown = new Map()
-  shown.set( id, instance )
-  const adapter = new Adapter( shown, new Map(), new Map() )
-
-  const man = vzomePkg.jsweet.JsManifestation.manifest( vectors, jsAF, adapter )
-  const rm = new vzomePkg.core.render.RenderedManifestation( man, orbitSource )
-  rm.resetAttributes( false, true )
-
-  // may be a zero-length strut, no shape
-  if ( !rm.getShape() )
-    return undefined
-  
-  // is the shape new?
-  const shapeId = rm.getShapeId().toString()
-  if ( ! shapes[ shapeId ] ) {
-    shapes[ shapeId ] = realizeShape( rm.getShape() )
-  }
-
-  // get shape, orientation, color, and position from rm
-  const positionAV = rm.getLocationAV() || jsAF.origin( 3 )
-  const { x, y, z } = positionAV.toRealVector() // orbitSource.getSymmetry().embedInR3( positionAV )
-  const zoneIndex = rm.getStrutZone()
-  const rotation = ( zoneIndex && (zoneIndex >= 0) && orbitSource.orientations[ zoneIndex ] ) || [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
-  let finalColor = rm.getColor().getRGB()
-
-  return { id, position: [ x, y, z ], rotation, color: finalColor, shapeId }
+  return { id, position: [ x, y, z ], rotation, color, selected, shapeId };
 }
 
 const legacyCommandFactory = ( createEditor, className ) => ( config ) => 
@@ -667,8 +635,6 @@ const parseViewXml = ( viewingElement ) =>
 
 const createParser = ( createDocument ) => ( xmlText ) =>
 {
-  // const domDoc = new DOMParser().parseFromString( xmlText, "application/xml" );
-
   const domDoc = txml.parse( xmlText /*, options */ );
 
   let vZomeRoot = new JavaDomElement( domDoc.filter( n => n.tagName === 'vzome:vZome' )[ 0 ] );
@@ -684,12 +650,13 @@ const createParser = ( createDocument ) => ( xmlText ) =>
   const scene = vZomeRoot.getChildElement( "sceneModel" )
   const lighting = scene && parseLighting( scene )
 
-  const edits = createEdit( assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement ) );
+  const xmlTree = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement );
+  const edits = createEdit( xmlTree );
   // Note: I'm adding one so that this matches the assigned ID of the next edit to do
-  const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
+  const targetEditId = `:${edits.getAttribute( "editNumber" )}:`
   const firstEdit = edits.firstChild()
 
-  return { firstEdit, camera, field, targetEdit, renderer, lighting, batchRender }
+  return { firstEdit, camera, field, targetEditId, renderer, lighting, batchRender, xmlTree }
 }
 
 export const parserPromise = init()

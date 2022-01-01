@@ -1,10 +1,10 @@
 
 import React from 'react'
 import { useEmbedding, useRotation, useGeometry } from './hooks.js'
+import { Matrix4 } from 'three';
 
 const Instance = ( { id, vectors, position, rotation, geometry, color, selected, highlightBall=()=>{}, onClick, onHover } ) =>
 {
-  // debugger
   const ref = useRotation( rotation );
   
   const handleHoverIn = ( e ) =>
@@ -38,9 +38,11 @@ const Instance = ( { id, vectors, position, rotation, geometry, color, selected,
 const InstancedShape = ( { shape, onClick, onHover, highlightBall } ) =>
 {
   const geometry = useGeometry( shape );
+  if ( shape.instances.length === 0 )
+    return null;
   return (
     <>
-      { shape.instances.map( instance => 
+      { shape.instances.map( instance =>
         <Instance key={instance.id} {...instance} geometry={geometry} highlightBall={highlightBall} onClick={onClick} onHover={onHover} /> ) }
     </>
   )

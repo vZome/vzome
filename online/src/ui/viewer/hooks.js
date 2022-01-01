@@ -25,7 +25,7 @@ export const useRotation = rotation =>
   useLayoutEffect( () => {
     const m = new Matrix4()
     m.set( ...rotation )
-    ref.current.applyMatrix4( m )
+    ref.current.matrix = m;
   }, [rotation] );
   return ref;
 }

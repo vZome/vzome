@@ -58,6 +58,7 @@ const debug = action => designName => async ( dispatch, getState ) =>
   }
 
   try {
+    // TODO this is outdated now, since we now need an abstraction of the state, not a mesh
     await interpret( action, mesh, edit, stack, recordSnapshot )
   } catch (error) {
     console.log( error )

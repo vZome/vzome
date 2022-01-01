@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const VZomeAppBar = ( { viewOnly } ) =>
+export const VZomeAppBar = ( { oneDesign } ) =>
 {
   const classes = useStyles()
 
@@ -34,11 +34,8 @@ export const VZomeAppBar = ( { viewOnly } ) =>
           <Typography variant="h5" className={classes.title}>
             vZome <Box component="span" fontStyle="oblique">Online</Box>
           </Typography>
-          { !viewOnly &&
-            <>
-              <OpenMenu className={classes.open} />
-              <AboutDialog/>
-            </> }
+          { !oneDesign && <OpenMenu className={classes.open} /> }
+          <AboutDialog/>
         </Toolbar>
       </AppBar>
     </div>

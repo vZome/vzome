@@ -1,7 +1,4 @@
 
-import { createStore, applyMiddleware } from 'redux';
-import { exposeStore } from 'redux-in-worker';
-
 const convertScene = preview =>
 {
   let { lights, camera, embedding } = preview
@@ -32,7 +29,6 @@ const convertGeometry = preview =>
     shapesDict[ shape.id ] = shape;
     shape.instances = [];
   } );
-  // shapes.map( shape => sceneListener.shapeAdded( shape ) );
 
   let i = 0;
   const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
@@ -42,9 +38,8 @@ const convertGeometry = preview =>
     const rotation = [ ...( orientations[ orientation ] || IDENTITY_MATRIX ) ];
     const instance = { id, position: [ x, y, z ], rotation, color, shapeId: shape };
     shapesDict[ shape ].instances.push( instance );
-    // sceneListener.instanceAdded( instance );
   });
-  return { shapes: shapesDict }
+  return { shapes: shapesDict, edit: null }
 }
 
 const fetchUrlText = async ( url ) =>
@@ -80,42 +75,7 @@ const fetchFileText = selected =>
   })
 }
 
-export const initialState = {};
-
-const reducer = ( state = initialState, event ) =>
-{
-  switch ( event.type ) {
-
-    case 'ALERT_RAISED':
-      return { ...state, problem: event.payload, waiting: false };
-
-    case 'ALERT_DISMISSED':
-      return { ...state, problem: '' };
-
-    case 'FETCH_STARTED': {
-      const { url, viewOnly } = event.payload;
-      return { ...state, waiting: true, editing: !viewOnly };
-    }
-
-    case 'TEXT_FETCHED':
-      return { ...state, source: event.payload };
-
-    case 'SCENE_INITIALIZED': {
-      const { scene } = state;
-      return { ...state, scene: { ...scene, ...event.payload } };
-      break;
-    }
-
-    case 'SCENE_COMPLETED': {
-      const { scene } = state;
-      return { ...state, scene: { ...scene, ...event.payload }, waiting: false };
-      break;
-    }
-
-    default:
-      return state;
-  }
-};
+let renderHistory;
 
 const parseAndInterpret = ( xmlLoading, report ) =>
 {
@@ -128,12 +88,14 @@ const parseAndInterpret = ( xmlLoading, report ) =>
     } )
 
     .then( design => {
-      const { renderer, camera, lighting } = design;
+      const { renderer, camera, lighting, xmlTree, targetEditId } = design;
       const { embedding } = renderer;
       camera.fov = 0.33915263; // WORKAROUND
-      report( { type: 'SCENE_INITIALIZED', payload: { lighting, camera, embedding, shapes: {} } } );
+      const scene = { lighting, camera, embedding, shapes: {} };
+      report( { type: 'PARSE_COMPLETED', payload: { scene, xmlTree } } );
       // the next step may take several seconds, which is why we already reported SCENE_INITIALIZED
-      report( { type: 'SCENE_COMPLETED', payload: legacyModule .interpretAndRender( design ) } );
+      renderHistory = legacyModule .interpretAndRender( design );
+      report( { type: 'RENDER_COMPLETED', payload: renderHistory .getScene( targetEditId ) } );
       return true; // probably nobody should care about the return value
     } )
 
@@ -144,7 +106,7 @@ const parseAndInterpret = ( xmlLoading, report ) =>
      } );
 }
 
-const fileLoader = store => report => event =>
+const fileLoader = ( report, event ) =>
 {
   if ( event.type !== 'FILE_PROVIDED' ) {
     return report( event );
@@ -160,7 +122,7 @@ const fileLoader = store => report => event =>
   return parseAndInterpret( xmlLoading, report );
 }
 
-const urlLoader = store => report => event =>
+const urlLoader = ( report, event ) =>
 {
   if ( event.type !== 'URL_PROVIDED' ) {
     return report( event );
@@ -178,8 +140,8 @@ const urlLoader = store => report => event =>
     return fetchUrlText( previewUrl )
       .then( text => JSON.parse( text ) )
       .then( preview => {
-        report( { type: 'SCENE_INITIALIZED', payload: convertScene( preview ) } );
-        report( { type: 'SCENE_COMPLETED', payload: convertGeometry( preview ) } );
+        report( { type: 'PARSE_COMPLETED', payload: { scene: convertScene( preview ) } } );
+        report( { type: 'RENDER_COMPLETED', payload: convertGeometry( preview ) } );
         return true; // probably nobody should care about the return value
       })
       .catch( error => {
@@ -193,6 +155,26 @@ const urlLoader = store => report => event =>
   }
 }
 
-const store = createStore( reducer, applyMiddleware( urlLoader, fileLoader ) );
+onmessage = ({ data }) =>
+{
+  console.log( `Worker received: ${JSON.stringify( data, null, 2 )}` );
+  const { type, payload } = data;
 
-exposeStore( store );
+  switch (type) {
+
+    case 'URL_PROVIDED':
+      urlLoader( postMessage, data );
+      break;
+  
+    case 'FILE_PROVIDED':
+      fileLoader( postMessage, data );
+      break;
+
+    case 'EDIT_SELECTED':
+      postMessage( { type: 'RENDER_COMPLETED', payload: renderHistory .getScene( payload ) } );
+      break;
+  
+    default:
+      break;
+  }
+}

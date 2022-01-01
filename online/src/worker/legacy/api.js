@@ -1,7 +1,6 @@
 
 import { normalizeRenderedManifestation, parserPromise, realizeShape } from './js2jsweet.js'
 import { defaultNew } from './resources/com/vzome/core/parts/index.js'
-import { createInstance } from './adapter.js'
 
 export { realizeShape, normalizeRenderedManifestation } from './js2jsweet.js'
 
@@ -75,9 +74,11 @@ export const getDefaultRenderer = field =>
 export const cloneMesh = ( { shown, selected, hidden, groups=[] } ) =>
   ({ shown: new Map( shown ), selected: new Map( selected ), hidden: new Map( hidden ), groups: [ ...groups ] })
 
+// TODO: put this in a module that both worker and main context can use.
+//  Right now this is duplicated!
 export const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
 
-export const interpret = ( action, mesh, edit, stack=[], recordSnapshot ) =>
+export const interpret = ( action, state, edit, stack=[] ) =>
 {
   // const nextTask = () => {
   //     return new Promise( res => setTimeout( res ) );
@@ -87,17 +88,17 @@ export const interpret = ( action, mesh, edit, stack=[], recordSnapshot ) =>
     if ( ! edit )
       return Step.DONE;
     if ( edit.isBranch() ) {
-      const branchMesh = cloneMesh( mesh );
-      stack.push( { branch: edit, mesh } );
-      recordSnapshot && recordSnapshot( branchMesh, edit.id(), edit.firstChild(), stack );
+      const branchState = state.clone();
+      stack.push( { branch: edit, state } );
+      branchState .recordSnapshot( edit.id(), edit.firstChild(), stack );
       edit = edit.firstChild(); // this assumes there are no empty branches
-      mesh = branchMesh;
+      state = branchState;
       return Step.IN;
     } else {
-      mesh = cloneMesh( mesh );  // each command builds on the last
-      edit.perform( mesh );
+      state = state.clone();  // each command builds on the last
+      edit.perform( state ); // here we may create a legacy edit object
       if ( edit.nextSibling() ) {
-        recordSnapshot && recordSnapshot( mesh, edit.id(), edit.nextSibling() );
+        state .recordSnapshot( edit.id(), edit.nextSibling() );
         edit = edit.nextSibling();
         return Step.OVER;
       } else {
@@ -106,13 +107,13 @@ export const interpret = ( action, mesh, edit, stack=[], recordSnapshot ) =>
           top = stack.pop();
         } while ( top && ! top.branch.nextSibling() )
         if ( top ) {
-          mesh = cloneMesh( top.mesh );  // overwrite and discard the prior value
+          state = top.state.clone();  // overwrite and discard the prior value
           edit = top.branch.nextSibling();
-          recordSnapshot && recordSnapshot( mesh, edit.id(), edit, stack );
+          state .recordSnapshot( edit.id(), edit, stack );
           return Step.OUT;
         } else {
           // at the end of the editHistory
-          recordSnapshot && recordSnapshot( mesh, edit.id(), null );
+          state .recordSnapshot( edit.id(), null );
           return Step.DONE;
         }
       }
@@ -173,113 +174,65 @@ export const interpret = ( action, mesh, edit, stack=[], recordSnapshot ) =>
   }
 }
 
-export const parseAndRender = async ( text ) =>
+class RenderHistory
 {
-  const { field, targetEdit, firstEdit, renderer, camera, lighting } = await parse( text );
-  let latestMesh = { shown: originShown( field ), selected: new Map(), hidden: new Map(), groups: [] };
-  let targetMesh = null;
-  const record = ( mesh, id ) => {
-    if ( !targetMesh && id === targetEdit ) {
-      targetMesh = latestMesh; // record the prior state
-    }
-    latestMesh = mesh; // will record where we failed, if we don't reach targetEdit
-  } // yup, overwrite every time
-  await interpret( Step.DONE, latestMesh, firstEdit, [], record );
-
-  const { shown, selected } = targetMesh || latestMesh;
-  const { shaper, embedding } = renderer;
-  const shapes = {};
-  const { instances } = shapeMesh( shapes, {}, shown, selected, shaper( shapes ) );
-
-  return {
-    camera: { ...camera, fov: 0.75 },
-    lighting,
-    embedding,
-    shapes,
-    instances,
-  };
-}
-
-const originShown = field =>
-{
-  const originBall = createInstance( [ field.origin( 3 ) ] );
-  return new Map().set( originBall.id, originBall )
-}
-
-export const shapeMesh = ( shapes, shapedInstances, shown, selected, cachingShaper ) =>
-{
-  const shapeInstance = ( instance ) =>
+  constructor( firstEdit, renderer )
   {
-    // TODO: handle undefined result from resolve
-    let shapedInstance = shapedInstances[ instance.id ];
-    if ( shapedInstance && ( instance.color === shapedInstance.color ) ) {
-      return shapedInstance;
-    }
-    shapedInstance = cachingShaper( instance );
-    // everything except selected state will go into shapedInstances
-    shapedInstance = { ...shapedInstance, vectors: instance.vectors };
-    shapedInstances[ instance.id ] = shapedInstance;
-    return shapedInstance
+    this.shapes = {};
+    this.snapshots = {};
+    this.batchRender = renderer;
+    this.currentId = '';
+    this.recordSnapshot( 'UNUSED', firstEdit );
   }
-  if ( cachingShaper ) {
-    try {
-      const instances = [];
-      const tryToShape = ( instance, selected ) => {
-        try {
-          instance && instances.push( { ...shapeInstance( instance ), selected } );
-        } catch (error) {
-          console.log( `Failed to shape instance: ${instance.id}` );
-        }
-      }
-      shown.forEach( instance => tryToShape( instance, false ) );
-      selected.forEach( instance => tryToShape( instance, true ) );
-      return { shapes, instances };
-    } catch (error) {
-      console.log( 'Caught an odd error while shaping' );
-      return {};
+
+  clone()
+  {
+    // Because we're not actually recording RealizedModel state, but recording
+    //   RenderedModel snapshots, we don't need to do anything here.  This
+    //   just satisfies the requirements of interpret().
+    return this;
+  }
+
+  // partial implementation of legacy RenderListener
+  manifestationAdded( rm )
+  {
+    const shapeId = 's' + rm.getShapeId().toString();
+    let shape = this.shapes[ shapeId ];
+    if ( ! shape ) {
+      shape = realizeShape( rm .getShape() );
+      this.shapes[ shapeId ] = shape;
     }
-  } else
-    console.log( 'no cachingShaper' );
-    return {};
+    let instance = normalizeRenderedManifestation( rm );
+    // Record this instance for the current edit
+    this.snapshots[ this.currentId ] .push( instance );
+  }
+
+  recordSnapshot( id, edit, stack )
+  {
+    this.currentId = edit? edit.id() : 'FINAL';
+    this.snapshots[ this.currentId ] = [];
+    this.batchRender( this ); // will make many callbacks to manifestationAdded()
+  }
+
+  getScene( editId )
+  {
+    const shapes = {};
+    const snapshot = this.snapshots[ editId ] || this.snapshots[ 'FINAL' ];
+    for ( const instance of snapshot ) {
+      const shapeId = instance.shapeId;
+      if ( ! shapes[ shapeId ] ) {
+        shapes[ shapeId ] = { ...this.shapes[ shapeId ], instances: [] };
+      }
+      shapes[ shapeId ] .instances .push( instance );
+    }
+    return { shapes, edit: editId };
+  }
 }
 
-export const interpretAndRender = design =>
+export const interpretAndRender = ( design ) =>
 {
-  const { targetEdit, firstEdit, batchRender } = design;
-  const shapes = {};
-
-  const renderingListener = ({
-    manifestationAdded: rm => {
-      const instance = normalizeRenderedManifestation( rm );
-      const { shapeId } = instance;
-      if ( ! shapes[ shapeId ] ) {
-        shapes[ shapeId ] = realizeShape( rm .getShape() );
-        shapes[ shapeId ].instances = {};
-      }
-      shapes[ shapeId ].instances[ instance.id ] = instance;
-    },
-    manifestationRemoved: rm => {
-      const instance = normalizeRenderedManifestation( rm );
-      const { shapeId } = instance;
-      const shape = shapes[ shapeId ];
-      delete shape.instances[ instance.id ];
-    },
-    glowChanged: rm => {
-      console.log( 'glowChanged' );
-    },
-    colorChanged: rm => {
-      console.log( 'colorChanged' );
-    },
-  });
-
-  const record = ( mesh, id ) => {
-    if ( id === targetEdit ) {
-      console.log( `Hit the target edit: ${targetEdit}` );
-    }
-  }
-  const unusedMesh = {};
-  interpret( Step.DONE, unusedMesh, firstEdit, [], record );
-  batchRender( renderingListener );
-  Object.values( shapes ).map( shape => shape.instances = Object.values( shape.instances ) );
-  return { shapes };
+  const { firstEdit, batchRender } = design;
+  const renderHistory = new RenderHistory( firstEdit, batchRender );
+  interpret( Step.DONE, renderHistory, firstEdit, [] );
+  return renderHistory;
 }
