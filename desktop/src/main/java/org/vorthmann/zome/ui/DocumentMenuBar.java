@@ -599,7 +599,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         
         menu .add( createMenuItem( "vZome Online (web app)...", "browse-https://vzome.com/app" ) );
         menu .add( createMenuItem( "vZome Home...", "browse-https://vzome.com" ) );
-        menu .add( createMenuItem( "Sharing vZome Files Online...", "browse-https://vorth.github.io/vzome-sharing/" ) );
+        menu .add( createMenuItem( "Sharing vZome Files Online...", "browse-https://vzome.github.io/vzome/sharing.html" ) );
         menu .add( createMenuItem( "vZome Tips on YouTube...", "browse-https://www.youtube.com/c/Vzome" ) );
         {
             JMenu submenu3d = new JMenu( "Social Media" );

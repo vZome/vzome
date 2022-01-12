@@ -537,6 +537,9 @@ public class ApplicationController extends DefaultController
     {
         props .setProperty( "githubClientId", this .properties .getProperty( "githubClientId" ) );
         props .setProperty( "githubClientSecret", this .properties .getProperty( "githubClientSecret" ) );
+        String repoNameOverride = this .properties .getProperty( "githubRepoName" );
+        if ( repoNameOverride != null && ! "".equals( repoNameOverride ) )
+            props .setProperty( "githubRepoName", repoNameOverride );
         
 //        props .setProperty( "edition", this .properties .getProperty( "edition" ) );
         props .setProperty( "version", this .properties .getProperty( "version" ) );

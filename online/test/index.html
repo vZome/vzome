@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>&lt;vzome-viewer&gt;</title>
+    <link rel="stylesheet" href="./vzome-viewer.css">
+    <script type="module">
+      import "/modules/vzome-viewer.js";
+
+      document.querySelector("select").addEventListener("input", (e) => {
+        document.querySelector("vzome-viewer").src = e.target.value;
+      })
+    </script>
+  </head>
+  <body>
+    <section>
+
+      <vzome-viewer src="/models/orangePurpleChiral.vZome">
+        <img src="/models/orangePurpleChiral.png" />
+      </vzome-viewer>
+
+      <select>
+        <option value="/models/orangePurpleChiral.vZome" selected>Orange & Purple Chiral</option>
+        <option value="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2021/10/28/14-19-45-THC-SV-colored/THC-SV-colored.vZome">THC Molecule</option>
+        <option value="/models/120-cell.vZome">Hyperdodecahedron</option>
+        <option value="/models/affineDodec.vZome">Affine Dodecahedron</option>
+        <option value="/models/bluePlaneArches1.vZome">Lacy RT</option>
+        <option value="/models/hept-test.vZome">Heptagon Test</option>
+        <option value="/models/C240.vZome">C240 Buckyball</option>
+        <option value="/models/vZomeLogo.vZome">vZome Logo</option>
+        <option value="">(none)</option>
+      </select>
+
+      <span>
+        Resize me! ↘
+      </span>
+    </section>
+  </body>
+</html>

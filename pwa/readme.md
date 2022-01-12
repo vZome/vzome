@@ -1,3 +1,10 @@
+
+This is an experimental subproject to create a simplified, online, vZome-like editor.  It is superseded by
+the `online` subproject.  Nonetheless, I'm keeping this around for the moment, until I confirm that
+all the value has been extracted.
+
+---
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
