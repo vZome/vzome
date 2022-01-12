@@ -56,8 +56,8 @@ react-vzome-viewer/dist
 react-vzome-*.tgz
 launch.json
 build.properties
-react-library/jsweetOut
+online/jsweetOut
 transpiled-java.js
-react-library/.snowpack
 vzome-react-vzome-*.tgz
 .vscode
+online/dist

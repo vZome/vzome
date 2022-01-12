@@ -80,9 +80,11 @@ dependencies {
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.3'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.3'
 
-    compile group: 'org.jsweet', name: 'jsweet-transpiler', version: '3.0.0'
-    compile group: 'org.jsweet', name: 'jsweet-core', version: "6.1.0"
-    compile group: 'org.jsweet', name: 'j4ts', version: '2.0.0'
+    if( project.gradle.startParameter.taskNames.contains( 'core:jsweet' ) ) {
+        compile group: 'org.jsweet', name: 'jsweet-transpiler', version: '3.0.0'
+        compile group: 'org.jsweet', name: 'jsweet-core', version: "6.1.0"
+        compile group: 'org.jsweet', name: 'j4ts', version: '2.0.0'
+    }
 
     runtime     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
     runtime     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
@@ -447,10 +449,10 @@ jsweet {
 
     bundle = true
 
-	outDir = new File( 'react-library/jsweetOut/js' )
+	outDir = new File( 'online/jsweetOut/js' )
 
     // The TS compile seems to fail when I set this!  Bug in the Gradle plugin?
-	// tsOut = new File( 'react-library/jsweetOut/ts' )
+	// tsOut = new File( 'online/jsweetOut/ts' )
 
 	targetVersion = 'ES6'
     tsOnly = false

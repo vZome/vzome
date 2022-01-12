@@ -292,6 +292,14 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                         errorCode = "internal error has been logged";
                     } else {
                         logger.log( Level.WARNING, "reporting error: " + errorCode, arguments );
+                        if(arguments != null) {
+                            StringBuilder buf = new StringBuilder(errorCode);
+                            for(Object arg : arguments) {
+                                buf.append("\n")
+                                .append(arg.toString());
+                            }
+                            errorCode = buf.toString();
+                        }
                         // TODO use resources
                     }
                     // TODO use resources
@@ -622,8 +630,9 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
 
                 + "Committers:\n\n" 
                 + "Scott Vorthmann\n" 
-                + "David Hall\n" + "\n"
-                + "Lucas Garron\n" + "\n"
+                + "David Hall\n"
+                + "Lucas Garron\n"
+                + "\n"
 
                 + "Contributors:\n\n"
                 + "Paul Hildebrandt\n"

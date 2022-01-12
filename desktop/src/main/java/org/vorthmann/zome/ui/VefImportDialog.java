@@ -76,4 +76,12 @@ public class VefImportDialog extends EscapeDialog
         this .quaternionPanel .syncFromModel();
     }
 
+    @Override
+    public void setVisible( boolean b )
+    {
+        if ( b ) {
+            this .syncFromModel();
+        }
+        super.setVisible(b);
+    }
 }
