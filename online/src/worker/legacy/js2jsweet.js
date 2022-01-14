@@ -4,7 +4,8 @@ import root2Field from '../fields/root2.js'
 import root3Field from '../fields/root3.js'
 import heptagonField from '../fields/heptagon.js'
 import Adapter from './adapter.js'
-import { algebraicNumberFactory, JavaDomElement, JsProperties } from './jsweet2js.js'
+import { algebraicNumberFactory, JavaDomElement, JsProperties } from './jsweet2js.js';
+import { LegacyEdit } from './edit.js';
 
 import allShapes from './resources/com/vzome/core/parts/index.js'
 import groupResources from './resources/com/vzome/core/math/symmetry/index.js'
@@ -401,22 +402,24 @@ const init = async () =>
 
     const renderer = createRenderer( orbitSource )
 
-    const parseAndPerformEdit = ( xmlElement, mesh ) =>
+    const interpretEdit = ( xmlElement, mesh ) =>
     {
       const wrappedElement = new JavaDomElement( xmlElement )
       // Note that we do not do editor.setAdapter() yet.  This means that we cannot
       //  deal with edits that have side-effects in their constructors!
       const edit = editFactory( editor, toolFactories, toolsModel )( wrappedElement )
       if ( ! edit )   // Null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit.
-        return false  //  Not indicating failure, just indicating nothing to record in history
+        return null  //  Not indicating failure, just indicating nothing to record in history
       const { shown, selected, hidden, groups } = mesh
       editor.setAdapter( new Adapter( shown, selected, hidden, groups ) )
       edit.loadAndPerform( wrappedElement, format, editContext )
-      return true
+      return edit;
     }
 
     /*
       STATUS:
+        (This was written before converting from DOM parsing to txml in the worker!)
+
           This approach is working OK, as far as producing valid JSON goes.  Obviously,
           The branch JSON is wrong.  More problematic is that the branch is already
           unpacked in the history.  This needs more thought.
@@ -452,30 +455,6 @@ const init = async () =>
       return result
     }
 
-    const createEdit = ( txmlElement, parent ) =>
-    {
-      const parentElement = parent;
-      const nativeElement = txmlElement;
-      const isBranch = () => txmlElement.tagName && txmlElement.tagName === "Branch";
-      const name = () => txmlElement.tagName;
-      const id = () => txmlElement.id;
-      const nextSibling = () => {
-        if ( !parentElement ) return null;
-        const next = nativeElement.index + 1;
-        if ( next >= parentElement.children.length ) return null;
-        return createEdit( parentElement.children[ next ], parentElement );
-      }
-      const firstChild = () => ( txmlElement.children.length > 0 ) && createEdit( txmlElement.children[ 0 ], txmlElement );
-      const getAttributeNames = () => txmlElement.attributes.keys();
-      const getAttribute = name => txmlElement.attributes[ name ];
-      const perform = mesh => parseAndPerformEdit( txmlElement, mesh );
-      const serialize = () => serializeLegacyEdit( txmlElement );
-      return {
-        nextSibling, firstChild, isBranch, id, perform,   // these are for the interpreter
-        name, getAttributeNames, getAttribute, serialize, // these are for the debugger UI
-      }
-    }
-
     const configureAndPerformEdit = ( className, config, adapter ) =>
     {
       const edit = editFactory( editor, toolFactories, toolsModel )( new JavaDomElement( { localName: className } ) )
@@ -493,7 +472,7 @@ const init = async () =>
 
     // renderer is not currently used, since the state is in RealizedModelImpl;
     //  instead, we have batchRender.
-    return { renderer, createEdit, configureAndPerformEdit, field, batchRender };
+    return { renderer, interpretEdit, configureAndPerformEdit, field, batchRender };
   }
 
   // Discover all the legacy edit classes and register as commands
@@ -642,7 +621,7 @@ const createParser = ( createDocument ) => ( xmlText ) =>
   const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
   const fieldName = vZomeRoot.getAttribute( "field" )
 
-  const { renderer, createEdit, field, batchRender } = createDocument( fieldName, namespace, vZomeRoot )
+  const { renderer, interpretEdit, field, batchRender } = createDocument( fieldName, namespace, vZomeRoot )
 
   const viewing = vZomeRoot.getChildElement( "Viewing" )
   const camera = viewing && parseViewXml( viewing )
@@ -651,7 +630,7 @@ const createParser = ( createDocument ) => ( xmlText ) =>
   const lighting = scene && parseLighting( scene )
 
   const xmlTree = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement );
-  const edits = createEdit( xmlTree );
+  const edits = new LegacyEdit( xmlTree, null, interpretEdit );
   // Note: I'm adding one so that this matches the assigned ID of the next edit to do
   const targetEditId = `:${edits.getAttribute( "editNumber" )}:`
   const firstEdit = edits.firstChild()

@@ -27,7 +27,13 @@ const reducer = ( state = initialState, event ) =>
 
     case 'PARSE_COMPLETED': {
       const { scene, xmlTree } = event.payload;
-      return { ...state, scene: { ...state.scene, ...scene }, xmlTree };
+      const attributes = {};
+      const index = node => node.children && node.children.map( child => {
+        attributes[ child.id ] = child.attributes;
+        index( child );
+      })
+      if ( xmlTree ) index( xmlTree );
+      return { ...state, scene: { ...state.scene, ...scene }, xmlTree, attributes };
     }
 
     case 'RENDER_COMPLETED': {

@@ -45,10 +45,10 @@ const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
 
 const defaultLighting = {
   backgroundColor: '#BBDAED',
-  ambientColor: '#393939',
+  ambientColor: '#555555',
   directionalLights: [ // These are the vZome defaults, for consistency
     { direction: [ 1, -1, -0.3 ], color: '#FDFDFD' },
-    { direction: [ -1, 0, -0.2 ], color: '#909090' },
+    { direction: [ -1, 0, -0.2 ], color: '#B5B5B5' },
     { direction: [ 0, 0, -1 ], color: '#303030' },
   ]
 }

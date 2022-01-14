@@ -80,9 +80,6 @@ export const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
 
 export const interpret = ( action, state, edit, stack=[] ) =>
 {
-  // const nextTask = () => {
-  //     return new Promise( res => setTimeout( res ) );
-  // }
   const step = () =>
   {
     if ( ! edit )
@@ -108,6 +105,7 @@ export const interpret = ( action, state, edit, stack=[] ) =>
         } while ( top && ! top.branch.nextSibling() )
         if ( top ) {
           state = top.state.clone();  // overwrite and discard the prior value
+          top.branch.undoChildren();
           edit = top.branch.nextSibling();
           state .recordSnapshot( edit.id(), edit, stack );
           return Step.OUT;
@@ -125,7 +123,6 @@ export const interpret = ( action, state, edit, stack=[] ) =>
     let stepped;
     do {
       stepped = stepOut();
-      // await nextTask();
     } while ( stepped !== Step.DONE );
   }
 
@@ -148,7 +145,6 @@ export const interpret = ( action, state, edit, stack=[] ) =>
     let stepped;
     do {
       stepped = stepOver();
-      // await nextTask();
     } while ( stepped !== Step.OUT && stepped !== Step.DONE );
     return stepped;
   }

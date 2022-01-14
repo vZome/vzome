@@ -3,10 +3,10 @@ import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@material-ui/core/Grid'
 
-import { Debugger } from './debugger.jsx'
+import { HistoryInspector } from './debugger.jsx'
 import { DesignViewer } from '../../ui/viewer/index.jsx'
 // import BuildPlane from './buildplane.jsx'
-import { UndoRedoButtons } from './undoredo.jsx'
+// import { UndoRedoButtons } from './undoredo.jsx'
 import { Spinner } from './spinner.jsx'
 // import { selectionToggled } from '../bundles/mesh.js'
 // import * as planes from '../bundles/planes.js'
@@ -85,7 +85,7 @@ export const DesignHistoryInspector = ( { debug } ) =>
     <div style={{ flex: '1', height: '100%' }}>
       <Grid id='editor-main' container spacing={0} style={{ height: '100%' }}>        
         <Grid id='editor-drawer' item xs={drawerColumns}>
-          <Debugger/>
+          <HistoryInspector/>
         </Grid>
         <Grid id='editor-canvas' item xs={canvasColumns}>
           <DesignViewer>

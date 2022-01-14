@@ -24,7 +24,7 @@ const Instance = ( { id, vectors, position, rotation, geometry, color, selected,
       onClick && onClick( id, vectors, selected )
     }
   }
-  const emissive = selected? "#bbbbbb" : highlightBall( id )? "#884444" : "black"
+  const emissive = selected? "#f6f6f6" : highlightBall( id )? "#884444" : "black"
   // TODO: cache materials
   return (
     <group position={ position } >

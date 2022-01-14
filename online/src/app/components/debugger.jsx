@@ -128,12 +128,13 @@ const StyledTreeItem = props => {
 //  Right now this is duplicated!
 export const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
 
-export const Debugger = ( {} )  =>
+export const HistoryInspector = ( { debug=false } )  =>
 {
   const report = useDispatch();
   const reportAction = action => report( { type: 'ACTION_TRIGGERED', payload: action } );
 
   const root = useSelector( state => state.xmlTree );
+  const allAttributes = useSelector( state => state.attributes );
   const current = useSelector( state => state.edit );
   
   const goToStart = () => reportAction( 'start' ); // TODO these all need to be rethought
@@ -150,13 +151,17 @@ export const Debugger = ( {} )  =>
 
   const renderTree = ( edit ) =>
   {
-    let subtrees = edit.children.length > 0 ? edit.children : null;
-    if ( subtrees && subtrees.length === 1 && subtrees[ 0 ].tagName === 'Boolean' ) {
+    if ( typeof edit === 'string' )
+      return null;
+    if ( edit.tagName === 'Boolean' || edit.tagName === 'polygonVertex' )
+      return null;
+    const kids = ( edit.children.length > 0 )? edit.children : null;
+    let subtrees = kids && kids.map( child => renderTree( child ) );
+    if ( subtrees && subtrees.length === 1 && subtrees[ 0 ] === null )
       subtrees = null;
-    }
     return (
       <StyledTreeItem key={edit.id} nodeId={edit.id} labelText={edit.tagName}>
-        { subtrees && subtrees.map( child => renderTree( child ) ) }
+        {subtrees}
       </StyledTreeItem>
     )
   }
@@ -172,6 +177,7 @@ export const Debugger = ( {} )  =>
 
   return (
     <Grid container direction='column' style={{ display: 'table', height: '100%' }}>
+      { debug &&
       <Grid item style={{ display: 'table-row' }}>
         <Toolbar id="debugger-tools" variant='dense'>
           <Tooltip title="Go to start" aria-label="go-to-start">
@@ -206,6 +212,7 @@ export const Debugger = ( {} )  =>
           </Tooltip>
         </Toolbar>
       </Grid>
+      }
       <Grid item id="debugger-source" style={{ display: 'table-row', height: '100%' }}>
         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
           <TreeView style={{ overflow: 'auto', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}
@@ -215,10 +222,12 @@ export const Debugger = ( {} )  =>
             defaultExpanded={ [ ':' ] }
             defaultExpandIcon={<ChevronRightIcon />}
           >
-            {renderTree( root, '' ) }
+            {root.children.map( edit => renderTree( edit ) ) }
+            <StyledTreeItem key={'--END--'} nodeId={'--END--'} labelText={'--END--'} />
           </TreeView>
         </div>
       </Grid>
+      { allAttributes &&
       <Grid item style={{ display: 'table-row' }}>
         <TableContainer component={Paper}>
           <Table size="small" aria-label="command attributes">
@@ -229,40 +238,18 @@ export const Debugger = ( {} )  =>
               </TableRow>
             </TableHead>
             <TableBody>
-              {current && current.attributes && Object.keys( current.attributes ).map( name => (
+              {current && allAttributes[ current ] && Object.keys( allAttributes[ current ] ).map( name => (
                 ( name !== 'id' ) &&
                 <StyledTableRow key={name}>
                   <StyledTableCell component="th" scope="row">{name}</StyledTableCell>
-                  <StyledTableCell>{current.attributes[ name ]}</StyledTableCell>
+                  <StyledTableCell>{allAttributes[ current ][ name ]}</StyledTableCell>
                 </StyledTableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
       </Grid>
+      }
     </Grid>
   )
 }
-
-
-// const select = ( state ) =>
-// {
-//   const dbugger = state.designs && designFns.selectDebugger( state )
-//   if ( ! dbugger ) {
-//     return {} // document had an unknown field, or couldn't parse
-//   }
-//   return {
-//     data: dbugger.source,
-//     current: dbugger && dbugger.nextEdit && dbugger.nextEdit.id(),
-//     branches: dbugger && dbugger.branchStack && dbugger.branchStack.map( ({ branch }) => branch.id() ),
-//     designName: dbugger && designFns.selectDesignName( state )
-//   }
-// }
-
-// const boundEventActions = {
-//   stepIn : dbugger.stepper.in,
-//   stepOver: dbugger.stepper.over,
-//   stepOut: dbugger.stepper.out,
-//   run: dbugger.stepper.done,
-// }
-
