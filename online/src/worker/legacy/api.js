@@ -207,7 +207,8 @@ class RenderHistory
   {
     this.currentId = edit? edit.id() : 'FINAL';
     this.snapshots[ this.currentId ] = [];
-    this.batchRender( this ); // will make many callbacks to manifestationAdded()
+    if ( this.currentId === 'FINAL' )
+      this.batchRender( this ); // will make many callbacks to manifestationAdded()
   }
 
   getScene( editId )

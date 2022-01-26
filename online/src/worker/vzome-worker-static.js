@@ -24,9 +24,9 @@ const convertScene = preview =>
 const convertGeometry = preview =>
 {
   let { shapes, instances, orientations } = preview
-  const shapesDict = {}
+  const shapesOut = {}
   shapes.map( shape => {
-    shapesDict[ shape.id ] = shape;
+    shapesOut[ shape.id ] = shape;
     shape.instances = [];
   } );
 
@@ -37,9 +37,9 @@ const convertGeometry = preview =>
     const { x, y, z } = position;
     const rotation = [ ...( orientations[ orientation ] || IDENTITY_MATRIX ) ];
     const instance = { id, position: [ x, y, z ], rotation, color, shapeId: shape };
-    shapesDict[ shape ].instances.push( instance );
+    shapesOut[ shape ].instances.push( instance );
   });
-  return { shapes: shapesDict, edit: null }
+  return shapesOut
 }
 
 const fetchUrlText = async ( url ) =>
@@ -91,11 +91,11 @@ const parseAndInterpret = ( xmlLoading, report ) =>
       const { renderer, camera, lighting, xmlTree, targetEditId } = design;
       const { embedding } = renderer;
       camera.fov = 0.33915263; // WORKAROUND
-      const scene = { lighting, camera, embedding, shapes: {} };
-      report( { type: 'PARSE_COMPLETED', payload: { scene, xmlTree } } );
-      // the next step may take several seconds, which is why we already reported SCENE_INITIALIZED
+      // the next step may take several seconds, which is why we already reported PARSE_COMPLETED
       renderHistory = legacyModule .interpretAndRender( design );
-      report( { type: 'RENDER_COMPLETED', payload: renderHistory .getScene( targetEditId ) } );
+      const { shapes } = renderHistory .getScene( targetEditId );
+      const scene = { lighting, camera, embedding, shapes };
+      report( { type: 'DESIGN_RENDERED', payload: { scene, xmlTree } } );
       return true; // probably nobody should care about the return value
     } )
 
@@ -140,8 +140,8 @@ const urlLoader = ( report, event ) =>
     return fetchUrlText( previewUrl )
       .then( text => JSON.parse( text ) )
       .then( preview => {
-        report( { type: 'PARSE_COMPLETED', payload: { scene: convertScene( preview ) } } );
-        report( { type: 'RENDER_COMPLETED', payload: convertGeometry( preview ) } );
+        const scene = { ...convertScene( preview ), shapes: convertGeometry( preview ) };
+        report( { type: 'DESIGN_RENDERED', payload: { scene } } );
         return true; // probably nobody should care about the return value
       })
       .catch( error => {
@@ -157,7 +157,7 @@ const urlLoader = ( report, event ) =>
 
 onmessage = ({ data }) =>
 {
-  console.log( `Worker received: ${JSON.stringify( data, null, 2 )}` );
+  // console.log( `Worker received: ${JSON.stringify( data, null, 2 )}` );
   const { type, payload } = data;
 
   switch (type) {

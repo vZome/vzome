@@ -19,7 +19,7 @@ export class VZomeViewer extends HTMLElement {
     this.#stylesMount = document.createElement("div");
     this.#container = this.#root.appendChild( this.#stylesMount );
 
-    this.#store = createWorkerStore();
+    this.#store = createWorkerStore( this );
 
     if ( this.hasAttribute( 'src' ) ) {
       const url = this.getAttribute( 'src' );
@@ -31,25 +31,21 @@ export class VZomeViewer extends HTMLElement {
       else
         this.#url = url;
         // Get the fetch started by the worker before we load the dynamic module below,
-        //  which is pretty big.  I really should make encapsulate the message in a function!
+        //  which is pretty big.  I really should encapsulate the message in a function!
         this.#store.dispatch( { type: 'URL_PROVIDED', payload: { url, viewOnly: true } } );
     }
   }
 
   connectedCallback() {
-    this.#render();
+    import( '../ui/viewer/index.jsx' )
+      .then( module => {
+        this.#reactElement = module.renderViewer( this.#store, this.#container, this.#stylesMount, this.#url );
+      })
   }
 
   #reactElement = null;
   get reactElement() {
     return this.#reactElement;
-  }
-
-  #render() {
-    import( '../ui/viewer/index.jsx' )
-      .then( module => {
-        this.#reactElement = module.renderViewer( this.#store, this.#container, this.#stylesMount, this.#url );
-      })
   }
 
   static get observedAttributes() {
@@ -63,7 +59,8 @@ export class VZomeViewer extends HTMLElement {
   ) {
     switch (attributeName) {
       case "src":
-        this.#render();
+      this.#url = _newValue;
+      this.#store.dispatch( { type: 'URL_PROVIDED', payload: { url: _newValue, viewOnly: true } } );
     }
   }
 

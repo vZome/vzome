@@ -25,7 +25,7 @@ const reducer = ( state = initialState, event ) =>
     case 'TEXT_FETCHED':
       return { ...state, source: event.payload };
 
-    case 'PARSE_COMPLETED': {
+    case 'DESIGN_RENDERED': {
       const { scene, xmlTree } = event.payload;
       const attributes = {};
       const index = node => node.children && node.children.map( child => {
@@ -33,13 +33,8 @@ const reducer = ( state = initialState, event ) =>
         index( child );
       })
       if ( xmlTree ) index( xmlTree );
-      return { ...state, scene: { ...state.scene, ...scene }, xmlTree, attributes };
-    }
-
-    case 'RENDER_COMPLETED': {
-      const { scene } = state;
-      const { shapes, edit } = event.payload;
-      return { ...state, scene: { ...scene, shapes }, edit, waiting: false };
+      // may need to merge scene.shapes here, for incremental case
+      return { ...state, scene: { ...state.scene, ...scene }, waiting: false };
     }
 
     default:
@@ -48,7 +43,7 @@ const reducer = ( state = initialState, event ) =>
 };
 
 
-export const createWorkerStore = () =>
+export const createWorkerStore = customElement =>
 {
   const worker = new Worker( new URL( '/modules/vzome-worker-static.js', import.meta.url ), { type: 'module' } );
 
@@ -61,14 +56,13 @@ export const createWorkerStore = () =>
       case 'ALERT_DISMISSED':
       case 'FETCH_STARTED':
       case 'TEXT_FETCHED':
-      case 'PARSE_COMPLETED':
-      case 'RENDER_COMPLETED':
+      case 'DESIGN_RENDERED':
         report( event );
         break;
 
       // Anything else is to send to the worker
       default:
-        console.log( `Message sending to worker: ${JSON.stringify( event, null, 2 )}` );
+        // console.log( `Message sending to worker: ${JSON.stringify( event, null, 2 )}` );
         worker.postMessage( event );  // send them all, let the worker filter them out
         break;    
     }
@@ -84,8 +78,12 @@ export const createWorkerStore = () =>
   });
 
   worker .onmessage = ({ data }) => {
-    console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
+    // console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
     store .dispatch( data );
+
+    // Useful for supporting regression testing of the vzome-viewer web component
+    if ( customElement && data.type === 'DESIGN_RENDERED' )
+      customElement.dispatchEvent( new Event( 'vzome-design-rendered' ) );
   }
 
   return store;
