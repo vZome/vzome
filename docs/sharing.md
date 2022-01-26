@@ -52,7 +52,7 @@ GitHub will display a list of several files, including a `README.md`, and below 
 render the `README.md` as styled text.  (This is standard behavior for GitHub whenever a
 folder contains such a file.)  The `README.md` contains several links, but the first two
 are the most important: a link to your generated, custom web page for the shared design,
-and a link to edit the *source Markdown file* from which that page is generated.
+and a link to edit the *source Markdown file from which that page is generated*.
 
 The first link is the one that you can copy and share on social media or email.
 ***However***, that link won't work immediately, as explained below, so *always*
@@ -71,6 +71,9 @@ GitHub Pages takes a few minutes to generate the custom web page.
 
 The second link in the `README.md` takes you right into edit mode for
 the source for your custom web page, which is a file in a different folder, with the suffix `.md` (for Markdown).
+I *strongly* recommend that you spend a few minute learning [the basics of Markdown syntax][markdown].
+You might also need to check the documentation of [the exact dialect that GitHub uses][ghmd], if you have difficulties.
+
 The raw `.md` file content will look something like this:
 
 {% raw %}
@@ -276,5 +279,6 @@ Coming soon.
 [example]: https://github.com/vorth/vzome-sharing/tree/main/2021/11/29/08-01-41-sample-vZome-share
 [postsrc]: https://github.com/vorth/vzome-sharing/blob/main/_posts/2021-11-29-sample-vZome-share-08-01-41.md
 [showcase]: https://jekyllrb.com/showcase/
-[markdown]: https://github.github.com/gfm/
+[markdown]: https://www.markdownguide.org/
+[ghmd]: https://github.github.com/gfm/
 [css]: https://developer.mozilla.org/en-US/docs/Web/CSS/Tutorials
