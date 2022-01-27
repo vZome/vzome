@@ -38,7 +38,7 @@ yarn run build || exit $?
 pushd dist
 
 banner 'Creating the online.tgz archive'
-  cp -R ../public/ app && \
+  cp -R ../public/* app && \
   echo 'Header always set Access-Control-Allow-Origin "*"' > modules/.htaccess && \
   tar czvf online.tgz app modules
 

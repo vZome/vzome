@@ -13,26 +13,27 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [16.3.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v2
+    - name: Set up JDK 8
+      uses: actions/setup-java@v2
+      with:
+        java-version: '8'
+        distribution: 'temurin'
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm install
-      working-directory: ./online
-    - run: npm run build
-      working-directory: ./online
-    - run: rm -rf app
-      working-directory: ./online
-    - run: mv build app
-      working-directory: ./online
+    - name: Grant execute permissions
+      run: chmod +x gradlew build-online.bash
+    - name: Build with Gradle and Yarn
+      run: ./build-online.bash
     - name: Archive vZome Online build
       uses: actions/upload-artifact@v2
       with:
         name: online-app
-        path: online/app
+        path: online/dist/online.tgz
 
