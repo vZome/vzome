@@ -13,19 +13,28 @@
       // })
 
       const customElement = document.querySelector("vzome-viewer");
+      const successes = document.querySelector( "#successes" );
+      const failures = document.querySelector( "#failures" );
 
       const sleep = ms => new Promise( resolve => setTimeout( resolve, ms ) );
+
+      const encode = path => path.split( '/' ).map( encodeURIComponent ).join( '/' );
 
       const BASE_URL = "https://raw.githubusercontent.com/John-Kostick/vzome-sharing/main/";
 
       let paths = []; // We'll use this as a stack
+      let currentPath;
 
-      const fetchNextDesign = async () =>
+      const fetchNextDesign = success => async () =>
       {
         if ( paths.length === 0 ) return; // we're done
-        // await sleep( 3000 ); // give the user a chance to see each model, and even interact
-        const path = paths.shift(); // pop the next path off the stack
-        customElement.src = BASE_URL + path;// triggers the worker to start loading,
+
+        let li = (success? successes : failures) .appendChild( document.createElement('li') );
+        li.textContent = currentPath;
+
+        // await sleep( 2000 ); // give the user a chance to see each model, and even interact
+        currentPath = paths.shift(); // pop the next path off the stack
+        customElement.src = BASE_URL + currentPath;// triggers the worker to start loading,
           // which will result in another RENDER_COMPLETED event coming back
       }
 
@@ -34,16 +43,18 @@
         .then( response => response.json() )
         .then( json => {
           const allPaths = json.tree.filter( entry => entry.type==="blob" && entry.path.endsWith( '.vZome' ) )
-            .map( entry => entry.path );
+            .filter( entry => entry.path > "2021/07/31" )
+            .map( entry => encode( entry.path ) );
           console.log( 'Repo has', allPaths.length, 'entries.' );
-          return allPaths.slice( 340 );
+          return allPaths;
         } )
         .then( pathsToTry => {
           paths = pathsToTry; // Initialize the full stack
           console.log( 'pathsToTry has', paths.length, 'entries.' );
-          customElement .addEventListener( "vzome-design-rendered", fetchNextDesign );
-          const path = paths.shift(); // pop the first path off the stack
-          customElement.src = BASE_URL + path;// triggers the worker to start loading,
+          customElement .addEventListener( "vzome-design-rendered", fetchNextDesign( true ) );
+          customElement .addEventListener( "vzome-design-failed", fetchNextDesign( false ) );
+          currentPath = paths.shift(); // pop the first path off the stack
+          customElement.src = BASE_URL + currentPath;// triggers the worker to start loading,
             // which will result in the RENDER_COMPLETED event coming back
         } );
 
@@ -64,9 +75,11 @@
       </select> -->
 
     </section>
-    <!-- <section>
-      <vzome-viewer src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2021/10/28/14-19-45-THC-SV-colored/THC-SV-colored.vZome">
-      </vzome-viewer>
-    </section> -->
+    <p>Failures:</p>
+    <ul id="failures">
+    </ul>
+    <p>Successes:</p>
+    <ul id="successes">
+    </ul>
   </body>
 </html>

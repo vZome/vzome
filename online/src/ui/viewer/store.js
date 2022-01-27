@@ -1,6 +1,5 @@
 
 import { configureStore } from '@reduxjs/toolkit'
-import logger from 'redux-logger'
 
 export const initialState = {};
 
@@ -82,8 +81,21 @@ export const createWorkerStore = customElement =>
     store .dispatch( data );
 
     // Useful for supporting regression testing of the vzome-viewer web component
-    if ( customElement && data.type === 'DESIGN_RENDERED' )
-      customElement.dispatchEvent( new Event( 'vzome-design-rendered' ) );
+    if ( customElement ) {
+      switch (data.type) {
+
+        case 'DESIGN_RENDERED':
+          customElement.dispatchEvent( new Event( 'vzome-design-rendered' ) );
+          break;
+      
+        case 'ALERT_RAISED':
+          customElement.dispatchEvent( new Event( 'vzome-design-failed' ) );
+          break;
+      
+        default:
+          break;
+      }
+    }
   }
 
   return store;
