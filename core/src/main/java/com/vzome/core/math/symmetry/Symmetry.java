@@ -8,16 +8,15 @@ import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 
-// Should be unnecessary, but JSweet fails under GitHub Actions (but not locally,
-//   using the exact same Eclipse Temurin OpenJDK 8!)
-import com.vzome.core.math.symmetry.Axis;
-
 /**
  * @author Scott Vorthmann
  *
  */
 public interface Symmetry extends Iterable<Direction>, Embedding
 {
+    int PLUS = 0 /*Axis.PLUS*/, MINUS = 1 /*Axis.MINUS*/;  // Dumb workaround for the JSweet compiler glitch.
+    // JSweet fails under GitHub Actions (but not locally, using the exact same Eclipse Temurin OpenJDK 8!)
+
     int NO_ROTATION = -1;
     
     String TETRAHEDRAL = "tetrahedral", PYRITOHEDRAL = "pyritohedral";
@@ -31,8 +30,6 @@ public interface Symmetry extends Iterable<Direction>, Embedding
     Axis getAxis( AlgebraicVector vector, OrbitSet orbits );
 
     Axis getAxis( RealVector vector, Collection<Direction> filter );
-    
-    int PLUS = Axis.PLUS, MINUS = Axis.MINUS;
 	
     int getMapping( int from, int to );
 
