@@ -33,3 +33,5 @@ cat 'online/jsweetOut/js/bundle.js' | \
 
 banner 'finished transpiling Java sources with JSweet'
 
+find online/src/wc
+banner `pwd`
