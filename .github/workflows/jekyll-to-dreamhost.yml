@@ -1,5 +1,5 @@
 
-name: Build Jekyll site and deploy to Dreamhost
+name: Build Jekyll site
 
 on:
   workflow_dispatch:
@@ -13,5 +13,9 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           build_only: true
-      - name: List files
-        run: ls .
+          jekyll_src: 'docs'
+      - name: Archive the site
+        uses: actions/upload-artifact@v2
+        with:
+          name: site-build
+          path: build
