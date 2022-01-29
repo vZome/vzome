@@ -127,14 +127,44 @@ the link will not get embedded as a preview -- your social media post won't show
 
 Your `vzome-sharing` repository creates an entire website, and there is no reason to limit yourself
 to just the plain blog index that you get from the template repo.
-You can choose a different *theme* in the "Pages" settings for your repository,
-and perhaps set some *theme properties* in the the `_config.yml` file that will appear in your repository.
-(Note that many of the themes do not generate a post index on the home page; this is the reason that
-the template `vzome-sharing` repo uses the `minima` theme by default.)
 
 You can create blog posts and regular web pages very easily, and make the website your own.
 Add as many HTML or Markdown pages as you like.  Best of all, those pages can show your vZome designs in the same repository,
 using the same `vzome-viewer` custom element used in the generated, design-specific pages.
+
+### Customizing the default minima theme
+
+If you look at the [sample page for the minima theme](https://jekyll.github.io/minima/),
+you should notice a few elements that are not present on your own `vzome-sharing` landing page.
+You'll see a customized site title, an "About" link, and some changes to the page footer.
+All of these are easy customizations to the `minima` theme.
+You can examine the [source for that sample page](https://github.com/jekyll/minima/tree/2.5-stable),
+but that is also the source for the theme itself.
+
+A better example is [my own `vzome-sharing` site](https://vorth.github.io/vzome-sharing/),
+where I have incorporated the "About" page, a vZome logo image above the posts list,
+and the footer enhancements, including social media links.
+You can compare with the source changes to [`_config.yml`](https://github.com/vorth/vzome-sharing/blob/main/_config.yml)
+and the added [`about.md`](https://github.com/vorth/vzome-sharing/blob/main/about.md) and
+[`index.md`](https://github.com/vorth/vzome-sharing/blob/main/index.md) files.
+To understand the exact details of those changes,
+look at the [README for the minima theme](https://github.com/jekyll/minima/blob/2.5-stable/README.md).
+As that document explains, you can even go further with customizing the `minima` theme,
+changing page layouts and creating new ones.
+
+### Switching to a different theme
+
+There is no reason you need to stick with the `minima` theme.
+There are about a dozen themes supported by GitHub Pages, and you can see them
+in the theme chooser as described in the [Quickstart page][themes].
+If you just want to browse the theme chooser, simply close that tab without
+hitting the "Select theme" button.
+
+The customization mechanisms may vary for different themes, so don't be surprised
+if you need to make some changes to `_config.yml`, as well as possibly adding
+some other layouts or template files.
+(Note that many of the themes do not generate a post index on the home page; this is the reason that
+the template `vzome-sharing` repo uses the `minima` theme by default.)
 
 GitHub Pages puts a lot of power in your hands, as we'll see below,
 so you are limited only by your imagination!
@@ -268,6 +298,7 @@ Coming soon.
 
 [vzome]: https://vzome.com/home/
 [pages]: https://pages.github.com/
+[themes]: https://docs.github.com/en/pages/quickstart
 [enable]: https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site
 [jekyll]: https://jekyllrb.com/
 [fmatter]: https://jekyllrb.com/docs/front-matter/
