@@ -159,7 +159,8 @@ you should notice a few elements that are not present on your own `vzome-sharing
 You'll see a customized site title, an "About" link, and some changes to the page footer.
 All of these are easy customizations to the `minima` theme.
 You can examine the [source for that sample page](https://github.com/jekyll/minima/tree/2.5-stable),
-but that is also the source for the theme itself.
+but that is also the source for the theme itself, so it is a bit confusing.
+(Note: the latest `minima` theme version is 3.0, but GitHub Pages is still using 2.5.)
 
 A better example is [my own `vzome-sharing` site](https://vorth.github.io/vzome-sharing/),
 where I have incorporated the custom title, the "About" page, a vZome logo image above the posts list,
