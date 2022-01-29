@@ -28,9 +28,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: Grant execute permissions
-      run: chmod +x gradlew build-online.bash
+      run: chmod +x gradlew cicd/build-online.bash
     - name: Build with Gradle and Yarn
-      run: ./build-online.bash
+      run: cicd/build-online.bash
     - name: Archive vZome Online build
       uses: actions/upload-artifact@v2
       with:

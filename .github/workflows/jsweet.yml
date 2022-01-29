@@ -32,10 +32,10 @@ jobs:
           distribution: 'temurin'
 
       - name: Grant execute permissions
-        run: chmod +x gradlew build-online.bash
+        run: chmod +x gradlew cicd/jsweet-legacy-code.bash
 
-      - name: Build with Gradle and Yarn
-        run: ./build-online.bash
+      - name: Build with Gradle and JSweet
+        run: cicd/jsweet-legacy-code.bash
 
       - name: Archive Generated JS
         uses: actions/upload-artifact@v2
