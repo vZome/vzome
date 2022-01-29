@@ -40,5 +40,5 @@ jobs:
       - name: Archive Generated JS
         uses: actions/upload-artifact@v2
         with:
-          name: legacy-bundle
-          path: online/jsweetOut/js/bundle.js
+          name: transpiled-java
+          path: online/src/worker/legacy/transpiled-java.js
