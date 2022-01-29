@@ -142,7 +142,7 @@ You can examine the [source for that sample page](https://github.com/jekyll/mini
 but that is also the source for the theme itself.
 
 A better example is [my own `vzome-sharing` site](https://vorth.github.io/vzome-sharing/),
-where I have incorporated the "About" page, a vZome logo image above the posts list,
+where I have incorporated the custom title, the "About" page, a vZome logo image above the posts list,
 and the footer enhancements, including social media links.
 You can compare with the source changes to [`_config.yml`](https://github.com/vorth/vzome-sharing/blob/main/_config.yml)
 and the added [`about.md`](https://github.com/vorth/vzome-sharing/blob/main/about.md) and
