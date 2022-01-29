@@ -41,4 +41,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: transpiled-java
-          path: online/src/worker/legacy/transpiled-java.js
+          path: online/src/wc/legacy/transpiled-java.js
