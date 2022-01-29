@@ -82,6 +82,9 @@ won't get updated.  If that happens, you'll see a red icon at the top of the lis
 of workflow runs.  You can click on it and drill in to see the detailed build log
 from GitHub Pages and Jekyll, and find out exactly how you broke things.
 
+*For both of these purposes, it is a good idea to just keep a dedicated browser
+tab open on the Actions page, so you always know what's happening.*
+
 ## Customizing the Generated Page
 
 The second link in the `README.md` takes you right into edit mode for
