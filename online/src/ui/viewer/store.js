@@ -33,6 +33,12 @@ const reducer = ( state = initialState, event ) =>
       })
       if ( xmlTree ) index( xmlTree );
       // may need to merge scene.shapes here, for incremental case
+      return { ...state, scene: { ...state.scene, ...scene }, waiting: false, xmlTree, attributes };
+    }
+
+    case 'EDIT_RENDERED': {
+      const { scene } = event.payload;
+      // may need to merge scene.shapes here, for incremental case
       return { ...state, scene: { ...state.scene, ...scene }, waiting: false };
     }
 
@@ -56,6 +62,7 @@ export const createWorkerStore = customElement =>
       case 'FETCH_STARTED':
       case 'TEXT_FETCHED':
       case 'DESIGN_RENDERED':
+      case 'EDIT_RENDERED':
         report( event );
         break;
 

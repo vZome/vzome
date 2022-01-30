@@ -11,6 +11,7 @@ import { create } from 'jss';
 import { ShapedGeometry } from './geometry.jsx'
 import { DesignCanvas } from './designcanvas.jsx'
 import { createWorkerStore } from './store.js';
+import { Spinner } from './spinner.jsx'
 
 // from https://www.bitdegree.org/learn/javascript-download
 const download = source =>
@@ -27,10 +28,11 @@ const download = source =>
   document.body.removeChild( element )
 }
 
-export const DesignViewer = ( { children, children3d } ) =>
+export const DesignViewer = ( { children, children3d, useSpinner=false } ) =>
 {
   const source = useSelector( state => state.source );
   const scene = useSelector( state => state.scene );
+  const waiting = useSelector( state => !!state.waiting );
   return (
     <div style={ { display: 'flex', height: '100%', position: 'relative' } }>
       { scene &&
@@ -41,6 +43,7 @@ export const DesignViewer = ( { children, children3d } ) =>
           {children3d}
         </DesignCanvas>
       }
+      <Spinner visible={useSpinner && waiting} />
       { source && source.text &&
         <IconButton color="inherit" aria-label="download"
             style={ { position: 'absolute', top: '5px', right: '5px' } }

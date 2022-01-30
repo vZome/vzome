@@ -171,7 +171,7 @@ onmessage = ({ data }) =>
       break;
 
     case 'EDIT_SELECTED':
-      postMessage( { type: 'RENDER_COMPLETED', payload: renderHistory .getScene( payload ) } );
+      postMessage( { type: 'EDIT_RENDERED', payload: { scene: renderHistory .getScene( payload ) } } );
       break;
   
     default:

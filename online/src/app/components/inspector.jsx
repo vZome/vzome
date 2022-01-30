@@ -7,7 +7,6 @@ import { HistoryInspector } from './debugger.jsx'
 import { DesignViewer } from '../../ui/viewer/index.jsx'
 // import BuildPlane from './buildplane.jsx'
 // import { UndoRedoButtons } from './undoredo.jsx'
-import { Spinner } from './spinner.jsx'
 // import { selectionToggled } from '../bundles/mesh.js'
 // import * as planes from '../bundles/planes.js'
 
@@ -45,7 +44,6 @@ import { Spinner } from './spinner.jsx'
 export const DesignHistoryInspector = ( { debug } ) =>
 {
   // const { startGridHover, stopGridHover, workingPlane } = props;
-  const waiting = useSelector( state => !!state.waiting );
   const report = useDispatch();
 
   const doAction = action =>
@@ -87,8 +85,8 @@ export const DesignHistoryInspector = ( { debug } ) =>
         <Grid id='editor-drawer' item xs={drawerColumns}>
           <HistoryInspector/>
         </Grid>
-        <Grid id='editor-canvas' item xs={canvasColumns}>
-          <DesignViewer>
+        <Grid id='editor-canvas' item xs={canvasColumns} >
+          <DesignViewer useSpinner>
             {/* { workingPlane && workingPlane.enabled &&
                 <BuildPlane config={workingPlane} {...{ startGridHover, stopGridHover }} /> } */}
             {/* <UndoRedoButtons {...{ canRedo, canUndo,
@@ -99,7 +97,6 @@ export const DesignHistoryInspector = ( { debug } ) =>
           </DesignViewer>
         </Grid>
       </Grid>
-      <Spinner visible={waiting} />
     </div>
   )
 }
