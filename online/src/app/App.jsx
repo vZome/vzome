@@ -7,17 +7,17 @@ import { VZomeAppBar } from './components/appbar.jsx'
 import { DesignViewer, WorkerContext, useVZomeUrl } from '../ui/viewer/index.jsx'
 
 const queryParams = new URLSearchParams( window.location.search );
-const url = queryParams.get( 'url' ); // support for legacy inspector usage
-const oneDesign = !!url;
+const url = queryParams.get( 'url' ); // support for legacy viewer usage (old vZome shares)
+const legacyViewerMode = !!url;
 
 const App = () =>
 {
-  useVZomeUrl( url, { preview: oneDesign } );
+  useVZomeUrl( url || '/models/vZomeLogo.vZome', { preview: legacyViewerMode } );
 
   return (
     <>
-      <VZomeAppBar oneDesign={oneDesign} />
-      { oneDesign? <DesignViewer/> : <DesignHistoryInspector/> }
+      <VZomeAppBar oneDesign={legacyViewerMode} />
+      { legacyViewerMode? <DesignViewer/> : <DesignHistoryInspector/> }
       <ErrorAlert/> 
     </>
   );
