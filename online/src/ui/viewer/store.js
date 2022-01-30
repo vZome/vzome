@@ -25,13 +25,16 @@ const reducer = ( state = initialState, event ) =>
       return { ...state, source: event.payload };
 
     case 'DESIGN_RENDERED': {
-      const { scene, xmlTree } = event.payload;
+      let { scene, xmlTree } = event.payload;
       const attributes = {};
       const indexAttributes = node => node.children && node.children.map( child => {
         attributes[ child.id ] = child.attributes;
         indexAttributes( child );
       })
-      if ( xmlTree ) indexAttributes( xmlTree );
+      if ( xmlTree ) {
+        indexAttributes( xmlTree );
+        xmlTree = branchSelectionBlocks( xmlTree );
+      }
       // may need to merge scene.shapes here, for incremental case
       return { ...state, scene: { ...state.scene, ...scene }, waiting: false, xmlTree, attributes };
     }
@@ -47,6 +50,31 @@ const reducer = ( state = initialState, event ) =>
   }
 };
 
+const branchSelectionBlocks = node =>
+{
+  if ( node.children && node.children.length > 1 ) {
+    const newChildren = [];
+    let block = null;
+    for (const child of node.children) {
+      if ( child.tagName === 'BeginBlock' ) {
+        block = [];
+        // discard this BeginBlock node (don't push it)
+      } else if ( child.tagName === 'EndBlock' ) {
+        const newNode = { tagName: 'ChangeSelection', id: child.id, children: block, attributes: {} };
+        newChildren.push( newNode );
+        block = null;
+      } else if ( block ) {
+        block.push( child ); // child can't be a branch inside a block
+      } else {
+        newChildren.push( branchSelectionBlocks( child ) );
+      }
+    }
+    node.children = newChildren;
+    return node;
+  }
+  else
+    return node;
+}
 
 export const createWorkerStore = customElement =>
 {
