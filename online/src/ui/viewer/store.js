@@ -27,11 +27,11 @@ const reducer = ( state = initialState, event ) =>
     case 'DESIGN_RENDERED': {
       const { scene, xmlTree } = event.payload;
       const attributes = {};
-      const index = node => node.children && node.children.map( child => {
+      const indexAttributes = node => node.children && node.children.map( child => {
         attributes[ child.id ] = child.attributes;
-        index( child );
+        indexAttributes( child );
       })
-      if ( xmlTree ) index( xmlTree );
+      if ( xmlTree ) indexAttributes( xmlTree );
       // may need to merge scene.shapes here, for incremental case
       return { ...state, scene: { ...state.scene, ...scene }, waiting: false, xmlTree, attributes };
     }

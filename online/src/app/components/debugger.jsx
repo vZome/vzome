@@ -146,7 +146,7 @@ export const HistoryInspector = ( { debug=false } )  =>
 
   const onNodeSelect = ( event, value ) =>
   {
-    report( { type: 'EDIT_SELECTED', payload: value } );
+    report( { type: 'EDIT_SELECTED', payload: { after: value } } );
   }
 
   const renderTree = ( edit ) =>
@@ -222,8 +222,8 @@ export const HistoryInspector = ( { debug=false } )  =>
             defaultExpanded={ [ ':' ] }
             defaultExpandIcon={<ChevronRightIcon />}
           >
+            <StyledTreeItem key={'--START--'} nodeId={'--START--'} labelText={'--START--'} />
             {root.children.map( edit => renderTree( edit ) ) }
-            <StyledTreeItem key={'--END--'} nodeId={'--END--'} labelText={'--END--'} />
           </TreeView>
         </div>
       </Grid>

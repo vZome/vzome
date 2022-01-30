@@ -87,7 +87,8 @@ export const interpret = ( action, state, edit, stack=[] ) =>
     if ( edit.isBranch() ) {
       const branchState = state.clone();
       stack.push( { branch: edit, state } );
-      branchState .recordSnapshot( edit.id(), edit.firstChild(), stack );
+      branchState .recordSnapshot( edit.id(), edit.firstChild().id(), stack );
+      branchState .recordSnapshot( edit.id(), edit.nextSibling().id() );
       edit = edit.firstChild(); // this assumes there are no empty branches
       state = branchState;
       return Step.IN;
@@ -95,10 +96,11 @@ export const interpret = ( action, state, edit, stack=[] ) =>
       state = state.clone();  // each command builds on the last
       edit.perform( state ); // here we may create a legacy edit object
       if ( edit.nextSibling() ) {
-        state .recordSnapshot( edit.id(), edit.nextSibling() );
+        state .recordSnapshot( edit.id(), edit.nextSibling().id() );
         edit = edit.nextSibling();
         return Step.OVER;
       } else {
+        state .recordSnapshot( edit.id(), '--END--' ); // last one will be the real before-end
         let top;
         do {
           top = stack.pop();
@@ -107,11 +109,9 @@ export const interpret = ( action, state, edit, stack=[] ) =>
           state = top.state.clone();  // overwrite and discard the prior value
           top.branch.undoChildren();
           edit = top.branch.nextSibling();
-          state .recordSnapshot( edit.id(), edit, stack );
           return Step.OUT;
         } else {
           // at the end of the editHistory
-          state .recordSnapshot( edit.id(), null );
           return Step.DONE;
         }
       }
@@ -175,10 +175,11 @@ class RenderHistory
   constructor( firstEdit, renderer )
   {
     this.shapes = {};
-    this.snapshots = {};
+    this.snapshotsAfter = {};
+    this.shapshotsBefore = {};
     this.batchRender = renderer;
-    this.currentId = '';
-    this.recordSnapshot( 'UNUSED', firstEdit );
+    this.currentSnapshot = [];
+    this.recordSnapshot( '--START--', firstEdit.id() );
   }
 
   clone()
@@ -200,20 +201,24 @@ class RenderHistory
     }
     let instance = normalizeRenderedManifestation( rm );
     // Record this instance for the current edit
-    this.snapshots[ this.currentId ] .push( instance );
+    this.currentSnapshot .push( instance );
   }
 
-  recordSnapshot( id, edit, stack )
+  recordSnapshot( afterId, beforeId, stack ) // stack is unused here, but part of the `state` contract for interpret()
   {
-    this.currentId = edit? edit.id() : 'FINAL';
-    this.snapshots[ this.currentId ] = [];
+    this.currentSnapshot = []; // prior value overwritten, but it was already captured in snapshotsAfter and snapshotsBefore
+    this.snapshotsAfter[ afterId ] = this.currentSnapshot;
+    this.shapshotsBefore[ beforeId ] = this.currentSnapshot;
     this.batchRender( this ); // will make many callbacks to manifestationAdded()
   }
 
-  getScene( editId )
+  getScene( editId, before=false )
   {
     const shapes = {};
-    const snapshot = this.snapshots[ editId ] || this.snapshots[ 'FINAL' ];
+    let snapshot = before? this.shapshotsBefore[ editId ] : this.snapshotsAfter[ editId ];
+    if ( !snapshot ) {
+      snapshot = before? this.shapshotsBefore[ '--END--' ] : this.snapshotsAfter[ '--START--' ];
+    }
     for ( const instance of snapshot ) {
       const shapeId = instance.shapeId;
       if ( ! shapes[ shapeId ] ) {

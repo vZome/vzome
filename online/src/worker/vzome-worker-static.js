@@ -93,8 +93,9 @@ const parseAndInterpret = ( xmlLoading, report ) =>
       camera.fov = 0.33915263; // WORKAROUND
       // the next step may take several seconds, which is why we already reported PARSE_COMPLETED
       renderHistory = legacyModule .interpretAndRender( design );
-      const { shapes } = renderHistory .getScene( targetEditId );
+      const { shapes } = renderHistory .getScene( targetEditId, true );
       const scene = { lighting, camera, embedding, shapes };
+      // TODO: massage xmlTree to make branches from BeginBlock ... EndBlock sequences
       report( { type: 'DESIGN_RENDERED', payload: { scene, xmlTree } } );
       return true; // probably nobody should care about the return value
     } )
@@ -171,7 +172,9 @@ onmessage = ({ data }) =>
       break;
 
     case 'EDIT_SELECTED':
-      postMessage( { type: 'EDIT_RENDERED', payload: { scene: renderHistory .getScene( payload ) } } );
+      const { before, after } = payload; // only one of these will have an edit ID
+      const scene = before? renderHistory .getScene( before, true ) : renderHistory .getScene( after, false );
+      postMessage( { type: 'EDIT_RENDERED', payload: { scene } } );
       break;
   
     default:
