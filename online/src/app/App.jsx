@@ -12,7 +12,7 @@ const oneDesign = !!url;
 
 const App = () =>
 {
-  useVZomeUrl( url, { preview: false } );
+  useVZomeUrl( url, { preview: oneDesign } );
 
   return (
     <>
