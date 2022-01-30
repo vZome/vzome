@@ -135,7 +135,7 @@ export const HistoryInspector = ( { debug=false } )  =>
 
   const root = useSelector( state => state.xmlTree );
   const allAttributes = useSelector( state => state.attributes );
-  const current = useSelector( state => state.edit );
+  const [ current, setCurrent ] = useState( null );
   
   const goToStart = () => reportAction( 'start' ); // TODO these all need to be rethought
   const stepBack  = () => reportAction( 'back' );
@@ -146,6 +146,7 @@ export const HistoryInspector = ( { debug=false } )  =>
 
   const onNodeSelect = ( event, value ) =>
   {
+    setCurrent( value );
     report( { type: 'EDIT_SELECTED', payload: { after: value } } );
   }
 
