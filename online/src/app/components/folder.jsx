@@ -91,7 +91,7 @@ export const OpenMenu = props =>
   const handleSelectModel = model => {
     setAnchorEl(null)
     const { url, key } = model
-    openUrl( url || `./models/${key}.vZome`, key )
+    openUrl( url || `/app/models/${key}.vZome`, key )
   }
 
   const handleClose = () => {
