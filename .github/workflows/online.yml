@@ -6,6 +6,10 @@ name: vZome Online build
 on:
   workflow_dispatch:
 
+env:
+  BUILD_NUMBER: ${{ github.run_number }}
+  GIT_COMMIT: ${{ github.sha }}
+
 jobs:
   build:
 
