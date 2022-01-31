@@ -14,7 +14,6 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Shapes;
-import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
@@ -26,7 +25,6 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.HasRenderedObject;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
-import com.vzome.core.model.ManifestationImpl;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 
@@ -169,10 +167,9 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     @Override
 	public void manifestationAdded( Manifestation m )
 	{
-        ManifestationImpl mi = (ManifestationImpl) m;
 		if ( ! this .enabled )
 		{
-		    mi .setRenderedObject( new RenderedManifestation( m, this .orbitSource ) );
+		    m .setRenderedObject( new RenderedManifestation( m, this .orbitSource ) );
 			return;
 		}
 		
@@ -180,7 +177,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         Polyhedron poly = rm .getShape();
 	    if ( poly == null )
 	        return; // no direction for this strut
-	    mi .setRenderedObject( rm );
+	    m .setRenderedObject( rm );
         
 	    mRendered .add( rm );
 	    this .byID .put( rm .getGuid(), rm );
@@ -194,9 +191,8 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     @Override
 	public void manifestationRemoved( Manifestation m )
 	{
-        ManifestationImpl mi = (ManifestationImpl) m;
 		if ( ! this .enabled ) {
-			mi .setRenderedObject( null );
+			m .setRenderedObject( null );
 			return;
 		}
 		
@@ -213,7 +209,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	        throw new IllegalStateException( "unable to remove RenderedManifestation" );
 	    
         this .byID .remove( rendered .getGuid() );
-        mi .setRenderedObject( null );
+        m .setRenderedObject( null );
 	}
     
     public RenderedManifestation getRenderedManifestation( String guid )
@@ -438,7 +434,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 
     public static double measureLengthCm( RealVector rv )
     {
-        return rv.length() * Exporter3d.RZOME_CM_SCALING;
+        return rv.length() * RealZomeScaling.RZOME_CM_SCALING;
     }
 
     public double measureLengthCm( Strut strut )

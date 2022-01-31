@@ -1,5 +1,5 @@
 
-import { createInstance } from '../../wc/legacy/adapter.js'
+import { createInstance } from '../../worker/legacy/adapter.js'
 
 const OBJECT_SELECTED = 'OBJECT_SELECTED'
 const OBJECT_DESELECTED = 'OBJECT_DESELECTED'

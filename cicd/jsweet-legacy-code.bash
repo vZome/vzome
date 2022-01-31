@@ -32,6 +32,3 @@ cat 'online/jsweetOut/js/bundle.js' | \
   >> $OUTJS
 
 banner 'finished transpiling Java sources with JSweet'
-
-find online/src/wc
-banner `pwd`

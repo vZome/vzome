@@ -10,21 +10,21 @@ import {
   Route,
 } from "react-router-dom"
 
-import App from './App.jsx';
-import Article from './Article.jsx';
-import BHallBasic from './BHallBasic.jsx';
+import { Online } from './App.jsx';
+import { Article } from './Article.jsx';
+import { BHallBasic } from './BHallBasic.jsx';
 
 render(
   <Router>
     <Switch>
-      <Route path="/app/fivecell">
+      <Route path="fivecell">
         <Article />
       </Route>
-      <Route path="/app/bhall/basic">
+      <Route path="bhall/basic">
         <BHallBasic />
       </Route>
       <Route path="/">
-        <App />
+        <Online/>
       </Route>
     </Switch>
   </Router>,

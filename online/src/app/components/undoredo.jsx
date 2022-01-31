@@ -1,7 +1,6 @@
 
 import React from 'react'
-import { connect } from 'react-redux'
-import { ActionCreators as UndoActionCreators } from 'redux-undo'
+// import { ActionCreators as UndoActionCreators } from 'redux-undo'
 
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
@@ -10,9 +9,7 @@ import SkipPreviousRoundedIcon from '@material-ui/icons/SkipPreviousRounded'
 import UndoRoundedIcon from '@material-ui/icons/UndoRounded'
 import RedoRoundedIcon from '@material-ui/icons/RedoRounded'
 
-import * as designFns from '../bundles/designs.js'
-
-const UndoRedoButtons = ({ doUndoAll, doUndo, doRedo, doRedoAll, canUndo, canRedo, redoAllIndex }) =>
+export const UndoRedoButtons = ({ doUndoAll, doUndo, doRedo, doRedoAll, canUndo, canRedo, redoAllIndex }) =>
 {
   const handleUndoAll = () =>
   {
@@ -25,7 +22,7 @@ const UndoRedoButtons = ({ doUndoAll, doUndo, doRedo, doRedoAll, canUndo, canRed
   }
 
   return (
-    <>
+    <div color="inherit" style={ { position: 'absolute', top: '5px', left: '5px' } }>
       <Tooltip title="Undo all" aria-label="undo-all">
         <IconButton color="inherit" aria-label="undo-all" onClick={handleUndoAll} disabled={!canUndo}>
           <SkipPreviousRoundedIcon fontSize="large"/>
@@ -46,26 +43,25 @@ const UndoRedoButtons = ({ doUndoAll, doUndo, doRedo, doRedoAll, canUndo, canRed
           <SkipNextRoundedIcon fontSize="large"/>
         </IconButton>
       </Tooltip>
-    </>
+    </div>
   )
 }
 
-const select = ( state ) =>
-{
-  const { designs } = state
-  const history = designs && designFns.selectDesign( state ).mesh
-  return {
-    canUndo: history && history.past.length > 0,
-    canRedo: history && history.future.length > 0,
-    redoAllIndex: history && history.future.length - 1
-  }
-}
+// const select = ( state ) =>
+// {
+//   const { designs } = state
+//   const history = designs && designFns.selectDesign( state ).mesh
+//   return {
+//     canUndo: history && history.past.length > 0,
+//     canRedo: history && history.future.length > 0,
+//     redoAllIndex: history && history.future.length - 1
+//   }
+// }
 
-const boundEventActions = {
-  doUndoAll : UndoActionCreators.jumpToPast,
-  doUndo : UndoActionCreators.undo,
-  doRedo : UndoActionCreators.redo,
-  doRedoAll : UndoActionCreators.jumpToFuture,
-}
+// const boundEventActions = {
+//   doUndoAll : UndoActionCreators.jumpToPast,
+//   doUndo : UndoActionCreators.undo,
+//   doRedo : UndoActionCreators.redo,
+//   doRedoAll : UndoActionCreators.jumpToFuture,
+// }
 
-export default connect( select, boundEventActions )( UndoRedoButtons )

@@ -109,7 +109,7 @@ public class StrutImpl extends ManifestationImpl implements Strut
     public Construction toConstruction()
     {
         Construction first = this .getFirstConstruction();
-        if ( first .is3d() )
+        if ( first != null && first .is3d() )
             return first;
         
         AlgebraicField field = m_end1 .getField();

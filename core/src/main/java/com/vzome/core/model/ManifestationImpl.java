@@ -2,9 +2,9 @@
 
 package com.vzome.core.model;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.List;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -19,7 +19,7 @@ import com.vzome.core.render.RenderedManifestation;
  */
 public abstract class ManifestationImpl implements GroupElement, Manifestation, HasRenderedObject
 {
-    protected final Set<Construction> mManifests = new HashSet<>(5);
+    protected final List<Construction> mManifests = new ArrayList<>();
 
     protected RenderedManifestation mRendered = null;
 
@@ -68,6 +68,8 @@ public abstract class ManifestationImpl implements GroupElement, Manifestation, 
      */
     public Construction getFirstConstruction()
     {
+    	if ( mManifests .isEmpty() )
+    		return null;
         return mManifests .iterator() .next();
     }
 
@@ -94,11 +96,11 @@ public abstract class ManifestationImpl implements GroupElement, Manifestation, 
         this.color = color;
     }
 
-    public void setRenderedObject( RenderedManifestation obj )
+    public void setRenderedObject( RenderedObject obj )
     {
-        mRendered = obj;
-        if ( obj != null )
-            this .color = obj .getColor();
+        mRendered = (RenderedManifestation) obj;
+        if ( this .mRendered != null )
+            this .color = this .mRendered .getColor();
     }
 
     public RenderedObject getRenderedObject()

@@ -30665,10 +30665,16 @@ export var java;
                 var userHome = "";
                 var userName = "";
                 var osArch = "";
-                if (System.ENVIRONMENT_IS_WEB_$LI$() || System.ENVIRONMENT_IS_WORKER_$LI$()) {
-                    System.propertyMap_$LI$().put("os.name", System.ENVIRONMENT_IS_WEB_$LI$() ? "WEB" : "WEB-WORKER");
+                if (System.ENVIRONMENT_IS_WEB_$LI$() ) {
+                    System.propertyMap_$LI$().put("os.name", "WEB" );
                     System.propertyMap_$LI$().put("os.version", navigator.userAgent);
                     var pathname = document.location.pathname;
+                    System.propertyMap_$LI$().put("user.dir", pathname.substring(0, pathname.lastIndexOf("/")));
+                }
+                else if (System.ENVIRONMENT_IS_WORKER_$LI$()) {
+                    System.propertyMap_$LI$().put("os.name", "WEB-WORKER");
+                    System.propertyMap_$LI$().put("os.version", navigator.userAgent);
+                    var pathname = '/'; // document.location.pathname; // DOES NOT WORK IN WEB WORKER!
                     System.propertyMap_$LI$().put("user.dir", pathname.substring(0, pathname.lastIndexOf("/")));
                 }
                 else if (System.ENVIRONMENT_IS_NODE_$LI$()) {

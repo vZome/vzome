@@ -29,9 +29,9 @@ public interface RealizedModel extends Iterable<Manifestation>
     
     // new for better performance in Javascript
 
-    Manifestation findPerEditManifestation( Manifestation m );
+    Manifestation findPerEditManifestation( String signature );
 
-    void addPerEditManifestation( Manifestation m );
+    void addPerEditManifestation( String signature, Manifestation m );
 
     void clearPerEditManifestations();
 }

@@ -1,1 +1,0 @@
-export { parseAndRender } from "./api";

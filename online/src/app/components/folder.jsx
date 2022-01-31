@@ -1,21 +1,15 @@
 
-import React, { useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
+import { useDispatch } from 'react-redux';
+
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
 import FolderOpenRoundedIcon from '@material-ui/icons/FolderOpenRounded'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import Divider from '@material-ui/core/Divider';
-import { connect } from 'react-redux'
 
 import UrlDialog from './webloader.jsx'
-import { fetchFileText } from '../bundles/files.js'
-import { openDesign } from '../bundles/designs.js'
-import { fetchUrlText } from '../../wc/components/hooks.js'
-
-const openDesignUrl = url => openDesign( fetchUrlText( url ), url )
-
-const openDesignFile = file => openDesign( fetchFileText( file ), file.name )
 
 const models = [
   {
@@ -56,13 +50,9 @@ const models = [
   },
 ]
 
-let url = "./models/vZomeLogo.vZome"
-const urlParams = new URLSearchParams( window.location.search );
-if ( urlParams.has( "url" ) ) {
-  url = decodeURI( urlParams.get( "url" ) )
-}
+// const url = "/models/vZomeLogo.vZome"
 
-const DesignsMenu = ( { openUrl, openFile } ) =>
+export const OpenMenu = props =>
 {
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [showDialog, setShowDialog] = React.useState(false)
@@ -71,7 +61,28 @@ const DesignsMenu = ( { openUrl, openFile } ) =>
     setAnchorEl(null)
     ref.current.click()
   }
-  useEffect( () => openUrl( url ), [openUrl] )
+
+  const report = useDispatch();
+  const openUrl = url => {
+    if ( url && url.endsWith( ".vZome" ) ) {
+      report( { type: 'URL_PROVIDED', payload: { url, viewOnly: false, } } );
+    }
+  }
+  const openFile = file => {
+    if ( file ) {
+      report( { type: 'FILE_PROVIDED', payload: file } );
+    }
+  }
+
+  // This can trigger an event cycle involving the "waiting" state,
+  //  if we change to "[openUrl]", causing an endless repetition
+  //  of this effect.
+  // However, as-is, this does not have the desired effect of opening
+  // the default URL, since openUrl will be a no-op until the controller
+  // is created.
+  // I'm taking it out, since an editor really should come up with a new document, anyway.
+  //
+  // useEffect( () => openUrl( url ), [] )
 
   const handleClickOpen = (event) => {
     setAnchorEl( event.currentTarget )
@@ -80,7 +91,7 @@ const DesignsMenu = ( { openUrl, openFile } ) =>
   const handleSelectModel = model => {
     setAnchorEl(null)
     const { url, key } = model
-    openUrl( url || `./models/${key}.vZome`, key )
+    openUrl( url || `/models/${key}.vZome`, key )
   }
 
   const handleClose = () => {
@@ -105,7 +116,7 @@ const DesignsMenu = ( { openUrl, openFile } ) =>
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={chooseFile}>Local vZome file
+        <MenuItem onClick={chooseFile} >Local vZome file
           <input className="FileInput" type="file" ref={ref}
             onChange={ (e) => {
                 const selected = e.target.files && e.target.files[0]
@@ -114,7 +125,7 @@ const DesignsMenu = ( { openUrl, openFile } ) =>
               } }
             accept=".vZome" /> 
         </MenuItem>
-        <MenuItem onClick={handleShowUrlDialog}>Remote vZome URL</MenuItem>
+        <MenuItem onClick={handleShowUrlDialog} >Remote vZome URL</MenuItem>
         <Divider />
         { models.map( (model) => (
           <MenuItem key={model.key} onClick={()=>handleSelectModel(model)}>{model.label}</MenuItem>
@@ -125,14 +136,3 @@ const DesignsMenu = ( { openUrl, openFile } ) =>
   )
 }
 
-const select = (state) => ({
-  // TODO make a real selector!
-  enabled: ! state.workingPlane,
-})
-
-const boundEventActions = {
-  openUrl : openDesignUrl,
-  openFile : openDesignFile,
-}
-
-export default connect( select, boundEventActions )( DesignsMenu )

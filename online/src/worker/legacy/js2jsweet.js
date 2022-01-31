@@ -4,10 +4,13 @@ import root2Field from '../fields/root2.js'
 import root3Field from '../fields/root3.js'
 import heptagonField from '../fields/heptagon.js'
 import Adapter from './adapter.js'
-import { algebraicNumberFactory, JavaDomElement, JsProperties } from './jsweet2js.js'
+import { algebraicNumberFactory, JavaDomElement, JsProperties } from './jsweet2js.js';
+import { LegacyEdit } from './edit.js';
 
 import allShapes from './resources/com/vzome/core/parts/index.js'
 import groupResources from './resources/com/vzome/core/math/symmetry/index.js'
+
+import * as txml from 'txml/dist/txml.mjs';
 
 import { com } from './transpiled-java.js'
 import { java } from './j4ts-2.0.0/bundle.js'
@@ -305,7 +308,7 @@ const init = async () =>
   
   const createRenderer = orbitSource => ({
     name: orbitSource.getShapes().getName(),
-    shaper: shaperFactory( vzomePkg, orbitSource ),
+    // shaper: shaperFactory( vzomePkg, orbitSource ),
     embedding: orbitSource.getEmbedding(),
   })
 
@@ -362,10 +365,24 @@ const init = async () =>
       getQuaternionSet: name => fieldApp.getQuaternionSymmetry( name )
     }
 
-    const realizedModel = new vzomePkg.jsweet.JsRealizedModel( legacyField )
-    const selection = new vzomePkg.jsweet.JsSelection( legacyField )
+    const projection = new vzomePkg.core.math.Projection.Default( legacyField );
+    const realizedModel = new vzomePkg.core.model.RealizedModelImpl( legacyField, projection );
+    const renderedModel = new vzomePkg.core.render.RenderedModel( legacyField, orbitSource );
+    realizedModel .addListener( renderedModel );
+
+    const originBall = realizedModel .manifest( originPoint );
+    originBall .addConstruction( originPoint );
+    realizedModel .add( originBall );
+    realizedModel .show( originBall );
+
+    const selection = new vzomePkg.core.editor.SelectionImpl();
     const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp, orbitSource, symmetrySystems )
     toolsModel.setEditorModel( editor )
+
+    selection.addListener( {
+      manifestationAdded: m => renderedModel .setManifestationGlow( m, true ),
+      manifestationRemoved: m => renderedModel .setManifestationGlow( m, false ),
+    } );
 
     const format = namespace && vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )
     format && format.initialize( legacyField, orbitSetField, 0, "vZome Online", new util.Properties() )
@@ -385,22 +402,24 @@ const init = async () =>
 
     const renderer = createRenderer( orbitSource )
 
-    const parseAndPerformEdit = ( xmlElement, mesh ) =>
+    const interpretEdit = ( xmlElement, mesh ) =>
     {
       const wrappedElement = new JavaDomElement( xmlElement )
       // Note that we do not do editor.setAdapter() yet.  This means that we cannot
       //  deal with edits that have side-effects in their constructors!
       const edit = editFactory( editor, toolFactories, toolsModel )( wrappedElement )
       if ( ! edit )   // Null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit.
-        return false  //  Not indicating failure, just indicating nothing to record in history
+        return null  //  Not indicating failure, just indicating nothing to record in history
       const { shown, selected, hidden, groups } = mesh
       editor.setAdapter( new Adapter( shown, selected, hidden, groups ) )
       edit.loadAndPerform( wrappedElement, format, editContext )
-      return true
+      return edit;
     }
 
     /*
       STATUS:
+        (This was written before converting from DOM parsing to txml in the worker!)
+
           This approach is working OK, as far as producing valid JSON goes.  Obviously,
           The branch JSON is wrong.  More problematic is that the branch is already
           unpacked in the history.  This needs more thought.
@@ -413,44 +432,27 @@ const init = async () =>
           Perhaps I should focus on "native" (non-legacy) edits first, so the interpreter
           is not biased towards DOM as it is today.  (See the createEdit API below.)
     */
-    const serializeLegacyEdit = domElement =>
+    const serializeLegacyEdit = txmlElement =>
     {
-      const editType = domElement.nodeName
+      const editType = txmlElement.nodeName
       const result = { editType }
       if ( editType === "Branch" ) {
         result.edits = []
         return result
       }
       // not a branch, if we got here
-      domElement.getAttributeNames().forEach( name => {
-        if ( name !== 'id' ) result[ name ] = domElement.getAttribute( name )
+      txmlElement.getAttributeNames().forEach( name => {
+        if ( name !== 'id' ) result[ name ] = txmlElement.getAttribute( name )
       })
-      if ( domElement.textContent ) {
-        const text = domElement.textContent.trim()
+      if ( txmlElement.textContent ) {
+        const text = txmlElement.textContent.trim()
         if ( !! text )
           result.textContent = text
       }
-      if ( domElement.firstElementChild ) {
-        console.log( `Nested XML: ${domElement.nodeName} ${domElement.firstElementChild.outerHTML}` );
+      if ( txmlElement.firstElementChild ) {
+        console.log( `Nested XML: ${txmlElement.nodeName} ${txmlElement.firstElementChild.outerHTML}` );
       }
       return result
-    }
-
-    const createEdit = ( domElement ) =>
-    {
-      const isBranch = () => domElement.nodeName === "Branch"
-      const name = () => domElement.nodeName
-      const id = () => domElement.id
-      const nextSibling = () => domElement.nextElementSibling && createEdit( domElement.nextElementSibling )
-      const firstChild = () => domElement.firstElementChild && createEdit( domElement.firstElementChild )
-      const getAttributeNames = () => domElement.getAttributeNames()
-      const getAttribute = name => domElement.getAttribute( name )
-      const perform = mesh => parseAndPerformEdit( domElement, mesh )
-      const serialize = () => serializeLegacyEdit( domElement )
-      return {
-        nextSibling, firstChild, isBranch, id, perform,   // these are for the interpreter
-        name, getAttributeNames, getAttribute, serialize, // these are for the debugger UI
-      }
     }
 
     const configureAndPerformEdit = ( className, config, adapter ) =>
@@ -463,7 +465,14 @@ const init = async () =>
       edit.perform()
     }
 
-    return { renderer, createEdit, configureAndPerformEdit, field }
+    const batchRender = renderingListener => {
+      const RM = vzomePkg.core.render.RenderedModel;
+      RM.renderChange( new RM( null, null ), renderedModel, renderingListener );
+    }
+
+    // renderer is not currently used, since the state is in RealizedModelImpl;
+    //  instead, we have batchRender.
+    return { renderer, interpretEdit, configureAndPerformEdit, field, batchRender };
   }
 
   // Discover all the legacy edit classes and register as commands
@@ -493,48 +502,35 @@ const init = async () =>
   return { parser, commands, gridPoints }
 }
 
-const realizeShape = ( shape ) =>
+export const realizeShape = ( shape ) =>
 {
   const vertices = shape.getVertexList().toArray().map( av => {
-    const { x, y, z } = av.toRealVector()  // this is too early to do embedding, which is done later, globally
-    return { x, y, z }
+    const { x, y, z } = av.toRealVector();  // this is too early to do embedding, which is done later, globally
+    return { x, y, z };
   })
-  const faces = shape.getTriangleFaces().toArray()
-  const id = shape.getGuid().toString()
-  return { id, vertices, faces }
+  const faces = shape.getTriangleFaces().toArray().map( ({ vertices }) => ({ vertices }) );  // not a no-op, converts to POJS
+  const id = 's' + shape.getGuid().toString();
+  return { id, vertices, faces, instances: [] };
 }
 
-const shaperFactory = ( vzomePkg, orbitSource ) => shapes => instance =>
+export const normalizeRenderedManifestation = rm =>
 {
-  const { id, vectors } = instance
-  const jsAF = orbitSource.getSymmetry().getField()
-
-  const shown = new Map()
-  shown.set( id, instance )
-  const adapter = new Adapter( shown, new Map(), new Map() )
-
-  const man = vzomePkg.jsweet.JsManifestation.manifest( vectors, jsAF, adapter )
-  const rm = new vzomePkg.core.render.RenderedManifestation( man, orbitSource )
-  rm.resetAttributes( false, true )
-
-  // may be a zero-length strut, no shape
-  if ( !rm.getShape() )
-    return undefined
-  
-  // is the shape new?
-  const shapeId = rm.getShapeId().toString()
-  if ( ! shapes[ shapeId ] ) {
-    shapes[ shapeId ] = realizeShape( rm.getShape() )
+  const id = 'i' + rm.getGuid().toString();
+  const shapeId = 's' + rm.getShapeId().toString();
+  const positionAV = rm.getLocationAV();
+  const { x, y, z } = ( positionAV && positionAV.toRealVector() ) || { x:0, y:0, z:0 };
+  const rotation = rm .getOrientation() .getRowMajorRealElements();
+  const selected = rm .getGlow() > 0.001;
+  const componentToHex = c => {
+    let hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
   }
+  let color = "#ffffff";
+  const rmc = rm.getColor();
+  if ( rmc )
+    color = "#" + componentToHex(rmc.getRed()) + componentToHex(rmc.getGreen()) + componentToHex(rmc.getBlue());
 
-  // get shape, orientation, color, and position from rm
-  const positionAV = rm.getLocationAV() || jsAF.origin( 3 )
-  const { x, y, z } = positionAV.toRealVector() // orbitSource.getSymmetry().embedInR3( positionAV )
-  const zoneIndex = rm.getStrutZone()
-  const rotation = ( zoneIndex && (zoneIndex >= 0) && orbitSource.orientations[ zoneIndex ] ) || [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
-  let finalColor = rm.getColor().getRGB()
-
-  return { id, position: [ x, y, z ], rotation, color: finalColor, shapeId }
+  return { id, position: [ x, y, z ], rotation, color, selected, shapeId };
 }
 
 const legacyCommandFactory = ( createEditor, className ) => ( config ) => 
@@ -557,15 +553,15 @@ const legacyCommandFactory = ( createEditor, className ) => ( config ) =>
   // dispatch( { type: WORK_FINISHED } )
 }
 
-const assignIds = ( element, id=':' ) => {
-  element.id = id
-  let child = element.firstElementChild
-  let i = 0
-  while ( child ) {
-    assignIds( child, `${id}${i++}:` )
-    child = child.nextElementSibling
-  }
-  return element
+const assignIds = ( txmlElement, id=':' ) => {
+  txmlElement.id = id;
+  txmlElement.children.map( (child,index) => {
+    if ( child instanceof Object ) {
+      child.index = index;
+      assignIds( child, `${id}${index}:` )
+    }
+  });
+  return txmlElement
 }
 
 const parseVector = ( element, name ) =>
@@ -618,13 +614,14 @@ const parseViewXml = ( viewingElement ) =>
 
 const createParser = ( createDocument ) => ( xmlText ) =>
 {
-  const domDoc = new DOMParser().parseFromString( xmlText, "application/xml" );
-  let vZomeRoot = new JavaDomElement( domDoc.firstElementChild )
+  const domDoc = txml.parse( xmlText /*, options */ );
+
+  let vZomeRoot = new JavaDomElement( domDoc.filter( n => n.tagName === 'vzome:vZome' )[ 0 ] );
 
   const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
   const fieldName = vZomeRoot.getAttribute( "field" )
 
-  const { renderer, createEdit, field } = createDocument( fieldName, namespace, vZomeRoot )
+  const { renderer, interpretEdit, field, batchRender } = createDocument( fieldName, namespace, vZomeRoot )
 
   const viewing = vZomeRoot.getChildElement( "Viewing" )
   const camera = viewing && parseViewXml( viewing )
@@ -632,14 +629,13 @@ const createParser = ( createDocument ) => ( xmlText ) =>
   const scene = vZomeRoot.getChildElement( "sceneModel" )
   const lighting = scene && parseLighting( scene )
 
-  const edits = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement )
+  const xmlTree = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement );
+  const edits = new LegacyEdit( xmlTree, null, interpretEdit );
   // Note: I'm adding one so that this matches the assigned ID of the next edit to do
-  const targetEdit = `:${edits.getAttribute( "editNumber" )}:`
-  const firstEdit = createEdit && createEdit( edits.firstElementChild )
+  const targetEditId = `:${edits.getAttribute( "editNumber" )}:`
+  const firstEdit = edits.firstChild()
 
-  return { firstEdit, camera, field, targetEdit, renderer, lighting }
+  return { firstEdit, camera, field, targetEditId, renderer, lighting, batchRender, xmlTree }
 }
 
-const parserPromise = init()
-
-export default parserPromise
+export const parserPromise = init()

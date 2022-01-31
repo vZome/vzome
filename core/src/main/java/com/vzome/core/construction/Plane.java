@@ -14,7 +14,7 @@ import com.vzome.core.algebra.Trivector3dHomogeneous;
  */
 public abstract class Plane extends Construction
 {
-    private AlgebraicVector mBase;
+	private AlgebraicVector mBase;
     private AlgebraicVector mNormal;
     
     protected Plane( AlgebraicField field )
@@ -22,7 +22,7 @@ public abstract class Plane extends Construction
         super( field );
     }
 
-    @Override
+   @Override
     public boolean is3d()
     {
         return true;
