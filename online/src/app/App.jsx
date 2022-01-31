@@ -10,14 +10,16 @@ const queryParams = new URLSearchParams( window.location.search );
 const url = queryParams.get( 'url' ); // support for legacy viewer usage (old vZome shares)
 const legacyViewerMode = !!url;
 
+console.log( 'App import.meta.url ===', JSON.stringify( import.meta.url ) );
+
 const App = () =>
 {
-  useVZomeUrl( url || '/models/vZomeLogo.vZome', { preview: legacyViewerMode } );
+  useVZomeUrl( url || './models/vZomeLogo.vZome', { preview: legacyViewerMode } );
 
   return (
     <>
       <VZomeAppBar oneDesign={legacyViewerMode} />
-      { legacyViewerMode? <DesignViewer/> : <DesignHistoryInspector/> }
+      { legacyViewerMode? <DesignViewer useSpinner/> : <DesignHistoryInspector/> }
       <ErrorAlert/> 
     </>
   );

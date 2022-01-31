@@ -44,13 +44,13 @@ const models = [
   },
   {
     key: "truncated5Cell",
-    url: "https://vzome.com/models/2007/04-Apr/5cell/A4_3C.vZome",
+    url: "/models/2007/04-Apr/5cell/A4_3C.vZome",
     label: "Truncated 5-Cell",
     description: "Truncated 5-Cell"
   },
 ]
 
-// const url = "/models/vZomeLogo.vZome"
+console.log( 'Folder import.meta.url ===', JSON.stringify( import.meta.url ) );
 
 export const OpenMenu = props =>
 {
@@ -91,7 +91,7 @@ export const OpenMenu = props =>
   const handleSelectModel = model => {
     setAnchorEl(null)
     const { url, key } = model
-    openUrl( url || `/models/${key}.vZome`, key )
+    openUrl( url || `./models/${key}.vZome`, key )
   }
 
   const handleClose = () => {
