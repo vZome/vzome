@@ -9,7 +9,7 @@ export class VZomeViewer extends HTMLElement {
   #root;
   #stylesMount;
   #container;
-  #store;
+  #storePromise;
   #url;
   constructor() {
     super();
@@ -19,27 +19,29 @@ export class VZomeViewer extends HTMLElement {
     this.#stylesMount = document.createElement("div");
     this.#container = this.#root.appendChild( this.#stylesMount );
 
-    this.#store = createWorkerStore( this );
+    this.#storePromise = createWorkerStore( this );
 
-    if ( this.hasAttribute( 'src' ) ) {
-      const url = this.getAttribute( 'src' );
-      if ( ! url.endsWith( ".vZome" ) ) {
-        // This is the only case in which we don't resolve the promise with text,
-        //  since there is no point in allowing download of non-vZome text.
-        alert( `Unrecognized file name: ${url}` );
+    this.#storePromise.then( store => {
+      if ( this.hasAttribute( 'src' ) ) {
+        const url = this.getAttribute( 'src' );
+        if ( ! url.endsWith( ".vZome" ) ) {
+          // This is the only case in which we don't resolve the promise with text,
+          //  since there is no point in allowing download of non-vZome text.
+          alert( `Unrecognized file name: ${url}` );
+        }
+        else
+          this.#url = url;
+          // Get the fetch started by the worker before we load the dynamic module below,
+          //  which is pretty big.  I really should encapsulate the message in a function!
+          store.dispatch( { type: 'URL_PROVIDED', payload: { url, viewOnly: true } } );
       }
-      else
-        this.#url = url;
-        // Get the fetch started by the worker before we load the dynamic module below,
-        //  which is pretty big.  I really should encapsulate the message in a function!
-        this.#store.dispatch( { type: 'URL_PROVIDED', payload: { url, viewOnly: true } } );
-    }
+    } );
   }
 
   connectedCallback() {
-    import( '../ui/viewer/index.jsx' )
-      .then( module => {
-        this.#reactElement = module.renderViewer( this.#store, this.#container, this.#stylesMount, this.#url );
+    Promise.all( [ this.#storePromise, import( '../ui/viewer/index.jsx' ) ] )
+      .then( ([ store, module ]) => {
+        this.#reactElement = module.renderViewer( store, this.#container, this.#stylesMount, this.#url );
       })
   }
 
@@ -60,7 +62,8 @@ export class VZomeViewer extends HTMLElement {
     switch (attributeName) {
       case "src":
       this.#url = _newValue;
-      this.#store.dispatch( { type: 'URL_PROVIDED', payload: { url: _newValue, viewOnly: true } } );
+      this.#storePromise.then( store => 
+        store.dispatch( { type: 'URL_PROVIDED', payload: { url: _newValue, viewOnly: true } } ) );
     }
   }
 

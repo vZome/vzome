@@ -76,9 +76,13 @@ const branchSelectionBlocks = node =>
     return node;
 }
 
-export const createWorkerStore = customElement =>
+export const createWorkerStore = async customElement =>
 {
-  const worker = new Worker( new URL( '/modules/vzome-worker-static.js', import.meta.url ), { type: 'module' } );
+  // trampolining to work around worker CORS issue
+  // see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
+  const workerURL = ( await import( "../../worker/vzome-worker-static.js" ) ).WORKER_ENTRY_FILE_URL;
+  const blob = new Blob( [ `import "${workerURL}";` ], { type: "text/javascript" } );
+  const worker = new Worker( URL.createObjectURL( blob ), { type: "module" } );
 
   const workerSender = store => report => event =>
   {
