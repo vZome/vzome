@@ -1,4 +1,8 @@
 
+// support trampolining to work around worker CORS issue
+//   see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
+export const WORKER_ENTRY_FILE_URL = import.meta.url;
+
 const convertScene = preview =>
 {
   let { lights, camera, embedding } = preview
