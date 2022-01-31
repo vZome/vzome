@@ -14,7 +14,7 @@ console.log( 'App import.meta.url ===', JSON.stringify( import.meta.url ) );
 
 const App = () =>
 {
-  useVZomeUrl( url || './models/vZomeLogo.vZome', { preview: legacyViewerMode } );
+  useVZomeUrl( url || '/app/models/vZomeLogo.vZome', { preview: legacyViewerMode } );
 
   return (
     <>
