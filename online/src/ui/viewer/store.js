@@ -76,13 +76,17 @@ const branchSelectionBlocks = node =>
     return node;
 }
 
-export const createWorkerStore = async customElement =>
+export const createWorkerStore = customElement =>
 {
   // trampolining to work around worker CORS issue
   // see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
-  const workerURL = ( await import( "../../worker/vzome-worker-static.js" ) ).WORKER_ENTRY_FILE_URL;
-  const blob = new Blob( [ `import "${workerURL}";` ], { type: "text/javascript" } );
-  const worker = new Worker( URL.createObjectURL( blob ), { type: "module" } );
+  const workerPromise = import( "../../worker/vzome-worker-static.js" )
+    .then( module => {
+      const blob = new Blob( [ `import "${module.WORKER_ENTRY_FILE_URL}";` ], { type: "text/javascript" } );
+      const worker = new Worker( URL.createObjectURL( blob ), { type: "module" } );
+      worker.onmessage = onWorkerMessage;
+      return worker;
+    } );
 
   const workerSender = store => report => event =>
   {
@@ -100,8 +104,10 @@ export const createWorkerStore = async customElement =>
 
       // Anything else is to send to the worker
       default:
-        // console.log( `Message sending to worker: ${JSON.stringify( event, null, 2 )}` );
-        worker.postMessage( event );  // send them all, let the worker filter them out
+        workerPromise.then( worker => {
+          // console.log( `Message sending to worker: ${JSON.stringify( event, null, 2 )}` );
+          worker.postMessage( event );  // send them all, let the worker filter them out
+        } );
         break;    
     }
   }
@@ -115,7 +121,7 @@ export const createWorkerStore = async customElement =>
     devTools: true,
   });
 
-  worker .onmessage = ({ data }) => {
+  const onWorkerMessage = ({ data }) => {
     // console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
     store .dispatch( data );
 
