@@ -21,7 +21,7 @@ public abstract class Point extends Construction
     
     public String getSignature()
     {
-        return this .mLocation .toString();
+        return this .mLocation .projectTo3d( true ) .toString();
     }
 
     @Override
