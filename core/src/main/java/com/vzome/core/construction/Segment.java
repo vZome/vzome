@@ -27,8 +27,8 @@ public abstract class Segment extends Construction
     
     public String getSignature()
     {
-    	String start = this .mStart .toString();
-    	String end = this .getEnd() .toString();
+    	String start = this .mStart .projectTo3d( true ) .toString();
+    	String end = this .getEnd() .projectTo3d( true ) .toString();
     	if ( start .compareTo( end ) <= 0 )
     		return start + "," + end;
     	else

@@ -29,7 +29,7 @@ public abstract class Polygon extends Construction
     public String getSignature()
     {
 //    	System.err.println( "Warning, Polygon.getSignature() may not work in Javascript" );
-        String[] strArray = Arrays.stream( mVertices ) .map( ( av ) -> av.toString() ) .toArray( String[]::new );
+        String[] strArray = Arrays.stream( mVertices ) .map( ( av ) -> av.projectTo3d( true ).toString() ) .toArray( String[]::new );
 //        System.err.println( "unsorted: " + Arrays.toString( strArray ) );
         Arrays.sort( strArray ); // This sort implementation may be broken in Javascript
 //        System.err.println( "  sorted: " + Arrays.toString( strArray ) );
