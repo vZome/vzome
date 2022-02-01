@@ -5,14 +5,12 @@ name: core unit & regression tests
 
 on:
   push:
-    branches: [ master ]
     paths:
       - 'core/src/main/java/**'
       - 'core/src/regression/**'
       - 'core/src/test/java/**'
       - 'core/build.gradle'
   pull_request:
-    branches: [ master ]
     paths:
       - 'core/src/main/java/**'
       - 'core/src/regression/**'
