@@ -50,7 +50,7 @@ const models = [
   },
 ]
 
-console.log( 'Folder import.meta.url ===', JSON.stringify( import.meta.url ) );
+export const getModelURL = key => new URL( `./models/${key}.vZome`, window.location ) .toString();
 
 export const OpenMenu = props =>
 {
@@ -91,7 +91,7 @@ export const OpenMenu = props =>
   const handleSelectModel = model => {
     setAnchorEl(null)
     const { url, key } = model
-    openUrl( url || `/app/models/${key}.vZome`, key )
+    openUrl( url || getModelURL( key ), key );
   }
 
   const handleClose = () => {
