@@ -49,14 +49,13 @@ public class PlasticNumberField  extends ParameterizedField {
     /*
 
     Multiplication table:
-    p = plasticNumber
-    φ = phi
+    P = plasticNumber a.k.a. upperRho
     
-      *  |  1  |  p  |  p^2
+      *  |  1  |  P  |  P^2
     -----+-----+-----+------
-      1  |  1  |  p  |  p^2
-      p  |  p  | p^2 |  1+p
-     p^2 | p^2 | 1+p | p+p^2
+      1  |  1  |  P  |  P^2
+      P  |  P  | P^2 |  1+P
+     P^2 | P^2 | 1+P | P+P^2
      
      */
     @Override
@@ -67,12 +66,12 @@ public class PlasticNumberField  extends ParameterizedField {
                 {0, 0, 1,},
                 {0, 1, 0,},
             },
-            { // PHI
+            { // P
                 {0, 1, 0,},
                 {1, 0, 1,},
                 {0, 1, 1,},
             },
-            { // PHI^2
+            { // P^2
                 {0, 0, 1,},
                 {0, 1, 0,},
                 {1, 0, 1,},

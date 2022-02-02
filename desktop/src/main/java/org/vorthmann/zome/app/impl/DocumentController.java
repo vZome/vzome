@@ -975,10 +975,11 @@ public class DocumentController extends DefaultController implements Scene.Provi
             if ( this .animation .finished() ) {
                 Thread bkgdTask = new Thread() // don't tie up the event queue with this!
                 {
+                    @Override
                     public void run()
                     {
                         try {
-                            BufferedImage[] images = (BufferedImage[]) imageList .toArray( new BufferedImage[ imageList.size() ] );
+                            BufferedImage[] images = imageList .toArray( new BufferedImage[ imageList.size() ] );
                             Giffer .generateFromBI( images, file .getAbsolutePath(), 0, true );
                             openApplication( file );
                         } catch (IOException e) {
