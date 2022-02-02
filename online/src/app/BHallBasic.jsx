@@ -8,8 +8,8 @@ import Divider from '@material-ui/core/Divider'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 
-import VZomeAppBar from './components/appbar.jsx'
-import { UrlViewer } from '../wc/urlviewer.jsx'
+import { UrlViewer } from '../ui/viewer/index.jsx'
+import { VZomeAppBar } from './components/appbar.jsx'
 
 const metadata = {
   easier: {
@@ -106,11 +106,13 @@ const viewerStyle = {
 
 const VZomeViewer = ({ name, parts }) =>
 {
+  const url = `https://vzome.com/bhall/basics/${name}.vZome`;
+
   return (
     <>
       <Divider />
       <div style={viewerStyle}>
-        <UrlViewer url={`https://vzome.com/bhall/basics/${name}.vZome`}/>
+        <UrlViewer url={url} />
       </div>
       <Typography gutterBottom align='center' variant="h6" >{name}</Typography>
       <Typography gutterBottom align='center' >Build with {parts}</Typography>
@@ -118,7 +120,7 @@ const VZomeViewer = ({ name, parts }) =>
   )
 }
 
-const Article = () =>
+export const BHallBasic = () =>
 {
   const classes = useStyles()
   const [difficulty, setDifficulty] = React.useState( 0 );
@@ -130,7 +132,7 @@ const Article = () =>
   };
   return (
     <>
-      <VZomeAppBar article/>
+      <VZomeAppBar viewOnly />
       <Container maxWidth="md">
         <Paper className={classes.paper}>
           <Typography variant="h2" gutterBottom >
@@ -163,5 +165,3 @@ const Article = () =>
     </>
   );
 }
-
-export default Article

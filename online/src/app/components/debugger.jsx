@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
 
 import { withStyles, makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -10,10 +10,12 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import TreeItem from '@material-ui/lab/TreeItem'
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
-import RedoRoundedIcon from '@material-ui/icons/RedoRounded'
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded'
 import PublishRoundedIcon from '@material-ui/icons/PublishRounded'
-import FastForwardRoundedIcon from '@material-ui/icons/FastForwardRounded'
+import SkipNextRoundedIcon from '@material-ui/icons/SkipNextRounded'
+import SkipPreviousRoundedIcon from '@material-ui/icons/SkipPreviousRounded'
+import UndoRoundedIcon from '@material-ui/icons/UndoRounded'
+import RedoRoundedIcon from '@material-ui/icons/RedoRounded'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
 import TableCell from '@material-ui/core/TableCell'
@@ -22,9 +24,6 @@ import TableHead from '@material-ui/core/TableHead'
 import TableRow from '@material-ui/core/TableRow'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
-
-import * as designFns from '../bundles/designs.js'
-import * as dbugger from '../bundles/dbugger.js'
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -70,12 +69,6 @@ const useTreeItemStyles = makeStyles((theme) => ({
     fontWeight: theme.typography.fontWeightMedium,
     '$expanded > &': {
       fontWeight: theme.typography.fontWeightRegular,
-    },
-  },
-  group: {
-    marginLeft: 0,
-    '& $content': {
-      paddingLeft: theme.spacing(2),
     },
   },
   expanded: {},
@@ -131,34 +124,50 @@ const StyledTreeItem = props => {
   );
 }
 
-const Debugger = ( { data, current, branches, designName, stepIn, stepOut, stepOver, run } )  =>
-{
-  const [ edit, setEdit ] = useState( null )
+// TODO: put this in a module that both worker and main context can use.
+//  Right now this is duplicated!
+export const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
 
-  const onLabelClick = edit => event =>
+export const HistoryInspector = ( { debug=false } )  =>
+{
+  const report = useDispatch();
+  const reportAction = action => report( { type: 'ACTION_TRIGGERED', payload: action } );
+
+  const root = useSelector( state => state.xmlTree );
+  const allAttributes = useSelector( state => state.attributes );
+  const [ current, setCurrent ] = useState( null );
+  
+  const goToStart = () => reportAction( 'start' ); // TODO these all need to be rethought
+  const stepBack  = () => reportAction( 'back' );
+  const stepIn    = () => reportAction( Step.IN );
+  const stepOver  = () => reportAction( Step.OVER );
+  const stepOut   = () => reportAction( Step.OUT );
+  const goToEnd   = () => reportAction( Step.DONE );
+
+  const onNodeSelect = ( event, value ) =>
   {
-    event.preventDefault()
-    setEdit( edit )
+    setCurrent( value );
+    report( { type: 'EDIT_SELECTED', payload: { after: value } } );
   }
 
-  const renderTree = ( edit ) => {
-    const id = edit.id()
-    const children = []
-    let child = edit.firstChild()
-    while ( child ) {
-      children.push( child )
-      child = child.nextSibling()
-    }
+  const renderTree = ( edit ) =>
+  {
+    if ( typeof edit === 'string' )
+      return null;
+    if ( edit.tagName === 'Boolean' || edit.tagName === 'polygonVertex' )
+      return null;
+    const kids = ( edit.children.length > 0 )? edit.children : null;
+    let subtrees = kids && kids.map( child => renderTree( child ) );
+    if ( subtrees && subtrees.length === 1 && subtrees[ 0 ] === null )
+      subtrees = null;
     return (
-      <StyledTreeItem key={id} nodeId={id} labelText={edit.name()} onLabelClick={onLabelClick( edit )}>
-        { children.length > 0 ? children.map( child => renderTree( child ) ) : null }
+      <StyledTreeItem key={edit.id} nodeId={edit.id} labelText={edit.tagName}>
+        {subtrees}
       </StyledTreeItem>
     )
   }
 
-  const expanded = branches && [ ':', ...branches ]
-
-  if ( !data )
+  if ( !root )
     return null
 
   // I don't know why this styling works to fill the vertical space, without letting
@@ -167,51 +176,59 @@ const Debugger = ( { data, current, branches, designName, stepIn, stepOut, stepO
   //  from a comment on this post:  https://www.whitebyte.info/programming/css/how-to-make-a-div-take-the-remaining-height
   //  Note that I had to add an extra div around the TreeView.
 
-  const root = {
-    id: () => ':',
-    name: () => 'EditHistory',
-    firstChild: () => data,
-    getAttributeNames: () => []
-  }
-
   return (
     <Grid container direction='column' style={{ display: 'table', height: '100%' }}>
+      { debug &&
       <Grid item style={{ display: 'table-row' }}>
         <Toolbar id="debugger-tools" variant='dense'>
+          <Tooltip title="Go to start" aria-label="go-to-start">
+            <IconButton color="secondary" aria-label="go-to-start" onClick={goToStart}>
+              <SkipPreviousRoundedIcon/>
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Step back" aria-label="step-back">
+            <IconButton color="secondary" aria-label="step-back" onClick={stepBack}>
+              <UndoRoundedIcon/>
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Step in" aria-label="step-in">
-            <IconButton color="secondary" aria-label="step-in" onClick={()=>stepIn( designName )}>
+            <IconButton color="secondary" aria-label="step-in" onClick={stepIn}>
               <GetAppRoundedIcon/>
             </IconButton>
           </Tooltip>
           <Tooltip title="Step over" aria-label="step-over">
-            <IconButton color="secondary" aria-label="step-over" onClick={()=>stepOver( designName )}>
+            <IconButton color="secondary" aria-label="step-over" onClick={stepOver}>
               <RedoRoundedIcon/>
             </IconButton>
           </Tooltip>
           <Tooltip title="Step out" aria-label="step-out">
-            <IconButton color="secondary" aria-label="step-out" onClick={()=>stepOut( designName )}>
+            <IconButton color="secondary" aria-label="step-out" onClick={stepOut}>
               <PublishRoundedIcon/>
             </IconButton>
           </Tooltip>
-          <Tooltip title="Continue" aria-label="continue">
-            <IconButton color="secondary" aria-label="continue" onClick={()=>run( designName )}>
-              <FastForwardRoundedIcon/>
+          <Tooltip title="Go to end" aria-label="go-to-end">
+            <IconButton color="secondary" aria-label="go-to-end" onClick={goToEnd}>
+              <SkipNextRoundedIcon/>
             </IconButton>
           </Tooltip>
         </Toolbar>
       </Grid>
+      }
       <Grid item id="debugger-source" style={{ display: 'table-row', height: '100%' }}>
         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
           <TreeView style={{ overflow: 'auto', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}
-            selected={current} expanded={expanded}
+            // selected={current} expanded={expanded}
+            onNodeSelect={onNodeSelect}
             defaultCollapseIcon={<ExpandMoreIcon />}
-            defaultExpanded={ expanded }
+            defaultExpanded={ [ ':' ] }
             defaultExpandIcon={<ChevronRightIcon />}
           >
-            {renderTree( root, '' ) }
+            <StyledTreeItem key={'--START--'} nodeId={'--START--'} labelText={'--START--'} />
+            {root.children.map( edit => renderTree( edit ) ) }
           </TreeView>
         </div>
       </Grid>
+      { allAttributes &&
       <Grid item style={{ display: 'table-row' }}>
         <TableContainer component={Paper}>
           <Table size="small" aria-label="command attributes">
@@ -222,43 +239,18 @@ const Debugger = ( { data, current, branches, designName, stepIn, stepOut, stepO
               </TableRow>
             </TableHead>
             <TableBody>
-              {edit && edit.getAttributeNames().map( name => (
+              {current && allAttributes[ current ] && Object.keys( allAttributes[ current ] ).map( name => (
                 ( name !== 'id' ) &&
                 <StyledTableRow key={name}>
-                  <StyledTableCell component="th" scope="row">
-                    {name}
-                  </StyledTableCell>
-                  <StyledTableCell>{edit.getAttribute( name )}</StyledTableCell>
+                  <StyledTableCell component="th" scope="row">{name}</StyledTableCell>
+                  <StyledTableCell>{allAttributes[ current ][ name ]}</StyledTableCell>
                 </StyledTableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
       </Grid>
+      }
     </Grid>
   )
 }
-
-
-const select = ( state ) =>
-{
-  const dbugger = state.designs && designFns.selectDebugger( state )
-  if ( ! dbugger ) {
-    return {} // document had an unknown field, or couldn't parse
-  }
-  return {
-    data: dbugger.source,
-    current: dbugger && dbugger.nextEdit && dbugger.nextEdit.id(),
-    branches: dbugger && dbugger.branchStack && dbugger.branchStack.map( ({ branch }) => branch.id() ),
-    designName: dbugger && designFns.selectDesignName( state )
-  }
-}
-
-const boundEventActions = {
-  stepIn : dbugger.stepper.in,
-  stepOver: dbugger.stepper.over,
-  stepOut: dbugger.stepper.out,
-  run: dbugger.stepper.done,
-}
-
-export default connect( select, boundEventActions )( Debugger )

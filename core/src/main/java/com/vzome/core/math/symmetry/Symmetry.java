@@ -14,9 +14,10 @@ import com.vzome.core.math.RealVector;
  */
 public interface Symmetry extends Iterable<Direction>, Embedding
 {
-	int PLUS = Axis.PLUS, MINUS = Axis.MINUS;
-	
-	int NO_ROTATION = -1;
+    int PLUS = 0 /*Axis.PLUS*/, MINUS = 1 /*Axis.MINUS*/;  // Dumb workaround for the JSweet compiler glitch.
+    // JSweet fails under GitHub Actions (but not locally, using the exact same Eclipse Temurin OpenJDK 8!)
+
+    int NO_ROTATION = -1;
     
     String TETRAHEDRAL = "tetrahedral", PYRITOHEDRAL = "pyritohedral";
     
@@ -29,7 +30,7 @@ public interface Symmetry extends Iterable<Direction>, Embedding
     Axis getAxis( AlgebraicVector vector, OrbitSet orbits );
 
     Axis getAxis( RealVector vector, Collection<Direction> filter );
-    
+	
     int getMapping( int from, int to );
 
     Permutation getPermutation( int i );

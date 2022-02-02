@@ -1,13 +1,13 @@
 import React from 'react'
+
 import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 
-import { UrlViewer } from '../wc/urlviewer.jsx'
-
-import VZomeAppBar from './components/appbar.jsx'
+import { UrlViewer } from '../ui/viewer/index.jsx'
+import { VZomeAppBar } from './components/appbar.jsx'
 
 const useStyles = makeStyles( (theme) => ({
   paper: {
@@ -38,12 +38,12 @@ const VZomeViewer = ({ url }) =>
   )
 }
 
-const Article = () =>
+export const Article = () =>
 {
   const classes = useStyles()
   return (
     <>
-      <VZomeAppBar article/>
+      <VZomeAppBar viewOnly />
       <Container maxWidth="md">
         <Paper className={classes.paper}>
           <Typography variant="h2" gutterBottom >
@@ -99,4 +99,3 @@ const Article = () =>
   );
 }
 
-export default Article

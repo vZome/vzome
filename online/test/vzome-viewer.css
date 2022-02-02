@@ -1,7 +1,7 @@
 html, body {
   width: 100%;
-  height: 100%;
-  margin: 0;
+  /* height: 100%; */
+  margin: 20;
   display: grid;
   place-content: center;
   gap: 1em;
@@ -15,9 +15,9 @@ section {
   resize: both;
   gap: 1em;
   display: grid;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.8);
   padding: 1em;
-  grid-template-rows: 1fr 1.5em;
+  /* grid-template-rows: 1fr 1.5em; */
 }
 
 vzome-viewer {

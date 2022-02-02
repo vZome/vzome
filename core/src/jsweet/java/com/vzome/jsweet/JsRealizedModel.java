@@ -119,10 +119,10 @@ public class JsRealizedModel implements RealizedModel {
     //  In JS we manage uniqueness in a simpler way, anyway.
     
     @Override
-    public Manifestation findPerEditManifestation( Manifestation m ) { return null; }
+    public Manifestation findPerEditManifestation( String signature ) { return null; }
 
     @Override
-    public void addPerEditManifestation(Manifestation m) {}
+    public void addPerEditManifestation( String signature, Manifestation m ) {}
 
     @Override
     public void clearPerEditManifestations() {}

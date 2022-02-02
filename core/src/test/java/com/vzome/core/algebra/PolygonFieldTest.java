@@ -165,4 +165,46 @@ public class PolygonFieldTest {
         System.out.println("};");
     }
     
+    @Test
+    public void testSafeSubtract() {
+        final long min = Long.MIN_VALUE;
+        final long max = Long.MAX_VALUE;
+        // zero
+        assertEquals( 0, PolygonField.safeSubtract( 0, 0));
+        assertEquals( 0, PolygonField.safeSubtract( 1, 1));
+        assertEquals( 0, PolygonField.safeSubtract(-1,-1));
+        // same signs
+        assertEquals( 1, PolygonField.safeSubtract( 3, 2));
+        assertEquals(-1, PolygonField.safeSubtract(-3,-2));
+        assertEquals(-1, PolygonField.safeSubtract( 2, 3));
+        assertEquals( 1, PolygonField.safeSubtract(-2,-3));
+        // opposite signs
+        assertEquals(-9, PolygonField.safeSubtract(-4, 5));        
+        assertEquals( 9, PolygonField.safeSubtract( 4,-5));        
+        assertEquals(-9, PolygonField.safeSubtract(-5, 4));        
+        assertEquals( 9, PolygonField.safeSubtract( 5,-4));
+        // safe within limits
+        assertEquals(min, PolygonField.safeSubtract(min, 0));
+        assertEquals(max, PolygonField.safeSubtract(max, 0));
+        assertEquals(min + 1, PolygonField.safeSubtract(min, -1));
+        assertEquals(max - 1, PolygonField.safeSubtract(max,  1));
+        // overflow scenarios
+        try {
+            PolygonField.safeSubtract(min, 1);
+            fail("Expected ArithmeticException");
+        }
+        catch(ArithmeticException ex ) {
+            // ignore expected exception
+//            System.out.println(ex.getMessage());
+        }
+        try {
+            PolygonField.safeSubtract(max, -1);
+            fail("Expected ArithmeticException");
+        }
+        catch(ArithmeticException ex ) {
+            // ignore expected exception
+//            System.out.println(ex.getMessage());
+        }
+    }
+    
 }

@@ -448,11 +448,11 @@ public class PolygonField extends ParameterizedField
      * @return a long that equals j - k
      * @throws ArithmeticException if the subtraction causes an integer overflow
      */
-    private static long safeSubtract(long j, long k) {
+    static long safeSubtract(long j, long k) {
         long result = j - k;
         // check if the subtraction itself causes the long result to overflow
-        if( (result < 0 && j > 0 && k > 0) || (result > 0 && j < 0 && k < 0) ) {
-            throw new ArithmeticException(j + " - " + k + " exceeds the size of a long."); 
+        if( (k > 0 && result >= j) || (k < 0 && result <= j) ) {
+            throw new ArithmeticException("Arithmetic Overflow: " + j + " - " + k + " = " + result + ". Result exceeds the size of a long."); 
         }
         return result;
     }

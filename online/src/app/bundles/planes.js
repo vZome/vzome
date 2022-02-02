@@ -1,5 +1,5 @@
 
-import goldenField from '../../wc/fields/golden.js'
+import goldenField from '../../worker/fields/golden.js'
 import buildStrut from '../commands/buildstrut.js'
 
 export const doStartGridHover = position =>

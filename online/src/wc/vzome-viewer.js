@@ -1,18 +1,16 @@
 // babel workaround
 import "regenerator-runtime/runtime";
 
-import React from "react";
-import ReactDOM from "react-dom";
-import { StylesProvider, jssPreset } from '@material-ui/styles';
-import { create } from 'jss';
-
-import * as vZome from "./urlviewer";
 import { vZomeViewerCSS } from "./vzome-viewer.css";
+
+import { createWorkerStore } from '../ui/viewer/store.js';
 
 export class VZomeViewer extends HTMLElement {
   #root;
   #stylesMount;
   #container;
+  #store;
+  #url;
   constructor() {
     super();
     this.#root = this.attachShadow({ mode: "open" });
@@ -20,39 +18,34 @@ export class VZomeViewer extends HTMLElement {
     this.#root.appendChild(document.createElement("style")).textContent = vZomeViewerCSS;
     this.#stylesMount = document.createElement("div");
     this.#container = this.#root.appendChild( this.#stylesMount );
+
+    this.#store = createWorkerStore( this );
+
+    if ( this.hasAttribute( 'src' ) ) {
+      const url = this.getAttribute( 'src' );
+      if ( ! url.endsWith( ".vZome" ) ) {
+        // This is the only case in which we don't resolve the promise with text,
+        //  since there is no point in allowing download of non-vZome text.
+        alert( `Unrecognized file name: ${url}` );
+      }
+      else
+        this.#url = url;
+        // Get the fetch started by the worker before we load the dynamic module below,
+        //  which is pretty big.  I really should encapsulate the message in a function!
+        this.#store.dispatch( { type: 'URL_PROVIDED', payload: { url, viewOnly: true } } );
+    }
   }
 
   connectedCallback() {
-    this.#render();
+    import( '../ui/viewer/index.jsx' )
+      .then( module => {
+        this.#reactElement = module.renderViewer( this.#store, this.#container, this.#stylesMount, this.#url );
+      })
   }
 
   #reactElement = null;
   get reactElement() {
     return this.#reactElement;
-  }
-
-  #render() {
-    if (this.src === null || this.src === "") {
-      ReactDOM.unmountComponentAtNode(this.#container);
-      this.#reactElement = null;
-      return;
-    }
-
-    // TODO: Can we handle canvas resizing using `ResizeObserver` without modifying `vZome` or recreating the element constantly?
-    const viewerElement = React.createElement(vZome.UrlViewer, {
-      url: this.src,
-    });
-
-    // We need JSS to inject styles on our shadow root, not on the document head.
-    // I found this solution here:
-    //   https://stackoverflow.com/questions/51832583/react-components-material-ui-theme-not-scoped-locally-to-shadow-dom
-    const jss = create({
-        ...jssPreset(),
-        insertionPoint: this.#container
-    });
-    this.#reactElement = React.createElement(StylesProvider, { jss: jss }, [ viewerElement ] );
-
-    ReactDOM.render(this.#reactElement, this.#stylesMount);
   }
 
   static get observedAttributes() {
@@ -66,7 +59,8 @@ export class VZomeViewer extends HTMLElement {
   ) {
     switch (attributeName) {
       case "src":
-        this.#render();
+      this.#url = _newValue;
+      this.#store.dispatch( { type: 'URL_PROVIDED', payload: { url: _newValue, viewOnly: true } } );
     }
   }
 

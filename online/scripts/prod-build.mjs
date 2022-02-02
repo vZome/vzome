@@ -5,7 +5,7 @@ esbuild.buildSync( { ...esbuildConfig, minify: true, sourcemap: false, outdir: '
 
 esbuild.buildSync( {
   entryPoints: {
-    'service-worker': 'src/app/service-worker.js',
+    'service-worker': 'src/service-worker.js',
   },
   bundle: true,
   splitting: false,

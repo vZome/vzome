@@ -5,35 +5,81 @@
     <title>&lt;vzome-viewer&gt;</title>
     <link rel="stylesheet" href="./vzome-viewer.css">
     <script type="module">
-      import "/modules/vzome-viewer.js";
 
-      document.querySelector("select").addEventListener("input", (e) => {
-        document.querySelector("vzome-viewer").src = e.target.value;
-      })
+      import "/modules/vzome-viewer.js"; // registers the custom element
+
+      // document.querySelector("select").addEventListener("input", (e) => {
+      //   document.querySelector("vzome-viewer").src = e.target.value;
+      // })
+
+      const customElement = document.querySelector("vzome-viewer");
+      const successes = document.querySelector( "#successes" );
+      const failures = document.querySelector( "#failures" );
+
+      const sleep = ms => new Promise( resolve => setTimeout( resolve, ms ) );
+
+      const encode = path => path.split( '/' ).map( encodeURIComponent ).join( '/' );
+
+      const BASE_URL = "https://raw.githubusercontent.com/John-Kostick/vzome-sharing/main/";
+
+      let paths = []; // We'll use this as a stack
+      let currentPath;
+
+      const fetchNextDesign = success => async () =>
+      {
+        if ( paths.length === 0 ) return; // we're done
+
+        let li = (success? successes : failures) .appendChild( document.createElement('li') );
+        li.textContent = currentPath;
+
+        // await sleep( 2000 ); // give the user a chance to see each model, and even interact
+        currentPath = paths.shift(); // pop the next path off the stack
+        customElement.src = BASE_URL + currentPath;// triggers the worker to start loading,
+          // which will result in another RENDER_COMPLETED event coming back
+      }
+
+      // The GitHub git/trees API returns a flat list of all blobs and trees
+      fetch( "https://api.github.com/repos/John-Kostick/vzome-sharing/git/trees/main?recursive=1" )
+        .then( response => response.json() )
+        .then( json => {
+          const allPaths = json.tree.filter( entry => entry.type==="blob" && entry.path.endsWith( '.vZome' ) )
+            .filter( entry => entry.path > "2021/07/31" )
+            .map( entry => encode( entry.path ) );
+          console.log( 'Repo has', allPaths.length, 'entries.' );
+          return allPaths;
+        } )
+        .then( pathsToTry => {
+          paths = pathsToTry; // Initialize the full stack
+          console.log( 'pathsToTry has', paths.length, 'entries.' );
+          customElement .addEventListener( "vzome-design-rendered", fetchNextDesign( true ) );
+          customElement .addEventListener( "vzome-design-failed", fetchNextDesign( false ) );
+          currentPath = paths.shift(); // pop the first path off the stack
+          customElement.src = BASE_URL + currentPath;// triggers the worker to start loading,
+            // which will result in the RENDER_COMPLETED event coming back
+        } );
+
     </script>
   </head>
   <body>
     <section>
-
-      <vzome-viewer src="/models/orangePurpleChiral.vZome">
-        <img src="/models/orangePurpleChiral.png" />
+      <vzome-viewer>
       </vzome-viewer>
-
+<!-- 
       <select>
-        <option value="/models/orangePurpleChiral.vZome" selected>Orange & Purple Chiral</option>
         <option value="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2021/10/28/14-19-45-THC-SV-colored/THC-SV-colored.vZome">THC Molecule</option>
-        <option value="/models/120-cell.vZome">Hyperdodecahedron</option>
-        <option value="/models/affineDodec.vZome">Affine Dodecahedron</option>
-        <option value="/models/bluePlaneArches1.vZome">Lacy RT</option>
+        <option selected value="/models/orangePurpleChiral.vZome">Affine Dodecahedron</option>
         <option value="/models/hept-test.vZome">Heptagon Test</option>
         <option value="/models/C240.vZome">C240 Buckyball</option>
         <option value="/models/vZomeLogo.vZome">vZome Logo</option>
         <option value="">(none)</option>
-      </select>
+      </select> -->
 
-      <span>
-        Resize me! ↘
-      </span>
     </section>
+    <p>Failures:</p>
+    <ul id="failures">
+    </ul>
+    <p>Successes:</p>
+    <ul id="successes">
+    </ul>
   </body>
 </html>

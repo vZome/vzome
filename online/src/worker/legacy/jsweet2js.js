@@ -305,8 +305,8 @@ class JavaDomNodeList
 
   item( i )
   {
-    const node = this.nativeNodeList.item( i )
-    if ( node.nodeType === 1 )
+    const node = this.nativeNodeList[ i ];
+    if ( node.tagName )
       return new JavaDomElement( node )
     else
       return node
@@ -323,43 +323,43 @@ export class JavaDomElement
 
   getAttribute( name )
   {
-    return this.nativeElement.getAttribute && this.nativeElement.getAttribute( name )
+    return this.nativeElement.attributes[ name ];
   }
 
   getLocalName()
   {
-    return this.nativeElement.localName
+    return this.nativeElement.tagName
   }
 
   getTextContent()
   {
-    return this.nativeElement.textContent
+    const kids = this.nativeElement.children;
+    if ( kids.length === 1 && ( typeof kids[ 0 ] === 'string' ) )
+      return kids[ 0 ];
+    return null;
   }
 
   getChildNodes()
   {
-    return new JavaDomNodeList( this.nativeElement.childNodes )
+    const kids = this.nativeElement.children;
+    if ( kids.length === 1 && ( typeof kids[ 0 ] === 'string' ) )
+      return null;
+    return new JavaDomNodeList( this.nativeElement.children )
   }
 
   getChildElement( name )
   {
-    let target = this.nativeElement.firstElementChild
-    while ( target && name.toLowerCase() !== target.nodeName.toLowerCase() )
-      target = target.nextElementSibling
-    return target && new JavaDomElement( target )
+    const nativeChild = this.nativeElement.children.filter( n => n.tagName === name )[ 0 ];
+    return nativeChild && new JavaDomElement( nativeChild );
   }
 
   getElementsByTagName( name )
   {
-    let target = this.nativeElement.firstElementChild
-    const results = []
-    while ( target ) {
-      if ( name.toLowerCase() === target.nodeName.toLowerCase() ) {
-        results.push( new JavaDomElement( target ) )
-      }
-      target = target.nextElementSibling
+    const results = this.nativeElement.children.filter( n => n.tagName === name );
+    return {
+      getLength: () => results.length,
+      item: i => (i < results.length)? new JavaDomElement( results[ i ] ) : null
     }
-    return { getLength: () => results.length, item: i => results[ i ] }
   }
 }
 

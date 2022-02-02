@@ -6,33 +6,13 @@ import java.io.Writer;
 
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.render.Colors;
+import com.vzome.core.render.RealZomeScaling;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.Camera;
 
-public abstract class Exporter3d
+public abstract class Exporter3d implements RealZomeScaling
 {
-    public static final double VZOME_BLUE_DIAMETER = 2.0d;
-    
-    //  nominal ball diameter in rZome: .700 in
-    //  plastic shrinkage in rZome production: .994
-    //    so actual ball diameter = .6958
-    public static final double RZOME_BLUE_DIAMETER_INCHES = 0.6958d;
-    
-    public static final double RZOME_BLUE_DIAMETER_CM = 1.7673d;
-    
-    public static final double RZOME_INCH_SCALING = RZOME_BLUE_DIAMETER_INCHES / VZOME_BLUE_DIAMETER;
-    
-    public static final double RZOME_CM_SCALING = RZOME_BLUE_DIAMETER_CM / VZOME_BLUE_DIAMETER;
-    
-    public static final double RZOME_MM_SCALING = RZOME_CM_SCALING * 10d;
-    
-    // This scale factor corresponds to a vZome model that uses a long blue as the radius of a ball.
-    //  norm squared of diameter in vZome: 1967.87  => diameter == 44.36
-	static final double VZOME_STRUT_MODEL_BALL_DIAMETER = 44.36d;
-
-	static final double VZOME_STRUT_MODEL_INCH_SCALING = RZOME_BLUE_DIAMETER_INCHES / VZOME_STRUT_MODEL_BALL_DIAMETER;
-
 	protected transient PrintWriter output;
 	
 	protected transient Camera mScene;

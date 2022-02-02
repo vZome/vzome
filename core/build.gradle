@@ -486,16 +486,29 @@ jsweet {
         'com/vzome/core/model/Group.java',
         'com/vzome/core/model/GroupElement.java',
         'com/vzome/core/model/Manifestation.java',
+        'com/vzome/core/model/ManifestationImpl.java',
         'com/vzome/core/model/ManifestationChanges.java',
         'com/vzome/core/model/Connector.java',
         'com/vzome/core/model/Strut.java',
         'com/vzome/core/model/Panel.java',
         'com/vzome/core/model/RealizedModel.java',
+        'com/vzome/core/model/ConnectorImpl.java',
+        'com/vzome/core/model/StrutImpl.java',
+        'com/vzome/core/model/PanelImpl.java',
+        'com/vzome/core/model/RealizedModelImpl.java',
         'com/vzome/core/model/JsonImportEvents.java',
+        'com/vzome/core/model/HasRenderedObject.java',
+        'com/vzome/core/model/Exporter.java',
+        'com/vzome/core/model/VefModelExporter.java',
 
         'com/vzome/core/editor/api/*.java',
 
         'com/vzome/core/edits/*.java',
+
+        // 'com/vzome/core/exporters/*.java',
+
+        // 'com/vzome/core/viewing/Lights.java',
+        // 'com/vzome/core/viewing/Camera.java',
 
         'com/vzome/core/kinds/DefaultFieldApplication.java',
         'com/vzome/core/kinds/GoldenFieldApplication.java',
@@ -504,6 +517,9 @@ jsweet {
         'com/vzome/core/kinds/HeptagonFieldApplication.java',
         'com/vzome/core/kinds/SnubCubeFieldApplication.java',
         'com/vzome/core/kinds/PolygonFieldApplication.java',
+        'com/vzome/core/kinds/AbstractSymmetryPerspective.java',
+        'com/vzome/core/kinds/OctahedralSymmetryPerspective.java',
+        'com/vzome/core/kinds/IcosahedralSymmetryPerspective.java',
 
         'com/vzome/fields/heptagon/HeptagonalAntiprismSymmetry.java',
         'com/vzome/fields/sqrtphi/*.java',
@@ -511,6 +527,7 @@ jsweet {
         'com/vzome/api/Tool.java',
         'com/vzome/api/InputBehaviors.java',
         'com/vzome/core/tools/*.java',
+
         'com/vzome/core/editor/Duplicator.java',
         'com/vzome/core/editor/AbstractToolFactory.java',
         'com/vzome/core/editor/CommandEdit.java',
@@ -523,10 +540,9 @@ jsweet {
         'com/vzome/core/editor/FieldApplication.java',
         'com/vzome/core/editor/SymmetrySystem.java',
         'com/vzome/core/editor/SymmetryPerspective.java',
+        'com/vzome/core/editor/SelectionImpl.java',
         'com/vzome/core/editor/SelectionSummary.java',
-        'com/vzome/core/kinds/AbstractSymmetryPerspective.java',
-        'com/vzome/core/kinds/OctahedralSymmetryPerspective.java',
-        'com/vzome/core/kinds/IcosahedralSymmetryPerspective.java',
+        
         'com/vzome/core/render/Colors.java',
         'com/vzome/core/viewing/AbstractShapes.java',
         'com/vzome/core/viewing/AntiprismShapes.java',
@@ -537,7 +553,11 @@ jsweet {
         'com/vzome/core/parts/StrutGeometry.java',
         'com/vzome/core/parts/FastDefaultStrutGeometry.java',
         'com/vzome/core/model/RenderedObject.java',
-        'com/vzome/core/render/RenderedManifestation.java'
+
+        'com/vzome/core/render/RealZomeScaling.java',
+        'com/vzome/core/render/RenderingChanges.java',
+        'com/vzome/core/render/RenderedManifestation.java',
+        'com/vzome/core/render/RenderedModel.java'
     ]
     excludes = [
                 
@@ -560,7 +580,12 @@ jsweet {
         'com/vzome/core/edits/Run*Script.java',
         'com/vzome/core/edits/Validate2Manifold.java',
         'com/vzome/core/edits/RealizeMetaParts.java',
-        'com/vzome/core/edits/ReplaceWithShape.java'
+        'com/vzome/core/edits/ReplaceWithShape.java',
+
+        'com/vzome/core/exporters/ColoredMeshJsonExporter.java',
+        'com/vzome/core/exporters/SimpleMeshJsonExporter.java',
+        'com/vzome/core/exporters/HistoryExporter.java',
+        'com/vzome/core/exporters/ShapesJsonExporter.java'
     ]
 }
 

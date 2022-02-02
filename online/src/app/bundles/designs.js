@@ -2,26 +2,16 @@
 import { combineReducers } from 'redux'
 import undoable, { ActionCreators as Undo } from 'redux-undo'
 
-import goldenField from '../../wc/fields/golden.js'
-import { fetchUrlDesign } from '../../wc/components/legacyhooks.js'
+import goldenField from '../../worker/fields/golden.js'
 import * as mesh from './mesh'
 import { reducer as cameraReducer, initialState as cameraDefault } from './camera.js'
 import * as dbugger from './dbugger.js'
-import * as renderers from './renderers.js'
 import { showAlert } from './alerts.js'
 
 const identityReducer = ( state="", action ) => state
 
 export const designReducer = combineReducers( {
-  mesh: undoable( mesh.reducer ),
   dbugger: undoable( dbugger.reducer ),
-  scene: combineReducers( {
-    camera: cameraReducer,
-    lighting: identityReducer, 
-    embedding: identityReducer, 
-    shapes: identityReducer, 
-    instances: identityReducer, 
-  }),
   // These cannot be changed (YET), so a constant reducer is fine
   name: identityReducer,
   text: identityReducer,
@@ -201,9 +191,6 @@ export const openDesign = ( textPromise, url ) => async ( dispatch, getState ) =
       // Each call to dispatch, on the other hand, triggers rendering, so we want to be even
       //  more careful about that.
       
-      // TODO: skip this dispatch if we already have a renderer for shapesName, in getState().renderers
-      dispatch( renderers.rendererDefined( renderer.name, renderer ) ) // outside the design
-
       design = designReducer( design, dbugger.sourceLoaded( firstEdit, targetEdit ) ) // recorded in history
       design = designReducer( design, Undo.clearHistory() )  // kind of a hack so both histories are in sync, with no past
 

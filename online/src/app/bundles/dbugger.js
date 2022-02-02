@@ -1,9 +1,7 @@
 
 import * as designs from '../bundles/designs.js'
-// import { ActionCreators } from 'redux-undo';
 import * as meshes from './mesh.js'
 import { showAlert } from './alerts.js'
-import { interpret, Step } from '../../wc/legacy/api.js'
 import { ActionCreators as UndoActionCreators } from 'redux-undo'
 
 export const reducer = ( state = {}, action ) =>
@@ -60,6 +58,7 @@ const debug = action => designName => async ( dispatch, getState ) =>
   }
 
   try {
+    // TODO this is outdated now, since we now need an abstraction of the state, not a mesh
     await interpret( action, mesh, edit, stack, recordSnapshot )
   } catch (error) {
     console.log( error )

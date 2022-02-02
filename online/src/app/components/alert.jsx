@@ -1,12 +1,17 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { clearAlert } from '../bundles/alerts.js'
+import { useDispatch, useSelector } from 'react-redux';
+
 import { Alert, AlertTitle } from '@material-ui/lab';
 import Snackbar from '@material-ui/core/Snackbar';
 
 
-const ErrorAlert = ( { message, dismissed } ) =>
+export const ErrorAlert = () =>
 {
+  const report = useDispatch();
+  const message = useSelector( state => state.problem );
+
+  const dismissed = () => report( { type: 'ALERT_DISMISSED' } );
+
   return (
     <Snackbar open={!!message} onClose={dismissed}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
@@ -18,12 +23,3 @@ const ErrorAlert = ( { message, dismissed } ) =>
   )
 }
 
-const select = (state) => ({
-  message: state.alerts
-})
-
-const boundEventActions = {
-  dismissed : clearAlert
-}
-
-export default connect( select, boundEventActions )( ErrorAlert )
