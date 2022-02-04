@@ -43,7 +43,7 @@ export const Article = () =>
   const classes = useStyles()
   return (
     <>
-      <VZomeAppBar viewOnly />
+      <VZomeAppBar oneDesign />
       <Container maxWidth="md">
         <Paper className={classes.paper}>
           <Typography variant="h2" gutterBottom >

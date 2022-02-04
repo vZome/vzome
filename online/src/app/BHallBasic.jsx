@@ -132,7 +132,7 @@ export const BHallBasic = () =>
   };
   return (
     <>
-      <VZomeAppBar viewOnly />
+      <VZomeAppBar oneDesign />
       <Container maxWidth="md">
         <Paper className={classes.paper}>
           <Typography variant="h2" gutterBottom >

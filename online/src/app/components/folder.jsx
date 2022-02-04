@@ -44,7 +44,7 @@ const models = [
   },
   {
     key: "truncated5Cell",
-    url: "/models/2007/04-Apr/5cell/A4_3C.vZome",
+    url: "https://www.vzome.com/models/2007/04-Apr/5cell/A4_3C.vZome",
     label: "Truncated 5-Cell",
     description: "Truncated 5-Cell"
   },
