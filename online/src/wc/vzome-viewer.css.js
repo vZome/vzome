@@ -1,4 +1,4 @@
-export const vZomeViewerCSS: string = `
+export const vZomeViewerCSS = `
 :host {
   display: inline-grid;
   width: 384px;
