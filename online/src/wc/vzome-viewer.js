@@ -62,8 +62,8 @@ export class VZomeViewer extends HTMLElement {
   ) {
     switch (attributeName) {
       case "src":
-      this.#url = _newValue;
-      this.#store.dispatch( { type: 'URL_PROVIDED', payload: { url: _newValue, viewOnly: true } } );
+      this.#url = new URL( _newValue, window.location ) .toString();
+      this.#store.dispatch( { type: 'URL_PROVIDED', payload: { url: this.#url, viewOnly: true } } );
     }
   }
 
