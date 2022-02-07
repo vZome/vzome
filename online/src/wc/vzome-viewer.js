@@ -3,6 +3,8 @@ import "regenerator-runtime/runtime";
 
 import { vZomeViewerCSS } from "./vzome-viewer.css";
 
+import { muiCSS } from "./mui-styles.css";
+
 import { createWorkerStore } from '../ui/viewer/store.js';
 
 export class VZomeViewer extends HTMLElement {
@@ -16,6 +18,7 @@ export class VZomeViewer extends HTMLElement {
     this.#root = this.attachShadow({ mode: "open" });
 
     this.#root.appendChild(document.createElement("style")).textContent = vZomeViewerCSS;
+    this.#root.appendChild(document.createElement("style")).textContent = muiCSS;
     this.#stylesMount = document.createElement("div");
     this.#container = this.#root.appendChild( this.#stylesMount );
 
@@ -29,10 +32,10 @@ export class VZomeViewer extends HTMLElement {
         alert( `Unrecognized file name: ${url}` );
       }
       else
-        this.#url = url;
+        this.#url = new URL( url, window.location ) .toString();
         // Get the fetch started by the worker before we load the dynamic module below,
         //  which is pretty big.  I really should encapsulate the message in a function!
-        this.#store.dispatch( { type: 'URL_PROVIDED', payload: { url, viewOnly: true } } );
+        this.#store.dispatch( { type: 'URL_PROVIDED', payload: { url: this.#url, viewOnly: true } } );
     }
   }
 

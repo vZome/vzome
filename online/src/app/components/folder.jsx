@@ -56,10 +56,10 @@ export const OpenMenu = props =>
 {
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [showDialog, setShowDialog] = React.useState(false)
-  const ref = useRef()
+  const inputRef = useRef()
   const chooseFile = () => {
     setAnchorEl(null)
-    ref.current.click()
+    inputRef.current.click()
   }
 
   const report = useDispatch();
@@ -117,7 +117,8 @@ export const OpenMenu = props =>
         onClose={handleClose}
       >
         <MenuItem onClick={chooseFile} >Local vZome file
-          <input className="FileInput" type="file" ref={ref}
+          <input className="FileInput" type="file" ref={inputRef}
+            // TODO: this doesn't get called if the same file is selected twice in a row; needs some kind of reset
             onChange={ (e) => {
                 const selected = e.target.files && e.target.files[0]
                 if ( selected )
