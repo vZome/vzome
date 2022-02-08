@@ -12,6 +12,7 @@ import { ShapedGeometry } from './geometry.jsx'
 import { DesignCanvas } from './designcanvas.jsx'
 import { createWorkerStore } from './store.js';
 import { Spinner } from './spinner.jsx'
+import { ErrorAlert } from './alert.jsx'
 
 // from https://www.bitdegree.org/learn/javascript-download
 const download = source =>
@@ -51,6 +52,7 @@ export const DesignViewer = ( { children, children3d, useSpinner=false } ) =>
           <GetAppRoundedIcon fontSize='medium'/>
         </IconButton>
       }
+      <ErrorAlert/> 
       {children}
     </div>
   )
