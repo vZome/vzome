@@ -56,29 +56,16 @@ public class HeptagonField extends AbstractAlgebraicField
         return getUnitTerm( C );
     }
 
+    private static final String[][] IRRATIONAL_LABELS = new String[][] {
+        {" ", " "},
+        {"\u03C1", "rho"},
+        {"\u03C3", "sigma"}
+    };
+    
     @Override
-    public String getIrrational( int which, int format )
+    public String getIrrational( int i, int format )
     {
-        if ( format == DEFAULT_FORMAT ) {
-            switch(which) {
-            case A:
-                return " ";
-            case B:
-                return "\u03C1";
-            case C:
-                return "\u03C3";
-            }
-        } else {
-            switch(which) {
-            case A:
-                return " ";
-            case B:
-                return "rho";
-            case C:
-                return "sigma";
-            }
-        }
-        throw new IllegalArgumentException( which + " is not a valid irrational in this field" );
+        return IRRATIONAL_LABELS[i][format];
     }
 
     @Override

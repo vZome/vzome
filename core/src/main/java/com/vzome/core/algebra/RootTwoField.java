@@ -46,13 +46,15 @@ public class RootTwoField extends AbstractAlgebraicField
         return new BigRational[]{ ones, sqrt2s };
     }
 
+    private static final String[][] IRRATIONAL_LABELS = new String[][] {
+        {" ", " "},
+        {"\u221A2", "sqrt(2)"}
+    };
+    
     @Override
-    public String getIrrational( int which, int format )
+    public String getIrrational( int i, int format )
     {
-        if ( format == DEFAULT_FORMAT )
-            return "\u221A2";
-        else
-            return "sqrt(2)";
+        return IRRATIONAL_LABELS[i][format];
     }
 
     @Override

@@ -1,6 +1,8 @@
 
 package org.vorthmann.zome.app.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.vorthmann.ui.DefaultController;
@@ -42,16 +44,60 @@ public class NumberController extends DefaultController
                 result[ i ] = Integer .toString( td[ i ] );
             return result;
 
+        case "named-values":
+            return getNamedValues();
+
+        case "math.operations":
+            return MATH_OPS;
+
 		default:
 	        return super.getCommandList( listName );
 		}
+    }
+
+    private static String[] OPTIONAL_NAMED_VALUES = new String[] {
+         // increasing order except that phi and other greek letters go before any sqrtN
+        "phi", 
+        "rho",
+        "sigma",
+        "seperator",
+        // square roots
+        "\u221A2",
+        "\u221A3",
+        "\u221A5",
+        "\u221A6",
+        "\u221A7",
+        "\u221A8",
+        "\u221A10",
+   };
+
+    private String[] getNamedValues() {
+        boolean seperateNext = false;
+        List<String> list = new ArrayList<>();
+        // These are always valid
+        list.add("zero");  
+        list.add("one");
+        // These are only added to the list if the field supports them
+        for(String test : OPTIONAL_NAMED_VALUES) {
+            if(test.equals("seperator")) {
+                seperateNext = true;
+            } else {
+                if(field.getNumberByName(test) != null) {
+                    if(seperateNext ) {
+                        seperateNext = false;
+                        list.add("seperator");
+                    }
+                    list.add(test);
+                }
+            }
+        }
+        return list.toArray(new String[list.size()]);
     }
 
     @Override
     public void setModelProperty( String property, Object value )
     {
         switch ( property ) {
-
         case "values":
             StringTokenizer values = new StringTokenizer( (String) value );
             int[] inputs = new int[ field .getOrder() ]; // divisor will be the last int
@@ -64,9 +110,58 @@ public class NumberController extends DefaultController
             this .value = field .createAlgebraicNumber( inputs ) .dividedBy( field .createRational( divisor ) );
             return;
 
-		default:
-            super .setModelProperty( property, value );
-		}
+        case "named-value":
+            setValueByName( String.valueOf(value) ); // null safe
+            return;
+
+        case "math.operation":
+            if(doMath( String.valueOf(value) ) ) { // null safe
+                return;
+            }
+        }
+		super .setModelProperty( property, value );
+    }
+
+    private void setValueByName(String name) {
+        AlgebraicNumber n = field.getNumberByName(name);
+        if(n != null) {
+            setValue(n);
+        }
+    }
+
+    private static final String[] MATH_OPS = new String[] {"Negate", "Reciprocal", "Square"};
+    
+    private boolean doMath(String operation) {
+        switch(operation) {
+        case "Negate":
+            setValue( getValue().negate() );
+            return true;
+    
+        case "Reciprocal":
+            if(! getValue().isZero()) {
+                setValue( getValue().reciprocal() );
+            }
+            return true;
+
+        case "Square":
+            setValue( getValue().times(getValue()) );
+            return true;
+        }
+        return false; // unhandled command
+    }
+
+    @Override
+    public String getProperty(String property) {
+        switch(property) {
+        case "value":
+            return value.toString();
+            
+        case "evaluate":
+            return String.valueOf(value.evaluate());
+            
+        default:
+            return super.getProperty(property);
+        }
     }
 
     public AlgebraicNumber getValue()

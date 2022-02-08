@@ -360,19 +360,7 @@ public class PolygonField extends ParameterizedField
         validate();
         initialize();
         isEven = polygonSides % 2 == 0;
-        final boolean isGolden = polygonSides % 5 == 0;
-        if (isGolden) {
-            int n = polygonSides / 5;
-            // Note that more than one term of these AlgebraicNumbers may be non-zero, 
-            // especially when polygonSides is not prime (e.g. a multiple of 5 that's greater than 5)
-            AlgebraicNumber goldenDenominator = getUnitDiagonal(n - 1); 
-            AlgebraicNumber goldenNumerator = getUnitDiagonal((2 * n) - 1);
-            // we could apply the logic of convertGoldenNumberPairs() here
-            // but this already works and they can be used to cross-check each other.
-            goldenRatio = goldenNumerator.dividedBy(goldenDenominator);
-        } else {
-            goldenRatio = null;
-        }
+        goldenRatio = getDiagonalRatio(5);
     }
     
     /**
@@ -623,6 +611,128 @@ public class PolygonField extends ParameterizedField
         return goldenRatio;
     }
 
+    @Override
+    public AlgebraicNumber getNumberByName(String name) {
+        switch(name) {
+        case "\u221A2": case "root2": case "sqrt2":
+            return getRoot2();
+
+        case "\u221A3": case "root3": case "sqrt3":
+            return getRoot3();
+
+        case "\u221A5": case "root5": case "sqrt5":
+            return super.getNumberByName("root5"); // base class handles this one
+
+        case "\u221A6": case "root6": case "sqrt6":
+            return getRoot6();
+
+        case "\u221A7": case "root7": case "sqrt7":
+            return getRoot7();
+
+        case "\u221A8": case "root8": case "sqrt8":
+            return super.getNumberByName("root8"); // base class handles this one
+
+        case "\u221A10": case "root10": case "sqrt10":
+            return getRoot10();
+
+        case "rho":
+            return getDiagonalRatio(7);
+
+        case "sigma":
+            AlgebraicNumber rho = getDiagonalRatio(7);
+            return rho == null ? null : rho.times(rho).minus(one());
+        }
+        return super.getNumberByName(name);
+    }
+
+    private AlgebraicNumber getRoot2() {
+        return getDiagonalRatio(4);
+    }
+
+    private AlgebraicNumber getRoot3() {
+        return getDiagonalRatio(6);
+    }
+
+    private AlgebraicNumber getRoot6() {
+        AlgebraicNumber r3 = getNumberByName("root3");
+        if(r3 != null) { // root3 is null more often so check it first
+            AlgebraicNumber r2 = getNumberByName("root2");
+            return r2 == null ? null : r2.times(r3);
+        }
+        return null;
+    }
+
+    private AlgebraicNumber getRoot7() {
+        if (polygonSides % 14 == 0) {
+            // See the drawing at 
+            // https://vzome.com/app/embed.py?url=https://raw.githubusercontent.com/david-hall/vzome-sharing/main/2021/10/31/23-45-24-Sqrt7-from-heptagon-cotangent-sums-in-14gon-field/Sqrt7-from-heptagon-cotangent-sums-in-14gon-field.vZome
+            //
+            // From https://en.wikipedia.org/wiki/Heptagonal_triangle
+            // Given lengths a = 1; b = rho, c = sigma (heptagon names)
+            // cosines...
+            // cos(A) = b/2a
+            // cos(B) = c/2b
+            // cos(C) = =a/2c
+            //
+            // Given angles A = π/7; B = 2π/7; C = 4π/7;
+            // cotangents (not cosines)
+            // cot(A) + cot(B) + cot(C) = root7
+            //
+            // For a 14-gon:
+            //     |  A  |  B  |  C
+            // sin | a/f | c/f | e/f
+            // cos | d/f | b/f |-1/f   ... uses all even indices so only cos can be done in polygon7
+            // tan | a/d | c/b | e/-1
+            // csc | f/a | f/c | f/e
+            // sec | f/d | f/b | f/-1
+            // cot | d/a | b/c |-1/e
+
+            int n = polygonSides / 14;
+            AlgebraicNumber d0 = getUnitDiagonal((1*n)-1).negate();
+            AlgebraicNumber d1 = getUnitDiagonal((2*n)-1);
+            AlgebraicNumber d2 = getUnitDiagonal((3*n)-1);
+            AlgebraicNumber d3 = getUnitDiagonal((4*n)-1);
+            AlgebraicNumber d4 = getUnitDiagonal((5*n)-1);
+            AlgebraicNumber d5 = getUnitDiagonal((6*n)-1);
+
+            AlgebraicNumber cotA = d4.dividedBy(d1); 
+            AlgebraicNumber cotB = d2.dividedBy(d3); 
+            AlgebraicNumber cotC = d0.dividedBy(d5); 
+
+            return cotA.plus(cotB).plus(cotC); // root7
+        }
+        return null;
+    }
+
+    // the base class handles root8 but if we were to need it here some day...
+//    private AlgebraicNumber getRoot8() {
+//        AlgebraicNumber n = getRoot2();
+//        return n == null ? null : n.times(createRational(2));
+//    }
+
+    private AlgebraicNumber getRoot10() {
+        AlgebraicNumber r5 = getNumberByName("root5");
+        if(r5 != null) { // root5 is null more often so check it first
+            AlgebraicNumber r2 = getNumberByName("root2");
+            return r2 == null ? null : r2.times(r5);
+        }
+        return null;
+    }
+
+    private AlgebraicNumber getDiagonalRatio(int divisor) {
+        // Note that more than one term of these AlgebraicNumbers may be non-zero. 
+        // This typically occurs when polygonSides is not prime.
+        // We could apply the logic of convertGoldenNumberPairs() here
+        // but this also works and they can be used to cross-check each other.
+        if (polygonSides % divisor == 0) {
+            int n = polygonSides / divisor;
+            AlgebraicNumber denominator = getUnitDiagonal(n - 1); 
+            AlgebraicNumber numerator = getUnitDiagonal((2 * n) - 1);
+            return numerator.dividedBy(denominator);
+        }
+        return null;
+    }
+    
     @Override
     protected void initializeCoefficients() {
         double[] temp = getCoefficients();

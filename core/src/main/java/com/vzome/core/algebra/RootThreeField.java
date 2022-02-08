@@ -68,12 +68,14 @@ public class RootThreeField extends AbstractAlgebraicField
         }
     }
 
+    private static final String[][] IRRATIONAL_LABELS = new String[][] {
+        {" ", " "},
+        {"\u221A3", "sqrt(3)"}
+    };
+    
     @Override
     public String getIrrational( int i, int format )
     {
-        if ( format == DEFAULT_FORMAT )
-            return "\u221A3";
-        else
-            return "sqrt(3)";
+        return IRRATIONAL_LABELS[i][format];
     }
 }

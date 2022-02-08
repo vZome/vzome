@@ -202,51 +202,19 @@ public class SnubDodecField extends AbstractAlgebraicField
     
     // No need to override convertGoldenNumberPairs() as long as phi is the first irrational
 
+    private static final String[][] IRRATIONAL_LABELS = new String[][] {
+        {" ", " "},
+        {"\u03C6", "phi"},
+        {"\u03BE", "xi"},
+        {"\u03C6\u03BE", "phi*xi"},
+        {"\u03BE\u00B2", "xi^2"},
+        {"\u03C6\u03BE\u00B2", "phi*xi^2"}
+    };
+    
     @Override
-    public String getIrrational( int which, int format )
+    public String getIrrational( int i, int format )
     {
-        if ( format == DEFAULT_FORMAT ) {
-            switch ( which ) {
-            case A:
-                return " ";
-
-            case B:
-                return "\u03C6";
-
-            case C:
-                return "\u03BE";
-
-            case D:
-                return "\u03C6\u03BE";
-
-            case E:
-                return "\u03BE\u00B2";
-
-            case F:
-                return "\u03C6\u03BE\u00B2";
-            }
-        } else {
-            switch ( which ) {
-            case A:
-                return " ";
-
-            case B:
-                return "phi";
-
-            case C:
-                return "xi";
-
-            case D:
-                return "phi*xi";
-
-            case E:
-                return "xi^2";
-
-            case F:
-                return "phi*xi^2";
-            }
-        }
-        throw new IllegalArgumentException( which + " is not a valid irrational in this field" );    
+        return IRRATIONAL_LABELS[i][format];
     }
 
     @Override

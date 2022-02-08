@@ -88,12 +88,6 @@ public final class PentagonField extends AbstractAlgebraicField
     }
 
     @Override
-    public String getIrrational( int which )
-    {
-        return this .getIrrational( which, DEFAULT_FORMAT );
-    }
-
-    @Override
     BigRational[] scaleBy( BigRational[] factors, int whichIrrational )
     {
         switch (whichIrrational) {
@@ -127,13 +121,15 @@ public final class PentagonField extends AbstractAlgebraicField
         return output;
     }
 
+    private static final String[][] IRRATIONAL_LABELS = new String[][] {
+        {" ", " "},
+        {"\u03C6", "phi"}
+    };
+    
     @Override
-    public String getIrrational( int which, int format )
+    public String getIrrational( int i, int format )
     {
-        if ( format == DEFAULT_FORMAT )
-            return "\u03C6";
-        else
-            return "phi";
+        return IRRATIONAL_LABELS[i][format];
     }
 
     @Override
