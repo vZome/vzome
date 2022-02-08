@@ -104,10 +104,20 @@ export const createWorkerStore = customElement =>
 
       // Anything else is to send to the worker
       default:
-        workerPromise.then( worker => {
-          // console.log( `Message sending to worker: ${JSON.stringify( event, null, 2 )}` );
-          worker.postMessage( event );  // send them all, let the worker filter them out
-        } );
+        if ( navigator.userAgent.indexOf( "Firefox" ) > -1 ) {
+            console.log( "The worker is not available in Firefox" );
+            report( { type: 'ALERT_RAISED', payload: 'Module workers are not yet supported in Firefox.  Please try another browser.' } );
+        }
+        else {
+          workerPromise.then( worker => {
+            // console.log( `Message sending to worker: ${JSON.stringify( event, null, 2 )}` );
+            worker.postMessage( event );  // send them all, let the worker filter them out
+          } )
+          .catch( error => {
+            console.log( "The worker is not available" );
+            report( { type: 'ALERT_RAISED', payload: 'The worker is not available.  Module workers are not supported in older versions of other browsers.  Please update your browser.' } );
+          } );
+        }
         break;    
     }
   }
