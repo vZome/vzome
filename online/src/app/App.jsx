@@ -8,8 +8,10 @@ import { getModelURL } from './components/folder.jsx';
 import { DesignViewer, WorkerContext, useVZomeUrl } from '../ui/viewer/index.jsx'
 
 const queryParams = new URLSearchParams( window.location.search );
-const url = queryParams.get( 'url' ); // support for legacy viewer usage (old vZome shares)
-const legacyViewerMode = !!url;
+const relativeUrl = queryParams.get( 'url' ); // support for legacy viewer usage (old vZome shares)
+const legacyViewerMode = !!relativeUrl;
+// Must make this absolute before the worker tries to, with the wrong base URL
+const url = relativeUrl && new URL( relativeUrl, window.location ) .toString();
 
 const App = () =>
 {

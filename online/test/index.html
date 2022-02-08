@@ -12,7 +12,7 @@
       //   document.querySelector("vzome-viewer").src = e.target.value;
       // })
 
-      const customElement = document.querySelector("vzome-viewer");
+      const viewer = document.querySelector( "#controlled" );
       const successes = document.querySelector( "#successes" );
       const failures = document.querySelector( "#failures" );
 
@@ -34,11 +34,12 @@
 
         // await sleep( 2000 ); // give the user a chance to see each model, and even interact
         currentPath = paths.shift(); // pop the next path off the stack
-        customElement.src = BASE_URL + currentPath;// triggers the worker to start loading,
+        viewer.src = BASE_URL + currentPath;// triggers the worker to start loading,
           // which will result in another RENDER_COMPLETED event coming back
       }
 
       // The GitHub git/trees API returns a flat list of all blobs and trees
+      if ( viewer )
       fetch( "https://api.github.com/repos/John-Kostick/vzome-sharing/git/trees/main?recursive=1" )
         .then( response => response.json() )
         .then( json => {
@@ -51,10 +52,10 @@
         .then( pathsToTry => {
           paths = pathsToTry; // Initialize the full stack
           console.log( 'pathsToTry has', paths.length, 'entries.' );
-          customElement .addEventListener( "vzome-design-rendered", fetchNextDesign( true ) );
-          customElement .addEventListener( "vzome-design-failed", fetchNextDesign( false ) );
+          viewer .addEventListener( "vzome-design-rendered", fetchNextDesign( true ) );
+          viewer .addEventListener( "vzome-design-failed", fetchNextDesign( false ) );
           currentPath = paths.shift(); // pop the first path off the stack
-          customElement.src = BASE_URL + currentPath;// triggers the worker to start loading,
+          viewer.src = BASE_URL + currentPath;// triggers the worker to start loading,
             // which will result in the RENDER_COMPLETED event coming back
         } );
 
@@ -62,8 +63,12 @@
   </head>
   <body>
     <section>
-      <vzome-viewer>
+      <vzome-viewer id="controlled" >
       </vzome-viewer>
+      <!-- <vzome-viewer src="./models/C240.vZome">
+      </vzome-viewer>
+      <vzome-viewer src="./models/affineDodec.vZome">
+      </vzome-viewer> -->
 <!-- 
       <select>
         <option value="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2021/10/28/14-19-45-THC-SV-colored/THC-SV-colored.vZome">THC Molecule</option>
