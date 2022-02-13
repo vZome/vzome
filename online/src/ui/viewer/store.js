@@ -132,7 +132,7 @@ export const createWorkerStore = customElement =>
   });
 
   const onWorkerMessage = ({ data }) => {
-    // console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
+    console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
     store .dispatch( data );
 
     // Useful for supporting regression testing of the vzome-viewer web component

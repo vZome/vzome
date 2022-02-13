@@ -36,13 +36,14 @@ export const DesignViewer = ( { children, children3d, useSpinner=false } ) =>
   const waiting = useSelector( state => !!state.waiting );
   return (
     <div style={ { display: 'flex', height: '100%', position: 'relative' } }>
-      { scene &&
+      { scene?
         <DesignCanvas {...scene} >
           { scene.shapes &&
             <ShapedGeometry embedding={scene.embedding} shapes={scene.shapes} />
           }
           {children3d}
         </DesignCanvas>
+        : children // This renders the light DOM if the scene couldn't load
       }
       <Spinner visible={useSpinner && waiting} />
       { source && source.text &&
@@ -53,20 +54,22 @@ export const DesignViewer = ( { children, children3d, useSpinner=false } ) =>
         </IconButton>
       }
       <ErrorAlert/> 
-      {children}
     </div>
   )
 }
 
-export const renderViewer = ( store, container, stylesMount, url ) =>
+export const renderViewer = ( store, container, url ) =>
 {
   if ( url === null || url === "" ) {
     ReactDOM.unmountComponentAtNode( container );
     return null;
   }
 
-  // TODO: Can we handle canvas resizing using `ResizeObserver` without modifying `vZome` or recreating the element constantly?
-  const viewerElement = React.createElement( UrlViewer, { store } );  // I removed the url, since we prefetched it
+  // The URL was prefetched, so we don't pass it here.
+  // Note the addition of a slot child element; this lets us potentially render the light dom,
+  //   for example if the worker cannot load.
+  // LG: Can we handle canvas resizing using `ResizeObserver` without modifying `vZome` or recreating the element constantly?
+  const viewerElement = React.createElement( UrlViewer, { store }, (<slot></slot>) );
 
   // We need JSS to inject styles on our shadow root, not on the document head.
   // I found this solution here:
@@ -77,7 +80,7 @@ export const renderViewer = ( store, container, stylesMount, url ) =>
   });
   const reactElement = React.createElement( StylesProvider, { jss: jss }, [ viewerElement ] );
 
-  ReactDOM.render( reactElement, stylesMount );
+  ReactDOM.render( reactElement, container );
 
   return reactElement;
 }
@@ -104,10 +107,12 @@ export const useVZomeUrl = ( url, config ) =>
 // This component has to be separate from UrlViewer because of the useDispatch hook used in
 //  useVZomeUrl above.  I shouldn't really need to export it, but React (or the dev tools)
 //  got pissy when I didn't.
-export const UrlViewerInner = ({ url }) =>
+export const UrlViewerInner = ({ url, children }) =>
 {
   useVZomeUrl( url, { preview: true } );
-  return ( <DesignViewer/> );
+  return ( <DesignViewer>
+             {children}
+           </DesignViewer> );
 }
 
 // This is the component to reuse in a React app rather than the web component.
@@ -116,8 +121,10 @@ export const UrlViewerInner = ({ url }) =>
 //  It is also used by the web component, but with the worker-store injected so that the
 //  worker can get initialized and loaded while the main context is still fetching
 //  this module.
-export const UrlViewer = props => (
-  <WorkerContext store={props.store} >
-    <UrlViewerInner url={props.url} />
+export const UrlViewer = ({ url, store, children }) => (
+  <WorkerContext store={store} >
+    <UrlViewerInner url={url}>
+      {children}
+    </UrlViewerInner>
   </WorkerContext>
 )
