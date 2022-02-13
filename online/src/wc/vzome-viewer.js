@@ -9,7 +9,6 @@ import { createWorkerStore } from '../ui/viewer/store.js';
 
 export class VZomeViewer extends HTMLElement {
   #root;
-  #stylesMount;
   #container;
   #store;
   #url;
@@ -17,10 +16,10 @@ export class VZomeViewer extends HTMLElement {
     super();
     this.#root = this.attachShadow({ mode: "open" });
 
-    this.#root.appendChild(document.createElement("style")).textContent = vZomeViewerCSS;
-    this.#root.appendChild(document.createElement("style")).textContent = muiCSS;
-    this.#stylesMount = document.createElement("div");
-    this.#container = this.#root.appendChild( this.#stylesMount );
+    this.#root.appendChild( document.createElement("style") ).textContent = vZomeViewerCSS;
+    this.#root.appendChild( document.createElement("style") ).textContent = muiCSS;
+    this.#container = document.createElement("div");
+    this.#root.appendChild( this.#container );
 
     this.#store = createWorkerStore( this );
 
@@ -42,7 +41,7 @@ export class VZomeViewer extends HTMLElement {
   connectedCallback() {
     import( '../ui/viewer/index.jsx' )
       .then( module => {
-        this.#reactElement = module.renderViewer( this.#store, this.#container, this.#stylesMount, this.#url );
+        this.#reactElement = module.renderViewer( this.#store, this.#container, this.#url );
       })
   }
 
