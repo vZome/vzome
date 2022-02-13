@@ -13,8 +13,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -83,6 +81,7 @@ public class ShareDialog extends EscapeDialog
     
     // Inputs
     private transient String fileName, png, xml, shapesJson;
+    private LocalDateTime createTime;
         
     /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      * First, the code that runs on the Swing event dispatcher thread...
@@ -274,9 +273,10 @@ public class ShareDialog extends EscapeDialog
         }
     }
 
-    public void startUpload( String fileName, String xml, String png, String shapesJson )
+    public void startUpload( String fileName, LocalDateTime createTime, String xml, String png, String shapesJson )
     {
         this.fileName = fileName;
+        this.createTime = createTime;
         this.xml = xml;
         this.png = png;
         this.shapesJson = shapesJson;
@@ -385,14 +385,12 @@ public class ShareDialog extends EscapeDialog
             int index = designName .toLowerCase() .lastIndexOf( ".vZome" .toLowerCase() );
             if ( index > 0 )
                 designName = designName .substring( 0, index );
-//            String encodedName = URLEncoder.encode( designName, StandardCharsets.UTF_8.toString() );
             String title = designName .replaceAll( "-", " " );
 
             // prepare the substitutions
-            LocalDateTime now = LocalDateTime.now();
-            String time = DateTimeFormatter.ofPattern( "HH-mm-ss" ) .format( now );
-            String date = DateTimeFormatter.ofPattern( "yyyy-MM-dd" ) .format( now );
-            String dateFolder = DateTimeFormatter.ofPattern( "yyyy/MM/dd" ) .format( now );
+            String time = DateTimeFormatter.ofPattern( "HH-mm-ss" ) .format( this .createTime );
+            String date = DateTimeFormatter.ofPattern( "yyyy-MM-dd" ) .format( createTime );
+            String dateFolder = DateTimeFormatter.ofPattern( "yyyy/MM/dd" ) .format( createTime );
             
             String postSrcPath = "_posts/" + date + "-" + designName + "-" + time + ".md";// e.g. _posts/2021-11-29-sample-vZome-share-08-01-41.md
             String postPath = dateFolder + "/" + designName + "-" + time + ".html";       // e.g. 2021/11/29/sample-vZome-share-08-01-41.html

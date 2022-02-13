@@ -81,7 +81,7 @@ public class SymmetryToolbarsPanel extends JPanel
             @Override
             public void propertyChange( PropertyChangeEvent evt )
             {
-                if ( "window.file" .equals( evt .getPropertyName() ) )
+                if ( "original.path" .equals( evt .getPropertyName() ) )
                 {
                     shareButton .setEnabled( evt .getNewValue() != null );
                 }

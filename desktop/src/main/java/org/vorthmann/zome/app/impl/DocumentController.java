@@ -1159,8 +1159,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
             
         case "png-base64": {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            String maxSizeStr = getProperty( "max.image.size" );
-            final int maxSize = ( maxSizeStr != null )? Integer .parseInt( maxSizeStr ) : -1;
+            final int maxSize = 1600;
             boolean withAlpha = true;
             BufferedImage image = imageCaptureViewer .captureImage( maxSize, withAlpha );
             try {
@@ -1277,8 +1276,10 @@ public class DocumentController extends DefaultController implements Scene.Provi
             String oldValue = this .properties .getProperty( "window.file" );
             if ( value == null )
                 this .properties .remove( "window.file" );
-            else
+            else {
                 this .properties .setProperty( "window.file", (String) value );
+                this .properties .setProperty( "original.path", (String) value );
+            }
             // App controller is listening, will change its map
             firePropertyChange( "name", oldValue, value );
             firePropertyChange( "window.file", oldValue, value );

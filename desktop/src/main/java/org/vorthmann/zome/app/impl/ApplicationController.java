@@ -353,6 +353,7 @@ public class ApplicationController extends DefaultController
 
             case "open":
                 docProps .setProperty( "window.file", path );
+                docProps .setProperty( "original.path", path );
                 break;
 
             case "newFromTemplate":
@@ -364,6 +365,7 @@ public class ApplicationController extends DefaultController
             case "openDeferringRedo":
                 docProps .setProperty( "open.undone", "true" );
                 docProps .setProperty( "window.file", path );
+                docProps .setProperty( "original.path", path );
                 break;
 
             default:
