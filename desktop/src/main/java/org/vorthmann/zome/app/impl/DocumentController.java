@@ -1283,6 +1283,7 @@ public class DocumentController extends DefaultController implements Scene.Provi
             // App controller is listening, will change its map
             firePropertyChange( "name", oldValue, value );
             firePropertyChange( "window.file", oldValue, value );
+            firePropertyChange( "original.path", oldValue, value );
         } else if ( "backgroundColor".equals( cmd ) ) {
             sceneLighting .setProperty( cmd, value );
         } else if ( "lastObjectColor".equals( cmd ) ) {
