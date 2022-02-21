@@ -3,9 +3,12 @@ package com.vzome.core.exporters;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -96,6 +99,40 @@ public class ExporterTest {
                 throw new RuntimeException(ex);
             }
             return out.toString();
+        }
+
+        public String exportTrigTable() {
+            StringWriter out = new StringWriter();
+            TrigTableExporter exporter = new TrigTableExporter(null, null, null, doc.getRenderedModel() );
+            try {
+                exporter.doExport(null, new PrintWriter( out ), 0, 0 );
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+            return out.toString();
+        }
+    }
+    
+//    @Test
+    public void exportAllTrigTables() {
+        String path = "";
+        // uncomment this line to generate the json as files
+        //path = "C:\\Users\\DHall\\Documents\\vZome\\TrigTables";
+        for(int i=4; i <= 100; i+=2) {
+            TestApp app = new TestApp ("polygon" + i);
+            String trig = app.exportTrigTable();
+            if(i > 0 && ! "".equals(path) ) {
+                File file = new File(path + "\\" + i + ".trig.json");
+                System.out.println("Exporting trig table to " + file.getAbsolutePath());
+                // A try-with-resources block closes the resource even if an exception occurs
+                try ( Writer out = new FileWriter( file ) ) {
+                    out.write(trig);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println(trig);    
+            }
         }
     }
 
