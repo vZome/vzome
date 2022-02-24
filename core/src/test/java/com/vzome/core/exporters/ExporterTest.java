@@ -117,12 +117,12 @@ public class ExporterTest {
     public void exportAllTrigTables() {
         String path = "";
         // uncomment this line to generate the json as files
-        //path = "C:\\Users\\DHall\\Documents\\vZome\\TrigTables";
-        for(int i=4; i <= 100; i+=2) {
+        //path = "C:\\Users\\DHall\\Documents\\GitHub\\vzome-sharing\\test\\PolygonFieldMathTables";
+        for(int i=4; i <= 100; i++) {
             TestApp app = new TestApp ("polygon" + i);
             String trig = app.exportTrigTable();
             if(i > 0 && ! "".equals(path) ) {
-                File file = new File(path + "\\" + i + ".trig.json");
+                File file = new File(path + "\\polygon" + i + ".math.json");
                 System.out.println("Exporting trig table to " + file.getAbsolutePath());
                 // A try-with-resources block closes the resource even if an exception occurs
                 try ( Writer out = new FileWriter( file ) ) {
