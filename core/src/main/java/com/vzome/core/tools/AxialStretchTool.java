@@ -212,7 +212,7 @@ public class AxialStretchTool extends TransformationTool
     private boolean stretch;
     private boolean red;
     private boolean first;
-    private final String category;
+    private String category;
 
     public AxialStretchTool( String id, IcosahedralSymmetry symmetry, ToolsModel tools, boolean stretch, boolean red, boolean first, String category )
     {
@@ -349,7 +349,9 @@ public class AxialStretchTool extends TransformationTool
         value = element .getAttribute( "orbit" );
         this .red = value .equals( "red" );
         value = element .getAttribute( "first" );
-        this .first = value == null || ! value .equals( "false" );;
+        this .first = value == null || ! value .equals( "false" );
+        
+        this .category = Factory.getCategory( red, stretch, first );
 
         this .symmetry = (IcosahedralSymmetry) ((XmlSymmetryFormat) format) .parseSymmetry( "icosahedral" );
         super .setXmlAttributes( element, format );
