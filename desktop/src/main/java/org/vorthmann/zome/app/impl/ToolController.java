@@ -24,12 +24,13 @@ public class ToolController extends DefaultController
 	{
         boolean selectInputs = this .tool .isSelectInputs();
         boolean deleteInputs = this .tool .isDeleteInputs();
+        boolean copyColors = this .tool .isCopyColors();
 		switch ( action ) {
 
 		case "apply":
 			// TODO use the checkbox modes, override with key modifiers
 			boolean createOutputs = ! justSelect;
-			this .tool .apply( selectInputs, deleteInputs, createOutputs, selectOutputs );
+			this .tool .apply( selectInputs, deleteInputs, createOutputs, selectOutputs, copyColors );
 			break;
 
         case "hideTool":
@@ -53,9 +54,14 @@ public class ToolController extends DefaultController
 			this .firePropertyChange( "deleteInputs", null, Boolean .toString( deleteInputs ) );
 			break;
 
-		case "selectOutputs":
-			this .selectOutputs = ! this .selectOutputs;
-			break;
+        case "copyColors":
+            copyColors = ! copyColors;
+            this .tool .setCopyColors( copyColors );
+            break;
+
+        case "selectOutputs":
+            this .selectOutputs = ! this .selectOutputs;
+            break;
 
 		case "createOutputs":
 			this .justSelect = ! this .justSelect;
@@ -91,8 +97,11 @@ public class ToolController extends DefaultController
 		case "selectInputs":
 			return Boolean .toString( this .tool .isSelectInputs() );
 
-		case "deleteInputs":
-			return Boolean .toString( this .tool .isDeleteInputs() );
+        case "deleteInputs":
+            return Boolean .toString( this .tool .isDeleteInputs() );
+
+        case "copyColors":
+            return Boolean .toString( this .tool .isCopyColors() );
 
 		case "selectOutputs":
 			return Boolean .toString( this .selectOutputs );

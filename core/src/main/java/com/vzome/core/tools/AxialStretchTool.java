@@ -186,6 +186,14 @@ public class AxialStretchTool extends TransformationTool
         }
 
         @Override
+        public Tool createTool()
+        {
+            Tool result = super.createTool();
+            result .setCopyColors( false ); // Overriding true default, only for newly created tools
+            return result;
+        }
+
+        @Override
         protected boolean bindParameters( Selection selection )
         {
             IcosahedralSymmetry symmetry = (IcosahedralSymmetry) getSymmetry();

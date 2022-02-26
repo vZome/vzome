@@ -48,7 +48,7 @@ public class ApplyTool extends ChangeManifestations
         {
             for (Manifestation man : inputs) {
                 Construction c = man .toConstruction();
-                c .setColor( man .getColor() );
+                c .setColor( copyColors? man .getColor() : null );
 
                 tool .performEdit( c, this );
             }
@@ -68,11 +68,11 @@ public class ApplyTool extends ChangeManifestations
 
     private Tool tool;
 
-    private boolean selectInputs, deselectOutputs, justSelect, hideInputs, deleteInputs, redundantOutputs;
+    private boolean selectInputs, deselectOutputs, justSelect, hideInputs, deleteInputs, redundantOutputs, copyColors;
 
     private final ToolsModel tools;
 
-    public ApplyTool( ToolsModel tools, Tool tool, boolean selectInputs, boolean deleteInputs, boolean createOutputs, boolean selectOutputs, boolean redundantOutputs )
+    public ApplyTool( ToolsModel tools, Tool tool, boolean selectInputs, boolean deleteInputs, boolean createOutputs, boolean selectOutputs, boolean redundantOutputs, boolean copyColors )
     {
         super( tools .getEditorModel() );
         this.tools = tools;
@@ -80,6 +80,7 @@ public class ApplyTool extends ChangeManifestations
         this .tool = tool;
         this .selectInputs = selectInputs;
         this .deleteInputs = deleteInputs;
+		this .copyColors = copyColors;
         this .hideInputs = false;
         this .deselectOutputs = ! selectOutputs;
         this .justSelect = ! createOutputs;
@@ -109,6 +110,8 @@ public class ApplyTool extends ChangeManifestations
             element .setAttribute( "hideInputs", "true" );
         if ( deleteInputs )
             element .setAttribute( "deleteInputs", "true" );
+        if ( copyColors )
+            element .setAttribute( "copyColors", "true" );
     }
 
     @Override
@@ -121,6 +124,9 @@ public class ApplyTool extends ChangeManifestations
         this .justSelect = isAttributeTrue( element, "justSelect" );
         this .hideInputs = isAttributeTrue( element, "hideInputs" );
         this .deleteInputs = isAttributeTrue( element, "deleteInputs" );
+        
+        String value = element .getAttribute( "copyColors" );
+        this .copyColors = value == null || ! value .equals( "false" );
     }
 
     private boolean isAttributeTrue( Element element, String name )

@@ -43,6 +43,7 @@ public class ToolConfigDialog extends JDialog implements ActionListener
 	private Controller controller;
 	private PropertyChangeListener checkboxChanges;
 	private final ActionListener closer;
+	private JCheckBox copyColorsCheckbox;
 	
     public ToolConfigDialog( JFrame frame, boolean forBookmark )
     {
@@ -159,8 +160,11 @@ public class ToolConfigDialog extends JDialog implements ActionListener
         tabs = new JTabbedPane();
         this .add( tabs, BorderLayout .CENTER );
         {
+            JPanel behavior = new JPanel();
+            tabs .addTab( "behavior", behavior );
+            behavior .setLayout( new GridLayout( 2, 1 ) );
             JPanel inputsOutputs = new JPanel();
-            tabs .addTab( "behavior", inputsOutputs );
+            behavior .add( inputsOutputs );
             inputsOutputs .setLayout( new GridLayout( 1, 2 ) );
             {
                 JPanel inputs = new JPanel();
@@ -189,6 +193,16 @@ public class ToolConfigDialog extends JDialog implements ActionListener
                 createOutputsCheckbox .setActionCommand( "createOutputs" );
                 createOutputsCheckbox .addActionListener( this );
                 outputs .add( createOutputsCheckbox );
+            }
+            {
+                JPanel copyColors = new JPanel();
+                copyColors .setBorder( BorderFactory .createTitledBorder( "copy colors" ) );
+                behavior .add( copyColors );
+                copyColors .setLayout( new GridLayout( 1, 1 ) );
+                copyColorsCheckbox = new JCheckBox( "copy colors" );
+                copyColorsCheckbox .setActionCommand( "copyColors" );
+                copyColorsCheckbox .addActionListener( this );
+                copyColors .add( copyColorsCheckbox );
             }
 
             JPanel showParamsPanel = new JPanel();
@@ -239,6 +253,10 @@ public class ToolConfigDialog extends JDialog implements ActionListener
 		createOutputsCheckbox .setEnabled( ! isBookmark );
 		selectOutputsCheckbox .setEnabled( createOutputs && ! isBookmark );
         
+        boolean copyColors = controller .propertyIsTrue( "copyColors" );
+        copyColorsCheckbox .setSelected( copyColors );
+        copyColorsCheckbox .setEnabled( ! isBookmark );
+        		
 		tabs .setSelectedIndex( 0 );  // should be "behavior" tab
         setLocationRelativeTo( button );
         setVisible( true );
