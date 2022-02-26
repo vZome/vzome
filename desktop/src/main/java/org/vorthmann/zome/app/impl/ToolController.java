@@ -30,7 +30,7 @@ public class ToolController extends DefaultController
 		case "apply":
 			// TODO use the checkbox modes, override with key modifiers
 			boolean createOutputs = ! justSelect;
-			this .tool .apply( selectInputs, deleteInputs, createOutputs, selectOutputs, true /* TODO */ );
+			this .tool .apply( selectInputs, deleteInputs, createOutputs, selectOutputs, copyColors );
 			break;
 
         case "hideTool":

@@ -48,8 +48,7 @@ public class ApplyTool extends ChangeManifestations
         {
             for (Manifestation man : inputs) {
                 Construction c = man .toConstruction();
-                if ( copyColors )
-                	c .setColor( man .getColor() );
+                c .setColor( copyColors? man .getColor() : null );
 
                 tool .performEdit( c, this );
             }

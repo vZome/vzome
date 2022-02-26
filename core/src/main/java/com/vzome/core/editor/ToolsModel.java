@@ -141,12 +141,10 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
         		DomUtils .addAttribute( toolElem, "label", tool .getLabel() );
         		if ( tool .isHidden() )
         		    DomUtils .addAttribute( toolElem, "hidden", "true" );
-        		if ( tool .isSelectInputs() )
-        		    toolElem .setAttribute( "selectInputs", "true" );
-                if ( tool .isDeleteInputs() )
-                    toolElem .setAttribute( "deleteInputs", "true" );
-                if ( ! tool .isCopyColors() )
-                    toolElem .setAttribute( "copyColors", "false" );
+        		// Always be explicit, to override implicit legacy default behaviors in loadFromXml() and setConfiguration()
+        		toolElem .setAttribute( "selectInputs", Boolean.toString( tool .isSelectInputs() ) );
+        		toolElem .setAttribute( "deleteInputs", Boolean.toString( tool .isDeleteInputs() ) );
+        		toolElem .setAttribute( "copyColors", Boolean.toString( tool .isCopyColors() ) );
         		result .appendChild( toolElem );
         	}
         return result;
@@ -165,16 +163,14 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
                 this .toolLabels .put( id, label );
 
                 String value = toolElem .getAttribute( "selectInputs" );
-                if ( value != null && value .equals( "true" ) )
+                if ( value != null && ! value .equals( "" ) )
                     toolSelectInputs .put( id, Boolean.parseBoolean( value ) );
                 value = toolElem .getAttribute( "deleteInputs" );
-                if ( value != null && value .equals( "true" ) )
+                if ( value != null && ! value .equals( "" ) )
                     toolDeleteInputs .put( id, Boolean.parseBoolean( value ) );
                 value = toolElem .getAttribute( "copyColors" );
-                if ( value != null && value .equals( "false" ) ) // Note, different from the other two... true by default
+                if ( value != null && ! value .equals( "" ) )
                     toolCopyColors .put( id, Boolean.parseBoolean( value ) );
-                else
-                    toolCopyColors .put( id, Boolean.valueOf( true ) );
                 
                 String hiddenStr = toolElem .getAttribute( "hidden" );
                 if ( hiddenStr != null && hiddenStr .equals( "true" ) )
@@ -193,10 +189,13 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 
         // be careful not to override the defaults for legacy commands with no serialized maps
         if ( this .toolDeleteInputs .containsKey( id ) || this .toolSelectInputs .containsKey( id ) ) {
-            // the map only ever contains "true" values; see loadFromXml() above
-            tool .setInputBehaviors( this .toolSelectInputs .containsKey( id ), this .toolDeleteInputs .containsKey( id ) );
+            boolean deleteInputs = this .toolDeleteInputs .containsKey( id )? this .toolDeleteInputs .get( id ) : true;
+            boolean selectInputs = this .toolSelectInputs .containsKey( id )? this .toolSelectInputs .get( id ) : false;
+            tool .setInputBehaviors( selectInputs, deleteInputs );
         }
-        tool .setCopyColors( this .toolCopyColors .get( id ) ); //
+        if ( this .toolCopyColors .containsKey( id ) ) {
+            tool .setCopyColors( this .toolCopyColors .get( id ) );
+        }
 
         tool .setHidden( this .hiddenTools .contains( id ) );
     }
