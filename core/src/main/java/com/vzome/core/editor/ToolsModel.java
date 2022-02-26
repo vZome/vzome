@@ -32,6 +32,7 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
     private final Map<String, String> toolLabels = new HashMap<>();
     private final Map<String, Boolean> toolDeleteInputs = new HashMap<>();
     private final Map<String, Boolean> toolSelectInputs = new HashMap<>();
+    private final Map<String, Boolean> toolCopyColors = new HashMap<>();
     private final Set<String> hiddenTools = new HashSet<>();
     
 	public ToolsModel( Context context, Point originPoint )
@@ -142,8 +143,10 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
         		    DomUtils .addAttribute( toolElem, "hidden", "true" );
         		if ( tool .isSelectInputs() )
         		    toolElem .setAttribute( "selectInputs", "true" );
-        		if ( tool .isDeleteInputs() )
-        		    toolElem .setAttribute( "deleteInputs", "true" );
+                if ( tool .isDeleteInputs() )
+                    toolElem .setAttribute( "deleteInputs", "true" );
+                if ( ! tool .isCopyColors() )
+                    toolElem .setAttribute( "copyColors", "false" );
         		result .appendChild( toolElem );
         	}
         return result;
@@ -167,6 +170,11 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
                 value = toolElem .getAttribute( "deleteInputs" );
                 if ( value != null && value .equals( "true" ) )
                     toolDeleteInputs .put( id, Boolean.parseBoolean( value ) );
+                value = toolElem .getAttribute( "copyColors" );
+                if ( value != null && value .equals( "false" ) ) // Note, different from the other two... true by default
+                    toolCopyColors .put( id, Boolean.parseBoolean( value ) );
+                else
+                    toolCopyColors .put( id, Boolean.valueOf( true ) );
                 
                 String hiddenStr = toolElem .getAttribute( "hidden" );
                 if ( hiddenStr != null && hiddenStr .equals( "true" ) )
@@ -188,6 +196,7 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
             // the map only ever contains "true" values; see loadFromXml() above
             tool .setInputBehaviors( this .toolSelectInputs .containsKey( id ), this .toolDeleteInputs .containsKey( id ) );
         }
+        tool .setCopyColors( this .toolCopyColors .get( id ) ); //
 
         tool .setHidden( this .hiddenTools .contains( id ) );
     }

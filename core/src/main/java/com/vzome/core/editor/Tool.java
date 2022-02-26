@@ -22,7 +22,7 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
 
     private boolean predefined, hidden;
     private String label;
-    private boolean selectInputs, deleteInputs;
+    private boolean selectInputs, deleteInputs, copyColors;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
 
     public Tool( String id, ToolsModel tools )
@@ -32,6 +32,7 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
         this .id = id;
         this .selectInputs = true;
         this .deleteInputs = false;
+        this .copyColors = true;
     }
 
     public boolean isSelectInputs()
@@ -44,10 +45,20 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
         return this.deleteInputs;
     }
 
+    public boolean isCopyColors()
+    {
+        return this.copyColors;
+    }
+
     public void setInputBehaviors( boolean selectInputs, boolean deleteInputs )
     {
         this.selectInputs = selectInputs;
         this.deleteInputs = deleteInputs;
+    }
+
+    public void setCopyColors( boolean value )
+    {
+        this .copyColors = value;
     }
 
     public void addPropertyChangeListener( PropertyChangeListener listener )

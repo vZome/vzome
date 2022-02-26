@@ -164,8 +164,8 @@ public class GenerateLinearMaps
 			join();
 			
 			select( p2 ); // input for the transform
-			symmetryTool .apply( true, false, false, false );
-			mappingTool .apply( false, true, false, false );
+			symmetryTool .apply( true, false, false, false, false );
+			mappingTool .apply( false, true, false, false, false );
 
 			deselect();
 			
