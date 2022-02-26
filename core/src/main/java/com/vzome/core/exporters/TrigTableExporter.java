@@ -3,7 +3,10 @@ package com.vzome.core.exporters;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -35,6 +38,9 @@ public class TrigTableExporter extends Exporter3d {
             writeEmbedding(field, buf);
             writeUnitDiagonals(field, buf);
             writeNamedNumbers(field, buf);
+            writeMultiplicationTable(field, buf);
+            writeDivisionTable(field, buf);
+            writeExponentsTable(field, buf);
             writeTrigTable(field, buf);
             buf.append( "}\n" );
 
@@ -177,6 +183,84 @@ public class TrigTableExporter extends Exporter3d {
         buf.append( " ]\n" );        
     }
 
+    private static void writeMultiplicationTable(PolygonField field, StringBuilder buf) {
+        writeTable(field, buf, "multiplication", (AlgebraicNumber n1, AlgebraicNumber n2) -> n1.times(n2));
+    }
+    
+    private static void writeDivisionTable(PolygonField field, StringBuilder buf) {
+        writeTable(field, buf, "division", (AlgebraicNumber n1, AlgebraicNumber n2) -> n1.dividedBy(n2));
+    }
+    
+    // this is pretty much a copy of ParameterizedFields.mathTableToString()
+    private static void writeTable(AlgebraicField field, StringBuilder buf, String tableName,
+            BiFunction<AlgebraicNumber, AlgebraicNumber, AlgebraicNumber> op) {
+        // This part is in case we ever use fields other than PolygonFields.
+        final Function<Integer, AlgebraicNumber> operandFactory = (field instanceof PolygonField) 
+                ? ((PolygonField) field)::getUnitDiagonal 
+                : field::getUnitTerm;
+        final int limit = (field instanceof PolygonField) ? ((PolygonField) field).diagonalCount() : field.getOrder();
+
+        buf.append(" '").append(tableName).append("': [\n");
+        String delim1 = "";
+        for (int i = 0; i < limit; i++) {
+            AlgebraicNumber n1 = operandFactory.apply(i);
+            buf.append(delim1).append("  [ ");
+            delim1 = ",\n";
+            String delim2 = "";
+            for (int j = 0; j < limit; j++) {
+                AlgebraicNumber n2 = operandFactory.apply(j);
+                AlgebraicNumber result = op.apply(n1, n2);
+                buf.append(delim2);
+                delim2 = ", ";
+                buf.append(formatAN(result));
+            }
+            buf.append(" ]");
+        }
+        buf.append("\n ],\n");
+    }
+    
+    private static void writeExponentsTable(PolygonField field, StringBuilder buf) {
+        final int limit = field.diagonalCount();
+        final int range = 6;
+        
+        buf.append(" 'exponents': [\n");
+        String delim1 = "";
+        for (int i = 1; i < limit; i++) {
+            buf.append(delim1).append("  {");
+            delim1 = ",\n";
+            String name = field.getIrrational(i);
+            buf.append(" 'base': '").append(name).append("'");
+            {
+                buf.append(",\n    'positivePowers': [ ");
+                String delim2 = "";
+                final AlgebraicNumber base = field.getUnitDiagonal(i);
+                AlgebraicNumber result = base; 
+                for (int power = 1; power <= range; power++) {
+                    buf.append(delim2);
+                    delim2 = ", ";
+                    buf.append(formatAN(result));
+                    result = result.times(base);
+                }
+                buf.append(" ]");
+            }
+            {
+                buf.append(",\n    'negativePowers': [ ");
+                String delim2 = "";
+                final AlgebraicNumber base = field.getUnitDiagonal(i).reciprocal();
+                AlgebraicNumber result = base; 
+                for (int power = 1; power <= range; power++) {
+                    buf.append(delim2);
+                    delim2 = ", ";
+                    buf.append(formatAN(result));
+                    result = result.times(base);
+                }
+                buf.append(" ]");
+            }
+            buf.append("\n  }");
+        }
+        buf.append("\n ],\n");
+    }
+    
     private static void writeDiagonalRatio(PolygonField field, int divisor, StringBuilder buf) {
         writeDiagonalRatio(field, divisor, buf, 2); // default step is 2. sigma uses 3
     }
