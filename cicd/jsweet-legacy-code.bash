@@ -1,15 +1,13 @@
 #!/bin/bash
 
 banner() {
-  echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-  echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
+  echo ''
   echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
   echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
   echo '%%%%    '$1
   echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
   echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-  echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-  echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
+  echo ''
 }
 
 # This is designed to run from the main repo as a working directory.
@@ -17,7 +15,12 @@ banner() {
 
 banner 'Transpiling Java sources with JSweet'
 
-./gradlew core:jsweet -x compileJava && exit $?
+./gradlew --continue core:jsweet -x compileJava &> jsweet-errors.txt    # ignore the exit code, it always fails
+cat jsweet-errors.txt
+
+grep -q 'transpilation failed with 106 error(s) and 0 warning(s)' jsweet-errors.txt \
+  && banner 'JSweet transpile found the expected errors' \
+  || { banner 'UNEXPECTED CHANGE IN JSWEET ERRORS'; exit 1; }
 
 banner 'Patching up the bundle as an ES6 module'
 
@@ -30,5 +33,3 @@ cat 'online/jsweetOut/js/bundle.js' | \
     -e 's/var java;//' \
     -e 's/(java || (java = {}));/(java);/' \
   >> $OUTJS
-
-banner 'finished transpiling Java sources with JSweet'
