@@ -480,7 +480,11 @@ public class JsAlgebraicField implements AlgebraicField
     
     
     
-    
+    public AlgebraicNumber getNumberByName( String name )
+    {
+        throw new RuntimeException( "unimplemented JsAlgebraicField.getNumberByName" );
+    }
+
     int[] scaleBy( int[] factors, int whichIrrational )
     {
         throw new RuntimeException( "unimplemented JsAlgebraicField.scaleBy" );

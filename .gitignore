@@ -62,3 +62,7 @@ vzome-react-vzome-*.tgz
 .vscode
 online/dist
 history.txt
+jsweet-errors.txt
+online-app.zip
+online.tgz
+deploy-to-dreamhost.sh
