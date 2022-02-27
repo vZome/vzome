@@ -110,8 +110,9 @@ public class ApplyTool extends ChangeManifestations
             element .setAttribute( "hideInputs", "true" );
         if ( deleteInputs )
             element .setAttribute( "deleteInputs", "true" );
-        if ( copyColors )
-            element .setAttribute( "copyColors", "true" );
+        
+        // Let's be explicit for new configurations, true or false
+        element .setAttribute( "copyColors", Boolean.toString( this.copyColors ) );
     }
 
     @Override
