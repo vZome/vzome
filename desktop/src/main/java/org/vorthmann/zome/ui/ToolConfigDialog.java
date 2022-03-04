@@ -65,7 +65,7 @@ public class ToolConfigDialog extends JDialog implements ActionListener
         //setUndecorated( true );
         setResizable( false );
         setLayout( new BorderLayout() );
-        setTitle( "tool management" );
+        setTitle( forBookmark? "manage bookmark" : "manage tool" );
 
         // The old key modifiers, from core, in case we want to bring back transient overrides.
         //        selectInputs = ( modes & ActionEvent.SHIFT_MASK ) != 0;
@@ -157,9 +157,18 @@ public class ToolConfigDialog extends JDialog implements ActionListener
             }
             iconAndLabel .add( namePanel, BorderLayout .CENTER );
         }
-        tabs = new JTabbedPane();
-        this .add( tabs, BorderLayout .CENTER );
+
+        this .tabs = new JTabbedPane();
+        this .selectInputsCheckbox = new JCheckBox( "select" );
+        this .deleteInputsCheckbox = new JCheckBox( "delete" );
+        this .selectOutputsCheckbox = new JCheckBox( "select" );
+        this .createOutputsCheckbox = new JCheckBox( "create" );
+        this .copyColorsCheckbox = new JCheckBox( "copy colors" );
+        this .showParamsButton = new JButton( "Show and select parameters" );
+        if ( ! forBookmark )
         {
+            this .add( tabs, BorderLayout .CENTER );
+
             JPanel behavior = new JPanel();
             tabs .addTab( "behavior", behavior );
             behavior .setLayout( new GridLayout( 2, 1 ) );
@@ -171,11 +180,9 @@ public class ToolConfigDialog extends JDialog implements ActionListener
                 inputs .setBorder( BorderFactory .createTitledBorder( "inputs" ) );
                 inputsOutputs .add( inputs );
                 inputs .setLayout( new GridLayout( 2, 1 ) );
-                selectInputsCheckbox = new JCheckBox( "select" );
                 selectInputsCheckbox .setActionCommand( "selectInputs" );
                 selectInputsCheckbox .addActionListener( this );
                 inputs .add( selectInputsCheckbox );
-                deleteInputsCheckbox = new JCheckBox( "delete" );
                 deleteInputsCheckbox .setActionCommand( "deleteInputs" );
                 deleteInputsCheckbox .addActionListener( this );
                 inputs .add( deleteInputsCheckbox );
@@ -185,11 +192,9 @@ public class ToolConfigDialog extends JDialog implements ActionListener
                 outputs .setBorder( BorderFactory .createTitledBorder( "outputs" ) );
                 inputsOutputs .add( outputs );
                 outputs .setLayout( new GridLayout( 2, 1 ) );
-                selectOutputsCheckbox = new JCheckBox( "select" );
                 selectOutputsCheckbox .setActionCommand( "selectOutputs" );
                 selectOutputsCheckbox .addActionListener( this );
                 outputs .add( selectOutputsCheckbox );
-                createOutputsCheckbox = new JCheckBox( "create" );
                 createOutputsCheckbox .setActionCommand( "createOutputs" );
                 createOutputsCheckbox .addActionListener( this );
                 outputs .add( createOutputsCheckbox );
@@ -199,24 +204,30 @@ public class ToolConfigDialog extends JDialog implements ActionListener
                 copyColors .setBorder( BorderFactory .createTitledBorder( "copy colors" ) );
                 behavior .add( copyColors );
                 copyColors .setLayout( new GridLayout( 1, 1 ) );
-                copyColorsCheckbox = new JCheckBox( "copy colors" );
                 copyColorsCheckbox .setActionCommand( "copyColors" );
                 copyColorsCheckbox .addActionListener( this );
                 copyColors .add( copyColorsCheckbox );
             }
-
             JPanel showParamsPanel = new JPanel();
             tabs .add( "configuration", showParamsPanel );
-            tabs .setSelectedIndex( 0 );  // should be "behavior" tab for tool, "configuration" for bookmark
+            tabs .setSelectedIndex( 0 );
             showParamsPanel .setLayout( new BorderLayout() );
             this .hideButton = new JButton( "Remove tool" );
             showParamsPanel .add( this .hideButton, BorderLayout .NORTH );
             this .hideButton .setActionCommand( "hideTool" );
             this .hideButton .addActionListener( this );
-            this .showParamsButton = new JButton( "Show and select parameters" );
             showParamsPanel .add( showParamsButton, BorderLayout .SOUTH );
             showParamsButton .setActionCommand( "selectParams" );
             showParamsButton .addActionListener( this );
+        }
+        else {
+            JPanel showParamsPanel = new JPanel();
+            this .add( showParamsPanel, BorderLayout .CENTER );
+            showParamsPanel .setLayout( new BorderLayout() );
+            this .hideButton = new JButton( "Remove bookmark" );
+            showParamsPanel .add( this .hideButton, BorderLayout .NORTH );
+            this .hideButton .setActionCommand( "hideTool" );
+            this .hideButton .addActionListener( this );
         }
         pack();
     }
@@ -256,8 +267,9 @@ public class ToolConfigDialog extends JDialog implements ActionListener
         boolean copyColors = controller .propertyIsTrue( "copyColors" );
         copyColorsCheckbox .setSelected( copyColors );
         copyColorsCheckbox .setEnabled( ! isBookmark );
-        		
-		tabs .setSelectedIndex( 0 );  // should be "behavior" tab
+        
+        if ( ! isBookmark )
+        	tabs .setSelectedIndex( 0 );  // should be "behavior" tab
         setLocationRelativeTo( button );
         setVisible( true );
     }
