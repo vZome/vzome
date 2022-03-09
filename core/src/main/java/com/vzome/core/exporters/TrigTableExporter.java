@@ -164,7 +164,7 @@ public class TrigTableExporter extends Exporter3d {
     
     private static void writeTrigTable(PolygonField field, StringBuilder buf) {
         buf.append( " 'trig': [\n" );
-        if(field.isEven()) {
+//        if(field.isEven()) {
             // trig tables don't apply to odd-gon fields because they are embedded
             final AlgebraicMatrix rotationMatrix = (new AntiprismSymmetry(field)).getRotationMatrix();
             final AlgebraicVector vX = field.basisVector(3, X); // rotation matrix expects 3D even though we only use 2
@@ -179,7 +179,7 @@ public class TrigTableExporter extends Exporter3d {
                 v = rotationMatrix.timesColumn(v);
                 bisector = rotationMatrix.timesColumn(bisector);
             }
-        }
+//        }
         buf.append( " ]\n" );        
     }
 
