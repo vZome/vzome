@@ -13,6 +13,7 @@ import {
 import { Online } from './App.jsx';
 import { Article } from './Article.jsx';
 import { BHallBasic } from './BHallBasic.jsx';
+import { Browser } from './Browser.jsx';
 
 render(
   <Router>
@@ -22,6 +23,9 @@ render(
       </Route>
       <Route path="bhall/basic">
         <BHallBasic />
+      </Route>
+      <Route path="browser">
+        <Browser />
       </Route>
       <Route path="/">
         <Online/>
