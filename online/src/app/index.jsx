@@ -18,16 +18,16 @@ import { Browser } from './Browser.jsx';
 render(
   <Router>
     <Switch>
-      <Route path="fivecell">
+      <Route path="/app/fivecell">
         <Article />
       </Route>
-      <Route path="bhall/basic">
+      <Route path="/app/bhall/basic">
         <BHallBasic />
       </Route>
-      <Route path="browser">
+      <Route path="/app/browser">
         <Browser />
       </Route>
-      <Route path="/">
+      <Route path="/app">
         <Online/>
       </Route>
     </Switch>
