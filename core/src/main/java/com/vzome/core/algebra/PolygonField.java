@@ -639,8 +639,34 @@ public class PolygonField extends ParameterizedField
             return getDiagonalRatio(7);
 
         case "sigma":
-            AlgebraicNumber rho = getDiagonalRatio(7);
-            return rho == null ? null : rho.times(rho).minus(one());
+            return getDiagonalRatio(7, 3);
+        
+        // alpha, beta and gamma are ambiguous when nSides is a mutiple of both 9 and 13
+        // but since 9*13=117, and we seldom use 117N-gons, I'll live with it. 
+        case "alpha":
+            return getDiagonalRatio((polygonSides % 9 == 0 ? 9 : 13), 2);
+        case "beta":
+            return getDiagonalRatio((polygonSides % 9 == 0 ? 9 : 13), 3);
+        case "gamma":
+            return getDiagonalRatio((polygonSides % 9 == 0 ? 9 : 13), 4);
+            
+        case "delta":
+            return getDiagonalRatio(13, 5);
+            
+        case "epsilon":
+            return getDiagonalRatio(13, 6);
+            
+        case "theta":
+            return getDiagonalRatio(11, 2);
+            
+        case "kappa":
+            return getDiagonalRatio(11, 3);
+            
+        case "lambda":
+            return getDiagonalRatio(11, 4);
+            
+        case "mu":
+            return getDiagonalRatio(11, 5);
         }
         return super.getNumberByName(name);
     }
@@ -720,14 +746,18 @@ public class PolygonField extends ParameterizedField
     }
 
     private AlgebraicNumber getDiagonalRatio(int divisor) {
+        return getDiagonalRatio(divisor, 2);
+    }
+    
+    private AlgebraicNumber getDiagonalRatio(int divisor, int step) {
         // Note that more than one term of these AlgebraicNumbers may be non-zero. 
         // This typically occurs when polygonSides is not prime.
         // We could apply the logic of convertGoldenNumberPairs() here
         // but this also works and they can be used to cross-check each other.
-        if (polygonSides % divisor == 0) {
+        if (polygonSides % divisor == 0 && step > 1 && step * 2 <= polygonSides ) {
             int n = polygonSides / divisor;
             AlgebraicNumber denominator = getUnitDiagonal(n - 1); 
-            AlgebraicNumber numerator = getUnitDiagonal((2 * n) - 1);
+            AlgebraicNumber numerator = getUnitDiagonal((step * n) - 1);
             return numerator.dividedBy(denominator);
         }
         return null;

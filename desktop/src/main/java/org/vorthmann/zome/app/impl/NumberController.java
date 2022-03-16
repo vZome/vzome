@@ -56,10 +56,21 @@ public class NumberController extends DefaultController
     }
 
     private static String[] OPTIONAL_NAMED_VALUES = new String[] {
-         // increasing order except that phi and other greek letters go before any sqrtN
-        "phi", 
-        "rho",
-        "sigma",
+        // increasing order except that phi and other greek letters go before any sqrtN
+        "phi",      // 5,2 
+        "rho",      // 7,2
+        "sigma",    // 7,3
+        // alpha, beta and gamma are ambiguous when nSides is a mutiple of both 9 and 13
+        // but since 9*13=117, and we seldom use 117N-gons, I'll live with it. 
+        "alpha",    // 13,2 and 9,2
+        "beta",     // 13,3 and 9,3
+        "gamma",    // 13,4 and 9,4
+        "delta",    // 13,5
+        "epsilon",  // 13,6
+        "theta",    // 11,2
+        "kappa",    // 11,3
+        "lambda",   // 11,4
+        "mu",       // 11,5
         "seperator",
         // square roots
         "\u221A2",
