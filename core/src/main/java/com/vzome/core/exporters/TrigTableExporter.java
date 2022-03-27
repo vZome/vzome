@@ -292,7 +292,7 @@ public class TrigTableExporter extends Exporter3d {
     private static void writeTrigEntry(int i, int nSides, AlgebraicVector vStep, AlgebraicVector bisector, StringBuilder buf) {
         final String delim1 = "', ";
         final String delim2 = ", ";
-        final String infinite = "{ 'alg': '\u221e', 'dec': '\\u221e', 'tdf': '\\u221e' }";
+        final String infinite = "{ 'alg': '\u221e', 'dec': '\u221e', 'tdf': '\u221e' }";
         AlgebraicVector v = vStep;
         for(int n = 0; n < 2; n++) {
             final int k = (i*2)+n;
