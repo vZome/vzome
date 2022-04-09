@@ -325,18 +325,12 @@ public class TrigTableExporter extends Exporter3d {
         .append("', 'dec': ").append(n.evaluate())
         .append(", 'tdf': [");
         String delim = "";
-        int nTerms = -1; // trailing divisor will not be counted
         for(int term : n.toTrailingDivisor()) {
             buf.append(delim);
             delim = ", ";
             buf.append(term);
-            if(term != 0) {
-                nTerms++;
-            }
         }
-        buf.append( "]")
-        .append(", 'nTerms': ").append(nTerms)
-        .append(" }");
+        buf.append( "] }");
         return buf.toString();
     }
     
