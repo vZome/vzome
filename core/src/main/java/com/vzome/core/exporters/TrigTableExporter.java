@@ -103,7 +103,6 @@ public class TrigTableExporter extends Exporter3d {
             delim = ",\n";
             buf.append("  { 'name': '").append(name).append("'");
             buf.append(", 'value': ").append(formatAN(number));
-            buf.append(", 'independant': ").append(i < field.getOrder());
             buf.append(" }");
         }
         buf.append( "\n ],\n" );
