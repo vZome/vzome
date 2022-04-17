@@ -23,8 +23,11 @@ import java.util.concurrent.ExecutionException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import org.eclipse.egit.github.core.Blob;
@@ -63,7 +66,7 @@ public class ShareDialog extends EscapeDialog
     private final JLabel errorLabel;
     private final HyperlinkPanel githubUrlPanel;
     
-    private final String readmeTemplate, postTemplate;
+    private final String readmeTemplate, readmeNoPostTemplate, postTemplate;
    
     // Services
     private final OAuth20Service oAuthService;
@@ -77,11 +80,18 @@ public class ShareDialog extends EscapeDialog
     private transient DeviceAuthorization deviceAuthorization;
     private transient String authToken, repoName;
     private transient Repository repo;
+    private transient boolean configuring, configured;
+    private transient String designName, title, description;
     private transient String gitUrl, error; // marks success or failure state
+    private transient Thread workerThread;
     
     // Inputs
-    private transient String fileName, png, xml, shapesJson;
+    private transient String png, xml, shapesJson;
     private LocalDateTime createTime;
+    private JCheckBox generatePageCheckBox, publishCheckBox;
+    private JTextField titleText;
+    private JTextArea descriptionText;
+    private JLabel publishLabel;
         
     /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      * First, the code that runs on the Swing event dispatcher thread...
@@ -119,6 +129,8 @@ public class ShareDialog extends EscapeDialog
         
         this .readmeTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubReadmeTemplate.md" );
 
+        this .readmeNoPostTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubReadmeNoPostTemplate.md" );
+
         this .postTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubPostTemplate.md" );
 
         JPanel loginPanel = new JPanel();
@@ -149,6 +161,7 @@ public class ShareDialog extends EscapeDialog
                 public void actionPerformed( ActionEvent e )
                 {
                     setVisible( false );
+                    workerThread .interrupt();
                 }
             } );
             JPanel buttons = new JPanel();
@@ -157,6 +170,98 @@ public class ShareDialog extends EscapeDialog
             loginPanel .add( help, BorderLayout.NORTH );
             loginPanel .add( codePanel, BorderLayout.CENTER );
             loginPanel .add( buttons, BorderLayout .SOUTH );
+        }
+
+        JPanel optionsPanel = new JPanel();
+        {
+            optionsPanel .setLayout( new BorderLayout() );
+            optionsPanel .setBorder( BorderFactory.createEmptyBorder( 15, 15, 15, 15 ) );
+
+            JPanel topPanel = new JPanel( new BorderLayout() );
+            generatePageCheckBox = new JCheckBox();
+            generatePageCheckBox .addActionListener( new ActionListener()
+            {
+                @Override
+                public void actionPerformed( ActionEvent e )
+                {
+                    boolean generatePost = controller .propertyIsTrue( "sharing-generatePost" );
+                    controller .setProperty( "sharing-generatePost", !generatePost );
+                    enableConfigurations();
+                }
+            });
+            topPanel .add( generatePageCheckBox, BorderLayout.WEST );
+            topPanel .add( new JLabel( "Generate web page" ), BorderLayout.CENTER );
+            optionsPanel .add( topPanel, BorderLayout.NORTH );
+
+            publishCheckBox = new JCheckBox();
+            publishCheckBox .addActionListener( new ActionListener()
+            {
+                @Override
+                public void actionPerformed( ActionEvent e )
+                {
+                    boolean publish = controller .propertyIsTrue( "sharing-publishImmediately" );
+                    controller .setProperty( "sharing-publishImmediately", !publish );
+                }
+            });
+            JPanel cboxPanel = new JPanel( new BorderLayout() );
+            cboxPanel .add( publishCheckBox, BorderLayout.WEST );
+            publishLabel = new JLabel( "Publish immediately" );
+            cboxPanel .add( publishLabel, BorderLayout.CENTER );
+
+            titleText = new JTextField( 0 );
+            titleText .setBorder(
+                    BorderFactory.createCompoundBorder(
+                            BorderFactory.createCompoundBorder(
+                                    BorderFactory.createTitledBorder( "Title" ),
+                                    BorderFactory.createEmptyBorder( 5,5,5,5 ) ),
+                            titleText .getBorder()));
+
+            descriptionText = new JTextArea();
+            descriptionText .setLineWrap( true );
+            descriptionText .setWrapStyleWord( true );
+            descriptionText .setBorder(
+                    BorderFactory.createCompoundBorder(
+                            BorderFactory.createCompoundBorder(
+                                    BorderFactory.createTitledBorder( "Description" ),
+                                    BorderFactory.createEmptyBorder( 5,5,5,5 ) ),
+                            descriptionText .getBorder()));
+
+            //Put everything together.
+            JPanel inputsPane = new JPanel( new BorderLayout() );
+            inputsPane .add( titleText, BorderLayout.NORTH );
+            inputsPane .add( descriptionText, BorderLayout.CENTER );
+            inputsPane .add( cboxPanel, BorderLayout.SOUTH );
+            inputsPane .setBorder( BorderFactory.createEmptyBorder( 5,5,5,5 ) );
+            optionsPanel .add( inputsPane, BorderLayout.CENTER );
+
+            JButton uploadButton = new JButton( "Upload to GitHub" );
+            uploadButton .addActionListener( new ActionListener()
+            {
+                @Override
+                public void actionPerformed( ActionEvent e )
+                {
+                    title = titleText .getText();
+                    description = descriptionText .getText();
+                    configured = true;
+                    updateDialog();
+                }
+            });
+            JButton cancel = new JButton( "Cancel" );
+            cancel .addActionListener( new ActionListener()
+            {
+                @Override
+                public void actionPerformed( ActionEvent e )
+                {
+                    setVisible( false );
+                    workerThread .interrupt();
+                }
+            } );
+            JPanel buttons = new JPanel();
+            buttons .add( cancel );
+            buttons .add( uploadButton );
+            optionsPanel .add( buttons, BorderLayout.SOUTH );
+            
+            enableConfigurations();
         }
 
         JPanel uploadPanel = new JPanel();
@@ -201,17 +306,27 @@ public class ShareDialog extends EscapeDialog
 
         this .cardPanel = new CardPanel();
         this .cardPanel .add( "authz",   loginPanel );
+        this .cardPanel .add( "options", optionsPanel );
         this .cardPanel .add( "upload",  uploadPanel );
         this .cardPanel .add( "success", resultsPanel );
         this .cardPanel .add( "error",   errorPanel );
         this .cardPanel .showCard( "authz" );
         content .add( this .cardPanel );
         
-        this .setSize( new Dimension( 450, 250 ) );
+        this .setSize( new Dimension( 500, 300 ) );
         this .setResizable( false );
         this .setLocationRelativeTo( frame );
     }
     
+    protected void enableConfigurations()
+    {
+        boolean generatePost = this .controller .propertyIsTrue( "sharing-generatePost" );
+        publishCheckBox .setEnabled( generatePost );
+        publishLabel .setEnabled( generatePost );
+        descriptionText .setEnabled( generatePost );
+        titleText .setEnabled( generatePost );
+    }
+
     private void updateDialog()
     {
         if ( this.error != null )
@@ -228,9 +343,20 @@ public class ShareDialog extends EscapeDialog
             getRootPane() .setDefaultButton( this .githubUrlPanel .getCopyButton() );
             this .githubUrlPanel .getCopyButton() .requestFocusInWindow();
         }
-        else if ( this.repo != null || this.authToken != null )
+        else if ( this.configured )
         {
             this .cardPanel .showCard( "upload" );
+        }
+        else if ( this.repo != null || this.authToken != null )
+        {
+            if ( ! this .configuring ) {
+                this .titleText .setText( this .title );
+                this .descriptionText .setText( this .description );
+                this .cardPanel .showCard( "options" );
+                this .generatePageCheckBox .setSelected( this .controller .propertyIsTrue( "sharing-generatePost" ) );
+                this .publishCheckBox .setSelected( this .controller .propertyIsTrue( "sharing-publishImmediately" ) );
+                this .configuring = true;
+            }
         }
         else if ( this.deviceAuthorization != null )
         {
@@ -275,19 +401,27 @@ public class ShareDialog extends EscapeDialog
 
     public void startUpload( String fileName, LocalDateTime createTime, String xml, String png, String shapesJson )
     {
-        this.fileName = fileName;
         this.createTime = createTime;
         this.xml = xml;
         this.png = png;
         this.shapesJson = shapesJson;
         
         // Initialize the transient, file-specific state
+        this.designName = fileName;
+        int index = designName .toLowerCase() .lastIndexOf( ".vZome" .toLowerCase() );
+        if ( index > 0 )
+            designName = designName .substring( 0, index );
+        this.title = designName .replaceAll( "-", " " );
+        this.description = "A 3D design created in vZome.  Use your mouse or touch to interact.";
         this.error = null;
         this.gitUrl = null;
+        this.configured = false;
+        this.configuring = false;
         
         this .updateDialog();
         
-        new Thread( new Worker() ).start();  // TODO kill this thread if the user cancels
+        this.workerThread = new Thread( new Worker() );
+        this.workerThread .start();
 
         this .setVisible( true );
     }
@@ -307,9 +441,22 @@ public class ShareDialog extends EscapeDialog
         {
             while ( error == null && gitUrl == null )
             {
-                if ( repo != null )
+                if ( Thread.currentThread().isInterrupted() )
+                    return;
+                
+                if ( configured )
                 {
                     doUpload();
+                }
+                else if ( repo != null )
+                {
+                    // just wait for the user
+                    try {
+                        Thread.sleep( 300 );
+                        continue; // skip the updateDialog()
+                    } catch (InterruptedException e) {
+                        // no problem, will exit at the top of the loop
+                    }
                 }
                 else if ( authToken != null && authToken != "" )
                 {
@@ -380,13 +527,6 @@ public class ShareDialog extends EscapeDialog
 
             Tree baseTree = dataService .getTree( this .repo, baseTreeSha );
 
-            // Encode the name to avoid problems with spaces, etc.
-            String designName = this .fileName;
-            int index = designName .toLowerCase() .lastIndexOf( ".vZome" .toLowerCase() );
-            if ( index > 0 )
-                designName = designName .substring( 0, index );
-            String title = designName .replaceAll( "-", " " );
-
             // prepare the substitutions
             String time = DateTimeFormatter.ofPattern( "HH-mm-ss" ) .format( this .createTime );
             String date = DateTimeFormatter.ofPattern( "yyyy-MM-dd" ) .format( createTime );
@@ -421,34 +561,52 @@ public class ShareDialog extends EscapeDialog
                      // e.g. https://vorth.github.io/vzome-sharing/2021/11/29/sample-vZome-share-08-01-41.html
             String postSrcUrl = repoUrl + "/edit/" + BRANCH_NAME + "/" + postSrcPath;
                      // e.g. https://github.com/vorth/vzome-sharing/edit/main/_posts/2021-11-29-sample-vZome-share-08-01-41.md
-            
-            // Generate a README for the vZome user to use 
-            String readmeMd = this.readmeTemplate
-                    .replace( "${imageFile}", designName + ".png" )
-                    .replace( "${postUrl}", postUrl )
-                    .replace( "${postSrcUrl}", postSrcUrl )
-                    .replace( "${rawUrl}", rawUrl );
-            this .addFile( entries, assetPath + "README.md", readmeMd, Blob.ENCODING_UTF8 );
-            
-            /*
-             * Generate a design-specific web page, assuming that GitHub Pages is
-             * enabled for the repo.  The "front-matter" format is defined by
-             * Jekyll, and these properties specifically are defined by the Jekyll SEO plugin.
-             *    https://github.com/jekyll/jekyll-seo-tag/tree/master/docs
-             * This guarantees good OpenGraph metadata for embedding in social media.
-             * TODO: let the user define a description (and a title).
-             * See also:
-             *    https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll
-             *    https://jekyllrb.com/
-             */
-            String indexMd = this.postTemplate
-                    .replace( "${title}", title )
-                    .replace( "${siteUrl}", siteUrl )
+                        
+            if ( this .controller .propertyIsTrue( "sharing-generatePost" ) ) {
+                // Generate a README for the vZome user to use 
+                String readmeMd = this.readmeTemplate
+                        .replace( "${imageFile}", designName + ".png" )
+                        .replace( "${siteUrl}", siteUrl )
+                        .replace( "${imagePath}", imagePath )
+                        .replace( "${designPath}", designPath )
+                        .replace( "${postUrl}", postUrl )
+                        .replace( "${postSrcUrl}", postSrcUrl )
+                        .replace( "${rawUrl}", rawUrl );
+                this .addFile( entries, assetPath + "README.md", readmeMd, Blob.ENCODING_UTF8 );
+
+                /*
+                 * Generate a design-specific web page, assuming that GitHub Pages is
+                 * enabled for the repo.  The "front-matter" format is defined by
+                 * Jekyll, and these properties specifically are defined by the Jekyll SEO plugin.
+                 *    https://github.com/jekyll/jekyll-seo-tag/tree/master/docs
+                 * This guarantees good OpenGraph metadata for embedding in social media.
+                 * TODO: let the user define a description (and a title).
+                 * See also:
+                 *    https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll
+                 *    https://jekyllrb.com/
+                 */
+                String descriptionClean = this.description .replace( '\n', ' ' ) .replace( '\r', ' ' );
+                String indexMd = this.postTemplate
+                        .replace( "${title}", this .title )
+                        .replace( "${description}", descriptionClean )
+                        .replace( "${published}", this .controller .getProperty( "sharing-publishImmediately" ) )
+                        .replace( "${siteUrl}", siteUrl )
                         .replace( "${postPath}", postPath )
                         .replace( "${imagePath}", imagePath )
                         .replace( "${designPath}", designPath )
-                    .replace( "${assetsUrl}", this .gitUrl );
-            this .addFile( entries, postSrcPath, indexMd, Blob.ENCODING_UTF8 );
+                        .replace( "${assetsUrl}", this .gitUrl );
+                this .addFile( entries, postSrcPath, indexMd, Blob.ENCODING_UTF8 );
+            }
+            else {
+                // Generate a README for the vZome user to use, with no blog post
+                String readmeMd = this.readmeNoPostTemplate
+                        .replace( "${imageFile}", designName + ".png" )
+                        .replace( "${siteUrl}", siteUrl )
+                        .replace( "${imagePath}", imagePath )
+                        .replace( "${designPath}", designPath )
+                        .replace( "${rawUrl}", rawUrl );
+                this .addFile( entries, assetPath + "README.md", readmeMd, Blob.ENCODING_UTF8 );
+            }
 
             Tree newTree = dataService .createTree( this .repo, entries, (baseTree==null)? null : baseTree.getSha() );
 

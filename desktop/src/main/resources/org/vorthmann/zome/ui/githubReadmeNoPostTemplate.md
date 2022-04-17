@@ -1,9 +1,7 @@
 
 ## How to Use or Share this Design
 
- - [***custom web page***][post] to share this design; *try it before you share it!*
- - [source file for that custom page][source]; click to customize
- - [raw vZome file][raw] to use in vZome desktop or vZome Online
+ - [raw vZome file](${rawUrl}) to use in vZome desktop or vZome Online
  
  HTML custom element for embedding in any web page:
  ```html
@@ -17,7 +15,3 @@
 
 ![Image](<${imageFile}>)
 
-
-[post]: <${postUrl}>
-[source]: <${postSrcUrl}>
-[raw]: <${rawUrl}>
