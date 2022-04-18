@@ -103,7 +103,7 @@ public class ExporterTest {
 
         public String exportMathTables() {
             StringWriter out = new StringWriter();
-            TrigTableExporter exporter = new TrigTableExporter(null, null, null, doc.getRenderedModel() );
+            MathTableExporter exporter = new MathTableExporter(null, null, null, doc.getRenderedModel() );
             try {
                 exporter.doExport(null, new PrintWriter( out ), 0, 0 );
             } catch (Exception ex) {
@@ -141,7 +141,6 @@ public class ExporterTest {
     private void exportMathTable(String fieldName, String path) {
         TestApp app = new TestApp (fieldName);
         String json = app.exportMathTables();
-        System.out.println(json);
         if(! "".equals(path) ) {
             File file = new File(path + fieldName + ".math.json");
             System.out.println("Exporting math table to " + file.getAbsolutePath());

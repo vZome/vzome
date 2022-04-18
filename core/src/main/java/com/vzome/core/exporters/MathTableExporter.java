@@ -18,46 +18,41 @@ import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 
-public class TrigTableExporter extends Exporter3d {
+public class MathTableExporter extends Exporter3d {
     private static final int X = AlgebraicVector.X;
     private static final int Y = AlgebraicVector.Y;
 
-    public TrigTableExporter(Camera scene, Colors colors, Lights lights, RenderedModel model) {
+    public MathTableExporter(Camera scene, Colors colors, Lights lights, RenderedModel model) {
         super(scene, colors, lights, model);
     }
     
     @Override
     public void doExport(File file, Writer writer, int height, int width) throws Exception {
-        try {
-            final AlgebraicField field = this.mModel.getField();
-            // TODO: consider https://github.com/FasterXML/jackson-databind instead of StringBuilder
-            StringBuilder buf = new StringBuilder();
+        final AlgebraicField field = this.mModel.getField();
+        // TODO: consider https://github.com/FasterXML/jackson-databind instead of StringBuilder
+        StringBuilder buf = new StringBuilder();
 
-            buf.append( "{\n" );
-            writeFieldData(field, buf);
-            writeUnitTermsOrDiagonals(field, buf);
-            writeMultiplicationTable(field, buf);
-            writeDivisionTable(field, buf);
-            writeExponentsTable(field, buf);
-            if(field instanceof PolygonField) { 
-                writeNamedNumbers((PolygonField) field, buf); 
-                writeEmbedding((PolygonField) field, buf);
-                writeTrigTable((PolygonField) field, buf);
-            }
-            // Rather than worrying about having the last appended method omit
-            // the final comma and newline before adding the closing brace,
-            // we'll just delete it here so we can easily reorder the elements in the json.
-            buf.setLength(buf.length()-2); 
-            buf.append( "\n}\n" );
+        buf.append( "{\n" );
+        writeFieldData(field, buf);
+        writeUnitTermsOrDiagonals(field, buf);
+        writeMultiplicationTable(field, buf);
+        writeDivisionTable(field, buf);
+        writeExponentsTable(field, buf);
+        if(field instanceof PolygonField) { 
+            writeNamedNumbers((PolygonField) field, buf); 
+            writeEmbedding((PolygonField) field, buf);
+            writeTrigTable((PolygonField) field, buf);
+        }
+        // Rather than worrying about having the last appended method omit
+        // the final comma and newline before adding the closing brace,
+        // we'll just delete it here so we can easily reorder the elements in the json.
+        buf.setLength(buf.length()-2); 
+        buf.append( "\n}\n" );
 
-            output = new PrintWriter( writer );
-            // we've used single quote as the delimiters so far for simplicity. Now switch to double quotes for json
-            output.println(buf.toString().replace("'", "\""));
-            output .flush();
-        }
-        catch(ClassCastException ex) {
-            throw new IllegalArgumentException("Trig exports are only implemented for polygon fields", ex);
-        }
+        output = new PrintWriter( writer );
+        // we've used single quote as the delimiters so far for simplicity. Now switch to double quotes for json
+        output.println(buf.toString().replace("'", "\""));
+        output .flush();
     }
     
     private static AlgebraicNumber getUnitTermOrDiagonal(AlgebraicField field, int i) {
@@ -107,7 +102,7 @@ public class TrigTableExporter extends Exporter3d {
 
     private static void writeUnitTermsOrDiagonals(AlgebraicField field, StringBuilder buf) {
         final int limit = getFieldOrderOrDiagonalCount(field);
-        buf.append( " 'unitDiagonals': [ ");
+        buf.append( " 'unitTerms': [ ");
         String delim = "\n";
         for(int i=0; i < limit; i++) {
             AlgebraicNumber number = getUnitTermOrDiagonal(field, i);
