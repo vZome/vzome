@@ -29,48 +29,60 @@ public class TrigTableExporter extends Exporter3d {
     @Override
     public void doExport(File file, Writer writer, int height, int width) throws Exception {
         try {
-            final PolygonField field = (PolygonField) this.mModel.getField();
+            final AlgebraicField field = this.mModel.getField();
             // TODO: consider https://github.com/FasterXML/jackson-databind instead of StringBuilder
             StringBuilder buf = new StringBuilder();
 
             buf.append( "{\n" );
             writeFieldData(field, buf);
-            writeEmbedding(field, buf);
-            writeUnitDiagonals(field, buf);
-            writeNamedNumbers(field, buf);
+            writeUnitTermsOrDiagonals(field, buf);
             writeMultiplicationTable(field, buf);
             writeDivisionTable(field, buf);
             writeExponentsTable(field, buf);
-            writeTrigTable(field, buf);
-            buf.append( "}\n" );
+            if(field instanceof PolygonField) { 
+                writeNamedNumbers((PolygonField) field, buf); 
+                writeEmbedding((PolygonField) field, buf);
+                writeTrigTable((PolygonField) field, buf);
+            }
+            // Rather than worrying about having the last appended method omit
+            // the final comma and newline before adding the closing brace,
+            // we'll just delete it here so we can easily reorder the elements in the json.
+            buf.setLength(buf.length()-2); 
+            buf.append( "\n}\n" );
 
             output = new PrintWriter( writer );
             // we've used single quote as the delimiters so far for simplicity. Now switch to double quotes for json
             output.println(buf.toString().replace("'", "\""));
             output .flush();
-            generateHtml(file);
         }
         catch(ClassCastException ex) {
             throw new IllegalArgumentException("Trig exports are only implemented for polygon fields", ex);
         }
     }
     
-    private void generateHtml(File file) {
-        if(file != null) {
-            // TODO: Generate an HTML that uses the json. 
-            // This should probably just be a String resource 
-            // that's written to an associated file name with minimal changes.
-        }
+    private static AlgebraicNumber getUnitTermOrDiagonal(AlgebraicField field, int i) {
+        return field instanceof PolygonField 
+                ? ((PolygonField) field).getUnitDiagonal(i) 
+                : field.getUnitTerm(i);
     }
-
-    private static void writeFieldData(PolygonField field, StringBuilder buf) {
+    
+    private static int getFieldOrderOrDiagonalCount(AlgebraicField field) {
+        return field instanceof PolygonField 
+                ? ((PolygonField) field).diagonalCount() 
+                : field.getOrder();
+    }
+    
+    private static void writeFieldData(AlgebraicField field, StringBuilder buf) {
         buf.append(" 'field': { ")
         .append("'name': '").append(field.getName()).append("', ")
-        .append("'order': ").append(field.getOrder()).append(", ")
-        .append("'parity': '").append(field.isOdd() ? "odd" : "even").append("', ")
-        .append("'diagonalCount': ").append(field.diagonalCount()).append(", ")
-        .append("'polygonSides': ").append(field.polygonSides())
-        .append(" },\n");
+        .append("'order': ").append(field.getOrder());
+        if(field instanceof PolygonField) {
+            PolygonField pfield = (PolygonField) field;
+            buf.append(", 'parity': '").append(pfield.isOdd() ? "odd" : "even").append("', ")
+            .append("'diagonalCount': ").append(pfield.diagonalCount()).append(", ")
+            .append("'polygonSides': ").append(pfield.polygonSides());
+        }
+        buf.append(" },\n");
     }
     
     private static void writeEmbedding(PolygonField field, StringBuilder buf) {
@@ -93,11 +105,12 @@ public class TrigTableExporter extends Exporter3d {
         buf.append( " ],\n" );
     }
 
-    private static void writeUnitDiagonals(PolygonField field, StringBuilder buf) {
+    private static void writeUnitTermsOrDiagonals(AlgebraicField field, StringBuilder buf) {
+        final int limit = getFieldOrderOrDiagonalCount(field);
         buf.append( " 'unitDiagonals': [ ");
         String delim = "\n";
-        for(int i=0; i < field.diagonalCount(); i++) {
-            AlgebraicNumber number = field.getUnitDiagonal(i);
+        for(int i=0; i < limit; i++) {
+            AlgebraicNumber number = getUnitTermOrDiagonal(field, i);
             String name = (i == 0) ? "1" : field.getIrrational(i);
             buf.append(delim);
             delim = ",\n";
@@ -173,31 +186,29 @@ public class TrigTableExporter extends Exporter3d {
     }
     
     private static void writeTrigTable(PolygonField field, StringBuilder buf) {
+        // Note: trig tables only apply to odd-gon fields if embedding is also applied
+        final AlgebraicMatrix rotationMatrix = (new AntiprismSymmetry(field)).getRotationMatrix();
+        final AlgebraicVector vX = field.basisVector(3, X); // rotation matrix expects 3D even though we only use 2
+        final AlgebraicVector v1 = rotationMatrix.timesColumn(vX);
+        AlgebraicVector bisector = vX.plus(v1).scale(field.getUnitTerm(1).reciprocal());
+        AlgebraicVector v = vX;
+        int nSides = field.polygonSides();
+                
         buf.append( " 'trig': [\n" );
-//        if(field.isEven()) {
-            // trig tables don't apply to odd-gon fields because they are embedded
-            final AlgebraicMatrix rotationMatrix = (new AntiprismSymmetry(field)).getRotationMatrix();
-            final AlgebraicVector vX = field.basisVector(3, X); // rotation matrix expects 3D even though we only use 2
-            final AlgebraicVector v1 = rotationMatrix.timesColumn(vX);
-            AlgebraicVector bisector = vX.plus(v1).scale(field.getUnitTerm(1).reciprocal());
-            AlgebraicVector v = vX;
-            int nSides = field.polygonSides();
-                    
-            for(int i = 0; i < nSides; i++) {
-                writeTrigEntry(i, nSides, v, bisector, buf);
-                buf.append(i == nSides-1 ? "\n" : ",\n");
-                v = rotationMatrix.timesColumn(v);
-                bisector = rotationMatrix.timesColumn(bisector);
-            }
-//        }
-        buf.append( " ]\n" );        
+        for(int i = 0; i < nSides; i++) {
+            writeTrigEntry(i, nSides, v, bisector, buf);
+            buf.append(i == nSides-1 ? "\n" : ",\n");
+            v = rotationMatrix.timesColumn(v);
+            bisector = rotationMatrix.timesColumn(bisector);
+        }
+        buf.append( " ],\n" );        
     }
 
-    private static void writeMultiplicationTable(PolygonField field, StringBuilder buf) {
+    private static void writeMultiplicationTable(AlgebraicField field, StringBuilder buf) {
         writeTable(field, buf, "multiplication", (AlgebraicNumber n1, AlgebraicNumber n2) -> n1.times(n2));
     }
     
-    private static void writeDivisionTable(PolygonField field, StringBuilder buf) {
+    private static void writeDivisionTable(AlgebraicField field, StringBuilder buf) {
         writeTable(field, buf, "division", (AlgebraicNumber n1, AlgebraicNumber n2) -> n1.dividedBy(n2));
     }
     
@@ -229,8 +240,8 @@ public class TrigTableExporter extends Exporter3d {
         buf.append("\n ],\n");
     }
     
-    private static void writeExponentsTable(PolygonField field, StringBuilder buf) {
-        final int limit = field.diagonalCount();
+    private static void writeExponentsTable(AlgebraicField field, StringBuilder buf) {
+        final int limit = getFieldOrderOrDiagonalCount(field);
         final int range = 6;
         
         buf.append(" 'exponents': [\n");
@@ -243,7 +254,7 @@ public class TrigTableExporter extends Exporter3d {
             {
                 buf.append(",\n    'positivePowers': [ ");
                 String delim2 = "";
-                final AlgebraicNumber base = field.getUnitDiagonal(i);
+                final AlgebraicNumber base = getUnitTermOrDiagonal(field, i);
                 AlgebraicNumber result = base; 
                 for (int power = 1; power <= range; power++) {
                     buf.append(delim2);
@@ -256,7 +267,7 @@ public class TrigTableExporter extends Exporter3d {
             {
                 buf.append(",\n    'negativePowers': [ ");
                 String delim2 = "";
-                final AlgebraicNumber base = field.getUnitDiagonal(i).reciprocal();
+                final AlgebraicNumber base = getUnitTermOrDiagonal(field, i).reciprocal();
                 AlgebraicNumber result = base; 
                 for (int power = 1; power <= range; power++) {
                     buf.append(delim2);
@@ -282,7 +293,6 @@ public class TrigTableExporter extends Exporter3d {
             AlgebraicNumber numerator = field.getUnitDiagonal((step * n) - 1);
             buf.append("'numerator': ").append(formatAN(numerator)).append(", ");
             buf.append("'denominator': ").append(formatAN(denominator)).append(", ");
-//            buf.append("'verify' : ").append(formatAN(numerator.dividedBy(denominator))).append(", ");
         } else {
             throw new IllegalStateException("shouldn't ever get here");
         }
