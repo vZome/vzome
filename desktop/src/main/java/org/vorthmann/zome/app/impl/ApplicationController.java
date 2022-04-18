@@ -516,7 +516,12 @@ public class ApplicationController extends DefaultController
     public void setModelProperty( String name, Object value )
     {
         this.properties .setProperty( name, value .toString() );
-        if ( "githubAccessToken" .equals( name ) ) {
+        switch ( name ) {
+
+        case "githubAccessToken":
+        case "sharing-generatePost":
+        case "sharing-publishImmediately":
+            
             this.storedConfig .setProperty( name, value .toString() );
             FileWriter writer;
             try {
@@ -526,6 +531,10 @@ public class ApplicationController extends DefaultController
             } catch ( IOException e ) {
                 logger.fine(e.toString());
             }
+            break;
+
+        default:
+            break;
         }
     }
 
