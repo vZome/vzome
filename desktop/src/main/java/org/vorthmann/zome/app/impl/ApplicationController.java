@@ -285,6 +285,16 @@ public class ApplicationController extends DefaultController
                 String path = action .substring( "newFromResource-" .length() );
                 ClassLoader cl = this .getClass() .getClassLoader();
                 InputStream bytes = cl .getResourceAsStream( path );
+                // handle the special case of "openTrackballModel" for AntiprismSymmetry
+                if(path.endsWith("antiprism-trackball-template.vZome")) {
+                    for(RenderedModel rm : this.symmetryModels.values()) {
+                        Symmetry symm = rm.getOrbitSource().getSymmetry();
+                        if(symm instanceof AntiprismSymmetry) {
+                            bytes = AntiprismTrackball.getTrackballModelStream(bytes, (AntiprismSymmetry)symm);
+                            break;
+                        }
+                    }
+                }
                 loadDocumentController( path, bytes, docProps );
             }
             else if ( action .startsWith( "openURL-" ) )
