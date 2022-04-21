@@ -66,7 +66,7 @@ public class HyperlinkPanel extends JPanel
         hyperlink .addMouseListener( new MouseAdapter()
         {
             @Override
-            public void mouseClicked( MouseEvent e )
+            public void mousePressed( MouseEvent e )
             {
                 try {
                     Desktop .getDesktop() .browse( new URI( url ) );

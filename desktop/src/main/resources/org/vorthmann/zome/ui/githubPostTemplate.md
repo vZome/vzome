@@ -7,8 +7,8 @@ layout: vzome
 ---
 
 {% comment %}
- - [***web page generated from this source***](${siteUrl}/${postPath})
- - [data assets and more info](${assetsUrl})
+ - [***web page generated from this source***](<${siteUrl}/${postPath}>)
+ - [data assets and more info](<${assetsUrl}>)
  
 {% endcomment %}
 

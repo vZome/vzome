@@ -1,7 +1,7 @@
 
 ## How to Use or Share this Design
 
- - [raw vZome file](${rawUrl}) to use in vZome desktop or vZome Online
+ - [raw vZome file](<${rawUrl}>) to use in vZome desktop or vZome Online
  
  HTML custom element for embedding in any web page:
  ```html
