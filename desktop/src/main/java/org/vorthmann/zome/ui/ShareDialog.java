@@ -407,11 +407,15 @@ public class ShareDialog extends EscapeDialog
         this.shapesJson = shapesJson;
         
         // Initialize the transient, file-specific state
-        this.designName = fileName;
+        this.designName = fileName .trim() .replaceAll( " ", "-" ); // we don't want spaces in our URLs
         int index = designName .toLowerCase() .lastIndexOf( ".vZome" .toLowerCase() );
         if ( index > 0 )
             designName = designName .substring( 0, index );
-        this.title = designName .replaceAll( "-", " " );
+        while ( designName .startsWith( "-" ) ) // leading hyphens can break things for Jekyll posts
+            designName = designName .substring( 1 );
+        while ( designName .endsWith( "-" ) ) // so can trailing hyphens
+            designName = designName .substring( 0, designName .lastIndexOf( '-' ) );
+        this.title = designName .replaceAll( "-", " " ) .trim();    // but we do want spaces in the title
         this.description = "A 3D design created in vZome.  Use your mouse or touch to interact.";
         this.error = null;
         this.gitUrl = null;
