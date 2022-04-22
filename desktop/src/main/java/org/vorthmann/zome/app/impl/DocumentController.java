@@ -889,6 +889,10 @@ public class DocumentController extends DefaultController implements Scene.Provi
                             exporter .exportDocument( documentModel, file, out, size.height, size.width );
                     }
                 }
+                catch (Command.Failure f) {
+                    logger .severe( "failed exporting " + command );
+                    mErrors.reportError( USER_ERROR_CODE, new Object[] { f } );
+                }
                 catch (Exception e) {
                     logger .severe( "failed exporting " + command );
                     e .printStackTrace();

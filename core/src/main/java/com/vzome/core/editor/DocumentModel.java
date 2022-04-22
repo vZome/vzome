@@ -51,6 +51,7 @@ import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.exporters.OpenScadExporter;
 import com.vzome.core.exporters.POVRayExporter;
 import com.vzome.core.exporters.PartGeometryExporter;
 import com.vzome.core.exporters.ShapesJsonExporter;
@@ -860,11 +861,18 @@ public class DocumentModel implements Snapshot .Recorder, Context
 
     public Exporter3d getStructuredExporter( String format, Camera camera, Colors colors, Lights lights )
     {
-        if ( format.equals( "partgeom" ) )
+        switch ( format ) {
+
+        case "openscad":
+            return new OpenScadExporter();
+
+        case "partgeom":
             // the rendered model must be set before export
             return new PartGeometryExporter( camera, colors, lights, this .renderedModel, this .editorModel .getSelection() );
-        else
+
+        default:
             return this .app .getExporter( format );
+        }
     }
 
     public LessonModel getLesson()
