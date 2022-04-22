@@ -111,7 +111,8 @@ public class ToolConfigDialog extends JDialog implements ActionListener
             public void actionPerformed( ActionEvent e )
             {
                 setVisible( false );
-                tabs .setSelectedIndex( 0 );  // should be "behavior" tab
+                if ( ! forBookmark )
+                    tabs .setSelectedIndex( 0 );  // should be "behavior" tab
                 controller .removePropertyListener( checkboxChanges );
                 controller = null;
             }
