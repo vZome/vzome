@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.vzome.core.algebra.AbstractAlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Construction;
@@ -84,24 +85,36 @@ public class OpenScadExporter extends Exporter3d
         // so set them to null to free the memory and to ensure we don't use them later by mistake.
         fixedVerticesSet = null;
         floatingVerticesSet = null;
-        
-        
-        
-        
-        
-        
-        
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% OK, ready to output!
         
         super .output = new PrintWriter( writer );
 
         super .printBoilerplate( "com/vzome/core/exporters/zome-strut-prelude.scad" );
-        
-        output .println( "irrational = " + super .mModel .getField() .getIrrational( 1 ) + ";" );
+                
+        AbstractAlgebraicField field = (AbstractAlgebraicField) super .mModel .getField();
+        output .println( "irrational = " + field .getCoefficients()[ 1 ] + ";" );
         output .println();
 
-        String tipVertex = super .mModel .renderVector( ((Point) tipPoint) .getLocation() ) .toString();
+        String tipVertex = super .mModel .renderVector( ((Point) tipPoint) .getLocation() ) .scale( RZOME_MM_SCALING ) .toString();
         output .println( "tip_vertex = [ " + tipVertex + " ];" );
         output .println();
+        
+        output .println( "fixed_vertices = [ " );
+        for ( AlgebraicVector vertex : sortedFixedVertexList ) {
+            output .print( "[ " );
+            output .print( super .mModel .renderVector( vertex ) .scale( RZOME_MM_SCALING ) .toString() );
+            output .print( " ], " );
+        }
+        output .println( " ];" );
+        
+        output .println( "floating_vertices = [ " );
+        for ( AlgebraicVector vertex : sortedFloatingVertexList ) {
+            output .print( "[ " );
+            output .print( super .mModel .renderVector( vertex ) .scale( RZOME_MM_SCALING ) .toString() );
+            output .print( " ], " );
+        }
+        output .println( " ];" );
         
         output .println( "faces = [ " );
         for ( RenderedManifestation rm : super .mModel ) {
@@ -109,15 +122,18 @@ public class OpenScadExporter extends Exporter3d
             if ( man instanceof Panel )
             {
                 output .print( "[ " );
-                boolean first = true;
                 Panel panel = (Panel) man;
                 for ( AlgebraicVector vertex : panel ) {
-                    if ( ! first )
-                        output .print( ", " );
-                    output .print( super .mModel .renderVector( vertex ) .toString() );
-                    first = false;
+                    int index = sortedFixedVertexList .indexOf( vertex );
+                    if ( index >= 0 ) {
+                        output .print( index );
+                    } else {
+                        index = sortedFloatingVertexList .indexOf( vertex );
+                        output .print( sortedFixedVertexList .size() + index );
+                    }
+                    output .print( ", " );
                 }
-                output .print( " ]" );
+                output .print( " ], " );
             }
         }
         output .println( " ];" );

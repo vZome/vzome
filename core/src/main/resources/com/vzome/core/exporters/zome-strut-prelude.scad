@@ -41,7 +41,6 @@ module zome_strut( size, scalar = 1.0 ) {
     shifted_vertices = [ for (vertex = floating_vertices) vertex + shift_vector ];
         
     if ($zome_debug) {
-        scale(physical_scale)
         for (vertex = shifted_vertices) {
             color("green")
             translate(vertex)
@@ -62,16 +61,15 @@ module zome_strut( size, scalar = 1.0 ) {
 
 // Multipack
 
-module zome_strut_multipack(count, orbit, size, scalar = 1.0) {
+module zome_strut_multipack(count, size, scalar = 1.0) {
     
-    tip_vertex = gf_point_to_real(orbit[2]);
     normal = [-tip_vertex.y, tip_vertex.x];
     unit_normal = normal / norm(normal);
 
     for (n = [0:count-1]) {
         
         translate(unit_normal * 7 * n)
-        zome_strut(orbit, size, scalar);
+        zome_strut( size, scalar);
         
     }
     
