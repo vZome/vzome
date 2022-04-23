@@ -33,7 +33,6 @@ import org.xml.sax.SAXException;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
-import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -239,11 +238,24 @@ public class GeoGebraExporter extends Exporter3d
         private void addVertex(AlgebraicVector v, Connector ball, String label, Embedding embedding)
                 throws XPathExpressionException 
         {
-            RealVector rv = embedding.isTrivial() ? v.toRealVector() : embedding.embedInR3(v);
+            // Be sure to use doubles here, not floats (as in a RealVector)
+            // because GeoGebra requires the vertices to use double precision 
+            // or else when rendering panels with more than 3 vertices,
+            // it may decide they are non-coplanar and it won't render them
+            // but it doesn't give any warning either.
+            // It will render triangles and polygon edges and struts 
+            // because they are never non-coplanar. 
+            // The problem originally showed up with pentagonal panels not being rendered
+            // but their edges and everything else were being shown.  
+            double[] rvDouble = embedding.isTrivial() ? v.to3dDoubleVector() : embedding.embedInR3Double(v);
+            final String x = Double.toString(rvDouble[0]);
+            final String y = Double.toString(rvDouble[1]);
+            final String z = Double.toString(rvDouble[2]);
             { // point
                 Element point = (Element) pointTemplate.cloneNode(true);
                 point.setAttribute("label", label);
-                point.setAttribute("exp", "(" + rv.toString() + ")");
+                final String exp = "(" + x + "," + y + "," + z + ")";
+                point.setAttribute("exp", exp);
                 constructionNode.appendChild(point);
             }
             { // point3d
@@ -259,9 +271,9 @@ public class GeoGebraExporter extends Exporter3d
                 setColor((ball == null) ? Color.WHITE : ball.getColor(), point3d);
                 // coords
                 Element coords = (Element) xpath.evaluate("coords", point3d, XPathConstants.NODE);
-                coords.setAttribute("x", Float.toString(rv.x));
-                coords.setAttribute("y", Float.toString(rv.y));
-                coords.setAttribute("z", Float.toString(rv.z));
+                coords.setAttribute("x", x);
+                coords.setAttribute("y", y);
+                coords.setAttribute("z", z);
                 constructionNode.appendChild(point3d);
             }
         }
