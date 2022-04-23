@@ -218,9 +218,14 @@ public class GeoGebraExporter extends Exporter3d
                     doc.getDocumentElement(), XPathConstants.NODE);
             { // coordSystem
                 float viewDistance = scene.getViewDistance();
+                float magnification = scene.getMagnification();
+                // TODO: Need to work out a better emperical function of viewDistance and magnification 
+                // that is reasonable for both large and small models.
+                // We can also zoom-to-fit after opening it in GeoGebra.
+                // Magnification needs to be used with Math.exp() to get its antilog. 
+                Double scale = viewDistance / Math.exp(magnification) * 0.5d;  // close enough for now...
                 Element coordSystem = (Element) xpath.evaluate("coordSystem", euclidianView3DNode, XPathConstants.NODE);
-                coordSystem.setAttribute("scale", Float.toString(viewDistance / 3.2f)); // seems close w/o zoom
-                // TODO: Adjust for the zoom level
+                coordSystem.setAttribute("scale", scale.toString());
             }
             { // bgColor
                 Element bgColor = (Element) xpath.evaluate("bgColor", euclidianView3DNode, XPathConstants.NODE);
@@ -365,7 +370,7 @@ public class GeoGebraExporter extends Exporter3d
                         sw.close();
                         zos.putNextEntry(new ZipEntry(GEOGEBRA_XML));
                         String xml = sw.toString();
-                        System.out.println(xml);
+//                        System.out.println(xml);
                         zos.write(xml.getBytes());
                         zos.closeEntry();
                     } catch (IOException e) {
