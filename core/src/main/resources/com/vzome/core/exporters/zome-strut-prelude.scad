@@ -1,6 +1,6 @@
 /****************************************************************
 
-  Zome Strut Generator
+  Zome Strut Generator, by Aaron Siegel
   
   The basic syntax is:
   zome_strut(size);
@@ -77,7 +77,5 @@ module zome_strut_multipack(count, size, scalar = 1.0) {
 
 $zome_debug = false;
 
-// Strut data (exported from vZome by Scott Vorthmann)
-
-
+// Strut data exported from vZome, https://vzome.com, by Scott Vorthmann
 
