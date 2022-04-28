@@ -51,6 +51,7 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
         super(symm);
 
         final AbstractShapes icosadefaultShapes = new ExportedVEFShapes(null, "default", "solid connectors", this.symmetry);
+        final AbstractShapes printableShapes = new ExportedVEFShapes(null, "printable", "printable", this.symmetry, icosadefaultShapes);
         final AbstractShapes lifelikeShapes = new ExportedVEFShapes(null, "lifelike", "lifelike", this.symmetry, icosadefaultShapes);
         final AbstractShapes tinyShapes = new ExportedVEFShapes(null, "tiny", "tiny connectors", this.symmetry);
         final AbstractShapes tinyDodecs = new ExportedVEFShapes(null, "dodecs", "small dodecahedra", "tiny dodecahedra", this.symmetry, tinyShapes);
@@ -61,6 +62,7 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
         final AbstractShapes vienne = new ExportedVEFShapes( null, "vienne", "Vienne 121 zone", this.symmetry, true );
         
         // this is the order they will be shown on the dialog
+        setDefaultGeometry( printableShapes );
         addShapes(icosadefaultShapes); 
         addShapes(lifelikeShapes); 
         addShapes(tinyShapes); 
@@ -70,7 +72,6 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
         addShapes(vienne2); 
         addShapes(vienne3); 
         addShapes(vienne);
-        setDefaultGeometry(icosadefaultShapes);
 
         AlgebraicField field = this.symmetry.getField();
         qSymmH4 = new QuaternionicSymmetry("H_4", "com/vzome/core/math/symmetry/H4roots.vef", field);
