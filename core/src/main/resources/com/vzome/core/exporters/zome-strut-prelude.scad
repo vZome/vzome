@@ -33,9 +33,7 @@ module zome_strut( size, scalar = 1.0 ) {
     
     // Raw data corresponds to size = 1, so
     // scale by a factor of phi^(size - 1).
-    
-    post_rotation_angle = 0;
-    
+        
     shifted_tip_vertex = tip_vertex * irrational^(size - 1) * scalar;
     shift_vector = shifted_tip_vertex - tip_vertex;
     shifted_vertices = [ for (vertex = floating_vertices) vertex + shift_vector ];
@@ -49,11 +47,12 @@ module zome_strut( size, scalar = 1.0 ) {
     }
     
     // Now rotate to lie flat on the xy-plane
-    //xyProjection = [shifted_tip_vertex.x, shifted_tip_vertex.y, 0];
-    //normal = [-xyProjection.y, xyProjection.x, 0];
-    //angle = atan(shifted_tip_vertex.z / sqrt(shifted_tip_vertex.x^2 + shifted_tip_vertex.y^2));
-    
-    //rotate(post_rotation_angle, xyProjection)
+    rotation_axis = cross( bottom_face_normal, [ 0, 0, -1 ] );
+    echo ( rotation_axis );
+    rotation_angle = acos( bottom_face_normal * [ 0, 0, -1 ] );
+    echo ( rotation_angle );
+
+    rotate( rotation_angle, rotation_axis )
 
     polyhedron( concat( fixed_vertices, shifted_vertices ), faces );
     

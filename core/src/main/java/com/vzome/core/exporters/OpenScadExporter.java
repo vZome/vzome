@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -18,6 +19,7 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
+import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.render.RenderedManifestation;
@@ -42,26 +44,43 @@ public class OpenScadExporter extends Exporter3d
     {
         ToolsModel toolsModel = doc .getToolsModel();
         super .mModel = doc .getRenderedModel();
+        AbstractAlgebraicField field = (AbstractAlgebraicField) super .mModel .getField();
 
-        Optional<Tool> tipBookmark = toolsModel .values() .stream() .filter( tool -> "tip_vertex" .equals( tool.getLabel() ) ) .findAny();
+        // Extract the tip_vertex parameter from its bookmark
+        Optional<Tool> tipBookmark = toolsModel .values() .stream() .filter( tool -> "tip vertex" .equals( tool.getLabel() ) ) .findAny();
         if ( ! tipBookmark .isPresent() )
-            throw new Command.Failure( "You must have a bookmark named \"tip_vertex\" for the strut endpoint." );
-        Construction tipPoint = tipBookmark .get() .getParameters() .get( 0 );
-        if ( ! (tipPoint instanceof Point ) )
-            throw new Command.Failure( "The \"tip_vertex\" bookmark must select a single ball." );
+            throw new Command.Failure( "You must have a bookmark named \"tip vertex\" for the strut endpoint." );
+        List<Construction> tipItems = tipBookmark .get() .getParameters();
+        Construction tipPoint = tipItems .get( 0 );
+        if ( tipItems .size() > 1 || ! (tipPoint instanceof Point ) )
+            throw new Command.Failure( "The \"tip vertex\" bookmark must select a single ball." );
+        AlgebraicVector tipVertex = ((Point) tipPoint) .getLocation();
 
-        Optional<Tool> floatingBookmark = toolsModel .values() .stream() .filter( tool -> "floating_panels" .equals( tool.getLabel() ) ) .findAny();
+        // Extract the "floating panels" parameter from its bookmark
+        Optional<Tool> floatingBookmark = toolsModel .values() .stream() .filter( tool -> "floating panels" .equals( tool.getLabel() ) ) .findAny();
         SortedSet<AlgebraicVector> floatingVerticesSet = new TreeSet<>();
         if ( ! floatingBookmark .isPresent() )
-            throw new Command.Failure( "You must have a bookmark named \"floating_panels\"." );
+            throw new Command.Failure( "You must have a bookmark named \"floating panels\"." );
         for ( Construction polygon : floatingBookmark .get() .getParameters() ) {
             if ( ! (polygon instanceof Polygon ) )
-                throw new Command.Failure( "The \"floating_panels\" bookmark must select only panels." );
+                throw new Command.Failure( "The \"floating panels\" bookmark must select only panels." );
             for ( AlgebraicVector vertex : ((Polygon) polygon) .getVertices() ) {
                 floatingVerticesSet .add( vertex );
             }
         }
         
+        // Extract the optional "bottom face" parameter from its bookmark
+        AlgebraicVector bottomFaceNormal = null; // a sentinel value tested later
+        Optional<Tool> bottomFaceBookmark = toolsModel .values() .stream() .filter( tool -> "bottom face" .equals( tool.getLabel() ) ) .findAny();
+        if ( bottomFaceBookmark .isPresent() ) {
+            List<Construction> bottomFaceItems = bottomFaceBookmark .get() .getParameters();
+            Construction bottomFacePanel = bottomFaceItems .get( 0 );
+            if ( bottomFaceItems .size() > 1 || ! (bottomFacePanel instanceof Polygon ) )
+                throw new Command.Failure( "The \"bottom face\" bookmark must select a single panel." );
+            bottomFaceNormal = ((Polygon) bottomFacePanel) .getNormal();
+        }
+        
+        // Find all the vertices of all the panels
         SortedSet<AlgebraicVector> fixedVerticesSet = new TreeSet<>();
         for ( RenderedManifestation rm : super .mModel ) {
             Manifestation man = rm .getManifestation();
@@ -92,12 +111,20 @@ public class OpenScadExporter extends Exporter3d
 
         super .printBoilerplate( "com/vzome/core/exporters/zome-strut-prelude.scad" );
                 
-        AbstractAlgebraicField field = (AbstractAlgebraicField) super .mModel .getField();
         output .println( "irrational = " + field .getCoefficients()[ 1 ] + ";" );
         output .println();
+        
+        if ( bottomFaceNormal == null ) {
+            output .println( "// WARNING: The vZome design contained no \"bottom face\" bookmark." );
+            output .println( "bottom_face_normal = [ 0, 0, -1 ];" );
+        } else {
+            RealVector bottomFaceDirection = super .mModel .renderVector( bottomFaceNormal ) .normalize();
+            output .println( "bottom_face_normal = [ " + bottomFaceDirection.toString() + " ];" );
+        }
+        output .println();
 
-        String tipVertex = super .mModel .renderVector( ((Point) tipPoint) .getLocation() ) .scale( RZOME_MM_SCALING ) .toString();
-        output .println( "tip_vertex = [ " + tipVertex + " ];" );
+        String tipVertexString = super .mModel .renderVector( tipVertex ) .scale( RZOME_MM_SCALING ) .toString();
+        output .println( "tip_vertex = [ " + tipVertexString + " ];" );
         output .println();
         
         output .println( "fixed_vertices = [ " );
