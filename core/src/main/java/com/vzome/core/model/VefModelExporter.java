@@ -13,7 +13,7 @@ public class VefModelExporter extends VefVectorExporter implements Exporter
 {
     public VefModelExporter( Writer writer, AlgebraicField field )
     {
-    		this( writer, field, null, false );
+        this( writer, field, null, false );
     }
 
     public VefModelExporter( Writer writer, AlgebraicField field, AlgebraicNumber scale, boolean withOffset )

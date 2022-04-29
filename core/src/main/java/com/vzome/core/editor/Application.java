@@ -38,6 +38,7 @@ import com.vzome.core.exporters.DxfExporter;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters.HistoryExporter;
 import com.vzome.core.exporters.OffExporter;
+import com.vzome.core.exporters.OpenScadExporter;
 import com.vzome.core.exporters.POVRayExporter;
 import com.vzome.core.exporters.PartGeometryExporter;
 import com.vzome.core.exporters.PartsListExporter;
@@ -121,6 +122,7 @@ public class Application implements AlgebraicField.Registry
         this .exporters .put( "off", new OffExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "vef", new VefExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "partgeom", new PartGeometryExporter( null, this .mColors, this .mLights, null, null ) ); // need this here just to find the extension in DocumentController.getProperty()
+        this .exporters .put( "openscad", new OpenScadExporter() ); // need this here just to find the extension in DocumentController.getProperty()
         this .exporters .put( "partslist", new PartsListExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "stl", new StlExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "dxf", new DxfExporter( null, this .mColors, this .mLights, null ) );
