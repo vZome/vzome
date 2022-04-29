@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
+import java.util.Stack;
 import java.util.TreeSet;
 
 import com.vzome.core.algebra.AbstractAlgebraicField;
@@ -163,17 +164,19 @@ public class OpenScadExporter extends Exporter3d
             {
                 output .print( "[ " );
                 Panel panel = (Panel) man;
+                Stack<AlgebraicVector> stack = new Stack<AlgebraicVector>();
                 for ( AlgebraicVector vertex : panel ) {
-                    int index = sortedFixedVertexList .indexOf( vertex );
-                    if ( index >= 0 ) {
-                        output .print( index );
-                    } else {
-                        index = sortedFloatingVertexList .indexOf( vertex );
-                        output .print( sortedFixedVertexList .size() + index );
-                    }
-                    output .print( ", " );
+                    stack .push( vertex ); // winding is backward (normals-in) in OpenSCAD, so we need to reverse the normals-out winding
                 }
-                output .print( " ], " );
+                while ( ! stack .isEmpty() ) {
+                    AlgebraicVector vertex = stack .pop();
+                    int index = sortedFixedVertexList .indexOf( vertex );
+                    if ( index < 0 ) {
+                        index = sortedFixedVertexList .size() + sortedFloatingVertexList .indexOf( vertex );
+                    }
+                    output .print( index + ", " );
+                }
+                output .print( "], " );
             }
         }
         output .println( " ];" );
@@ -183,64 +186,6 @@ public class OpenScadExporter extends Exporter3d
 
         output.flush();
     }
-
-//    private void exportSelection()
-//    {
-//        // save the first selected ball as "tip" and sort the selected panels
-//        Connector tip = null;
-//        ArrayComparator<AlgebraicVector> arrayComparator = new ArrayComparator<>();
-//        SortedSet<AlgebraicVector[]> panelVertices = new TreeSet<>( arrayComparator.getLengthFirstArrayComparator() );
-//        Map<AlgebraicVector[], Panel> vertexArrayPanelMap = new HashMap<>();
-//
-//		for (Manifestation man : selection) {
-//			if ( man instanceof Connector ) {
-//                if(tip == null) {
-//                    tip = (Connector) man;
-//                }
-//                // else just ignore the other balls
-//            }
-//            else if ( man instanceof Panel ) {
-//                Panel panel = (Panel) man;
-//                // Unsorted list retains the panel vertex order
-//                ArrayList<AlgebraicVector> corners = new ArrayList<>(panel.getVertexCount());
-//                for (AlgebraicVector vertex : panel) {
-//                    corners .add( vertex );
-//                }
-//                AlgebraicVector[] cornerArray = new AlgebraicVector[corners.size()];
-//                corners.toArray(cornerArray);
-//                panelVertices.add( cornerArray );
-//                vertexArrayPanelMap.put(cornerArray, panel);
-//            }
-//        }
-//
-//		/* 
-//			ExportedVEFShapes requires "tip" to precede "middle" when importing the vef
-//				so be sure to export Connectors before Panels
-//				regardless of which order the user selected them.
-//			Be sure that exactly one "tip" is selected if any panels are exported as "middle".
-//            Selected Panels should be exported in sorted order using the same panel sorting logic as VefModelExporter
-//		*/
-//
-//        // TODO: Should we warn the user if more than one ball was selected and that extra ones are being ignored?
-//        // TODO: Should we warn the user if no ball was selected and that any "middle" panels are being ignored?
-//        // If so, how do we notify them? Should we throw an Exception or write to the log?
-//
-//        if(tip != null) {
-//            exporter .exportSelectedManifestation( null ); // newline
-//            // Connectors ("tip")
-//            exporter .exportSelectedManifestation( tip );
-//
-//            if(! panelVertices.isEmpty()) {
-//                exporter .exportSelectedManifestation( null ); // newline
-//                // Panels ("middle")
-//                for(AlgebraicVector[] vertexArray : panelVertices) {
-//                    Panel panel = vertexArrayPanelMap.get(vertexArray);
-//                    exporter .exportSelectedManifestation( panel );
-//                }
-//            }
-//            exporter .exportSelectedManifestation( null ); // newline
-//        }
-//    }
 
     @Override
     public String getFileExtension()
