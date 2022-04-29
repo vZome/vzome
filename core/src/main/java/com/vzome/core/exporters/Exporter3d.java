@@ -51,7 +51,7 @@ public abstract class Exporter3d implements RealZomeScaling
         return true;
     }
     
-    protected void printBoilerplate( String resourcePath )
+    protected String getBoilerplate( String resourcePath )
     {
         InputStream input = getClass() .getClassLoader() .getResourceAsStream( resourcePath );
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -63,7 +63,7 @@ public abstract class Exporter3d implements RealZomeScaling
         } catch (IOException e) {
             e.printStackTrace();
         }
-        output .println( new String( out .toByteArray() ) );
+        return new String( out .toByteArray() );
     }
 
     /**

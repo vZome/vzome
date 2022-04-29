@@ -22,6 +22,7 @@ import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
+import com.vzome.core.model.Strut;
 import com.vzome.core.render.RenderedManifestation;
 
 /**
@@ -82,6 +83,7 @@ public class OpenScadExporter extends Exporter3d
         
         // Find all the vertices of all the panels
         SortedSet<AlgebraicVector> fixedVerticesSet = new TreeSet<>();
+        String orbitName = null;
         for ( RenderedManifestation rm : super .mModel ) {
             Manifestation man = rm .getManifestation();
             if ( man instanceof Panel )
@@ -91,8 +93,14 @@ public class OpenScadExporter extends Exporter3d
                     if ( ! floatingVerticesSet .contains( vertex ) )
                         fixedVerticesSet .add( vertex );
                 }
+            } else if ( man instanceof Strut ) {
+                if ( orbitName != null )
+                    throw new Command.Failure( "The model must contain a single prototype strut." );
+                orbitName = rm .getStrutOrbit() .getName();
             }
         }
+        if ( orbitName == null )
+            throw new Command.Failure( "The model must contain a single prototype strut." );
         
         // Now all panel vertices are in one of two sorted sets, fixed and floating.
         // Up to this point, the sorted TreeSets have collected and sorted every unique vertex of every panel.
@@ -109,25 +117,30 @@ public class OpenScadExporter extends Exporter3d
         
         super .output = new PrintWriter( writer );
 
-        super .printBoilerplate( "com/vzome/core/exporters/zome-strut-prelude.scad" );
-                
-        output .println( "irrational = " + field .getCoefficients()[ 1 ] + ";" );
+        String prelude = super .getBoilerplate( "com/vzome/core/exporters/zome-strut-prelude.scad" );
+        prelude = prelude .replaceAll( "%%ORBIT%%", orbitName );
+        output .println( prelude );
+
+        output .println( "  irrational = " + field .getCoefficients()[ 1 ] + ";" );
         output .println();
         
+        output .println( "module " + orbitName + "_strut( size, scalar=1.0, offsets=0 ) {" );
+        output .println();
+
         if ( bottomFaceNormal == null ) {
-            output .println( "// WARNING: The vZome design contained no \"bottom face\" bookmark." );
-            output .println( "bottom_face_normal = [ 0, 0, -1 ];" );
+            output .println( "  // WARNING: The vZome design contained no \"bottom face\" bookmark." );
+            output .println( "  bottom_face_normal = [ 0, 0, -1 ];" );
         } else {
             RealVector bottomFaceDirection = super .mModel .renderVector( bottomFaceNormal ) .normalize();
-            output .println( "bottom_face_normal = [ " + bottomFaceDirection.toString() + " ];" );
+            output .println( "  bottom_face_normal = [ " + bottomFaceDirection.toString() + " ];" );
         }
         output .println();
 
         String tipVertexString = super .mModel .renderVector( tipVertex ) .scale( RZOME_MM_SCALING ) .toString();
-        output .println( "tip_vertex = [ " + tipVertexString + " ];" );
+        output .println( "  tip_vertex = [ " + tipVertexString + " ];" );
         output .println();
         
-        output .println( "fixed_vertices = [ " );
+        output .println( "  fixed_vertices = [ " );
         for ( AlgebraicVector vertex : sortedFixedVertexList ) {
             output .print( "[ " );
             output .print( super .mModel .renderVector( vertex ) .scale( RZOME_MM_SCALING ) .toString() );
@@ -135,7 +148,7 @@ public class OpenScadExporter extends Exporter3d
         }
         output .println( " ];" );
         
-        output .println( "floating_vertices = [ " );
+        output .println( "  floating_vertices = [ " );
         for ( AlgebraicVector vertex : sortedFloatingVertexList ) {
             output .print( "[ " );
             output .print( super .mModel .renderVector( vertex ) .scale( RZOME_MM_SCALING ) .toString() );
@@ -143,7 +156,7 @@ public class OpenScadExporter extends Exporter3d
         }
         output .println( " ];" );
         
-        output .println( "faces = [ " );
+        output .println( "  faces = [ " );
         for ( RenderedManifestation rm : super .mModel ) {
             Manifestation man = rm .getManifestation();
             if ( man instanceof Panel )
@@ -164,6 +177,9 @@ public class OpenScadExporter extends Exporter3d
             }
         }
         output .println( " ];" );
+
+        output .println( "  zome_strut( tip_vertex, fixed_vertices, floating_vertices, faces, bottom_face_normal, size, scalar, offsets );" );
+        output .println( "}" );
 
         output.flush();
     }
