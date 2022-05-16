@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
+import org.vorthmann.j3d.MouseTool;
+
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Point;
@@ -29,6 +31,7 @@ import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.render.TransparentRendering;
+import com.vzome.desktop.controller.LengthController;
 import com.vzome.desktop.controller.ZoneVectorBall;
 
 public class PreviewStrut implements PropertyChangeListener
@@ -46,7 +49,7 @@ public class PreviewStrut implements PropertyChangeListener
 
     private SymmetryController symmetryController;
 
-    private LengthController length;
+    private LengthCanvasTool length;
 
     private StrutCreation strut;
 
@@ -80,7 +83,7 @@ public class PreviewStrut implements PropertyChangeListener
                 zone = newZone;
                 if ( newZone == null )
                     return;
-                length = symmetryController.orbitLengths.get( newZone .getDirection() );
+                length = new LengthCanvasTool( (LengthController) symmetryController.orbitLengths.get( newZone .getDirection() ) );
                 adjustStrut();
                 length .addPropertyListener( PreviewStrut .this );
             }
@@ -145,7 +148,7 @@ public class PreviewStrut implements PropertyChangeListener
             length = null;
             return;
         }
-        this .length = symmetryController.orbitLengths.get( zone.getDirection() );
+        this .length = new LengthCanvasTool( (LengthController) symmetryController.orbitLengths.get( zone .getDirection() ) );
         adjustStrut();
         length .addPropertyListener( this );
     }
@@ -170,9 +173,9 @@ public class PreviewStrut implements PropertyChangeListener
         this .workingPlaneDual = null;
     }
 
-    public LengthController getLengthModel()
+    MouseTool getLengthMouseWheel()
     {
-        return length;
+        return this.length == null? null : this .length .getMouseTool();
     }
 
     private void adjustStrut()

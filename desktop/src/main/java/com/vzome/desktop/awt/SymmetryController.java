@@ -9,9 +9,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.vorthmann.ui.DefaultController;
-
 import com.vzome.api.Tool;
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
@@ -24,6 +23,8 @@ import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.controller.DefaultController;
+import com.vzome.desktop.controller.LengthController;
 import com.vzome.desktop.controller.ToolFactoryController;
 
 public class SymmetryController extends DefaultController
@@ -66,7 +67,7 @@ public class SymmetryController extends DefaultController
     public OrbitSetController buildController;
     public OrbitSetController renderController;
 
-    public Map<Direction, LengthController> orbitLengths = new HashMap<>();
+    public Map<Direction, Controller> orbitLengths = new HashMap<>();
 
     private final Map<String, Controller> symmetryToolFactories = new LinkedHashMap<>();
     private final Map<String, Controller> transformToolFactories = new LinkedHashMap<>();
@@ -122,7 +123,8 @@ public class SymmetryController extends DefaultController
 
         for ( Direction orbit : this .symmetrySystem .getOrbits() ) {
             AlgebraicNumber unitLength = this .symmetrySystem .getOrbitUnitLength( orbit );
-            LengthController lengthModel = new LengthController( symmetry .getField(), unitLength );
+            AlgebraicField field = symmetry .getField();
+            Controller lengthModel = new LengthController( unitLength, field .one(), field );
             buildController .addSubController( "length." + orbit .getName(), lengthModel );
             orbitLengths .put( orbit, lengthModel );
         }
@@ -273,13 +275,14 @@ public class SymmetryController extends DefaultController
         }
     }
 
-    private LengthController getLengthController( Direction orbit )
+    private Controller getLengthController( Direction orbit )
     {
-        LengthController result = orbitLengths .get( orbit );
+        Controller result = orbitLengths .get( orbit );
         if ( result == null && orbit != null )
         {
             AlgebraicNumber unitLength = this .symmetrySystem .getOrbitUnitLength( orbit );
-            result = new LengthController( this .symmetrySystem .getSymmetry() .getField(), unitLength );
+            AlgebraicField field = this .symmetrySystem .getSymmetry() .getField();
+            result = new LengthController( unitLength, field .one(), field );
             buildController .addSubController( "length." + orbit .getName(), result );
             orbitLengths .put( orbit, result );
             renderOrbits .add( orbit );

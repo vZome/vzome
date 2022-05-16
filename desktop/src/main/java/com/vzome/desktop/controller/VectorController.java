@@ -1,7 +1,5 @@
 package com.vzome.desktop.controller;
 
-import org.vorthmann.ui.DefaultController;
-
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;

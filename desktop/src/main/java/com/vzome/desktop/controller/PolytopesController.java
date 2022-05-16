@@ -8,8 +8,6 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.vorthmann.ui.DefaultController;
-
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;

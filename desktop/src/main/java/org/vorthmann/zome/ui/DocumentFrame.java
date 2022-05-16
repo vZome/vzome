@@ -48,13 +48,13 @@ import javax.swing.ToolTipManager;
 
 import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.Platform;
-import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.ExclusiveAction;
 
 import com.vzome.core.render.Scene;
 import com.vzome.desktop.api.Controller;
 import com.vzome.desktop.awt.GraphicsController;
 import com.vzome.desktop.awt.RenderingViewer;
+import com.vzome.desktop.controller.DefaultController;
 
 public class DocumentFrame extends JFrame implements PropertyChangeListener, ControlActions
 {

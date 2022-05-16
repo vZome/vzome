@@ -74,6 +74,7 @@ import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.api.Controller;
 import com.vzome.desktop.controller.AnimationController;
+import com.vzome.desktop.controller.LengthController;
 import com.vzome.desktop.controller.MeasureController;
 import com.vzome.desktop.controller.NumberController;
 import com.vzome.desktop.controller.PartsController;

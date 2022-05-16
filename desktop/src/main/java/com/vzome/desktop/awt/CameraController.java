@@ -19,7 +19,6 @@ import javax.vecmath.Vector3f;
 import org.vorthmann.j3d.MouseTool;
 import org.vorthmann.j3d.MouseToolDefault;
 import org.vorthmann.j3d.Trackball;
-import org.vorthmann.ui.DefaultController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +28,7 @@ import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
+import com.vzome.desktop.controller.DefaultController;
 
 /**
  * In this camera model, the view frustum shape is generally held constant

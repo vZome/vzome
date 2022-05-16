@@ -2,8 +2,6 @@ package com.vzome.desktop.controller;
 
 import java.util.stream.Collectors;
 
-import org.vorthmann.ui.DefaultController;
-
 import com.vzome.core.editor.EditHistory;
 import com.vzome.desktop.api.Controller;
 

@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 
 import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.Platform;
-import org.vorthmann.ui.DefaultController;
 import org.vorthmann.zome.ui.ApplicationUI;
 
 import com.vzome.core.commands.Command.Failure;
@@ -38,6 +37,7 @@ import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.AntiprismTrackball;
 import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.controller.DefaultController;
 
 public class ApplicationController extends DefaultController
 {

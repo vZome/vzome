@@ -12,7 +12,6 @@ import org.vorthmann.j3d.MouseTool;
 import org.vorthmann.j3d.MouseToolDefault;
 import org.vorthmann.j3d.MouseToolFilter;
 import org.vorthmann.j3d.Trackball;
-import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.LeftMouseDragAdapter;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -22,6 +21,7 @@ import com.vzome.core.math.Line;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.render.RenderingChanges;
+import com.vzome.desktop.controller.DefaultController;
 
 public class StrutBuilderController extends DefaultController implements CanvasTool
 {    
@@ -144,11 +144,11 @@ public class StrutBuilderController extends DefaultController implements CanvasT
             @Override
             public void mouseWheelMoved( MouseWheelEvent e )
             {
-                LengthController length = previewStrut .getLengthModel();
-                if ( length != null )
+                MouseTool lengthWheel = previewStrut .getLengthMouseWheel();
+                if ( lengthWheel != null )
                 {
                     // scroll to scale the preview strut (when it is rendered)
-                    length .getMouseTool() .mouseWheelMoved( e );
+                    lengthWheel .mouseWheelMoved( e );
                     // don't adjustPreviewStrut() here, let the prop change trigger it,
                     // so we don't flicker for every tick of the mousewheel
                 }

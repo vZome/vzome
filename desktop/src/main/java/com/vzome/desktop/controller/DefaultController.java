@@ -1,6 +1,6 @@
 
 
-package org.vorthmann.ui;
+package com.vzome.desktop.controller;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;

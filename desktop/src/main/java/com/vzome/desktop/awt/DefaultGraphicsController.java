@@ -5,7 +5,8 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 
 import org.vorthmann.j3d.MouseTool;
-import org.vorthmann.ui.DefaultController;
+
+import com.vzome.desktop.controller.DefaultController;
 
 public class DefaultGraphicsController extends DefaultController implements GraphicsController
 {

@@ -3,8 +3,6 @@ package com.vzome.desktop.controller;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import org.vorthmann.ui.DefaultController;
-
 import com.vzome.api.Tool;
 
 public class ToolFactoryController extends DefaultController implements PropertyChangeListener
