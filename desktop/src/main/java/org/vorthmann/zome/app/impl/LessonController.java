@@ -13,7 +13,7 @@ import com.vzome.core.editor.LessonModel;
 import com.vzome.core.editor.Snapshot;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.ThumbnailRenderer;
-import com.vzome.desktop.controller.CameraController;
+import com.vzome.desktop.awt.CameraController;
 
 public class LessonController extends DefaultController
 {

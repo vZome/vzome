@@ -31,7 +31,7 @@ import org.vorthmann.ui.Controller;
 import org.vorthmann.zome.app.impl.DocumentController;
 import org.vorthmann.zome.app.impl.PickingController;
 
-import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.desktop.awt.RenderingViewer;
 
 public class ModelPanel extends JPanel implements PropertyChangeListener, SymmetryToolbarsPanel.ButtonFactory
 {

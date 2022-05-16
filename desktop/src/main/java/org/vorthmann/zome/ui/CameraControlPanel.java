@@ -21,8 +21,8 @@ import javax.swing.event.ChangeListener;
 
 import org.vorthmann.ui.Controller;
 
-import com.vzome.desktop.controller.CameraController;
-import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.desktop.awt.CameraController;
+import com.vzome.desktop.awt.RenderingViewer;
 
 /**
  * Description here.

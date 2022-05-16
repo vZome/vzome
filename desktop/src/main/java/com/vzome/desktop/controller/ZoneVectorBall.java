@@ -11,6 +11,7 @@ import javax.vecmath.Vector3f;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.OrbitSet;
+import com.vzome.desktop.awt.CameraController;
 
 /**
  * Transducer: turns trackball roll events into zone (Axis) change events.

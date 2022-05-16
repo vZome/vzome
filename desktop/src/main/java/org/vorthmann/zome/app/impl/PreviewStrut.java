@@ -29,7 +29,7 @@ import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.render.TransparentRendering;
-import com.vzome.desktop.controller.CameraController;
+import com.vzome.desktop.awt.CameraController;
 import com.vzome.desktop.controller.ZoneVectorBall;
 
 public class PreviewStrut implements PropertyChangeListener

@@ -3,7 +3,7 @@ package org.vorthmann.zome.app.impl;
 import javax.vecmath.Vector3f;
 
 import com.vzome.core.viewing.Camera;
-import com.vzome.desktop.controller.CameraController;
+import com.vzome.desktop.awt.CameraController;
 
 public class WiggleAnimation implements AnimationController
 {

@@ -10,7 +10,7 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.desktop.awt.RenderingViewer;
 
 /**
  * Controller for handling contextual menu commands that apply only when a Manifestation can be picked.

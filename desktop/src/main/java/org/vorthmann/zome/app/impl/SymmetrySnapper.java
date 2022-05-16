@@ -7,7 +7,7 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.math.symmetry.OrbitSet;
-import com.vzome.desktop.controller.CameraController;
+import com.vzome.desktop.awt.CameraController;
 
 public class SymmetrySnapper implements CameraController.Snapper
 {

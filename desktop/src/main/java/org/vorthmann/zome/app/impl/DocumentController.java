@@ -74,9 +74,9 @@ import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
-import com.vzome.desktop.controller.CameraController;
-import com.vzome.desktop.controller.RenderingViewer;
-import com.vzome.desktop.controller.ThumbnailRendererImpl;
+import com.vzome.desktop.awt.CameraController;
+import com.vzome.desktop.awt.RenderingViewer;
+import com.vzome.desktop.awt.ThumbnailRendererImpl;
 
 import shine.htetaung.giffer.Giffer;
 

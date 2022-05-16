@@ -7,7 +7,7 @@ import org.vorthmann.j3d.MouseToolDefault;
 
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.desktop.awt.RenderingViewer;
 
 /**
  * Transducer: turns mouse events into pick events on visible Manifestations

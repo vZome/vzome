@@ -53,7 +53,7 @@ import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.ExclusiveAction;
 
 import com.vzome.core.render.Scene;
-import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.desktop.awt.RenderingViewer;
 
 public class DocumentFrame extends JFrame implements PropertyChangeListener, ControlActions
 {

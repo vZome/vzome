@@ -1,5 +1,5 @@
 
-package com.vzome.desktop.controller;
+package com.vzome.desktop.awt;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 
 import com.vzome.core.math.Line;
 import com.vzome.core.render.ManifestationPicker;
+import com.vzome.desktop.awt.CameraController.Viewer;
 
 public interface RenderingViewer extends CameraController.Viewer, ManifestationPicker
 {

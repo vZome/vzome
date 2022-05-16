@@ -1,5 +1,5 @@
 
-package com.vzome.desktop.controller;
+package com.vzome.desktop.awt;
 
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;

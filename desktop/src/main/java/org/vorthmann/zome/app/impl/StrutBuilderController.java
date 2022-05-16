@@ -22,8 +22,8 @@ import com.vzome.core.math.Line;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.render.RenderingChanges;
-import com.vzome.desktop.controller.CameraController;
-import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.desktop.awt.CameraController;
+import com.vzome.desktop.awt.RenderingViewer;
 
 public class StrutBuilderController extends DefaultController implements CanvasTool
 {    

@@ -1,7 +1,7 @@
 /*
  * Created on Jun 30, 2003
  */
-package com.vzome.desktop.controller;
+package com.vzome.desktop.awt;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;

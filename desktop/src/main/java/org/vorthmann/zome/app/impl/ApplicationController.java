@@ -38,7 +38,7 @@ import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.AntiprismTrackball;
 import com.vzome.core.viewing.Lights;
-import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.desktop.awt.RenderingViewer;
 
 public class ApplicationController extends DefaultController
 {
