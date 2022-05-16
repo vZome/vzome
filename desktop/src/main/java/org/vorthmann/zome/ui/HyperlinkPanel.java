@@ -18,7 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.api.Controller;
 
 public class HyperlinkPanel extends JPanel
 {

@@ -33,11 +33,11 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 import org.vorthmann.j3d.Platform;
-import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.SplashScreen;
-import org.vorthmann.zome.app.impl.ApplicationController;
 
 import com.vzome.dap.DapAdapter;
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.awt.ApplicationController;
 
 /**
  * Top-level UI class for vZome.

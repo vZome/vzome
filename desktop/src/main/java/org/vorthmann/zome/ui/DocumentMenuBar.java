@@ -26,7 +26,8 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 
 import org.vorthmann.j3d.Platform;
-import org.vorthmann.ui.Controller;
+
+import com.vzome.desktop.api.Controller;
 
 public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 {

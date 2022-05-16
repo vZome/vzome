@@ -31,8 +31,10 @@ import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.ReorderableJList;
+
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.awt.GraphicsController;
 
 
 public class PagelistPanel extends JPanel implements PropertyChangeListener
@@ -132,11 +134,11 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
 
     private final class ContextualMenuMouseListener extends MouseAdapter
     {
-        private final Controller controller;
+        private final GraphicsController controller;
 
         private final ContextualMenu pickerPopup;
 
-        private ContextualMenuMouseListener( Controller controller, ContextualMenu pickerPopup )
+        private ContextualMenuMouseListener( GraphicsController controller, ContextualMenu pickerPopup )
         {
             this.controller = controller;
             this.pickerPopup = pickerPopup;
@@ -179,7 +181,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
         return menuItem;
     }
 
-    public PagelistPanel( final Controller controller )
+    public PagelistPanel( final GraphicsController controller )
     {
         super( new BorderLayout() );
         controller .addPropertyListener( this );

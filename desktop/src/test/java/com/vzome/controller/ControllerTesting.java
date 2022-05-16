@@ -5,7 +5,7 @@ import static org.junit.Assert.fail;
 
 import java.util.StringTokenizer;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.api.Controller;
 
 public class ControllerTesting
 {

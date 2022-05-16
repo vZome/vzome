@@ -27,10 +27,11 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import org.vorthmann.ui.CardPanel;
-import org.vorthmann.ui.Controller;
-import org.vorthmann.zome.app.impl.DocumentController;
-import org.vorthmann.zome.app.impl.PickingController;
 
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.awt.DocumentController;
+import com.vzome.desktop.awt.GraphicsController;
+import com.vzome.desktop.awt.PickingController;
 import com.vzome.desktop.awt.RenderingViewer;
 
 public class ModelPanel extends JPanel implements PropertyChangeListener, SymmetryToolbarsPanel.ButtonFactory
@@ -78,7 +79,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
         monocularCanvas = viewer .getCanvas();
         ((DocumentController) controller) .attachViewer( viewer, monocularCanvas );
 
-        Controller monoController = new PickingController( viewer, (DocumentController) controller );
+        GraphicsController monoController = new PickingController( viewer, (DocumentController) controller );
         controller .addSubController( "monocularPicking", monoController );
         mMonocularPanel .add( monocularCanvas, BorderLayout.CENTER );
 

@@ -2,9 +2,6 @@
 
 package org.vorthmann.ui;
 
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -14,7 +11,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.vorthmann.j3d.MouseTool;
+import com.vzome.desktop.api.Controller;
 
 public class DefaultController implements Controller
 {
@@ -96,15 +93,6 @@ public class DefaultController implements Controller
     }
 
     @Override
-    public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
-    {
-        if ( mNextController != null )
-            return mNextController .enableContextualCommands( menu, e );
-        else
-            return new boolean[0];
-    }
-
-    @Override
     public String[] getCommandList( String listName )
     {
         if ( mNextController != null )
@@ -150,13 +138,6 @@ public class DefaultController implements Controller
         if ( mNextController != null )
             return mNextController .getSubController( name );
         return null;
-    }
-
-    @Override
-    public void repaintGraphics( String panelName, Graphics graphics, Dimension size )
-    {
-        if ( mNextController != null )
-            mNextController .repaintGraphics( panelName, graphics, size );
     }
 
     @Override
@@ -208,12 +189,6 @@ public class DefaultController implements Controller
         if ( logger .isLoggable( Level .FINE ) )
             logger.fine( "CHGEVENT: " + getPath() + "||" + propName + "=" + newValue );
         this .pcs .firePropertyChange( propName, oldValue, newValue );
-    }
-
-    @Override
-    public MouseTool getMouseTool()
-    {
-        return null;
     }
 
     @Override

@@ -19,8 +19,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.vorthmann.ui.Controller;
-
+import com.vzome.desktop.api.Controller;
 import com.vzome.desktop.awt.CameraController;
 import com.vzome.desktop.awt.RenderingViewer;
 

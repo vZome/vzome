@@ -28,9 +28,9 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 
 import org.vorthmann.ui.CardPanel;
-import org.vorthmann.ui.Controller;
 
 import com.jogamp.newt.event.KeyEvent;
+import com.vzome.desktop.api.Controller;
 
 public class ToolConfigDialog extends JDialog implements ActionListener
 {

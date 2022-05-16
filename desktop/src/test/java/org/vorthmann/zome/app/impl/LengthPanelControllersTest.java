@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Properties;
 
 import org.junit.Test;
-import org.vorthmann.ui.Controller;
 
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.editor.FieldApplication;
@@ -17,6 +16,9 @@ import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.render.Colors;
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.awt.StrutBuilderController;
+import com.vzome.desktop.awt.SymmetryController;
 
 public class LengthPanelControllersTest
 {

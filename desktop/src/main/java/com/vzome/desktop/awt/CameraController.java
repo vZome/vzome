@@ -20,7 +20,6 @@ import org.vorthmann.j3d.MouseTool;
 import org.vorthmann.j3d.MouseToolDefault;
 import org.vorthmann.j3d.Trackball;
 import org.vorthmann.ui.DefaultController;
-import org.vorthmann.zome.app.impl.TrackballRenderingViewer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

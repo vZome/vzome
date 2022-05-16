@@ -3,8 +3,9 @@ package org.vorthmann.zome.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.DefaultController;
+
+import com.vzome.desktop.api.Controller;
 
 public class ControllerActionListener implements ActionListener
 {

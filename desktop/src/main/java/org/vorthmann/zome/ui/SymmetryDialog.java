@@ -10,7 +10,8 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.awt.GraphicsController;
 
 public class SymmetryDialog extends EscapeDialog
 {
@@ -31,14 +32,14 @@ public class SymmetryDialog extends EscapeDialog
             {
                 JPanel mainPanel = new JPanel();
                 mainPanel .setLayout( new BoxLayout( mainPanel, BoxLayout.LINE_AXIS ) );
-                Controller orbitController = controller .getSubController( "availableOrbits" );
+                GraphicsController orbitController = (GraphicsController) controller .getSubController( "availableOrbits" );
                 {
                     JPanel panel = new OrbitPanel( orbitController, controller, null );
                     panel .setBorder( BorderFactory .createTitledBorder( "available directions" ) );
                     mainPanel .add( panel );
                 }
                 {
-                    JPanel panel = new OrbitPanel( controller .getSubController( "snapOrbits" ), orbitController, null );
+                    JPanel panel = new OrbitPanel( (GraphicsController) controller .getSubController( "snapOrbits" ), orbitController, null );
                     panel .setBorder( BorderFactory .createTitledBorder( "snap directions" ) );
                     mainPanel .add( panel );
                 }

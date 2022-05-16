@@ -9,7 +9,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.awt.GraphicsController;
 
 
 @SuppressWarnings("serial")
@@ -31,9 +32,9 @@ public class StrutBuilderPanel extends JPanel
 
         final Controller symmController = this .controller .getSubController( "symmetry." + symmName );
 
-        final Controller orbitController = symmController .getSubController( "buildOrbits" );
+        final GraphicsController orbitController = (GraphicsController) symmController .getSubController( "buildOrbits" );
         {
-            orbitPanel = new OrbitPanel( orbitController, symmController .getSubController( "availableOrbits" ), enabler );
+            orbitPanel = new OrbitPanel( orbitController, (GraphicsController) symmController .getSubController( "availableOrbits" ), enabler );
             orbitPanel .setBorder( BorderFactory .createTitledBorder( "strut directions" ) );
             orbitPanel .setToolTipText( "Click and drag on a ball to create a strut, using directions selected here." );
             constraintsPanel .add( orbitPanel, BorderLayout.CENTER );
@@ -52,7 +53,7 @@ public class StrutBuilderPanel extends JPanel
         this .add( constraintsPanel, BorderLayout.CENTER );
 
         {
-            lengthPanel = new NewLengthPanel( frame, orbitController .getSubController( "currentLength" ) );
+            lengthPanel = new NewLengthPanel( frame, (GraphicsController) orbitController .getSubController( "currentLength" ) );
             controller .addPropertyListener( lengthPanel );
             lengthPanel .setBorder( BorderFactory .createTitledBorder( "strut size" ) );
             this .add( lengthPanel, BorderLayout.SOUTH );
@@ -94,13 +95,13 @@ public class StrutBuilderPanel extends JPanel
     private void systemChanged( String system )
     {
         Controller symmController = this .controller .getSubController( "symmetry." + system );
-        orbitPanel .systemChanged( symmController .getSubController( "buildOrbits" ), symmController .getSubController( "availableOrbits" ) );
+        orbitPanel .systemChanged( (GraphicsController) symmController .getSubController( "buildOrbits" ), (GraphicsController) symmController .getSubController( "availableOrbits" ) );
         final Controller orbitController = symmController .getSubController( "buildOrbits" );
         String dirName = orbitController .getProperty( "selectedOrbit" );
         if ( dirName == null )
             lengthPanel .setVisible( false );
         else {
-            lengthPanel .setController( orbitController .getSubController( "currentLength" ) );
+            lengthPanel .setController( (GraphicsController) orbitController .getSubController( "currentLength" ) );
             lengthPanel .setVisible( true );
         }
     }
