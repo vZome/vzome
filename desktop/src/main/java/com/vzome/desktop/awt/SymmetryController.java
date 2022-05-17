@@ -23,6 +23,7 @@ import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.controller.CameraController;
 import com.vzome.desktop.controller.DefaultController;
 import com.vzome.desktop.controller.LengthController;
 import com.vzome.desktop.controller.ToolFactoryController;

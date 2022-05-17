@@ -7,7 +7,6 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.desktop.api.Controller;
 
 /**
  * Controller for handling contextual menu commands that apply only when a Manifestation can be picked.
@@ -18,7 +17,7 @@ import com.vzome.desktop.api.Controller;
  * @author vorth
  *
  */
-public class PickingController extends DefaultGraphicsController implements Controller
+public class PickingController extends DefaultGraphicsController
 {
 	private final RenderingViewer viewer;
 	private final DocumentController delegate;

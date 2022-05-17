@@ -5,6 +5,7 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 
 import com.vzome.core.viewing.Camera;
+import com.vzome.desktop.controller.CameraController;
 
 /**
  * A CameraController.Viewer that only changes rotations.

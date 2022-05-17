@@ -5,6 +5,7 @@ import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
 import com.vzome.desktop.controller.AnimationController;
+import com.vzome.desktop.controller.CameraController;
 
 public class RedSpinAnimation implements AnimationController
 {

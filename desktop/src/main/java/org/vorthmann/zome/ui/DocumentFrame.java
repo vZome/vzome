@@ -60,7 +60,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 {
     private static final long serialVersionUID = 1L;
 
-    protected final Controller mController, toolsController;
+    protected final GraphicsController mController;
+    
+    protected final Controller toolsController;
 
     private final ModelPanel modelPanel;
             
@@ -86,9 +88,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
     private JLabel statusText;
 
-    private Controller cameraController;
-
-    private GraphicsController lessonController;
+    private GraphicsController lessonController, cameraController;
     
     private JDialog polytopesDialog, importScaleDialog;
     
@@ -128,7 +128,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     	this .appUI = appUI;
     }
         
-    public DocumentFrame( final Controller controller, final J3dComponentFactory factory3d )
+    public DocumentFrame( final GraphicsController controller, final J3dComponentFactory factory3d )
     {
         mController = controller;
         mController .addPropertyListener( this );
@@ -481,7 +481,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
         // -------------------------------------- create panels and tools
 
-        cameraController = mController .getSubController( "camera" );
+        cameraController = (GraphicsController) mController .getSubController( "camera" );
         lessonController = (GraphicsController) mController .getSubController( "lesson" );
         lessonController .addPropertyListener( this );
 

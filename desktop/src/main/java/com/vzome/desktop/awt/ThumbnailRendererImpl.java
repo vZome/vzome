@@ -12,6 +12,7 @@ import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 import com.vzome.core.viewing.ThumbnailRenderer;
+import com.vzome.desktop.controller.CameraController;
 
 
 public class ThumbnailRendererImpl extends CameraController implements ThumbnailRenderer

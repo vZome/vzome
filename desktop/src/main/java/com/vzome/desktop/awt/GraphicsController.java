@@ -1,5 +1,6 @@
 package com.vzome.desktop.awt;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
@@ -15,4 +16,6 @@ public interface GraphicsController extends Controller
     boolean[] enableContextualCommands( String[] menu, MouseEvent e );
     
     MouseTool getMouseTool();
+
+    void attachViewer( RenderingViewer viewer, Component canvas );
 }

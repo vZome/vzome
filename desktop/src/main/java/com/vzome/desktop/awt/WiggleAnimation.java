@@ -4,6 +4,7 @@ import javax.vecmath.Vector3f;
 
 import com.vzome.core.viewing.Camera;
 import com.vzome.desktop.controller.AnimationController;
+import com.vzome.desktop.controller.CameraController;
 
 public class WiggleAnimation implements AnimationController
 {

@@ -74,6 +74,7 @@ import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.api.Controller;
 import com.vzome.desktop.controller.AnimationController;
+import com.vzome.desktop.controller.CameraController;
 import com.vzome.desktop.controller.LengthController;
 import com.vzome.desktop.controller.MeasureController;
 import com.vzome.desktop.controller.NumberController;
@@ -285,9 +286,9 @@ public class DocumentController extends DefaultGraphicsController implements Sce
 
         sceneLighting = this .documentModel .getSceneLighting();
 
-        cameraController = new CameraController( document .getCamera(), sceneLighting, maxOrientations );
+        cameraController = new CameraGraphicsController( document .getCamera(), sceneLighting, maxOrientations );
         this .addSubController( "camera", cameraController );
-        this .articleModeZoom = this .cameraController .getZoomScroller();
+        this .articleModeZoom = new CameraZoomWheel( this .cameraController );
 
         strutBuilder = new StrutBuilderController( this, cameraController )
                 .withGraphicalViews( app .propertyIsTrue( "useGraphicalViews" ) )
@@ -362,7 +363,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
             }
         };
 
-        articleModeMainTrackball = cameraController .getTrackball( 0.7d );
+        articleModeMainTrackball = new CameraTrackball( cameraController, 0.7d );
         // will not be attached, initially; gets attached on switchToArticle
         if ( propertyIsTrue( "presenter.mode" ) )
             ((Trackball) articleModeMainTrackball) .setModal( false );

@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 
 import com.vzome.core.math.Line;
 import com.vzome.core.render.ManifestationPicker;
-import com.vzome.desktop.awt.CameraController.Viewer;
+import com.vzome.desktop.controller.CameraController;
 
 public interface RenderingViewer extends CameraController.Viewer, ManifestationPicker
 {

@@ -23,6 +23,7 @@ import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.controller.CameraController;
 import com.vzome.desktop.controller.JsonClientRendering;
 
 public abstract class JsonClientShim implements JsonClientRendering.EventDispatcher

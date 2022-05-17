@@ -1,5 +1,6 @@
 package com.vzome.desktop.awt;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
@@ -31,4 +32,7 @@ public class DefaultGraphicsController extends DefaultController implements Grap
     {
         return null;
     }
+
+    @Override
+    public void attachViewer( RenderingViewer viewer, Component canvas ) {}
 }
