@@ -13,4 +13,7 @@ talk to Ben Eater about smoothing & interactive animations (tell Grant first)
  - switch the fivecell and bhall apps to use the web component?
 
  - automate deploy to Dreamhost from GitHub Actions
+
+ - better filename presentation in GitHub browser app
+ - snippet-copy feature in browser app
  

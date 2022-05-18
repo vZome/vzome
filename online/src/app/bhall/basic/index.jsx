@@ -111,7 +111,7 @@ const viewerStyle = {
 
 const VZomeViewer = ({ name, parts }) =>
 {
-  const url = `https://vzome.com/bhall/basics/${name}.vZome`;
+  const url = name && new URL( `/bhall/basics/${name}.vZome`, window.location ) .toString();
 
   return (
     <>
@@ -146,7 +146,7 @@ const BHallBasic = () =>
           <Typography gutterBottom >
             Brian Hall is a professor of Mathematical Physics, and an expert
             with <Link target="_blank" rel="noopener" href="https://zometool.com" >Zometool</Link>.
-            Using <Link target="_blank" rel="noopener" href="https://vzome.com" >vZome</Link> to
+            Using <Link target="_blank" rel="noopener" href="https://www.vzome.com" >vZome</Link> to
             explore different possibilities,
             Brian was able to create a number of beautiful and interesting designs,
             all constructible with fairly small Zometool sets.
