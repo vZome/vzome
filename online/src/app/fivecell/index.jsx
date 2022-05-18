@@ -33,8 +33,10 @@ const viewerStyle = {
   border: "solid",
 }
 
-const VZomeViewer = ({ url }) =>
+const VZomeViewer = ({ name }) =>
 {
+  const url = name && new URL( `/models/2007/04-Apr/5cell/${name}.vZome`, window.location ) .toString();
+
   return (
     <div style={viewerStyle}>
       <UrlViewer url={url} />
@@ -62,7 +64,7 @@ const Article = () =>
             You can count the five tetrahedra: the outer green one, and the four interior tetrahedra with three yellow edges
             foreshortened by the projection.
           </Typography>
-          <VZomeViewer url={"https://vzome.com/models/2007/04-Apr/5cell/greenTetra.vZome"} />
+          <VZomeViewer name="greenTetra" />
           <Typography gutterBottom >
             Until 2007, my friend <Link target="_blank" href="https://homepages.wmich.edu/~drichter" rel="noopener" >David Richter</Link> and
             I believed that there was no other orthogonal 3D projection of the 5-cell 
@@ -71,7 +73,7 @@ const Article = () =>
             Furthermore, David showed that there are two other rZome-constructible projections, one using red, yellow, and blue,
             and one using just yellow and blue.
           </Typography>
-          <VZomeViewer url={"https://vzome.com/models/2007/04-Apr/5cell/A4_18.vZome"} />
+          <VZomeViewer name="A4_18" />
           <Typography gutterBottom >
             The remarkable thing about this projection is that it exhibits "ghost symmetry". 
             This is our term for a phenomenon wherein the symmetry of a 4D object is subtly exposed in a 3D projection. 
@@ -87,7 +89,7 @@ const Article = () =>
             see <Link target="_blank" href="https://homepages.wmich.edu/~drichter/a4polychorazome.htm" rel="noopener" >David's page</Link> on
             the other Zome projections of the A4 family.
           </Typography>
-          <VZomeViewer url={"https://vzome.com/models/2007/04-Apr/5cell/A4_9.vZome"} />
+          <VZomeViewer name="A4_9" />
           <Typography gutterBottom >
             All of these are constructible in real Zome, in principle. 
             However, several of them are challenging to build, due to the false intersections at inconvenient places, 
@@ -96,7 +98,7 @@ const Article = () =>
             This corresponds to projecting only one hemisphere of the 4D hypersphere into 3D.
             Unfortunately, doing so will destroy the 5-fold symmetric shadows.
           </Typography>
-          <VZomeViewer url={"https://vzome.com/models/2007/04-Apr/5cell/A4_BD.vZome"} />
+          <VZomeViewer name="A4_BD" />
         </Paper>
       </Container>
     </>
