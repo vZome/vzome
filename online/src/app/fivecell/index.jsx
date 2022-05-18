@@ -1,4 +1,8 @@
-import React from 'react'
+// babel workaround
+import "regenerator-runtime/runtime";
+
+import React from 'react';
+import { render } from 'react-dom'
 
 import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
@@ -6,8 +10,8 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 
-import { UrlViewer } from '../ui/viewer/index.jsx'
-import { VZomeAppBar } from './components/appbar.jsx'
+import { UrlViewer } from '../../ui/viewer/index.jsx'
+import { VZomeAppBar } from '../components/appbar.jsx'
 
 const useStyles = makeStyles( (theme) => ({
   paper: {
@@ -38,7 +42,7 @@ const VZomeViewer = ({ url }) =>
   )
 }
 
-export const Article = () =>
+const Article = () =>
 {
   const classes = useStyles()
   return (
@@ -99,3 +103,4 @@ export const Article = () =>
   );
 }
 
+render( <Article />, document.getElementById( 'root' ) )
