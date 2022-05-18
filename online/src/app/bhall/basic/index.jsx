@@ -1,4 +1,9 @@
-import React from 'react'
+// babel workaround
+import "regenerator-runtime/runtime";
+
+import React from 'react';
+import { render } from 'react-dom'
+
 import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
 import Paper from '@material-ui/core/Paper'
@@ -8,8 +13,8 @@ import Divider from '@material-ui/core/Divider'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 
-import { UrlViewer } from '../ui/viewer/index.jsx'
-import { VZomeAppBar } from './components/appbar.jsx'
+import { UrlViewer } from '../../../ui/viewer/index.jsx'
+import { VZomeAppBar } from '../../components/appbar.jsx'
 
 const metadata = {
   easier: {
@@ -120,7 +125,7 @@ const VZomeViewer = ({ name, parts }) =>
   )
 }
 
-export const BHallBasic = () =>
+const BHallBasic = () =>
 {
   const classes = useStyles()
   const [difficulty, setDifficulty] = React.useState( 0 );
@@ -165,3 +170,5 @@ export const BHallBasic = () =>
     </>
   );
 }
+
+render( <BHallBasic />, document.getElementById( 'root' ) )

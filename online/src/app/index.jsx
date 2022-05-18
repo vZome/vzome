@@ -1,41 +1,37 @@
+
 // babel workaround
 import "regenerator-runtime/runtime";
 
 import React from 'react';
 import { render } from 'react-dom'
-// import * as serviceWorker from './serviceWorker';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-} from "react-router-dom"
 
-import { Online } from './App.jsx';
-import { Article } from './Article.jsx';
-import { BHallBasic } from './BHallBasic.jsx';
-import { Browser } from './Browser.jsx';
+import { DesignHistoryInspector } from './components/inspector.jsx'
+import { VZomeAppBar } from './components/appbar.jsx'
+import { getModelURL } from './components/folder.jsx';
+import { DesignViewer, WorkerContext, useVZomeUrl } from '../ui/viewer/index.jsx'
 
-render(
-  <Router>
-    <Switch>
-      <Route path="/app/fivecell">
-        <Article />
-      </Route>
-      <Route path="/app/bhall/basic">
-        <BHallBasic />
-      </Route>
-      <Route path="/app/browser">
-        <Browser />
-      </Route>
-      <Route path="/app">
-        <Online/>
-      </Route>
-    </Switch>
-  </Router>,
-  document.getElementById( 'root' )
-)
+const queryParams = new URLSearchParams( window.location.search );
+const relativeUrl = queryParams.get( 'url' ); // support for legacy viewer usage (old vZome shares)
+const legacyViewerMode = !!relativeUrl;
+// Must make this absolute before the worker tries to, with the wrong base URL
+const url = relativeUrl && new URL( relativeUrl, window.location ) .toString();
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-// serviceWorker.unregister();
+const App = () =>
+{
+  useVZomeUrl( url || getModelURL( 'vZomeLogo' ), { preview: legacyViewerMode } );
+
+  return (
+    <>
+      <VZomeAppBar oneDesign={legacyViewerMode} />
+      { legacyViewerMode? <DesignViewer useSpinner/> : <DesignHistoryInspector/> }
+    </>
+  );
+}
+
+const Online = () => (
+  <WorkerContext>
+    <App/>
+  </WorkerContext>
+);
+
+render( <Online/>, document.getElementById( 'root' ) );
