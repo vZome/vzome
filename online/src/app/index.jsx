@@ -23,7 +23,7 @@ const App = () =>
   return (
     <>
       <VZomeAppBar oneDesign={legacyViewerMode} />
-      { legacyViewerMode? <DesignViewer useSpinner/> : <DesignHistoryInspector/> }
+      { legacyViewerMode? <DesignViewer useSpinner showSnapshots /> : <DesignHistoryInspector/> }
     </>
   );
 }

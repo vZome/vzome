@@ -17,8 +17,7 @@ export const vZomeViewerCSS = `
 }
 
 :host > div,
-:host > div > div,
-:host > div > div > div {
+:host > div > div {
   width: 100% !important;
   height: 100% !important;
   overflow: hidden;

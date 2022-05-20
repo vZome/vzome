@@ -3,9 +3,14 @@ import React, { useEffect, useState } from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import ReactDOM from "react-dom";
 
+import { makeStyles } from '@material-ui/core/styles';
 import { StylesProvider, jssPreset } from '@material-ui/styles';
 import IconButton from '@material-ui/core/IconButton'
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded'
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 import { create } from 'jss';
 
 import { ShapedGeometry } from './geometry.jsx'
@@ -29,11 +34,61 @@ const download = source =>
   document.body.removeChild( element )
 }
 
-export const DesignViewer = ( { children, children3d, useSpinner=false } ) =>
+const useStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+}));
+
+export const SceneMenu = ( { snapshots } ) =>
+{
+  const classes = useStyles();
+  const report = useDispatch();
+  const [snapshotIndex, setSnapshotIndex] = React.useState( 0 );
+  const handleChange = (event) =>
+  {
+    const index = event.target.value;
+    setSnapshotIndex( index );
+    const { nodeId, camera } = snapshots[ index ];
+    report( { type: 'EDIT_SELECTED', payload: { before: nodeId } } );
+    report( { type: 'CAMERA_DEFINED', payload: camera } );
+  }
+
+  return (
+    <div style={ { position: 'absolute', background: 'lightgray' } }>
+      <FormControl variant="outlined" className={classes.formControl}>
+        <InputLabel htmlFor="scene-menu-label">Scene</InputLabel>
+        <Select
+          native
+          value={snapshotIndex}
+          onChange={handleChange}
+          label="Scene"
+          inputProps={{
+            name: 'scene',
+            id: 'scene-menu-label',
+          }}
+        >
+          {snapshots.map((snapshot, index) => (
+            <option key={index} value={index}>{
+              snapshot.title || (( index === 0 )? "- none -" : `scene ${index}`)
+            }</option>)
+          )}
+        </Select>
+      </FormControl>
+    </div>
+  );
+}
+
+export const DesignViewer = ( { children, children3d, useSpinner=false, showSnapshots=false } ) =>
 {
   const source = useSelector( state => state.source );
   const scene = useSelector( state => state.scene );
   const waiting = useSelector( state => !!state.waiting );
+  const snapshots = useSelector( state => state.snapshots );
   return (
     <div style={ { display: 'flex', height: '100%', position: 'relative' } }>
       { scene?
@@ -45,6 +100,9 @@ export const DesignViewer = ( { children, children3d, useSpinner=false } ) =>
         </DesignCanvas>
         : children // This renders the light DOM if the scene couldn't load
       }
+      { showSnapshots && snapshots && snapshots[1] &&  // There is always >=1 snapshot, and we only want to show 2 or more
+        <SceneMenu snapshots={snapshots} />
+      }
       <Spinner visible={useSpinner && waiting} />
       { source && source.text &&
         <IconButton color="inherit" aria-label="download"
@@ -53,7 +111,7 @@ export const DesignViewer = ( { children, children3d, useSpinner=false } ) =>
           <GetAppRoundedIcon fontSize='medium'/>
         </IconButton>
       }
-      <ErrorAlert/> 
+      <ErrorAlert/>
     </div>
   )
 }
@@ -101,7 +159,7 @@ export const useVZomeUrl = ( url, config ) =>
 {
   const { preview } = config;
   const report = useDispatch();
-  useEffect( () => !!url && report( { type: 'URL_PROVIDED', payload: { url, viewOnly: preview } } ), [] );
+  useEffect( () => !!url && report( { type: 'URL_PROVIDED', payload: { url, viewOnly: preview } } ), [ url ] );
 }
 
 // This component has to be separate from UrlViewer because of the useDispatch hook used in
@@ -110,7 +168,7 @@ export const useVZomeUrl = ( url, config ) =>
 export const UrlViewerInner = ({ url, children }) =>
 {
   useVZomeUrl( url, { preview: true } );
-  return ( <DesignViewer>
+  return ( <DesignViewer showSnapshots >
              {children}
            </DesignViewer> );
 }

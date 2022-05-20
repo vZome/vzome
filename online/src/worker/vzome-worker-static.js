@@ -92,15 +92,15 @@ const parseAndInterpret = ( xmlLoading, report ) =>
     } )
 
     .then( design => {
-      const { renderer, camera, lighting, xmlTree, targetEditId } = design;
+      const { renderer, camera, lighting, xmlTree, targetEditId, snapshots } = design;
       const { embedding } = renderer;
-      camera.fov = 0.33915263; // WORKAROUND
       // the next step may take several seconds, which is why we already reported PARSE_COMPLETED
       renderHistory = legacyModule .interpretAndRender( design );
       const { shapes } = renderHistory .getScene( targetEditId, true );
       const scene = { lighting, camera, embedding, shapes };
       // TODO: massage xmlTree to make branches from BeginBlock ... EndBlock sequences
-      report( { type: 'DESIGN_RENDERED', payload: { scene, xmlTree } } );
+      report( { type: 'SCENE_RENDERED', payload: { scene } } );
+      report( { type: 'DESIGN_INTERPRETED', payload: { xmlTree, snapshots } } );
       return true; // probably nobody should care about the return value
     } )
 
@@ -146,14 +146,20 @@ const urlLoader = ( report, event ) =>
       .then( text => JSON.parse( text ) )
       .then( preview => {
         const scene = { ...convertScene( preview ), shapes: convertGeometry( preview ) };
-        report( { type: 'DESIGN_RENDERED', payload: { scene } } );
+        report( { type: 'SCENE_RENDERED', payload: { scene } } );
         return true; // probably nobody should care about the return value
-      })
+      } )
       .catch( error => {
         console.log( error.message );
         console.log( `Failed to load and parse preview: ${previewUrl}` );
+        return false; // probably nobody should care about the return value
+      } )
+      .then( () => {
+        // Even in viewOnly mode we want to see any article/lesson snapshots,
+        //   so we can't avoid doing the full parse.  However, delaying it until
+        //   after the preview scene is rendered gives a much better experience.
         return parseAndInterpret( xmlLoading, report );
-      } );
+      })
   }
   else {
     return parseAndInterpret( xmlLoading, report );
@@ -178,7 +184,7 @@ onmessage = ({ data }) =>
     case 'EDIT_SELECTED':
       const { before, after } = payload; // only one of these will have an edit ID
       const scene = before? renderHistory .getScene( before, true ) : renderHistory .getScene( after, false );
-      postMessage( { type: 'EDIT_RENDERED', payload: { scene } } );
+      postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
       break;
   
     default:
