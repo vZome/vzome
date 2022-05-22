@@ -661,7 +661,7 @@ const createParser = ( createDocument ) => ( xmlText ) =>
   findSnapshots( xmlTree, snapshotNodes );
 
   const notes = vZomeRoot.getChildElement( "notes" );
-  const realSnapshots = notes.nativeElement.children.map( pageElement => parseArticlePage( pageElement, snapshotNodes ) );
+  const realSnapshots = ( notes && notes.nativeElement.children.map( pageElement => parseArticlePage( pageElement, snapshotNodes ) ) ) || [];
   const snapshots = [ { nodeId: targetEditId, camera }, ...realSnapshots ];
 
   return { firstEdit, camera, field, targetEditId, renderer, lighting, batchRender, xmlTree, snapshots }
