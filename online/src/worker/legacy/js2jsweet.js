@@ -553,7 +553,8 @@ const legacyCommandFactory = ( createEditor, className ) => ( config ) =>
   // dispatch( { type: WORK_FINISHED } )
 }
 
-const assignIds = ( txmlElement, id=':' ) => {
+const assignIds = ( txmlElement, id=':' ) =>
+{
   txmlElement.id = id;
   txmlElement.children.map( (child,index) => {
     if ( child instanceof Object ) {
@@ -562,6 +563,20 @@ const assignIds = ( txmlElement, id=':' ) => {
     }
   });
   return txmlElement
+}
+
+const findSnapshots = ( txmlElement, snapshots ) =>
+{
+  if ( txmlElement.tagName === "Snapshot" ) {
+    const snapshotId = parseInt( txmlElement.attributes.id );
+    snapshots[ snapshotId ] = txmlElement.id;
+  } else {
+    txmlElement.children.map( child => {
+      if ( child instanceof Object ) {
+        findSnapshots( child, snapshots )
+      }
+    });
+  }
 }
 
 const parseVector = ( element, name ) =>
@@ -608,8 +623,16 @@ const parseViewXml = ( viewingElement ) =>
   const lookAt = parseVector( viewModel, "LookAtPoint" )
   const up = parseVector( viewModel, "UpDirection" )
   const lookDirection = parseVector( viewModel, "LookDirection" )
-  const position = lookAt.map( (e,i) => e - distance * lookDirection[ i ] )
-  return { position, lookAt, up, near, far }
+  const position = lookAt.map( (e,i) => e - distance * lookDirection[ i ] );
+  return { position, lookAt, up, near, far, fov: 0.43915263 };
+}
+
+const parseArticlePage = ( pageElement, snapshots ) =>
+{
+  const { snapshot, title } = pageElement.attributes;
+  const nodeId = snapshots[ snapshot ];
+  const camera = parseViewXml( new JavaDomElement( pageElement ) );
+  return { title, nodeId, camera };
 }
 
 const createParser = ( createDocument ) => ( xmlText ) =>
@@ -631,11 +654,17 @@ const createParser = ( createDocument ) => ( xmlText ) =>
 
   const xmlTree = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement );
   const edits = new LegacyEdit( xmlTree, null, interpretEdit );
-  // Note: I'm adding one so that this matches the assigned ID of the next edit to do
   const targetEditId = `:${edits.getAttribute( "editNumber" )}:`
   const firstEdit = edits.firstChild()
 
-  return { firstEdit, camera, field, targetEditId, renderer, lighting, batchRender, xmlTree }
+  const snapshotNodes = [];
+  findSnapshots( xmlTree, snapshotNodes );
+
+  const notes = vZomeRoot.getChildElement( "notes" );
+  const realSnapshots = notes.nativeElement.children.map( pageElement => parseArticlePage( pageElement, snapshotNodes ) );
+  const snapshots = [ { nodeId: targetEditId, camera }, ...realSnapshots ];
+
+  return { firstEdit, camera, field, targetEditId, renderer, lighting, batchRender, xmlTree, snapshots }
 }
 
 export const parserPromise = init()
