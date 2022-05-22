@@ -86,7 +86,7 @@ export const DesignHistoryInspector = ( { debug } ) =>
           <HistoryInspector/>
         </Grid>
         <Grid id='editor-canvas' item xs={canvasColumns} >
-          <DesignViewer useSpinner>
+          <DesignViewer config={ { useSpinner: true } }>
             {/* { workingPlane && workingPlane.enabled &&
                 <BuildPlane config={workingPlane} {...{ startGridHover, stopGridHover }} /> } */}
             {/* <UndoRedoButtons {...{ canRedo, canUndo,

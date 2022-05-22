@@ -80,7 +80,7 @@ export const DesignBrowser = ( { debug } ) =>
           <DesignList setUrl={setUrl}/>
         </Grid>
         <Grid id='editor-canvas' item xs={canvasColumns} >
-          <DesignViewer useSpinner />
+          <DesignViewer config={ { useSpinner: true } } />
         </Grid>
       </Grid>
     </div>

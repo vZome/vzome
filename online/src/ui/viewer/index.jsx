@@ -83,8 +83,9 @@ export const SceneMenu = ( { snapshots } ) =>
   );
 }
 
-export const DesignViewer = ( { children, children3d, useSpinner=false, showSnapshots=false } ) =>
+export const DesignViewer = ( { children, children3d, config={} } ) =>
 {
+  const { showSnapshots=false, useSpinner=false } = config;
   const source = useSelector( state => state.source );
   const scene = useSelector( state => state.scene );
   const waiting = useSelector( state => !!state.waiting );
@@ -165,10 +166,10 @@ export const useVZomeUrl = ( url, config ) =>
 // This component has to be separate from UrlViewer because of the useDispatch hook used in
 //  useVZomeUrl above.  I shouldn't really need to export it, but React (or the dev tools)
 //  got pissy when I didn't.
-export const UrlViewerInner = ({ url, children }) =>
+export const UrlViewerInner = ({ url, children, config }) =>
 {
   useVZomeUrl( url, { preview: true } );
-  return ( <DesignViewer showSnapshots >
+  return ( <DesignViewer config={config} >
              {children}
            </DesignViewer> );
 }
@@ -179,9 +180,9 @@ export const UrlViewerInner = ({ url, children }) =>
 //  It is also used by the web component, but with the worker-store injected so that the
 //  worker can get initialized and loaded while the main context is still fetching
 //  this module.
-export const UrlViewer = ({ url, store, children }) => (
+export const UrlViewer = ({ url, store, children, config={} }) => (
   <WorkerContext store={store} >
-    <UrlViewerInner url={url}>
+    <UrlViewerInner url={url} config={config}>
       {children}
     </UrlViewerInner>
   </WorkerContext>
