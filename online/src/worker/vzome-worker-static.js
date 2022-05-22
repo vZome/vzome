@@ -81,7 +81,7 @@ const fetchFileText = selected =>
 
 let renderHistory;
 
-const parseAndInterpret = ( xmlLoading, report ) =>
+const parseAndInterpret = ( xmlLoading, report, render=true ) =>
 {
   let legacyModule;
   return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
@@ -92,15 +92,17 @@ const parseAndInterpret = ( xmlLoading, report ) =>
     } )
 
     .then( design => {
-      const { renderer, camera, lighting, xmlTree, targetEditId } = design;
-      const { embedding } = renderer;
-      camera.fov = 0.33915263; // WORKAROUND
+      const { renderer, camera, lighting, xmlTree, targetEditId, snapshots } = design;
       // the next step may take several seconds, which is why we already reported PARSE_COMPLETED
-      renderHistory = legacyModule .interpretAndRender( design );
-      const { shapes } = renderHistory .getScene( targetEditId, true );
-      const scene = { lighting, camera, embedding, shapes };
-      // TODO: massage xmlTree to make branches from BeginBlock ... EndBlock sequences
-      report( { type: 'DESIGN_RENDERED', payload: { scene, xmlTree } } );
+      if ( render ) { // if we already have a preview, we don't want to interpret and render
+        const { embedding } = renderer;
+        renderHistory = legacyModule .interpretAndRender( design );
+        const { shapes } = renderHistory .getScene( targetEditId, true );
+        const scene = { lighting, camera, embedding, shapes };
+        // TODO: massage xmlTree to make branches from BeginBlock ... EndBlock sequences
+        report( { type: 'SCENE_RENDERED', payload: { scene } } );
+      }
+      report( { type: 'DESIGN_INTERPRETED', payload: { xmlTree, snapshots } } );
       return true; // probably nobody should care about the return value
     } )
 
@@ -140,20 +142,28 @@ const urlLoader = ( report, event ) =>
 
   xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { name, text } } ) );
 
+  let renderXml = true;
   if ( viewOnly ) {
     const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
     return fetchUrlText( previewUrl )
       .then( text => JSON.parse( text ) )
       .then( preview => {
         const scene = { ...convertScene( preview ), shapes: convertGeometry( preview ) };
-        report( { type: 'DESIGN_RENDERED', payload: { scene } } );
+        report( { type: 'SCENE_RENDERED', payload: { scene } } );
+        renderXml = false;
         return true; // probably nobody should care about the return value
-      })
+      } )
       .catch( error => {
         console.log( error.message );
         console.log( `Failed to load and parse preview: ${previewUrl}` );
-        return parseAndInterpret( xmlLoading, report );
-      } );
+        return false; // probably nobody should care about the return value
+      } )
+      .then( () => {
+        // Even in viewOnly mode we want to see any article/lesson snapshots,
+        //   so we can't avoid doing the full parse.  However, delaying it until
+        //   after the preview scene is rendered gives a much better experience.
+        return parseAndInterpret( xmlLoading, report, renderXml );
+      })
   }
   else {
     return parseAndInterpret( xmlLoading, report );
@@ -178,7 +188,7 @@ onmessage = ({ data }) =>
     case 'EDIT_SELECTED':
       const { before, after } = payload; // only one of these will have an edit ID
       const scene = before? renderHistory .getScene( before, true ) : renderHistory .getScene( after, false );
-      postMessage( { type: 'EDIT_RENDERED', payload: { scene } } );
+      postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
       break;
   
     default:

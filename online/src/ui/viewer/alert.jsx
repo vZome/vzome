@@ -23,7 +23,7 @@ export const ErrorAlert = () =>
 
   return (
     <Backdrop className={classes.backdrop} open={!!message}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        anchororigin={{ vertical: 'top', horizontal: 'center' }}>
       <Alert variant='filled' severity="error" onClose={dismissed}>
         <AlertTitle>There's a problem</AlertTitle>
         {message}
