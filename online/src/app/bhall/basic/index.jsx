@@ -84,7 +84,8 @@ const metadata = {
     },
     "doubleSpiral": {
       "parts": "10 short reds, 10 medium reds, 20 long reds, 10 short yellows, and 47 balls.",
-      "description": ""
+      "description": "",
+      config: { showSnapshots: false }
     },
   },
 }
@@ -109,7 +110,7 @@ const viewerStyle = {
   border: "solid",
 }
 
-const VZomeViewer = ({ name, parts }) =>
+const VZomeViewer = ({ name, parts, config }) =>
 {
   const url = name && new URL( `/bhall/basics/${name}.vZome`, window.location ) .toString();
 
@@ -117,7 +118,7 @@ const VZomeViewer = ({ name, parts }) =>
     <>
       <Divider />
       <div style={viewerStyle}>
-        <UrlViewer url={url} />
+        <UrlViewer url={url} config={config} />
       </div>
       <Typography gutterBottom align='center' variant="h6" >{name}</Typography>
       <Typography gutterBottom align='center' >Build with {parts}</Typography>
@@ -150,7 +151,7 @@ const BHallBasic = () =>
             explore different possibilities,
             Brian was able to create a number of beautiful and interesting designs,
             all constructible with fairly small Zometool sets.
-            Here are a few of them for your enjoyment; try constructing them with Zometool!
+            Here are a few of them for your enjoyment; try constructing them in the real world!
             Note that they are organized into three sections, by difficulty.
           </Typography>
           <Typography gutterBottom color='secondary' >
@@ -164,7 +165,8 @@ const BHallBasic = () =>
               <Tab label={labels[2]} />
             </Tabs>
           </Paper>
-          { Object.entries( metadata[ labels[ difficulty ] ] ).map( ([ name, value ]) => <VZomeViewer name={name} parts={value.parts} /> )}
+          { Object.entries( metadata[ labels[ difficulty ] ] ).map( ([ name, value, config={} ]) =>
+            <VZomeViewer name={name} parts={value.parts} config={config} /> )}
         </Paper>
       </Container>
     </>
