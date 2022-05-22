@@ -17,3 +17,7 @@ talk to Ben Eater about smoothing & interactive animations (tell Grant first)
  - better filename presentation in GitHub browser app
  - snippet-copy feature in browser app
  
+------- 2022-05-22
+
+ - script local git actions for merging a PR
+ 

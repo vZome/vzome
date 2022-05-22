@@ -565,20 +565,6 @@ const assignIds = ( txmlElement, id=':' ) =>
   return txmlElement
 }
 
-const findSnapshots = ( txmlElement, snapshots ) =>
-{
-  if ( txmlElement.tagName === "Snapshot" ) {
-    const snapshotId = parseInt( txmlElement.attributes.id );
-    snapshots[ snapshotId ] = txmlElement.id;
-  } else {
-    txmlElement.children.map( child => {
-      if ( child instanceof Object ) {
-        findSnapshots( child, snapshots )
-      }
-    });
-  }
-}
-
 const parseVector = ( element, name ) =>
 {
   const child = element.getChildElement( name )
@@ -627,12 +613,36 @@ const parseViewXml = ( viewingElement ) =>
   return { position, lookAt, up, near, far, fov: 0.43915263 };
 }
 
-const parseArticlePage = ( pageElement, snapshots ) =>
+const parseArticle = ( notesElement, xmlTree ) =>
 {
-  const { snapshot, title } = pageElement.attributes;
-  const nodeId = snapshots[ snapshot ];
-  const camera = parseViewXml( new JavaDomElement( pageElement ) );
-  return { title, nodeId, camera };
+  if ( !notesElement )
+    return [];
+
+  const snapshotNodes = [];
+  const findSnapshots = ( txmlElement ) =>
+  {
+    if ( txmlElement.tagName === "Snapshot" ) {
+      const snapshotId = parseInt( txmlElement.attributes.id );
+      snapshotNodes[ snapshotId ] = txmlElement.id;
+    } else {
+      txmlElement.children.map( child => {
+        if ( child instanceof Object ) {
+          findSnapshots( child, snapshotNodes )
+        }
+      });
+    }
+  }
+  findSnapshots( xmlTree );
+  const parseArticlePage = ( pageElement ) =>
+  {
+    const { snapshot, title } = pageElement.attributes;
+    const nodeId = snapshotNodes[ snapshot ];
+    const camera = parseViewXml( new JavaDomElement( pageElement ) );
+    return { title, nodeId, camera };
+  }
+  return notesElement.nativeElement.children.map( pageElement => parseArticlePage( pageElement ) )
+          // Early vZome files always had a default article with one explanatory page
+          .filter( snapshot => snapshot.title !== "How to save notes" );
 }
 
 const createParser = ( createDocument ) => ( xmlText ) =>
@@ -657,11 +667,7 @@ const createParser = ( createDocument ) => ( xmlText ) =>
   const targetEditId = `:${edits.getAttribute( "editNumber" )}:`
   const firstEdit = edits.firstChild()
 
-  const snapshotNodes = [];
-  findSnapshots( xmlTree, snapshotNodes );
-
-  const notes = vZomeRoot.getChildElement( "notes" );
-  const realSnapshots = ( notes && notes.nativeElement.children.map( pageElement => parseArticlePage( pageElement, snapshotNodes ) ) ) || [];
+  const realSnapshots = parseArticle( vZomeRoot.getChildElement( "notes" ), xmlTree );
   const snapshots = [ { nodeId: targetEditId, camera }, ...realSnapshots ];
 
   return { firstEdit, camera, field, targetEditId, renderer, lighting, batchRender, xmlTree, snapshots }
