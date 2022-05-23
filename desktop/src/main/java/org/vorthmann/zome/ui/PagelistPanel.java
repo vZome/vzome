@@ -26,6 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
@@ -285,20 +286,34 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
         list .setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
         list .setVisibleRowCount( 12 );
         
-        // The controller is not initialized when this constructor runs, so we defer this.
-        SwingUtilities .invokeLater( new Runnable()
-        {    
+        // The controller is not initialized when this constructor runs, so we defer listModel init.
+        //   TODO: How are we sure that the controller will be ready when this worker runs?
+        //   The current code is running on the EDT, so running a worker is only a guarantee
+        //   if there was already a worker running, and it has already initialized the controller.
+        //   We want more controlled synchronization!
+        SwingWorker worker = new SwingWorker()
+        {
             @Override
-            public void run() {
+            protected Object doInBackground() throws Exception
+            {
                 int initialCount = Integer .parseInt( controller .getProperty( "num.pages" ) );
                 for ( int i = 0; i < initialCount; i++ )
                 {
                     ImageIcon icon = new ImageIcon( new BufferedImage( 80, 70, BufferedImage .TYPE_INT_RGB ) );
                     listModel .addElement( icon );
                 }
+                return listModel;
+            }
+
+            @Override
+            protected void done()
+            {
+                // This runs on the EDT again.  We can be sure it won't run until the current
+                //   thread (calling execute()) has completed, AND doInBackground() has completed.
                 list .setSelectedIndex( 0 );
             }
-        });
+        };
+        worker .execute();  //Start the background thread
     }
     
     private void syncController()
