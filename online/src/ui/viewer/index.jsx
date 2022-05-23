@@ -180,7 +180,7 @@ export const UrlViewerInner = ({ url, children, config }) =>
 //  It is also used by the web component, but with the worker-store injected so that the
 //  worker can get initialized and loaded while the main context is still fetching
 //  this module.
-export const UrlViewer = ({ url, store, children, config={} }) => (
+export const UrlViewer = ({ url, store, children, config={ showSnapshots: true } }) => (
   <WorkerContext store={store} >
     <UrlViewerInner url={url} config={config}>
       {children}
