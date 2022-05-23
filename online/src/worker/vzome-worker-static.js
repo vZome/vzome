@@ -94,10 +94,10 @@ const parseAndInterpret = ( xmlLoading, report, render=true ) =>
     .then( design => {
       const { renderer, camera, lighting, xmlTree, targetEditId, snapshots } = design;
       // the next step may take several seconds, which is why we already reported PARSE_COMPLETED
-      if ( render ) { // if we already have a preview, we don't want to interpret and render
-        const { embedding } = renderer;
-        renderHistory = legacyModule .interpretAndRender( design );
+      renderHistory = legacyModule .interpretAndRender( design ); // always have the renderHistory ready for snapshots
+      if ( render ) { // if we already have a preview, we don't want to render
         const { shapes } = renderHistory .getScene( targetEditId, true );
+        const { embedding } = renderer;
         const scene = { lighting, camera, embedding, shapes };
         // TODO: massage xmlTree to make branches from BeginBlock ... EndBlock sequences
         report( { type: 'SCENE_RENDERED', payload: { scene } } );
