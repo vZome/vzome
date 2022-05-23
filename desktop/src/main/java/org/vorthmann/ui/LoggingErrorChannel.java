@@ -4,6 +4,8 @@ package org.vorthmann.ui;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.vzome.desktop.api.Controller;
+
 
 public class LoggingErrorChannel implements Controller .ErrorChannel
 {

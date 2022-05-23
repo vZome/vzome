@@ -33,7 +33,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.vorthmann.ui.CardPanel;
-import org.vorthmann.ui.Controller;
+
+import com.vzome.desktop.api.Controller;
 
 public class NewLengthPanel extends JPanel implements PropertyChangeListener, ActionListener
 {
@@ -83,14 +84,14 @@ public class NewLengthPanel extends JPanel implements PropertyChangeListener, Ac
     {
         if ( this .controller != null )
         {
-            this .controller .getMouseTool() .detach( this );
+//            ((CanvasTool) this .controller) .detach( this );  // cannot be in preview strut drag at this point
             this .controller .removePropertyListener( this );
         }
         this .controller = controller;
         if ( this .controller != null )
         {
             this .controller .addPropertyListener( this );
-            this .controller .getMouseTool() .attach( this );
+//            ((CanvasTool) this .controller) .attach( this );  // cannot be in preview strut drag at this point
         }
         lengthDialog = new LengthDialog( frame, controller .getSubController( "unit" ), "Custom Unit Strut Length", new ControllerActionListener(controller) );
         boolean value = "true" .equals( controller .getProperty( "showStrutScales" ) );

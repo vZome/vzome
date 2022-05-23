@@ -27,7 +27,7 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Lights;
-import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.desktop.awt.RenderingViewer;
 import com.vzome.opengl.OutlineRenderer;
 import com.vzome.opengl.Renderer;
 import com.vzome.opengl.SolidRenderer;

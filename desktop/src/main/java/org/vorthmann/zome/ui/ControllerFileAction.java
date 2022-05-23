@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.api.Controller;
 
 public class ControllerFileAction implements ActionListener
 {

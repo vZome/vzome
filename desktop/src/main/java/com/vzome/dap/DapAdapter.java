@@ -42,7 +42,8 @@ import org.eclipse.lsp4j.debug.launch.DSPLauncher;
 import org.eclipse.lsp4j.debug.services.IDebugProtocolClient;
 import org.eclipse.lsp4j.debug.services.IDebugProtocolServer;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
-import org.vorthmann.ui.Controller;
+
+import com.vzome.desktop.api.Controller;
 
 public class DapAdapter implements IDebugProtocolServer
 {

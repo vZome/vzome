@@ -3,7 +3,7 @@ package org.vorthmann.zome.ui;
 import javax.swing.AbstractButton;
 import javax.swing.JMenuItem;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.api.Controller;
 
 public interface ControlActions
 {

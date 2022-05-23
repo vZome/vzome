@@ -48,18 +48,21 @@ import javax.swing.ToolTipManager;
 
 import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.Platform;
-import org.vorthmann.ui.Controller;
-import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.ExclusiveAction;
 
 import com.vzome.core.render.Scene;
-import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.awt.GraphicsController;
+import com.vzome.desktop.awt.RenderingViewer;
+import com.vzome.desktop.controller.DefaultController;
 
 public class DocumentFrame extends JFrame implements PropertyChangeListener, ControlActions
 {
     private static final long serialVersionUID = 1L;
 
-    protected final Controller mController, toolsController;
+    protected final GraphicsController mController;
+    
+    protected final Controller toolsController;
 
     private final ModelPanel modelPanel;
             
@@ -85,9 +88,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
     private JLabel statusText;
 
-    private Controller cameraController;
-
-    private Controller lessonController;
+    private GraphicsController lessonController, cameraController;
     
     private JDialog polytopesDialog, importScaleDialog;
     
@@ -127,7 +128,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     	this .appUI = appUI;
     }
         
-    public DocumentFrame( final Controller controller, final J3dComponentFactory factory3d )
+    public DocumentFrame( final GraphicsController controller, final J3dComponentFactory factory3d )
     {
         mController = controller;
         mController .addPropertyListener( this );
@@ -294,7 +295,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     
                 case "snapshot.2d":
                     if ( snapshot2dFrame == null ) {
-                        snapshot2dFrame = new Snapshot2dFrame( mController.getSubController( "snapshot.2d" ), fileDialog );
+                        snapshot2dFrame = new Snapshot2dFrame( (GraphicsController) mController.getSubController( "snapshot.2d" ), fileDialog );
                     }
                     snapshot2dFrame.setPanelSize( modelPanel .getRenderedSize() );
                     snapshot2dFrame.pack();
@@ -480,8 +481,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
         // -------------------------------------- create panels and tools
 
-        cameraController = mController .getSubController( "camera" );
-        lessonController = mController .getSubController( "lesson" );
+        cameraController = (GraphicsController) mController .getSubController( "camera" );
+        lessonController = (GraphicsController) mController .getSubController( "lesson" );
         lessonController .addPropertyListener( this );
 
         ControllerActionListener actionListener = new ControllerActionListener( this .mController );
