@@ -18,7 +18,7 @@ const url = relativeUrl && new URL( relativeUrl, window.location ) .toString();
 
 const App = () =>
 {
-  useVZomeUrl( url || getModelURL( 'vZomeLogo' ), { preview: legacyViewerMode } );
+  useVZomeUrl( url || getModelURL( 'vZomeLogo' ), { viewOnly: legacyViewerMode } );
 
   return (
     <>

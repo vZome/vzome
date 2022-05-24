@@ -134,7 +134,8 @@ const urlLoader = ( report, event ) =>
   if ( event.type !== 'URL_PROVIDED' ) {
     return report( event );
   }
-  const { url, viewOnly } = event.payload;
+  const { url, config={} } = event.payload;
+  const { viewOnly=false, showSnapshots=false } = config;
   const name = url.split( '\\' ).pop().split( '/' ).pop()
   report( { type: 'FETCH_STARTED', payload: event.payload } );
   console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${viewOnly? "viewing" : "editing " } ${url}` );
@@ -142,7 +143,6 @@ const urlLoader = ( report, event ) =>
 
   xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { name, text } } ) );
 
-  let renderXml = true;
   if ( viewOnly ) {
     const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
     return fetchUrlText( previewUrl )
@@ -150,20 +150,13 @@ const urlLoader = ( report, event ) =>
       .then( preview => {
         const scene = { ...convertScene( preview ), shapes: convertGeometry( preview ) };
         report( { type: 'SCENE_RENDERED', payload: { scene } } );
-        renderXml = false;
         return true; // probably nobody should care about the return value
       } )
       .catch( error => {
         console.log( error.message );
         console.log( `Failed to load and parse preview: ${previewUrl}` );
-        return false; // probably nobody should care about the return value
+        return parseAndInterpret( xmlLoading, report );
       } )
-      .then( () => {
-        // Even in viewOnly mode we want to see any article/lesson snapshots,
-        //   so we can't avoid doing the full parse.  However, delaying it until
-        //   after the preview scene is rendered gives a much better experience.
-        return parseAndInterpret( xmlLoading, report, renderXml );
-      })
   }
   else {
     return parseAndInterpret( xmlLoading, report );
