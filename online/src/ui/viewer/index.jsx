@@ -158,9 +158,8 @@ export const WorkerContext = props =>
 
 export const useVZomeUrl = ( url, config ) =>
 {
-  const { preview } = config;
   const report = useDispatch();
-  useEffect( () => !!url && report( { type: 'URL_PROVIDED', payload: { url, viewOnly: preview } } ), [ url ] );
+  useEffect( () => !!url && report( { type: 'URL_PROVIDED', payload: { url, config } } ), [ url ] );
 }
 
 // This component has to be separate from UrlViewer because of the useDispatch hook used in
@@ -168,7 +167,7 @@ export const useVZomeUrl = ( url, config ) =>
 //  got pissy when I didn't.
 export const UrlViewerInner = ({ url, children, config }) =>
 {
-  useVZomeUrl( url, { preview: true } );
+  useVZomeUrl( url, { viewOnly: true, ...config } );
   return ( <DesignViewer config={config} >
              {children}
            </DesignViewer> );
@@ -180,7 +179,7 @@ export const UrlViewerInner = ({ url, children, config }) =>
 //  It is also used by the web component, but with the worker-store injected so that the
 //  worker can get initialized and loaded while the main context is still fetching
 //  this module.
-export const UrlViewer = ({ url, store, children, config={ showSnapshots: true } }) => (
+export const UrlViewer = ({ url, store, children, config={ showSnapshots: false } }) => (
   <WorkerContext store={store} >
     <UrlViewerInner url={url} config={config}>
       {children}
