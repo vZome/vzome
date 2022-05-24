@@ -6,8 +6,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.StringTokenizer;
 
-import javax.swing.SwingUtilities;
-
 import com.vzome.core.editor.LessonModel;
 import com.vzome.core.editor.Snapshot;
 import com.vzome.core.viewing.Camera;
@@ -206,26 +204,14 @@ public class LessonController extends DefaultGraphicsController
 
     public void renderThumbnails( final Snapshot.Recorder recorder, final ThumbnailRenderer renderer )
     {
-        // This method is invoked on a background (worker) thread, and we want the thumbnail updates
-        //   to also happen on a background thread... but later?  SwingUtilities is not doing this, rather simply scheduling
-        //   work on the EDT.  Things seem to be working, in that we are somehow avoiding thread safety issues
-        //   and corrupting the list, but the thumbnails are not rendering properly.
-        //   I think we have accidental synchronization, with the current code here and in PagelistPanel.java.
-        //   The thumbnail rendering is probably a JOGL issue, unrelated to synchronization.
-        //  TODO: figure this all out!
-        SwingUtilities .invokeLater( new Runnable()
+        // This method is invoked on a background (worker) thread, so we don't need another thread
+        //   to do this without affecting the main UI.  I'm not sure we still need the synchronized block.
+        synchronized ( renderer )
         {
-            @Override
-            public void run()
+            for (int i = 0; i < model .size(); i++)
             {
-                synchronized ( renderer )
-                {
-                    for (int i = 0; i < model .size(); i++)
-                    {
-                        model .updateThumbnail( i, recorder, renderer );
-                    }
-                }
+                model .updateThumbnail( i, recorder, renderer );
             }
-        });
+        }
     }
 }

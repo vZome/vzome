@@ -73,6 +73,8 @@ public class ApplicationController extends DefaultController
     public ApplicationController( UI ui, Properties commandLineArgs, J3dComponentFactory rvFactory )
     {
         super();
+        
+        // This is executed on the EDT.  Should it be?
 
         long starttime = System.currentTimeMillis();
 

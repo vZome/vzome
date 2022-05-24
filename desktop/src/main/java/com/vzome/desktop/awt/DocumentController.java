@@ -505,7 +505,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                 {
                     RenderedModel .renderChange( new RenderedModel( null, null ), mRenderedModel, mainScene );
                     mRenderedModel .addListener( mainScene );
-                    // get the thumbnails updating in the background
+                    // get the thumbnails updating in the background thread (we are already on)
                     if ( lessonController != null )
                         lessonController .renderThumbnails( documentModel, thumbnails );
                 }

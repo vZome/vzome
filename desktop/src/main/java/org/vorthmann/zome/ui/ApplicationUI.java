@@ -2,7 +2,6 @@
 package org.vorthmann.zome.ui;
 
 import java.awt.Desktop;
-import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -30,6 +29,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.vorthmann.j3d.Platform;
@@ -208,7 +208,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
          */
 
         // NOW we're ready to spend the cost of further initialization, but on the event thread
-        EventQueue .invokeLater( new InitializationWorker( theUI, args, splash ) );
+        SwingUtilities .invokeLater( new InitializationWorker( theUI, args, splash ) );
 
         return theUI;
     }
@@ -229,6 +229,8 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
         @Override
         public void run()
         {
+            // This is executed on the EDT.  Should it be?
+
             Properties configuration = new Properties();
             Path fileArgument = null;
             for ( int i = 0; i < args.length; i++ ) {

@@ -280,7 +280,7 @@ public class LessonModel implements Iterable<PageModel>
     {
         firePropertyChange( "has.pages", false, true );
         final PageModel page = pages .get( pageNum );
-        if ( page .thumbnailIsCurrent() )
+        if ( page .thumbnailIsCurrent() || true )
             return;
         page .setThumbnailCurrent( true );
 
