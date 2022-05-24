@@ -90,6 +90,8 @@ public class Application implements AlgebraicField.Registry
 
     public Application( boolean enableCommands, Command.FailureChannel failures, Properties overrides )
     {
+        // This is executed on the EDT.  Should it be?
+
         this .failures = failures;
 
         properties = loadDefaults();
