@@ -18,12 +18,12 @@ const url = relativeUrl && new URL( relativeUrl, window.location ) .toString();
 
 const App = () =>
 {
-  useVZomeUrl( url || getModelURL( 'vZomeLogo' ), { viewOnly: legacyViewerMode } );
+  useVZomeUrl( url || getModelURL( 'vZomeLogo' ), { preview: legacyViewerMode } );
 
   return (
     <>
       <VZomeAppBar oneDesign={legacyViewerMode} />
-      { legacyViewerMode? <DesignViewer config={ { useSpinner: true, showSnapshots: true } } /> : <DesignHistoryInspector/> }
+      { legacyViewerMode? <DesignViewer config={ { useSpinner: true } } /> : <DesignHistoryInspector/> }
     </>
   );
 }

@@ -68,7 +68,7 @@ const DesignList = ( { setUrl } ) =>
 export const DesignBrowser = ( { debug } ) =>
 {
   const report = useDispatch();
-  const setUrl = url => report( { type: 'URL_PROVIDED', payload: { url, viewOnly: true } } );
+  const setUrl = url => report( { type: 'URL_PROVIDED', payload: { url, config: { preview: true } } } );
 
   const drawerColumns = 5;
   const canvasColumns = 12 - drawerColumns;

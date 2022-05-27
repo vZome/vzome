@@ -88,7 +88,9 @@ export const interpret = ( action, state, edit, stack=[] ) =>
       const branchState = state.clone();
       stack.push( { branch: edit, state } );
       branchState .recordSnapshot( edit.id(), edit.firstChild().id(), stack );
-      branchState .recordSnapshot( edit.id(), edit.nextSibling().id() );
+      if ( edit.nextSibling() ) {
+        branchState .recordSnapshot( edit.id(), edit.nextSibling().id() );
+      }
       edit = edit.firstChild(); // this assumes there are no empty branches
       state = branchState;
       return Step.IN;

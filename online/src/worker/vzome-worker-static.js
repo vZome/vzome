@@ -81,7 +81,7 @@ const fetchFileText = selected =>
 
 let renderHistory;
 
-const parseAndInterpret = ( xmlLoading, report, render=true ) =>
+const parseAndInterpret = ( xmlLoading, report ) =>
 {
   let legacyModule;
   return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
@@ -94,14 +94,11 @@ const parseAndInterpret = ( xmlLoading, report, render=true ) =>
     .then( design => {
       const { renderer, camera, lighting, xmlTree, targetEditId, snapshots } = design;
       // the next step may take several seconds, which is why we already reported PARSE_COMPLETED
-      renderHistory = legacyModule .interpretAndRender( design ); // always have the renderHistory ready for snapshots
-      if ( render ) { // if we already have a preview, we don't want to render
-        const { shapes } = renderHistory .getScene( targetEditId, true );
-        const { embedding } = renderer;
-        const scene = { lighting, camera, embedding, shapes };
-        // TODO: massage xmlTree to make branches from BeginBlock ... EndBlock sequences
-        report( { type: 'SCENE_RENDERED', payload: { scene } } );
-      }
+      renderHistory = legacyModule .interpretAndRender( design );
+      const { shapes } = renderHistory .getScene( targetEditId, true );
+      const { embedding } = renderer;
+      const scene = { lighting, camera, embedding, shapes };
+      report( { type: 'SCENE_RENDERED', payload: { scene } } );
       report( { type: 'DESIGN_INTERPRETED', payload: { xmlTree, snapshots } } );
       return true; // probably nobody should care about the return value
     } )
@@ -120,7 +117,7 @@ const fileLoader = ( report, event ) =>
   }
   const file = event.payload;
   const { name } = file;
-  report( { type: 'FETCH_STARTED', payload: { name, viewOnly: false } } );
+  report( { type: 'FETCH_STARTED', payload: { name, preview: false } } );
   console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% editing ${name}` );
   const xmlLoading = fetchFileText( file );
 
@@ -135,15 +132,19 @@ const urlLoader = ( report, event ) =>
     return report( event );
   }
   const { url, config={} } = event.payload;
-  const { viewOnly=false, showSnapshots=false } = config;
+  if ( !url ) {
+    throw new Error( "No url field in URL_PROVIDED event payload" );
+  }
   const name = url.split( '\\' ).pop().split( '/' ).pop()
   report( { type: 'FETCH_STARTED', payload: event.payload } );
-  console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${viewOnly? "viewing" : "editing " } ${url}` );
+
+  const { preview=false } = config;
+  console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${preview? "previewing" : "interpreting " } ${url}` );
   const xmlLoading = fetchUrlText( url );
 
   xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { name, text } } ) );
 
-  if ( viewOnly ) {
+  if ( preview ) {
     const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
     return fetchUrlText( previewUrl )
       .then( text => JSON.parse( text ) )
