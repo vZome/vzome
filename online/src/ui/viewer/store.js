@@ -17,8 +17,8 @@ const reducer = ( state = initialState, event ) =>
     case 'FETCH_STARTED': {
       if ( state.waiting )
         return state; // the fetch was started already
-      const { url, viewOnly } = event.payload;
-      return { ...state, waiting: true, editing: !viewOnly };
+      const { url, preview } = event.payload;
+      return { ...state, waiting: true, editing: !preview };
     }
 
     case 'TEXT_FETCHED':

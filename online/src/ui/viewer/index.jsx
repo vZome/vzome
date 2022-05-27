@@ -8,7 +8,6 @@ import { StylesProvider, jssPreset } from '@material-ui/styles';
 import IconButton from '@material-ui/core/IconButton'
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded'
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { create } from 'jss';
@@ -117,7 +116,7 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
   )
 }
 
-export const renderViewer = ( store, container, url ) =>
+export const renderViewer = ( store, container, url, config ) =>
 {
   if ( url === null || url === "" ) {
     ReactDOM.unmountComponentAtNode( container );
@@ -128,7 +127,7 @@ export const renderViewer = ( store, container, url ) =>
   // Note the addition of a slot child element; this lets us potentially render the light dom,
   //   for example if the worker cannot load.
   // LG: Can we handle canvas resizing using `ResizeObserver` without modifying `vZome` or recreating the element constantly?
-  const viewerElement = React.createElement( UrlViewer, { store }, (<slot></slot>) );
+  const viewerElement = React.createElement( UrlViewer, { store, config }, (<slot></slot>) );
 
   // We need JSS to inject styles on our shadow root, not on the document head.
   // I found this solution here:
@@ -159,6 +158,7 @@ export const WorkerContext = props =>
 export const useVZomeUrl = ( url, config ) =>
 {
   const report = useDispatch();
+  // TODO: this should be encapsulated in an API on the store
   useEffect( () => !!url && report( { type: 'URL_PROVIDED', payload: { url, config } } ), [ url ] );
 }
 
@@ -167,7 +167,10 @@ export const useVZomeUrl = ( url, config ) =>
 //  got pissy when I didn't.
 export const UrlViewerInner = ({ url, children, config }) =>
 {
-  useVZomeUrl( url, { viewOnly: true, ...config } );
+  const { showSnapshots } = config;
+  // "preview" means show a preview if you find one.  When "showSnapshots" is true, the
+  //   XML will have to be parsed, so a preview JSON is not desirable.
+  useVZomeUrl( url, { preview: !showSnapshots, ...config } );
   return ( <DesignViewer config={config} >
              {children}
            </DesignViewer> );
@@ -175,7 +178,7 @@ export const UrlViewerInner = ({ url, children, config }) =>
 
 // This is the component to reuse in a React app rather than the web component.
 //  In that context, the store property can be null, since the WorkerContext
-//  will create a worker-store when none is injected.
+//  will create a worker-sre when none is injected.
 //  It is also used by the web component, but with the worker-store injected so that the
 //  worker can get initialized and loaded while the main context is still fetching
 //  this module.
