@@ -322,7 +322,6 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
             int num = Integer .parseInt( pageNum );
             ImageIcon icon = new ImageIcon( new BufferedImage( 80, 70, BufferedImage .TYPE_INT_RGB ) );
             listModel .insertElementAt( icon, num );
-            list .setSelectedIndex( num );
         }
         else if ( evt .getPropertyName() .startsWith( "pageRemovedAt-" ) )
         {

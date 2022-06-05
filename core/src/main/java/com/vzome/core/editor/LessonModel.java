@@ -104,11 +104,12 @@ public class LessonModel implements Iterable<PageModel>
         //   knowing that the LessonController will schedule EDT work to handle the changes
         for ( int i = 0; i < pages .size(); i++ ) {
             firePropertyChange( "newElementAddedAt-" + i, false, true );
+            if ( i == 0 ) {
+                firePropertyChange( "has.pages", false, true );
+                // Don't wait... we want to show the first page while the others are being added
+                goToPage( 0 );
+            } 
             firePropertyChange( "thumbnailChanged", -1, i );
-        }
-        if ( ! pages .isEmpty() ) {
-            firePropertyChange( "has.pages", false, true );
-            goToPage( 0 );
         }
     }
 
