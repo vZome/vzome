@@ -3,9 +3,12 @@ package com.vzome.core.exporters;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -96,6 +99,59 @@ public class ExporterTest {
                 throw new RuntimeException(ex);
             }
             return out.toString();
+        }
+
+        public String exportMathTables() {
+            StringWriter out = new StringWriter();
+            MathTableExporter exporter = new MathTableExporter(null, null, null, doc.getRenderedModel() );
+            try {
+                exporter.doExport(null, new PrintWriter( out ), 0, 0 );
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+            return out.toString();
+        }
+    }
+    
+//    @Test
+    public void exportMathTables() {
+        String path = "";
+        // uncomment this line to generate the json as files
+        //path = "C:\\Users\\DHall\\Documents\\GitHub\\vzome-sharing\\test\\PolygonFieldMathTables\\";
+        String[] fieldNames = {
+            "golden",
+            "rootTwo",
+            "rootThree",
+            "snubCube",
+            "snubDodec",
+            "sqrtPhi",
+            "plasticNumber",
+            "plasticPhi",
+            "superGolden",
+            "edPegg"
+        };
+        for(String fieldName : fieldNames) {
+            exportMathTable(fieldName, path);
+        }
+        for(int i=4; i <= 100; i++) {
+            exportMathTable("polygon" + i, path);
+        }
+    }
+    
+    private void exportMathTable(String fieldName, String path) {
+        TestApp app = new TestApp (fieldName);
+        String json = app.exportMathTables();
+        if(! "".equals(path) ) {
+            File file = new File(path + fieldName + ".math.json");
+            System.out.println("Exporting math table to " + file.getAbsolutePath());
+            // A try-with-resources block closes the resource even if an exception occurs
+            try ( Writer out = new FileWriter( file ) ) {
+                out.write(json);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println(json);    
         }
     }
 
