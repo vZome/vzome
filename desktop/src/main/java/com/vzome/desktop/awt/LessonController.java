@@ -4,7 +4,10 @@ package com.vzome.desktop.awt;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.StringTokenizer;
+
+import javax.swing.event.SwingPropertyChangeSupport;
 
 import com.vzome.core.editor.LessonModel;
 import com.vzome.core.editor.Snapshot;
@@ -12,9 +15,41 @@ import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.ThumbnailRenderer;
 import com.vzome.desktop.controller.CameraController;
 
+/*
+ * Thoughts on how to rationalize creation and update of the article mode editor:
+ * 
+ * We can ignore the document-created and document-with-no-pages-loaded scenarios, since
+ * we know we don't want to create the LessonPanel yet nor enable the mode switch.
+ * 
+ * The remaining scenarios are:
+ * 
+ *   - document-with-pages-loaded
+ *   - first-page-captured
+ *   - subsequent-page-captured
+ *   
+ * Logically, to normalize things as much as possible, we should refactor these as:
+ * 
+ *   - lesson-model-created  (triggers creation of the UI)
+ *   - lesson-page-added
+ *   
+ * The load case just automates the first event and a series of the second.
+ * 
+ * If we are careful to schedule those events as distinct actions on the EDT,
+ * they will serialize nicely.  We can do this using the SwingPropertyChangeSupport,
+ * as long as the scheduling code executes on a worker thread.  (If spcs .firePropertyChange
+ * happens on the EDT, the handling is synchronous and immediate!)
+ * 
+ * A better option: always create the lesson UI with the document UI, just don't enable it.
+ * This is a simplification, since we don't need the lesson UI to listen to "has.pages" at all.
+ * That simplification is certainly worth the tiny overhead of creating the Swing objects.
+ * Therefore, we don't need an event to create the lesson UI.  We will only need
+ */
+
 public class LessonController extends DefaultGraphicsController
 {
-    private final LessonModel model;
+	private final PropertyChangeSupport spcs = new SwingPropertyChangeSupport( this, true ); // events will always be handled on EDT
+
+	private final LessonModel model;
 
     private final CameraController vpm;
 
@@ -30,10 +65,22 @@ public class LessonController extends DefaultGraphicsController
             @Override
             public void propertyChange( PropertyChangeEvent change )
             {
-                firePropertyChange( change ); // forward to the view
+                spcs .firePropertyChange( change ); // forward to the view, but on the EDT
             }
         } );
     }
+
+	@Override
+	public void addPropertyListener( PropertyChangeListener listener )
+	{
+		this .spcs .addPropertyChangeListener( listener );
+	}
+
+	@Override
+	public void removePropertyListener( PropertyChangeListener listener )
+	{
+		this .spcs .removePropertyChangeListener( listener );
+	}
 
     @Override
     public void doAction( String action ) throws Exception
@@ -174,6 +221,7 @@ public class LessonController extends DefaultGraphicsController
     public String getProperty( String propName )
     {
         if ( "has.pages" .equals( propName ) )
+            // This should not be called for UI creation, so we can do that concurrently with model loading
             return Boolean .toString( ! model .isEmpty() );
 
         if ( "onFirstPage" .equals( propName ) )

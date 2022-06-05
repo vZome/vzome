@@ -681,6 +681,7 @@ public class DocumentModel implements Snapshot .Recorder, Context
             }
         }
     }
+    
     private final long startTime = System.nanoTime();
 
     boolean fileIsTooNew( String fileVersion )

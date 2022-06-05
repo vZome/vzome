@@ -55,13 +55,13 @@ public class DefaultController implements Controller
     }
 
     @Override
-    public final void addPropertyListener( PropertyChangeListener listener )
+    public void addPropertyListener( PropertyChangeListener listener )
     {
         pcs .addPropertyChangeListener( listener );
     }
 
     @Override
-    public final void removePropertyListener( PropertyChangeListener listener )
+    public void removePropertyListener( PropertyChangeListener listener )
     {
         pcs .removePropertyChangeListener( listener );
     }

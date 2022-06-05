@@ -90,10 +90,19 @@ public class LessonModel implements Iterable<PageModel>
                 else
                     snapshotIndex = Integer .parseInt( snapshot );
                 PageModel model = new PageModel( title, content, view, snapshotIndex );
+                int newPageNum = pages .size();
                 pages .add( model );
+                
+                // Since this code is running on a background thread, we can safely fire these changes,
+                //   knowing that the LessonController will schedule EDT work to handle the changes
+                firePropertyChange( "newElementAddedAt-" + newPageNum, false, true );
+                firePropertyChange( "thumbnailChanged", -1, newPageNum );
+                if ( pages .size() == 1 ) {
+                    firePropertyChange( "has.pages", false, true );
+                    goToPage( 0 );
+                }
             }
         }
-        pageNum = 0;
     }
 
     public void addPage( String name, String string, Camera view, int snapshot )
@@ -142,16 +151,11 @@ public class LessonModel implements Iterable<PageModel>
         PageModel pc = new PageModel( "", "", view, snapshotId );
         pages .add( newPageNum, pc );
 
-        // This is redundant with goToPage(), below, but we need to initialize
-        //  pageNum before we fire the "has.pages" property, which will create the
-        //  LessonPanel, calling back for various properties.
-        this .pageNum = newPageNum;
-
-        if ( pages .size() == 1 )
-            firePropertyChange( "has.pages", false, true );
         firePropertyChange( "newElementAddedAt-" + newPageNum, false, true );
         goToPage( newPageNum );
         firePropertyChange( "thumbnailChanged", -1, newPageNum );
+        if ( pages .size() == 1 )
+            firePropertyChange( "has.pages", false, true );
     }
 
     public void deletePage()
@@ -278,9 +282,8 @@ public class LessonModel implements Iterable<PageModel>
 
     public void updateThumbnail( final int pageNum, final Snapshot.Recorder recorder, final ThumbnailRenderer renderer )
     {
-        firePropertyChange( "has.pages", false, true );
         final PageModel page = pages .get( pageNum );
-        if ( page .thumbnailIsCurrent() || true )
+        if ( page .thumbnailIsCurrent() )
             return;
         page .setThumbnailCurrent( true );
 
