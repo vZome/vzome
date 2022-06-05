@@ -1,6 +1,7 @@
 
 package com.vzome.desktop.awt;
 
+//import java.awt.image.BaseMultiResolutionImage;  // waiting for Java 11!
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,8 +60,11 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
 
         RenderingViewer viewer = this .rvFactory .createRenderingViewer( scene );
         this .addViewer( viewer );
-        BufferedImage image = viewer .captureImage( 80, true );
+        viewer .setSize( 80, 70 ); // to control the aspect ratio
+//        BufferedImage lowRes = viewer .captureImage( 80, true );
+        BufferedImage hiRes = viewer .captureImage( 120, true );
         this .removeViewer( viewer );
-        callback .thumbnailReady( image );
+//        BaseMultiResolutionImage baseMultiResolutionImage = new BaseMultiResolutionImage( lowRes, hiRes );
+        callback .thumbnailReady( hiRes );
     }
 }

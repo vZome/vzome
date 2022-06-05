@@ -64,8 +64,10 @@ public class CameraController extends DefaultController implements Scene.Provide
         int MONOCULAR = 0; int LEFT_EYE = 1; int RIGHT_EYE = 2;
 
         void setViewTransformation( Matrix4f trans );
+        
+        void setSize( int width, int height );
 
-        void setPerspective( double fov, double aspectRatio, double near, double far );
+        void setPerspective( double fov, double near, double far );
 
         void setOrthographic( double halfEdge, double near, double far );
     }
@@ -159,7 +161,7 @@ public class CameraController extends DefaultController implements Scene.Provide
         else {
             double field = model .getFieldOfView();
             for ( int i = 0; i < mViewers .size(); i++ )
-                mViewers .get( i ) .setPerspective( field, 1.0d, near, far );
+                mViewers .get( i ) .setPerspective( field, near, far );
         }
 
         // TODO - make aspect ratio track the screen window shape
