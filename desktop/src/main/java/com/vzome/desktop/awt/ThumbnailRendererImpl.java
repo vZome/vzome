@@ -58,7 +58,9 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
         }
 
         RenderingViewer viewer = this .rvFactory .createRenderingViewer( scene );
+        this .addViewer( viewer );
         BufferedImage image = viewer .captureImage( 80, true );
+        this .removeViewer( viewer );
         callback .thumbnailReady( image );
     }
 }
