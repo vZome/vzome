@@ -43,7 +43,7 @@ public abstract class ExclusiveAction implements ActionListener
         	return this.busy;
         }
         
-        public void grab( SwingWorker worker )
+        public void grab( SwingWorker<?, ?> worker )
         {
             grab();
             worker .execute();
@@ -109,7 +109,7 @@ public abstract class ExclusiveAction implements ActionListener
     		return;
     	}
     	
-        final SwingWorker worker = new SwingWorker()
+        final SwingWorker<?, ?> worker = new SwingWorker<Object, Object>()
         {            
             @Override
             protected Object doInBackground() throws Exception
