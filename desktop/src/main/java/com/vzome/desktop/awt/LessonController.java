@@ -252,6 +252,10 @@ public class LessonController extends DefaultGraphicsController
 
     public void renderThumbnails( final Snapshot.Recorder recorder, final ThumbnailRenderer renderer )
     {
+        // Now we know that the entire history has been loaded and all Snapshots discovered,
+        //  so it is safe to fire off the property changes to updated the lesson UI
+        model .firePropertyChanges();
+        
         // This method is invoked on a background (worker) thread, so we don't need another thread
         //   to do this without affecting the main UI.  I'm not sure we still need the synchronized block.
         synchronized ( renderer )

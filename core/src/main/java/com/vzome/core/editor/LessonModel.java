@@ -90,18 +90,25 @@ public class LessonModel implements Iterable<PageModel>
                 else
                     snapshotIndex = Integer .parseInt( snapshot );
                 PageModel model = new PageModel( title, content, view, snapshotIndex );
-                int newPageNum = pages .size();
                 pages .add( model );
-                
-                // Since this code is running on a background thread, we can safely fire these changes,
-                //   knowing that the LessonController will schedule EDT work to handle the changes
-                firePropertyChange( "newElementAddedAt-" + newPageNum, false, true );
-                firePropertyChange( "thumbnailChanged", -1, newPageNum );
-                if ( pages .size() == 1 ) {
-                    firePropertyChange( "has.pages", false, true );
-                    goToPage( 0 );
-                }
             }
+        }
+    }
+
+    /**
+     * This is called after the document has loaded, so we can update the UI in a normalized fashion.
+     */
+    public void firePropertyChanges()
+    {
+        // Since this code is running on a background thread, we can safely fire these changes,
+        //   knowing that the LessonController will schedule EDT work to handle the changes
+        for ( int i = 0; i < pages .size(); i++ ) {
+            firePropertyChange( "newElementAddedAt-" + i, false, true );
+            firePropertyChange( "thumbnailChanged", -1, i );
+        }
+        if ( ! pages .isEmpty() ) {
+            firePropertyChange( "has.pages", false, true );
+            goToPage( 0 );
         }
     }
 
