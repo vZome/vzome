@@ -115,14 +115,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         return mExcluder;
     }
     
-    private void createLessonPanel()
-    {
-    	if ( lessonPanel != null )
-    		return;
-        lessonPanel = new LessonPanel( lessonController );
-        modelArticleEditPanel .add( lessonPanel, "article" );
-    }
-    
     void setAppUI( PropertyChangeListener appUI )
     {
     	this .appUI = appUI;
@@ -532,7 +524,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         }
                     } );
                     articleButton  = new JRadioButton( "Article" );
-                    articleButton .setEnabled( lessonController .propertyIsTrue( "has.pages" ) );
+                    articleButton .setEnabled( false ); // don't check the model, which may be loading concurrently.  PCE will come in due course
                     articleButton .setSelected( false );
                     articleButtonsPanel .add( articleButton );
                     group .add( articleButton );
@@ -600,6 +592,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         modelArticleEditPanel .add( buildPanel, "model" );
                 }
 
+                // We always create this, whether we'll need it or not, to simplify the MVC
+                //  interactions and concurrency.
+                lessonPanel = new LessonPanel( lessonController );
+                modelArticleEditPanel .add( lessonPanel, "article" );
                 if ( this .isEditor )
                 {
                     modelArticleCardLayout .show( modelArticleEditPanel, "model" );
@@ -608,7 +604,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 }
                 else
                 {
-                	createLessonPanel();
                     modelArticleCardLayout .show( modelArticleEditPanel, "article" );
                     modelArticleEditPanel .setMinimumSize( new Dimension( 400, 500 ) );
                     modelArticleEditPanel .setPreferredSize( new Dimension( 400, 800 ) );
@@ -965,15 +960,12 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 //                viewControl .setVisible( true );
                 mExcluder .release();
             }
-            createLessonPanel();
             modelArticleCardLayout .show( modelArticleEditPanel, mode );
             modelArticleEditPanel .setMinimumSize( new Dimension( width, 500 ) );
             modelArticleEditPanel .setPreferredSize( new Dimension( width, 800 ) );
 			break;
 
 		case "has.pages":
-		    // lessonPanel is necessary for thumbnails to render when loading a file
-		    createLessonPanel();
             if ( articleButton != null )
             {
                 boolean enable = e .getNewValue() .toString() .equals( "true" );

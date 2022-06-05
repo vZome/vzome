@@ -113,8 +113,13 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
                     }
                     pagePanel .add( panel, BorderLayout.CENTER );
                 }
-                if ( mController .propertyIsTrue( "has.pages" ) )
-                    updatePageState();
+                // Do NOT try to update the page state.  We generally want UI creation to
+                //  be independent of the document state, so that we have no concern about
+                //  model changes that might be happening concurrently on a worker thread.
+                //  Document model loading should schedule property change events that will
+                //  update the UI in due course.
+//                if ( mController .propertyIsTrue( "has.pages" ) )
+//                    updatePageState();
             }
             this .add( pagePanel, BorderLayout.CENTER );
         }

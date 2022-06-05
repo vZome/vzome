@@ -36,7 +36,7 @@ public class TrackballRenderingViewer implements CameraController.Viewer
 		double near = defaultCamera .getNearClipDistance();
         double far = defaultCamera .getFarClipDistance();
         double fov = defaultCamera .getFieldOfView();
-		this .delegate .setPerspective( fov, 1.0d, near, far );
+		this .delegate .setPerspective( fov, near, far );
 	}
 
 	@Override
@@ -53,8 +53,11 @@ public class TrackballRenderingViewer implements CameraController.Viewer
 	}
 
 	@Override
-	public void setPerspective( double fov, double aspectRatio, double near, double far ) {}
+	public void setPerspective( double fov, double near, double far ) {}
 
 	@Override
 	public void setOrthographic( double halfEdge, double near, double far ) {}
+
+    @Override
+    public void setSize( int width, int height ) {}
 }
