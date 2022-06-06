@@ -36,6 +36,7 @@ import com.vzome.core.exporters.ColoredMeshJsonExporter;
 import com.vzome.core.exporters.DaeExporter;
 import com.vzome.core.exporters.DxfExporter;
 import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.exporters.GeoGebraExporter;
 import com.vzome.core.exporters.HistoryExporter;
 import com.vzome.core.exporters.MathTableExporter;
 import com.vzome.core.exporters.OffExporter;
@@ -118,6 +119,7 @@ public class Application implements AlgebraicField.Registry
         this .exporters .put( "cmesh", new ColoredMeshJsonExporter() );
         this .exporters .put( "shapes", new ShapesJsonExporter() );
 
+        this .exporters .put( "ggb", new GeoGebraExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "math", new MathTableExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "pov", new POVRayExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "dae", new DaeExporter( null, this .mColors, this .mLights, null ) );
