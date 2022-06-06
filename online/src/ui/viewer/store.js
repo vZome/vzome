@@ -17,15 +17,15 @@ const reducer = ( state = initialState, event ) =>
     case 'FETCH_STARTED': {
       if ( state.waiting )
         return state; // the fetch was started already
-      const { url, viewOnly } = event.payload;
-      return { ...state, waiting: true, editing: !viewOnly };
+      const { url, preview } = event.payload;
+      return { ...state, waiting: true, editing: !preview };
     }
 
     case 'TEXT_FETCHED':
       return { ...state, source: event.payload };
 
-    case 'DESIGN_RENDERED': {
-      let { scene, xmlTree } = event.payload;
+    case 'DESIGN_INTERPRETED': {
+      let { xmlTree, snapshots } = event.payload;
       const attributes = {};
       const indexAttributes = node => node.children && node.children.map( child => {
         attributes[ child.id ] = child.attributes;
@@ -35,14 +35,18 @@ const reducer = ( state = initialState, event ) =>
         indexAttributes( xmlTree );
         xmlTree = branchSelectionBlocks( xmlTree );
       }
-      // may need to merge scene.shapes here, for incremental case
-      return { ...state, scene: { ...state.scene, ...scene }, waiting: false, xmlTree, attributes };
+      return { ...state, waiting: false, xmlTree, attributes, snapshots };
     }
 
-    case 'EDIT_RENDERED': {
+    case 'SCENE_RENDERED': {
       const { scene } = event.payload;
       // may need to merge scene.shapes here, for incremental case
       return { ...state, scene: { ...state.scene, ...scene }, waiting: false };
+    }
+
+    case 'CAMERA_DEFINED': {
+      const camera = event.payload;
+      return { ...state, scene: { ...state.scene, camera } };
     }
 
     default:
@@ -97,8 +101,10 @@ export const createWorkerStore = customElement =>
       case 'ALERT_DISMISSED':
       case 'FETCH_STARTED':
       case 'TEXT_FETCHED':
-      case 'DESIGN_RENDERED':
-      case 'EDIT_RENDERED':
+      case 'DESIGN_INTERPRETED':
+      case 'SCENE_RENDERED':
+      // This is a local state change
+      case 'CAMERA_DEFINED':
         report( event );
         break;
 
@@ -139,7 +145,7 @@ export const createWorkerStore = customElement =>
     if ( customElement ) {
       switch (data.type) {
 
-        case 'DESIGN_RENDERED':
+        case 'DESIGN_INTERPRETED':
           customElement.dispatchEvent( new Event( 'vzome-design-rendered' ) );
           break;
       

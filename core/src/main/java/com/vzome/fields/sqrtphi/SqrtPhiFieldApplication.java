@@ -93,7 +93,6 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
     
             // this is the order they will be shown on the dialog
             addShapes(icosahedralShapes);
-            addShapes(tinyIcosaShapes);
             setDefaultGeometry(tinyIcosaShapes);
         }
     };
@@ -109,9 +108,8 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
             final AbstractShapes kostickShapes = new ExportedVEFShapes( null, "sqrtPhi/fivefold", "Kostick", pentaSymm, octahedralShapes );
             
             // this is the order they will be shown on the dialog
-            addShapes(kostickShapes);
-            addShapes(octahedralShapes);
             setDefaultGeometry(kostickShapes);
+            addShapes(octahedralShapes);
 
             axialsymm = new CommandAxialSymmetry( pentaSymm );
         }

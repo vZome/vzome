@@ -3,9 +3,13 @@ import React, { useEffect, useState } from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import ReactDOM from "react-dom";
 
+import { makeStyles } from '@material-ui/core/styles';
 import { StylesProvider, jssPreset } from '@material-ui/styles';
 import IconButton from '@material-ui/core/IconButton'
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded'
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 import { create } from 'jss';
 
 import { ShapedGeometry } from './geometry.jsx'
@@ -29,11 +33,62 @@ const download = source =>
   document.body.removeChild( element )
 }
 
-export const DesignViewer = ( { children, children3d, useSpinner=false } ) =>
+const useStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+}));
+
+export const SceneMenu = ( { snapshots } ) =>
 {
+  const classes = useStyles();
+  const report = useDispatch();
+  const [snapshotIndex, setSnapshotIndex] = React.useState( 0 );
+  const handleChange = (event) =>
+  {
+    const index = event.target.value;
+    setSnapshotIndex( index );
+    const { nodeId, camera } = snapshots[ index ];
+    report( { type: 'EDIT_SELECTED', payload: { before: nodeId } } );
+    report( { type: 'CAMERA_DEFINED', payload: camera } );
+  }
+
+  return (
+    <div style={ { position: 'absolute', background: 'lightgray' } }>
+      <FormControl variant="outlined" className={classes.formControl}>
+        <InputLabel htmlFor="scene-menu-label">Scene</InputLabel>
+        <Select
+          native
+          value={snapshotIndex}
+          onChange={handleChange}
+          label="Scene"
+          inputProps={{
+            name: 'scene',
+            id: 'scene-menu-label',
+          }}
+        >
+          {snapshots.map((snapshot, index) => (
+            <option key={index} value={index}>{
+              snapshot.title || (( index === 0 )? "- none -" : `scene ${index}`)
+            }</option>)
+          )}
+        </Select>
+      </FormControl>
+    </div>
+  );
+}
+
+export const DesignViewer = ( { children, children3d, config={} } ) =>
+{
+  const { showSnapshots=false, useSpinner=false } = config;
   const source = useSelector( state => state.source );
   const scene = useSelector( state => state.scene );
   const waiting = useSelector( state => !!state.waiting );
+  const snapshots = useSelector( state => state.snapshots );
   return (
     <div style={ { display: 'flex', height: '100%', position: 'relative' } }>
       { scene?
@@ -45,6 +100,9 @@ export const DesignViewer = ( { children, children3d, useSpinner=false } ) =>
         </DesignCanvas>
         : children // This renders the light DOM if the scene couldn't load
       }
+      { showSnapshots && snapshots && snapshots[1] &&  // There is always >=1 snapshot, and we only want to show 2 or more
+        <SceneMenu snapshots={snapshots} />
+      }
       <Spinner visible={useSpinner && waiting} />
       { source && source.text &&
         <IconButton color="inherit" aria-label="download"
@@ -53,12 +111,12 @@ export const DesignViewer = ( { children, children3d, useSpinner=false } ) =>
           <GetAppRoundedIcon fontSize='medium'/>
         </IconButton>
       }
-      <ErrorAlert/> 
+      <ErrorAlert/>
     </div>
   )
 }
 
-export const renderViewer = ( store, container, url ) =>
+export const renderViewer = ( store, container, url, config ) =>
 {
   if ( url === null || url === "" ) {
     ReactDOM.unmountComponentAtNode( container );
@@ -69,7 +127,7 @@ export const renderViewer = ( store, container, url ) =>
   // Note the addition of a slot child element; this lets us potentially render the light dom,
   //   for example if the worker cannot load.
   // LG: Can we handle canvas resizing using `ResizeObserver` without modifying `vZome` or recreating the element constantly?
-  const viewerElement = React.createElement( UrlViewer, { store }, (<slot></slot>) );
+  const viewerElement = React.createElement( UrlViewer, { store, config }, (<slot></slot>) );
 
   // We need JSS to inject styles on our shadow root, not on the document head.
   // I found this solution here:
@@ -99,31 +157,34 @@ export const WorkerContext = props =>
 
 export const useVZomeUrl = ( url, config ) =>
 {
-  const { preview } = config;
   const report = useDispatch();
-  useEffect( () => !!url && report( { type: 'URL_PROVIDED', payload: { url, viewOnly: preview } } ), [] );
+  // TODO: this should be encapsulated in an API on the store
+  useEffect( () => !!url && report( { type: 'URL_PROVIDED', payload: { url, config } } ), [ url ] );
 }
 
 // This component has to be separate from UrlViewer because of the useDispatch hook used in
 //  useVZomeUrl above.  I shouldn't really need to export it, but React (or the dev tools)
 //  got pissy when I didn't.
-export const UrlViewerInner = ({ url, children }) =>
+export const UrlViewerInner = ({ url, children, config }) =>
 {
-  useVZomeUrl( url, { preview: true } );
-  return ( <DesignViewer>
+  const { showSnapshots } = config;
+  // "preview" means show a preview if you find one.  When "showSnapshots" is true, the
+  //   XML will have to be parsed, so a preview JSON is not desirable.
+  useVZomeUrl( url, { preview: !showSnapshots, ...config } );
+  return ( <DesignViewer config={config} >
              {children}
            </DesignViewer> );
 }
 
 // This is the component to reuse in a React app rather than the web component.
 //  In that context, the store property can be null, since the WorkerContext
-//  will create a worker-store when none is injected.
+//  will create a worker-sre when none is injected.
 //  It is also used by the web component, but with the worker-store injected so that the
 //  worker can get initialized and loaded while the main context is still fetching
 //  this module.
-export const UrlViewer = ({ url, store, children }) => (
+export const UrlViewer = ({ url, store, children, config={ showSnapshots: false } }) => (
   <WorkerContext store={store} >
-    <UrlViewerInner url={url}>
+    <UrlViewerInner url={url} config={config}>
       {children}
     </UrlViewerInner>
   </WorkerContext>

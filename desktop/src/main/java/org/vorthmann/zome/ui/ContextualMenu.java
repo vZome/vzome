@@ -8,7 +8,7 @@ import java.util.Map;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.awt.GraphicsController;
 
 public class ContextualMenu extends JPopupMenu
 {
@@ -18,7 +18,7 @@ public class ContextualMenu extends JPopupMenu
     
     private String[] mActionNames = null;
 
-    public void enableActions( Controller controller, MouseEvent e )
+    public void enableActions( GraphicsController controller, MouseEvent e )
     {
         if ( mActionNames == null ) {
             mActionNames = new String[ mActions .size() ];

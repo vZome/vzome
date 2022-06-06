@@ -72,7 +72,7 @@ export const OpenMenu = props =>
 
   const openUrl = url => {
     if ( url && url.endsWith( ".vZome" ) ) {
-      report( { type: 'URL_PROVIDED', payload: { url, viewOnly: false, } } );
+      report( { type: 'URL_PROVIDED', payload: { url, config: { preview: false } } } );
     }
   }
 

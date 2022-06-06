@@ -19,9 +19,9 @@ import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.vorthmann.j3d.J3dComponentFactory;
-import org.vorthmann.ui.Controller;
-import org.vorthmann.zome.app.impl.ApplicationController;
-import org.vorthmann.zome.app.impl.DocumentController;
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.awt.ApplicationController;
+import com.vzome.desktop.awt.DocumentController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vzome.core.render.Scene;
 import com.vzome.desktop.controller.JsonClientRendering;
-import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.desktop.awt.RenderingViewer;
 
 public class ControllerWebSocket implements WebSocketListener, JsonClientRendering.EventDispatcher
 {

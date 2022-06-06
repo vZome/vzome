@@ -1,6 +1,9 @@
 package com.vzome.core.exporters;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 
@@ -46,6 +49,21 @@ public abstract class Exporter3d implements RealZomeScaling
      */
     public boolean needsManifestations() {
         return true;
+    }
+    
+    protected String getBoilerplate( String resourcePath )
+    {
+        InputStream input = getClass() .getClassLoader() .getResourceAsStream( resourcePath );
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] buf = new byte[1024];
+        int num;
+        try {
+            while ( ( num = input .read( buf, 0, 1024 )) > 0 )
+                out .write( buf, 0, num );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new String( out .toByteArray() );
     }
 
     /**

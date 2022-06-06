@@ -14,7 +14,7 @@ layout: vzome
 
 ${description}
 
-<vzome-viewer style="width: 100%; height: 65vh;"
+<vzome-viewer style="width: 87%; height: 60vh; margin: 5%"
        src="${siteUrl}/${designPath}" >
   <img src="${siteUrl}/${imagePath}" />
 </vzome-viewer>

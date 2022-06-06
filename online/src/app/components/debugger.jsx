@@ -240,7 +240,6 @@ export const HistoryInspector = ( { debug=false } )  =>
             </TableHead>
             <TableBody>
               {current && allAttributes[ current ] && Object.keys( allAttributes[ current ] ).map( name => (
-                ( name !== 'id' ) &&
                 <StyledTableRow key={name}>
                   <StyledTableCell component="th" scope="row">{name}</StyledTableCell>
                   <StyledTableCell>{allAttributes[ current ][ name ]}</StyledTableCell>

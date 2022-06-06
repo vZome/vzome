@@ -45,13 +45,12 @@ import org.eclipse.egit.github.core.service.DataService;
 import org.eclipse.egit.github.core.service.RepositoryService;
 import org.eclipse.egit.github.core.service.UserService;
 import org.vorthmann.ui.CardPanel;
-import org.vorthmann.ui.Controller;
-import org.vorthmann.zome.app.impl.GitHubApi;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.DeviceAuthorization;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import com.vzome.desktop.api.Controller;
 import com.vzome.xml.ResourceLoader;
 
 public class ShareDialog extends EscapeDialog

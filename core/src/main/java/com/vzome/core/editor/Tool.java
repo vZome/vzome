@@ -76,7 +76,7 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
         this .parameters .add( c );
     }
 
-    List<Construction> getParameters()
+    public List<Construction> getParameters()
     {
         return this .parameters;
     }

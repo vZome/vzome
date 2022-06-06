@@ -9,8 +9,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.SwingWorker;
 
 
 /**
@@ -40,10 +43,10 @@ public abstract class ExclusiveAction implements ActionListener
         	return this.busy;
         }
         
-        public void grab( SwingWorker worker )
+        public void grab( SwingWorker<?, ?> worker )
         {
             grab();
-            worker .start();
+            worker .execute();
         }
 
         public void grab()
@@ -106,10 +109,10 @@ public abstract class ExclusiveAction implements ActionListener
     		return;
     	}
     	
-        final SwingWorker worker = new SwingWorker("vZome-ExclusiveAction")
+        final SwingWorker<?, ?> worker = new SwingWorker<Object, Object>()
         {            
             @Override
-            public Object construct()
+            protected Object doInBackground() throws Exception
             {
                 try {
                     doAction( e );
@@ -121,12 +124,21 @@ public abstract class ExclusiveAction implements ActionListener
             }
             
             @Override
-            public void finished()
+            public void done()
             {
-                Object error = get();
-                if ( error != null )
-                    showError( (Exception) error );
-                mExcluder .release();
+                Object error;
+                try {
+                    error = get();
+                    if ( error != null )
+                        showError( (Exception) error );
+                    mExcluder .release();
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
         };
         mExcluder .grab( worker );

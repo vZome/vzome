@@ -13,7 +13,7 @@ import com.jogamp.opengl.GLCapabilitiesImmutable;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.vzome.core.render.Scene;
-import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.desktop.awt.RenderingViewer;
 
 public class JoglFactory implements J3dComponentFactory
 {    

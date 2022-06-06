@@ -1,0 +1,23 @@
+restore article mode
+fix array index OOB defect in article mode
+share enable.article.creation flag with that guy
+create article about the OpenSCAD rotations, but using blue axes for everything
+JSON preview support for different scenes (article mode export), and thus support in the web component
+talk to Ben Eater about smoothing & interactive animations (tell Grant first)
+
+
+------- 2022-05-17
+
+ - commit old vZome assets to GitHub: notes, ideas, wiki, designs, etc.... but only if dates are captured
+
+ - switch the fivecell and bhall apps to use the web component?
+
+ - automate deploy to Dreamhost from GitHub Actions
+
+ - better filename presentation in GitHub browser app
+ - snippet-copy feature in browser app
+ 
+------- 2022-05-22
+
+ - script local git actions for merging a PR
+ 

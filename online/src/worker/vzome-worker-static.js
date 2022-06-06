@@ -92,15 +92,14 @@ const parseAndInterpret = ( xmlLoading, report ) =>
     } )
 
     .then( design => {
-      const { renderer, camera, lighting, xmlTree, targetEditId } = design;
-      const { embedding } = renderer;
-      camera.fov = 0.33915263; // WORKAROUND
+      const { renderer, camera, lighting, xmlTree, targetEditId, snapshots } = design;
       // the next step may take several seconds, which is why we already reported PARSE_COMPLETED
       renderHistory = legacyModule .interpretAndRender( design );
       const { shapes } = renderHistory .getScene( targetEditId, true );
+      const { embedding } = renderer;
       const scene = { lighting, camera, embedding, shapes };
-      // TODO: massage xmlTree to make branches from BeginBlock ... EndBlock sequences
-      report( { type: 'DESIGN_RENDERED', payload: { scene, xmlTree } } );
+      report( { type: 'SCENE_RENDERED', payload: { scene } } );
+      report( { type: 'DESIGN_INTERPRETED', payload: { xmlTree, snapshots } } );
       return true; // probably nobody should care about the return value
     } )
 
@@ -118,7 +117,7 @@ const fileLoader = ( report, event ) =>
   }
   const file = event.payload;
   const { name } = file;
-  report( { type: 'FETCH_STARTED', payload: { name, viewOnly: false } } );
+  report( { type: 'FETCH_STARTED', payload: { name, preview: false } } );
   console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% editing ${name}` );
   const xmlLoading = fetchFileText( file );
 
@@ -132,28 +131,33 @@ const urlLoader = ( report, event ) =>
   if ( event.type !== 'URL_PROVIDED' ) {
     return report( event );
   }
-  const { url, viewOnly } = event.payload;
+  const { url, config={} } = event.payload;
+  if ( !url ) {
+    throw new Error( "No url field in URL_PROVIDED event payload" );
+  }
   const name = url.split( '\\' ).pop().split( '/' ).pop()
   report( { type: 'FETCH_STARTED', payload: event.payload } );
-  console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${viewOnly? "viewing" : "editing " } ${url}` );
+
+  const { preview=false } = config;
+  console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${preview? "previewing" : "interpreting " } ${url}` );
   const xmlLoading = fetchUrlText( url );
 
   xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { name, text } } ) );
 
-  if ( viewOnly ) {
+  if ( preview ) {
     const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
     return fetchUrlText( previewUrl )
       .then( text => JSON.parse( text ) )
       .then( preview => {
         const scene = { ...convertScene( preview ), shapes: convertGeometry( preview ) };
-        report( { type: 'DESIGN_RENDERED', payload: { scene } } );
+        report( { type: 'SCENE_RENDERED', payload: { scene } } );
         return true; // probably nobody should care about the return value
-      })
+      } )
       .catch( error => {
         console.log( error.message );
         console.log( `Failed to load and parse preview: ${previewUrl}` );
         return parseAndInterpret( xmlLoading, report );
-      } );
+      } )
   }
   else {
     return parseAndInterpret( xmlLoading, report );
@@ -178,7 +182,7 @@ onmessage = ({ data }) =>
     case 'EDIT_SELECTED':
       const { before, after } = payload; // only one of these will have an edit ID
       const scene = before? renderHistory .getScene( before, true ) : renderHistory .getScene( after, false );
-      postMessage( { type: 'EDIT_RENDERED', payload: { scene } } );
+      postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
       break;
   
     default:

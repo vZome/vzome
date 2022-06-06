@@ -16,7 +16,7 @@ import javax.swing.border.BevelBorder;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.api.Controller;
 
 @SuppressWarnings("serial")
 public class NumberPanel extends JPanel

@@ -553,7 +553,8 @@ const legacyCommandFactory = ( createEditor, className ) => ( config ) =>
   // dispatch( { type: WORK_FINISHED } )
 }
 
-const assignIds = ( txmlElement, id=':' ) => {
+const assignIds = ( txmlElement, id=':' ) =>
+{
   txmlElement.id = id;
   txmlElement.children.map( (child,index) => {
     if ( child instanceof Object ) {
@@ -608,8 +609,40 @@ const parseViewXml = ( viewingElement ) =>
   const lookAt = parseVector( viewModel, "LookAtPoint" )
   const up = parseVector( viewModel, "UpDirection" )
   const lookDirection = parseVector( viewModel, "LookDirection" )
-  const position = lookAt.map( (e,i) => e - distance * lookDirection[ i ] )
-  return { position, lookAt, up, near, far }
+  const position = lookAt.map( (e,i) => e - distance * lookDirection[ i ] );
+  return { position, lookAt, up, near, far, fov: 0.43915263 };
+}
+
+const parseArticle = ( notesElement, xmlTree ) =>
+{
+  if ( !notesElement )
+    return [];
+
+  const snapshotNodes = [];
+  const findSnapshots = ( txmlElement ) =>
+  {
+    if ( txmlElement.tagName === "Snapshot" ) {
+      const snapshotId = parseInt( txmlElement.attributes.id );
+      snapshotNodes[ snapshotId ] = txmlElement.id;
+    } else {
+      txmlElement.children.map( child => {
+        if ( child instanceof Object ) {
+          findSnapshots( child, snapshotNodes )
+        }
+      });
+    }
+  }
+  findSnapshots( xmlTree );
+  const parseArticlePage = ( pageElement ) =>
+  {
+    const { snapshot, title } = pageElement.attributes;
+    const nodeId = snapshotNodes[ snapshot ];
+    const camera = parseViewXml( new JavaDomElement( pageElement ) );
+    return { title, nodeId, camera };
+  }
+  return notesElement.nativeElement.children.map( pageElement => parseArticlePage( pageElement ) )
+          // Early vZome files always had a default article with one explanatory page
+          .filter( snapshot => snapshot.title !== "How to save notes" );
 }
 
 const createParser = ( createDocument ) => ( xmlText ) =>
@@ -631,11 +664,13 @@ const createParser = ( createDocument ) => ( xmlText ) =>
 
   const xmlTree = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement );
   const edits = new LegacyEdit( xmlTree, null, interpretEdit );
-  // Note: I'm adding one so that this matches the assigned ID of the next edit to do
   const targetEditId = `:${edits.getAttribute( "editNumber" )}:`
   const firstEdit = edits.firstChild()
 
-  return { firstEdit, camera, field, targetEditId, renderer, lighting, batchRender, xmlTree }
+  const realSnapshots = parseArticle( vZomeRoot.getChildElement( "notes" ), xmlTree );
+  const snapshots = [ { nodeId: targetEditId, camera }, ...realSnapshots ];
+
+  return { firstEdit, camera, field, targetEditId, renderer, lighting, batchRender, xmlTree, snapshots }
 }
 
 export const parserPromise = init()
