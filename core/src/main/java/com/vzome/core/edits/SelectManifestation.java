@@ -13,6 +13,7 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.api.ChangeSelection;
 import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.SideEffects;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.xml.DomUtils;
@@ -133,7 +134,7 @@ public class SelectManifestation extends ChangeSelection
             construction = format .parsePolygonReversed( xml, "polygonVertex" );
             mManifestation = mRealized .getManifestation( construction );
             if ( mManifestation != null )
-                logBugAccommodation( "reverse-oriented polygon" );
+                SideEffects.logBugAccommodation( "reverse-oriented polygon" );
         }
     }
 

@@ -18,7 +18,7 @@ banner 'Transpiling Java sources with JSweet'
 ./gradlew --continue core:jsweet -x compileJava &> jsweet-errors.txt    # ignore the exit code, it always fails
 cat jsweet-errors.txt
 
-grep -q 'transpilation failed with 106 error(s) and 0 warning(s)' jsweet-errors.txt \
+grep -q 'transpilation failed with 104 error(s) and 0 warning(s)' jsweet-errors.txt \
   && banner 'JSweet transpile found the expected errors' \
   || { banner 'UNEXPECTED CHANGE IN JSWEET ERRORS'; exit 1; }
 
