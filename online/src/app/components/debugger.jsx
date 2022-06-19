@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { selectEditAfter } from '../../ui/viewer/store';
 
 import { withStyles, makeStyles } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
@@ -147,7 +148,7 @@ export const HistoryInspector = ( { debug=false } )  =>
   const onNodeSelect = ( event, value ) =>
   {
     setCurrent( value );
-    report( { type: 'EDIT_SELECTED', payload: { after: value } } );
+    report( selectEditAfter( value ) );
   }
 
   const renderTree = ( edit ) =>

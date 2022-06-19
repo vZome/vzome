@@ -3,6 +3,11 @@ import { configureStore } from '@reduxjs/toolkit'
 
 export const initialState = {};
 
+export const selectEditBefore = nodeId => ({ type: 'EDIT_SELECTED', payload: { before: nodeId } } );
+export const selectEditAfter = nodeId => ({ type: 'EDIT_SELECTED', payload: { after: nodeId } } );
+export const defineCamera = camera => ({ type: 'CAMERA_DEFINED', payload: camera });
+export const fetchDesign = ( url, preview ) => ({ type: 'URL_PROVIDED', payload: { url, preview } });
+
 const reducer = ( state = initialState, event ) =>
 {
   switch ( event.type ) {

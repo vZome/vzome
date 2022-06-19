@@ -1,6 +1,7 @@
 
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux';
+import { fetchDesign } from '../../ui/viewer/store.js';
 
 import { DesignViewer } from '../../ui/viewer/index.jsx'
 
@@ -68,7 +69,7 @@ const DesignList = ( { setUrl } ) =>
 export const DesignBrowser = ( { debug } ) =>
 {
   const report = useDispatch();
-  const setUrl = url => report( { type: 'URL_PROVIDED', payload: { url, config: { preview: true } } } );
+  const setUrl = url => report( fetchDesign( url, true ) );
 
   const drawerColumns = 5;
   const canvasColumns = 12 - drawerColumns;

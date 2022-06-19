@@ -14,7 +14,7 @@ import { create } from 'jss';
 
 import { ShapedGeometry } from './geometry.jsx'
 import { DesignCanvas } from './designcanvas.jsx'
-import { createWorkerStore } from './store.js';
+import { createWorkerStore, defineCamera, fetchDesign, selectEditBefore } from './store.js';
 import { Spinner } from './spinner.jsx'
 import { ErrorAlert } from './alert.jsx'
 
@@ -53,8 +53,8 @@ export const SceneMenu = ( { snapshots } ) =>
     const index = event.target.value;
     setSnapshotIndex( index );
     const { nodeId, camera } = snapshots[ index ];
-    report( { type: 'EDIT_SELECTED', payload: { before: nodeId } } );
-    report( { type: 'CAMERA_DEFINED', payload: camera } );
+    report( selectEditBefore( nodeId ) );
+    report( defineCamera( camera ) );
   }
 
   return (
@@ -155,11 +155,11 @@ export const WorkerContext = props =>
   );
 }
 
-export const useVZomeUrl = ( url, config ) =>
+export const useVZomeUrl = ( url, preview ) =>
 {
   const report = useDispatch();
   // TODO: this should be encapsulated in an API on the store
-  useEffect( () => !!url && report( { type: 'URL_PROVIDED', payload: { url, config } } ), [ url ] );
+  useEffect( () => !!url && report( fetchDesign( url, preview ) ), [ url ] );
 }
 
 // This component has to be separate from UrlViewer because of the useDispatch hook used in
@@ -169,8 +169,8 @@ export const UrlViewerInner = ({ url, children, config }) =>
 {
   const { showSnapshots } = config;
   // "preview" means show a preview if you find one.  When "showSnapshots" is true, the
-  //   XML will have to be parsed, so a preview JSON is not desirable.
-  useVZomeUrl( url, { preview: !showSnapshots, ...config } );
+  //   XML will have to be parsed, so a preview JSON is not sufficient.
+  useVZomeUrl( url, !showSnapshots );
   return ( <DesignViewer config={config} >
              {children}
            </DesignViewer> );

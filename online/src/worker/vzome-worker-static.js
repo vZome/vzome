@@ -131,14 +131,13 @@ const urlLoader = ( report, event ) =>
   if ( event.type !== 'URL_PROVIDED' ) {
     return report( event );
   }
-  const { url, config={} } = event.payload;
+  const { url, preview=false } = event.payload;
   if ( !url ) {
     throw new Error( "No url field in URL_PROVIDED event payload" );
   }
   const name = url.split( '\\' ).pop().split( '/' ).pop()
   report( { type: 'FETCH_STARTED', payload: event.payload } );
 
-  const { preview=false } = config;
   console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${preview? "previewing" : "interpreting " } ${url}` );
   const xmlLoading = fetchUrlText( url );
 
