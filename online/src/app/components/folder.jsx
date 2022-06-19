@@ -1,6 +1,7 @@
 
 import React, { useRef, useState } from 'react'
 import { useDispatch } from 'react-redux';
+import { fetchDesign } from '../../ui/viewer/store.js';
 
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
@@ -72,7 +73,7 @@ export const OpenMenu = props =>
 
   const openUrl = url => {
     if ( url && url.endsWith( ".vZome" ) ) {
-      report( { type: 'URL_PROVIDED', payload: { url, config: { preview: false } } } );
+      report( fetchDesign( url, false ) );
     }
   }
 
