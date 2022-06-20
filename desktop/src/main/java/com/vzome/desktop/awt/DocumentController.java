@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.imageio.ImageIO;
 import javax.vecmath.Point3f;
 
 import org.vorthmann.j3d.MouseTool;
@@ -1167,12 +1168,17 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                 return null;
             }
             
-        case "png-base64": {
+        case "png-base64": {  // This is used when sharing to GitHub
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             final int maxSize = 1600;
             boolean withAlpha = true;
             BufferedImage image = imageCaptureViewer .captureImage( maxSize, withAlpha );
             try {
+                if ( propertyIsTrue( "share.3d.watermark" ) ) {
+                    InputStream is = DocumentController.class .getClassLoader() .getResourceAsStream( "org/vorthmann/zome/app/3D-watermark.png" );
+                    BufferedImage watermarkImage = ImageIO .read( is );
+                    WatermarkImage .watermarkImage( image, watermarkImage );
+                }
                 FileImageCapture .captureImage( image, byteArrayOutputStream, "png" );
             } catch (Exception e) {
                 this.mErrors .reportError( DocumentController.UNKNOWN_ERROR_CODE, new Object[] { e } );
