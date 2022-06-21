@@ -208,6 +208,7 @@ class RenderHistory
 
   recordSnapshot( afterId, beforeId, stack ) // stack is unused here, but part of the `state` contract for interpret()
   {
+    this.lastEdit = afterId;
     this.currentSnapshot = []; // prior value overwritten, but it was already captured in snapshotsAfter and snapshotsBefore
     this.snapshotsAfter[ afterId ] = this.currentSnapshot;
     this.shapshotsBefore[ beforeId ] = this.currentSnapshot;
@@ -219,7 +220,8 @@ class RenderHistory
     const shapes = {};
     let snapshot = before? this.shapshotsBefore[ editId ] : this.snapshotsAfter[ editId ];
     if ( !snapshot ) {
-      snapshot = before? this.shapshotsBefore[ '--END--' ] : this.snapshotsAfter[ '--START--' ];
+      editId = before? '--END--' : this.lastEdit;
+      snapshot = before? this.shapshotsBefore[ editId ] : this.snapshotsAfter[ editId ];
     }
     for ( const instance of snapshot ) {
       const shapeId = instance.shapeId;
@@ -230,12 +232,26 @@ class RenderHistory
     }
     return { shapes, edit: editId };
   }
+
+  setError( error )
+  {
+    this.error = error;
+  }
+
+  getError()
+  {
+    return this.error;
+  }
 }
 
 export const interpretAndRender = ( design ) =>
 {
   const { firstEdit, batchRender } = design;
   const renderHistory = new RenderHistory( firstEdit, batchRender );
-  interpret( Step.DONE, renderHistory, firstEdit, [] );
+  try {
+    interpret( Step.DONE, renderHistory, firstEdit, [] );
+  } catch (error) {
+    renderHistory .setError( error );
+  }
   return renderHistory;
 }

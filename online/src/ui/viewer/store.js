@@ -44,9 +44,10 @@ const reducer = ( state = initialState, event ) =>
     }
 
     case 'SCENE_RENDERED': {
-      const { scene } = event.payload;
-      // may need to merge scene.shapes here, for incremental case
-      return { ...state, scene: { ...state.scene, ...scene }, waiting: false };
+      // TODO: I wish I had a better before/after contract with the worker
+      const { scene, edit } = event.payload;
+      // may need to merge scene.shapes here, if we ever have an incremental case
+      return { ...state, edit, scene: { ...state.scene, ...scene }, waiting: false };
     }
 
     case 'CAMERA_DEFINED': {
@@ -108,7 +109,6 @@ export const createWorkerStore = customElement =>
       case 'TEXT_FETCHED':
       case 'DESIGN_INTERPRETED':
       case 'SCENE_RENDERED':
-      // This is a local state change
       case 'CAMERA_DEFINED':
         report( event );
         break;

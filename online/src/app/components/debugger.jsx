@@ -136,20 +136,26 @@ export const HistoryInspector = ( { debug=false } )  =>
 
   const root = useSelector( state => state.xmlTree );
   const allAttributes = useSelector( state => state.attributes );
-  const [ current, setCurrent ] = useState( null );
-  
+  const current = useSelector( state => state.edit );
+
+  const [expanded, setExpanded] = React.useState([]);
+
+  const handleToggle = ( event, nodeIds ) =>
+  {
+    setExpanded(nodeIds);
+  };
+
+  const handleSelect = ( event, value ) =>
+  {
+    report( selectEditAfter( value ) );
+  };
+
   const goToStart = () => reportAction( 'start' ); // TODO these all need to be rethought
   const stepBack  = () => reportAction( 'back' );
   const stepIn    = () => reportAction( Step.IN );
   const stepOver  = () => reportAction( Step.OVER );
   const stepOut   = () => reportAction( Step.OUT );
   const goToEnd   = () => reportAction( Step.DONE );
-
-  const onNodeSelect = ( event, value ) =>
-  {
-    setCurrent( value );
-    report( selectEditAfter( value ) );
-  }
 
   const renderTree = ( edit ) =>
   {
@@ -218,8 +224,10 @@ export const HistoryInspector = ( { debug=false } )  =>
       <Grid item id="debugger-source" style={{ display: 'table-row', height: '100%' }}>
         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
           <TreeView style={{ overflow: 'auto', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}
-            // selected={current} expanded={expanded}
-            onNodeSelect={onNodeSelect}
+            expanded={expanded}
+            selected={current}
+            onNodeToggle={handleToggle}
+            onNodeSelect={handleSelect}
             defaultCollapseIcon={<ExpandMoreIcon />}
             defaultExpanded={ [ ':' ] }
             defaultExpandIcon={<ChevronRightIcon />}

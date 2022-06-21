@@ -92,15 +92,28 @@ const parseAndInterpret = ( xmlLoading, report ) =>
     } )
 
     .then( design => {
-      const { renderer, camera, lighting, xmlTree, targetEditId, snapshots } = design;
+      const { renderer, camera, lighting, xmlTree, targetEditId, snapshots, field } = design;
+      if ( field.unknown ) {
+        throw new Error( `Field "${field.name}" is not supported.` );
+      }
       // the next step may take several seconds, which is why we already reported PARSE_COMPLETED
       renderHistory = legacyModule .interpretAndRender( design );
-      const { shapes } = renderHistory .getScene( targetEditId, true );
+      // TODO: define a better contract for before/after.
+      //  Here we are using before=false with targetEditId, which is meant to be the *next*
+      //  edit to be executed, so this really should be before=true.
+      //  However, the semantics of the HistoryInspector UI require the edit field to contain the "after" edit ID.
+      //  Thus, we are too tightly coupled to the UI here!
+      //  See also the 'EDIT_SELECTED' case in onmessage(), below.
+      const { shapes, edit } = renderHistory .getScene( targetEditId, false );
       const { embedding } = renderer;
       const scene = { lighting, camera, embedding, shapes };
-      report( { type: 'SCENE_RENDERED', payload: { scene } } );
+      report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
       report( { type: 'DESIGN_INTERPRETED', payload: { xmlTree, snapshots } } );
-      return true; // probably nobody should care about the return value
+      const error = renderHistory .getError();
+      if ( !! error ) {
+        throw error;
+      } else
+        return true; // probably nobody should care about the return value
     } )
 
     .catch( error => {
@@ -181,7 +194,8 @@ onmessage = ({ data }) =>
     case 'EDIT_SELECTED':
       const { before, after } = payload; // only one of these will have an edit ID
       const scene = before? renderHistory .getScene( before, true ) : renderHistory .getScene( after, false );
-      postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
+      const { edit } = scene;
+      postMessage( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
       break;
   
     default:
