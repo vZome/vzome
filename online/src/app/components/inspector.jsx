@@ -41,7 +41,7 @@ import { DesignViewer } from '../../ui/viewer/index.jsx'
 //   return false
 // }
 
-export const DesignHistoryInspector = ( { debug } ) =>
+export const DesignHistoryInspector = props =>
 {
   // const { startGridHover, stopGridHover, workingPlane } = props;
   const report = useDispatch();

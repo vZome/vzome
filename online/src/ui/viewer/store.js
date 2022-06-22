@@ -6,7 +6,7 @@ export const initialState = {};
 export const selectEditBefore = nodeId => ({ type: 'EDIT_SELECTED', payload: { before: nodeId } } );
 export const selectEditAfter = nodeId => ({ type: 'EDIT_SELECTED', payload: { after: nodeId } } );
 export const defineCamera = camera => ({ type: 'CAMERA_DEFINED', payload: camera });
-export const fetchDesign = ( url, preview ) => ({ type: 'URL_PROVIDED', payload: { url, preview } });
+export const fetchDesign = ( url, preview, debug=false ) => ({ type: 'URL_PROVIDED', payload: { url, preview, debug } });
 
 const reducer = ( state = initialState, event ) =>
 {

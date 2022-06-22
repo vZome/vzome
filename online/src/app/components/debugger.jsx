@@ -125,37 +125,25 @@ const StyledTreeItem = props => {
   );
 }
 
-// TODO: put this in a module that both worker and main context can use.
-//  Right now this is duplicated!
-export const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
-
-export const HistoryInspector = ( { debug=false } )  =>
+export const HistoryInspector = props  =>
 {
   const report = useDispatch();
-  const reportAction = action => report( { type: 'ACTION_TRIGGERED', payload: action } );
 
   const root = useSelector( state => state.xmlTree );
   const allAttributes = useSelector( state => state.attributes );
   const current = useSelector( state => state.edit );
 
-  const [expanded, setExpanded] = React.useState([]);
+  const [expanded, setExpanded] = React.useState( [] );
 
   const handleToggle = ( event, nodeIds ) =>
   {
-    setExpanded(nodeIds);
+    setExpanded( nodeIds );
   };
 
   const handleSelect = ( event, value ) =>
   {
     report( selectEditAfter( value ) );
   };
-
-  const goToStart = () => reportAction( 'start' ); // TODO these all need to be rethought
-  const stepBack  = () => reportAction( 'back' );
-  const stepIn    = () => reportAction( Step.IN );
-  const stepOver  = () => reportAction( Step.OVER );
-  const stepOut   = () => reportAction( Step.OUT );
-  const goToEnd   = () => reportAction( Step.DONE );
 
   const renderTree = ( edit ) =>
   {
@@ -185,42 +173,6 @@ export const HistoryInspector = ( { debug=false } )  =>
 
   return (
     <Grid container direction='column' style={{ display: 'table', height: '100%' }}>
-      { debug &&
-      <Grid item style={{ display: 'table-row' }}>
-        <Toolbar id="debugger-tools" variant='dense'>
-          <Tooltip title="Go to start" aria-label="go-to-start">
-            <IconButton color="secondary" aria-label="go-to-start" onClick={goToStart}>
-              <SkipPreviousRoundedIcon/>
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Step back" aria-label="step-back">
-            <IconButton color="secondary" aria-label="step-back" onClick={stepBack}>
-              <UndoRoundedIcon/>
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Step in" aria-label="step-in">
-            <IconButton color="secondary" aria-label="step-in" onClick={stepIn}>
-              <GetAppRoundedIcon/>
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Step over" aria-label="step-over">
-            <IconButton color="secondary" aria-label="step-over" onClick={stepOver}>
-              <RedoRoundedIcon/>
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Step out" aria-label="step-out">
-            <IconButton color="secondary" aria-label="step-out" onClick={stepOut}>
-              <PublishRoundedIcon/>
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Go to end" aria-label="go-to-end">
-            <IconButton color="secondary" aria-label="go-to-end" onClick={goToEnd}>
-              <SkipNextRoundedIcon/>
-            </IconButton>
-          </Tooltip>
-        </Toolbar>
-      </Grid>
-      }
       <Grid item id="debugger-source" style={{ display: 'table-row', height: '100%' }}>
         <div style={{ width: '100%', height: '100%', position: 'relative' }}>
           <TreeView style={{ overflow: 'auto', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}

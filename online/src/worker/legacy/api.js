@@ -78,8 +78,10 @@ export const cloneMesh = ( { shown, selected, hidden, groups=[] } ) =>
 //  Right now this is duplicated!
 export const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
 
-export const interpret = ( action, state, edit, stack=[] ) =>
+export const interpret = ( action, state, stack=[] ) =>
 {
+  let edit = state .getNextEdit();
+
   const step = () =>
   {
     if ( ! edit )
@@ -97,10 +99,11 @@ export const interpret = ( action, state, edit, stack=[] ) =>
     } else {
       state = state.clone();  // each command builds on the last
       edit.perform( state ); // here we may create a legacy edit object
+      const breakpointHit = state .atBreakpoint( edit );
       if ( edit.nextSibling() ) {
         state .recordSnapshot( edit.id(), edit.nextSibling().id() );
         edit = edit.nextSibling();
-        return Step.OVER;
+        return breakpointHit? Step.DONE : Step.OVER;
       } else {
         state .recordSnapshot( edit.id(), '--END--' ); // last one will be the real before-end
         let top;
@@ -111,7 +114,7 @@ export const interpret = ( action, state, edit, stack=[] ) =>
           state = top.state.clone();  // overwrite and discard the prior value
           top.branch.undoChildren();
           edit = top.branch.nextSibling();
-          return Step.OUT;
+          return breakpointHit? Step.DONE : Step.OUT;
         } else {
           // at the end of the editHistory
           return Step.DONE;
@@ -170,18 +173,38 @@ export const interpret = ( action, state, edit, stack=[] ) =>
       conTinue();
       break;
   }
+  state .setNextEdit( edit );
 }
 
 class RenderHistory
 {
-  constructor( firstEdit, renderer )
+  constructor( design )
   {
+    const { firstEdit, batchRender } = design;
     this.shapes = {};
     this.snapshotsAfter = {};
     this.shapshotsBefore = {};
-    this.batchRender = renderer;
+    this.batchRender = batchRender;
     this.currentSnapshot = [];
+    this.nextEdit = firstEdit;
+    this.lastEdit = '--START--';
     this.recordSnapshot( '--START--', firstEdit.id() );
+  }
+
+  getNextEdit()
+  {
+    return this.nextEdit;
+  }
+
+  setNextEdit( edit )
+  {
+    this.nextEdit = edit;
+  }
+
+  atBreakpoint( edit )
+  {
+    console.log( `at edit ${edit.id()}; nextEdit is ${this.nextEdit.id()} breakpoint is ${this.breakpoint}` );
+    return ( edit.id() === this.breakpoint );
   }
 
   clone()
@@ -220,6 +243,11 @@ class RenderHistory
     const shapes = {};
     let snapshot = before? this.shapshotsBefore[ editId ] : this.snapshotsAfter[ editId ];
     if ( !snapshot ) {
+
+      this.breakpoint = editId;
+      interpret( Step.DONE, this, [] );
+      this.breakpoint = null;
+
       editId = before? '--END--' : this.lastEdit;
       snapshot = before? this.shapshotsBefore[ editId ] : this.snapshotsAfter[ editId ];
     }
@@ -244,14 +272,14 @@ class RenderHistory
   }
 }
 
-export const interpretAndRender = ( design ) =>
+export const interpretAndRender = ( design, debug ) =>
 {
-  const { firstEdit, batchRender } = design;
-  const renderHistory = new RenderHistory( firstEdit, batchRender );
-  try {
-    interpret( Step.DONE, renderHistory, firstEdit, [] );
-  } catch (error) {
-    renderHistory .setError( error );
-  }
+  const renderHistory = new RenderHistory( design );
+  if ( ! debug ) // in debug mode, we'll interpret incrementally
+    try {
+      interpret( Step.DONE, renderHistory, [] );
+    } catch (error) {
+      renderHistory .setError( error );
+    }
   return renderHistory;
 }

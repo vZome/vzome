@@ -16,14 +16,18 @@ const legacyViewerMode = !!relativeUrl;
 // Must make this absolute before the worker tries to, with the wrong base URL
 const url = relativeUrl && new URL( relativeUrl, window.location ) .toString();
 
+const forDebugger = !legacyViewerMode && queryParams.get( 'debug' ) === 'true';
+
 const App = () =>
 {
-  useVZomeUrl( url || getModelURL( 'vZomeLogo' ), legacyViewerMode );
+  useVZomeUrl( url || getModelURL( 'vZomeLogo' ), legacyViewerMode, forDebugger );
 
   return (
     <>
-      <VZomeAppBar oneDesign={legacyViewerMode} />
-      { legacyViewerMode? <DesignViewer config={ { useSpinner: true } } /> : <DesignHistoryInspector/> }
+      <VZomeAppBar oneDesign={legacyViewerMode} forDebugger={forDebugger} />
+      { legacyViewerMode?
+        <DesignViewer config={ { useSpinner: true } } />
+      : <DesignHistoryInspector/> }
     </>
   );
 }

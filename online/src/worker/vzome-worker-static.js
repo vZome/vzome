@@ -81,7 +81,7 @@ const fetchFileText = selected =>
 
 let renderHistory;
 
-const parseAndInterpret = ( xmlLoading, report ) =>
+const parseAndInterpret = ( xmlLoading, report, debug ) =>
 {
   let legacyModule;
   return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
@@ -97,14 +97,14 @@ const parseAndInterpret = ( xmlLoading, report ) =>
         throw new Error( `Field "${field.name}" is not supported.` );
       }
       // the next step may take several seconds, which is why we already reported PARSE_COMPLETED
-      renderHistory = legacyModule .interpretAndRender( design );
+      renderHistory = legacyModule .interpretAndRender( design, debug );
       // TODO: define a better contract for before/after.
       //  Here we are using before=false with targetEditId, which is meant to be the *next*
       //  edit to be executed, so this really should be before=true.
       //  However, the semantics of the HistoryInspector UI require the edit field to contain the "after" edit ID.
       //  Thus, we are too tightly coupled to the UI here!
       //  See also the 'EDIT_SELECTED' case in onmessage(), below.
-      const { shapes, edit } = renderHistory .getScene( targetEditId, false );
+      const { shapes, edit } = renderHistory .getScene( debug? '--START--' : targetEditId, false );
       const { embedding } = renderer;
       const scene = { lighting, camera, embedding, shapes };
       report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
@@ -144,7 +144,7 @@ const urlLoader = ( report, event ) =>
   if ( event.type !== 'URL_PROVIDED' ) {
     return report( event );
   }
-  const { url, preview=false } = event.payload;
+  const { url, preview=false, debug=false } = event.payload;
   if ( !url ) {
     throw new Error( "No url field in URL_PROVIDED event payload" );
   }
@@ -168,11 +168,11 @@ const urlLoader = ( report, event ) =>
       .catch( error => {
         console.log( error.message );
         console.log( `Failed to load and parse preview: ${previewUrl}` );
-        return parseAndInterpret( xmlLoading, report );
+        return parseAndInterpret( xmlLoading, report, debug );
       } )
   }
   else {
-    return parseAndInterpret( xmlLoading, report );
+    return parseAndInterpret( xmlLoading, report, debug );
   }
 }
 

@@ -155,11 +155,11 @@ export const WorkerContext = props =>
   );
 }
 
-export const useVZomeUrl = ( url, preview ) =>
+export const useVZomeUrl = ( url, preview, forDebugger=false ) =>
 {
   const report = useDispatch();
   // TODO: this should be encapsulated in an API on the store
-  useEffect( () => !!url && report( fetchDesign( url, preview ) ), [ url ] );
+  useEffect( () => !!url && report( fetchDesign( url, preview, forDebugger ) ), [ url ] );
 }
 
 // This component has to be separate from UrlViewer because of the useDispatch hook used in
