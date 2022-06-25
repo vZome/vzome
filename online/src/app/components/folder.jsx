@@ -51,10 +51,11 @@ const models = [
   },
 ]
 
-export const getModelURL = key => new URL( `./models/${key}.vZome`, window.location ) .toString();
+export const getModelURL = ( key, pathToRoot='.' ) => new URL( `${pathToRoot}/models/${key}.vZome`, window.location ) .toString();
 
 export const OpenMenu = props =>
 {
+  const { pathToRoot, forDebugger=false } = props;
   const [anchorEl, setAnchorEl] = useState(null)
   const [showDialog, setShowDialog] = useState(false)
   const inputRef = useRef()
@@ -73,7 +74,7 @@ export const OpenMenu = props =>
 
   const openUrl = url => {
     if ( url && url.endsWith( ".vZome" ) ) {
-      report( fetchDesign( url, false ) );
+      report( fetchDesign( url, false, forDebugger ) );
     }
   }
 
@@ -94,7 +95,7 @@ export const OpenMenu = props =>
   const handleSelectModel = model => {
     setAnchorEl(null)
     const { url, key } = model
-    openUrl( url || getModelURL( key ), key );
+    openUrl( url || getModelURL( key, pathToRoot ), key );
   }
 
   const handleClose = () => {
