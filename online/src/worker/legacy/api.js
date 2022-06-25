@@ -203,7 +203,6 @@ class RenderHistory
 
   atBreakpoint( edit )
   {
-    console.log( `at edit ${edit.id()}; nextEdit is ${this.nextEdit.id()} breakpoint is ${this.breakpoint}` );
     return ( edit.id() === this.breakpoint );
   }
 
