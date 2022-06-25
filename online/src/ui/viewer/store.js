@@ -7,6 +7,7 @@ export const selectEditBefore = nodeId => ({ type: 'EDIT_SELECTED', payload: { b
 export const selectEditAfter = nodeId => ({ type: 'EDIT_SELECTED', payload: { after: nodeId } } );
 export const defineCamera = camera => ({ type: 'CAMERA_DEFINED', payload: camera });
 export const fetchDesign = ( url, preview, debug=false ) => ({ type: 'URL_PROVIDED', payload: { url, preview, debug } });
+export const openDesignFile = ( file, debug=false ) => ({ type: 'FILE_PROVIDED', payload: { file, debug } });
 
 const reducer = ( state = initialState, event ) =>
 {

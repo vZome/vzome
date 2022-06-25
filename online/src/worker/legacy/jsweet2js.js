@@ -341,10 +341,10 @@ export class JavaDomElement
 
   getChildNodes()
   {
-    const kids = this.nativeElement.children;
+    const kids = this.nativeElement.children .filter( kid => kid.tagName !== 'effects' ); // 'effects' appear when parsing a history export
     if ( kids.length === 1 && ( typeof kids[ 0 ] === 'string' ) )
       return null;
-    return new JavaDomNodeList( this.nativeElement.children )
+    return new JavaDomNodeList( kids )
   }
 
   getChildElement( name )

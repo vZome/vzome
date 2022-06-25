@@ -1,7 +1,7 @@
 
 import React, { useRef, useState } from 'react'
 import { useDispatch } from 'react-redux';
-import { fetchDesign } from '../../ui/viewer/store.js';
+import { fetchDesign, openDesignFile } from '../../ui/viewer/store.js';
 
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'
@@ -68,7 +68,7 @@ export const OpenMenu = props =>
   const onFileSelected = e => {
     const selected = e.target.files && e.target.files[0]
     if ( selected )
-      report( { type: 'FILE_PROVIDED', payload: selected } );
+      report( openDesignFile( selected, forDebugger ) );
     inputRef.current.value = null;
   }
 
