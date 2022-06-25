@@ -7,7 +7,7 @@ export class LegacyEdit
     this.parentEdit = parent;
     this.interpret = interpretEdit;
     this.legacyEdit = undefined;
-    const kids = txmlElement.children;
+    const kids = txmlElement.children .filter( kid => kid.tagName !== 'effects' ); // 'effects' appear when parsing a history export
     if ( kids.length === 1 && ( typeof kids[ 0 ] === 'string' ) )
       this.children = [];
     else

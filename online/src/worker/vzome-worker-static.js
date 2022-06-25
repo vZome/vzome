@@ -128,7 +128,7 @@ const fileLoader = ( report, event ) =>
   if ( event.type !== 'FILE_PROVIDED' ) {
     return report( event );
   }
-  const file = event.payload;
+  const { file, debug=false } = event.payload;
   const { name } = file;
   report( { type: 'FETCH_STARTED', payload: { name, preview: false } } );
   console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% editing ${name}` );
@@ -136,7 +136,7 @@ const fileLoader = ( report, event ) =>
 
   xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { name, text } } ) );
 
-  return parseAndInterpret( xmlLoading, report );
+  return parseAndInterpret( xmlLoading, report, debug );
 }
 
 const urlLoader = ( report, event ) =>
