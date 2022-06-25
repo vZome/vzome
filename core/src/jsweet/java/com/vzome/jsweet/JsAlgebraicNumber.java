@@ -168,7 +168,7 @@ public class JsAlgebraicNumber implements AlgebraicNumber
      */
     public String toString( int format )
     {
-        return Arrays .toString( this .factors );
+        return this.field .toString( this.factors, format );
     }
 
     @Override
