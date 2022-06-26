@@ -239,12 +239,17 @@ class RenderHistory
 
   getScene( editId, before=false )
   {
+    this .setError( null );
     const shapes = {};
     let snapshot = before? this.shapshotsBefore[ editId ] : this.snapshotsAfter[ editId ];
     if ( !snapshot ) {
 
       this.breakpoint = editId;
-      interpret( Step.DONE, this, [] );
+      try {
+        interpret( Step.DONE, this, [] );
+      } catch (error) {
+        this .setError( error );
+      }
       this.breakpoint = null;
 
       editId = before? '--END--' : this.lastEdit;
