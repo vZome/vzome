@@ -143,6 +143,15 @@ public class SymmetrySystem implements OrbitSource
             List<Tool.Factory> list = this .symmetryPerspective .createToolFactories( kind, tools );
             // toolFactoryLists manifest to the Controller automatically
             this .toolFactoryLists .put( kind, list );
+            
+            // TODO: fix this horrible hack!
+            //  All SymmetrySystems feed their predef tools into the same ToolsModel,
+            //  with name collisions!  That only works if the transformations of, say,
+            //  tetrahedral symmetry are the same for all systems.  That was mostly
+            //  true, except for a defect for the "synestructics" system that bit me
+            //  in the transcribed Javascript, where the collision resolved differently!
+            //  See SymmetryTool.checkSelection().
+            //
             List<Tool> toolList = this .symmetryPerspective .predefineTools( kind, tools );
             this .toolLists .put( kind, toolList );
         }
