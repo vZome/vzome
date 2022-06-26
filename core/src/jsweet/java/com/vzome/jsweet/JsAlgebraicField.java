@@ -97,6 +97,12 @@ public class JsAlgebraicField implements AlgebraicField
         Function f = (Function) this.delegate .$get( "negate" );
         return (int[]) f.$apply( any( factors ) );
     }
+    
+    String toString( int[] factors, int format )
+    {
+        Function f = (Function) this.delegate .$get( "toString" );
+        return (String) f.$apply( any( factors ), any( format ) );
+    }
 
     @Override
     public AlgebraicNumber zero()

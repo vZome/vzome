@@ -152,7 +152,7 @@ export const HistoryInspector = props  =>
     if ( edit.tagName === 'Boolean' || edit.tagName === 'polygonVertex' )
       return null;
     const kids = ( edit.children.length > 0 )? edit.children : null;
-    let subtrees = kids && kids.map( child => renderTree( child ) );
+    let subtrees = kids && kids.filter( kid => kid.tagName !== 'effects' ) .map( child => renderTree( child ) );
     if ( subtrees && subtrees.length === 1 && subtrees[ 0 ] === null )
       subtrees = null;
     return (

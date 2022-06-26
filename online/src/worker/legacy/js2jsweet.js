@@ -4,7 +4,7 @@ import root2Field from '../fields/root2.js'
 import root3Field from '../fields/root3.js'
 import heptagonField from '../fields/heptagon.js'
 import Adapter from './adapter.js'
-import { algebraicNumberFactory, JavaDomElement, JsProperties } from './jsweet2js.js';
+import { algebraicNumberFactory, JavaDomDocument, JavaDomElement, JsProperties } from './jsweet2js.js';
 import { LegacyEdit } from './edit.js';
 
 import allShapes from './resources/com/vzome/core/parts/index.js'
@@ -413,7 +413,25 @@ const init = async () =>
       const { shown, selected, hidden, groups } = mesh
       editor.setAdapter( new Adapter( shown, selected, hidden, groups ) )
       edit.loadAndPerform( wrappedElement, format, editContext )
+
+      checkSideEffects( edit, wrappedElement );
+
       return edit;
+    }
+
+    const checkSideEffects = ( edit, element ) =>
+    {
+      const expectedEffects = element.nativeElement.children .filter( kid => kid.tagName === 'effects' )[ 0 ];
+      if ( expectedEffects ) {
+        const actualEffects = edit .getDetailXml( element .getOwnerDocument() ) .getChildElement( 'effects' ) .nativeElement;
+        const expectedText = JSON.stringify( expectedEffects, null, 2 );
+        const actualText = JSON.stringify( actualEffects, null, 2 );
+        if ( actualText !== expectedText ) {
+          console.log( 'EXPECTED: ', expectedText );
+          console.log( 'ACTUAL  : ', actualText );
+          throw new Error( 'Side effects from edit do not match recorded history!' );
+        }
+      }
     }
 
     /*
@@ -555,9 +573,11 @@ const legacyCommandFactory = ( createEditor, className ) => ( config ) =>
 
 const assignIds = ( txmlElement, id=':' ) =>
 {
+  if ( txmlElement.tagName === 'effects' )
+    return txmlElement;
   txmlElement.id = id;
   txmlElement.children.map( (child,index) => {
-    if ( child instanceof Object ) {
+    if ( child instanceof Object && child.tagName !== 'effects' ) {
       child.index = index;
       assignIds( child, `${id}${index}:` )
     }
@@ -662,7 +682,8 @@ const createParser = ( createDocument ) => ( xmlText ) =>
   const scene = vZomeRoot.getChildElement( "sceneModel" )
   const lighting = scene && parseLighting( scene )
 
-  const xmlTree = assignIds( vZomeRoot.getChildElement( "EditHistory" ).nativeElement );
+  const historyElement = vZomeRoot.getChildElement( "EditHistory" ) || vZomeRoot.getChildElement( "EditHistoryDetails" );
+  const xmlTree = assignIds( historyElement.nativeElement );
   const edits = new LegacyEdit( xmlTree, null, interpretEdit );
   const targetEditId = `:${edits.getAttribute( "editNumber" )}:`
   const firstEdit = edits.firstChild()

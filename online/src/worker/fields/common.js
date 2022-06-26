@@ -174,6 +174,49 @@ const origin3 = dimensions =>
   return result
 }
 
+const Format = { DEFAULT: 0, EXPRESSION: 1, ZOMIC: 2, VEF: 3 }
+
+function bigRationalToString( num, denom )
+{
+  if ( denom === 1n )
+    return num.toString()
+  else
+    return num.toString() + "/" + denom.toString()
+}
+
+function toString2( trailingDivisor, format )
+{
+  const [ a0=0n, a1=0n, d=1n ] = trailingDivisor
+  const [ n0, d0 ] = simplify( [ BigInt(a0), BigInt(d) ] );
+  const [ n1, d1 ] = simplify( [ BigInt(a1), BigInt(d) ] );
+  switch (format)
+  {
+    case Format.ZOMIC:
+      return bigRationalToString( n0, d0 ) + " " + bigRationalToString( n1, d1 );
+  
+    case Format.VEF:
+    default:
+      return "(" + bigRationalToString( n1, d1 ) + "," + bigRationalToString( n0, d0 ) + ")";
+  }
+}
+
+function toString3( trailingDivisor, format )
+{
+  const [ a0=0n, a1=0n, a2=0n, d=1n ] = trailingDivisor
+  const [ n0, d0 ] = simplify( [ BigInt(a0), BigInt(d) ] );
+  const [ n1, d1 ] = simplify( [ BigInt(a1), BigInt(d) ] );
+  const [ n2, d2 ] = simplify( [ BigInt(a2), BigInt(d) ] );
+  switch (format)
+  {
+    case Format.ZOMIC:
+      return bigRationalToString( n0, d0 ) + " " + bigRationalToString( n1, d1 ) + " " + bigRationalToString( n2, d2 );
+  
+    case Format.VEF:
+    default:
+      return "(" + bigRationalToString( n2, d2 ) + "," + bigRationalToString( n1, d1 ) + "," + bigRationalToString( n0, d0 ) + ")";
+  }
+}
+
 export const createField = ( { name, order, times, embed, reciprocal } ) =>
 {
   let scalarTerm = 1
@@ -185,6 +228,7 @@ export const createField = ( { name, order, times, embed, reciprocal } ) =>
   let minus = minus2
   let createNumberFromPairs = createNumberFromPairs2
   let createNumber = createNumber2
+  let toString = toString2
   if ( order === 3 ) {
     scalarTerm = 2
     zero = [ 0n, 0n, 0n, 1n ]
@@ -195,6 +239,7 @@ export const createField = ( { name, order, times, embed, reciprocal } ) =>
     minus = minus3
     createNumberFromPairs = createNumberFromPairs3
     createNumber = createNumber3
+    toString = toString3
   }
 
   const scalarmul = ( s, v ) => [ ...v.values() ].map( ( vi=[0n] ) => times( s, vi ) )
@@ -231,6 +276,6 @@ export const createField = ( { name, order, times, embed, reciprocal } ) =>
     plus, minus, times, embed, reciprocal, negate,
     scalarmul, vectoradd, quatTransform, quatmul,
     embedv: (v) => v.map( embed ),
-    createNumberFromPairs, createNumber,
+    createNumberFromPairs, createNumber, toString,
   }
 }

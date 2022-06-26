@@ -292,10 +292,11 @@ const ZERO = new JavaBigRational( 0n, 1n )
 
 class JavaDomNodeList
 {
-  constructor( nodeList )
+  constructor( nodeList, owner=null )
   {
     this.nativeNodeList = nodeList
     this.__interfaces = [ "org.w3c.dom.NodeList" ]
+    this.document = owner || new JavaDomDocument();
   }
 
   getLength()
@@ -307,18 +308,78 @@ class JavaDomNodeList
   {
     const node = this.nativeNodeList[ i ];
     if ( node.tagName )
-      return new JavaDomElement( node )
+      return new JavaDomElement( node, this.document )
     else
       return node
   }
 }
 
+function sortObj(obj) {
+  return Object.keys(obj).sort().reduce(function (result, key) {
+    result[key] = obj[key];
+    return result;
+  }, {});
+}
+
+// JavaDomAttributes, JavaDomDocument, and the setters on JavaDomElement
+//  are all required just for the edit .getDetailXml() function we need when
+//  doing checkSideEffects() during debugging.
+//
+// The sorting in JavaDomAttributes is required to match the sorting behavior
+//  that happens while serializing XML in the desktop implementation, since
+//  checkSideEffects() completely bypasses XML serialization and parsing.
+
+export class JavaDomAttributes
+{
+  toJSON( key )
+  {
+    return sortObj( this );
+  }
+}
+
+export class JavaDomDocument
+{
+  constructor()
+  {
+    this.__interfaces = [ "org.w3c.dom.Document" ]
+  }
+
+  createElement( tagName )
+  {
+    return new JavaDomElement( { tagName, attributes: new JavaDomAttributes(), children: [] }, this );
+  }
+
+  createTextNode( text )
+  {
+    return text;
+  }
+}
+
 export class JavaDomElement
 {
-  constructor( element )
+  constructor( element, owner=null )
   {
     this.nativeElement = element
     this.__interfaces = [ "org.w3c.dom.Element" ]
+    this.document = owner || new JavaDomDocument();
+  }
+
+  appendChild( child )
+  {
+    if ( typeof( child ) === 'string' )
+      this.nativeElement.children.push( child );
+    else
+      this.nativeElement.children.push( child.nativeElement );
+  }
+
+  setAttribute( name, value )
+  {
+    this.nativeElement.attributes[ name ] = value;
+  }
+
+  getOwnerDocument()
+  {
+    return this.document;
   }
 
   getAttribute( name )
@@ -333,7 +394,7 @@ export class JavaDomElement
 
   getTextContent()
   {
-    const kids = this.nativeElement.children;
+    const kids = this.nativeElement.children .filter( kid => kid.tagName !== 'effects' ); // 'effects' appear when parsing a history export
     if ( kids.length === 1 && ( typeof kids[ 0 ] === 'string' ) )
       return kids[ 0 ];
     return null;
@@ -344,13 +405,13 @@ export class JavaDomElement
     const kids = this.nativeElement.children .filter( kid => kid.tagName !== 'effects' ); // 'effects' appear when parsing a history export
     if ( kids.length === 1 && ( typeof kids[ 0 ] === 'string' ) )
       return null;
-    return new JavaDomNodeList( kids )
+    return new JavaDomNodeList( kids, this.document )
   }
 
   getChildElement( name )
   {
     const nativeChild = this.nativeElement.children.filter( n => n.tagName === name )[ 0 ];
-    return nativeChild && new JavaDomElement( nativeChild );
+    return nativeChild && new JavaDomElement( nativeChild, this.document );
   }
 
   getElementsByTagName( name )
@@ -358,7 +419,7 @@ export class JavaDomElement
     const results = this.nativeElement.children.filter( n => n.tagName === name );
     return {
       getLength: () => results.length,
-      item: i => (i < results.length)? new JavaDomElement( results[ i ] ) : null
+      item: i => (i < results.length)? new JavaDomElement( results[ i ], this.document ) : null
     }
   }
 }
