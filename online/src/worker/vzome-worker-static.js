@@ -196,6 +196,11 @@ onmessage = ({ data }) =>
       const scene = before? renderHistory .getScene( before, true ) : renderHistory .getScene( after, false );
       const { edit } = scene;
       postMessage( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
+      const error = renderHistory .getError();
+      if ( !!error ) {
+        console.log( `getScene error: ${error.message}` );
+        postMessage( { type: 'ALERT_RAISED', payload: 'Failed to interpret all edits.' } );
+      }
       break;
   
     default:
