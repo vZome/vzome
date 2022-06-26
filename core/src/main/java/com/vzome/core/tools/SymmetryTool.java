@@ -144,7 +144,7 @@ public class SymmetryTool extends TransformationTool
 
 	    int[] closure = symmetry .subgroup( Symmetry.TETRAHEDRAL );
 
-	    switch ( symmetry .getName() ) {
+	    switch ( symmetry .getName() ) { // OMG former self, this is such a $#$%^! hack!  What part of OO didn't you understand?
 
 	    case "icosahedral":
 	        if ( !prepareTool && ( axis != null ) && getCategory() .equals( "icosahedral" ) )
@@ -233,7 +233,8 @@ public class SymmetryTool extends TransformationTool
 	        }
 	        break;
 
-	    case "octahedral":
+        case "synestructics":
+        case "octahedral":
 	        if ( prepareTool ) {
 	            if ( getCategory() .equals( "tetrahedral" ) ) {
 	                int order = closure .length;
