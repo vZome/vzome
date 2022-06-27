@@ -58,6 +58,7 @@ export const OpenMenu = props =>
   const { pathToRoot, forDebugger=false } = props;
   const [anchorEl, setAnchorEl] = useState(null)
   const [showDialog, setShowDialog] = useState(false)
+  const acceptFiles = forDebugger? ".vZome,.xml" : ".vZome";
   const inputRef = useRef()
   const report = useDispatch();
 
@@ -122,7 +123,7 @@ export const OpenMenu = props =>
       >
         <MenuItem onClick={chooseFile} >Local vZome file
           <input className="FileInput" type="file" ref={inputRef}
-            onChange={onFileSelected} accept=".vZome" /> 
+            onChange={onFileSelected} accept={acceptFiles} /> 
         </MenuItem>
         <MenuItem onClick={handleShowUrlDialog} >Remote vZome URL</MenuItem>
         <Divider />
