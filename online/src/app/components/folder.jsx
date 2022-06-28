@@ -58,7 +58,7 @@ export const OpenMenu = props =>
   const { pathToRoot, forDebugger=false } = props;
   const [anchorEl, setAnchorEl] = useState(null)
   const [showDialog, setShowDialog] = useState(false)
-  const acceptFiles = forDebugger? ".vZome,.xml" : ".vZome";
+  const acceptFiles = ".vZome";
   const inputRef = useRef()
   const report = useDispatch();
 

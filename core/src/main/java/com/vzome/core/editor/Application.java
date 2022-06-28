@@ -49,6 +49,7 @@ import com.vzome.core.exporters.PlyExporter;
 import com.vzome.core.exporters.STEPExporter;
 import com.vzome.core.exporters.SegExporter;
 import com.vzome.core.exporters.ShapesJsonExporter;
+import com.vzome.core.exporters.SideEffectsExporter;
 import com.vzome.core.exporters.SimpleMeshJsonExporter;
 import com.vzome.core.exporters.StlExporter;
 import com.vzome.core.exporters.VRMLExporter;
@@ -136,6 +137,7 @@ public class Application implements AlgebraicField.Registry
         this .exporters .put( "seg", new SegExporter( null, this .mColors, this .mLights, null ) );
         this .exporters .put( "ply", new PlyExporter( this .mColors, this .mLights ) );
         this .exporters .put( "history", new HistoryExporter( null, this .mColors, this .mLights, null ) );
+        this .exporters .put( "effects", new SideEffectsExporter( null, this .mColors, this .mLights, null ) );
 
         this .exporters2d .put( "pdf", PDFExporter::new );
         this .exporters2d .put( "svg", SVGExporter::new );
