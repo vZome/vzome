@@ -17,9 +17,15 @@ import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 import com.vzome.xml.DomSerializer;
 
-public class HistoryExporter extends Exporter3d
+/**
+ * This is just a variant of the HistoryExporter that includes symmetries and tools,
+ * so the resulting file can be interpreted.  We therefore use a different file extension.
+ * @author vorth
+ *
+ */
+public class SideEffectsExporter extends Exporter3d
 {
-    public HistoryExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
+    public SideEffectsExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
     {
         super( scene, colors, lights, model );
     }
@@ -32,7 +38,7 @@ public class HistoryExporter extends Exporter3d
         DocumentBuilder builder = factory .newDocumentBuilder();
         Document dom = builder .newDocument();
 
-        Element modelXml = document .getDetailsXml( dom, false );
+        Element modelXml = document .getDetailsXml( dom, true );
         dom .appendChild( modelXml );
 
         DomSerializer .serialize( dom, writer );
@@ -42,13 +48,13 @@ public class HistoryExporter extends Exporter3d
     public void doExport( File directory, Writer writer, int height, int width )
             throws Exception
     {
-        throw new IllegalArgumentException( "HistoryExporter not supported" );
+        throw new IllegalArgumentException( "SideEffectsExporter not supported" );
     }
 
     @Override
     public String getFileExtension()
     {
-        return "history.xml";
+        return "effects.vZome";
     }
 
 }

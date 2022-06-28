@@ -703,13 +703,15 @@ public class DocumentModel implements Snapshot .Recorder, Context
         return false;
     }
 
-    public Element getDetailsXml( Document doc )
+    public Element getDetailsXml( Document doc, boolean includeSymmetriesAndTools )
     {
         Element vZomeRoot = doc .createElementNS( XmlSaveFormat.CURRENT_FORMAT, "vzome:vZome" );
         vZomeRoot .setAttribute( "xmlns:vzome", XmlSaveFormat.CURRENT_FORMAT );
         vZomeRoot .setAttribute( "field", field.getName() );
         Element result = mHistory .getDetailXml( doc );
         vZomeRoot .appendChild( result );
+        if ( includeSymmetriesAndTools )
+            this .serializeSymmetriesAndTools( vZomeRoot );
         return vZomeRoot;
     }
 
@@ -724,6 +726,34 @@ public class DocumentModel implements Snapshot .Recorder, Context
         props .setProperty( "edition", "vZome" );
         props .setProperty( "version", "5.0" );
         this .serialize( out, props );
+    }
+    
+    private void serializeSymmetriesAndTools( Element vZomeRoot )
+    {
+        Document doc = vZomeRoot .getOwnerDocument();
+        Element childElement = ((SymmetrySystem) this .editorModel .getSymmetrySystem()) .getXml( doc );
+        vZomeRoot .appendChild( childElement );
+
+        // We have to store all symmetries, not just the current one, due to sequences like this:
+        //   1. drag an icosahedral olive strut
+        //   2. switch to octahedral symmetry
+        //   3. do "build with this" on the olive strut
+        //   4. drag out a strut
+        //   5. switch back to icosahedral symmetry
+        // The end result is that the command in step 4 records the name of an automatic orbit.
+        // That automatic orbit must be captured in the file.
+        childElement = doc .createElement( "OtherSymmetries" );
+        for ( Iterator<OrbitSource> iterator = this .editorModel .getSymmetrySystems(); iterator.hasNext(); ) {
+            OrbitSource symmetry = iterator.next();
+            if ( symmetry == this .editorModel .getSymmetrySystem() )
+                continue; // already serialized above
+            Element symmElement = ((SymmetrySystem) symmetry) .getXml( doc );
+            childElement .appendChild( symmElement );
+        }
+        vZomeRoot .appendChild( childElement );
+
+        childElement = this .tools .getXml( doc );
+        vZomeRoot .appendChild( childElement );
     }
 
     public void serialize( OutputStream out, Properties editorProps ) throws Exception
@@ -772,29 +802,7 @@ public class DocumentModel implements Snapshot .Recorder, Context
         childElement .appendChild( viewXml );
         vZomeRoot .appendChild( childElement );
 
-        childElement = ((SymmetrySystem) this .editorModel .getSymmetrySystem()) .getXml( doc );
-        vZomeRoot .appendChild( childElement );
-
-        // We have to store all symmetries, not just the current one, due to sequences like this:
-        //   1. drag an icosahedral olive strut
-        //   2. switch to octahedral symmetry
-        //   3. do "build with this" on the olive strut
-        //   4. drag out a strut
-        //   5. switch back to icosahedral symmetry
-        // The end result is that the command in step 4 records the name of an automatic orbit.
-        // That automatic orbit must be captured in the file.
-        childElement = doc .createElement( "OtherSymmetries" );
-        for ( Iterator<OrbitSource> iterator = this .editorModel .getSymmetrySystems(); iterator.hasNext(); ) {
-            OrbitSource symmetry = iterator.next();
-            if ( symmetry == this .editorModel .getSymmetrySystem() )
-                continue; // already serialized above
-            Element symmElement = ((SymmetrySystem) symmetry) .getXml( doc );
-            childElement .appendChild( symmElement );
-        }
-        vZomeRoot .appendChild( childElement );
-
-        childElement = this .tools .getXml( doc );
-        vZomeRoot .appendChild( childElement );
+        this .serializeSymmetriesAndTools( vZomeRoot );
 
         DomSerializer .serialize( doc, out );
     }
