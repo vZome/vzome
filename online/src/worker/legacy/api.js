@@ -94,6 +94,7 @@ export const interpret = ( action, state, stack=[] ) =>
         branchState .recordSnapshot( edit.id(), edit.nextSibling().id() );
       }
       edit = edit.firstChild(); // this assumes there are no empty branches
+      state .setNextEdit( edit );
       state = branchState;
       return Step.IN;
     } else {
@@ -103,6 +104,7 @@ export const interpret = ( action, state, stack=[] ) =>
       if ( edit.nextSibling() ) {
         state .recordSnapshot( edit.id(), edit.nextSibling().id() );
         edit = edit.nextSibling();
+        state .setNextEdit( edit );
         return breakpointHit? Step.DONE : Step.OVER;
       } else {
         state .recordSnapshot( edit.id(), '--END--' ); // last one will be the real before-end
@@ -114,6 +116,7 @@ export const interpret = ( action, state, stack=[] ) =>
           state = top.state.clone();  // overwrite and discard the prior value
           top.branch.undoChildren();
           edit = top.branch.nextSibling();
+          state .setNextEdit( edit );
           return breakpointHit? Step.DONE : Step.OUT;
         } else {
           // at the end of the editHistory
@@ -173,7 +176,6 @@ export const interpret = ( action, state, stack=[] ) =>
       conTinue();
       break;
   }
-  state .setNextEdit( edit );
 }
 
 class RenderHistory

@@ -2,6 +2,7 @@
 package com.vzome.core.construction;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -26,13 +27,13 @@ public abstract class Polygon extends Construction
         super( field );
     }
     
+    // We need this only for JSweet, since the default overloaded implementation of Arrays.sort() does the wrong thing
+    private Comparator<String> STRING_COMPARATOR = (String s1, String s2) -> s1 .compareTo( s2 );
+    
     public String getSignature()
     {
-//    	System.err.println( "Warning, Polygon.getSignature() may not work in Javascript" );
         String[] strArray = Arrays.stream( mVertices ) .map( ( av ) -> av.projectTo3d( true ).toString() ) .toArray( String[]::new );
-//        System.err.println( "unsorted: " + Arrays.toString( strArray ) );
-        Arrays.sort( strArray ); // This sort implementation may be broken in Javascript
-//        System.err.println( "  sorted: " + Arrays.toString( strArray ) );
+        Arrays.sort( strArray, 0, strArray.length, STRING_COMPARATOR ); // The simple form doesn't work in JSweet, due to poor overload resolution
         return Arrays.toString( strArray );
     }
 
