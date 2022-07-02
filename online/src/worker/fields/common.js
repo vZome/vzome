@@ -195,8 +195,21 @@ function toString2( trailingDivisor, format )
       return bigRationalToString( n0, d0 ) + " " + bigRationalToString( n1, d1 );
   
     case Format.VEF:
-    default:
       return "(" + bigRationalToString( n1, d1 ) + "," + bigRationalToString( n0, d0 ) + ")";
+
+    default:
+      if ( a0 === 0n ) {
+        if ( a1 === 0n )
+          return "0";
+        else
+          return bigRationalToString( a1, d ) + "*𝜙";
+      }
+      else {
+        if ( a1 === 0n )
+          return bigRationalToString( a0, d );
+        else
+          return bigRationalToString( a0, d ) + "+" + bigRationalToString( a1, d ) + "*𝜙";
+      }
   }
 }
 
@@ -212,8 +225,38 @@ function toString3( trailingDivisor, format )
       return bigRationalToString( n0, d0 ) + " " + bigRationalToString( n1, d1 ) + " " + bigRationalToString( n2, d2 );
   
     case Format.VEF:
-    default:
       return "(" + bigRationalToString( n2, d2 ) + "," + bigRationalToString( n1, d1 ) + "," + bigRationalToString( n0, d0 ) + ")";
+
+    default:
+      // NOTE: this is untested code as of this writing
+      if ( a0 === 0n ) {
+        if ( a1 === 0n ) {
+          if ( a2 === 0n )
+            return "0";
+          else
+            return bigRationalToString( a2, d ) + "*b";
+        }
+        else {
+          if ( a2 === 0n )
+            return bigRationalToString( a1, d ) + "*a";
+          else
+            return bigRationalToString( a1, d ) + "*a +" + bigRationalToString( a2, d ) + "*b";
+        }
+      }
+      else {
+        if ( a1 === 0n ) {
+          if ( a2 === 0n )
+            return bigRationalToString( a0, d );
+          else
+            return bigRationalToString( a0, d ) + " +" + bigRationalToString( a2, d ) + "*b";
+        }
+        else {
+          if ( a2 === 0n )
+            return bigRationalToString( a0, d ) + " +" + bigRationalToString( a1, d ) + "*a";
+          else
+            return bigRationalToString( a0, d ) + " +" + bigRationalToString( a1, d ) + "*a +" + bigRationalToString( a2, d ) + "*b";
+        }
+      }
   }
 }
 
