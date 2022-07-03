@@ -1,7 +1,6 @@
 
 import React from 'react'
 import { useEmbedding, useRotation, useGeometry } from './hooks.js'
-import { Matrix4 } from 'three';
 
 const Instance = ( { id, vectors, position, rotation, geometry, color, selected, highlightBall=()=>{}, onClick, onHover } ) =>
 {
