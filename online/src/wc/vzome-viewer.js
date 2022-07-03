@@ -7,6 +7,8 @@ import { muiCSS } from "./mui-styles.css";
 
 import { createWorkerStore, fetchDesign } from '../ui/viewer/store.js';
 
+import { fullScreenMode } from '../ui/viewer/fullscreen.js';
+
 export class VZomeViewer extends HTMLElement
 {
   #root;
@@ -53,7 +55,7 @@ export class VZomeViewer extends HTMLElement
   {
     import( '../ui/viewer/index.jsx' )
       .then( module => {
-        this.#reactElement = module.renderViewer( this.#store, this.#container, this.#url, this.#config );
+        this.#reactElement = module.renderViewer( this.#store, this.#container, this.#url, this.#config, fullScreenMode(this) );
       })
   }
 

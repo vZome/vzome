@@ -1,12 +1,14 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import ReactDOM from "react-dom";
 
 import { makeStyles } from '@material-ui/core/styles';
 import { StylesProvider, jssPreset } from '@material-ui/styles';
 import IconButton from '@material-ui/core/IconButton'
-import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded'
+import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded';
+import FullscreenIcon from '@material-ui/icons/Fullscreen';
+import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
@@ -82,7 +84,7 @@ export const SceneMenu = ( { snapshots } ) =>
   );
 }
 
-export const DesignViewer = ( { children, children3d, config={} } ) =>
+export const DesignViewer = ( { children, children3d, config={}, fullScreenMode } ) =>
 {
   const { showSnapshots=false, useSpinner=false } = config;
   const source = useSelector( state => state.source );
@@ -104,6 +106,13 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
         <SceneMenu snapshots={snapshots} />
       }
       <Spinner visible={useSpinner && waiting} />
+      { fullScreenMode && fullScreenMode.supported() &&
+        <IconButton color="inherit" aria-label="fullscreen"
+            style={ { position: 'absolute', bottom: '5px', right: '5px' } }
+            onClick={fullScreenMode.toggle} >
+          { fullScreenMode.on()? <FullscreenExitIcon fontSize='medium'/> : <FullscreenIcon fontSize='medium'/> }
+        </IconButton>
+      }
       { source && source.text &&
         <IconButton color="inherit" aria-label="download"
             style={ { position: 'absolute', top: '5px', right: '5px' } }
@@ -116,7 +125,7 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
   )
 }
 
-export const renderViewer = ( store, container, url, config ) =>
+export const renderViewer = ( store, container, url, config, fullScreenMode ) =>
 {
   if ( url === null || url === "" ) {
     ReactDOM.unmountComponentAtNode( container );
@@ -127,7 +136,7 @@ export const renderViewer = ( store, container, url, config ) =>
   // Note the addition of a slot child element; this lets us potentially render the light dom,
   //   for example if the worker cannot load.
   // LG: Can we handle canvas resizing using `ResizeObserver` without modifying `vZome` or recreating the element constantly?
-  const viewerElement = React.createElement( UrlViewer, { store, config }, (<slot></slot>) );
+  const viewerElement = React.createElement( UrlViewer, { store, config, fullScreenMode }, (<slot></slot>) );
 
   // We need JSS to inject styles on our shadow root, not on the document head.
   // I found this solution here:
@@ -165,13 +174,13 @@ export const useVZomeUrl = ( url, preview, forDebugger=false ) =>
 // This component has to be separate from UrlViewer because of the useDispatch hook used in
 //  useVZomeUrl above.  I shouldn't really need to export it, but React (or the dev tools)
 //  got pissy when I didn't.
-export const UrlViewerInner = ({ url, children, config }) =>
+export const UrlViewerInner = ({ url, children, config, fullScreenMode }) =>
 {
   const { showSnapshots } = config;
   // "preview" means show a preview if you find one.  When "showSnapshots" is true, the
   //   XML will have to be parsed, so a preview JSON is not sufficient.
   useVZomeUrl( url, !showSnapshots );
-  return ( <DesignViewer config={config} >
+  return ( <DesignViewer config={config} fullScreenMode={fullScreenMode} >
              {children}
            </DesignViewer> );
 }
@@ -182,9 +191,9 @@ export const UrlViewerInner = ({ url, children, config }) =>
 //  It is also used by the web component, but with the worker-store injected so that the
 //  worker can get initialized and loaded while the main context is still fetching
 //  this module.
-export const UrlViewer = ({ url, store, children, config={ showSnapshots: false } }) => (
+export const UrlViewer = ({ url, store, children, config={ showSnapshots: false }, fullScreenMode }) => (
   <WorkerContext store={store} >
-    <UrlViewerInner url={url} config={config}>
+    <UrlViewerInner url={url} config={config} fullScreenMode={fullScreenMode}>
       {children}
     </UrlViewerInner>
   </WorkerContext>
