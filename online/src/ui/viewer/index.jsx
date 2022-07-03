@@ -60,7 +60,7 @@ export const SceneMenu = ( { snapshots } ) =>
   }
 
   return (
-    <div style={ { position: 'absolute', background: 'lightgray' } }>
+    <div style={ { position: 'absolute', background: 'lightgray', top: '0px' } }>
       <FormControl variant="outlined" className={classes.formControl}>
         <InputLabel htmlFor="scene-menu-label">Scene</InputLabel>
         <Select
