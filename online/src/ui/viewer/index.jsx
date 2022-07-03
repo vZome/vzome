@@ -6,7 +6,9 @@ import ReactDOM from "react-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import { StylesProvider, jssPreset } from '@material-ui/styles';
 import IconButton from '@material-ui/core/IconButton'
-import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded'
+import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded';
+import FullscreenIcon from '@material-ui/icons/Fullscreen';
+import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
@@ -89,8 +91,11 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
   const scene = useSelector( state => state.scene );
   const waiting = useSelector( state => !!state.waiting );
   const snapshots = useSelector( state => state.snapshots );
+  const [ fullScreen, setFullScreen ] = useState( false );
+  const normalStyle = { display: 'flex', height: '100%', position: 'relative' };
+  const fullScreenStyle = { height: '100%', width: '100%', position: 'fixed', top: '0px', left: '0px', zIndex: '1000' };
   return (
-    <div style={ { display: 'flex', height: '100%', position: 'relative' } }>
+    <div style={ fullScreen? fullScreenStyle : normalStyle }>
       { scene?
         <DesignCanvas {...scene} >
           { scene.shapes &&
@@ -104,6 +109,11 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
         <SceneMenu snapshots={snapshots} />
       }
       <Spinner visible={useSpinner && waiting} />
+      <IconButton color="inherit" aria-label="fullscreen"
+          style={ { position: 'absolute', bottom: '5px', right: '5px' } }
+          onClick={() => setFullScreen(!fullScreen)} >
+        { fullScreen? <FullscreenExitIcon fontSize='medium'/> : <FullscreenIcon fontSize='medium'/> }
+      </IconButton>
       { source && source.text &&
         <IconButton color="inherit" aria-label="download"
             style={ { position: 'absolute', top: '5px', right: '5px' } }
