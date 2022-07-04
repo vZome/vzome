@@ -3,7 +3,7 @@ import React, { useRef, useMemo } from 'react'
 import { Canvas, useThree, extend, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { PerspectiveCamera } from '@react-three/drei'
-import { TrackballControls } from 'three/examples/jsm/controls/TrackballControls'
+import { TrackballControls } from 'three-stdlib/controls/TrackballControls'
 import useMeasure from 'react-use-measure';
 
 extend({ TrackballControls })
