@@ -1,6 +1,7 @@
 
 import React, { useRef, useMemo } from 'react'
 import { Canvas, useThree, extend, useFrame } from '@react-three/fiber'
+import { VRCanvas, DefaultXRControllers } from '@react-three/xr'
 import * as THREE from 'three'
 import { PerspectiveCamera } from '@react-three/drei'
 import { TrackballControls } from 'three-stdlib/controls/TrackballControls'
@@ -75,12 +76,13 @@ export const DesignCanvas = ( { lighting, camera, children, handleBackgroundClic
     backgroundColor: (lighting && lighting.backgroundColor) || defaultLighting.backgroundColor,
   }));
   return(
-    <Canvas ref={ref} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
-      <PerspectiveCamera makeDefault { ...{ fov: fovY, position, up } }>
+    <VRCanvas ref={ref} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
+      <DefaultXRControllers/>
+      <PerspectiveCamera makeDefault manual { ...{ fov: fovY, position, up } }>
         <Lighting {...(lights)} />
       </PerspectiveCamera>
       <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
       {children}
-    </Canvas>
+    </VRCanvas>
   )
 }

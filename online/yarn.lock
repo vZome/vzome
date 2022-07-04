@@ -241,6 +241,14 @@
     suspend-react "^0.0.8"
     zustand "^3.7.1"
 
+"@react-three/xr@^3.5.0":
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/@react-three/xr/-/xr-3.5.0.tgz#90e41eed9b6fc492f9fb3c656ce658741d38b61a"
+  integrity sha512-Kb+dTjyOYwCw7CErZi2UYvhvTy41144HHpHpl/vvaa2B1xQKVK5vvbXJqUDzyrAcCZj5RUUx5e6W/u6NMa7miQ==
+  dependencies:
+    react-merge-refs "^1.1.0"
+    three-stdlib "^2.8.6"
+
 "@reduxjs/toolkit@^1.8.3":
   version "1.8.3"
   resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-1.8.3.tgz#9c6a9c497bde43a67618d37a4175a00ae12efeb2"
@@ -1442,7 +1450,7 @@ three-mesh-bvh@^0.5.10:
   resolved "https://registry.yarnpkg.com/three-mesh-bvh/-/three-mesh-bvh-0.5.14.tgz#605654cf802b3e92ea7b18997535960d04344159"
   integrity sha512-rSk7SpKDR47m1PmkUxt5na5+dM4h0KW5zF43lMniZGjT4hQn9Om+g64ooFreFIWlQlrNN8pFqiPnDMRZS58/Yw==
 
-three-stdlib@^2.10.2, three-stdlib@^2.12.1:
+three-stdlib@^2.10.2, three-stdlib@^2.12.1, three-stdlib@^2.8.6:
   version "2.12.1"
   resolved "https://registry.yarnpkg.com/three-stdlib/-/three-stdlib-2.12.1.tgz#b63de05cf7f7803e630a7c0c5887e85ae06178ca"
   integrity sha512-G3SSsCOBiWa0sjjPt+K28ikQ84Plm/ZVUozMfWagK59kZqBWcaPVXpOThkAgvdBpm2zCWLW3edAoW/4XIbljVQ==

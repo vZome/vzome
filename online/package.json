@@ -8,6 +8,7 @@
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@react-three/drei": "^9.16.0",
     "@react-three/fiber": "^8.0.0",
+    "@react-three/xr": "^3.5.0",
     "@reduxjs/toolkit": "^1.8.3",
     "react": "^18.0",
     "react-dom": "^18.0",
@@ -29,6 +30,7 @@
   "scripts": {
     "build": "node scripts/prod-build.mjs",
     "dev": "node scripts/test-app.mjs",
+    "https": "node scripts/test-https.mjs",
     "wcdev": "node scripts/test-web-component.mjs"
   },
   "eslintConfig": {
