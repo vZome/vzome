@@ -26,7 +26,7 @@ export const vZomeViewerCSS = `
 
 :host > div > div > div {
   display: grid;
-  place-content: center;
+  // place-content: center;
 }
 
 .muiButton:hover {

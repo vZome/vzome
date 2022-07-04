@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
-import ReactDOM from "react-dom";
+import { createRoot } from 'react-dom/client';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { StylesProvider, jssPreset } from '@material-ui/styles';
@@ -148,7 +148,8 @@ export const renderViewer = ( store, container, url, config ) =>
   });
   const reactElement = React.createElement( StylesProvider, { jss: jss }, [ viewerElement ] );
 
-  ReactDOM.render( reactElement, container );
+  const root = createRoot( container );
+  root.render( reactElement );
 
   return reactElement;
 }
@@ -169,7 +170,11 @@ export const useVZomeUrl = ( url, preview, forDebugger=false ) =>
 {
   const report = useDispatch();
   // TODO: this should be encapsulated in an API on the store
-  useEffect( () => !!url && report( fetchDesign( url, preview, forDebugger ) ), [ url ] );
+  useEffect( () =>
+  {
+    if ( !!url ) 
+      report( fetchDesign( url, preview, forDebugger ) );
+  }, [ url ] );
 }
 
 // This component has to be separate from UrlViewer because of the useDispatch hook used in
