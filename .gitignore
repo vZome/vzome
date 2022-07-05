@@ -66,3 +66,4 @@ jsweet-errors.txt
 online-app.zip
 online.tgz
 deploy-to-dreamhost.sh
+*.pem

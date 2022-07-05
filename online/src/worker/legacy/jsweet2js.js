@@ -117,6 +117,39 @@ class JavaAlgebraicNumber
   {
     return this.legacyField.evaluateNumber( this.bigRationals )
   }
+
+  compareTo( that )
+  {
+    const d1 = this.evaluate();
+    const d2 = that.evaluate();
+    return (d1===d2)? 0 : (d1<d2) ? -1 : 1;
+  }
+
+  lessThan( that )
+  {
+    return this.compareTo(that) < 0;
+  }
+
+  greaterThan( that )
+  {
+    return this.compareTo(that) > 0;
+  }
+
+  lessThanOrEqualTo( that )
+  {
+    return this.compareTo(that) <= 0;
+  }
+
+  greaterThanOrEqualTo( that )
+  {
+    return this.compareTo(that) >= 0;
+  }
+
+  signum()
+  {
+    const d1 = this.evaluate();
+    return (d1===0) ? 0 : (d1<0) ? -1 : 1;
+  }
   
   isZero()
   {
