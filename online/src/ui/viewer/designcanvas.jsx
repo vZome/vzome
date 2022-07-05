@@ -1,9 +1,9 @@
 
 import React, { useRef, useMemo } from 'react'
 import { Canvas, useThree, extend, useFrame } from '@react-three/fiber'
-import { VRCanvas, DefaultXRControllers } from '@react-three/xr'
+import { VRCanvas, DefaultXRControllers, useXR, RayGrab } from '@react-three/xr'
 import * as THREE from 'three'
-import { PerspectiveCamera } from '@react-three/drei'
+import { PerspectiveCamera, Sky } from '@react-three/drei'
 import { TrackballControls } from 'three-stdlib/controls/TrackballControls'
 import useMeasure from 'react-use-measure';
 
@@ -29,6 +29,13 @@ const Controls = props => {
 //   )
 // }
 
+const Floor = () => (
+  <mesh rotation={[-Math.PI / 2, 0, 0]}>
+    <planeBufferGeometry attach="geometry" args={[40, 40]} />
+    <meshStandardMaterial attach="material" color="#999" />
+  </mesh>
+)
+
 const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
   const color = useMemo(() => new THREE.Color( backgroundColor ), [backgroundColor])
   useFrame( ({scene}) => { scene.background = color } )
@@ -42,6 +49,22 @@ const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
         <directionalLight key={JSON.stringify(direction)} target={centerObject} intensity={1.0} color={color} position={direction.map( x => -x )} /> ) }
     </>
   )
+}
+
+const VREffects = ({ children }) =>
+{
+  const { controllers, isPresenting, player } = useXR();
+  return (
+    <>
+      { isPresenting && <Sky sunPosition={[0, 1, 0]} />}
+      { isPresenting && <Floor /> }
+      <RayGrab>
+        <group scale={isPresenting? 0.025 : 1.0} position={isPresenting? [0,0,0] : [ 0, 1, -1 ]} >
+          {children}
+        </group>
+      </RayGrab>
+    </>
+  );
 }
 
 const defaultLighting = {
@@ -86,7 +109,9 @@ export const DesignCanvas = ( { lighting, camera, children, handleBackgroundClic
         <Lighting {...(lights)} />
         <PerspectiveCamera makeDefault manual { ...{ fov: fovY, position, up } } />
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
-        {children}
+        <VREffects>
+          {children}
+        </VREffects>
       </VRCanvas> )
   } else {
     return (
