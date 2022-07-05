@@ -63,6 +63,10 @@ export const defaultInitialCamera = {
   near: 0.271,
 }
 
+
+const queryParams = new URLSearchParams( window.location.search );
+const vrMode = queryParams.get( 'vr' ) === 'true';
+
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
@@ -75,14 +79,23 @@ export const DesignCanvas = ( { lighting, camera, children, handleBackgroundClic
     ...defaultLighting,
     backgroundColor: (lighting && lighting.backgroundColor) || defaultLighting.backgroundColor,
   }));
-  return(
-    <VRCanvas ref={ref} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
-      <DefaultXRControllers/>
-      <PerspectiveCamera makeDefault manual { ...{ fov: fovY, position, up } }>
+  if ( vrMode ) {
+    return (
+      <VRCanvas dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} >
+        <DefaultXRControllers/>
         <Lighting {...(lights)} />
-      </PerspectiveCamera>
-      <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
-      {children}
-    </VRCanvas>
-  )
+        <PerspectiveCamera makeDefault manual { ...{ fov: fovY, position, up } } />
+        <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
+        {children}
+      </VRCanvas> )
+  } else {
+    return (
+      <Canvas ref={ref} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
+        <PerspectiveCamera makeDefault manual { ...{ fov: fovY, position, up } }>
+          <Lighting {...(lights)} />
+        </PerspectiveCamera>
+        <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
+        {children}
+      </Canvas> )
+  }
 }
