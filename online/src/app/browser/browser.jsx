@@ -1,52 +1,27 @@
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useDispatch } from 'react-redux';
 import { fetchDesign } from '../../ui/viewer/store.js';
+import { useGitHubShares } from './github.js';
 
 import { DesignViewer } from '../../ui/viewer/index.jsx'
 
-import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid'
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: '100%',
-    maxWidth: 360,
-    position: 'relative',
-    overflow: 'auto'
-  },
-}));
-
 const queryParams = new URLSearchParams( window.location.search );
 const githubUser = queryParams.get( 'user' ) || "vorth";
 
-const BASE_URL = `https://raw.githubusercontent.com/${githubUser}/vzome-sharing/main/`;
-
 const DesignList = ( { setUrl } ) =>
 {
-  const classes = useStyles();
-  const [ designs, setDesigns ] = React.useState( [] );
+  const [ designs, getDesignUrl ] = useGitHubShares( githubUser );
   const [ selectedIndex, setSelectedIndex ] = React.useState( 0 );
-
-  useEffect( () => {
-    fetch( `https://api.github.com/repos/${githubUser}/vzome-sharing/git/trees/main?recursive=1` )
-      .then( response => response.json() )
-      .then( json => {
-        const allPaths = json.tree.filter( entry => entry.type==="blob" && entry.path.endsWith( '.vZome' ) )
-          .filter( entry => entry.path > "2021/07/31" )
-          .map( entry => entry.path );
-        console.log( 'Repo has', allPaths.length, 'entries.' );
-        setDesigns( allPaths );
-      } );
-  }, [] );
 
   const handleListItemClick = (event, index) => {
     setSelectedIndex(index);
-    const path = designs[ index ].split( '/' ).map( encodeURIComponent ).join( '/' );
-    setUrl( BASE_URL + path );
+    setUrl( getDesignUrl( index ) );
   };
 
   return (

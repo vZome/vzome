@@ -1,8 +1,9 @@
 
 import React, { useRef, useMemo } from 'react'
 import { Canvas, useThree, extend, useFrame } from '@react-three/fiber'
+import { VRCanvas, DefaultXRControllers, useXR, RayGrab } from '@react-three/xr'
 import * as THREE from 'three'
-import { PerspectiveCamera } from '@react-three/drei'
+import { PerspectiveCamera, Sky } from '@react-three/drei'
 import { TrackballControls } from 'three-stdlib/controls/TrackballControls'
 import useMeasure from 'react-use-measure';
 
@@ -28,6 +29,13 @@ const Controls = props => {
 //   )
 // }
 
+const Floor = () => (
+  <mesh rotation={[-Math.PI / 2, 0, 0]}>
+    <planeBufferGeometry attach="geometry" args={[40, 40]} />
+    <meshStandardMaterial attach="material" color="#999" />
+  </mesh>
+)
+
 const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
   const color = useMemo(() => new THREE.Color( backgroundColor ), [backgroundColor])
   useFrame( ({scene}) => { scene.background = color } )
@@ -41,6 +49,22 @@ const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
         <directionalLight key={JSON.stringify(direction)} target={centerObject} intensity={1.0} color={color} position={direction.map( x => -x )} /> ) }
     </>
   )
+}
+
+const VREffects = ({ children }) =>
+{
+  const { controllers, isPresenting, player } = useXR();
+  return (
+    <>
+      { isPresenting && <Sky sunPosition={[0, 1, 0]} />}
+      { isPresenting && <Floor /> }
+      <RayGrab>
+        <group scale={isPresenting? 0.025 : 1.0} position={isPresenting? [0,0,0] : [ 0, 1, -1 ]} >
+          {children}
+        </group>
+      </RayGrab>
+    </>
+  );
 }
 
 const defaultLighting = {
@@ -62,6 +86,10 @@ export const defaultInitialCamera = {
   near: 0.271,
 }
 
+
+const queryParams = new URLSearchParams( window.location.search );
+const vrMode = queryParams.get( 'vr' ) === 'true';
+
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
@@ -74,13 +102,25 @@ export const DesignCanvas = ( { lighting, camera, children, handleBackgroundClic
     ...defaultLighting,
     backgroundColor: (lighting && lighting.backgroundColor) || defaultLighting.backgroundColor,
   }));
-  return(
-    <Canvas ref={ref} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
-      <PerspectiveCamera makeDefault { ...{ fov: fovY, position, up } }>
+  if ( vrMode ) {
+    return (
+      <VRCanvas dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} >
+        <DefaultXRControllers/>
         <Lighting {...(lights)} />
-      </PerspectiveCamera>
-      <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
-      {children}
-    </Canvas>
-  )
+        {/* <PerspectiveCamera makeDefault manual { ...{ fov: fovY, position, up } } /> */}
+        <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
+        <VREffects>
+          {children}
+        </VREffects>
+      </VRCanvas> )
+  } else {
+    return (
+      <Canvas ref={ref} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
+        <PerspectiveCamera makeDefault { ...{ fov: fovY, position, up } }>
+          <Lighting {...(lights)} />
+        </PerspectiveCamera>
+        <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
+        {children}
+      </Canvas> )
+  }
 }
