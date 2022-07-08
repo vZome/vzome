@@ -154,7 +154,7 @@ const urlLoader = ( report, event ) =>
   console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${preview? "previewing" : "interpreting " } ${url}` );
   const xmlLoading = fetchUrlText( url );
 
-  xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { name, text } } ) );
+  xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { name, text, url } } ) );
 
   if ( preview ) {
     const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );

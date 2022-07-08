@@ -86,7 +86,7 @@ export const defaultInitialCamera = {
   near: 0.271,
 }
 
-const useVR = () =>
+export const useVR = () =>
 {
   const [ vrAvailable, setVrAvailable ] = useState( false );
   useEffect( () => {
