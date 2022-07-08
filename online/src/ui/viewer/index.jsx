@@ -9,13 +9,15 @@ import IconButton from '@material-ui/core/IconButton'
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
+import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser'
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import Link from '@material-ui/core/Link';
 import { create } from 'jss';
 
 import { ShapedGeometry } from './geometry.jsx'
-import { DesignCanvas } from './designcanvas.jsx'
+import { DesignCanvas, useVR } from './designcanvas.jsx'
 import { createWorkerStore, defineCamera, fetchDesign, selectEditBefore } from './store.js';
 import { Spinner } from './spinner.jsx'
 import { ErrorAlert } from './alert.jsx'
@@ -84,6 +86,8 @@ export const SceneMenu = ( { snapshots } ) =>
   );
 }
 
+const encodeUrl = url => url .split( '/' ) .map( encodeURIComponent ) .join( '/' );
+
 export const DesignViewer = ( { children, children3d, config={} } ) =>
 {
   const { showSnapshots=false, useSpinner=false } = config;
@@ -94,6 +98,7 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
   const [ fullScreen, setFullScreen ] = useState( false );
   const normalStyle = { display: 'flex', height: '100%', position: 'relative' };
   const fullScreenStyle = { height: '100%', width: '100%', position: 'fixed', top: '0px', left: '0px', zIndex: '1000' };
+  const vrAvailable = useVR();
   return (
     <div style={ fullScreen? fullScreenStyle : normalStyle }>
       { scene?
@@ -114,6 +119,21 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
           onClick={() => setFullScreen(!fullScreen)} >
         { fullScreen? <FullscreenExitIcon fontSize='medium'/> : <FullscreenIcon fontSize='medium'/> }
       </IconButton>
+
+      {/* I'm using the legacy preview mode just for me, really, when viewing on my Oculus Quest.
+          This lets me enjoy designs from web pages that include many viewers, which normally
+          limit you to one VR experience.  The preview viewer will open in a new tab, where I can enter VR.
+        */}
+      { vrAvailable && source && source.url &&
+        <IconButton color="inherit" aria-label="preview"
+          style={ { position: 'absolute', top: '45px', right: '5px' } }
+          component={Link}
+          href={`https://www.vzome.com/app/?url=${encodeUrl(source.url)}`} target="_blank" rel="noopener"
+        >
+          <OpenInBrowserIcon fontSize='medium'/>
+        </IconButton>
+      }
+
       { source && source.text &&
         <IconButton color="inherit" aria-label="download"
             style={ { position: 'absolute', top: '5px', right: '5px' } }
