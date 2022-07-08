@@ -114,7 +114,7 @@ export const DesignCanvas = ( { lighting, camera, children, handleBackgroundClic
       <VRCanvas dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} >
         <DefaultXRControllers/>
         <Lighting {...(lights)} />
-        {/* <PerspectiveCamera makeDefault manual { ...{ fov: fovY, position, up } } /> */}
+        <PerspectiveCamera makeDefault manual { ...{ fov: fovY, position, up } } />
         <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
         <VREffects>
           {children}
