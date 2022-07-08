@@ -1,5 +1,5 @@
 
-import React, { useRef, useMemo } from 'react'
+import React, { useRef, useMemo, useState, useEffect } from 'react'
 import { Canvas, useThree, extend, useFrame } from '@react-three/fiber'
 import { VRCanvas, DefaultXRControllers, useXR, RayGrab } from '@react-three/xr'
 import * as THREE from 'three'
@@ -86,9 +86,15 @@ export const defaultInitialCamera = {
   near: 0.271,
 }
 
-
-const queryParams = new URLSearchParams( window.location.search );
-const vrMode = queryParams.get( 'vr' ) === 'true';
+const useVR = () =>
+{
+  const [ vrAvailable, setVrAvailable ] = useState( false );
+  useEffect( () => {
+    const xr = window.navigator.xr;
+    xr && xr.isSessionSupported( "immersive-vr" ) .then( available => setVrAvailable( available ) );
+  }, []);
+  return vrAvailable;
+}
 
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
@@ -102,7 +108,8 @@ export const DesignCanvas = ( { lighting, camera, children, handleBackgroundClic
     ...defaultLighting,
     backgroundColor: (lighting && lighting.backgroundColor) || defaultLighting.backgroundColor,
   }));
-  if ( vrMode ) {
+  const vrAvailable = useVR();
+  if ( vrAvailable ) {
     return (
       <VRCanvas dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} >
         <DefaultXRControllers/>
