@@ -171,3 +171,17 @@
 *.gz lfs
 *.rar lfs
 *.tar lfs
+
+
+# Other, warning from Unity about Oculus Integration bits
+*.bundle lfs
+*.dylib lfs
+*.pb lfs
+*.tga lfs
+*.aar lfs
+*.fbx lfs
+
+
+*ovrplatform lfs
+
+*AudioPluginOculusSpatializer lfs
