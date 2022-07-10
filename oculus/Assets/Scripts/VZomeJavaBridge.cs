@@ -72,16 +72,20 @@ public class VZomeJavaBridge : MonoBehaviour
         msgText = messages .GetComponent<Text>();
         msgText .text = "Loading file: " + fileNames[ selectedFile ];
         LoadVZomeJob job = new LoadVZomeJob();
+        Debug.Log( "%%%%%%%%%%%%%% LoadVZomeJob created. " );
 
         string filePath = paths[ selectedFile ];
         job .pathN = new NativeArray<byte>( filePath.Length, Allocator.Temp );
         job .pathN .CopyFrom( Encoding.ASCII.GetBytes( filePath ) );
+        Debug.Log( "%%%%%%%%%%%%%% file bytes copied. " );
 
         string anchor = this .name;
         job .objectNameN = new NativeArray<byte>( anchor.Length, Allocator.Temp );
         job .objectNameN .CopyFrom( Encoding.ASCII.GetBytes( anchor ) );
 
         JobHandle jh = job .Schedule();
+        JobHandle .ScheduleBatchedJobs();
+        msgText .text = "%%%%%%%%%%%%%% LoadVZomeJob scheduled.";
         Debug.Log( "%%%%%%%%%%%%%% LoadVZomeJob scheduled. " );
     }
 
@@ -143,9 +147,9 @@ public class VZomeJavaBridge : MonoBehaviour
         MeshCollider collider = copy .GetComponent<MeshCollider>();
         collider .sharedMesh = meshFilter .mesh;
 
-        GrabSnapper snapper = copy .GetComponent<GrabSnapper>();
-        snapper .vZomeId = instance.id;
-        snapper .bridge = this;
+        // GrabSnapper snapper = copy .GetComponent<GrabSnapper>();
+        // snapper .vZomeId = instance.id;
+        // snapper .bridge = this;
 
         copy .transform .localPosition = instance .position;
         copy .transform .localRotation = instance .rotation;
