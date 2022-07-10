@@ -16,7 +16,7 @@ class Renderer implements RenderingChanges
     static class UnityMeshView implements AlgebraicNumber.Views.Real, Polyhedron.Views.UnityMesh {}
 
     private final Adapter adapter;
-    private final JsonMapper mapper = new JsonMapper( UnityMeshView.class );
+    private final JsonMapper mapper = new JsonMapper( UnityMeshView.class, true );
     private final ObjectWriter objectWriter = mapper .getObjectMapper() .writer();
 
     Renderer( Adapter adapter )
