@@ -66,7 +66,7 @@ public class VZomeJavaBridge : MonoBehaviour
     {
         template = this .transform .Find( "vZomeTemplate" ) .gameObject;
 
-        Transform panel = canvas .Find( "Panel" );
+        Transform panel = canvas .Find( "Load Panel" );
         GameObject messages = panel .Find( "JavaMessages" ) .gameObject;
 
         msgText = messages .GetComponent<Text>();
