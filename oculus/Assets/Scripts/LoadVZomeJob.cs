@@ -21,6 +21,7 @@ public struct LoadVZomeJob : IJob
         AndroidJavaClass adapterClass = new AndroidJavaClass( "com.vzome.unity.Adapter" );
         Debug.Log( "%%%%%%%%%%%%%% LoadVZomeJob attempting to open: " + path );
         adapterClass .CallStatic( "loadFile", path, objectName );
+        // adapterClass .CallStatic( "loadUrl", "https://raw.githubusercontent.com/vorth/vzome-sharing/main/2022/07/04/16-28-03-test-demo-johnK/test-demo-johnK.vZome", objectName );
         Debug.Log( "%%%%%%%%%%%%%% LoadVZomeJob: loadFile returned" );
     }
 }

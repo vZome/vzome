@@ -155,6 +155,25 @@ public class VZomeJavaBridge : MonoBehaviour
         Debug.Log( "%%%%%%%%%%%%%% CreateGameObject from Java: " + instance.id );
     }
 
+    void ChangeObjectColor( string json )
+    { 
+        Instance instance = JsonUtility.FromJson<Instance>(json);
+        Debug.Log( "%%%%%%%%%%%%%% ChangeObjectColor from Java: " + instance .id );
+        GameObject toChange = instances[ instance .id ];
+        Material material;
+        if ( materials .ContainsKey( instance .color ) ) {
+            material = materials[ instance .color ];
+        } else {
+            material = new Material( Shader.Find("Standard") );
+            Debug.Log( "&&&&& material created for " + instance.color );
+            Color color;
+            ColorUtility .TryParseHtmlString( instance .color, out color );
+            material .color = color;
+            materials .Add( instance .color, material );
+        }
+        toChange .GetComponent<MeshRenderer>() .sharedMaterial = material;
+    }
+
     void DeleteGameObject( string json )
     { 
         Deletion deletion = JsonUtility.FromJson<Deletion>(json);
