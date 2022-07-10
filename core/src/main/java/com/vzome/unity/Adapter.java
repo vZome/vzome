@@ -119,13 +119,14 @@ public class Adapter
     protected void sendMessage( String callbackFn, String message )
     {
         System.out.println( "Adapter.sendMessage(): " + callbackFn + " : " + message );
-        try {
-            SEND_MESSAGE_METHOD .invoke( null, this .gameObjectName, callbackFn, message );
-        }
-        catch ( SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e )
-        {
-            e.printStackTrace();
-        }
+        if ( SEND_MESSAGE_METHOD != null )
+            try {
+                SEND_MESSAGE_METHOD .invoke( null, this .gameObjectName, callbackFn, message );
+            }
+            catch ( SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e )
+            {
+                e.printStackTrace();
+            }
     }
 
     protected void logInfo( String message )
@@ -269,7 +270,7 @@ public class Adapter
                 "0\n" + 
                 "";
         registerShape( "default-connector", twoPanels );
-        String url = "http://vzome.com/models/2008/02-Feb/06-Scott-K4more/K4more.vZome";
+        String url = "https://raw.githubusercontent.com/vorth/vzome-sharing/main/2022/07/04/16-28-03-test-demo-johnK/test-demo-johnK.vZome";
         loadUrl( url, null );
         System.out.println( "%%%%%%%%%%%%%" );
         System.out.println( "%%%%%%%%%%%%%" );

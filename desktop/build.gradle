@@ -21,7 +21,17 @@ task recordBuildProperties {
 processResources { 
     dependsOn recordBuildProperties
     from recordBuildProperties.outputDir
-} 
+}
+
+task installUnityJars( type: Copy ) {
+    dependsOn installDist
+    from( "$buildDir/install/desktop/lib" ) {
+        include 'core-*.jar'
+        include 'jackson-*.jar'
+        include 'vecmath-*.jar'
+    }
+    into "${rootProject.projectDir}/oculus/Assets/Plugins/Android"
+}
 
 // used by the 'application' plugin
 // as well as the 'macappbundle' and 'launch4j' Gradle plugins in sub-projects

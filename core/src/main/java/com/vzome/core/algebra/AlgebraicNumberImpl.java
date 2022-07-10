@@ -541,9 +541,9 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         BigInteger divisor = this .getDivisor();
         int order = this .factors .length;
         int[] result = new int[ order + 1 ];
-        result[ order ] = divisor .intValueExact();
+        result[ order ] = divisor .intValue();
         for ( int i = 0; i < order; i++ ) {
-            result[ i ] = ((BigRationalImpl) this .factors[ i ] .times( new BigRationalImpl( divisor, BigInteger.ONE ) )) .getNumerator() .intValueExact();
+            result[ i ] = ((BigRationalImpl) this .factors[ i ] .times( new BigRationalImpl( divisor, BigInteger.ONE ) )) .getNumerator() .intValue();
         }
         return result;
     }
