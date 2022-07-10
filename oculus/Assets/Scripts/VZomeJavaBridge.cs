@@ -24,8 +24,9 @@ public class VZomeJavaBridge : MonoBehaviour
     public Dropdown dropdown;
     int selectedFile;
 
-    private const string VZOME_PATH = "/mnt/sdcard/Oculus/vZome/";
+    private const string VZOME_PATH = "/mnt/sdcard/Download/";
     private const string VZOME_EXTENSION = ".vzome";
+    private const string XML_EXTENSION = ".xml";
     private List<string> fileNames = new List<string>();
     private List<string> paths = new List<string>();
 
@@ -44,13 +45,19 @@ public class VZomeJavaBridge : MonoBehaviour
             adapterClass .CallStatic( "registerShape", vef.name, ((TextAsset) vef).text );
         }
 
+        Debug.Log( "%%%%%%%%%%%%%% Discovering files in " + VZOME_PATH );
         foreach (string path in Directory .GetFiles( VZOME_PATH ) )
         {
             string ext = Path .GetExtension( path ) .ToLower();
+            string filename = Path .GetFileNameWithoutExtension( path );
+            if ( XML_EXTENSION .Equals( ext ) ) {
+                ext = Path .GetExtension( filename ) .ToLower();
+                filename = Path .GetFileNameWithoutExtension( filename );
+            }
             if ( VZOME_EXTENSION .Equals( ext ) ) {
-                string filename = Path .GetFileNameWithoutExtension( path );
                 fileNames .Add( filename );
                 paths .Add( path );
+                Debug.Log( "%%%%%%%%%%%%%% Discovered file " + path );
             }
         }
         dropdown .AddOptions( fileNames );
