@@ -15,6 +15,7 @@ public class VZomeJavaBridge : MonoBehaviour
 
     private Text msgText;
     private GameObject template;
+    private string currentFilePath;
 
     public AudioClip snapReleaseSound; 
     public AudioClip modelReadySound; 
@@ -79,12 +80,10 @@ public class VZomeJavaBridge : MonoBehaviour
         msgText = messages .GetComponent<Text>();
         msgText .text = "Loading file: " + fileNames[ selectedFile ];
         LoadVZomeJob job = new LoadVZomeJob();
-        Debug.Log( "%%%%%%%%%%%%%% LoadVZomeJob created. " );
 
-        string filePath = paths[ selectedFile ];
-        job .pathN = new NativeArray<byte>( filePath.Length, Allocator.Temp );
-        job .pathN .CopyFrom( Encoding.ASCII.GetBytes( filePath ) );
-        Debug.Log( "%%%%%%%%%%%%%% file bytes copied. " );
+        currentFilePath = paths[ selectedFile ];
+        job .pathN = new NativeArray<byte>( currentFilePath.Length, Allocator.Temp );
+        job .pathN .CopyFrom( Encoding.ASCII.GetBytes( currentFilePath ) );
 
         string anchor = this .name;
         job .objectNameN = new NativeArray<byte>( anchor.Length, Allocator.Temp );
@@ -92,7 +91,6 @@ public class VZomeJavaBridge : MonoBehaviour
 
         JobHandle jh = job .Schedule();
         JobHandle .ScheduleBatchedJobs();
-        msgText .text = "%%%%%%%%%%%%%% LoadVZomeJob scheduled.";
         Debug.Log( "%%%%%%%%%%%%%% LoadVZomeJob scheduled. " );
     }
 
@@ -212,10 +210,18 @@ public class VZomeJavaBridge : MonoBehaviour
     public void DoSimpleAction( String action )
     {
         if ( adapter != null ) {
-            Debug .Log( "%%%%%%%%%%%%%% Calling DoSimpleAction: " + action );
-            SimpleAction pa = new SimpleAction();
-            pa .action = action;
-            DoModelAction( pa );
+            msgText .text = "DoSimpleAction: " + action;
+            EditJob job = new EditJob();
+
+            job .pathN = new NativeArray<byte>( currentFilePath.Length, Allocator.Temp );
+            job .pathN .CopyFrom( Encoding.ASCII.GetBytes( currentFilePath ) );
+
+            job .actionN = new NativeArray<byte>( action.Length, Allocator.Temp );
+            job .actionN .CopyFrom( Encoding.ASCII.GetBytes( action ) );
+
+            JobHandle jh = job .Schedule();
+            JobHandle .ScheduleBatchedJobs();
+            Debug.Log( "%%%%%%%%%%%%%% DoSimpleAction scheduled. " );
         }
     }
 
