@@ -94,6 +94,8 @@ const init = async () =>
 
   class ImportColoredMeshJson extends vzomePkg.core.edits.ImportMesh
   {
+    getXmlElementName() { return "ImportColoredMeshJson"; }
+
     parseMeshData( offset, events, registry )
     {
       // TODO: handle projection and scale
@@ -133,6 +135,8 @@ const init = async () =>
 
   class ImportSimpleMeshJson extends vzomePkg.core.edits.ImportMesh
   {
+    getXmlElementName() { return "ImportSimpleMeshJson"; }
+    
     parseMeshData( offset, events, registry )
     {
       // TODO: handle projection and scale
