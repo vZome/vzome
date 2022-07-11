@@ -2172,7 +2172,7 @@ MonoBehaviour:
   m_TurnAmount: 15
   m_DebounceTime: 0.33
   m_EnableTurnLeftRight: 1
-  m_EnableTurnAround: 1
+  m_EnableTurnAround: 0
   m_LeftHandSnapTurnAction:
     m_UseReference: 0
     m_Action:

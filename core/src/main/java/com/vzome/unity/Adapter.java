@@ -89,6 +89,7 @@ public class Adapter
     private final RenderingChanges renderer;
     private final RenderedModel renderedModel;
     private final ObjectMapper objectMapper;
+    private static final boolean batchRendering = true;
 
     private Adapter( String gameObjectName, String path, Document doc )
     {
@@ -99,16 +100,21 @@ public class Adapter
 
         this .objectMapper = new ObjectMapper();
 //
-        logInfo( "loaded: " + path );
+        logInfo( "loading and rendering... please wait..." );
         renderedModel = model .getRenderedModel();
-        renderedModel .addListener( this .renderer );
-
-        // This just to render the center ball
-        RenderedModel .renderChange( new RenderedModel( null, null ), renderedModel, this .renderer );
+        if ( !batchRendering ) {
+            renderedModel .addListener( this .renderer );
+            // This just to render the center ball
+            RenderedModel .renderChange( new RenderedModel( null, null ), renderedModel, this .renderer );
+        }
 
         try {
             model .finishLoading( false, false );
+            if ( batchRendering ) {
+                RenderedModel .renderChange( new RenderedModel( null, null ), renderedModel, this .renderer );
+            }
             this .logInfo( "DONE rendering!" );
+            renderedModel .addListener( this .renderer );
         }
         catch ( Failure e )
         {
@@ -118,7 +124,7 @@ public class Adapter
     
     protected void sendMessage( String callbackFn, String message )
     {
-        System.out.println( "Adapter.sendMessage(): " + callbackFn + " : " + message );
+        System.out.println( "[com.vzome.unity.Adapter.sendMessage()] " + callbackFn + " : " + message );
         if ( SEND_MESSAGE_METHOD != null )
             try {
                 SEND_MESSAGE_METHOD .invoke( null, this .gameObjectName, callbackFn, message );
