@@ -16,12 +16,12 @@ PlayerSettings:
   productName: vZome VR
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
-  m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
+  m_SplashScreenBackgroundColor: {r: 0.6226415, g: 0.6226415, b: 0.6226415, a: 1}
   m_ShowUnitySplashScreen: 1
   m_ShowUnitySplashLogo: 1
   m_SplashScreenOverlayOpacity: 0.575
   m_SplashScreenAnimation: 1
-  m_SplashScreenLogoStyle: 0
+  m_SplashScreenLogoStyle: 1
   m_SplashScreenDrawMode: 0
   m_SplashScreenBackgroundAnimationZoom: 1
   m_SplashScreenLogoAnimationZoom: 1
@@ -39,9 +39,7 @@ PlayerSettings:
     y: 0
     width: 1
     height: 1
-  m_SplashScreenLogos:
-  - logo: {fileID: 0}
-    duration: 2
+  m_SplashScreenLogos: []
   m_VirtualRealitySplashScreen: {fileID: 2800000, guid: ff76347170fbc4ab1b35ca8c7fc0fe62,
     type: 3}
   m_HolographicTrackingLossScreen: {fileID: 0}
@@ -158,7 +156,10 @@ PlayerSettings:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: -3662998013706177469, guid: cbf66a9c58da840eb8caf5f97c3f8b85, type: 2}
+  - {fileID: 0}
   - {fileID: -2174203159256720554, guid: 11c0b498faa3749c58d4a3d2c33d4a98, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -185,7 +186,7 @@ PlayerSettings:
     iPhone: 0
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
-  AndroidBundleVersionCode: 1
+  AndroidBundleVersionCode: 3
   AndroidMinSdkVersion: 23
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 0
@@ -357,22 +358,30 @@ PlayerSettings:
       m_Height: 36
       m_Kind: 1
       m_SubKind: 
-    - m_Textures: []
+    - m_Textures:
+      - {fileID: 2800000, guid: ff76347170fbc4ab1b35ca8c7fc0fe62, type: 3}
+      - {fileID: 2800000, guid: ff76347170fbc4ab1b35ca8c7fc0fe62, type: 3}
       m_Width: 432
       m_Height: 432
       m_Kind: 2
       m_SubKind: 
-    - m_Textures: []
+    - m_Textures:
+      - {fileID: 2800000, guid: ff76347170fbc4ab1b35ca8c7fc0fe62, type: 3}
+      - {fileID: 2800000, guid: ff76347170fbc4ab1b35ca8c7fc0fe62, type: 3}
       m_Width: 324
       m_Height: 324
       m_Kind: 2
       m_SubKind: 
-    - m_Textures: []
+    - m_Textures:
+      - {fileID: 2800000, guid: ff76347170fbc4ab1b35ca8c7fc0fe62, type: 3}
+      - {fileID: 2800000, guid: ff76347170fbc4ab1b35ca8c7fc0fe62, type: 3}
       m_Width: 216
       m_Height: 216
       m_Kind: 2
       m_SubKind: 
-    - m_Textures: []
+    - m_Textures:
+      - {fileID: 2800000, guid: ff76347170fbc4ab1b35ca8c7fc0fe62, type: 3}
+      - {fileID: 2800000, guid: ff76347170fbc4ab1b35ca8c7fc0fe62, type: 3}
       m_Width: 162
       m_Height: 162
       m_Kind: 2
@@ -472,7 +481,9 @@ PlayerSettings:
   m_BuildTargetGroupLightmapEncodingQuality: []
   m_BuildTargetGroupLightmapSettings: []
   m_BuildTargetNormalMapEncoding: []
-  m_BuildTargetDefaultTextureCompressionFormat: []
+  m_BuildTargetDefaultTextureCompressionFormat:
+  - m_BuildTarget: Android
+    m_Format: 3
   playModeTestRunnerEnabled: 0
   runPlayModeTestAsEditModeTest: 0
   actionOnDotNetUnhandledException: 1
