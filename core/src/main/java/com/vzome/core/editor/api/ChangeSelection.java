@@ -94,7 +94,7 @@ public abstract class ChangeSelection extends SideEffects
             break;
 
         default:
-            logger.warning("unexpected action: " + action.toString() );
+            logger.warning("unexpected action: " + action.name() );
             break;
         }
     }
