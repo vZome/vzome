@@ -161,7 +161,7 @@ public class JoinPoints extends ChangeManifestations {
                     }
                     break;
                 default:
-                    throw new Failure("Unsupported JoinModeEnum: " + joinMode.toString());
+                    throw new Failure("Unsupported JoinModeEnum: " + joinMode.name());
             }
             // commit the changes
             redo();
