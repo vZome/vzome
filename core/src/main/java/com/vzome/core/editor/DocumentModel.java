@@ -907,6 +907,17 @@ public class DocumentModel implements Snapshot .Recorder, Context
     @Override
     public void actOnSnapshot( int id, SnapshotAction action )
     {
+        if (id >= snapshots.length) {
+            // This avoids an ArrayIndexOutOfBoundsException.
+            // Since 8 is the initial size of snapshots[], 
+            // this should only happen if we're using VSCode to debug a vZome file
+            // having more than 8 snapshots with lastStickyEdit = -1.
+            snapshots = Arrays.copyOf(snapshots, id + 1);
+            // Since the new array element is null, 
+            // I could just return early to avoid the overhead of actOnSnapshot()
+            // but it correctly handles null snapshots and this should only happen 
+            // when debugging, so I won't change the code path.
+        }
         RenderedModel snapshot = snapshots[ id ];
         action .actOnSnapshot( snapshot );
     }
