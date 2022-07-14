@@ -4,8 +4,9 @@ import root2Field from '../fields/root2.js'
 import root3Field from '../fields/root3.js'
 import heptagonField from '../fields/heptagon.js'
 import Adapter from './adapter.js'
-import { algebraicNumberFactory, JavaDomDocument, JavaDomElement, JsProperties } from './jsweet2js.js';
+import { algebraicNumberFactory, JavaDomElement, JsProperties } from './jsweet2js.js';
 import { LegacyEdit } from './edit.js';
+import { configureLogging } from './logging.js'
 
 import allShapes from './resources/com/vzome/core/parts/index.js'
 import groupResources from './resources/com/vzome/core/math/symmetry/index.js'
@@ -89,8 +90,12 @@ const makeFloatMatrices = ( matrices ) =>
 
 const init = async () =>
 {
-  const vzomePkg = com.vzome
-  const util = java.util
+  const vzomePkg = com.vzome;
+  const util = java.util;
+
+  // This is a bit of a hack, but how else would you configure system props for JSweet?
+  java.lang.System.propertyMap_$LI$().put( "gwt.logging.enabled", "TRUE" );
+  configureLogging( util.logging );
 
   class ImportColoredMeshJson extends vzomePkg.core.edits.ImportMesh
   {
