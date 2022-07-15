@@ -150,8 +150,8 @@ public abstract class ManifestationImpl implements GroupElement, Manifestation, 
 
     public Element getXml( Document doc )
     {
-        return mManifests .isEmpty()
-                ? doc .createElement( "NoConstructions" )
-                        : mManifests .iterator() .next() .getXml( doc );
+        // This is better than the old way, which was subject to mutation,
+        //   but it may break some history diffs in regression testing.
+        return toConstruction() .getXml( doc );
     }
 }
