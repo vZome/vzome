@@ -3,6 +3,8 @@ package com.vzome.core.editor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
@@ -14,9 +16,14 @@ import com.vzome.core.model.Manifestation;
 
 public class ApplyTool extends ChangeManifestations
 {
+    private static final Logger logger = Logger .getLogger( "com.vzome.core.editor.ApplyTool" );
+
     @Override
     public void perform() throws Failure
     {
+        if ( logger .isLoggable( Level .FINE ) )
+            logger .fine( "performing ApplyTool " + tool .getId() + " :: " + tool .getCategory() );
+
         // first, handle the inputs, offering each to the tool (if it needs input).
         //  If the tool does not need input, it operates just on its parameters and
         //  the entire realized model, but it still may add to or replace the current
@@ -27,14 +34,21 @@ public class ApplyTool extends ChangeManifestations
             {
                 super .unselect( man, true );
                 super .deleteManifestation( man );
+                if ( logger .isLoggable( Level .FINEST ) )
+                    logger .finest( "ApplyTool - unselect and delete " + man .toString() );
             }
             else if ( hideInputs && tool .needsInput() )
             {
                 super .unselect( man, true );
                 super .hideManifestation( man );
+                if ( logger .isLoggable( Level .FINEST ) )
+                    logger .finest( "ApplyTool - unselect and hide " + man .toString() );
             }
-            else if ( ! selectInputs )
+            else if ( ! selectInputs ) {
                 super .unselect( man, true );
+                if ( logger .isLoggable( Level .FINEST ) )
+                    logger .finest( "ApplyTool - unselect " + man .toString() );
+            }
             if ( tool .needsInput() )
                 inputs .add( man );
         }
