@@ -635,11 +635,13 @@ const parseViewXml = ( viewingElement ) =>
   const distance = parseFloat( viewModel.getAttribute( "distance" ) )
   const near = parseFloat( viewModel.getAttribute( "near" ) )
   const far = parseFloat( viewModel.getAttribute( "far" ) )
+  const parallelAttr = viewModel.getAttribute( "parallel" );
+  const orthographic = parallelAttr ? (parallelAttr.toLowerCase() == "true") : false
   const lookAt = parseVector( viewModel, "LookAtPoint" )
   const up = parseVector( viewModel, "UpDirection" )
   const lookDirection = parseVector( viewModel, "LookDirection" )
   const position = lookAt.map( (e,i) => e - distance * lookDirection[ i ] );
-  return { position, lookAt, up, near, far, fov: 0.43915263 };
+  return { position, lookAt, up, near, far, fov: 0.43915263, perspective: !orthographic };
 }
 
 const parseArticle = ( notesElement, xmlTree ) =>

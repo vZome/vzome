@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { createRoot } from 'react-dom/client';
 
@@ -10,6 +10,7 @@ import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser'
+import SettingsIcon from '@material-ui/icons/Settings'
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
@@ -21,6 +22,7 @@ import { DesignCanvas, useVR } from './designcanvas.jsx'
 import { createWorkerStore, defineCamera, fetchDesign, selectEditBefore } from './store.js';
 import { Spinner } from './spinner.jsx'
 import { ErrorAlert } from './alert.jsx'
+import { SettingsDialog } from './settings.jsx';
 
 // from https://www.bitdegree.org/learn/javascript-download
 const download = source =>
@@ -95,14 +97,21 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
   const scene = useSelector( state => state.scene );
   const waiting = useSelector( state => !!state.waiting );
   const snapshots = useSelector( state => state.snapshots );
+  const report = useDispatch();
+  const setPerspective = value => report( defineCamera( { ...(scene && scene.camera), perspective: value } ) );
+
+  const perspective = scene && scene.camera && scene.camera.perspective;
   const [ fullScreen, setFullScreen ] = useState( false );
+  const [ showSettings, setShowSettings ] = useState( false );
   const normalStyle = { display: 'flex', height: '100%', position: 'relative' };
   const fullScreenStyle = { height: '100%', width: '100%', position: 'fixed', top: '0px', left: '0px', zIndex: '1000' };
   const vrAvailable = useVR();
+  const containerRef = useRef()
+
   return (
-    <div style={ fullScreen? fullScreenStyle : normalStyle }>
+    <div ref={containerRef} style={ fullScreen? fullScreenStyle : normalStyle }>
       { scene?
-        <DesignCanvas {...scene} >
+        <DesignCanvas lighting={scene.lighting} camera={ { ...scene.camera, perspective } } >
           { scene.shapes &&
             <ShapedGeometry embedding={scene.embedding} shapes={scene.shapes} />
           }
@@ -117,8 +126,14 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
       <IconButton color="inherit" aria-label="fullscreen"
           style={ { position: 'absolute', bottom: '5px', right: '5px' } }
           onClick={() => setFullScreen(!fullScreen)} >
-        { fullScreen? <FullscreenExitIcon fontSize='medium'/> : <FullscreenIcon fontSize='medium'/> }
+        { fullScreen? <FullscreenExitIcon fontSize='large'/> : <FullscreenIcon fontSize='large'/> }
       </IconButton>
+      <IconButton color="inherit" aria-label="settings"
+          style={ { position: 'absolute', top: '5px', right: '5px' } }
+          onClick={() => setShowSettings(!showSettings)} >
+        <SettingsIcon fontSize='large'/>
+      </IconButton>
+      <SettingsDialog {...{ showSettings, setShowSettings, perspective, setPerspective }} container={containerRef.current} />
 
       {/* I'm using the legacy preview mode just for me, really, when viewing on my Oculus Quest.
           This lets me enjoy designs from web pages that include many viewers, which normally
@@ -130,15 +145,15 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
           component={Link}
           href={`https://www.vzome.com/app/?url=${encodeUrl(source.url)}`} target="_blank" rel="noopener"
         >
-          <OpenInBrowserIcon fontSize='medium'/>
+          <OpenInBrowserIcon fontSize='large'/>
         </IconButton>
       }
 
       { source && source.text &&
         <IconButton color="inherit" aria-label="download"
-            style={ { position: 'absolute', top: '5px', right: '5px' } }
+            style={ { position: 'absolute', bottom: '5px', left: '5px' } }
             onClick={() => download( source ) } >
-          <GetAppRoundedIcon fontSize='medium'/>
+          <GetAppRoundedIcon fontSize='large'/>
         </IconButton>
       }
       <ErrorAlert/>

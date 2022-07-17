@@ -1,33 +1,10 @@
 
-import React, { useRef, useMemo, useState, useEffect } from 'react'
-import { Canvas, useThree, extend, useFrame } from '@react-three/fiber'
+import React, { useMemo, useState, useEffect } from 'react'
+import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { VRCanvas, DefaultXRControllers, useXR, RayGrab } from '@react-three/xr'
 import * as THREE from 'three'
-import { PerspectiveCamera, Sky } from '@react-three/drei'
-import { TrackballControls } from 'three-stdlib/controls/TrackballControls'
+import { PerspectiveCamera, OrthographicCamera, Sky, TrackballControls } from '@react-three/drei'
 import useMeasure from 'react-use-measure';
-
-extend({ TrackballControls })
-const Controls = props => {
-  const { gl, camera } = useThree()
-  const controls = useRef()
-  useFrame(() => controls.current.update())
-  return <trackballControls ref={controls} args={[camera, gl.domElement]} {...props} />
-}
-
-// // Found this trick for getting the DL.target into the scene here:
-// //   https://spectrum.chat/react-three-fiber/general/how-to-set-spotlight-target~823340ea-433e-426a-a0dc-b9a333fc3f94
-// const DirLight = ( { direction, color } ) =>
-// {
-//   const position = direction.map( x => -x )
-//   const light = useMemo(() => new THREE.DirectionalLight(), [])
-//   return (
-//     <>
-//       <primitive object={light} position={position} color={color} />
-//       <primitive object={light.target} position={[0,0,0]}  />
-//     </>
-//   )
-// }
 
 const Floor = () => (
   <mesh rotation={[-Math.PI / 2, 0, 0]}>
@@ -37,7 +14,7 @@ const Floor = () => (
 )
 
 const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
-  const color = useMemo(() => new THREE.Color( backgroundColor ), [backgroundColor])
+  const color = useMemo(() => new THREE.Color( backgroundColor ) .convertLinearToSRGB(), [backgroundColor]);
   useFrame( ({scene}) => { scene.background = color } )
   const {scene} = useThree();
   const centerObject = scene.getObjectByName('Center');
@@ -84,7 +61,9 @@ export const defaultInitialCamera = {
   up: [ 0, 1, 0 ],
   far: 217.46,
   near: 0.271,
+  perspective: true,
 }
+
 
 export const useVR = () =>
 {
@@ -102,8 +81,10 @@ export const useVR = () =>
 export const DesignCanvas = ( { lighting, camera, children, handleBackgroundClick=()=>{} } ) =>
 {
   const [ ref, bounds ] = useMeasure();
-  const { fov, position, up, lookAt } = camera || defaultInitialCamera
-  const fovY = useMemo( () => ( fov * bounds.height / bounds.width ) * 180 / Math.PI, [ fov, bounds ] );
+  const { fov, position, up, lookAt, perspective } = camera || defaultInitialCamera;
+  const { width, height } = bounds;
+  const aspectRatio = width? height / width : 1;
+  const fovY = useMemo( () => ( fov * aspectRatio ) * 180 / Math.PI, [ fov, aspectRatio ] );
   const lights = useMemo( () => ({
     ...defaultLighting,
     backgroundColor: (lighting && lighting.backgroundColor) || defaultLighting.backgroundColor,
@@ -115,7 +96,7 @@ export const DesignCanvas = ( { lighting, camera, children, handleBackgroundClic
         <DefaultXRControllers/>
         <Lighting {...(lights)} />
         <PerspectiveCamera makeDefault manual { ...{ fov: fovY, position, up } } />
-        <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
+        <TrackballControls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
         <VREffects>
           {children}
         </VREffects>
@@ -123,10 +104,19 @@ export const DesignCanvas = ( { lighting, camera, children, handleBackgroundClic
   } else {
     return (
       <Canvas ref={ref} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
-        <PerspectiveCamera makeDefault { ...{ fov: fovY, position, up } }>
-          <Lighting {...(lights)} />
-        </PerspectiveCamera>
-        <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
+        { perspective?
+          <PerspectiveCamera makeDefault { ...{ fov: fovY, position, up } } >
+            <Lighting {...(lights)} />
+          </PerspectiveCamera>
+        :
+          <OrthographicCamera makeDefault { ...{ fov: fovY, position, up, zoom: 1 } } >
+            <Lighting {...(lights)} />
+          </OrthographicCamera>
+        }
+        <TrackballControls staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={lookAt}
+          // The interpretation of min/maxDistance here is just a mystery, when OrthographicCamera is in use 
+          {...( !perspective && { minDistance: 0.3, maxDistance: 1.5} )}
+        />
         {children}
       </Canvas> )
   }
