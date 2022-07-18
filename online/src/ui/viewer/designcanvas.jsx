@@ -1,6 +1,6 @@
 
-import React, { useMemo } from 'react'
-import { useSelector } from 'react-redux';
+import React, { useMemo, useRef, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { VRCanvas, DefaultXRControllers, useXR, RayGrab } from '@react-three/xr'
 import * as THREE from 'three'
@@ -15,10 +15,11 @@ const Floor = () => (
   </mesh>
 )
 
-const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
+const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) =>
+{
   const color = useMemo(() => new THREE.Color( backgroundColor ) .convertLinearToSRGB(), [backgroundColor]);
   useFrame( ({scene}) => { scene.background = color } )
-  const {scene} = useThree();
+  const { scene } = useThree();
   const centerObject = scene.getObjectByName('Center');
   return (
     <>
@@ -56,16 +57,33 @@ const defaultLighting = {
   ]
 }
 
+const toVector = vector3 =>
+{
+  const { x, y, z } = vector3;
+  return [ x, y, z ];
+}
+
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-export const DesignCanvas = ( { lighting, children, handleBackgroundClick=()=>{} } ) =>
+const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamera }) =>
 {
-  const camera = useSelector( state => state.scene.camera );
-  const [ measured, bounds ] = useMeasure();
-  const aspect = ( bounds && bounds.height )? bounds.width / bounds.height : 1;
+  // Here we can useThree, etc., which we could not in DesignCanvas
 
-  const { near, far, width, distance, up, lookAt, lookDir, perspective } = camera;
+  const controlsChanged = evt =>
+  {
+    const { target } = evt;
+    const camera = target.object;
+    const up = toVector( camera.up );
+    const position = toVector( camera.position );
+    const lookAt = toVector( target.target );
+    const offset = lookAt.map( (e,i) => e - position[ i ] );
+    const distance = Math.sqrt( offset.reduce( (sum,e) => sum + (e*e) ), 0 );
+    const lookDir = offset.map( (e) => e / distance );
+    syncCamera( { lookAt, up, lookDir, distance } );
+  }
+
+  const { near, far, width, distance, up, lookAt, lookDir, perspective } = sceneCamera;
   const halfX = width / 2;
   const halfY = halfX / aspect;
   const position = useMemo( () => lookAt.map( (e,i) => e - distance * lookDir[ i ] ), [ lookAt, lookDir, distance ] );
@@ -75,14 +93,49 @@ export const DesignCanvas = ( { lighting, children, handleBackgroundClick=()=>{}
     ...defaultLighting,
     backgroundColor: (lighting && lighting.backgroundColor) || defaultLighting.backgroundColor,
   }));
+
+  return forVR? (
+    <>
+      <Lighting {...(lights)} />
+      <PerspectiveCamera makeDefault manual { ...{ fov, position, up, near, far } } />
+      <TrackballControls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
+    </>
+  )
+  : (
+    <>
+      { perspective?
+        <PerspectiveCamera makeDefault { ...{ fov, position, up } } >
+          <Lighting {...(lights)} />
+        </PerspectiveCamera>
+      :
+        <OrthographicCamera makeDefault { ...{ position, up, near, far, left: -halfX, right: halfX, top: halfY, bottom: -halfY } } >
+          <Lighting {...(lights)} />
+        </OrthographicCamera>
+      }
+      <TrackballControls onEnd={controlsChanged} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={lookAt}
+        // The interpretation of min/maxDistance here is just a mystery, when OrthographicCamera is in use 
+        {...( !perspective && { minDistance: 0.3, maxDistance: 1.5} )}
+      />
+    </>
+  );
+}
+
+export const DesignCanvas = ( { lighting, children, handleBackgroundClick=()=>{} } ) =>
+{
+  const [ measured, bounds ] = useMeasure();
+  const aspect = ( bounds && bounds.height )? bounds.width / bounds.height : 1;
+
+   // react-redux hooks are not available inside the Canvas, so we have to drill sceneCamera and syncCamera
+  const sceneCamera = useSelector( state => state.scene.camera );
+  const report = useDispatch();
+  const syncCamera = camera => report( { type: 'TRACKBALL_MOVED', payload: camera } );
+
   const vrAvailable = useVR();
   if ( vrAvailable ) {
     return (
       <VRCanvas dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} >
         <DefaultXRControllers/>
-        <Lighting {...(lights)} />
-        <PerspectiveCamera makeDefault manual { ...{ fov, position, up, near, far } } />
-        <TrackballControls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
+        <LightedCameraControls forVR {...{ lighting, aspect, sceneCamera, syncCamera }} />
         <VREffects>
           {children}
         </VREffects>
@@ -90,19 +143,7 @@ export const DesignCanvas = ( { lighting, children, handleBackgroundClick=()=>{}
   } else {
     return (
       <Canvas ref={measured} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
-        { perspective?
-          <PerspectiveCamera makeDefault { ...{ fov, position, up } } >
-            <Lighting {...(lights)} />
-          </PerspectiveCamera>
-        :
-          <OrthographicCamera makeDefault { ...{ position, up, near, far, left: -halfX, right: halfX, top: halfY, bottom: -halfY } } >
-            <Lighting {...(lights)} />
-          </OrthographicCamera>
-        }
-        <TrackballControls staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={lookAt}
-          // The interpretation of min/maxDistance here is just a mystery, when OrthographicCamera is in use 
-          {...( !perspective && { minDistance: 0.3, maxDistance: 1.5} )}
-        />
+        <LightedCameraControls {...{ lighting, aspect, sceneCamera, syncCamera }} />
         {children}
       </Canvas> )
   }

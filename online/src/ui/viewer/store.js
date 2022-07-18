@@ -72,8 +72,12 @@ const reducer = ( state = initialState, event ) =>
 
     case 'PERSPECTIVE_SET': {
       const perspective = event.payload;
-      console.log( `store, perspective from ${state.scene.camera.perspective} to ${perspective}`);
-      return { ...state, scene: { ...state.scene, camera: { ...state.scene.camera, perspective } } };
+      return { ...state, scene: { ...state.scene, camera: { ...state.scene.camera, ...state.scene.trackball, perspective } } };
+    }
+
+    case 'TRACKBALL_MOVED': {
+      const trackball = event.payload;
+      return { ...state, scene: { ...state.scene, trackball } };
     }
 
     default:
@@ -132,6 +136,7 @@ export const createWorkerStore = customElement =>
       case 'SCENE_RENDERED':
       case 'CAMERA_DEFINED':
       case 'PERSPECTIVE_SET':
+      case 'TRACKBALL_MOVED':
         report( event );
         break;
 
