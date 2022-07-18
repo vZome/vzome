@@ -102,7 +102,7 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
   const [ fullScreen, setFullScreen ] = useState( false );
   const [ showSettings, setShowSettings ] = useState( false );
   const normalStyle = { display: 'flex', height: '100%', position: 'relative' };
-  const fullScreenStyle = { height: '100%', width: '100%', position: 'fixed', top: '0px', left: '0px', zIndex: '1000' };
+  const fullScreenStyle = { height: '100%', width: '100%', position: 'fixed', top: '0px', left: '0px', zIndex: '1300' };
   const vrAvailable = useVR();
   const containerRef = useRef();
 
