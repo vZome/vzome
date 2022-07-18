@@ -1,10 +1,12 @@
 
-import React, { useMemo, useState, useEffect } from 'react'
+import React, { useMemo } from 'react'
+import { useSelector } from 'react-redux';
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { VRCanvas, DefaultXRControllers, useXR, RayGrab } from '@react-three/xr'
 import * as THREE from 'three'
 import { PerspectiveCamera, OrthographicCamera, Sky, TrackballControls } from '@react-three/drei'
 import useMeasure from 'react-use-measure';
+import { useVR } from './hooks'
 
 const Floor = () => (
   <mesh rotation={[-Math.PI / 2, 0, 0]}>
@@ -54,37 +56,21 @@ const defaultLighting = {
   ]
 }
 
-export const defaultInitialCamera = {
-  fov: 0.75, // 0.44 in vZome
-  position: [ 0, 0, 75 ],
-  lookAt: [ 0, 0, 0 ],
-  up: [ 0, 1, 0 ],
-  far: 217.46,
-  near: 0.271,
-  perspective: true,
-}
-
-
-export const useVR = () =>
-{
-  const [ vrAvailable, setVrAvailable ] = useState( false );
-  useEffect( () => {
-    const xr = window.navigator.xr;
-    xr && xr.isSessionSupported( "immersive-vr" ) .then( available => setVrAvailable( available ) );
-  }, []);
-  return vrAvailable;
-}
-
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-export const DesignCanvas = ( { lighting, camera, children, handleBackgroundClick=()=>{} } ) =>
+export const DesignCanvas = ( { lighting, children, handleBackgroundClick=()=>{} } ) =>
 {
-  const [ ref, bounds ] = useMeasure();
-  const { fov, position, up, lookAt, perspective } = camera || defaultInitialCamera;
-  const { width, height } = bounds;
-  const aspectRatio = width? height / width : 1;
-  const fovY = useMemo( () => ( fov * aspectRatio ) * 180 / Math.PI, [ fov, aspectRatio ] );
+  const camera = useSelector( state => state.scene.camera );
+  const [ measured, bounds ] = useMeasure();
+  const aspect = ( bounds && bounds.height )? bounds.width / bounds.height : 1;
+
+  const { near, far, width, distance, up, lookAt, lookDir, perspective } = camera;
+  const halfX = width / 2;
+  const halfY = halfX / aspect;
+  const position = useMemo( () => lookAt.map( (e,i) => e - distance * lookDir[ i ] ), [ lookAt, lookDir, distance ] );
+  const fov = useMemo( () => 360 * Math.atan( halfY / distance ) / Math.PI, [ halfX, aspect, distance ] );
+
   const lights = useMemo( () => ({
     ...defaultLighting,
     backgroundColor: (lighting && lighting.backgroundColor) || defaultLighting.backgroundColor,
@@ -95,7 +81,7 @@ export const DesignCanvas = ( { lighting, camera, children, handleBackgroundClic
       <VRCanvas dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} >
         <DefaultXRControllers/>
         <Lighting {...(lights)} />
-        <PerspectiveCamera makeDefault manual { ...{ fov: fovY, position, up } } />
+        <PerspectiveCamera makeDefault manual { ...{ fov, position, up, near, far } } />
         <TrackballControls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
         <VREffects>
           {children}
@@ -103,13 +89,13 @@ export const DesignCanvas = ( { lighting, camera, children, handleBackgroundClic
       </VRCanvas> )
   } else {
     return (
-      <Canvas ref={ref} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
+      <Canvas ref={measured} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
         { perspective?
-          <PerspectiveCamera makeDefault { ...{ fov: fovY, position, up } } >
+          <PerspectiveCamera makeDefault { ...{ fov, position, up } } >
             <Lighting {...(lights)} />
           </PerspectiveCamera>
         :
-          <OrthographicCamera makeDefault { ...{ fov: fovY, position, up, zoom: 1 } } >
+          <OrthographicCamera makeDefault { ...{ position, up, near, far, left: -halfX, right: halfX, top: halfY, bottom: -halfY } } >
             <Lighting {...(lights)} />
           </OrthographicCamera>
         }

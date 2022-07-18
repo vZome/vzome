@@ -18,11 +18,12 @@ import Link from '@material-ui/core/Link';
 import { create } from 'jss';
 
 import { ShapedGeometry } from './geometry.jsx'
-import { DesignCanvas, useVR } from './designcanvas.jsx'
+import { DesignCanvas } from './designcanvas.jsx'
 import { createWorkerStore, defineCamera, fetchDesign, selectEditBefore } from './store.js';
 import { Spinner } from './spinner.jsx'
 import { ErrorAlert } from './alert.jsx'
 import { SettingsDialog } from './settings.jsx';
+import { useVR } from './hooks.js';
 
 // from https://www.bitdegree.org/learn/javascript-download
 const download = source =>
@@ -97,21 +98,18 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
   const scene = useSelector( state => state.scene );
   const waiting = useSelector( state => !!state.waiting );
   const snapshots = useSelector( state => state.snapshots );
-  const report = useDispatch();
-  const setPerspective = value => report( defineCamera( { ...(scene && scene.camera), perspective: value } ) );
 
-  const perspective = scene && scene.camera && scene.camera.perspective;
   const [ fullScreen, setFullScreen ] = useState( false );
   const [ showSettings, setShowSettings ] = useState( false );
   const normalStyle = { display: 'flex', height: '100%', position: 'relative' };
   const fullScreenStyle = { height: '100%', width: '100%', position: 'fixed', top: '0px', left: '0px', zIndex: '1000' };
   const vrAvailable = useVR();
-  const containerRef = useRef()
+  const containerRef = useRef();
 
   return (
     <div ref={containerRef} style={ fullScreen? fullScreenStyle : normalStyle }>
       { scene?
-        <DesignCanvas lighting={scene.lighting} camera={ { ...scene.camera, perspective } } >
+        <DesignCanvas lighting={scene.lighting} camera={ { ...scene.camera } } >
           { scene.shapes &&
             <ShapedGeometry embedding={scene.embedding} shapes={scene.shapes} />
           }
@@ -133,7 +131,7 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
           onClick={() => setShowSettings(!showSettings)} >
         <SettingsIcon fontSize='large'/>
       </IconButton>
-      <SettingsDialog {...{ showSettings, setShowSettings, perspective, setPerspective }} container={containerRef.current} />
+      <SettingsDialog {...{ showSettings, setShowSettings }} container={containerRef.current} />
 
       {/* I'm using the legacy preview mode just for me, really, when viewing on my Oculus Quest.
           This lets me enjoy designs from web pages that include many viewers, which normally
