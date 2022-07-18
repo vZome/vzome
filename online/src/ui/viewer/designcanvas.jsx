@@ -1,33 +1,12 @@
 
-import React, { useRef, useMemo, useState, useEffect } from 'react'
-import { Canvas, useThree, extend, useFrame } from '@react-three/fiber'
+import React, { useMemo, useRef, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { VRCanvas, DefaultXRControllers, useXR, RayGrab } from '@react-three/xr'
 import * as THREE from 'three'
-import { PerspectiveCamera, Sky } from '@react-three/drei'
-import { TrackballControls } from 'three-stdlib/controls/TrackballControls'
+import { PerspectiveCamera, OrthographicCamera, Sky, TrackballControls } from '@react-three/drei'
 import useMeasure from 'react-use-measure';
-
-extend({ TrackballControls })
-const Controls = props => {
-  const { gl, camera } = useThree()
-  const controls = useRef()
-  useFrame(() => controls.current.update())
-  return <trackballControls ref={controls} args={[camera, gl.domElement]} {...props} />
-}
-
-// // Found this trick for getting the DL.target into the scene here:
-// //   https://spectrum.chat/react-three-fiber/general/how-to-set-spotlight-target~823340ea-433e-426a-a0dc-b9a333fc3f94
-// const DirLight = ( { direction, color } ) =>
-// {
-//   const position = direction.map( x => -x )
-//   const light = useMemo(() => new THREE.DirectionalLight(), [])
-//   return (
-//     <>
-//       <primitive object={light} position={position} color={color} />
-//       <primitive object={light.target} position={[0,0,0]}  />
-//     </>
-//   )
-// }
+import { useVR } from './hooks'
 
 const Floor = () => (
   <mesh rotation={[-Math.PI / 2, 0, 0]}>
@@ -36,10 +15,11 @@ const Floor = () => (
   </mesh>
 )
 
-const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) => {
-  const color = useMemo(() => new THREE.Color( backgroundColor ), [backgroundColor])
+const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) =>
+{
+  const color = useMemo(() => new THREE.Color( backgroundColor ) .convertLinearToSRGB(), [backgroundColor]);
   useFrame( ({scene}) => { scene.background = color } )
-  const {scene} = useThree();
+  const { scene } = useThree();
   const centerObject = scene.getObjectByName('Center');
   return (
     <>
@@ -77,56 +57,93 @@ const defaultLighting = {
   ]
 }
 
-export const defaultInitialCamera = {
-  fov: 0.75, // 0.44 in vZome
-  position: [ 0, 0, 75 ],
-  lookAt: [ 0, 0, 0 ],
-  up: [ 0, 1, 0 ],
-  far: 217.46,
-  near: 0.271,
-}
-
-export const useVR = () =>
+const toVector = vector3 =>
 {
-  const [ vrAvailable, setVrAvailable ] = useState( false );
-  useEffect( () => {
-    const xr = window.navigator.xr;
-    xr && xr.isSessionSupported( "immersive-vr" ) .then( available => setVrAvailable( available ) );
-  }, []);
-  return vrAvailable;
+  const { x, y, z } = vector3;
+  return [ x, y, z ];
 }
 
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-export const DesignCanvas = ( { lighting, camera, children, handleBackgroundClick=()=>{} } ) =>
+const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamera }) =>
 {
-  const [ ref, bounds ] = useMeasure();
-  const { fov, position, up, lookAt } = camera || defaultInitialCamera
-  const fovY = useMemo( () => ( fov * bounds.height / bounds.width ) * 180 / Math.PI, [ fov, bounds ] );
+  // Here we can useThree, etc., which we could not in DesignCanvas
+
+  const controlsChanged = evt =>
+  {
+    const { target } = evt;
+    const camera = target.object;
+    const up = toVector( camera.up );
+    const position = toVector( camera.position );
+    const lookAt = toVector( target.target );
+    const offset = lookAt.map( (e,i) => e - position[ i ] );
+    const distance = Math.sqrt( offset.reduce( (sum,e) => sum + (e*e) ), 0 );
+    const lookDir = offset.map( (e) => e / distance );
+    syncCamera( { lookAt, up, lookDir, distance } );
+  }
+
+  const { near, far, width, distance, up, lookAt, lookDir, perspective } = sceneCamera;
+  const halfX = width / 2;
+  const halfY = halfX / aspect;
+  const position = useMemo( () => lookAt.map( (e,i) => e - distance * lookDir[ i ] ), [ lookAt, lookDir, distance ] );
+  const fov = useMemo( () => 360 * Math.atan( halfY / distance ) / Math.PI, [ halfX, aspect, distance ] );
+
   const lights = useMemo( () => ({
     ...defaultLighting,
     backgroundColor: (lighting && lighting.backgroundColor) || defaultLighting.backgroundColor,
   }));
+
+  return forVR? (
+    <>
+      <Lighting {...(lights)} />
+      <PerspectiveCamera makeDefault manual { ...{ fov, position, up, near, far } } />
+      <TrackballControls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
+    </>
+  )
+  : (
+    <>
+      { perspective?
+        <PerspectiveCamera makeDefault { ...{ fov, position, up } } >
+          <Lighting {...(lights)} />
+        </PerspectiveCamera>
+      :
+        <OrthographicCamera makeDefault { ...{ position, up, near, far, left: -halfX, right: halfX, top: halfY, bottom: -halfY } } >
+          <Lighting {...(lights)} />
+        </OrthographicCamera>
+      }
+      <TrackballControls onEnd={controlsChanged} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={lookAt}
+        // The interpretation of min/maxDistance here is just a mystery, when OrthographicCamera is in use 
+        {...( !perspective && { minDistance: 0.3, maxDistance: 1.5} )}
+      />
+    </>
+  );
+}
+
+export const DesignCanvas = ( { lighting, children, handleBackgroundClick=()=>{} } ) =>
+{
+  const [ measured, bounds ] = useMeasure();
+  const aspect = ( bounds && bounds.height )? bounds.width / bounds.height : 1;
+
+   // react-redux hooks are not available inside the Canvas, so we have to drill sceneCamera and syncCamera
+  const sceneCamera = useSelector( state => state.scene.camera );
+  const report = useDispatch();
+  const syncCamera = camera => report( { type: 'TRACKBALL_MOVED', payload: camera } );
+
   const vrAvailable = useVR();
   if ( vrAvailable ) {
     return (
       <VRCanvas dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} >
         <DefaultXRControllers/>
-        <Lighting {...(lights)} />
-        <PerspectiveCamera makeDefault manual { ...{ fov: fovY, position, up } } />
-        <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
+        <LightedCameraControls forVR {...{ lighting, aspect, sceneCamera, syncCamera }} />
         <VREffects>
           {children}
         </VREffects>
       </VRCanvas> )
   } else {
     return (
-      <Canvas ref={ref} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
-        <PerspectiveCamera makeDefault { ...{ fov: fovY, position, up } }>
-          <Lighting {...(lights)} />
-        </PerspectiveCamera>
-        <Controls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
+      <Canvas ref={measured} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
+        <LightedCameraControls {...{ lighting, aspect, sceneCamera, syncCamera }} />
         {children}
       </Canvas> )
   }
