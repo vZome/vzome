@@ -27,11 +27,11 @@ export class VZomeViewer extends HTMLElement
 
     this.#store = createWorkerStore( this );
 
-    this.#config = { showSnapshots: false };
+    this.#config = { preview: true, showSnapshots: false };
 
     if ( this.hasAttribute( 'show-scenes' ) ) {
       const showSnapshots = this.getAttribute( 'show-scenes' ) === 'true';
-      this.#config = { showSnapshots };
+      this.#config = { ...this.#config, showSnapshots };
     }
 
     if ( this.hasAttribute( 'src' ) ) {
@@ -45,7 +45,7 @@ export class VZomeViewer extends HTMLElement
         this.#url = new URL( url, window.location ) .toString();
         // Get the fetch started by the worker before we load the dynamic module below,
         //  which is pretty big.
-        this.#store.dispatch( fetchDesign( this.#url, !this.#config.showSnapshots ) );
+        this.#store.dispatch( fetchDesign( this.#url, this.#config ) );
     }
   }
 
@@ -76,7 +76,7 @@ export class VZomeViewer extends HTMLElement
       const newUrl = new URL( _newValue, window.location ) .toString();
       if ( newUrl !== this.#url ) {
         this.#url = newUrl;
-        this.#store.dispatch( fetchDesign( this.#url, !this.#config.showSnapshots ) );
+        this.#store.dispatch( fetchDesign( this.#url, this.#config ) );
       }
       break;
 
@@ -86,7 +86,7 @@ export class VZomeViewer extends HTMLElement
         this.#config = { ...this.#config, showSnapshots };
       // The 2nd parameter for fetchDesign means that a preview JSON (if available) is sufficient.
       //  When "show-scenes" is true, the XML will have to be parsed, so a preview JSON is not sufficient.
-        this.#store.dispatch( fetchDesign( this.#url, !this.#config.showSnapshots ) );
+        this.#store.dispatch( fetchDesign( this.#url, this.#config ) );
       }
       break;
     }

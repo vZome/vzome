@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { createRoot } from 'react-dom/client';
 
-import { makeStyles } from '@material-ui/core/styles';
 import { StylesProvider, jssPreset } from '@material-ui/styles';
 import IconButton from '@material-ui/core/IconButton'
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded';
@@ -11,19 +10,17 @@ import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser'
 import SettingsIcon from '@material-ui/icons/Settings'
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import Link from '@material-ui/core/Link';
 import { create } from 'jss';
 
 import { ShapedGeometry } from './geometry.jsx'
 import { DesignCanvas } from './designcanvas.jsx'
-import { createWorkerStore, defineCamera, fetchDesign, selectEditBefore } from './store.js';
+import { createWorkerStore, fetchDesign } from './store.js';
 import { Spinner } from './spinner.jsx'
 import { ErrorAlert } from './alert.jsx'
 import { SettingsDialog } from './settings.jsx';
 import { useVR } from './hooks.js';
+import { SceneMenu } from './scenes.jsx';
 
 // from https://www.bitdegree.org/learn/javascript-download
 const download = source =>
@@ -38,55 +35,6 @@ const download = source =>
   document.body.appendChild( element )
   element.click()
   document.body.removeChild( element )
-}
-
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-}));
-
-export const SceneMenu = ( { snapshots } ) =>
-{
-  const classes = useStyles();
-  const report = useDispatch();
-  const [snapshotIndex, setSnapshotIndex] = React.useState( 0 );
-  const handleChange = (event) =>
-  {
-    const index = event.target.value;
-    setSnapshotIndex( index );
-    const { nodeId, camera } = snapshots[ index ];
-    report( selectEditBefore( nodeId ) );
-    report( defineCamera( camera ) );
-  }
-
-  return (
-    <div style={ { position: 'absolute', background: 'lightgray', top: '0px' } }>
-      <FormControl variant="outlined" className={classes.formControl}>
-        <InputLabel htmlFor="scene-menu-label">Scene</InputLabel>
-        <Select
-          native
-          value={snapshotIndex}
-          onChange={handleChange}
-          label="Scene"
-          inputProps={{
-            name: 'scene',
-            id: 'scene-menu-label',
-          }}
-        >
-          {snapshots.map((snapshot, index) => (
-            <option key={index} value={index}>{
-              snapshot.title || (( index === 0 )? "- none -" : `scene ${index}`)
-            }</option>)
-          )}
-        </Select>
-      </FormControl>
-    </div>
-  );
 }
 
 const encodeUrl = url => url .split( '/' ) .map( encodeURIComponent ) .join( '/' );
@@ -114,7 +62,6 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
   const source = useSelector( state => state.source );
   const scene = useSelector( state => state.scene );
   const waiting = useSelector( state => !!state.waiting );
-  const snapshots = useSelector( state => state.snapshots );
 
   const [ fullScreen, setFullScreen ] = useState( false );
   const [ showSettings, setShowSettings ] = useState( false );
@@ -132,10 +79,11 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
         </DesignCanvas>
         : children // This renders the light DOM if the scene couldn't load
       }
-      { showSnapshots && snapshots && snapshots[1] &&  // There is always >=1 snapshot, and we only want to show 2 or more
-        <SceneMenu snapshots={snapshots} />
-      }
+
+      { showSnapshots && <SceneMenu/> }
+
       <Spinner visible={useSpinner && waiting} />
+
       { allowFullViewport &&
         <IconButton color="inherit" aria-label="fullscreen"
             style={ { position: 'absolute', bottom: '5px', right: '5px' } }
@@ -148,6 +96,7 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
           onClick={() => setShowSettings(!showSettings)} >
         <SettingsIcon fontSize='large'/>
       </IconButton>
+
       <SettingsDialog {...{ showSettings, setShowSettings }} container={containerRef.current} />
 
       {/* I'm using the legacy preview mode just for me, really, when viewing on my Oculus Quest.
@@ -171,6 +120,7 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
           <GetAppRoundedIcon fontSize='large'/>
         </IconButton>
       }
+
       <ErrorAlert/>
     </div>
   )
@@ -223,7 +173,7 @@ export const useVZomeUrl = ( url, preview, forDebugger=false ) =>
   useEffect( () =>
   {
     if ( !!url ) 
-      report( fetchDesign( url, preview, forDebugger ) );
+      report( fetchDesign( url, { preview, debug: forDebugger } ) );
   }, [ url ] );
 }
 

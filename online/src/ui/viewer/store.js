@@ -16,11 +16,11 @@ export const initialState = {
   }
 };
 
+export const selectSnapshot = index => ({ type: 'SNAPSHOT_SELECTED', payload: index } );
 export const selectEditBefore = nodeId => ({ type: 'EDIT_SELECTED', payload: { before: nodeId } } );
 export const selectEditAfter = nodeId => ({ type: 'EDIT_SELECTED', payload: { after: nodeId } } );
-export const defineCamera = camera => ({ type: 'CAMERA_DEFINED', payload: camera });
 export const setPerspective = value => ({ type: 'PERSPECTIVE_SET', payload: value });
-export const fetchDesign = ( url, preview, debug=false ) => ({ type: 'URL_PROVIDED', payload: { url, preview, debug } });
+export const fetchDesign = ( url, config={ preview: false, debug: false } ) => ({ type: 'URL_PROVIDED', payload: { url, config } });
 export const openDesignFile = ( file, debug=false ) => ({ type: 'FILE_PROVIDED', payload: { file, debug } });
 
 const reducer = ( state = initialState, event ) =>
@@ -127,21 +127,11 @@ export const createWorkerStore = customElement =>
   {
     switch ( event.type ) {
 
-      // These are all coming back from the worker
-      case 'ALERT_RAISED':
-      case 'ALERT_DISMISSED':
-      case 'FETCH_STARTED':
-      case 'TEXT_FETCHED':
-      case 'DESIGN_INTERPRETED':
-      case 'SCENE_RENDERED':
-      case 'CAMERA_DEFINED':
-      case 'PERSPECTIVE_SET':
-      case 'TRACKBALL_MOVED':
-        report( event );
-        break;
-
-      // Anything else is to send to the worker
-      default:
+      // These get sent to the worker
+      case 'URL_PROVIDED':
+      case 'FILE_PROVIDED':
+      case 'SNAPSHOT_SELECTED':
+      case 'EDIT_SELECTED':
         if ( navigator.userAgent.indexOf( "Firefox" ) > -1 ) {
             console.log( "The worker is not available in Firefox" );
             report( { type: 'ALERT_RAISED', payload: 'Module workers are not yet supported in Firefox.  Please try another browser.' } );
@@ -157,6 +147,13 @@ export const createWorkerStore = customElement =>
           } );
         }
         break;    
+
+      // Anything else is either targeting this store directly,
+      //  or is coming *back* from the worker.  In both cases
+      //  they go to the reducers.
+      default:
+        report( event );
+        break;
     }
   }
 

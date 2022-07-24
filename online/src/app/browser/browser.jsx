@@ -44,7 +44,7 @@ const DesignList = ( { setUrl } ) =>
 export const DesignBrowser = ( { debug } ) =>
 {
   const report = useDispatch();
-  const setUrl = url => report( fetchDesign( url, true ) );
+  const setUrl = url => report( fetchDesign( url, { preview: true } ) );
 
   const drawerColumns = 5;
   const canvasColumns = 12 - drawerColumns;

@@ -83,6 +83,7 @@ const fetchFileText = selected =>
 }
 
 let renderHistory;
+let snapshots;
 
 const parseAndInterpret = ( xmlLoading, report, debug ) =>
 {
@@ -95,7 +96,8 @@ const parseAndInterpret = ( xmlLoading, report, debug ) =>
     } )
 
     .then( design => {
-      const { renderer, camera, lighting, xmlTree, targetEditId, snapshots, field } = design;
+      const { renderer, camera, lighting, xmlTree, targetEditId, field } = design;
+      snapshots = design.snapshots;
       if ( field.unknown ) {
         throw new Error( `Field "${field.name}" is not supported.` );
       }
@@ -147,7 +149,8 @@ const urlLoader = ( report, event ) =>
   if ( event.type !== 'URL_PROVIDED' ) {
     return report( event );
   }
-  const { url, preview=false, debug=false } = event.payload;
+  const { url, config } = event.payload;
+  const { preview=false, showSnapshots=false, debug=false } = config;
   if ( !url ) {
     throw new Error( "No url field in URL_PROVIDED event payload" );
   }
@@ -194,7 +197,15 @@ onmessage = ({ data }) =>
       fileLoader( postMessage, data );
       break;
 
-    case 'EDIT_SELECTED':
+    case 'SNAPSHOT_SELECTED': {
+      const index = payload;
+      const { nodeId, camera } = snapshots[ index ];
+      const scene = renderHistory .getScene( nodeId, true );
+      postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
+      break;
+    }
+
+    case 'EDIT_SELECTED': {
       const { before, after } = payload; // only one of these will have an edit ID
       const scene = before? renderHistory .getScene( before, true ) : renderHistory .getScene( after, false );
       const { edit } = scene;
@@ -205,6 +216,7 @@ onmessage = ({ data }) =>
         postMessage( { type: 'ALERT_RAISED', payload: 'Failed to interpret all edits.' } );
       }
       break;
+    }
   
     default:
       break;
