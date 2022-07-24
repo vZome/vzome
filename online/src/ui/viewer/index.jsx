@@ -91,9 +91,26 @@ export const SceneMenu = ( { snapshots } ) =>
 
 const encodeUrl = url => url .split( '/' ) .map( encodeURIComponent ) .join( '/' );
 
+const normalStyle = {
+  display: 'flex',       // flex is for the light dom content, usually an image
+  height: '100%',
+  width: '100%',
+  position: 'relative',
+  overflow: 'hidden',    // curiously, this forces Canvas to recompute its size when changing back
+};
+
+const fullScreenStyle = {
+  height: '100%',
+  width: '100%',
+  position: 'fixed',
+  top: '0px',
+  left: '0px',
+  zIndex: '1300',
+};
+
 export const DesignViewer = ( { children, children3d, config={} } ) =>
 {
-  const { showSnapshots=false, useSpinner=false } = config;
+  const { showSnapshots=false, useSpinner=false, allowFullViewport=false } = config;
   const source = useSelector( state => state.source );
   const scene = useSelector( state => state.scene );
   const waiting = useSelector( state => !!state.waiting );
@@ -101,8 +118,6 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
 
   const [ fullScreen, setFullScreen ] = useState( false );
   const [ showSettings, setShowSettings ] = useState( false );
-  const normalStyle = { display: 'flex', height: '100%', width: '100%', position: 'relative' }; // flex is for the light dom content
-  const fullScreenStyle = { height: '100%', width: '100%', position: 'fixed', top: '0px', left: '0px', zIndex: '1300' };
   const vrAvailable = useVR();
   const containerRef = useRef();
 
@@ -121,11 +136,13 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
         <SceneMenu snapshots={snapshots} />
       }
       <Spinner visible={useSpinner && waiting} />
-      <IconButton color="inherit" aria-label="fullscreen"
-          style={ { position: 'absolute', bottom: '5px', right: '5px' } }
-          onClick={() => setFullScreen(!fullScreen)} >
-        { fullScreen? <FullscreenExitIcon fontSize='large'/> : <FullscreenIcon fontSize='large'/> }
-      </IconButton>
+      { allowFullViewport &&
+        <IconButton color="inherit" aria-label="fullscreen"
+            style={ { position: 'absolute', bottom: '5px', right: '5px' } }
+            onClick={() => setFullScreen(!fullScreen)} >
+          { fullScreen? <FullscreenExitIcon fontSize='large'/> : <FullscreenIcon fontSize='large'/> }
+        </IconButton>
+      }
       <IconButton color="inherit" aria-label="settings"
           style={ { position: 'absolute', top: '5px', right: '5px' } }
           onClick={() => setShowSettings(!showSettings)} >
@@ -232,7 +249,7 @@ export const UrlViewerInner = ({ url, children, config }) =>
 //  this module.
 export const UrlViewer = ({ url, store, children, config={ showSnapshots: false } }) => (
   <WorkerContext store={store} >
-    <UrlViewerInner url={url} config={config}>
+    <UrlViewerInner url={url} config={ { ...config, allowFullViewport: true } }>
       {children}
     </UrlViewerInner>
   </WorkerContext>

@@ -1,9 +1,12 @@
 html,
-body,
+body {
+  height: 100%;  /* This makes the root div fill the viewport vertically. */
+}
+
 #root {
   height: 100%;  /* This makes the root div fill the viewport vertically. */
-  display: flex; /* This is the key to getting the Canvas to fill the area below the AppBar. */
-  flex-direction: column; /*  This makes it "below", not "to the right of". */
+  display: grid; /* This is the key to getting the Canvas to fill the area below the AppBar. */
+  grid-template-rows: min-content 1fr; /*  This makes it "below", not "to the right of". */
 }
 
 body {
