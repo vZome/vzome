@@ -1027,4 +1027,9 @@ public class DocumentModel implements Snapshot .Recorder, Context
             throw new Command.Failure( UNKNOWN_COMMAND + " " + cmdName );
         }
     }
+
+    public RenderedModel[] getSnapshots()
+    {
+        return snapshots;
+    }
 }

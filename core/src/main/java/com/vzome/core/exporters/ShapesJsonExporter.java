@@ -10,11 +10,13 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.render.JsonMapper;
 import com.vzome.core.render.RenderedManifestation;
+import com.vzome.core.render.RenderedModel;
 
 
 public class ShapesJsonExporter extends Exporter3d
@@ -26,23 +28,15 @@ public class ShapesJsonExporter extends Exporter3d
         super( null, null, null, null );
     }
 
-    @Override
-    public void doExport( File directory, Writer writer, int height, int width ) throws IOException
+    public void exportDocument( DocumentModel doc, File file, Writer writer, int height, int width ) throws Exception
     {
-        ArrayList<JsonNode> shapes = new ArrayList<>();
-        ArrayList<JsonNode> instances = new ArrayList<>();
+        mScene = doc .getCamera();
+        mModel = doc .getRenderedModel();
+        mLights = doc .getSceneLighting();
 
-        for ( RenderedManifestation rm : mModel ) {
-            ObjectNode instanceNode = mapper .getObjectNode( rm, true );
-            if ( instanceNode != null ) {
-                ObjectNode shapeNode = mapper .getShapeNode( rm .getShape() );
-                if ( shapeNode != null )
-                {
-                    shapes .add( shapeNode ); // a shape not reported yet
-                }
-                instances .add( instanceNode );
-            }
-        }
+        ArrayList<JsonNode> shapes = new ArrayList<>();
+        
+        ArrayList<JsonNode> instances = exportRenderedModel( mModel, shapes );
         OrbitSource orbitSource = mModel .getOrbitSource();
         AlgebraicField field = mModel .getField();
         
@@ -54,6 +48,12 @@ public class ShapesJsonExporter extends Exporter3d
             embeddingRows[ 0 + i ] = column.x;
             embeddingRows[ 4 + i ] = column.y;
             embeddingRows[ 8 + i ] = column.z;
+        }
+        
+        ArrayList<ArrayList<JsonNode>> snapshots = new ArrayList<>();
+        for ( RenderedModel snapshot : doc .getSnapshots() ) {
+            if ( snapshot != null )
+                snapshots .add( exportRenderedModel( snapshot, shapes ) );
         }
 
         JsonFactory factory = new JsonFactory() .disable( JsonGenerator.Feature.AUTO_CLOSE_TARGET );
@@ -70,9 +70,34 @@ public class ShapesJsonExporter extends Exporter3d
         generator .writeObjectField( "embedding", embeddingRows );
         generator .writeObjectField( "shapes", shapes );
         generator .writeObjectField( "instances", instances );
+        generator .writeObjectField( "scenes", doc .getLesson() .iterator() );
+        generator .writeObjectField( "snapshots", snapshots );
         generator .writeEndObject();
         generator.close();
+        mScene = null;
+        mModel = null;
+        mLights = null;
     }
+
+    private ArrayList<JsonNode> exportRenderedModel( RenderedModel model, ArrayList<JsonNode> shapes )
+    {
+        ArrayList<JsonNode> instances = new ArrayList<>();
+        for ( RenderedManifestation rm : model ) {
+            ObjectNode instanceNode = mapper .getObjectNode( rm, true );
+            if ( instanceNode != null ) {
+                ObjectNode shapeNode = mapper .getShapeNode( rm .getShape() );
+                if ( shapeNode != null )
+                {
+                    shapes .add( shapeNode ); // a shape not reported yet
+                }
+                instances .add( instanceNode );
+            }
+        }
+        return instances;
+    }
+
+    @Override
+    public void doExport( File directory, Writer writer, int height, int width ) throws IOException {}
 
     @Override
     public String getFileExtension()
