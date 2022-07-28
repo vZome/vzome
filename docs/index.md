@@ -37,3 +37,8 @@ Ray-traced vZome models are easy again, for Mac users using POV-Ray.
 
 Instructions for how to install and run vZome on a Linux system
 
+## [Capturing Vector Graphics (e.g. PDF)](./capture-vector-graphics.html)
+
+Are you still capturing JPEG images to share your vZome creations? There's a better way, for most cases: vector graphics.
+
+
