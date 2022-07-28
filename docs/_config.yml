@@ -251,7 +251,7 @@ date_format: "%B %-d, %Y"
 timezone: "America/Los_Angeles"
 markdown: kramdown
 highlighter: rouge
-permalink: /:year-:month-:day-:title/
+# permalink: /:year-:month-:day-:title/
 paginate: 5
 
 kramdown:
