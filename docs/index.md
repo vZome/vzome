@@ -1,10 +1,21 @@
 ---
-title: vZome Supplemental Documentation
-description: Supplemental documentation for vZome, a 3D modeling app for Zometool and other geometries
+title: vZome Documentation
+subtitle: Documentation for vZome, a 3D modeling app for Zometool and other geometries
 ---
 
-This page contains supplemental documentation about vZome, a 3D modeling app for Zometool and other geometries.
+This page contains  documentation about vZome, a 3D modeling app for Zometool and other geometries.
 Please visit the [main vZome web site](https://www.vzome.com) for general information.
+
+## Join the Discord
+
+The best way to get help quickly is to [join our Discord server](http://discord.gg/vhyFsNAFPS), and ask there.
+It is also the best way to learn about new features, and even to help set priorities for vZome.
+
+## [Quick Start Guide](./quick-start)
+
+## YouTube Playlist
+
+<iframe allowfullscreen="" frameborder="0" height="250" src="//www.youtube.com/embed/videoseries?list=PL7FhcGSSTrf5LR_L1pKUepRf15y6VOHcG" width="450"></iframe>
 
 ## [Sharing vZome Designs](./sharing)
 
