@@ -1,6 +1,6 @@
 ---
-title: Welcome to vZome
-description: Supplemental information about vZome, a 3D modeling app for Zometool and other geometries
+title: vZome Supplemental Documentation
+description: Supplemental documentation for vZome, a 3D modeling app for Zometool and other geometries
 ---
 
 This page contains supplemental documentation about vZome, a 3D modeling app for Zometool and other geometries.
