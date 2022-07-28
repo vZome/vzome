@@ -21,6 +21,10 @@ vZome supports sharing designs via GitHub, including generation of simple web pa
   </figcaption>
 </figure>
 
+## [vZome Toolbars for Diehards](./toolbars-for-diehards.html)
+
+You can use modern vZome but still have the tools from older versions.
+
 ## [Ray-tracing with POV-Ray on Mac OS](./povray.html)
 
 Ray-traced vZome models are easy again, for Mac users using POV-Ray.
