@@ -20,7 +20,7 @@ Just the basics to get you started creating geometric designs with vZome.
 Significant new features get a dedicated YouTube video:
 
 <figure style="margin: 5%">
-  <iframe allowfullscreen="" frameborder="2" height="30vh" width="100%"
+  <iframe allowfullscreen="" frameborder="2" height="330" width="100%"
      src="//www.youtube.com/embed/videoseries?list=PL7FhcGSSTrf5LR_L1pKUepRf15y6VOHcG">
   </iframe>
 </figure>
