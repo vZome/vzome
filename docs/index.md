@@ -13,3 +13,6 @@ Please visit the [main vZome web site](https://vzome.com) for general informatio
 
 vZome supports [sharing designs via GitHub](./sharing.html).
 
+## Ray-tracing with POV-Ray on Mac OS
+
+Ray-traced vZome models are easy again, for [Mac users using POV-Ray](./povray.html).
