@@ -25,6 +25,10 @@ vZome supports sharing designs via GitHub, including generation of simple web pa
 
 You can use modern vZome but still have the tools from older versions.
 
+## [vZome Content Workflows](./content-workflows.html)
+
+Have you ever wished that you could automatically capture an image or export with every vZome file you save?
+
 ## [Ray-tracing with POV-Ray on Mac OS](./povray.html)
 
 Ray-traced vZome models are easy again, for Mac users using POV-Ray.
