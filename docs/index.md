@@ -6,7 +6,7 @@ description: Supplemental documentation for vZome, a 3D modeling app for Zometoo
 This page contains supplemental documentation about vZome, a 3D modeling app for Zometool and other geometries.
 Please visit the [main vZome web site](https://www.vzome.com) for general information.
 
-## [Sharing vZome Designs](./sharing.html)
+## [Sharing vZome Designs](./sharing)
 
 vZome supports sharing designs via GitHub, including generation of simple web pages with embedded interactive 3D views.
 
@@ -21,23 +21,23 @@ vZome supports sharing designs via GitHub, including generation of simple web pa
   </figcaption>
 </figure>
 
-## [vZome Toolbars for Diehards](./toolbars-for-diehards.html)
+## [vZome Toolbars for Diehards](./toolbars-for-diehards)
 
 You can use modern vZome but still have the tools from older versions.
 
-## [vZome Content Workflows](./content-workflows.html)
+## [vZome Content Workflows](./content-workflows)
 
 Have you ever wished that you could automatically capture an image or export with every vZome file you save?
 
-## [Ray-tracing with POV-Ray on Mac OS](./povray.html)
+## [Ray-tracing with POV-Ray on Mac OS](./povray)
 
 Ray-traced vZome models are easy again, for Mac users using POV-Ray.
 
-## [Running vZome on Linux](./running-on-linux.html)
+## [Running vZome on Linux](./running-on-linux)
 
 Instructions for how to install and run vZome on a Linux system
 
-## [Capturing Vector Graphics (e.g. PDF)](./capture-vector-graphics.html)
+## [Capturing Vector Graphics (e.g. PDF)](./capture-vector-graphics)
 
 Are you still capturing JPEG images to share your vZome creations? There's a better way, for most cases: vector graphics.
 
