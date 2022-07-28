@@ -4,28 +4,36 @@ description:
   Have you ever wished that you could automatically capture an image with every vZome file you save?
 published: true
 ---
-<p>Have you ever wished that you could automatically capture an image with every vZome file you save?</p>
+Have you ever wished that you could automatically capture an image with every vZome file you save?
 
-<p>This is a simple example of a <em>content workflow</em>. More complex examples might include running a mesh conversion when you export a 3D model, or uploading an exported model to a sharing service in the cloud. vZome supports such workflows in several ways, providing some simple hooks that you can use to trigger arbitrary automation.</p>
+This is a simple example of a <em>content workflow</em>. More complex examples might include running a mesh conversion when you export a 3D model,
+or uploading an exported model to a sharing service in the cloud. 
+vZome supports such workflows in several ways, providing some simple hooks that you can use to trigger arbitrary automation.
 
-<h2>The Preferences File</h2>
+## The Preferences File
 
-<p>To take advantage of these hooks, you must first locate your vZome preferences file. The file is named <code>.vZome.prefs</code>, and is found in your home directory. It is automatically created the first time you run vZome. When you open it in your text editor, you'll see something like this:</p>
+To take advantage of these hooks, you must first locate your vZome preferences file.
+The file is named <code>.vZome.prefs</code>, and is found in your home directory.
+It is automatically created the first time you run vZome. When you open it in your text editor, you'll see something like this:
 
-<pre><code>#
+```
+#
 #Fri Jan 01 23:53:46 PST 2016
 
 saw.welcome=true
-</code></pre>
+```
 
-<p>Keep the editor open on this file; we're going to add some settings. Note that changes to this file only take effect when vZome is launched, so you'll need to quit and relaunch when you make changes.</p>
+Keep the editor open on this file; we're going to add some settings. 
+Note that changes to this file only take effect when vZome is launched, 
+so you'll need to quit and relaunch when you make changes.
 
-<h2>Adding Exports on Save</h2>
+## Adding Exports on Save
 
-<p>The simple example I gave above, capturing an image to go with any vZome file, is very easy to achieve. Add this line to your preference file:</p>
+The simple example I gave above, capturing an image to go with any vZome file, is very easy to achieve. Add this line to your preference file:
 
-<pre><code>save.exports=capture.png
-</code></pre>
+```
+save.exports=capture.png
+```
 
 <p>Now, whenever you save a vZome file like "myModel.vZome", vZome will automatically capture the current view as "myModel.vZome.png", in the same directory. You can use the following types of image capture:</p>
 
