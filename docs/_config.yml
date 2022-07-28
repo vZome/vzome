@@ -25,7 +25,7 @@ author: Scott Vorthmann
 navbar-links:
 #  About Me: "aboutme"
   vZome home: "https://www.vzome.com"
-  Geometry blog: "https://vzome.github.io/vzome/"
+  Geometry blog: "https://vorth.github.io/vzome-sharing/"
 
 ################
 # --- Logo --- #
@@ -282,7 +282,7 @@ exclude:
   - LICENSE
   - README.md
   - screenshot.png
-  - docs/
+#  - docs/
 
 plugins:
   - jekyll-paginate
