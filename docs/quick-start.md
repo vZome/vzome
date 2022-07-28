@@ -12,7 +12,8 @@ To use vZome you need to know how to build struts, and to do that you must under
   <img alt="" src="https://www.vzome.com/home/data/uploads/viewcontrols.png" />
 </figure>
 
-	The &quot;rotation trackball&quot; panel is solely used to initiate mouse dragging actions. As with the classical video game trackballs (like Centipedes), the ball can roll in any direction. When you drag with the mouse, imagine that you are dragging a pane of glass over a real rubber trackball, and the pane of glass can move in any direction but does not rotate at all. Many 3D viewers use other trackball control metaphors, but I find them nonintuitive and clumsy.</p>
+The &quot;rotation trackball&quot; panel is solely used to initiate mouse dragging actions. As with the classical video game trackballs (like Centipedes), the ball can roll in any direction. When you drag with the mouse, imagine that you are dragging a pane of glass over a real rubber trackball, and the pane of glass can move in any direction but does not rotate at all. Many 3D viewers use other trackball control metaphors, but I find them nonintuitive and clumsy.
+
 <p>
 	The &quot;distance&quot; control is a logarithmic slider to move the viewpoint closer and farther away. If you have a wheelmouse, the wheel should work to move this slider, when the mouse is in the view control area.</p>
 <h2>
