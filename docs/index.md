@@ -32,3 +32,8 @@ Have you ever wished that you could automatically capture an image or export wit
 ## [Ray-tracing with POV-Ray on Mac OS](./povray.html)
 
 Ray-traced vZome models are easy again, for Mac users using POV-Ray.
+
+## [Running vZome on Linux](./running-linux.html)
+
+Instructions for how to install and run vZome on a Linux system
+
