@@ -14,7 +14,13 @@ layout: vzome
 
 ${description}
 
-<vzome-viewer style="width: 87%; height: 60vh; margin: 5%"
+<figure style="width: 87%; margin: 5%">
+  <vzome-viewer style="width: 100%; height: 60vh"
        src="${siteUrl}/${designPath}" >
-  <img src="${siteUrl}/${imagePath}" />
-</vzome-viewer>
+    <img  style="width: 100%"
+       src="${siteUrl}/${imagePath}" >
+  </vzome-viewer>
+  <figcaption style="text-align: center; font-style: italic;">
+    ${title}
+  </figcaption>
+</figure>
