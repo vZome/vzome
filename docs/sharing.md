@@ -4,8 +4,6 @@ description: vZome supports sharing 3D designs using GitHub Pages.  This is an e
 
 ---
 
-# {{ page.title }}
-
 [vZome][vzome] supports sharing designs using [Github Pages][pages].
 In addition to vZome itself, all you need is a free [GitHub][github] account,
 and a GitHub repository named `vzome-sharing` with a `main` branch.
@@ -128,6 +126,10 @@ your entire `vzome-sharing` repo.
 You can add images, links to other web sites (like YouTube)... whatever you like.
 You can add a few more `vzome-viewer` elements for other designs you have shared,
 to make a complete article about some topic.  Run with it!
+
+To make your page immediately engaging, try not to put too much text before the first
+`vzome-viewer` element.  You want someone to see the design immediately, without scrolling, even if they
+are viewing on a phone.  Two or three average sentences is fine.
 
 Check out [this example][postsrc] of a customized `.md` page source file.  In particular,
 note the use of `{{ "{{" }} page.description }}`.
