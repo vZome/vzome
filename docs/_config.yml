@@ -33,7 +33,7 @@ navbar-links:
 
 # Image to show in the navigation bar - works best with a square image
 # Remove this parameter if you don't want an image in the navbar
-avatar: "/assets/maskable_icon_x192.png"
+avatar: "https://user-images.githubusercontent.com/1584024/182040944-4d0fa393-1ce0-46a4-9424-a99bc54e9826.png"
 
 # By default, the image is cut into a circle. You can disable this behaviour by setting 'round-avatar: false'
 round-avatar: true
