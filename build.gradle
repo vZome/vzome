@@ -16,6 +16,8 @@ ext.githubRepoName = System.getenv( "GITHUB_REPO_NAME" ) ?: ''
 ext.githubClientId = System.getenv( "GITHUB_CLIENT_ID" )
 ext.githubClientSecret = System.getenv( "GITHUB_CLIENT_SECRET" )
 
+ext.jreHome = System.getenv( "JAVA_HOME" ) ?: '/Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home'
+
 ext.appName = 'vZome'
 ext.edition = appName
 
