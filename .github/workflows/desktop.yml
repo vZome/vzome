@@ -39,7 +39,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: vZome-MacOSX-7.1.${{ github.run_number }}
-        path: desktop/platform/mac/build/macApp/vZome-*.app
+        path: desktop/platform/mac/build/distributions/vZome-7.1.*-MacOSX.zip
 
   build-linux:
     runs-on: ubuntu-latest
