@@ -29,6 +29,10 @@ jobs:
       with:
         java-version: '8'
         distribution: 'adopt'
+    - name: Control Timezone
+      uses: szenius/set-timezone@v1.0
+      with:
+        timezoneMacos: "America/Los_Angeles"
     - name: Get current date
       run: date
     - name: Grant execute permission for gradlew
