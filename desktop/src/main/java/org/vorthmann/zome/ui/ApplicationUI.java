@@ -189,7 +189,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
          */
 
         SplashScreen splash = null;
-        String splashImage = "org/vorthmann/zome/ui/vZome-7-splash.png";
+        String splashImage = "org/vorthmann/zome/ui/vZome-splash.png";
         splash = new SplashScreen( splashImage );
         splash .splash();
         logger .info( "splash screen displayed" );
