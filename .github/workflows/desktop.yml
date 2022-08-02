@@ -11,8 +11,8 @@ env:
   # TODO connect these to secrets
   # NOTE: They have nothing to do with running this GitHub Action;
   #   they are for vZome to make runtime API calls to GitHub.
-  GITHUB_CLIENT_SECRET: ''
-  GITHUB_CLIENT_ID: ''
+  GITHUB_CLIENT_SECRET: ${{ secrets.VZOME_GITHUB_CLIENT_SECRET }}
+  GITHUB_CLIENT_ID: ${{ secrets.VZOME_GITHUB_CLIENT_ID }}
 
 
 jobs:
