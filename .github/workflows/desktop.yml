@@ -6,7 +6,6 @@ on:
   workflow_dispatch:
 
 env:
-  BUILD_NUMBER: ${{ github.run_number }}
   GIT_COMMIT: ${{ github.sha }}
   # TODO connect these to secrets
   # NOTE: They have nothing to do with running this GitHub Action;
@@ -28,7 +27,7 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: '8'
-        distribution: 'adopt'
+        distribution: 'temurin'
     - name: Control Timezone
       uses: szenius/set-timezone@v1.0
       with:
@@ -37,13 +36,15 @@ jobs:
       run: date
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+    - name: Set build number
+      run: export BUILD_NUMBER=$(expr ${{ github.run_number }} + 78)
     - name: Build with Gradle
       run: ./gradlew clean createAppZip
     - name: Archive MacOS build
       uses: actions/upload-artifact@v2
       with:
-        name: vZome-MacOSX-7.1.${{ github.run_number }}
-        path: desktop/platform/mac/build/distributions/vZome-7.1.*-MacOSX.zip
+        name: vZome-MacOSX-7.1.${BUILD_NUMBER}
+        path: desktop/platform/mac/build/macApp/vZome-7.1.*.app
 
   build-linux:
     runs-on: ubuntu-latest
