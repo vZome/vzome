@@ -56,7 +56,7 @@ jobs:
       env:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Publish MacOS build
-      run: platform=mac sftp -b ./cicd/sftp-cmds.txt dreamhost:vzome.com/quarantine
+      run: platform=mac sftp -b ./cicd/sftp-cmds.txt dreamhost
 
   build-linux:
     runs-on: ubuntu-latest
