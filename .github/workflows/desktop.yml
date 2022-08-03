@@ -40,7 +40,9 @@ jobs:
     - name: Build with Gradle
       run: |
         ./gradlew clean createApp
-        cd desktop/platform/mac/build
+        cd desktop/platform/mac/build/macApp
+        pwd
+        ls
         find vZome*.app -exec touch -A -080000 {} \;
         zip vZome-7.1.${{ github.run_number }}-MacOSX.zip vZome*.app/
     - name: Configure SSH
