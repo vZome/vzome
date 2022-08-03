@@ -39,11 +39,16 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew clean createAppZip
-    - name: Archive MacOS build
-      uses: actions/upload-artifact@v2
+    - name: Publish MacOS build
+      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
       with:
-        name: vZome-MacOSX-7.1.${{ github.run_number }}
-        path: desktop/platform/mac/build/distributions/vZome-7.1.*-MacOSX.zip
+        username: 'scottvorthmann'
+        server: 'sandy.dreamhost.com'
+        ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }} 
+        local_path: 'desktop/platform/mac/build/distributions/vZome-7.1.*-MacOSX.zip'
+        remote_path: '/quarantine'
+        sftpArgs: '-o ConnectTimeout=5'
+        sftp_only: true
 
   build-linux:
     runs-on: ubuntu-latest
