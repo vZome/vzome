@@ -1,0 +1,6 @@
+cd vzome.com/quarantine/
+-mkdir ${BUILD_NUMBER}
+cd ${BUILD_NUMBER}
+-mkdir ${platform}
+cd ${platform}
+mput vZome-*.zip	
