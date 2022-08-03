@@ -42,7 +42,7 @@ jobs:
     - name: change directory
       run: cd desktop/platform/mac/build/distributions
     - name: Prepare key
-      run: echo ${{ secrets.SSH_PRIVATE_KEY }} > pkey.txt
+      run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > pkey.txt
     - name: Publish MacOS build
       run: platform=mac sftp -i pkey.txt -b ./cicd/sftp-cmds.txt scottvorthmann@sandy.dreamhost.com:vzome.com/quarantine
     - name: clean key
