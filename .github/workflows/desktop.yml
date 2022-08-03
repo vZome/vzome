@@ -41,12 +41,22 @@ jobs:
       run: ./gradlew clean createAppZip
     - name: change directory
       run: cd desktop/platform/mac/build/distributions
-    - name: Prepare key
-      run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > pkey.txt
+    - name: Configure SSH
+      run: |
+        mkdir -p ~/.ssh/
+        echo "$SSH_KEY" > ~/.ssh/dreamhost.key
+        chmod 600 ~/.ssh/dreamhost.key
+        cat >>~/.ssh/config <<END
+        Host staging
+          HostName sandy.dreamhost.com
+          User scottvorthmann
+          IdentityFile ~/.ssh/dreamhost.key
+          StrictHostKeyChecking no
+        END
+      env:
+        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Publish MacOS build
-      run: platform=mac sftp -i pkey.txt -b ./cicd/sftp-cmds.txt scottvorthmann@sandy.dreamhost.com:vzome.com/quarantine
-    - name: clean key
-      run: rm -f pkey.txt
+      run: platform=mac sftp -b ./cicd/sftp-cmds.txt scottvorthmann@sandy.dreamhost.com:vzome.com/quarantine
 
   build-linux:
     runs-on: ubuntu-latest
