@@ -38,7 +38,11 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew clean createAppZip
+      run: |
+        ./gradlew clean createApp
+        cd desktop/platform/mac/build
+        find vZome*.app -exec touch -A -080000 {} \;
+        zip vZome-7.1.${{ github.run_number }}-MacOSX.zip vZome*.app/
     - name: Configure SSH
       run: |
         mkdir -p ~/.ssh/
