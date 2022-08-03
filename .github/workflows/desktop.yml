@@ -39,16 +39,14 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew clean createAppZip
+    - name: change directory
+      run: cd desktop/platform/mac/build/distributions
+    - name: Prepare key
+      run: echo ${{ secrets.SSH_PRIVATE_KEY }} > pkey.txt
     - name: Publish MacOS build
-      uses: wlixcc/SFTP-Deploy-Action@v1.2.4
-      with:
-        username: 'scottvorthmann'
-        server: 'sandy.dreamhost.com'
-        ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }} 
-        local_path: 'desktop/platform/mac/build/distributions/vZome-7.1.*-MacOSX.zip'
-        remote_path: '/quarantine'
-        sftpArgs: '-o ConnectTimeout=5'
-        sftp_only: true
+      run: platform=mac sftp -i pkey.txt -b ./cicd/sftp-cmds.txt scottvorthmann@sandy.dreamhost.com:vzome.com/quarantine
+    - name: clean key
+      run: rm -f pkey.txt
 
   build-linux:
     runs-on: ubuntu-latest
