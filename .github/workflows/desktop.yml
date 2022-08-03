@@ -44,7 +44,7 @@ jobs:
         pwd
         ls
         find vZome*.app -exec touch -A -080000 {} \;
-        zip -r vZome-7.1.${{ github.run_number }}-MacOSX vZome*.app/
+        zip -r vZome-7.1.${{ github.run_number }}-MacOSX.zip vZome*.app/
     - name: Configure SSH
       run: |
         mkdir -p ~/.ssh/
@@ -61,9 +61,11 @@ jobs:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Publish MacOS build to DreamHost
       run: |
+        pwd
+        ls
         platform=mac sftp -b - dreamhost <<END
           cd vzome.com/quarantine
-          mput desktop/platform/mac/build/macApp/vZome-*.zip	
+          mput vZome-*.zip	
         END
 
   build-linux:
