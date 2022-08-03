@@ -44,6 +44,7 @@ jobs:
         pwd
         ls
         find vZome*.app -exec touch -A -080000 {} \;
+        xattr -lr vZome*.app
         zip -r vZome-7.1.${{ github.run_number }}-MacOSX.zip vZome*.app/
         ls
         pwd
