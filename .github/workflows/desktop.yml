@@ -53,10 +53,12 @@ jobs:
         END
       env:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-    - name: Publish MacOS build
+    - name: Publish MacOS build to DreamHost
       run: |
-        cd desktop/platform/mac/build/distributions
-        platform=mac sftp -b ./cicd/sftp-cmds.txt dreamhost
+        platform=mac sftp -b - dreamhost <<END
+          cd vzome.com/quarantine
+          mput desktop/platform/mac/build/distributions/vZome-*.zip	
+        END
 
   build-linux:
     runs-on: ubuntu-latest
