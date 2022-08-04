@@ -38,9 +38,20 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
+      env: 
+        MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
+        MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
       run: |
+        echo $MACOS_CERTIFICATE | base64 —decode > certificate.p12
+        security create-keychain -p KeychainPwd build.keychain
+        security default-keychain -s build.keychain
+        security unlock-keychain -p KeychainPwd build.keychain
+        security import certificate.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
+        security find-identity -v
+        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k KeychainPwd build.keychain
         ./gradlew clean createApp
         cd desktop/platform/mac/build/macApp
+        /usr/bin/codesign --force -s 7018518FFC3092925AE4260675852B28A71B3091 vZome*.app -v
         find vZome*.app -exec touch {} \;
         find vZome*.app -exec touch -A -100000 {} \;
         zip -r vZome-7.1.${{ github.run_number }}-MacOSX.zip vZome*.app/
