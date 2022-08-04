@@ -64,21 +64,7 @@ macAppBundle {
         CFBundleTypeRole: 'Editor',
         LSTypeIsPackage: 'false'
     ] ] ]
-    // now make sure we add '-Xmx3048M', which does not work as in either javaProperties or arguments
-    generatePlist << {
-        def parser = new XmlParser( false, false, true )
-        parser .setFeature( "http://apache.org/xml/features/nonvalidating/load-external-dtd", false )
-        def plistFile = getPlistFile()
-        def plist = parser.parse( plistFile )
-
-        plist.dict.array[0].appendNode(
-            new groovy.xml.QName("string"),
-            [:],
-            '-Xmx3048M'
-        )
-        def writer = new FileWriter( plistFile )
-        groovy.xml.XmlUtil .serialize( plist, writer )
-    }
+    javaExtras.put( "-Xmx3048M", null )
 }
 // the macAppBundle extension adds this unwanted dependency
 assemble .dependsOn .remove( createDmg )
