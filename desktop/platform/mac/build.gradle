@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'edu.sc.seis.macAppBundle' version '2.1.3'
+    id 'edu.sc.seis.macAppBundle' version '2.3.0'
 }
 
 compileJava {
@@ -47,7 +47,8 @@ macAppBundle {
     dmgName = "${appName}-MacOSX"
     volumeName = "${dmgName}-build-${->project.buildNumber}"
     delegate.mainClassName = 'com.vzome.platform.mac.Adapter'
-    creatorCode = 'vZ60'
+    creatorCode = 'vZ71'
+    bundleIdentifier = 'com.vzome.desktop.7.1'
     icon = 'vZome-6.icns'
     bundleJRE = 'true'
     jreHome = "${rootProject.jreHome}"
