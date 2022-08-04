@@ -29,10 +29,10 @@ jobs:
       with:
         java-version: '8.0.265'
         distribution: 'adopt'
-#    - name: Control Timezone
-#      uses: szenius/set-timezone@v1.0
-#      with:
-#        timezoneMacos: "America/Los_Angeles"
+    - name: Control Timezone
+      uses: szenius/set-timezone@v1.0
+      with:
+        timezoneMacos: "America/Los_Angeles"
     - name: Get current date
       run: date
     - name: Grant execute permission for gradlew
@@ -41,6 +41,8 @@ jobs:
       run: |
         ./gradlew clean createApp
         cd desktop/platform/mac/build/macApp
+        find vZome*.app -exec touch {} \;
+        find vZome*.app -exec touch -A -100000 {} \;
         zip -r vZome-7.1.${{ github.run_number }}-MacOSX.zip vZome*.app/
     - name: Configure SSH
       run: |
