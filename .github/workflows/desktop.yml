@@ -28,7 +28,7 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: '8'
-        distribution: 'temurin'
+        distribution: 'adopt'
     - name: Control Timezone
       uses: szenius/set-timezone@v1.0
       with:
