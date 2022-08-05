@@ -53,7 +53,7 @@ jobs:
         cd desktop/platform/mac/build/macApp
         /usr/bin/codesign -s 7018518FFC3092925AE4260675852B28A71B3091 --deep -fv vZome*.app/Contents/PlugIns/*
         echo '%%%%%%%%% signed the JRE'
-        /usr/bin/codesign -s 7018518FFC3092925AE4260675852B28A71B3091 -fv vZome*.app
+        /usr/bin/codesign -s 7018518FFC3092925AE4260675852B28A71B3091 --deep -fv vZome*.app
         zip -r vZome-7.1.${{ github.run_number }}-MacOSX.zip vZome*.app/
     - name: Configure SSH
       run: |
