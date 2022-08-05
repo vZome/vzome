@@ -49,9 +49,9 @@ jobs:
         security import certificate.p12 -k build.keychain -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
         security find-identity -v
         security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k KeychainPwd build.keychain
-        ./gradlew clean createApp
+        ./gradlew clean createApp 
         cd desktop/platform/mac/build/macApp
-        /usr/bin/codesign --deep --force -s 7018518FFC3092925AE4260675852B28A71B3091 vZome*.app -v
+        /usr/bin/codesign -s 7018518FFC3092925AE4260675852B28A71B3091 --deep -fv vZome*.app
         zip -r vZome-7.1.${{ github.run_number }}-MacOSX.zip vZome*.app/
     - name: Configure SSH
       run: |
