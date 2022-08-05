@@ -50,8 +50,8 @@ macAppBundle {
     creatorCode = 'vZ71'
     bundleIdentifier = 'com.vzome.desktop.7.1'
     icon = 'vZome-6.icns'
-    bundleJRE = 'true'
-    jreHome = "${rootProject.jreHome}"
+//    bundleJRE = 'true'
+//    jreHome = "${rootProject.jreHome}"
     println "JRE home is: $jreHome"
     javaProperties.putAll jvmArgs
     // Commented out this line, now that I need to use SSL (from jre/lib/ext/sunjce_provider.jar?) for gist sharing
