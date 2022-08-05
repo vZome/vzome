@@ -50,10 +50,8 @@ jobs:
         security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k KeychainPwd build.keychain
         ./gradlew clean createApp 
         cd desktop/platform/mac/build/macApp
-        echo '%%%%%%%%%%'
-        chmod -v -v -R a+r vZome*.app/Contents/PlugIns/*/Contents
-        echo '%%%%%%%%%%'
-        /usr/bin/codesign -s 'Scott Vorthmann' --deep -fv vZome*.app
+        /usr/bin/codesign -s 'Scott Vorthmann' -fv vZome*.app/Contents/PlugIns/*
+        /usr/bin/codesign -s 'Scott Vorthmann' -v vZome*.app
         zip -r vZome-7.1.${{ github.run_number }}-MacOSX.zip vZome*.app/
     - name: Configure SSH
       run: |
