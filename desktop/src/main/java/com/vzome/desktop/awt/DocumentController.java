@@ -875,8 +875,9 @@ public class DocumentController extends DefaultGraphicsController implements Sce
             {
                 Dimension size = this .modelCanvas .getSize();
                 String format = command .substring( "export2d." .length() ) .toLowerCase();
-                Java2dSnapshot snapshot = documentModel .capture2d( currentSnapshot, size.height, size.width, cameraController .getView(), sceneLighting, false, true );
-                documentModel .export2d( snapshot, format, file, this .drawOutlines, false, true );
+                Java2dSnapshot snapshot = Java2dSnapshotController .capture2d( currentSnapshot, size.height, size.width, cameraController .getView(), sceneLighting, false, true );
+                Java2dSnapshotController controller = new Java2dSnapshotController( cameraController .getView(), sceneLighting, currentSnapshot, this .drawOutlines ); 
+                controller .export2d( snapshot, format, file, this .drawOutlines, false, true );
                 this .openApplication( file );
                 return;
             }
@@ -887,14 +888,9 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                 try {
                     out = new FileWriter( file );
                     String format = command .substring( "export." .length() ) .toLowerCase();
-                    Exporter3d exporter = documentModel .getNaiveExporter( format, cameraController .getView(), colors, sceneLighting, currentSnapshot );
+                    Exporter3d exporter = this .mApp .getExporter( format ); //, cameraController .getView(), colors, sceneLighting, currentSnapshot );
                     if ( exporter != null ) {
-                        exporter.doExport( file, out, size.height, size.width );
-                    }
-                    else {
-                        exporter = documentModel .getStructuredExporter( format, cameraController .getView(), colors, sceneLighting );
-                        if ( exporter != null )
-                            exporter .exportDocument( documentModel, file, out, size.height, size.width );
+                        exporter .exportDocument( documentModel, file, out, size.height, size.width );
                     }
                 }
                 catch (Command.Failure f) {
@@ -1240,6 +1236,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                     break; // fall through to properties or super
                 }
             }
+            // TODO: move this to ApplicationController!
             else if ( propName .startsWith( "exportExtension." ) ) {
                 String format = propName .substring( "exportExtension." .length() );
                 // handle null exporter so that typo in custom menu doesn't throw NPE 
@@ -1267,7 +1264,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         
         case "snapshot.2d": {
             if ( java2dController == null ) {
-                java2dController = new Java2dSnapshotController( this .documentModel, cameraController.getView(), this.sceneLighting,
+                java2dController = new Java2dSnapshotController( cameraController.getView(), this.sceneLighting,
                 						this.currentSnapshot, this.drawOutlines );
                 this .addSubController( name, java2dController );
             }

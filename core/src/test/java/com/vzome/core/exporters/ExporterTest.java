@@ -81,10 +81,10 @@ public class ExporterTest {
 
         public String exportPartGeometry() {
             StringWriter out = new StringWriter();
-            PartGeometryExporter exporter = (PartGeometryExporter) doc.getStructuredExporter("partgeom", null, null, null );
+            PartGeometryExporter exporter = new PartGeometryExporter();
             try {
-                exporter.doExport(null, new PrintWriter( out ), 0, 0 );
-            } catch (IOException ex) {
+                exporter.exportDocument( doc, null, new PrintWriter( out ), 0, 0 );
+            } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
             return out.toString();
@@ -92,10 +92,10 @@ public class ExporterTest {
 
         public String exportModelAsOFF() {
             StringWriter out = new StringWriter();
-            OffExporter exporter = new OffExporter(null, null, null, doc.getRenderedModel() );
+            OffExporter exporter = new OffExporter();
             try {
-                exporter.doExport(null, new PrintWriter( out ), 0, 0 );
-            } catch (IOException ex) {
+                exporter.exportDocument( doc, null, new PrintWriter( out ), 0, 0 );
+            } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
             return out.toString();
@@ -103,9 +103,9 @@ public class ExporterTest {
 
         public String exportMathTables() {
             StringWriter out = new StringWriter();
-            MathTableExporter exporter = new MathTableExporter(null, null, null, doc.getRenderedModel() );
+            MathTableExporter exporter = new MathTableExporter();
             try {
-                exporter.doExport(null, new PrintWriter( out ), 0, 0 );
+                exporter.exportDocument( doc, null, new PrintWriter( out ), 0, 0 );
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }

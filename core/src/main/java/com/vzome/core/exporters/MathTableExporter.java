@@ -13,18 +13,10 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PolygonField;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.AntiprismSymmetry;
-import com.vzome.core.render.Colors;
-import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Camera;
-import com.vzome.core.viewing.Lights;
 
 public class MathTableExporter extends Exporter3d {
     private static final int X = AlgebraicVector.X;
     private static final int Y = AlgebraicVector.Y;
-
-    public MathTableExporter(Camera scene, Colors colors, Lights lights, RenderedModel model) {
-        super(scene, colors, lights, model);
-    }
     
     @Override
     public void doExport(File file, Writer writer, int height, int width) throws Exception {

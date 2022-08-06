@@ -15,18 +15,14 @@ import java.util.Locale;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Camera;
-import com.vzome.core.viewing.Lights;
 
 /**
  * Renders out to POV-Ray using #declare statements to reuse geometry.
  * @author vorth
  */
-public class STEPExporter extends Exporter3d{
-	
+public class STEPExporter extends Exporter3d
+{	
 	private static final String PREAMBLE_FILE = "com/vzome/core/exporters/step/preamble.step";
     
     private static final String POSTLUDE = "ENDSEC;\nEND-ISO-10303-21;";
@@ -39,11 +35,6 @@ public class STEPExporter extends Exporter3d{
      *   ball model are short and medium blue struts.
      */
     private static final double SCALE = 0.350d;
-
-    public STEPExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
-    {
-        super( scene, colors, lights, model );
-    }
     
     @Override
     public void doExport( File directory, Writer writer, int height, int width ) throws Exception

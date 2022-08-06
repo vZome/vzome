@@ -11,10 +11,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.render.Colors;
-import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Camera;
-import com.vzome.core.viewing.Lights;
 import com.vzome.xml.DomSerializer;
 
 /**
@@ -25,11 +21,6 @@ import com.vzome.xml.DomSerializer;
  */
 public class SideEffectsExporter extends Exporter3d
 {
-    public SideEffectsExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
-    {
-        super( scene, colors, lights, model );
-    }
-
     @Override
     public void exportDocument( DocumentModel document, File file, Writer writer, int height, int width ) throws Exception
     {

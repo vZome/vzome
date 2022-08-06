@@ -116,28 +116,50 @@ public class Application implements AlgebraicField.Registry
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+        /*
+         * These exporters fall in two categories: rendering and geometry.  The ones that support the currentSnapshot
+         * (the current article page, or the main model) can do rendering export, and can work with just a rendered
+         * model (a snapshot), which has lost its attached Manifestation objects.
+         * 
+         * The ones that require mRenderedModel need access to the RealizedModel objects hanging from it (the
+         * Manifestations).  These are the geometry exporters.  They can be aware of the structure of field elements,
+         * as well as the orbits and zones.
+         * 
+         * POV-Ray is a bit of a special case, but only because the .pov language supports coordinate values as expressions,
+         * and supports enough modeling that the different strut shapes can be defined, and so on.
+         * 
+         * The POV-Ray export reuses shapes, etc. just as vZome does, so really works just with the RenderedManifestations
+         * (except when the Manifestation is available for structured coordinate expressions).  Again, any rendering exporter
+         * could apply the same reuse tricks, working just with RenderedManifestations, so the current limitations to
+         * mRenderedModel for many of these is spurious.
+         *
+         * The base Exporter3d class now has a boolean needsManifestations() method which subclasses should override
+         * if they don't rely on Manifestations and therefore can operate on article pages.
+         */
+
+        // need these all here just to find the extension in DocumentController.getProperty()
         this .exporters .put( "mesh", new SimpleMeshJsonExporter() );
         this .exporters .put( "cmesh", new ColoredMeshJsonExporter() );
         this .exporters .put( "shapes", new ShapesJsonExporter() );
-
-        this .exporters .put( "ggb", new GeoGebraExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "math", new MathTableExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "pov", new POVRayExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "dae", new DaeExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "step", new STEPExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "vrml", new VRMLExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "off", new OffExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "vef", new VefExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "partgeom", new PartGeometryExporter( null, this .mColors, this .mLights, null, null ) ); // need this here just to find the extension in DocumentController.getProperty()
-        this .exporters .put( "openscad", new OpenScadExporter() ); // need this here just to find the extension in DocumentController.getProperty()
-        this .exporters .put( "partslist", new PartsListExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "stl", new StlExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "dxf", new DxfExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "pdb", new PdbExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "seg", new SegExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "ply", new PlyExporter( this .mColors, this .mLights ) );
-        this .exporters .put( "history", new HistoryExporter( null, this .mColors, this .mLights, null ) );
-        this .exporters .put( "effects", new SideEffectsExporter( null, this .mColors, this .mLights, null ) );
+ 
+        this .exporters .put( "ggb", new GeoGebraExporter() );
+        this .exporters .put( "math", new MathTableExporter() );
+        this .exporters .put( "pov", new POVRayExporter() );
+        this .exporters .put( "dae", new DaeExporter() );
+        this .exporters .put( "step", new STEPExporter() );
+        this .exporters .put( "vrml", new VRMLExporter() );
+        this .exporters .put( "off", new OffExporter() );
+        this .exporters .put( "vef", new VefExporter() );
+        this .exporters .put( "partgeom", new PartGeometryExporter() );
+        this .exporters .put( "openscad", new OpenScadExporter() );
+        this .exporters .put( "partslist", new PartsListExporter() );
+        this .exporters .put( "stl", new StlExporter() );
+        this .exporters .put( "dxf", new DxfExporter() );
+        this .exporters .put( "pdb", new PdbExporter() );
+        this .exporters .put( "seg", new SegExporter() );
+        this .exporters .put( "ply", new PlyExporter() );
+        this .exporters .put( "history", new HistoryExporter() );
+        this .exporters .put( "effects", new SideEffectsExporter() );
 
         this .exporters2d .put( "pdf", PDFExporter::new );
         this .exporters2d .put( "svg", SVGExporter::new );

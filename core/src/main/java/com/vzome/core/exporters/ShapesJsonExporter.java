@@ -23,11 +23,6 @@ public class ShapesJsonExporter extends Exporter3d
 {
     private final JsonMapper mapper = new JsonMapper();
     
-    public ShapesJsonExporter()
-    {
-        super( null, null, null, null );
-    }
-
     public void exportDocument( DocumentModel doc, File file, Writer writer, int height, int width ) throws Exception
     {
         mScene = doc .getCamera();

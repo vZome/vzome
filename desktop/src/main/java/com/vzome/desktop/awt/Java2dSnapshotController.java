@@ -8,8 +8,12 @@ import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
 
 import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.exporters2d.Java2dExporter;
+import com.vzome.core.exporters2d.SnapshotExporter;
 import com.vzome.core.exporters2d.Java2dSnapshot;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Camera;
@@ -30,8 +34,6 @@ public class Java2dSnapshotController extends DefaultGraphicsController
 
     private transient Java2dSnapshot snapshot;
 
-    private final DocumentModel document;
-
     private Camera camera;
 
     private Lights lights;
@@ -39,9 +41,8 @@ public class Java2dSnapshotController extends DefaultGraphicsController
     private RenderedModel model;
 
     
-    public Java2dSnapshotController( DocumentModel document, Camera camera, Lights lights, RenderedModel model, boolean outlinePanels )
+    public Java2dSnapshotController( Camera camera, Lights lights, RenderedModel model, boolean outlinePanels )
     {
-        this .document = document;
         this .camera = camera;
         this .lights = lights;
         this .model = model;
@@ -148,7 +149,7 @@ public class Java2dSnapshotController extends DefaultGraphicsController
     {
         try {
             String format = command .substring( "export2d." .length() ) .toLowerCase();
-            this .document .export2d( snapshot, format, file, this .outlinePanels, this .monochrome, this .showBackground );
+            export2d( snapshot, format, file, this .outlinePanels, this .monochrome, this .showBackground );
             openApplication( file );
         } catch ( Exception e ) {
             mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ e } );
@@ -160,7 +161,7 @@ public class Java2dSnapshotController extends DefaultGraphicsController
     {
         if ( ! current )
             try {
-                snapshot = this .document .capture2d( this .model, size.height, size.width, this .camera,
+                snapshot = capture2d( this .model, size.height, size.width, this .camera,
                         this .lights, this .lineDrawing, this .doLighting );
                 current = true;
             } catch ( Exception e1 ) {
@@ -209,7 +210,6 @@ public class Java2dSnapshotController extends DefaultGraphicsController
         g2d.dispose(); //clean up
     }
 
-
     public void setScene( Camera camera, Lights lights, RenderedModel model, boolean outlinePanels )
     {
         this .camera = camera;
@@ -217,6 +217,24 @@ public class Java2dSnapshotController extends DefaultGraphicsController
         this .model = model;
         this .current = false;
         this .outlinePanels = outlinePanels;
+    }
+
+    public static Java2dSnapshot capture2d( RenderedModel model, int height, int width, Camera camera, Lights lights,
+            boolean drawLines, boolean doLighting ) throws Exception
+    {
+        Java2dExporter captureSnapshot = new Java2dExporter();
+        Java2dSnapshot snapshot = captureSnapshot .render2d( model, camera, lights, height, width, drawLines, doLighting );
+
+        return snapshot;
+    }
+
+    public void export2d( Java2dSnapshot snapshot, String format, File file, boolean doOutlines, boolean monochrome, boolean showBackground ) throws Exception
+    {
+        SnapshotExporter exporter = this .app .getSnapshotExporter( format );
+        // A try-with-resources block closes the resource even if an exception occurs
+        try ( Writer out = new FileWriter( file ) ) {
+            exporter .export( snapshot, out, doOutlines, monochrome, showBackground );
+        }
     }
 }
 

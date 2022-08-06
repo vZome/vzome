@@ -22,13 +22,10 @@ public abstract class Exporter3d implements RealZomeScaling
 	protected transient Colors mColors;
 	protected transient Lights mLights;
 	protected transient RenderedModel mModel;
-	
-	public Exporter3d( Camera scene, Colors colors, Lights lights, RenderedModel model )
+		
+	public Exporter3d()
 	{
-	    mScene = scene;
-	    mColors = colors;
-	    mLights = lights;
-        mModel = model;
+	    super();
 	}
 
 	/**
@@ -47,7 +44,8 @@ public abstract class Exporter3d implements RealZomeScaling
      * Subclasses can override this if they don't rely on Manifestations and therefore can operate on article pages
      * See the comments below DocumentModel.getNaiveExporter() for a more complete explanation.
      */
-    public boolean needsManifestations() {
+    public boolean needsManifestations()
+    {
         return true;
     }
     
@@ -67,7 +65,7 @@ public abstract class Exporter3d implements RealZomeScaling
     }
 
     /**
-     * Subclasses can override this if they need to export history or the lesson model.
+     * Subclasses can override this if they need to export history, the lesson model, or the selection.
      */
     public void exportDocument( DocumentModel doc, File file, Writer writer, int height, int width ) throws Exception
     {

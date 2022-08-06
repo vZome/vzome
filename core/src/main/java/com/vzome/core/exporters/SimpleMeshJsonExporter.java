@@ -9,11 +9,6 @@ import com.vzome.core.model.SimpleMeshJson;
 
 public class SimpleMeshJsonExporter extends Exporter3d
 {			
-    public SimpleMeshJsonExporter()
-    {
-        super( null, null, null, null );
-    }
-
     @Override
     public void doExport( File directory, Writer writer, int height, int width ) throws IOException
     {
