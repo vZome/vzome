@@ -117,7 +117,7 @@ public class ExporterTest {
     public void exportMathTables() {
         String path = "";
         // uncomment this line to generate the json as files
-        //path = "C:\\Users\\DHall\\Documents\\GitHub\\vzome-sharing\\test\\PolygonFieldMathTables\\";
+        //path = "C:\\Users\\DHall\\Documents\\GitHub\\vzome-sharing\\2022\\04\\20\\algebraic-field-math-tables\\";
         String[] fieldNames = {
             "golden",
             "rootTwo",
