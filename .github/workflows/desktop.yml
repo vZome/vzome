@@ -54,7 +54,7 @@ jobs:
         ls -al vZome*.app/Contents/PlugIns/x64/Contents/Home/jre/
         ls -al vZome*.app/Contents/PlugIns/x64/Contents/Home/
         ls -al vZome*.app/Contents/PlugIns/x64/Contents/
-        /usr/bin/codesign -s 'Scott Vorthmann' --deep -fv vZome*.app
+        /usr/bin/codesign --deep -s 'Scott Vorthmann' --force --verbose=4 vZome*.app
         zip -r vZome-7.1.${{ github.run_number }}-MacOSX.zip vZome*.app/
     - name: Configure SSH
       run: |
