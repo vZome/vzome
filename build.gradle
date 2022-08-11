@@ -4,11 +4,7 @@ group = 'com.vzome'
 version = '7.0'
 
 wrapper() {
-   // Note that gradle version 6.0.1 can't find java3d in the ivy repository.
-   // I think it's because http://jogamp.org/deployment/java3d/1.6.0-final/ivy.xml doesn't exist
-   // Gradle 5.6.4 can find it without needing ivy.xml, 
-   // so don't upgrade to 6.* yet, but maybe after java3d is replaced.
-   gradleVersion = '6.9.2' //version required
+   gradleVersion = '7.5.1' //version required
 }
 
 // These environment variables are automatically available during a Jenkins build
@@ -42,16 +38,22 @@ subprojects {
     mavenCentral()
     
     // This is for the JSweet compiler
-    maven { url "http://repository.jsweet.org/artifactory/libs-release-local" }
-    maven { url "http://repository.jsweet.org/artifactory/libs-snapshot-local" }
+    maven {
+      allowInsecureProtocol true
+      url "http://repository.jsweet.org/artifactory/libs-release-local" }
+    maven {
+      allowInsecureProtocol true
+      url "http://repository.jsweet.org/artifactory/libs-snapshot-local" }
 
     // this one is for javax.media.jai
-    maven { url 'http://repository.springsource.com/maven/bundles/external' }
+    maven { allowInsecureProtocol true
+      url 'http://repository.springsource.com/maven/bundles/external' }
 
     // For EGit
     maven { url 'https://repo.eclipse.org/content/groups/releases' }
 
     ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR downloads for JOGL
+      allowInsecureProtocol true
       url "http://jogamp.org/deployment"
       metadataSources {
         artifact();
@@ -61,6 +63,7 @@ subprojects {
       }
     }
     ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR download for vecmath
+      allowInsecureProtocol true
       url "http://jogamp.org/deployment"
       metadataSources {
         artifact();

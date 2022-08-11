@@ -86,9 +86,9 @@ dependencies {
         implementation group: 'org.jsweet', name: 'j4ts', version: '2.0.0'
     }
 
-    // runtime     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
-    runtime     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
-    runtime     group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.2'
+    // runtimeOnly     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
+    runtimeOnly     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
+    runtimeOnly     group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.2'
 
     testImplementation group: 'antlr',             name: 'antlr',             version:'2.7.7'
     testImplementation group: 'junit',             name: 'junit',             version:'4.12'
@@ -98,7 +98,7 @@ dependencies {
     regressionImplementation sourceSets.main.output
     regressionImplementation configurations.testImplementation
     regressionImplementation sourceSets.test.output
-    regressionRuntime configurations.testRuntime
+    regressionRuntimeOnly configurations.testRuntimeOnly
 }
 
 // These options apply to all java projects
@@ -400,14 +400,6 @@ jar {
     }
 }
 
-uploadArchives {
-    repositories {
-       flatDir {
-           dirs 'repos'
-       }
-    }
-}
-
 
 def writeProjectProperties( keys, propsFile )
 {
@@ -430,8 +422,10 @@ def writeProjectProperties( keys, propsFile )
 buildscript {
 	repositories {
 		mavenCentral()
-		maven { url "http://repository.jsweet.org/artifactory/libs-release-local" }
-		maven { url "http://repository.jsweet.org/artifactory/plugins-release-local" }
+		maven { allowInsecureProtocol true
+            url "http://repository.jsweet.org/artifactory/libs-release-local" }
+		maven { allowInsecureProtocol true
+            url "http://repository.jsweet.org/artifactory/plugins-release-local" }
 	}
 	dependencies {
 		classpath("org.jsweet:jsweet-gradle-plugin:2.3.7") { transitive = true }
