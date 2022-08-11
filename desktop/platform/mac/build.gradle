@@ -16,7 +16,7 @@ compileJava {
 }
 
 dependencies {
-    compile project( ':desktop' )
+    implementation project( ':desktop' )
 }
 
 // The classesDir adjustment is necessary so that mac-6.0.jar does not end up containing

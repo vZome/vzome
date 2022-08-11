@@ -80,12 +80,12 @@ subprojects {
 
 project(':desktop') {
     dependencies {
-        compile project(':core')
+        implementation project(':core')
     }
 }
 
 project(':server') {
     dependencies {
-        compile project(':desktop')
+        implementation project(':desktop')
     }
 }
