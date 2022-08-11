@@ -18,7 +18,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.vorthmann.ui.CardPanel;
-import org.vorthmann.ui.Controller;
+
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.awt.GraphicsController;
 
 public class OrbitPanel extends JPanel implements PropertyChangeListener
 {
@@ -29,14 +31,15 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
 		orbitCheckboxes .setToolTipText( text );
 	}
 
-	private Controller enabledOrbits, drawnOrbits;
+	private GraphicsController enabledOrbits;
+	private Controller drawnOrbits;
 	private final ContextualMenu directionPopupMenu;
 	private final JPanel orbitTriangle, orbitCheckboxes;
 	private final CardPanel cardPanel;
 	private MouseListener orbitPopup;
 	private JCheckBox singleCheckbox;
 	
-	public OrbitPanel( final Controller selectedOrbits, final Controller drawnOrbits, ControlActions enabler )
+	public OrbitPanel( final GraphicsController selectedOrbits, final Controller drawnOrbits, ControlActions enabler )
 	{
 		this .enabledOrbits = selectedOrbits;
 		this .drawnOrbits = drawnOrbits;
@@ -123,7 +126,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
             cardPanel .showCard( "textual" );
 	}
 
-	public void systemChanged( Controller buildOrbits, Controller shownOrbits )
+	public void systemChanged( GraphicsController buildOrbits, Controller shownOrbits )
 	{
         if ( orbitPopup != null )
         	orbitTriangle .removeMouseListener( orbitPopup );

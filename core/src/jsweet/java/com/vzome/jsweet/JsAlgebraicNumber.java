@@ -42,7 +42,7 @@ public class JsAlgebraicNumber implements AlgebraicNumber
      * @param n is the value to be added
      * @return this + n
      */
-    public AlgebraicNumber plus( int n )
+    public AlgebraicNumber plusInt( int n )
     {
         return n == 0 ? this : this.plus( field.createRational(n) );
     }
@@ -53,7 +53,7 @@ public class JsAlgebraicNumber implements AlgebraicNumber
      * @param den is the denominator of the rational value to be added
      * @return this + (num / den)
      */
-    public AlgebraicNumber plus( int num, int den )
+    public AlgebraicNumber plusRational( int num, int den )
     {
         return this.plus( field.createRational( num, den ) );
     }
@@ -66,19 +66,19 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     }
 
     @Override
-    public AlgebraicNumber minus( int n )
+    public AlgebraicNumber minusInt( int n )
     {
         return n == 0 ? this : this.minus( field.createRational(n) );
     }
 
     @Override
-    public AlgebraicNumber minus( int num, int den )
+    public AlgebraicNumber minusRational( int num, int den )
     {
         return this.minus( field.createRational( num, den ) );
     }
 
     @Override
-    public AlgebraicNumber minus(AlgebraicNumber that)
+    public AlgebraicNumber minus( AlgebraicNumber that )
     {
         int[] factors = this.field .subtract( this.factors, ((JsAlgebraicNumber) that) .factors );
         return new JsAlgebraicNumber( this .field, factors );
@@ -92,13 +92,13 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     }
 
     @Override
-    public AlgebraicNumber dividedBy( int divisor )
+    public AlgebraicNumber dividedByInt( int divisor )
     {
         return divisor == 1 ? this : this.times( field.createRational( 1, divisor ) );
     }
 
     @Override
-    public AlgebraicNumber dividedBy( int num, int den )
+    public AlgebraicNumber dividedByRational( int num, int den )
     {
         return this.times( field.createRational( den, num ) );
     }
@@ -168,7 +168,7 @@ public class JsAlgebraicNumber implements AlgebraicNumber
      */
     public String toString( int format )
     {
-        return Arrays .toString( this .factors );
+        return this.field .toString( this.factors, format );
     }
 
     @Override
@@ -234,20 +234,20 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     
 
     @Override
-    public AlgebraicNumber times(int n)
+    public AlgebraicNumber timesInt(int n)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicNumber.timesInt" );
     }
 
     @Override
-    public AlgebraicNumber times(int num, int den)
+    public AlgebraicNumber timesRational(int num, int den)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicNumber.times" );
     }
 
     @Override
     public boolean isRational()
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicNumber.isRational" );
     }
 }

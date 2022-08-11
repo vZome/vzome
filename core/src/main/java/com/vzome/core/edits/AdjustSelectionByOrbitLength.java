@@ -147,8 +147,8 @@ public class AdjustSelectionByOrbitLength extends ChangeSelection
         if (length != null) {
             XmlSaveFormat.serializeNumber(element, "length", length);
         }
-        element .setAttribute( "struts", strutAction.toString() );
-        element .setAttribute( "panels", panelAction.toString() );
+        element .setAttribute( "struts", strutAction.name() );
+        element .setAttribute( "panels", panelAction.name() );
     }
 
     @Override

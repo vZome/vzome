@@ -32,7 +32,7 @@ public class HistoryExporter extends Exporter3d
         DocumentBuilder builder = factory .newDocumentBuilder();
         Document dom = builder .newDocument();
 
-        Element modelXml = document .getDetailsXml( dom );
+        Element modelXml = document .getDetailsXml( dom, false );
         dom .appendChild( modelXml );
 
         DomSerializer .serialize( dom, writer );

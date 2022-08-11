@@ -4,15 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -24,7 +21,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.awt.GraphicsController;
 
 public class LessonPanel extends JPanel implements PropertyChangeListener
 {
@@ -39,7 +37,7 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
     
     private final boolean isEditor;
     
-	public LessonPanel( final Controller controller )
+	public LessonPanel( final GraphicsController controller )
 	{
         mController = controller;
         mController .addPropertyListener( this );
@@ -115,8 +113,13 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
                     }
                     pagePanel .add( panel, BorderLayout.CENTER );
                 }
-                if ( mController .propertyIsTrue( "has.pages" ) )
-                    updatePageState();
+                // Do NOT try to update the page state.  We generally want UI creation to
+                //  be independent of the document state, so that we have no concern about
+                //  model changes that might be happening concurrently on a worker thread.
+                //  Document model loading should schedule property change events that will
+                //  update the UI in due course.
+//                if ( mController .propertyIsTrue( "has.pages" ) )
+//                    updatePageState();
             }
             this .add( pagePanel, BorderLayout.CENTER );
         }

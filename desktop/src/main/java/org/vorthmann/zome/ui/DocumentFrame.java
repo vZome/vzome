@@ -19,7 +19,12 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -43,18 +48,21 @@ import javax.swing.ToolTipManager;
 
 import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.Platform;
-import org.vorthmann.ui.Controller;
-import org.vorthmann.ui.DefaultController;
 import org.vorthmann.ui.ExclusiveAction;
 
 import com.vzome.core.render.Scene;
-import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.awt.GraphicsController;
+import com.vzome.desktop.awt.RenderingViewer;
+import com.vzome.desktop.controller.DefaultController;
 
 public class DocumentFrame extends JFrame implements PropertyChangeListener, ControlActions
 {
     private static final long serialVersionUID = 1L;
 
-    protected final Controller mController, toolsController;
+    protected final GraphicsController mController;
+    
+    protected final Controller toolsController;
 
     private final ModelPanel modelPanel;
             
@@ -80,9 +88,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
     private JLabel statusText;
 
-    private Controller cameraController;
-
-    private Controller lessonController;
+    private GraphicsController lessonController, cameraController;
     
     private JDialog polytopesDialog, importScaleDialog;
     
@@ -109,20 +115,12 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         return mExcluder;
     }
     
-    private void createLessonPanel()
-    {
-    	if ( lessonPanel != null )
-    		return;
-        lessonPanel = new LessonPanel( lessonController );
-        modelArticleEditPanel .add( lessonPanel, "article" );
-    }
-    
     void setAppUI( PropertyChangeListener appUI )
     {
     	this .appUI = appUI;
     }
         
-    public DocumentFrame( final Controller controller, final J3dComponentFactory factory3d )
+    public DocumentFrame( final GraphicsController controller, final J3dComponentFactory factory3d )
     {
         mController = controller;
         mController .addPropertyListener( this );
@@ -225,18 +223,28 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     break;
 
                 case "Share":
-                    String windowName = mController .getProperty( "window.file" );
-                    if ( windowName == null ) {
+                    String filePathStr = mController .getProperty( "original.path" );
+                    if ( filePathStr == null ) {
                         JOptionPane .showMessageDialog( DocumentFrame.this, "You must save your model before you can share it.",
                                 "Command Failure", JOptionPane .ERROR_MESSAGE );
                         return;
                     }
                     if ( shareDialog == null )
                         shareDialog = new ShareDialog( DocumentFrame.this, mController );
-                    Path filePath = new File( windowName ) .toPath();
+                    Path filePath = Paths.get( filePathStr );
+                    LocalDateTime lastMod = LocalDateTime.now();
+                    if ( mController .propertyIsTrue( "share.last.mod.time" ) ) {
+                        try {
+                            FileTime fileTime = Files.getLastModifiedTime( Paths.get( filePathStr ) );
+                            lastMod = LocalDateTime.ofInstant( fileTime.toInstant(), ZoneId.systemDefault() );
+                        } catch (IOException e2) {
+                            logger.log( Level.INFO, "Unable to get last mod time for " + filePathStr );
+                        }
+                    }
                     String xml = mController .getProperty( "vZome-xml" );
                     String pngEncoded = mController .getProperty( "png-base64" );
-                    shareDialog .startUpload( filePath .getFileName() .toString(), xml, pngEncoded );
+                    String shapesJson = mController .getProperty( "shapes-json" );
+                    shareDialog .startUpload( filePath .getFileName() .toString(), lastMod, xml, pngEncoded, shapesJson );
                     break;
 
                 case "saveDefault":
@@ -279,7 +287,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     
                 case "snapshot.2d":
                     if ( snapshot2dFrame == null ) {
-                        snapshot2dFrame = new Snapshot2dFrame( mController.getSubController( "snapshot.2d" ), fileDialog );
+                        snapshot2dFrame = new Snapshot2dFrame( (GraphicsController) mController.getSubController( "snapshot.2d" ), fileDialog );
                     }
                     snapshot2dFrame.setPanelSize( modelPanel .getRenderedSize() );
                     snapshot2dFrame.pack();
@@ -415,6 +423,16 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                             importScaleDialog = new VefImportDialog( DocumentFrame.this, importScaleController, "Set Scale and Rotation",
                                 new ControllerFileAction( fileDialog, true, cmd, "vef", controller ) );
                         }
+                        try {
+                            // The polytopesController knows how to pre-load the quaternion based on a selected strut.
+                            // TODO: It's probably better to teach the importScaleController how to do it too
+                            // or else make one of them a subcontroller of the other 
+                            // so we don't need to invoke them seperately.
+                            polytopesController = mController .getSubController( "polytopes" );
+                            polytopesController.actionPerformed(DocumentFrame.this, "setQuaternion");
+                        } catch (Exception e1) {
+                            errors.reportError(Controller.USER_ERROR_CODE, new Object[] { e1 });
+                        }
                         importScaleDialog .setVisible( true );
                     }
                     else if ( cmd .startsWith( "setSymmetry." ) )
@@ -455,8 +473,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
         // -------------------------------------- create panels and tools
 
-        cameraController = mController .getSubController( "camera" );
-        lessonController = mController .getSubController( "lesson" );
+        cameraController = (GraphicsController) mController .getSubController( "camera" );
+        lessonController = (GraphicsController) mController .getSubController( "lesson" );
         lessonController .addPropertyListener( this );
 
         ControllerActionListener actionListener = new ControllerActionListener( this .mController );
@@ -506,7 +524,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         }
                     } );
                     articleButton  = new JRadioButton( "Article" );
-                    articleButton .setEnabled( lessonController .propertyIsTrue( "has.pages" ) );
+                    articleButton .setEnabled( false ); // don't check the model, which may be loading concurrently.  PCE will come in due course
                     articleButton .setSelected( false );
                     articleButtonsPanel .add( articleButton );
                     group .add( articleButton );
@@ -526,7 +544,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
                 Scene scene = ((Scene.Provider) mController) .getScene();
                 RenderingViewer viewer = factory3d .createRenderingViewer( scene );
-                modelPanel = new ModelPanel( mController, viewer, (ControlActions) this, this .isEditor, fullPower );
+                modelPanel = new ModelPanel( mController, viewer, this, this .isEditor, fullPower );
                 leftCenterPanel .add( modelPanel, BorderLayout.CENTER );
             }
             outerPanel.add( leftCenterPanel, BorderLayout.CENTER );
@@ -574,6 +592,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         modelArticleEditPanel .add( buildPanel, "model" );
                 }
 
+                // We always create this, whether we'll need it or not, to simplify the MVC
+                //  interactions and concurrency.
+                lessonPanel = new LessonPanel( lessonController );
+                modelArticleEditPanel .add( lessonPanel, "article" );
                 if ( this .isEditor )
                 {
                     modelArticleCardLayout .show( modelArticleEditPanel, "model" );
@@ -582,7 +604,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 }
                 else
                 {
-                	createLessonPanel();
                     modelArticleCardLayout .show( modelArticleEditPanel, "article" );
                     modelArticleEditPanel .setMinimumSize( new Dimension( 400, 500 ) );
                     modelArticleEditPanel .setPreferredSize( new Dimension( 400, 800 ) );
@@ -772,7 +793,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             break;
 
         case "Share":
-            enable = controller .getProperty( "window.file" ) != null;
+            enable = controller .getProperty( "original.path" ) != null;
             // We're doing this one immediately, because we need the listener attached if
             //  it is later enabled.  It is surprising that this has not been an issue for
             //  anything else!
@@ -842,8 +863,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 actionListener = this .localActions;
                 break;
 
+            case "capture-wiggle-gif":
             case "capture-animation":
-                actionListener = new ControllerFileAction( fileDialog, false, command, "png", controller );
+                actionListener = new ControllerFileAction( fileDialog, false, command, "gif", controller );
                 break;
 
             default:
@@ -938,15 +960,12 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 //                viewControl .setVisible( true );
                 mExcluder .release();
             }
-            createLessonPanel();
             modelArticleCardLayout .show( modelArticleEditPanel, mode );
             modelArticleEditPanel .setMinimumSize( new Dimension( width, 500 ) );
             modelArticleEditPanel .setPreferredSize( new Dimension( width, 800 ) );
 			break;
 
 		case "has.pages":
-		    // lessonPanel is necessary for thumbnails to render when loading a file
-		    createLessonPanel();
             if ( articleButton != null )
             {
                 boolean enable = e .getNewValue() .toString() .equals( "true" );

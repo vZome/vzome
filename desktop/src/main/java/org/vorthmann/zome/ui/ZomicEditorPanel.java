@@ -27,7 +27,8 @@ import javax.vecmath.Quat4f;
 import org.vorthmann.j3d.MouseToolDefault;
 import org.vorthmann.j3d.Tool;
 import org.vorthmann.j3d.Trackball;
-import org.vorthmann.ui.Controller;
+
+import com.vzome.desktop.api.Controller;
 
 public class ZomicEditorPanel extends JPanel implements Tool
 {

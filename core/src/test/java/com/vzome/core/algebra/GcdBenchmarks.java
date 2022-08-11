@@ -1,6 +1,6 @@
 package com.vzome.core.algebra;
 
-import static com.vzome.core.algebra.BigRational.Gcd.LOOKUP_SIZE;
+import static com.vzome.core.algebra.BigRationalImpl.Gcd;
 import static com.vzome.core.generic.Utilities.thisSourceCodeLine;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -14,20 +14,20 @@ public class GcdBenchmarks {
 
 	@Test
 	public void testGcdLookupSize() {
-		int lSize = BigRational.Gcd.LOOKUP_SIZE;
-		assertEquals("BigRational.Gcd.lookupSize must be a power of two.", lSize & -lSize, lSize);
-		assertTrue("BigRational.Gcd.lookupSize must greater than 1", lSize > 1);
-		assertTrue("BigRational.Gcd.lookupSize not be greater than than 256", lSize <= 256);
+		int lSize = Gcd.LOOKUP_SIZE;
+		assertEquals("Gcd.lookupSize must be a power of two.", lSize & -lSize, lSize);
+		assertTrue("Gcd.lookupSize must greater than 1", lSize > 1);
+		assertTrue("Gcd.lookupSize not be greater than than 256", lSize <= 256);
 		assertEquals("Be sure that the highest cached values are returned as positive numbers.", 
-			BigRational.Gcd.LOOKUP_SIZE, BigRational.Gcd.gcd(0, BigRational.Gcd.LOOKUP_SIZE));
+			Gcd.LOOKUP_SIZE, Gcd.gcd(0, Gcd.LOOKUP_SIZE));
 		
 	}
 
 	@Test
 	public void verifyUncachedImplementations() {
-		for(int j = 0; j < BigRational.Gcd.LOOKUP_SIZE; j++) {
+		for(int j = 0; j < Gcd.LOOKUP_SIZE; j++) {
 			BigInteger jj = BigInteger.valueOf(j);
-			for(int k = 0; k < BigRational.Gcd.LOOKUP_SIZE; k++) {
+			for(int k = 0; k < Gcd.LOOKUP_SIZE; k++) {
 				String msg = j + " " + k + ": ";
 				BigInteger kk = BigInteger.valueOf(k);
 				long expected = jj.gcd(kk).longValueExact();
@@ -36,8 +36,8 @@ public class GcdBenchmarks {
 				// These methods don't accept negative values
 				assertEquals(msg, expected, cachedGcd(j, k)); 
 				assertEquals(msg, expected, cachedGcd(k, j));  // swap args
-				assertEquals(msg, expected, BigRational.Gcd.calculateGcd(j, k));
-				assertEquals(msg, expected, BigRational.Gcd.gcd(k, j)); // swap args
+				assertEquals(msg, expected, Gcd.calculateGcd(j, k));
+				assertEquals(msg, expected, Gcd.gcd(k, j)); // swap args
 				
 				// These methods accept negative and positive values
 				for(int sign = 1; sign >= -1; sign -= 2) {
@@ -54,9 +54,9 @@ public class GcdBenchmarks {
 	@Test
 	public void verifyCachedImplementations() {
 		int span = 4; // test this many values above and below the cache size
-		for(int j = BigRational.Gcd.LOOKUP_SIZE-span; j < BigRational.Gcd.LOOKUP_SIZE+span; j++) {
+		for(int j = Gcd.LOOKUP_SIZE-span; j < Gcd.LOOKUP_SIZE+span; j++) {
 			BigInteger jj = BigInteger.valueOf(j);
-			for(int k = BigRational.Gcd.LOOKUP_SIZE-span; k < BigRational.Gcd.LOOKUP_SIZE+span; k++) {
+			for(int k = Gcd.LOOKUP_SIZE-span; k < Gcd.LOOKUP_SIZE+span; k++) {
 				String msg = j + " " + k + ": ";
 				BigInteger kk = BigInteger.valueOf(k);
 				long expected = jj.gcd(kk).longValueExact();
@@ -67,8 +67,8 @@ public class GcdBenchmarks {
 					assertEquals(msg, expected, vZomeOriginalGcdCached(sign * j, k));
 					assertEquals(msg, expected, apacheGcdCached(sign * j, k));
 					assertEquals(msg, expected, googleGcdCached(sign * j, k));
-					assertEquals(msg, expected, BigRational.Gcd.gcd(sign * j, k));
-					assertEquals(msg, expected, BigRational.Gcd.gcd(sign * k, j)); // swap args
+					assertEquals(msg, expected, Gcd.gcd(sign * j, k));
+					assertEquals(msg, expected, Gcd.gcd(sign * k, j)); // swap args
 				}
 			}
 		}
@@ -83,11 +83,11 @@ public class GcdBenchmarks {
 //	@Test
 	public void testGcdBenchmarks() { 
 		int reps = 250000000;
-		int range = BigRational.Gcd.LOOKUP_SIZE;
+		int range = Gcd.LOOKUP_SIZE;
 
-		showBenchmarkSettings(BigRational.Gcd.LOOKUP_SIZE, range, reps);
+		showBenchmarkSettings(Gcd.LOOKUP_SIZE, range, reps);
 		benchmark( "Direct cache lookup", thisSourceCodeLine(), GcdBenchmarks::cachedGcd, range, reps);
-		benchmark( "BigRational gcd", thisSourceCodeLine(), BigRational.Gcd::gcd, range, reps);
+		benchmark( "BigRational gcd", thisSourceCodeLine(), Gcd::gcd, range, reps);
 		benchmark( "No-op (test overhead)", thisSourceCodeLine(), GcdBenchmarks::noop, range, reps);
 		
 		range *= 2; // double the range so that only 1 out of 4 will use cache
@@ -98,12 +98,12 @@ public class GcdBenchmarks {
 		benchmark( "Google Commons gcd", thisSourceCodeLine(), GcdBenchmarks::googleGcd, range, reps);
 		benchmark( "No-op (test overhead)", thisSourceCodeLine(), GcdBenchmarks::noop, range, reps);
 		
-		showBenchmarkSettings(BigRational.Gcd.LOOKUP_SIZE, range, reps);
+		showBenchmarkSettings(Gcd.LOOKUP_SIZE, range, reps);
 		benchmark( "Cached Swing gcd (recursive)", thisSourceCodeLine(), GcdBenchmarks::swingGcdCached , range, reps);
 		benchmark( "Cached Original vZome gcd (iterative)", thisSourceCodeLine(), GcdBenchmarks::vZomeOriginalGcdCached , range, reps);
 		benchmark( "Cached Apache Commons gcd", thisSourceCodeLine(), GcdBenchmarks::apacheGcdCached , range, reps);
 		benchmark( "Cached Google Commons gcd", thisSourceCodeLine(), GcdBenchmarks::googleGcdCached , range, reps);
-		benchmark( "BigRational gcd", thisSourceCodeLine(), BigRational.Gcd::gcd, range, reps);
+		benchmark( "BigRational gcd", thisSourceCodeLine(), Gcd::gcd, range, reps);
 		benchmark( "No-op (test overhead)", thisSourceCodeLine(), GcdBenchmarks::noop, range, reps);
 		
 	}
@@ -331,7 +331,7 @@ public class GcdBenchmarks {
       return a << Math.min(aTwos, bTwos);
     }
     
-    static final byte[][] LOOKUP_TABLE = BigRational.Gcd.calculateLookupTable(LOOKUP_SIZE);
+    static final byte[][] LOOKUP_TABLE = Gcd.calculateLookupTable(Gcd.LOOKUP_SIZE);
     /**
      * 
      * @param j
@@ -347,12 +347,12 @@ public class GcdBenchmarks {
     {
     	// since this is intended to be a relative performance test of the algorithms,
     	// there's no overhead added by checking to ensure that neither j nor k are negative
-    	return(((j|k) & BigRational.Gcd.LOOKUP_MASK) == 0L)
+    	return(((j|k) & Gcd.LOOKUP_MASK) == 0L)
     			? cachedGcd(j, k)
     			: gcd.apply(j, k);
     }
 
-//	// I have disabled this test for now, along with the code that it is supposed to test in BigRational.Gcd.gcd().
+//	// I have disabled this test for now, along with the code that it is supposed to test in Gcd.gcd().
 //	// See the comments there explaining the reasons.  
 //	@Test
 //	public void testGcdExtremes() {

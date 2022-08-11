@@ -3,6 +3,8 @@ package com.vzome.core.editor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
@@ -14,9 +16,14 @@ import com.vzome.core.model.Manifestation;
 
 public class ApplyTool extends ChangeManifestations
 {
+    private static final Logger logger = Logger .getLogger( "com.vzome.core.editor.ApplyTool" );
+
     @Override
     public void perform() throws Failure
     {
+        if ( logger .isLoggable( Level .FINE ) )
+            logger .fine( "performing ApplyTool " + tool .getId() + " :: " + tool .getCategory() );
+
         // first, handle the inputs, offering each to the tool (if it needs input).
         //  If the tool does not need input, it operates just on its parameters and
         //  the entire realized model, but it still may add to or replace the current
@@ -27,14 +34,21 @@ public class ApplyTool extends ChangeManifestations
             {
                 super .unselect( man, true );
                 super .deleteManifestation( man );
+                if ( logger .isLoggable( Level .FINEST ) )
+                    logger .finest( "ApplyTool - unselect and delete " + man .toString() );
             }
             else if ( hideInputs && tool .needsInput() )
             {
                 super .unselect( man, true );
                 super .hideManifestation( man );
+                if ( logger .isLoggable( Level .FINEST ) )
+                    logger .finest( "ApplyTool - unselect and hide " + man .toString() );
             }
-            else if ( ! selectInputs )
+            else if ( ! selectInputs ) {
                 super .unselect( man, true );
+                if ( logger .isLoggable( Level .FINEST ) )
+                    logger .finest( "ApplyTool - unselect " + man .toString() );
+            }
             if ( tool .needsInput() )
                 inputs .add( man );
         }
@@ -48,7 +62,7 @@ public class ApplyTool extends ChangeManifestations
         {
             for (Manifestation man : inputs) {
                 Construction c = man .toConstruction();
-                c .setColor( man .getColor() );
+                c .setColor( copyColors? man .getColor() : null );
 
                 tool .performEdit( c, this );
             }
@@ -68,11 +82,11 @@ public class ApplyTool extends ChangeManifestations
 
     private Tool tool;
 
-    private boolean selectInputs, deselectOutputs, justSelect, hideInputs, deleteInputs, redundantOutputs;
+    private boolean selectInputs, deselectOutputs, justSelect, hideInputs, deleteInputs, redundantOutputs, copyColors;
 
     private final ToolsModel tools;
 
-    public ApplyTool( ToolsModel tools, Tool tool, boolean selectInputs, boolean deleteInputs, boolean createOutputs, boolean selectOutputs, boolean redundantOutputs )
+    public ApplyTool( ToolsModel tools, Tool tool, boolean selectInputs, boolean deleteInputs, boolean createOutputs, boolean selectOutputs, boolean redundantOutputs, boolean copyColors )
     {
         super( tools .getEditorModel() );
         this.tools = tools;
@@ -80,6 +94,7 @@ public class ApplyTool extends ChangeManifestations
         this .tool = tool;
         this .selectInputs = selectInputs;
         this .deleteInputs = deleteInputs;
+		this .copyColors = copyColors;
         this .hideInputs = false;
         this .deselectOutputs = ! selectOutputs;
         this .justSelect = ! createOutputs;
@@ -109,6 +124,9 @@ public class ApplyTool extends ChangeManifestations
             element .setAttribute( "hideInputs", "true" );
         if ( deleteInputs )
             element .setAttribute( "deleteInputs", "true" );
+        
+        // Let's be explicit for new configurations, true or false
+        element .setAttribute( "copyColors", Boolean.toString( this.copyColors ) );
     }
 
     @Override
@@ -121,6 +139,9 @@ public class ApplyTool extends ChangeManifestations
         this .justSelect = isAttributeTrue( element, "justSelect" );
         this .hideInputs = isAttributeTrue( element, "hideInputs" );
         this .deleteInputs = isAttributeTrue( element, "deleteInputs" );
+        
+        String value = element .getAttribute( "copyColors" );
+        this .copyColors = value == null || ! value .equals( "false" );
     }
 
     private boolean isAttributeTrue( Element element, String name )

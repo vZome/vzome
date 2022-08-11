@@ -27,7 +27,7 @@ public abstract class Line extends Construction
     {
         super( field );
     }
-    
+
     @Override
     public boolean is3d()
     {

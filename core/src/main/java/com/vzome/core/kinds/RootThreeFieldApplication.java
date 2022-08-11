@@ -52,7 +52,6 @@ public class RootThreeFieldApplication extends DefaultFieldApplication
         symm .createZoneOrbit( "brown", 0, Symmetry .NO_ROTATION, new int[][] { {1,1, 0,1}, {1,1, 0,1}, {2,1, 0,1} } );
 
         AbstractShapes defaultShapes = new ExportedVEFShapes( null, "rootThreeOctaSmall", "small octahedra", "small connectors", symm );
-        octahedralPerspective .addShapes( defaultShapes );
         octahedralPerspective .setDefaultGeometry( defaultShapes );
     }
 

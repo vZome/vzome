@@ -4,6 +4,7 @@ package com.vzome.core.editor;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.viewing.Camera;
 import com.vzome.xml.DomUtils;
 
@@ -92,6 +93,7 @@ public class PageModel
 		this .thumbnail = thumbnail;
 	}
 	
+	@JsonIgnore
 	public Object getThumbnail()
 	{
 		return this .thumbnail;

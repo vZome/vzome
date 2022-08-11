@@ -1,32 +1,30 @@
 package com.vzome.fields.sqrtphi;
 
 import com.vzome.core.algebra.AlgebraicNumber;
-import com.vzome.core.algebra.BigRational;
+import com.vzome.core.algebra.AlgebraicNumberFactory;
 import com.vzome.core.algebra.ParameterizedField;
-import com.vzome.core.algebra.PentagonField;
 
 /**
  * @author David Hall
  */
-public class SqrtPhiField  extends ParameterizedField<Integer>
+public class SqrtPhiField  extends ParameterizedField
 {
     public static final String FIELD_NAME = "sqrtPhi";
-    
+    public static final double PHI_VALUE = ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
+    public static final double SQRT_PHI_VALUE = Math.sqrt( PHI_VALUE );
+
     /**
      * 
-     * @param radicand
      * @return the coefficients of a SqrtPhiField. 
      * This can be used to determine when two fields have compatible coefficients 
      * without having to generate an instance of the class. 
-     * Note that this method provides no validation of the parameter.
      */
     public static double[] getFieldCoefficients() {
-        final double PHI_VALUE = PentagonField.PHI_VALUE; // ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
         return new double[] {
                 1.0d,
-                Math.sqrt(PHI_VALUE),
+                SQRT_PHI_VALUE,
                 PHI_VALUE,
-                PHI_VALUE * Math.sqrt(PHI_VALUE)
+                PHI_VALUE * SQRT_PHI_VALUE
         };
     }
     
@@ -37,23 +35,14 @@ public class SqrtPhiField  extends ParameterizedField<Integer>
     }
 
     @Override
-    public void defineMultiplier( StringBuffer buf, int w )
-    {
-        buf .append( "phi = " ); // note that phi is not the first irrational in this field
-        buf .append( PentagonField.PHI_VALUE );
-    }
-
-    @Override
     public double[] getCoefficients() {
         return getFieldCoefficients();
     }
     
-    public SqrtPhiField() {
-        super(FIELD_NAME, 4, 0);
+    public SqrtPhiField( AlgebraicNumberFactory factory ) {
+        super( FIELD_NAME, 4, factory );
+        initialize();
     }
-
-    @Override
-    protected void validate() {}
 
     @Override
     protected void initializeCoefficients() {
@@ -118,11 +107,12 @@ public class SqrtPhiField  extends ParameterizedField<Integer>
     }
     
     @Override
-    protected BigRational[] prepareAlgebraicNumberTerms(BigRational[] terms) {
-        return (terms.length == 2)
-            // remap [ units, phis ] to [ units, 0, phis, 0 ]
-            ? new BigRational[] { terms[0], BigRational.ZERO, terms[1], BigRational.ZERO }
-            : super.prepareAlgebraicNumberTerms(terms);
+    protected long[] convertGoldenNumberPairs( long[] pairs )
+    {
+        // remap [ unitNumDen, phiNumDen ] pairs to [ unitNumDen, 0, phiNumDen, 0 ]
+        return ( pairs.length == 4 )
+            ? new long[] { pairs[0], pairs[1], 0, 1, pairs[2], pairs[3], 0, 1 }
+            : pairs;
     }
     
     @Override

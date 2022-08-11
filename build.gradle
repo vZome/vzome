@@ -14,6 +14,7 @@ wrapper() {
 // These environment variables are automatically available during a Jenkins build
 ext.buildNumber = System.getenv( "BUILD_NUMBER" ) ?: 'dev'
 ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
+ext.githubRepoName = System.getenv( "GITHUB_REPO_NAME" ) ?: ''
 
 // These environment variables must be configured in the Jenkins job explicitly.
 ext.githubClientId = System.getenv( "GITHUB_CLIENT_ID" )

@@ -97,6 +97,12 @@ public class JsAlgebraicField implements AlgebraicField
         Function f = (Function) this.delegate .$get( "negate" );
         return (int[]) f.$apply( any( factors ) );
     }
+    
+    String toString( int[] factors, int format )
+    {
+        Function f = (Function) this.delegate .$get( "toString" );
+        return (String) f.$apply( any( factors ), any( format ) );
+    }
 
     @Override
     public AlgebraicNumber zero()
@@ -473,69 +479,56 @@ public class JsAlgebraicField implements AlgebraicField
         return createAlgebraicNumber( ones, phis, div, 0 );
     }
 
-    @Override
-    public AlgebraicVector createIntegerVectorFromTDs(int[][] nums)
+    
+    
+    
+    
+    
+    
+    
+    public AlgebraicNumber getNumberByName( String name )
     {
-        final int dims = nums.length;
-        AlgebraicVector result = origin( dims );
-        for (int dim = 0; dim < dims; dim++) {
-            result .setComponent( dim, createAlgebraicNumberFromTD( nums[dim] ) );
-        }
-        return result;
+        throw new RuntimeException( "unimplemented JsAlgebraicField.getNumberByName" );
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
     int[] scaleBy( int[] factors, int whichIrrational )
     {
-        throw new RuntimeException( "unimplemented" );
-    }
-
-    @Override
-    public void defineMultiplier(StringBuffer instances, int w)
-    {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.scaleBy" );
     }
 
     @Override
     public String getIrrational(int i, int format)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.getIrrational" );
     }
 
     @Override
     public String getIrrational(int which)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.getIrrational" );
     }
 
     @Override
     public AlgebraicVector nearestAlgebraicVector(RealVector target)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.nearestAlgebraicVector" );
     }
 
     @Override
     public AlgebraicVector createIntegerVector(int[][] nums)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.createIntegerVector" );
     }
 
     @Override
     public AlgebraicMatrix createMatrix(int[][][] data)
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.createMatrix" );
     }
 
     @Override
     public int getNumMultipliers()
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented JsAlgebraicField.getNumMultipliers" );
     }
 }

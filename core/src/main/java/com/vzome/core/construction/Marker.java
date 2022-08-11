@@ -15,7 +15,7 @@ public class Marker extends Construction
         // the usual pattern is to call mapParamsToState()
         mTarget = target;
     }
-    
+
     public Construction getTarget()
     {
         return mTarget;

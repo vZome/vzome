@@ -13,7 +13,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.api.Controller;
 
 public class VefImportDialog extends EscapeDialog
 {
@@ -76,4 +76,12 @@ public class VefImportDialog extends EscapeDialog
         this .quaternionPanel .syncFromModel();
     }
 
+    @Override
+    public void setVisible( boolean b )
+    {
+        if ( b ) {
+            this .syncFromModel();
+        }
+        super.setVisible(b);
+    }
 }

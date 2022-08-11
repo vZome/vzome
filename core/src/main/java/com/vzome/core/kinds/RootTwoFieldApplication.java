@@ -54,7 +54,6 @@ public class RootTwoFieldApplication extends DefaultFieldApplication
 
         AbstractShapes defaultShapes = new ExportedVEFShapes( null, "rootTwoSmall", "small octahedra", "small connectors", symmetry );
         octahedralPerspective .setDefaultGeometry( defaultShapes );
-        octahedralPerspective .addShapes( defaultShapes );
         octahedralPerspective .addShapes( new ExportedVEFShapes( null, "rootTwo", "Tesseractix", symmetry, defaultShapes ) );
         octahedralPerspective .addShapes( new ExportedVEFShapes( null, "rootTwoBig", "ornate", symmetry, defaultShapes ) );
     }

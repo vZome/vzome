@@ -22,7 +22,7 @@ public class HeptagonField extends AbstractAlgebraicField
 
     public HeptagonField()
     {
-        super( FIELD_NAME, 3 );
+        super( FIELD_NAME, 3, AlgebraicNumberImpl.FACTORY );
     };
     
     // specified to more precision than a double can retain so that values are as exact as possible: within one ulp().
@@ -46,21 +46,6 @@ public class HeptagonField extends AbstractAlgebraicField
         return new BigRational[]{ ones, rhos, sigmas };
     }
 
-    @Override
-    public void defineMultiplier( StringBuffer buf, int i )
-    {
-        if ( i == B )
-        {
-            buf .append( "rho = " );
-            buf .append( RHO_VALUE );
-        }
-        if ( i == C )
-        {
-            buf .append( "sigma = " );
-            buf .append( SIGMA_VALUE );
-        }
-    }
-    
     /**
      * scalar for an affine heptagon
      * @return 
@@ -71,19 +56,16 @@ public class HeptagonField extends AbstractAlgebraicField
         return getUnitTerm( C );
     }
 
+    private static final String[][] IRRATIONAL_LABELS = new String[][] {
+        {" ", " "},
+        {"\u03C1", "rho"},
+        {"\u03C3", "sigma"}
+    };
+    
     @Override
-    public String getIrrational( int which, int format )
+    public String getIrrational( int i, int format )
     {
-        if ( format == DEFAULT_FORMAT )
-            if ( which == B )
-                return "\u03C1";
-            else
-                return "\u03C3";
-        else
-            if ( which == B )
-                return "rho";
-            else
-                return "sigma";
+        return IRRATIONAL_LABELS[i][format];
     }
 
     @Override

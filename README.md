@@ -1,6 +1,6 @@
 ## vZome Online Development Workflow
 
-See [react-library/README.md](react-library/README.md)
+See [online/README.md](online/README.md)
 
 ## vZome desktop Development Workflow
 

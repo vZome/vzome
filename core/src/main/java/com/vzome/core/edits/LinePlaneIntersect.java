@@ -2,6 +2,7 @@
 package com.vzome.core.edits;
 
 
+import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Line;
 import com.vzome.core.construction.LineFromPointAndVector;
 import com.vzome.core.construction.LinePlaneIntersectionPoint;
@@ -32,7 +33,7 @@ public class LinePlaneIntersect extends ChangeManifestations
     }
     
     @Override
-    public void perform()
+    public void perform() throws Command.Failure
     {
         Panel panel = null;
         Strut strut = null;
@@ -57,6 +58,23 @@ public class LinePlaneIntersect extends ChangeManifestations
             {
                 panel = ((Panel) man);
             }
+        }
+        if(strut == null) {
+            // Ideally I'd throw a Failure here to notify the user of the problem 
+            // but since other similar issues have always been silently ignored by this command, 
+            // I don't want to introduce a different behavior when loading legacy models
+            // nor do I want a different user experience when the strut is missing 
+            // than when other required inputs are missing.
+            // This includes issues like not enough balls or no plane selected 
+            // or when too many balls, struts or panels are selected.
+            // Rather than throw new Command.Failure("No strut was selected."),
+            // I'll just avoid the NPE by returning early.
+            // Note that this avoids the redo() below,
+            // so none of the unselects from above get committed.
+            // but that would happen anyway if an NPE or a Failure were thrown.
+            // It makes for inconsistent error handling, but it avoids an NPE below 
+            // and doesn't break any legacy models.
+            return;
         }
         Point point = null;
         Plane plane = null;

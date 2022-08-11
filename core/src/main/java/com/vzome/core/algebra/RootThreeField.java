@@ -22,18 +22,12 @@ public class RootThreeField extends AbstractAlgebraicField
 
     public static final double ROOT_3 = Math.sqrt( 3d );
     
-    private static final BigRational THREE = new BigRational( 3 );
+    private static final BigRational THREE = new BigRationalImpl( 3 );
     
     public RootThreeField()
     {
-        super( FIELD_NAME, 2 );
+        super( FIELD_NAME, 2, AlgebraicNumberImpl.FACTORY );
     };
-    
-    @Override
-    public void defineMultiplier( StringBuffer buf, int i )
-    {
-        buf .append( "" );
-    }
 
     @Override
     public final BigRational[] multiply( BigRational[] first, BigRational[]  second )
@@ -74,12 +68,14 @@ public class RootThreeField extends AbstractAlgebraicField
         }
     }
 
+    private static final String[][] IRRATIONAL_LABELS = new String[][] {
+        {" ", " "},
+        {"\u221A3", "sqrt(3)"}
+    };
+    
     @Override
     public String getIrrational( int i, int format )
     {
-        if ( format == DEFAULT_FORMAT )
-            return "\u221A3";
-        else
-            return "sqrt(3)";
+        return IRRATIONAL_LABELS[i][format];
     }
 }

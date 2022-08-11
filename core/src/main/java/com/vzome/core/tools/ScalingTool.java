@@ -21,6 +21,7 @@ import com.vzome.core.editor.AbstractToolFactory;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.editor.api.Selection;
+import com.vzome.core.editor.api.SideEffects;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
@@ -229,7 +230,7 @@ public class ScalingTool extends SymmetryTool
         if ( symmName == null || symmName .isEmpty() )
         {
             element .setAttribute( "symmetry", "icosahedral" );
-            logBugAccommodation( "scaling tool serialized with no symmetry; assuming icosahedral" );
+            SideEffects.logBugAccommodation( "scaling tool serialized with no symmetry; assuming icosahedral" );
         }
         super .setXmlAttributes( element, format );
     }

@@ -25,14 +25,20 @@ import com.vzome.api.Tool;
 import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicNumberImpl;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.EdPeggField;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
+import com.vzome.core.algebra.PlasticNumberField;
+import com.vzome.core.algebra.PlasticPhiField;
 import com.vzome.core.algebra.PolygonField;
 import com.vzome.core.algebra.PolygonFieldTest;
 import com.vzome.core.algebra.RootThreeField;
 import com.vzome.core.algebra.RootTwoField;
 import com.vzome.core.algebra.SnubCubeField;
+import com.vzome.core.algebra.SnubDodecField;
+import com.vzome.core.algebra.SuperGoldenField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.commands.CommandSymmetry;
@@ -59,6 +65,7 @@ import com.vzome.core.tools.ProjectionTool;
 import com.vzome.core.tools.RotationTool;
 import com.vzome.core.tools.ScalingTool;
 import com.vzome.core.tools.TranslationTool;
+import com.vzome.fields.sqrtphi.SqrtPhiField;
 import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;
 
 public class FieldApplicationTest
@@ -72,11 +79,17 @@ public class FieldApplicationTest
         result.add( new RootTwoFieldApplication( new RootTwoField() ) );
         result.add( new RootThreeFieldApplication(new RootThreeField() ) );
         result.add( new HeptagonFieldApplication( new HeptagonField() ) );
-        result.add( new SqrtPhiFieldApplication());
-        result.add( new SnubCubeFieldApplication( new SnubCubeField() ) );
-        result.add( new SnubDodecFieldApplication());
+        result.add( new SqrtPhiFieldApplication( new SqrtPhiField( AlgebraicNumberImpl.FACTORY )));
+        result.add( new SnubCubeFieldApplication( new SnubCubeField( AlgebraicNumberImpl.FACTORY ) ) );
+        result.add( new SnubDodecFieldApplication( new SnubDodecField( AlgebraicNumberImpl.FACTORY ) ));
+        result.add( new DefaultFieldApplication ( new PlasticNumberField( AlgebraicNumberImpl.FACTORY ) ) );
+        result.add( new DefaultFieldApplication ( new PlasticPhiField( AlgebraicNumberImpl.FACTORY ) ) );
+//        result.add( new PlasticPhiFieldApplication ( new PlasticPhiField( AlgebraicNumberImpl.FACTORY ) ) ); // TODO: Tweak the test cases when this is fully imllemented
+        result.add( new DefaultFieldApplication ( new SuperGoldenField( AlgebraicNumberImpl.FACTORY ) ) );
+        result.add( new DefaultFieldApplication ( new EdPeggField( AlgebraicNumberImpl.FACTORY ) ) );
         for(int nSides = PolygonField.MIN_SIDES; nSides < PolygonFieldTest.MAX_SIDES; nSides++) {
-            result.add( new PolygonFieldApplication(nSides));
+            PolygonField field = new PolygonField( nSides, AlgebraicNumberImpl.FACTORY );
+            result.add( new PolygonFieldApplication( field ));
         }
         return result;
     }
@@ -390,6 +403,22 @@ public class FieldApplicationTest
             assertTrue(app.getLegacyCommand("tauDivide") instanceof CommandTauDivision);
             break;
             
+        case "plasticNumber":
+            noop();
+            break;
+            
+        case "plasticPhi":
+            noop();
+            break;
+            
+        case "superGolden":
+            noop();
+            break;
+            
+        case "edPegg":
+            noop();
+            break;
+            
         default:
             if(name.startsWith("polygon")) {
                 noop();
@@ -562,6 +591,22 @@ public class FieldApplicationTest
             assertTrue(toolFactories .get( "AxialStretchTool") instanceof AxialStretchTool.Factory);
             break;
             
+        case "plasticNumber":
+            noop();
+            break;
+            
+        case "plasticPhi":
+            noop();
+            break;
+
+        case "superGolden":
+            noop();
+            break;
+            
+        case "edPegg":
+            noop();
+            break;
+            
         default:
             if(name.startsWith("polygon")) {
                 if(name.equals("polygon5")) {
@@ -712,6 +757,22 @@ public class FieldApplicationTest
                 
             case "snubDodec":
                 assertNotNull(msg, qSymm);
+                break;
+                
+            case "plasticNumber":
+                assertNull(msg, qSymm);
+                break;
+                
+            case "plasticPhi":
+                assertNull(msg, qSymm);
+                break;
+
+            case "superGolden":
+                assertNull(msg, qSymm);
+                break;
+                
+            case "edPegg":
+                assertNull(msg, qSymm);
                 break;
                 
             case "polygon5": // TODO: eventually, this should be any 5N-gon

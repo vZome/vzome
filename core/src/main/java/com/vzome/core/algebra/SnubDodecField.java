@@ -27,12 +27,12 @@ public class SnubDodecField extends AbstractAlgebraicField
         return getFieldCoefficients();
     }
 
-    public SnubDodecField( )
+    public SnubDodecField( AlgebraicNumberFactory factory )
     {
-        super( FIELD_NAME, 6 );
+        super( FIELD_NAME, 6, factory );
     };
     
-    public static final double PHI_VALUE = PentagonField.PHI_VALUE; // ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
+    public static final double PHI_VALUE = ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
 
     // specified to more precision than a double can retain so that value is as exact as possible: within one ulp().
     public static final double XI_VALUE = 1.71556149969736783d; // root of x^3 -2x -PHI_VALUE 
@@ -184,24 +184,6 @@ public class SnubDodecField extends AbstractAlgebraicField
         return 2; // only two primitive elements, phi and xi
     }
 
-    @Override
-    public void defineMultiplier( StringBuffer buf, int i )
-    {
-        switch (i) {
-            case B:
-                buf .append( "phi = " );
-                buf .append( PHI_VALUE );
-                break;
-            case C:
-                buf .append( "xi = " );
-                buf .append( XI_VALUE );
-                break;
-            default:
-                buf .append( "" );
-                break;
-        }
-    }
-
     /**
      * scalar for an affine pentagon
      * @return 
@@ -218,57 +200,21 @@ public class SnubDodecField extends AbstractAlgebraicField
         return getUnitTerm(1);
     }
     
-    @Override
-    public String getIrrational( int which, int format )
-    {
-        if ( format == DEFAULT_FORMAT )
-        {
-            switch ( which ) {
-            case A:
-                return "";
+    // No need to override convertGoldenNumberPairs() as long as phi is the first irrational
 
-            case B:
-                return "\u03C6";
-
-            case C:
-                return "\u03BE";
-
-            case D:
-                return "\u03C6\u03BE";
-
-            case E:
-                return "\u03BE\u00B2";
-
-            case F:
-                return "\u03C6\u03BE\u00B2";
-
-            default:
-                throw new IllegalArgumentException( which + " is not a valid irrational in this field" );
-            }
-        }
-        else
-        {
-            switch ( which ) {
-            case B:
-                return "phi";
-
-            case C:
-                return "xi";
-
-            case D:
-                return "phi*xi";
-
-            case E:
-                return "xi^2";
-
-            case F:
-                return "phi*xi^2";
-
-            default:
-                throw new IllegalArgumentException( which + " is not a valid irrational in this field" );
-            }
-        }
+    private static final String[][] IRRATIONAL_LABELS = new String[][] {
+        {" ", " "},
+        {"\u03C6", "phi"},
+        {"\u03BE", "xi"},
+        {"\u03C6\u03BE", "phi*xi"},
+        {"\u03BE\u00B2", "xi^2"},
+        {"\u03C6\u03BE\u00B2", "phi*xi^2"}
+    };
     
+    @Override
+    public String getIrrational( int i, int format )
+    {
+        return IRRATIONAL_LABELS[i][format];
     }
 
     @Override

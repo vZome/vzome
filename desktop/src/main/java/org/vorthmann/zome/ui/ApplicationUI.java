@@ -2,7 +2,6 @@
 package org.vorthmann.zome.ui;
 
 import java.awt.Desktop;
-import java.awt.EventQueue;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -30,14 +29,16 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.vorthmann.j3d.Platform;
-import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.SplashScreen;
-import org.vorthmann.zome.app.impl.ApplicationController;
 
 import com.vzome.dap.DapAdapter;
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.awt.ApplicationController;
+import com.vzome.desktop.awt.GraphicsController;
 
 /**
  * Top-level UI class for vZome.
@@ -170,7 +171,11 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
          */
 
         if( System.getProperty("os.name").toLowerCase().contains("windows")) {
-            if( "console".compareToIgnoreCase(System.getenv("SESSIONNAME")) != 0) {
+            String sessionName = System.getenv("SESSIONNAME");
+            // Apparently, the sessionName environment variable can be null in some obscure situations.
+            // This can happen in the rare case when Explorer.exe has been killed and restarted manually.
+            // We will allow for that condition to avoid the NPE.
+            if( sessionName != null && "console".compareToIgnoreCase(sessionName) != 0) {
                 logger.info("Java OpenGL (JOGL) is not supported by Windows Terminal Services.");
                 final String msg = "vZome cannot be run under Windows Terminal Services.";
                 logger.severe(msg);
@@ -203,7 +208,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
          */
 
         // NOW we're ready to spend the cost of further initialization, but on the event thread
-        EventQueue .invokeLater( new InitializationWorker( theUI, args, splash ) );
+        SwingUtilities .invokeLater( new InitializationWorker( theUI, args, splash ) );
 
         return theUI;
     }
@@ -224,6 +229,8 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
         @Override
         public void run()
         {
+            // This is executed on the EDT.  Should it be?
+
             Properties configuration = new Properties();
             Path fileArgument = null;
             for ( int i = 0; i < args.length; i++ ) {
@@ -288,6 +295,14 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                         errorCode = "internal error has been logged";
                     } else {
                         logger.log( Level.WARNING, "reporting error: " + errorCode, arguments );
+                        if(arguments != null) {
+                            StringBuilder buf = new StringBuilder(errorCode);
+                            for(Object arg : arguments) {
+                                buf.append("\n")
+                                .append(arg.toString());
+                            }
+                            errorCode = buf.toString();
+                        }
                         // TODO use resources
                     }
                     // TODO use resources
@@ -330,7 +345,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
         switch ( evt .getPropertyName() ) {
 
         case "newDocument":
-            Controller controller = (Controller) evt. getNewValue();
+            GraphicsController controller = (GraphicsController) evt. getNewValue();
             DocumentFrame window = new DocumentFrame( controller, this .mController .getJ3dFactory() );
             window .setVisible( true );
             window .setAppUI( new PropertyChangeListener() {
@@ -618,7 +633,9 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
 
                 + "Committers:\n\n" 
                 + "Scott Vorthmann\n" 
-                + "David Hall\n" + "\n"
+                + "David Hall\n"
+                + "Lucas Garron\n"
+                + "\n"
 
                 + "Contributors:\n\n"
                 + "Paul Hildebrandt\n"
@@ -626,15 +643,16 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                 + "Brian Hall\n"
                 + "George Hart\n"
                 + "Edmund Harriss\n"
+                + "Aaron Siegel\n"
+                + "John and Jane Kostick\n"
+                + "Jacob Rus\n"
+                + "Nan Ma\n"
+                + "Walt Venable\n"
+                + "Will Ackel\n"
                 + "Corrado Falcolini\n"
                 + "Ezra Bradford\n"
                 + "Sam Vandervelde\n"
-                + "Jacob Rus\n"
-                + "Nan Ma\n"
                 + "Dan Duddy\n"
-                + "Walt Venable\n"
-                + "Will Ackel\n"
-                + "John and Jane Kostick\n"
                 + "Samuel Verbiese\n"
                 + "Tom Darrow\n"
                 + "Henri Picciotto\n"

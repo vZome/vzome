@@ -174,16 +174,16 @@ public class EditorModelImpl implements LegacyEditorModel, SymmetryAware
         return null;
     }
 
-    private final Set<Manifestation> failedConstructions = new HashSet<>();
+    private final Set<String> failedConstructions = new HashSet<>();
 
     public void addFailedConstruction( Construction cons )
     {
-        failedConstructions .add( mRealized .manifest( cons ) );
+        failedConstructions .add( cons .toString() );
     }
 
     public boolean hasFailedConstruction( Construction cons )
     {
-        return failedConstructions .contains( mRealized .manifest( cons ) );
+        return failedConstructions .contains( cons .toString() );
     }
 
     public Selection getSelection()

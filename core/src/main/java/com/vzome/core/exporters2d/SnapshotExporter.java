@@ -77,7 +77,7 @@ public abstract class SnapshotExporter {
 		}
 	}
 	
-	public void export( Java2dSnapshot snapshot, Writer writer, boolean doOutlines, boolean monochrome )
+	public void export( Java2dSnapshot snapshot, Writer writer, boolean doOutlines, boolean monochrome, boolean showBackground )
 	{
         XY_FORMAT .setGroupingUsed( false );
         XY_FORMAT .setMaximumFractionDigits( 2 );
@@ -96,7 +96,7 @@ public abstract class SnapshotExporter {
 		outputPrologue( snapshot .getRect(), strokeWidth );
 		
 		Color bgColor = snapshot .getBackgroundColor();
-		if ( bgColor != null )
+		if ( bgColor != null && showBackground )
 			outputBackground( bgColor );
 		
         if ( ! lines .isEmpty() )

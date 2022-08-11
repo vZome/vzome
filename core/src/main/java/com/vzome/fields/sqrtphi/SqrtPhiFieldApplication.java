@@ -45,10 +45,9 @@ import com.vzome.core.viewing.OctahedralShapes;
  */
 public class SqrtPhiFieldApplication extends DefaultFieldApplication
 {
-	public SqrtPhiFieldApplication()
+	public SqrtPhiFieldApplication( AlgebraicField field )
 	{
-		super( new SqrtPhiField() );
-		AlgebraicField field = this .getField();
+		super( field );
 
 		OctahedralSymmetryPerspective octahedralPerspective = (OctahedralSymmetryPerspective) super .getDefaultSymmetryPerspective();
 		OctahedralSymmetry symm = octahedralPerspective .getSymmetry();
@@ -94,7 +93,6 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
     
             // this is the order they will be shown on the dialog
             addShapes(icosahedralShapes);
-            addShapes(tinyIcosaShapes);
             setDefaultGeometry(tinyIcosaShapes);
         }
     };
@@ -110,9 +108,8 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
             final AbstractShapes kostickShapes = new ExportedVEFShapes( null, "sqrtPhi/fivefold", "Kostick", pentaSymm, octahedralShapes );
             
             // this is the order they will be shown on the dialog
-            addShapes(kostickShapes);
-            addShapes(octahedralShapes);
             setDefaultGeometry(kostickShapes);
+            addShapes(octahedralShapes);
 
             axialsymm = new CommandAxialSymmetry( pentaSymm );
         }

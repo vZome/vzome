@@ -5,16 +5,16 @@ name: core unit & regression tests
 
 on:
   push:
-    branches: [ master ]
     paths:
       - 'core/src/main/java/**'
+      - 'core/src/jsweet/java/**'
       - 'core/src/regression/**'
       - 'core/src/test/java/**'
       - 'core/build.gradle'
   pull_request:
-    branches: [ master ]
     paths:
       - 'core/src/main/java/**'
+      - 'core/src/jsweet/java/**'
       - 'core/src/regression/**'
       - 'core/src/test/java/**'
       - 'core/build.gradle'
@@ -31,8 +31,15 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: '8'
-        distribution: 'adopt'
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build with Gradle
-      run: ./gradlew test regression
+        distribution: 'temurin'
+    - name: Grant execute permissions
+      run: chmod +x gradlew cicd/jsweet-legacy-code.bash
+    - name: check for JSweet regression
+      run: cicd/jsweet-legacy-code.bash
+    - name: Run unit and regression tests
+      run: ./gradlew test regression -PregressionOutput=failures.xml
+    - name: Archive regression failures
+      uses: actions/upload-artifact@v2
+      with:
+        name: regression-failures
+        path: failures.xml

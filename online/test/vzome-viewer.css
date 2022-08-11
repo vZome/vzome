@@ -1,0 +1,32 @@
+html, body {
+  width: 100%;
+  /* height: 100%; */
+  margin: 20;
+  display: grid;
+  place-content: center;
+  gap: 1em;
+  font-family: sans-serif;
+}
+
+section {
+  width: 80vw;
+  max-width: 780px;
+  margin: auto;
+  height: 40vh;
+  overflow: hidden;
+  resize: both;
+  gap: 1em;
+  display: grid;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 1em;
+  /* grid-template-rows: 1fr 1.5em; */
+}
+
+vzome-viewer {
+  width: 100%;
+  height: 100%;
+}
+
+span {
+  text-align: right;
+}

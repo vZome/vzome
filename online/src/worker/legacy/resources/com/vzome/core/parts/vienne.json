@@ -1,0 +1,101 @@
+{
+  "connectorShape" : {
+    "id" : "218c4fa0-f6ca-4964-8673-94828a01e7b5",
+    "vertices" : [ [ 0.7639320225002102, 0.0, 0.0 ], [ -0.7639320225002102, 0.0, 0.0 ], [ 0.0, 0.7639320225002102, 0.0 ], [ 0.0, -0.7639320225002102, 0.0 ], [ 0.0, 0.0, 0.7639320225002102 ], [ 0.0, 0.0, -0.7639320225002102 ] ],
+    "faces" : [ {
+      "vertices" : [ 0, 2, 4 ]
+    }, {
+      "vertices" : [ 0, 5, 2 ]
+    }, {
+      "vertices" : [ 0, 4, 3 ]
+    }, {
+      "vertices" : [ 1, 4, 2 ]
+    }, {
+      "vertices" : [ 0, 3, 5 ]
+    }, {
+      "vertices" : [ 1, 2, 5 ]
+    }, {
+      "vertices" : [ 1, 3, 4 ]
+    }, {
+      "vertices" : [ 1, 5, 3 ]
+    } ]
+  },
+  "strutGeometries" : {
+    "cinnamon" : {
+      "fast" : true
+    },
+    "green" : {
+      "fast" : true
+    },
+    "snubDiagonal" : {
+      "fast" : true
+    },
+    "snubTriangle" : {
+      "fast" : true
+    },
+    "navy" : {
+      "fast" : true
+    },
+    "snubPentagon" : {
+      "fast" : true
+    },
+    "black" : {
+      "fast" : true
+    },
+    "yellow" : {
+      "fast" : true
+    },
+    "turquoise" : {
+      "fast" : true
+    },
+    "brown" : {
+      "fast" : true
+    },
+    "snubFaceNormal" : {
+      "fast" : true
+    },
+    "orange" : {
+      "fast" : true
+    },
+    "red" : {
+      "fast" : true
+    },
+    "apple" : {
+      "fast" : true
+    },
+    "sand" : {
+      "fast" : true
+    },
+    "blue" : {
+      "fast" : true
+    },
+    "olive" : {
+      "fast" : true
+    },
+    "coral" : {
+      "fast" : true
+    },
+    "sulfur" : {
+      "fast" : true
+    },
+    "purple" : {
+      "fast" : true
+    },
+    "rose" : {
+      "fast" : true
+    },
+    "snubVertex" : {
+      "fast" : true
+    },
+    "maroon" : {
+      "fast" : true
+    },
+    "lavender" : {
+      "fast" : true
+    },
+    "spruce" : {
+      "fast" : true
+    }
+  },
+  "name" : "Vienne 121 zone"
+}

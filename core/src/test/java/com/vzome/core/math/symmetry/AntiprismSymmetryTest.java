@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicNumberImpl;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PolygonField;
@@ -23,7 +24,7 @@ public class AntiprismSymmetryTest {
     public static final int MAX_SIDES = PolygonFieldTest.MAX_SIDES;
     
     private static final AntiprismSymmetry getAntiprismSymmetry(int nSides) {
-        return new AntiprismSymmetry(new PolygonField(nSides)).createStandardOrbits("blue");
+        return new AntiprismSymmetry(new PolygonField(nSides, AlgebraicNumberImpl.FACTORY )).createStandardOrbits("blue");
     }
 
     @Test

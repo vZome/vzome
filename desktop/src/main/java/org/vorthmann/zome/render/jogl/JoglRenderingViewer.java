@@ -11,6 +11,7 @@ import javax.vecmath.Vector3f;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLCapabilitiesChooser;
 import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLDrawableFactory;
 import com.jogamp.opengl.GLEventListener;
@@ -26,7 +27,7 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Lights;
-import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.desktop.awt.RenderingViewer;
 import com.vzome.opengl.OutlineRenderer;
 import com.vzome.opengl.Renderer;
 import com.vzome.opengl.SolidRenderer;
@@ -179,14 +180,20 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     @Override
     public void reshape( GLAutoDrawable drawable, int x, int y, int width, int height )
     {
+        this .setSize( width, height );
+    }
+
+    @Override
+    public void setSize( int width, int height )
+    {
         this.width = width;
-        this.height = height;
-        this .aspectRatio = (float) width / (float) height;
+        this.height = height;                               // width and height are only further used for image capture
+        this .aspectRatio = (float) width / (float) height; // aspectRatio is used for rendering
         this .setProjection();
     }
 
     @Override
-    public void setPerspective( double fovX, double aspectRatio, double near, double far )
+    public void setPerspective( double fovX, double near, double far )
     {
         this .fovX = (float) fovX;
         this .near = (float) near;
@@ -248,7 +255,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     }
     
     @Override
-    public void captureImage( int maxSize, boolean withAlpha, ImageCapture capture )
+    public BufferedImage captureImage( int maxSize, boolean withAlpha )
     {
         // Key parts of this copied from TestGLOffscreenAutoDrawableBug1044AWT in the Github jogl repo,
         //   now modified with changes to fix the capture on Windows, thanks to David Hall.
@@ -271,7 +278,12 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         glcapabilities .setDepthBits( 32 );
         // Without line below, there is an error on Windows.
         glcapabilities .setDoubleBuffered( false );
-        final GLOffscreenAutoDrawable drawable = fac.createOffscreenAutoDrawable( null, glcapabilities, null, imageWidth, imageHeight );
+        
+        GLCapabilitiesChooser chooser = null;// new JoglFactory.MultisampleChooser();  // THIS YIELDS BLACK OR EMPTY IMAGES!
+//        glcapabilities .setSampleBuffers(true);
+//        glcapabilities .setNumSamples(4);
+
+        final GLOffscreenAutoDrawable drawable = fac.createOffscreenAutoDrawable( null, glcapabilities, chooser, imageWidth, imageHeight );
         drawable.display();
         final GLContext context = drawable .getContext();
         context .makeCurrent();
@@ -294,12 +306,11 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
 
         final AWTGLReadBufferUtil agb = new AWTGLReadBufferUtil( glprofile, withAlpha );
         final BufferedImage image = agb .readPixelsToBufferedImage( gl2, true );
-        
-        capture .captureImage( image );
 
         context .destroy();
         drawable .setRealized( false );
-        System.out.println( "Done!" );
+        
+        return image;
     }
 
     @Override

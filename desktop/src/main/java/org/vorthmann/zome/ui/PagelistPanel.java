@@ -31,8 +31,10 @@ import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.ReorderableJList;
+
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.awt.GraphicsController;
 
 
 public class PagelistPanel extends JPanel implements PropertyChangeListener
@@ -132,11 +134,11 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
 
     private final class ContextualMenuMouseListener extends MouseAdapter
     {
-        private final Controller controller;
+        private final GraphicsController controller;
 
         private final ContextualMenu pickerPopup;
 
-        private ContextualMenuMouseListener( Controller controller, ContextualMenu pickerPopup )
+        private ContextualMenuMouseListener( GraphicsController controller, ContextualMenu pickerPopup )
         {
             this.controller = controller;
             this.pickerPopup = pickerPopup;
@@ -179,7 +181,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
         return menuItem;
     }
 
-    public PagelistPanel( final Controller controller )
+    public PagelistPanel( final GraphicsController controller )
     {
         super( new BorderLayout() );
         controller .addPropertyListener( this );
@@ -270,7 +272,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
             removeButton = new JButton( remString );
             removeButton.setActionCommand( "deletePage" );
             removeButton.addActionListener( actionListener );
-            removeButton.setEnabled( controller .propertyIsTrue( "has.pages" ) );
+            removeButton.setEnabled( false );  // PCE will change this in due course, if necessary
 
             // Create a panel that uses BoxLayout.
             JPanel buttonPane = new JPanel();
@@ -283,20 +285,8 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
         list .setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
         list .setVisibleRowCount( 12 );
         
-        // The controller is not initialized when this constructor runs, so we defer this.
-        SwingUtilities .invokeLater( new Runnable()
-        {    
-            @Override
-            public void run() {
-                int initialCount = Integer .parseInt( controller .getProperty( "num.pages" ) );
-                for ( int i = 0; i < initialCount; i++ )
-                {
-                    ImageIcon icon = new ImageIcon( new BufferedImage( 80, 70, BufferedImage .TYPE_INT_RGB ) );
-                    listModel .addElement( icon );
-                }
-                list .setSelectedIndex( 0 );
-            }
-        });
+        // Don't try to initialize the list based on controller data; the change events
+        //  will appear in due course, even for a document being loaded.
     }
     
     private void syncController()
@@ -332,7 +322,6 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
             int num = Integer .parseInt( pageNum );
             ImageIcon icon = new ImageIcon( new BufferedImage( 80, 70, BufferedImage .TYPE_INT_RGB ) );
             listModel .insertElementAt( icon, num );
-            list .setSelectedIndex( num );
         }
         else if ( evt .getPropertyName() .startsWith( "pageRemovedAt-" ) )
         {

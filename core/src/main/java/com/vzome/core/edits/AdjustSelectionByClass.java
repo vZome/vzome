@@ -102,9 +102,9 @@ public class AdjustSelectionByClass extends ChangeSelection
     @Override
     protected void getXmlAttributes( Element element )
     {
-        element .setAttribute( "balls", ballAction.toString() );
-        element .setAttribute( "struts", strutAction.toString() );
-        element .setAttribute( "panels", panelAction.toString() );
+        element .setAttribute( "balls", ballAction.name() );
+        element .setAttribute( "struts", strutAction.name() );
+        element .setAttribute( "panels", panelAction.name() );
     }
 
     @Override

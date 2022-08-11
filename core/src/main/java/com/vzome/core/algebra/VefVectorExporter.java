@@ -11,9 +11,6 @@ import java.util.TreeSet;
 import com.vzome.core.generic.ArrayComparator;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.VefParser;
-//import com.vzome.core.model.Exporter;
-//import com.vzome.core.model.Panel;
-//import com.vzome.core.model.VefModelExporter;
 
 public class VefVectorExporter {
 

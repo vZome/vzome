@@ -32,6 +32,7 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
     private final Map<String, String> toolLabels = new HashMap<>();
     private final Map<String, Boolean> toolDeleteInputs = new HashMap<>();
     private final Map<String, Boolean> toolSelectInputs = new HashMap<>();
+    private final Map<String, Boolean> toolCopyColors = new HashMap<>();
     private final Set<String> hiddenTools = new HashSet<>();
     
 	public ToolsModel( Context context, Point originPoint )
@@ -63,15 +64,16 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 		return super .put( key, tool );
 	}
 
+	// Create from deserializing
 	public UndoableEdit createEdit( String className )
 	{
 		switch ( className ) {
 
         case "ToolApplied":
-            return new ApplyTool( this, null, false, false, false, false, false );
+            return new ApplyTool( this, null, false, false, false, false, false, true );
 
         case "ApplyTool":
-            return new ApplyTool( this, null, false, false, false, false, true );
+            return new ApplyTool( this, null, false, false, false, false, true, true );
         
 		case "SelectToolParameters":
 		    return new SelectToolParameters( this, null );
@@ -81,9 +83,9 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 		}
 	}
 
-	public void applyTool( Tool tool, boolean selectInputs, boolean deleteInputs, boolean createOutputs, boolean selectOutputs )
+	public void applyTool( Tool tool, boolean selectInputs, boolean deleteInputs, boolean createOutputs, boolean selectOutputs, boolean copyColors )
 	{
-		UndoableEdit edit = new ApplyTool( this, tool, selectInputs, deleteInputs, createOutputs, selectOutputs, true );
+		UndoableEdit edit = new ApplyTool( this, tool, selectInputs, deleteInputs, createOutputs, selectOutputs, true, copyColors );
         this .getContext() .performAndRecord( edit );
 	}	
 
@@ -139,10 +141,10 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
         		DomUtils .addAttribute( toolElem, "label", tool .getLabel() );
         		if ( tool .isHidden() )
         		    DomUtils .addAttribute( toolElem, "hidden", "true" );
-        		if ( tool .isSelectInputs() )
-        		    toolElem .setAttribute( "selectInputs", "true" );
-        		if ( tool .isDeleteInputs() )
-        		    toolElem .setAttribute( "deleteInputs", "true" );
+        		// Always be explicit, to override implicit legacy default behaviors in loadFromXml() and setConfiguration()
+        		toolElem .setAttribute( "selectInputs", Boolean.toString( tool .isSelectInputs() ) );
+        		toolElem .setAttribute( "deleteInputs", Boolean.toString( tool .isDeleteInputs() ) );
+        		toolElem .setAttribute( "copyColors", Boolean.toString( tool .isCopyColors() ) );
         		result .appendChild( toolElem );
         	}
         return result;
@@ -161,11 +163,14 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
                 this .toolLabels .put( id, label );
 
                 String value = toolElem .getAttribute( "selectInputs" );
-                if ( value != null && value .equals( "true" ) )
+                if ( value != null && ! value .equals( "" ) )
                     toolSelectInputs .put( id, Boolean.parseBoolean( value ) );
                 value = toolElem .getAttribute( "deleteInputs" );
-                if ( value != null && value .equals( "true" ) )
+                if ( value != null && ! value .equals( "" ) )
                     toolDeleteInputs .put( id, Boolean.parseBoolean( value ) );
+                value = toolElem .getAttribute( "copyColors" );
+                if ( value != null && ! value .equals( "" ) )
+                    toolCopyColors .put( id, Boolean.parseBoolean( value ) );
                 
                 String hiddenStr = toolElem .getAttribute( "hidden" );
                 if ( hiddenStr != null && hiddenStr .equals( "true" ) )
@@ -184,8 +189,12 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 
         // be careful not to override the defaults for legacy commands with no serialized maps
         if ( this .toolDeleteInputs .containsKey( id ) || this .toolSelectInputs .containsKey( id ) ) {
-            // the map only ever contains "true" values; see loadFromXml() above
-            tool .setInputBehaviors( this .toolSelectInputs .containsKey( id ), this .toolDeleteInputs .containsKey( id ) );
+            boolean deleteInputs = this .toolDeleteInputs .containsKey( id )? this .toolDeleteInputs .get( id ) : true;
+            boolean selectInputs = this .toolSelectInputs .containsKey( id )? this .toolSelectInputs .get( id ) : false;
+            tool .setInputBehaviors( selectInputs, deleteInputs );
+        }
+        if ( this .toolCopyColors .containsKey( id ) ) {
+            tool .setCopyColors( this .toolCopyColors .get( id ) );
         }
 
         tool .setHidden( this .hiddenTools .contains( id ) );

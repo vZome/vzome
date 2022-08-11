@@ -17,6 +17,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
@@ -40,6 +41,7 @@ public class ExportedVEFShapes extends AbstractShapes
 
     private static final String NODE_MODEL = "connector";
 
+    @JsonIgnore
     private final AbstractShapes fallback;
 
     private final Properties colors = new Properties();
@@ -97,34 +99,50 @@ public class ExportedVEFShapes extends AbstractShapes
     }
 
     @Override
-    protected Polyhedron buildConnectorShape( String pkgName )
-    {
-        String vefData = loadVefData( NODE_MODEL );
-        if ( vefData != null ) {
+    protected Polyhedron buildConnectorShape(String pkgName) {
+        String vefData = loadVefData(NODE_MODEL);
+        if (vefData != null) {
             VefToShape parser = new VefToShape();
             parser.invertSnubBall = isSnub;
-            parser .parseVEF( vefData, mSymmetry .getField() );
-            return parser .getConnectorPolyhedron();
+            parser.parseVEF(vefData, mSymmetry.getField());
+            return parser.getConnectorPolyhedron();
         }
-        if ( this .fallback != null )
-            return this .fallback .buildConnectorShape( pkgName );
-        else
-            throw new IllegalStateException( "missing connector shape: " + pkgName );
+        final Level logLevel = Level.FINE;
+        if (LOGGER.isLoggable(logLevel)) {
+            LOGGER.log(logLevel, this.toString() + " has no VEF data for " + NODE_MODEL + " at " + pkgName);
+        }
+        if (this.fallback != null) {
+            if (LOGGER.isLoggable(logLevel)) {
+                LOGGER.log(logLevel, "\t" + NODE_MODEL + " --> fallback to " + fallback.toString());
+            }
+            return this.fallback.buildConnectorShape(pkgName);
+        }
+        throw new IllegalStateException("missing connector shape: " + pkgName);
     }
 
     @Override
-    protected StrutGeometry createStrutGeometry( Direction dir )
-    {
-        String vefData = loadVefData( dir .getName() );
-        if ( vefData != null ) {
-            VefToShape parser = new VefToShape();
-            parser .parseVEF( vefData, mSymmetry .getField() );
-            return parser .getStrutGeometry( dir .getAxis( Symmetry .PLUS, 0 ) .normal() );
+    protected StrutGeometry createStrutGeometry(Direction dir) {
+        // automatic struts don't use VEF so don't waste time trying
+        if (!dir.isAutomatic()) {
+            String vefData = loadVefData(dir.getName());
+            if (vefData != null) {
+                VefToShape parser = new VefToShape();
+                parser.parseVEF(vefData, mSymmetry.getField());
+                return parser.getStrutGeometry(dir.getAxis(Symmetry.PLUS, 0).normal());
+            }
+            // strut uses finer logging level than connector since strut fallback is more common.
+            final Level logLevel = Level.FINER;
+            if (LOGGER.isLoggable(logLevel)) {
+                LOGGER.log(logLevel, this.toString() + " has no VEF data for strut: " + dir.getName());
+            }
+            if (fallback != null) {
+                if (LOGGER.isLoggable(logLevel)) {
+                    LOGGER.log(logLevel, "\t" + dir.getName() + " strut --> fallback to " + fallback.toString());
+                }
+                return this.fallback.createStrutGeometry(dir);
+            }
         }
-        else  if ( this .fallback != null )
-            return this .fallback .createStrutGeometry( dir );
-        else
-            return super .createStrutGeometry( dir );
+        return super.createStrutGeometry(dir);
     }
 
     protected String loadVefData( String name )

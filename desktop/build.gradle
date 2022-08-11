@@ -7,7 +7,7 @@ description = 'vzome-desktop'
 
 def injectionKeys = [
     'version', 'edition', 'buildNumber', 'gitCommit',
-    'githubClientId', 'githubClientSecret'
+    'githubClientId', 'githubClientSecret', 'githubRepoName'
 ]
 
 task recordBuildProperties {
@@ -21,7 +21,17 @@ task recordBuildProperties {
 processResources { 
     dependsOn recordBuildProperties
     from recordBuildProperties.outputDir
-} 
+}
+
+task installUnityJars( type: Copy ) {
+    dependsOn installDist
+    from( "$buildDir/install/desktop/lib" ) {
+        include 'core-*.jar'
+        include 'jackson-*.jar'
+        include 'vecmath-*.jar'
+    }
+    into "${rootProject.projectDir}/oculus/Assets/Plugins/Android"
+}
 
 // used by the 'application' plugin
 // as well as the 'macappbundle' and 'launch4j' Gradle plugins in sub-projects
@@ -68,23 +78,23 @@ dependencies {
 
     compile group: 'java3d', name: 'vecmath', version:'1.6.0-final'
 
-    compile group: 'org.jogamp', name: 'gluegen-rt', version:'v2.4.0-rc-20200307'
-    compile group: 'org.jogamp', name: 'gluegen-rt-natives-linux-aarch64', version:'v2.4.0-rc-20200307'
-    compile group: 'org.jogamp', name: 'gluegen-rt-natives-linux-amd64', version:'v2.4.0-rc-20200307'
-    compile group: 'org.jogamp', name: 'gluegen-rt-natives-linux-armv6hf', version:'v2.4.0-rc-20200307'
-    compile group: 'org.jogamp', name: 'gluegen-rt-natives-linux-i586', version:'v2.4.0-rc-20200307'
-    compile group: 'org.jogamp', name: 'gluegen-rt-natives-macosx-universal', version:'v2.4.0-rc-20200307'
-    compile group: 'org.jogamp', name: 'gluegen-rt-natives-windows-amd64', version:'v2.4.0-rc-20200307'
-    compile group: 'org.jogamp', name: 'gluegen-rt-natives-windows-i586', version:'v2.4.0-rc-20200307'
+    compile group: 'org.jogamp', name: 'gluegen-rt', version:'v2.4.0-rc-20210111'
+    compile group: 'org.jogamp', name: 'gluegen-rt-natives-linux-aarch64', version:'v2.4.0-rc-20210111'
+    compile group: 'org.jogamp', name: 'gluegen-rt-natives-linux-amd64', version:'v2.4.0-rc-20210111'
+    compile group: 'org.jogamp', name: 'gluegen-rt-natives-linux-armv6hf', version:'v2.4.0-rc-20210111'
+    compile group: 'org.jogamp', name: 'gluegen-rt-natives-linux-i586', version:'v2.4.0-rc-20210111'
+    compile group: 'org.jogamp', name: 'gluegen-rt-natives-macosx-universal', version:'v2.4.0-rc-20210111'
+    compile group: 'org.jogamp', name: 'gluegen-rt-natives-windows-amd64', version:'v2.4.0-rc-20210111'
+    compile group: 'org.jogamp', name: 'gluegen-rt-natives-windows-i586', version:'v2.4.0-rc-20210111'
 
-    compile group: 'org.jogamp', name: 'jogl-all', version:'v2.4.0-rc-20200307'
-    compile group: 'org.jogamp', name: 'jogl-all-natives-linux-aarch64', version:'v2.4.0-rc-20200307'
-    compile group: 'org.jogamp', name: 'jogl-all-natives-linux-amd64', version:'v2.4.0-rc-20200307'
-    compile group: 'org.jogamp', name: 'jogl-all-natives-linux-armv6hf', version:'v2.4.0-rc-20200307'
-    compile group: 'org.jogamp', name: 'jogl-all-natives-linux-i586', version:'v2.4.0-rc-20200307'
-    compile group: 'org.jogamp', name: 'jogl-all-natives-macosx-universal', version:'v2.4.0-rc-20200307'
-    compile group: 'org.jogamp', name: 'jogl-all-natives-windows-amd64', version:'v2.4.0-rc-20200307'
-    compile group: 'org.jogamp', name: 'jogl-all-natives-windows-i586', version:'v2.4.0-rc-20200307'
+    compile group: 'org.jogamp', name: 'jogl-all', version:'v2.4.0-rc-20210111'
+    compile group: 'org.jogamp', name: 'jogl-all-natives-linux-aarch64', version:'v2.4.0-rc-20210111'
+    compile group: 'org.jogamp', name: 'jogl-all-natives-linux-amd64', version:'v2.4.0-rc-20210111'
+    compile group: 'org.jogamp', name: 'jogl-all-natives-linux-armv6hf', version:'v2.4.0-rc-20210111'
+    compile group: 'org.jogamp', name: 'jogl-all-natives-linux-i586', version:'v2.4.0-rc-20210111'
+    compile group: 'org.jogamp', name: 'jogl-all-natives-macosx-universal', version:'v2.4.0-rc-20210111'
+    compile group: 'org.jogamp', name: 'jogl-all-natives-windows-amd64', version:'v2.4.0-rc-20210111'
+    compile group: 'org.jogamp', name: 'jogl-all-natives-windows-i586', version:'v2.4.0-rc-20210111'
 
     compile group: 'javax.media.jai', name: 'com.springsource.javax.media.jai.core', version:'1.1.3'
     compile group: 'org.eclipse.lsp4j', name: 'org.eclipse.lsp4j.debug', version: '0.8.1'

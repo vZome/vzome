@@ -177,7 +177,7 @@ public class ParameterizedFields {
         }
     }
     
-	public static String multiplicationTensorToString(ParameterizedField<?> field) {
+	public static String multiplicationTensorToString(ParameterizedField field) {
 		StringBuffer buf = new StringBuffer();
 		buf.append("{\n");
 		for (short[][] outer : field.multiplicationTensor) {
@@ -222,7 +222,7 @@ public class ParameterizedFields {
         System.out.println();
     }
 
-    public static void printMultiplicationTensor(ParameterizedField<?> field) {
+    public static void printMultiplicationTensor(ParameterizedField field) {
         String name = "( " + field.toString() + " ) = \n";
         System.out.println("Multiplication Tensor" + name + multiplicationTensorToString(field));
     }

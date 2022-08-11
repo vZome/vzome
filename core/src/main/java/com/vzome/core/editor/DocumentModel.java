@@ -51,6 +51,7 @@ import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.exporters.OpenScadExporter;
 import com.vzome.core.exporters.POVRayExporter;
 import com.vzome.core.exporters.PartGeometryExporter;
 import com.vzome.core.exporters.ShapesJsonExporter;
@@ -680,6 +681,7 @@ public class DocumentModel implements Snapshot .Recorder, Context
             }
         }
     }
+    
     private final long startTime = System.nanoTime();
 
     boolean fileIsTooNew( String fileVersion )
@@ -701,13 +703,15 @@ public class DocumentModel implements Snapshot .Recorder, Context
         return false;
     }
 
-    public Element getDetailsXml( Document doc )
+    public Element getDetailsXml( Document doc, boolean includeSymmetriesAndTools )
     {
         Element vZomeRoot = doc .createElementNS( XmlSaveFormat.CURRENT_FORMAT, "vzome:vZome" );
         vZomeRoot .setAttribute( "xmlns:vzome", XmlSaveFormat.CURRENT_FORMAT );
         vZomeRoot .setAttribute( "field", field.getName() );
         Element result = mHistory .getDetailXml( doc );
         vZomeRoot .appendChild( result );
+        if ( includeSymmetriesAndTools )
+            this .serializeSymmetriesAndTools( vZomeRoot );
         return vZomeRoot;
     }
 
@@ -722,6 +726,34 @@ public class DocumentModel implements Snapshot .Recorder, Context
         props .setProperty( "edition", "vZome" );
         props .setProperty( "version", "5.0" );
         this .serialize( out, props );
+    }
+    
+    private void serializeSymmetriesAndTools( Element vZomeRoot )
+    {
+        Document doc = vZomeRoot .getOwnerDocument();
+        Element childElement = ((SymmetrySystem) this .editorModel .getSymmetrySystem()) .getXml( doc );
+        vZomeRoot .appendChild( childElement );
+
+        // We have to store all symmetries, not just the current one, due to sequences like this:
+        //   1. drag an icosahedral olive strut
+        //   2. switch to octahedral symmetry
+        //   3. do "build with this" on the olive strut
+        //   4. drag out a strut
+        //   5. switch back to icosahedral symmetry
+        // The end result is that the command in step 4 records the name of an automatic orbit.
+        // That automatic orbit must be captured in the file.
+        childElement = doc .createElement( "OtherSymmetries" );
+        for ( Iterator<OrbitSource> iterator = this .editorModel .getSymmetrySystems(); iterator.hasNext(); ) {
+            OrbitSource symmetry = iterator.next();
+            if ( symmetry == this .editorModel .getSymmetrySystem() )
+                continue; // already serialized above
+            Element symmElement = ((SymmetrySystem) symmetry) .getXml( doc );
+            childElement .appendChild( symmElement );
+        }
+        vZomeRoot .appendChild( childElement );
+
+        childElement = this .tools .getXml( doc );
+        vZomeRoot .appendChild( childElement );
     }
 
     public void serialize( OutputStream out, Properties editorProps ) throws Exception
@@ -742,7 +774,6 @@ public class DocumentModel implements Snapshot .Recorder, Context
         value = editorProps .getProperty( "buildNumber" );
         if ( value != null )
             vZomeRoot .setAttribute( "buildNumber", value );
-        vZomeRoot .setAttribute( "coreVersion", this .coreVersion );
         vZomeRoot .setAttribute( "field", field.getName() );
 
         Element childElement;
@@ -771,29 +802,7 @@ public class DocumentModel implements Snapshot .Recorder, Context
         childElement .appendChild( viewXml );
         vZomeRoot .appendChild( childElement );
 
-        childElement = ((SymmetrySystem) this .editorModel .getSymmetrySystem()) .getXml( doc );
-        vZomeRoot .appendChild( childElement );
-
-        // We have to store all symmetries, not just the current one, due to sequences like this:
-        //   1. drag an icosahedral olive strut
-        //   2. switch to octahedral symmetry
-        //   3. do "build with this" on the olive strut
-        //   4. drag out a strut
-        //   5. switch back to icosahedral symmetry
-        // The end result is that the command in step 4 records the name of an automatic orbit.
-        // That automatic orbit must be captured in the file.
-        childElement = doc .createElement( "OtherSymmetries" );
-        for ( Iterator<OrbitSource> iterator = this .editorModel .getSymmetrySystems(); iterator.hasNext(); ) {
-            OrbitSource symmetry = iterator.next();
-            if ( symmetry == this .editorModel .getSymmetrySystem() )
-                continue; // already serialized above
-            Element symmElement = ((SymmetrySystem) symmetry) .getXml( doc );
-            childElement .appendChild( symmElement );
-        }
-        vZomeRoot .appendChild( childElement );
-
-        childElement = this .tools .getXml( doc );
-        vZomeRoot .appendChild( childElement );
+        this .serializeSymmetriesAndTools( vZomeRoot );
 
         DomSerializer .serialize( doc, out );
     }
@@ -861,11 +870,18 @@ public class DocumentModel implements Snapshot .Recorder, Context
 
     public Exporter3d getStructuredExporter( String format, Camera camera, Colors colors, Lights lights )
     {
-        if ( format.equals( "partgeom" ) )
+        switch ( format ) {
+
+        case "openscad":
+            return new OpenScadExporter();
+
+        case "partgeom":
             // the rendered model must be set before export
             return new PartGeometryExporter( camera, colors, lights, this .renderedModel, this .editorModel .getSelection() );
-        else
+
+        default:
             return this .app .getExporter( format );
+        }
     }
 
     public LessonModel getLesson()
@@ -891,6 +907,17 @@ public class DocumentModel implements Snapshot .Recorder, Context
     @Override
     public void actOnSnapshot( int id, SnapshotAction action )
     {
+        if (id >= snapshots.length) {
+            // This avoids an ArrayIndexOutOfBoundsException.
+            // Since 8 is the initial size of snapshots[], 
+            // this should only happen if we're using VSCode to debug a vZome file
+            // having more than 8 snapshots with lastStickyEdit = -1.
+            snapshots = Arrays.copyOf(snapshots, id + 1);
+            // Since the new array element is null, 
+            // I could just return early to avoid the overhead of actOnSnapshot()
+            // but it correctly handles null snapshots and this should only happen 
+            // when debugging, so I won't change the code path.
+        }
         RenderedModel snapshot = snapshots[ id ];
         action .actOnSnapshot( snapshot );
     }
@@ -974,12 +1001,12 @@ public class DocumentModel implements Snapshot .Recorder, Context
         return snapshot;
     }
 
-    public void export2d( Java2dSnapshot snapshot, String format, File file, boolean doOutlines, boolean monochrome ) throws Exception
+    public void export2d( Java2dSnapshot snapshot, String format, File file, boolean doOutlines, boolean monochrome, boolean showBackground ) throws Exception
     {
         SnapshotExporter exporter = this .app .getSnapshotExporter( format );
         // A try-with-resources block closes the resource even if an exception occurs
         try ( Writer out = new FileWriter( file ) ) {
-            exporter .export( snapshot, out, doOutlines, monochrome );
+            exporter .export( snapshot, out, doOutlines, monochrome, showBackground );
         }
     }
 
@@ -999,5 +1026,10 @@ public class DocumentModel implements Snapshot .Recorder, Context
         } catch ( Exception e ) {
             throw new Command.Failure( UNKNOWN_COMMAND + " " + cmdName );
         }
+    }
+
+    public RenderedModel[] getSnapshots()
+    {
+        return snapshots;
     }
 }

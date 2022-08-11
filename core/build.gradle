@@ -80,9 +80,11 @@ dependencies {
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.3'
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.3'
 
-    compile group: 'org.jsweet', name: 'jsweet-transpiler', version: '3.0.0'
-    compile group: 'org.jsweet', name: 'jsweet-core', version: "6.1.0"
-    compile group: 'org.jsweet', name: 'j4ts', version: '2.0.0'
+    if( project.gradle.startParameter.taskNames.contains( 'core:jsweet' ) ) {
+        compile group: 'org.jsweet', name: 'jsweet-transpiler', version: '3.0.0'
+        compile group: 'org.jsweet', name: 'jsweet-core', version: "6.1.0"
+        compile group: 'org.jsweet', name: 'j4ts', version: '2.0.0'
+    }
 
     // runtime     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
     runtime     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
@@ -447,10 +449,10 @@ jsweet {
 
     bundle = true
 
-	outDir = new File( 'react-library/jsweetOut/js' )
+	outDir = new File( 'online/jsweetOut/js' )
 
     // The TS compile seems to fail when I set this!  Bug in the Gradle plugin?
-	// tsOut = new File( 'react-library/jsweetOut/ts' )
+	// tsOut = new File( 'online/jsweetOut/ts' )
 
 	targetVersion = 'ES6'
     tsOnly = false
@@ -484,28 +486,48 @@ jsweet {
         'com/vzome/core/model/Group.java',
         'com/vzome/core/model/GroupElement.java',
         'com/vzome/core/model/Manifestation.java',
+        'com/vzome/core/model/ManifestationImpl.java',
         'com/vzome/core/model/ManifestationChanges.java',
         'com/vzome/core/model/Connector.java',
         'com/vzome/core/model/Strut.java',
         'com/vzome/core/model/Panel.java',
         'com/vzome/core/model/RealizedModel.java',
+        'com/vzome/core/model/ConnectorImpl.java',
+        'com/vzome/core/model/StrutImpl.java',
+        'com/vzome/core/model/PanelImpl.java',
+        'com/vzome/core/model/RealizedModelImpl.java',
         'com/vzome/core/model/JsonImportEvents.java',
+        'com/vzome/core/model/HasRenderedObject.java',
+        'com/vzome/core/model/Exporter.java',
+        'com/vzome/core/model/VefModelExporter.java',
 
         'com/vzome/core/editor/api/*.java',
 
         'com/vzome/core/edits/*.java',
+
+        // 'com/vzome/core/exporters/*.java',
+
+        // 'com/vzome/core/viewing/Lights.java',
+        // 'com/vzome/core/viewing/Camera.java',
 
         'com/vzome/core/kinds/DefaultFieldApplication.java',
         'com/vzome/core/kinds/GoldenFieldApplication.java',
         'com/vzome/core/kinds/RootTwoFieldApplication.java',
         'com/vzome/core/kinds/RootThreeFieldApplication.java',
         'com/vzome/core/kinds/HeptagonFieldApplication.java',
+        'com/vzome/core/kinds/SnubCubeFieldApplication.java',
+        'com/vzome/core/kinds/PolygonFieldApplication.java',
+        'com/vzome/core/kinds/AbstractSymmetryPerspective.java',
+        'com/vzome/core/kinds/OctahedralSymmetryPerspective.java',
+        'com/vzome/core/kinds/IcosahedralSymmetryPerspective.java',
 
         'com/vzome/fields/heptagon/HeptagonalAntiprismSymmetry.java',
+        'com/vzome/fields/sqrtphi/*.java',
 
         'com/vzome/api/Tool.java',
         'com/vzome/api/InputBehaviors.java',
         'com/vzome/core/tools/*.java',
+
         'com/vzome/core/editor/Duplicator.java',
         'com/vzome/core/editor/AbstractToolFactory.java',
         'com/vzome/core/editor/CommandEdit.java',
@@ -518,12 +540,12 @@ jsweet {
         'com/vzome/core/editor/FieldApplication.java',
         'com/vzome/core/editor/SymmetrySystem.java',
         'com/vzome/core/editor/SymmetryPerspective.java',
+        'com/vzome/core/editor/SelectionImpl.java',
         'com/vzome/core/editor/SelectionSummary.java',
-        'com/vzome/core/kinds/AbstractSymmetryPerspective.java',
-        'com/vzome/core/kinds/OctahedralSymmetryPerspective.java',
-        'com/vzome/core/kinds/IcosahedralSymmetryPerspective.java',
+        
         'com/vzome/core/render/Colors.java',
         'com/vzome/core/viewing/AbstractShapes.java',
+        'com/vzome/core/viewing/AntiprismShapes.java',
         'com/vzome/core/viewing/OctahedralShapes.java',
         'com/vzome/core/viewing/DodecagonalShapes.java',
         'com/vzome/core/viewing/ExportedVEFShapes.java',
@@ -531,30 +553,24 @@ jsweet {
         'com/vzome/core/parts/StrutGeometry.java',
         'com/vzome/core/parts/FastDefaultStrutGeometry.java',
         'com/vzome/core/model/RenderedObject.java',
-        'com/vzome/core/render/RenderedManifestation.java'
+
+        'com/vzome/core/render/RealZomeScaling.java',
+        'com/vzome/core/render/RenderingChanges.java',
+        'com/vzome/core/render/RenderedManifestation.java',
+        'com/vzome/core/render/RenderedModel.java'
     ]
     excludes = [
-        
-        'com/vzome/core/math/symmetry/AntiprismSymmetry.java',
-        
-        'com/vzome/core/algebra/BigRational.java',
+                
         'com/vzome/core/algebra/RootThreeField.java',
-        'com/vzome/core/algebra/AbstractAlgebraicField.java',
         'com/vzome/core/algebra/RootTwoField.java',
-        'com/vzome/core/algebra/SnubDodecField.java',
         'com/vzome/core/algebra/PentagonField.java',
-        'com/vzome/core/algebra/ParameterizedField.java',
         'com/vzome/core/algebra/HeptagonField.java',
-        'com/vzome/core/algebra/AlgebraicSeries.java',
         'com/vzome/core/algebra/*Impl.java',
         'com/vzome/core/algebra/AlgebraicFields.java',
-        'com/vzome/core/algebra/PolygonField.java',
 
         'com/vzome/core/commands/ZomicVirtualMachine.java',
         'com/vzome/core/commands/CommandExecuteZomicScript.java',
         'com/vzome/core/commands/CommandExecutePythonScript.java',
-
-    //     'com/vzome/core/model/*Impl.java',
 
         'com/vzome/core/edits/ImportSimpleMeshJson.java',
         'com/vzome/core/edits/ImportColoredMeshJson.java',
@@ -564,7 +580,12 @@ jsweet {
         'com/vzome/core/edits/Run*Script.java',
         'com/vzome/core/edits/Validate2Manifold.java',
         'com/vzome/core/edits/RealizeMetaParts.java',
-        'com/vzome/core/edits/ReplaceWithShape.java'
+        'com/vzome/core/edits/ReplaceWithShape.java',
+
+        'com/vzome/core/exporters/ColoredMeshJsonExporter.java',
+        'com/vzome/core/exporters/SimpleMeshJsonExporter.java',
+        'com/vzome/core/exporters/HistoryExporter.java',
+        'com/vzome/core/exporters/ShapesJsonExporter.java'
     ]
 }
 

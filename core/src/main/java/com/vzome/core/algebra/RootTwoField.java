@@ -22,7 +22,7 @@ public class RootTwoField extends AbstractAlgebraicField
     
     public RootTwoField()
     {
-        super( FIELD_NAME, 2 );
+        super( FIELD_NAME, 2, AlgebraicNumberImpl.FACTORY );
     };
     
     @Override
@@ -30,16 +30,10 @@ public class RootTwoField extends AbstractAlgebraicField
     {
         return true;
     }
-
-    @Override
-    public void defineMultiplier( StringBuffer buf, int which )
-    {
-        buf .append( "" );
-    }
     
     public static final double ROOT_2 = Math.sqrt( 2d );
     
-    private static final BigRational TWO = new BigRational( 2 );
+    private static final BigRational TWO = new BigRationalImpl( 2 );
     
     private static final int ONES_PLACE = 0, SQRT2_PLACE = 1;
 
@@ -52,13 +46,15 @@ public class RootTwoField extends AbstractAlgebraicField
         return new BigRational[]{ ones, sqrt2s };
     }
 
+    private static final String[][] IRRATIONAL_LABELS = new String[][] {
+        {" ", " "},
+        {"\u221A2", "sqrt(2)"}
+    };
+    
     @Override
-    public String getIrrational( int which, int format )
+    public String getIrrational( int i, int format )
     {
-        if ( format == DEFAULT_FORMAT )
-            return "\u221A2";
-        else
-            return "sqrt(2)";
+        return IRRATIONAL_LABELS[i][format];
     }
 
     @Override

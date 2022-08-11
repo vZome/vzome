@@ -3,9 +3,6 @@
  */
 package com.vzome.desktop.controller;
 
-import java.awt.Component;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,12 +12,6 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
-
-import org.vorthmann.j3d.MouseTool;
-import org.vorthmann.j3d.MouseToolDefault;
-import org.vorthmann.j3d.Trackball;
-import org.vorthmann.ui.DefaultController;
-import org.vorthmann.zome.app.impl.TrackballRenderingViewer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,8 +64,10 @@ public class CameraController extends DefaultController implements Scene.Provide
         int MONOCULAR = 0; int LEFT_EYE = 1; int RIGHT_EYE = 2;
 
         void setViewTransformation( Matrix4f trans );
+        
+        void setSize( int width, int height );
 
-        void setPerspective( double fov, double aspectRatio, double near, double far );
+        void setPerspective( double fov, double near, double far );
 
         void setOrthographic( double halfEdge, double near, double far );
     }
@@ -87,8 +80,7 @@ public class CameraController extends DefaultController implements Scene.Provide
     public void setPerspective( boolean value )
     {
         model .setPerspective( value );
-        updateViewersTransformation();
-        updateViewersProjection();
+        updateViewers();
     }
 
     public void getViewOrientation( Vector3f lookDir, Vector3f upDir )
@@ -100,6 +92,8 @@ public class CameraController extends DefaultController implements Scene.Provide
     public void addViewer( CameraController.Viewer viewer )
     {
         mViewers .add( viewer );
+
+        updateViewers();
     }
 
     public void removeViewer( CameraController.Viewer viewer )
@@ -129,8 +123,7 @@ public class CameraController extends DefaultController implements Scene.Provide
         boolean wasStereo = model .isStereo();
         float oldMag = model .getMagnification();
         model = new Camera( view );
-        updateViewersTransformation();
-        updateViewersProjection();
+        updateViewers();
 
         if ( wasPerspective != model .isPerspective() )
             firePropertyChange( "perspective", wasPerspective, model .isPerspective() );
@@ -168,7 +161,7 @@ public class CameraController extends DefaultController implements Scene.Provide
         else {
             double field = model .getFieldOfView();
             for ( int i = 0; i < mViewers .size(); i++ )
-                mViewers .get( i ) .setPerspective( field, 1.0d, near, far );
+                mViewers .get( i ) .setPerspective( field, near, far );
         }
 
         // TODO - make aspect ratio track the screen window shape
@@ -232,8 +225,7 @@ public class CameraController extends DefaultController implements Scene.Provide
 
         // have to adjust the projection, since the clipping distances
         //   adjust with distance
-        updateViewersTransformation();
-        updateViewersProjection();
+        updateViewers();
     }
 
 
@@ -245,7 +237,7 @@ public class CameraController extends DefaultController implements Scene.Provide
 
     private int currentRecentView = 0;
 
-    private boolean saveBaselineView()
+    public boolean saveBaselineView()
     {
         if ( model .equals( baselineView ) )
             return false;
@@ -300,16 +292,14 @@ public class CameraController extends DefaultController implements Scene.Provide
                 model .setStereoAngle( CameraController.DEFAULT_STEREO_ANGLE );
             else
                 model .setStereoAngle( 0f );
-            updateViewersTransformation();
-            updateViewersProjection();
+            updateViewers();
             firePropertyChange( "stereo", wasStereo, !wasStereo );
         }
         else if ( action .equals( "togglePerspective" ) )
         {
             saveBaselineView(); // might have been zooming
             model .setPerspective( ! model .isPerspective() );
-            updateViewersTransformation();
-            updateViewersProjection();
+            updateViewers();
             saveBaselineView();
         }
         else if ( action .equals( "goForward" ) )
@@ -338,47 +328,10 @@ public class CameraController extends DefaultController implements Scene.Provide
             super .doAction( action );
     }
 
-    public MouseTool getTrackball( double speed )
+    private void updateViewers()
     {
-        return new Trackball( speed, true )
-        {
-//            @Override
-//            protected double getSpeed()
-//            {
-//                double baseSpeed = super.getSpeed();
-//                // make speed depend on model.getMagnification()
-//                float mag = model .getMagnification();
-//                float power = (-1f/3f) * ( mag + 2f );
-//                return baseSpeed * Math .pow( 10d, power );
-//            }
-
-            @Override
-            public void mousePressed( MouseEvent e )
-            {
-                saveBaselineView(); // might have been zooming
-                super .mousePressed( e );
-            }
-
-            @Override
-            public void trackballRolled( Quat4f roll )
-            {
-                Quat4f copy = new Quat4f( roll );
-
-                getWorldRotation( copy );
-
-                addViewpointRotation( copy );
-
-                // TODO give will-snap feedback when drag paused
-            }
-
-            @Override
-            public void mouseReleased( MouseEvent e )
-            {
-                if ( snapping )
-                    snapView();
-                saveBaselineView();
-            }
-        };
+        updateViewersTransformation();
+        updateViewersProjection();
     }
 
     // ticks <-> mag mapping is duplicated in ViewPlatformControlPanel... should live here only
@@ -393,24 +346,6 @@ public class CameraController extends DefaultController implements Scene.Provide
     private static float ticksToMag( int ticks )
     {
         return ( ticks / MAG_PER_TICKS ) + 1f;
-    }
-
-    public MouseTool getZoomScroller()
-    {
-        return new MouseToolDefault()
-        {
-            @Override
-            public void mouseWheelMoved( MouseWheelEvent e )
-            {
-                int amt = e .getWheelRotation();
-                float oldMag = model .getMagnification();
-                int ticks = magToTicks( oldMag );
-                ticks -= amt;
-                float newMag = ticksToMag( ticks );
-                setMagnification( newMag );
-                firePropertyChange( "magnification", Float .toString( oldMag ), Float .toString( newMag ) );
-            }
-        };
     }
 
     @Override
@@ -522,21 +457,6 @@ public class CameraController extends DefaultController implements Scene.Provide
     {
         return this .copied != null;
     }
-
-    public void attachViewer( CameraController.Viewer viewer, Component canvas )
-    {
-        MouseTool trackball = this .getTrackball( 0.04d );
-        
-        // cannot use MouseTool .attach(), because it attaches a useless wheel listener,
-        //  and CameraControlPanel will attach a better one to the parent component 
-        canvas .addMouseListener( trackball );
-        canvas .addMouseMotionListener( trackball );
-
-        this .addViewer( new TrackballRenderingViewer( viewer ) );
-
-        updateViewersTransformation();
-        updateViewersProjection();
-    }
     
     public void setSymmetry( RenderedModel model, Snapper snapper )
     {
@@ -560,5 +480,15 @@ public class CameraController extends DefaultController implements Scene.Provide
     public Scene getScene()
     {
         return this.scene;
+    }
+
+    public void adjustZoom( int amt )
+    {
+        float oldMag = model .getMagnification();
+        int ticks = magToTicks( oldMag );
+        ticks -= amt;
+        float newMag = ticksToMag( ticks );
+        setMagnification( newMag );
+        firePropertyChange( "magnification", Float .toString( oldMag ), Float .toString( newMag ) );
     }
 }

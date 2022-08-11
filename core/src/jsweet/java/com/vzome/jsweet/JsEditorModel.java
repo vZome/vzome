@@ -36,8 +36,8 @@ public class JsEditorModel implements EditorModel, LegacyEditorModel, SymmetryAw
     
     public void setAdapter( Object adapter )
     {
-        ((JsRealizedModel) this.realizedModel) .setAdapter( adapter );
-        ((JsSelection) this.selection) .setAdapter( adapter );
+//        ((JsRealizedModel) this.realizedModel) .setAdapter( adapter );
+//        ((JsSelection) this.selection) .setAdapter( adapter );
     }
 
     @Override

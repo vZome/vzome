@@ -5,23 +5,21 @@ import java.util.function.BiConsumer;
 /**
  * @author David Hall
  */
-public abstract class ParameterizedField<T extends Object> extends AbstractAlgebraicField {
+public abstract class ParameterizedField extends AbstractAlgebraicField {
 
-    protected final T operand;
     protected final double[] coefficients;
     protected short[][][] multiplicationTensor;
     protected String[][] irrationalLabels;
     
-    public ParameterizedField(String name, int order, T operand) {
-        super(name, order);
-        this.operand = operand;
+    public ParameterizedField( String name, int order, AlgebraicNumberFactory factory ) {
+        super( name, order, factory );
         // These arrays are allocated here, but all non-zero values will be initialized in the derived classes.
         coefficients = new double[order];
         multiplicationTensor = new short[order][order][order];
         irrationalLabels = new String[order][2];
         irrationalLabels[0] = new String[] {" ", " "}; // units use a space character
-        // overridable methods intentionally called from c'tor. Be sure all member variables are initialized first.
-        initialize();
+        // overridable methods should not be called from c'tor since not all member variables may be initialized.
+        // derived classes should call initialize() in their c'tor.
     }
 
     /**
@@ -49,14 +47,11 @@ public abstract class ParameterizedField<T extends Object> extends AbstractAlgeb
         // In some cases, the coefficients may eventually be determined
         // simply by evaluating the only possible solutions to the multiplicationTensor.
         // The labels are initialized last because they could possibly utilize the other values.
-        validate();
         initializeNormalizer();
         initializeMultiplicationTensor();
         initializeCoefficients();
         initializeLabels();
     }
-
-    protected abstract void validate();
 
     protected void initializeNormalizer() 
     {
@@ -74,38 +69,14 @@ public abstract class ParameterizedField<T extends Object> extends AbstractAlgeb
     protected abstract void initializeCoefficients();
     
     protected abstract void initializeLabels();
-    
-    @Override
-    public void defineMultiplier(StringBuffer buf, int i) {
-        if(i > getNumMultipliers()) {
-            buf .append( "" );
-        } else {
-            String varName = getIrrational(i, AlgebraicField.EXPRESSION_FORMAT);
-            // This method used used by the POVRayExporter
-            // to define a set of named constants.
-            // I suspect that POVRay prefers alphanumeric variable names,
-            // so for the common case where our EXPRESSION_FORMAT looks like "sqrt(phi)",
-            // we'll try to make the variable name alphanumeric.
-            // Derived class can override this method to handle other odd cases.
-            if(varName.matches("sqrt\\(.+\\)") ) {
-                varName = varName.replace("sqrt(", "sqrt").replace(")", "");
-            }
-            if(varName.contains("^") ) {
-                System.err.println("WARNING: " + getName() + ".getNumMultipliers() should probably be returning less than " + i);
-            }
-            buf .append( varName );
-            buf .append( " = " );
-            buf .append( getCoefficient(i) );
-        }
-    }
-    
+        
     @Override
     protected BigRational[] multiply( BigRational[] v1, BigRational[] v2 )
     {
         int order = getOrder();
         BigRational[] result = new BigRational[order];
         for(int i = 0; i < order; i++) {
-            result[i] = BigRational.ZERO;
+            result[i] = numberFactory.zero();
             for (int j = 0; j < order; j++) {
                 for (int k = 0; k < order; k++) {
                     int multiplier = multiplicationTensor[i][j][k];
@@ -115,7 +86,7 @@ public abstract class ParameterizedField<T extends Object> extends AbstractAlgeb
                     if(multiplier != 0) {
                         BigRational product = v1[j]. times( v2[k] );
                         if(multiplier != 1) {
-                            product = product. times( multiplier );
+                            product = product. timesInt( multiplier );
                         }
                         result[i] = result[i].plus(product);
                     }
@@ -134,7 +105,7 @@ public abstract class ParameterizedField<T extends Object> extends AbstractAlgeb
         int order = getOrder();
         BigRational[] result = new BigRational[order];
         for(int i = 0; i < order; i++) {
-            result[i] = BigRational.ZERO;
+            result[i] = numberFactory.zero();
             for (int j = 0; j < order; j++) {
                 int multiplier = multiplicationTensor[i][j][whichIrrational];
                 // We would get the same result if we do the long math even when multiplier is 0 or 1
@@ -144,7 +115,7 @@ public abstract class ParameterizedField<T extends Object> extends AbstractAlgeb
                     if (multiplier == 1) {
                         result[i] = result[i].plus(factors[j]);
                     } else {
-                        result[i] = result[i].plus(factors[j].times( multiplier ));
+                        result[i] = result[i].plus(factors[j].timesInt( multiplier ));
                     }
                 }
             }
@@ -171,4 +142,5 @@ public abstract class ParameterizedField<T extends Object> extends AbstractAlgeb
     public double getCoefficient(int i) {
         return coefficients[i];
     }
+    
 }
