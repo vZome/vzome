@@ -81,6 +81,6 @@ macAppBundle {
     }
 }
 // the macAppBundle extension adds this unwanted dependency
-assemble .dependsOn .remove( createDmg )
+// assemble .dependsOn .remove( createDmg )
 //println assemble.taskDependencies.values
 

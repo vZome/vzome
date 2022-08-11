@@ -8,7 +8,7 @@ wrapper() {
    // I think it's because http://jogamp.org/deployment/java3d/1.6.0-final/ivy.xml doesn't exist
    // Gradle 5.6.4 can find it without needing ivy.xml, 
    // so don't upgrade to 6.* yet, but maybe after java3d is replaced.
-   gradleVersion = '5.6.4' //version required
+   gradleVersion = '6.9.2' //version required
 }
 
 // These environment variables are automatically available during a Jenkins build
@@ -27,7 +27,6 @@ ext.edition = appName
 subprojects {
 
   apply plugin: 'java'
-  apply plugin: 'maven'
   apply plugin: 'eclipse'
 
   compileJava {
@@ -54,12 +53,18 @@ subprojects {
 
     ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR downloads for JOGL
       url "http://jogamp.org/deployment"
-      layout "pattern", {
+      metadataSources {
+        artifact();
+      }
+      patternLayout {
         artifact "[revision]/jar/[artifact].[ext]"
       }
     }
     ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR download for vecmath
       url "http://jogamp.org/deployment"
+      metadataSources {
+        artifact();
+      }
       patternLayout {
         artifact "[organization]/[revision]/[artifact].[ext]"
       }
