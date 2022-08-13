@@ -49,9 +49,9 @@ jobs:
         security unlock-keychain -p KeychainPwd $SIGNING_KEYCHAIN
         security import certificate.p12 -k $SIGNING_KEYCHAIN -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
         security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k KeychainPwd $SIGNING_KEYCHAIN
-        ./gradlew clean jpackage 
-        cd desktop/build/jpackage
-        zip -r vZome-7.1.${{ github.run_number }}-MacOSX.zip vZome*.app/
+        ./gradlew --info clean jpackage 
+        # cd desktop/build/jpackage
+        # zip -r vZome-7.1.${{ github.run_number }}-MacOSX.zip vZome*.app/
     - name: Configure SSH
       run: |
         mkdir -p ~/.ssh/
@@ -70,7 +70,7 @@ jobs:
       run: |
         platform=mac sftp -b - dreamhost <<END
           cd vzome.com/quarantine
-          mput desktop/build/jpackage/vZome-*.zip	
+          mput desktop/build/jpackage/vZome-*.dmg	
         END
 
   build-linux:

@@ -184,7 +184,7 @@ jpackage {
 
     verbose = true
 
-    type = 'app-image'
+    // type = 'app-image'
 
     input = "$buildDir/install/desktop/lib"
     destination = "$buildDir/jpackage"
