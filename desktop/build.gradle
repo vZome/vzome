@@ -196,7 +196,7 @@ jpackage {
 
     arguments = vzomeArgs
 
-    additionalParameters = [ "--mac-signing-keychain", "$keychain" ]
+    additionalParameters = []
     applicationDefaultJvmArgs.each { entry ->
         additionalParameters << "--java-options"
         additionalParameters << "$entry"
@@ -210,6 +210,8 @@ jpackage {
         macPackageName = "$appName-$appVersion"
         macSign = true
         macSigningKeyUserName = "Scott Vorthmann"
+        additionalParameters << "--mac-signing-keychain"
+        additionalParameters << "$keychain"
     }
     windows {
         icon = "platform/windows/resources/icons/vZomeLogo.ico"

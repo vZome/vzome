@@ -119,7 +119,7 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew clean jpackage
+      run: ./gradlew --info clean jpackage
     - name: Configure SSH
       run: |
         mkdir -p ~/.ssh/
