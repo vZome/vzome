@@ -78,7 +78,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
     private LessonPanel lessonPanel;
     
-    private JFrame zomicFrame, zomodFrame, pythonFrame;
+    private JFrame zomicFrame, zomodFrame; //, pythonFrame;
 
     private JButton snapshotButton;
 
@@ -320,14 +320,14 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     polytopesDialog .setVisible( true );
                     break;
                 
-                case "showPythonWindow":
-                    if ( pythonFrame == null ) {
-                        pythonFrame = new JFrame( "Python Scripting" );
-                        pythonFrame .setContentPane( new PythonConsolePanel( pythonFrame, mController ) );
-                    }
-                    pythonFrame .pack();
-                    pythonFrame .setVisible( true );
-                    break;
+//                case "showPythonWindow":
+//                    if ( pythonFrame == null ) {
+//                        pythonFrame = new JFrame( "Python Scripting" );
+//                        pythonFrame .setContentPane( new PythonConsolePanel( pythonFrame, mController ) );
+//                    }
+//                    pythonFrame .pack();
+//                    pythonFrame .setVisible( true );
+//                    break;
                     
                 case "showZomicWindow":
                     if ( zomicFrame == null ) {

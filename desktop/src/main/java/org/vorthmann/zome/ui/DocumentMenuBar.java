@@ -43,7 +43,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
     private static final long serialVersionUID = 1L;
 
-    private final JMenuItem setColorMenuItem, showToolsMenuItem, zomicMenuItem, pythonMenuItem, importVEFItem;
+    private final JMenuItem setColorMenuItem, showToolsMenuItem, zomicMenuItem, importVEFItem; //, pythonMenuItem
 
     private final ControlActions actions;
 
@@ -559,10 +559,10 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         menu = new JMenu( "Scripting" );
         menu .setEnabled( fullPower );
-        pythonMenuItem = createMenuItem( "Python...", "showPythonWindow" );
-        pythonMenuItem .setEnabled( fullPower );
-        if ( developerExtras )
-            menu .add( pythonMenuItem );
+//        pythonMenuItem = createMenuItem( "Python...", "showPythonWindow" );
+//        pythonMenuItem .setEnabled( fullPower );
+//        if ( developerExtras )
+//            menu .add( pythonMenuItem );
         zomicMenuItem = createMenuItem( "Zomic...", "showZomicWindow" );
         zomicMenuItem .setEnabled( fullPower );
         menu .add( zomicMenuItem );
@@ -644,7 +644,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
                 setColorMenuItem .setEnabled( false );
                 if ( showToolsMenuItem != null )
                     showToolsMenuItem .setEnabled( false );
-                pythonMenuItem .setEnabled( false );
+//                pythonMenuItem .setEnabled( false );
                 zomicMenuItem .setEnabled( false );
                 importVEFItem .setEnabled( false );
             }
@@ -653,7 +653,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
                 setColorMenuItem .setEnabled( true );
                 if ( showToolsMenuItem != null )
                     showToolsMenuItem .setEnabled( fullPower );
-                pythonMenuItem .setEnabled( fullPower );
+//                pythonMenuItem .setEnabled( fullPower );
                 zomicMenuItem .setEnabled( fullPower );
                 importVEFItem .setEnabled( fullPower );
             }

@@ -3,8 +3,8 @@
 group = 'com.vzome'
 version = '7.1'
 
-task wrapper(type: Wrapper) {
-   gradleVersion = '4.5.1' //version required
+wrapper() {
+   gradleVersion = '7.5.1' //version required
 }
 
 // These environment variables are automatically available during a Jenkins build
@@ -24,15 +24,14 @@ ext.edition = appName
 // Specify common settings for all subprojects
 subprojects {
 
-  apply plugin: 'java'
-  apply plugin: 'maven'
+  apply plugin: 'java-library'
   apply plugin: 'eclipse'
 
   compileJava {
-	// set these to 9 for Java 9
+	// set these to 11 for Java 11
 	// set them to 1.8 for Java 8
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility = 11
+    targetCompatibility = 11
     options.encoding = 'UTF-8'
   }
 
@@ -41,24 +40,37 @@ subprojects {
     mavenCentral()
     
     // This is for the JSweet compiler
-    maven { url "http://repository.jsweet.org/artifactory/libs-release-local" }
-    maven { url "http://repository.jsweet.org/artifactory/libs-snapshot-local" }
+    maven {
+      allowInsecureProtocol true
+      url "http://repository.jsweet.org/artifactory/libs-release-local" }
+    maven {
+      allowInsecureProtocol true
+      url "http://repository.jsweet.org/artifactory/libs-snapshot-local" }
 
     // this one is for javax.media.jai
-    maven { url 'http://repository.springsource.com/maven/bundles/external' }
+    maven { allowInsecureProtocol true
+      url 'http://repository.springsource.com/maven/bundles/external' }
 
     // For EGit
     maven { url 'https://repo.eclipse.org/content/groups/releases' }
 
     ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR downloads for JOGL
+      allowInsecureProtocol true
       url "http://jogamp.org/deployment"
-      layout "pattern", {
+      metadataSources {
+        artifact();
+      }
+      patternLayout {
         artifact "[revision]/jar/[artifact].[ext]"
       }
     }
     ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR download for vecmath
+      allowInsecureProtocol true
       url "http://jogamp.org/deployment"
-      layout "pattern", {
+      metadataSources {
+        artifact();
+      }
+      patternLayout {
         artifact "[organization]/[revision]/[artifact].[ext]"
       }
     }
@@ -73,12 +85,12 @@ subprojects {
 
 project(':desktop') {
     dependencies {
-        compile project(':core')
+        implementation project(':core')
     }
 }
 
 project(':server') {
     dependencies {
-        compile project(':desktop')
+        implementation project(':desktop')
     }
 }
