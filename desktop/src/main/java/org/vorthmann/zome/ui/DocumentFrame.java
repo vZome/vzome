@@ -672,10 +672,18 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 		}
 		this.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
 
-        this.pack();
-        this.setVisible( true );
-        this.setFocusable( true );
-
+		try {
+			// This is where the GraphicsConfiguration fails on David's Windows 10 using Java 17
+			this.pack();
+	        this.setVisible( true );
+	        this.setFocusable( true );
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			errors.reportError( "Failed to initialize UI. Exiting the application.", new Object[] { ex } );
+			// go ahead and exit so the process is killed
+			// and log files have their associated .lck files removed correctly. 
+			System.exit(-1);
+		}
 
         new ExclusiveAction( this .getExcluder() )
         {

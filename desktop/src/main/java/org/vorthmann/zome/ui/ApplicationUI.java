@@ -152,7 +152,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
             initialize( args );
         } catch ( Throwable e ) {
             e .printStackTrace();
-            System.out.println( "problem in main(): " + e.getMessage() );
+			logger.severe("problem in main(): " + e.getMessage());
         }
     }
 
