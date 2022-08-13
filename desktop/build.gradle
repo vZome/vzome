@@ -182,14 +182,13 @@ gradle.projectsEvaluated {
 jpackage {
     dependsOn( "installDist" )
 
-    verbose = true
-
-    // type = 'app-image'
+    // verbose = true
 
     input = "$buildDir/install/desktop/lib"
     destination = "$buildDir/jpackage"
 
-    appName = "${->project.appName}-${->project.version}.${->project.buildNumber}"
+    appName = "${->project.appName}"
+    appVersion = "${->project.version}.${->project.buildNumber}"
     vendor = "vzome.com"
 
     mainJar = jar.archiveName
@@ -208,11 +207,17 @@ jpackage {
     mac {
         icon = "platform/mac/vZome-6.icns"
         macPackageIdentifier = "com.vzome.desktop.${->project.version}"
-        macPackageName = appName
+        macPackageName = "$appName-$appVersion"
         macSign = true
         macSigningKeyUserName = "Scott Vorthmann"
     }
     windows {
         icon = "platform/windows/resources/icons/vZomeLogo.ico"
+    }
+
+    doLast {
+        println "appName is $appName"
+        println "appVersion is $appVersion"
+        println "macPackageName is $macPackageName"
     }
 }

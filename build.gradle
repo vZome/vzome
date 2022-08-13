@@ -8,7 +8,7 @@ wrapper() {
 }
 
 // These environment variables are automatically available during a Jenkins build
-ext.buildNumber = System.getenv( "BUILD_NUMBER" ) ?: 'dev'
+ext.buildNumber = System.getenv( "BUILD_NUMBER" ) ?: '999'
 ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
 ext.githubRepoName = System.getenv( "GITHUB_REPO_NAME" ) ?: ''
 
