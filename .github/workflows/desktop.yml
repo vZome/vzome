@@ -140,5 +140,5 @@ jobs:
       run: |
         echo "cd vzome.com/quarantine/windows" > batchfile.txt
         echo "mput desktop/build/jpackage/vZome-*.exe" >> batchfile.txt
-        platform=windows sftp -b batchfile.txt dreamhost
+        sftp -b batchfile.txt dreamhost
 
