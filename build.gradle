@@ -30,8 +30,8 @@ subprojects {
   compileJava {
 	// set these to 11 for Java 11
 	// set them to 1.8 for Java 8
-    sourceCompatibility = 11
-    targetCompatibility = 11
+    sourceCompatibility = 17
+    targetCompatibility = 17
     options.encoding = 'UTF-8'
   }
 
