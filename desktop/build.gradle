@@ -1,7 +1,7 @@
 
 plugins {
-  id "org.panteleyev.jpackageplugin" version "1.3.1"
-  id "application"
+    id "application"
+    id "org.panteleyev.jpackageplugin" version "1.3.1"
 }
 
 
@@ -179,15 +179,40 @@ gradle.projectsEvaluated {
 	}
 }
 
-// jpackage {
-//     dependsOn( "build", "jar" )
+jpackage {
+    dependsOn( "installDist" )
 
-//     input  = "$buildDir/jars"
-//     destination = "$buildDir/dist"
+    verbose = true
 
-//     appName = "vZome JPackage"
-//     vendor = "vzome.com"
+    type = 'app-image'
 
-//     mainJar = tasks.jar.get().archiveFileName.get()
-//     mainClass = "com.vzome.platform.mac.Adapter"
-// }
+    input = "$buildDir/install/desktop/lib"
+    destination = "$buildDir/jpackage"
+
+    appName = "${->project.appName}-${->project.version}.${->project.buildNumber}"
+    vendor = "vzome.com"
+
+    mainJar = jar.archiveName
+    mainClass = mainClassName
+
+    arguments = vzomeArgs
+
+    additionalParameters = []
+    applicationDefaultJvmArgs.each { entry ->
+        additionalParameters << "--java-options"
+        additionalParameters << "$entry"
+    }
+
+    fileAssociations = [ "file-associations.properties" ]
+
+    mac {
+        icon = "platform/mac/vZome-6.icns"
+        macPackageIdentifier = "com.vzome.desktop.${->project.version}"
+        macPackageName = appName
+        // macSign = true
+        // macSigningKeyUserName = "Scott Vorthmann"
+    }
+    windows {
+        icon = "platform/windows/resources/icons/vZomeLogo.ico"
+    }
+}

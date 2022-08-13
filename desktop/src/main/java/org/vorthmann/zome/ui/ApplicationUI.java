@@ -2,6 +2,13 @@
 package org.vorthmann.zome.ui;
 
 import java.awt.Desktop;
+import java.awt.desktop.AboutEvent;
+import java.awt.desktop.AboutHandler;
+import java.awt.desktop.OpenFilesEvent;
+import java.awt.desktop.OpenFilesHandler;
+import java.awt.desktop.QuitEvent;
+import java.awt.desktop.QuitHandler;
+import java.awt.desktop.QuitResponse;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -20,6 +27,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.FileHandler;
@@ -149,7 +157,41 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
     public static void main( String[] args )
     {
         try {
-            initialize( args );
+            ApplicationUI ui = initialize( args );
+
+            Desktop desktop = Desktop .getDesktop();
+            
+            desktop .setOpenFileHandler( new OpenFilesHandler()
+            {
+                public void openFiles( OpenFilesEvent ofe )
+                {
+                    for (Iterator<?> iterator = ofe .getFiles() .iterator(); iterator.hasNext(); ) {
+                        File file = (File) iterator.next();
+                        ui .openFile( file );
+                    }
+                }
+            } );
+            
+            desktop .setAboutHandler( new AboutHandler()
+            {
+                public void handleAbout( AboutEvent about )
+                {
+                    ui .about();
+                }
+            } );
+            
+            desktop .setQuitHandler( new QuitHandler()
+            {
+                public void handleQuitRequestWith( QuitEvent qe, QuitResponse qr )
+                {
+                    if ( ui .quit() )
+                        qr .performQuit();
+                    else
+                        qr .cancelQuit();
+                        
+                }
+            } );    
+
         } catch ( Throwable e ) {
             e .printStackTrace();
             System.out.println( "problem in main(): " + e.getMessage() );

@@ -31,12 +31,12 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew clean createAppZip
+      run: ./gradlew clean jpackage
     - name: Archive MacOS build
       uses: actions/upload-artifact@v2
       with:
         name: vZome-MacOSX-7.1.${{ github.run_number }}
-        path: desktop/platform/mac/build/macApp/vZome-*.app
+        path: desktop/build/jpackage/vZome-*.dmg
 
   build-linux:
     runs-on: ubuntu-latest
