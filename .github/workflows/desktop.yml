@@ -126,7 +126,7 @@ jobs:
         ls desktop/build/jpackage
     - name: Configure SSH
       run: |
-        mkdir -p ~/.ssh/
+        mkdir -p $env:USERPROFILE/.ssh/
         echo "$SSH_KEY" > $env:USERPROFILE/.ssh/dreamhost.key
         chmod 600 $env:USERPROFILE/.ssh/dreamhost.key
         echo 'Host dreamhost' > $env:USERPROFILE/.ssh/config
