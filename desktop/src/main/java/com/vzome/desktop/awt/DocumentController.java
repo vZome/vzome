@@ -408,6 +408,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         } );
     }
     
+    @Override
     public void attachViewer( RenderingViewer viewer, Component canvas )
     {
     		// This is called on a UI thread!
