@@ -679,9 +679,11 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 	        this.setFocusable( true );
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			errors.reportError( "Failed to initialize UI. Exiting the application.", new Object[] { ex } );
+			final String msg = "Failed to initialize GraphicsConfiguration.\nExiting the application.";
+			errors.reportError(msg, new Object[] { ex } );
 			// go ahead and exit so the process is killed
-			// and log files have their associated .lck files removed correctly. 
+			// and log files have their associated .lck files removed correctly.
+			JOptionPane.showMessageDialog( null, msg, "vZome Fatal Error", JOptionPane.ERROR_MESSAGE );
 			System.exit(-1);
 		}
 
