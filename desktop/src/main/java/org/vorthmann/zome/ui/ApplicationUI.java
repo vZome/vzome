@@ -2,6 +2,7 @@
 package org.vorthmann.zome.ui;
 
 import java.awt.Desktop;
+import java.awt.Desktop.Action;
 import java.awt.desktop.AboutEvent;
 import java.awt.desktop.AboutHandler;
 import java.awt.desktop.OpenFilesEvent;
@@ -157,40 +158,46 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
     public static void main( String[] args )
     {
         try {
-            ApplicationUI ui = initialize( args );
+            initialize( args );
+            
+            if ( ! Desktop .isDesktopSupported() )
+                return;
 
             Desktop desktop = Desktop .getDesktop();
             
-            desktop .setOpenFileHandler( new OpenFilesHandler()
-            {
-                public void openFiles( OpenFilesEvent ofe )
+            if ( desktop .isSupported( Action.APP_OPEN_FILE ) )
+                desktop .setOpenFileHandler( new OpenFilesHandler()
                 {
-                    for (Iterator<?> iterator = ofe .getFiles() .iterator(); iterator.hasNext(); ) {
-                        File file = (File) iterator.next();
-                        ui .openFile( file );
+                    public void openFiles( OpenFilesEvent ofe )
+                    {
+                        for (Iterator<?> iterator = ofe .getFiles() .iterator(); iterator.hasNext(); ) {
+                            File file = (File) iterator.next();
+                            theUI .openFile( file );
+                        }
                     }
-                }
-            } );
+                } );
             
-            desktop .setAboutHandler( new AboutHandler()
-            {
-                public void handleAbout( AboutEvent about )
+            if ( desktop .isSupported( Action.APP_ABOUT ) )
+                desktop .setAboutHandler( new AboutHandler()
                 {
-                    ui .about();
-                }
-            } );
-            
-            desktop .setQuitHandler( new QuitHandler()
-            {
-                public void handleQuitRequestWith( QuitEvent qe, QuitResponse qr )
+                    public void handleAbout( AboutEvent about )
+                    {
+                        theUI .about();
+                    }
+                } );
+                
+            if ( desktop .isSupported( Action.APP_QUIT_HANDLER ) )
+                desktop .setQuitHandler( new QuitHandler()
                 {
-                    if ( ui .quit() )
-                        qr .performQuit();
-                    else
-                        qr .cancelQuit();
-                        
-                }
-            } );    
+                    public void handleQuitRequestWith( QuitEvent qe, QuitResponse qr )
+                    {
+                        if ( theUI .quit() )
+                            qr .performQuit();
+                        else
+                            qr .cancelQuit();
+                            
+                    }
+                } );    
 
         } catch ( Throwable e ) {
             e .printStackTrace();
