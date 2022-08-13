@@ -103,7 +103,7 @@ jobs:
       run: |
         platform=linux sftp -b - dreamhost <<END
           cd vzome.com/quarantine/linux
-          mput desktop/build/jpackage/vZome-*.zip	
+          mput desktop/build/jpackage/vZome-*.*	
         END
 
   build-windows:
@@ -136,5 +136,5 @@ jobs:
       run: |
         platform=windows sftp -b - dreamhost <<END
           cd vzome.com/quarantine/windows
-          mput desktop/build/jpackage/vZome-*.zip	
+          mput desktop/build/jpackage/vZome-*.*	
         END
