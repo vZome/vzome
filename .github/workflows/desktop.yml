@@ -127,13 +127,13 @@ jobs:
     - name: Configure SSH
       run: |
         mkdir -p ~/.ssh/
-        echo "$SSH_KEY" > ~/.ssh/dreamhost.key
-        chmod 600 ~/.ssh/dreamhost.key
-        echo 'Host dreamhost' > ~/.ssh/config
-        echo '  HostName sandy.dreamhost.com' >> ~/.ssh/config
-        echo '  User scottvorthmann' >> ~/.ssh/config
-        echo "  IdentityFile C:\Users\$(whoami)\.ssh\dreamhost.key" >> ~/.ssh/config
-        echo '  StrictHostKeyChecking no' >> ~/.ssh/config
+        echo "$SSH_KEY" > $env:USERPROFILE/.ssh/dreamhost.key
+        chmod 600 $env:USERPROFILE/.ssh/dreamhost.key
+        echo 'Host dreamhost' > $env:USERPROFILE/.ssh/config
+        echo '  HostName sandy.dreamhost.com' >> $env:USERPROFILE/.ssh/config
+        echo '  User scottvorthmann' >> $env:USERPROFILE/.ssh/config
+        echo "  IdentityFile $env:USERPROFILE\.ssh\dreamhost.key" >> $env:USERPROFILE/.ssh/config
+        echo '  StrictHostKeyChecking no' >> $env:USERPROFILE/.ssh/config
       env:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Publish Windows build to DreamHost
