@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.AccessControlException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -34,7 +33,7 @@ public class Platform
                 isWindows = true;
             os = System .getProperty( "java.specification.version" );
             logger .log(Level.FINE, "java.specification.version: {0}", os);
-        } catch ( AccessControlException e ) {
+        } catch ( SecurityException e ) {
             // must be running in JNLP without signing
             logger .fine( "running in JNLP without signing" );
         }
