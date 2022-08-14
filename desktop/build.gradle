@@ -53,7 +53,15 @@ ext.vzomeArgs = [  // a list, not a map
 mainClassName = 'org.vorthmann.zome.ui.ApplicationUI'
 // used by the 'application' Gradle plugin
 run.args( vzomeArgs )
-applicationDefaultJvmArgs = [ '-Xmx3072M', '-Dfile.encoding=UTF8', ] // '--illegal-access=warn' ]
+applicationDefaultJvmArgs = [ '-Xmx3096M', '-Dfile.encoding=UTF8', 
+    // These are needed for Windows only.  See the jpackage comments below.
+        "--add-exports",
+        "java.base/java.lang=ALL-UNNAMED",
+        "--add-exports",
+        "java.desktop/sun.awt=ALL-UNNAMED",
+        "--add-exports",
+        "java.desktop/sun.java2d=ALL-UNNAMED",
+]
 jvmArgs.each { entry ->
     applicationDefaultJvmArgs << "-D$entry.key=$entry.value"
 }
