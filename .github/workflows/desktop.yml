@@ -66,6 +66,8 @@ jobs:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Publish MacOS build to DreamHost
       run: |
+        cat desktop\build\buildPropsResource\build.properties
+        source desktop\build\buildPropsResource\build.properties
         platform=mac sftp -b - dreamhost <<END
           cd vzome.com/quarantine
           mput desktop/build/jpackage/vZome-*.dmg	
