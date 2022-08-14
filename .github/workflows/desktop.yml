@@ -66,10 +66,13 @@ jobs:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Publish MacOS build to DreamHost
       run: |
-        cat desktop\build\buildPropsResource\build.properties
-        source desktop\build\buildPropsResource\build.properties
-        platform=mac sftp -b - dreamhost <<END
-          cd vzome.com/quarantine
+        source desktop/build/buildPropsResource/build.properties  # to set the version variable
+        sftp -b - dreamhost <<END
+          cd vzome.com/download/${version}/
+          -mkdir ${{ github.run_number }}
+          cd ${{ github.run_number }}
+          -mkdir mac
+          cd mac
           mput desktop/build/jpackage/vZome-*.dmg	
         END
 
@@ -105,8 +108,13 @@ jobs:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Publish Linux build to DreamHost
       run: |
-        platform=linux sftp -b - dreamhost <<END
-          cd vzome.com/quarantine/linux
+        source desktop/build/buildPropsResource/build.properties  # to set the version variable
+        sftp -b - dreamhost <<END
+          cd vzome.com/download/${version}/
+          -mkdir ${{ github.run_number }}
+          cd ${{ github.run_number }}
+          -mkdir linux
+          cd linux
           mput desktop/build/jpackage/vzome_*.deb
         END
 
@@ -145,7 +153,11 @@ jobs:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
     - name: Publish Windows build to DreamHost
       run: |
-        echo "cd vzome.com/quarantine/windows" > batchfile.txt
+        echo "cd vzome.com/download/${version}/" >> batchfile.txt
+        echo "-mkdir ${{ github.run_number }}"   >> batchfile.txt
+        echo "cd ${{ github.run_number }}"       >> batchfile.txt
+        echo "-mkdir win"                        >> batchfile.txt
+        echo "cd win"                            >> batchfile.txt
         echo "mput desktop/build/jpackage/vZome-*.exe" >> batchfile.txt
         sftp -b batchfile.txt dreamhost
 
