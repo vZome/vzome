@@ -8,13 +8,13 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.math.symmetry.OctahedralSymmetry;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
-import com.vzome.core.tools.InversionTool;
-import com.vzome.core.tools.LinearMapTool;
-import com.vzome.core.tools.MirrorTool;
+import com.vzome.core.tools.InversionToolFactory;
+import com.vzome.core.tools.LinearMapToolFactory;
+import com.vzome.core.tools.MirrorToolFactory;
 import com.vzome.core.tools.OctahedralToolFactory;
-import com.vzome.core.tools.ProjectionTool;
-import com.vzome.core.tools.RotationTool;
-import com.vzome.core.tools.ScalingTool;
+import com.vzome.core.tools.ProjectionToolFactory;
+import com.vzome.core.tools.ScalingToolFactory;
+import com.vzome.core.tools.SymmetryToolFactory;
 import com.vzome.core.tools.TetrahedralToolFactory;
 import com.vzome.core.tools.TranslationTool;
 import com.vzome.core.viewing.OctahedralShapes;
@@ -40,20 +40,20 @@ public final class OctahedralSymmetryPerspective extends AbstractSymmetryPerspec
 		case SYMMETRY:
 			result .add( new OctahedralToolFactory( tools, this .symmetry ) );
 			result .add( new TetrahedralToolFactory( tools, this .symmetry ) );
-			result .add( new InversionTool.Factory( tools ) );
-			result .add( new MirrorTool.Factory( tools ) );
+			result .add( new InversionToolFactory( tools ) );
+			result .add( new MirrorToolFactory( tools ) );
 			result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) );
 			break;
 
 		case TRANSFORM:
-			result .add( new ScalingTool.Factory( tools, this .symmetry ) );
-			result .add( new RotationTool.Factory( tools, this .symmetry ) );
+			result .add( new ScalingToolFactory( tools, this .symmetry ) );
+			result .add( new SymmetryToolFactory( tools, this .symmetry ) );
             result .add( new TranslationTool.Factory( tools ) );
-            result .add( new ProjectionTool.Factory( tools ) );
+            result .add( new ProjectionToolFactory( tools ) );
 			break;
 
 		case LINEAR_MAP:
-			result .add( new LinearMapTool.Factory( tools, this .symmetry, false ) );
+			result .add( new LinearMapToolFactory( tools, this .symmetry, false ) );
 			break;
 
 		default:
@@ -71,15 +71,15 @@ public final class OctahedralSymmetryPerspective extends AbstractSymmetryPerspec
 		case SYMMETRY:
 			result .add( new OctahedralToolFactory( tools, this .symmetry ) .createPredefinedTool( "octahedral around origin" ) );
 			result .add( new TetrahedralToolFactory( tools, this .symmetry ) .createPredefinedTool( "tetrahedral around origin" ) );
-			result .add( new InversionTool.Factory( tools ) .createPredefinedTool( "reflection through origin" ) );
-			result .add( new MirrorTool.Factory( tools ) .createPredefinedTool( "reflection through XY plane" ) );
+			result .add( new InversionToolFactory( tools ) .createPredefinedTool( "reflection through origin" ) );
+			result .add( new MirrorToolFactory( tools ) .createPredefinedTool( "reflection through XY plane" ) );
 			result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) .createPredefinedTool( "symmetry around green through origin" ) );
 			break;
 
 		case TRANSFORM:
-			result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale down" ) );
-			result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale up" ) );
-			result .add( new RotationTool.Factory( tools, this .symmetry ) .createPredefinedTool( "rotate around green through origin" ) );
+			result .add( new ScalingToolFactory( tools, this .symmetry ) .createPredefinedTool( "scale down" ) );
+			result .add( new ScalingToolFactory( tools, this .symmetry ) .createPredefinedTool( "scale up" ) );
+			result .add( new SymmetryToolFactory( tools, this .symmetry ) .createPredefinedTool( "rotate around green through origin" ) );
 			result .add( new TranslationTool.Factory( tools ) .createPredefinedTool( "b1 move along +X" ) );
 			break;
 

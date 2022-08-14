@@ -11,49 +11,21 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
-import com.vzome.core.editor.AbstractToolFactory;
 import com.vzome.core.editor.Duplicator;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.editor.api.ChangeManifestations;
-import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Manifestation;
 
 public class ModuleTool extends Tool
 {
-	private static final String ID = "module";
-	private static final String LABEL = "Create a module tool";
-	private static final String TOOLTIP = "<p>" +
+	static final String ID = "module";
+	static final String LABEL = "Create a module tool";
+	static final String TOOLTIP = "<p>" +
     		"Each tool duplicates the original module.<br>" +
 		"</p>";
 
-	public static class Factory extends AbstractToolFactory
-	{
-		public Factory( ToolsModel tools )
-		{
-			super( tools, null, ID, LABEL, TOOLTIP );
-		}
-
-		@Override
-		protected boolean countsAreValid( int total, int balls, int struts, int panels )
-		{
-			return ( total > 0);
-		}
-
-		@Override
-		public Tool createToolInternal( String id )
-		{
-			return new ModuleTool( id, getToolsModel() );
-		}
-
-		@Override
-		protected boolean bindParameters( Selection selection )
-		{
-			return true;
-		}
-	}
-
-    private String name;
+	private String name;
     
     private final List<Manifestation> bookmarkedSelection = new ArrayList<>();
         

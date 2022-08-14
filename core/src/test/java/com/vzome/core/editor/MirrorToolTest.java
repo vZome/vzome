@@ -27,7 +27,7 @@ import com.vzome.core.model.PanelImpl;
 import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.model.Strut;
 import com.vzome.core.model.StrutImpl;
-import com.vzome.core.tools.MirrorTool;
+import com.vzome.core.tools.MirrorToolFactory;
 
 public class MirrorToolTest
 {
@@ -141,6 +141,6 @@ public class MirrorToolTest
     {
 		ToolsModel tools = new ToolsModel( null, originPoint );
 		tools .setEditorModel( editor );
-		return new MirrorTool.Factory( tools ) .createToolInternal( "1/foo" );
+		return new MirrorToolFactory( tools ) .createToolInternal( "1/foo" );
 	}
 }

@@ -5,18 +5,15 @@ package com.vzome.core.tools;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PointReflection;
 import com.vzome.core.construction.Transformation;
-import com.vzome.core.editor.AbstractToolFactory;
-import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
-import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 
 public class InversionTool extends TransformationTool
 {	
-	private static final String ID = "point reflection";
-	private static final String LABEL = "Create a point reflection tool";
-	private static final String TOOLTIP = "<p>" +
+	static final String ID = "point reflection";
+	static final String LABEL = "Create a point reflection tool";
+	static final String TOOLTIP = "<p>" +
 			    "Each tool duplicates the selection by reflecting<br>" +
 			    "each point through the defined center.  To create a<br>" +
 			    "tool, select a single ball that defines that center.<br>" +
@@ -27,46 +24,7 @@ public class InversionTool extends TransformationTool
         super( toolName, tools );
 	}
 
-	public static class Factory extends AbstractToolFactory
-	{
-		private transient Connector center;  // TODO use this in createToolInternal()
-		
-		public Factory( ToolsModel tools )
-		{
-			super( tools, null, ID, LABEL, TOOLTIP );
-		}
-
-		@Override
-		protected boolean countsAreValid( int total, int balls, int struts, int panels )
-		{
-			return ( total == 1 && balls == 1 );
-		}
-
-		@Override
-		public Tool createToolInternal( String id )
-		{
-			return new InversionTool( id, getToolsModel() );
-		}
-
-        @Override
-        public Tool createTool()
-        {
-            Tool result = super.createTool();
-            result .setCopyColors( false ); // Overriding true default, only for newly created tools
-            return result;
-        }
-
-		@Override
-		protected boolean bindParameters( Selection selection )
-		{
-			assert selection .size() == 1;
-        	for ( Manifestation man : selection )
-        		center = (Connector) man;
-			return true;
-		}
-	}
-
-    @Override
+	@Override
     protected String checkSelection( boolean prepareTool )
     {
         Point center = null;

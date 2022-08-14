@@ -14,11 +14,8 @@ import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.construction.Transformation;
-import com.vzome.core.editor.AbstractToolFactory;
-import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.editor.api.OrbitSource;
-import com.vzome.core.editor.api.Selection;
 import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.SpecialOrbit;
@@ -30,50 +27,15 @@ import com.vzome.core.model.Strut;
 
 public class MirrorTool extends TransformationTool
 {
-    private static final String ID = "mirror";
-    private static final String LABEL = "Create a mirror reflection tool";
-    private static final String TOOLTIP = "<p>" +
+    static final String ID = "mirror";
+    static final String LABEL = "Create a mirror reflection tool";
+    static final String TOOLTIP = "<p>" +
             "Each tool duplicates the selection by reflecting<br>" +
             "each object in a mirror plane.  To create a<br>" +
             "tool, define the mirror plane by selecting a single<br>" +
             "panel, or by selecting a strut orthogonal to the<br>" +
             "plane and a ball lying in the plane.<br>" +
             "</p>";
-
-    public static class Factory extends AbstractToolFactory
-    {
-        public Factory( ToolsModel tools )
-        {
-            super( tools, null, ID, LABEL, TOOLTIP );
-        }
-
-        @Override
-        protected boolean countsAreValid( int total, int balls, int struts, int panels )
-        {
-            return ( total == 2 && balls == 1 && struts == 1 )
-                    || ( total == 1 && panels == 1 );
-        }
-
-        @Override
-        public Tool createToolInternal( String id )
-        {
-            return new MirrorTool( id, getToolsModel() );
-        }
-
-        @Override
-        public Tool createTool()
-        {
-            Tool result = super.createTool();
-            result .setCopyColors( false ); // Overriding true default, only for newly created tools
-            return result;
-        }
-
-        @Override
-        protected boolean bindParameters( Selection selection )
-        {
-            return true;
-        }
-    }
 
     protected final OrbitSource symmSys;
     

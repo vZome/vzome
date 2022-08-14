@@ -58,7 +58,7 @@ sourceSets {
             println( project.gradle.startParameter.taskNames )
             if( project.gradle.startParameter.taskNames.contains( 'core:jsweet' ) ) {
                 srcDir file( 'src/main/java' )
-                srcDir file( 'src/jsweet/java' )
+                // srcDir file( 'src/jsweet/java' )
             }
             
             exclude 'com/vzome/opengl/FancyRenderer.java'
