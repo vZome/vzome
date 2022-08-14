@@ -39,19 +39,3 @@ jobs:
       with:
         name: regression-failures
         path: failures.xml
-
-  jsweet:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 8
-      uses: actions/setup-java@v2
-      with:
-        java-version: '8'
-        distribution: 'temurin'
-    - name: Grant execute permissions
-      run: chmod +x gradlew cicd/jsweet-legacy-code.bash
-    - name: check for JSweet regression
-      run: cicd/jsweet-legacy-code.bash
