@@ -670,12 +670,14 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 			int n = 15, d = n + 1; // set size to 15/16 of full screen size then maximize it
 			this.setSize(bestMode.getWidth() * n/d, bestMode.getHeight() * n/d);
 		}
-		this.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
 
 		try {
-			// This is where the GraphicsConfiguration fails on David's Windows 10 using Java 17
+			// This is where the GraphicsConfiguration failed on David's Windows 10 using Java 17
+			// before including the "--add-exports" JVM args to the build 
 			this.pack();
 	        this.setVisible( true );
+	        // Java 17 seems to successfully set the extended state only after the frame is visible.
+	        this.setExtendedState(MAXIMIZED_BOTH);
 	        this.setFocusable( true );
 		} catch (Exception ex) {
 			ex.printStackTrace();
