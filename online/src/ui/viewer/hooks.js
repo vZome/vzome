@@ -1,5 +1,5 @@
 
-import { useMemo, useEffect, useRef, useLayoutEffect } from 'react';
+import { useMemo, useEffect, useRef, useLayoutEffect, useState } from 'react';
 import { BufferGeometry, Vector3, Float32BufferAttribute, Matrix4 } from 'three';
 
 export const useEmbedding = embedding =>
@@ -56,4 +56,14 @@ export const useGeometry = shape =>
     return geometry;
   }, [ shape ] );
   return geometry;
+}
+
+export const useVR = () =>
+{
+  const [ vrAvailable, setVrAvailable ] = useState( false );
+  useEffect( () => {
+    const xr = window.navigator.xr;
+    xr && xr.isSessionSupported( "immersive-vr" ) .then( available => setVrAvailable( available ) );
+  }, []);
+  return vrAvailable;
 }

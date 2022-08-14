@@ -80,7 +80,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
     private LessonPanel lessonPanel;
     
-    private JFrame zomicFrame, zomodFrame, pythonFrame;
+    private JFrame zomicFrame, zomodFrame; //, pythonFrame;
 
     private JButton snapshotButton;
 
@@ -322,14 +322,14 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     polytopesDialog .setVisible( true );
                     break;
                 
-                case "showPythonWindow":
-                    if ( pythonFrame == null ) {
-                        pythonFrame = new JFrame( "Python Scripting" );
-                        pythonFrame .setContentPane( new PythonConsolePanel( pythonFrame, mController ) );
-                    }
-                    pythonFrame .pack();
-                    pythonFrame .setVisible( true );
-                    break;
+//                case "showPythonWindow":
+//                    if ( pythonFrame == null ) {
+//                        pythonFrame = new JFrame( "Python Scripting" );
+//                        pythonFrame .setContentPane( new PythonConsolePanel( pythonFrame, mController ) );
+//                    }
+//                    pythonFrame .pack();
+//                    pythonFrame .setVisible( true );
+//                    break;
                     
                 case "showZomicWindow":
                     if ( zomicFrame == null ) {
@@ -672,13 +672,26 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 			int n = 15, d = n + 1; // set size to 15/16 of full screen size then maximize it
 			this.setSize(bestMode.getWidth() * n/d, bestMode.getHeight() * n/d);
 		}
-		this.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
 
-        this.pack();
-        this.setVisible( true );
-        this.setFocusable( true );
+		try {
+			// This is where the GraphicsConfiguration failed on David's Windows 10 using Java 17
+			// before including the "--add-exports" JVM args to the build 
+			this.pack();
+	        this.setVisible( true );
+	        // Java 17 seems to successfully set the extended state only after the frame is visible.
+	        this.setExtendedState(MAXIMIZED_BOTH);
+	        this.setFocusable( true );
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			final String msg = "Failed to initialize GraphicsConfiguration.\nExiting the application.";
+			errors.reportError(msg, new Object[] { ex } );
+			// go ahead and exit so the process is killed
+			// and log files have their associated .lck files removed correctly.
+			JOptionPane.showMessageDialog( null, msg, "vZome Fatal Error", JOptionPane.ERROR_MESSAGE );
+			System.exit(-1);
+		}
 
-        SwingWorker<Exception, Object> finisher = new SwingWorker<Exception, Object>()
+        new ExclusiveAction( this .getExcluder() )
         {
             @Override
             protected Exception doInBackground() throws Exception

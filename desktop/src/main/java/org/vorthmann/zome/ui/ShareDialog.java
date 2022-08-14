@@ -615,7 +615,7 @@ public class ShareDialog extends EscapeDialog
 
             // create commit
             Commit commit = new Commit();
-            commit.setMessage( "shared from vZome" );
+            commit.setMessage( this .title );
             commit.setTree( newTree );
             
             // Due to an error with github api we have to do this

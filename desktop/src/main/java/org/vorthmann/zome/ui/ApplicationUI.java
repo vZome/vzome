@@ -2,6 +2,14 @@
 package org.vorthmann.zome.ui;
 
 import java.awt.Desktop;
+import java.awt.Desktop.Action;
+import java.awt.desktop.AboutEvent;
+import java.awt.desktop.AboutHandler;
+import java.awt.desktop.OpenFilesEvent;
+import java.awt.desktop.OpenFilesHandler;
+import java.awt.desktop.QuitEvent;
+import java.awt.desktop.QuitHandler;
+import java.awt.desktop.QuitResponse;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -20,6 +28,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.FileHandler;
@@ -95,6 +104,9 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                 break;
             }
         }
+        
+        Properties buildProps = loadBuildProperties();
+        String version = buildProps.getProperty( "version" ) + "." + buildProps.getProperty( "buildNumber" );
 
         // If no FileHandler was pre-configured, then initialize our own default
         if (fh == null) {
@@ -113,7 +125,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                 // 
                 // SV: I've reversed the %u and %g, so that sorting by name puts related logs together, in order.  The Finder / Explorer already
                 //   knows how to sort by date, so we don't need to support that.
-                fh = new FileHandler("%h/" + Platform.logsPath() + "/vZome7.0_%u_%g.log", 500000, 10);
+                fh = new FileHandler("%h/" + Platform.logsPath() + "/vZome-" + version + "_%u_%g.log", 500000, 10);
             } catch (Exception e1) {
                 rootLogger.log(Level.WARNING, "unable to set up vZome file log handler", e1);
                 try {
@@ -150,9 +162,49 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
     {
         try {
             initialize( args );
+            
+            if ( ! Desktop .isDesktopSupported() )
+                return;
+
+            Desktop desktop = Desktop .getDesktop();
+            
+            if ( desktop .isSupported( Action.APP_OPEN_FILE ) )
+                desktop .setOpenFileHandler( new OpenFilesHandler()
+                {
+                    public void openFiles( OpenFilesEvent ofe )
+                    {
+                        for (Iterator<?> iterator = ofe .getFiles() .iterator(); iterator.hasNext(); ) {
+                            File file = (File) iterator.next();
+                            theUI .openFile( file );
+                        }
+                    }
+                } );
+            
+            if ( desktop .isSupported( Action.APP_ABOUT ) )
+                desktop .setAboutHandler( new AboutHandler()
+                {
+                    public void handleAbout( AboutEvent about )
+                    {
+                        theUI .about();
+                    }
+                } );
+                
+            if ( desktop .isSupported( Action.APP_QUIT_HANDLER ) )
+                desktop .setQuitHandler( new QuitHandler()
+                {
+                    public void handleQuitRequestWith( QuitEvent qe, QuitResponse qr )
+                    {
+                        if ( theUI .quit() )
+                            qr .performQuit();
+                        else
+                            qr .cancelQuit();
+                            
+                    }
+                } );    
+
         } catch ( Throwable e ) {
             e .printStackTrace();
-            System.out.println( "problem in main(): " + e.getMessage() );
+			logger.severe("problem in main(): " + e.getMessage());
         }
     }
 
@@ -189,7 +241,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
          */
 
         SplashScreen splash = null;
-        String splashImage = "org/vorthmann/zome/ui/vZome-7-splash.png";
+        String splashImage = "org/vorthmann/zome/ui/vZome-splash.png";
         splash = new SplashScreen( splashImage );
         splash .splash();
         logger .info( "splash screen displayed" );

@@ -154,7 +154,28 @@ public class JsonMapper
                 return node;
             }
             else
-                return null;
+            {
+                ObjectNode node = this .objectMapper .createObjectNode();
+                node .put( "shape", shapeId );
+
+                Color color = rm .getColor();
+                if ( color == null )
+                    color = Color.WHITE;
+                node .put( "color", color .toWebString() );
+
+                node .set( "position", this .getLocation( rm ) );
+
+                if ( sharedOrientations ) {
+                    int orientation = rm .getStrutZone();
+                    node .put( "orientation", (orientation<0)? 0 : orientation );
+                }
+                else {
+                    ObjectNode quaternion = getQuaternionNode( rm .getOrientation() );
+                    node .set( "rotation", quaternion );
+                }
+
+                return node;
+            }
         } catch (RuntimeException e) {
             System.err.println( e .getMessage() );
             e .printStackTrace();

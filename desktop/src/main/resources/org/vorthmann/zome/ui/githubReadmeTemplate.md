@@ -5,12 +5,18 @@
  - [source file for that custom page][source]; click to customize
  - [raw vZome file][raw] to use in vZome desktop or vZome Online
  
- HTML custom element for embedding in any web page:
+ HTML for embedding in any web page:
  ```html
-<vzome-viewer style="width: 87%; height: 60vh; margin: 5%"
+<figure style="width: 87%; margin: 5%">
+  <vzome-viewer style="width: 100%; height: 60vh"
        src="${siteUrl}/${designPath}" >
-  <img src="${siteUrl}/${imagePath}" />
-</vzome-viewer>
+    <img  style="width: 100%"
+       src="${siteUrl}/${imagePath}" >
+  </vzome-viewer>
+  <figcaption style="text-align: center; font-style: italic;">
+     REPLACE this caption!
+  </figcaption>
+</figure>
  ```
 
 [vZome Sharing documentation](https://vzome.github.io/vzome/sharing.html#how-it-works)

@@ -1,11 +1,25 @@
 
 import { configureStore } from '@reduxjs/toolkit'
 
-export const initialState = {};
+export const initialState = {
+  scene: {
+    camera: {
+      near: 0.1,
+      far: 80,
+      width: 18,
+      distance: 40,
+      up: [ 0, 1, 0 ],
+      lookAt: [ 0, 0, 0 ],
+      lookDir: [ 0, 0, -1 ],
+      perspective: true,
+    }
+  }
+};
 
 export const selectEditBefore = nodeId => ({ type: 'EDIT_SELECTED', payload: { before: nodeId } } );
 export const selectEditAfter = nodeId => ({ type: 'EDIT_SELECTED', payload: { after: nodeId } } );
 export const defineCamera = camera => ({ type: 'CAMERA_DEFINED', payload: camera });
+export const setPerspective = value => ({ type: 'PERSPECTIVE_SET', payload: value });
 export const fetchDesign = ( url, preview, debug=false ) => ({ type: 'URL_PROVIDED', payload: { url, preview, debug } });
 export const openDesignFile = ( file, debug=false ) => ({ type: 'FILE_PROVIDED', payload: { file, debug } });
 
@@ -54,6 +68,16 @@ const reducer = ( state = initialState, event ) =>
     case 'CAMERA_DEFINED': {
       const camera = event.payload;
       return { ...state, scene: { ...state.scene, camera } };
+    }
+
+    case 'PERSPECTIVE_SET': {
+      const perspective = event.payload;
+      return { ...state, scene: { ...state.scene, camera: { ...state.scene.camera, ...state.scene.trackball, perspective } } };
+    }
+
+    case 'TRACKBALL_MOVED': {
+      const trackball = event.payload;
+      return { ...state, scene: { ...state.scene, trackball } };
     }
 
     default:
@@ -111,6 +135,8 @@ export const createWorkerStore = customElement =>
       case 'DESIGN_INTERPRETED':
       case 'SCENE_RENDERED':
       case 'CAMERA_DEFINED':
+      case 'PERSPECTIVE_SET':
+      case 'TRACKBALL_MOVED':
         report( event );
         break;
 

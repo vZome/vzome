@@ -13,14 +13,17 @@ const convertScene = preview =>
   })
   const lighting = { ...lights, directionalLights: dlights };
 
-  const { lookAtPoint, upDirection, lookDirection, viewDistance, fieldOfView, near, far } = camera
+  const { lookAtPoint, upDirection, lookDirection, viewDistance, width, nearClipDistance, farClipDistance, perspective } = camera
   const lookAt = [ ...Object.values( lookAtPoint ) ]
   const up = [ ...Object.values( upDirection ) ]
-  const lookDir = [ ...Object.values( lookDirection ) ]
+  const lookDir = [ ...Object.values( lookDirection ) ];
+  const near = nearClipDistance;
+  const far = farClipDistance;
+  const distance = viewDistance;
   camera = {
-    near, far, up, lookAt,
-    fov: fieldOfView,
-    position: lookAt.map( (e,i) => e - viewDistance * lookDir[ i ] ),
+    near, far, width, distance,
+    up, lookAt, lookDir,
+    perspective
   }
   return { lighting, camera, embedding };
 }

@@ -10,18 +10,8 @@ html, body {
 
 section {
   width: 80vw;
-  height: 70vh;
-  overflow: hidden;
-  resize: both;
-  gap: 1em;
-  display: grid;
-  background: rgba(0, 0, 0, 0.8);
-  padding: 1em;
-  /* grid-template-rows: 1fr 1.5em; */
-}
-
-.fortyPercent {
-  width: 80vw;
+  max-width: 780px;
+  margin: auto;
   height: 40vh;
   overflow: hidden;
   resize: both;
