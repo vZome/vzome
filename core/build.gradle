@@ -1,4 +1,20 @@
 
+buildscript {
+	repositories {
+		mavenCentral()
+		maven { url "https://repository.jsweet.org/artifactory/libs-release-local" }
+		maven { url "https://repository.jsweet.org/artifactory/libs-snapshot-local" }
+		maven { url "https://repository.jsweet.org/artifactory/plugins-release-local" }
+		maven { url "https://repository.jsweet.org/artifactory/plugins-snapshot-local" }
+		maven { url "https://google-diff-match-patch.googlecode.com/svn/trunk/maven" }
+	}
+	dependencies {
+		classpath('org.jsweet:jsweet-gradle-plugin:3.1.0') {
+			transitive = true 
+		}
+	}
+}
+
 ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
 
 description = "vzome-core"
@@ -418,19 +434,6 @@ def writeProjectProperties( keys, propsFile )
     }
 }
 
-
-buildscript {
-	repositories {
-		mavenCentral()
-		maven { allowInsecureProtocol true
-            url "http://repository.jsweet.org/artifactory/libs-release-local" }
-		maven { allowInsecureProtocol true
-            url "http://repository.jsweet.org/artifactory/plugins-release-local" }
-	}
-	dependencies {
-		classpath("org.jsweet:jsweet-gradle-plugin:2.3.7") { transitive = true }
-	}
-}
 
 apply plugin: 'org.jsweet.jsweet-gradle-plugin'
 
