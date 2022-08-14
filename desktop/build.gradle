@@ -215,6 +215,18 @@ jpackage {
     }
     windows {
         icon = "platform/windows/resources/icons/vZomeLogo.ico"
+        additionalParameters << "--java-options"
+        additionalParameters <<     "--add-exports"
+        additionalParameters << "--java-options"
+        additionalParameters <<     "java.base/java.lang=ALL-UNNAMED"
+        additionalParameters << "--java-options"
+        additionalParameters <<     "--add-exports"
+        additionalParameters << "--java-options"
+        additionalParameters <<     "java.desktop/sun.awt=ALL-UNNAMED"
+        additionalParameters << "--java-options"
+        additionalParameters <<     "--add-exports"
+        additionalParameters << "--java-options"
+        additionalParameters <<     "java.desktop/sun.java2d=ALL-UNNAMED"
     }
 
     doLast {
