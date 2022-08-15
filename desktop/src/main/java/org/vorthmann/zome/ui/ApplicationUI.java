@@ -82,10 +82,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
 
     private final Collection<DocumentFrame> windowsToClose = new ArrayList<>();
 
-    // loggerClassName = "org.vorthmann.zome.ui.ApplicationUI"
-    // Initializing it this way just ensures that any copied code uses the correct class name for a static Logger in any class.
-    private static final String loggerClassName = new Throwable().getStackTrace()[0].getClassName();
-    private static final Logger logger = Logger .getLogger( loggerClassName );
+    private static final Logger LOGGER = Logger .getLogger( "org.vorthmann.zome.ui.ApplicationUI" );
 
     // static class initializer configures global logging before any instance of the class is created.
     static {
@@ -171,6 +168,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
             if ( desktop .isSupported( Action.APP_OPEN_FILE ) )
                 desktop .setOpenFileHandler( new OpenFilesHandler()
                 {
+                    @Override
                     public void openFiles( OpenFilesEvent ofe )
                     {
                         for (Iterator<?> iterator = ofe .getFiles() .iterator(); iterator.hasNext(); ) {
@@ -183,6 +181,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
             if ( desktop .isSupported( Action.APP_ABOUT ) )
                 desktop .setAboutHandler( new AboutHandler()
                 {
+                    @Override
                     public void handleAbout( AboutEvent about )
                     {
                         theUI .about();
@@ -192,6 +191,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
             if ( desktop .isSupported( Action.APP_QUIT_HANDLER ) )
                 desktop .setQuitHandler( new QuitHandler()
                 {
+                    @Override
                     public void handleQuitRequestWith( QuitEvent qe, QuitResponse qr )
                     {
                         if ( theUI .quit() )
@@ -204,7 +204,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
 
         } catch ( Throwable e ) {
             e .printStackTrace();
-			logger.severe("problem in main(): " + e.getMessage());
+			LOGGER.severe("problem in main(): " + e.getMessage());
         }
     }
 
@@ -228,9 +228,9 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
             // This can happen in the rare case when Explorer.exe has been killed and restarted manually.
             // We will allow for that condition to avoid the NPE.
             if( sessionName != null && "console".compareToIgnoreCase(sessionName) != 0) {
-                logger.info("Java OpenGL (JOGL) is not supported by Windows Terminal Services.");
+                LOGGER.info("Java OpenGL (JOGL) is not supported by Windows Terminal Services.");
                 final String msg = "vZome cannot be run under Windows Terminal Services.";
-                logger.severe(msg);
+                LOGGER.severe(msg);
                 JOptionPane.showMessageDialog( null, msg, "vZome Fatal Error", JOptionPane.ERROR_MESSAGE );
                 System .exit( 0 );
             }
@@ -244,7 +244,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
         String splashImage = "org/vorthmann/zome/ui/vZome-splash.png";
         splash = new SplashScreen( splashImage );
         splash .splash();
-        logger .info( "splash screen displayed" );
+        LOGGER .info( "splash screen displayed" );
 
         theUI = new ApplicationUI();
 
@@ -292,7 +292,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                     configuration .setProperty( propName, propValue );
                 } else {
                     String arg = args[i];
-                    logger.info( "OS file argument: " + arg );
+                    LOGGER.info( "OS file argument: " + arg );
                     Path normalizedPath = null;
                     try {
                         // standard Java 7 idiom for dealing with file URIs, which is what
@@ -303,11 +303,11 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                         normalizedPath = Paths .get( arg );
                     } catch ( FileSystemNotFoundException e ) {
                         // Someone passed an HTTP URL, and Paths.get() can't handle it.
-                        logger.warning( "URL command-line arguments are not supported." );
+                        LOGGER.warning( "URL command-line arguments are not supported." );
                         continue; // leave fileArgument as null
                     }
                     fileArgument = normalizedPath .toAbsolutePath() .normalize();
-                    logger.info( "Normalized file argument: " + fileArgument );
+                    LOGGER.info( "Normalized file argument: " + fileArgument );
                 }
             }
 
@@ -323,7 +323,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                 } 
                 catch (Exception e) {
                     // live without it
-                    logger.severe( "The look&feel was not set successfully: " + className );
+                    LOGGER.severe( "The look&feel was not set successfully: " + className );
                 }
             }
 
@@ -340,13 +340,13 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                     if ( Controller.USER_ERROR_CODE.equals( errorCode ) ) {
                         errorCode = ( (Exception) arguments[0] ).getMessage();
                         // don't want a stack trace for a user error
-                        logger.log( Level.WARNING, errorCode );
+                        LOGGER.log( Level.WARNING, errorCode );
                     } else if ( Controller.UNKNOWN_ERROR_CODE.equals( errorCode ) ) {
                         errorCode = ( (Exception) arguments[0] ).getMessage();
-                        logger.log( Level.WARNING, "internal error: " + errorCode, ( (Exception) arguments[0] ) );
+                        LOGGER.log( Level.WARNING, "internal error: " + errorCode, ( (Exception) arguments[0] ) );
                         errorCode = "internal error has been logged";
                     } else {
-                        logger.log( Level.WARNING, "reporting error: " + errorCode, arguments );
+                        LOGGER.log( Level.WARNING, "reporting error: " + errorCode, arguments );
                         if(arguments != null) {
                             StringBuilder buf = new StringBuilder(errorCode);
                             for(Object arg : arguments) {
@@ -384,8 +384,8 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                     Integer debugPort = Integer .parseInt( debugPortStr );
                     ui .debugger .startServer( debugPort, ui .mController );
                 } catch ( NumberFormatException e ) {
-                    if ( logger .isLoggable( Level .WARNING ) )
-                        logger .warning( "debug.adapter.port not an integer; debugger not listening" );
+                    if ( LOGGER .isLoggable( Level .WARNING ) )
+                        LOGGER .warning( "debug.adapter.port not an integer; debugger not listening" );
                 }
             }
         }
@@ -493,10 +493,18 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
         try {
             ClassLoader cl = ApplicationUI.class.getClassLoader();
             InputStream in = cl.getResourceAsStream( defaultRsrc );
-            if ( in != null ) 
-                defaults .load( in );
+			if (in != null) {
+				defaults.load(in);
+			} else {
+				// Gradle builds normally regenerate this file in desktop/build/buildPropsResource, 
+				// but it's not generated in Eclipse builds.
+				// Be sure to manually add build/buildPropsResource to both the core and desktop projects in Eclipse
+				// then run gradlew core:recordBuildProperties desktop:recordBuildProperties from the command line
+				// to generate them. Otherwise "about" version info and log file names will show up as "null".
+				LOGGER.warning("RESOURCE NOT FOUND. Ensure that the build path for the desktop project includes " + defaultRsrc);
+			}
         } catch ( IOException ioe ) {
-            logger.warning( "problem reading build properties: " + defaultRsrc );
+            LOGGER.warning( "problem reading build properties: " + defaultRsrc );
         }
         return defaults;
     }
@@ -567,7 +575,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
 
     private static void logJVMArgs() {
         Level level = Level.CONFIG;
-        if(logger.isLoggable(level)) {
+        if(LOGGER.isLoggable(level)) {
             Properties props = new Properties();
             RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
             List<String> arguments = runtimeMxBean.getInputArguments();
@@ -579,13 +587,13 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
             }
             StringBuilder sb = new StringBuilder("JVM args:");
             appendPropertiesList(sb, props);
-            logger.log(level, sb.toString());
+            LOGGER.log(level, sb.toString());
         }
     }
 
     private static void logExtendedCharacters() {
         Level level = Level.FINE;
-        if(logger.isLoggable(level)) {
+        if(LOGGER.isLoggable(level)) {
             Properties props = new Properties();
             props.put("phi",   "\u03C6");
             props.put("rho",   "\u03C1");
@@ -594,7 +602,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
             props.put("xi",    "\u03BE");
             StringBuilder sb = new StringBuilder("Extended characters:");
             appendPropertiesList(sb, props);
-            logger.log(level, sb.toString());
+            LOGGER.log(level, sb.toString());
         }
     }
 

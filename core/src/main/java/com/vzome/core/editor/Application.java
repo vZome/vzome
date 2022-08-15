@@ -89,7 +89,7 @@ public class Application implements AlgebraicField.Registry
 
     private final Map<String, Supplier<SnapshotExporter>> exporters2d = new HashMap<>();
 
-    private static final Logger logger = Logger.getLogger( "com.vzome.core.editor" );
+    private static final Logger LOGGER = Logger.getLogger( "com.vzome.core.editor" );
 
     public Application( boolean enableCommands, Command.FailureChannel failures, Properties overrides )
     {
@@ -178,11 +178,11 @@ public class Application implements AlgebraicField.Registry
             String error = "Unknown " + edition + " file format.";
             if ( ! version .isEmpty() )
                 error += "\n Cannot open files created by " + edition + " " + version;
-            logger .severe( error );
+            LOGGER .severe( error );
             throw new IllegalStateException( error );
         }
         else
-            logger .fine( "supported format: " + tns );
+            LOGGER .fine( "supported format: " + tns );
 
         String fieldName = element .getAttribute( "field" );
         if ( fieldName .isEmpty() )
@@ -269,8 +269,11 @@ public class Application implements AlgebraicField.Registry
         try {
             ClassLoader cl = Application.class.getClassLoader();
             InputStream in = cl.getResourceAsStream( defaultRsrc );
-            if ( in != null )
-                defaults .load( in );
+			if (in != null) {
+				defaults.load(in);
+			} else {
+				LOGGER.warning("RESOURCE NOT FOUND. Ensure that the build path for the core project includes " + defaultRsrc);
+			}
         } catch ( IOException ioe ) {
             System.err.println( "problem reading default preferences: " + defaultRsrc );
         }
@@ -284,10 +287,18 @@ public class Application implements AlgebraicField.Registry
         try {
             ClassLoader cl = Application.class.getClassLoader();
             InputStream in = cl.getResourceAsStream( defaultRsrc );
-            if ( in != null )
-                defaults .load( in );
+			if (in != null) {
+				defaults.load(in);
+			} else {
+				// Gradle builds normally regenerate this file in core/build/buildPropsResource, 
+				// but it's not generated in Eclipse builds.
+				// Be sure to manually add build/buildPropsResource to both the core and desktop projects in Eclipse
+				// then run gradlew core:recordBuildProperties desktop:recordBuildProperties from the command line
+				// to generate them. Otherwise "about" version info and log file names will show up as "null".
+				LOGGER.warning("RESOURCE NOT FOUND. Ensure that the build path for the core project includes " + defaultRsrc);
+			}
         } catch ( IOException ioe ) {
-            logger.warning( "problem reading build properties: " + defaultRsrc );
+            LOGGER.warning( "problem reading build properties: " + defaultRsrc );
         }
         return defaults;
     }
