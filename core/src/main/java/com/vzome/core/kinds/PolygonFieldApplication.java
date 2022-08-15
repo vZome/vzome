@@ -26,7 +26,7 @@ import com.vzome.core.tools.MirrorToolFactory;
 import com.vzome.core.tools.RotationToolFactory;
 import com.vzome.core.tools.ScalingToolFactory;
 import com.vzome.core.tools.SymmetryToolFactory;
-import com.vzome.core.tools.TranslationTool;
+import com.vzome.core.tools.TranslationToolFactory;
 import com.vzome.core.viewing.AbstractShapes;
 import com.vzome.core.viewing.AntiprismShapes;
 import com.vzome.core.viewing.OctahedralShapes;
@@ -103,7 +103,7 @@ public class PolygonFieldApplication extends DefaultFieldApplication
             case TRANSFORM:
                 result.add(new ScalingToolFactory(tools, this.symmetry));
                 result.add(new SymmetryToolFactory(tools, this.symmetry));
-                result.add(new TranslationTool.Factory(tools));
+                result.add(new TranslationToolFactory(tools));
                 break;
 
             case LINEAR_MAP:

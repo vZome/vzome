@@ -16,7 +16,7 @@ import com.vzome.core.tools.ProjectionToolFactory;
 import com.vzome.core.tools.ScalingToolFactory;
 import com.vzome.core.tools.SymmetryToolFactory;
 import com.vzome.core.tools.TetrahedralToolFactory;
-import com.vzome.core.tools.TranslationTool;
+import com.vzome.core.tools.TranslationToolFactory;
 import com.vzome.core.viewing.OctahedralShapes;
 
 public final class OctahedralSymmetryPerspective extends AbstractSymmetryPerspective
@@ -48,7 +48,7 @@ public final class OctahedralSymmetryPerspective extends AbstractSymmetryPerspec
 		case TRANSFORM:
 			result .add( new ScalingToolFactory( tools, this .symmetry ) );
 			result .add( new SymmetryToolFactory( tools, this .symmetry ) );
-            result .add( new TranslationTool.Factory( tools ) );
+            result .add( new TranslationToolFactory( tools ) );
             result .add( new ProjectionToolFactory( tools ) );
 			break;
 
@@ -80,7 +80,7 @@ public final class OctahedralSymmetryPerspective extends AbstractSymmetryPerspec
 			result .add( new ScalingToolFactory( tools, this .symmetry ) .createPredefinedTool( "scale down" ) );
 			result .add( new ScalingToolFactory( tools, this .symmetry ) .createPredefinedTool( "scale up" ) );
 			result .add( new SymmetryToolFactory( tools, this .symmetry ) .createPredefinedTool( "rotate around green through origin" ) );
-			result .add( new TranslationTool.Factory( tools ) .createPredefinedTool( "b1 move along +X" ) );
+			result .add( new TranslationToolFactory( tools ) .createPredefinedTool( "b1 move along +X" ) );
 			break;
 
 		default:

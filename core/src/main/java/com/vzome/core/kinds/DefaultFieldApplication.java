@@ -36,7 +36,7 @@ import com.vzome.core.tools.PlaneSelectionToolFactory;
 import com.vzome.core.tools.ProjectionToolFactory;
 import com.vzome.core.tools.ScalingToolFactory;
 import com.vzome.core.tools.SymmetryToolFactory;
-import com.vzome.core.tools.TranslationTool;
+import com.vzome.core.tools.TranslationToolFactory;
 
 public class DefaultFieldApplication implements FieldApplication
 {
@@ -116,7 +116,7 @@ public class DefaultFieldApplication implements FieldApplication
 	    
 	    toolFactories .put( "InversionTool", new InversionToolFactory( tools ) );
 	    toolFactories .put( "MirrorTool", new MirrorToolFactory( tools ) );
-        toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
+        toolFactories .put( "TranslationTool", new TranslationToolFactory( tools ) );
         toolFactories .put( "ProjectionTool", new ProjectionToolFactory( tools ) );
 	    toolFactories .put( "BookmarkTool", new BookmarkToolFactory( tools ) );
 	    toolFactories .put( "LinearTransformTool", new LinearMapToolFactory( tools, null, false ) );

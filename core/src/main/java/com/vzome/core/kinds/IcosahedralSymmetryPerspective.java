@@ -24,7 +24,7 @@ import com.vzome.core.tools.ProjectionToolFactory;
 import com.vzome.core.tools.ScalingToolFactory;
 import com.vzome.core.tools.SymmetryToolFactory;
 import com.vzome.core.tools.TetrahedralToolFactory;
-import com.vzome.core.tools.TranslationTool;
+import com.vzome.core.tools.TranslationToolFactory;
 import com.vzome.core.viewing.AbstractShapes;
 import com.vzome.core.viewing.ExportedVEFShapes;
 
@@ -109,7 +109,7 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
             result.add(new ScalingToolFactory(tools, icosaSymm));
             result.add(new SymmetryToolFactory(tools, icosaSymm));
 //            result.add(new PlaneSelectionTool.Factory(tools));
-            result.add(new TranslationTool.Factory(tools));
+            result.add(new TranslationToolFactory(tools));
             result.add(new ProjectionToolFactory(tools));
             break;
         case LINEAR_MAP:
@@ -143,7 +143,7 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
             result.add(new ScalingToolFactory(tools, icosaSymm).createPredefinedTool("scale down"));
             result.add(new ScalingToolFactory(tools, icosaSymm).createPredefinedTool("scale up"));
             result.add(new SymmetryToolFactory(tools, icosaSymm).createPredefinedTool("rotate around red through origin"));
-            result.add(new TranslationTool.Factory(tools).createPredefinedTool("b1 move along +X"));
+            result.add(new TranslationToolFactory(tools).createPredefinedTool("b1 move along +X"));
             break;
         default:
             break;

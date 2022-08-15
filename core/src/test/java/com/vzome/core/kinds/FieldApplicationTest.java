@@ -64,7 +64,7 @@ import com.vzome.core.tools.PlaneSelectionToolFactory;
 import com.vzome.core.tools.ProjectionToolFactory;
 import com.vzome.core.tools.ScalingToolFactory;
 import com.vzome.core.tools.SymmetryToolFactory;
-import com.vzome.core.tools.TranslationTool;
+import com.vzome.core.tools.TranslationToolFactory;
 import com.vzome.fields.sqrtphi.SqrtPhiField;
 import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;
 
@@ -549,7 +549,7 @@ public class FieldApplicationTest
         
         assertTrue(toolFactories .get( "InversionTool") instanceof InversionToolFactory);
         assertTrue(toolFactories .get( "MirrorTool") instanceof MirrorToolFactory);
-        assertTrue(toolFactories .get( "TranslationTool") instanceof TranslationTool.Factory);
+        assertTrue(toolFactories .get( "TranslationTool") instanceof TranslationToolFactory);
         assertTrue(toolFactories .get( "ProjectionTool") instanceof ProjectionToolFactory);
         assertTrue(toolFactories .get( "BookmarkTool") instanceof BookmarkToolFactory);
         assertTrue(toolFactories .get( "LinearTransformTool") instanceof LinearMapToolFactory);
