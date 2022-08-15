@@ -557,6 +557,8 @@ jsweet {
         'com/vzome/core/render/RenderedModel.java'
     ]
     excludes = [
+
+        'com/vzome/core/generic/SubClassIterator.java',
                 
         'com/vzome/core/algebra/RootThreeField.java',
         'com/vzome/core/algebra/RootTwoField.java',
