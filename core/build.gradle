@@ -1,6 +1,7 @@
 
 buildscript {
 	repositories {
+        mavenLocal()
 		mavenCentral()
 		maven { url "https://repository.jsweet.org/artifactory/libs-release-local" }
 		maven { url "https://repository.jsweet.org/artifactory/libs-snapshot-local" }
@@ -13,6 +14,10 @@ buildscript {
 			transitive = true 
 		}
 	}
+}
+
+plugins {
+    id 'org.jsweet.jsweet-gradle-plugin' version '3.1.1'
 }
 
 ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
@@ -434,9 +439,6 @@ def writeProjectProperties( keys, propsFile )
     }
 }
 
-
-apply plugin: 'org.jsweet.jsweet-gradle-plugin'
-
 jsweet {
 	veryVerbose = true
 	encoding = 'UTF-8'
@@ -447,6 +449,8 @@ jsweet {
     bundle = true
 
 	outDir = new File( 'online/jsweetOut/js' )
+
+    javaCompilerExtraOptions = '-source,1.8,-target,1.8'
 
     // The TS compile seems to fail when I set this!  Bug in the Gradle plugin?
 	// tsOut = new File( 'online/jsweetOut/ts' )
