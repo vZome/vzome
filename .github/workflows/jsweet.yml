@@ -27,12 +27,6 @@ jobs:
           ref: issue-35-javaCompilerExtraOptions
           path: plugin
 
-      - name: Set up JDK
-        uses: actions/setup-java@v2
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
       - name: Build & deploy jsweet-gradle-plugin
         run: |
           pwd
@@ -41,6 +35,12 @@ jobs:
           chmod +x gradlew
           ./gradlew publishToMavenLocal -DskipSigning=true
           cd ..
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
       - name: Build with Gradle and JSweet
         run: |
