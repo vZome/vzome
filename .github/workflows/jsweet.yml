@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: vorth/jsweet-gradle-plugin
+          ref: issue-35-javaCompilerExtraOptions
           path: plugin
 
       - name: Build & deploy jsweet-gradle-plugin
