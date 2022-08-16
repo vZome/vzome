@@ -154,7 +154,7 @@ jobs:
         echo "  IdentityFile $env:USERPROFILE\.ssh\dreamhost.key" >> $env:USERPROFILE/.ssh/config
         echo '  StrictHostKeyChecking no' >> $env:USERPROFILE/.ssh/config
       env:
-        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY_WINDOWS }}
     - name: Publish Windows build to DreamHost
       run: |
         echo "cd vzome.com/download/${version}/" >> batchfile.txt
