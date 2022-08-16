@@ -448,12 +448,10 @@ jsweet {
 
     bundle = true
 
-	outDir = new File( 'online/jsweetOut/js' )
+	tsOut = new File( "$projectDir/../online/jsweetOut/ts" )
+	outDir = new File( "$projectDir/../online/jsweetOut/js" )
 
     javaCompilerExtraOptions = '-source,1.8,-target,1.8'
-
-    // The TS compile seems to fail when I set this!  Bug in the Gradle plugin?
-	// tsOut = new File( 'online/jsweetOut/ts' )
 
 	targetVersion = 'ES6'
     tsOnly = false
