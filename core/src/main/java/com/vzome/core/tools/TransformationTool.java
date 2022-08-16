@@ -74,7 +74,7 @@ public abstract class TransformationTool extends Tool
             result .setColor( color ); // just for consistency
             Manifestation m = applyTool .manifestConstruction( result );
             if ( m != null )  // not sure why, but this happens
-                if ( color != null && ! color.equals( m .getColor() )  ) // color can be null in the Javascript world
+                if ( color != null ) // color can be null in the Javascript world
                     applyTool .colorManifestation( m, c .getColor() );
         }
         applyTool .redo();
