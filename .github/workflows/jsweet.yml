@@ -19,8 +19,6 @@ jobs:
     steps:
       - name: Checkout vZome source
         uses: actions/checkout@v2
-        with:
-          path: vzome
 
       - name: Checkout modified jsweet-gradle-plugin
         uses: actions/checkout@v2
@@ -29,23 +27,24 @@ jobs:
           ref: issue-35-javaCompilerExtraOptions
           path: plugin
 
-      - name: Build & deploy jsweet-gradle-plugin
-        run: |
-          pwd
-          cd plugin
-          chmod +x gradlew
-          ./gradlew publishToMavenLocal -DskipSigning=true
-
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Build & deploy jsweet-gradle-plugin
+        run: |
+          pwd
+          cd plugin
+          pwd
+          chmod +x gradlew
+          ./gradlew publishToMavenLocal -DskipSigning=true
+          cd ..
+
       - name: Build with Gradle and JSweet
         run: |
           pwd
-          cd ../vzome
           chmod +x gradlew cicd/jsweet-legacy-code.bash
           cicd/jsweet-legacy-code.bash
 
