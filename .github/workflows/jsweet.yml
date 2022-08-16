@@ -31,6 +31,7 @@ jobs:
 
       - name: Build & deploy jsweet-gradle-plugin
         run: |
+          pwd
           cd plugin
           chmod +x gradlew
           ./gradlew publishToMavenLocal -DskipSigning=true
@@ -43,6 +44,7 @@ jobs:
 
       - name: Build with Gradle and JSweet
         run: |
+          pwd
           cd ../vzome
           chmod +x gradlew cicd/jsweet-legacy-code.bash
           cicd/jsweet-legacy-code.bash
