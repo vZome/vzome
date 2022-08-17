@@ -40,23 +40,17 @@ subprojects {
     mavenCentral()
     
     // This is for the JSweet compiler
-    maven {
-      allowInsecureProtocol true
-      url "http://repository.jsweet.org/artifactory/libs-release-local" }
-    maven {
-      allowInsecureProtocol true
-      url "http://repository.jsweet.org/artifactory/libs-snapshot-local" }
+    maven { url "https://repository.jsweet.org/artifactory/libs-release-local" }
+    maven { url "https://repository.jsweet.org/artifactory/libs-snapshot-local" }
 
     // this one is for javax.media.jai
-    maven { allowInsecureProtocol true
-      url 'http://repository.springsource.com/maven/bundles/external' }
+    maven { url 'https://repository.springsource.com/maven/bundles/external' }
 
     // For EGit
     maven { url 'https://repo.eclipse.org/content/groups/releases' }
 
     ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR downloads for JOGL
-      allowInsecureProtocol true
-      url "http://jogamp.org/deployment"
+      url "https://jogamp.org/deployment"
       metadataSources {
         artifact();
       }
@@ -65,8 +59,7 @@ subprojects {
       }
     }
     ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR download for vecmath
-      allowInsecureProtocol true
-      url "http://jogamp.org/deployment"
+      url "https://jogamp.org/deployment"
       metadataSources {
         artifact();
       }
@@ -92,5 +85,6 @@ project(':desktop') {
 project(':server') {
     dependencies {
         implementation project(':desktop')
+        implementation project(':core')
     }
 }
