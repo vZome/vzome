@@ -12,10 +12,7 @@ import com.vzome.core.construction.MatrixTransformation;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.SymmetryTransformation;
 import com.vzome.core.construction.Transformation;
-import com.vzome.core.editor.AbstractToolFactory;
-import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
-import com.vzome.core.editor.api.Selection;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
 import com.vzome.core.math.symmetry.OctahedralSymmetry;
@@ -27,38 +24,12 @@ import com.vzome.core.model.Strut;
 
 public class SymmetryTool extends TransformationTool
 {
-	private static final String ID = "symmetry";
-	private static final String LABEL = "Create a general symmetry tool";
-	private static final String TOOLTIP = "<p>" +
+	static final String ID = "symmetry";
+	static final String LABEL = "Create a general symmetry tool";
+	static final String TOOLTIP = "<p>" +
     		"General symmetry tool.<br>" +
 		"</p>";
 	
-	public static class Factory extends AbstractToolFactory
-	{
-		public Factory( ToolsModel tools, Symmetry symmetry )
-		{
-			super( tools, symmetry, ID, LABEL, TOOLTIP );
-		}
-
-		@Override
-		protected boolean countsAreValid( int total, int balls, int struts, int panels )
-		{
-			return ( total == 1 && balls == 1 );
-		}
-
-		@Override
-		public Tool createToolInternal( String id )
-		{
-			return new SymmetryTool( id, getSymmetry(), getToolsModel() );
-		}
-
-		@Override
-		protected boolean bindParameters( Selection selection )
-		{
-	        return selection.size() == 1 && selection.iterator().next() instanceof Connector;
-		}
-	}
-
 	protected Symmetry symmetry;
     
     public SymmetryTool( String id, Symmetry symmetry, ToolsModel tools )

@@ -1,4 +1,25 @@
 
+buildscript {
+	repositories {
+        mavenLocal()
+		mavenCentral()
+		maven { url "https://repository.jsweet.org/artifactory/libs-release-local" }
+		maven { url "https://repository.jsweet.org/artifactory/libs-snapshot-local" }
+		maven { url "https://repository.jsweet.org/artifactory/plugins-release-local" }
+		maven { url "https://repository.jsweet.org/artifactory/plugins-snapshot-local" }
+		maven { url "https://google-diff-match-patch.googlecode.com/svn/trunk/maven" }
+	}
+	dependencies {
+		classpath('org.jsweet:jsweet-gradle-plugin:3.1.0') {
+			transitive = true 
+		}
+	}
+}
+
+plugins {
+    id 'org.jsweet.jsweet-gradle-plugin' version '3.1.0'
+}
+
 ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
 
 description = "vzome-core"
@@ -418,22 +439,6 @@ def writeProjectProperties( keys, propsFile )
     }
 }
 
-
-buildscript {
-	repositories {
-		mavenCentral()
-		maven { allowInsecureProtocol true
-            url "http://repository.jsweet.org/artifactory/libs-release-local" }
-		maven { allowInsecureProtocol true
-            url "http://repository.jsweet.org/artifactory/plugins-release-local" }
-	}
-	dependencies {
-		classpath("org.jsweet:jsweet-gradle-plugin:2.3.7") { transitive = true }
-	}
-}
-
-apply plugin: 'org.jsweet.jsweet-gradle-plugin'
-
 jsweet {
 	veryVerbose = true
 	encoding = 'UTF-8'
@@ -443,10 +448,10 @@ jsweet {
 
     bundle = true
 
-	outDir = new File( 'online/jsweetOut/js' )
+	tsOut = new File( "$projectDir/../online/jsweetOut/ts" )
+	outDir = new File( "$projectDir/../online/jsweetOut/js" )
 
-    // The TS compile seems to fail when I set this!  Bug in the Gradle plugin?
-	// tsOut = new File( 'online/jsweetOut/ts' )
+    javaCompilerExtraOptions = '-source,1.8,-target,1.8'
 
 	targetVersion = 'ES6'
     tsOnly = false
@@ -554,6 +559,8 @@ jsweet {
         'com/vzome/core/render/RenderedModel.java'
     ]
     excludes = [
+
+        'com/vzome/core/generic/SubClassIterator.java',
                 
         'com/vzome/core/algebra/RootThreeField.java',
         'com/vzome/core/algebra/RootTwoField.java',

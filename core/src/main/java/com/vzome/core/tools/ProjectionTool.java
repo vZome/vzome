@@ -13,10 +13,7 @@ import com.vzome.core.construction.PlaneProjection;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.Transformation;
-import com.vzome.core.editor.AbstractToolFactory;
-import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
-import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -24,9 +21,9 @@ import com.vzome.core.model.Strut;
 
 public class ProjectionTool extends TransformationTool
 {
-	private static final String ID = "projection";
-	private static final String LABEL = "Create a plane projection tool";
-	private static final String TOOLTIP = "<p>" +
+	static final String ID = "projection";
+	static final String LABEL = "Create a plane projection tool";
+	static final String TOOLTIP = "<p>" +
 	    		"Created tools project selected objects to a 2D plane.<br>"
                 + "<br>"
                 + "To create a tool, define the projection plane<br>" 
@@ -38,42 +35,6 @@ public class ProjectionTool extends TransformationTool
                 + "The default line of projection is orthogonal to the projection plane.<br>"
                 + "</p>";
 	
-	public static class Factory extends AbstractToolFactory
-	{
-		public Factory( ToolsModel tools )
-		{
-			super( tools, null, ID, LABEL, TOOLTIP );
-		}
-
-		@Override
-		protected boolean countsAreValid( int total, int balls, int struts, int panels )
-		{
-			return ( total == 2 && panels == 1 && struts == 1 )
-	                || ( total == 1 && panels == 1 )
-	                || ( total == 2 && balls == 1 && struts == 1 );
-		}
-
-		@Override
-		public Tool createToolInternal( String id )
-		{
-			return new ProjectionTool( id, getToolsModel() );
-		}
-
-        @Override
-        public Tool createTool()
-        {
-            Tool result = super.createTool();
-            result .setCopyColors( false ); // Overriding true default, only for newly created tools
-            return result;
-        }
-
-		@Override
-		protected boolean bindParameters( Selection selection )
-		{
-			return true;
-		}
-	}
-
 	public ProjectionTool( String id, ToolsModel tools )
     {
         super( id, tools );
