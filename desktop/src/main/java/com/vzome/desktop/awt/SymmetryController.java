@@ -95,7 +95,7 @@ public class SymmetryController extends DefaultController
         buildOrbits = new OrbitSet( symmetry );
         renderOrbits = new OrbitSet( symmetry );
         snapper = new SymmetrySnapper( snapOrbits );
-        for (Direction orbit : symmetry .getOrbitSet()) {
+        for (Direction orbit : symmetry .getOrbitSet() .getDirections()) {
             if ( model .orbitIsStandard( orbit ) )
             {
                 availableOrbits .add( orbit );
@@ -122,7 +122,7 @@ public class SymmetryController extends DefaultController
         renderController = new OrbitSetController( renderOrbits, this .symmetrySystem .getOrbits(), this .symmetrySystem, false );
         this .addSubController( "renderOrbits", renderController );
 
-        for ( Direction orbit : this .symmetrySystem .getOrbits() ) {
+        for ( Direction orbit : this .symmetrySystem .getOrbits() .getDirections() ) {
             AlgebraicNumber unitLength = this .symmetrySystem .getOrbitUnitLength( orbit );
             AlgebraicField field = symmetry .getField();
             Controller lengthModel = new LengthController( unitLength, field .one(), field );
@@ -158,7 +158,7 @@ public class SymmetryController extends DefaultController
 
             String[] result = new String[ this .symmetrySystem .getOrbits() .size() ];
             int i = 0;
-            for (Direction orbit : this .symmetrySystem .getOrbits()) {
+            for (Direction orbit : this .symmetrySystem .getOrbits() .getDirections()) {
                 result[ i ] = orbit .getName();
                 i++;
             }

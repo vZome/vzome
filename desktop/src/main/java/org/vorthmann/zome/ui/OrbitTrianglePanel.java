@@ -18,8 +18,8 @@ import com.vzome.core.construction.Color;
 import com.vzome.core.editor.Application;
 import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.SymmetryPerspective;
-import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Colors;
@@ -42,7 +42,7 @@ public class OrbitTrianglePanel extends JPanel
 
         colorSource = new SymmetrySystem( null, symmPer, null, COLORS, true );
         Symmetry symm = symmPer .getSymmetry();
-        for ( Direction orbit : symm ) {
+        for ( Direction orbit : symm .getDirections() ) {
             OrbitState dot = new OrbitState();
             dot .dotX = orbit .getDotX();
             dot .dotY = orbit .getDotY();

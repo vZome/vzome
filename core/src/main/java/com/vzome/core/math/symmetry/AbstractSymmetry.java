@@ -4,7 +4,6 @@ package com.vzome.core.math.symmetry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -285,9 +284,9 @@ public abstract class AbstractSymmetry implements Symmetry
     }
 
     @Override
-    public Iterator<Direction> iterator()
+    public Iterable<Direction> getDirections()
     {
-        return mDirectionList .iterator();
+        return mDirectionList;
     }
 
     @Override
@@ -306,7 +305,7 @@ public abstract class AbstractSymmetry implements Symmetry
         Direction canonicalOrbit = this .getSpecialOrbit( SpecialOrbit.BLACK );
         if ( canonicalOrbit == null )
             // the old, brute-force approach
-            for (Direction dir : orbits) {
+            for (Direction dir : orbits .getDirections() ) {
                 Axis candidate = dir .getAxis( vector );
                 if ( candidate != null )
                 {
@@ -318,7 +317,7 @@ public abstract class AbstractSymmetry implements Symmetry
             Axis zone = canonicalOrbit .getAxis( vector .toRealVector() );
             int orientation = zone .getOrientation();
             int sense = zone .getSense();
-            for (Direction orbit : orbits) {
+            for (Direction orbit : orbits .getDirections()) {
                 Axis candidate = orbit .getCanonicalAxis( sense, orientation );
                 if ( AlgebraicVectors.areParallel(candidate .normal(), vector ) ) {
                     return candidate;
@@ -358,11 +357,10 @@ public abstract class AbstractSymmetry implements Symmetry
             sense = closestChiralAxis .getSense();
         }
 
-        Iterator<Direction> dirs = dirMask == null 
-                ? orbitSet .iterator() 
-                        : dirMask .iterator();
-                while ( dirs .hasNext() ) {
-                    Direction dir = dirs .next();
+        Iterable<Direction> dirs = dirMask == null 
+                ? orbitSet .getDirections() 
+                        : dirMask;
+                for ( Direction dir : dirs ) {
                     Axis axis = ( orientation >= 0 )
                             ? dir .getCanonicalAxis( sense, orientation ) // we found the orientation above, so we don't need to iterate over the whole orbit
                                     : dir .getAxisBruteForce( vector ); // iterate over zones in the orbit
