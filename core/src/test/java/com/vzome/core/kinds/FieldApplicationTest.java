@@ -62,8 +62,8 @@ import com.vzome.core.tools.ModuleToolFactory;
 import com.vzome.core.tools.OctahedralToolFactory;
 import com.vzome.core.tools.PlaneSelectionToolFactory;
 import com.vzome.core.tools.ProjectionToolFactory;
+import com.vzome.core.tools.RotationToolFactory;
 import com.vzome.core.tools.ScalingToolFactory;
-import com.vzome.core.tools.SymmetryToolFactory;
 import com.vzome.core.tools.TranslationToolFactory;
 import com.vzome.fields.sqrtphi.SqrtPhiField;
 import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;
@@ -544,7 +544,7 @@ public class FieldApplicationTest
         ToolsModel tools = null;
         app.registerToolFactories( toolFactories, tools );
         
-        assertTrue(toolFactories .get( "RotationTool") instanceof SymmetryToolFactory);
+        assertTrue(toolFactories .get( "RotationTool") instanceof RotationToolFactory);
         assertTrue(toolFactories .get( "ScalingTool") instanceof ScalingToolFactory);
         
         assertTrue(toolFactories .get( "InversionTool") instanceof InversionToolFactory);
