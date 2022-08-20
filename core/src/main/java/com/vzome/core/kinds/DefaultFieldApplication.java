@@ -34,8 +34,8 @@ import com.vzome.core.tools.ModuleToolFactory;
 import com.vzome.core.tools.OctahedralToolFactory;
 import com.vzome.core.tools.PlaneSelectionToolFactory;
 import com.vzome.core.tools.ProjectionToolFactory;
+import com.vzome.core.tools.RotationToolFactory;
 import com.vzome.core.tools.ScalingToolFactory;
-import com.vzome.core.tools.SymmetryToolFactory;
 import com.vzome.core.tools.TranslationToolFactory;
 
 public class DefaultFieldApplication implements FieldApplication
@@ -111,7 +111,7 @@ public class DefaultFieldApplication implements FieldApplication
 	    // These symm parameters can be null since it will be overwritten by SymmetryTool.setXmlAttributes()
         // Any SymmetryTool factory here is good enough
 	    toolFactories .put( "SymmetryTool", new OctahedralToolFactory( tools, null ) );
-	    toolFactories .put( "RotationTool", new SymmetryToolFactory( tools, null ) );
+	    toolFactories .put( "RotationTool", new RotationToolFactory( tools, null ) );
 	    toolFactories .put( "ScalingTool", new ScalingToolFactory( tools, null ) );
 	    
 	    toolFactories .put( "InversionTool", new InversionToolFactory( tools ) );
