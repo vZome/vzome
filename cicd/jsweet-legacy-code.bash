@@ -20,7 +20,7 @@ rm -rf online/node_modules
 ./gradlew --continue -p online jsweet -x compileJava &> jsweet-errors.txt    # ignore the exit code, it always fails
 cat jsweet-errors.txt
 
-grep -q 'transpilation failed with 36 error(s) and 0 warning(s)' jsweet-errors.txt \
+grep -q 'transpilation failed with 35 error(s) and 0 warning(s)' jsweet-errors.txt \
   && banner 'JSweet transpile found the expected errors' \
   || { banner 'UNEXPECTED CHANGE IN JSWEET ERRORS'; exit 1; }
 
