@@ -368,11 +368,17 @@ const init = async () =>
 
     // This has no analogue in Java DocumentModel
     orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
-    const orbitSetField = {
-      __interfaces: [ "com.vzome.core.math.symmetry.OrbitSet.Field" ],
-      getGroup: name => symmetrySystems[ name ].getOrbits(),
-      getQuaternionSet: name => fieldApp.getQuaternionSymmetry( name )
+    class OSField {
+      constructor(){}
+      getGroup( name ) {
+        return symmetrySystems[ name ].getOrbits();
+      }
+      getQuaternionSet( name ) {
+        return fieldApp.getQuaternionSymmetry( name );
+      }
     }
+    OSField.__interfaces = [ "com.vzome.core.math.symmetry.OrbitSet.Field" ];
+    const orbitSetField = new OSField();
 
     const projection = new vzomePkg.core.math.Projection.Default( legacyField );
     const realizedModel = new vzomePkg.core.model.RealizedModelImpl( legacyField, projection );
@@ -403,7 +409,7 @@ const init = async () =>
 
     fieldApp.registerToolFactories( toolFactories, toolsModel )
     
-    const bookmarkFactory = new vzomePkg.core.tools.BookmarkTool.Factory( toolsModel );
+    const bookmarkFactory = new vzomePkg.core.tools.BookmarkToolFactory( toolsModel );
     bookmarkFactory.createPredefinedTool( "ball at origin" );
 
     const toolsXml = xml && xml.getChildElement( "Tools" )

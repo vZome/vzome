@@ -38,13 +38,10 @@ public abstract class AbstractSymmetry implements Symmetry
 
     private OrbitDotLocator dotLocator;
 
-    protected AbstractSymmetry( int order, AlgebraicField field, String frameColor )
-    {
-        this( order, field, frameColor, null );
-    }
-
     protected AbstractSymmetry( int order, AlgebraicField field, String frameColor, AlgebraicMatrix principalReflection )
     {
+        super();
+        
         mField = field;
 
         this.principalReflection = principalReflection;
