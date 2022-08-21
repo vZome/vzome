@@ -21,12 +21,12 @@ import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
 import com.vzome.core.tools.AxialStretchTool;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
 import com.vzome.core.tools.IcosahedralToolFactory;
-import com.vzome.core.tools.LinearMapTool;
-import com.vzome.core.tools.MirrorTool;
-import com.vzome.core.tools.RotationTool;
-import com.vzome.core.tools.ScalingTool;
-import com.vzome.core.tools.SymmetryTool;
-import com.vzome.core.tools.TranslationTool;
+import com.vzome.core.tools.LinearMapToolFactory;
+import com.vzome.core.tools.MirrorToolFactory;
+import com.vzome.core.tools.RotationToolFactory;
+import com.vzome.core.tools.ScalingToolFactory;
+import com.vzome.core.tools.SymmetryToolFactory;
+import com.vzome.core.tools.TranslationToolFactory;
 import com.vzome.core.viewing.AbstractShapes;
 import com.vzome.core.viewing.AntiprismShapes;
 import com.vzome.core.viewing.OctahedralShapes;
@@ -95,19 +95,19 @@ public class PolygonFieldApplication extends DefaultFieldApplication
             switch (kind) {
 
             case SYMMETRY:
-                result.add(new SymmetryTool.Factory(tools, this.symmetry));
-                result.add(new MirrorTool.Factory(tools));
+                result.add(new SymmetryToolFactory(tools, this.symmetry));
+                result.add(new MirrorToolFactory(tools));
                 result.add(new AxialSymmetryToolFactory(tools, this.symmetry));
                 break;
 
             case TRANSFORM:
-                result.add(new ScalingTool.Factory(tools, this.symmetry));
-                result.add(new RotationTool.Factory(tools, this.symmetry));
-                result.add(new TranslationTool.Factory(tools));
+                result.add(new ScalingToolFactory(tools, this.symmetry));
+                result.add(new SymmetryToolFactory(tools, this.symmetry));
+                result.add(new TranslationToolFactory(tools));
                 break;
 
             case LINEAR_MAP:
-                result.add(new LinearMapTool.Factory(tools, this.symmetry, false));
+                result.add(new LinearMapToolFactory(tools, this.symmetry, false));
                 break;
 
             default:
@@ -122,15 +122,15 @@ public class PolygonFieldApplication extends DefaultFieldApplication
             switch (kind) {
 
             case SYMMETRY:
-                result.add(new SymmetryTool.Factory(tools, this.symmetry).createPredefinedTool("polygonal antiprism around origin"));
-                result.add(new MirrorTool.Factory(tools).createPredefinedTool("reflection through XY plane"));
+                result.add(new SymmetryToolFactory(tools, this.symmetry).createPredefinedTool("polygonal antiprism around origin"));
+                result.add(new MirrorToolFactory(tools).createPredefinedTool("reflection through XY plane"));
                 result.add(new AxialSymmetryToolFactory(tools, this.symmetry, true).createPredefinedTool("symmetry around red through origin"));
                 break;
 
             case TRANSFORM:
-                result.add(new ScalingTool.Factory(tools, this.symmetry).createPredefinedTool("scale down"));
-                result.add(new ScalingTool.Factory(tools, this.symmetry).createPredefinedTool("scale up"));
-                result.add(new RotationTool.Factory(tools, this.symmetry, true).createPredefinedTool("rotate around red through origin"));
+                result.add(new ScalingToolFactory(tools, this.symmetry).createPredefinedTool("scale down"));
+                result.add(new ScalingToolFactory(tools, this.symmetry).createPredefinedTool("scale up"));
+                result.add(new RotationToolFactory(tools, this.symmetry, true).createPredefinedTool("rotate around red through origin"));
                 break;
 
             default:

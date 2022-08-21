@@ -88,7 +88,7 @@ format-2.1.0-models.vZome-files
 2008/08-Aug/11-Brian-foam/weairePhelan5.vZome
 
 # uses new tools
-2010/04-Apr/17-Scott-shapeways/orange-short.vZome
+#2010/04-Apr/17-Scott-shapeways/orange-short.vZome
 
 # has some very bad anonymous orbits, with large prototypes that causes overflow;
 #  also has panels with anonymous orbits

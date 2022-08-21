@@ -11,11 +11,9 @@ import com.vzome.core.algebra.Vector3d;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.construction.Construction;
-import com.vzome.core.editor.AbstractToolFactory;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.editor.api.ChangeManifestations;
-import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
@@ -23,32 +21,6 @@ import com.vzome.core.model.Strut;
 
 public class PlaneSelectionTool extends Tool
 {
-    public static class Factory extends AbstractToolFactory
-    {
-        public Factory( ToolsModel tools )
-        {
-            super( tools, null, "plane", "", "" );
-        }
-
-        @Override
-        protected boolean countsAreValid( int total, int balls, int struts, int panels )
-        {
-            return ( total == 3 && balls == 3 );
-        }
-
-        @Override
-        public Tool createToolInternal( String id )
-        {
-            return new PlaneSelectionTool( id, getToolsModel() );
-        }
-
-        @Override
-        protected boolean bindParameters( Selection selection )
-        {
-            return true;
-        }
-    }
-
     private Bivector3d plane;
 
     private AlgebraicVector anchor;

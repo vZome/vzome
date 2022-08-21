@@ -74,7 +74,7 @@ import com.vzome.core.model.Strut;
 import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.tools.BookmarkTool;
+import com.vzome.core.tools.BookmarkToolFactory;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 import com.vzome.xml.DomSerializer;
@@ -244,7 +244,7 @@ public class DocumentModel implements Snapshot .Recorder, Context
 
         kind .registerToolFactories( this .toolFactories, this .tools );
 
-        this .bookmarkFactory = new BookmarkTool.Factory( tools );
+        this .bookmarkFactory = new BookmarkToolFactory( tools );
         this .editorModel .addSelectionSummaryListener( this .bookmarkFactory );
 
         this .bookmarkFactory .createPredefinedTool( "ball at origin" );

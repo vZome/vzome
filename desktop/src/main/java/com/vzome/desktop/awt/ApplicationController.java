@@ -41,7 +41,7 @@ import com.vzome.desktop.controller.DefaultController;
 
 public class ApplicationController extends DefaultController
 {
-    private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.controller" );
+    private static final Logger LOGGER = Logger.getLogger( "org.vorthmann.zome.controller" );
 
     private final Map<String, DocumentController> docControllers = new HashMap<>();
 
@@ -78,8 +78,8 @@ public class ApplicationController extends DefaultController
 
         long starttime = System.currentTimeMillis();
 
-        if ( logger .isLoggable( Level .INFO ) )
-            logger .info( "ApplicationController .initialize() starting" );
+        if ( LOGGER .isLoggable( Level .INFO ) )
+            LOGGER .info( "ApplicationController .initialize() starting" );
 
         this.ui = ui;
 
@@ -94,14 +94,14 @@ public class ApplicationController extends DefaultController
         }
         Properties userPrefs = new Properties();
         if ( ! prefsFile .exists() ) {
-            logger .config( "Used default preferences." );
+            LOGGER .config( "Used default preferences." );
         } else {
             try {
                 InputStream in = new FileInputStream( prefsFile );
                 userPrefs .load( in );
-                logger .config( "User Preferences loaded from " + prefsFile .getAbsolutePath() );
+                LOGGER .config( "User Preferences loaded from " + prefsFile .getAbsolutePath() );
             } catch ( Throwable t ) {
-                logger .severe( "problem reading user preferences: " + t.getMessage() );
+                LOGGER .severe( "problem reading user preferences: " + t.getMessage() );
             }
         }
 
@@ -110,9 +110,9 @@ public class ApplicationController extends DefaultController
             try {
                 InputStream in = new FileInputStream( this.configFile );
                 storedConfig .load( in );
-                logger .config( "Stored config loaded from " + this.configFile .getAbsolutePath() );
+                LOGGER .config( "Stored config loaded from " + this.configFile .getAbsolutePath() );
             } catch ( Throwable t ) {
-                logger .severe( "problem reading stored config: " + t.getMessage() );
+                LOGGER .severe( "problem reading stored config: " + t.getMessage() );
             }
         }
 
@@ -121,10 +121,13 @@ public class ApplicationController extends DefaultController
         try {
             ClassLoader cl = ApplicationUI.class.getClassLoader();
             InputStream in = cl.getResourceAsStream( defaultRsrc );
-            if ( in != null )
-                defaults .load( in ); // override the core defaults
+			if (in != null) {
+				defaults.load(in); // override the core defaults
+			} else {
+				LOGGER.warning("RESOURCE NOT FOUND. Ensure that the build path for the desktop project includes " + defaultRsrc);
+			}
         } catch ( IOException ioe ) {
-            logger.severe( "problem reading default preferences: " + defaultRsrc );
+            LOGGER.severe( "problem reading default preferences: " + defaultRsrc );
         }
 
         // last-wins, so getProperty() will show command-line args overriding stored configs,
@@ -142,7 +145,7 @@ public class ApplicationController extends DefaultController
         final String NOERASEBACKGROUND = "sun.awt.noerasebackground";
         if( propertyIsTrue(NOERASEBACKGROUND)) { // if it's set to true in the prefs file or command line
             System.setProperty(NOERASEBACKGROUND, "true"); // then set the System property so the AWT/Swing components will use it.
-            logger .config( NOERASEBACKGROUND + " is set to 'true'." );
+            LOGGER .config( NOERASEBACKGROUND + " is set to 'true'." );
         }
 
         final FailureChannel failures = new FailureChannel()
@@ -175,8 +178,8 @@ public class ApplicationController extends DefaultController
         }
 
         long endtime = System.currentTimeMillis();
-        if ( logger .isLoggable( Level .INFO ) )
-            logger .log(Level.INFO, "ApplicationController initialization in milliseconds: {0}", ( endtime - starttime ));
+        if ( LOGGER .isLoggable( Level .INFO ) )
+            LOGGER .log(Level.INFO, "ApplicationController initialization in milliseconds: {0}", ( endtime - starttime ));
     }
 
     public RenderedModel getSymmetryModel( String path, Symmetry symmetry )
@@ -238,7 +241,7 @@ public class ApplicationController extends DefaultController
                         this.storedConfig .store( writer, "This file is managed by vZome.  Do not edit." );
                         writer .close();
                     } catch ( IOException e ) {
-                        logger.fine(e.toString());
+                        LOGGER.fine(e.toString());
                     }
                     return;
                 }
@@ -255,7 +258,7 @@ public class ApplicationController extends DefaultController
                 String fieldName = action .substring( "new-" .length() );
                 File prototype = new File( Platform .getPreferencesFolder(), "Prototypes/" + fieldName + ".vZome" );
                 if ( prototype .exists() ) {
-                    logger.log(Level.CONFIG, "Loading default template from {0}", prototype.getCanonicalPath());
+                    LOGGER.log(Level.CONFIG, "Loading default template from {0}", prototype.getCanonicalPath());
                     doFileAction( "newFromTemplate", prototype );
                 }
                 else
@@ -331,7 +334,7 @@ public class ApplicationController extends DefaultController
     @Override
     public void doFileAction( String command, File file )
     {
-        if ( logger .isLoggable( Level.INFO ) ) logger .info( String.format( "ApplicationController.doFileAction: %s %s", command, file .getAbsolutePath() ) );
+        if ( LOGGER .isLoggable( Level.INFO ) ) LOGGER .info( String.format( "ApplicationController.doFileAction: %s %s", command, file .getAbsolutePath() ) );
         if ( file != null )
         {
             Properties docProps = new Properties();
@@ -540,7 +543,7 @@ public class ApplicationController extends DefaultController
                 this.storedConfig .store( writer, "This file is managed by vZome.  Do not edit." );
                 writer .close();
             } catch ( IOException e ) {
-                logger.fine(e.toString());
+                LOGGER.fine(e.toString());
             }
             break;
 
