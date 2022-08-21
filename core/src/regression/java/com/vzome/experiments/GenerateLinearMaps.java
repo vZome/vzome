@@ -27,7 +27,7 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.tools.IcosahedralToolFactory;
-import com.vzome.core.tools.LinearMapTool;
+import com.vzome.core.tools.LinearMapToolFactory;
 
 public class GenerateLinearMaps
 {
@@ -140,7 +140,7 @@ public class GenerateLinearMaps
 			select( strut2 );
 			select( strut( origin, a3, l3 ) );
 			select( origin ); // center for the transform
-			Tool.Factory factory = new LinearMapTool.Factory( doc .getToolsModel(), symmetry, false );
+			Tool.Factory factory = new LinearMapToolFactory( doc .getToolsModel(), symmetry, false );
 			Tool mappingTool = factory .createTool();
 
 			deselect();

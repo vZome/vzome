@@ -27,15 +27,28 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up JDK 8
+
+    - name: Checkout modified jsweet-gradle-plugin
+      uses: actions/checkout@v2
+      with:
+        repository: vorth/jsweet-gradle-plugin
+        ref: issue-35-javaCompilerExtraOptions
+        path: plugin
+
+    - name: Build & deploy jsweet-gradle-plugin
+      run: |
+        pwd
+        cd plugin
+        pwd
+        chmod +x gradlew
+        ./gradlew publishToMavenLocal -DskipSigning=true
+        cd ..
+
+    - name: Set up JDK 17
       uses: actions/setup-java@v2
       with:
-        java-version: '8'
+        java-version: '17'
         distribution: 'temurin'
-    - name: Grant execute permissions
-      run: chmod +x gradlew cicd/jsweet-legacy-code.bash
-    - name: check for JSweet regression
-      run: cicd/jsweet-legacy-code.bash
     - name: Run unit and regression tests
       run: ./gradlew test regression -PregressionOutput=failures.xml
     - name: Archive regression failures

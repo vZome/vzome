@@ -1,4 +1,25 @@
 
+buildscript {
+	repositories {
+        mavenLocal()
+		mavenCentral()
+		maven { url "https://repository.jsweet.org/artifactory/libs-release-local" }
+		maven { url "https://repository.jsweet.org/artifactory/libs-snapshot-local" }
+		maven { url "https://repository.jsweet.org/artifactory/plugins-release-local" }
+		maven { url "https://repository.jsweet.org/artifactory/plugins-snapshot-local" }
+		maven { url "https://google-diff-match-patch.googlecode.com/svn/trunk/maven" }
+	}
+	dependencies {
+		classpath('org.jsweet:jsweet-gradle-plugin:3.1.0') {
+			transitive = true 
+		}
+	}
+}
+
+plugins {
+    id 'org.jsweet.jsweet-gradle-plugin' version '3.1.0'
+}
+
 ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
 
 description = "vzome-core"
@@ -68,37 +89,37 @@ processResources {
 
 
 dependencies {
-    compile     group: 'org.antlr',         name: 'antlr4',            version:'4.7.1'
-    compile     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
-    compile     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
-    compile     group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
-    compile     group: 'org.jogamp', name: 'jogl-all', version:'v2.4.0-rc-20200307'
+    implementation     group: 'org.antlr',         name: 'antlr4',            version:'4.7.1'
+    implementation     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
+//    implementation     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
+    implementation     group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
+    implementation     group: 'org.jogamp', name: 'jogl-all', version:'v2.4.0-rc-20200307'
 
-    compile group: 'antlr',             name: 'antlr',             version:'2.7.7'
+    implementation group: 'antlr',             name: 'antlr',             version:'2.7.7'
 
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.3'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.3'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.3'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.3'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.3'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.3'
 
     if( project.gradle.startParameter.taskNames.contains( 'core:jsweet' ) ) {
-        compile group: 'org.jsweet', name: 'jsweet-transpiler', version: '3.0.0'
-        compile group: 'org.jsweet', name: 'jsweet-core', version: "6.1.0"
-        compile group: 'org.jsweet', name: 'j4ts', version: '2.0.0'
+        implementation group: 'org.jsweet', name: 'jsweet-transpiler', version: '3.0.0'
+        implementation group: 'org.jsweet', name: 'jsweet-core', version: "6.1.0"
+        implementation group: 'org.jsweet', name: 'j4ts', version: '2.0.0'
     }
 
-    runtime     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
-    runtime     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
-    runtime     group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.2'
+    // runtimeOnly     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
+    runtimeOnly     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
+    runtimeOnly     group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.2'
 
-    testCompile group: 'antlr',             name: 'antlr',             version:'2.7.7'
-    testCompile group: 'junit',             name: 'junit',             version:'4.12'
+    testImplementation group: 'antlr',             name: 'antlr',             version:'2.7.7'
+    testImplementation group: 'junit',             name: 'junit',             version:'4.12'
 
     antlr4      group: 'org.antlr',         name: 'antlr4',            version: '4.7.1'
 
-    regressionCompile sourceSets.main.output
-    regressionCompile configurations.testCompile
-    regressionCompile sourceSets.test.output
-    regressionRuntime configurations.testRuntime
+    regressionImplementation sourceSets.main.output
+    regressionImplementation configurations.testImplementation
+    regressionImplementation sourceSets.test.output
+    regressionRuntimeOnly configurations.testRuntimeOnly
 }
 
 // These options apply to all java projects
@@ -273,7 +294,7 @@ compileJava {
     source antlr4.destinationDir
 }
 
-task cleanAntlr {
+task cleanAntlr(type: Delete) {
 	doLast() {
 		// Be sure to wrap this inside doLast(). 
 		// Otherwise it will run during the initialization or configuration phase, even when an unrelated task is is run.
@@ -400,14 +421,6 @@ jar {
     }
 }
 
-uploadArchives {
-    repositories {
-       flatDir {
-           dirs 'repos'
-       }
-    }
-}
-
 
 def writeProjectProperties( keys, propsFile )
 {
@@ -426,20 +439,6 @@ def writeProjectProperties( keys, propsFile )
     }
 }
 
-
-buildscript {
-	repositories {
-		mavenCentral()
-		maven { url "http://repository.jsweet.org/artifactory/libs-release-local" }
-		maven { url "http://repository.jsweet.org/artifactory/plugins-release-local" }
-	}
-	dependencies {
-		classpath("org.jsweet:jsweet-gradle-plugin:2.3.7") { transitive = true }
-	}
-}
-
-apply plugin: 'org.jsweet.jsweet-gradle-plugin'
-
 jsweet {
 	veryVerbose = true
 	encoding = 'UTF-8'
@@ -449,10 +448,10 @@ jsweet {
 
     bundle = true
 
-	outDir = new File( 'online/jsweetOut/js' )
+	tsOut = new File( "$projectDir/../online/jsweetOut/ts" )
+	outDir = new File( "$projectDir/../online/jsweetOut/js" )
 
-    // The TS compile seems to fail when I set this!  Bug in the Gradle plugin?
-	// tsOut = new File( 'online/jsweetOut/ts' )
+    javaCompilerExtraOptions = '-source,1.8,-target,1.8'
 
 	targetVersion = 'ES6'
     tsOnly = false
@@ -560,6 +559,8 @@ jsweet {
         'com/vzome/core/render/RenderedModel.java'
     ]
     excludes = [
+
+        'com/vzome/core/generic/SubClassIterator.java',
                 
         'com/vzome/core/algebra/RootThreeField.java',
         'com/vzome/core/algebra/RootTwoField.java',

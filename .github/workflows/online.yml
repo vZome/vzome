@@ -22,10 +22,27 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up JDK 8
+
+    - name: Checkout modified jsweet-gradle-plugin
+      uses: actions/checkout@v2
+      with:
+        repository: vorth/jsweet-gradle-plugin
+        ref: issue-35-javaCompilerExtraOptions
+        path: plugin
+
+    - name: Build & deploy jsweet-gradle-plugin
+      run: |
+        pwd
+        cd plugin
+        pwd
+        chmod +x gradlew
+        ./gradlew publishToMavenLocal -DskipSigning=true
+        cd ..
+
+    - name: Set up JDK
       uses: actions/setup-java@v2
       with:
-        java-version: '8'
+        java-version: '17'
         distribution: 'temurin'
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1

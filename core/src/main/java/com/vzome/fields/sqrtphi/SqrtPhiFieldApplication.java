@@ -24,12 +24,11 @@ import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
-import com.vzome.core.tools.LinearMapTool;
-import com.vzome.core.tools.MirrorTool;
-import com.vzome.core.tools.RotationTool;
-import com.vzome.core.tools.ScalingTool;
-import com.vzome.core.tools.SymmetryTool;
-import com.vzome.core.tools.TranslationTool;
+import com.vzome.core.tools.LinearMapToolFactory;
+import com.vzome.core.tools.MirrorToolFactory;
+import com.vzome.core.tools.ScalingToolFactory;
+import com.vzome.core.tools.SymmetryToolFactory;
+import com.vzome.core.tools.TranslationToolFactory;
 import com.vzome.core.viewing.AbstractShapes;
 import com.vzome.core.viewing.ExportedVEFShapes;
 import com.vzome.core.viewing.OctahedralShapes;
@@ -128,19 +127,19 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 			switch ( kind ) {
 
 			case SYMMETRY:
-				result .add( new SymmetryTool.Factory( tools, pentaSymm ) );
-				result .add( new MirrorTool.Factory( tools ) );
+				result .add( new SymmetryToolFactory( tools, pentaSymm ) );
+				result .add( new MirrorToolFactory( tools ) );
 				result .add( new AxialSymmetryToolFactory( tools, pentaSymm ) );
 				break;
 
 			case TRANSFORM:
-				result .add( new ScalingTool.Factory( tools, pentaSymm ) );
-				result .add( new RotationTool.Factory( tools, pentaSymm ) );
-				result .add( new TranslationTool.Factory( tools ) );
+				result .add( new ScalingToolFactory( tools, pentaSymm ) );
+				result .add( new SymmetryToolFactory( tools, pentaSymm ) );
+				result .add( new TranslationToolFactory( tools ) );
 				break;
 
 			case LINEAR_MAP:
-				result .add( new LinearMapTool.Factory( tools, pentaSymm, false ) );
+				result .add( new LinearMapToolFactory( tools, pentaSymm, false ) );
 				break;
 
 			default:
@@ -157,15 +156,15 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 			switch ( kind ) {
 
 			case SYMMETRY:
-				result .add( new SymmetryTool.Factory( tools, pentaSymm ) .createPredefinedTool( "pentagonal antiprism around origin" ) );
+				result .add( new SymmetryToolFactory( tools, pentaSymm ) .createPredefinedTool( "pentagonal antiprism around origin" ) );
 				result .add( new AxialSymmetryToolFactory( tools, pentaSymm ) .createPredefinedTool( "fivefold symmetry through origin" ) );
-				result .add( new MirrorTool.Factory( tools ) .createPredefinedTool( "reflection through red plane" ) );
+				result .add( new MirrorToolFactory( tools ) .createPredefinedTool( "reflection through red plane" ) );
 				break;
 
 			case TRANSFORM:
-				result .add( new ScalingTool.Factory( tools, pentaSymm ) .createPredefinedTool( "scale down" ) );
-				result .add( new ScalingTool.Factory( tools, pentaSymm ) .createPredefinedTool( "scale up" ) );
-				result .add( new RotationTool.Factory( tools,pentaSymm ) .createPredefinedTool( "fivefold rotation through origin" ) );
+				result .add( new ScalingToolFactory( tools, pentaSymm ) .createPredefinedTool( "scale down" ) );
+				result .add( new ScalingToolFactory( tools, pentaSymm ) .createPredefinedTool( "scale up" ) );
+				result .add( new SymmetryToolFactory( tools,pentaSymm ) .createPredefinedTool( "fivefold rotation through origin" ) );
 				break;
 
 			default:

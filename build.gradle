@@ -1,14 +1,14 @@
 
 
 group = 'com.vzome'
-version = '7.0'
+version = '7.1'
 
-task wrapper(type: Wrapper) {
-   gradleVersion = '4.5.1' //version required
+wrapper() {
+   gradleVersion = '7.5.1' //version required
 }
 
 // These environment variables are automatically available during a Jenkins build
-ext.buildNumber = System.getenv( "BUILD_NUMBER" ) ?: 'dev'
+ext.buildNumber = System.getenv( "BUILD_NUMBER" ) ?: '999'
 ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
 ext.githubRepoName = System.getenv( "GITHUB_REPO_NAME" ) ?: ''
 
@@ -16,21 +16,22 @@ ext.githubRepoName = System.getenv( "GITHUB_REPO_NAME" ) ?: ''
 ext.githubClientId = System.getenv( "GITHUB_CLIENT_ID" )
 ext.githubClientSecret = System.getenv( "GITHUB_CLIENT_SECRET" )
 
+ext.keychain = System.getenv( "SIGNING_KEYCHAIN" ) ?: 'login.keychain'
+
 ext.appName = 'vZome'
 ext.edition = appName
 
 // Specify common settings for all subprojects
 subprojects {
 
-  apply plugin: 'java'
-  apply plugin: 'maven'
+  apply plugin: 'java-library'
   apply plugin: 'eclipse'
 
   compileJava {
-	// set these to 9 for Java 9
+	// set these to 11 for Java 11
 	// set them to 1.8 for Java 8
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility = 17
+    targetCompatibility = 17
     options.encoding = 'UTF-8'
   }
 
@@ -39,24 +40,30 @@ subprojects {
     mavenCentral()
     
     // This is for the JSweet compiler
-    maven { url "http://repository.jsweet.org/artifactory/libs-release-local" }
-    maven { url "http://repository.jsweet.org/artifactory/libs-snapshot-local" }
+    maven { url "https://repository.jsweet.org/artifactory/libs-release-local" }
+    maven { url "https://repository.jsweet.org/artifactory/libs-snapshot-local" }
 
     // this one is for javax.media.jai
-    maven { url 'http://repository.springsource.com/maven/bundles/external' }
+    maven { url 'https://repository.springsource.com/maven/bundles/external' }
 
     // For EGit
     maven { url 'https://repo.eclipse.org/content/groups/releases' }
 
     ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR downloads for JOGL
-      url "http://jogamp.org/deployment"
-      layout "pattern", {
+      url "https://jogamp.org/deployment"
+      metadataSources {
+        artifact();
+      }
+      patternLayout {
         artifact "[revision]/jar/[artifact].[ext]"
       }
     }
     ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR download for vecmath
-      url "http://jogamp.org/deployment"
-      layout "pattern", {
+      url "https://jogamp.org/deployment"
+      metadataSources {
+        artifact();
+      }
+      patternLayout {
         artifact "[organization]/[revision]/[artifact].[ext]"
       }
     }
@@ -71,12 +78,13 @@ subprojects {
 
 project(':desktop') {
     dependencies {
-        compile project(':core')
+        implementation project(':core')
     }
 }
 
 project(':server') {
     dependencies {
-        compile project(':desktop')
+        implementation project(':desktop')
+        implementation project(':core')
     }
 }

@@ -12,12 +12,11 @@ import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
-import com.vzome.core.tools.LinearMapTool;
-import com.vzome.core.tools.MirrorTool;
-import com.vzome.core.tools.RotationTool;
-import com.vzome.core.tools.ScalingTool;
-import com.vzome.core.tools.SymmetryTool;
-import com.vzome.core.tools.TranslationTool;
+import com.vzome.core.tools.LinearMapToolFactory;
+import com.vzome.core.tools.MirrorToolFactory;
+import com.vzome.core.tools.ScalingToolFactory;
+import com.vzome.core.tools.SymmetryToolFactory;
+import com.vzome.core.tools.TranslationToolFactory;
 import com.vzome.core.viewing.AbstractShapes;
 import com.vzome.core.viewing.ExportedVEFShapes;
 import com.vzome.core.viewing.OctahedralShapes;
@@ -65,19 +64,19 @@ public class HeptagonFieldApplication extends DefaultFieldApplication
             switch ( kind ) {
 
             case SYMMETRY:
-                result .add( new SymmetryTool.Factory( tools, this .symmetry ) );
-                result .add( new MirrorTool.Factory( tools ) );
+                result .add( new SymmetryToolFactory( tools, this .symmetry ) );
+                result .add( new MirrorToolFactory( tools ) );
                 result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) );
                 break;
 
             case TRANSFORM:
-                result .add( new ScalingTool.Factory( tools, this .symmetry ) );
-                result .add( new RotationTool.Factory( tools, this .symmetry ) );
-                result .add( new TranslationTool.Factory( tools ) );
+                result .add( new ScalingToolFactory( tools, this .symmetry ) );
+                result .add( new SymmetryToolFactory( tools, this .symmetry ) );
+                result .add( new TranslationToolFactory( tools ) );
                 break;
 
             case LINEAR_MAP:
-                result .add( new LinearMapTool.Factory( tools, this .symmetry, false ) );
+                result .add( new LinearMapToolFactory( tools, this .symmetry, false ) );
                 break;
 
             default:
@@ -93,16 +92,16 @@ public class HeptagonFieldApplication extends DefaultFieldApplication
             switch ( kind ) {
 
             case SYMMETRY:
-                result .add( new SymmetryTool.Factory( tools, this .symmetry ) .createPredefinedTool( "heptagonal antiprism around origin" ) );
-                result .add( new MirrorTool.Factory( tools ) .createPredefinedTool( "reflection through XY plane" ) );
+                result .add( new SymmetryToolFactory( tools, this .symmetry ) .createPredefinedTool( "heptagonal antiprism around origin" ) );
+                result .add( new MirrorToolFactory( tools ) .createPredefinedTool( "reflection through XY plane" ) );
                 result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) .createPredefinedTool( "symmetry around red through origin" ) );
                 break;
 
             case TRANSFORM:
-                result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale down" ) );
-                result .add( new ScalingTool.Factory( tools, this .symmetry ) .createPredefinedTool( "scale up" ) );
-                result .add( new RotationTool.Factory( tools, this .symmetry ) .createPredefinedTool( "rotate around red through origin" ) );
-                result .add( new TranslationTool.Factory( tools ) .createPredefinedTool( "b1 move along +X" ) );
+                result .add( new ScalingToolFactory( tools, this .symmetry ) .createPredefinedTool( "scale down" ) );
+                result .add( new ScalingToolFactory( tools, this .symmetry ) .createPredefinedTool( "scale up" ) );
+                result .add( new SymmetryToolFactory( tools, this .symmetry ) .createPredefinedTool( "rotate around red through origin" ) );
+                result .add( new TranslationToolFactory( tools ) .createPredefinedTool( "b1 move along +X" ) );
                 break;
 
             default:

@@ -53,18 +53,18 @@ import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.tools.AxialStretchTool;
-import com.vzome.core.tools.BookmarkTool;
+import com.vzome.core.tools.BookmarkToolFactory;
 import com.vzome.core.tools.IcosahedralToolFactory;
-import com.vzome.core.tools.InversionTool;
-import com.vzome.core.tools.LinearMapTool;
-import com.vzome.core.tools.MirrorTool;
-import com.vzome.core.tools.ModuleTool;
+import com.vzome.core.tools.InversionToolFactory;
+import com.vzome.core.tools.LinearMapToolFactory;
+import com.vzome.core.tools.MirrorToolFactory;
+import com.vzome.core.tools.ModuleToolFactory;
 import com.vzome.core.tools.OctahedralToolFactory;
-import com.vzome.core.tools.PlaneSelectionTool;
-import com.vzome.core.tools.ProjectionTool;
-import com.vzome.core.tools.RotationTool;
-import com.vzome.core.tools.ScalingTool;
-import com.vzome.core.tools.TranslationTool;
+import com.vzome.core.tools.PlaneSelectionToolFactory;
+import com.vzome.core.tools.ProjectionToolFactory;
+import com.vzome.core.tools.RotationToolFactory;
+import com.vzome.core.tools.ScalingToolFactory;
+import com.vzome.core.tools.TranslationToolFactory;
 import com.vzome.fields.sqrtphi.SqrtPhiField;
 import com.vzome.fields.sqrtphi.SqrtPhiFieldApplication;
 
@@ -544,20 +544,20 @@ public class FieldApplicationTest
         ToolsModel tools = null;
         app.registerToolFactories( toolFactories, tools );
         
-        assertTrue(toolFactories .get( "RotationTool") instanceof RotationTool.Factory);
-        assertTrue(toolFactories .get( "ScalingTool") instanceof ScalingTool.Factory);
+        assertTrue(toolFactories .get( "RotationTool") instanceof RotationToolFactory);
+        assertTrue(toolFactories .get( "ScalingTool") instanceof ScalingToolFactory);
         
-        assertTrue(toolFactories .get( "InversionTool") instanceof InversionTool.Factory);
-        assertTrue(toolFactories .get( "MirrorTool") instanceof MirrorTool.Factory);
-        assertTrue(toolFactories .get( "TranslationTool") instanceof TranslationTool.Factory);
-        assertTrue(toolFactories .get( "ProjectionTool") instanceof ProjectionTool.Factory);
-        assertTrue(toolFactories .get( "BookmarkTool") instanceof BookmarkTool.Factory);
-        assertTrue(toolFactories .get( "LinearTransformTool") instanceof LinearMapTool.Factory);
+        assertTrue(toolFactories .get( "InversionTool") instanceof InversionToolFactory);
+        assertTrue(toolFactories .get( "MirrorTool") instanceof MirrorToolFactory);
+        assertTrue(toolFactories .get( "TranslationTool") instanceof TranslationToolFactory);
+        assertTrue(toolFactories .get( "ProjectionTool") instanceof ProjectionToolFactory);
+        assertTrue(toolFactories .get( "BookmarkTool") instanceof BookmarkToolFactory);
+        assertTrue(toolFactories .get( "LinearTransformTool") instanceof LinearMapToolFactory);
     
         // These tool factories have to be available for loading legacy documents.
-        assertTrue(toolFactories .get( "LinearMapTool") instanceof LinearMapTool.Factory);
-        assertTrue(toolFactories .get( "ModuleTool") instanceof ModuleTool.Factory);
-        assertTrue(toolFactories .get( "PlaneSelectionTool") instanceof PlaneSelectionTool.Factory);
+        assertTrue(toolFactories .get( "LinearMapTool") instanceof LinearMapToolFactory);
+        assertTrue(toolFactories .get( "ModuleTool") instanceof ModuleToolFactory);
+        assertTrue(toolFactories .get( "PlaneSelectionTool") instanceof PlaneSelectionToolFactory);
         
         String name = app.getName();
         switch(name) {

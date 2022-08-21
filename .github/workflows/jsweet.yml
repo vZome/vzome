@@ -10,32 +10,43 @@ on:
       - 'core/src/jsweet/**'
       - 'core/src/main/java/**'
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - name: Checkout vZome source
+        uses: actions/checkout@v2
 
-      - name: Set up JDK 8
+      - name: Checkout modified jsweet-gradle-plugin
+        uses: actions/checkout@v2
+        with:
+          repository: vorth/jsweet-gradle-plugin
+          ref: issue-35-javaCompilerExtraOptions
+          path: plugin
+
+      - name: Build & deploy jsweet-gradle-plugin
+        run: |
+          pwd
+          cd plugin
+          pwd
+          chmod +x gradlew
+          ./gradlew publishToMavenLocal -DskipSigning=true
+          cd ..
+
+      - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '8'
+          java-version: '17'
           distribution: 'temurin'
 
-      - name: Grant execute permissions
-        run: chmod +x gradlew cicd/jsweet-legacy-code.bash
-
       - name: Build with Gradle and JSweet
-        run: cicd/jsweet-legacy-code.bash
+        run: |
+          pwd
+          chmod +x gradlew cicd/jsweet-legacy-code.bash
+          cicd/jsweet-legacy-code.bash
 
       - name: Archive Generated JS
         uses: actions/upload-artifact@v2
