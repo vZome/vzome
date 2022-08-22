@@ -61,3 +61,4 @@ online-app.zip
 online.tgz
 deploy-to-dreamhost.sh
 *.pem
+online/src/worker/legacy/candies

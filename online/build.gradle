@@ -66,6 +66,8 @@ jsweet {
 	tsOut = new File( "$projectDir/jsweetOut/ts" )
 	outDir = new File( "$projectDir/jsweetOut/js" )
 
+  candiesJsOut = project.file('src/worker/legacy/candies')
+
   javaCompilerExtraOptions = '-source,1.8,-target,1.8'
 
 	targetVersion = 'ES6'
