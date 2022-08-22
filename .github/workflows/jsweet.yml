@@ -7,8 +7,8 @@ on:
   push:
     branches: [ master ]
     paths:
-      - 'core/src/jsweet/**'
       - 'core/src/main/java/**'
+      - 'online/src/main/java/**'
 
   workflow_dispatch:
 
