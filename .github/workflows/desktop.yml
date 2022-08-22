@@ -24,29 +24,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
         lfs: 'true'
-
-    - name: Checkout modified jsweet-gradle-plugin
-      uses: actions/checkout@v2
-      with:
-        repository: vorth/jsweet-gradle-plugin
-        ref: issue-35-javaCompilerExtraOptions
-        path: plugin
-
-    - name: Set up JDK
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-
-    - name: Build & deploy jsweet-gradle-plugin
-      run: |
-        pwd
-        cd plugin
-        pwd
-        chmod +x gradlew
-        ./gradlew publishToMavenLocal -DskipSigning=true
-        cd ..
-
     - name: Set up JDK
       uses: actions/setup-java@v2
       with:
@@ -106,29 +83,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
         lfs: 'true'
-  
-    - name: Checkout modified jsweet-gradle-plugin
-      uses: actions/checkout@v2
-      with:
-        repository: vorth/jsweet-gradle-plugin
-        ref: issue-35-javaCompilerExtraOptions
-        path: plugin
-
-    - name: Set up JDK
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-
-    - name: Build & deploy jsweet-gradle-plugin
-      run: |
-        pwd
-        cd plugin
-        pwd
-        chmod +x gradlew
-        ./gradlew publishToMavenLocal -DskipSigning=true
-        cd ..
-
     - name: Set up JDK
       uses: actions/setup-java@v2
       with:
@@ -173,29 +127,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
         lfs: 'true'
-
-    - name: Checkout modified jsweet-gradle-plugin
-      uses: actions/checkout@v2
-      with:
-        repository: vorth/jsweet-gradle-plugin
-        ref: issue-35-javaCompilerExtraOptions
-        path: plugin
-
-    - name: Set up JDK
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-
-    - name: Build & deploy jsweet-gradle-plugin
-      run: |
-        pwd
-        cd plugin
-        pwd
-        chmod +x gradlew
-        ./gradlew publishToMavenLocal -DskipSigning=true
-        cd ..
-
     - name: Set up JDK
       uses: actions/setup-java@v2
       with:

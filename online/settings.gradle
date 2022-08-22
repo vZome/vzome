@@ -1,0 +1,18 @@
+
+pluginManagement {
+    // includeBuild '../../../Projects/jsweet-gradle-plugin'
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.namespace == 'org.jsweet') {
+                useModule('org.jsweet:jsweet-gradle-plugin:3.1.0')
+            }
+        }
+    }
+    repositories {
+      mavenLocal()
+      gradlePluginPortal()
+    }
+}
+
+
+rootProject.name = 'vzome'
