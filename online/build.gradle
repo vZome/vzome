@@ -1,12 +1,11 @@
 buildscript {
 	repositories {
-        mavenLocal()
+    mavenLocal()
 		mavenCentral()
 		maven { url "https://repository.jsweet.org/artifactory/libs-release-local" }
 		maven { url "https://repository.jsweet.org/artifactory/libs-snapshot-local" }
 		maven { url "https://repository.jsweet.org/artifactory/plugins-release-local" }
 		maven { url "https://repository.jsweet.org/artifactory/plugins-snapshot-local" }
-		maven { url "https://google-diff-match-patch.googlecode.com/svn/trunk/maven" }
 	}
 	dependencies {
 		classpath('org.jsweet:jsweet-gradle-plugin:3.1.0') {
@@ -28,6 +27,15 @@ repositories {
   maven { url "https://repository.jsweet.org/artifactory/libs-snapshot-local" }
   maven { url "https://repository.jsweet.org/artifactory/plugins-release-local" }
   maven { url "https://repository.jsweet.org/artifactory/plugins-snapshot-local" }
+  ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR download for vecmath
+    url "https://jogamp.org/deployment"
+    metadataSources {
+      artifact();
+    }
+    patternLayout {
+      artifact "[organization]/[revision]/[artifact].[ext]"
+    }
+  }
 }
 
 compileJava {
@@ -38,6 +46,7 @@ sourceSets {
     main {
         java {
             srcDir "$projectDir/../core/src/main/java"
+            srcDir "$projectDir/../desktop/src/main/java"
             
             exclude 'com/vzome/opengl/FancyRenderer.java'
         }
@@ -48,10 +57,12 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.3'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.3'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
+    implementation     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
 
     implementation group: 'org.jsweet', name: 'jsweet-transpiler', version: '3.0.0'
     implementation group: 'org.jsweet', name: 'jsweet-core', version: "6.1.0"
-    implementation group: 'org.jsweet', name: 'j4ts', version: '2.0.0'
+    implementation group: 'org.jsweet', name: 'j4ts', version: '2.1.0-SNAPSHOT'
+    implementation group: 'org.jsweet.candies.j4ts', name: 'j4ts-awt-swing', version: '0.0.2-SNAPSHOT'
 }
 
 jsweet {
@@ -63,10 +74,10 @@ jsweet {
 
   bundle = true
 
-	tsOut = new File( "$projectDir/jsweetOut/ts" )
-	outDir = new File( "$projectDir/jsweetOut/js" )
+	tsOut = project.file( 'jsweetOut/ts' )
+	outDir = project.file( 'jsweetOut/js' )
 
-  candiesJsOut = project.file('src/worker/legacy/candies')
+  candiesJsOut = project.file( 'jsweetOut/candies' )
 
   javaCompilerExtraOptions = '-source,1.8,-target,1.8'
 
@@ -173,7 +184,27 @@ jsweet {
         'com/vzome/core/render/RealZomeScaling.java',
         'com/vzome/core/render/RenderingChanges.java',
         'com/vzome/core/render/RenderedManifestation.java',
-        'com/vzome/core/render/RenderedModel.java'
+        'com/vzome/core/render/RenderedModel.java',
+
+        // OrbitSetController and its dependencies
+        'com/vzome/desktop/controller/DefaultController.java',
+        'com/vzome/desktop/awt/DefaultGraphicsController.java',
+        'com/vzome/desktop/awt/OrbitSetController.java',
+
+        // OrbitPanel and its dependencies
+        'com/vzome/desktop/api/Controller.java',
+        'com/vzome/desktop/awt/GraphicsController.java',
+        'com/vzome/desktop/awt/GraphicsViewer.java',
+        'org/vorthmann/ui/CardPanel.java',
+        'org/vorthmann/ui/LeftMouseDragAdapter.java',
+        'org/vorthmann/j3d/MouseTool.java',
+        'org/vorthmann/j3d/MouseToolDefault.java',
+        'org/vorthmann/j3d/CanvasTool.java',
+        'org/vorthmann/zome/ui/ContextualMenu.java',
+        'org/vorthmann/zome/ui/ContextualMenuMouseListener.java',
+        'org/vorthmann/zome/ui/ControlActions.java',
+        'org/vorthmann/zome/ui/ControllerActionListener.java',
+        'org/vorthmann/zome/ui/OrbitPanel.java',
     ]
     excludes = [
 
