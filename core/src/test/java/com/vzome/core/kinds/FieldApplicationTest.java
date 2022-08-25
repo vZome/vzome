@@ -663,7 +663,13 @@ public class FieldApplicationTest
                 
             default:
                 if(name.startsWith("antiprism") ) {
-                    verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1);
+                	int symmetryToolCount = 3, transformToolCount = 3, linearMapToolCount = 1;
+                	if(perspective.getSymmetry().isTrivial()) {
+                    	// adjust tool counts for even-gon antiprism symmetries 
+                    	symmetryToolCount = 4;
+                    	transformToolCount = 4;
+                    }
+                	verifyToolFactoryCounts(name, kind, toolFactoryList, symmetryToolCount, transformToolCount, linearMapToolCount);
                     break;                    
                 }
                 fail(appName + " has an unexpected perspective name: " + name);
