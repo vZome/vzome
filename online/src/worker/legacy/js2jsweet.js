@@ -321,14 +321,21 @@ const init = async () =>
     embedding: orbitSource.getEmbedding(),
   })
 
+  const getLegacyField = fieldName =>
+  {
+    const fieldApp = getFieldApp( fieldName )
+    if ( !fieldApp )
+      return { field: { name: fieldName, unknown: true } };
+    return fieldApp.getField();
+  }
+
   const documentFactory = ( fieldName, namespace, xml ) =>
   {
     // This reproduces the DocumentModel constructor pretty faithfully
 
-    const fieldApp = getFieldApp( fieldName )
-    if ( !fieldApp )
-      return { field: { name: fieldName, unknown: true } }
-    const legacyField = fieldApp.getField()
+    const legacyField = getLegacyField( fieldName );
+    if ( legacyField.unknown )
+      return legacyField;
     const field = legacyField.delegate
 
     const originPoint = new vzomePkg.core.construction.FreePoint( legacyField.origin( 3 ) )
@@ -532,7 +539,7 @@ const init = async () =>
     }
   ) )
 
-  return { parser, commands, gridPoints }
+  return { parser, commands, gridPoints, getLegacyField }
 }
 
 export const realizeShape = ( shape ) =>
