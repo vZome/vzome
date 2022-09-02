@@ -29,6 +29,8 @@ banner 'Patching up the j4ts bundle as an ES6 module'
 OUTJS='online/src/worker/legacy/transpiled-java.js'
 echo 'import { java, javaemul } from "./candies/j4ts-2.1.0-SNAPSHOT/bundle.js"' > $OUTJS
 
+mkdir -p online/src/worker/legacy/candies/j4ts-2.1.0-SNAPSHOT
+
 cat 'online/jsweetOut/candies/j4ts-2.1.0-SNAPSHOT/bundle.js' | \
   sed \
     -e 's/^var java;/export var java;/' \
