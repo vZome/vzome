@@ -325,7 +325,7 @@ const init = async () =>
   {
     const fieldApp = getFieldApp( fieldName )
     if ( !fieldApp )
-      return { field: { name: fieldName, unknown: true } };
+      return { name: fieldName, unknown: true };
     return fieldApp.getField();
   }
 
@@ -333,9 +333,10 @@ const init = async () =>
   {
     // This reproduces the DocumentModel constructor pretty faithfully
 
-    const legacyField = getLegacyField( fieldName );
-    if ( legacyField.unknown )
-      return legacyField;
+    const fieldApp = getFieldApp( fieldName )
+    if ( !fieldApp )
+      return { field: { name: fieldName, unknown: true } };
+    const legacyField = fieldApp.getField();
     const field = legacyField.delegate
 
     const originPoint = new vzomePkg.core.construction.FreePoint( legacyField.origin( 3 ) )
