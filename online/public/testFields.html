@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Testing vZome (https://vzome.com) algebraic field extensions"
+    />
+    <title>vZome Fields</title>
+    <link rel="stylesheet" href="./App.css">
+    <link rel="manifest" href="./manifest.json">
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module">
+      import { getField } from "../modules/vzome-legacy.js";
+
+      getField( "golden" ) .then( field => {
+        const num = field .createPower( 2 );
+        console.log( num .toString(0) );
+        const num2 = field .createPower( 3 );
+        console.log( num2 .toString(0) );
+        const num3 = num .plus( num2 );
+        console.log( num3 .toString(0) );
+        const str = num3 .evaluate();
+        const root = document .getElementById( "root" );
+        root .innerHTML = str;
+      });
+    </script>
+  </body>
+</html>
