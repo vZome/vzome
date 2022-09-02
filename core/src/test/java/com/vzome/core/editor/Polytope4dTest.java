@@ -3,21 +3,21 @@ package com.vzome.core.editor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.construction.Point;
-import com.vzome.core.construction.Segment;
-import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.editor.api.EditorModel;
-import com.vzome.core.editor.api.Selection;
+import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.edits.Polytope4d;
 import com.vzome.core.kinds.GoldenFieldApplication;
 import com.vzome.core.math.Projection;
-import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.RealizedModelImpl;
 
 public class Polytope4dTest
@@ -27,28 +27,28 @@ public class Polytope4dTest
 	{
 		FieldApplication app = new GoldenFieldApplication( new PentagonField() );
 		AlgebraicField field = app .getField();
+        AlgebraicNumber one = field .one();
 		AlgebraicVector x = field .basisVector( 3, 0 );
 		AlgebraicVector y = field .basisVector( 3, 1 );
+		AlgebraicVector quaternion = y .minus( x ) .inflateTo4d();
 
-		Point xpoint = new FreePoint( x );
-		Point ypoint = new FreePoint( y );
-		Segment segment = new SegmentJoiningPoints( xpoint, ypoint );
-
-		Selection selection = new SelectionImpl();
 		RealizedModelImpl realized = new RealizedModelImpl( field, new Projection .Default( field ) );
 		assertEquals( 0, realized .size() );
-        EditorModel editorModel = new EditorModel()
-        {
-            @Override
-            public RealizedModel getRealizedModel() { return realized; }
+        EditorModel editorModel = new EditorModelImpl( realized, new FreePoint( field.origin(3) ), app, null, new HashMap<String, OrbitSource>() );
 
-            @Override
-            public Selection getSelection() { return selection; }
-        };
-
-		Polytope4d cmd = new Polytope4d( editorModel, app, segment, 1, "A4" );
+		Polytope4d cmd = new Polytope4d( editorModel );
+		
+		Map<String, Object> params = new HashMap<>();
+        params .put( "groupName", "A4" );
+        params .put( "renderGroupName", "A4" );
+        params .put( "index", 1 );
+        params .put( "edgesToRender", 0 );
+        params .put( "edgeScales", new AlgebraicNumber[]{ one, one, one, one } );
+        params .put( "quaternion", quaternion );
+        cmd .configure( params );
+		
 		cmd .perform();
-		assertEquals( 10, realized .size() );
+		assertEquals( 5, realized .size() );
 		// look for ball at (2/5 -4/5φ, 8/5 -6/5φ, -2 +2φ)
 		AlgebraicVector target = field .createVector( new int[][]{ {2,5, -4,5}, {8,5, -6,5}, {-2,1, 2,1} } );
 		assertNotNull( realized .findConstruction( new FreePoint( target ) ) );
