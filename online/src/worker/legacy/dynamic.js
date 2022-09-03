@@ -1,2 +1,2 @@
 
-export { parse, interpretAndRender } from "./api";
+export { parse, interpretAndRender, getField } from "./api";

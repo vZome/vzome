@@ -59,7 +59,7 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
     implementation     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
 
-    implementation group: 'org.jsweet', name: 'jsweet-transpiler', version: '3.0.0'
+    implementation group: 'org.jsweet', name: 'jsweet-transpiler', version: '3.2.0-SNAPSHOT'
     implementation group: 'org.jsweet', name: 'jsweet-core', version: "6.1.0"
     implementation group: 'org.jsweet', name: 'j4ts', version: '2.1.0-SNAPSHOT'
     implementation group: 'org.jsweet.candies.j4ts', name: 'j4ts-awt-swing', version: '0.0.2-SNAPSHOT'
@@ -74,9 +74,9 @@ jsweet {
 
   bundle = true
 
+  workingDir = project.file( '.jsweet' )
 	tsOut = project.file( 'jsweetOut/ts' )
 	outDir = project.file( 'jsweetOut/js' )
-
   candiesJsOut = project.file( 'jsweetOut/candies' )
 
   javaCompilerExtraOptions = '-source,1.8,-target,1.8'

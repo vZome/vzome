@@ -82,6 +82,14 @@ const fetchFileText = selected =>
   })
 }
 
+const getField = name =>
+{
+  return import( './legacy/dynamic.js' )
+    .then( module => {
+      return module .getField( name );
+    } );
+}
+
 let renderHistory;
 
 const parseAndInterpret = ( xmlLoading, report, debug ) =>
