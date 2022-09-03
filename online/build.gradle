@@ -41,12 +41,12 @@ compileJava {
 }
 
 sourceSets {
-    worker {
+    core {
         java {
-            srcDir "$projectDir/../core/src/main/java"
+            srcDirs = [ 'src/worker/java', "$projectDir/../core/src/main/java" ]
         }
     }
-    ui {
+    desktop {
         java {
             srcDir "$projectDir/../desktop/src/main/java"
         }
@@ -54,30 +54,32 @@ sourceSets {
 }
 
 dependencies {
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.3'
-    implementation group: 'java3d',                     name: 'vecmath',             version:'1.6.0-final'
+    coreCompileOnly group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.3'
+    coreCompileOnly group: 'java3d',                     name: 'vecmath',             version:'1.6.0-final'
 
-    implementation group: 'org.jsweet', name: 'jsweet-core',       version: "6.1.0"
-    implementation group: 'org.jsweet', name: 'j4ts',              version: '2.1.0-SNAPSHOT'
-    // implementation group: 'org.jsweet.candies.j4ts', name: 'j4ts-awt-swing', version: '0.0.2-SNAPSHOT'
+    coreCompileOnly group: 'org.jsweet', name: 'jsweet-core', version: "6.1.0"
+    coreCompileOnly group: 'org.jsweet', name: 'j4ts',        version: '2.1.0-SNAPSHOT'
+    
+    desktopCompileOnly group: 'org.jsweet.candies.j4ts', name: 'j4ts-awt-swing', version: '0.0.2-SNAPSHOT'
 }
 
 JavaPluginConvention javaPluginConvention = getConvention().getPlugin(JavaPluginConvention.class);
 SourceSetContainer sourceSets = javaPluginConvention.getSourceSets();
 
-def transpileWorkerTask = getTasks().create( "worker", org.jsweet.gradle.JSweetTranspileTask.class );
-def extension = transpileWorkerTask.extensions.create( "config", org.jsweet.gradle.JSweetPluginExtension.class );
-transpileWorkerTask.setGroup( "generate" );
-transpileWorkerTask.dependsOn( JavaPlugin.COMPILE_JAVA_TASK_NAME );
-transpileWorkerTask.setConfiguration( extension );
-transpileWorkerTask.setSources( sourceSets.getByName( "worker" ) .getAllJava() );
-transpileWorkerTask.setClasspath( sourceSets.getByName( "main" ) .getCompileClasspath() );
+def transpileCoreTask = getTasks().create( "core", org.jsweet.gradle.JSweetTranspileTask.class );
+def extension = transpileCoreTask.extensions.create( "config", org.jsweet.gradle.JSweetPluginExtension.class );
+def coreSources = sourceSets.getByName( "core" )
+transpileCoreTask.setGroup( "generate" );
+transpileCoreTask.dependsOn( JavaPlugin.COMPILE_JAVA_TASK_NAME );
+transpileCoreTask.setConfiguration( extension );
+transpileCoreTask.setSources( coreSources .getAllJava() );
+transpileCoreTask.setClasspath( coreSources .getCompileClasspath() );
 
-def cleanTask = getTasks().create("jsweetClean", org.jsweet.gradle.JSweetCleanTask.class);
+def cleanTask = getTasks().create( "coreClean", org.jsweet.gradle.JSweetCleanTask.class );
 cleanTask.setConfiguration(extension);
 
 
-worker.config {
+core.config {
 	veryVerbose = true
 	encoding = 'UTF-8'
 	sourceMap = false  // I can't set breakpoints if the browser cannot find the Java file, so disabling for now.

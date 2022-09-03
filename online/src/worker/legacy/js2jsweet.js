@@ -13,7 +13,7 @@ import groupResources from './resources/com/vzome/core/math/symmetry/index.js'
 
 import * as txml from 'txml/dist/txml.mjs';
 
-import { com } from './transpiled-java.js'
+import { com } from './core-java.js'
 import { java } from './candies/j4ts-2.1.0-SNAPSHOT/bundle.js'
 
 // Copied from core/src/main/resources/com/vzome/core/editor/defaultPrefs.properties

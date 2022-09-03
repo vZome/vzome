@@ -14,16 +14,16 @@ banner() {
 # From the command line there, run "cicd/jsweet-legacy-code.bash".
 
 
-banner 'Transpiling Java sources with JSweet' ######################################
+banner 'Transpiling core Java sources with JSweet' ######################################
 
 rm -rf online/node_modules online/.jsweet
 
-./gradlew --continue -p online jsweetClean worker &> jsweet-errors.txt    # ignore the exit code, it always fails
-cat jsweet-errors.txt
+./gradlew --continue -p online coreClean core &> core-errors.txt    # ignore the exit code, it always fails
+cat core-errors.txt
 
-grep -q 'transpilation failed with 30 error(s) and 0 warning(s)' jsweet-errors.txt \
-  && banner 'JSweet transpile found the expected errors' \
-  || { banner 'UNEXPECTED CHANGE IN JSWEET ERRORS'; exit 1; }
+grep -q 'transpilation failed with 30 error(s) and 0 warning(s)' core-errors.txt \
+  && banner 'JSweet core transpile found the expected errors' \
+  || { banner 'UNEXPECTED CHANGE IN JSWEET CORE ERRORS'; exit 1; }
 
 LEGACY=online/src/worker/legacy
 CANDIES_IN=online/jsweetOut/candies
@@ -55,7 +55,7 @@ cat $CANDIES_IN/j4ts-2.1.0-SNAPSHOT/bundle.js | \
 
 banner 'Patching up the vZome bundle as an ES6 module' ######################################
 
-OUTJS=$LEGACY/transpiled-java.js
+OUTJS=$LEGACY/core-java.js
 echo 'import { java, javaemul } from "./candies/j4ts-2.1.0-SNAPSHOT/bundle.js"' > $OUTJS
 # echo 'import { javax } from "./candies/j4ts-awt-swing-0.0.2-SNAPSHOT/bundle.js"' >> $OUTJS
 
