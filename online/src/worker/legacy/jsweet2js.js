@@ -97,7 +97,6 @@ class JavaAlgebraicNumber
   {
     this.legacyField = legacyField
     this.bigRationals = bigRationals
-    this.__interfaces = [ "com.vzome.core.algebra.AlgebraicNumber" ]
     this[ 'times$com_vzome_core_algebra_AlgebraicNumber' ] = this.times
     this[ 'plus$com_vzome_core_algebra_AlgebraicNumber' ] = this.plus
     this[ 'minus$com_vzome_core_algebra_AlgebraicNumber' ] = this.minus
@@ -216,6 +215,7 @@ class JavaAlgebraicNumber
     return this.legacyField.getNumberExpression( sbuf, this.bigRationals, format )
   }
 }
+JavaAlgebraicNumber.__interfaces = [ "com.vzome.core.algebra.AlgebraicNumber" ]
 
 class JavaBigRational
 {
@@ -328,7 +328,6 @@ class JavaDomNodeList
   constructor( nodeList, owner=null )
   {
     this.nativeNodeList = nodeList
-    this.__interfaces = [ "org.w3c.dom.NodeList" ]
     this.document = owner || new JavaDomDocument();
   }
 
@@ -346,6 +345,7 @@ class JavaDomNodeList
       return node
   }
 }
+JavaDomNodeList.__interfaces = [ "org.w3c.dom.NodeList" ]
 
 function sortObj(obj) {
   return Object.keys(obj).sort().reduce(function (result, key) {
@@ -374,7 +374,6 @@ export class JavaDomDocument
 {
   constructor()
   {
-    this.__interfaces = [ "org.w3c.dom.Document" ]
   }
 
   createElement( tagName )
@@ -387,13 +386,13 @@ export class JavaDomDocument
     return text;
   }
 }
+JavaDomDocument.__interfaces = [ "org.w3c.dom.Document" ]
 
 export class JavaDomElement
 {
   constructor( element, owner=null )
   {
     this.nativeElement = element
-    this.__interfaces = [ "org.w3c.dom.Element" ]
     this.document = owner || new JavaDomDocument();
   }
 
@@ -456,6 +455,7 @@ export class JavaDomElement
     }
   }
 }
+JavaDomElement.__interfaces = [ "org.w3c.dom.Element" ]
 
 export class JsProperties
 {

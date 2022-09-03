@@ -14,7 +14,7 @@ import groupResources from './resources/com/vzome/core/math/symmetry/index.js'
 import * as txml from 'txml/dist/txml.mjs';
 
 import { com } from './transpiled-java.js'
-import { java } from './candies/j4ts-2.0.0/bundle.js'
+import { java } from './candies/j4ts-2.1.0-SNAPSHOT/bundle.js'
 
 // Copied from core/src/main/resources/com/vzome/core/editor/defaultPrefs.properties
 const defaults = {
@@ -321,14 +321,22 @@ const init = async () =>
     embedding: orbitSource.getEmbedding(),
   })
 
+  const getLegacyField = fieldName =>
+  {
+    const fieldApp = getFieldApp( fieldName )
+    if ( !fieldApp )
+      return { name: fieldName, unknown: true };
+    return fieldApp.getField();
+  }
+
   const documentFactory = ( fieldName, namespace, xml ) =>
   {
     // This reproduces the DocumentModel constructor pretty faithfully
 
     const fieldApp = getFieldApp( fieldName )
     if ( !fieldApp )
-      return { field: { name: fieldName, unknown: true } }
-    const legacyField = fieldApp.getField()
+      return { field: { name: fieldName, unknown: true } };
+    const legacyField = fieldApp.getField();
     const field = legacyField.delegate
 
     const originPoint = new vzomePkg.core.construction.FreePoint( legacyField.origin( 3 ) )
@@ -368,11 +376,17 @@ const init = async () =>
 
     // This has no analogue in Java DocumentModel
     orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
-    const orbitSetField = {
-      __interfaces: [ "com.vzome.core.math.symmetry.OrbitSet.Field" ],
-      getGroup: name => symmetrySystems[ name ].getOrbits(),
-      getQuaternionSet: name => fieldApp.getQuaternionSymmetry( name )
+    class OSField {
+      constructor(){}
+      getGroup( name ) {
+        return symmetrySystems[ name ].getOrbits();
+      }
+      getQuaternionSet( name ) {
+        return fieldApp.getQuaternionSymmetry( name );
+      }
     }
+    OSField.__interfaces = [ "com.vzome.core.math.symmetry.OrbitSet.Field" ];
+    const orbitSetField = new OSField();
 
     const projection = new vzomePkg.core.math.Projection.Default( legacyField );
     const realizedModel = new vzomePkg.core.model.RealizedModelImpl( legacyField, projection );
@@ -403,7 +417,7 @@ const init = async () =>
 
     fieldApp.registerToolFactories( toolFactories, toolsModel )
     
-    const bookmarkFactory = new vzomePkg.core.tools.BookmarkTool.Factory( toolsModel );
+    const bookmarkFactory = new vzomePkg.core.tools.BookmarkToolFactory( toolsModel );
     bookmarkFactory.createPredefinedTool( "ball at origin" );
 
     const toolsXml = xml && xml.getChildElement( "Tools" )
@@ -526,7 +540,7 @@ const init = async () =>
     }
   ) )
 
-  return { parser, commands, gridPoints }
+  return { parser, commands, gridPoints, getLegacyField }
 }
 
 export const realizeShape = ( shape ) =>

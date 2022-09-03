@@ -313,7 +313,7 @@ public class FieldApplicationTest
     }
     
     public static void testDirectionAxisVsPrototype(String appName, Symmetry symmetry) {
-        for( Direction dir : symmetry) {
+        for( Direction dir : symmetry .getDirections() ) {
             String symDirName = symmetry.getName() + " " + dir.getName();
             String msg = appName + " " + symDirName;
             // No automatic directions will have been added to these symmetries 
@@ -354,7 +354,7 @@ public class FieldApplicationTest
     private void listDirections(String appName, Symmetry symmetry) {
         final String msg = appName + " " + symmetry.getName() + " ";
         System.out.println(msg);
-        for( Direction dir : symmetry) {
+        for( Direction dir : symmetry .getDirections() ) {
             System.out.println("\"" + dir.getName() + "\",");
         }
     }
@@ -533,7 +533,7 @@ public class FieldApplicationTest
         assertNotNull(name + ".getConnectorShape()", shapes.getConnectorShape());
         AlgebraicField field = symmetry.getField();
         AlgebraicNumber length = field.createPower(1);
-        for(Direction dir : symmetry) {
+        for(Direction dir : symmetry .getDirections() ) {
             assertNotNull(name + ".getStrutShape()", shapes.getStrutShape(dir, length));
         }
     }

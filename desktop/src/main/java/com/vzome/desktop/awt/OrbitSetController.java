@@ -87,7 +87,7 @@ public class OrbitSetController extends DefaultGraphicsController implements Pro
         orbitDots .clear();
         //        lastOrbit = null;  // cannot do this, we might have a valid value, for example after loading from XML
         boolean lastOrbitChanged = false;
-        for ( Direction dir : allOrbits )
+        for ( Direction dir : allOrbits .getDirections() )
         {
             if ( lastOrbit == null )
             {
@@ -159,7 +159,7 @@ public class OrbitSetController extends DefaultGraphicsController implements Pro
         {
             mOneAtATime = false;
             orbits .clear();
-            for (Direction dir : allOrbits) {
+            for (Direction dir : allOrbits .getDirections()) {
                 if ( dir .isStandard() ) {
                     orbits .add( dir );
                 }
@@ -169,7 +169,7 @@ public class OrbitSetController extends DefaultGraphicsController implements Pro
         {
             mOneAtATime = false;
             orbits .clear();
-            for (Direction dir : allOrbits) {
+            for (Direction dir : allOrbits .getDirections()) {
                 if ( ! dir .isAutomatic() ) {
                     orbits .add( dir );
                 }
@@ -447,7 +447,7 @@ public class OrbitSetController extends DefaultGraphicsController implements Pro
         {
             String[] result = new String[ orbits .size() ];
             int i = 0;
-            for ( Direction dir :  orbits ) {
+            for ( Direction dir : orbits .getDirections() ) {
                 result[ i ] = dir .getName();
                 i++;
             }
@@ -457,7 +457,7 @@ public class OrbitSetController extends DefaultGraphicsController implements Pro
         {
             String[] result = new String[ allOrbits .size() ];
             int i = 0;
-            for ( Direction dir : allOrbits ) {
+            for ( Direction dir : allOrbits .getDirections() ) {
                 result[ i ] = dir .getName();
                 i++;
             }

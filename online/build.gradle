@@ -1,6 +1,6 @@
 buildscript {
 	repositories {
-        mavenLocal()
+    mavenLocal()
 		mavenCentral()
 		maven { url "https://repository.jsweet.org/artifactory/libs-release-local" }
 		maven { url "https://repository.jsweet.org/artifactory/libs-snapshot-local" }
@@ -49,9 +49,9 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.3'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
 
-    implementation group: 'org.jsweet', name: 'jsweet-transpiler', version: '3.0.0'
+    implementation group: 'org.jsweet', name: 'jsweet-transpiler', version: '3.2.0-SNAPSHOT'
     implementation group: 'org.jsweet', name: 'jsweet-core', version: "6.1.0"
-    implementation group: 'org.jsweet', name: 'j4ts', version: '2.0.0'
+    implementation group: 'org.jsweet', name: 'j4ts', version: '2.1.0-SNAPSHOT'
 }
 
 jsweet {
@@ -63,10 +63,10 @@ jsweet {
 
   bundle = true
 
-	tsOut = new File( "$projectDir/jsweetOut/ts" )
-	outDir = new File( "$projectDir/jsweetOut/js" )
-
-  candiesJsOut = project.file('src/worker/legacy/candies')
+  workingDir = project.file( '.jsweet' )
+	tsOut = project.file( 'jsweetOut/ts' )
+	outDir = project.file( 'jsweetOut/js' )
+  candiesJsOut = project.file( 'jsweetOut/candies' )
 
   javaCompilerExtraOptions = '-source,1.8,-target,1.8'
 

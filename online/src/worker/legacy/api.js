@@ -10,6 +10,12 @@ export const parse = async text =>
   return parser( text )
 }
 
+export const getField = async name =>
+{
+  const { getLegacyField } = await parserPromise;
+  return getLegacyField( name );
+}
+
 const R = 2
 const octahedronShape =
 {

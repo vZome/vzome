@@ -18,7 +18,7 @@ public class DodecagonalSymmetry extends AbstractSymmetry
     
     public DodecagonalSymmetry( AlgebraicField field)
     {
-        super( ORDER, field, "blue" );
+        super( ORDER, field, "blue", null );
     }
     
     @Override

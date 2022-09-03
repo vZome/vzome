@@ -12,7 +12,7 @@ import com.vzome.core.math.RealVector;
  * @author Scott Vorthmann
  *
  */
-public interface Symmetry extends Iterable<Direction>, Embedding
+public interface Symmetry extends Embedding
 {
     int PLUS = 0 /*Axis.PLUS*/, MINUS = 1 /*Axis.MINUS*/;  // Dumb workaround for the JSweet compiler glitch.
     // JSweet fails under GitHub Actions (but not locally, using the exact same Eclipse Temurin OpenJDK 8!)
@@ -82,4 +82,6 @@ public interface Symmetry extends Iterable<Direction>, Embedding
 	public String computeOrbitDots();
 
     public boolean reverseOrbitTriangle();
+    
+    Iterable<Direction> getDirections();
 }

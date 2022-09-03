@@ -43,8 +43,8 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
     private final Command cmdTxTsymmetry;
     private final Command cmdVanOss600cell;
 
-    public IcosahedralSymmetryPerspective(AlgebraicField field) {
-        this( new IcosahedralSymmetry(field) );
+    public IcosahedralSymmetryPerspective(AlgebraicField af) {
+        this( new IcosahedralSymmetry(af) );
     }
     
     protected IcosahedralSymmetryPerspective(IcosahedralSymmetry symm) {
