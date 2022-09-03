@@ -18,7 +18,7 @@ banner 'Transpiling Java sources with JSweet' ##################################
 
 rm -rf online/node_modules online/.jsweet
 
-./gradlew --continue -p online jsweetClean jsweet -x compileJava &> jsweet-errors.txt    # ignore the exit code, it always fails
+./gradlew --continue -p online jsweetClean worker &> jsweet-errors.txt    # ignore the exit code, it always fails
 cat jsweet-errors.txt
 
 grep -q 'transpilation failed with 30 error(s) and 0 warning(s)' jsweet-errors.txt \
