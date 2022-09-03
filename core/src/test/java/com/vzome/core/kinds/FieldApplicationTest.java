@@ -631,7 +631,6 @@ public class FieldApplicationTest
             assertNotNull("createToolFactories()", toolFactoryList);
             
             String name = perspective.getName();
-            String source = appName + "." + name;
             switch(name) {
             case "octahedral":
                 verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 4, 1);
