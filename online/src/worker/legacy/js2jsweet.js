@@ -279,6 +279,7 @@ const init = async () =>
   addNewField( heptagonField, vzomePkg.core.kinds.HeptagonFieldApplication )
   addLegacyField( vzomePkg.fields.sqrtphi.SqrtPhiField, vzomePkg.fields.sqrtphi.SqrtPhiFieldApplication )
   addLegacyField( vzomePkg.core.algebra.SnubCubeField, vzomePkg.core.kinds.SnubCubeFieldApplication )
+  addLegacyField( vzomePkg.core.algebra.SnubDodecField, vzomePkg.core.kinds.SnubDodecFieldApplication )
   addLegacyField( vzomePkg.core.algebra.SuperGoldenField, vzomePkg.core.kinds.DefaultFieldApplication )
   addLegacyField( vzomePkg.core.algebra.PlasticNumberField, vzomePkg.core.kinds.DefaultFieldApplication )
   addLegacyField( vzomePkg.core.algebra.PlasticPhiField, vzomePkg.core.kinds.DefaultFieldApplication )

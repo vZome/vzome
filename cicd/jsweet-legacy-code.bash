@@ -15,7 +15,7 @@ banner() {
 
 banner 'Transpiling Java sources with JSweet'
 
-rm -rf online/node_modules
+rm -rf online/node_modules online/.jsweet
 
 ./gradlew --continue -p online jsweetClean jsweet -x compileJava &> jsweet-errors.txt    # ignore the exit code, it always fails
 cat jsweet-errors.txt
