@@ -16,12 +16,12 @@ banner() {
 
 banner 'Transpiling Java sources with JSweet' ######################################
 
-rm -rf online/node_modules
+rm -rf online/node_modules online/.jsweet
 
 ./gradlew --continue -p online jsweetClean jsweet -x compileJava &> jsweet-errors.txt    # ignore the exit code, it always fails
 cat jsweet-errors.txt
 
-grep -q 'transpilation failed with 32 error(s) and 0 warning(s)' jsweet-errors.txt \
+grep -q 'transpilation failed with 30 error(s) and 0 warning(s)' jsweet-errors.txt \
   && banner 'JSweet transpile found the expected errors' \
   || { banner 'UNEXPECTED CHANGE IN JSWEET ERRORS'; exit 1; }
 
@@ -39,25 +39,25 @@ cat $CANDIES_IN/j4ts-2.1.0-SNAPSHOT/bundle.js | \
   > $CANDIES_OUT/j4ts-2.1.0-SNAPSHOT/bundle.js || exit $?
 
 
-banner 'Patching up the j4ts-awt-swing bundle as an ES6 module' ######################################
+# banner 'Patching up the j4ts-awt-swing bundle as an ES6 module' ######################################
 
-mkdir -p $CANDIES_OUT/j4ts-awt-swing-0.0.2-SNAPSHOT
-OUTJS=$CANDIES_OUT/j4ts-awt-swing-0.0.2-SNAPSHOT/bundle.js
-echo 'import { java, javaemul } from "../j4ts-2.1.0-SNAPSHOT/bundle.js"' > $OUTJS
+# mkdir -p $CANDIES_OUT/j4ts-awt-swing-0.0.2-SNAPSHOT
+# OUTJS=$CANDIES_OUT/j4ts-awt-swing-0.0.2-SNAPSHOT/bundle.js
+# echo 'import { java, javaemul } from "../j4ts-2.1.0-SNAPSHOT/bundle.js"' > $OUTJS
 
-cat $CANDIES_IN/j4ts-awt-swing-0.0.2-SNAPSHOT/bundle.js | \
-  sed \
-    -e 's/^var javax;/export var javax;/' \
-    -e 's/var java;//' \
-    -e 's/(java || (java = {}));/(java);/' \
-  >> $OUTJS || exit $?
+# cat $CANDIES_IN/j4ts-awt-swing-0.0.2-SNAPSHOT/bundle.js | \
+#   sed \
+#     -e 's/^var javax;/export var javax;/' \
+#     -e 's/var java;//' \
+#     -e 's/(java || (java = {}));/(java);/' \
+  # >> $OUTJS || exit $?
 
 
 banner 'Patching up the vZome bundle as an ES6 module' ######################################
 
 OUTJS=$LEGACY/transpiled-java.js
 echo 'import { java, javaemul } from "./candies/j4ts-2.1.0-SNAPSHOT/bundle.js"' > $OUTJS
-echo 'import { javax } from "./candies/j4ts-awt-swing-0.0.2-SNAPSHOT/bundle.js"' > $OUTJS
+# echo 'import { javax } from "./candies/j4ts-awt-swing-0.0.2-SNAPSHOT/bundle.js"' >> $OUTJS
 
 cat 'online/jsweetOut/js/bundle.js' | \
   sed \

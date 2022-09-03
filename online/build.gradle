@@ -62,7 +62,7 @@ dependencies {
     implementation group: 'org.jsweet', name: 'jsweet-transpiler', version: '3.2.0-SNAPSHOT'
     implementation group: 'org.jsweet', name: 'jsweet-core', version: "6.1.0"
     implementation group: 'org.jsweet', name: 'j4ts', version: '2.1.0-SNAPSHOT'
-    implementation group: 'org.jsweet.candies.j4ts', name: 'j4ts-awt-swing', version: '0.0.2-SNAPSHOT'
+    // implementation group: 'org.jsweet.candies.j4ts', name: 'j4ts-awt-swing', version: '0.0.2-SNAPSHOT'
 }
 
 jsweet {
@@ -187,24 +187,24 @@ jsweet {
         'com/vzome/core/render/RenderedModel.java',
 
         // OrbitSetController and its dependencies
-        'com/vzome/desktop/controller/DefaultController.java',
-        'com/vzome/desktop/awt/DefaultGraphicsController.java',
-        'com/vzome/desktop/awt/OrbitSetController.java',
+        // 'com/vzome/desktop/controller/DefaultController.java',
+        // 'com/vzome/desktop/awt/DefaultGraphicsController.java',
+        // 'com/vzome/desktop/awt/OrbitSetController.java',
 
         // OrbitPanel and its dependencies
-        'com/vzome/desktop/api/Controller.java',
-        'com/vzome/desktop/awt/GraphicsController.java',
-        'com/vzome/desktop/awt/GraphicsViewer.java',
-        'org/vorthmann/ui/CardPanel.java',
-        'org/vorthmann/ui/LeftMouseDragAdapter.java',
-        'org/vorthmann/j3d/MouseTool.java',
-        'org/vorthmann/j3d/MouseToolDefault.java',
-        'org/vorthmann/j3d/CanvasTool.java',
-        'org/vorthmann/zome/ui/ContextualMenu.java',
-        'org/vorthmann/zome/ui/ContextualMenuMouseListener.java',
-        'org/vorthmann/zome/ui/ControlActions.java',
-        'org/vorthmann/zome/ui/ControllerActionListener.java',
-        'org/vorthmann/zome/ui/OrbitPanel.java',
+        // 'com/vzome/desktop/api/Controller.java',
+        // 'com/vzome/desktop/awt/GraphicsController.java',
+        // 'com/vzome/desktop/awt/GraphicsViewer.java',
+        // 'org/vorthmann/ui/CardPanel.java',
+        // 'org/vorthmann/ui/LeftMouseDragAdapter.java',
+        // 'org/vorthmann/j3d/MouseTool.java',
+        // 'org/vorthmann/j3d/MouseToolDefault.java',
+        // 'org/vorthmann/j3d/CanvasTool.java',
+        // 'org/vorthmann/zome/ui/ContextualMenu.java',
+        // 'org/vorthmann/zome/ui/ContextualMenuMouseListener.java',
+        // 'org/vorthmann/zome/ui/ControlActions.java',
+        // 'org/vorthmann/zome/ui/ControllerActionListener.java',
+        // 'org/vorthmann/zome/ui/OrbitPanel.java',
     ]
     excludes = [
 
