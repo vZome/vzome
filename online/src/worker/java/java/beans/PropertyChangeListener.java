@@ -2,5 +2,5 @@ package java.beans;
 
 public interface PropertyChangeListener
 {
-    void propertyChange( Object evt );
+    void propertyChange( PropertyChangeEvent event );
 }

@@ -26,6 +26,7 @@ import com.vzome.desktop.api.Controller;
 import com.vzome.desktop.controller.CameraController;
 import com.vzome.desktop.controller.DefaultController;
 import com.vzome.desktop.controller.LengthController;
+import com.vzome.desktop.controller.OrbitSetController;
 import com.vzome.desktop.controller.ToolFactoryController;
 
 public class SymmetryController extends DefaultController
@@ -107,11 +108,11 @@ public class SymmetryController extends DefaultController
             }
             renderOrbits .add( orbit );
         }
-        availableController = new OrbitSetController( availableOrbits, this .symmetrySystem .getOrbits(), this .symmetrySystem, false );
+        availableController = new OrbitSetController( availableOrbits, this .symmetrySystem .getOrbits(), this .symmetrySystem );
         this .addSubController( "availableOrbits", availableController );
-        snapController = new OrbitSetController( snapOrbits, availableOrbits, this .symmetrySystem, false );
+        snapController = new OrbitSetController( snapOrbits, availableOrbits, this .symmetrySystem );
         this .addSubController( "snapOrbits", snapController );
-        buildController = new OrbitSetController( buildOrbits, availableOrbits, this .symmetrySystem, true );
+        buildController = new OrbitSetController( buildOrbits, availableOrbits, this .symmetrySystem );
         this .addSubController( "buildOrbits", buildController );
         if ( parent .propertyIsTrue( "single.orbit" ) )
             try {
@@ -119,7 +120,7 @@ public class SymmetryController extends DefaultController
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        renderController = new OrbitSetController( renderOrbits, this .symmetrySystem .getOrbits(), this .symmetrySystem, false );
+        renderController = new OrbitSetController( renderOrbits, this .symmetrySystem .getOrbits(), this .symmetrySystem );
         this .addSubController( "renderOrbits", renderController );
 
         for ( Direction orbit : this .symmetrySystem .getOrbits() .getDirections() ) {

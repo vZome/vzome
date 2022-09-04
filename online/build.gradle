@@ -43,7 +43,7 @@ compileJava {
 sourceSets {
     core {
         java {
-            srcDirs = [ 'src/worker/java', "$projectDir/../core/src/main/java" ]
+            srcDirs = [ 'src/worker/java', "$projectDir/../core/src/main/java", "$projectDir/../desktop/src/main/java" ]
         }
     }
     desktop {
@@ -200,19 +200,19 @@ core.config {
         'com/vzome/core/render/RenderedModel.java',
 
         // OrbitSetController and its dependencies
-        // 'com/vzome/desktop/controller/DefaultController.java',
-        // 'com/vzome/desktop/awt/DefaultGraphicsController.java',
-        // 'com/vzome/desktop/awt/OrbitSetController.java',
-
-        // OrbitPanel and its dependencies
-        // 'com/vzome/desktop/api/Controller.java',
+        'com/vzome/desktop/api/Controller.java',
+        // 'org/vorthmann/j3d/CanvasTool.java',
         // 'com/vzome/desktop/awt/GraphicsController.java',
         // 'com/vzome/desktop/awt/GraphicsViewer.java',
-        // 'org/vorthmann/ui/CardPanel.java',
-        // 'org/vorthmann/ui/LeftMouseDragAdapter.java',
+        'com/vzome/desktop/controller/DefaultController.java',
+        // 'com/vzome/desktop/awt/DefaultGraphicsController.java',
+        'com/vzome/desktop/controller/OrbitSetController.java',
+
+        // OrbitPanel and its dependencies
         // 'org/vorthmann/j3d/MouseTool.java',
         // 'org/vorthmann/j3d/MouseToolDefault.java',
-        // 'org/vorthmann/j3d/CanvasTool.java',
+        // 'org/vorthmann/ui/CardPanel.java',
+        // 'org/vorthmann/ui/LeftMouseDragAdapter.java',
         // 'org/vorthmann/zome/ui/ContextualMenu.java',
         // 'org/vorthmann/zome/ui/ContextualMenuMouseListener.java',
         // 'org/vorthmann/zome/ui/ControlActions.java',
