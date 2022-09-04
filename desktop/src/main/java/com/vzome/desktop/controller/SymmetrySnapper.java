@@ -1,5 +1,5 @@
 
-package com.vzome.desktop.awt;
+package com.vzome.desktop.controller;
 
 import javax.vecmath.Vector3f;
 
@@ -7,9 +7,8 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.math.symmetry.OrbitSet;
-import com.vzome.desktop.controller.CameraController;
 
-public class SymmetrySnapper implements CameraController.Snapper
+public class SymmetrySnapper implements OrbitSnapper
 {
     private final OrbitSet orbitSet;
     

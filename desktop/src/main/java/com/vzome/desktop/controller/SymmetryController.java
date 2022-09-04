@@ -1,5 +1,5 @@
 
-package com.vzome.desktop.awt;
+package com.vzome.desktop.controller;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -23,11 +23,6 @@ import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.desktop.api.Controller;
-import com.vzome.desktop.controller.CameraController;
-import com.vzome.desktop.controller.DefaultController;
-import com.vzome.desktop.controller.LengthController;
-import com.vzome.desktop.controller.OrbitSetController;
-import com.vzome.desktop.controller.ToolFactoryController;
 
 public class SymmetryController extends DefaultController
 {
@@ -62,7 +57,7 @@ public class SymmetryController extends DefaultController
     public OrbitSet snapOrbits;
     public OrbitSet buildOrbits;
     public OrbitSet renderOrbits;
-    private final CameraController.Snapper snapper;
+    private final OrbitSnapper snapper;
 
     public OrbitSetController availableController;
     public OrbitSetController snapController;
@@ -81,7 +76,7 @@ public class SymmetryController extends DefaultController
         return this .symmetrySystem .getSymmetry();
     }
 
-    public CameraController.Snapper getSnapper()
+    public OrbitSnapper getSnapper()
     {
         return snapper;
     }

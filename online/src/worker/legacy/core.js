@@ -514,7 +514,7 @@ const init = async () =>
 
     // renderer is not currently used, since the state is in RealizedModelImpl;
     //  instead, we have batchRender.
-    return { renderer, interpretEdit, configureAndPerformEdit, field, batchRender };
+    return { renderer, interpretEdit, configureAndPerformEdit, field, batchRender, orbitSource };
   }
 
   // Discover all the legacy edit classes and register as commands
@@ -541,7 +541,7 @@ const init = async () =>
     }
   ) )
 
-  return { parser, commands, gridPoints, getLegacyField }
+  return { parser, documentFactory, commands, gridPoints, getLegacyField }
 }
 
 export const realizeShape = ( shape ) =>
@@ -725,4 +725,4 @@ const createParser = ( createDocument ) => ( xmlText ) =>
   return { firstEdit, camera, field, targetEditId, renderer, lighting, batchRender, xmlTree, snapshots }
 }
 
-export const parserPromise = init()
+export const initPromise = init()

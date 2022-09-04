@@ -54,11 +54,6 @@ public class CameraController extends DefaultController implements Scene.Provide
 
     private final int maxOrientations;
 
-    public interface Snapper
-    {
-        void snapDirections( Vector3f lookDir, Vector3f upDir );
-    }
-
     public static interface Viewer 
     {
         int MONOCULAR = 0; int LEFT_EYE = 1; int RIGHT_EYE = 2;
@@ -251,7 +246,7 @@ public class CameraController extends DefaultController implements Scene.Provide
 
     private static final Vector3f Z = new Vector3f( 0f, 0f, -1f ), Y = new Vector3f( 0f, 1f, 0f );
 
-    private Snapper snapper = null;
+    private OrbitSnapper snapper = null;
 
     private boolean snapping = false;
 
@@ -458,7 +453,7 @@ public class CameraController extends DefaultController implements Scene.Provide
         return this .copied != null;
     }
     
-    public void setSymmetry( RenderedModel model, Snapper snapper )
+    public void setSymmetry( RenderedModel model, OrbitSnapper snapper )
     {
         this .symmetryModel = model;
         if ( this .scene == null )

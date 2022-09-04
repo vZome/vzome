@@ -201,14 +201,16 @@ core.config {
 
         // OrbitSetController and its dependencies
         'com/vzome/desktop/api/Controller.java',
+        'com/vzome/desktop/controller/DefaultController.java',
+        'com/vzome/desktop/controller/OrbitSetController.java',
+        'com/vzome/desktop/controller/NumberController.java',
+        'com/vzome/desktop/controller/LengthController.java',
+
+        // OrbitPanel and its dependencies
         // 'org/vorthmann/j3d/CanvasTool.java',
         // 'com/vzome/desktop/awt/GraphicsController.java',
         // 'com/vzome/desktop/awt/GraphicsViewer.java',
-        'com/vzome/desktop/controller/DefaultController.java',
         // 'com/vzome/desktop/awt/DefaultGraphicsController.java',
-        'com/vzome/desktop/controller/OrbitSetController.java',
-
-        // OrbitPanel and its dependencies
         // 'org/vorthmann/j3d/MouseTool.java',
         // 'org/vorthmann/j3d/MouseToolDefault.java',
         // 'org/vorthmann/ui/CardPanel.java',

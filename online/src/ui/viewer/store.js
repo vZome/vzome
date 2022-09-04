@@ -22,6 +22,8 @@ export const defineCamera = camera => ({ type: 'CAMERA_DEFINED', payload: camera
 export const setPerspective = value => ({ type: 'PERSPECTIVE_SET', payload: value });
 export const fetchDesign = ( url, preview, debug=false ) => ({ type: 'URL_PROVIDED', payload: { url, preview, debug } });
 export const openDesignFile = ( file, debug=false ) => ({ type: 'FILE_PROVIDED', payload: { file, debug } });
+export const newDesign = () => ({ type: 'NEW_DESIGN_STARTED', payload: { field: 'golden' } });
+export const doControllerAction = ( controller='', action, parameters={} ) => ({ type: 'ACTION_TRIGGERED', payload: { controller, action, parameters } });
 
 const reducer = ( state = initialState, event ) =>
 {

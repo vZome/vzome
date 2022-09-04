@@ -1,18 +1,18 @@
 
-import { normalizeRenderedManifestation, parserPromise, realizeShape } from './js2jsweet.js'
+import { normalizeRenderedManifestation, initPromise, realizeShape } from './core.js'
 import { defaultNew } from './resources/com/vzome/core/parts/index.js'
 
-export { realizeShape, normalizeRenderedManifestation } from './js2jsweet.js'
+// export { realizeShape, normalizeRenderedManifestation } from './core.js'
 
 export const parse = async text =>
 {
-  const { parser } = await parserPromise
+  const { parser } = await initPromise
   return parser( text )
 }
 
 export const getField = async name =>
 {
-  const { getLegacyField } = await parserPromise;
+  const { getLegacyField } = await initPromise;
   return getLegacyField( name );
 }
 
@@ -50,7 +50,7 @@ const loadBallShape = ( fieldName, shapesModel ) =>
   return { id, vertices, faces }
 }
 
-export const getDefaultRenderer = field =>
+const getDefaultRenderer = field =>
 {
   const defaultShaper = shapes => ( { id, vectors } ) =>
   {
@@ -77,14 +77,14 @@ export const getDefaultRenderer = field =>
   }
 }
 
-export const cloneMesh = ( { shown, selected, hidden, groups=[] } ) =>
+const cloneMesh = ( { shown, selected, hidden, groups=[] } ) =>
   ({ shown: new Map( shown ), selected: new Map( selected ), hidden: new Map( hidden ), groups: [ ...groups ] })
 
 // TODO: put this in a module that both worker and main context can use.
 //  Right now this is duplicated!
-export const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
+const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
 
-export const interpret = ( action, state, stack=[] ) =>
+const interpret = ( action, state, stack=[] ) =>
 {
   let edit = state .getNextEdit();
 

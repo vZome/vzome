@@ -3,6 +3,7 @@ export const esbuildConfig = {
   entryPoints: {
     'vzome-online': 'src/app/index.jsx',
     'vzome-browser': 'src/app/browser/index.jsx',
+    'vzome-classic': 'src/app/classic/index.jsx',
     'vzome-viewer': 'src/wc/index.js',
     'vzome-viewer-dynamic': 'src/ui/viewer/index.jsx',
     'vzome-legacy': 'src/worker/legacy/dynamic.js',

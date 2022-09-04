@@ -82,6 +82,27 @@ const fetchFileText = selected =>
   })
 }
 
+let designController;
+
+const createDesign = ( report, fieldName ) =>
+{
+  return import( './legacy/dynamic.js' )
+
+    .then( module => {
+      return module .newDesign( fieldName );
+    } )
+
+    .then( controller => {
+      designController = controller;
+    } )
+
+    .catch( error => {
+      console.log( `createDesign failure: ${error.message}` );
+      report( { type: 'ALERT_RAISED', payload: 'Failed to create vZome model.' } );
+      return false; // probably nobody should care about the return value
+     } );
+}
+
 const getField = name =>
 {
   return import( './legacy/dynamic.js' )
@@ -212,6 +233,15 @@ onmessage = ({ data }) =>
         console.log( `getScene error: ${error.message}` );
         postMessage( { type: 'ALERT_RAISED', payload: 'Failed to interpret all edits.' } );
       }
+      break;
+
+    case 'ACTION_TRIGGERED':
+      const { controller, action, parameters } = payload;
+      break;
+
+    case 'NEW_DESIGN_STARTED':
+      const { field } = payload;
+      createDesign( postMessage, field );
       break;
   
     default:
