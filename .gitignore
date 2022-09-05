@@ -65,3 +65,6 @@ online.tgz
 deploy-to-dreamhost.sh
 *.pem
 online/src/worker/legacy/candies
+online/src/ui/legacy/candies
+
+desktop-errors.txt
