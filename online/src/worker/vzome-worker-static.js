@@ -94,6 +94,12 @@ const createDesign = ( report, fieldName ) =>
 
     .then( controller => {
       designController = controller;
+      controller .addPropertyListener( { propertyChange: pce => {
+        const name = pce .getPropertyName();
+        const value = pce .getNewValue();
+        report( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { path: '', name, value } } );
+      } } );
+      report( { type: 'CONTROLLER_CREATED' } );
     } )
 
     .catch( error => {
@@ -236,8 +242,20 @@ onmessage = ({ data }) =>
       break;
 
     case 'ACTION_TRIGGERED':
+    {
       const { controller, action, parameters } = payload;
+      designController .actionPerformed( null, action )
       break;
+    }
+
+    case 'LIST_REQUESTED':
+    {
+      const { controllerName, listName } = payload;
+      // TODO: dispatch to the right subcontroller
+      const list = designController .getCommandList( listName );
+      postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { path: controllerName, name: listName, value: list } } );
+      break;
+    }
 
     case 'NEW_DESIGN_STARTED':
       const { field } = payload;
