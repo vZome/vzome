@@ -65,7 +65,7 @@ export const ClassicEditor = ( props ) =>
 
   useEffect( () => {
     const applet = new com.vzome.online.classic.OrbitsApplet();
-    applet.setSize( 500, 300 );
+    applet.setSize( 400, 200 );
     const element = document .getElementById( 'swing-root' );
     applet .bindHTML( element );
     applet .init();

@@ -17,19 +17,49 @@ public class OrbitsApplet extends JApplet
 
     public void init()
     {
-        this .enabledOrbits = new OrbitSetGraphicsController( new DefaultController(), false );
+        DefaultController controller = new DefaultController()
+        {
+            public String[] getCommandList( String listName )
+            {
+                if ( "allOrbits" .equals( listName ) )
+                    return new String[]{ "red", "yellow", "blue" };
+                else
+                    return super .getCommandList( listName );
+            }
+
+            public String getProperty( String name )
+            {
+                switch ( name ) {
+
+                    case "orbitDot.red":
+                        return "0xaf0000/1.0/0.0";
+                    case "orbitDot.yellow":
+                        return "0xf0a000/0.0/1.0";
+                    case "orbitDot.blue":
+                        return "0x7695/0.0/0.0";
+
+                    default:
+                        return super .getProperty( name );
+                }
+            }
+
+            protected void doAction( String action ) throws Exception
+            {
+            }
+        };
+        this .enabledOrbits = new OrbitSetGraphicsController( controller, false );
+        this .enabledOrbits .actionPerformed( this, "refreshDots" );
+        Dimension size = this .getSize();
         JPanel orbitsPanel = new JPanel()
         {
             public void paint( Graphics graphics )
             {
-                Dimension size = getSize();
-                enabledOrbits .repaintGraphics( "orbits", graphics, getSize() );
-                graphics .drawString( "HELLO!", 100, 100 );
-                graphics .drawString( "HELLO!", 100, 200 );
-                graphics .drawString( "HELLO!", 200, 100 );
-                graphics .drawString( "HELLO!", 200, 200 );
+                enabledOrbits .repaintGraphics( "orbits", graphics, size );
             }
         };
         this.add( orbitsPanel );
+
+        // shouldn't need to do this
+        orbitsPanel .setSize( this .getSize() );
     }
 }
