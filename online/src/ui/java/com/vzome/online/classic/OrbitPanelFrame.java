@@ -12,6 +12,14 @@ import com.vzome.desktop.api.Controller;
 import com.vzome.desktop.controller.DefaultController;
 import org.vorthmann.zome.ui.OrbitPanel;
 
+/**
+ * This was my initial attempt at using legacy Swing-based vZome UI classes in the web.
+ * I abandoned it because j4ts-awt-swing is simply not ready.  In this case, it fails
+ * somewhere in GridLayout, one of the *six* layout managers used by vZome, and I'm not
+ * willing to debug and possibly implement them.
+ *
+ * This code is currently not getting transpiled by JSweet... see `build.gradle`.
+ */
 public class OrbitPanelFrame extends JFrame
 {
     public OrbitPanelFrame()

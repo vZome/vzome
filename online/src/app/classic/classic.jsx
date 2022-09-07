@@ -2,7 +2,8 @@
 import React from 'react'
 import { useDispatch, useSelector, useStore } from 'react-redux';
 import { doControllerAction, newDesign, requestControllerList } from '../../ui/viewer/store.js';
-import { org, com } from '../../ui/legacy/desktop-java.js'
+import { com } from '../../ui/legacy/desktop-java.js'
+import { WorkerController } from './controller.js';
 
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button';
@@ -27,7 +28,8 @@ const controllerSelector = ( path, name ) => state =>
 export const useController = ( path ) =>
 {
   const report = useDispatch();
-  useEffect( () => report( newDesign() ), [] );
+  // let WorkerController do this
+  // useEffect( () => report( newDesign() ), [] );
 
   const controller = useSelector( controllerSelector( path ) );
   const selector = name => controllerSelector( path, name );
@@ -63,12 +65,14 @@ export const ClassicEditor = ( props ) =>
   const controller = useController( '' );
   const orbitNames = useControllerList( controller, 'orbits' );
 
+  const store = useStore();
   useEffect( () => {
+    const controller = new WorkerController( store );
     const applet = new com.vzome.online.classic.OrbitsApplet();
     applet.setSize( 400, 200 );
     const element = document .getElementById( 'swing-root' );
     applet .bindHTML( element );
-    applet .init();
+    applet .setController( controller );
     applet .doPaintInternal();
   }, []);
 

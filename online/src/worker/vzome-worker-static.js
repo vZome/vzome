@@ -248,6 +248,15 @@ onmessage = ({ data }) =>
       break;
     }
 
+    case 'PROPERTY_REQUESTED':
+    {
+      const { controllerName, propName } = payload;
+      // TODO: dispatch to the right subcontroller
+      const list = designController .getProperty( propName );
+      postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { path: controllerName, name: propName, value: list } } );
+      break;
+    }
+
     case 'LIST_REQUESTED':
     {
       const { controllerName, listName } = payload;

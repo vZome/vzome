@@ -28,6 +28,7 @@ export const openDesignFile = ( file, debug=false ) => workerAction( 'FILE_PROVI
 export const newDesign = () => workerAction( 'NEW_DESIGN_STARTED', { field: 'golden' } );
 export const doControllerAction = ( controller='', action, parameters={} ) => workerAction( 'ACTION_TRIGGERED', { controller, action, parameters } );
 export const requestControllerList = ( controllerName='', listName ) => workerAction( 'LIST_REQUESTED', { controllerName, listName } );
+export const requestControllerProperty = ( controllerName='', propName ) => workerAction( 'PROPERTY_REQUESTED', { controllerName, propName } );
 
 const reducer = ( state = initialState, event ) =>
 {

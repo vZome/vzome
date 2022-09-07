@@ -267,7 +267,6 @@ desktop.config {
   tsOnly = false
 	includes = [
 
-    // 'com/vzome/online/classic/OrbitPanelFrame.java',
     'com/vzome/online/classic/OrbitsApplet.java',
 
     // OrbitPanel and its dependencies

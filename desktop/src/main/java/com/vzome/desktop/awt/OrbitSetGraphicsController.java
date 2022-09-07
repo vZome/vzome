@@ -61,12 +61,14 @@ public class OrbitSetGraphicsController extends DefaultGraphicsController
             orbitDots .clear();
             for ( String orbitName : super .getCommandList( "allOrbits" ) ) {
                 String details = super .getProperty( "orbitDot." + orbitName );
-                String[] tokens = details .split( "/" );
-                OrbitState dot = new OrbitState();
-                dot .color = Color.decode( tokens[0] );
-                dot .dotX = Double.parseDouble( tokens[1] );
-                dot .dotY = Double.parseDouble( tokens[2] );
-                this .orbitDots .put( orbitName, dot );
+                if ( details != null && details .contains( "/" ) ) {
+                    String[] tokens = details .split( "/" );
+                    OrbitState dot = new OrbitState();
+                    dot .color = Color.decode( tokens[0] );
+                    dot .dotX = Double.parseDouble( tokens[1] );
+                    dot .dotY = Double.parseDouble( tokens[2] );
+                    this .orbitDots .put( orbitName, dot );
+                }
             }
             return;
         }
