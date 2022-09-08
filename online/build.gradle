@@ -46,11 +46,6 @@ sourceSets {
             srcDirs = [ 'src/worker/java', "$projectDir/../core/src/main/java", "$projectDir/../desktop/src/main/java" ]
         }
     }
-    desktop {
-        java {
-            srcDirs = [ 'src/ui/java', "$projectDir/../desktop/src/main/java" ]
-        }
-    }
 }
 
 dependencies {
@@ -59,8 +54,6 @@ dependencies {
 
     coreCompileOnly group: 'org.jsweet', name: 'jsweet-core', version: "6.1.0"
     coreCompileOnly group: 'org.jsweet', name: 'j4ts',        version: '2.1.0-SNAPSHOT'
-    
-    desktopCompileOnly group: 'org.jsweet.candies.j4ts', name: 'j4ts-awt-swing', version: '0.0.2-SNAPSHOT'
 }
 
 JavaPluginConvention javaPluginConvention = getConvention().getPlugin(JavaPluginConvention.class);
@@ -234,61 +227,6 @@ core.config {
     'com/vzome/core/exporters/SimpleMeshJsonExporter.java',
     'com/vzome/core/exporters/HistoryExporter.java',
     'com/vzome/core/exporters/ShapesJsonExporter.java'
-  ]
-}
-
-def transpileDesktopTask = getTasks().create( "desktop", org.jsweet.gradle.JSweetTranspileTask.class );
-def desktopExtension = transpileDesktopTask.extensions.create( "config", org.jsweet.gradle.JSweetPluginExtension.class );
-def desktopSources = sourceSets.getByName( "desktop" )
-transpileDesktopTask.setGroup( "generate" );
-transpileDesktopTask.dependsOn( JavaPlugin.COMPILE_JAVA_TASK_NAME );
-transpileDesktopTask.setConfiguration( desktopExtension );
-transpileDesktopTask.setSources( desktopSources .getAllJava() );
-transpileDesktopTask.setClasspath( desktopSources .getCompileClasspath() );
-
-def cleanDesktopTask = getTasks().create( "desktopClean", org.jsweet.gradle.JSweetCleanTask.class );
-cleanDesktopTask.setConfiguration( desktopExtension );
-
-desktop.config {
-	veryVerbose = true
-	encoding = 'UTF-8'
-	sourceMap = false  // I can't set breakpoints if the browser cannot find the Java file, so disabling for now.
-
-  bundle = true
-
-  workingDir = project.file( '.jsweet/desktop' )
-	tsOut = project.file( 'jsweetOut/desktop/ts' )
-	outDir = project.file( 'jsweetOut/desktop/js' )
-  candiesJsOut = project.file( 'jsweetOut/desktop/candies' )
-
-  javaCompilerExtraOptions = '-source,1.8,-target,1.8'
-
-	targetVersion = 'ES6'
-  tsOnly = false
-	includes = [
-
-    'com/vzome/online/classic/OrbitsApplet.java',
-
-    // OrbitPanel and its dependencies
-    'com/vzome/desktop/api/Controller.java',
-    'com/vzome/desktop/controller/DefaultController.java',
-    'org/vorthmann/j3d/CanvasTool.java',
-    'org/vorthmann/j3d/MouseTool.java',
-    'org/vorthmann/j3d/MouseToolDefault.java',
-    'com/vzome/desktop/awt/GraphicsController.java',
-    'com/vzome/desktop/awt/GraphicsViewer.java',
-    'com/vzome/desktop/awt/DefaultGraphicsController.java',
-    'com/vzome/desktop/awt/OrbitSetGraphicsController.java',
-    'org/vorthmann/ui/CardPanel.java',
-    'org/vorthmann/ui/LeftMouseDragAdapter.java',
-    'org/vorthmann/zome/ui/ContextualMenu.java',
-    'org/vorthmann/zome/ui/ContextualMenuMouseListener.java',
-    'org/vorthmann/zome/ui/ControlActions.java',
-    'org/vorthmann/zome/ui/ControllerActionListener.java',
-    'org/vorthmann/zome/ui/OrbitPanel.java',
-  ]
-  excludes = [
-
   ]
 }
 
