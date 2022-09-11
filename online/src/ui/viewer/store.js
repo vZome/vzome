@@ -16,12 +16,19 @@ export const initialState = {
   }
 };
 
-export const selectEditBefore = nodeId => ({ type: 'EDIT_SELECTED', payload: { before: nodeId } } );
-export const selectEditAfter = nodeId => ({ type: 'EDIT_SELECTED', payload: { after: nodeId } } );
 export const defineCamera = camera => ({ type: 'CAMERA_DEFINED', payload: camera });
 export const setPerspective = value => ({ type: 'PERSPECTIVE_SET', payload: value });
-export const fetchDesign = ( url, preview, debug=false ) => ({ type: 'URL_PROVIDED', payload: { url, preview, debug } });
-export const openDesignFile = ( file, debug=false ) => ({ type: 'FILE_PROVIDED', payload: { file, debug } });
+
+const workerAction = ( type, payload ) => ({ type, payload, meta: 'WORKER' } );
+
+export const selectEditBefore = nodeId => workerAction( 'EDIT_SELECTED', { before: nodeId } );
+export const selectEditAfter = nodeId => workerAction( 'EDIT_SELECTED', { after: nodeId } );
+export const fetchDesign = ( url, preview, debug=false ) => workerAction( 'URL_PROVIDED', { url, preview, debug } );
+export const openDesignFile = ( file, debug=false ) => workerAction( 'FILE_PROVIDED', { file, debug } );
+export const newDesign = () => workerAction( 'NEW_DESIGN_STARTED', { field: 'golden' } );
+export const doControllerAction = ( controller='', action, parameters={} ) => workerAction( 'ACTION_TRIGGERED', { controller, action, parameters } );
+export const requestControllerList = ( controllerName='', listName ) => workerAction( 'LIST_REQUESTED', { controllerName, listName } );
+export const requestControllerProperty = ( controllerName='', propName ) => workerAction( 'PROPERTY_REQUESTED', { controllerName, propName } );
 
 const reducer = ( state = initialState, event ) =>
 {
@@ -80,6 +87,26 @@ const reducer = ( state = initialState, event ) =>
       return { ...state, scene: { ...state.scene, trackball } };
     }
 
+    case 'CONTROLLER_CREATED': {
+      return { ...state, controller: {} };
+    }
+
+    case 'CONTROLLER_PROPERTY_CHANGED': {
+      const { path, name, value } = event.payload;
+      let elements = path? path.split( '/' ) : [];
+      const updateField = ( object={}, names, value ) =>
+      {
+        if ( names.length === 0 )
+          return { ...object, [name]: value };
+        else {
+          const key = names[ 0 ];
+          return { ...object, [key]: updateField( object[key], names.slice( 1 ), value ) };
+        }
+      }
+      const controller = updateField( state.controller, elements, value );
+      return { ...state, controller };
+    }
+
     default:
       return state;
   }
@@ -125,39 +152,24 @@ export const createWorkerStore = customElement =>
 
   const workerSender = store => report => event =>
   {
-    switch ( event.type ) {
-
-      // These are all coming back from the worker
-      case 'ALERT_RAISED':
-      case 'ALERT_DISMISSED':
-      case 'FETCH_STARTED':
-      case 'TEXT_FETCHED':
-      case 'DESIGN_INTERPRETED':
-      case 'SCENE_RENDERED':
-      case 'CAMERA_DEFINED':
-      case 'PERSPECTIVE_SET':
-      case 'TRACKBALL_MOVED':
-        report( event );
-        break;
-
-      // Anything else is to send to the worker
-      default:
-        if ( navigator.userAgent.indexOf( "Firefox" ) > -1 ) {
-            console.log( "The worker is not available in Firefox" );
-            report( { type: 'ALERT_RAISED', payload: 'Module workers are not yet supported in Firefox.  Please try another browser.' } );
-        }
-        else {
-          workerPromise.then( worker => {
-            // console.log( `Message sending to worker: ${JSON.stringify( event, null, 2 )}` );
-            worker.postMessage( event );  // send them all, let the worker filter them out
-          } )
-          .catch( error => {
-            console.log( "The worker is not available" );
-            report( { type: 'ALERT_RAISED', payload: 'The worker is not available.  Module workers are not supported in older versions of other browsers.  Please update your browser.' } );
-          } );
-        }
-        break;    
+    if ( event.meta && event.meta === 'WORKER' ) {
+      if ( navigator.userAgent.indexOf( "Firefox" ) > -1 ) {
+          console.log( "The worker is not available in Firefox" );
+          report( { type: 'ALERT_RAISED', payload: 'Module workers are not yet supported in Firefox.  Please try another browser.' } );
+      }
+      else {
+        workerPromise.then( worker => {
+          // console.log( `Message sending to worker: ${JSON.stringify( event, null, 2 )}` );
+          worker.postMessage( event );  // send them all, let the worker filter them out
+        } )
+        .catch( error => {
+          console.log( "The worker is not available" );
+          report( { type: 'ALERT_RAISED', payload: 'The worker is not available.  Module workers are supported in newer versions of most browsers.  Please update your browser.' } );
+        } );
+      }
     }
+    else
+        report( event );
   }
 
   const preloadedState = {}
@@ -171,11 +183,12 @@ export const createWorkerStore = customElement =>
 
   const onWorkerMessage = ({ data }) => {
     console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
-    store .dispatch( data );
+
+    store .dispatch( data );  // forward to the reducer(s)
 
     // Useful for supporting regression testing of the vzome-viewer web component
     if ( customElement ) {
-      switch (data.type) {
+      switch ( data.type ) {
 
         case 'DESIGN_INTERPRETED':
           customElement.dispatchEvent( new Event( 'vzome-design-rendered' ) );

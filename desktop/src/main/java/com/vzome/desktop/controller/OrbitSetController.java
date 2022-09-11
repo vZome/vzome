@@ -1,22 +1,11 @@
 
-package com.vzome.desktop.awt;
+package com.vzome.desktop.controller;
 
-import java.awt.BasicStroke;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.event.MouseEvent;
-import java.awt.geom.GeneralPath;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.vorthmann.j3d.MouseTool;
-import org.vorthmann.j3d.MouseToolDefault;
-import org.vorthmann.ui.LeftMouseDragAdapter;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
@@ -30,43 +19,29 @@ import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.desktop.api.Controller;
 
-public class OrbitSetController extends DefaultGraphicsController implements PropertyChangeListener
+public class OrbitSetController extends DefaultController implements PropertyChangeListener
 {
     private final OrbitSource colorSource;
 
     private final OrbitSet orbits, allOrbits;
 
     private Direction lastOrbit = null;
-
-    private boolean mOneAtATime = true, showLastOrbit = false;
+    
+    private boolean mOneAtATime = true;
 
     private final Map<Direction, OrbitState> orbitDots = new HashMap<>();
-
-    private final MouseTool mouseTool = new LeftMouseDragAdapter( new MouseToolDefault()
-    {
-        @Override
-        public void mouseClicked( MouseEvent click )
-        {
-            Direction pickedDir = pickDirection( click );
-            if ( pickedDir != null ) {
-                toggleOrbit( pickedDir );
-                firePropertyChange( "orbits", true, false );
-            }
-        }
-    }, /* half-second forgiveness */ 500 );
 
     private static class OrbitState
     {
         double dotX, dotY;
-        int dotXint, dotYint;
+        Color color;
     }
 
-    public OrbitSetController( OrbitSet orbits, OrbitSet allOrbits, OrbitSource colorSource, boolean showLastOrbit )
+    public OrbitSetController( OrbitSet orbits, OrbitSet allOrbits, OrbitSource colorSource )
     {
         this.orbits = orbits;
         this.allOrbits = allOrbits;
         this.colorSource = colorSource;
-        this.showLastOrbit = showLastOrbit;
         this.mOneAtATime = orbits .size() == 1;
         recalculateDots();
     }
@@ -98,6 +73,7 @@ public class OrbitSetController extends DefaultGraphicsController implements Pro
             OrbitState orbit = new OrbitState();
             orbitDots .put( dir, orbit );
 
+            orbit .color = colorSource .getColor( dir );
             orbit .dotX = dir .getDotX();
             if ( orbit .dotX >= -90d ) {
                 // This orbit supports pre-computed dot locations
@@ -256,6 +232,10 @@ public class OrbitSetController extends DefaultGraphicsController implements Pro
     {
         if ( "oneAtATime" .equals( string ) )
             return Boolean .toString( mOneAtATime );
+
+        if ( "reverseOrbitTriangle" .equals( string ) )
+            return Boolean .toString( this .allOrbits .getSymmetry() .reverseOrbitTriangle() );
+
         if ( "selectedOrbit" .equals( string ) )
             if ( lastOrbit != null )
                 return lastOrbit .getName();
@@ -288,6 +268,19 @@ public class OrbitSetController extends DefaultGraphicsController implements Pro
 
         if ( "half" .equals( string ) | "unitText" .equals( string ) | "multiplierText" .equals( string ) )
             return getSubController( "currentLength" ) .getProperty( string );
+        
+        if ( string .startsWith( "orbitDot." ) ) {
+            String orbitName = string .substring( "orbitDot." .length() );
+            Direction orbit = allOrbits .getDirection( orbitName );
+            OrbitState dot = this .orbitDots .get( orbit );
+            return "0x" + Integer.toHexString( dot.color.getRGB() ) + "/" + dot.dotX + "/" + dot.dotY;
+        }
+        
+        if ( string .startsWith( "orbitEnabled." ) ) {
+            String orbitName = string .substring( "orbitEnabled." .length() );
+            Direction orbit = orbits .getDirection( orbitName );
+            return Boolean.toString( orbit != null );
+        }
 
         return super .getProperty( string );
     }
@@ -303,142 +296,6 @@ public class OrbitSetController extends DefaultGraphicsController implements Pro
             super .setModelProperty( cmd, value );
     }
 
-    private static final int RADIUS = 12;
-    private static final int INNER_RADIUS = 5;
-    private static final int OUTER_RADIUS = 19;
-    private static final int DIAM = 2 * RADIUS;
-    private static int TOP = 30;
-    private static int LEFT = TOP;
-
-    @Override
-    public void repaintGraphics( String panelName, Graphics graphics, Dimension size )
-    {
-        if ( panelName .startsWith( "oneOrbit." ) )
-        {
-            Direction dir = allOrbits .getDirection( panelName .substring( "oneOrbit." .length() ) );
-            Graphics2D g2d = (Graphics2D) graphics;
-            g2d .clearRect( 0, 0, (int) size .getWidth(), (int) size .getHeight() );
-            Color color = colorSource .getColor( dir );
-            g2d .setPaint( color == null? java.awt.Color.WHITE : new java.awt.Color( color .getRGB() ) );
-            g2d .fill( g2d .getClipBounds() );
-        }
-        else if ( "selectedOrbit" .equals( panelName ) )
-        {
-            Graphics2D g2d = (Graphics2D) graphics;
-            g2d .clearRect( 0, 0, (int) size .getWidth(), (int) size .getHeight() );
-            Color color = colorSource .getColor( lastOrbit );
-            g2d .setPaint( color == null? java.awt.Color.WHITE : new java.awt.Color( color .getRGB() ) );
-            g2d .fill( g2d .getClipBounds() );
-        }
-        else if ( "orbits" .equals( panelName ) )
-        {
-            int fullwidth = (int) size .getWidth();
-            int fullheight = (int) size .getHeight();
-
-            Graphics2D g2d = (Graphics2D) graphics;
-            g2d .clearRect( 0, 0, fullwidth, fullheight );
-            g2d .setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-
-            if ( fullheight > 180 )
-                fullheight = 180;
-            int width = fullwidth - 2*TOP;
-            int height = fullheight - 2*LEFT;
-
-            int right = LEFT + width;
-            int bottom = TOP + height ;
-            int corner = LEFT;
-            Symmetry symm = allOrbits .getSymmetry();
-            if ( symm .reverseOrbitTriangle() )
-                corner = right;
-
-            g2d .setStroke( new BasicStroke( 1.5f , BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND ) );
-            g2d .setPaint( java.awt.Color.black );
-
-            GeneralPath path = new GeneralPath();
-            path .moveTo( corner, TOP );
-            path .lineTo( LEFT, bottom );
-            path .lineTo( right, bottom );
-            path .lineTo( corner, TOP );
-            path .closePath();
-            g2d .draw( path );
-
-            for (Direction dir : orbitDots .keySet()) {
-                OrbitState orbit = orbitDots .get( dir );
-                Color color = colorSource .getColor( dir );
-                int x = LEFT + (int) Math .round( orbit.dotX * width );
-                // flip right/left if necessary
-                if ( corner == right )
-                    x = corner - (int) Math .round( orbit.dotX * width );
-                int y = bottom - (int) Math .round( orbit.dotY * height );
-                // now store the int coords for later picking
-                orbit.dotXint = x;
-                orbit.dotYint = y;
-                g2d .setPaint( color == null? java.awt.Color.WHITE : new java.awt.Color( color .getRGB() ) );
-                g2d .fillOval( orbit.dotXint-RADIUS, orbit.dotYint-RADIUS, DIAM, DIAM );
-                g2d .setPaint( java.awt.Color.black );
-                g2d .drawOval( orbit.dotXint-RADIUS, orbit.dotYint-RADIUS, DIAM, DIAM );
-                if ( orbits .contains( dir ) ) {
-                    g2d .setPaint( java.awt.Color.black );
-                    g2d .fillOval( orbit.dotXint-INNER_RADIUS, orbit.dotYint-INNER_RADIUS, INNER_RADIUS*2, INNER_RADIUS*2 );
-                }
-                if ( showLastOrbit &&  lastOrbit == dir )
-                {
-                    g2d .setPaint( java.awt.Color.black );
-                    g2d .drawOval( orbit.dotXint-OUTER_RADIUS, orbit.dotYint-OUTER_RADIUS, OUTER_RADIUS*2, OUTER_RADIUS*2 );
-                }
-            }
-
-            g2d.dispose(); //clean up
-        }
-    }
-
-    Direction pickDirection( MouseEvent click )
-    {
-        double minDist = 999d;
-        Direction pickedDir = null;
-        for (Direction dir : orbitDots .keySet()) {
-            OrbitState orbit = orbitDots .get( dir );
-            double dist = Math.sqrt( Math.pow( click.getX()-orbit.dotXint, 2 ) + Math.pow( click.getY()-orbit.dotYint, 2 ) );
-            if ( dist < (double) RADIUS*4 )
-            {
-                if ( dist < minDist ) {
-                    minDist = dist;
-                    pickedDir = dir;
-                }
-            }
-        }
-        return pickedDir;
-    }
-
-
-    @Override
-    public MouseTool getMouseTool()
-    {
-        return this .mouseTool;
-    }
-
-    @Override
-    public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
-    {
-        boolean[] result = new boolean[menu.length];
-        for ( int i = 0; i < menu.length; i++ ) {
-            String menuItem = menu[i];
-            switch ( menuItem ) {
-
-            case "rZomeOrbits":
-            case "predefinedOrbits":
-            case "setAllDirections":
-            case "usedOrbits":
-            case "configureDirections":
-                result[i] = true;
-                break;
-
-            default:
-                result[i] = false;
-            }
-        }
-        return result;
-    }
 
     @Override
     public String[] getCommandList( String listName )

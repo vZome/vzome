@@ -34,7 +34,7 @@ public class CameraGraphicsController extends CameraController implements Graphi
     }
 
     @Override
-    public void attachViewer( RenderingViewer viewer, Component canvas )
+    public void attachViewer( GraphicsViewer viewer, Component canvas )
     {
         MouseTool trackball = new CameraTrackball( this, 0.04d );
         
@@ -43,6 +43,6 @@ public class CameraGraphicsController extends CameraController implements Graphi
         canvas .addMouseListener( trackball );
         canvas .addMouseMotionListener( trackball );
 
-        this .addViewer( new TrackballRenderingViewer( viewer ) );
+        this .addViewer( new TrackballRenderingViewer( (RenderingViewer) viewer ) );
     }
 }

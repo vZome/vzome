@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import com.vzome.desktop.api.Controller;
 import com.vzome.desktop.awt.GraphicsController;
 
+@SuppressWarnings("serial")
 public class SymmetryDialog extends EscapeDialog
 {
     public SymmetryDialog( Frame frame, Controller controller )
@@ -21,33 +22,23 @@ public class SymmetryDialog extends EscapeDialog
         {
             Container content = getContentPane();
             content .setLayout( new BorderLayout() );
-//            {
-//                JCheckBox checkbox = new JCheckBox( "Use graphical views" );
-//                checkbox .addActionListener( controller );
-//                checkbox .setActionCommand( "toggleOrbitViews" );
-//                boolean setting = "true" .equals( controller .getProperty( "useGraphicalViews" ) );
-//                checkbox .setSelected( setting );
-//                content .add( checkbox, BorderLayout.NORTH );
-//            }
             {
                 JPanel mainPanel = new JPanel();
                 mainPanel .setLayout( new BoxLayout( mainPanel, BoxLayout.LINE_AXIS ) );
-                GraphicsController orbitController = (GraphicsController) controller .getSubController( "availableOrbits" );
+                Controller orbitController = controller .getSubController( "availableOrbits" );
                 {
                     JPanel panel = new OrbitPanel( orbitController, controller, null );
                     panel .setBorder( BorderFactory .createTitledBorder( "available directions" ) );
                     mainPanel .add( panel );
                 }
                 {
-                    JPanel panel = new OrbitPanel( (GraphicsController) controller .getSubController( "snapOrbits" ), orbitController, null );
+                    JPanel panel = new OrbitPanel( controller .getSubController( "snapOrbits" ), orbitController, null );
                     panel .setBorder( BorderFactory .createTitledBorder( "snap directions" ) );
                     mainPanel .add( panel );
                 }
                 content .add( mainPanel, BorderLayout.CENTER );
             }
-        }
-//        setContentPane( new SymmetryPanel( controller ) );
-        
+        }        
         setSize( new Dimension( 600, 250 ) );
         setLocationRelativeTo( frame );
     }

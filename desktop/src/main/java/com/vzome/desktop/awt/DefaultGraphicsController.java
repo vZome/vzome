@@ -34,5 +34,5 @@ public class DefaultGraphicsController extends DefaultController implements Grap
     }
 
     @Override
-    public void attachViewer( RenderingViewer viewer, Component canvas ) {}
+    public void attachViewer( GraphicsViewer viewer, Component canvas ) {}
 }

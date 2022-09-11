@@ -51,8 +51,8 @@ jobs:
       - name: Archive Generated JS
         uses: actions/upload-artifact@v2
         with:
-          name: transpiled-java
-          path: online/src/wc/legacy/transpiled-java.js
+          name: core-java
+          path: online/src/wc/legacy/core-java.js
 
       # TODO: publish to npm.pkg.github.com; see https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
       
