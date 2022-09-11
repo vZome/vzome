@@ -1,77 +1,12 @@
 
 import React from 'react'
-import { useDispatch, useSelector, useStore } from 'react-redux';
-import { doControllerAction, newDesign, requestControllerList, requestControllerProperty } from '../../ui/viewer/store.js';
+import { DesignViewer } from '../../ui/viewer/index.jsx'
+import { useNewDesign, useController, useControllerList, useControllerProperty } from './controller-hooks.js';
 
 import Grid from '@material-ui/core/Grid'
-import Button from '@material-ui/core/Button';
-import { useEffect } from 'react';
 
-const controllerSelector = ( path, name ) => state =>
-{
-  const elements = path.split( '/' );
-  if ( name )
-    elements .push( name );
-  let result = state.controller;
-  for ( const element of elements ) {
-    if ( !result )
-      return result;
-    if ( !element )
-      continue;
-    result = result[ element ];
-  }
-  return result;
-}
 
-export const useController = ( path ) =>
-{
-  const report = useDispatch();
-  // let WorkerController do this
-  // useEffect( () => report( newDesign() ), [] );
-
-  const controller = useSelector( controllerSelector( path ) );
-  const selector = name => controllerSelector( path, name );
-  if ( controller ) {
-    const doAction = action => report( doControllerAction( path, action ) );
-    const getList = listName => report( requestControllerList( path, listName ) );
-    const getProperty = propName => report( requestControllerProperty( path, propName ) );
-    return { ready: true, doAction, getList, getProperty, selector };
-  }
-  else
-    return { selector };
-}
-
-export const useControllerProperty = ( controller, propName ) =>
-{
-  const store = useStore();
-  useEffect( () => {
-    if ( controller.ready && ! controller.selector( propName )( store .getState() ) ) {
-      // trigger the initial fetch
-      controller.getProperty( propName );
-    }
-  }, [ controller ] );
-  return useSelector( controller.selector( propName ) );
-}
-
-export const useControllerList = ( controller, listName ) =>
-{
-  const store = useStore();
-  useEffect( () => {
-    if ( controller.ready && ! controller.selector( listName )( store .getState() ) ) {
-      // trigger the initial fetch
-      controller.getList( listName );
-    }
-  }, [ controller ] );
-  return useSelector( controller.selector( listName ) );
-}
-
-const controllerAction = ( controller, action ) => evt =>
-{
-  if ( controller.ready )
-    controller .doAction( action );
-}
-
-export const OrbitDot = ( { controllerPath, orbit, selectedOrbitNames, maxX, maxY, strokeWidth } ) =>
+export const OrbitDot = ( { controllerPath, orbit, selectedOrbitNames } ) =>
 {
   const selected = selectedOrbitNames && selectedOrbitNames .indexOf( orbit ) >= 0;
   const controller = useController( controllerPath );
@@ -87,10 +22,11 @@ export const OrbitDot = ( { controllerPath, orbit, selectedOrbitNames, maxX, max
     else
       color = `#${color}`
   }
+  const r = 0.08;
   return color && ( <>
-    <circle key={orbit} cx={x * maxX} cy={y * maxY} r="0.024" fill={color} stroke="black" strokeWidth={strokeWidth}/>
+    <circle key={orbit} cx={x} cy={1-y} r={r} fill={color} />
     { selected &&
-      <circle key={orbit+'DOT'} cx={x * maxX} cy={y * maxY} r="0.010" fill="black" stroke="black" strokeWidth={strokeWidth}/>
+      <circle key={orbit+'DOT'} cx={x} cy={1-y} r={0.37*r} fill="black" />
     }
   </> )
 }
@@ -100,42 +36,35 @@ export const OrbitPanel = ( { controllerPath } ) =>
   const controller = useController( controllerPath );
   const orbitNames = useControllerList( controller, 'allOrbits' );
   const selectedOrbitNames = useControllerList( controller, 'orbits' );
-  const maxX = 0.6180339;
-  const maxY = -0.3819660;
-  const strokeWidth = 0.003;
 
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" 
-      viewBox="-0.15450849718747373 -0.47745751406263137 0.9270509831248424 0.5729490168751576"
-      width="628" height="400">
+    <svg viewBox="-0.2 -0.2 1.4 1.4" 
+         stroke="black" strokeWidth={0.007} >
       <g>
-        <polygon fill="none" stroke="black" strokeWidth={strokeWidth} points={`0,0 ${maxX},0 0,${maxY}`}/>
+        {/* TODO: reversed triangle per the controller */}
+        <polygon fill="none" points={`0,1 1,1 0,0`}/>  { /* all dot X & Y values are in [0..1] */ }
         { orbitNames && orbitNames.map && orbitNames.map( orbit =>
-          <OrbitDot { ...{ controllerPath, orbit, selectedOrbitNames, maxX, maxY, strokeWidth } }/>
+          <OrbitDot { ...{ controllerPath, orbit, selectedOrbitNames } }/>
         ) }
       </g>
     </svg>
   )
 }
 
-export const ClassicEditor = ( props ) =>
+export const ClassicEditor = () =>
 {
-  const report = useDispatch();
-  useEffect( () => report( newDesign() ), [] );
-  const controller = useController( '' );
+  useNewDesign();
 
-  const drawerColumns = 5;
-  const canvasColumns = 12 - drawerColumns;
+  const rightColumns = 3;
+  const canvasColumns = 12 - rightColumns;
 
   return (
     <div style={{ flex: '1', height: '100%' }}>
       <Grid id='editor-main' container spacing={0} style={{ height: '100%' }}>        
-        <Grid id='editor-drawer' item xs={drawerColumns}>
-          <Button variant="contained" color="primary" onClick={controllerAction( controller, 'rZomeOrbits' )}>
-            Real Zome Orbits
-          </Button>
+        <Grid id='editor-drawer' item xs={canvasColumns}>
+          <DesignViewer config={ { useSpinner: true } } />
         </Grid>
-        <Grid id='editor-canvas' item xs={canvasColumns} >
+        <Grid id='editor-canvas' item xs={rightColumns} >
           <OrbitPanel controllerPath="" />
         </Grid>
       </Grid>
