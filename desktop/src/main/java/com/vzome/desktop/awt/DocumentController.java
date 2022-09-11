@@ -81,6 +81,7 @@ import com.vzome.desktop.controller.MeasureController;
 import com.vzome.desktop.controller.NumberController;
 import com.vzome.desktop.controller.PartsController;
 import com.vzome.desktop.controller.PolytopesController;
+import com.vzome.desktop.controller.SymmetryController;
 import com.vzome.desktop.controller.ToolFactoryController;
 import com.vzome.desktop.controller.UndoRedoController;
 import com.vzome.desktop.controller.VectorController;
@@ -409,11 +410,11 @@ public class DocumentController extends DefaultGraphicsController implements Sce
     }
     
     @Override
-    public void attachViewer( RenderingViewer viewer, Component canvas )
+    public void attachViewer( GraphicsViewer viewer, Component canvas )
     {
     		// This is called on a UI thread!
         this .modelCanvas = canvas;
-        this .imageCaptureViewer = viewer;
+        this .imageCaptureViewer = (RenderingViewer) viewer;
         
         // clicks become select or deselect all
         selectionClick = new LeftMouseDragAdapter( new ManifestationPicker( imageCaptureViewer )
@@ -434,7 +435,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         this .cameraController .addViewer( this .imageCaptureViewer );
         this .addSubController( "monocularPicking", new PickingController( this .imageCaptureViewer, this ) );
 
-        this .strutBuilder .attach( viewer, this .mainScene );
+        this .strutBuilder .attach( (RenderingViewer) viewer, this .mainScene );
         
         if ( this .modelCanvas != null )
             if ( editingModel ) {

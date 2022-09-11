@@ -1,17 +1,25 @@
 
+import { java } from "./candies/j4ts-2.1.0-SNAPSHOT/bundle.js"
 import { simplify, createNumberFromPairs } from '../fields/common'
 
-export const algebraicNumberFactory =
+class JavaAlgebraicNumberFactory
 {
-  __interfaces: [ "com.vzome.core.algebra.AlgebraicNumberFactory" ],
+  zero ()
+  {
+    return new JavaBigRational( 0n, 1n );
+  }
 
-  zero: () => new JavaBigRational( 0n, 1n ),
+  one ()
+  {
+    return new JavaBigRational( 1n, 1n );
+  }
 
-  one: () => new JavaBigRational( 1n, 1n ),
+  createBigRational( num, denom )
+  {
+    return new JavaBigRational( BigInt(num), BigInt(denom) );
+  }
 
-  createBigRational: ( num, denom ) => new JavaBigRational( BigInt(num), BigInt(denom) ),
-
-  createRational: ( legacyField, num, denom ) =>
+  createRational( legacyField, num, denom )
     {
       const order = legacyField.getOrder()
       const factors = [ new JavaBigRational( num, denom ) ]
@@ -19,18 +27,18 @@ export const algebraicNumberFactory =
         factors.push( ZERO )
       }
       return new JavaAlgebraicNumber( legacyField, factors )
-    },
+    }
 
-  createAlgebraicNumber: ( legacyField, numerators, divisor ) =>
+  createAlgebraicNumber( legacyField, numerators, divisor )
     {
       const bigRats = []
       for (let i = 0; i < numerators.length; i++) {
         bigRats.push( new JavaBigRational( numerators[ i ], divisor ) )
       }
       return new JavaAlgebraicNumber( legacyField, bigRats )
-    },
+    }
 
-  createAlgebraicNumberFromTD: ( legacyField, trailingDivisor ) =>
+  createAlgebraicNumberFromTD( legacyField, trailingDivisor )
     {
       const bigRats = []
       const divisor = trailingDivisor[ trailingDivisor.length-1 ]
@@ -38,9 +46,9 @@ export const algebraicNumberFactory =
         bigRats.push( new JavaBigRational( trailingDivisor[ i ], divisor ) )
       }
       return new JavaAlgebraicNumber( legacyField, bigRats )
-    },
+    }
 
-  createAlgebraicNumberFromPairs: ( legacyField, pairs ) =>
+  createAlgebraicNumberFromPairs( legacyField, pairs )
     {
       const order = pairs.length / 2
       const bigRats = []
@@ -48,9 +56,9 @@ export const algebraicNumberFactory =
         bigRats.push( new JavaBigRational( pairs[ 2*i ], pairs[ 2*i+1 ] ) )
       }
       return new JavaAlgebraicNumber( legacyField, bigRats )
-    },
+    }
   
-  isPrime: prime =>
+  isPrime( prime )
     {
       const n = 2*prime
 
@@ -68,9 +76,9 @@ export const algebraicNumberFactory =
         if ( i === prime )
           return true
       }
-    },
+    }
   
-  nextPrime: prime =>
+  nextPrime( prime )
     {
       const n = 2*prime
       let sawPrevious = false
@@ -88,8 +96,10 @@ export const algebraicNumberFactory =
         if ( i === prime )
           sawPrevious = true
       }
-    },
+    }
 }
+JavaAlgebraicNumberFactory.__interfaces = [ "com.vzome.core.algebra.AlgebraicNumberFactory" ]
+export const algebraicNumberFactory = new JavaAlgebraicNumberFactory();
 
 class JavaAlgebraicNumber
 {
@@ -213,6 +223,13 @@ class JavaAlgebraicNumber
   getNumberExpression( sbuf, format )
   {
     return this.legacyField.getNumberExpression( sbuf, this.bigRationals, format )
+  }
+
+  toString( format )
+  {
+    const buf = new java.lang.StringBuffer();
+    this.getNumberExpression( buf, format );
+    return buf .toString();
   }
 }
 JavaAlgebraicNumber.__interfaces = [ "com.vzome.core.algebra.AlgebraicNumber" ]

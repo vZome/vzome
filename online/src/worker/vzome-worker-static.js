@@ -82,6 +82,33 @@ const fetchFileText = selected =>
   })
 }
 
+let designController;
+
+const createDesign = ( report, fieldName ) =>
+{
+  return import( './legacy/dynamic.js' )
+
+    .then( module => {
+      return module .newDesign( fieldName );
+    } )
+
+    .then( controller => {
+      designController = controller;
+      controller .addPropertyListener( { propertyChange: pce => {
+        const name = pce .getPropertyName();
+        const value = pce .getNewValue();
+        report( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { path: '', name, value } } );
+      } } );
+      report( { type: 'CONTROLLER_CREATED' } );
+    } )
+
+    .catch( error => {
+      console.log( `createDesign failure: ${error.message}` );
+      report( { type: 'ALERT_RAISED', payload: 'Failed to create vZome model.' } );
+      return false; // probably nobody should care about the return value
+     } );
+}
+
 const getField = name =>
 {
   return import( './legacy/dynamic.js' )
@@ -212,6 +239,36 @@ onmessage = ({ data }) =>
         console.log( `getScene error: ${error.message}` );
         postMessage( { type: 'ALERT_RAISED', payload: 'Failed to interpret all edits.' } );
       }
+      break;
+
+    case 'ACTION_TRIGGERED':
+    {
+      const { controller, action, parameters } = payload;
+      designController .actionPerformed( null, action )
+      break;
+    }
+
+    case 'PROPERTY_REQUESTED':
+    {
+      const { controllerName, propName } = payload;
+      // TODO: dispatch to the right subcontroller
+      const list = designController .getProperty( propName );
+      postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { path: controllerName, name: propName, value: list } } );
+      break;
+    }
+
+    case 'LIST_REQUESTED':
+    {
+      const { controllerName, listName } = payload;
+      // TODO: dispatch to the right subcontroller
+      const list = designController .getCommandList( listName );
+      postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { path: controllerName, name: listName, value: list } } );
+      break;
+    }
+
+    case 'NEW_DESIGN_STARTED':
+      const { field } = payload;
+      createDesign( postMessage, field );
       break;
   
     default:
