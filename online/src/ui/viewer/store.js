@@ -19,6 +19,16 @@ export const initialState = {
 export const defineCamera = camera => ({ type: 'CAMERA_DEFINED', payload: camera });
 export const setPerspective = value => ({ type: 'PERSPECTIVE_SET', payload: value });
 
+export const whilePerspective = ( perspective, doSetter ) => async dispatch =>
+{
+  const wait = ms => new Promise( (resolve) => setTimeout(resolve, 100) );
+  dispatch( setPerspective( true ) );
+  await wait( 10 );
+  doSetter();
+  await wait( 10 );
+  dispatch( setPerspective( perspective ) );
+}
+
 const workerAction = ( type, payload ) => ({ type, payload, meta: 'WORKER' } );
 
 export const selectEditBefore = nodeId => workerAction( 'EDIT_SELECTED', { before: nodeId } );
