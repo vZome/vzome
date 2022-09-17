@@ -193,14 +193,7 @@ core.config {
 
     // SymmetryController and its dependencies
     'com/vzome/desktop/api/Controller.java',
-    'com/vzome/desktop/controller/DefaultController.java',
-    'com/vzome/desktop/controller/SymmetryController.java',
-    'com/vzome/desktop/controller/SymmetrySnapper.java',
-    'com/vzome/desktop/controller/OrbitSnapper.java',
-    'com/vzome/desktop/controller/OrbitSetController.java',
-    'com/vzome/desktop/controller/NumberController.java',
-    'com/vzome/desktop/controller/LengthController.java',
-    'com/vzome/desktop/controller/ToolFactoryController.java',
+    'com/vzome/desktop/controller/*.java',
   ]
   excludes = [
 
@@ -230,7 +223,13 @@ core.config {
     'com/vzome/core/exporters/ColoredMeshJsonExporter.java',
     'com/vzome/core/exporters/SimpleMeshJsonExporter.java',
     'com/vzome/core/exporters/HistoryExporter.java',
-    'com/vzome/core/exporters/ShapesJsonExporter.java'
+    'com/vzome/core/exporters/ShapesJsonExporter.java',
+
+    'com/vzome/desktop/controller/CameraController.java',
+    'com/vzome/desktop/controller/ZoneVectorBall.java',
+    'com/vzome/desktop/controller/UndoRedoController.java',
+    'com/vzome/desktop/controller/JsonClientRendering.java',
+
   ]
 }
 

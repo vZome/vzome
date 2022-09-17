@@ -144,7 +144,11 @@ public class JsSelection implements Selection
     
     
 
-    
+    @Override
+    public Manifestation getSingleSelection( Class<? extends Manifestation> class1 )
+    {
+        throw new RuntimeException( "unimplemented getSingleSelection" );
+    }
     
     @Override
     public void copy(List<Manifestation> bookmarkedSelection)
