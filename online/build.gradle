@@ -191,12 +191,16 @@ core.config {
     'com/vzome/core/render/RenderedManifestation.java',
     'com/vzome/core/render/RenderedModel.java',
 
-    // OrbitSetController and its dependencies
+    // SymmetryController and its dependencies
     'com/vzome/desktop/api/Controller.java',
     'com/vzome/desktop/controller/DefaultController.java',
+    'com/vzome/desktop/controller/SymmetryController.java',
+    'com/vzome/desktop/controller/SymmetrySnapper.java',
+    'com/vzome/desktop/controller/OrbitSnapper.java',
     'com/vzome/desktop/controller/OrbitSetController.java',
     'com/vzome/desktop/controller/NumberController.java',
     'com/vzome/desktop/controller/LengthController.java',
+    'com/vzome/desktop/controller/ToolFactoryController.java',
   ]
   excludes = [
 
