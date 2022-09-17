@@ -167,7 +167,7 @@ const parseAndInterpret = ( xmlLoading, report, debug ) =>
     } )
 
     .then( design => {
-      const { renderer, camera, lighting, xmlTree, targetEditId, snapshots, field } = design;
+      const { orbitSource, camera, lighting, xmlTree, targetEditId, snapshots, field } = design;
       if ( field.unknown ) {
         throw new Error( `Field "${field.name}" is not supported.` );
       }
@@ -180,7 +180,7 @@ const parseAndInterpret = ( xmlLoading, report, debug ) =>
       //  Thus, we are too tightly coupled to the UI here!
       //  See also the 'EDIT_SELECTED' case in onmessage(), below.
       const { shapes, edit } = renderHistory .getScene( debug? '--START--' : targetEditId, false );
-      const { embedding } = renderer;
+      const embedding = orbitSource .getEmbedding();
       const scene = { lighting, camera, embedding, shapes };
       report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
       report( { type: 'DESIGN_INTERPRETED', payload: { xmlTree, snapshots } } );

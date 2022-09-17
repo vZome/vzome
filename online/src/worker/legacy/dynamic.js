@@ -1,3 +1,4 @@
 
-export { parse, interpretAndRender, getField } from "./core-api";
-export { newDesign } from "./controllers";
+export { interpretAndRender } from "./interpreter.js";
+export { getField, parse } from "./core.js"
+export { newDesign } from "./controllers.js";

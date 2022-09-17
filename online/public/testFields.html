@@ -19,17 +19,16 @@
     <script type="module">
       import { getField } from "../modules/vzome-legacy.js";
 
-      getField( "polygon13" ) .then( field => {
-        const num = field .createPower( 2 );
-        console.log( num .toString(0) );
-        const num2 = field .createPower( 3 );
-        console.log( num2 .toString(0) );
-        const num3 = num .plus( num2 );
-        console.log( num3 .toString(0) );
-        const str = num3 .evaluate();
-        const root = document .getElementById( "root" );
-        root .innerHTML = str;
-      });
+      const field = getField( "polygon13" );
+      const num = field .createPower( 2 );
+      console.log( num .toString(0) );
+      const num2 = field .createPower( 3 );
+      console.log( num2 .toString(0) );
+      const num3 = num .plus( num2 );
+      console.log( num3 .toString(0) );
+      const str = num3 .evaluate();
+      const root = document .getElementById( "root" );
+      root .innerHTML = str;
     </script>
   </body>
 </html>
