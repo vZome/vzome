@@ -128,6 +128,8 @@ public class SymmetryController extends DefaultController
         if ( parent .propertyIsTrue( "disable.known.directions" ) )
             this .symmetrySystem .disableKnownDirection();
 
+        availableController .addPropertyListener( buildController );
+        availableController .addPropertyListener( snapController );
         availableController .addPropertyListener( new PropertyChangeListener()
         {
             @Override

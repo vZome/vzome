@@ -83,6 +83,7 @@ const fetchFileText = selected =>
 }
 
 let designController;
+const propertyChanges = {};
 
 const getNamedController = controllerNames =>
 {
@@ -97,6 +98,27 @@ const getNamedController = controllerNames =>
     }
   }
   return getSubController( designController, controllerNames );
+}
+
+const registerChangeListener = ( controller, controllerPath, changeName, propName, isList ) =>
+{
+  if ( !changeName )
+    return;
+  if ( ! propertyChanges[ controllerPath ] ) {
+    controller .addPropertyListener( { propertyChange: pce => {
+      const name = pce .getPropertyName();
+      if ( name === changeName ) {
+        for ( const [propName, isList] of Object.entries( propertyChanges[ controllerPath ][ changeName ] ) ) {
+          const value = isList? controller .getCommandList( propName ) : controller .getProperty( propName );
+          postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name: propName, value } } );
+        }
+      }
+    } } );
+    propertyChanges[ controllerPath ] = {};
+  }
+  const change = propertyChanges[ controllerPath ][ changeName ] || {};
+  if ( ! change[ propName ] )
+    propertyChanges[ controllerPath ][ changeName ] = { ...change, [ propName ]: isList };
 }
 
 const createDesign = ( report, fieldName ) =>
@@ -231,7 +253,7 @@ const urlLoader = ( report, event ) =>
 
 onmessage = ({ data }) =>
 {
-  console.log( `Worker received: ${JSON.stringify( data, null, 2 )}` );
+  // console.log( `Worker received: ${JSON.stringify( data, null, 2 )}` );
   const { type, payload } = data;
 
   switch (type) {
@@ -261,27 +283,18 @@ onmessage = ({ data }) =>
       const { controllerPath, action, parameters } = payload;
       const controllerNames = controllerPath? controllerPath.split( '/' ) : [];
       const controller = getNamedController( controllerNames );
-      controller .actionPerformed( null, action )
+      controller .actionPerformed( null, action );
       break;
     }
 
     case 'PROPERTY_REQUESTED':
     {
-      const { controllerPath, propName } = payload;
+      const { controllerPath, propName, changeName, isList } = payload;
       const controllerNames = controllerPath? controllerPath.split( '/' ) : [];
       const controller = getNamedController( controllerNames );
-      const list = controller .getProperty( propName );
-      postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name: propName, value: list } } );
-      break;
-    }
-
-    case 'LIST_REQUESTED':
-    {
-      const { controllerPath, listName } = payload;
-      const controllerNames = controllerPath? controllerPath.split( '/' ) : [];
-      const controller = getNamedController( controllerNames );
-      const list = controller .getCommandList( listName );
-      postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name: listName, value: list } } );
+      registerChangeListener( controller, controllerPath, changeName, propName, isList );
+      const value = isList? controller .getCommandList( propName ) : controller .getProperty( propName );
+      postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name: propName, value } } );
       break;
     }
 

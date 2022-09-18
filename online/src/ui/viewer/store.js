@@ -37,8 +37,7 @@ export const fetchDesign = ( url, preview, debug=false ) => workerAction( 'URL_P
 export const openDesignFile = ( file, debug=false ) => workerAction( 'FILE_PROVIDED', { file, debug } );
 export const newDesign = () => workerAction( 'NEW_DESIGN_STARTED', { field: 'golden' } );
 export const doControllerAction = ( controllerPath='', action, parameters={} ) => workerAction( 'ACTION_TRIGGERED', { controllerPath, action, parameters } );
-export const requestControllerList = ( controllerPath='', listName ) => workerAction( 'LIST_REQUESTED', { controllerPath, listName } );
-export const requestControllerProperty = ( controllerPath='', propName ) => workerAction( 'PROPERTY_REQUESTED', { controllerPath, propName } );
+export const requestControllerProperty = ( controllerPath='', propName, changeName, isList ) => workerAction( 'PROPERTY_REQUESTED', { controllerPath, propName, changeName, isList } );
 
 const reducer = ( state = initialState, event ) =>
 {
@@ -103,6 +102,7 @@ const reducer = ( state = initialState, event ) =>
 
     case 'CONTROLLER_PROPERTY_CHANGED': {
       const { controllerPath, name, value } = event.payload;
+      console.log( JSON.stringify( event.payload ) );
       return { ...state, controller: { ...state.controller, [ controllerPath + '/' + name ]: value } };
     }
 
@@ -158,7 +158,7 @@ export const createWorkerStore = customElement =>
       }
       else {
         workerPromise.then( worker => {
-          console.log( `Message sending to worker: ${JSON.stringify( event, null, 2 )}` );
+          // console.log( `Message sending to worker: ${JSON.stringify( event, null, 2 )}` );
           worker.postMessage( event );  // send them all, let the worker filter them out
         } )
         .catch( error => {
@@ -181,7 +181,7 @@ export const createWorkerStore = customElement =>
   });
 
   const onWorkerMessage = ({ data }) => {
-    console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
+    // console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
 
     store .dispatch( data );  // forward to the reducer(s)
 

@@ -1,7 +1,7 @@
 
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { newDesign, doControllerAction, requestControllerList, requestControllerProperty } from '../../ui/viewer/store.js';
+import { newDesign, doControllerAction, requestControllerProperty } from '../../ui/viewer/store.js';
 
 export const useNewDesign = () =>
 {
@@ -9,7 +9,7 @@ export const useNewDesign = () =>
   useEffect( () => report( newDesign() ), [] );
 }
 
-export const useControllerProperty = ( controllerPath, propName ) =>
+export const useControllerProperty = ( controllerPath, propName, changeName=null, isList=false ) =>
 {
   const report = useDispatch();
   const fullName = controllerPath + '/' + propName;
@@ -18,29 +18,17 @@ export const useControllerProperty = ( controllerPath, propName ) =>
   useEffect( () => {
     if ( controller && value === undefined ) {
       // trigger the initial fetch
-      report( requestControllerProperty( controllerPath, propName ) );
+      report( requestControllerProperty( controllerPath, propName, changeName, isList ) );
     }
   }, [ controller, value ] );
   return value;
 }
 
-export const useControllerList = ( controllerPath, listName ) =>
+export const useControllerAction = ( controllerPath, action ) =>
 {
   const report = useDispatch();
-  const fullName = controllerPath + '/' + listName;
   const controller = useSelector( state => state.controller );
-  const value = useSelector( state => state.controller && state.controller[ fullName ] );
-  useEffect( () => {
-    if ( controller && value === undefined ) {
-      // trigger the initial fetch
-      report( requestControllerList( controllerPath, listName ) );
-    }
-  }, [ controller, value ] );
-  return value;
-}
-
-export const controllerAction = ( controller, action ) => evt =>
-{
-  if ( controller.ready )
-    controller .doAction( action );
+  return evt => {
+    controller && report ( doControllerAction( controllerPath, action ) );
+  }
 }

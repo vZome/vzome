@@ -191,6 +191,12 @@ public class OrbitSetController extends DefaultController implements PropertyCha
         if ( "length" .equals( evt .getPropertyName() )
                 && evt .getSource() == getSubController( "currentLength" ) )
             firePropertyChange( evt ); // forward to the NewLengthPanel
+
+        // allOrbits must have changed, forward to our listeners
+        if ( "orbits" .equals( evt .getPropertyName() ) ) {
+            recalculateDots();
+            firePropertyChange( evt );
+        }
     }
 
     void toggleOrbit( Direction dir )
@@ -273,6 +279,8 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             String orbitName = string .substring( "orbitDot." .length() );
             Direction orbit = allOrbits .getDirection( orbitName );
             OrbitState dot = this .orbitDots .get( orbit );
+            if ( dot == null )
+                return "0xffffff/0/0";
             return "0x" + Integer.toHexString( dot.color.getRGB() ) + "/" + dot.dotX + "/" + dot.dotY;
         }
         
