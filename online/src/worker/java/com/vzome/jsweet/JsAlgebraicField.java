@@ -62,6 +62,12 @@ public class JsAlgebraicField implements AlgebraicField
         return getOrder() - 1;
     }
 
+    @Override
+    public int getNumMultipliers()
+    {
+        return getNumIrrationals();
+    }
+
     int[] add( int[] v1, int[] v2 )
     {
         Function f = (Function) this.delegate .$get( "plus" );
@@ -524,11 +530,5 @@ public class JsAlgebraicField implements AlgebraicField
     public AlgebraicMatrix createMatrix(int[][][] data)
     {
         throw new RuntimeException( "unimplemented JsAlgebraicField.createMatrix" );
-    }
-
-    @Override
-    public int getNumMultipliers()
-    {
-        throw new RuntimeException( "unimplemented JsAlgebraicField.getNumMultipliers" );
     }
 }
