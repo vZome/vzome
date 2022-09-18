@@ -84,6 +84,21 @@ const fetchFileText = selected =>
 
 let designController;
 
+const getNamedController = controllerNames =>
+{
+  const getSubController = ( controller, names ) => {
+    if ( !names || names.length === 0 || ( names.length === 1 && !names[ 0 ] ) )
+      return controller;
+    else {
+      controller = controller .getSubController( names[ 0 ] );
+      if ( !controller )
+        return undefined;
+      return getSubController( controller, names.slice( 1 ) );
+    }
+  }
+  return getSubController( designController, controllerNames );
+}
+
 const createDesign = ( report, fieldName ) =>
 {
   return import( './legacy/dynamic.js' )
@@ -97,7 +112,7 @@ const createDesign = ( report, fieldName ) =>
       controller .addPropertyListener( { propertyChange: pce => {
         const name = pce .getPropertyName();
         const value = pce .getNewValue();
-        report( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { path: '', name, value } } );
+        report( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath: '', name, value } } );
       } } );
       report( { type: 'CONTROLLER_CREATED' } );
     } )
@@ -216,7 +231,7 @@ const urlLoader = ( report, event ) =>
 
 onmessage = ({ data }) =>
 {
-  // console.log( `Worker received: ${JSON.stringify( data, null, 2 )}` );
+  console.log( `Worker received: ${JSON.stringify( data, null, 2 )}` );
   const { type, payload } = data;
 
   switch (type) {
@@ -243,26 +258,30 @@ onmessage = ({ data }) =>
 
     case 'ACTION_TRIGGERED':
     {
-      const { controller, action, parameters } = payload;
-      designController .actionPerformed( null, action )
+      const { controllerPath, action, parameters } = payload;
+      const controllerNames = controllerPath? controllerPath.split( '/' ) : [];
+      const controller = getNamedController( controllerNames );
+      controller .actionPerformed( null, action )
       break;
     }
 
     case 'PROPERTY_REQUESTED':
     {
-      const { controllerName, propName } = payload;
-      // TODO: dispatch to the right subcontroller
-      const list = designController .getProperty( propName );
-      postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { path: controllerName, name: propName, value: list } } );
+      const { controllerPath, propName } = payload;
+      const controllerNames = controllerPath? controllerPath.split( '/' ) : [];
+      const controller = getNamedController( controllerNames );
+      const list = controller .getProperty( propName );
+      postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name: propName, value: list } } );
       break;
     }
 
     case 'LIST_REQUESTED':
     {
-      const { controllerName, listName } = payload;
-      // TODO: dispatch to the right subcontroller
-      const list = designController .getCommandList( listName );
-      postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { path: controllerName, name: listName, value: list } } );
+      const { controllerPath, listName } = payload;
+      const controllerNames = controllerPath? controllerPath.split( '/' ) : [];
+      const controller = getNamedController( controllerNames );
+      const list = controller .getCommandList( listName );
+      postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name: listName, value: list } } );
       break;
     }
 

@@ -1,7 +1,7 @@
 
 import React from 'react'
 import { DesignViewer } from '../../ui/viewer/index.jsx'
-import { useNewDesign, useController, useControllerList, useControllerProperty } from './controller-hooks.js';
+import { useNewDesign, useControllerList, useControllerProperty } from './controller-hooks.js';
 
 import Grid from '@material-ui/core/Grid'
 
@@ -9,8 +9,7 @@ import Grid from '@material-ui/core/Grid'
 export const OrbitDot = ( { controllerPath, orbit, selectedOrbitNames } ) =>
 {
   const selected = selectedOrbitNames && selectedOrbitNames .indexOf( orbit ) >= 0;
-  const controller = useController( controllerPath );
-  const orbitDetails = useControllerProperty( controller, `orbitDot.${orbit}` ) || "";
+  const orbitDetails = useControllerProperty( controllerPath, `orbitDot.${orbit}` ) || "";
   const [ colorHex, x, y ] = orbitDetails.split( '/' );
   let color;
   if ( colorHex ) {
@@ -33,13 +32,11 @@ export const OrbitDot = ( { controllerPath, orbit, selectedOrbitNames } ) =>
 
 export const OrbitPanel = ( { controllerPath } ) =>
 {
-  const controller = useController( controllerPath );
-  const orbitNames = useControllerList( controller, 'allOrbits' );
-  const selectedOrbitNames = useControllerList( controller, 'orbits' );
+  const orbitNames = useControllerList( controllerPath, 'allOrbits' );
+  const selectedOrbitNames = useControllerList( controllerPath, 'orbits' );
 
   return (
-    <svg viewBox="-0.2 -0.2 1.4 1.4" 
-         stroke="black" strokeWidth={0.007} >
+    <svg viewBox="-0.2 -0.2 1.4 1.4" stroke="black" strokeWidth={0.007} >
       <g>
         {/* TODO: reversed triangle per the controller */}
         <polygon fill="none" points={`0,1 1,1 0,0`}/>  { /* all dot X & Y values are in [0..1] */ }
@@ -65,7 +62,7 @@ export const ClassicEditor = () =>
           <DesignViewer config={ { useSpinner: true } } />
         </Grid>
         <Grid id='editor-canvas' item xs={rightColumns} >
-          <OrbitPanel controllerPath="" />
+          <OrbitPanel controllerPath='strutBuilder/symmetry/buildOrbits' />
         </Grid>
       </Grid>
     </div>

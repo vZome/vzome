@@ -7,8 +7,11 @@ export const newDesign = async fieldName =>
   const { documentFactory } = await initPromise;
   const { orbitSource } = documentFactory( fieldName );
   
-  const parent = new com.vzome.desktop.controller.DefaultController();
-  const controller = new com.vzome.desktop.controller.SymmetryController( parent, orbitSource, null );
+  const mainController = new com.vzome.desktop.controller.DefaultController();
+  const strutBuilder = new com.vzome.desktop.controller.DefaultController();
+  mainController .addSubController( 'strutBuilder', strutBuilder );
+  const symmController = new com.vzome.desktop.controller.SymmetryController( strutBuilder, orbitSource, null );
+  strutBuilder .addSubController( 'symmetry', symmController );
 
-  return controller .getSubController( 'buildOrbits' );
+  return mainController;
 }
