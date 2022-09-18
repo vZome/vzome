@@ -1,8 +1,16 @@
 package com.vzome.desktop.controller;
 
-import javax.vecmath.Vector3f;
+import com.vzome.core.math.RealVector;
 
 public interface OrbitSnapper
 {
-    void snapDirections( Vector3f lookDir, Vector3f upDir );
+    RealVector snapZ( RealVector zIn );
+    
+    /**
+     * Snap the Y-axis.
+     * @param zOut already-snapped Z-axis
+     * @param yIn
+     * @return
+     */
+    RealVector snapY( RealVector zOut, RealVector yIn );
 }

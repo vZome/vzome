@@ -4,6 +4,7 @@ import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
+import com.vzome.core.editor.SelectionSummary;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.LegacyEditorModel;
 import com.vzome.core.editor.api.OrbitSource;
@@ -105,11 +106,15 @@ public class JsEditorModel implements EditorModel, LegacyEditorModel, SymmetryAw
     
     
 
-    
+    @Override
+    public void addSelectionSummaryListener( SelectionSummary.Listener listener )
+    {
+        throw new RuntimeException( "unimplemented addSelectionSummaryListener" );
+    }
 
     @Override
     public Construction getSelectedConstruction( Class<? extends Construction> kind )
     {
-        throw new RuntimeException( "unimplemented" );
+        throw new RuntimeException( "unimplemented getSelectedConstruction" );
     }
 }

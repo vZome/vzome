@@ -163,7 +163,7 @@ public class NumberController extends DefaultController
     public String getProperty(String property) {
         switch(property) {
         case "value":
-            return value.toString();
+            return value.toString( AlgebraicField.DEFAULT_FORMAT );
             
         case "evaluate":
             return String.valueOf(value.evaluate());

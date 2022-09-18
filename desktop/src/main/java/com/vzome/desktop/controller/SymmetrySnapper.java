@@ -1,8 +1,6 @@
 
 package com.vzome.desktop.controller;
 
-import javax.vecmath.Vector3f;
-
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Embedding;
@@ -11,30 +9,33 @@ import com.vzome.core.math.symmetry.OrbitSet;
 public class SymmetrySnapper implements OrbitSnapper
 {
     private final OrbitSet orbitSet;
+    private final Embedding embedding;
     
     public SymmetrySnapper( OrbitSet orbitSet )
     {
         this.orbitSet = orbitSet;
+        this.embedding = orbitSet .getSymmetry();;
     }
 
     @Override
-    public void snapDirections( Vector3f lookDir, Vector3f upDir )
+    public RealVector snapZ( RealVector zIn )
     {
-        RealVector vector = new RealVector( lookDir .x, lookDir .y, lookDir .z );
-        Axis axis = orbitSet .getAxis( vector );
-        if ( axis == null )
-            return;
-        Embedding embedding = orbitSet .getSymmetry();
-        RealVector rv = embedding .embedInR3( axis .normal() );
-        lookDir .set( rv.x, rv.y, rv.z );
-        vector = new RealVector( upDir .x, upDir .y, upDir .z );
-        axis = orbitSet .getAxis( vector );
-        rv = embedding .embedInR3( axis .normal() );
-        upDir .set( rv.x, rv.y, rv.z );
+        Axis lookZone = orbitSet .getAxis( zIn );
+        if ( lookZone == null )
+            return zIn;
+        return embedding .embedInR3( lookZone .normal() );
+    }
+
+    @Override
+    public RealVector snapY( RealVector zOut, RealVector yIn )
+    {
+        Axis upZone = orbitSet .getAxis( yIn );
+        if ( upZone == null )
+            return yIn;
+        yIn = embedding .embedInR3( upZone .normal() );
         
-        Vector3f cross = new Vector3f();
-        cross .cross( lookDir, upDir );
-        upDir .cross( cross, lookDir );
+        RealVector left = zOut .cross( yIn );
+        return left .cross( zOut );
     }
 
 }

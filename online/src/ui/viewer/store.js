@@ -36,9 +36,8 @@ export const selectEditAfter = nodeId => workerAction( 'EDIT_SELECTED', { after:
 export const fetchDesign = ( url, preview, debug=false ) => workerAction( 'URL_PROVIDED', { url, preview, debug } );
 export const openDesignFile = ( file, debug=false ) => workerAction( 'FILE_PROVIDED', { file, debug } );
 export const newDesign = () => workerAction( 'NEW_DESIGN_STARTED', { field: 'golden' } );
-export const doControllerAction = ( controller='', action, parameters={} ) => workerAction( 'ACTION_TRIGGERED', { controller, action, parameters } );
-export const requestControllerList = ( controllerName='', listName ) => workerAction( 'LIST_REQUESTED', { controllerName, listName } );
-export const requestControllerProperty = ( controllerName='', propName ) => workerAction( 'PROPERTY_REQUESTED', { controllerName, propName } );
+export const doControllerAction = ( controllerPath='', action, parameters={} ) => workerAction( 'ACTION_TRIGGERED', { controllerPath, action, parameters } );
+export const requestControllerProperty = ( controllerPath='', propName, changeName, isList ) => workerAction( 'PROPERTY_REQUESTED', { controllerPath, propName, changeName, isList } );
 
 const reducer = ( state = initialState, event ) =>
 {
@@ -102,19 +101,9 @@ const reducer = ( state = initialState, event ) =>
     }
 
     case 'CONTROLLER_PROPERTY_CHANGED': {
-      const { path, name, value } = event.payload;
-      let elements = path? path.split( '/' ) : [];
-      const updateField = ( object={}, names, value ) =>
-      {
-        if ( names.length === 0 )
-          return { ...object, [name]: value };
-        else {
-          const key = names[ 0 ];
-          return { ...object, [key]: updateField( object[key], names.slice( 1 ), value ) };
-        }
-      }
-      const controller = updateField( state.controller, elements, value );
-      return { ...state, controller };
+      const { controllerPath, name, value } = event.payload;
+      console.log( JSON.stringify( event.payload ) );
+      return { ...state, controller: { ...state.controller, [ controllerPath + '/' + name ]: value } };
     }
 
     default:
@@ -192,7 +181,7 @@ export const createWorkerStore = customElement =>
   });
 
   const onWorkerMessage = ({ data }) => {
-    console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
+    // console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
 
     store .dispatch( data );  // forward to the reducer(s)
 

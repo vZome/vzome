@@ -75,7 +75,7 @@ public class GenerateLinearMaps
 	private boolean tryMapping( Axis a1, AlgebraicNumber l1, Axis a2, AlgebraicNumber l2, Axis a3, AlgebraicNumber l3 )
 	{
 		this .doc = this .app .createDocument( "golden" );
-		this .doc .setRenderedModel( new RenderedModel( kind .getField(), doc .getSymmetrySystem() )
+		this .doc .setRenderedModel( new RenderedModel( kind .getField(), doc .getEditorModel() .getSymmetrySystem() )
 		{
 			@Override
 			public void manifestationAdded( Manifestation m )

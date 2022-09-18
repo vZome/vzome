@@ -18,6 +18,8 @@ public interface Selection extends Iterable<Manifestation>
     void select( Manifestation mMan );
 
     void unselect( Manifestation mMan );
+    
+    Manifestation getSingleSelection( final Class<? extends Manifestation> kind );
 
     // only for GroupSelection
     void gatherGroup();

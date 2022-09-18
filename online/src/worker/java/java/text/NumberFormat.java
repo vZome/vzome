@@ -8,13 +8,18 @@ public class NumberFormat
     {
         return new NumberFormat();
     }
+    
+    public static NumberFormat getInstance()
+    {
+        return new NumberFormat();
+    }
 
     public void setMaximumFractionDigits( int i ) {}
 
     public void setMinimumFractionDigits(int i) {}
 
-    public String format( float x )
+    public String format( double x )
     {
-        return Float .toString( x );
+        return Double .toString( x );
     }
 }

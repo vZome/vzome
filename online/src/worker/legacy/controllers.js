@@ -6,15 +6,12 @@ export const newDesign = async fieldName =>
 {
   const { documentFactory } = await initPromise;
   const { orbitSource } = documentFactory( fieldName );
-  const symmetry = orbitSource .getSymmetry();
-  const editableOrbits = new com.vzome.core.math.symmetry.OrbitSet( symmetry );
-
-  for (let iter = symmetry.getOrbitSet().getDirections().iterator(); iter.hasNext();) {
-    const orbit = iter.next();
-    editableOrbits .add( orbit );
-  }
   
-  const controller = new com.vzome.desktop.controller.OrbitSetController( editableOrbits, orbitSource .getOrbits(), orbitSource );
+  const mainController = new com.vzome.desktop.controller.DefaultController();
+  const strutBuilder = new com.vzome.desktop.controller.DefaultController();
+  mainController .addSubController( 'strutBuilder', strutBuilder );
+  const symmController = new com.vzome.desktop.controller.SymmetryController( strutBuilder, orbitSource, null );
+  strutBuilder .addSubController( 'symmetry', symmController );
 
-  return controller;
+  return mainController;
 }

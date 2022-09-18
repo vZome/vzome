@@ -425,7 +425,7 @@ public class DocumentModel implements Snapshot .Recorder, Context
 
         if ( edit == null )
         {
-            logger .warning( "no DocumentModel action for : " + action );
+            logger .warning( "no edit created for : " + action );
             return false;
         }
         if ( mode != null )
@@ -944,27 +944,9 @@ public class DocumentModel implements Snapshot .Recorder, Context
         return (Segment) editorModel .getSelectedConstruction( Segment.class );
     }
 
-    public Segment getSymmetryAxis()
-    {
-        return editorModel .getSymmetrySegment();
-    }
-
     public ToolsModel getToolsModel()
     {
         return this .tools;
-    }
-
-    public OrbitSource getSymmetrySystem()
-    {
-        return this .editorModel .getSymmetrySystem();
-    }
-
-    public OrbitSource getSymmetrySystem( String name )
-    {
-        if ( name == null )
-            return this .getSymmetrySystem();
-        else
-            return this .symmetrySystems .get( name );
     }
 
     public void setSymmetrySystem( SymmetrySystem system )

@@ -83,6 +83,43 @@ const fetchFileText = selected =>
 }
 
 let designController;
+const propertyChanges = {};
+
+const getNamedController = controllerNames =>
+{
+  const getSubController = ( controller, names ) => {
+    if ( !names || names.length === 0 || ( names.length === 1 && !names[ 0 ] ) )
+      return controller;
+    else {
+      controller = controller .getSubController( names[ 0 ] );
+      if ( !controller )
+        return undefined;
+      return getSubController( controller, names.slice( 1 ) );
+    }
+  }
+  return getSubController( designController, controllerNames );
+}
+
+const registerChangeListener = ( controller, controllerPath, changeName, propName, isList ) =>
+{
+  if ( !changeName )
+    return;
+  if ( ! propertyChanges[ controllerPath ] ) {
+    controller .addPropertyListener( { propertyChange: pce => {
+      const name = pce .getPropertyName();
+      if ( name === changeName ) {
+        for ( const [propName, isList] of Object.entries( propertyChanges[ controllerPath ][ changeName ] ) ) {
+          const value = isList? controller .getCommandList( propName ) : controller .getProperty( propName );
+          postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name: propName, value } } );
+        }
+      }
+    } } );
+    propertyChanges[ controllerPath ] = {};
+  }
+  const change = propertyChanges[ controllerPath ][ changeName ] || {};
+  if ( ! change[ propName ] )
+    propertyChanges[ controllerPath ][ changeName ] = { ...change, [ propName ]: isList };
+}
 
 const createDesign = ( report, fieldName ) =>
 {
@@ -97,7 +134,7 @@ const createDesign = ( report, fieldName ) =>
       controller .addPropertyListener( { propertyChange: pce => {
         const name = pce .getPropertyName();
         const value = pce .getNewValue();
-        report( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { path: '', name, value } } );
+        report( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath: '', name, value } } );
       } } );
       report( { type: 'CONTROLLER_CREATED' } );
     } )
@@ -243,26 +280,21 @@ onmessage = ({ data }) =>
 
     case 'ACTION_TRIGGERED':
     {
-      const { controller, action, parameters } = payload;
-      designController .actionPerformed( null, action )
+      const { controllerPath, action, parameters } = payload;
+      const controllerNames = controllerPath? controllerPath.split( '/' ) : [];
+      const controller = getNamedController( controllerNames );
+      controller .actionPerformed( null, action );
       break;
     }
 
     case 'PROPERTY_REQUESTED':
     {
-      const { controllerName, propName } = payload;
-      // TODO: dispatch to the right subcontroller
-      const list = designController .getProperty( propName );
-      postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { path: controllerName, name: propName, value: list } } );
-      break;
-    }
-
-    case 'LIST_REQUESTED':
-    {
-      const { controllerName, listName } = payload;
-      // TODO: dispatch to the right subcontroller
-      const list = designController .getCommandList( listName );
-      postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { path: controllerName, name: listName, value: list } } );
+      const { controllerPath, propName, changeName, isList } = payload;
+      const controllerNames = controllerPath? controllerPath.split( '/' ) : [];
+      const controller = getNamedController( controllerNames );
+      registerChangeListener( controller, controllerPath, changeName, propName, isList );
+      const value = isList? controller .getCommandList( propName ) : controller .getProperty( propName );
+      postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name: propName, value } } );
       break;
     }
 

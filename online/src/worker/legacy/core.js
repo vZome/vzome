@@ -309,11 +309,15 @@ const init = async () =>
       if ( constructor )
         return new constructor()
       else
-        throw new Error( `${name} command is not available yet`)
+        throw new Error( `${name} command is not available yet`);
     },
     
     // We will do our own edit recording, so this is just perform
-    performAndRecord: edit => edit.perform()
+    performAndRecord: edit => edit.perform(),
+
+    doEdit: ( action, props ) => {
+      throw new Error( `${action} command is not implemented yet` );
+    }
   }
   
   const createRenderer = orbitSource => ({
