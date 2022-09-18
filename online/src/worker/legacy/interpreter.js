@@ -134,7 +134,7 @@ export const normalizeRenderedManifestation = rm =>
   return { id, position: [ x, y, z ], rotation, color, selected, shapeId };
 }
 
-class RenderHistory
+export class RenderHistory
 {
   constructor( design )
   {
@@ -146,7 +146,7 @@ class RenderHistory
     this.currentSnapshot = [];
     this.nextEdit = firstEdit;
     this.lastEdit = '--START--';
-    this.recordSnapshot( '--START--', firstEdit.id() );
+    this.recordSnapshot( '--START--', firstEdit? firstEdit.id() : '--END--' );
   }
 
   getNextEdit()

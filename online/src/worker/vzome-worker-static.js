@@ -129,14 +129,14 @@ const createDesign = ( report, fieldName ) =>
       return module .newDesign( fieldName );
     } )
 
-    .then( controller => {
+    .then( design => {
+      const { controller, renderHistory, orbitSource } = design;
       designController = controller;
-      controller .addPropertyListener( { propertyChange: pce => {
-        const name = pce .getPropertyName();
-        const value = pce .getNewValue();
-        report( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath: '', name, value } } );
-      } } );
       report( { type: 'CONTROLLER_CREATED' } );
+      const { shapes, edit } = renderHistory .getScene( '--START--', false );
+      const embedding = orbitSource .getEmbedding();
+      const scene = { embedding, shapes };
+      report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
     } )
 
     .catch( error => {

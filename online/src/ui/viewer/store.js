@@ -171,7 +171,7 @@ export const createWorkerStore = customElement =>
         report( event );
   }
 
-  const preloadedState = {}
+  const preloadedState = initialState
 
   const store = configureStore( {
     reducer,
