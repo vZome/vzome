@@ -1,85 +1,4 @@
 
-import { normalizeRenderedManifestation, initPromise, realizeShape } from './core.js'
-import { defaultNew } from './resources/com/vzome/core/parts/index.js'
-
-// export { realizeShape, normalizeRenderedManifestation } from './core.js'
-
-export const parse = async text =>
-{
-  const { parser } = await initPromise
-  return parser( text )
-}
-
-export const getField = async name =>
-{
-  const { getLegacyField } = await initPromise;
-  return getLegacyField( name );
-}
-
-const R = 2
-const octahedronShape =
-{
-  id: "octahedron",
-  vertices: [
-    { x: R, y: 0, z: 0 },
-    { x: 0, y: R, z: 0 },
-    { x: 0, y: 0, z: R },
-    { x: -R, y: 0, z: 0 },
-    { x: 0, y: -R, z: 0 },
-    { x: 0, y: 0, z: -R },
-  ],
-  faces: [
-    { vertices: [ 0, 1, 2 ] },
-    { vertices: [ 0, 5, 1 ] },
-    { vertices: [ 0, 4, 5 ] },
-    { vertices: [ 0, 2, 4 ] },
-    { vertices: [ 3, 2, 1 ] },
-    { vertices: [ 3, 4, 2 ] },
-    { vertices: [ 3, 5, 4 ] },
-    { vertices: [ 3, 1, 5 ] },
-  ]
-}
-const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
-
-const loadBallShape = ( fieldName, shapesModel ) =>
-{
-  const { connectorShape, name } = shapesModel
-  const { faces } = connectorShape
-  const id = `${fieldName}/${name}/connector`
-  const vertices = connectorShape.vertices.map( ([x,y,z]) => ({x,y,z}) )
-  return { id, vertices, faces }
-}
-
-const getDefaultRenderer = field =>
-{
-  const defaultShaper = shapes => ( { id, vectors } ) =>
-  {
-    if ( ! shapes.octahedron ) {
-      shapes.octahedron = octahedronShape
-    }
-    const [ v0 ] = vectors
-    const [ x, y, z ] = field.embedv( v0 )
-    return { id, position: [ x, y, z ], rotation: IDENTITY_MATRIX, color: "#ffffff", shapeId: "octahedron" }
-  }
-  const goldenShaper = shapes => ( { id, vectors } ) =>
-  {
-    if ( ! shapes.goldenBall ) {
-      shapes.goldenBall = loadBallShape( "golden", defaultNew )
-    }
-    const [ v0 ] = vectors
-    const [ x, y, z ] = field.embedv( v0 )
-    return { id, position: [ x, y, z ], rotation: IDENTITY_MATRIX, color: "#ffffff", shapeId: shapes.goldenBall.id }
-  }
-  return {
-    name: 'default',
-    embedding: IDENTITY_MATRIX,
-    shaper: ( field.name === "golden" )? goldenShaper : defaultShaper
-  }
-}
-
-const cloneMesh = ( { shown, selected, hidden, groups=[] } ) =>
-  ({ shown: new Map( shown ), selected: new Map( selected ), hidden: new Map( hidden ), groups: [ ...groups ] })
-
 // TODO: put this in a module that both worker and main context can use.
 //  Right now this is duplicated!
 const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
@@ -184,7 +103,38 @@ const interpret = ( action, state, stack=[] ) =>
   }
 }
 
-class RenderHistory
+export const realizeShape = ( shape ) =>
+{
+  const vertices = shape.getVertexList().toArray().map( av => {
+    const { x, y, z } = av.toRealVector();  // this is too early to do embedding, which is done later, globally
+    return { x, y, z };
+  })
+  const faces = shape.getTriangleFaces().toArray().map( ({ vertices }) => ({ vertices }) );  // not a no-op, converts to POJS
+  const id = 's' + shape.getGuid().toString();
+  return { id, vertices, faces, instances: [] };
+}
+
+export const normalizeRenderedManifestation = rm =>
+{
+  const id = 'i' + rm.getGuid().toString();
+  const shapeId = 's' + rm.getShapeId().toString();
+  const positionAV = rm.getLocationAV();
+  const { x, y, z } = ( positionAV && positionAV.toRealVector() ) || { x:0, y:0, z:0 };
+  const rotation = rm .getOrientation() .getRowMajorRealElements();
+  const selected = rm .getGlow() > 0.001;
+  const componentToHex = c => {
+    let hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+  }
+  let color = "#ffffff";
+  const rmc = rm.getColor();
+  if ( rmc )
+    color = "#" + componentToHex(rmc.getRed()) + componentToHex(rmc.getGreen()) + componentToHex(rmc.getBlue());
+
+  return { id, position: [ x, y, z ], rotation, color, selected, shapeId };
+}
+
+export class RenderHistory
 {
   constructor( design )
   {
@@ -196,7 +146,7 @@ class RenderHistory
     this.currentSnapshot = [];
     this.nextEdit = firstEdit;
     this.lastEdit = '--START--';
-    this.recordSnapshot( '--START--', firstEdit.id() );
+    this.recordSnapshot( '--START--', firstEdit? firstEdit.id() : '--END--' );
   }
 
   getNextEdit()

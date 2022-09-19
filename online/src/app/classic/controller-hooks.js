@@ -24,11 +24,11 @@ export const useControllerProperty = ( controllerPath, propName, changeName=null
   return value;
 }
 
-export const useControllerAction = ( controllerPath, action ) =>
+export const useControllerAction = controllerPath =>
 {
   const report = useDispatch();
   const controller = useSelector( state => state.controller );
-  return evt => {
+  return action => {
     controller && report ( doControllerAction( controllerPath, action ) );
   }
 }

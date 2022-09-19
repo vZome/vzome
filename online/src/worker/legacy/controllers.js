@@ -1,17 +1,20 @@
 
-import { initPromise } from './core.js'
+import { documentFactory } from './core.js'
 import { com } from './core-java.js'
+import { RenderHistory } from './interpreter.js';
 
 export const newDesign = async fieldName =>
 {
-  const { documentFactory } = await initPromise;
-  const { orbitSource } = documentFactory( fieldName );
+  const { orbitSource, batchRender } = documentFactory( fieldName );
   
-  const mainController = new com.vzome.desktop.controller.DefaultController();
+  const controller = new com.vzome.desktop.controller.DefaultController();
   const strutBuilder = new com.vzome.desktop.controller.DefaultController();
-  mainController .addSubController( 'strutBuilder', strutBuilder );
+  controller .addSubController( 'strutBuilder', strutBuilder );
   const symmController = new com.vzome.desktop.controller.SymmetryController( strutBuilder, orbitSource, null );
   strutBuilder .addSubController( 'symmetry', symmController );
 
-  return mainController;
+  const design = { batchRender, firstEdit: null };
+  const renderHistory = new RenderHistory( design );
+
+  return { controller, renderHistory, orbitSource };
 }

@@ -129,14 +129,14 @@ const createDesign = ( report, fieldName ) =>
       return module .newDesign( fieldName );
     } )
 
-    .then( controller => {
+    .then( design => {
+      const { controller, renderHistory, orbitSource } = design;
       designController = controller;
-      controller .addPropertyListener( { propertyChange: pce => {
-        const name = pce .getPropertyName();
-        const value = pce .getNewValue();
-        report( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath: '', name, value } } );
-      } } );
       report( { type: 'CONTROLLER_CREATED' } );
+      const { shapes, edit } = renderHistory .getScene( '--START--', false );
+      const embedding = orbitSource .getEmbedding();
+      const scene = { embedding, shapes };
+      report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
     } )
 
     .catch( error => {
@@ -167,7 +167,7 @@ const parseAndInterpret = ( xmlLoading, report, debug ) =>
     } )
 
     .then( design => {
-      const { renderer, camera, lighting, xmlTree, targetEditId, snapshots, field } = design;
+      const { orbitSource, camera, lighting, xmlTree, targetEditId, snapshots, field } = design;
       if ( field.unknown ) {
         throw new Error( `Field "${field.name}" is not supported.` );
       }
@@ -180,7 +180,7 @@ const parseAndInterpret = ( xmlLoading, report, debug ) =>
       //  Thus, we are too tightly coupled to the UI here!
       //  See also the 'EDIT_SELECTED' case in onmessage(), below.
       const { shapes, edit } = renderHistory .getScene( debug? '--START--' : targetEditId, false );
-      const { embedding } = renderer;
+      const embedding = orbitSource .getEmbedding();
       const scene = { lighting, camera, embedding, shapes };
       report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
       report( { type: 'DESIGN_INTERPRETED', payload: { xmlTree, snapshots } } );
