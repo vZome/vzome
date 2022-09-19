@@ -50,7 +50,7 @@ export const OrbitPanel = ( { symmController, orbitSet, showLastOrbit=true } ) =
   const orbitSetAction = useControllerAction( controllerPath );
   const orbitNames = useControllerProperty( controllerPath, 'allOrbits', 'orbits', true );
   const selectedOrbitNames = useControllerProperty( controllerPath, 'orbits', 'orbits', true );
-  const oneAtATime = useControllerProperty( controllerPath, 'oneAtATime', 'orbits', true );
+  const oneAtATime = useControllerProperty( controllerPath, 'oneAtATime', 'orbits', false ) === 'true';
   const selectedOrbit = useControllerProperty( controllerPath, 'selectedOrbit', 'orbits', false );
   const lastSelected = showLastOrbit && selectedOrbit;
   const [ anchorEl, setAnchorEl ] = useState( null );
@@ -73,7 +73,7 @@ export const OrbitPanel = ( { symmController, orbitSet, showLastOrbit=true } ) =
           <Button variant="outlined" style={marginedStyle} onClick={ () => orbitSetAction( 'setNoDirections' ) } >None</Button>
           <Button variant="outlined" style={marginedStyle} onClick={ () => orbitSetAction( 'setAllDirections' ) } >All</Button>
           <FormControlLabel style={marginedStyle}
-            control={<Checkbox checked={oneAtATime} onChange={ () => orbitSetAction( 'oneAtATime' ) } />}
+            control={<Checkbox checked={oneAtATime} color="primary" onChange={ () => orbitSetAction( 'oneAtATime' ) } />}
             label="Single"
           />
         </FormGroup>
