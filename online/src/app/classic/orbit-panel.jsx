@@ -11,7 +11,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 
 import { useControllerProperty, useControllerAction } from './controller-hooks.js';
 
-export const OrbitDot = ( { controllerPath, orbit, selectedOrbitNames, relativeHeight } ) =>
+export const OrbitDot = ( { controllerPath, orbit, selectedOrbitNames, relativeHeight, isLastSelected } ) =>
 {
   const orbitSetAction = useControllerAction( controllerPath );
   const selected = selectedOrbitNames && selectedOrbitNames .indexOf( orbit ) >= 0;
@@ -37,10 +37,13 @@ export const OrbitDot = ( { controllerPath, orbit, selectedOrbitNames, relativeH
     { selected &&
       <circle key={orbit+'DOT'} cx={x} cy={relY} r={0.37*r} fill="black" onClick={toggleDot} />
     }
+    { isLastSelected &&
+      <circle key={orbit+'RING'} cx={x} cy={relY} r={1.57*r} fill="none" />
+    }
   </> )
 }
 
-export const OrbitPanel = ( { symmController, orbitSet } ) =>
+export const OrbitPanel = ( { symmController, orbitSet, showLastOrbit=true } ) =>
 {
   const symmetryAction = useControllerAction( symmController );
   const controllerPath = symmController + '/' + orbitSet;
@@ -48,6 +51,8 @@ export const OrbitPanel = ( { symmController, orbitSet } ) =>
   const orbitNames = useControllerProperty( controllerPath, 'allOrbits', 'orbits', true );
   const selectedOrbitNames = useControllerProperty( controllerPath, 'orbits', 'orbits', true );
   const oneAtATime = useControllerProperty( controllerPath, 'oneAtATime', 'orbits', true );
+  const selectedOrbit = useControllerProperty( controllerPath, 'selectedOrbit', 'orbits', false );
+  const lastSelected = showLastOrbit && selectedOrbit;
   const [ anchorEl, setAnchorEl ] = useState( null );
 
   const revealSettings = evt => setAnchorEl( evt.currentTarget );
@@ -79,7 +84,7 @@ export const OrbitPanel = ( { symmController, orbitSet } ) =>
             {/* TODO: reversed triangle per the controller */}
             <polygon fill="none" points={triangleCorners}/>  { /* all dot X & Y values are in [0..1] */ }
             { orbitNames && orbitNames.map && orbitNames.map( orbit =>
-              <OrbitDot { ...{ controllerPath, orbit, selectedOrbitNames, relativeHeight } }/>
+              <OrbitDot { ...{ controllerPath, orbit, selectedOrbitNames, relativeHeight } } isLastSelected={ orbit === lastSelected }/>
             ) }
           </g>
         </svg>

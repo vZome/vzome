@@ -12,7 +12,7 @@ export const ClassicEditor = () =>
   useNewDesign();
   // const makeHyperdo = useControllerAction( '', 'Polytope4d' );
 
-  const rightColumns = 3;
+  const rightColumns = 2;
   const canvasColumns = 12 - rightColumns;
 
   return (
