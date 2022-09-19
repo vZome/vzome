@@ -13,6 +13,7 @@ import { useControllerProperty, useControllerAction } from './controller-hooks.j
 
 export const OrbitDot = ( { controllerPath, orbit, selectedOrbitNames, relativeHeight } ) =>
 {
+  const orbitSetAction = useControllerAction( controllerPath );
   const selected = selectedOrbitNames && selectedOrbitNames .indexOf( orbit ) >= 0;
   const orbitDetails = useControllerProperty( controllerPath, `orbitDot.${orbit}` ) || "";
   const [ colorHex, x, y ] = orbitDetails.split( '/' );
@@ -28,10 +29,13 @@ export const OrbitDot = ( { controllerPath, orbit, selectedOrbitNames, relativeH
   }
   const r = 0.05;
   const relY = relativeHeight * ( 1-y );
+
+  const toggleDot = evt => orbitSetAction( `toggleDirection.${orbit}` );
+
   return color && ( <>
-    <circle key={orbit} cx={x} cy={relY} r={r} fill={color} />
+    <circle key={orbit} cx={x} cy={relY} r={r} fill={color} onClick={toggleDot} />
     { selected &&
-      <circle key={orbit+'DOT'} cx={x} cy={relY} r={0.37*r} fill="black" />
+      <circle key={orbit+'DOT'} cx={x} cy={relY} r={0.37*r} fill="black" onClick={toggleDot} />
     }
   </> )
 }
@@ -70,7 +74,7 @@ export const OrbitPanel = ( { symmController, orbitSet } ) =>
         </FormGroup>
       </div>
       <div style={{ position: 'relative' }}>
-        <svg viewBox={viewBox} stroke="black" strokeWidth={0.005}>
+        <svg viewBox={viewBox} stroke="black" strokeWidth={0.005} >
           <g>
             {/* TODO: reversed triangle per the controller */}
             <polygon fill="none" points={triangleCorners}/>  { /* all dot X & Y values are in [0..1] */ }

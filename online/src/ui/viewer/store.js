@@ -102,7 +102,6 @@ const reducer = ( state = initialState, event ) =>
 
     case 'CONTROLLER_PROPERTY_CHANGED': {
       const { controllerPath, name, value } = event.payload;
-      console.log( JSON.stringify( event.payload ) );
       return { ...state, controller: { ...state.controller, [ controllerPath + '/' + name ]: value } };
     }
 
