@@ -22,10 +22,11 @@ export const ClassicEditor = () =>
           <DesignViewer config={ { useSpinner: true } } />
         </Grid>
         <Grid id='editor-drawer' item xs={rightColumns} style={{ position: 'relative' }}>
+          <div id="camera-control" style={{ minHeight: '280px' }}></div>
           <OrbitPanel symmController='strutBuilder/symmetry' orbitSet='buildOrbits' />
-          <Button variant="contained" color="primary" >
+          {/* <Button variant="contained" color="primary" >
             Hyperdo
-          </Button>
+          </Button> */}
         </Grid>
       </Grid>
     </div>
