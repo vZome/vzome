@@ -502,7 +502,7 @@ const makeFloatMatrices = ( matrices ) =>
       RM.renderChange( new RM( null, null ), renderedModel, renderingListener );
     }
 
-    return { interpretEdit, configureAndPerformEdit, field, batchRender, orbitSource };
+    return { interpretEdit, configureAndPerformEdit, field, batchRender, orbitSource, toolsModel };
   }
 
   // TODO: replace the legacyCommandFactory, which was for the old {shown,hidden,selected} model

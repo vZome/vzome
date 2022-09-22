@@ -164,23 +164,26 @@ public class SymmetryController extends DefaultController
 
         case "symmetryToolFactories":
 
-            // This will be called only once, before any relevant getSubController, so it is OK to do creations
-            for ( Tool.Factory factory : this .symmetrySystem .getToolFactories( Tool.Kind.SYMMETRY ) )
-                this .symmetryToolFactories .put( factory .getId(), new ToolFactoryController( factory ) );
+            if ( this .symmetryToolFactories .isEmpty() ) {
+                for ( Tool.Factory factory : this .symmetrySystem .getToolFactories( Tool.Kind.SYMMETRY ) )
+                    this .symmetryToolFactories .put( factory .getId(), new ToolFactoryController( factory ) );
+            }
             return this .symmetryToolFactories .keySet() .toArray( new String[]{} );
 
         case "transformToolFactories":
 
-            // This will be called only once, before any relevant getSubController, so it is OK to do creations
-            for ( Tool.Factory factory : this .symmetrySystem .getToolFactories( Tool.Kind.TRANSFORM ) )
-                this .transformToolFactories .put( factory .getId(), new ToolFactoryController( factory ) );
+            if ( this .transformToolFactories .isEmpty() ) {
+                for ( Tool.Factory factory : this .symmetrySystem .getToolFactories( Tool.Kind.TRANSFORM ) )
+                    this .transformToolFactories .put( factory .getId(), new ToolFactoryController( factory ) );
+            }
             return this .transformToolFactories .keySet() .toArray( new String[]{} );
 
         case "linearMapToolFactories":
 
-            // This will be called only once, before any relevant getSubController, so it is OK to do creations
-            for ( Tool.Factory factory : this .symmetrySystem .getToolFactories( Tool.Kind.LINEAR_MAP ) )
-                this .linearMapToolFactories .put( factory .getId(), new ToolFactoryController( factory ) );
+            if ( this .linearMapToolFactories .isEmpty() ) {
+                for ( Tool.Factory factory : this .symmetrySystem .getToolFactories( Tool.Kind.LINEAR_MAP ) )
+                    this .linearMapToolFactories .put( factory .getId(), new ToolFactoryController( factory ) );
+            }
             return this .linearMapToolFactories .keySet() .toArray( new String[]{} );
 
         case "builtInSymmetryTools":

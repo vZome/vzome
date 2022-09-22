@@ -10,6 +10,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
 import { useControllerProperty, useControllerAction } from './controller-hooks.js';
+import { subcontroller } from '../../ui/viewer/store.js';
 
 export const OrbitDot = ( { controllerPath, orbit, selectedOrbitNames, relativeHeight, isLastSelected } ) =>
 {
@@ -46,7 +47,7 @@ export const OrbitDot = ( { controllerPath, orbit, selectedOrbitNames, relativeH
 export const OrbitPanel = ( { symmController, orbitSet, showLastOrbit=true } ) =>
 {
   const symmetryAction = useControllerAction( symmController );
-  const controllerPath = symmController + '/' + orbitSet;
+  const controllerPath = subcontroller( symmController, orbitSet );
   const orbitSetAction = useControllerAction( controllerPath );
   const orbitNames = useControllerProperty( controllerPath, 'allOrbits', 'orbits', true );
   const selectedOrbitNames = useControllerProperty( controllerPath, 'orbits', 'orbits', true );
@@ -78,7 +79,7 @@ export const OrbitPanel = ( { symmController, orbitSet, showLastOrbit=true } ) =
           />
         </FormGroup>
       </div>
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: 'relative', backgroundColor: 'white' }}>
         <svg viewBox={viewBox} stroke="black" strokeWidth={0.005} >
           <g>
             {/* TODO: reversed triangle per the controller */}

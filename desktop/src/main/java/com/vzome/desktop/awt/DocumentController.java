@@ -84,6 +84,7 @@ import com.vzome.desktop.controller.PartsController;
 import com.vzome.desktop.controller.PolytopesController;
 import com.vzome.desktop.controller.SymmetryController;
 import com.vzome.desktop.controller.ToolFactoryController;
+import com.vzome.desktop.controller.ToolsController;
 import com.vzome.desktop.controller.UndoRedoController;
 import com.vzome.desktop.controller.VectorController;
 

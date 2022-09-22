@@ -85,8 +85,9 @@ const fetchFileText = selected =>
 let designController;
 const propertyChanges = {};
 
-const getNamedController = controllerNames =>
+const getNamedController = controllerPath =>
 {
+  const controllerNames = controllerPath? controllerPath.split( ':' ) : [];
   const getSubController = ( controller, names ) => {
     if ( !names || names.length === 0 || ( names.length === 1 && !names[ 0 ] ) )
       return controller;
@@ -281,8 +282,7 @@ onmessage = ({ data }) =>
     case 'ACTION_TRIGGERED':
     {
       const { controllerPath, action, parameters } = payload;
-      const controllerNames = controllerPath? controllerPath.split( '/' ) : [];
-      const controller = getNamedController( controllerNames );
+      const controller = getNamedController( controllerPath );
       controller .actionPerformed( null, action );
       break;
     }
@@ -290,8 +290,7 @@ onmessage = ({ data }) =>
     case 'PROPERTY_REQUESTED':
     {
       const { controllerPath, propName, changeName, isList } = payload;
-      const controllerNames = controllerPath? controllerPath.split( '/' ) : [];
-      const controller = getNamedController( controllerNames );
+      const controller = getNamedController( controllerPath );
       registerChangeListener( controller, controllerPath, changeName, propName, isList );
       const value = isList? controller .getCommandList( propName ) : controller .getProperty( propName );
       postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name: propName, value } } );

@@ -1,10 +1,8 @@
-package com.vzome.desktop.awt;
-
-import java.awt.event.MouseEvent;
+package com.vzome.desktop.controller;
 
 import com.vzome.api.Tool;
 
-public class ToolController extends DefaultGraphicsController
+public class ToolController extends DefaultController
 {
 	private Tool tool;
 	private boolean selectOutputs;
@@ -125,27 +123,5 @@ public class ToolController extends DefaultGraphicsController
 		default:
 			super .setModelProperty( name, value );
 		}
-	}
-
-	@Override
-	public boolean[] enableContextualCommands( String[] menu, MouseEvent e )
-	{
-		boolean[] result = new boolean[ menu .length ];
-		for (int i = 0; i < menu.length; i++) {
-			switch ( menu[ i ] ) {
-
-			case "selectInputs":
-				result[ i ] = ! this .tool .isDeleteInputs();
-				break;
-
-			case "selectOutputs":
-				result[ i ] = ! this .justSelect;
-				break;
-
-			default:
-				result[ i ] = true;
-			}
-		}
-		return result;
 	}
 }

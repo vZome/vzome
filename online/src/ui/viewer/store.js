@@ -39,6 +39,8 @@ export const newDesign = () => workerAction( 'NEW_DESIGN_STARTED', { field: 'gol
 export const doControllerAction = ( controllerPath='', action, parameters={} ) => workerAction( 'ACTION_TRIGGERED', { controllerPath, action, parameters } );
 export const requestControllerProperty = ( controllerPath='', propName, changeName, isList ) => workerAction( 'PROPERTY_REQUESTED', { controllerPath, propName, changeName, isList } );
 
+export const subcontroller = ( controllerPath, subName ) => controllerPath + ':' + subName;
+
 const reducer = ( state = initialState, event ) =>
 {
   switch ( event.type ) {
@@ -102,7 +104,7 @@ const reducer = ( state = initialState, event ) =>
 
     case 'CONTROLLER_PROPERTY_CHANGED': {
       const { controllerPath, name, value } = event.payload;
-      return { ...state, controller: { ...state.controller, [ controllerPath + '/' + name ]: value } };
+      return { ...state, controller: { ...state.controller, [ subcontroller( controllerPath, name ) ]: value } };
     }
 
     default:
