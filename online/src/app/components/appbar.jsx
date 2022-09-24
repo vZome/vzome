@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-export const VZomeAppBar = ( { oneDesign, pathToRoot='.', forDebugger=false } ) =>
+export const VZomeAppBar = ( { oneDesign, pathToRoot='.', forDebugger=false, title, about } ) =>
 {
   const classes = useStyles()
 
@@ -35,7 +35,7 @@ export const VZomeAppBar = ( { oneDesign, pathToRoot='.', forDebugger=false } ) 
             vZome <Box component="span" fontStyle="oblique">Online</Box>
           </Typography>
           { !oneDesign && <OpenMenu pathToRoot={pathToRoot} forDebugger={forDebugger} className={classes.open} /> }
-          <AboutDialog/>
+          <AboutDialog title={title} about={about} />
         </Toolbar>
       </AppBar>
     </div>
