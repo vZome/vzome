@@ -33,10 +33,13 @@ CANDIES_OUT="$LEGACY/candies"
 
 banner 'Patching up the j4ts bundle as an ES6 module' ######################################
 
+# also, working around https://github.com/cincheo/jsweet/issues/740
+
 mkdir -p $CANDIES_OUT/j4ts-2.1.0-SNAPSHOT
 cat $CANDIES_IN/j4ts-2.1.0-SNAPSHOT/bundle.js | \
   sed \
     -e 's/^var java/export var java/' \
+    -e 's/return this.size();/return this.__parent.size();/' \
   > $CANDIES_OUT/j4ts-2.1.0-SNAPSHOT/bundle.js || exit $?
 
 banner 'Patching up the core bundle as an ES6 module' ######################################

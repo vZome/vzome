@@ -1,7 +1,7 @@
 
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { newDesign, doControllerAction, requestControllerProperty } from '../../ui/viewer/store.js';
+import { newDesign, doControllerAction, requestControllerProperty, subcontroller } from '../../ui/viewer/store.js';
 
 export const useNewDesign = () =>
 {
@@ -12,7 +12,7 @@ export const useNewDesign = () =>
 export const useControllerProperty = ( controllerPath, propName, changeName=null, isList=false ) =>
 {
   const report = useDispatch();
-  const fullName = controllerPath + '/' + propName;
+  const fullName = subcontroller( controllerPath, propName );
   const controller = useSelector( state => state.controller );
   const value = useSelector( state => state.controller && state.controller[ fullName ] );
   useEffect( () => {

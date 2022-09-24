@@ -1,5 +1,5 @@
 
-package com.vzome.desktop.awt;
+package com.vzome.desktop.controller;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -7,7 +7,6 @@ import java.beans.PropertyChangeListener;
 import com.vzome.api.Tool;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.desktop.api.Controller;
-import com.vzome.desktop.controller.DefaultController;
 
 public class ToolsController extends DefaultController implements PropertyChangeListener
 {
