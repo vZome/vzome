@@ -20,7 +20,7 @@ export const ToolFactoryBar = ( { controller }) =>
   const mapFactoryNames = useControllerProperty( controller, 'linearMapToolFactories', 'linearMapToolFactories', true );
 
   return (
-    <div id='factory-bar' style={{ display: 'flex' }}>
+    <div id='factory-bar' style={{ display: 'flex', minHeight: '34px' }}>
       { symmFactoryNames && symmFactoryNames.map && symmFactoryNames.map( factoryName =>
         <ToolFactoryButton factoryName={factoryName}/>
       ) }
