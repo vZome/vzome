@@ -1,17 +1,20 @@
 
-import React from 'react';
-import { IconButton } from '@material-ui/core';
+import React, { useState } from 'react';
 
 import { useControllerProperty, useControllerAction } from '../controller-hooks.js';
+import { useEffect } from 'react';
 
-const ToolbarSpacer = () => ( <div style={{ minWidth: '10px' }}></div> )
+const ToolbarSpacer = () => ( <div style={{ minWidth: '10px', minHeight: '10px' }}></div> )
 
-const ToolFactoryButton = ( { factoryName } ) =>
+const ToolbarButton = ( { label, image } ) =>
 (
-  <button aria-label={factoryName} style={{ padding: '0px', borderWidth: '2px', borderColor: 'darkgray' }}>
-    <img key={factoryName} src={`./icons/tools/newTool/${factoryName}.png`}/>
+  <button aria-label={label} className='toolbar-button'>
+    <img src={ `./icons/tools/${image}.png`}/>
   </button>
 )
+
+const ToolFactoryButton = ( { factoryName } ) => <ToolbarButton label={factoryName} image={`newTool/${factoryName}`} />
+const CommandButton = ( { cmdName } ) => <ToolbarButton label={cmdName} image={`small/${cmdName}`} />
 
 export const ToolFactoryBar = ( { controller }) =>
 {
@@ -22,26 +25,17 @@ export const ToolFactoryBar = ( { controller }) =>
   return (
     <div id='factory-bar' style={{ display: 'flex', minHeight: '34px' }}>
       { symmFactoryNames && symmFactoryNames.map && symmFactoryNames.map( factoryName =>
-        <ToolFactoryButton factoryName={factoryName}/>
+        <ToolFactoryButton key={factoryName} factoryName={factoryName}/>
       ) }
-      <ToolbarSpacer/>
+      <ToolbarSpacer key='sp1' />
       { transFactoryNames && transFactoryNames.map && transFactoryNames.map( factoryName =>
-        <ToolFactoryButton factoryName={factoryName}/>
+        <ToolFactoryButton key={factoryName} factoryName={factoryName}/>
       ) }
-      <ToolbarSpacer/>
+      <ToolbarSpacer key='sp2' />
       { mapFactoryNames && mapFactoryNames.map && mapFactoryNames.map( factoryName =>
-        <ToolFactoryButton factoryName={factoryName}/>
+        <ToolFactoryButton key={factoryName} factoryName={factoryName}/>
       ) }
     </div>
-  )
-}
-
-const CommandButton = ( { cmdName } ) =>
-{
-  return (
-    <button aria-label={cmdName} style={{ padding: '0px', borderWidth: '2px', borderColor: 'darkgray' }}>
-      <img key={cmdName} src={`./icons/tools/small/${cmdName}.png`}/>
-    </button>
   )
 }
 
@@ -49,11 +43,7 @@ const ToolButton = ( { controller } ) =>
 {
   const kind = useControllerProperty( controller, 'kind', 'kind', false );
   const label = useControllerProperty( controller, 'label', 'label', false );
-  return (
-    <button aria-label={label} style={{ padding: '0px', borderWidth: '2px', borderColor: 'darkgray' }}>
-      <img key={label} src={`./icons/tools/small/${kind}.png`}/>
-    </button>
-  )
+  return ( <ToolbarButton label={label} image={`small/${kind}`} /> )
 }
 
 export const ToolBar = ( { symmetryController, toolsController }) =>
@@ -75,12 +65,45 @@ export const ToolBar = ( { symmetryController, toolsController }) =>
       <CommandButton cmdName='NewCentroid' hoverText='Construct centroid of points'/>
       <ToolbarSpacer/>
       { symmToolNames && symmToolNames.map && symmToolNames.map( toolName =>
-        <ToolButton controller={`${toolsController}:${toolName}`}/>
+        <ToolButton key={toolName} controller={`${toolsController}:${toolName}`}/>
       ) }
       <ToolbarSpacer/>
       { transToolNames && transToolNames.map && transToolNames.map( toolName =>
-        <ToolButton controller={`${toolsController}:${toolName}`}/>
+        <ToolButton key={toolName} controller={`${toolsController}:${toolName}`}/>
       ) }
+    </div>
+  )
+}
+
+let nextBookmarkIcon = 0;
+
+const BookmarkButton = ( { controller } ) =>
+{
+  const label = useControllerProperty( controller, 'label', 'label', false );
+  const [ iconName, setIconName ] = useState( null );
+  useEffect( () => {
+    setIconName( `bookmark_${nextBookmarkIcon}`);
+    nextBookmarkIcon = ( nextBookmarkIcon + 1 ) % 4;
+  }, [] );
+  return ( <ToolbarButton label={label} image={`small/${iconName}`} /> )
+}
+
+export const BookmarkBar = ( { bookmarkController, toolsController }) =>
+{
+  // const bookmarkNames = useControllerProperty( bookmarkController, 'builtInSymmetryTools', 'builtInSymmetryTools', true );
+
+  return (
+    <div id='tools-bar' style={{ display: 'flex', flexDirection: 'column' }}>
+      <ToolFactoryButton factoryName='bookmark' />
+      <ToolbarSpacer/>
+      <BookmarkButton controller={`${toolsController}:bookmark.builtin/ball at origin`}/>
+      <BookmarkButton controller={`${toolsController}:bookmark.builtin/ball at origin`}/>
+      <BookmarkButton controller={`${toolsController}:bookmark.builtin/ball at origin`}/>
+      <BookmarkButton controller={`${toolsController}:bookmark.builtin/ball at origin`}/>
+      <BookmarkButton controller={`${toolsController}:bookmark.builtin/ball at origin`}/>
+      {/* { bookmarkNames && bookmarkNames.map && bookmarkNames.map( toolName =>
+        <BookmarkButton controller={`${toolsController}:${toolName}`}/>
+      ) } */}
     </div>
   )
 }

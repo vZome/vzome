@@ -85,7 +85,7 @@ export const OrbitPanel = ( { symmController, orbitSet, showLastOrbit=true } ) =
             {/* TODO: reversed triangle per the controller */}
             <polygon fill="none" points={triangleCorners}/>  { /* all dot X & Y values are in [0..1] */ }
             { orbitNames && orbitNames.map && orbitNames.map( orbit =>
-              <OrbitDot { ...{ controllerPath, orbit, selectedOrbitNames, relativeHeight } } isLastSelected={ orbit === lastSelected }/>
+              <OrbitDot key={orbit} { ...{ controllerPath, orbit, selectedOrbitNames, relativeHeight } } isLastSelected={ orbit === lastSelected }/>
             ) }
           </g>
         </svg>
