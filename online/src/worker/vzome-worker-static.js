@@ -84,6 +84,8 @@ const fetchFileText = selected =>
 
 let designController;
 const propertyChanges = {};
+const bookmarks = [];
+const tools = [];
 
 const getNamedController = controllerPath =>
 {
@@ -127,13 +129,28 @@ const createDesign = ( report, fieldName ) =>
   return import( './legacy/dynamic.js' )
 
     .then( module => {
-      return module .newDesign( fieldName );
-    } )
-
-    .then( design => {
+      const design = module .newDesign( fieldName );
       const { controller, renderHistory, orbitSource } = design;
       designController = controller;
       report( { type: 'CONTROLLER_CREATED' } );
+
+      // Here we emulate the PCL of ModelPanel, since there is no list property
+      //  on toolsController for either "tools" or "bookmarks".
+      // NOTE: this is not tested yet!
+      const toolsController = getNamedController( 'strutBuilder:tools' );
+      toolsController .addPropertyListener( { propertyChange: pce => {
+        const name = pce .getPropertyName();
+        if ( name === 'tool.added' ) {
+          const toolController = pce .getNewValue();
+          const kind = toolController .getProperty( "kind" );
+          if ( kind === 'bookmark' ) {
+            const name = toolController .getProperty( "label" );
+            bookmarks .append( name );
+            report( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath: 'strutBuilder:tools', name: 'bookmarks', value: bookmarks.slice() } } );
+          }
+        }
+      } } );
+
       const { shapes, edit } = renderHistory .getScene( '--START--', false );
       const embedding = orbitSource .getEmbedding();
       const scene = { embedding, shapes };

@@ -21,35 +21,3 @@ body {
 .FileInput {
   display: none;
 }
-
-img {
-  display: block;
-}
-
-.placeholder {
-  border: 3px solid lightgray;
-  color: gray;
-}
-
-.editor-main {
-  display: grid;
-  grid-template-columns: 80% 20%;
-}
-
-.editor-drawer {
-  display: grid;
-  grid-template-rows: min-content 1fr;
-}
-
-@media ( orientation: portrait ) {
-
-  .editor-main {
-    display: grid;
-    grid-template-rows: 100%;
-    grid-template-columns: 100%;
-  }
-
-  .editor-drawer {
-    display: none;
-  }
-}
