@@ -3,10 +3,11 @@ import React from 'react';
 
 import { DesignViewer } from '../../ui/viewer/index.jsx'
 import { subcontroller } from '../../ui/viewer/store.js';
-import { CameraControls } from './components/camera.jsx';
-import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
 import { useNewDesign } from './controller-hooks.js';
-import { OrbitPanel } from './orbit-panel.jsx';
+import { CameraControls } from './components/camera.jsx';
+import { StrutLengthPanel } from './components/length.jsx';
+import { OrbitPanel } from './components/orbit-panel.jsx';
+import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
 
 export const ClassicEditor = () =>
 {
@@ -18,7 +19,7 @@ export const ClassicEditor = () =>
   return (
     // <div id='classic' style={{ display: 'grid', gridTemplateRows: 'min-content 1fr' }}>
     //   <div id='menu-bar' className='placeholder' style={{ minHeight: '25px' }}>Menus</div>
-      <div id='editor-main' className='editor-main' style={{ backgroundColor: 'whitesmoke' }}>        
+      <div id='editor-main' className='grid-cols-1-min whitesmoke-bkgd' >        
 
         <div id='editor-canvas' style={{ display: 'grid', gridTemplateRows: 'min-content min-content min-content 1fr' }}>
           <div id='article-and-status' style={{ display: 'grid', gridTemplateColumns: 'min-content 1fr' }}>
@@ -33,12 +34,12 @@ export const ClassicEditor = () =>
           </div>
         </div>
 
-        <div id='editor-drawer' className='editor-drawer'>
+        <div id='editor-drawer' className='grid-rows-min-1 editor-drawer'>
           <CameraControls/>
           <div id="build-parts-measure" style={{ height: '100%' }}>
             <div id="build" style={{ display: 'grid', gridTemplateRows: '1fr min-content', height: '100%' }}>
               <OrbitPanel symmController={symmController} orbitSet='buildOrbits' style={{ height: '100%' }} />
-              <div id='length' className='placeholder' style={{ minHeight: '250px' }}>Length</div>
+              <StrutLengthPanel />
             </div>
           </div>
         </div>
