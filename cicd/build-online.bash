@@ -31,6 +31,7 @@ REVISION=${BUILD_NUMBER:-'dev'}
 
 banner 'Creating the online.tgz archive'
   cp -R ../public/* app && \
+  rm -rf app/test* && \
   echo 'Header always set Access-Control-Allow-Origin "*"' > modules/.htaccess && \
   echo ${REVISION} > modules/revision.txt && \
   tar czvf online.tgz app modules
