@@ -22,8 +22,9 @@ rm -rf dist || exit $?
 yarn run build || exit $?
 
 rm -rf public/classic/icons || exit $?
-mkdir -p public/classic/icons || exit $?
+mkdir -p public/classic/icons/misc || exit $?
 cp -R ../desktop/src/main/resources/icons/* public/classic/icons || exit $?
+cp -R ../desktop/src/main/resources/org/vorthmann/zome/ui/*.gif public/classic/icons/misc || exit $?
 
 pushd dist
 
