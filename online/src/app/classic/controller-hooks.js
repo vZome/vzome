@@ -13,14 +13,15 @@ export const useControllerProperty = ( controllerPath, propName, changeName=null
 {
   const report = useDispatch();
   const fullName = subcontroller( controllerPath, propName );
-  const controller = useSelector( state => state.controller );
+  const controllerReady = useSelector( state => state.controller?.isReady );
   const value = useSelector( state => state.controller && state.controller[ fullName ] );
   useEffect( () => {
-    if ( controller && value === undefined ) {
-      // trigger the initial fetch
+    if ( controllerReady ) {
+      // This must be a one-time action for any given property.  The response
+      // on the worker side will become the first change event coming back.
       report( requestControllerProperty( controllerPath, propName, changeName, isList ) );
     }
-  }, [ controller, value ] );
+  }, [ controllerReady ] );
   return value;
 }
 

@@ -99,7 +99,7 @@ const reducer = ( state = initialState, event ) =>
     }
 
     case 'CONTROLLER_CREATED': {
-      return { ...state, controller: {} };
+      return { ...state, controller: { isReady: true } };
     }
 
     case 'CONTROLLER_PROPERTY_CHANGED': {
