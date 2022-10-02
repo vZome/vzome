@@ -11,23 +11,15 @@ import Checkbox from '@material-ui/core/Checkbox';
 
 import { useControllerProperty, useControllerAction } from '../controller-hooks.js';
 import { subcontroller } from '../../../ui/viewer/store.js';
+import { hexToWebColor, StrutLengthPanel } from './length.jsx';
 
-export const OrbitDot = ( { controllerPath, orbit, selectedOrbitNames, relativeHeight, isLastSelected } ) =>
+export const OrbitDot = ( { controller, orbit, selectedOrbitNames, relativeHeight, isLastSelected } ) =>
 {
-  const orbitSetAction = useControllerAction( controllerPath );
+  const orbitSetAction = useControllerAction( controller );
   const selected = selectedOrbitNames && selectedOrbitNames .indexOf( orbit ) >= 0;
-  const orbitDetails = useControllerProperty( controllerPath, `orbitDot.${orbit}` ) || "";
+  const orbitDetails = useControllerProperty( controller, `orbitDot.${orbit}` ) || "";
   const [ colorHex, x, y ] = orbitDetails.split( '/' );
-  let color;
-  if ( colorHex ) {
-    color = colorHex .substring( 2 ); // remove "0x"
-    if ( color .length === 2 )
-      color = `#0000${color}`
-    else if ( color .length === 4 )
-      color = `#00${color}`
-    else
-      color = `#${color}`
-  }
+  const color = colorHex && hexToWebColor( colorHex );
   const r = 0.05;
   const relY = relativeHeight * ( 1-y );
 
@@ -44,23 +36,11 @@ export const OrbitDot = ( { controllerPath, orbit, selectedOrbitNames, relativeH
   </> )
 }
 
-export const OrbitPanel = ( { symmController, orbitSet, showLastOrbit=true } ) =>
+export const OrbitPanel = ( { controller, orbitNames, lastSelected, children } ) =>
 {
-  const symmetryAction = useControllerAction( symmController );
-  const controllerPath = subcontroller( symmController, orbitSet );
-  const orbitSetAction = useControllerAction( controllerPath );
-  const orbitNames = useControllerProperty( controllerPath, 'allOrbits', 'orbits', true );
-  const selectedOrbitNames = useControllerProperty( controllerPath, 'orbits', 'orbits', true );
-  const oneAtATime = useControllerProperty( controllerPath, 'oneAtATime', 'orbits', false ) === 'true';
-  const selectedOrbit = useControllerProperty( controllerPath, 'selectedOrbit', 'orbits', false );
-  const lastSelected = showLastOrbit && selectedOrbit;
-  const [ anchorEl, setAnchorEl ] = useState( null );
-
-  const revealSettings = evt => setAnchorEl( evt.currentTarget );
-  const hideSettingsAnd = action => () => {
-    setAnchorEl( null );
-    symmetryAction( action );
-  }
+  const orbitSetAction = useControllerAction( controller );
+  const selectedOrbitNames = useControllerProperty( controller, 'orbits', 'orbits', true );
+  const oneAtATime = useControllerProperty( controller, 'oneAtATime', 'orbits', false ) === 'true';
 
   const marginedStyle = { margin: '8px' }
   const relativeHeight = 0.6;
@@ -73,10 +53,10 @@ export const OrbitPanel = ( { symmController, orbitSet, showLastOrbit=true } ) =
         <FormGroup row>
           <Button variant="outlined" style={marginedStyle} onClick={ () => orbitSetAction( 'setNoDirections' ) } >None</Button>
           <Button variant="outlined" style={marginedStyle} onClick={ () => orbitSetAction( 'setAllDirections' ) } >All</Button>
-          <FormControlLabel style={marginedStyle}
+          { lastSelected && <FormControlLabel style={marginedStyle}
             control={<Checkbox checked={oneAtATime} color="primary" onChange={ () => orbitSetAction( 'oneAtATime' ) } />}
             label="Single"
-          />
+          /> }
         </FormGroup>
       </div>
       <div style={{ position: 'relative', backgroundColor: 'white' }}>
@@ -85,10 +65,35 @@ export const OrbitPanel = ( { symmController, orbitSet, showLastOrbit=true } ) =
             {/* TODO: reversed triangle per the controller */}
             <polygon fill="none" points={triangleCorners}/>  { /* all dot X & Y values are in [0..1] */ }
             { orbitNames && orbitNames.map && orbitNames.map( orbit =>
-              <OrbitDot key={orbit} { ...{ controllerPath, orbit, selectedOrbitNames, relativeHeight } } isLastSelected={ orbit === lastSelected }/>
+              <OrbitDot key={orbit} { ...{ controller, orbit, selectedOrbitNames, relativeHeight } } isLastSelected={ orbit === lastSelected }/>
             ) }
           </g>
         </svg>
+        { children }
+      </div>
+    </div>
+  )
+}
+
+export const StrutBuildPanel = ( { symmController } ) =>
+{
+  const availableOrbits = subcontroller( symmController, 'availableOrbits' );
+  const orbitNames = useControllerProperty( availableOrbits, 'orbits', 'orbits', true );
+  const setOrbitNames = useControllerAction( availableOrbits );
+
+  const buildOrbits = subcontroller( symmController, 'buildOrbits' );
+  const lastSelected = useControllerProperty( buildOrbits, 'selectedOrbit', 'orbits', false );
+
+  const [ anchorEl, setAnchorEl ] = useState( null );
+  const revealSettings = evt => setAnchorEl( evt.currentTarget );
+  const setAvailableOrbits = action => () => {
+    setAnchorEl( null );
+    setOrbitNames( action );
+  }
+
+  return(
+    <div id="build" style={{ display: 'grid', gridTemplateRows: '1fr min-content', height: '100%' }}>
+      <OrbitPanel controller={buildOrbits} { ...{ orbitNames, lastSelected } } style={{ height: '100%' }} >
         <IconButton color="inherit" aria-label="settings"
             style={ { position: 'absolute', top: '8px', right: '8px' } }
             onClick={revealSettings} >
@@ -101,11 +106,12 @@ export const OrbitPanel = ( { symmController, orbitSet, showLastOrbit=true } ) =
           open={Boolean(anchorEl)}
           onClose={ () => setAnchorEl( null ) }
         >
-          <MenuItem onClick={ hideSettingsAnd( 'rZomeOrbits' ) }>real Zome</MenuItem>
-          <MenuItem onClick={ hideSettingsAnd( 'predefinedOrbits' ) }>predefined</MenuItem>
-          <MenuItem onClick={ hideSettingsAnd( 'setAllDirections' ) }>all</MenuItem>
+          <MenuItem onClick={ setAvailableOrbits( 'rZomeOrbits' ) }>real Zome</MenuItem>
+          <MenuItem onClick={ setAvailableOrbits( 'predefinedOrbits' ) }>predefined</MenuItem>
+          <MenuItem onClick={ setAvailableOrbits( 'setAllDirections' ) }>all</MenuItem>
         </Menu>
-      </div>
+      </OrbitPanel>
+      <StrutLengthPanel controller={buildOrbits} />
     </div>
-  )
+  );
 }

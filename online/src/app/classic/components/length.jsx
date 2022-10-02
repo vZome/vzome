@@ -3,12 +3,29 @@ import React from 'react';
 
 import Slider from '@material-ui/core/Slider';
 
+import { useControllerProperty } from '../controller-hooks.js';
+import { subcontroller } from '../../../ui/viewer/store.js';
+
 const sliderMarks = Array.from( { length: 13 }, (_, i) => i-6 ) .map( i => ({ value: i }));
 sliderMarks[ 6 ].label = 'unit';
 
-export const StrutLengthPanel = () =>
+export const hexToWebColor = colorHex =>
 {
-  const color = '#8412a0'
+  const color = colorHex .substring( 2 ); // remove "0x"
+  if ( color .length === 2 )
+    return `#0000${color}`
+  else if ( color .length === 4 )
+    return `#00${color}`
+  else
+    return `#${color}`
+}
+
+export const StrutLengthPanel = ( { controller }) =>
+{
+  const orbitController = subcontroller( controller, 'currentLength' );
+  const color = useControllerProperty( orbitController, 'color', 'selectedOrbit', false );
+  const backgroundColor = ( color && hexToWebColor( color ) ) || 'whitesmoke';
+
   return (
     <div id='strut-length' className='grid-rows-fr-min' >
       <div id='change-size' className='grid-cols-2-1' >
@@ -16,7 +33,7 @@ export const StrutLengthPanel = () =>
           <div id='scale-factors' className='placeholder' style={{ minHeight: '35px' }}>
             scale by
           </div>
-          <div id='colored-panel' className='grid-cols-min-1 orbit-scale' style={{ backgroundColor: color }}>
+          <div id='colored-panel' className='grid-cols-min-1 orbit-scale' style={{ backgroundColor }}>
             <div id='up-down' className='grid-rows-1-1 pad-4px' >
               <button aria-label='scale-up' className='scale-button'>
                 <img src='./icons/misc/scaleUp.gif'/>
