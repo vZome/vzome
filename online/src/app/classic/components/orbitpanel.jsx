@@ -5,7 +5,7 @@ import Button from "@suid/material/Button"
 import Checkbox from "@suid/material/Checkbox";
 import FormControlLabel from "@suid/material/FormControlLabel";
 
-import { controllerAction, requireProperty, rootController } from '../controllers-solid.js';
+import { controllerAction, controllerProperty, rootController, subController } from '../controllers-solid.js';
 
 export const hexToWebColor = colorHex =>
 {
@@ -20,13 +20,15 @@ export const hexToWebColor = colorHex =>
 
 export const OrbitDot = props =>
 {
-  const buildOrbits = () => props.controller.buildOrbits;
-  const availableOrbits = () => props.controller.availableOrbits;
+  const availableOrbits = () => subController( props.controller, 'availableOrbits' );
+  const buildOrbits = () => subController( props.controller, 'buildOrbits' );
   const propName = () => `orbitDot.${props.orbit}`;
-  const selected = () => buildOrbits() .orbits .indexOf( props.orbit ) >= 0;
-  const isLastSelected = () => props.orbit === buildOrbits() .selectedOrbit;
+  const orbits = () => controllerProperty( buildOrbits(), 'orbits', 'orbits', true ) || [];
+  const selectedOrbit = () => controllerProperty( buildOrbits(), 'selectedOrbit', 'orbits', false );
+  const selected = () => orbits() .indexOf( props.orbit ) >= 0;
+  const isLastSelected = () => props.orbit === selectedOrbit();
   const details = () => {
-    const value = availableOrbits()[ propName() ] || "";
+    const value = controllerProperty( availableOrbits(), propName(), 'orbits', false ) || "";
     const [ colorHex, x=0, y=0 ] = value .split( '/' );
     const color = colorHex && hexToWebColor( colorHex );
     return { color, x, y };
@@ -35,8 +37,6 @@ export const OrbitDot = props =>
   const color = () => details().color;
   const x = () => details().x;
   const y = () => props.relativeHeight * ( 1 - details().y );
-
-  requireProperty( 'strutBuilder:symmetry:availableOrbits', propName(), 'orbits', false );
 
   const toggleDot = evt => controllerAction( buildOrbits(), `toggleDirection.${props.orbit}` );
 
@@ -53,20 +53,13 @@ export const OrbitDot = props =>
 
 export const OrbitPanel = props =>
 {
-  console.log( 'OrbitPanel: ', JSON.stringify( props, null, 2 ) );
-  requireProperty( 'strutBuilder:symmetry:availableOrbits', 'orbits', 'orbits', true );
-  requireProperty( 'strutBuilder:symmetry:buildOrbits', 'orbits', 'orbits', true );
-  requireProperty( 'strutBuilder:symmetry:buildOrbits', 'oneAtATime', 'orbits', false );
-  requireProperty( 'strutBuilder:symmetry:buildOrbits', 'selectedOrbit', 'orbits', false );
+  const strutBuilder = () => subController( rootController(), 'strutBuilder' );
+  const symmetry = () => subController( strutBuilder(), 'symmetry' );
+  const availableOrbits = () => subController( symmetry(), 'availableOrbits' );
+  const buildOrbits = () => subController( symmetry(), 'buildOrbits' );
 
-  const controller = () => {
-    console.log( 'OrbitPanel.controller' );
-    const root = rootController();
-    return root?.strutBuilder?.symmetry;
-  }
-  const buildOrbits = () => ( controller() || {} ) .buildOrbits;
-  const availableOrbits = () => ( controller() || {} ) .availableOrbits;
-  const oneAtATime = () => ( buildOrbits() || {} ) .oneAtATime || false;
+  const orbits = () => controllerProperty( availableOrbits(), 'orbits', 'orbits', true );
+  const oneAtATime = () => controllerProperty( buildOrbits(), 'oneAtATime', 'orbits', false );
 
   const selectNone = () => controllerAction( buildOrbits(), 'setNoDirections' );
   const selectAll = () => controllerAction( buildOrbits(), 'setAllDirections' );
@@ -82,23 +75,21 @@ export const OrbitPanel = props =>
       <Stack spacing={2} direction="row">
         <Button variant="outlined" style={marginedStyle} onClick={ selectNone } >None</Button>
         <Button variant="outlined" style={marginedStyle} onClick={ selectAll } >All</Button>
-        <Show when={props.lastSelected}>
+        {/* <Show when={props.lastSelected}>
           <FormControlLabel style={marginedStyle}
             control={<Checkbox checked={oneAtATime()} color="primary" onChange={ singleAction } />}
             label="Single"
           />
-        </Show>
+        </Show> */}
       </Stack>
       <div style={{ position: 'relative', 'background-color': 'whitesmoke' }}>
         <svg viewBox={viewBox} stroke="black" stroke-width={0.005} >
           <g>
             {/* TODO: reversed triangle per the controller */}
             <polygon fill="none" points={triangleCorners}/>  { /* all dot X & Y values are in [0..1] */ }
-            <Show when={availableOrbits()} >
-              <For each={availableOrbits().orbits}>{ orbit =>
-                <OrbitDot orbit={orbit} relativeHeight={relativeHeight} controller={controller()} />
-              }</For>
-            </Show>
+            <For each={orbits()}>{ orbit =>
+              <OrbitDot orbit={orbit} relativeHeight={relativeHeight} controller={symmetry()} />
+            }</For>
           </g>
         </svg>
         {/* { children } */}
