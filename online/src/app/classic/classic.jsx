@@ -5,7 +5,7 @@ import { DesignViewer } from '../../ui/viewer/index.jsx'
 import { subcontroller } from '../../ui/viewer/store.js';
 import { useNewDesign } from './controller-hooks.js';
 import { CameraControls } from './components/camera.jsx';
-import { StrutBuildPanel } from './components/orbit-panel.jsx';
+import { StrutBuildPanel } from './components/strutbuilder.jsx';
 import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
 
 export const ClassicEditor = () =>

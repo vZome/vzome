@@ -5,6 +5,7 @@ import React from 'react';
 import { render } from 'react-dom'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
+import { ReactToSolidBridgeProvider } from 'react-solid-bridge';
 
 import { VZomeAppBar } from '../components/appbar.jsx'
 import { WorkerContext } from '../../ui/viewer/index.jsx'
@@ -12,6 +13,7 @@ import { ClassicEditor } from './classic.jsx';
 
 const Classic = () => (
   <WorkerContext>
+  <ReactToSolidBridgeProvider>
     <VZomeAppBar oneDesign={true} title='vZome Online Classic'
       about={ <>
         <Typography gutterBottom>
@@ -27,6 +29,7 @@ const Classic = () => (
         </Typography>
       </> } />
     <ClassicEditor />
+  </ReactToSolidBridgeProvider>
   </WorkerContext>
 )
 

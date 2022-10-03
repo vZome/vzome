@@ -144,11 +144,23 @@ const branchSelectionBlocks = node =>
     return node;
 }
 
+let workerPromise;
+const workerSubscribers = [];
+
+export const postWorkerMessage = msg =>
+{
+  workerPromise .then( worker => {
+    worker.postMessage( msg );
+  } );
+}
+
+export const addWorkerSubscriber = subscriber => workerSubscribers .push( subscriber );
+
 export const createWorkerStore = customElement =>
 {
   // trampolining to work around worker CORS issue
   // see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
-  const workerPromise = import( "../../worker/vzome-worker-static.js" )
+  workerPromise = import( "../../worker/vzome-worker-static.js" )
     .then( module => {
       const blob = new Blob( [ `import "${module.WORKER_ENTRY_FILE_URL}";` ], { type: "text/javascript" } );
       const worker = new Worker( URL.createObjectURL( blob ), { type: "module" } );
@@ -191,6 +203,10 @@ export const createWorkerStore = customElement =>
     // console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
 
     store .dispatch( data );  // forward to the reducer(s)
+
+    for (const subscriber of workerSubscribers) {
+      subscriber( data );
+    }
 
     // Useful for supporting regression testing of the vzome-viewer web component
     if ( customElement ) {
