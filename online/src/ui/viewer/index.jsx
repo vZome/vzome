@@ -75,6 +75,8 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
 
   const report = useDispatch();
   const sceneCamera = useSelector( state => state.scene && state.scene.camera );
+  const syncCamera = camera => report( { type: 'TRACKBALL_MOVED', payload: camera } );
+
   const toggleFullScreen = () =>
   {
     const { perspective } = sceneCamera || {};
@@ -87,7 +89,7 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
   return (
     <div ref={containerRef} style={ fullScreen? fullScreenStyle : normalStyle }>
       { scene?
-        <DesignCanvas lighting={scene.lighting} camera={ { ...scene.camera } } >
+        <DesignCanvas lighting={scene.lighting} sceneCamera={sceneCamera} syncCamera={syncCamera} >
           { scene.shapes &&
             <ShapedGeometry embedding={scene.embedding} shapes={scene.shapes} />
           }

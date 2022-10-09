@@ -120,15 +120,10 @@ const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamer
   );
 }
 
-export const DesignCanvas = ( { lighting, children, handleBackgroundClick=()=>{} } ) =>
+export const DesignCanvas = ( { lighting, children, sceneCamera, syncCamera, handleBackgroundClick=()=>{} } ) =>
 {
   const [ measured, bounds ] = useMeasure();
   const aspect = ( bounds && bounds.height )? bounds.width / bounds.height : 1;
-
-   // react-redux hooks are not available inside the Canvas, so we have to drill sceneCamera and syncCamera
-  const sceneCamera = useSelector( state => state.scene.camera );
-  const report = useDispatch();
-  const syncCamera = camera => report( { type: 'TRACKBALL_MOVED', payload: camera } );
 
   const vrAvailable = useVR();
   if ( vrAvailable ) {

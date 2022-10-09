@@ -1,7 +1,6 @@
 
-import { configureStore } from '@reduxjs/toolkit'
-
 export const initialState = {
+  controller: { __path: [] },
   scene: {
     camera: {
       near: 0.1,

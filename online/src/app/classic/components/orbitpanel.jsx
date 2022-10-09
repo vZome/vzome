@@ -5,18 +5,8 @@ import Button from "@suid/material/Button"
 import Checkbox from "@suid/material/Checkbox";
 import FormControlLabel from "@suid/material/FormControlLabel";
 
-import { controllerAction, controllerProperty, rootController, subController } from '../controllers-solid.js';
-
-export const hexToWebColor = colorHex =>
-{
-  const color = colorHex .substring( 2 ); // remove "0x"
-  if ( color .length === 2 )
-    return `#0000${color}`
-  else if ( color .length === 4 )
-    return `#00${color}`
-  else
-    return `#${color}`
-}
+import { controllerAction, controllerProperty, subController } from '../controllers-solid.js';
+import { hexToWebColor } from './length.jsx';
 
 export const OrbitDot = props =>
 {
@@ -53,10 +43,8 @@ export const OrbitDot = props =>
 
 export const OrbitPanel = props =>
 {
-  const strutBuilder = () => subController( rootController(), 'strutBuilder' );
-  const symmetry = () => subController( strutBuilder(), 'symmetry' );
-  const availableOrbits = () => subController( symmetry(), 'availableOrbits' );
-  const buildOrbits = () => subController( symmetry(), 'buildOrbits' );
+  const availableOrbits = () => subController( props.controller, 'availableOrbits' );
+  const buildOrbits = () => subController( props.controller, 'buildOrbits' );
 
   const orbits = () => controllerProperty( availableOrbits(), 'orbits', 'orbits', true );
   const oneAtATime = () => controllerProperty( buildOrbits(), 'oneAtATime', 'orbits', false );
@@ -82,13 +70,13 @@ export const OrbitPanel = props =>
           />
         </Show> */}
       </Stack>
-      <div style={{ position: 'relative', 'background-color': 'whitesmoke' }}>
+      <div style={{ position: 'relative', 'background-color': 'white' }}>
         <svg viewBox={viewBox} stroke="black" stroke-width={0.005} >
           <g>
             {/* TODO: reversed triangle per the controller */}
             <polygon fill="none" points={triangleCorners}/>  { /* all dot X & Y values are in [0..1] */ }
             <For each={orbits()}>{ orbit =>
-              <OrbitDot orbit={orbit} relativeHeight={relativeHeight} controller={symmetry()} />
+              <OrbitDot orbit={orbit} relativeHeight={relativeHeight} controller={ props.controller } />
             }</For>
           </g>
         </svg>

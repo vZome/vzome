@@ -1,41 +1,42 @@
-import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import AppBar from '@material-ui/core/AppBar'
-import Toolbar from '@material-ui/core/Toolbar'
-import Typography from '@material-ui/core/Typography'
-import Box from '@material-ui/core/Box'
 
-import { AboutDialog } from './about.jsx'
-import { OpenMenu } from './folder.jsx'
+import AppBar from '@suid/material/AppBar'
+import Toolbar from '@suid/material/Toolbar'
+import Typography from '@suid/material/Typography'
+import Box from '@suid/material/Box'
+
+// import { AboutDialog } from './about.jsx'
+// import { OpenMenu } from './folder.jsx'
 import { VZomeLogo } from './logo.jsx'
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    zIndex: theme.zIndex.drawer + 1,
-  },
-  title: {
-    marginLeft: theme.spacing(2),
-    flexGrow: 1,
-  },
-  open: {
-    marginRight: theme.spacing(5),
-  },
-}))
+// const useStyles = makeStyles((theme) => ({
+//   root: {
+//     zIndex: theme.zIndex.drawer + 1,
+//   },
+//   title: {
+//     marginLeft: theme.spacing(2),
+//     flexGrow: 1,
+//   },
+//   open: {
+//     marginRight: theme.spacing(5),
+//   },
+// }))
 
-export const VZomeAppBar = ( { oneDesign, pathToRoot='.', forDebugger=false, title, about } ) =>
+export const VZomeAppBar = props =>
 {
-  const classes = useStyles()
+  const classes = { root: {}, title: {}, open: {} };
 
   return (
-    <div id="appbar" className={classes.root}>
+    <div id="appbar" class={classes.root}>
       <AppBar position="static">
         <Toolbar>
           <VZomeLogo/>
-          <Typography variant="h5" className={classes.title}>
+          <Typography variant="h5" class={classes.title}>
             vZome <Box component="span" fontStyle="oblique">Online</Box>
           </Typography>
-          { !oneDesign && <OpenMenu pathToRoot={pathToRoot} forDebugger={forDebugger} className={classes.open} /> }
-          <AboutDialog title={title} about={about} />
+          {/* <Show when={ ! props.oneDesign }>
+            <OpenMenu pathToRoot={props.pathToRoot} forDebugger={props.forDebugger} class={classes.open} />
+          </Show> */}
+          {/* <AboutDialog title={props.title} about={props.about} /> */}
         </Toolbar>
       </AppBar>
     </div>

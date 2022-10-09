@@ -1,19 +1,15 @@
 // babel workaround
 import "regenerator-runtime/runtime";
 
-import React from 'react';
-import { render } from 'react-dom'
-import Typography from '@material-ui/core/Typography'
-import Link from '@material-ui/core/Link'
-import { ReactToSolidBridgeProvider } from 'react-solid-bridge';
+import { render } from 'solid-js/web';
+import Typography from '@suid/material/Typography'
+import Link from '@suid/material/Link'
 
 import { VZomeAppBar } from '../components/appbar.jsx'
-import { WorkerContext } from '../../ui/viewer/index.jsx'
 import { ClassicEditor } from './classic.jsx';
 
 const Classic = () => (
-  <WorkerContext>
-  <ReactToSolidBridgeProvider>
+  <>
     <VZomeAppBar oneDesign={true} title='vZome Online Classic'
       about={ <>
         <Typography gutterBottom>
@@ -29,8 +25,7 @@ const Classic = () => (
         </Typography>
       </> } />
     <ClassicEditor />
-  </ReactToSolidBridgeProvider>
-  </WorkerContext>
+  </>
 )
 
-render( <Classic />, document.getElementById( 'root' ) )
+render( Classic, document.getElementById( 'root' ) );

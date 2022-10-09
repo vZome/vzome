@@ -7,6 +7,7 @@ img {
 .toolbar-button {
   padding: 0px;
   border-width: 2px;
+  min-width: 36px;
   border-color: darkgray;
 }
 

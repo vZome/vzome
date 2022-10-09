@@ -1,55 +1,54 @@
 
-import React, { useState } from 'react';
+import { createSignal, createEffect } from "solid-js";
 
-import { useControllerProperty, useControllerAction } from '../controller-hooks.js';
-import { useEffect } from 'react';
+import { controllerProperty, subController } from '../controllers-solid.js';
 
-const ToolbarSpacer = () => ( <div style={{ minWidth: '10px', minHeight: '10px' }}></div> )
+const ToolbarSpacer = () => ( <div style={{ 'min-width': '10px', 'min-height': '10px' }}></div> )
 
-const ToolbarButton = ( { label, image } ) =>
+const ToolbarButton = props =>
 (
-  <button aria-label={label} className='toolbar-button'>
-    <img src={ `./icons/tools/${image}.png`}/>
+  <button aria-label={props.label} class='toolbar-button'>
+    <img src={ `./icons/tools/${props.image}.png`}/>
   </button>
 )
 
-const ToolFactoryButton = ( { factoryName } ) => <ToolbarButton label={factoryName} image={`newTool/${factoryName}`} />
-const CommandButton = ( { cmdName } ) => <ToolbarButton label={cmdName} image={`small/${cmdName}`} />
+const ToolFactoryButton = props => <ToolbarButton label={props.factoryName} image={`newTool/${props.factoryName}`} />
+const CommandButton = props => <ToolbarButton label={props.cmdName} image={`small/${props.cmdName}`} />
 
-export const ToolFactoryBar = ( { controller }) =>
+export const ToolFactoryBar = props =>
 {
-  const symmFactoryNames = useControllerProperty( controller, 'symmetryToolFactories', 'symmetryToolFactories', true );
-  const transFactoryNames = useControllerProperty( controller, 'transformToolFactories', 'transformToolFactories', true );
-  const mapFactoryNames = useControllerProperty( controller, 'linearMapToolFactories', 'linearMapToolFactories', true );
+  const symmFactoryNames = () => controllerProperty( props.controller, 'symmetryToolFactories', 'symmetryToolFactories', true );
+  const transFactoryNames = () => controllerProperty( props.controller, 'transformToolFactories', 'transformToolFactories', true );
+  const mapFactoryNames = () => controllerProperty( props.controller, 'linearMapToolFactories', 'linearMapToolFactories', true );
 
   return (
-    <div id='factory-bar' style={{ display: 'flex', minHeight: '34px' }}>
-      { symmFactoryNames && symmFactoryNames.map && symmFactoryNames.map( factoryName =>
-        <ToolFactoryButton key={factoryName} factoryName={factoryName}/>
-      ) }
+    <div id='factory-bar' style={{ display: 'flex', 'min-height': '34px' }}>
+      <For each={symmFactoryNames()}>{ factoryName =>
+        <ToolFactoryButton factoryName={factoryName}/>
+      }</For>
       <ToolbarSpacer key='sp1' />
-      { transFactoryNames && transFactoryNames.map && transFactoryNames.map( factoryName =>
-        <ToolFactoryButton key={factoryName} factoryName={factoryName}/>
-      ) }
+      <For each={transFactoryNames()}>{ factoryName =>
+        <ToolFactoryButton factoryName={factoryName}/>
+      }</For>
       <ToolbarSpacer key='sp2' />
-      { mapFactoryNames && mapFactoryNames.map && mapFactoryNames.map( factoryName =>
-        <ToolFactoryButton key={factoryName} factoryName={factoryName}/>
-      ) }
+      <For each={mapFactoryNames()}>{ factoryName =>
+        <ToolFactoryButton factoryName={factoryName}/>
+      }</For>
     </div>
   )
 }
 
-const ToolButton = ( { controller } ) =>
+const ToolButton = props =>
 {
-  const kind = useControllerProperty( controller, 'kind', 'kind', false );
-  const label = useControllerProperty( controller, 'label', 'label', false );
-  return ( <ToolbarButton label={label} image={`small/${kind}`} /> )
+  const kind = () => controllerProperty( props.controller, 'kind', 'kind', false );
+  const label = () => controllerProperty( props.controller, 'label', 'label', false );
+  return ( <ToolbarButton label={label()} image={`small/${kind()}`} /> )
 }
 
-export const ToolBar = ( { symmetryController, toolsController }) =>
+export const ToolBar = props =>
 {
-  const symmToolNames = useControllerProperty( symmetryController, 'builtInSymmetryTools', 'builtInSymmetryTools', true );
-  const transToolNames = useControllerProperty( symmetryController, 'builtInTransformTools', 'builtInTransformTools', true );
+  const symmToolNames = () => controllerProperty( props.symmetryController, 'builtInSymmetryTools', 'builtInSymmetryTools', true );
+  const transToolNames = () => controllerProperty( props.symmetryController, 'builtInTransformTools', 'builtInTransformTools', true );
 
   return (
     <div id='tools-bar' style={{ display: 'flex' }}>
@@ -64,46 +63,46 @@ export const ToolBar = ( { symmetryController, toolsController }) =>
       <CommandButton cmdName='panel' hoverText='Make a panel polygon'/>
       <CommandButton cmdName='NewCentroid' hoverText='Construct centroid of points'/>
       <ToolbarSpacer/>
-      { symmToolNames && symmToolNames.map && symmToolNames.map( toolName =>
-        <ToolButton key={toolName} controller={`${toolsController}:${toolName}`}/>
-      ) }
+      <For each={symmToolNames()}>{ toolName =>
+        <ToolButton controller={subController( props.toolsController, toolName )}/>
+      }</For>
       <ToolbarSpacer/>
-      { transToolNames && transToolNames.map && transToolNames.map( toolName =>
-        <ToolButton key={toolName} controller={`${toolsController}:${toolName}`}/>
-      ) }
+      <For each={transToolNames()}>{ toolName =>
+        <ToolButton controller={subController( props.toolsController, toolName )}/>
+      }</For>
     </div>
   )
 }
 
 let nextBookmarkIcon = 0;
 
-const BookmarkButton = ( { controller } ) =>
+const BookmarkButton = props =>
 {
-  const label = useControllerProperty( controller, 'label', 'label', false );
-  const [ iconName, setIconName ] = useState( null );
-  useEffect( () => {
-    setIconName( `bookmark_${nextBookmarkIcon}`);
+  const label = () => controllerProperty( props.controller, 'label', 'label', false );
+  const [ iconName, setIconName ] = createSignal( null );
+  createEffect( () => {
+    setIconName( `bookmark_${nextBookmarkIcon}` );
     nextBookmarkIcon = ( nextBookmarkIcon + 1 ) % 4;
   }, [] );
-  return ( <ToolbarButton label={label} image={`small/${iconName}`} /> )
+  return ( <ToolbarButton label={label()} image={`small/${iconName()}`} /> )
 }
 
-export const BookmarkBar = ( { bookmarkController, toolsController }) =>
+export const BookmarkBar = props =>
 {
-  // const bookmarkNames = useControllerProperty( bookmarkController, 'builtInSymmetryTools', 'builtInSymmetryTools', true );
+  const bookmarkNames = () => controllerProperty( props.bookmarkController, 'builtInSymmetryTools', 'builtInSymmetryTools', true );
 
   return (
-    <div id='tools-bar' style={{ display: 'flex', flexDirection: 'column' }}>
+    <div id='tools-bar' style={{ display: 'flex', 'flex-direction': 'column' }}>
       <ToolFactoryButton factoryName='bookmark' />
       <ToolbarSpacer/>
-      <BookmarkButton controller={`${toolsController}:bookmark.builtin/ball at origin`}/>
-      <BookmarkButton controller={`${toolsController}:bookmark.builtin/ball at origin`}/>
-      <BookmarkButton controller={`${toolsController}:bookmark.builtin/ball at origin`}/>
-      <BookmarkButton controller={`${toolsController}:bookmark.builtin/ball at origin`}/>
-      <BookmarkButton controller={`${toolsController}:bookmark.builtin/ball at origin`}/>
-      {/* { bookmarkNames && bookmarkNames.map && bookmarkNames.map( toolName =>
-        <BookmarkButton controller={`${toolsController}:${toolName}`}/>
-      ) } */}
+      <BookmarkButton controller={subController( props.toolsController, 'bookmark.builtin/ball at origin' )}/>
+      <BookmarkButton controller={subController( props.toolsController, 'bookmark.builtin/ball at origin' )}/>
+      <BookmarkButton controller={subController( props.toolsController, 'bookmark.builtin/ball at origin' )}/>
+      <BookmarkButton controller={subController( props.toolsController, 'bookmark.builtin/ball at origin' )}/>
+      <BookmarkButton controller={subController( props.toolsController, 'bookmark.builtin/ball at origin' )}/>
+      <For each={bookmarkNames()}>{ toolName =>
+        <BookmarkButton controller={subController( props.toolsController, toolName )}/>
+      }</For>
     </div>
   )
 }
