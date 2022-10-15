@@ -102,7 +102,7 @@ public class ShapesJsonExporter extends Exporter3d
     @Override
     public String getFileExtension()
     {
-        return "json";
+        return "shapes.json";
     }
 
     @Override

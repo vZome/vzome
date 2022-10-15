@@ -61,7 +61,7 @@ public class SymmetrySystem implements OrbitSource
         orbits = new OrbitSet( symmetry );
         if ( symmXml == null ) 
         {
-            for ( Direction orbit : symmetry .getOrbitSet() ) {
+            for ( Direction orbit : symmetry .getOrbitSet() .getDirections() ) {
                 if ( symmetryPerspective .orbitIsStandard( orbit ) || allowNonstandard )  // reader
                     orbits .add( orbit );
                 Color color = colors .getColor( Colors.DIRECTION + orbit .getName() );
@@ -117,7 +117,7 @@ public class SymmetrySystem implements OrbitSource
                 }
             }
             // fill in the orbits that might be newer than what the file had
-            for (Direction orbit : symmetry .getOrbitSet()) {
+            for (Direction orbit : symmetry .getOrbitSet() .getDirections()) {
                 if ( orbits .contains( orbit ) )
                     continue;
                 if ( orbit .isStandard() || allowNonstandard )  // reader
@@ -297,7 +297,7 @@ public class SymmetrySystem implements OrbitSource
         DomUtils .addAttribute( result, "name", this .getSymmetry() .getName() );
         DomUtils .addAttribute( result, "renderingStyle", this .shapes .getName() );
 
-        for (Direction dir : this .orbits) {
+        for (Direction dir : this .orbits .getDirections()) {
             Element dirElem = doc .createElement( "Direction" );
             if ( dir .isAutomatic() )
                 DomUtils .addAttribute( dirElem, "prototype", dir .getPrototype() .getVectorExpression( AlgebraicField .ZOMIC_FORMAT ) );

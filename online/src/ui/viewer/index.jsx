@@ -15,7 +15,7 @@ import { create } from 'jss';
 
 import { ShapedGeometry } from './geometry.jsx'
 import { DesignCanvas } from './designcanvas.jsx'
-import { createWorkerStore, fetchDesign } from './store.js';
+import { createWorkerStore, defineCamera, fetchDesign, selectEditBefore, whilePerspective } from './store.js';
 import { Spinner } from './spinner.jsx'
 import { ErrorAlert } from './alert.jsx'
 import { SettingsDialog } from './settings.jsx';
@@ -68,6 +68,17 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
   const vrAvailable = useVR();
   const containerRef = useRef();
 
+  const report = useDispatch();
+  const sceneCamera = useSelector( state => state.scene && state.scene.camera );
+  const toggleFullScreen = () =>
+  {
+    const { perspective } = sceneCamera || {};
+    // This is a complete hack to work around the issue with resize in OrthographicCamera.
+    //  We simply use a thunk to switch to a perspective camera before we toggle fullScreen.
+    //  Note that this does NOT help with window resize.
+    report( whilePerspective( perspective, () => setFullScreen( !fullScreen ) ) );
+  }
+
   return (
     <div ref={containerRef} style={ fullScreen? fullScreenStyle : normalStyle }>
       { scene?
@@ -87,7 +98,7 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
       { allowFullViewport &&
         <IconButton color="inherit" aria-label="fullscreen"
             style={ { position: 'absolute', bottom: '5px', right: '5px' } }
-            onClick={() => setFullScreen(!fullScreen)} >
+            onClick={toggleFullScreen} >
           { fullScreen? <FullscreenExitIcon fontSize='large'/> : <FullscreenIcon fontSize='large'/> }
         </IconButton>
       }

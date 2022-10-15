@@ -6,10 +6,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
-import com.vzome.core.editor.EditorModelImpl;
 import com.vzome.core.editor.SelectionSummary;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.Manifestations;
@@ -39,7 +39,7 @@ public class MeasureController extends DefaultController implements SelectionSum
 	    this .renderedModel = renderedModel;
 	    this .selection = model .getSelection();
 	    this .editorModel = model; // allow run time access to the current editorModel.symmetrySystem
-	    ((EditorModelImpl) model) .addSelectionSummaryListener( this );
+	    model .addSelectionSummaryListener( this );
         this .twoPlaces .setMaximumFractionDigits( 2 );
         this .fourPlaces .setMaximumFractionDigits( 4 );
 	}
@@ -156,7 +156,7 @@ public class MeasureController extends DefaultController implements SelectionSum
 	{
         AlgebraicVector v1 = s1.getOffset();
         AlgebraicVector v2 = s2.getOffset();
-        OrbitSource ss = ((EditorModelImpl) editorModel).getSymmetrySystem();
+        OrbitSource ss = editorModel .getSymmetrySystem();
         Axis axis1 = ss .getAxis( v1 );
         Axis axis2 = ss .getAxis( v2 );
         Direction dir1 = axis1.getDirection();
@@ -212,8 +212,8 @@ public class MeasureController extends DefaultController implements SelectionSum
                 AlgebraicNumber exactength2 = axis2 .getLength( v2 );
                 AlgebraicNumber exactRatio = exactLength1.dividedBy(exactength2);
                 AlgebraicNumber exactRecip = exactRatio.reciprocal();
-                this .measurements .put( n1n2, exactRatio.toString());
-                this .measurements .put( n2n1, exactRecip.toString());
+                this .measurements .put( n1n2, exactRatio.toString( AlgebraicField.DEFAULT_FORMAT ));
+                this .measurements .put( n2n1, exactRecip.toString( AlgebraicField.DEFAULT_FORMAT ));
 //                System.out.println( n1n2 + " = " + exactRatio.toString());
 //                System.out.println( n2n1 + " = " + exactRecip.toString());
             }

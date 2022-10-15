@@ -21,8 +21,10 @@ import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
 import com.vzome.core.tools.AxialStretchTool;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
 import com.vzome.core.tools.IcosahedralToolFactory;
+import com.vzome.core.tools.InversionToolFactory;
 import com.vzome.core.tools.LinearMapToolFactory;
 import com.vzome.core.tools.MirrorToolFactory;
+import com.vzome.core.tools.ProjectionToolFactory;
 import com.vzome.core.tools.RotationToolFactory;
 import com.vzome.core.tools.ScalingToolFactory;
 import com.vzome.core.tools.SymmetryToolFactory;
@@ -91,11 +93,17 @@ public class PolygonFieldApplication extends DefaultFieldApplication
         
         @Override
         public List<Tool.Factory> createToolFactories(Tool.Kind kind, ToolsModel tools) {
+        	final boolean isTrivial = this.symmetry.isTrivial();
             List<Tool.Factory> result = new ArrayList<>();
             switch (kind) {
 
             case SYMMETRY:
                 result.add(new SymmetryToolFactory(tools, this.symmetry));
+                if(isTrivial) {
+                	// InversionTool should be OK as long as there is no embedding
+                	// which is always the case when PolygonField.getField().isEven().
+                	result .add( new InversionToolFactory( tools ) );
+                }
                 result.add(new MirrorToolFactory(tools));
                 result.add(new AxialSymmetryToolFactory(tools, this.symmetry));
                 break;
@@ -104,6 +112,16 @@ public class PolygonFieldApplication extends DefaultFieldApplication
                 result.add(new ScalingToolFactory(tools, this.symmetry));
                 result.add(new SymmetryToolFactory(tools, this.symmetry));
                 result.add(new TranslationToolFactory(tools));
+                if(isTrivial) {
+                	// ProjectionTool should be OK as long as there is no embedding
+                	// which is always the case when PolygonField.getField().isEven().
+                	// TODO: I think if we make the ProjectionToolFactory check that neither 
+                	// the projection plane's normal nor the projection direction (usually the same as the normal)
+                	// are changed by the embedding (I think that might be an eigenvector of the embedding matrix)
+                	// then we could allow ProjectionTools in non-trivial embeddings as well.
+                	// For now, just allow it for the trivial embeddings.
+                	result .add( new ProjectionToolFactory( tools ) );
+                }
                 break;
 
             case LINEAR_MAP:

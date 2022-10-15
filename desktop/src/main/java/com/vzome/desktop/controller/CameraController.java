@@ -16,6 +16,7 @@ import javax.vecmath.Vector3f;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.vzome.core.math.RealVector;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Scene;
@@ -53,11 +54,6 @@ public class CameraController extends DefaultController implements Scene.Provide
     protected final Lights sceneLighting;
 
     private final int maxOrientations;
-
-    public interface Snapper
-    {
-        void snapDirections( Vector3f lookDir, Vector3f upDir );
-    }
 
     public static interface Viewer 
     {
@@ -196,9 +192,11 @@ public class CameraController extends DefaultController implements Scene.Provide
         updateViewersTransformation();
     }
 
-    public void setViewDirection( Vector3f lookDir, Vector3f upDir )
+    public void setViewDirection( RealVector zOut, RealVector yOut )
     {
-        model .setViewDirection( lookDir, upDir );
+        Vector3f z = new Vector3f( zOut.x, zOut.y, zOut.z );
+        Vector3f y = new Vector3f( yOut.x, yOut.y, yOut.z );
+        model .setViewDirection( z, y );
         updateViewersTransformation();
     }
 
@@ -249,9 +247,7 @@ public class CameraController extends DefaultController implements Scene.Provide
         return true;
     }
 
-    private static final Vector3f Z = new Vector3f( 0f, 0f, -1f ), Y = new Vector3f( 0f, 1f, 0f );
-
-    private Snapper snapper = null;
+    private OrbitSnapper snapper = null;
 
     private boolean snapping = false;
 
@@ -262,14 +258,18 @@ public class CameraController extends DefaultController implements Scene.Provide
 
     public void snapView()
     {
+        Vector3f Z = new Vector3f( 0f, 0f, -1f ), Y = new Vector3f( 0f, 1f, 0f );
         Z .set( 0f, 0f, -1f );
         mapViewToWorld( Z );
         Y .set( 0f, 1f, 0f );
         mapViewToWorld( Y );
 
-        snapper .snapDirections( Z, Y );
+        RealVector zIn = new RealVector( Z.x, Z.y, Z.z );
+        RealVector zOut = this .snapper .snapZ( zIn );
+        RealVector yIn = new RealVector( Y.x, Y.y, Y.z );
+        RealVector yOut = this .snapper .snapY( zOut, yIn );
 
-        setViewDirection( Z, Y );
+        setViewDirection( zOut, yOut );
     }
 
     @Override
@@ -458,7 +458,7 @@ public class CameraController extends DefaultController implements Scene.Provide
         return this .copied != null;
     }
     
-    public void setSymmetry( RenderedModel model, Snapper snapper )
+    public void setSymmetry( RenderedModel model, OrbitSnapper snapper )
     {
         this .symmetryModel = model;
         if ( this .scene == null )

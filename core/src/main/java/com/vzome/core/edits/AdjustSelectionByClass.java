@@ -85,16 +85,31 @@ public class AdjustSelectionByClass extends ChangeSelection
                 ? this .editor .getRealizedModel()
                 : mSelection;
 
+        Connector originBall = null;
         for (Manifestation man : whichManifestationSet) {
             if ( man .isRendered() ) {
                 if (man instanceof Connector) {
-                    adjustSelection(man, ballAction);
+                	if (originBall == null && ballAction == ActionEnum.SELECT && man.getLocation().isOrigin()) {
+                		// save selection of origin for last to match the behavior as SelectAll
+                        originBall = (Connector) man;
+                    } else {
+                    	adjustSelection(man, ballAction);
+                    }
                 } else if (man instanceof Strut) {
                     adjustSelection(man, strutAction);
                 } else if (man instanceof Panel) {
                     adjustSelection(man, panelAction);
                 }
             }
+        }
+        if (originBall != null) {
+        	final boolean ignoreGroups = true;
+            if (mSelection.manifestationSelected(originBall)) {
+                unselect(originBall, ignoreGroups);
+                redo(); // commit the current selection state of all manifestations 
+            }
+            // originBall is the last manifestation to be selected
+            select(originBall, ignoreGroups);
         }
         redo();
     }

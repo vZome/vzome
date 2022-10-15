@@ -75,7 +75,7 @@ public class GenerateLinearMaps
 	private boolean tryMapping( Axis a1, AlgebraicNumber l1, Axis a2, AlgebraicNumber l2, Axis a3, AlgebraicNumber l3 )
 	{
 		this .doc = this .app .createDocument( "golden" );
-		this .doc .setRenderedModel( new RenderedModel( kind .getField(), doc .getSymmetrySystem() )
+		this .doc .setRenderedModel( new RenderedModel( kind .getField(), doc .getEditorModel() .getSymmetrySystem() )
 		{
 			@Override
 			public void manifestationAdded( Manifestation m )
@@ -247,11 +247,11 @@ public class GenerateLinearMaps
 		 */
 
 		GenerateLinearMaps generator = new GenerateLinearMaps();
-		for ( Direction orbit1 : symmetry ) {
+		for ( Direction orbit1 : symmetry .getDirections() ) {
 			if ( orbit1 .isStandard() )
 				for ( AlgebraicNumber scale1 : scales ) {
 					AlgebraicNumber l1 = orbit1 .getUnitLength() .times( scale1 );
-					for ( Direction orbit2 : symmetry ) {
+					for ( Direction orbit2 : symmetry .getDirections() ) {
 						if ( orbit2 .isStandard() )
 							for ( AlgebraicNumber scale2 : scales ) {
 								AlgebraicNumber l2 = orbit2 .getUnitLength() .times( scale2 );

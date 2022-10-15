@@ -29,8 +29,7 @@
   "scripts": {
     "build": "node scripts/prod-build.mjs",
     "dev": "node scripts/test-app.mjs",
-    "https": "node scripts/test-https.mjs",
-    "wcdev": "node scripts/test-web-component.mjs"
+    "https": "node scripts/test-https.mjs"
   },
   "eslintConfig": {
     "extends": "react-app"

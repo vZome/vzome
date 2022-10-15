@@ -654,6 +654,12 @@ public class EditHistory implements Iterable<UndoableEdit>
                     {
                         return context .createLegacyCommand( cmdName );
                     }
+
+                    @Override
+                    public boolean doEdit( String action, Map<String, Object> props )
+                    {
+                        return false;
+                    }
                 } ); // this method needs to have the history, since it may migrate
                 //        		System.out.println();
 
