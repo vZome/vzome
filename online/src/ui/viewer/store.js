@@ -32,10 +32,10 @@ export const whilePerspective = ( perspective, doSetter ) => async dispatch =>
 
 const workerAction = ( type, payload ) => ({ type, payload, meta: 'WORKER' } );
 
-export const selectSnapshot = index => ({ type: 'SNAPSHOT_SELECTED', payload: index } );
+export const selectScene = index => workerAction( 'SCENE_SELECTED', index );
 export const selectEditBefore = nodeId => workerAction( 'EDIT_SELECTED', { before: nodeId } );
 export const selectEditAfter = nodeId => workerAction( 'EDIT_SELECTED', { after: nodeId } );
-export const fetchDesign = ( url, config={ preview: false, debug: false } ) => ({ type: 'URL_PROVIDED', payload: { url, config } });
+export const fetchDesign = ( url, config={ preview: false, debug: false, showScenes: false } ) => workerAction( 'URL_PROVIDED', { url, config } );
 export const openDesignFile = ( file, debug=false ) => workerAction( 'FILE_PROVIDED', { file, debug } );
 export const newDesign = () => workerAction( 'NEW_DESIGN_STARTED', { field: 'golden' } );
 export const doControllerAction = ( controllerPath='', action, parameters={} ) => workerAction( 'ACTION_TRIGGERED', { controllerPath, action, parameters } );
@@ -65,7 +65,7 @@ const reducer = ( state = initialState, event ) =>
       return { ...state, source: event.payload };
 
     case 'DESIGN_INTERPRETED': {
-      let { xmlTree, snapshots } = event.payload;
+      let xmlTree = event.payload;
       const attributes = {};
       const indexAttributes = node => node.children && node.children.map( child => {
         attributes[ child.id ] = child.attributes;
@@ -75,7 +75,11 @@ const reducer = ( state = initialState, event ) =>
         indexAttributes( xmlTree );
         xmlTree = branchSelectionBlocks( xmlTree );
       }
-      return { ...state, waiting: false, xmlTree, attributes, snapshots };
+      return { ...state, waiting: false, xmlTree, attributes };
+    }
+
+    case 'SCENES_DISCOVERED': {
+      return { ...state, scenes: event.payload };
     }
 
     case 'SCENE_RENDERED': {
@@ -154,37 +158,6 @@ export const createWorkerStore = customElement =>
 
   const workerSender = store => report => event =>
   {
-<<<<<<< HEAD
-    switch ( event.type ) {
-
-      // These get sent to the worker
-      case 'URL_PROVIDED':
-      case 'FILE_PROVIDED':
-      case 'SNAPSHOT_SELECTED':
-      case 'EDIT_SELECTED':
-        if ( navigator.userAgent.indexOf( "Firefox" ) > -1 ) {
-            console.log( "The worker is not available in Firefox" );
-            report( { type: 'ALERT_RAISED', payload: 'Module workers are not yet supported in Firefox.  Please try another browser.' } );
-        }
-        else {
-          workerPromise.then( worker => {
-            // console.log( `Message sending to worker: ${JSON.stringify( event, null, 2 )}` );
-            worker.postMessage( event );  // send them all, let the worker filter them out
-          } )
-          .catch( error => {
-            console.log( "The worker is not available" );
-            report( { type: 'ALERT_RAISED', payload: 'The worker is not available.  Module workers are not supported in older versions of other browsers.  Please update your browser.' } );
-          } );
-        }
-        break;    
-
-      // Anything else is either targeting this store directly,
-      //  or is coming *back* from the worker.  In both cases
-      //  they go to the reducers.
-      default:
-        report( event );
-        break;
-=======
     if ( event.meta && event.meta === 'WORKER' ) {
       if ( navigator.userAgent.indexOf( "Firefox" ) > -1 ) {
           console.log( "The worker is not available in Firefox" );
@@ -200,7 +173,6 @@ export const createWorkerStore = customElement =>
           report( { type: 'ALERT_RAISED', payload: 'The worker is not available.  Module workers are supported in newer versions of most browsers.  Please update your browser.' } );
         } );
       }
->>>>>>> master
     }
     else
         report( event );

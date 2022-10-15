@@ -27,11 +27,11 @@ export class VZomeViewer extends HTMLElement
 
     this.#store = createWorkerStore( this );
 
-    this.#config = { preview: true, showSnapshots: false };
+    this.#config = { preview: true, showScenes: false };
 
     if ( this.hasAttribute( 'show-scenes' ) ) {
-      const showSnapshots = this.getAttribute( 'show-scenes' ) === 'true';
-      this.#config = { ...this.#config, showSnapshots };
+      const showScenes = this.getAttribute( 'show-scenes' ) === 'true';
+      this.#config = { ...this.#config, showScenes };
     }
 
     if ( this.hasAttribute( 'src' ) ) {
@@ -81,11 +81,9 @@ export class VZomeViewer extends HTMLElement
       break;
 
     case "show-scenes":
-      const showSnapshots = _newValue === 'true';
-      if ( showSnapshots !== this.#config.showSnapshots ) {
-        this.#config = { ...this.#config, showSnapshots };
-      // The 2nd parameter for fetchDesign means that a preview JSON (if available) is sufficient.
-      //  When "show-scenes" is true, the XML will have to be parsed, so a preview JSON is not sufficient.
+      const showScenes = _newValue === 'true';
+      if ( showScenes !== this.#config.showScenes ) {
+        this.#config = { ...this.#config, showScenes };
         this.#store.dispatch( fetchDesign( this.#url, this.#config ) );
       }
       break;

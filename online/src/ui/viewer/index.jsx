@@ -58,7 +58,7 @@ const fullScreenStyle = {
 
 export const DesignViewer = ( { children, children3d, config={} } ) =>
 {
-  const { showSnapshots=false, useSpinner=false, allowFullViewport=false } = config;
+  const { showScenes=false, useSpinner=false, allowFullViewport=false } = config;
   const source = useSelector( state => state.source );
   const scene = useSelector( state => state.scene );
   const waiting = useSelector( state => !!state.waiting );
@@ -91,7 +91,7 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
         : children // This renders the light DOM if the scene couldn't load
       }
 
-      { showSnapshots && <SceneMenu/> }
+      { showScenes && <SceneMenu/> }
 
       <Spinner visible={useSpinner && waiting} />
 
@@ -177,14 +177,14 @@ export const WorkerContext = props =>
   );
 }
 
-export const useVZomeUrl = ( url, preview, forDebugger=false ) =>
+export const useVZomeUrl = ( url, config={ debug: false } ) =>
 {
   const report = useDispatch();
   // TODO: this should be encapsulated in an API on the store
   useEffect( () =>
   {
     if ( !!url ) 
-      report( fetchDesign( url, { preview, debug: forDebugger } ) );
+      report( fetchDesign( url, config ) );
   }, [ url ] );
 }
 
@@ -193,10 +193,7 @@ export const useVZomeUrl = ( url, preview, forDebugger=false ) =>
 //  got pissy when I didn't.
 export const UrlViewerInner = ({ url, children, config }) =>
 {
-  const { showSnapshots } = config;
-  // "preview" means show a preview if you find one.  When "showSnapshots" is true, the
-  //   XML will have to be parsed, so a preview JSON is not sufficient.
-  useVZomeUrl( url, !showSnapshots );
+  useVZomeUrl( url, config );
   return ( <DesignViewer config={config} >
              {children}
            </DesignViewer> );
@@ -208,7 +205,7 @@ export const UrlViewerInner = ({ url, children, config }) =>
 //  It is also used by the web component, but with the worker-store injected so that the
 //  worker can get initialized and loaded while the main context is still fetching
 //  this module.
-export const UrlViewer = ({ url, store, children, config={ showSnapshots: false } }) => (
+export const UrlViewer = ({ url, store, children, config={ showScenes: false } }) => (
   <WorkerContext store={store} >
     <UrlViewerInner url={url} config={ { ...config, allowFullViewport: true } }>
       {children}

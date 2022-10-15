@@ -22,7 +22,7 @@ const forDebugger = !legacyViewerMode && queryParams.get( 'debug' ) === 'true';
 
 const App = () =>
 {
-  useVZomeUrl( url || getModelURL( 'vZomeLogo' ), legacyViewerMode, forDebugger );
+  useVZomeUrl( url || getModelURL( 'vZomeLogo' ), { preview: legacyViewerMode, debug: forDebugger } );
 
   return (
     <>

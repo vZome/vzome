@@ -3,16 +3,15 @@
 //   see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
 export const WORKER_ENTRY_FILE_URL = import.meta.url;
 
-const convertScene = preview =>
-{
-  let { lights, camera, embedding } = preview
-  
-  const dlights = lights.directionalLights.map( ({ direction, color }) => {
-    const { x, y, z } = direction
-    return { direction: [ x, y, z ], color }
-  })
-  const lighting = { ...lights, directionalLights: dlights };
+const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
 
+let renderHistory;
+let scenes;
+let snapshots;
+let previewShapes;
+
+const convertCamera = camera =>
+{
   const { lookAtPoint, upDirection, lookDirection, viewDistance, width, nearClipDistance, farClipDistance, perspective } = camera
   const lookAt = [ ...Object.values( lookAtPoint ) ]
   const up = [ ...Object.values( upDirection ) ]
@@ -20,33 +19,66 @@ const convertScene = preview =>
   const near = nearClipDistance;
   const far = farClipDistance;
   const distance = viewDistance;
-  camera = {
+  return {
     near, far, width, distance,
     up, lookAt, lookDir,
     perspective
   }
-  return { lighting, camera, embedding };
 }
 
-const convertGeometry = preview =>
+const prepareScene = index =>
 {
-  let { shapes, instances, orientations } = preview
-  const shapesOut = {}
+  const { snapshot, view } = scenes[ index ];
+  const camera = convertCamera( view );
+  const shapes = {};
+  for (const [ id, shape ] of Object.entries( previewShapes )) {
+    shapes[ id ] = { ...shape, instances: [] };
+  }
+  for (const instance of snapshots[ snapshot ]) {
+    shapes[ instance.shapeId ].instances.push( instance );
+  }
+  return { shapes, camera };
+}
+
+const convertScene = preview =>
+{
+  const { lights, embedding, orientations, shapes, instances } = preview
+  
+  const dlights = lights.directionalLights.map( ({ direction, color }) => {
+    const { x, y, z } = direction
+    return { direction: [ x, y, z ], color }
+  })
+  const lighting = { ...lights, directionalLights: dlights };
+
+  const convertInstances = ( instances, idPrefix ) =>
+  {
+    let i = 0;
+    return instances.map( ({ position, orientation, color, shape }) => {
+      const id = idPrefix + i++;
+      const { x, y, z } = position;
+      const rotation = [ ...( orientations[ orientation ] || IDENTITY_MATRIX ) ];
+      const instance = { id, position: [ x, y, z ], rotation, color, shapeId: shape };
+      return instance;
+    });
+  }
+  // Save the module global snapshots
+  snapshots = preview.snapshots? [ ...preview.snapshots ] .map( (snapshot,i) => {
+    return convertInstances( snapshot, `snap${i}_` );
+  }) : [];
+  snapshots .push( convertInstances( instances, "main_" ) );
+  const defaultSnapshot = snapshots.length-1;
+
+  // Convert the shapes array to the previewShapes object, module global for reuse with other scenes/snapshots
+  previewShapes = {}
   shapes.map( shape => {
-    shapesOut[ shape.id ] = shape;
-    shape.instances = [];
+    previewShapes[ shape.id ] = shape;
   } );
 
-  let i = 0;
-  const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
-  instances.map( ({ position, orientation, color, shape }) => {
-    const id = "id_" + i++;
-    const { x, y, z } = position;
-    const rotation = [ ...( orientations[ orientation ] || IDENTITY_MATRIX ) ];
-    const instance = { id, position: [ x, y, z ], rotation, color, shapeId: shape };
-    shapesOut[ shape ].instances.push( instance );
-  });
-  return shapesOut
+  // Save the module global scenes
+  const defaultScene = { title: 'default scene', view: preview.camera, snapshot: defaultSnapshot };
+  scenes = preview.scenes? [ defaultScene, ...preview.scenes ] : [ defaultScene ];
+
+  return { lighting, embedding, ...prepareScene( defaultSnapshot ) };
 }
 
 const fetchUrlText = async ( url ) =>
@@ -172,9 +204,6 @@ const getField = name =>
     } );
 }
 
-let renderHistory;
-let snapshots;
-
 const parseAndInterpret = ( xmlLoading, report, debug ) =>
 {
   let legacyModule;
@@ -186,7 +215,8 @@ const parseAndInterpret = ( xmlLoading, report, debug ) =>
     } )
 
     .then( design => {
-      const { orbitSource, camera, lighting, xmlTree, targetEditId, snapshots, field } = design;
+      const { orbitSource, camera, lighting, xmlTree, targetEditId, field } = design;
+      scenes = design.scenes; // setting the module global, so we cannot use the destructuring above
       if ( field.unknown ) {
         throw new Error( `Field "${field.name}" is not supported.` );
       }
@@ -202,7 +232,8 @@ const parseAndInterpret = ( xmlLoading, report, debug ) =>
       const embedding = orbitSource .getEmbedding();
       const scene = { lighting, camera, embedding, shapes };
       report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
-      report( { type: 'DESIGN_INTERPRETED', payload: { xmlTree, snapshots } } );
+      report( { type: 'DESIGN_INTERPRETED', payload: xmlTree } );
+      report( { type: 'SCENES_DISCOVERED', payload: scenes } );
       const error = renderHistory .getError();
       if ( !! error ) {
         throw error;
@@ -239,7 +270,7 @@ const urlLoader = ( report, event ) =>
     return report( event );
   }
   const { url, config } = event.payload;
-  const { preview=false, showSnapshots=false, debug=false } = config;
+  const { preview=false, debug=false, showScenes=false } = config;
   if ( !url ) {
     throw new Error( "No url field in URL_PROVIDED event payload" );
   }
@@ -252,17 +283,24 @@ const urlLoader = ( report, event ) =>
   xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { name, text, url } } ) );
 
   if ( preview ) {
+    // The client prefers to show a preview if possible.
     const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
     return fetchUrlText( previewUrl )
       .then( text => JSON.parse( text ) )
       .then( preview => {
-        const scene = { ...convertScene( preview ), shapes: convertGeometry( preview ) };
+        const scene = convertScene( preview ); // sets module global scenes as a side-effect
+        if ( showScenes && scenes.length < 2 )
+          // The client expects scenes, but this preview JSON predates the scenes export,
+          //  so fall back on XML.
+          throw new Error( `No scenes in preview ${previewUrl}` );
         report( { type: 'SCENE_RENDERED', payload: { scene } } );
+        if ( scenes )
+          report( { type: 'SCENES_DISCOVERED', payload: scenes } );
         return true; // probably nobody should care about the return value
       } )
       .catch( error => {
         console.log( error.message );
-        console.log( `Failed to load and parse preview: ${previewUrl}` );
+        console.log( 'Preview failed, falling back to vZome XML' );
         return parseAndInterpret( xmlLoading, report, debug );
       } )
   }
@@ -286,10 +324,14 @@ onmessage = ({ data }) =>
       fileLoader( postMessage, data );
       break;
 
-    case 'SNAPSHOT_SELECTED': {
+    case 'SCENE_SELECTED': {
       const index = payload;
-      const { nodeId, camera } = snapshots[ index ];
-      const scene = renderHistory .getScene( nodeId, true );
+      const { nodeId, camera } = scenes[ index ];
+      let scene;
+      if ( nodeId ) { // XML was parsed by the legacy module
+        scene = { camera, ...renderHistory .getScene( nodeId, true ) };
+      } else // a preview JSON
+        scene = prepareScene( index );
       postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
       break;
     }
@@ -305,6 +347,7 @@ onmessage = ({ data }) =>
         postMessage( { type: 'ALERT_RAISED', payload: 'Failed to interpret all edits.' } );
       }
       break;
+    }
 
     case 'ACTION_TRIGGERED':
     {

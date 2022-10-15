@@ -1,12 +1,13 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
-import { selectSnapshot } from './store.js';
+import { selectScene } from './store.js';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -20,24 +21,24 @@ const useStyles = makeStyles((theme) => ({
 
 export const SceneMenu = () =>
 {
-  const snapshots = useSelector( state => state.snapshots );
+  const scenes = useSelector( state => state.scenes );
   const classes = useStyles();
   const report = useDispatch();
-  const [snapshotIndex, setSnapshotIndex] = useState( 0 );
+  const [sceneIndex, setSceneIndex] = useState( 0 );
   const handleChange = (event) =>
   {
     const index = event.target.value;
-    setSnapshotIndex( index );
-    report( selectSnapshot( index ) );
+    setSceneIndex( index );
+    report( selectScene( index ) );
   }
 
-  return snapshots && snapshots[1] && (
+  return scenes && scenes[1] && (
     <div style={ { position: 'absolute', background: 'lightgray', top: '0px' } }>
       <FormControl variant="outlined" className={classes.formControl}>
         <InputLabel htmlFor="scene-menu-label">Scene</InputLabel>
         <Select
           native
-          value={snapshotIndex}
+          value={sceneIndex}
           onChange={handleChange}
           label="Scene"
           inputProps={{
@@ -45,9 +46,9 @@ export const SceneMenu = () =>
             id: 'scene-menu-label',
           }}
         >
-          {snapshots.map((snapshot, index) => (
+          {scenes.map((scene, index) => (
             <option key={index} value={index}>{
-              snapshot.title || (( index === 0 )? "- none -" : `scene ${index}`)
+              scene.title || (( index === 0 )? "- none -" : `scene ${index}`)
             }</option>)
           )}
         </Select>
