@@ -12,9 +12,13 @@ banner() {
   echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
 }
 
+REVISION=${BUILD_NUMBER:-'DEV'}
+
 cicd/jsweet-legacy-code.bash || exit $?
 
 pushd online
+
+echo "export const REVISION=\"${REVISION}\"" > src/revision.js
 
 banner 'Preparing the distribution folder with NPM'
 yarn install || exit $?
@@ -27,8 +31,6 @@ cp -R ../desktop/src/main/resources/icons/* public/classic/icons || exit $?
 cp -R ../desktop/src/main/resources/org/vorthmann/zome/ui/*.gif public/classic/icons/misc || exit $?
 
 pushd dist
-
-REVISION=${BUILD_NUMBER:-'dev'}
 
 banner 'Creating the online.tgz archive'
   cp -R ../public/* app && \
