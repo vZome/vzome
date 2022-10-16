@@ -78,7 +78,7 @@ const convertScene = preview =>
   const defaultScene = { title: 'default scene', view: preview.camera, snapshot: defaultSnapshot };
   scenes = preview.scenes? [ defaultScene, ...preview.scenes ] : [ defaultScene ];
 
-  return { lighting, embedding, ...prepareScene( defaultSnapshot ) };
+  return { lighting, embedding, ...prepareScene( 0 ) };
 }
 
 const fetchUrlText = async ( url ) =>
