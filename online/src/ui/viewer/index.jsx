@@ -1,4 +1,9 @@
 
+import { REVISION } from '../../revision.js'
+export { REVISION } from '../../revision.js'
+
+console.log( `vzome-viewer revision ${REVISION}` );
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { createRoot } from 'react-dom/client';
