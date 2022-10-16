@@ -85,7 +85,7 @@ const metadata = {
     "doubleSpiral": {
       "parts": "10 short reds, 10 medium reds, 20 long reds, 10 short yellows, and 47 balls.",
       "description": "",
-      config: { showSnapshots: false }
+      config: { showScenes: false }
     },
   },
 }

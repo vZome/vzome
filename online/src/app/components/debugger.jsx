@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectEditAfter } from '../../ui/viewer/store';
 
 import { withStyles, makeStyles } from '@material-ui/core/styles'
-import Toolbar from '@material-ui/core/Toolbar'
 import Grid from '@material-ui/core/Grid'
 import TreeView from '@material-ui/lab/TreeView'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'

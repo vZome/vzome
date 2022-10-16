@@ -94,7 +94,7 @@ export const DesignBrowser = ( { debug } ) =>
   const [ path, setPath ] = useState( null );
   const selectUrl = ( url, path ) =>
   {
-    report( fetchDesign( url, true ) );
+    report( fetchDesign( url, { preview: true } ) );
     setUrl( url );
     setPath( path );
   }

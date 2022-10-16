@@ -75,7 +75,7 @@ export const OpenMenu = props =>
 
   const openUrl = url => {
     if ( url && url.endsWith( ".vZome" ) ) {
-      report( fetchDesign( url, false, forDebugger ) );
+      report( fetchDesign( url, { preview: false, debug: forDebugger } ) );
     }
   }
 

@@ -16,6 +16,7 @@ export const initialState = {
   }
 };
 
+ 
 export const defineCamera = camera => ({ type: 'CAMERA_DEFINED', payload: camera });
 export const setPerspective = value => ({ type: 'PERSPECTIVE_SET', payload: value });
 
@@ -31,9 +32,10 @@ export const whilePerspective = ( perspective, doSetter ) => async dispatch =>
 
 const workerAction = ( type, payload ) => ({ type, payload, meta: 'WORKER' } );
 
+export const selectScene = index => workerAction( 'SCENE_SELECTED', index );
 export const selectEditBefore = nodeId => workerAction( 'EDIT_SELECTED', { before: nodeId } );
 export const selectEditAfter = nodeId => workerAction( 'EDIT_SELECTED', { after: nodeId } );
-export const fetchDesign = ( url, preview, debug=false ) => workerAction( 'URL_PROVIDED', { url, preview, debug } );
+export const fetchDesign = ( url, config={ preview: false, debug: false, showScenes: false } ) => workerAction( 'URL_PROVIDED', { url, config } );
 export const openDesignFile = ( file, debug=false ) => workerAction( 'FILE_PROVIDED', { file, debug } );
 export const newDesign = () => workerAction( 'NEW_DESIGN_STARTED', { field: 'golden' } );
 export const doControllerAction = ( controllerPath='', action, parameters={} ) => workerAction( 'ACTION_TRIGGERED', { controllerPath, action, parameters } );
@@ -63,7 +65,7 @@ const reducer = ( state = initialState, event ) =>
       return { ...state, source: event.payload };
 
     case 'DESIGN_INTERPRETED': {
-      let { xmlTree, snapshots } = event.payload;
+      let xmlTree = event.payload;
       const attributes = {};
       const indexAttributes = node => node.children && node.children.map( child => {
         attributes[ child.id ] = child.attributes;
@@ -73,7 +75,11 @@ const reducer = ( state = initialState, event ) =>
         indexAttributes( xmlTree );
         xmlTree = branchSelectionBlocks( xmlTree );
       }
-      return { ...state, waiting: false, xmlTree, attributes, snapshots };
+      return { ...state, waiting: false, xmlTree, attributes };
+    }
+
+    case 'SCENES_DISCOVERED': {
+      return { ...state, scenes: event.payload };
     }
 
     case 'SCENE_RENDERED': {

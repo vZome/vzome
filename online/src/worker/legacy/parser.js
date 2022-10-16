@@ -128,8 +128,8 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
   const targetEditId = `:${edits.getAttribute( "editNumber" )}:`
   const firstEdit = edits.firstChild()
 
-  const realSnapshots = parseArticle( vZomeRoot.getChildElement( "notes" ), xmlTree );
-  const snapshots = [ { nodeId: targetEditId, camera }, ...realSnapshots ];
+  const realScenes = parseArticle( vZomeRoot.getChildElement( "notes" ), xmlTree );
+  const scenes = [ { title: 'default scene', nodeId: targetEditId, camera }, ...realScenes ];
 
-  return { firstEdit, camera, field, targetEditId, orbitSource, lighting, batchRender, xmlTree, snapshots }
+  return { firstEdit, camera, field, targetEditId, orbitSource, lighting, batchRender, xmlTree, scenes }
 }
