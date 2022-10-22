@@ -161,3 +161,7 @@ format-2.1.0-models.vZome-files
 
 # ProjectionTool can now be generated from a ball and strut, not just a panel
 2021/08-Aug/03-David-ProjectionTool-from-ball-and-strut/ProjectionTool-from-ball-and-strut.vZome
+
+# SelectAll must set originLast explicitly
+2022/select-all-origin-last-false.vZome
+2022/select-all-origin-last-true.vZome
