@@ -220,7 +220,7 @@ class JavaAlgebraicNumber
     return this.times( that.reciprocal() )
   }
 
-  getNumberExpression( sbuf, format )
+  getNumberExpression( sbuf, format=0 )
   {
     return this.legacyField.getNumberExpression( sbuf, this.bigRationals, format )
   }
