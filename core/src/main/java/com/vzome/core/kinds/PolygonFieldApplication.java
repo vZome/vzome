@@ -110,7 +110,7 @@ public class PolygonFieldApplication extends DefaultFieldApplication
 
             case TRANSFORM:
                 result.add(new ScalingToolFactory(tools, this.symmetry));
-                result.add(new SymmetryToolFactory(tools, this.symmetry));
+                result.add(new RotationToolFactory(tools, this.symmetry));
                 result.add(new TranslationToolFactory(tools));
                 if(isTrivial) {
                 	// ProjectionTool should be OK as long as there is no embedding

@@ -21,6 +21,7 @@ import com.vzome.core.tools.InversionToolFactory;
 import com.vzome.core.tools.LinearMapToolFactory;
 import com.vzome.core.tools.MirrorToolFactory;
 import com.vzome.core.tools.ProjectionToolFactory;
+import com.vzome.core.tools.RotationToolFactory;
 import com.vzome.core.tools.ScalingToolFactory;
 import com.vzome.core.tools.SymmetryToolFactory;
 import com.vzome.core.tools.TetrahedralToolFactory;
@@ -107,7 +108,7 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
             break;
         case TRANSFORM:
             result.add(new ScalingToolFactory(tools, icosaSymm));
-            result.add(new SymmetryToolFactory(tools, icosaSymm));
+            result.add(new RotationToolFactory(tools, icosaSymm));
 //            result.add(new PlaneSelectionTool.Factory(tools));
             result.add(new TranslationToolFactory(tools));
             result.add(new ProjectionToolFactory(tools));
