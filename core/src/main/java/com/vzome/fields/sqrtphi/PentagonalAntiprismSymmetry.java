@@ -121,12 +121,6 @@ public class PentagonalAntiprismSymmetry extends AbstractSymmetry
 	}
     
     @Override
-    public boolean isTrivial()
-    {
-        return false; // signals the POV-Ray exporter to generate the tranform
-    }
-
-    @Override
     public String getName()
     {
     	    return "pentagonal";
