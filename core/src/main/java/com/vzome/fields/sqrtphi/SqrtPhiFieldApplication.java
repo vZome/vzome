@@ -24,8 +24,11 @@ import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
+import com.vzome.core.tools.InversionToolFactory;
 import com.vzome.core.tools.LinearMapToolFactory;
 import com.vzome.core.tools.MirrorToolFactory;
+import com.vzome.core.tools.ProjectionToolFactory;
+import com.vzome.core.tools.RotationToolFactory;
 import com.vzome.core.tools.ScalingToolFactory;
 import com.vzome.core.tools.SymmetryToolFactory;
 import com.vzome.core.tools.TranslationToolFactory;
@@ -128,14 +131,16 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 
 			case SYMMETRY:
 				result .add( new SymmetryToolFactory( tools, pentaSymm ) );
+	            result .add( new InversionToolFactory(tools));
 				result .add( new MirrorToolFactory( tools ) );
 				result .add( new AxialSymmetryToolFactory( tools, pentaSymm ) );
 				break;
 
 			case TRANSFORM:
 				result .add( new ScalingToolFactory( tools, pentaSymm ) );
-				result .add( new SymmetryToolFactory( tools, pentaSymm ) );
+				result .add( new RotationToolFactory( tools, pentaSymm ) );
 				result .add( new TranslationToolFactory( tools ) );
+	            result .add( new ProjectionToolFactory( tools ) );
 				break;
 
 			case LINEAR_MAP:
