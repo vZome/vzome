@@ -645,7 +645,7 @@ public class FieldApplicationTest
                 break;
                 
             case "pentagonal":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 4, 4, 1);
                 break;
                 
             case "heptagonal antiprism":
