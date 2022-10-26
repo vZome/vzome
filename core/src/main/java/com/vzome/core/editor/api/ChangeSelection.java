@@ -51,7 +51,18 @@ public abstract class ChangeSelection extends SideEffects
 			// selectionEffects must be set, so that selection-affecting side effects get pushed
 			super.undo();
 						
-			mSelection .clear();
+			// This is currently the only place that clear() is called.
+			// If undo() is called when a failure occcurs (e.g. invalid inputs) 
+			// on an edit with orderedSelection = true, then 
+			// the clearing of the selection here was not being recorded in the history
+			// and the document change listeners were not notified so,
+			// for example, the parts tab and the measure tab would get out of sync.
+			// The fact that the selection was cleared but not recorded in the history
+			// Obviously makes for some potentially difficult to track bugs when reopening documents.
+			// I don't know if any legacy behaviors will be broken if I remove this line.
+			// The regression tests amd unit tests don't indicate any issue so 
+			// I'll just comment it out for now and leave here it as a reminder.
+			// mSelection .clear();
 			
 			// to let the SideEffects undo correctly, selectionEffects must be cleared
 			this .selectionEffects = null;
