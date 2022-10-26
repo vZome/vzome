@@ -133,7 +133,7 @@ public class MathTableExporter extends Exporter3d {
         "kappa",    // 11,3
         "lambda",   // 11,4
         "mu",       // 11,5
-        //"seperator",
+        //"separator",
         // square roots
         "\u221A2",
         "\u221A3",
