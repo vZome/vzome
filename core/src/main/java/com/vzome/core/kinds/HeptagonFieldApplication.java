@@ -14,6 +14,7 @@ import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
 import com.vzome.core.tools.LinearMapToolFactory;
 import com.vzome.core.tools.MirrorToolFactory;
+import com.vzome.core.tools.RotationToolFactory;
 import com.vzome.core.tools.ScalingToolFactory;
 import com.vzome.core.tools.SymmetryToolFactory;
 import com.vzome.core.tools.TranslationToolFactory;
@@ -71,7 +72,7 @@ public class HeptagonFieldApplication extends DefaultFieldApplication
 
             case TRANSFORM:
                 result .add( new ScalingToolFactory( tools, this .symmetry ) );
-                result .add( new SymmetryToolFactory( tools, this .symmetry ) );
+                result .add( new RotationToolFactory( tools, this .symmetry ) );
                 result .add( new TranslationToolFactory( tools ) );
                 break;
 
