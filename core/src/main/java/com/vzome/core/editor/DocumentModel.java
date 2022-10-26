@@ -403,6 +403,7 @@ public class DocumentModel implements Snapshot .Recorder, Context
         return out .toString();
     }
 
+    @Override
     public boolean doEdit( String action, Map<String,Object> props )
     {
         if ( this .editorModel .mSelection .isEmpty() && action .equals( "hideball" ) ) {
