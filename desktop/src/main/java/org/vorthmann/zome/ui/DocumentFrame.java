@@ -682,7 +682,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 	        this.setVisible( true );
 	        // Java 17 seems to successfully set the frame size and extended state only after the frame is visible.
 	        if(bestWidth > 0 && bestHeight > 0) {
-		        this.setExtendedState(NORMAL);
 				int n = 15, d = n + 1; // set NORMAL size to 15/16 of full screen size then maximize it
 				this.setSize(bestWidth * n/d, bestHeight * n/d);
 	        }
