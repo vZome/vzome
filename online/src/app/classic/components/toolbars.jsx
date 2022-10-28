@@ -8,7 +8,7 @@ const ToolbarSpacer = () => ( <div style={{ 'min-width': '10px', 'min-height': '
 const ToolbarButton = props =>
 (
   <button aria-label={props.label} class='toolbar-button'>
-    <img src={ `./icons/tools/${props.image}.png`}/>
+    <img src={ `./icons/tools/${props.image}.png`} class='toolbar-image'/>
   </button>
 )
 
@@ -22,7 +22,7 @@ export const ToolFactoryBar = props =>
   const mapFactoryNames = () => controllerProperty( props.controller, 'linearMapToolFactories', 'linearMapToolFactories', true );
 
   return (
-    <div id='factory-bar' style={{ display: 'flex', 'min-height': '34px' }}>
+    <div id='factory-bar' class='toolbar'>
       <For each={symmFactoryNames()}>{ factoryName =>
         <ToolFactoryButton factoryName={factoryName}/>
       }</For>
@@ -51,7 +51,7 @@ export const ToolBar = props =>
   const transToolNames = () => controllerProperty( props.symmetryController, 'builtInTransformTools', 'builtInTransformTools', true );
 
   return (
-    <div id='tools-bar' style={{ display: 'flex' }}>
+    <div id='tools-bar' class='toolbar'>
       <CommandButton cmdName='Delete'/>
       <CommandButton cmdName='hideball'/>
       <CommandButton cmdName='setItemColor'/>
@@ -92,7 +92,8 @@ export const BookmarkBar = props =>
   const bookmarkNames = () => controllerProperty( props.bookmarkController, 'builtInSymmetryTools', 'builtInSymmetryTools', true );
 
   return (
-    <div id='tools-bar' style={{ display: 'flex', 'flex-direction': 'column' }}>
+    <div id='tools-bar' class='toolbar-vert'>
+      <ToolbarSpacer/>
       <ToolFactoryButton factoryName='bookmark' />
       <ToolbarSpacer/>
       <BookmarkButton controller={subController( props.toolsController, 'bookmark.builtin/ball at origin' )}/>
