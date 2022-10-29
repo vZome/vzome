@@ -1,6 +1,5 @@
 
 export const initialState = {
-  controller: { __path: [] },
   scene: {
     camera: {
       near: 0.1,
@@ -37,7 +36,7 @@ export const selectEditAfter = nodeId => workerAction( 'EDIT_SELECTED', { after:
 export const fetchDesign = ( url, config={ preview: false, debug: false, showScenes: false } ) => workerAction( 'URL_PROVIDED', { url, config } );
 export const openDesignFile = ( file, debug=false ) => workerAction( 'FILE_PROVIDED', { file, debug } );
 export const newDesign = () => workerAction( 'NEW_DESIGN_STARTED', { field: 'golden' } );
-export const doControllerAction = ( controllerPath='', action, parameters={} ) => workerAction( 'ACTION_TRIGGERED', { controllerPath, action, parameters } );
+export const doControllerAction = ( controllerPath='', action, parameters ) => workerAction( 'ACTION_TRIGGERED', { controllerPath, action, parameters } );
 export const requestControllerProperty = ( controllerPath='', propName, changeName, isList ) => workerAction( 'PROPERTY_REQUESTED', { controllerPath, propName, changeName, isList } );
 
 export const subcontroller = ( controllerPath, subName ) => controllerPath + ':' + subName;

@@ -47,13 +47,13 @@ const InstancedShape = ( { shape, onClick, onHover, highlightBall } ) =>
   )
 }
 
-export const ShapedGeometry = ( { shapes, embedding, highlightBall, handleClick, onHover } ) =>
+export const ShapedGeometry = ( { shapes, embedding, highlightBall, onClick, onHover } ) =>
 {
   const ref = useEmbedding( embedding );
   return ( shapes &&
     <group matrixAutoUpdate={false} ref={ref}>
       { Object.values( shapes ).map( shape =>
-        <InstancedShape key={shape.id} {...{ shape, highlightBall, handleClick, onHover }} />
+        <InstancedShape key={shape.id} {...{ shape, highlightBall, onClick, onHover }} />
       ) }
     </group>
   ) || null

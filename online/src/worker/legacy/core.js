@@ -424,8 +424,8 @@ const makeFloatMatrices = ( matrices ) =>
       const edit = editFactory( editor, toolFactories, toolsModel )( wrappedElement )
       if ( ! edit )   // Null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit.
         return null  //  Not indicating failure, just indicating nothing to record in history
-      const { shown, selected, hidden, groups } = mesh
-      editor.setAdapter( new Adapter( shown, selected, hidden, groups ) )
+      // const { shown, selected, hidden, groups } = mesh
+      // editor.setAdapter( new Adapter( shown, selected, hidden, groups ) );
       edit.loadAndPerform( wrappedElement, format, editContext )
 
       checkSideEffects( edit, wrappedElement );
@@ -489,12 +489,12 @@ const makeFloatMatrices = ( matrices ) =>
 
     const configureAndPerformEdit = ( className, config, adapter ) =>
     {
-      const edit = editFactory( editor, toolFactories, toolsModel )( new JavaDomElement( { localName: className } ) )
+      const edit = editFactory( editor, toolFactories, toolsModel )( new JavaDomElement( { tagName: className } ) )
       if ( ! edit )
         return
-      editor.setAdapter( adapter )
-      edit.configure( new JsProperties( config ) )
-      edit.perform()
+      // editor.setAdapter( adapter );
+      edit.configure( new JsProperties( config ) );
+      edit.perform();
     }
 
     const batchRender = renderingListener => {
@@ -502,7 +502,7 @@ const makeFloatMatrices = ( matrices ) =>
       RM.renderChange( new RM( null, null ), renderedModel, renderingListener );
     }
 
-    return { interpretEdit, configureAndPerformEdit, field, batchRender, orbitSource, toolsModel, bookmarkFactory };
+    return { interpretEdit, configureAndPerformEdit, field, renderedModel, batchRender, orbitSource, toolsModel, bookmarkFactory };
   }
 
   // TODO: replace the legacyCommandFactory, which was for the old {shown,hidden,selected} model

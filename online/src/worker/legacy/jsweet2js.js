@@ -433,7 +433,7 @@ export class JavaDomElement
 
   getAttribute( name )
   {
-    return this.nativeElement.attributes[ name ];
+    return this.nativeElement.attributes && this.nativeElement.attributes[ name ];
   }
 
   getLocalName()
@@ -479,6 +479,11 @@ export class JsProperties
   constructor( config )
   {
     this.config = config
+  }
+
+  getConfig()
+  {
+    return { ...this.config };
   }
 
   getProperty( key )

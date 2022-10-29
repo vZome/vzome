@@ -2,7 +2,7 @@
 import { Canvas } from './components/canvas.jsx';
 import { CameraControls } from './components/camera.jsx';
 import { StrutBuildPanel } from './components/strutbuilder.jsx';
-import { createWorkerStore, subController } from './controllers-solid.js';
+import { createWorkerStore, subController, controllerAction } from './controllers-solid.js';
 import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
 import { solidify } from './solid-react.jsx';
 
@@ -15,9 +15,16 @@ export const ClassicEditor = () =>
   const { rootController, getScene } = createWorkerStore();
 
   const bookmarkController = () => subController( rootController(), 'bookmark' );
+  const editorController = () => subController( rootController(), 'editor' );
+  const pickingController = () => subController( editorController(), 'picking' );
   const strutBuilder       = () => subController( rootController(), 'strutBuilder' );
   const symmController     = () => subController( strutBuilder(), 'symmetry' );
   const toolsController    = () => subController( strutBuilder(), 'tools' );
+
+  const handleClick = ( id, vectors, selected ) =>
+  {
+    controllerAction( pickingController(), 'SelectManifestation', { id } );
+  }
 
   return (
     // <div id='classic' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }}>
@@ -33,7 +40,7 @@ export const ClassicEditor = () =>
           <ToolBar symmetryController={symmController()} toolsController={toolsController()} />
           <div id='canvas-and-bookmarks' style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
             <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} />
-            <GeometryCanvas scene={getScene()} />
+            <GeometryCanvas scene={getScene()} onClick={handleClick} />
           </div>
         </div>
 

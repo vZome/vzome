@@ -1,6 +1,6 @@
 
 import { createEffect } from "solid-js";
-import { createStore, reconcile } from "solid-js/store";
+import { createStore } from "solid-js/store";
 
 import { initialState, newDesign, requestControllerProperty, doControllerAction } from '../../ui/viewer/store.js';
 
@@ -18,6 +18,35 @@ export const createWorkerStore = () =>
         const { scene, edit } = data.payload;
         setState( { edit, scene: { ...state.scene, ...scene }, waiting: false } );
         break;
+      }
+
+      case 'SHAPE_DEFINED': {
+        const shape = data.payload;
+        const shapes = { ...state.scene.shapes, [ shape.id ]: shape };
+        setState( { scene: { ...state.scene, shapes }, waiting: false } );
+        break;
+      }
+
+      case 'INSTANCE_ADDED': {
+        let instance = data.payload;
+        //  TODO: put this granularity in when I've switched to SolidJS for the rendering
+        // const [ selected, setSelected ] = createSignal( instance.selected );
+        // const [ color, setColor ] = createSignal( instance.color );
+        // instance = { ...instance, color, setColor, selected, setSelected };
+        const shape = state.scene.shapes[ instance.shapeId ];
+        const shapes = { ...state.scene.shapes, [ shape.id ]: { ...shape, instances: [ ...shape.instances, instance ] } };
+        setState( { scene: { ...state.scene, shapes }, waiting: false } );
+        break;
+      }
+
+      case 'SELECTION_TOGGLED': {
+        const { shapeId, id, selected } = data.payload;
+        const shape = state.scene.shapes[ shapeId ];
+        const instances = shape .instances.map( inst => (
+          inst.id !== id ? inst : { ...inst, selected }
+        ));
+        const shapes = { ...state.scene.shapes, [ shapeId ]: { ...shape, instances } };
+        setState( { scene: { ...state.scene, shapes }, waiting: false } );
       }
 
       case 'CONTROLLER_CREATED':
@@ -95,8 +124,8 @@ export const createWorkerStore = () =>
 
   const rootController = () =>
   {
-    if ( ! state.workerReady ) {
-      setState( 'controller', '__store', store ); // empower every subcontroller to access this store
+    if ( ! state.controller ) {
+      setState( 'controller', { __store: store, __path: [] } ); // empower every subcontroller to access this store
       postMessage( newDesign() );
     }
     return state.controller;
@@ -139,7 +168,7 @@ export const controllerProperty = ( controller, propName, changeName, isList ) =
   return controller[ propName ];
 }
 
-export const controllerAction = ( controller, action, parameters={} ) =>
+export const controllerAction = ( controller, action, parameters ) =>
 {
   const controllerPath = controller.__path .join( ':' );
   controller.__store.postMessage( doControllerAction( controllerPath, action, parameters ) );

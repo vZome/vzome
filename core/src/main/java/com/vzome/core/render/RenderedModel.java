@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -38,7 +37,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 
 	protected final HashSet<RenderedManifestation> mRendered = new HashSet<>();
 	
-	protected final HashMap<UUID, RenderedManifestation> byID = new HashMap<>();
+	protected final HashMap<String, RenderedManifestation> byID = new HashMap<>();
 
 	private final AlgebraicField field;
 
@@ -180,7 +179,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	    m .setRenderedObject( rm );
         
 	    mRendered .add( rm );
-	    this .byID .put( rm .getGuid(), rm );
+	    this .byID .put( rm .getGuid() .toString(), rm );
 	    if ( mainListener != null )
 	        mainListener .manifestationAdded( rm );
         for (RenderingChanges listener : mListeners) {
@@ -208,13 +207,13 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	    if ( ! mRendered .remove( rendered ) )
 	        throw new IllegalStateException( "unable to remove RenderedManifestation" );
 	    
-        this .byID .remove( rendered .getGuid() );
+        this .byID .remove( rendered .getGuid() .toString() );
         m .setRenderedObject( null );
 	}
     
     public RenderedManifestation getRenderedManifestation( String guid )
     {
-        return this .byID .get( UUID .fromString( guid ) );
+        return this .byID .get( guid );
     }
 
 	public void setManifestationGlow( Manifestation m, boolean on )
@@ -334,7 +333,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
             }
             mRendered .addAll( newSet );
             for ( RenderedManifestation rm : newSet ) {
-                this .byID .put( rm .getGuid(), rm );
+                this .byID .put( rm .getGuid() .toString(), rm );
             }
         }
 	    
