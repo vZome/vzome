@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import * as THREE from 'three'
 
-function BuildPlane( { config, startGridHover, stopGridHover } )
+export const BuildPlane = ( { config, startGridHover, stopGridHover } ) =>
 {
   const { position, quaternion, grid, color, size, field } = config
   const [ material, materialRef ] = useState()
@@ -70,5 +70,3 @@ function BuildPlane( { config, startGridHover, stopGridHover } )
     </group>
   )
 }
-
-export default BuildPlane
