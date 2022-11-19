@@ -1,10 +1,9 @@
 
 import React from 'react'
+import { forwardRef, useImperativeHandle } from 'react';
 import { useEmbedding, useRotation, useGeometry } from './hooks.js'
 import { useThree } from '@react-three/fiber'
-import {
-  GLTFExporter
-} from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/exporters/GLTFExporter.js';
+import { GLTFExporter } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/exporters/GLTFExporter.js';
 
 const Instance = ( { id, vectors, position, rotation, geometry, color, selected, highlightBall=()=>{}, onClick, onHover } ) =>
 {
@@ -51,32 +50,26 @@ const InstancedShape = ( { shape, onClick, onHover, highlightBall } ) =>
   )
 }
 
-// from https://www.bitdegree.org/learn/javascript-download
-const saveGltf = ( json, filename ) =>
-{
-  const blob = new Blob( [ json ], { type : 'model/gltf+json' } );
-  const element = document.createElement( 'a' )
-  const blobURI = URL.createObjectURL( blob )
-  element.setAttribute( 'href', blobURI )
-  element.setAttribute( 'download', `${filename}` )
-  element.style.display = 'none'
-  document.body.appendChild( element )
-  element.click()
-  document.body.removeChild( element )
-}
-
-export const ShapedGeometry = ( { shapes, embedding, highlightBall, handleClick, onHover } ) =>
+export const ShapedGeometry = forwardRef(( { shapes, embedding, highlightBall, handleClick, onHover }, exporterRef ) =>
 {
   const { scene } = useThree();
 
+  const gltfExporter = {
+    exportGltfJson: writeFile =>
+    {
+      const exporter = new GLTFExporter();
+      // Parse the input and generate the glTF output
+      exporter.parse( scene, gltf => {
+        writeFile( JSON.stringify( gltf, null, 2 ) );
+      }, {} );
+    }
+  };
+  // This lets the download menu make the generateGltfJson call
+  useImperativeHandle( exporterRef, () => gltfExporter );
+
   const bkgdClick = () =>
   {
-    const exporter = new GLTFExporter();
-    // Parse the input and generate the glTF output
-    exporter.parse(scene, function(gltf) {
-      const output = JSON.stringify( gltf, null, 2 );
-      saveGltf( output, 'scene.gltf' );
-    }, {});
+    // no-op for now
   }
 
   const ref = useEmbedding( embedding );
@@ -87,4 +80,4 @@ export const ShapedGeometry = ( { shapes, embedding, highlightBall, handleClick,
       ) }
     </group>
   ) || null
-}
+});
