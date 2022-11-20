@@ -11,3 +11,12 @@ Unlike prior vZome packages for Linux, this package does include its own JRE (Ja
 
 If you have difficulties with this or any other Linux distribution, please contact `support@vzome.com`.
 
+Test
+
+
+<iframe id="three-ball"
+    title="First Three.js"
+    width="600"
+    height="400"
+    src="https://vorth.github.io/vzome-web/">
+</iframe>
