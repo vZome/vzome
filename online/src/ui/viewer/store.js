@@ -40,6 +40,7 @@ export const openDesignFile = ( file, debug=false ) => workerAction( 'FILE_PROVI
 export const newDesign = () => workerAction( 'NEW_DESIGN_STARTED', { field: 'golden' } );
 export const doControllerAction = ( controllerPath='', action, parameters={} ) => workerAction( 'ACTION_TRIGGERED', { controllerPath, action, parameters } );
 export const requestControllerProperty = ( controllerPath='', propName, changeName, isList ) => workerAction( 'PROPERTY_REQUESTED', { controllerPath, propName, changeName, isList } );
+export const createStrut = ( origin, plane, zone, index ) => workerAction( 'STRUT_CREATION_TRIGGERED', { origin, plane, zone, index } );
 
 export const subcontroller = ( controllerPath, subName ) => controllerPath + ':' + subName;
 
@@ -113,6 +114,10 @@ const reducer = ( state = initialState, event ) =>
       return { ...state, controller: { ...state.controller, [ subcontroller( controllerPath, name ) ]: value } };
     }
 
+    case 'WORKING_PLANE_GRID_DEFINED': {
+      return { ...state, buildPlanes: event.payload }
+    }
+
     default:
       return state;
   }
@@ -144,7 +149,7 @@ const branchSelectionBlocks = node =>
     return node;
 }
 
-export const createWorkerStore = customElement =>
+export const createWorkerStore = ( customElement, moreMiddleware ) =>
 {
   // trampolining to work around worker CORS issue
   // see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
@@ -183,7 +188,13 @@ export const createWorkerStore = customElement =>
   const store = configureStore( {
     reducer,
     preloadedState,
-    middleware: getDefaultMiddleware => getDefaultMiddleware().concat( workerSender ),
+    middleware: getDefaultMiddleware => {
+      const someMiddleware = getDefaultMiddleware().concat( workerSender );
+      if ( moreMiddleware )
+        return someMiddleware .concat( moreMiddleware );
+      else
+        return someMiddleware;
+    },
     devTools: true,
   });
 

@@ -10,6 +10,7 @@ import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.PlaneOrbitSet;
+import com.vzome.core.construction.Color;
 
 public class JsAdapter
 {
@@ -28,25 +29,37 @@ public class JsAdapter
                 .toArray();
     }
 
-    public static int[][][] getZoneGrid( OrbitSource orbits, int[][] planeNormal )
+    public static def.js.Object getZoneGrid( OrbitSource orbits, int[][] planeNormal )
     {
-        ArrayList<int[][]> gridPoints = new ArrayList<>();
         JsAlgebraicField field = (JsAlgebraicField) orbits .getSymmetry() .getField();
         AlgebraicVector normal = mapVectorToJava( planeNormal, field );
-        
+        String planeColor = orbits .getVectorColor( normal ) .toWebString();
+        String planeName = orbits .getSymmetry() .getAxis( normal ) .getOrbit() .getName();
+
+        ArrayList<def.js.Object> zonesList = new ArrayList<>();
+
         PlaneOrbitSet planeOrbits = new PlaneOrbitSet( orbits.getOrbits(), normal );
         for ( Iterator<Axis> iterator = planeOrbits.zones(); iterator.hasNext();) {
             Axis zone = (Axis) iterator.next();
             Direction orbit = zone .getDirection();
             if ( ! orbit .isStandard() )
                 continue;
+            ArrayList<AlgebraicVector> gridPoints = new ArrayList<>();
+            AlgebraicVector zoneNormal = zone .normal();
+            String zoneColor = orbits .getVectorColor( zoneNormal ) .toWebString();
             AlgebraicNumber scale = orbit .getUnitLength();
             for ( int i = 0; i < 5; i++ ) {
                 scale = scale .times( field .createPower( 1 ) );
-                AlgebraicVector gridPoint = zone .normal() .scale( scale );
-                gridPoints .add( mapVectorToJavascript( gridPoint ) );
+                AlgebraicVector gridPoint = zoneNormal .scale( scale );
+                gridPoints .add( gridPoint );
             }
+            AlgebraicVector[] vectors = gridPoints .stream() .toArray( size -> new AlgebraicVector[size] );
+            
+            def.js.Object zoneObj = new def.js.Object() {{ $set( "color", zoneColor ); $set( "vectors", vectors ); }};
+            zonesList .add( zoneObj );
         }
-        return gridPoints .stream() .toArray( size -> new int[size][][] );
+
+        def.js.Object[] zones = zonesList .stream() .toArray( size -> new def.js.Object[size] );
+        return new def.js.Object() {{ $set( "color", planeColor ); $set( "zones", zones ); }};
     }
 }

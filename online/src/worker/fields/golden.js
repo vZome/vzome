@@ -54,12 +54,12 @@ const goldenSeries = ({ plus }) => depth =>
   }, [])
 }
 
-const createQuaternions = ({ scalarmul, quatmul}) =>
+const createQuaternions = ({ scalarmul, quatmul }) =>
 {
   function grsign( a )
   {
-    const [a0=0n, a1=0n, ad=1n] = a, float = Number(a0) + PHI * Number(a1)
-    return ((ad>0n)-(ad<0n)) * ((float>0)-(float<0))
+    const [a0=0n, a1=0n, ad=1n] = a, float = Number(a0) + PHI * Number(a1);
+    return BigInt((ad>0n)-(ad<0n)) * BigInt((float>0)-(float<0))
   }
 
   function quatnormalize(q)
@@ -83,7 +83,7 @@ const baseField = createField( { name: 'golden', order: 2, times, embed, recipro
 const field = {
   ...baseField,
   goldenRatio: [ 0n, 1n, 1n ],
-  // quaternions: createQuaternions( baseField ),
+  quaternions: createQuaternions( baseField ),
   goldenSeries: goldenSeries( baseField )
 }
 

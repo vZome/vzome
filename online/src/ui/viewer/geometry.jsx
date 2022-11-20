@@ -50,7 +50,7 @@ const InstancedShape = ( { shape, onClick, onHover, highlightBall } ) =>
   )
 }
 
-export const ShapedGeometry = forwardRef(( { shapes, embedding, highlightBall, handleClick, onHover }, exporterRef ) =>
+export const ShapedGeometry = forwardRef(( { shapes, embedding, highlightBall, onClick, onHover }, exporterRef ) =>
 {
   const { scene } = useThree();
 
@@ -76,7 +76,7 @@ export const ShapedGeometry = forwardRef(( { shapes, embedding, highlightBall, h
   return ( shapes &&
     <group matrixAutoUpdate={false} ref={ref} onPointerMissed={bkgdClick}>
       { Object.values( shapes ).map( shape =>
-        <InstancedShape key={shape.id} {...{ shape, highlightBall, handleClick, onHover }} />
+        <InstancedShape key={shape.id} {...{ shape, highlightBall, onClick, onHover }} />
       ) }
     </group>
   ) || null

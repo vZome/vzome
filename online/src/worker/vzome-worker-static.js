@@ -156,6 +156,25 @@ const registerChangeListener = ( controller, controllerPath, changeName, propNam
     propertyChanges[ controllerPath ][ changeName ] = { ...change, [ propName ]: isList };
 }
 
+const resolveBuildPlanes = buildPlanes =>
+{
+  const resolveAV = av => {
+    const { x, y, z } = av.toRealVector(); // does this need to be embedded?  I think not.
+    return [ x, y, z ];
+  }
+  const planes = {};
+  for ( const [ name, plane ] of Object.entries( buildPlanes ) ) {
+    const zones = [];
+    for ( const zone of plane.zones ) {
+      const vectors = zone .vectors .map( resolveAV );
+      zones .push( { name: zone.name, color: zone.color, vectors } );
+    }
+    const { x, y, z } = plane.normal.toRealVector() .normalize(); // does this need to be embedded?  I think not.
+    planes[ name ] = { color: plane.color, normal: [ x, y, z ], zones };
+  }
+  return planes;
+}
+
 const createDesign = ( report, fieldName ) =>
 {
   return import( './legacy/dynamic.js' )
@@ -165,6 +184,10 @@ const createDesign = ( report, fieldName ) =>
       const { controller, renderHistory, orbitSource } = design;
       designController = controller;
       report( { type: 'CONTROLLER_CREATED' } );
+      const planes = resolveBuildPlanes( orbitSource .buildPlanes );
+      const { orientations, symmetry } = orbitSource;
+      const scalars = [ symmetry .getField() .getAffineScalar() .evaluate() ]; //TODO get them all!
+      report( { type: 'WORKING_PLANE_GRID_DEFINED', payload: { orientations, scalars, planes } } );
 
       // Here we emulate the PCL of ModelPanel, since there is no list property
       //  on toolsController for either "tools" or "bookmarks".
@@ -371,6 +394,14 @@ onmessage = ({ data }) =>
       const { field } = payload;
       createDesign( postMessage, field );
       break;
+
+    case 'STRUT_CREATION_TRIGGERED':
+    {
+      console.log( JSON.stringify( payload ) );
+      const { origin, plane, zone, index } = payload;
+      const controller = getNamedController();
+      // controller .actionPerformed( null, action );
+    }
   
     default:
       break;

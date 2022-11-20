@@ -1,5 +1,8 @@
 
 // TODO: put this in a module that both worker and main context can use.
+
+import { convertColor } from "./core";
+
 //  Right now this is duplicated!
 const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
 
@@ -122,14 +125,7 @@ export const normalizeRenderedManifestation = rm =>
   const { x, y, z } = ( positionAV && positionAV.toRealVector() ) || { x:0, y:0, z:0 };
   const rotation = rm .getOrientation() .getRowMajorRealElements();
   const selected = rm .getGlow() > 0.001;
-  const componentToHex = c => {
-    let hex = c.toString(16);
-    return hex.length == 1 ? "0" + hex : hex;
-  }
-  let color = "#ffffff";
-  const rmc = rm.getColor();
-  if ( rmc )
-    color = "#" + componentToHex(rmc.getRed()) + componentToHex(rmc.getGreen()) + componentToHex(rmc.getBlue());
+  const color = convertColor( rm .getColor() );
 
   return { id, position: [ x, y, z ], rotation, color, selected, shapeId };
 }

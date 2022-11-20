@@ -1,6 +1,4 @@
 
-import goldenField from '../../../worker/fields/golden.js'
-import buildStrut from '../commands/buildstrut.js'
 
 export const doStartGridHover = position =>
 {
@@ -25,7 +23,7 @@ export const doStopBallHover = position =>
 export const doBallClick = ( focus, position ) => ( dispatch, getState ) =>
 {
   dispatch( { type: 'BALL_CLICKED', payload: position } )
-  dispatch( buildStrut( focus, position ) )
+  // dispatch( buildStrut( focus, position ) )
 }
 
 export const doBackgroundClick = () =>
@@ -33,44 +31,17 @@ export const doBackgroundClick = () =>
   return { type: 'BACKGROUND_CLICKED' }
 }
 
-export const doSetWorkingPlaneGrid = grid => {
-  return { type: 'WORKING_PLANE_GRID_DEFINED', payload: grid }
-}
-
 export const doChangeOrientation = () => {
   return { type: 'ORIENTATION_CHANGED' }
 }
 
-const series = goldenField.goldenSeries( 6 ).map( n => goldenField.times( goldenField.goldenRatio, n ) )
-
-const zero = goldenField.zero
-const grid = [ [ zero, zero ] ]
-
-series.forEach( x => {
-  const nx = goldenField.negate( x )
-  grid.push( [ x, zero ] )
-  grid.push( [ zero, x ] )
-  grid.push( [ nx, zero ] )
-  grid.push( [ zero, nx ] )
-  series.forEach( y => {
-    const ny = goldenField.negate( y )
-    grid.push( [ x, y ] )
-    grid.push( [ x, ny ] )
-    grid.push( [ nx, y ] )
-    grid.push( [ nx, ny ] )
-  });  
-});
-
-const initialState = {
-  position: [ goldenField.zero, goldenField.zero, goldenField.zero ],
+export const initialState = {
+  position: [ 0,0,0 ],
   endPt: undefined,
-  quaternion: null, //goldenField.quaternions[ 0 ],
-  size: goldenField.times( [5n,0n,1n], goldenField.goldenRatio ),
-  grid: [],
-  color: "#00aacc",
-  enabled: false,
+  quaternion: [1,0,0,0],
+  plane: 'blue',
+  enabled: true,
   buildingStruts: false,
-  field: goldenField
 }
 
 export const reducer = ( state=initialState, action ) =>
@@ -100,9 +71,6 @@ export const reducer = ( state=initialState, action ) =>
     case 'BACKGROUND_CLICKED':
       return { ...state, enabled: !state.enabled }
     
-    case 'WORKING_PLANE_GRID_DEFINED':
-      return { ...state, enabled: true, buildingStruts: true, grid: action.payload }
-
     case 'ORIENTATION_CHANGED':
       return { ...state, enabled: true, orientation: (state.orientation+1)%3 }
 

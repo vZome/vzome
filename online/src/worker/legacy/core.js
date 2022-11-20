@@ -369,6 +369,22 @@ const makeFloatMatrices = ( matrices ) =>
 
     // This has no analogue in Java DocumentModel
     orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
+    const blue = [ [0n,0n,1n], [0n,0n,1n], [1n,0n,1n] ]
+    const yellow = [ [0n,0n,1n], [1n,0n,1n], [1n,1n,1n] ]
+    const red = [ [1n,0n,1n], [0n,0n,1n], [0n,1n,1n] ]
+    const green = [ [1n,0n,1n], [1n,0n,1n], [0n,0n,1n] ]
+    const bluePlane = getBuildPlane( orbitSource, blue );
+    const yellowPlane = getBuildPlane( orbitSource, yellow );
+    const redPlane = getBuildPlane( orbitSource, red );
+    const greenPlane = getBuildPlane( orbitSource, green );
+    orbitSource.buildPlanes = {
+      blue: bluePlane,
+      red: redPlane,
+      green: greenPlane,
+      yellow: yellowPlane,
+    };
+
+
     class OSField {
       constructor(){}
       getGroup( name ) {
@@ -505,22 +521,55 @@ const makeFloatMatrices = ( matrices ) =>
     return { interpretEdit, configureAndPerformEdit, field, batchRender, orbitSource, toolsModel, bookmarkFactory };
   }
 
+  export const convertColor = color =>
+  {
+    if ( !color )
+      return '#ffffff';
+
+    const componentToHex = c => {
+      let hex = c.toString(16);
+      return hex.length == 1 ? "0" + hex : hex;
+    }
+    return "#" + componentToHex(color.getRed()) + componentToHex(color.getGreen()) + componentToHex(color.getBlue());
+  }
+
+  const getBuildPlane = ( orbits, planeNormal ) =>
+  {
+    const field = orbits .getSymmetry() .getField();
+    const normal = vzomePkg.jsweet.JsAdapter.mapVectorToJava( planeNormal, field );
+    const planeColor = convertColor( orbits .getVectorColor( normal ) );
+    const planeName = orbits .getSymmetry() .getAxis( normal ) .getOrbit() .getName();
+
+    const zones = [];
+
+    const planeOrbits = new vzomePkg.core.math.symmetry.PlaneOrbitSet( orbits.getOrbits(), normal );
+    const iterator = planeOrbits .zones();
+    while ( iterator .hasNext() ) {
+      const zone = iterator .next()
+      const orbit = zone .getDirection();
+      if ( ! orbit .isStandard() )
+        continue;
+      const vectors = [];
+      const zoneNormal = zone .normal();
+      const zoneColor = convertColor( orbits .getVectorColor( zoneNormal ) );
+      let scale = orbit .getUnitLength();
+      for ( let i = 0; i < 5; i++ ) {
+        scale = scale .times( field .createPower( 1 ) );
+        const gridPoint = zoneNormal .scale( scale );
+        vectors .push( gridPoint );
+      }
+      
+      zones .push( { name: orbit.getName(), color: zoneColor, vectors } );
+    }
+
+    return { color: planeColor, normal, zones };
+  }
+
   // TODO: replace the legacyCommandFactory, which was for the old {shown,hidden,selected} model
   // Discover all the legacy edit classes and register as commands
   // const commands = {}
   // for ( const name of Object.keys( vzomePkg.core.edits ) )
   //   commands[ name ] = legacyCommandFactory( documentFactory, name )
-
-  // Prepare the gridPoints
-  const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
-  const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, editContext, colors, true )
-  // orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
-  const blue = [ [0n,0n,1n], [0n,0n,1n], [1n,0n,1n] ]
-  const yellow = [ [0n,0n,1n], [1n,0n,1n], [1n,1n,1n] ]
-  const red = [ [1n,0n,1n], [0n,0n,1n], [0n,1n,1n] ]
-  const green = [ [1n,0n,1n], [1n,0n,1n], [0n,0n,1n] ]
-  const gridPoints = vzomePkg.jsweet.JsAdapter.getZoneGrid( orbitSource, blue )
-  // store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
 
   export const parse = createParser( documentFactory )
 
