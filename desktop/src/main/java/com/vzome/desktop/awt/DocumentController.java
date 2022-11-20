@@ -149,7 +149,9 @@ public class DocumentController extends DefaultGraphicsController implements Sce
     private final NumberController importScaleController;
     private final VectorController quaternionController;
     private String lastObjectColor = "#ffffffff";
-        
+    
+    private boolean mainViewRotation = true;
+
    /*
      * See the javadoc to control the logging:
      * 
@@ -289,8 +291,10 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         }
 
         sceneLighting = this .documentModel .getSceneLighting();
+        
+        mainViewRotation = ! app .propertyIsTrue( "no.main.view.trackball" );
 
-        cameraController = new CameraGraphicsController( document .getCamera(), sceneLighting, maxOrientations );
+        cameraController = new CameraGraphicsController( document .getCamera(), sceneLighting, maxOrientations, mainViewRotation? 0.15d : 0.7d );
         this .addSubController( "camera", cameraController );
         this .articleModeZoom = new CameraZoomWheel( this .cameraController );
 
@@ -442,7 +446,8 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         if ( this .modelCanvas != null )
             if ( editingModel ) {
                 this .selectionClick .attach( modelCanvas );
-                this .modelModeMainTrackball .attach( modelCanvas );
+                if ( mainViewRotation )
+                    this .modelModeMainTrackball .attach( modelCanvas );
                 this .strutBuilder .attach( modelCanvas );
             } else {
                 this .articleModeMainTrackball .attach( modelCanvas );
@@ -542,7 +547,8 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                     
                     this .selectionClick .detach( this .modelCanvas );
                     this .strutBuilder .detach( this .modelCanvas );
-                    this .modelModeMainTrackball .detach( this .modelCanvas );
+                    if ( mainViewRotation )
+                        this .modelModeMainTrackball .detach( this .modelCanvas );
                     
                     this .lessonPageClick .attach( this .modelCanvas );
                     this .articleModeMainTrackball .attach( this .modelCanvas );
@@ -583,7 +589,8 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                     this .articleModeZoom .detach( this .modelCanvas );
                     
                     this .selectionClick .attach( this .modelCanvas );
-                    this .modelModeMainTrackball .attach( this .modelCanvas );
+                    if ( mainViewRotation )
+                        this .modelModeMainTrackball .attach( this .modelCanvas );
                     this .strutBuilder .attach( this .modelCanvas );
     
                     this .editingModel = true;
