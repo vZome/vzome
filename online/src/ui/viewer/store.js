@@ -40,7 +40,7 @@ export const openDesignFile = ( file, debug=false ) => workerAction( 'FILE_PROVI
 export const newDesign = () => workerAction( 'NEW_DESIGN_STARTED', { field: 'golden' } );
 export const doControllerAction = ( controllerPath='', action, parameters={} ) => workerAction( 'ACTION_TRIGGERED', { controllerPath, action, parameters } );
 export const requestControllerProperty = ( controllerPath='', propName, changeName, isList ) => workerAction( 'PROPERTY_REQUESTED', { controllerPath, propName, changeName, isList } );
-export const createStrut = ( origin, plane, zone, index ) => workerAction( 'STRUT_CREATION_TRIGGERED', { origin, plane, zone, index } );
+export const createStrut = ( id, plane, zone, index ) => workerAction( 'STRUT_CREATION_TRIGGERED', { id, plane, zone, index } );
 
 export const subcontroller = ( controllerPath, subName ) => controllerPath + ':' + subName;
 
@@ -88,6 +88,35 @@ const reducer = ( state = initialState, event ) =>
       const { scene, edit } = event.payload;
       // may need to merge scene.shapes here, if we ever have an incremental case
       return { ...state, edit, scene: { ...state.scene, ...scene }, waiting: false };
+    }
+
+    case 'SHAPE_DEFINED': {
+      const shape = event.payload;
+      const shapes = { ...state.scene.shapes, [ shape.id ]: shape };
+      return { ...state, scene: { ...state.scene, shapes }, waiting: false };
+      break;
+    }
+
+    case 'INSTANCE_ADDED': {
+      let instance = event.payload;
+      //  TODO: put this granularity in when I've switched to SolidJS for the rendering
+      // const [ selected, setSelected ] = createSignal( instance.selected );
+      // const [ color, setColor ] = createSignal( instance.color );
+      // instance = { ...instance, color, setColor, selected, setSelected };
+      const shape = state.scene.shapes[ instance.shapeId ];
+      const shapes = { ...state.scene.shapes, [ shape.id ]: { ...shape, instances: [ ...shape.instances, instance ] } };
+      return { ...state, scene: { ...state.scene, shapes }, waiting: false };
+      break;
+    }
+
+    case 'SELECTION_TOGGLED': {
+      const { shapeId, id, selected } = data.payload;
+      const shape = state.scene.shapes[ shapeId ];
+      const instances = shape .instances.map( inst => (
+        inst.id !== id ? inst : { ...inst, selected }
+      ));
+      const shapes = { ...state.scene.shapes, [ shapeId ]: { ...shape, instances } };
+      return { ...state, scene: { ...state.scene, shapes }, waiting: false };
     }
 
     case 'CAMERA_DEFINED': {

@@ -369,6 +369,7 @@ const makeFloatMatrices = ( matrices ) =>
 
     // This has no analogue in Java DocumentModel
     orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
+    // TODO: generalize for all fields and symmetries
     const blue = [ [0n,0n,1n], [0n,0n,1n], [1n,0n,1n] ]
     const yellow = [ [0n,0n,1n], [1n,0n,1n], [1n,1n,1n] ]
     const red = [ [1n,0n,1n], [0n,0n,1n], [0n,1n,1n] ]
@@ -383,7 +384,6 @@ const makeFloatMatrices = ( matrices ) =>
       green: greenPlane,
       yellow: yellowPlane,
     };
-
 
     class OSField {
       constructor(){}
@@ -440,8 +440,8 @@ const makeFloatMatrices = ( matrices ) =>
       const edit = editFactory( editor, toolFactories, toolsModel )( wrappedElement )
       if ( ! edit )   // Null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit.
         return null  //  Not indicating failure, just indicating nothing to record in history
-      const { shown, selected, hidden, groups } = mesh
-      editor.setAdapter( new Adapter( shown, selected, hidden, groups ) )
+      // const { shown, selected, hidden, groups } = mesh
+      // editor.setAdapter( new Adapter( shown, selected, hidden, groups ) );
       edit.loadAndPerform( wrappedElement, format, editContext )
 
       checkSideEffects( edit, wrappedElement );
@@ -505,12 +505,12 @@ const makeFloatMatrices = ( matrices ) =>
 
     const configureAndPerformEdit = ( className, config, adapter ) =>
     {
-      const edit = editFactory( editor, toolFactories, toolsModel )( new JavaDomElement( { localName: className } ) )
+      const edit = editFactory( editor, toolFactories, toolsModel )( new JavaDomElement( { tagName: className } ) )
       if ( ! edit )
         return
-      editor.setAdapter( adapter )
-      edit.configure( new JsProperties( config ) )
-      edit.perform()
+      // editor.setAdapter( adapter );
+      edit.configure( new JsProperties( config ) );
+      edit.perform();
     }
 
     const batchRender = renderingListener => {
@@ -518,7 +518,7 @@ const makeFloatMatrices = ( matrices ) =>
       RM.renderChange( new RM( null, null ), renderedModel, renderingListener );
     }
 
-    return { interpretEdit, configureAndPerformEdit, field, batchRender, orbitSource, toolsModel, bookmarkFactory };
+    return { interpretEdit, configureAndPerformEdit, field, renderedModel, batchRender, orbitSource, toolsModel, bookmarkFactory };
   }
 
   export const convertColor = color =>
@@ -556,10 +556,10 @@ const makeFloatMatrices = ( matrices ) =>
       for ( let i = 0; i < 5; i++ ) {
         scale = scale .times( field .createPower( 1 ) );
         const gridPoint = zoneNormal .scale( scale );
-        vectors .push( gridPoint );
+        vectors .push( { point: gridPoint, scale } );
       }
       
-      zones .push( { name: orbit.getName(), color: zoneColor, vectors } );
+      zones .push( { name: orbit.getName(), zone, color: zoneColor, vectors } );
     }
 
     return { color: planeColor, normal, zones };

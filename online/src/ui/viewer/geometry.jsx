@@ -5,39 +5,36 @@ import { useEmbedding, useRotation, useGeometry } from './hooks.js'
 import { useThree } from '@react-three/fiber'
 import { GLTFExporter } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/exporters/GLTFExporter.js';
 
-const Instance = ( { id, vectors, position, rotation, geometry, color, selected, highlightBall=()=>{}, onClick, onHover } ) =>
+const Instance = ( { id, position, rotation, geometry, color, selected, callbacks } ) =>
 {
   const ref = useRotation( rotation );
+  const { onClick, onHover } = callbacks;
   
-  const handleHoverIn = ( e ) =>
+  const handleHover = value => e =>
   {
     e.stopPropagation()
-    onHover && onHover( vectors, true )
-  }
-  const handleHoverOut = ( e ) =>
-  {
-    e.stopPropagation()
-    onHover && onHover( vectors, false )
+    onHover && onHover( id, position, value )
   }
   const handleClick = ( e ) =>
   {
     if ( onClick ) { // may be undefined when the model is not editable, or when the object is not clickable in the current mode
       e.stopPropagation()
-      onClick && onClick( id, vectors, selected )
+      onClick && onClick( id, position, selected )
     }
   }
-  const emissive = selected? "#f6f6f6" : highlightBall( id )? "#884444" : "black"
+  const emissive = selected? "#f6f6f6" : "black"
   // TODO: cache materials
   return (
     <group position={ position } >
-      <mesh matrixAutoUpdate={false} ref={ ref } geometry={geometry} onPointerOver={handleHoverIn} onPointerOut={handleHoverOut} onClick={handleClick}>
+      <mesh matrixAutoUpdate={false} ref={ ref } geometry={geometry}
+          onPointerOver={handleHover(true)} onPointerOut={handleHover(false)} onClick={handleClick}>
         <meshLambertMaterial attach="material" color={color} emissive={emissive} />
       </mesh>
     </group>
   )
 }
 
-const InstancedShape = ( { shape, onClick, onHover, highlightBall } ) =>
+const InstancedShape = ( { shape, callbacks } ) =>
 {
   const geometry = useGeometry( shape );
   if ( shape.instances.length === 0 )
@@ -45,12 +42,12 @@ const InstancedShape = ( { shape, onClick, onHover, highlightBall } ) =>
   return (
     <>
       { shape.instances.map( instance =>
-        <Instance key={instance.id} {...instance} geometry={geometry} highlightBall={highlightBall} onClick={onClick} onHover={onHover} /> ) }
+        <Instance key={instance.id} {...instance} geometry={geometry} callbacks={callbacks} /> ) }
     </>
   )
 }
 
-export const ShapedGeometry = forwardRef(( { shapes, embedding, highlightBall, onClick, onHover }, exporterRef ) =>
+export const ShapedGeometry = forwardRef(( { shapes, embedding, callbacks }, exporterRef ) =>
 {
   const { scene } = useThree();
 
@@ -76,7 +73,7 @@ export const ShapedGeometry = forwardRef(( { shapes, embedding, highlightBall, o
   return ( shapes &&
     <group matrixAutoUpdate={false} ref={ref} onPointerMissed={bkgdClick}>
       { Object.values( shapes ).map( shape =>
-        <InstancedShape key={shape.id} {...{ shape, highlightBall, onClick, onHover }} />
+        <InstancedShape key={shape.id} {...{ shape, callbacks }} />
       ) }
     </group>
   ) || null

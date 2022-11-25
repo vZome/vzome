@@ -1,7 +1,8 @@
 
 // TODO: put this in a module that both worker and main context can use.
 
-import { convertColor } from "./core";
+import { convertColor } from "./core.js";
+import { realizeShape, normalizeRenderedManifestation } from './scenes.js';
 
 //  Right now this is duplicated!
 const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
@@ -106,30 +107,6 @@ const interpret = ( action, state, stack=[] ) =>
   }
 }
 
-export const realizeShape = ( shape ) =>
-{
-  const vertices = shape.getVertexList().toArray().map( av => {
-    const { x, y, z } = av.toRealVector();  // this is too early to do embedding, which is done later, globally
-    return { x, y, z };
-  })
-  const faces = shape.getTriangleFaces().toArray().map( ({ vertices }) => ({ vertices }) );  // not a no-op, converts to POJS
-  const id = 's' + shape.getGuid().toString();
-  return { id, vertices, faces, instances: [] };
-}
-
-export const normalizeRenderedManifestation = rm =>
-{
-  const id = 'i' + rm.getGuid().toString();
-  const shapeId = 's' + rm.getShapeId().toString();
-  const positionAV = rm.getLocationAV();
-  const { x, y, z } = ( positionAV && positionAV.toRealVector() ) || { x:0, y:0, z:0 };
-  const rotation = rm .getOrientation() .getRowMajorRealElements();
-  const selected = rm .getGlow() > 0.001;
-  const color = convertColor( rm .getColor() );
-
-  return { id, position: [ x, y, z ], rotation, color, selected, shapeId };
-}
-
 export class RenderHistory
 {
   constructor( design )
@@ -169,6 +146,7 @@ export class RenderHistory
   }
 
   // partial implementation of legacy RenderListener
+  // TODO replace this with scenes.js renderedModelTransducer
   manifestationAdded( rm )
   {
     const shapeId = 's' + rm.getShapeId().toString();

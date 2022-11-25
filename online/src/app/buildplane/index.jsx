@@ -12,20 +12,34 @@ import { VZomeAppBar } from '../components/appbar.jsx'
 import { BuildPlane } from './buildplane.jsx'
 import { useNewDesign } from '../classic/controller-hooks.js';
 import { DesignViewer, WorkerContext } from '../../ui/viewer/index.jsx'
-import { reducer, initialState, doStartGridHover, doStopGridHover } from './planes.js';
+import { reducer, initialState, doBackgroundClick, doBallClick } from './planes.js';
 import { createStrut } from '../../ui/viewer/store.js';
+
+const isLeftMouseButton = e =>
+{
+  e = e || window.event;
+  if ( "which" in e )  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+    return e.which === 1
+  else if ( "button" in e )  // IE, Opera 
+    return e.button === 0
+  return false
+}
 
 const App = () =>
 {
   useNewDesign(); // has to be nested here, since it needs Redux context
-
-  const [ state, dispatch ] = useReducer( reducer, initialState ); // dedicated local store
+  const sendToWorker = useDispatch();
+  const doCreateStrut = ( plane, zone, index ) => sendToWorker( createStrut( state.focusId, plane, zone, index ) );
   const buildPlanes = useSelector( reduxState => reduxState.buildPlanes ); // from the main Redux store
-  const startGridHover = (pt) => dispatch( doStartGridHover( pt ) );
-  const stopGridHover = (pt) => dispatch( doStopGridHover( pt ) );
 
-  const report = useDispatch();
-  const doCreateStrut = ( origin, plane, zone, index ) => report( createStrut( origin, plane, zone, index ) );
+  // TODO: encapsulate the build plane as a "tool", including a UI
+  const [ state, dispatch ] = useReducer( reducer, initialState ); // dedicated local store
+
+  const designCallbacks = {
+    bkgdClick: ( e ) => isLeftMouseButton( e ) && dispatch( doBackgroundClick() ),
+    onClick: ( id, position, selected ) => dispatch( doBallClick( id, position ) ),
+    onHover: ( id, position, value ) => { },
+  }
 
   return (
     <>
@@ -37,9 +51,9 @@ const App = () =>
           </Typography>
         </> }
       />
-      <DesignViewer config={ { useSpinner: true } }
-        children3d={ buildPlanes &&
-          <BuildPlane {...{ buildPlanes, state, startGridHover, stopGridHover }} createStrut={doCreateStrut} />
+      <DesignViewer config={ { useSpinner: true } } callbacks={designCallbacks}
+        children3d={ buildPlanes && state.enabled &&
+          <BuildPlane {...{ buildPlanes, state }} createStrut={doCreateStrut} />
         } />
     </>
   );

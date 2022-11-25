@@ -1,29 +1,17 @@
 
-
-export const doStartGridHover = position =>
+export const doGridHover = ( position, value ) =>
 {
-  return { type: 'GRID_HOVER_STARTED', payload: position }
+  return value? { type: 'GRID_HOVER_STARTED', payload: position } : { type: 'GRID_HOVER_STOPPED', payload: position };
 }
 
-export const doStopGridHover = position =>
+export const doBallHover = ( position, value ) =>
 {
-  return { type: 'GRID_HOVER_STOPPED', payload: position }
+  return value? { type: 'BALL_HOVER_STARTED', payload: position } : { type: 'BALL_HOVER_STOPPED', payload: position };
 }
 
-export const doStartBallHover = position =>
+export const doBallClick = ( id, position ) =>
 {
-  return { type: 'BALL_HOVER_STARTED', payload: position }
-}
-
-export const doStopBallHover = position =>
-{
-  return { type: 'BALL_HOVER_STOPPED', payload: position }
-}
-
-export const doBallClick = ( focus, position ) => ( dispatch, getState ) =>
-{
-  dispatch( { type: 'BALL_CLICKED', payload: position } )
-  // dispatch( buildStrut( focus, position ) )
+  return { type: 'BALL_CLICKED', payload: { id, position } };
 }
 
 export const doBackgroundClick = () =>
@@ -40,8 +28,8 @@ export const initialState = {
   endPt: undefined,
   quaternion: [1,0,0,0],
   plane: 'blue',
-  enabled: true,
-  buildingStruts: false,
+  enabled: false,
+  buildingStruts: true,
 }
 
 export const reducer = ( state=initialState, action ) =>
@@ -61,11 +49,11 @@ export const reducer = ( state=initialState, action ) =>
       return { ...state, endPt: undefined }
         
     case 'BALL_CLICKED':
-      const target = action.payload
-      if ( JSON.stringify( state.position ) === JSON.stringify( target ) )
-        return { ...state, enabled: true, buildingStruts: !state.buildingStruts, endPt: undefined }
+      const { id, position } = action.payload
+      if ( state.focusId === id )
+        return { ...state, enabled: true, buildingStruts: !state.buildingStruts, focusId: id, endPt: undefined }
       else
-        return { ...state, enabled: true, buildingStruts: true, position: target, endPt: undefined }
+        return { ...state, enabled: true, buildingStruts: true, focusId: id, position, endPt: undefined }
     
     // not generated yet, so untested
     case 'BACKGROUND_CLICKED':

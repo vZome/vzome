@@ -2,47 +2,6 @@ import React, { useState } from 'react';
 import { useMemo } from 'react';
 import { DoubleSide, Matrix4, Quaternion, Vector3 } from 'three';
 
-const BuildZone = ( { zone, position, startGridHover, stopGridHover, createStrut } ) =>
-{
-  const dotSize = 1/3;
-
-  const makeAbsolute = ( gridPt ) =>
-  {
-    // let vector3d = field.quatTransform( quaternion, [ ...gridPt, field.zero ] )
-    return position .map( (x,i) => x + gridPt[ i ] );
-  }
-  const handleHoverIn = ( e, gridPt ) =>
-  {
-    e.stopPropagation()
-    startGridHover( makeAbsolute( gridPt ) )
-  }
-  const handleHoverOut = ( e, gridPt ) =>
-  {
-    e.stopPropagation()
-    stopGridHover( makeAbsolute( gridPt ) )
-  }
-  const handleClick = ( e, index ) =>
-  {
-    e.stopPropagation();
-    createStrut( index );
-  }
-
-  const [ material, materialRef ] = useState();
-  return (
-    <group>
-      <meshLambertMaterial ref={materialRef} color={zone.color} side={DoubleSide} />
-      {zone.vectors.map( ( v, i ) =>
-        <mesh position={v} key={JSON.stringify( v )} material={material}
-            onPointerOver={ e => handleHoverIn( e, v ) }
-            onPointerOut={ e => handleHoverOut( e, v ) }
-            onClick={ e => handleClick( e, i ) }>
-          <icosahedronBufferGeometry attach="geometry" args={[dotSize]} />
-        </mesh>
-      )}
-    </group>
-  );
-}
-
 const makeRotation = ( from, to ) =>
 {
   const fromV = new Vector3() .fromArray( from ) .normalize();
@@ -55,9 +14,71 @@ const makeRotation = ( from, to ) =>
   return new Quaternion() .setFromRotationMatrix( matrix );
 }
 
-export const BuildPlane = ( { buildPlanes, state, startGridHover, stopGridHover, createStrut } ) =>
+const dotSize = 1/3;
+const cylinderSize = 1/8;
+
+const BuildDot = ( { position, material, buildingStruts, createStrut } ) =>
 {
-  const { position, quaternion, plane } = state;
+  const [ strutCenter, strutQuaternion, strutLength ] = useMemo( () => {
+    const midpoint = position .map( x => x/2 );
+    const length = Math.sqrt( position .reduce( (sum,x) => sum + x**2, 0 ) );
+    return [ midpoint, makeRotation( [0,1,0], position ), length ];
+  }, [ position ] );
+  const [ hovered, setHovered ] = useState( false );
+  const handleHover = value => e =>
+  {
+    e.stopPropagation();
+    setHovered( value );
+  }
+  const handleClick = ( e ) =>
+  {
+    e.stopPropagation();
+    setHovered( false );
+    createStrut();
+  }
+
+  return (
+    <group>
+      <mesh position={position} material={material}
+          onPointerOver={ handleHover( true ) } onPointerOut={ handleHover( false ) } onClick={ handleClick }>
+        <sphereBufferGeometry attach="geometry" args={[ dotSize, 12, 8 ]} />
+      </mesh>
+      {buildingStruts && hovered &&
+        <mesh position={strutCenter} quaternion={strutQuaternion} material={material}>
+          <cylinderBufferGeometry attach="geometry" args={[ cylinderSize, cylinderSize, strutLength, 12, 1, true ]} />
+        </mesh>
+      }
+    </group>
+  )
+}
+
+const BuildZone = ( { zone, createStrut } ) =>
+{
+  const handleClick = index => () => createStrut( index );
+
+  const [ material, materialRef ] = useState();
+
+  const [ coneCenter, zoneQuaternion ] = useMemo( () => {
+    const midpoint = zone.vectors[ 0 ] .map( x => 2*x/3 );
+    return [ midpoint, makeRotation( [0,1,0], midpoint ) ];
+  }, [ zone ] );
+
+  return (
+    <group>
+      <meshLambertMaterial ref={materialRef} color={zone.color} side={DoubleSide} />
+      <mesh position={coneCenter} quaternion={zoneQuaternion} material={material}>
+        <coneBufferGeometry attach="geometry" args={[ 1/8, 1.5 ]} />
+      </mesh>
+      {zone.vectors.map( ( v, i ) =>
+        <BuildDot key={i} position={v} material={material} buildingStruts={true} createStrut={handleClick( i )} />
+      )}
+    </group>
+  );
+}
+
+export const BuildPlane = ( { buildPlanes, state, createStrut } ) =>
+{
+  const { position, quaternion, plane, focusId } = state;
   const [ planeMaterial, planeMaterialRef ] = useState()
   const discSize = 35;
   const wlast = q =>
@@ -70,13 +91,10 @@ export const BuildPlane = ( { buildPlanes, state, startGridHover, stopGridHover,
   const diskRotation = useMemo( () => makeRotation( [0,1,0], grid.normal ), [ grid ] );
   const hoopRotation = useMemo( () => makeRotation( [0,0,1], grid.normal ), [ grid ] );
 
-  const createZoneStrut = ( zone ) => ( index ) => createStrut( 'IGNORED', plane, zone, index );
+  const createZoneStrut = ( zoneIndex ) => ( index ) => createStrut( plane, zoneIndex, index );
 
   /*
     Ideas:
-      - when building struts, render the colored rays
-      - always render the dots in colors
-
       - always render the hinge cylinder
       - hover on the hinge should show the two control handles:
          - a ball plus arc for the hinge angle around the center
@@ -92,8 +110,8 @@ export const BuildPlane = ( { buildPlanes, state, startGridHover, stopGridHover,
       <mesh quaternion={hoopRotation} material={planeMaterial}>
         <torusBufferGeometry attach="geometry" args={[ discSize, 0.5, 15, 60 ]} />
       </mesh>
-      {grid.zones .map( ( zone, index ) =>
-        <BuildZone key={index} {...{ zone, position, startGridHover, stopGridHover }} createStrut={ createZoneStrut( index ) } />
+      {grid.zones .map( ( zone, zoneIndex ) =>
+        <BuildZone key={zoneIndex} {...{ zone, position }} createStrut={ createZoneStrut( zoneIndex ) } />
       )}
     </group>
   )
