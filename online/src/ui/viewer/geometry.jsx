@@ -1,8 +1,8 @@
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { forwardRef, useImperativeHandle } from 'react';
 import { useEmbedding, useRotation, useGeometry } from './hooks.js'
-import { useThree } from '@react-three/fiber'
+import { useThree, useFrame } from '@react-three/fiber'
 import { GLTFExporter } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/exporters/GLTFExporter.js';
 
 const Instance = ( { id, vectors, position, rotation, geometry, color, selected, highlightBall=()=>{}, onClick, onHover } ) =>
@@ -53,6 +53,15 @@ const InstancedShape = ( { shape, onClick, onHover, highlightBall } ) =>
 export const ShapedGeometry = forwardRef(( { shapes, embedding, highlightBall, handleClick, onHover }, exporterRef ) =>
 {
   const { scene } = useThree();
+
+  const [ dirty, setDirty ] = useState( true );
+  useFrame( ({ gl, scene, camera }) => {
+    if ( dirty ) {
+      gl.render( scene, camera );
+      setDirty( false );
+    }
+  }, 2 );
+  useEffect( () => setDirty( true ), [ shapes ] );
 
   const gltfExporter = {
     exportGltfJson: writeFile =>
