@@ -17,42 +17,48 @@ const makeRotation = ( from, to ) =>
 const dotSize = 1/3;
 const cylinderSize = 1/8;
 
-const BuildDot = ( { position, material, buildingStruts, createStrut } ) =>
+const StrutPreview = ( { endPt } ) =>
 {
   const [ strutCenter, strutQuaternion, strutLength ] = useMemo( () => {
-    const midpoint = position .map( x => x/2 );
-    const length = Math.sqrt( position .reduce( (sum,x) => sum + x**2, 0 ) );
-    return [ midpoint, makeRotation( [0,1,0], position ), length ];
-  }, [ position ] );
-  const [ hovered, setHovered ] = useState( false );
+    const midpoint = endPt .map( x => x/2 );
+    const length = Math.sqrt( endPt .reduce( (sum,x) => sum + x**2, 0 ) );
+    return [ midpoint, makeRotation( [0,1,0], endPt ), length ];
+  }, [ endPt ] );
+  const [ material, materialRef ] = useState();
+
+  return (
+    <mesh position={strutCenter} quaternion={strutQuaternion}>
+      <meshLambertMaterial attach="material" color={"white"} side={DoubleSide} />
+      <cylinderBufferGeometry attach="geometry" args={[ cylinderSize, cylinderSize, strutLength, 12, 1, true ]} />
+    </mesh>
+  );
+}
+
+const BuildDot = ( { position, material, previewStrut, createStrut } ) =>
+{
   const handleHover = value => e =>
   {
     e.stopPropagation();
-    setHovered( value );
+    if ( value )
+      previewStrut( position );
+    else
+      previewStrut( null );
   }
   const handleClick = ( e ) =>
   {
     e.stopPropagation();
-    setHovered( false );
     createStrut();
   }
 
   return (
-    <group>
-      <mesh position={position} material={material}
-          onPointerOver={ handleHover( true ) } onPointerOut={ handleHover( false ) } onClick={ handleClick }>
-        <sphereBufferGeometry attach="geometry" args={[ dotSize, 12, 8 ]} />
-      </mesh>
-      {buildingStruts && hovered &&
-        <mesh position={strutCenter} quaternion={strutQuaternion} material={material}>
-          <cylinderBufferGeometry attach="geometry" args={[ cylinderSize, cylinderSize, strutLength, 12, 1, true ]} />
-        </mesh>
-      }
-    </group>
+    <mesh position={position} material={material}
+        onPointerOver={ handleHover( true ) } onPointerOut={ handleHover( false ) } onClick={ handleClick }>
+      <sphereBufferGeometry attach="geometry" args={[ dotSize, 12, 8 ]} />
+    </mesh>
   )
 }
 
-const BuildZone = ( { zone, createStrut } ) =>
+const BuildZone = ( { zone, previewStrut, createStrut } ) =>
 {
   const handleClick = index => () => createStrut( index );
 
@@ -70,15 +76,15 @@ const BuildZone = ( { zone, createStrut } ) =>
         <coneBufferGeometry attach="geometry" args={[ 1/8, 1.5 ]} />
       </mesh>
       {zone.vectors.map( ( v, i ) =>
-        <BuildDot key={i} position={v} material={material} buildingStruts={true} createStrut={handleClick( i )} />
+        <BuildDot key={i} position={v} material={material} previewStrut={previewStrut} createStrut={handleClick( i )} />
       )}
     </group>
   );
 }
 
-export const BuildPlane = ( { buildPlanes, state, createStrut } ) =>
+export const BuildPlane = ( { buildPlanes, state, previewStrut, createStrut } ) =>
 {
-  const { position, quaternion, plane, focusId } = state;
+  const { center, quaternion, plane, focusId } = state;
   const [ planeMaterial, planeMaterialRef ] = useState()
   const discSize = 35;
   const wlast = q =>
@@ -102,7 +108,7 @@ export const BuildPlane = ( { buildPlanes, state, createStrut } ) =>
   */
   
   return (
-    <group position={position} quaternion={wlast( quaternion )}>
+    <group position={center.position} quaternion={wlast( quaternion )}>
       <meshLambertMaterial ref={planeMaterialRef} transparent={true} opacity={0.5} color={grid.color} />
       <mesh quaternion={diskRotation} material={planeMaterial}>
         <cylinderBufferGeometry attach="geometry" args={[ discSize, discSize, 0.05, 60 ]} />
@@ -110,9 +116,12 @@ export const BuildPlane = ( { buildPlanes, state, createStrut } ) =>
       <mesh quaternion={hoopRotation} material={planeMaterial}>
         <torusBufferGeometry attach="geometry" args={[ discSize, 0.5, 15, 60 ]} />
       </mesh>
-      {grid.zones .map( ( zone, zoneIndex ) =>
-        <BuildZone key={zoneIndex} {...{ zone, position }} createStrut={ createZoneStrut( zoneIndex ) } />
+      {state.buildingStruts && grid.zones .map( ( zone, zoneIndex ) =>
+        <BuildZone key={zoneIndex} zone={zone}
+          previewStrut={previewStrut} createStrut={ createZoneStrut( zoneIndex ) } />
       )}
+      {state.endPt &&
+        <StrutPreview endPt={state.endPt} />}
     </group>
   )
 }

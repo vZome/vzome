@@ -422,6 +422,7 @@ onmessage = ({ data }) =>
       break;
 
     case 'STRUT_CREATION_TRIGGERED':
+    case 'JOIN_BALLS_TRIGGERED':
     {
       console.log( JSON.stringify( payload ) );
       const controller = getNamedController( 'editor:buildPlane' );

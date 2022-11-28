@@ -12,8 +12,8 @@ import { VZomeAppBar } from '../components/appbar.jsx'
 import { BuildPlane } from './buildplane.jsx'
 import { useNewDesign } from '../classic/controller-hooks.js';
 import { DesignViewer, WorkerContext } from '../../ui/viewer/index.jsx'
-import { reducer, initialState, doBackgroundClick, doBallClick } from './planes.js';
-import { createStrut } from '../../ui/viewer/store.js';
+import { reducer, initialState, doBackgroundClick, doBallClick, doStrutPreview } from './planes.js';
+import { createStrut, joinBalls } from '../../ui/viewer/store.js';
 
 const isLeftMouseButton = e =>
 {
@@ -29,16 +29,31 @@ const App = () =>
 {
   useNewDesign(); // has to be nested here, since it needs Redux context
   const sendToWorker = useDispatch();
-  const doCreateStrut = ( plane, zone, index ) => sendToWorker( createStrut( state.focusId, plane, zone, index ) );
+  const doCreateStrut = ( plane, zone, index ) => sendToWorker( createStrut( state.center.id, plane, zone, index ) );
+  const doJoinBalls = ( i1, i2 ) => sendToWorker( joinBalls( i1, i2 ) );
   const buildPlanes = useSelector( reduxState => reduxState.buildPlanes ); // from the main Redux store
 
   // TODO: encapsulate the build plane as a "tool", including a UI
   const [ state, dispatch ] = useReducer( reducer, initialState ); // dedicated local store
+  const previewStrut = endPt => dispatch( doStrutPreview( endPt ) );
 
-  const designCallbacks = {
+  const ballCallbacks = {
     bkgdClick: ( e ) => isLeftMouseButton( e ) && dispatch( doBackgroundClick() ),
-    onClick: ( id, position, selected ) => dispatch( doBallClick( id, position ) ),
-    onHover: ( id, position, value ) => { },
+    onClick: ( id, position, selected ) => {
+      if ( state.endPt ) {
+        doJoinBalls( state.center.id, id );
+      }
+      dispatch( doBallClick( id, position ) );
+    },
+    onHover: ( id, position, value ) => {
+      if ( value && state.buildingStruts && state.center.position ) {
+        const [ x0, y0, z0 ] = state.center.position;
+        const [ x1, y1, z1 ] = position;
+        const vector = [ x1-x0, y1-y0, z1-z0 ];
+        dispatch( doStrutPreview( vector ) );
+      } else
+        dispatch( doStrutPreview() );
+    },
   }
 
   return (
@@ -47,13 +62,14 @@ const App = () =>
         about={ <>
           <Typography gutterBottom>
             This is an experimental in-browser modeling tool
-            for <Link target="_blank" href="https://zometool.com" rel="noopener" >Zometool</Link>.
+            for <Link target="_blank" href="https://zometool.com" rel="noopener" >Zometool</Link>,
+            based on <Link target="_blank" href="https://vzome.com" rel="noopener" >vZome</Link> technology.
           </Typography>
         </> }
       />
-      <DesignViewer config={ { useSpinner: true } } callbacks={designCallbacks}
+      <DesignViewer config={ { useSpinner: true } } callbacks={ballCallbacks}
         children3d={ buildPlanes && state.enabled &&
-          <BuildPlane {...{ buildPlanes, state }} createStrut={doCreateStrut} />
+          <BuildPlane {...{ buildPlanes, state }}  previewStrut={previewStrut} createStrut={doCreateStrut} />
         } />
     </>
   );

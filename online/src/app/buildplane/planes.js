@@ -1,7 +1,7 @@
 
-export const doGridHover = ( position, value ) =>
+export const doStrutPreview= ( position ) =>
 {
-  return value? { type: 'GRID_HOVER_STARTED', payload: position } : { type: 'GRID_HOVER_STOPPED', payload: position };
+  return position? { type: 'STRUT_PREVIEW_STARTED', payload: position } : { type: 'STRUT_PREVIEW_STOPPED' };
 }
 
 export const doBallHover = ( position, value ) =>
@@ -24,20 +24,23 @@ export const doChangeOrientation = () => {
 }
 
 export const initialState = {
-  position: [ 0,0,0 ],
+  center: {},
   endPt: undefined,
   quaternion: [1,0,0,0],
   plane: 'blue',
   enabled: false,
-  buildingStruts: true,
+  buildingStruts: false,
 }
 
 export const reducer = ( state=initialState, action ) =>
 {
   switch ( action.type )
   {
-    case 'GRID_HOVER_STARTED':
+    case 'STRUT_PREVIEW_STARTED':
       return { ...state, endPt: action.payload }
+          
+    case 'STRUT_PREVIEW_STOPPED':
+      return { ...state, endPt: undefined }
           
     case 'BALL_HOVER_STARTED':
       if ( state.endPt )
@@ -50,14 +53,13 @@ export const reducer = ( state=initialState, action ) =>
         
     case 'BALL_CLICKED':
       const { id, position } = action.payload
-      if ( state.focusId === id )
-        return { ...state, enabled: true, buildingStruts: !state.buildingStruts, focusId: id, endPt: undefined }
+      if ( state.center.id === id )
+        return { ...state, enabled: true, buildingStruts: !state.buildingStruts, endPt: undefined }
       else
-        return { ...state, enabled: true, buildingStruts: true, focusId: id, position, endPt: undefined }
+        return { ...state, enabled: true, buildingStruts: true, center: { id, position }, endPt: undefined }
     
-    // not generated yet, so untested
     case 'BACKGROUND_CLICKED':
-      return { ...state, enabled: !state.enabled }
+      return { ...state, enabled: !state.enabled, buildingStruts: !state.enabled }
     
     case 'ORIENTATION_CHANGED':
       return { ...state, enabled: true, orientation: (state.orientation+1)%3 }

@@ -60,19 +60,38 @@ class BuildPlaneController extends com.vzome.desktop.controller.DefaultControlle
   doParamAction( action, params )
   {
     const config = params .getConfig();
-    const { id, plane, zone, index } = config;
-    if ( id ) {
-      const rm = this .renderedModel .getRenderedManifestation( id );
-      const anchor = rm .getManifestation() .toConstruction();
+    switch (action) {
 
-      const buildPlane = this.buildPlanes[ plane ];
-      const buildZone = buildPlane .zones[ zone ];
-      const length = buildZone .vectors[ index ] .scale;
+      case 'STRUT_CREATION_TRIGGERED': {
+        const { id, plane, zone, index } = config;
+        if ( id ) {
+          const rm = this .renderedModel .getRenderedManifestation( id );
+          const anchor = rm .getManifestation() .toConstruction();
 
-      super.doParamAction( 'StrutCreation', new JsProperties( { anchor, zone: buildZone.zone, length } ) );
+          const buildPlane = this.buildPlanes[ plane ];
+          const buildZone = buildPlane .zones[ zone ];
+          const length = buildZone .vectors[ index ] .scale;
+
+          super.doParamAction( 'StrutCreation', new JsProperties( { anchor, zone: buildZone.zone, length } ) );
+          return;
+        } // else fall through
+      }
+    
+      case 'JOIN_BALLS_TRIGGERED': {
+        const { id1, id2 } = config;
+        if ( id1 && id2 ) {
+          const rm1 = this .renderedModel .getRenderedManifestation( id1 );
+          const rm2 = this .renderedModel .getRenderedManifestation( id2 );
+          const start = rm1 .getManifestation() .toConstruction();
+          const end = rm2 .getManifestation() .toConstruction();
+          super.doParamAction( 'JoinPointPair', new JsProperties( { start, end } ) );
+          return;
+        } // else fall through
+      }
+    
+      default:
+        super.doParamAction( action, params );
     }
-    else
-      super.doParamAction( action, params );
   }
 }
 
