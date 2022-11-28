@@ -39,18 +39,22 @@ const App = () =>
 
   const ballCallbacks = {
     bkgdClick: ( e ) => isLeftMouseButton( e ) && dispatch( doBackgroundClick() ),
-    onClick: ( id, position, selected ) => {
-      if ( state.endPt ) {
-        doJoinBalls( state.center.id, id );
+    onClick: ( id, position, type, selected ) => {
+      if ( type === 'ball' ) {
+        if ( state.endPt ) {
+          doJoinBalls( state.center.id, id );
+        }
+        dispatch( doBallClick( id, position ) );
       }
-      dispatch( doBallClick( id, position ) );
     },
-    onHover: ( id, position, value ) => {
+    onHover: ( id, position, type, value ) => {
       if ( value && state.buildingStruts && state.center.position ) {
-        const [ x0, y0, z0 ] = state.center.position;
-        const [ x1, y1, z1 ] = position;
-        const vector = [ x1-x0, y1-y0, z1-z0 ];
-        dispatch( doStrutPreview( vector ) );
+        if ( type === 'ball' ) {
+          const [ x0, y0, z0 ] = state.center.position;
+          const [ x1, y1, z1 ] = position;
+          const vector = [ x1-x0, y1-y0, z1-z0 ];
+          dispatch( doStrutPreview( vector ) );
+        }
       } else
         dispatch( doStrutPreview() );
     },

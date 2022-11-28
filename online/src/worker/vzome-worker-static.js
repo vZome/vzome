@@ -424,7 +424,6 @@ onmessage = ({ data }) =>
     case 'STRUT_CREATION_TRIGGERED':
     case 'JOIN_BALLS_TRIGGERED':
     {
-      console.log( JSON.stringify( payload ) );
       const controller = getNamedController( 'editor:buildPlane' );
       controller .paramActionPerformed( null, type, new JsProperties( payload ) );
     }

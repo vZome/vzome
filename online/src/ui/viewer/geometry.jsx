@@ -5,7 +5,7 @@ import { useEmbedding, useRotation, useGeometry } from './hooks.js'
 import { useThree, useFrame } from '@react-three/fiber'
 import { GLTFExporter } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/exporters/GLTFExporter.js';
 
-const Instance = ( { id, position, rotation, geometry, color, selected, callbacks } ) =>
+const Instance = ( { id, position, rotation, geometry, color, selected, type, callbacks } ) =>
 {
   const ref = useRotation( rotation );
   const { onClick, onHover } = callbacks;
@@ -13,13 +13,13 @@ const Instance = ( { id, position, rotation, geometry, color, selected, callback
   const handleHover = value => e =>
   {
     e.stopPropagation()
-    onHover && onHover( id, position, value )
+    onHover && onHover( id, position, type, value )
   }
   const handleClick = ( e ) =>
   {
     if ( onClick ) { // may be undefined when the model is not editable, or when the object is not clickable in the current mode
       e.stopPropagation()
-      onClick && onClick( id, position, selected )
+      onClick && onClick( id, position, type, selected )
     }
   }
   const emissive = selected? "#f6f6f6" : "black"

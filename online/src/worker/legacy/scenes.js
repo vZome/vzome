@@ -14,6 +14,7 @@ export const realizeShape = ( shape ) =>
 export const normalizeRenderedManifestation = rm =>
 {
   const id = rm.getGuid().toString();
+  const type = rm .getShape() .name;
   const shapeId = 's' + rm.getShapeId().toString();
   const positionAV = rm.getLocationAV();
   const { x, y, z } = ( positionAV && positionAV.toRealVector() ) || { x:0, y:0, z:0 };
@@ -28,7 +29,7 @@ export const normalizeRenderedManifestation = rm =>
   if ( rmc )
     color = "#" + componentToHex(rmc.getRed()) + componentToHex(rmc.getGreen()) + componentToHex(rmc.getBlue());
 
-  return { id, position: [ x, y, z ], rotation, color, selected, shapeId };
+  return { id, position: [ x, y, z ], rotation, color, selected, shapeId, type };
 }
 
 export const renderedModelTransducer = ( shapeCache, sceneReporter ) =>
