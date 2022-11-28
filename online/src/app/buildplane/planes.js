@@ -59,7 +59,10 @@ export const reducer = ( state=initialState, action ) =>
         return { ...state, enabled: true, buildingStruts: true, center: { id, position }, endPt: undefined }
     
     case 'BACKGROUND_CLICKED':
-      return { ...state, enabled: !state.enabled, buildingStruts: !state.enabled }
+      if ( state.center.id )
+        return { ...state, enabled: !state.enabled, buildingStruts: !state.enabled };
+      else
+        return state;
     
     case 'ORIENTATION_CHANGED':
       return { ...state, enabled: true, orientation: (state.orientation+1)%3 }

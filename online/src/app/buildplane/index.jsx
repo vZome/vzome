@@ -14,6 +14,7 @@ import { useNewDesign } from '../classic/controller-hooks.js';
 import { DesignViewer, WorkerContext } from '../../ui/viewer/index.jsx'
 import { reducer, initialState, doBackgroundClick, doBallClick, doStrutPreview } from './planes.js';
 import { createStrut, joinBalls } from '../../ui/viewer/store.js';
+import { useEffect } from "react";
 
 const isLeftMouseButton = e =>
 {
@@ -32,10 +33,20 @@ const App = () =>
   const doCreateStrut = ( plane, zone, index ) => sendToWorker( createStrut( state.center.id, plane, zone, index ) );
   const doJoinBalls = ( i1, i2 ) => sendToWorker( joinBalls( i1, i2 ) );
   const buildPlanes = useSelector( reduxState => reduxState.buildPlanes ); // from the main Redux store
+  const lastInstance = useSelector( reduxState => reduxState.lastInstance );
 
   // TODO: encapsulate the build plane as a "tool", including a UI
   const [ state, dispatch ] = useReducer( reducer, initialState ); // dedicated local store
   const previewStrut = endPt => dispatch( doStrutPreview( endPt ) );
+
+  // The last ball created always gets to be the new plane center
+  useEffect( () => {
+    if ( lastInstance ) {
+      const { type, id, position } = lastInstance;
+      if ( type === 'ball' )
+        dispatch( doBallClick( id, position ) );
+    }
+  }, [ lastInstance ] );
 
   const ballCallbacks = {
     bkgdClick: ( e ) => isLeftMouseButton( e ) && dispatch( doBackgroundClick() ),

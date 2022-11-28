@@ -62,7 +62,7 @@ const fullScreenStyle = {
   zIndex: '1300',
 };
 
-export const DesignViewer = ( { children, children3d, config={}, callbacks } ) =>
+export const DesignViewer = ( { children, children3d, config={}, callbacks={} } ) =>
 {
   const { showScenes=false, useSpinner=false, allowFullViewport=false } = config;
   const source = useSelector( state => state.source );

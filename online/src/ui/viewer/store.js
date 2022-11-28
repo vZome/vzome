@@ -106,7 +106,7 @@ const reducer = ( state = initialState, event ) =>
       // instance = { ...instance, color, setColor, selected, setSelected };
       const shape = state.scene.shapes[ instance.shapeId ];
       const shapes = { ...state.scene.shapes, [ shape.id ]: { ...shape, instances: [ ...shape.instances, instance ] } };
-      return { ...state, scene: { ...state.scene, shapes }, waiting: false };
+      return { ...state, scene: { ...state.scene, shapes }, waiting: false, lastInstance: instance };
       break;
     }
 
