@@ -1,4 +1,6 @@
 
+import { JsProperties } from './legacy/jsweet2js.js';
+
 // support trampolining to work around worker CORS issue
 //   see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
 export const WORKER_ENTRY_FILE_URL = import.meta.url;
@@ -156,15 +158,51 @@ const registerChangeListener = ( controller, controllerPath, changeName, propNam
     propertyChanges[ controllerPath ][ changeName ] = { ...change, [ propName ]: isList };
 }
 
+const resolveBuildPlanes = buildPlanes =>
+{
+  const resolveAV = av => {
+    const { x, y, z } = av.toRealVector(); // does this need to be embedded?  I think not.
+    return [ x, y, z ];
+  }
+  const planes = {};
+  for ( const [ name, plane ] of Object.entries( buildPlanes ) ) {
+    const zones = [];
+    for ( const zone of plane.zones ) {
+      const vectors = zone .vectors .map( ({ point }) => resolveAV( point ) );
+      zones .push( { name: zone.name, color: zone.color, vectors } );
+    }
+    const { x, y, z } = plane.normal.toRealVector() .normalize(); // does this need to be embedded?  I think not.
+    planes[ name ] = { color: plane.color, normal: [ x, y, z ], zones };
+  }
+  return planes;
+}
+
+const sceneReporter = report =>
+{
+  const sceneChanged = scene => report( { type: 'SCENE_RENDERED', payload: { scene, edit: '--START--' } } );
+
+  const shapeDefined = shape => report( { type: 'SHAPE_DEFINED', payload: shape } );
+
+  const instanceAdded = instance => report( { type: 'INSTANCE_ADDED', payload: instance } );
+
+  const selectionToggled = ( shapeId, id, selected ) => report( { type: 'SELECTION_TOGGLED', payload: { shapeId, id, selected } } );
+
+  return { sceneChanged, shapeDefined, instanceAdded, selectionToggled }
+}
+
 const createDesign = ( report, fieldName ) =>
 {
   return import( './legacy/dynamic.js' )
 
     .then( module => {
-      const design = module .newDesign( fieldName );
-      const { controller, renderHistory, orbitSource } = design;
+      const design = module .newDesign( fieldName, sceneReporter( report ) );
+      const { controller, orbitSource } = design;
       designController = controller;
       report( { type: 'CONTROLLER_CREATED' } );
+      const planes = resolveBuildPlanes( orbitSource .buildPlanes );
+      const { orientations, symmetry } = orbitSource;
+      const scalars = [ symmetry .getField() .getAffineScalar() .evaluate() ]; //TODO get them all!
+      report( { type: 'WORKING_PLANE_GRID_DEFINED', payload: { orientations, scalars, planes } } );
 
       // Here we emulate the PCL of ModelPanel, since there is no list property
       //  on toolsController for either "tools" or "bookmarks".
@@ -183,10 +221,10 @@ const createDesign = ( report, fieldName ) =>
         }
       } } );
 
-      const { shapes, edit } = renderHistory .getScene( '--START--', false );
-      const embedding = orbitSource .getEmbedding();
-      const scene = { embedding, shapes };
-      report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
+      // const { shapes, edit } = renderHistory .getScene( '--START--', false );
+      // const embedding = orbitSource .getEmbedding();
+      // const scene = { embedding, shapes };
+      // report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
     } )
 
     .catch( error => {
@@ -215,6 +253,9 @@ const parseAndInterpret = ( xmlLoading, report, debug ) =>
     } )
 
     .then( design => {
+
+      // TODO: create controller
+      
       const { orbitSource, camera, lighting, xmlTree, targetEditId, field } = design;
       scenes = design.scenes; // setting the module global, so we cannot use the destructuring above
       if ( field.unknown ) {
@@ -353,7 +394,15 @@ onmessage = ({ data }) =>
     {
       const { controllerPath, action, parameters } = payload;
       const controller = getNamedController( controllerPath );
-      controller .actionPerformed( null, action );
+      try {
+        if ( parameters )
+          controller .paramActionPerformed( null, action, new JsProperties( parameters ) );
+        else
+          controller .actionPerformed( null, action );
+      } catch (error) {
+        console.log( `${action} actionPerformed error: ${error.message}` );
+        postMessage( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
+      }
       break;
     }
 
@@ -371,6 +420,13 @@ onmessage = ({ data }) =>
       const { field } = payload;
       createDesign( postMessage, field );
       break;
+
+    case 'STRUT_CREATION_TRIGGERED':
+    case 'JOIN_BALLS_TRIGGERED':
+    {
+      const controller = getNamedController( 'editor:buildPlane' );
+      controller .paramActionPerformed( null, type, new JsProperties( payload ) );
+    }
   
     default:
       break;

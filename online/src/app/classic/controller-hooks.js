@@ -1,7 +1,7 @@
 
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { newDesign, doControllerAction, requestControllerProperty, subcontroller } from '../../ui/viewer/store.js';
+import { newDesign, createStrut, doControllerAction, requestControllerProperty, subcontroller } from '../../ui/viewer/store.js';
 
 export const useNewDesign = () =>
 {

@@ -62,7 +62,7 @@ const fullScreenStyle = {
   zIndex: '1300',
 };
 
-export const DesignViewer = ( { children, children3d, config={} } ) =>
+export const DesignViewer = ( { children, children3d, config={}, callbacks={} } ) =>
 {
   const { showScenes=false, useSpinner=false, allowFullViewport=false } = config;
   const source = useSelector( state => state.source );
@@ -108,9 +108,9 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
   return (
     <div ref={containerRef} style={ fullScreen? fullScreenStyle : normalStyle }>
       { scene?
-        <DesignCanvas lighting={scene.lighting} camera={ { ...scene.camera } } >
+        <DesignCanvas lighting={scene.lighting} camera={ { ...scene.camera } } handleBackgroundClick={callbacks.bkgdClick} >
           { scene.shapes &&
-            <ShapedGeometry ref={exporterRef} embedding={scene.embedding} shapes={scene.shapes} />
+            <ShapedGeometry ref={exporterRef} embedding={scene.embedding} shapes={scene.shapes} callbacks={callbacks} />
           }
           {children3d}
         </DesignCanvas>
