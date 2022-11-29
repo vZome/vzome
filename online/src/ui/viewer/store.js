@@ -40,7 +40,7 @@ export const openDesignFile = ( file, debug=false ) => workerAction( 'FILE_PROVI
 export const newDesign = () => workerAction( 'NEW_DESIGN_STARTED', { field: 'golden' } );
 export const doControllerAction = ( controllerPath='', action, parameters={} ) => workerAction( 'ACTION_TRIGGERED', { controllerPath, action, parameters } );
 export const requestControllerProperty = ( controllerPath='', propName, changeName, isList ) => workerAction( 'PROPERTY_REQUESTED', { controllerPath, propName, changeName, isList } );
-export const createStrut = ( id, plane, zone, index ) => workerAction( 'STRUT_CREATION_TRIGGERED', { id, plane, zone, index } );
+export const createStrut = ( id, plane, zone, index, orientation ) => workerAction( 'STRUT_CREATION_TRIGGERED', { id, plane, zone, index, orientation } );
 export const joinBalls = ( id1, id2 ) => workerAction( 'JOIN_BALLS_TRIGGERED', { id1, id2 } );
 
 export const subcontroller = ( controllerPath, subName ) => controllerPath + ':' + subName;
