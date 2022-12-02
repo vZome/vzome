@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useMemo } from 'react';
 import { DoubleSide, Matrix4, Quaternion, Vector3 } from 'three';
+import { useFrame } from '@react-three/fiber'
 
 import { normalize, vlength, vscale } from './vectors.js';
 
@@ -49,7 +50,7 @@ const StrutPreview = ( { endPt } ) =>
   );
 }
 
-const BuildDot = ( { position, material, previewStrut, createStrut } ) =>
+const BuildDot = ( { position, diskRotation, material, previewStrut, createStrut } ) =>
 {
   const handleHover = value => e =>
   {
@@ -66,14 +67,14 @@ const BuildDot = ( { position, material, previewStrut, createStrut } ) =>
   }
 
   return (
-    <mesh position={position} material={material}
+    <mesh position={position} quaternion={diskRotation} material={material}
         onPointerOver={ handleHover( true ) } onPointerOut={ handleHover( false ) } onClick={ handleClick }>
-      <sphereBufferGeometry attach="geometry" args={[ dotSize, 12, 8 ]} />
+      <cylinderBufferGeometry attach="geometry" args={[ 0.5, 0.5, 0.35, 20 ]} />
     </mesh>
   )
 }
 
-const BuildZone = ( { zone, previewStrut, createStrut } ) =>
+const BuildZone = ( { zone, previewStrut, createStrut, diskRotation } ) =>
 {
   const handleClick = index => () => createStrut( index );
 
@@ -89,7 +90,8 @@ const BuildZone = ( { zone, previewStrut, createStrut } ) =>
         <cylinderBufferGeometry attach="geometry" args={[ 1/16, 1/6, 1, 12, 1, false ]} />
       </mesh>
       {zone.vectors.map( ( v, i ) =>
-        <BuildDot key={i} position={v} material={material} previewStrut={previewStrut} createStrut={handleClick( i )} />
+        <BuildDot key={i} position={v} material={material} diskRotation={diskRotation}
+          previewStrut={previewStrut} createStrut={handleClick( i )} />
       )}
     </group>
   );
@@ -178,9 +180,24 @@ export const BuildPlane = ( { buildPlanes, state, actions } ) =>
 
   const createZoneStrut = ( zoneIndex ) => ( index ) => actions.createStrut( orbit, zoneIndex, index, orientation );
 
+  const [ needsRender, setNeedsRender ] = useState( 20 );
+  useFrame( ({ gl, scene, camera }) => {
+    if ( needsRender > 0 ) {
+      gl.render( scene, camera );
+      setNeedsRender( needsRender-1 );
+    }
+  }, 1 );
+  const previewStrut = position =>
+  {
+    actions.previewStrut( position );
+    setNeedsRender( 10 );
+  }
+
   const diskClick = e => {
-    e.stopPropagation();
-    actions.toggleBuild();
+    if ( e.delta < 5 ) {
+      e.stopPropagation();
+      actions.toggleBuild();
+    }
   }
   
   return (
@@ -195,8 +212,8 @@ export const BuildPlane = ( { buildPlanes, state, actions } ) =>
         </mesh>
         {plane.zones .map( ( zone, zoneIndex ) =>
           state.buildingStruts?
-            <BuildZone key={zoneIndex} zone={zone}
-              previewStrut={actions.previewStrut} createStrut={ createZoneStrut( zoneIndex ) } />
+            <BuildZone key={zoneIndex} zone={zone} diskRotation={diskRotation}
+              previewStrut={previewStrut} createStrut={ createZoneStrut( zoneIndex ) } />
           :
             <HingeOption key={zoneIndex} zone={zone} changeHinge={doChangeHinge} />
           ) }
