@@ -169,10 +169,10 @@ const resolveBuildPlanes = buildPlanes =>
     const zones = [];
     for ( const zone of plane.zones ) {
       const vectors = zone .vectors .map( ({ point }) => resolveAV( point ) );
-      zones .push( { name: zone.name, color: zone.color, vectors } );
+      zones .push( { name: zone.name, color: zone.color, vectors, orientation: zone.orientation } );
     }
     const { x, y, z } = plane.normal.toRealVector() .normalize(); // does this need to be embedded?  I think not.
-    planes[ name ] = { color: plane.color, normal: [ x, y, z ], zones };
+    planes[ name ] = { color: plane.color, normal: [ x, y, z ], zones, orientation: plane.orientation };
   }
   return planes;
 }
@@ -200,9 +200,9 @@ const createDesign = ( report, fieldName ) =>
       designController = controller;
       report( { type: 'CONTROLLER_CREATED' } );
       const planes = resolveBuildPlanes( orbitSource .buildPlanes );
-      const { orientations, symmetry } = orbitSource;
+      const { orientations, symmetry, permutations } = orbitSource;
       const scalars = [ symmetry .getField() .getAffineScalar() .evaluate() ]; //TODO get them all!
-      report( { type: 'WORKING_PLANE_GRID_DEFINED', payload: { orientations, scalars, planes } } );
+      report( { type: 'WORKING_PLANE_GRID_DEFINED', payload: { orientations, permutations, scalars, planes } } );
 
       // Here we emulate the PCL of ModelPanel, since there is no list property
       //  on toolsController for either "tools" or "bookmarks".

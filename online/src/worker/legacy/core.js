@@ -368,7 +368,8 @@ const makeFloatMatrices = ( matrices ) =>
     }
 
     // This has no analogue in Java DocumentModel
-    orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
+    orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() );
+    orbitSource.permutations = orbitSource .getSymmetry() .getPermutations() .map( p => p .getJsonValue() );
     // TODO: generalize for all fields and symmetries
     const blue = [ [0n,0n,1n], [0n,0n,1n], [1n,0n,1n] ]
     const yellow = [ [0n,0n,1n], [1n,0n,1n], [1n,1n,1n] ]
@@ -536,9 +537,16 @@ const makeFloatMatrices = ( matrices ) =>
   const getBuildPlane = ( orbits, planeNormal ) =>
   {
     const field = orbits .getSymmetry() .getField();
-    const normal = vzomePkg.jsweet.JsAdapter.mapVectorToJava( planeNormal, field );
+    let normal = vzomePkg.jsweet.JsAdapter.mapVectorToJava( planeNormal, field );
     const planeColor = convertColor( orbits .getVectorColor( normal ) );
-    const planeName = orbits .getSymmetry() .getAxis( normal ) .getOrbit() .getName();
+    const planeZone = orbits .getSymmetry() .getAxis( normal );
+    const planeOrbit = planeZone .getOrbit();
+    const planeName = planeOrbit .getName();
+    const orientation = planeZone .orientation;
+
+    // now that we have the orientation of the plane, we normalize to zones
+    //  for a plane orthogonal to zone 0
+    normal = planeOrbit .getAxis( 0, 0 ) .normal();
 
     const zones = [];
 
@@ -546,6 +554,7 @@ const makeFloatMatrices = ( matrices ) =>
     const iterator = planeOrbits .zones();
     while ( iterator .hasNext() ) {
       const zone = iterator .next()
+      const orientation = zone .getOrientation();
       const orbit = zone .getDirection();
       if ( ! orbit .isStandard() )
         continue;
@@ -559,10 +568,10 @@ const makeFloatMatrices = ( matrices ) =>
         vectors .push( { point: gridPoint, scale } );
       }
       
-      zones .push( { name: orbit.getName(), zone, color: zoneColor, vectors } );
+      zones .push( { name: orbit.getName(), zone, orientation, color: zoneColor, vectors } );
     }
 
-    return { color: planeColor, normal, zones };
+    return { color: planeColor, normal, zones, orientation };
   }
 
   // TODO: replace the legacyCommandFactory, which was for the old {shown,hidden,selected} model

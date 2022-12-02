@@ -63,16 +63,21 @@ class BuildPlaneController extends com.vzome.desktop.controller.DefaultControlle
     switch (action) {
 
       case 'STRUT_CREATION_TRIGGERED': {
-        const { id, plane, zone, index } = config;
+        const { id, plane, zone, index, orientation } = config;
         if ( id ) {
           const rm = this .renderedModel .getRenderedManifestation( id );
           const anchor = rm .getManifestation() .toConstruction();
 
           const buildPlane = this.buildPlanes[ plane ];
           const buildZone = buildPlane .zones[ zone ];
+          let axis = buildZone .zone; // the Axis object
+          const orbit = axis .getOrbit();
+          const symmetry = orbit .getSymmetry();
+          const permutation = symmetry .getPermutation( orientation );
+          axis = permutation .permute( axis, 0 ); // TODO: is PLUS always right?
           const length = buildZone .vectors[ index ] .scale;
 
-          super.doParamAction( 'StrutCreation', new JsProperties( { anchor, zone: buildZone.zone, length } ) );
+          super.doParamAction( 'StrutCreation', new JsProperties( { anchor, zone: axis, length } ) );
           return;
         } // else fall through
       }

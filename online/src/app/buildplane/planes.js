@@ -1,33 +1,44 @@
 
 export const doStrutPreview= ( position ) =>
 {
-  return position? { type: 'STRUT_PREVIEW_STARTED', payload: position } : { type: 'STRUT_PREVIEW_STOPPED' };
+  return { type: 'STRUT_PREVIEW_TOGGLED', payload: position };
 }
 
-export const doBallHover = ( position, value ) =>
+export const doSetCenter = ( id, position ) =>
 {
-  return value? { type: 'BALL_HOVER_STARTED', payload: position } : { type: 'BALL_HOVER_STOPPED', payload: position };
+  return { type: 'CENTER_SET', payload: { id, position } };
 }
 
-export const doBallClick = ( id, position ) =>
+export const doToggleBuild = () =>
 {
-  return { type: 'BALL_CLICKED', payload: { id, position } };
+  return { type: 'BUILD_TOGGLED' }
 }
-
-export const doBackgroundClick = () =>
+export const doToggleDisk = () =>
 {
-  return { type: 'BACKGROUND_CLICKED' }
+  return { type: 'PLANE_TOGGLED' }
 }
 
-export const doChangeOrientation = () => {
-  return { type: 'ORIENTATION_CHANGED' }
+export const doSelectPlane = ( orbit, orientation ) =>
+{
+  return { type: 'PLANE_SELECTED', payload: { orbit, orientation } }
+}
+
+export const doSelectHinge = ( orbit, orientation ) =>
+{
+  return { type: 'HINGE_SELECTED', payload: { orbit, orientation } }
 }
 
 export const initialState = {
   center: {},
   endPt: undefined,
-  quaternion: [1,0,0,0],
-  plane: 'blue',
+  diskZone: {
+    orbit: 'blue',
+    orientation: 2,
+  },
+  hingeZone: {
+    orbit: 'blue',
+    orientation: 0,
+  },
   enabled: false,
   buildingStruts: false,
 }
@@ -36,36 +47,27 @@ export const reducer = ( state=initialState, action ) =>
 {
   switch ( action.type )
   {
-    case 'STRUT_PREVIEW_STARTED':
+    case 'STRUT_PREVIEW_TOGGLED':
       return { ...state, endPt: action.payload }
-          
-    case 'STRUT_PREVIEW_STOPPED':
-      return { ...state, endPt: undefined }
-          
-    case 'BALL_HOVER_STARTED':
-      if ( state.endPt )
-        return state
-      else
-        return { ...state, endPt: action.payload }
-  
-    case 'BALL_HOVER_STOPPED':
-      return { ...state, endPt: undefined }
         
-    case 'BALL_CLICKED':
+    case 'CENTER_SET':
       const { id, position } = action.payload
-      if ( state.center.id === id )
-        return { ...state, enabled: true, buildingStruts: !state.buildingStruts, endPt: undefined }
-      else
-        return { ...state, enabled: true, buildingStruts: true, center: { id, position }, endPt: undefined }
+      return { ...state, enabled: true, buildingStruts: true, center: { id, position }, endPt: undefined }
     
-    case 'BACKGROUND_CLICKED':
+    case 'PLANE_TOGGLED':
       if ( state.center.id )
         return { ...state, enabled: !state.enabled, buildingStruts: !state.enabled };
       else
         return state;
     
-    case 'ORIENTATION_CHANGED':
-      return { ...state, enabled: true, orientation: (state.orientation+1)%3 }
+    case 'BUILD_TOGGLED':
+      return { ...state, enabled: true, buildingStruts: !state.buildingStruts, endPt: undefined };
+    
+    case 'PLANE_SELECTED':
+      return { ...state, enabled: true, diskZone: action.payload };
+    
+    case 'HINGE_SELECTED':
+      return { ...state, enabled: true, hingeZone: action.payload };
 
     default:
       return state

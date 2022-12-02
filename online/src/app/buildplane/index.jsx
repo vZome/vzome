@@ -12,7 +12,7 @@ import { VZomeAppBar } from '../components/appbar.jsx'
 import { BuildPlane } from './buildplane.jsx'
 import { useNewDesign } from '../classic/controller-hooks.js';
 import { DesignViewer, WorkerContext } from '../../ui/viewer/index.jsx'
-import { reducer, initialState, doBackgroundClick, doBallClick, doStrutPreview } from './planes.js';
+import { reducer, initialState, doToggleDisk, doSetCenter, doStrutPreview, doSelectPlane, doSelectHinge, doToggleBuild } from './planes.js';
 import { createStrut, joinBalls } from '../../ui/viewer/store.js';
 import { useEffect } from "react";
 
@@ -30,32 +30,30 @@ const App = () =>
 {
   useNewDesign(); // has to be nested here, since it needs Redux context
   const sendToWorker = useDispatch();
-  const doCreateStrut = ( plane, zone, index ) => sendToWorker( createStrut( state.center.id, plane, zone, index ) );
   const doJoinBalls = ( i1, i2 ) => sendToWorker( joinBalls( i1, i2 ) );
   const buildPlanes = useSelector( reduxState => reduxState.buildPlanes ); // from the main Redux store
   const lastInstance = useSelector( reduxState => reduxState.lastInstance );
 
   // TODO: encapsulate the build plane as a "tool", including a UI
   const [ state, dispatch ] = useReducer( reducer, initialState ); // dedicated local store
-  const previewStrut = endPt => dispatch( doStrutPreview( endPt ) );
 
   // The last ball created always gets to be the new plane center
   useEffect( () => {
     if ( lastInstance ) {
       const { type, id, position } = lastInstance;
       if ( type === 'ball' )
-        dispatch( doBallClick( id, position ) );
+        dispatch( doSetCenter( id, position ) );
     }
   }, [ lastInstance ] );
 
   const ballCallbacks = {
-    bkgdClick: ( e ) => isLeftMouseButton( e ) && dispatch( doBackgroundClick() ),
+    bkgdClick: ( e ) => isLeftMouseButton( e ) && dispatch( doToggleDisk() ),
     onClick: ( id, position, type, selected ) => {
       if ( type === 'ball' ) {
         if ( state.endPt ) {
           doJoinBalls( state.center.id, id );
         }
-        dispatch( doBallClick( id, position ) );
+        dispatch( doSetCenter( id, position ) );
       }
     },
     onHover: ( id, position, type, value ) => {
@@ -69,6 +67,13 @@ const App = () =>
       } else
         dispatch( doStrutPreview() );
     },
+  }
+  const actions = {
+    createStrut: ( plane, zone, index, orientation ) => sendToWorker( createStrut( state.center.id, plane, zone, index, orientation ) ),
+    previewStrut: endPt => dispatch( doStrutPreview( endPt ) ),
+    changePlane: ( name, orientation ) => dispatch( doSelectPlane( name, orientation ) ),
+    changeHinge: ( name, orientation ) => dispatch( doSelectHinge( name, orientation ) ),
+    toggleBuild: endPt => dispatch( doToggleBuild( endPt ) ),
   }
 
   return (
@@ -84,7 +89,7 @@ const App = () =>
       />
       <DesignViewer config={ { useSpinner: true } } callbacks={ballCallbacks}
         children3d={ buildPlanes && state.enabled &&
-          <BuildPlane {...{ buildPlanes, state }}  previewStrut={previewStrut} createStrut={doCreateStrut} />
+          <BuildPlane {...{ buildPlanes, state }} actions={actions} />
         } />
     </>
   );

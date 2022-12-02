@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useMemo } from 'react';
 import { DoubleSide, Matrix4, Quaternion, Vector3 } from 'three';
+import { useFrame } from '@react-three/fiber'
+
+import { normalize, vlength, vscale } from './vectors.js';
 
 const makeRotation = ( from, to ) =>
 {
@@ -14,17 +17,30 @@ const makeRotation = ( from, to ) =>
   return new Quaternion() .setFromRotationMatrix( matrix );
 }
 
+const useCylinderQuaternion = vector => useMemo( () => makeRotation( [0,1,0], vector ), [ vector ] );
+
+const useOrientation = ( buildPlanes, orientation ) =>
+{
+  return useMemo( () => {
+    const array = buildPlanes .orientations[ orientation ];
+    const matrix = new Matrix4() .fromArray( array ) .transpose();
+    return new Quaternion() .setFromRotationMatrix( matrix );
+  }, [ buildPlanes, orientation ] );
+}
+
+const discSize = 35;
 const dotSize = 1/3;
 const cylinderSize = 1/8;
+const TORUS_AXIS = [0,0,1];
 
 const StrutPreview = ( { endPt } ) =>
 {
-  const [ strutCenter, strutQuaternion, strutLength ] = useMemo( () => {
-    const midpoint = endPt .map( x => x/2 );
-    const length = Math.sqrt( endPt .reduce( (sum,x) => sum + x**2, 0 ) );
-    return [ midpoint, makeRotation( [0,1,0], endPt ), length ];
+  const [ strutCenter, strutLength ] = useMemo( () => {
+    const midpoint = vscale( endPt, 1/2 );
+    const length = vlength( endPt );
+    return [ midpoint, length ];
   }, [ endPt ] );
-  const [ material, materialRef ] = useState();
+  const strutQuaternion = useCylinderQuaternion( endPt );
 
   return (
     <mesh position={strutCenter} quaternion={strutQuaternion}>
@@ -34,7 +50,7 @@ const StrutPreview = ( { endPt } ) =>
   );
 }
 
-const BuildDot = ( { position, material, previewStrut, createStrut } ) =>
+const BuildDot = ( { position, diskRotation, material, previewStrut, createStrut } ) =>
 {
   const handleHover = value => e =>
   {
@@ -51,77 +67,162 @@ const BuildDot = ( { position, material, previewStrut, createStrut } ) =>
   }
 
   return (
-    <mesh position={position} material={material}
+    <mesh position={position} quaternion={diskRotation} material={material}
         onPointerOver={ handleHover( true ) } onPointerOut={ handleHover( false ) } onClick={ handleClick }>
-      <sphereBufferGeometry attach="geometry" args={[ dotSize, 12, 8 ]} />
+      <cylinderBufferGeometry attach="geometry" args={[ 0.5, 0.5, 0.35, 20 ]} />
     </mesh>
   )
 }
 
-const BuildZone = ( { zone, previewStrut, createStrut } ) =>
+const BuildZone = ( { zone, previewStrut, createStrut, diskRotation } ) =>
 {
   const handleClick = index => () => createStrut( index );
 
   const [ material, materialRef ] = useState();
 
-  const [ coneCenter, zoneQuaternion ] = useMemo( () => {
-    const midpoint = zone.vectors[ 0 ] .map( x => 2*x/3 );
-    return [ midpoint, makeRotation( [0,1,0], midpoint ) ];
-  }, [ zone ] );
+  const coneCenter = useMemo( () => vscale( normalize( zone.vectors[ 0 ] ), 1.7 ), [ zone ] );
+  const zoneQuaternion = useCylinderQuaternion( zone.vectors[ 0 ] );
 
   return (
     <group>
       <meshLambertMaterial ref={materialRef} color={zone.color} side={DoubleSide} />
       <mesh position={coneCenter} quaternion={zoneQuaternion} material={material}>
-        <coneBufferGeometry attach="geometry" args={[ 1/8, 1.5 ]} />
+        <cylinderBufferGeometry attach="geometry" args={[ 1/16, 1/6, 1, 12, 1, false ]} />
       </mesh>
       {zone.vectors.map( ( v, i ) =>
-        <BuildDot key={i} position={v} material={material} previewStrut={previewStrut} createStrut={handleClick( i )} />
+        <BuildDot key={i} position={v} material={material} diskRotation={diskRotation}
+          previewStrut={previewStrut} createStrut={handleClick( i )} />
       )}
     </group>
   );
 }
 
-export const BuildPlane = ( { buildPlanes, state, previewStrut, createStrut } ) =>
+const HingeOption = ( { zone, changeHinge } ) =>
 {
-  const { center, quaternion, plane, focusId } = state;
-  const [ planeMaterial, planeMaterialRef ] = useState()
-  const discSize = 35;
-  const wlast = q =>
+  const handleClick = e =>
   {
-    const [ w, x, y, z ] = q
-    return [ x, y, z, w ]
+    e.stopPropagation();
+    changeHinge( zone.name, zone.orientation );
   }
 
-  const grid = buildPlanes .planes[ plane ];
-  const diskRotation = useMemo( () => makeRotation( [0,1,0], grid.normal ), [ grid ] );
-  const hoopRotation = useMemo( () => makeRotation( [0,0,1], grid.normal ), [ grid ] );
+  const [ material, materialRef ] = useState();
 
-  const createZoneStrut = ( zoneIndex ) => ( index ) => createStrut( plane, zoneIndex, index );
+  const tubeCenter = useMemo( () => vscale( normalize( zone.vectors[ 0 ] ), 9 ), [ zone ] );
+  const zoneQuaternion = useCylinderQuaternion( zone.vectors[ 0 ] );
 
-  /*
-    Ideas:
-      - always render the hinge cylinder
-      - hover on the hinge should show the two control handles:
-         - a ball plus arc for the hinge angle around the center
-         - a small torus for the plane angle around the hinge
-  */
+  return (
+    <group>
+      <meshLambertMaterial ref={materialRef} color={zone.color} side={DoubleSide} />
+      <mesh position={tubeCenter} quaternion={zoneQuaternion} material={material} onClick={handleClick}>
+        <cylinderBufferGeometry attach="geometry" args={[ 0.6, 0.6, 3, 36 ]} />
+      </mesh>
+    </group>
+  );
+}
+
+const PlaneOption = ({ zone, changePlane }) =>
+{
+  const [ diskMaterial, diskMaterialRef ] = useState();
+  const vector = zone.vectors[ 0 ];
+  const quaternion = useCylinderQuaternion( vector );
+  const handleClick = e =>
+  {
+    e.stopPropagation();
+    changePlane( zone.name, zone.orientation );
+  }
+  return (
+    <group>
+      <meshLambertMaterial ref={diskMaterialRef} color={zone.color} transparent={true} opacity={0.5} />
+      <mesh quaternion={quaternion} material={diskMaterial} onClick={handleClick}>
+        <cylinderBufferGeometry attach="geometry" args={[ 6, 6, 0.4, 48 ]} />
+      </mesh>
+    </group>
+  );
+}
+
+const Hinge = ( { state, buildPlanes, actions } ) =>
+{
+  const { center, hingeZone } = state;
+  const { orbit, orientation } = hingeZone;
+  const plane = buildPlanes .planes[ orbit ];
+  const permutation = buildPlanes .permutations[ orientation ];
+  const doChangePlane = ( orbit, orientation ) => actions.changePlane( orbit, permutation[ orientation ] );
+
+  const hingeQuaternion = useCylinderQuaternion( plane.normal );
+  const globalRotation = useOrientation( buildPlanes, orientation );
+
+  return (
+    <group position={center.position} quaternion={globalRotation}>
+      <mesh quaternion={hingeQuaternion}>
+        <meshLambertMaterial attach="material" transparent={true} opacity={0.5} color={plane.color} />
+        <cylinderBufferGeometry attach="geometry" args={[ 1/2, 1/2, 2*discSize, 12, 1, false ]} />
+      </mesh>
+
+      {plane.zones .map( ( zone, zoneIndex ) =>
+        <PlaneOption key={zoneIndex} zone={zone} changePlane={doChangePlane} />
+      )}
+    </group>
+  )
+}
+
+export const BuildPlane = ( { buildPlanes, state, actions } ) =>
+{
+  const { center, diskZone } = state;
+  const { orbit, orientation } = diskZone;
+  const [ planeMaterial, planeMaterialRef ] = useState()
+
+  const plane = buildPlanes .planes[ orbit ];
+  const permutation = buildPlanes .permutations[ orientation ];
+  const doChangeHinge = ( orbit, orientation ) => actions.changeHinge( orbit, permutation[ orientation ] );
+  const diskRotation = useCylinderQuaternion( plane.normal );
+  const hoopRotation = useMemo( () => makeRotation( TORUS_AXIS, plane.normal ), [ plane ] );
+  const globalRotation = useOrientation( buildPlanes, orientation );
+
+  const createZoneStrut = ( zoneIndex ) => ( index ) => actions.createStrut( orbit, zoneIndex, index, orientation );
+
+  const [ needsRender, setNeedsRender ] = useState( 20 );
+  useFrame( ({ gl, scene, camera }) => {
+    if ( needsRender > 0 ) {
+      gl.render( scene, camera );
+      setNeedsRender( needsRender-1 );
+    }
+  }, 1 );
+  const previewStrut = position =>
+  {
+    actions.previewStrut( position );
+    setNeedsRender( 10 );
+  }
+
+  const diskClick = e => {
+    if ( e.delta < 5 ) {
+      e.stopPropagation();
+      actions.toggleBuild();
+    }
+  }
   
   return (
-    <group position={center.position} quaternion={wlast( quaternion )}>
-      <meshLambertMaterial ref={planeMaterialRef} transparent={true} opacity={0.5} color={grid.color} />
-      <mesh quaternion={diskRotation} material={planeMaterial}>
-        <cylinderBufferGeometry attach="geometry" args={[ discSize, discSize, 0.05, 60 ]} />
-      </mesh>
-      <mesh quaternion={hoopRotation} material={planeMaterial}>
-        <torusBufferGeometry attach="geometry" args={[ discSize, 0.5, 15, 60 ]} />
-      </mesh>
-      {state.buildingStruts && grid.zones .map( ( zone, zoneIndex ) =>
-        <BuildZone key={zoneIndex} zone={zone}
-          previewStrut={previewStrut} createStrut={ createZoneStrut( zoneIndex ) } />
-      )}
-      {state.endPt &&
-        <StrutPreview endPt={state.endPt} />}
+    <group>
+      <group position={center.position} quaternion={globalRotation}>
+        <meshLambertMaterial ref={planeMaterialRef} transparent={true} opacity={0.5} color={plane.color} />
+        <mesh quaternion={diskRotation} material={planeMaterial} onClick={diskClick}>
+          <cylinderBufferGeometry attach="geometry" args={[ discSize, discSize, 0.05, 60 ]} />
+        </mesh>
+        <mesh quaternion={hoopRotation} material={planeMaterial}>
+          <torusBufferGeometry attach="geometry" args={[ discSize, 0.5, 15, 60 ]} />
+        </mesh>
+        {plane.zones .map( ( zone, zoneIndex ) =>
+          state.buildingStruts?
+            <BuildZone key={zoneIndex} zone={zone} diskRotation={diskRotation}
+              previewStrut={previewStrut} createStrut={ createZoneStrut( zoneIndex ) } />
+          :
+            <HingeOption key={zoneIndex} zone={zone} changeHinge={doChangeHinge} />
+          ) }
+        {state.endPt &&
+          <StrutPreview endPt={state.endPt} />}
+      </group>
+      { !state.buildingStruts &&
+        <Hinge state={state} buildPlanes={buildPlanes} actions={actions} />
+      }
     </group>
   )
 }
