@@ -224,6 +224,10 @@ jpackage {
     windows {
         icon = "platform/windows/resources/icons/vZomeLogo.ico"
 
+        winDirChooser = true
+        winShortcut = true
+        winShortcutPrompt = true
+
         // These --add-exports seem to be required to get JOGL 2.4 to work with Java 17 on Windows
         //  see:  https://forum.jogamp.org/JOGL-2-4-and-Java-17-report-td4041572.html
         //  and:  https://github.com/jzy3d/jzy3d-api/issues/230#issuecomment-1004197519
