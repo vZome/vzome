@@ -3,7 +3,6 @@ import goldenField from '../fields/golden.js'
 import root2Field from '../fields/root2.js'
 import root3Field from '../fields/root3.js'
 import heptagonField from '../fields/heptagon.js'
-import Adapter from './adapter.js'
 import { algebraicNumberFactory, JavaDomElement, JsProperties } from './jsweet2js.js';
 import { configureLogging } from './logging.js'
 

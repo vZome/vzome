@@ -66,7 +66,7 @@ const reducer = ( state = initialState, event ) =>
     case 'TEXT_FETCHED':
       return { ...state, source: event.payload };
 
-    case 'DESIGN_INTERPRETED': {
+    case 'DESIGN_XML_PARSED': {
       let xmlTree = event.payload;
       const attributes = {};
       const indexAttributes = node => node.children && node.children.map( child => {
@@ -87,8 +87,16 @@ const reducer = ( state = initialState, event ) =>
     case 'SCENE_RENDERED': {
       // TODO: I wish I had a better before/after contract with the worker
       const { scene, edit } = event.payload;
+      const camera = scene.camera || state.scene.camera;
       // may need to merge scene.shapes here, if we ever have an incremental case
-      return { ...state, edit, scene: { ...state.scene, ...scene }, waiting: false };
+      let lastInstance;
+      for ( const shapeId in scene.shapes ) {
+        const shape = scene.shapes[ shapeId ];
+        lastInstance = shape .instances[ 0 ];
+        if ( lastInstance .type === 'ball' )
+          break;
+      }
+      return { ...state, edit, scene: { ...state.scene, ...scene, camera }, waiting: false, lastInstance };
     }
 
     case 'SHAPE_DEFINED': {
@@ -111,7 +119,7 @@ const reducer = ( state = initialState, event ) =>
     }
 
     case 'SELECTION_TOGGLED': {
-      const { shapeId, id, selected } = data.payload;
+      const { shapeId, id, selected } = event.payload;
       const shape = state.scene.shapes[ shapeId ];
       const instances = shape .instances.map( inst => (
         inst.id !== id ? inst : { ...inst, selected }

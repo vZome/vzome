@@ -105,7 +105,7 @@ const parseArticle = ( notesElement, xmlTree ) =>
           .filter( snapshot => snapshot.title !== "How to save notes" );
 }
 
-export const createParser = ( createDocument ) => ( xmlText ) =>
+export const createParser = ( documentFactory ) => ( xmlText ) =>
 {
   const domDoc = txml.parse( xmlText /*, options */ );
 
@@ -114,7 +114,7 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
   const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
   const fieldName = vZomeRoot.getAttribute( "field" )
 
-  const { orbitSource, interpretEdit, field, batchRender } = createDocument( fieldName, namespace, vZomeRoot )
+  const { orbitSource, interpretEdit, field, batchRender, renderedModel, configureAndPerformEdit, toolsModel, bookmarkFactory } = documentFactory( fieldName, namespace, vZomeRoot )
 
   const viewing = vZomeRoot.getChildElement( "Viewing" )
   const camera = viewing && parseViewXml( viewing )
@@ -131,5 +131,7 @@ export const createParser = ( createDocument ) => ( xmlText ) =>
   const realScenes = parseArticle( vZomeRoot.getChildElement( "notes" ), xmlTree );
   const scenes = [ { title: 'default scene', nodeId: targetEditId, camera }, ...realScenes ];
 
-  return { firstEdit, camera, field, targetEditId, orbitSource, lighting, batchRender, xmlTree, scenes }
+  return { firstEdit, camera, field, targetEditId, orbitSource, lighting,
+            batchRender, renderedModel, configureAndPerformEdit, toolsModel, bookmarkFactory,
+            xmlTree, scenes }
 }

@@ -32,7 +32,7 @@ export const normalizeRenderedManifestation = rm =>
   return { id, position: [ x, y, z ], rotation, color, selected, shapeId, type };
 }
 
-export const renderedModelTransducer = ( shapeCache, sceneReporter ) =>
+export const renderedModelTransducer = ( shapeCache, clientEvents ) =>
 {
   const manifestationAdded = rm =>
   {
@@ -41,20 +41,41 @@ export const renderedModelTransducer = ( shapeCache, sceneReporter ) =>
     if ( ! shape ) {
       shape = realizeShape( rm .getShape() );
       shapeCache[ shapeId ] = shape;
-      sceneReporter .shapeDefined( shape );
+      clientEvents .shapeDefined( shape );
     }
     let instance = normalizeRenderedManifestation( rm );
     // Record this instance for the current edit
-    sceneReporter .instanceAdded( instance );
+    clientEvents .instanceAdded( instance );
   }
+
+  const manifestationRemoved = rm => {}
 
   const glowChanged = rm =>
   {
     const shapeId = 's' + rm.getShapeId().toString();
     const id = rm.getGuid().toString();
     const selected = rm .getGlow() > 0.001;
-    sceneReporter .selectionToggled( shapeId, id, selected );
+    clientEvents .selectionToggled( shapeId, id, selected );
   }
 
-  return { manifestationAdded, glowChanged }
+  return { manifestationAdded, manifestationRemoved, glowChanged };
+}
+
+export const resolveBuildPlanes = buildPlanes =>
+{
+  const resolveAV = av => {
+    const { x, y, z } = av.toRealVector(); // does this need to be embedded?  I think not.
+    return [ x, y, z ];
+  }
+  const planes = {};
+  for ( const [ name, plane ] of Object.entries( buildPlanes ) ) {
+    const zones = [];
+    for ( const zone of plane.zones ) {
+      const vectors = zone .vectors .map( ({ point }) => resolveAV( point ) );
+      zones .push( { name: zone.name, color: zone.color, vectors, orientation: zone.orientation } );
+    }
+    const { x, y, z } = plane.normal.toRealVector() .normalize(); // does this need to be embedded?  I think not.
+    planes[ name ] = { color: plane.color, normal: [ x, y, z ], zones, orientation: plane.orientation };
+  }
+  return planes;
 }

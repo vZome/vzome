@@ -78,7 +78,7 @@ const App = () =>
 
   return (
     <>
-      <VZomeAppBar oneDesign={true} forDebugger={false} title='vZome Online'
+      <VZomeAppBar oneDesign={false} pathToRoot='..' forDebugger={false} title='vZome Online'
         about={ <>
           <Typography gutterBottom>
             This is an experimental in-browser modeling tool
