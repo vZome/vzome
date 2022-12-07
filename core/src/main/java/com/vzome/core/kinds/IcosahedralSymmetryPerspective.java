@@ -23,7 +23,6 @@ import com.vzome.core.tools.MirrorToolFactory;
 import com.vzome.core.tools.ProjectionToolFactory;
 import com.vzome.core.tools.RotationToolFactory;
 import com.vzome.core.tools.ScalingToolFactory;
-import com.vzome.core.tools.SymmetryToolFactory;
 import com.vzome.core.tools.TetrahedralToolFactory;
 import com.vzome.core.tools.TranslationToolFactory;
 import com.vzome.core.viewing.AbstractShapes;
@@ -143,7 +142,7 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
         case TRANSFORM:
             result.add(new ScalingToolFactory(tools, icosaSymm).createPredefinedTool("scale down"));
             result.add(new ScalingToolFactory(tools, icosaSymm).createPredefinedTool("scale up"));
-            result.add(new SymmetryToolFactory(tools, icosaSymm).createPredefinedTool("rotate around red through origin"));
+            result.add(new RotationToolFactory(tools, icosaSymm, true).createPredefinedTool("rotate around red through origin"));
             result.add(new TranslationToolFactory(tools).createPredefinedTool("b1 move along +X"));
             break;
         default:
