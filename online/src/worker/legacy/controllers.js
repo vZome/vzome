@@ -7,21 +7,25 @@ import { interpret, RenderHistory, Step } from './interpreter.js';
 
 class EditorController extends com.vzome.desktop.controller.DefaultController
 {
-  constructor( performer )
+  constructor( design, clientEvents )
   {
     super();
-    this.performer = performer;
+    this.design = design;
+    this.clientEvents = clientEvents;
   }
 
   // There are no implementors of doParamAction() in the Java code
   doParamAction( action, params )
   {
-    this.performer .configureAndPerformEdit( action, params && params .getConfig() );
+    this.design .configureAndPerformEdit( action, params && params .getConfig() );
+    const text = this .design .serializeToDom() .toIndentedString( "" );
+    console.log( text );
+    this.clientEvents .designSerialized( text );
   }
 
   doAction( action )
   {
-    this.performer .configureAndPerformEdit( action, {} );
+    this .doParamAction( action, {} );
   }
 }
 
@@ -134,18 +138,18 @@ export const loadDesign = ( xml, debug, clientEvents ) =>
   const scalars = [ symmetry .getField() .getAffineScalar() .evaluate() ]; //TODO get them all!
   clientEvents .symmetryChanged( { orientations, permutations, scalars, planes } );
 
-  return createControllers( design, renderHistory );
+  return createControllers( design, renderHistory, clientEvents );
 }
 
 export const newDesign = ( fieldName, clientEvents ) =>
 {
   const design = documentFactory( fieldName );
-  const { lighting, camera, orbitSource } = design;
+  const { orbitSource } = design;
 
   const renderHistory = new RenderHistory( design );
   const { shapes, edit } = renderHistory .getScene( '--START--', false );
   const embedding = orbitSource .getEmbedding();
-  const scene = { lighting, camera, embedding, shapes };
+  const scene = { embedding, shapes };
   clientEvents .sceneChanged( scene, edit );
 
   const planes = resolveBuildPlanes( orbitSource .buildPlanes );
@@ -153,16 +157,16 @@ export const newDesign = ( fieldName, clientEvents ) =>
   const scalars = [ symmetry .getField() .getAffineScalar() .evaluate() ]; //TODO get them all!
   clientEvents .symmetryChanged( { orientations, permutations, scalars, planes } );
 
-  return createControllers( design, renderHistory );
+  return createControllers( design, renderHistory, clientEvents );
 }
 
-const createControllers = ( document, renderHistory ) =>
+const createControllers = ( design, renderHistory, clientEvents ) =>
 {
-  const { orbitSource, renderedModel, configureAndPerformEdit, toolsModel, bookmarkFactory } = document;
+  const { orbitSource, renderedModel, toolsModel, bookmarkFactory } = design;
   const controller = new com.vzome.desktop.controller.DefaultController(); // this is the equivalent of DocumentController
 
   // This one has no equivalent in Java, though I've considered it.  Too much change.
-  const editorController = new EditorController( { configureAndPerformEdit }, orbitSource.buildPlanes );
+  const editorController = new EditorController( design, clientEvents );
   controller .addSubController( 'editor', editorController );
 
   // This has similar function to the Java equivalent, but a very different mechanism

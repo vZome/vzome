@@ -1,7 +1,8 @@
 
 import { LegacyEdit } from './edit.js';
 import * as txml from 'txml/dist/txml.mjs';
-import { JavaDomElement } from './jsweet2js.js';
+import { JavaDomElement } from './dom.js';
+import { newDesign } from './controllers.js';
 
 
 const assignIds = ( txmlElement, id=':' ) =>
@@ -114,7 +115,7 @@ export const createParser = ( documentFactory ) => ( xmlText ) =>
   const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
   const fieldName = vZomeRoot.getAttribute( "field" )
 
-  const { orbitSource, interpretEdit, field, batchRender, renderedModel, configureAndPerformEdit, toolsModel, bookmarkFactory } = documentFactory( fieldName, namespace, vZomeRoot )
+  const design = documentFactory( fieldName, namespace, vZomeRoot )
 
   const viewing = vZomeRoot.getChildElement( "Viewing" )
   const camera = viewing && parseViewXml( viewing )
@@ -124,14 +125,12 @@ export const createParser = ( documentFactory ) => ( xmlText ) =>
 
   const historyElement = vZomeRoot.getChildElement( "EditHistory" ) || vZomeRoot.getChildElement( "EditHistoryDetails" );
   const xmlTree = assignIds( historyElement.nativeElement );
-  const edits = new LegacyEdit( xmlTree, null, interpretEdit );
+  const edits = new LegacyEdit( xmlTree, null, design.interpretEdit );
   const targetEditId = `:${edits.getAttribute( "editNumber" )}:`
   const firstEdit = edits.firstChild()
 
   const realScenes = parseArticle( vZomeRoot.getChildElement( "notes" ), xmlTree );
   const scenes = [ { title: 'default scene', nodeId: targetEditId, camera }, ...realScenes ];
 
-  return { firstEdit, camera, field, targetEditId, orbitSource, lighting,
-            batchRender, renderedModel, configureAndPerformEdit, toolsModel, bookmarkFactory,
-            xmlTree, scenes }
+  return { ...design, firstEdit, camera, targetEditId, lighting, xmlTree, scenes }
 }

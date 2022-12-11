@@ -99,6 +99,7 @@ core.config {
 
     'com/vzome/xml/DomUtils.java',
     'com/vzome/xml/ResourceLoader.java',
+    'com/vzome/xml/LocationData.java',
 
     'com/vzome/core/generic/*.java',
 
@@ -136,11 +137,6 @@ core.config {
 
     'com/vzome/core/edits/*.java',
 
-    // 'com/vzome/core/exporters/*.java',
-
-    // 'com/vzome/core/viewing/Lights.java',
-    // 'com/vzome/core/viewing/Camera.java',
-
     'com/vzome/core/kinds/DefaultFieldApplication.java',
     'com/vzome/core/kinds/GoldenFieldApplication.java',
     'com/vzome/core/kinds/RootTwoFieldApplication.java',
@@ -174,6 +170,8 @@ core.config {
     'com/vzome/core/editor/SymmetryPerspective.java',
     'com/vzome/core/editor/SelectionImpl.java',
     'com/vzome/core/editor/SelectionSummary.java',
+    'com/vzome/core/editor/EditHistory.java',
+    'com/vzome/core/editor/Branch.java',
     
     'com/vzome/core/render/Colors.java',
     'com/vzome/core/viewing/AbstractShapes.java',

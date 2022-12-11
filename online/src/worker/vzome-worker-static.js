@@ -176,7 +176,9 @@ const clientEvents = report =>
     report( { type: 'SCENES_DISCOVERED', payload: s } );
   }
 
-  return { sceneChanged, shapeDefined, instanceAdded, selectionToggled, symmetryChanged, xmlParsed, scenesDiscovered };
+  const designSerialized = xml => report( { type: 'DESIGN_XML_SAVED', payload: xml } );
+
+  return { sceneChanged, shapeDefined, instanceAdded, selectionToggled, symmetryChanged, xmlParsed, scenesDiscovered, designSerialized };
 }
 
 const createDesign = ( report, fieldName ) =>
