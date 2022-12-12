@@ -32,19 +32,18 @@ const App = () =>
   const sendToWorker = useDispatch();
   const doJoinBalls = ( i1, i2 ) => sendToWorker( joinBalls( i1, i2 ) );
   const buildPlanes = useSelector( reduxState => reduxState.buildPlanes ); // from the main Redux store
-  const lastInstance = useSelector( reduxState => reduxState.lastInstance );
+  const origin = useSelector( reduxState => reduxState.origin );
 
   // TODO: encapsulate the build plane as a "tool", including a UI
   const [ state, dispatch ] = useReducer( reducer, initialState ); // dedicated local store
 
   // The last ball created always gets to be the new plane center
   useEffect( () => {
-    if ( lastInstance ) {
-      const { type, id, position } = lastInstance;
-      if ( type === 'ball' )
-        dispatch( doSetCenter( id, position ) );
+    if ( origin ) {
+      const { id, position } = origin;
+      dispatch( doSetCenter( id, position ) );
     }
-  }, [ lastInstance ] );
+  }, [ origin ] );
 
   const ballCallbacks = {
     bkgdClick: ( e ) => isLeftMouseButton( e ) && dispatch( doToggleDisk() ),

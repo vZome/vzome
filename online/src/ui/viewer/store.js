@@ -74,7 +74,7 @@ const reducer = ( state = initialState, event ) =>
     }
 
     case 'TEXT_FETCHED':
-      return { ...state, source: event.payload };
+      return { ...state, source: event.payload, origin: undefined };
 
     case 'DESIGN_XML_SAVED': {
       return { ...state, source: { ...state.source, changedText: event.payload } };
@@ -103,14 +103,17 @@ const reducer = ( state = initialState, event ) =>
       const { scene, edit } = event.payload;
       const camera = scene.camera || state.scene.camera;
       // may need to merge scene.shapes here, if we ever have an incremental case
-      let lastInstance;
-      for ( const shapeId in scene.shapes ) {
-        const shape = scene.shapes[ shapeId ];
-        lastInstance = shape .instances[ 0 ];
-        if ( lastInstance .type === 'ball' )
-          break;
-      }
-      return { ...state, edit, scene: { ...state.scene, ...scene, camera }, waiting: false, lastInstance };
+      let origin = state.origin;
+      if ( ! origin ) // This is a one-shot deal, designed to give us an origin for a new model
+        for ( const shapeId in scene.shapes ) {
+          const shape = scene.shapes[ shapeId ];
+          const instance = shape .instances[ 0 ];
+          if ( instance .type === 'ball' ) {
+            origin = instance;
+            break;
+          }
+        }
+      return { ...state, edit, scene: { ...state.scene, ...scene, camera }, waiting: false, origin };
     }
 
     case 'SHAPE_DEFINED': {
