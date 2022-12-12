@@ -169,7 +169,7 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 			case TRANSFORM:
 				result .add( new ScalingToolFactory( tools, pentaSymm ) .createPredefinedTool( "scale down" ) );
 				result .add( new ScalingToolFactory( tools, pentaSymm ) .createPredefinedTool( "scale up" ) );
-				result .add( new SymmetryToolFactory( tools,pentaSymm ) .createPredefinedTool( "fivefold rotation through origin" ) );
+				result .add( new RotationToolFactory(tools, pentaSymm, true) .createPredefinedTool( "fivefold rotation through origin" ) );
 				break;
 
 			default:
