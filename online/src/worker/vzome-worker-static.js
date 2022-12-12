@@ -58,7 +58,7 @@ const convertPreview = preview =>
       const id = idPrefix + i++;
       const { x, y, z } = position;
       const rotation = [ ...( orientations[ orientation ] || IDENTITY_MATRIX ) ];
-      const instance = { id, position: [ x, y, z ], rotation, color, shapeId: shape };
+      const instance = { id, position: [ x, y, z ], rotation, color, shapeId: shape, type: 'irrelevant' };
       return instance;
     });
   }

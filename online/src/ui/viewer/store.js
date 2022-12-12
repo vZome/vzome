@@ -108,7 +108,7 @@ const reducer = ( state = initialState, event ) =>
         for ( const shapeId in scene.shapes ) {
           const shape = scene.shapes[ shapeId ];
           const instance = shape .instances[ 0 ];
-          if ( instance .type === 'ball' ) {
+          if ( instance ?.type === 'ball' ) {
             origin = instance;
             break;
           }
