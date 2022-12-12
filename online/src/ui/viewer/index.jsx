@@ -22,7 +22,7 @@ import { create } from 'jss';
 
 import { ShapedGeometry } from './geometry.jsx'
 import { DesignCanvas } from './designcanvas.jsx'
-import { createWorkerStore, defineCamera, fetchDesign, selectEditBefore, whilePerspective } from './store.js';
+import { createWorkerStore, fetchDesign, whilePerspective, serializeVZomeXml } from './store.js';
 import { Spinner } from './spinner.jsx'
 import { ErrorAlert } from './alert.jsx'
 import { SettingsDialog } from './settings.jsx';
@@ -92,8 +92,15 @@ export const DesignViewer = ( { children, children3d, config={}, callbacks={} } 
   const downloadVZome = () =>
   {
     hideDownloadMenu();
-    const { name, text } = source;
-    download( name, text, 'application/xml' );
+    const { name, text, changedText } = source;
+    const fileName = name || 'untitled.vZome';
+    if ( changedText ) {
+      const { camera, liveCamera, lighting } = scene;
+      const fullText = serializeVZomeXml( changedText, liveCamera || camera, lighting );
+      download( fileName, fullText, 'application/xml' );
+    }
+    else
+      download( fileName, text, 'application/xml' );
   }
   const exportGLTF = () =>
   {
@@ -150,7 +157,7 @@ export const DesignViewer = ( { children, children3d, config={}, callbacks={} } 
         </IconButton>
       }
 
-      { source && source.text &&
+      { source && ( source.text || source.changedText ) &&
         <>
           <IconButton color="inherit" aria-label="export"
               style={ { position: 'absolute', bottom: '5px', left: '5px' } }

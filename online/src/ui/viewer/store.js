@@ -1,18 +1,28 @@
 
 import { configureStore } from '@reduxjs/toolkit'
+import { REVISION } from '../../revision.js';
 
 export const initialState = {
   scene: {
     camera: {
-      near: 0.1,
-      far: 80,
-      width: 18,
-      distance: 40,
+      near: 0.271828,
+      far: 217,
+      width: 48,
+      distance: 108,
       up: [ 0, 1, 0 ],
       lookAt: [ 0, 0, 0 ],
       lookDir: [ 0, 0, -1 ],
       perspective: true,
-    }
+    },
+    lighting: {
+      backgroundColor: '#BBDAED',
+      ambientColor: '#555555',
+      directionalLights: [ // These are the vZome defaults, for consistency
+        { direction: [ 1, -1, -0.3 ], color: '#FDFDFD' },
+        { direction: [ -1, 0, -0.2 ], color: '#B5B5B5' },
+        { direction: [ 0, 0, -1 ], color: '#303030' },
+      ]
+    },
   }
 };
 
@@ -64,9 +74,13 @@ const reducer = ( state = initialState, event ) =>
     }
 
     case 'TEXT_FETCHED':
-      return { ...state, source: event.payload };
+      return { ...state, source: event.payload, origin: undefined };
 
-    case 'DESIGN_INTERPRETED': {
+    case 'DESIGN_XML_SAVED': {
+      return { ...state, source: { ...state.source, changedText: event.payload } };
+    }
+
+    case 'DESIGN_XML_PARSED': {
       let xmlTree = event.payload;
       const attributes = {};
       const indexAttributes = node => node.children && node.children.map( child => {
@@ -87,8 +101,19 @@ const reducer = ( state = initialState, event ) =>
     case 'SCENE_RENDERED': {
       // TODO: I wish I had a better before/after contract with the worker
       const { scene, edit } = event.payload;
+      const camera = scene.camera || state.scene.camera;
       // may need to merge scene.shapes here, if we ever have an incremental case
-      return { ...state, edit, scene: { ...state.scene, ...scene }, waiting: false };
+      let origin = state.origin;
+      if ( ! origin ) // This is a one-shot deal, designed to give us an origin for a new model
+        for ( const shapeId in scene.shapes ) {
+          const shape = scene.shapes[ shapeId ];
+          const instance = shape .instances[ 0 ];
+          if ( instance .type === 'ball' ) {
+            origin = instance;
+            break;
+          }
+        }
+      return { ...state, edit, scene: { ...state.scene, ...scene, camera }, waiting: false, origin };
     }
 
     case 'SHAPE_DEFINED': {
@@ -111,7 +136,7 @@ const reducer = ( state = initialState, event ) =>
     }
 
     case 'SELECTION_TOGGLED': {
-      const { shapeId, id, selected } = data.payload;
+      const { shapeId, id, selected } = event.payload;
       const shape = state.scene.shapes[ shapeId ];
       const instances = shape .instances.map( inst => (
         inst.id !== id ? inst : { ...inst, selected }
@@ -131,8 +156,8 @@ const reducer = ( state = initialState, event ) =>
     }
 
     case 'TRACKBALL_MOVED': {
-      const trackball = event.payload;
-      return { ...state, scene: { ...state.scene, trackball } };
+      const liveCamera = { ...state.scene.camera, ...event.payload };
+      return { ...state, scene: { ...state.scene, liveCamera } };
     }
 
     case 'CONTROLLER_CREATED': {
@@ -152,6 +177,90 @@ const reducer = ( state = initialState, event ) =>
       return state;
   }
 };
+
+const serializeLighting = ( lighting, doc ) =>
+{
+  const getRGB = color =>{
+    const [ r, g, b ] = [ parseInt( color.substr(1, 2), 16 ), parseInt( color.substr(3, 2), 16 ), parseInt( color.substr(5, 2), 16 ) ];
+    return r + ',' + g + ',' + b;
+  }
+  const { ambientColor, backgroundColor, directionalLights } = lighting;
+  const sceneModel = doc .createElement( "sceneModel" );
+  sceneModel .setAttribute( "ambientLight", getRGB( ambientColor ) );
+  sceneModel .setAttribute( "background", getRGB( backgroundColor ) );
+  for (const dlight of directionalLights) {
+    const { color, direction } = dlight;
+    const child = doc .createElement( "directionalLight" );
+    child .setAttribute( "color", getRGB( color ) );
+    child .setAttribute( "x", String( direction[ 0 ] ) );
+    child .setAttribute( "y", String( direction[ 1 ] ) );
+    child .setAttribute( "z", String( direction[ 2 ] ) );
+    sceneModel .appendChild( child );
+  }
+  return sceneModel;
+}
+
+const serializeCamera = ( camera, doc ) =>
+{
+  const { near, far, width, distance, perspective, lookAt, lookDir, up } = camera;
+  const viewing = doc .createElement( "Viewing" );
+  const viewmodel = doc .createElement( "ViewModel" );
+  viewing .appendChild( viewmodel );
+  viewmodel .setAttribute( "near", String( near ) );
+  viewmodel .setAttribute( "far", String( far ) );
+  viewmodel .setAttribute( "width", String( width ) );
+  viewmodel .setAttribute( "distance", String( distance ) );
+  viewmodel .setAttribute( "stereoAngle", "0.0" );
+  viewmodel .setAttribute( "parallel", String( !perspective ) );
+  {
+      const child = doc .createElement( "LookAtPoint" );
+      child .setAttribute( "x", String( lookAt[ 0 ] ) );
+      child .setAttribute( "y", String( lookAt[ 1 ] ) );
+      child .setAttribute( "z", String( lookAt[ 2 ] ) );
+      viewmodel .appendChild( child );
+  }
+  {
+      const child = doc .createElement( "UpDirection" );
+      child .setAttribute( "x", String( up[ 0 ] ) );
+      child .setAttribute( "y", String( up[ 1 ] ) );
+      child .setAttribute( "z", String( up[ 2 ] ) );
+      viewmodel .appendChild( child );
+  }
+  {
+      const child = doc .createElement( "LookDirection" );
+      child .setAttribute( "x", String( lookDir[ 0 ] ) );
+      child .setAttribute( "y", String( lookDir[ 1 ] ) );
+      child .setAttribute( "z", String( lookDir[ 2 ] ) );
+      viewmodel .appendChild( child );
+  }
+  return viewing;
+}
+
+export const serializeVZomeXml = ( xmlStr, camera, lighting ) =>
+{
+  const parser = new DOMParser();
+  const doc = parser .parseFromString( xmlStr, "application/xml" );
+
+  const rootElement = doc .documentElement;
+  const field = rootElement .getAttribute( 'field' );
+
+  const children = rootElement .childNodes;
+
+  const newRoot = document .createElementNS( 'http://xml.vzome.com/vZome/4.0.0/', 'vzome:vZome' );
+  newRoot .setAttribute( 'field', field );
+  newRoot .setAttribute( 'edition', 'online' );
+  newRoot .setAttribute( 'version', '1.0' );
+  newRoot .setAttribute( 'buildNumber', REVISION );
+  newRoot .replaceChildren( ...children );
+
+  newRoot .appendChild( serializeLighting( lighting, doc ) );
+  newRoot .appendChild( serializeCamera( camera, doc ) );
+
+  rootElement .replaceWith( newRoot );
+
+  const serializer = new XMLSerializer();
+  return serializer .serializeToString( doc );
+}
 
 const branchSelectionBlocks = node =>
 {
@@ -213,7 +322,7 @@ export const createWorkerStore = ( customElement, moreMiddleware ) =>
         report( event );
   }
 
-  const preloadedState = initialState
+  const preloadedState = initialState;
 
   const store = configureStore( {
     reducer,

@@ -3,8 +3,8 @@ import goldenField from '../fields/golden.js'
 import root2Field from '../fields/root2.js'
 import root3Field from '../fields/root3.js'
 import heptagonField from '../fields/heptagon.js'
-import Adapter from './adapter.js'
-import { algebraicNumberFactory, JavaDomElement, JsProperties } from './jsweet2js.js';
+import { algebraicNumberFactory, JsProperties } from './jsweet2js.js';
+import { JavaDomDocument, JavaDomElement } from './dom.js';
 import { configureLogging } from './logging.js'
 
 import allShapes from './resources/com/vzome/core/parts/index.js'
@@ -292,27 +292,6 @@ const makeFloatMatrices = ( matrices ) =>
     }
     return fieldApp
   }
-
-  // This object implements the UndoableEdit.Context interface
-  const editContext = {
-    // Since we are not creating Branch edits, this should never be used
-    createEdit: () => { throw new Error( "createEdit should never be called" ) },
-
-    createLegacyCommand: name => {
-      const constructor = vzomePkg.core.commands[ name ]
-      if ( constructor )
-        return new constructor()
-      else
-        throw new Error( `${name} command is not available yet`);
-    },
-    
-    // We will do our own edit recording, so this is just perform
-    performAndRecord: edit => edit.perform(),
-
-    doEdit: ( action, props ) => {
-      throw new Error( `${action} command is not implemented yet` );
-    }
-  }
   
   export const getField = fieldName =>
   {
@@ -337,6 +316,35 @@ const makeFloatMatrices = ( matrices ) =>
     const systemXml = xml && xml.getChildElement( "SymmetrySystem" )
     const symmName = systemXml && systemXml.getAttribute( "name" )
     const symmPer = ( symmName && fieldApp.getSymmetryPerspective( symmName ) ) || fieldApp.getDefaultSymmetryPerspective()
+
+    const history = new vzomePkg.core.editor.EditHistory();
+    history .setSerializer( { serialize: element => element .serialize( "" ) } );
+
+    // This object implements the UndoableEdit.Context interface
+    const editContext = {
+      // Since we are not creating Branch edits, this should never be used
+      createEdit: () => { throw new Error( "createEdit should never be called" ) },
+
+      createLegacyCommand: name => {
+        const constructor = vzomePkg.core.commands[ name ]
+        if ( constructor )
+          return new constructor()
+        else
+          throw new Error( `${name} command is not available yet`);
+      },
+      
+      performAndRecord: edit => {
+        edit.perform();
+        if ( edit .isNoOp() )
+          return;
+        history .mergeSelectionChanges();
+        history .addEdit( edit, editContext );
+      },
+
+      doEdit: ( action, props ) => {
+        throw new Error( `${action} command is not implemented yet` );
+      }
+    }
 
     const toolsModel = new vzomePkg.core.editor.ToolsModel( editContext, originPoint )
 
@@ -433,6 +441,8 @@ const makeFloatMatrices = ( matrices ) =>
     const toolsXml = xml && xml.getChildElement( "Tools" )
     toolsXml && toolsModel.loadFromXml( toolsXml )
 
+    // xml && console.log( xml .serialize( "" ) );
+
     const interpretEdit = ( xmlElement, mesh ) =>
     {
       const wrappedElement = new JavaDomElement( xmlElement )
@@ -511,7 +521,7 @@ const makeFloatMatrices = ( matrices ) =>
         return
       // editor.setAdapter( adapter );
       edit.configure( new JsProperties( config ) );
-      edit.perform();
+      editContext .performAndRecord( edit );
     }
 
     const batchRender = renderingListener => {
@@ -519,7 +529,62 @@ const makeFloatMatrices = ( matrices ) =>
       RM.renderChange( new RM( null, null ), renderedModel, renderingListener );
     }
 
-    return { interpretEdit, configureAndPerformEdit, field, renderedModel, batchRender, orbitSource, toolsModel, bookmarkFactory };
+    const serializeToDom = () =>
+    {
+      const doc = new JavaDomDocument();
+
+      // This is not meant to be the traditional "vzome:vZome" root element,
+      //   since the camera and lighting state are not managed here in the worker.
+      //   Furthermore, the main app should control the root attributes.
+      const root = doc .createElement( "design" );
+      root .setAttribute( "field", field.name );
+
+      let childElement;
+      {
+        childElement = history .getXml( doc );
+        let edits = 0, lastStickyEdit=-1;
+        const undoables = history .iterator();
+        while ( undoables .hasNext() ) {
+          const undoable = undoables .next()
+          childElement .appendChild( undoable .getXml( doc ) );
+          ++ edits;
+          if ( undoable .isSticky() )
+            lastStickyEdit = edits;
+        }
+        childElement .setAttribute( "lastStickyEdit", '' + lastStickyEdit );
+      }
+      root .appendChild( childElement );
+
+      // childElement = lesson .getXml( doc );
+      // root .appendChild( childElement );
+
+      childElement = orbitSource .getXml( doc );
+      root .appendChild( childElement );
+
+      // We have to store all symmetries, not just the current one, due to sequences like this:
+      //   1. drag an icosahedral olive strut
+      //   2. switch to octahedral symmetry
+      //   3. do "build with this" on the olive strut
+      //   4. drag out a strut
+      //   5. switch back to icosahedral symmetry
+      // The end result is that the command in step 4 records the name of an automatic orbit.
+      // That automatic orbit must be captured in the file.
+      childElement = doc .createElement( "OtherSymmetries" );
+      for ( const symmetrySystem of Object.values( symmetrySystems ) ) {
+          if ( symmetrySystem === orbitSource )
+              continue; // already serialized above
+          const symmElement = symmetrySystem .getXml( doc );
+          childElement .appendChild( symmElement );
+      }
+      root .appendChild( childElement );
+
+      childElement = toolsModel .getXml( doc );
+      root .appendChild( childElement );
+
+      return root;
+    }
+
+    return { interpretEdit, configureAndPerformEdit, field, renderedModel, batchRender, orbitSource, toolsModel, bookmarkFactory, serializeToDom };
   }
 
   export const convertColor = color =>

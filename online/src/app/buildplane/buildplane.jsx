@@ -107,7 +107,7 @@ const HingeOption = ( { zone, changeHinge } ) =>
 
   const [ material, materialRef ] = useState();
 
-  const tubeCenter = useMemo( () => vscale( normalize( zone.vectors[ 0 ] ), 9 ), [ zone ] );
+  const tubeCenter = useMemo( () => vscale( normalize( zone.vectors[ 0 ] ), 13 ), [ zone ] );
   const zoneQuaternion = useCylinderQuaternion( zone.vectors[ 0 ] );
 
   return (
@@ -134,7 +134,7 @@ const PlaneOption = ({ zone, changePlane }) =>
     <group>
       <meshLambertMaterial ref={diskMaterialRef} color={zone.color} transparent={true} opacity={0.5} />
       <mesh quaternion={quaternion} material={diskMaterial} onClick={handleClick}>
-        <cylinderBufferGeometry attach="geometry" args={[ 6, 6, 0.4, 48 ]} />
+        <cylinderBufferGeometry attach="geometry" args={[ 5, 5, 0.4, 48 ]} />
       </mesh>
     </group>
   );
@@ -147,6 +147,7 @@ const Hinge = ( { state, buildPlanes, actions } ) =>
   const plane = buildPlanes .planes[ orbit ];
   const permutation = buildPlanes .permutations[ orientation ];
   const doChangePlane = ( orbit, orientation ) => actions.changePlane( orbit, permutation[ orientation ] );
+  const disksCenter = useMemo( () => vscale( normalize( plane.normal ), 6 ), [ plane ] );
 
   const hingeQuaternion = useCylinderQuaternion( plane.normal );
   const globalRotation = useOrientation( buildPlanes, orientation );
@@ -158,9 +159,11 @@ const Hinge = ( { state, buildPlanes, actions } ) =>
         <cylinderBufferGeometry attach="geometry" args={[ 1/2, 1/2, 2*discSize, 12, 1, false ]} />
       </mesh>
 
-      {plane.zones .map( ( zone, zoneIndex ) =>
-        <PlaneOption key={zoneIndex} zone={zone} changePlane={doChangePlane} />
-      )}
+      <group position={disksCenter}>
+        {plane.zones .map( ( zone, zoneIndex ) =>
+          <PlaneOption key={zoneIndex} zone={zone} changePlane={doChangePlane} />
+        )}
+      </group>
     </group>
   )
 }
