@@ -34,8 +34,10 @@ export const createWorker = () =>
 
   const subscribe = subscriber => subscribers .push( subscriber );
 
-  const onWorkerMessage = message => subscribers .forEach( subscriber => subscriber .onWorkerMessage( message.data ) );
-  const onWorkerError = message => subscribers .forEach( subscriber => subscriber .onWorkerError( message ) );
+  const onWorkerMessage = message =>
+    subscribers .forEach( subscriber => subscriber .onWorkerMessage( message.data ) );
+  const onWorkerError = message =>
+    subscribers .forEach( subscriber => subscriber .onWorkerError( message ) );
 
   return { sendToWorker, subscribe };
 }

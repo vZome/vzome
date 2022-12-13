@@ -15,6 +15,9 @@ import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser'
 import SettingsIcon from '@material-ui/icons/Settings'
+import UndoIcon from '@material-ui/icons/Undo'
+import RedoIcon from '@material-ui/icons/Redo'
+import Tooltip from '@material-ui/core/Tooltip'
 import Link from '@material-ui/core/Link';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -28,6 +31,7 @@ import { ErrorAlert } from './alert.jsx'
 import { SettingsDialog } from './settings.jsx';
 import { useVR } from './hooks.js';
 import { SceneMenu } from './scenes.jsx';
+import { controllerAction } from '../../app/classic/controllers-solid.js';
 
 // from https://www.bitdegree.org/learn/javascript-download
 const download = ( name, text, type ) =>
@@ -64,7 +68,8 @@ const fullScreenStyle = {
 
 export const DesignViewer = ( { children, children3d, config={}, callbacks={} } ) =>
 {
-  const { showScenes=false, useSpinner=false, allowFullViewport=false } = config;
+  const { showScenes=false, useSpinner=false, allowFullViewport=false, undoRedo=false } = config;
+  const historyAction = controllerAction( 'undoRedo' );
   const source = useSelector( state => state.source );
   const scene = useSelector( state => state.scene );
   const waiting = useSelector( state => !!state.waiting );
@@ -130,18 +135,41 @@ export const DesignViewer = ( { children, children3d, config={}, callbacks={} } 
 
       <Spinner visible={useSpinner && waiting} />
 
-      { allowFullViewport &&
-        <IconButton color="inherit" aria-label="fullscreen"
-            style={ { position: 'absolute', bottom: '5px', right: '5px' } }
-            onClick={toggleFullScreen} >
-          { fullScreen? <FullscreenExitIcon fontSize='large'/> : <FullscreenIcon fontSize='large'/> }
-        </IconButton>
+      { undoRedo &&
+        <>
+          <Tooltip title={'Undo'} aria-label="undo">
+            <IconButton color="inherit" aria-label="undo"
+                style={ { position: 'absolute', top: '5px', left: '5px' } }
+                onClick={() => historyAction( 'undo' )} >
+              <UndoIcon fontSize='large'/>
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={'Redo'} aria-label="redo">
+            <IconButton color="inherit" aria-label="redo"
+                style={ { position: 'absolute', top: '5px', left: '45px' } }
+                onClick={() => historyAction( 'redo' )} >
+              <RedoIcon fontSize='large'/>
+            </IconButton>
+          </Tooltip>
+        </>
       }
-      <IconButton color="inherit" aria-label="settings"
-          style={ { position: 'absolute', top: '5px', right: '5px' } }
-          onClick={() => setShowSettings(!showSettings)} >
-        <SettingsIcon fontSize='large'/>
-      </IconButton>
+
+      { allowFullViewport &&
+        <Tooltip title={ fullScreen? 'Collapse' : 'Expand' } aria-label="fullscreen">
+          <IconButton color="inherit" aria-label="fullscreen"
+              style={ { position: 'absolute', bottom: '5px', right: '5px' } }
+              onClick={toggleFullScreen} >
+            { fullScreen? <FullscreenExitIcon fontSize='large'/> : <FullscreenIcon fontSize='large'/> }
+          </IconButton>
+        </Tooltip>
+      }
+      <Tooltip title={ 'Settings' } aria-label="settings">
+        <IconButton color="inherit" aria-label="settings"
+            style={ { position: 'absolute', top: '5px', right: '5px' } }
+            onClick={() => setShowSettings(!showSettings)} >
+          <SettingsIcon fontSize='large'/>
+        </IconButton>
+      </Tooltip>
 
       <SettingsDialog {...{ showSettings, setShowSettings }} container={containerRef.current} />
 
@@ -150,22 +178,26 @@ export const DesignViewer = ( { children, children3d, config={}, callbacks={} } 
           limit you to one VR experience.  The preview viewer will open in a new tab, where I can enter VR.
         */}
       { vrAvailable && source && source.url &&
-        <IconButton color="inherit" aria-label="preview"
-          style={ { position: 'absolute', top: '45px', right: '5px' } }
-          component={Link}
-          href={`https://www.vzome.com/app/?url=${encodeUrl(source.url)}`} target="_blank" rel="noopener"
-        >
-          <OpenInBrowserIcon fontSize='large'/>
-        </IconButton>
+        <Tooltip title={ 'Preview' } aria-label="preview">
+          <IconButton color="inherit" aria-label="preview"
+            style={ { position: 'absolute', top: '45px', right: '5px' } }
+            component={Link}
+            href={`https://www.vzome.com/app/?url=${encodeUrl(source.url)}`} target="_blank" rel="noopener"
+          >
+            <OpenInBrowserIcon fontSize='large'/>
+          </IconButton>
+        </Tooltip>
       }
 
       { source && ( source.text || source.changedText ) &&
         <>
-          <IconButton color="inherit" aria-label="export"
-              style={ { position: 'absolute', bottom: '5px', left: '5px' } }
-              onClick={ showDownloadMenu } >
-            <GetAppRoundedIcon fontSize='large'/>
-          </IconButton>
+          <Tooltip title={ 'Download' } aria-label="download">
+            <IconButton color="inherit" aria-label="download"
+                style={ { position: 'absolute', bottom: '5px', left: '5px' } }
+                onClick={ showDownloadMenu } >
+              <GetAppRoundedIcon fontSize='large'/>
+            </IconButton>
+          </Tooltip>
           <Menu
             id="export-menu"
             anchorEl={downloadAnchor}

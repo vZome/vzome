@@ -84,7 +84,7 @@ const App = () =>
           </Typography>
         </> }
       />
-      <DesignViewer config={ { useSpinner: true } } callbacks={ballCallbacks}
+      <DesignViewer config={ { useSpinner: true, undoRedo: true } } callbacks={ballCallbacks}
         children3d={ state.buildPlanes && state.enabled && state.center &&
           <BuildPlane {...{ state }} actions={actions} />
         } />

@@ -19,7 +19,6 @@ class EditorController extends com.vzome.desktop.controller.DefaultController
   {
     this.design .configureAndPerformEdit( action, params && params .getConfig() );
     const text = this .design .serializeToDom() .toIndentedString( "" );
-    console.log( text );
     this.clientEvents .designSerialized( text );
   }
 
@@ -162,7 +161,7 @@ export const newDesign = ( fieldName, clientEvents ) =>
 
 const createControllers = ( design, renderHistory, clientEvents ) =>
 {
-  const { orbitSource, renderedModel, toolsModel, bookmarkFactory } = design;
+  const { orbitSource, renderedModel, toolsModel, bookmarkFactory, history } = design;
   const controller = new com.vzome.desktop.controller.DefaultController(); // this is the equivalent of DocumentController
 
   // This one has no equivalent in Java, though I've considered it.  Too much change.
@@ -176,6 +175,9 @@ const createControllers = ( design, renderHistory, clientEvents ) =>
   // This has no desktop equivalent
   const buildPlaneController = new BuildPlaneController( renderedModel, orbitSource );
   editorController .addSubController( 'buildPlane', buildPlaneController );
+
+  const undoRedoController = new com.vzome.desktop.controller.UndoRedoController( history );
+  controller .addSubController( 'undoRedo', undoRedoController );
 
   const bookmarkController = new com.vzome.desktop.controller.ToolFactoryController( bookmarkFactory );
   controller .addSubController( 'bookmark', bookmarkController );

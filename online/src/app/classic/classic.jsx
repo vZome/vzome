@@ -2,6 +2,7 @@
 import { Canvas } from './components/canvas.jsx';
 import { CameraControls } from './components/camera.jsx';
 import { StrutBuildPanel } from './components/strutbuilder.jsx';
+import { MenuBar } from './components/menubar.jsx';
 import { createWorkerStore, subController, controllerAction } from './controllers-solid.js';
 import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
 import { solidify } from './solid-react.jsx';
@@ -19,14 +20,36 @@ export const ClassicEditor = ( { worker } ) =>
   const symmController     = () => subController( strutBuilder(), 'symmetry' );
   const toolsController    = () => subController( strutBuilder(), 'tools' );
 
+  const handleKeyDown = event => {
+    switch ( event.code ) {
+      case "KeyZ":
+        if ( event .metaKey ) {
+          console.log( "undo" );
+          event .preventDefault();
+        }
+        break;
+    
+      case "KeyY":
+        if ( event .metaKey ) {
+          console.log( "redo" );
+          event .preventDefault();
+        }
+        break;
+    
+      default:
+        break;
+    }
+  }
+  document .addEventListener( "keydown", handleKeyDown );
+
   const callbacks = {
     onClick: ( id, position, type, selected ) =>
       controllerAction( pickingController(), 'SelectManifestation', { id } ),
   }
 
   return (
-    // <div id='classic' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }}>
-    //   <div id='menu-bar' class='placeholder' style={{ 'min-height': '25px' }}>Menus</div>
+    <div id='classic' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }} class='whitesmoke-bkgd'>
+      <MenuBar controller={rootController()} />
       <div id='editor-main' class='grid-cols-1-min whitesmoke-bkgd' >
 
         <div id='editor-canvas' style={{ display: 'grid', 'grid-template-rows': 'min-content min-content min-content 1fr' }}>
@@ -50,6 +73,6 @@ export const ClassicEditor = ( { worker } ) =>
         </div>
 
       </div>
-    // </div>
+    </div>
   )
 }
