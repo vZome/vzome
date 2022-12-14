@@ -378,21 +378,7 @@ const makeFloatMatrices = ( matrices ) =>
     // This has no analogue in Java DocumentModel
     orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() );
     orbitSource.permutations = orbitSource .getSymmetry() .getPermutations() .map( p => p .getJsonValue() );
-    // TODO: generalize for all fields and symmetries
-    const blue = [ [0n,0n,1n], [0n,0n,1n], [1n,0n,1n] ]
-    const yellow = [ [0n,0n,1n], [1n,0n,1n], [1n,1n,1n] ]
-    const red = [ [1n,0n,1n], [0n,0n,1n], [0n,1n,1n] ]
-    const green = [ [1n,0n,1n], [1n,0n,1n], [0n,0n,1n] ]
-    const bluePlane = getBuildPlane( orbitSource, blue );
-    const yellowPlane = getBuildPlane( orbitSource, yellow );
-    const redPlane = getBuildPlane( orbitSource, red );
-    const greenPlane = getBuildPlane( orbitSource, green );
-    orbitSource.buildPlanes = {
-      blue: bluePlane,
-      red: redPlane,
-      green: greenPlane,
-      yellow: yellowPlane,
-    };
+    collectBuildPlanes( orbitSource );
 
     class OSField {
       constructor(){}
@@ -599,44 +585,46 @@ const makeFloatMatrices = ( matrices ) =>
     return "#" + componentToHex(color.getRed()) + componentToHex(color.getGreen()) + componentToHex(color.getBlue());
   }
 
-  const getBuildPlane = ( orbits, planeNormal ) =>
+  const collectBuildPlanes = ( orbitSource ) =>
   {
-    const field = orbits .getSymmetry() .getField();
-    let normal = vzomePkg.jsweet.JsAdapter.mapVectorToJava( planeNormal, field );
-    const planeColor = convertColor( orbits .getVectorColor( normal ) );
-    const planeZone = orbits .getSymmetry() .getAxis( normal );
-    const planeOrbit = planeZone .getOrbit();
-    const planeName = planeOrbit .getName();
-    const orientation = planeZone .orientation;
+    const field = orbitSource .getSymmetry() .getField();
+    orbitSource .buildPlanes = {};
 
-    // now that we have the orientation of the plane, we normalize to zones
-    //  for a plane orthogonal to zone 0
-    normal = planeOrbit .getAxis( 0, 0 ) .normal();
-
-    const zones = [];
-
-    const planeOrbits = new vzomePkg.core.math.symmetry.PlaneOrbitSet( orbits.getOrbits(), normal );
-    const iterator = planeOrbits .zones();
-    while ( iterator .hasNext() ) {
-      const zone = iterator .next()
-      const orientation = zone .getOrientation();
-      const orbit = zone .getDirection();
-      if ( ! orbit .isStandard() )
+    const orbitIterator = orbitSource .getOrbits() .getDirections() .iterator();
+    while ( orbitIterator .hasNext() ) {
+      const planeOrbit = orbitIterator .next();
+      if ( ! planeOrbit .isStandard() )
         continue;
-      const vectors = [];
-      const zoneNormal = zone .normal();
-      const zoneColor = convertColor( orbits .getVectorColor( zoneNormal ) );
-      let scale = orbit .getUnitLength();
-      for ( let i = 0; i < 5; i++ ) {
-        scale = scale .times( field .createPower( 1 ) );
-        const gridPoint = zoneNormal .scale( scale );
-        vectors .push( { point: gridPoint, scale } );
-      }
-      
-      zones .push( { name: orbit.getName(), zone, orientation, color: zoneColor, vectors } );
-    }
+      const planeName = planeOrbit .getName();
+      const color = convertColor( orbitSource .getColor( planeOrbit ) );
+      const planeZone = planeOrbit .getAxis( 0, 0 );
+      const orientation = planeZone .orientation;
+      const normal = planeZone .normal();
 
-    return { color: planeColor, normal, zones, orientation };
+      const zones = [];
+
+      const planeOrbits = new vzomePkg.core.math.symmetry.PlaneOrbitSet( orbitSource.getOrbits(), normal );
+      const iterator = planeOrbits .zones();
+      while ( iterator .hasNext() ) {
+        const zone = iterator .next()
+        const orientation = zone .getOrientation();
+        const orbit = zone .getDirection();
+        if ( ! orbit .isStandard() )
+          continue;
+        const vectors = [];
+        const zoneNormal = zone .normal();
+        const zoneColor = convertColor( orbitSource .getVectorColor( zoneNormal ) );
+        let scale = orbit .getUnitLength();
+        for ( let i = 0; i < 5; i++ ) {
+          scale = scale .times( field .createPower( 1 ) );
+          const gridPoint = zoneNormal .scale( scale );
+          vectors .push( { point: gridPoint, scale } );
+        }
+        
+        zones .push( { name: orbit.getName(), zone, orientation, color: zoneColor, vectors } );
+      }
+      orbitSource .buildPlanes[ planeName ] = { color, normal, zones, orientation };
+    }
   }
 
   // TODO: replace the legacyCommandFactory, which was for the old {shown,hidden,selected} model
