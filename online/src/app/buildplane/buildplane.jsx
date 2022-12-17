@@ -168,9 +168,9 @@ const Hinge = ( { state, buildPlanes, actions } ) =>
   )
 }
 
-export const BuildPlane = ( { buildPlanes, state, actions } ) =>
+export const BuildPlane = ( { state, actions } ) =>
 {
-  const { center, diskZone } = state;
+  const { center, diskZone, buildPlanes } = state;
   const { orbit, orientation } = diskZone;
   const [ planeMaterial, planeMaterialRef ] = useState()
 
