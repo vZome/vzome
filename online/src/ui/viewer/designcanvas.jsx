@@ -71,7 +71,9 @@ const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamer
   // Here we can useThree, etc., which we could not in DesignCanvas
 
   const [ needsRender, setNeedsRender ] = useState( 20 );
-  const trackballChange = evt => setNeedsRender( 20 );
+  const trackballChange = evt => {
+    setNeedsRender( 20 );
+  };
   useFrame( ({ gl, scene, camera }) => {
     if ( needsRender > 0 ) {
       gl.render( scene, camera );
@@ -104,30 +106,38 @@ const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamer
     backgroundColor: (lighting && lighting.backgroundColor) || defaultLighting.backgroundColor,
   }));
 
-  return forVR? (
+  return (
     <>
-      <Lighting {...(lights)} />
-      <PerspectiveCamera makeDefault manual { ...{ fov, position, up, near, far } } />
-      <TrackballControls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
-    </>
-  )
-  : (
-    <>
-      { perspective?
-        <PerspectiveCamera makeDefault { ...{ fov, position, up } } >
-          <Lighting {...(lights)} />
-        </PerspectiveCamera>
-      :
-        <OrthographicCamera makeDefault { ...{ position, up, near, far, left: -halfX, right: halfX, top: halfY, bottom: -halfY } } >
-          <Lighting {...(lights)} />
-        </OrthographicCamera>
-      }
-      <TrackballControls onChange={trackballChange} onEnd={trackballEnd} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={lookAt}
-        // The interpretation of min/maxDistance here is just a mystery, when OrthographicCamera is in use 
-        {...( !perspective && { minDistance: 0.3, maxDistance: 1.5} )}
-      />
+      <PerspectiveCamera makeDefault { ...{ fov, position, up } } >
+        <Lighting {...(lights)} />
+      </PerspectiveCamera>
+      <TrackballControls onChange={trackballChange} onEnd={trackballEnd} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={lookAt} />
     </>
   );
+  // return forVR? (
+  //   <>
+  //     <Lighting {...(lights)} />
+  //     <PerspectiveCamera makeDefault manual { ...{ fov, position, up, near, far } } />
+  //     <TrackballControls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
+  //   </>
+  // )
+  // : (
+  //   <>
+  //     { perspective?
+  //       <PerspectiveCamera makeDefault { ...{ fov, position, up } } >
+  //         <Lighting {...(lights)} />
+  //       </PerspectiveCamera>
+  //     :
+  //       <OrthographicCamera makeDefault { ...{ position, up, near, far, left: -halfX, right: halfX, top: halfY, bottom: -halfY } } >
+  //         <Lighting {...(lights)} />
+  //       </OrthographicCamera>
+  //     }
+  //     <TrackballControls onChange={trackballChange} onEnd={trackballEnd} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={lookAt}
+  //       // The interpretation of min/maxDistance here is just a mystery, when OrthographicCamera is in use 
+  //       {...( !perspective && { minDistance: 0.3, maxDistance: 1.5} )}
+  //     />
+  //   </>
+  // );
 }
 
 export const DesignCanvas = ( { lighting, children, handleBackgroundClick=()=>{} } ) =>
