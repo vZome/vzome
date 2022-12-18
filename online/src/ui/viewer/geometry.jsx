@@ -5,10 +5,10 @@ import { useEmbedding, useRotation, useGeometry } from './hooks.js'
 import { useThree, useFrame } from '@react-three/fiber'
 import { GLTFExporter } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/exporters/GLTFExporter.js';
 
-const Instance = ( { id, position, rotation, geometry, color, selected, type, callbacks } ) =>
+const Instance = ( { id, position, rotation, geometry, color, selected, type, toolRef } ) =>
 {
   const ref = useRotation( rotation );
-  const { onClick, onHover } = callbacks;
+  const { onClick, onHover } = toolRef?.current || {};
   
   const handleHover = value => e =>
   {
@@ -19,7 +19,7 @@ const Instance = ( { id, position, rotation, geometry, color, selected, type, ca
   {
     if ( onClick ) { // may be undefined when the model is not editable, or when the object is not clickable in the current mode
       e.stopPropagation()
-      onClick && onClick( id, position, type, selected )
+      onClick( id, position, type, selected )
     }
   }
   const emissive = selected? "#f6f6f6" : "black"
@@ -34,7 +34,7 @@ const Instance = ( { id, position, rotation, geometry, color, selected, type, ca
   )
 }
 
-const InstancedShape = ( { shape, callbacks } ) =>
+const InstancedShape = ( { shape, toolRef } ) =>
 {
   const geometry = useGeometry( shape );
   if ( shape.instances.length === 0 )
@@ -42,12 +42,12 @@ const InstancedShape = ( { shape, callbacks } ) =>
   return (
     <>
       { shape.instances.map( instance =>
-        <Instance key={instance.id} {...instance} geometry={geometry} callbacks={callbacks} /> ) }
+        <Instance key={instance.id} {...instance} geometry={geometry} toolRef={toolRef} /> ) }
     </>
   )
 }
 
-export const ShapedGeometry = forwardRef(( { shapes, embedding, callbacks }, exporterRef ) =>
+export const ShapedGeometry = forwardRef(( { shapes, embedding, toolRef }, exporterRef ) =>
 {
   const { scene } = useThree();
 
@@ -82,7 +82,7 @@ export const ShapedGeometry = forwardRef(( { shapes, embedding, callbacks }, exp
   return ( shapes &&
     <group matrixAutoUpdate={false} ref={ref} onPointerMissed={bkgdClick}>
       { Object.values( shapes ).map( shape =>
-        <InstancedShape key={shape.id} {...{ shape, callbacks }} />
+        <InstancedShape key={shape.id} {...{ shape, toolRef }} />
       ) }
     </group>
   ) || null

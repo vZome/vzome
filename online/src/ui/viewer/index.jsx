@@ -23,8 +23,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { create } from 'jss';
 
-import { ShapedGeometry } from './geometry.jsx'
-import { DesignCanvas } from './designcanvas.jsx'
+import { SceneCanvas } from './scenecanvas.jsx';
 import { createWorkerStore, fetchDesign, whilePerspective, doControllerAction } from './store.js';
 import { Spinner } from './spinner.jsx'
 import { ErrorAlert } from './alert.jsx'
@@ -69,7 +68,7 @@ const fullScreenStyle = {
   zIndex: '1300',
 };
 
-export const DesignViewer = ( { children, children3d, config={}, callbacks={} } ) =>
+export const DesignViewer = ( { children, children3d, config={}, toolRef={} } ) =>
 {
   const { showScenes=false, useSpinner=false, allowFullViewport=false, undoRedo=false } = config;
   const source = useSelector( state => state.source );
@@ -114,7 +113,7 @@ export const DesignViewer = ( { children, children3d, config={}, callbacks={} } 
   const exportGLTF = () =>
   {
     hideDownloadMenu();
-    const vName = source.name;
+    const vName = source.name || 'untitled.vZome';
     const name = vName.substring( 0, vName.length-6 ).concat( ".gltf" );
     if ( !exporterRef.current ) return;
     const writeFile = text => download( name, text, 'model/gltf+json' );
@@ -123,7 +122,7 @@ export const DesignViewer = ( { children, children3d, config={}, callbacks={} } 
   const exportSceneJSON = () =>
   {
     hideDownloadMenu();
-    const vName = source.name;
+    const vName = source.name || 'untitled.vZome';
     const name = vName.substring( 0, vName.length-6 ).concat( ".json" );
     const text = JSON .stringify( scene, null, 2 );
     download( name, text, 'application/json' );
@@ -136,12 +135,7 @@ export const DesignViewer = ( { children, children3d, config={}, callbacks={} } 
   return (
     <div ref={containerRef} style={ fullScreen? fullScreenStyle : normalStyle }>
       { scene?
-        <DesignCanvas lighting={scene.lighting} sceneCamera={ { ...scene.camera } } syncCamera={syncCamera} handleBackgroundClick={callbacks.bkgdClick} >
-          { scene.shapes &&
-            <ShapedGeometry ref={exporterRef} embedding={scene.embedding} shapes={scene.shapes} callbacks={callbacks} />
-          }
-          {children3d}
-        </DesignCanvas>
+        <SceneCanvas { ...{ scene, toolRef, syncCamera, children3d } } ref={exporterRef} />
         : children // This renders the light DOM if the scene couldn't load
       }
 
