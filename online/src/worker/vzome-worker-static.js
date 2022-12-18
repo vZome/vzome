@@ -167,7 +167,7 @@ const clientEvents = report =>
 
   const selectionToggled = ( shapeId, id, selected ) => report( { type: 'SELECTION_TOGGLED', payload: { shapeId, id, selected } } );
 
-  const symmetryChanged = details => report( { type: 'WORKING_PLANE_GRID_DEFINED', payload: details } );
+  const symmetryChanged = details => report( { type: 'PLANES_DEFINED', payload: details } );
 
   const xmlParsed = xmlTree => report( { type: 'DESIGN_XML_PARSED', payload: xmlTree } );
 
@@ -183,6 +183,7 @@ const clientEvents = report =>
 
 const createDesign = ( report, fieldName ) =>
 {
+  report( { type: 'FETCH_STARTED', payload: { name: 'untitled.vZome', preview: false } } );
   return import( './legacy/dynamic.js' )
 
     .then( module => {

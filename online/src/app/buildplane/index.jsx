@@ -3,7 +3,7 @@
 import "regenerator-runtime/runtime";
 
 import React, { useReducer } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, useStore } from 'react-redux';
 import { render } from 'react-dom'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
@@ -30,33 +30,27 @@ const App = () =>
 {
   useNewDesign(); // has to be nested here, since it needs Redux context
   const sendToWorker = useDispatch();
-  const doJoinBalls = ( i1, i2 ) => sendToWorker( joinBalls( i1, i2 ) );
-  const buildPlanes = useSelector( reduxState => reduxState.buildPlanes ); // from the main Redux store
-  const origin = useSelector( reduxState => reduxState.origin );
 
   // TODO: encapsulate the build plane as a "tool", including a UI
   const [ state, dispatch ] = useReducer( reducer, initialState ); // dedicated local store
-
-  // The last ball created always gets to be the new plane center
+  const reduxStore = useStore();
   useEffect( () => {
-    if ( origin ) {
-      const { id, position } = origin;
-      dispatch( doSetCenter( id, position ) );
-    }
-  }, [ origin ] );
+    // Connect the worker store to the local store, to listen to worker events
+    reduxStore .setFallbackStore( { dispatch } )
+  }, [] );
 
   const ballCallbacks = {
     bkgdClick: ( e ) => isLeftMouseButton( e ) && dispatch( doToggleDisk() ),
     onClick: ( id, position, type, selected ) => {
       if ( type === 'ball' ) {
         if ( state.endPt ) {
-          doJoinBalls( state.center.id, id );
+          sendToWorker( joinBalls( state.center.id, id ) );
         }
         dispatch( doSetCenter( id, position ) );
       }
     },
-    onHover: ( id, position, type, value ) => {
-      if ( value && state.buildingStruts && state.center.position ) {
+    onHover: ( id, position, type, starting ) => {
+      if ( starting && state.buildingStruts && state.center ?.position ) {
         if ( type === 'ball' ) {
           const [ x0, y0, z0 ] = state.center.position;
           const [ x1, y1, z1 ] = position;
@@ -80,15 +74,15 @@ const App = () =>
       <VZomeAppBar oneDesign={false} pathToRoot='..' forDebugger={false} title='vZome Online'
         about={ <>
           <Typography gutterBottom>
-            This is an experimental in-browser modeling tool
+            This is an experimental web-based modeling tool
             for <Link target="_blank" href="https://zometool.com" rel="noopener" >Zometool</Link>,
             based on <Link target="_blank" href="https://vzome.com" rel="noopener" >vZome</Link> technology.
           </Typography>
         </> }
       />
       <DesignViewer config={ { useSpinner: true } } callbacks={ballCallbacks}
-        children3d={ buildPlanes && state.enabled &&
-          <BuildPlane {...{ buildPlanes, state }} actions={actions} />
+        children3d={ state.buildPlanes && state.enabled && state.center &&
+          <BuildPlane {...{ state }} actions={actions} />
         } />
     </>
   );

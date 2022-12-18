@@ -74,7 +74,7 @@ const reducer = ( state = initialState, event ) =>
     }
 
     case 'TEXT_FETCHED':
-      return { ...state, source: event.payload, origin: undefined };
+      return { ...state, source: event.payload };
 
     case 'DESIGN_XML_SAVED': {
       return { ...state, source: { ...state.source, changedText: event.payload } };
@@ -103,17 +103,7 @@ const reducer = ( state = initialState, event ) =>
       const { scene, edit } = event.payload;
       const camera = scene.camera || state.scene.camera;
       // may need to merge scene.shapes here, if we ever have an incremental case
-      let origin = state.origin;
-      if ( ! origin ) // This is a one-shot deal, designed to give us an origin for a new model
-        for ( const shapeId in scene.shapes ) {
-          const shape = scene.shapes[ shapeId ];
-          const instance = shape .instances[ 0 ];
-          if ( instance ?.type === 'ball' ) {
-            origin = instance;
-            break;
-          }
-        }
-      return { ...state, edit, scene: { ...state.scene, ...scene, camera }, waiting: false, origin };
+      return { ...state, edit, scene: { ...state.scene, ...scene, camera }, waiting: false };
     }
 
     case 'SHAPE_DEFINED': {
@@ -167,10 +157,6 @@ const reducer = ( state = initialState, event ) =>
     case 'CONTROLLER_PROPERTY_CHANGED': {
       const { controllerPath, name, value } = event.payload;
       return { ...state, controller: { ...state.controller, [ subcontroller( controllerPath, name ) ]: value } };
-    }
-
-    case 'WORKING_PLANE_GRID_DEFINED': {
-      return { ...state, buildPlanes: event.payload }
     }
 
     default:
@@ -324,6 +310,8 @@ export const createWorkerStore = ( customElement, moreMiddleware ) =>
 
   const preloadedState = initialState;
 
+  let fallbackStore;
+
   const store = configureStore( {
     reducer,
     preloadedState,
@@ -337,10 +325,15 @@ export const createWorkerStore = ( customElement, moreMiddleware ) =>
     devTools: true,
   });
 
+  store .setFallbackStore = other => fallbackStore = other;
+
   const onWorkerMessage = ({ data }) => {
     // console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
 
     store .dispatch( data );  // forward to the reducer(s)
+
+    if ( fallbackStore )
+      fallbackStore .dispatch( data );
 
     // Useful for supporting regression testing of the vzome-viewer web component
     if ( customElement ) {
