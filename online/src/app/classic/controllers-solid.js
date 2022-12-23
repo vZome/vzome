@@ -8,6 +8,7 @@ export const createWorkerStore = () =>
 {
   const [ state, setState ] = createStore( initialState );
 
+  // TODO: try to replace this with use of the reducer from store.js
   const onWorkerMessage = ({ data }) => {
     // console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
 

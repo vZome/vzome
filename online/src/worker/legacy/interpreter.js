@@ -1,11 +1,6 @@
 
 import { realizeShape, normalizeRenderedManifestation } from './scenes.js';
 
-// TODO: put this in a module that both worker and main context can use.
-
-import { convertColor } from "./core.js";
-import { realizeShape, normalizeRenderedManifestation } from './scenes.js';
-
 //  Right now this is duplicated!
 export const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
 

@@ -1,6 +1,5 @@
 
 import React, { useMemo, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { VRCanvas, DefaultXRControllers, useXR, RayGrab } from '@react-three/xr'
 import * as THREE from 'three'

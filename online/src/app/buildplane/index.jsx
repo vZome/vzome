@@ -10,10 +10,9 @@ import Link from '@material-ui/core/Link'
 
 import { VZomeAppBar } from '../components/appbar.jsx'
 import { BuildPlane } from './buildplane.jsx'
-import { useNewDesign } from '../classic/controller-hooks.js';
 import { DesignViewer, WorkerContext } from '../../ui/viewer/index.jsx'
 import { reducer, initialState, doToggleDisk, doSetCenter, doStrutPreview, doSelectPlane, doSelectHinge, doToggleBuild } from './planes.js';
-import { createStrut, joinBalls } from '../../ui/viewer/store.js';
+import { createStrut, joinBalls, newDesign } from '../../ui/viewer/store.js';
 import { useEffect } from "react";
 
 const isLeftMouseButton = e =>
@@ -28,7 +27,6 @@ const isLeftMouseButton = e =>
 
 const App = () =>
 {
-  useNewDesign(); // has to be nested here, since it needs Redux context
   const sendToWorker = useDispatch();
 
   // TODO: encapsulate the build plane as a "tool", including a UI
@@ -37,6 +35,7 @@ const App = () =>
   useEffect( () => {
     // Connect the worker store to the local store, to listen to worker events
     reduxStore .setFallbackStore( { dispatch } )
+    sendToWorker( newDesign() );
   }, [] );
 
   const ballCallbacks = {

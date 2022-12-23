@@ -2,9 +2,6 @@
 import { JsProperties } from './legacy/jsweet2js.js';
 
 // support trampolining to work around worker CORS issue
-
-import { JsProperties } from './legacy/jsweet2js.js';
-
 //   see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
 export const WORKER_ENTRY_FILE_URL = import.meta.url;
 

@@ -117,7 +117,7 @@ export const DesignViewer = ( { children, children3d, config={}, callbacks={} } 
   return (
     <div ref={containerRef} style={ fullScreen? fullScreenStyle : normalStyle }>
       { scene?
-        <DesignCanvas lighting={scene.lighting} camera={ { ...scene.camera } } handleBackgroundClick={callbacks.bkgdClick} >
+        <DesignCanvas lighting={scene.lighting} sceneCamera={ { ...scene.camera } } syncCamera={syncCamera} handleBackgroundClick={callbacks.bkgdClick} >
           { scene.shapes &&
             <ShapedGeometry ref={exporterRef} embedding={scene.embedding} shapes={scene.shapes} callbacks={callbacks} />
           }

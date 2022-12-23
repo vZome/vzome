@@ -10,8 +10,6 @@ const GeometryCanvas = solidify( Canvas );
 
 export const ClassicEditor = () =>
 {
-  // const makeHyperdo = useControllerAction( '', 'Polytope4d' );
-
   const { rootController, getScene } = createWorkerStore();
 
   const bookmarkController = () => subController( rootController(), 'bookmark' );
@@ -21,9 +19,9 @@ export const ClassicEditor = () =>
   const symmController     = () => subController( strutBuilder(), 'symmetry' );
   const toolsController    = () => subController( strutBuilder(), 'tools' );
 
-  const handleClick = ( id, vectors, selected ) =>
-  {
-    controllerAction( pickingController(), 'SelectManifestation', { id } );
+  const callbacks = {
+    onClick: ( id, position, type, selected ) =>
+      controllerAction( pickingController(), 'SelectManifestation', { id } ),
   }
 
   return (
@@ -40,7 +38,7 @@ export const ClassicEditor = () =>
           <ToolBar symmetryController={symmController()} toolsController={toolsController()} />
           <div id='canvas-and-bookmarks' style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
             <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} />
-            <GeometryCanvas scene={getScene()} onClick={handleClick} />
+            <GeometryCanvas scene={getScene()} callbacks={callbacks} />
           </div>
         </div>
 

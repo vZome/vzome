@@ -1,5 +1,6 @@
 
 import { configureStore } from '@reduxjs/toolkit'
+import { REVISION } from '../../revision.js';
 
 export const initialState = {
   scene: {
@@ -273,23 +274,11 @@ const branchSelectionBlocks = node =>
     return node;
 }
 
-let workerPromise;
-const workerSubscribers = [];
-
-export const postWorkerMessage = msg =>
-{
-  workerPromise .then( worker => {
-    worker.postMessage( msg );
-  } );
-}
-
-export const addWorkerSubscriber = subscriber => workerSubscribers .push( subscriber );
-
 export const createWorkerStore = ( customElement, moreMiddleware ) =>
 {
   // trampolining to work around worker CORS issue
   // see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
-  workerPromise = import( "../../worker/vzome-worker-static.js" )
+  const workerPromise = import( "../../worker/vzome-worker-static.js" )
     .then( module => {
       const blob = new Blob( [ `import "${module.WORKER_ENTRY_FILE_URL}";` ], { type: "text/javascript" } );
       const worker = new Worker( URL.createObjectURL( blob ), { type: "module" } );
