@@ -16,11 +16,13 @@ import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser'
 import SettingsIcon from '@material-ui/icons/Settings'
 import Link from '@material-ui/core/Link';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import { create } from 'jss';
 
 import { ShapedGeometry } from './geometry.jsx'
 import { DesignCanvas } from './designcanvas.jsx'
-import { createWorkerStore, defineCamera, fetchDesign, selectEditBefore, whilePerspective } from './store.js';
+import { createWorkerStore, fetchDesign, whilePerspective, serializeVZomeXml } from './store.js';
 import { Spinner } from './spinner.jsx'
 import { ErrorAlert } from './alert.jsx'
 import { SettingsDialog } from './settings.jsx';
@@ -28,10 +30,9 @@ import { useVR } from './hooks.js';
 import { SceneMenu } from './scenes.jsx';
 
 // from https://www.bitdegree.org/learn/javascript-download
-const download = source =>
+const download = ( name, text, type ) =>
 {
-  const { name, text } = source;
-  const blob = new Blob( [ text ], { type : 'application/xml' } );
+  const blob = new Blob( [ text ], { type } );
   const element = document.createElement( 'a' )
   const blobURI = URL.createObjectURL( blob )
   element.setAttribute( 'href', blobURI )
@@ -61,7 +62,7 @@ const fullScreenStyle = {
   zIndex: '1300',
 };
 
-export const DesignViewer = ( { children, children3d, config={} } ) =>
+export const DesignViewer = ( { children, children3d, config={}, callbacks={} } ) =>
 {
   const { showScenes=false, useSpinner=false, allowFullViewport=false } = config;
   const source = useSelector( state => state.source );
@@ -86,12 +87,39 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
     report( whilePerspective( perspective, () => setFullScreen( !fullScreen ) ) );
   }
 
+  const [ downloadAnchor, setDownloadAnchor ] = useState( null );
+  const exporterRef = useRef();
+  const showDownloadMenu = (event) => setDownloadAnchor( event.currentTarget );
+  const hideDownloadMenu = () => setDownloadAnchor( null );
+  const downloadVZome = () =>
+  {
+    hideDownloadMenu();
+    const { name, text, changedText } = source;
+    const fileName = name || 'untitled.vZome';
+    if ( changedText ) {
+      const { camera, liveCamera, lighting } = scene;
+      const fullText = serializeVZomeXml( changedText, liveCamera || camera, lighting );
+      download( fileName, fullText, 'application/xml' );
+    }
+    else
+      download( fileName, text, 'application/xml' );
+  }
+  const exportGLTF = () =>
+  {
+    hideDownloadMenu();
+    const vName = source.name;
+    const name = vName.substring( 0, vName.length-6 ).concat( ".gltf" );
+    if ( !exporterRef.current ) return;
+    const writeFile = text => download( name, text, 'model/gltf+json' );
+    exporterRef.current .exportGltfJson( writeFile );
+  }
+
   return (
     <div ref={containerRef} style={ fullScreen? fullScreenStyle : normalStyle }>
       { scene?
-        <DesignCanvas lighting={scene.lighting} sceneCamera={sceneCamera} syncCamera={syncCamera} >
+        <DesignCanvas lighting={scene.lighting} camera={ { ...scene.camera } } handleBackgroundClick={callbacks.bkgdClick} >
           { scene.shapes &&
-            <ShapedGeometry embedding={scene.embedding} shapes={scene.shapes} />
+            <ShapedGeometry ref={exporterRef} embedding={scene.embedding} shapes={scene.shapes} callbacks={callbacks} />
           }
           {children3d}
         </DesignCanvas>
@@ -131,12 +159,25 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
         </IconButton>
       }
 
-      { source && source.text &&
-        <IconButton color="inherit" aria-label="download"
-            style={ { position: 'absolute', bottom: '5px', left: '5px' } }
-            onClick={() => download( source ) } >
-          <GetAppRoundedIcon fontSize='large'/>
-        </IconButton>
+      { source && ( source.text || source.changedText ) &&
+        <>
+          <IconButton color="inherit" aria-label="export"
+              style={ { position: 'absolute', bottom: '5px', left: '5px' } }
+              onClick={ showDownloadMenu } >
+            <GetAppRoundedIcon fontSize='large'/>
+          </IconButton>
+          <Menu
+            id="export-menu"
+            anchorEl={downloadAnchor}
+            container={containerRef.current}
+            keepMounted
+            open={Boolean(downloadAnchor)}
+            onClose={hideDownloadMenu}
+          >
+            <MenuItem onClick={downloadVZome}>.vZome source</MenuItem>
+            <MenuItem onClick={exportGLTF}>glTF scene</MenuItem>
+          </Menu>
+        </>
       }
 
       <ErrorAlert/>

@@ -1,16 +1,27 @@
 
+import { configureStore } from '@reduxjs/toolkit'
+
 export const initialState = {
   scene: {
     camera: {
-      near: 0.1,
-      far: 80,
-      width: 18,
-      distance: 40,
+      near: 0.271828,
+      far: 217,
+      width: 48,
+      distance: 108,
       up: [ 0, 1, 0 ],
       lookAt: [ 0, 0, 0 ],
       lookDir: [ 0, 0, -1 ],
       perspective: true,
-    }
+    },
+    lighting: {
+      backgroundColor: '#BBDAED',
+      ambientColor: '#555555',
+      directionalLights: [ // These are the vZome defaults, for consistency
+        { direction: [ 1, -1, -0.3 ], color: '#FDFDFD' },
+        { direction: [ -1, 0, -0.2 ], color: '#B5B5B5' },
+        { direction: [ 0, 0, -1 ], color: '#303030' },
+      ]
+    },
   }
 };
 
@@ -38,6 +49,8 @@ export const openDesignFile = ( file, debug=false ) => workerAction( 'FILE_PROVI
 export const newDesign = () => workerAction( 'NEW_DESIGN_STARTED', { field: 'golden' } );
 export const doControllerAction = ( controllerPath='', action, parameters ) => workerAction( 'ACTION_TRIGGERED', { controllerPath, action, parameters } );
 export const requestControllerProperty = ( controllerPath='', propName, changeName, isList ) => workerAction( 'PROPERTY_REQUESTED', { controllerPath, propName, changeName, isList } );
+export const createStrut = ( id, plane, zone, index, orientation ) => workerAction( 'STRUT_CREATION_TRIGGERED', { id, plane, zone, index, orientation } );
+export const joinBalls = ( id1, id2 ) => workerAction( 'JOIN_BALLS_TRIGGERED', { id1, id2 } );
 
 export const subcontroller = ( controllerPath, subName ) => controllerPath + ':' + subName;
 
@@ -62,7 +75,11 @@ const reducer = ( state = initialState, event ) =>
     case 'TEXT_FETCHED':
       return { ...state, source: event.payload };
 
-    case 'DESIGN_INTERPRETED': {
+    case 'DESIGN_XML_SAVED': {
+      return { ...state, source: { ...state.source, changedText: event.payload } };
+    }
+
+    case 'DESIGN_XML_PARSED': {
       let xmlTree = event.payload;
       const attributes = {};
       const indexAttributes = node => node.children && node.children.map( child => {
@@ -83,8 +100,38 @@ const reducer = ( state = initialState, event ) =>
     case 'SCENE_RENDERED': {
       // TODO: I wish I had a better before/after contract with the worker
       const { scene, edit } = event.payload;
+      const camera = scene.camera || state.scene.camera;
       // may need to merge scene.shapes here, if we ever have an incremental case
-      return { ...state, edit, scene: { ...state.scene, ...scene }, waiting: false };
+      return { ...state, edit, scene: { ...state.scene, ...scene, camera }, waiting: false };
+    }
+
+    case 'SHAPE_DEFINED': {
+      const shape = event.payload;
+      const shapes = { ...state.scene.shapes, [ shape.id ]: shape };
+      return { ...state, scene: { ...state.scene, shapes }, waiting: false };
+      break;
+    }
+
+    case 'INSTANCE_ADDED': {
+      let instance = event.payload;
+      //  TODO: put this granularity in when I've switched to SolidJS for the rendering
+      // const [ selected, setSelected ] = createSignal( instance.selected );
+      // const [ color, setColor ] = createSignal( instance.color );
+      // instance = { ...instance, color, setColor, selected, setSelected };
+      const shape = state.scene.shapes[ instance.shapeId ];
+      const shapes = { ...state.scene.shapes, [ shape.id ]: { ...shape, instances: [ ...shape.instances, instance ] } };
+      return { ...state, scene: { ...state.scene, shapes }, waiting: false, lastInstance: instance };
+      break;
+    }
+
+    case 'SELECTION_TOGGLED': {
+      const { shapeId, id, selected } = event.payload;
+      const shape = state.scene.shapes[ shapeId ];
+      const instances = shape .instances.map( inst => (
+        inst.id !== id ? inst : { ...inst, selected }
+      ));
+      const shapes = { ...state.scene.shapes, [ shapeId ]: { ...shape, instances } };
+      return { ...state, scene: { ...state.scene, shapes }, waiting: false };
     }
 
     case 'CAMERA_DEFINED': {
@@ -98,8 +145,8 @@ const reducer = ( state = initialState, event ) =>
     }
 
     case 'TRACKBALL_MOVED': {
-      const trackball = event.payload;
-      return { ...state, scene: { ...state.scene, trackball } };
+      const liveCamera = { ...state.scene.camera, ...event.payload };
+      return { ...state, scene: { ...state.scene, liveCamera } };
     }
 
     case 'CONTROLLER_CREATED': {
@@ -115,6 +162,90 @@ const reducer = ( state = initialState, event ) =>
       return state;
   }
 };
+
+const serializeLighting = ( lighting, doc ) =>
+{
+  const getRGB = color =>{
+    const [ r, g, b ] = [ parseInt( color.substr(1, 2), 16 ), parseInt( color.substr(3, 2), 16 ), parseInt( color.substr(5, 2), 16 ) ];
+    return r + ',' + g + ',' + b;
+  }
+  const { ambientColor, backgroundColor, directionalLights } = lighting;
+  const sceneModel = doc .createElement( "sceneModel" );
+  sceneModel .setAttribute( "ambientLight", getRGB( ambientColor ) );
+  sceneModel .setAttribute( "background", getRGB( backgroundColor ) );
+  for (const dlight of directionalLights) {
+    const { color, direction } = dlight;
+    const child = doc .createElement( "directionalLight" );
+    child .setAttribute( "color", getRGB( color ) );
+    child .setAttribute( "x", String( direction[ 0 ] ) );
+    child .setAttribute( "y", String( direction[ 1 ] ) );
+    child .setAttribute( "z", String( direction[ 2 ] ) );
+    sceneModel .appendChild( child );
+  }
+  return sceneModel;
+}
+
+const serializeCamera = ( camera, doc ) =>
+{
+  const { near, far, width, distance, perspective, lookAt, lookDir, up } = camera;
+  const viewing = doc .createElement( "Viewing" );
+  const viewmodel = doc .createElement( "ViewModel" );
+  viewing .appendChild( viewmodel );
+  viewmodel .setAttribute( "near", String( near ) );
+  viewmodel .setAttribute( "far", String( far ) );
+  viewmodel .setAttribute( "width", String( width ) );
+  viewmodel .setAttribute( "distance", String( distance ) );
+  viewmodel .setAttribute( "stereoAngle", "0.0" );
+  viewmodel .setAttribute( "parallel", String( !perspective ) );
+  {
+      const child = doc .createElement( "LookAtPoint" );
+      child .setAttribute( "x", String( lookAt[ 0 ] ) );
+      child .setAttribute( "y", String( lookAt[ 1 ] ) );
+      child .setAttribute( "z", String( lookAt[ 2 ] ) );
+      viewmodel .appendChild( child );
+  }
+  {
+      const child = doc .createElement( "UpDirection" );
+      child .setAttribute( "x", String( up[ 0 ] ) );
+      child .setAttribute( "y", String( up[ 1 ] ) );
+      child .setAttribute( "z", String( up[ 2 ] ) );
+      viewmodel .appendChild( child );
+  }
+  {
+      const child = doc .createElement( "LookDirection" );
+      child .setAttribute( "x", String( lookDir[ 0 ] ) );
+      child .setAttribute( "y", String( lookDir[ 1 ] ) );
+      child .setAttribute( "z", String( lookDir[ 2 ] ) );
+      viewmodel .appendChild( child );
+  }
+  return viewing;
+}
+
+export const serializeVZomeXml = ( xmlStr, camera, lighting ) =>
+{
+  const parser = new DOMParser();
+  const doc = parser .parseFromString( xmlStr, "application/xml" );
+
+  const rootElement = doc .documentElement;
+  const field = rootElement .getAttribute( 'field' );
+
+  const children = rootElement .childNodes;
+
+  const newRoot = document .createElementNS( 'http://xml.vzome.com/vZome/4.0.0/', 'vzome:vZome' );
+  newRoot .setAttribute( 'field', field );
+  newRoot .setAttribute( 'edition', 'online' );
+  newRoot .setAttribute( 'version', '1.0' );
+  newRoot .setAttribute( 'buildNumber', REVISION );
+  newRoot .replaceChildren( ...children );
+
+  newRoot .appendChild( serializeLighting( lighting, doc ) );
+  newRoot .appendChild( serializeCamera( camera, doc ) );
+
+  rootElement .replaceWith( newRoot );
+
+  const serializer = new XMLSerializer();
+  return serializer .serializeToString( doc );
+}
 
 const branchSelectionBlocks = node =>
 {
@@ -154,7 +285,7 @@ export const postWorkerMessage = msg =>
 
 export const addWorkerSubscriber = subscriber => workerSubscribers .push( subscriber );
 
-export const createWorkerStore = customElement =>
+export const createWorkerStore = ( customElement, moreMiddleware ) =>
 {
   // trampolining to work around worker CORS issue
   // see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
@@ -188,23 +319,32 @@ export const createWorkerStore = customElement =>
         report( event );
   }
 
-  const preloadedState = initialState
+  const preloadedState = initialState;
+
+  let fallbackStore;
 
   const store = configureStore( {
     reducer,
     preloadedState,
-    middleware: getDefaultMiddleware => getDefaultMiddleware().concat( workerSender ),
+    middleware: getDefaultMiddleware => {
+      const someMiddleware = getDefaultMiddleware().concat( workerSender );
+      if ( moreMiddleware )
+        return someMiddleware .concat( moreMiddleware );
+      else
+        return someMiddleware;
+    },
     devTools: true,
   });
+
+  store .setFallbackStore = other => fallbackStore = other;
 
   const onWorkerMessage = ({ data }) => {
     // console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
 
     store .dispatch( data );  // forward to the reducer(s)
 
-    for (const subscriber of workerSubscribers) {
-      subscriber( data );
-    }
+    if ( fallbackStore )
+      fallbackStore .dispatch( data );
 
     // Useful for supporting regression testing of the vzome-viewer web component
     if ( customElement ) {

@@ -270,6 +270,14 @@ public class DocumentModel implements Snapshot .Recorder, Context
         }
 
         mHistory = new EditHistory();
+        mHistory .setSerializer( new EditHistory.XmlSerializer()
+        {
+            @Override
+            public String serialize( Element xmlElement )
+            {
+                return DomSerializer .getXmlString( xmlElement );
+            }
+        });
         mHistory .setListener( new EditHistory.Listener() {
 
             @Override

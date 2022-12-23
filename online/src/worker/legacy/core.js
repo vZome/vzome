@@ -3,8 +3,8 @@ import goldenField from '../fields/golden.js'
 import root2Field from '../fields/root2.js'
 import root3Field from '../fields/root3.js'
 import heptagonField from '../fields/heptagon.js'
-import Adapter from './adapter.js'
-import { algebraicNumberFactory, JavaDomElement, JsProperties } from './jsweet2js.js';
+import { algebraicNumberFactory, JsProperties } from './jsweet2js.js';
+import { JavaDomDocument, JavaDomElement } from './dom.js';
 import { configureLogging } from './logging.js'
 
 import allShapes from './resources/com/vzome/core/parts/index.js'
@@ -292,27 +292,6 @@ const makeFloatMatrices = ( matrices ) =>
     }
     return fieldApp
   }
-
-  // This object implements the UndoableEdit.Context interface
-  const editContext = {
-    // Since we are not creating Branch edits, this should never be used
-    createEdit: () => { throw new Error( "createEdit should never be called" ) },
-
-    createLegacyCommand: name => {
-      const constructor = vzomePkg.core.commands[ name ]
-      if ( constructor )
-        return new constructor()
-      else
-        throw new Error( `${name} command is not available yet`);
-    },
-    
-    // We will do our own edit recording, so this is just perform
-    performAndRecord: edit => edit.perform(),
-
-    doEdit: ( action, props ) => {
-      throw new Error( `${action} command is not implemented yet` );
-    }
-  }
   
   export const getField = fieldName =>
   {
@@ -337,6 +316,35 @@ const makeFloatMatrices = ( matrices ) =>
     const systemXml = xml && xml.getChildElement( "SymmetrySystem" )
     const symmName = systemXml && systemXml.getAttribute( "name" )
     const symmPer = ( symmName && fieldApp.getSymmetryPerspective( symmName ) ) || fieldApp.getDefaultSymmetryPerspective()
+
+    const history = new vzomePkg.core.editor.EditHistory();
+    history .setSerializer( { serialize: element => element .serialize( "" ) } );
+
+    // This object implements the UndoableEdit.Context interface
+    const editContext = {
+      // Since we are not creating Branch edits, this should never be used
+      createEdit: () => { throw new Error( "createEdit should never be called" ) },
+
+      createLegacyCommand: name => {
+        const constructor = vzomePkg.core.commands[ name ]
+        if ( constructor )
+          return new constructor()
+        else
+          throw new Error( `${name} command is not available yet`);
+      },
+      
+      performAndRecord: edit => {
+        edit.perform();
+        if ( edit .isNoOp() )
+          return;
+        history .mergeSelectionChanges();
+        history .addEdit( edit, editContext );
+      },
+
+      doEdit: ( action, props ) => {
+        throw new Error( `${action} command is not implemented yet` );
+      }
+    }
 
     const toolsModel = new vzomePkg.core.editor.ToolsModel( editContext, originPoint )
 
@@ -368,7 +376,10 @@ const makeFloatMatrices = ( matrices ) =>
     }
 
     // This has no analogue in Java DocumentModel
-    orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
+    orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() );
+    orbitSource.permutations = orbitSource .getSymmetry() .getPermutations() .map( p => p .getJsonValue() );
+    collectBuildPlanes( orbitSource );
+
     class OSField {
       constructor(){}
       getGroup( name ) {
@@ -415,6 +426,8 @@ const makeFloatMatrices = ( matrices ) =>
 
     const toolsXml = xml && xml.getChildElement( "Tools" )
     toolsXml && toolsModel.loadFromXml( toolsXml )
+
+    // xml && console.log( xml .serialize( "" ) );
 
     const interpretEdit = ( xmlElement, mesh ) =>
     {
@@ -494,7 +507,7 @@ const makeFloatMatrices = ( matrices ) =>
         return
       // editor.setAdapter( adapter );
       edit.configure( new JsProperties( config ) );
-      edit.perform();
+      editContext .performAndRecord( edit );
     }
 
     const batchRender = renderingListener => {
@@ -502,7 +515,116 @@ const makeFloatMatrices = ( matrices ) =>
       RM.renderChange( new RM( null, null ), renderedModel, renderingListener );
     }
 
-    return { interpretEdit, configureAndPerformEdit, field, renderedModel, batchRender, orbitSource, toolsModel, bookmarkFactory };
+    const serializeToDom = () =>
+    {
+      const doc = new JavaDomDocument();
+
+      // This is not meant to be the traditional "vzome:vZome" root element,
+      //   since the camera and lighting state are not managed here in the worker.
+      //   Furthermore, the main app should control the root attributes.
+      const root = doc .createElement( "design" );
+      root .setAttribute( "field", field.name );
+
+      let childElement;
+      {
+        childElement = history .getXml( doc );
+        let edits = 0, lastStickyEdit=-1;
+        const undoables = history .iterator();
+        while ( undoables .hasNext() ) {
+          const undoable = undoables .next()
+          childElement .appendChild( undoable .getXml( doc ) );
+          ++ edits;
+          if ( undoable .isSticky() )
+            lastStickyEdit = edits;
+        }
+        childElement .setAttribute( "lastStickyEdit", '' + lastStickyEdit );
+      }
+      root .appendChild( childElement );
+
+      // childElement = lesson .getXml( doc );
+      // root .appendChild( childElement );
+
+      childElement = orbitSource .getXml( doc );
+      root .appendChild( childElement );
+
+      // We have to store all symmetries, not just the current one, due to sequences like this:
+      //   1. drag an icosahedral olive strut
+      //   2. switch to octahedral symmetry
+      //   3. do "build with this" on the olive strut
+      //   4. drag out a strut
+      //   5. switch back to icosahedral symmetry
+      // The end result is that the command in step 4 records the name of an automatic orbit.
+      // That automatic orbit must be captured in the file.
+      childElement = doc .createElement( "OtherSymmetries" );
+      for ( const symmetrySystem of Object.values( symmetrySystems ) ) {
+          if ( symmetrySystem === orbitSource )
+              continue; // already serialized above
+          const symmElement = symmetrySystem .getXml( doc );
+          childElement .appendChild( symmElement );
+      }
+      root .appendChild( childElement );
+
+      childElement = toolsModel .getXml( doc );
+      root .appendChild( childElement );
+
+      return root;
+    }
+
+    return { interpretEdit, configureAndPerformEdit, field, renderedModel, batchRender, orbitSource, toolsModel, bookmarkFactory, serializeToDom };
+  }
+
+  export const convertColor = color =>
+  {
+    if ( !color )
+      return '#ffffff';
+
+    const componentToHex = c => {
+      let hex = c.toString(16);
+      return hex.length == 1 ? "0" + hex : hex;
+    }
+    return "#" + componentToHex(color.getRed()) + componentToHex(color.getGreen()) + componentToHex(color.getBlue());
+  }
+
+  const collectBuildPlanes = ( orbitSource ) =>
+  {
+    const field = orbitSource .getSymmetry() .getField();
+    orbitSource .buildPlanes = {};
+
+    const orbitIterator = orbitSource .getOrbits() .getDirections() .iterator();
+    while ( orbitIterator .hasNext() ) {
+      const planeOrbit = orbitIterator .next();
+      if ( ! planeOrbit .isStandard() )
+        continue;
+      const planeName = planeOrbit .getName();
+      const color = convertColor( orbitSource .getColor( planeOrbit ) );
+      const planeZone = planeOrbit .getAxis( 0, 0 );
+      const orientation = planeZone .orientation;
+      const normal = planeZone .normal();
+
+      const zones = [];
+
+      const planeOrbits = new vzomePkg.core.math.symmetry.PlaneOrbitSet( orbitSource.getOrbits(), normal );
+      const iterator = planeOrbits .zones();
+      while ( iterator .hasNext() ) {
+        const zone = iterator .next()
+        const orientation = zone .getOrientation();
+        const orbit = zone .getDirection();
+        if ( ! orbit .isStandard() )
+          continue;
+        const vectors = [];
+        const zoneNormal = zone .normal();
+        const zoneColor = convertColor( orbitSource .getVectorColor( zoneNormal ) );
+        let scale = orbit .getUnitLength();
+        for ( let i = 0; i < 5; i++ ) {
+          scale = scale .times( field .createPower( 1 ) );
+          const gridPoint = zoneNormal .scale( scale );
+          vectors .push( { point: gridPoint, scale } );
+        }
+        
+        zones .push( { name: orbit.getName(), zone, orientation, color: zoneColor, vectors } );
+      }
+      orbitSource .buildPlanes[ planeName ] = { color, normal, zones, orientation };
+    }
   }
 
   // TODO: replace the legacyCommandFactory, which was for the old {shown,hidden,selected} model
@@ -510,17 +632,6 @@ const makeFloatMatrices = ( matrices ) =>
   // const commands = {}
   // for ( const name of Object.keys( vzomePkg.core.edits ) )
   //   commands[ name ] = legacyCommandFactory( documentFactory, name )
-
-  // Prepare the gridPoints
-  const symmPer = fieldApps.golden.getDefaultSymmetryPerspective()
-  const orbitSource = new vzomePkg.core.editor.SymmetrySystem( null, symmPer, editContext, colors, true )
-  // orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() )
-  const blue = [ [0n,0n,1n], [0n,0n,1n], [1n,0n,1n] ]
-  const yellow = [ [0n,0n,1n], [1n,0n,1n], [1n,1n,1n] ]
-  const red = [ [1n,0n,1n], [0n,0n,1n], [0n,1n,1n] ]
-  const green = [ [1n,0n,1n], [1n,0n,1n], [0n,0n,1n] ]
-  const gridPoints = vzomePkg.jsweet.JsAdapter.getZoneGrid( orbitSource, blue )
-  // store.dispatch( planes.doSetWorkingPlaneGrid( gridPoints ) )
 
   export const parse = createParser( documentFactory )
 

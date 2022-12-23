@@ -2,10 +2,14 @@
 import { realizeShape, normalizeRenderedManifestation } from './scenes.js';
 
 // TODO: put this in a module that both worker and main context can use.
-//  Right now this is duplicated!
-const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
 
-const interpret = ( action, state, stack=[] ) =>
+import { convertColor } from "./core.js";
+import { realizeShape, normalizeRenderedManifestation } from './scenes.js';
+
+//  Right now this is duplicated!
+export const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
+
+export const interpret = ( action, state, stack=[] ) =>
 {
   let edit = state .getNextEdit();
 
@@ -144,7 +148,7 @@ export class RenderHistory
   }
 
   // partial implementation of legacy RenderListener
-  // TODO replace this with scenes.js renderedModelTransducer
+  // TODO replace this with scenes.js renderedModelTransducer? Only if we want incremental events.
   manifestationAdded( rm )
   {
     const shapeId = 's' + rm.getShapeId().toString();
@@ -204,16 +208,4 @@ export class RenderHistory
   {
     return this.error;
   }
-}
-
-export const interpretAndRender = ( design, debug ) =>
-{
-  const renderHistory = new RenderHistory( design );
-  if ( ! debug ) // in debug mode, we'll interpret incrementally
-    try {
-      interpret( Step.DONE, renderHistory, [] );
-    } catch (error) {
-      renderHistory .setError( error );
-    }
-  return renderHistory;
 }

@@ -12,4 +12,5 @@ public interface Element extends Node
 
   public String getAttribute(String name);
 
+  public Object getUserData( String key );
 }

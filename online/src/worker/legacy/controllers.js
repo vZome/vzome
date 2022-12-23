@@ -1,26 +1,31 @@
 
-import { documentFactory } from './core.js'
+import { documentFactory, parse } from './core.js'
 import { com } from './core-java.js'
 import { JsProperties } from './jsweet2js.js';
-import { renderedModelTransducer } from './scenes.js';
+import { resolveBuildPlanes } from './scenes.js';
+import { interpret, RenderHistory, Step } from './interpreter.js';
 
 class EditorController extends com.vzome.desktop.controller.DefaultController
 {
-  constructor( performer )
+  constructor( design, clientEvents )
   {
     super();
-    this.performer = performer;
+    this.design = design;
+    this.clientEvents = clientEvents;
   }
 
   // There are no implementors of doParamAction() in the Java code
   doParamAction( action, params )
   {
-    this.performer .configureAndPerformEdit( action, params && params .getConfig() );
+    this.design .configureAndPerformEdit( action, params && params .getConfig() );
+    const text = this .design .serializeToDom() .toIndentedString( "" );
+    console.log( text );
+    this.clientEvents .designSerialized( text );
   }
 
   doAction( action )
   {
-    this.performer .configureAndPerformEdit( action, {} );
+    this .doParamAction( action, {} );
   }
 }
 
@@ -35,30 +40,142 @@ class PickingController extends com.vzome.desktop.controller.DefaultController
   // There are no implementors of doParamAction() in the Java code
   doParamAction( action, params )
   {
-    const { id } = params .getConfig(); // TODO capture others and forward
+    const config = params .getConfig();
+    const { id } = config;
     if ( id ) {
       const rm = this .renderedModel .getRenderedManifestation( id );
       const picked = rm .getManifestation();
-      super.doParamAction( action, new JsProperties( { picked } ) ); // TODO forward others here
+      super.doParamAction( action, new JsProperties( { ...config, picked } ) );
     }
     else
       super.doParamAction( action, params );
   }
 }
 
-export const newDesign = ( fieldName, sceneReporter ) =>
+class BuildPlaneController extends com.vzome.desktop.controller.DefaultController
 {
-  const { orbitSource, renderedModel, configureAndPerformEdit, batchRender, toolsModel, bookmarkFactory } = documentFactory( fieldName );
-  
+  constructor( renderedModel, orbitSource )
+  {
+    super();
+    this.renderedModel = renderedModel;
+    this.buildPlanes = orbitSource .buildPlanes;
+  }
+
+  // There are no implementors of doParamAction() in the Java code
+  doParamAction( action, params )
+  {
+    const config = params .getConfig();
+    switch (action) {
+
+      case 'STRUT_CREATION_TRIGGERED': {
+        const { id, plane, zone, index, orientation } = config;
+        if ( id ) {
+          const rm = this .renderedModel .getRenderedManifestation( id );
+          const anchor = rm .getManifestation() .toConstruction();
+
+          const buildPlane = this.buildPlanes[ plane ];
+          const buildZone = buildPlane .zones[ zone ];
+          let axis = buildZone .zone; // the Axis object
+          const orbit = axis .getOrbit();
+          const symmetry = orbit .getSymmetry();
+          const permutation = symmetry .getPermutation( orientation );
+          axis = permutation .permute( axis, 0 ); // TODO: is PLUS always right?
+          const length = buildZone .vectors[ index ] .scale;
+
+          super.doParamAction( 'StrutCreation', new JsProperties( { anchor, zone: axis, length } ) );
+          return;
+        } // else fall through
+      }
+    
+      case 'JOIN_BALLS_TRIGGERED': {
+        const { id1, id2 } = config;
+        if ( id1 && id2 ) {
+          const rm1 = this .renderedModel .getRenderedManifestation( id1 );
+          const rm2 = this .renderedModel .getRenderedManifestation( id2 );
+          const start = rm1 .getManifestation() .toConstruction();
+          const end = rm2 .getManifestation() .toConstruction();
+          super.doParamAction( 'JoinPointPair', new JsProperties( { start, end } ) );
+          return;
+        } // else fall through
+      }
+    
+      default:
+        super.doParamAction( action, params );
+    }
+  }
+}
+
+export const loadDesign = ( xml, debug, clientEvents ) =>
+{
+  const design = parse( xml );
+      
+  const { orbitSource, camera, lighting, xmlTree, targetEditId, field, scenes } = design;
+  if ( field.unknown ) {
+    throw new Error( `Field "${field.name}" is not supported.` );
+  }
+  clientEvents .xmlParsed( xmlTree );
+  clientEvents .scenesDiscovered( scenes );
+
+  // the next step may take several seconds, which is why we already reported PARSE_COMPLETED
+  const renderHistory = new RenderHistory( design );
+  if ( ! debug ) {
+    interpret( Step.DONE, renderHistory, [] );
+  } // else in debug mode, we'll interpret incrementally
+
+  // TODO: define a better contract for before/after.
+  //  Here we are using before=false with targetEditId, which is meant to be the *next*
+  //  edit to be executed, so this really should be before=true.
+  //  However, the semantics of the HistoryInspector UI require the edit field to contain the "after" edit ID.
+  //  Thus, we are too tightly coupled to the UI here!
+  //  See also the 'EDIT_SELECTED' case in onmessage(), below.
+  const { shapes, edit } = renderHistory .getScene( debug? '--START--' : targetEditId, false );
+  const embedding = orbitSource .getEmbedding();
+  const scene = { lighting, camera, embedding, shapes };
+  clientEvents .sceneChanged( scene, edit );
+
+  const planes = resolveBuildPlanes( orbitSource .buildPlanes );
+  const { orientations, symmetry, permutations } = orbitSource;
+  const scalars = [ symmetry .getField() .getAffineScalar() .evaluate() ]; //TODO get them all!
+  clientEvents .symmetryChanged( { orientations, permutations, scalars, planes } );
+
+  return createControllers( design, renderHistory, clientEvents );
+}
+
+export const newDesign = ( fieldName, clientEvents ) =>
+{
+  const design = documentFactory( fieldName );
+  const { orbitSource } = design;
+
+  const renderHistory = new RenderHistory( design );
+  const { shapes, edit } = renderHistory .getScene( '--START--', false );
+  const embedding = orbitSource .getEmbedding();
+  const scene = { embedding, shapes };
+  clientEvents .sceneChanged( scene, edit );
+
+  const planes = resolveBuildPlanes( orbitSource .buildPlanes );
+  const { orientations, symmetry, permutations } = orbitSource;
+  const scalars = [ symmetry .getField() .getAffineScalar() .evaluate() ]; //TODO get them all!
+  clientEvents .symmetryChanged( { orientations, permutations, scalars, planes } );
+
+  return createControllers( design, renderHistory, clientEvents );
+}
+
+const createControllers = ( design, renderHistory, clientEvents ) =>
+{
+  const { orbitSource, renderedModel, toolsModel, bookmarkFactory } = design;
   const controller = new com.vzome.desktop.controller.DefaultController(); // this is the equivalent of DocumentController
 
   // This one has no equivalent in Java, though I've considered it.  Too much change.
-  const editorController = new EditorController( { configureAndPerformEdit } );
+  const editorController = new EditorController( design, clientEvents );
   controller .addSubController( 'editor', editorController );
 
   // This has similar function to the Java equivalent, but a very different mechanism
   const pickingController = new PickingController( renderedModel );
   editorController .addSubController( 'picking', pickingController );
+
+  // This has no desktop equivalent
+  const buildPlaneController = new BuildPlaneController( renderedModel, orbitSource );
+  editorController .addSubController( 'buildPlane', buildPlaneController );
 
   const bookmarkController = new com.vzome.desktop.controller.ToolFactoryController( bookmarkFactory );
   controller .addSubController( 'bookmark', bookmarkController );
@@ -73,23 +190,14 @@ export const newDesign = ( fieldName, sceneReporter ) =>
   toolsController .addTool( toolsModel .get( "bookmark.builtin/ball at origin" ) );
   strutBuilder .addSubController( 'tools', toolsController );
 
-  const shapes = {};
-  const transducer = renderedModelTransducer( shapes, sceneReporter ); // reports changes back to the client
-  renderedModel .addListener( transducer );
+  // Not beautiful, but functional
+  controller .getScene = ( editId, before=false ) =>
+  {
+    return renderHistory .getScene( editId, before );
+  }
 
-  const embedding = orbitSource .getEmbedding();
-  const scene = { embedding, shapes: {} };
-  sceneReporter .sceneChanged( scene );
+  // TODO: fix this terrible hack!
+  controller .renderScene = () => renderHistory .recordSnapshot( '--END--', '--END--', [] );
 
-  batchRender( transducer );
-
-  const config = {
-    groupName: "H4",
-    renderGroupName: "H4",
-    index: 8,
-    edgesToRender: 8
-  };
-  configureAndPerformEdit( "Polytope4d", config );
-
-  return { controller };
+  return controller;
 }

@@ -96,9 +96,28 @@ jobs:
       run: |
         chmod +x gradlew cicd/build-online.bash
         cicd/build-online.bash
-    - name: Archive vZome Online build
-      uses: actions/upload-artifact@v2
-      with:
-        name: online-app
-        path: online/dist/online.tgz
+
+    - name: Configure SSH
+      run: |
+        mkdir -p ~/.ssh/
+        echo "$SSH_KEY" > ~/.ssh/dreamhost.key
+        chmod 600 ~/.ssh/dreamhost.key
+        cat >>~/.ssh/config <<END
+        Host dreamhost
+          HostName sandy.dreamhost.com
+          User scottvorthmann
+          IdentityFile ~/.ssh/dreamhost.key
+          StrictHostKeyChecking no
+        END
+      env:
+        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Publish Online build to DreamHost
+      run: |
+        sftp -b - dreamhost <<END
+          cd vzome.com/
+          put online/dist/online.tgz	
+        END
+        ssh dreamhost ./install-vzome-online.bash
+
 

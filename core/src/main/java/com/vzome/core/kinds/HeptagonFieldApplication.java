@@ -101,7 +101,7 @@ public class HeptagonFieldApplication extends DefaultFieldApplication
             case TRANSFORM:
                 result .add( new ScalingToolFactory( tools, this .symmetry ) .createPredefinedTool( "scale down" ) );
                 result .add( new ScalingToolFactory( tools, this .symmetry ) .createPredefinedTool( "scale up" ) );
-                result .add( new SymmetryToolFactory( tools, this .symmetry ) .createPredefinedTool( "rotate around red through origin" ) );
+                result .add( new RotationToolFactory(tools, this.symmetry, true) .createPredefinedTool( "rotate around red through origin" ) );
                 result .add( new TranslationToolFactory( tools ) .createPredefinedTool( "b1 move along +X" ) );
                 break;
 

@@ -1,5 +1,5 @@
 
-import React, { useMemo } from 'react'
+import React, { useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { VRCanvas, DefaultXRControllers, useXR, RayGrab } from '@react-three/xr'
@@ -24,9 +24,9 @@ const Lighting = ( { backgroundColor, ambientColor, directionalLights } ) =>
   return (
     <>
       <group name="Center" position={[0,0,0]} visible={false} />
-      <ambientLight color={ambientColor} intensity={1.0} />
+      <ambientLight color={ambientColor} intensity={1.5} />
       { directionalLights.map( ( { color, direction } ) =>
-        <directionalLight key={JSON.stringify(direction)} target={centerObject} intensity={1.0} color={color} position={direction.map( x => -x )} /> ) }
+        <directionalLight key={JSON.stringify(direction)} target={centerObject} intensity={1.7} color={color} position={direction.map( x => -x )} /> ) }
     </>
   )
 }
@@ -70,7 +70,18 @@ const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamer
 {
   // Here we can useThree, etc., which we could not in DesignCanvas
 
-  const controlsChanged = evt =>
+  const [ needsRender, setNeedsRender ] = useState( 20 );
+  const trackballChange = evt => {
+    setNeedsRender( 20 );
+  };
+  useFrame( ({ gl, scene, camera }) => {
+    if ( needsRender > 0 ) {
+      gl.render( scene, camera );
+      setNeedsRender( needsRender-1 );
+    }
+  }, 1 );
+
+  const trackballEnd = evt =>
   {
     const { target } = evt;
     const camera = target.object;
@@ -81,6 +92,7 @@ const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamer
     const distance = Math.sqrt( offset.reduce( (sum,e) => sum + (e*e) ), 0 );
     const lookDir = offset.map( (e) => e / distance );
     syncCamera( { lookAt, up, lookDir, distance } );
+    setNeedsRender( 20 );
   }
 
   const { near, far, width, distance, up, lookAt, lookDir, perspective } = sceneCamera;
@@ -94,30 +106,38 @@ const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamer
     backgroundColor: (lighting && lighting.backgroundColor) || defaultLighting.backgroundColor,
   }));
 
-  return forVR? (
+  return (
     <>
-      <Lighting {...(lights)} />
-      <PerspectiveCamera makeDefault manual { ...{ fov, position, up, near, far } } />
-      <TrackballControls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
-    </>
-  )
-  : (
-    <>
-      { perspective?
-        <PerspectiveCamera makeDefault { ...{ fov, position, up } } >
-          <Lighting {...(lights)} />
-        </PerspectiveCamera>
-      :
-        <OrthographicCamera makeDefault { ...{ position, up, near, far, left: -halfX, right: halfX, top: halfY, bottom: -halfY } } >
-          <Lighting {...(lights)} />
-        </OrthographicCamera>
-      }
-      <TrackballControls onEnd={controlsChanged} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={lookAt}
-        // The interpretation of min/maxDistance here is just a mystery, when OrthographicCamera is in use 
-        {...( !perspective && { minDistance: 0.3, maxDistance: 1.5} )}
-      />
+      <PerspectiveCamera makeDefault { ...{ fov, position, up } } >
+        <Lighting {...(lights)} />
+      </PerspectiveCamera>
+      <TrackballControls onChange={trackballChange} onEnd={trackballEnd} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={lookAt} />
     </>
   );
+  // return forVR? (
+  //   <>
+  //     <Lighting {...(lights)} />
+  //     <PerspectiveCamera makeDefault manual { ...{ fov, position, up, near, far } } />
+  //     <TrackballControls staticMoving='true' rotateSpeed={6} zoomSpeed={3} panSpeed={1} target={lookAt} />
+  //   </>
+  // )
+  // : (
+  //   <>
+  //     { perspective?
+  //       <PerspectiveCamera makeDefault { ...{ fov, position, up } } >
+  //         <Lighting {...(lights)} />
+  //       </PerspectiveCamera>
+  //     :
+  //       <OrthographicCamera makeDefault { ...{ position, up, near, far, left: -halfX, right: halfX, top: halfY, bottom: -halfY } } >
+  //         <Lighting {...(lights)} />
+  //       </OrthographicCamera>
+  //     }
+  //     <TrackballControls onChange={trackballChange} onEnd={trackballEnd} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={lookAt}
+  //       // The interpretation of min/maxDistance here is just a mystery, when OrthographicCamera is in use 
+  //       {...( !perspective && { minDistance: 0.3, maxDistance: 1.5} )}
+  //     />
+  //   </>
+  // );
 }
 
 export const DesignCanvas = ( { lighting, children, sceneCamera, syncCamera, handleBackgroundClick=()=>{} } ) =>
