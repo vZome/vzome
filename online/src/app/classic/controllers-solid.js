@@ -50,7 +50,7 @@ export const createWorkerStore = ( worker ) =>
       }
 
       case 'CONTROLLER_CREATED':
-        setState( { workerReady: true } );
+        setState( { workerReady: true, controller: { __store: store, __path: [] } } );
         break;
     
       case 'CONTROLLER_PROPERTY_CHANGED':
