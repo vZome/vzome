@@ -1,6 +1,7 @@
 
 import { configureStore } from '@reduxjs/toolkit'
 import { REVISION } from '../../revision.js';
+import { createWorker } from '../../workerClient/client.js';
 
 export const initialState = {
   scene: {
@@ -274,84 +275,40 @@ const branchSelectionBlocks = node =>
     return node;
 }
 
-export const createWorkerStore = ( customElement, moreMiddleware ) =>
+// TODO: Honestly, we don't really need to use the store to dispatch to the worker any more,
+//   if we replace all those uses of dispatch() with sendToWorker().
+//   All we need is the store to subscribe to the worker.
+export const createWorkerStore = ( worker ) =>
 {
-  // trampolining to work around worker CORS issue
-  // see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
-  const workerPromise = import( "../../worker/vzome-worker-static.js" )
-    .then( module => {
-      const blob = new Blob( [ `import "${module.WORKER_ENTRY_FILE_URL}";` ], { type: "text/javascript" } );
-      const worker = new Worker( URL.createObjectURL( blob ), { type: "module" } );
-      worker.onmessage = onWorkerMessage;
-      return worker;
-    } );
-
-  const workerSender = store => report => event =>
+  const workerSender = store => report =>
   {
-    if ( event.meta && event.meta === 'WORKER' ) {
-      if ( navigator.userAgent.indexOf( "Firefox" ) > -1 ) {
-          console.log( "The worker is not available in Firefox" );
-          report( { type: 'ALERT_RAISED', payload: 'Module workers are not yet supported in Firefox.  Please try another browser.' } );
+    const onWorkerError = error =>
+      report( { type: 'ALERT_RAISED', payload: error } );
+    const onWorkerMessage = message =>
+      report( message );
+    const workerClient = worker || createWorker();
+    workerClient .subscribe( { onWorkerMessage, onWorkerError } );
+
+    const handleEvent = event =>
+    {
+      if ( event.meta && event.meta === 'WORKER' ) {
+        workerClient .sendToWorker( event );
       }
-      else {
-        workerPromise.then( worker => {
-          // console.log( `Message sending to worker: ${JSON.stringify( event, null, 2 )}` );
-          worker.postMessage( event );  // send them all, let the worker filter them out
-        } )
-        .catch( error => {
-          console.log( "The worker is not available" );
-          report( { type: 'ALERT_RAISED', payload: 'The worker is not available.  Module workers are supported in newer versions of most browsers.  Please update your browser.' } );
-        } );
-      }
+      else
+          report( event );
     }
-    else
-        report( event );
+
+    return handleEvent;
   }
 
   const preloadedState = initialState;
 
-  let fallbackStore;
-
   const store = configureStore( {
     reducer,
     preloadedState,
-    middleware: getDefaultMiddleware => {
-      const someMiddleware = getDefaultMiddleware().concat( workerSender );
-      if ( moreMiddleware )
-        return someMiddleware .concat( moreMiddleware );
-      else
-        return someMiddleware;
-    },
+    middleware: getDefaultMiddleware => getDefaultMiddleware().concat( workerSender ),
     devTools: true,
   });
-
-  store .setFallbackStore = other => fallbackStore = other;
-
-  const onWorkerMessage = ({ data }) => {
-    // console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
-
-    store .dispatch( data );  // forward to the reducer(s)
-
-    if ( fallbackStore )
-      fallbackStore .dispatch( data );
-
-    // Useful for supporting regression testing of the vzome-viewer web component
-    if ( customElement ) {
-      switch ( data.type ) {
-
-        case 'DESIGN_INTERPRETED':
-          customElement.dispatchEvent( new Event( 'vzome-design-rendered' ) );
-          break;
-      
-        case 'ALERT_RAISED':
-          customElement.dispatchEvent( new Event( 'vzome-design-failed' ) );
-          break;
-      
-        default:
-          break;
-      }
-    }
-  }
 
   return store;
 }

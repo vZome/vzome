@@ -3,7 +3,7 @@
 import "regenerator-runtime/runtime";
 
 import React, { useReducer } from 'react';
-import { useDispatch, useSelector, useStore } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
 import { render } from 'react-dom'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
@@ -14,6 +14,7 @@ import { DesignViewer, WorkerContext } from '../../ui/viewer/index.jsx'
 import { reducer, initialState, doToggleDisk, doSetCenter, doStrutPreview, doSelectPlane, doSelectHinge, doToggleBuild } from './planes.js';
 import { createStrut, joinBalls, newDesign } from '../../ui/viewer/store.js';
 import { useEffect } from "react";
+import { createWorker } from "../../workerClient/client.js";
 
 const isLeftMouseButton = e =>
 {
@@ -25,16 +26,20 @@ const isLeftMouseButton = e =>
   return false
 }
 
+const worker = createWorker();
+
 const App = () =>
 {
-  const sendToWorker = useDispatch();
+  const { sendToWorker, subscribe } = worker;
 
   // TODO: encapsulate the build plane as a "tool", including a UI
   const [ state, dispatch ] = useReducer( reducer, initialState ); // dedicated local store
-  const reduxStore = useStore();
   useEffect( () => {
     // Connect the worker store to the local store, to listen to worker events
-    reduxStore .setFallbackStore( { dispatch } )
+    subscribe( {
+      onWorkerError: error => console.log( error ), // TODO show the user!
+      onWorkerMessage: msg => dispatch( msg ),
+    } );
     sendToWorker( newDesign() );
   }, [] );
 
@@ -88,7 +93,7 @@ const App = () =>
 }
 
 const WorkerApp = () => (
-  <WorkerContext>
+  <WorkerContext worker={worker} >
     <App/>
   </WorkerContext>
 );

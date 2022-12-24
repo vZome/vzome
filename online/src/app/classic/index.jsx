@@ -6,13 +6,16 @@ import { solidify } from './solid-react.jsx';
 
 import { ClassicAppBar } from './appbar.jsx';
 import { ClassicEditor } from './classic.jsx';
+import { createWorker } from "../../workerClient/client.js";
 
 const AppBar = solidify( ClassicAppBar );
 
+const worker = createWorker();
+
 const Classic = () => (
   <>
-    <AppBar />
-    <ClassicEditor />
+    <AppBar worker={worker} />
+    <ClassicEditor worker={worker} />
   </>
 )
 

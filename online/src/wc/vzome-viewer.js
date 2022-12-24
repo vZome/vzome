@@ -6,6 +6,7 @@ import { vZomeViewerCSS } from "./vzome-viewer.css";
 import { muiCSS } from "./mui-styles.css";
 
 import { createWorkerStore, fetchDesign } from '../ui/viewer/store.js';
+import { createWorker } from "../workerClient/client";
 
 export class VZomeViewer extends HTMLElement
 {
@@ -25,7 +26,26 @@ export class VZomeViewer extends HTMLElement
     this.#container = document.createElement("div");
     this.#root.appendChild( this.#container );
 
-    this.#store = createWorkerStore( this );
+    const worker = createWorker();
+    worker .subscribe( {
+      onWorkerError: () => {},
+      onWorkerMessage: data => {
+        switch ( data.type ) {
+
+          case 'DESIGN_INTERPRETED':
+            this .dispatchEvent( new Event( 'vzome-design-rendered' ) );
+            break;
+        
+          case 'ALERT_RAISED':
+            this .dispatchEvent( new Event( 'vzome-design-failed' ) );
+            break;
+        
+          default:
+            break;
+        }
+      }
+    } );
+    this.#store = createWorkerStore( worker );
 
     this.#config = { preview: true, showScenes: false };
 

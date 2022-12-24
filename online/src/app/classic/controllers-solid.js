@@ -4,12 +4,11 @@ import { createStore } from "solid-js/store";
 
 import { initialState, newDesign, requestControllerProperty, doControllerAction } from '../../ui/viewer/store.js';
 
-export const createWorkerStore = () =>
+export const createWorkerStore = ( worker ) =>
 {
   const [ state, setState ] = createStore( initialState );
 
-  // TODO: try to replace this with use of the reducer from store.js
-  const onWorkerMessage = ({ data }) => {
+  const onWorkerMessage = ( data ) => {
     // console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
 
     switch ( data.type ) {
@@ -72,62 +71,21 @@ export const createWorkerStore = () =>
       default:
         break;
     }
-
-    // Useful for supporting regression testing of the vzome-viewer web component
-    // if ( customElement ) {
-    //   switch ( data.type ) {
-
-    //     case 'DESIGN_INTERPRETED':
-    //       customElement.dispatchEvent( new Event( 'vzome-design-rendered' ) );
-    //       break;
-      
-    //     case 'ALERT_RAISED':
-    //       customElement.dispatchEvent( new Event( 'vzome-design-failed' ) );
-    //       break;
-      
-    //     default:
-    //       break;
-    //   }
-    // }
   }
 
-  // trampolining to work around worker CORS issue
-  // see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
-  const workerPromise = import( "../../worker/vzome-worker-static.js" )
-    .then( module => {
-      const blob = new Blob( [ `import "${module.WORKER_ENTRY_FILE_URL}";` ], { type: "text/javascript" } );
-      const worker = new Worker( URL.createObjectURL( blob ), { type: "module" } );
-      worker.onmessage = onWorkerMessage;
-      return worker;
-    } );
+  const onWorkerError = error => { console.log( error ); };  // TODO: handle the errors in a way the user can see
 
-  const postMessage = event =>
-  {
-    if ( navigator.userAgent.indexOf( "Firefox" ) > -1 ) {
-      console.log( "The worker is not available in Firefox" );
-      // report( { type: 'ALERT_RAISED', payload: 'Module workers are not yet supported in Firefox.  Please try another browser.' } );
-    }
-    else {
-      workerPromise.then( worker => {
-        // console.log( `Message sending to worker: ${JSON.stringify( event, null, 2 )}` );
-        worker.postMessage( event );  // send them all, let the worker filter them out
-      } )
-      .catch( error => {
-        console.log( "The worker is not available" );
-        // report( { type: 'ALERT_RAISED', payload: 'The worker is not available.  Module workers are supported in newer versions of most browsers.  Please update your browser.' } );
-      } );
-    }
-  }
+  worker .subscribe( { onWorkerMessage, onWorkerError } );
 
   const isWorkerReady = () => state.workerReady;
 
-  const store = { postMessage, isWorkerReady, setState }; // needed for every subcontroller
+  const store = { postMessage: worker .sendToWorker, isWorkerReady, setState }; // needed for every subcontroller
 
   const rootController = () =>
   {
     if ( ! state.controller ) {
       setState( 'controller', { __store: store, __path: [] } ); // empower every subcontroller to access this store
-      postMessage( newDesign() );
+      worker .sendToWorker( newDesign() );
     }
     return state.controller;
   };
@@ -136,11 +94,6 @@ export const createWorkerStore = () =>
 
   return { ...store, rootController, getScene };
 }
-
-// createEffect( () => {
-//   console.log( JSON.stringify( state, null, 2 ));
-// });
-
 
 export const subController = ( parent, key ) =>
 {

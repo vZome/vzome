@@ -215,9 +215,10 @@ export const renderViewer = ( store, container, url, config ) =>
 
 // If the worker-store is not injected (as in the web component), it is created here.
 //  This component is used by UrlViewer (below) and by the Online App.
+//  Note that the worker client may also be injected, if the store is not.
 export const WorkerContext = props =>
 {
-  const [ store ] = useState( props.store || createWorkerStore() );
+  const [ store ] = useState( props.store || createWorkerStore( props.worker ) );
   return (
     <Provider store={store}>
       {props.children}

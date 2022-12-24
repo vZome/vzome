@@ -8,9 +8,9 @@ import { solidify } from './solid-react.jsx';
 
 const GeometryCanvas = solidify( Canvas );
 
-export const ClassicEditor = () =>
+export const ClassicEditor = ( { worker } ) =>
 {
-  const { rootController, getScene } = createWorkerStore();
+  const { rootController, getScene } = createWorkerStore( worker );
 
   const bookmarkController = () => subController( rootController(), 'bookmark' );
   const editorController = () => subController( rootController(), 'editor' );

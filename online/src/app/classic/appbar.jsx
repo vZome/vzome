@@ -6,9 +6,9 @@ import Link from '@material-ui/core/Link'
 import { VZomeAppBar } from '../components/appbar.jsx';
 import { WorkerContext } from '../../ui/viewer/index.jsx';
 
-export const ClassicAppBar = () => (
-  <WorkerContext>
-    <VZomeAppBar oneDesign={true} pathToRoot='..' title='vZome Online Classic'
+export const ClassicAppBar = ( { worker } ) => (
+  <WorkerContext worker={worker} >
+    <VZomeAppBar oneDesign={false} pathToRoot='..' title='vZome Online Classic'
       about={ <>
         <Typography gutterBottom>
           vZome Online Classic is a work in progress, still at the proof-of-concept stage.  It will be part of a web-based modeling tool
