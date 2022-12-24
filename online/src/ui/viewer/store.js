@@ -306,7 +306,7 @@ export const createWorkerStore = ( worker ) =>
   const store = configureStore( {
     reducer,
     preloadedState,
-    middleware: getDefaultMiddleware => getDefaultMiddleware().concat( workerSender ),
+    middleware: getDefaultMiddleware => getDefaultMiddleware( { immutableCheck: false } ).concat( workerSender ),
     devTools: true,
   });
 
