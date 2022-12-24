@@ -24,7 +24,7 @@ class EditorController extends com.vzome.desktop.controller.DefaultController
 
   doAction( action )
   {
-    this .doParamAction( action, {} );
+    this .doParamAction( action, new JsProperties() );
   }
 }
 

@@ -3,7 +3,6 @@
 import "regenerator-runtime/runtime";
 
 import React, { useReducer } from 'react';
-import { useDispatch, useStore } from 'react-redux';
 import { render } from 'react-dom'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'

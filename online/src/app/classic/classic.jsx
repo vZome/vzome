@@ -13,6 +13,7 @@ export const ClassicEditor = ( { worker } ) =>
 {
   const { rootController, getScene } = createWorkerStore( worker );
 
+  const undoRedoController = () => subController( rootController(), "undoRedo" );
   const bookmarkController = () => subController( rootController(), 'bookmark' );
   const editorController = () => subController( rootController(), 'editor' );
   const pickingController = () => subController( editorController(), 'picking' );
@@ -24,14 +25,14 @@ export const ClassicEditor = ( { worker } ) =>
     switch ( event.code ) {
       case "KeyZ":
         if ( event .metaKey ) {
-          console.log( "undo" );
+          controllerAction( undoRedoController(), "undo" );
           event .preventDefault();
         }
         break;
     
       case "KeyY":
         if ( event .metaKey ) {
-          console.log( "redo" );
+          controllerAction( undoRedoController(), "redo" );
           event .preventDefault();
         }
         break;
@@ -45,6 +46,8 @@ export const ClassicEditor = ( { worker } ) =>
   const callbacks = {
     onClick: ( id, position, type, selected ) =>
       controllerAction( pickingController(), 'SelectManifestation', { id } ),
+    bkgdClick: () =>
+      controllerAction( editorController(), 'DeselectAll' ),
   }
 
   return (

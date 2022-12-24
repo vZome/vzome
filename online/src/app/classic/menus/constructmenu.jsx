@@ -28,7 +28,7 @@ export const ConstructMenu = () =>
         onClose={handleClose}
         MenuListProps={{ "aria-labelledby": "basic-button" }}
       >
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
+        <MenuItem disabled={true} onClick={handleClose}>Panel</MenuItem>
       </Menu>
     </div>
   );

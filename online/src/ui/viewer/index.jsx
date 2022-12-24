@@ -25,13 +25,12 @@ import { create } from 'jss';
 
 import { ShapedGeometry } from './geometry.jsx'
 import { DesignCanvas } from './designcanvas.jsx'
-import { createWorkerStore, fetchDesign, whilePerspective, serializeVZomeXml } from './store.js';
+import { createWorkerStore, fetchDesign, whilePerspective, serializeVZomeXml, doControllerAction } from './store.js';
 import { Spinner } from './spinner.jsx'
 import { ErrorAlert } from './alert.jsx'
 import { SettingsDialog } from './settings.jsx';
 import { useVR } from './hooks.js';
 import { SceneMenu } from './scenes.jsx';
-import { controllerAction } from '../../app/classic/controllers-solid.js';
 
 // from https://www.bitdegree.org/learn/javascript-download
 const download = ( name, text, type ) =>
@@ -69,7 +68,6 @@ const fullScreenStyle = {
 export const DesignViewer = ( { children, children3d, config={}, callbacks={} } ) =>
 {
   const { showScenes=false, useSpinner=false, allowFullViewport=false, undoRedo=false } = config;
-  const historyAction = controllerAction( 'undoRedo' );
   const source = useSelector( state => state.source );
   const scene = useSelector( state => state.scene );
   const waiting = useSelector( state => !!state.waiting );
@@ -118,6 +116,10 @@ export const DesignViewer = ( { children, children3d, config={}, callbacks={} } 
     const writeFile = text => download( name, text, 'model/gltf+json' );
     exporterRef.current .exportGltfJson( writeFile );
   }
+  const historyAction = action =>
+  {
+    return () => report( doControllerAction( 'undoRedo', action ) );
+  }
 
   return (
     <div ref={containerRef} style={ fullScreen? fullScreenStyle : normalStyle }>
@@ -140,14 +142,14 @@ export const DesignViewer = ( { children, children3d, config={}, callbacks={} } 
           <Tooltip title={'Undo'} aria-label="undo">
             <IconButton color="inherit" aria-label="undo"
                 style={ { position: 'absolute', top: '5px', left: '5px' } }
-                onClick={() => historyAction( 'undo' )} >
+                onClick={ historyAction( 'undo' ) } >
               <UndoIcon fontSize='large'/>
             </IconButton>
           </Tooltip>
           <Tooltip title={'Redo'} aria-label="redo">
             <IconButton color="inherit" aria-label="redo"
                 style={ { position: 'absolute', top: '5px', left: '45px' } }
-                onClick={() => historyAction( 'redo' )} >
+                onClick={ historyAction( 'redo' ) } >
               <RedoIcon fontSize='large'/>
             </IconButton>
           </Tooltip>
