@@ -503,7 +503,22 @@ const makeFloatMatrices = ( matrices ) =>
 
     const configureAndPerformEdit = ( className, config, adapter ) =>
     {
-      const edit = editFactory( editor, toolFactories, toolsModel )( new JavaDomElement( { tagName: className } ) )
+      if ( editor .selection .isEmpty() && className === "hideball" ) {
+        className = "ShowHidden";
+      }
+
+      const command = fieldApp .getLegacyCommand( className );
+      if ( command )
+      {
+        const edit = new vzomePkg.core.editor.CommandEdit( command, editor );
+        editContext .performAndRecord( edit );
+        return;
+      }
+
+      const [ action, mode ] = className .split( '/' );
+      if ( mode ) config .mode = mode;
+
+      const edit = editFactory( editor, toolFactories, toolsModel )( new JavaDomElement( { tagName: action } ) )
       if ( ! edit )
         return
       // editor.setAdapter( adapter );

@@ -1,19 +1,18 @@
 
 import { createSignal, createEffect } from "solid-js";
 
-import { controllerProperty, subController } from '../controllers-solid.js';
+import { controllerAction, controllerProperty, subController } from '../controllers-solid.js';
 
 const ToolbarSpacer = () => ( <div style={{ 'min-width': '10px', 'min-height': '10px' }}></div> )
 
 const ToolbarButton = props =>
 (
-  <button aria-label={props.label} class='toolbar-button'>
+  <button aria-label={props.label} class='toolbar-button' onClick={props.onClick}>
     <img src={ `./icons/tools/${props.image}.png`} class='toolbar-image'/>
   </button>
 )
 
 const ToolFactoryButton = props => <ToolbarButton label={props.factoryName} image={`newTool/${props.factoryName}`} />
-const CommandButton = props => <ToolbarButton label={props.cmdName} image={`small/${props.cmdName}`} />
 
 export const ToolFactoryBar = props =>
 {
@@ -38,6 +37,14 @@ export const ToolFactoryBar = props =>
   )
 }
 
+const CommandButton = props =>
+{
+  const handleClick = () => controllerAction( props.ctrlr, props.cmdName );
+  return (
+    <ToolbarButton label={props.cmdName} image={`small/${props.cmdName}`} onClick={handleClick} />
+  );
+}
+
 const ToolButton = props =>
 {
   const kind = () => controllerProperty( props.controller, 'kind', 'kind', false );
@@ -52,16 +59,16 @@ export const ToolBar = props =>
 
   return (
     <div id='tools-bar' class='toolbar'>
-      <CommandButton cmdName='Delete'/>
-      <CommandButton cmdName='hideball'/>
-      <CommandButton cmdName='setItemColor'/>
+      <CommandButton ctrlr={props.editorController} cmdName='Delete'/>
+      <CommandButton ctrlr={props.editorController} cmdName='hideball'/>
+      <CommandButton ctrlr={props.editorController} cmdName='setItemColor'/>
       <ToolbarSpacer/>
-      <CommandButton cmdName='JoinPoints/CLOSED_LOOP' hoverText='Connect balls in a loop'/>
-      <CommandButton cmdName='JoinPoints/CHAIN_BALLS' hoverText='Connect balls in a chain'/>
-      <CommandButton cmdName='JoinPoints/ALL_TO_LAST' hoverText='Connect all balls to last selected'/>
-      <CommandButton cmdName='JoinPoints/ALL_POSSIBLE' hoverText='Connect balls in all possible ways'/>
-      <CommandButton cmdName='panel' hoverText='Make a panel polygon'/>
-      <CommandButton cmdName='NewCentroid' hoverText='Construct centroid of points'/>
+      <CommandButton ctrlr={props.editorController} cmdName='JoinPoints/CLOSED_LOOP' hoverText='Connect balls in a loop'/>
+      <CommandButton ctrlr={props.editorController} cmdName='JoinPoints/CHAIN_BALLS' hoverText='Connect balls in a chain'/>
+      <CommandButton ctrlr={props.editorController} cmdName='JoinPoints/ALL_TO_LAST' hoverText='Connect all balls to last selected'/>
+      <CommandButton ctrlr={props.editorController} cmdName='JoinPoints/ALL_POSSIBLE' hoverText='Connect balls in all possible ways'/>
+      <CommandButton ctrlr={props.editorController} cmdName='panel' hoverText='Make a panel polygon'/>
+      <CommandButton ctrlr={props.editorController} cmdName='NewCentroid' hoverText='Construct centroid of points'/>
       <ToolbarSpacer/>
       <For each={symmToolNames()}>{ toolName =>
         <ToolButton controller={subController( props.toolsController, toolName )}/>
