@@ -1,4 +1,6 @@
 
+import { solidPlugin } from './esbuild-solid-plugin.mjs';
+
 export const esbuildConfig = {
   entryPoints: {
     'vzome-online': 'src/app/index.jsx',
@@ -16,4 +18,5 @@ export const esbuildConfig = {
   splitting: true,
   loader: { '.vef': 'dataurl' },
   format: 'esm',
+  plugins: [solidPlugin()],
 };

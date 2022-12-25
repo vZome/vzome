@@ -15,6 +15,9 @@ import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser'
 import SettingsIcon from '@material-ui/icons/Settings'
+import UndoIcon from '@material-ui/icons/Undo'
+import RedoIcon from '@material-ui/icons/Redo'
+import Tooltip from '@material-ui/core/Tooltip'
 import Link from '@material-ui/core/Link';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -22,7 +25,7 @@ import { create } from 'jss';
 
 import { ShapedGeometry } from './geometry.jsx'
 import { DesignCanvas } from './designcanvas.jsx'
-import { createWorkerStore, fetchDesign, whilePerspective, serializeVZomeXml } from './store.js';
+import { createWorkerStore, fetchDesign, whilePerspective, serializeVZomeXml, doControllerAction } from './store.js';
 import { Spinner } from './spinner.jsx'
 import { ErrorAlert } from './alert.jsx'
 import { SettingsDialog } from './settings.jsx';
@@ -64,7 +67,7 @@ const fullScreenStyle = {
 
 export const DesignViewer = ( { children, children3d, config={}, callbacks={} } ) =>
 {
-  const { showScenes=false, useSpinner=false, allowFullViewport=false } = config;
+  const { showScenes=false, useSpinner=false, allowFullViewport=false, undoRedo=false } = config;
   const source = useSelector( state => state.source );
   const scene = useSelector( state => state.scene );
   const waiting = useSelector( state => !!state.waiting );
@@ -76,6 +79,8 @@ export const DesignViewer = ( { children, children3d, config={}, callbacks={} } 
 
   const report = useDispatch();
   const sceneCamera = useSelector( state => state.scene && state.scene.camera );
+  const syncCamera = camera => report( { type: 'TRACKBALL_MOVED', payload: camera } );
+
   const toggleFullScreen = () =>
   {
     const { perspective } = sceneCamera || {};
@@ -111,11 +116,15 @@ export const DesignViewer = ( { children, children3d, config={}, callbacks={} } 
     const writeFile = text => download( name, text, 'model/gltf+json' );
     exporterRef.current .exportGltfJson( writeFile );
   }
+  const historyAction = action =>
+  {
+    return () => report( doControllerAction( 'undoRedo', action ) );
+  }
 
   return (
     <div ref={containerRef} style={ fullScreen? fullScreenStyle : normalStyle }>
       { scene?
-        <DesignCanvas lighting={scene.lighting} camera={ { ...scene.camera } } handleBackgroundClick={callbacks.bkgdClick} >
+        <DesignCanvas lighting={scene.lighting} sceneCamera={ { ...scene.camera } } syncCamera={syncCamera} handleBackgroundClick={callbacks.bkgdClick} >
           { scene.shapes &&
             <ShapedGeometry ref={exporterRef} embedding={scene.embedding} shapes={scene.shapes} callbacks={callbacks} />
           }
@@ -128,18 +137,41 @@ export const DesignViewer = ( { children, children3d, config={}, callbacks={} } 
 
       <Spinner visible={useSpinner && waiting} />
 
-      { allowFullViewport &&
-        <IconButton color="inherit" aria-label="fullscreen"
-            style={ { position: 'absolute', bottom: '5px', right: '5px' } }
-            onClick={toggleFullScreen} >
-          { fullScreen? <FullscreenExitIcon fontSize='large'/> : <FullscreenIcon fontSize='large'/> }
-        </IconButton>
+      { undoRedo &&
+        <>
+          <Tooltip title={'Undo'} aria-label="undo">
+            <IconButton color="inherit" aria-label="undo"
+                style={ { position: 'absolute', top: '5px', left: '5px' } }
+                onClick={ historyAction( 'undo' ) } >
+              <UndoIcon fontSize='large'/>
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={'Redo'} aria-label="redo">
+            <IconButton color="inherit" aria-label="redo"
+                style={ { position: 'absolute', top: '5px', left: '45px' } }
+                onClick={ historyAction( 'redo' ) } >
+              <RedoIcon fontSize='large'/>
+            </IconButton>
+          </Tooltip>
+        </>
       }
-      <IconButton color="inherit" aria-label="settings"
-          style={ { position: 'absolute', top: '5px', right: '5px' } }
-          onClick={() => setShowSettings(!showSettings)} >
-        <SettingsIcon fontSize='large'/>
-      </IconButton>
+
+      { allowFullViewport &&
+        <Tooltip title={ fullScreen? 'Collapse' : 'Expand' } aria-label="fullscreen">
+          <IconButton color="inherit" aria-label="fullscreen"
+              style={ { position: 'absolute', bottom: '5px', right: '5px' } }
+              onClick={toggleFullScreen} >
+            { fullScreen? <FullscreenExitIcon fontSize='large'/> : <FullscreenIcon fontSize='large'/> }
+          </IconButton>
+        </Tooltip>
+      }
+      <Tooltip title={ 'Settings' } aria-label="settings">
+        <IconButton color="inherit" aria-label="settings"
+            style={ { position: 'absolute', top: '5px', right: '5px' } }
+            onClick={() => setShowSettings(!showSettings)} >
+          <SettingsIcon fontSize='large'/>
+        </IconButton>
+      </Tooltip>
 
       <SettingsDialog {...{ showSettings, setShowSettings }} container={containerRef.current} />
 
@@ -148,22 +180,26 @@ export const DesignViewer = ( { children, children3d, config={}, callbacks={} } 
           limit you to one VR experience.  The preview viewer will open in a new tab, where I can enter VR.
         */}
       { vrAvailable && source && source.url &&
-        <IconButton color="inherit" aria-label="preview"
-          style={ { position: 'absolute', top: '45px', right: '5px' } }
-          component={Link}
-          href={`https://www.vzome.com/app/?url=${encodeUrl(source.url)}`} target="_blank" rel="noopener"
-        >
-          <OpenInBrowserIcon fontSize='large'/>
-        </IconButton>
+        <Tooltip title={ 'Preview' } aria-label="preview">
+          <IconButton color="inherit" aria-label="preview"
+            style={ { position: 'absolute', top: '45px', right: '5px' } }
+            component={Link}
+            href={`https://www.vzome.com/app/?url=${encodeUrl(source.url)}`} target="_blank" rel="noopener"
+          >
+            <OpenInBrowserIcon fontSize='large'/>
+          </IconButton>
+        </Tooltip>
       }
 
       { source && ( source.text || source.changedText ) &&
         <>
-          <IconButton color="inherit" aria-label="export"
-              style={ { position: 'absolute', bottom: '5px', left: '5px' } }
-              onClick={ showDownloadMenu } >
-            <GetAppRoundedIcon fontSize='large'/>
-          </IconButton>
+          <Tooltip title={ 'Download' } aria-label="download">
+            <IconButton color="inherit" aria-label="download"
+                style={ { position: 'absolute', bottom: '5px', left: '5px' } }
+                onClick={ showDownloadMenu } >
+              <GetAppRoundedIcon fontSize='large'/>
+            </IconButton>
+          </Tooltip>
           <Menu
             id="export-menu"
             anchorEl={downloadAnchor}
@@ -213,9 +249,10 @@ export const renderViewer = ( store, container, url, config ) =>
 
 // If the worker-store is not injected (as in the web component), it is created here.
 //  This component is used by UrlViewer (below) and by the Online App.
+//  Note that the worker client may also be injected, if the store is not.
 export const WorkerContext = props =>
 {
-  const [ store ] = useState( props.store || createWorkerStore() );
+  const [ store ] = useState( props.store || createWorkerStore( props.worker ) );
   return (
     <Provider store={store}>
       {props.children}

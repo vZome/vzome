@@ -1,7 +1,4 @@
 
-// TODO: put this in a module that both worker and main context can use.
-
-import { convertColor } from "./core.js";
 import { realizeShape, normalizeRenderedManifestation } from './scenes.js';
 
 //  Right now this is duplicated!

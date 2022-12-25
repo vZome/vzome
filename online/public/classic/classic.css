@@ -4,10 +4,32 @@ img {
   display: block;
 }
 
+.toolbar {
+  display: flex;
+  min-height: 32px;
+  gap: 1px;
+}
+
+.toolbar-vert {
+  display: flex;
+  min-width: 38px;
+  gap: 1px;
+  flex-direction: column;
+}
+
 .toolbar-button {
   padding: 0px;
-  border-width: 2px;
-  border-color: darkgray;
+  border-width: 0px;
+  min-height: 30px;
+  min-width: 36px;
+}
+
+.toolbar-image {
+  border-radius: 5px;
+}
+
+.toolbar-image:active {
+  filter: brightness(0.5);
 }
 
 .placeholder {

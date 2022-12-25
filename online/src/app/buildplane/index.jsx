@@ -3,18 +3,17 @@
 import "regenerator-runtime/runtime";
 
 import React, { useReducer } from 'react';
-import { useDispatch, useSelector, useStore } from 'react-redux';
 import { render } from 'react-dom'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 
 import { VZomeAppBar } from '../components/appbar.jsx'
 import { BuildPlane } from './buildplane.jsx'
-import { useNewDesign } from '../classic/controller-hooks.js';
 import { DesignViewer, WorkerContext } from '../../ui/viewer/index.jsx'
 import { reducer, initialState, doToggleDisk, doSetCenter, doStrutPreview, doSelectPlane, doSelectHinge, doToggleBuild } from './planes.js';
-import { createStrut, joinBalls } from '../../ui/viewer/store.js';
+import { createStrut, joinBalls, newDesign } from '../../ui/viewer/store.js';
 import { useEffect } from "react";
+import { createWorker } from "../../workerClient/client.js";
 
 const isLeftMouseButton = e =>
 {
@@ -26,17 +25,21 @@ const isLeftMouseButton = e =>
   return false
 }
 
+const worker = createWorker();
+
 const App = () =>
 {
-  useNewDesign(); // has to be nested here, since it needs Redux context
-  const sendToWorker = useDispatch();
+  const { sendToWorker, subscribe } = worker;
 
   // TODO: encapsulate the build plane as a "tool", including a UI
   const [ state, dispatch ] = useReducer( reducer, initialState ); // dedicated local store
-  const reduxStore = useStore();
   useEffect( () => {
     // Connect the worker store to the local store, to listen to worker events
-    reduxStore .setFallbackStore( { dispatch } )
+    subscribe( {
+      onWorkerError: error => console.log( error ), // TODO show the user!
+      onWorkerMessage: msg => dispatch( msg ),
+    } );
+    sendToWorker( newDesign() );
   }, [] );
 
   const ballCallbacks = {
@@ -80,7 +83,7 @@ const App = () =>
           </Typography>
         </> }
       />
-      <DesignViewer config={ { useSpinner: true } } callbacks={ballCallbacks}
+      <DesignViewer config={ { useSpinner: true, undoRedo: true } } callbacks={ballCallbacks}
         children3d={ state.buildPlanes && state.enabled && state.center &&
           <BuildPlane {...{ state }} actions={actions} />
         } />
@@ -89,7 +92,7 @@ const App = () =>
 }
 
 const WorkerApp = () => (
-  <WorkerContext>
+  <WorkerContext worker={worker} >
     <App/>
   </WorkerContext>
 );

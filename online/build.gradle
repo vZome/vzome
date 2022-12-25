@@ -225,7 +225,6 @@ core.config {
 
     'com/vzome/desktop/controller/CameraController.java',
     'com/vzome/desktop/controller/ZoneVectorBall.java',
-    'com/vzome/desktop/controller/UndoRedoController.java',
     'com/vzome/desktop/controller/JsonClientRendering.java',
 
   ]

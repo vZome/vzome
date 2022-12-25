@@ -1,3 +1,4 @@
+import shapes from "../../worker/legacy/resources/com/vzome/core/parts";
 
 export const doStrutPreview= ( position ) =>
 {
@@ -90,18 +91,35 @@ export const reducer = ( state=initialState, action ) =>
     case 'SCENE_RENDERED': {
       const { scene } = action.payload;
       let center = state.center;
-      if ( ! center && Object.keys( scene.shapes ) .length === 1 ) // This is a one-shot deal, designed to give us a plane center for a new design
+      if ( center ) {
+        // Make sure the center is still in the scene
+        center = undefined;
         for ( const shapeId in scene.shapes ) {
           const shape = scene.shapes[ shapeId ];
-          if ( shape .instances .length === 1 ) {
-            const instance = shape .instances[ 0 ];
-            if ( instance ?.type === 'ball' ) {
-              center = instance;
-              // TODO: create a more first-class contract for this event
-              break;
-            }
+          for ( const instance of shape .instances ) {
+            if ( instance .type === 'ball' ) {
+              if ( instance .id === state.center .id ) {
+                center = instance;
+                break;
+              }
+            } else
+              break; // only need to check balls, of course
           }
         }
+      } else {
+        if ( Object.keys( scene.shapes ) .length === 1 ) // This is a one-shot deal, designed to give us a plane center for a new design
+          for ( const shapeId in scene.shapes ) {
+            const shape = scene.shapes[ shapeId ];
+            if ( shape .instances .length === 1 ) {
+              const instance = shape .instances[ 0 ];
+              if ( instance ?.type === 'ball' ) {
+                center = instance;
+                // TODO: create a more first-class contract for this event
+                break;
+              }
+            }
+          }
+      }
       return { ...state, enabled: true, buildingStruts: true, center, endPt: undefined }
     }
 

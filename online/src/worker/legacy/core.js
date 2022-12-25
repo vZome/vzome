@@ -319,6 +319,7 @@ const makeFloatMatrices = ( matrices ) =>
 
     const history = new vzomePkg.core.editor.EditHistory();
     history .setSerializer( { serialize: element => element .serialize( "" ) } );
+    history .setListener( { publishChanges: () => {} } );
 
     // This object implements the UndoableEdit.Context interface
     const editContext = {
@@ -570,7 +571,7 @@ const makeFloatMatrices = ( matrices ) =>
       return root;
     }
 
-    return { interpretEdit, configureAndPerformEdit, field, renderedModel, batchRender, orbitSource, toolsModel, bookmarkFactory, serializeToDom };
+    return { interpretEdit, configureAndPerformEdit, field, renderedModel, batchRender, orbitSource, toolsModel, bookmarkFactory, serializeToDom, history };
   }
 
   export const convertColor = color =>

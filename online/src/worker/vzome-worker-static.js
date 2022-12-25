@@ -116,7 +116,7 @@ const fetchFileText = selected =>
 }
 
 let designController;
-const propertyChanges = {};
+let propertyChanges = {};
 const bookmarks = [];
 const tools = [];
 
@@ -187,6 +187,7 @@ const createDesign = ( report, fieldName ) =>
   return import( './legacy/dynamic.js' )
 
     .then( module => {
+      propertyChanges = {};
       designController = module .newDesign( fieldName, clientEvents( report ) );
       report( { type: 'CONTROLLER_CREATED' } );
 
@@ -228,6 +229,7 @@ const loadDesign = ( xmlLoading, report, debug ) =>
   return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
 
     .then( ([ module, xml ]) => {
+      propertyChanges = {};
       designController = module .loadDesign( xml, debug, clientEvents( report ) );
       report( { type: 'CONTROLLER_CREATED' } );
     } )
