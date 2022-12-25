@@ -13,10 +13,12 @@ export const ClassicEditor = ( { worker } ) =>
 {
   const { rootController, getScene } = createWorkerStore( worker );
 
+  const bkgdColor = () => getScene() ?.lighting .backgroundColor;
+
   const undoRedoController = () => subController( rootController(), "undoRedo" );
   const bookmarkController = () => subController( rootController(), 'bookmark' );
-  const editorController = () => subController( rootController(), 'editor' );
-  const pickingController = () => subController( editorController(), 'picking' );
+  const editorController   = () => subController( rootController(), 'editor' );
+  const pickingController  = () => subController( editorController(), 'picking' );
   const strutBuilder       = () => subController( rootController(), 'strutBuilder' );
   const symmController     = () => subController( strutBuilder(), 'symmetry' );
   const toolsController    = () => subController( strutBuilder(), 'tools' );
@@ -69,7 +71,7 @@ export const ClassicEditor = ( { worker } ) =>
         </div>
 
         <div id='editor-drawer' class='grid-rows-min-1 editor-drawer'>
-          <CameraControls/>
+          <CameraControls symmController={symmController()} bkgdColor={bkgdColor()} />
           <div id="build-parts-measure" style={{ height: '100%' }}>
             <StrutBuildPanel symmController={symmController()} />
           </div>

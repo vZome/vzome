@@ -65,7 +65,7 @@ const toVector = vector3 =>
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamera }) =>
+const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamera, trackball }) =>
 {
   // Here we can useThree, etc., which we could not in DesignCanvas
 
@@ -110,7 +110,7 @@ const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamer
       <PerspectiveCamera makeDefault { ...{ fov, position, up } } >
         <Lighting {...(lights)} />
       </PerspectiveCamera>
-      <TrackballControls onChange={trackballChange} onEnd={trackballEnd} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={lookAt} />
+      {trackball && <TrackballControls onChange={trackballChange} onEnd={trackballEnd} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={lookAt} />}
     </>
   );
   // return forVR? (
@@ -139,7 +139,7 @@ const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamer
   // );
 }
 
-export const DesignCanvas = ( { lighting, children, sceneCamera, syncCamera, handleBackgroundClick=()=>{} } ) =>
+export const DesignCanvas = ( { lighting, children, sceneCamera, syncCamera, handleBackgroundClick=()=>{}, trackball=true } ) =>
 {
   const [ measured, bounds ] = useMeasure();
   const aspect = ( bounds && bounds.height )? bounds.width / bounds.height : 1;
@@ -157,7 +157,7 @@ export const DesignCanvas = ( { lighting, children, sceneCamera, syncCamera, han
   } else {
     return (
       <Canvas ref={measured} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
-        <LightedCameraControls {...{ lighting, aspect, sceneCamera, syncCamera }} />
+        <LightedCameraControls {...{ lighting, aspect, sceneCamera, syncCamera, trackball }} />
         {children}
       </Canvas> )
   }

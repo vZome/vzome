@@ -9,7 +9,7 @@ export const solidify = Component =>
 {
   return (props) => {
     let el;
-    const result = <div ref={el} />;
+    const result = <div ref={el} style={props.style} />;
     const root = createRoot( el );
     createEffect(() => {
       Object.values( props );
