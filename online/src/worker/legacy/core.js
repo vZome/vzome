@@ -319,7 +319,6 @@ const makeFloatMatrices = ( matrices ) =>
 
     const history = new vzomePkg.core.editor.EditHistory();
     history .setSerializer( { serialize: element => element .serialize( "" ) } );
-    history .setListener( { publishChanges: () => {} } );
 
     // This object implements the UndoableEdit.Context interface
     const editContext = {
@@ -340,6 +339,7 @@ const makeFloatMatrices = ( matrices ) =>
           return;
         history .mergeSelectionChanges();
         history .addEdit( edit, editContext );
+        editor .notifyListeners();
       },
 
       doEdit: ( action, props ) => {
@@ -406,8 +406,11 @@ const makeFloatMatrices = ( matrices ) =>
     const selection = new vzomePkg.core.editor.SelectionImpl();
     const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp, orbitSource, symmetrySystems )
     toolsModel.setEditorModel( editor )
+    history .setListener( { publishChanges: () => {
+      editor .notifyListeners();
+    } } );
 
-    selection.addListener( {
+    selection .addListener( {
       manifestationAdded: m => renderedModel .setManifestationGlow( m, true ),
       manifestationRemoved: m => renderedModel .setManifestationGlow( m, false ),
     } );
@@ -418,11 +421,18 @@ const makeFloatMatrices = ( matrices ) =>
     const toolFactories = new util.HashMap()
     for ( const symmetrySystem of Object.values( symmetrySystems ) ) {
       symmetrySystem.createToolFactories( toolsModel ) // needed to register built-in tools
+      for ( let toolkind of [ 0, 1, 2 ] ) {
+        for (let index = symmetrySystem .getToolFactories( toolkind ) .iterator(); index.hasNext(); ) {
+          let factory = index.next();  
+          editor .addSelectionSummaryListener( factory );
+        }
+      }
     }
 
     fieldApp.registerToolFactories( toolFactories, toolsModel )
     
     const bookmarkFactory = new vzomePkg.core.tools.BookmarkToolFactory( toolsModel );
+    editor .addSelectionSummaryListener( bookmarkFactory );
     bookmarkFactory.createPredefinedTool( "ball at origin" );
 
     const toolsXml = xml && xml.getChildElement( "Tools" )

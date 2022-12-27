@@ -5,6 +5,7 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.SelectionSummary;
+import com.vzome.core.editor.SelectionImpl;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.LegacyEditorModel;
 import com.vzome.core.editor.api.OrbitSource;
@@ -24,6 +25,7 @@ public class JsEditorModel implements EditorModel, LegacyEditorModel, SymmetryAw
     private Point symmetryCenter;
     private final OrbitSource symmetries;
     private final Object symmetrySystems;
+    private final SelectionSummary selectionSummary;
 
     public JsEditorModel( RealizedModel realizedModel, Selection selection, Symmetries4D kind, OrbitSource symmetries, Object symmetrySystems )
     {
@@ -33,6 +35,9 @@ public class JsEditorModel implements EditorModel, LegacyEditorModel, SymmetryAw
         this.symmetries = symmetries;
         this.symmetrySystems = symmetrySystems;
         this.symmetryCenter = new FreePoint( realizedModel .getField() .origin( 3 ) );
+
+        this .selectionSummary = new SelectionSummary( this .selection );
+        ( (SelectionImpl) this .selection ) .addListener( this .selectionSummary );
     }
     
     public void setAdapter( Object adapter )
@@ -104,13 +109,18 @@ public class JsEditorModel implements EditorModel, LegacyEditorModel, SymmetryAw
         this.symmetrySegment = segment;
     }
     
-    
-
     @Override
     public void addSelectionSummaryListener( SelectionSummary.Listener listener )
     {
-        throw new RuntimeException( "unimplemented addSelectionSummaryListener" );
+        this .selectionSummary .addListener( listener );
     }
+
+    public void notifyListeners()
+    {
+        this .selectionSummary .notifyListeners();
+    }
+
+
 
     @Override
     public Construction getSelectedConstruction( Class<? extends Construction> kind )

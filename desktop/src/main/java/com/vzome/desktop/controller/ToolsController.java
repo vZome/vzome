@@ -37,7 +37,7 @@ public class ToolsController extends DefaultController implements PropertyChange
     public void addTool( Tool tool )
     {
         Controller controller = new ToolController( tool );
-        this .addSubController( "tools", controller );
+        this .addSubController( tool .getId(), controller );
         this .firePropertyChange( new PropertyChangeEvent( this, "tool.added", null, controller ) );
     }
 
@@ -45,6 +45,12 @@ public class ToolsController extends DefaultController implements PropertyChange
     public void propertyChange( PropertyChangeEvent evt )
     {
         switch ( evt .getPropertyName() ) {
+        
+        case "customTools":
+        case "customBookmarks":
+            // forward for the web client
+            this .firePropertyChange( new PropertyChangeEvent( this, evt .getPropertyName(), null, evt .getNewValue() ) );
+            break;
 
         case "tool.instances":
             if ( evt .getOldValue() == null ) // adding a tool
@@ -65,5 +71,22 @@ public class ToolsController extends DefaultController implements PropertyChange
         default:
             break;
         }
+    }
+
+    @Override
+    public String[] getCommandList( String listName )
+    {
+        switch (listName) {
+
+        case "customTools":
+            return this .tools .getToolIDs( false );
+
+        case "customBookmarks":
+            return this .tools .getToolIDs( true );
+
+        default:
+            break;
+        }
+        return super.getCommandList( listName );
     }
 }

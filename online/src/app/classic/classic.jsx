@@ -65,7 +65,7 @@ export const ClassicEditor = ( { worker } ) =>
           <ToolFactoryBar controller={symmController()} />
           <ToolBar symmetryController={symmController()} toolsController={toolsController()} editorController={editorController()} />
           <div id='canvas-and-bookmarks' style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
-            <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} />
+            <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} symmetryController={symmController()} />
             <GeometryCanvas scene={getScene()} callbacks={callbacks} />
           </div>
         </div>
