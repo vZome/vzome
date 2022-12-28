@@ -1,5 +1,5 @@
 export const icosahedralScene = {
-  "camera": {
+  "fixedCamera": {
     "near": 0.3320118188858032,
     "far": 265.60888671875,
     "width": 59.7620849609375,
@@ -40955,7 +40955,7 @@ export const icosahedralScene = {
       ]
     }
   },
-  "liveCamera": {
+  "camera": {
     "near": 0.3320118188858032,
     "far": 265.60888671875,
     "width": 59.7620849609375,

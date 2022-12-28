@@ -18,11 +18,11 @@ export const CameraControls = props =>
   return (
     <div id='camera-controls' style={{ display: 'grid', 'grid-template-rows': 'min-content min-content' }}>
       <div id='camera-buttons' class='placeholder' style={{ 'min-height': '60px' }} >perspective | snap | outlines</div>
-      <div id="ball-and-slider" style={{ display: 'grid', 'grid-template-columns': '1fr min-content' }}>
-        <div id="camera-trackball" style={{ display: 'grid', 'grid-template-rows': '1fr', border: '1px solid', 'min-height': '220px' }}>
-          <SymmetryCanvas scene={scene()} trackball={false} style={{ height: '100%' }} />
+      <div id="ball-and-slider" style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
+        <div id="camera-trackball" style={{ border: '1px solid' }}>
+          <SymmetryCanvas scene={scene()} trackball={false} style={{ position: 'relative', height: '200px', 'max-width': '240px' }} />
         </div>
-        <div id='zoom-slider' class='placeholder' style={{ 'min-height': '100px', 'min-width': '70px' }} >zoom</div>
+        <div id='zoom-slider' class='placeholder' style={{ 'min-height': '100px', 'min-width': '60px' }} >zoom</div>
       </div>
     </div>
   )
