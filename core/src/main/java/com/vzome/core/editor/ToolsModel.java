@@ -2,8 +2,10 @@ package com.vzome.core.editor;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -17,6 +19,7 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.editor.api.Context;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.UndoableEdit;
+import com.vzome.core.tools.BookmarkTool;
 import com.vzome.xml.DomUtils;
 
 @SuppressWarnings("serial")
@@ -34,6 +37,10 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
     private final Map<String, Boolean> toolSelectInputs = new HashMap<>();
     private final Map<String, Boolean> toolCopyColors = new HashMap<>();
     private final Set<String> hiddenTools = new HashSet<>();
+    
+    // Adding these for the web client
+    private final List<String> customTools = new ArrayList<>();
+    private final List<String> customBookmarks = new ArrayList<>();
     
 	public ToolsModel( Context context, Point originPoint )
 	{
@@ -60,8 +67,27 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 	@Override
 	public Tool put( String key, Tool tool )
 	{
-		this .pcs .firePropertyChange( "tool.instances", null, tool );
-		return super .put( key, tool );
+		Tool result = super .put( key, tool );
+		// PCE listeners may access this map!
+        this .pcs .firePropertyChange( "tool.instances", null, tool );
+        
+        // Adding this for the web client, which is quite nicely generic React or SolidJS
+        if ( ! tool .isPredefined() && ! tool .isHidden() ) {
+            if ( tool .getCategory() .equals( BookmarkTool.ID ) ) {
+                this .customBookmarks .add( key );
+                this .pcs .firePropertyChange( "customBookmarks", null, this .getToolIDs( true ) );
+            }
+            else {
+                this .customTools .add( key );
+                this .pcs .firePropertyChange( "customTools", null, this .getToolIDs( false ) );
+            }
+        }
+        return result;
+	}
+	
+	public String[] getToolIDs( boolean bookmarks )
+	{
+	    return bookmarks? this .customBookmarks .toArray( new String[]{} ) : this .customTools .toArray( new String[]{} );
 	}
 
 	// Create from deserializing
@@ -203,5 +229,14 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
     public void hideTool( Tool tool )
     {
         this .pcs .firePropertyChange( "tool.instances", tool, null );
+
+        if ( tool .getCategory() .equals( BookmarkTool.ID ) ) {
+            this .customBookmarks .remove( tool .getId() );
+            this .pcs .firePropertyChange( "customBookmarks", null, this .getToolIDs( true ) );
+        }
+        else {
+            this .customTools .remove( tool .getId() );
+            this .pcs .firePropertyChange( "customTools", null, this .getToolIDs( false ) );
+        }
     }
 }

@@ -48,6 +48,9 @@ const download = ( name, text, type ) =>
 
 const encodeUrl = url => url .split( '/' ) .map( encodeURIComponent ) .join( '/' );
 
+const queryParams = new URLSearchParams( window.location.search );
+const canDownloadScene = !! queryParams .get( 'canDownloadScene' );
+
 const normalStyle = {
   display: 'flex',       // flex is for the light dom content, usually an image
   height: '100%',
@@ -115,6 +118,14 @@ export const DesignViewer = ( { children, children3d, config={}, callbacks={} } 
     if ( !exporterRef.current ) return;
     const writeFile = text => download( name, text, 'model/gltf+json' );
     exporterRef.current .exportGltfJson( writeFile );
+  }
+  const exportSceneJSON = () =>
+  {
+    hideDownloadMenu();
+    const vName = source.name;
+    const name = vName.substring( 0, vName.length-6 ).concat( ".json" );
+    const text = JSON .stringify( scene, null, 2 );
+    download( name, text, 'application/json' );
   }
   const historyAction = action =>
   {
@@ -210,6 +221,7 @@ export const DesignViewer = ( { children, children3d, config={}, callbacks={} } 
           >
             <MenuItem onClick={downloadVZome}>.vZome source</MenuItem>
             <MenuItem onClick={exportGLTF}>glTF scene</MenuItem>
+            { canDownloadScene && <MenuItem onClick={exportSceneJSON}>Scene JSON</MenuItem> }
           </Menu>
         </>
       }

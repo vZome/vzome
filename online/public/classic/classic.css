@@ -25,7 +25,11 @@ img {
 }
 
 .toolbar-image {
-  border-radius: 5px;
+  border-radius: 3px;
+}
+
+button:disabled > .toolbar-image {
+  filter: saturate(0.1) brightness(2) grayscale(0.9) contrast(0.15);
 }
 
 .toolbar-image:active {

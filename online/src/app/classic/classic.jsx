@@ -13,10 +13,12 @@ export const ClassicEditor = ( { worker } ) =>
 {
   const { rootController, getScene } = createWorkerStore( worker );
 
+  const bkgdColor = () => getScene() ?.lighting .backgroundColor;
+
   const undoRedoController = () => subController( rootController(), "undoRedo" );
   const bookmarkController = () => subController( rootController(), 'bookmark' );
-  const editorController = () => subController( rootController(), 'editor' );
-  const pickingController = () => subController( editorController(), 'picking' );
+  const editorController   = () => subController( rootController(), 'editor' );
+  const pickingController  = () => subController( editorController(), 'picking' );
   const strutBuilder       = () => subController( rootController(), 'strutBuilder' );
   const symmController     = () => subController( strutBuilder(), 'symmetry' );
   const toolsController    = () => subController( strutBuilder(), 'tools' );
@@ -61,15 +63,15 @@ export const ClassicEditor = ( { worker } ) =>
             <div id='stats-bar' class='placeholder' style={{ 'min-height': '30px' }} >Status</div>
           </div>
           <ToolFactoryBar controller={symmController()} />
-          <ToolBar symmetryController={symmController()} toolsController={toolsController()} />
+          <ToolBar symmetryController={symmController()} toolsController={toolsController()} editorController={editorController()} />
           <div id='canvas-and-bookmarks' style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
-            <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} />
-            <GeometryCanvas scene={getScene()} callbacks={callbacks} />
+            <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} symmetryController={symmController()} />
+            <GeometryCanvas scene={getScene()} callbacks={callbacks} style={{ position: 'relative', height: '100%' }} />
           </div>
         </div>
 
         <div id='editor-drawer' class='grid-rows-min-1 editor-drawer'>
-          <CameraControls/>
+          <CameraControls symmController={symmController()} bkgdColor={bkgdColor()} />
           <div id="build-parts-measure" style={{ height: '100%' }}>
             <StrutBuildPanel symmController={symmController()} />
           </div>

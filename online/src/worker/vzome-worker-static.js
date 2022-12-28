@@ -117,8 +117,6 @@ const fetchFileText = selected =>
 
 let designController;
 let propertyChanges = {};
-const bookmarks = [];
-const tools = [];
 
 const getNamedController = controllerPath =>
 {
@@ -143,10 +141,12 @@ const registerChangeListener = ( controller, controllerPath, changeName, propNam
   if ( ! propertyChanges[ controllerPath ] ) {
     controller .addPropertyListener( { propertyChange: pce => {
       const name = pce .getPropertyName();
-      if ( name === changeName ) {
-        for ( const [propName, isList] of Object.entries( propertyChanges[ controllerPath ][ changeName ] ) ) {
-          const value = isList? controller .getCommandList( propName ) : controller .getProperty( propName );
-          postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name: propName, value } } );
+      for (const [ cName, changes ] of Object.entries( propertyChanges[ controllerPath ] ) ) {
+        if ( name === cName ) {
+          for ( const [propName, isList] of Object.entries( changes ) ) {
+            const value = isList? controller .getCommandList( propName ) : controller .getProperty( propName );
+            postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name: propName, value } } );
+          }
         }
       }
     } } );
@@ -171,6 +171,8 @@ const clientEvents = report =>
 
   const xmlParsed = xmlTree => report( { type: 'DESIGN_XML_PARSED', payload: xmlTree } );
 
+  const propertyChanged = ( controllerPath, name, value ) => report( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name, value } } );
+
   const scenesDiscovered = s => {
     scenes = s; // TODO fix this horrible hack
     report( { type: 'SCENES_DISCOVERED', payload: s } );
@@ -178,7 +180,7 @@ const clientEvents = report =>
 
   const designSerialized = xml => report( { type: 'DESIGN_XML_SAVED', payload: xml } );
 
-  return { sceneChanged, shapeDefined, instanceAdded, selectionToggled, symmetryChanged, xmlParsed, scenesDiscovered, designSerialized };
+  return { sceneChanged, shapeDefined, instanceAdded, selectionToggled, symmetryChanged, xmlParsed, scenesDiscovered, designSerialized, propertyChanged };
 }
 
 const createDesign = ( report, fieldName ) =>
@@ -190,23 +192,6 @@ const createDesign = ( report, fieldName ) =>
       propertyChanges = {};
       designController = module .newDesign( fieldName, clientEvents( report ) );
       report( { type: 'CONTROLLER_CREATED' } );
-
-      // Here we emulate the PCL of ModelPanel, since there is no list property
-      //  on toolsController for either "tools" or "bookmarks".
-      // NOTE: this is not tested yet!
-      const toolsController = getNamedController( 'strutBuilder:tools' );
-      toolsController .addPropertyListener( { propertyChange: pce => {
-        const name = pce .getPropertyName();
-        if ( name === 'tool.added' ) {
-          const toolController = pce .getNewValue();
-          const kind = toolController .getProperty( "kind" );
-          if ( kind === 'bookmark' ) {
-            const name = toolController .getProperty( "label" );
-            bookmarks .append( name );
-            report( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath: 'strutBuilder:tools', name: 'bookmarks', value: bookmarks.slice() } } );
-          }
-        }
-      } } );
     } )
 
     .catch( error => {
