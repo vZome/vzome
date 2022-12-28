@@ -82,15 +82,23 @@ const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamer
 
   const trackballEnd = evt =>
   {
-    const { target } = evt;
-    const camera = target.object;
+    const trackball = evt.target;
+    const camera = trackball.object;
     const up = toVector( camera.up );
     const position = toVector( camera.position );
-    const lookAt = toVector( target.target );
-    const offset = lookAt.map( (e,i) => e - position[ i ] );
-    const distance = Math.sqrt( offset.reduce( (sum,e) => sum + (e*e) ), 0 );
-    const lookDir = offset.map( (e) => e / distance );
-    syncCamera( { lookAt, up, lookDir, distance } );
+    const lookAt = toVector( trackball.target );
+    const [ x, y, z ] = lookAt.map( (e,i) => e - position[ i ] );
+    const distance = Math.sqrt( x*x + y*y + z*z );
+    const lookDir = [ x/distance, y/distance, z/distance ];
+
+    // This was missing, and vZome reads width to set FOV
+    const fovX = camera.fov * (Math.PI/180) * camera.aspect; // Switch from Y-based FOV degrees to X-based radians
+    const width = 2 * distance * Math.tan( fovX / 2 );
+    // This is needed to keep the fog depth correct in desktop.
+    //  See the reducer, where the width/distance ratio is maintained.
+    const far = camera.far;
+
+    syncCamera( { lookAt, up, lookDir, distance, width, far } );
     setNeedsRender( 20 );
   }
 
@@ -98,7 +106,8 @@ const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamer
   const halfX = width / 2;
   const halfY = halfX / aspect;
   const position = useMemo( () => lookAt.map( (e,i) => e - distance * lookDir[ i ] ), [ lookAt, lookDir, distance ] );
-  const fov = useMemo( () => 360 * Math.atan( halfY / distance ) / Math.PI, [ halfX, aspect, distance ] );
+  const fov = useMemo( () =>
+    360 * Math.atan( halfY / distance ) / Math.PI, [ halfY, distance ] );
 
   const lights = useMemo( () => ({
     ...defaultLighting,
