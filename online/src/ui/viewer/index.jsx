@@ -25,12 +25,13 @@ import { create } from 'jss';
 
 import { ShapedGeometry } from './geometry.jsx'
 import { DesignCanvas } from './designcanvas.jsx'
-import { createWorkerStore, fetchDesign, whilePerspective, serializeVZomeXml, doControllerAction } from './store.js';
+import { createWorkerStore, fetchDesign, whilePerspective, doControllerAction } from './store.js';
 import { Spinner } from './spinner.jsx'
 import { ErrorAlert } from './alert.jsx'
 import { SettingsDialog } from './settings.jsx';
 import { useVR } from './hooks.js';
 import { SceneMenu } from './scenes.jsx';
+import { serializeVZomeXml } from '../../workerClient/serializer.js';
 
 // from https://www.bitdegree.org/learn/javascript-download
 const download = ( name, text, type ) =>
@@ -104,7 +105,7 @@ export const DesignViewer = ( { children, children3d, config={}, callbacks={} } 
     const fileName = name || 'untitled.vZome';
     if ( changedText ) {
       const { camera, liveCamera, lighting } = scene;
-      const fullText = serializeVZomeXml( changedText, liveCamera || camera, lighting );
+      const fullText = serializeVZomeXml( changedText, lighting, liveCamera, camera );
       download( fileName, fullText, 'application/xml' );
     }
     else
