@@ -8,6 +8,12 @@ import ListItemText from "@suid/material/ListItemText";
 import { createSignal } from "solid-js";
 import { controllerAction, subController } from "../controllers-solid";
 
+const isMac = navigator.userAgentData?.platform === 'macOS';
+
+console.log( JSON.stringify( navigator.userAgentData ));
+
+const isMeta = evt => isMac? evt.metaKey : evt.ctrlKey;
+
 export const EditMenu = ( props ) =>
 {
   const [ anchorEl, setAnchorEl ] = createSignal( null );
@@ -23,7 +29,7 @@ export const EditMenu = ( props ) =>
     }
     if ( innerProps.key && !innerProps.disabled ) {
       document .addEventListener( "keydown", evt => {
-        if ( evt .metaKey && evt.code===("Key"+innerProps.key) ) {
+        if ( isMeta( evt ) && evt.key===innerProps.key ) {
           doAction();
           evt .preventDefault();
         }
@@ -34,7 +40,7 @@ export const EditMenu = ( props ) =>
         <ListItemText>{innerProps.label}</ListItemText>
         <Show when={innerProps.key} >
           <Typography variant="body2" color="text.secondary">
-            ⌘{innerProps.key}
+            { ( isMac? '⌘' : '^' ) + innerProps.key}
           </Typography>
         </Show>
       </MenuItem>
