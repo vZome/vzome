@@ -149,10 +149,29 @@ const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamer
   // );
 }
 
-export const LightedTrackballCanvas = ( { lighting, children, sceneCamera, syncCamera, handleBackgroundClick=()=>{}, trackball=true } ) =>
+const isLeftMouseButton = e =>
+{
+  e = e || window.event;
+  if ( "which" in e )  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
+    return e.which === 1
+  else if ( "button" in e )  // IE, Opera 
+    return e.button === 0
+  return false
+}
+
+export const LightedTrackballCanvas = ( { lighting, children, sceneCamera, syncCamera, toolActions={}, trackball=true } ) =>
 {
   const [ measured, bounds ] = useMeasure();
   const aspect = ( bounds && bounds.height )? bounds.width / bounds.height : 1;
+  const { onDrag, onDragEnd } = toolActions;
+
+  const handlePointerMissed = ( e ) =>
+  {
+    if ( isLeftMouseButton( e ) && toolActions?.bkgdClick ) {
+      e.stopPropagation()
+      toolActions .bkgdClick();
+    }
+  }
 
   const vrAvailable = useVR();
   if ( vrAvailable ) {
@@ -166,7 +185,8 @@ export const LightedTrackballCanvas = ( { lighting, children, sceneCamera, syncC
       </VRCanvas> )
   } else {
     return (
-      <Canvas ref={measured} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
+      <Canvas ref={measured} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }}
+          onPointerMove={onDrag} onPointerUp={onDragEnd} onPointerMissed={handlePointerMissed} >
         <LightedCameraControls {...{ lighting, aspect, sceneCamera, syncCamera, trackball }} />
         {children}
       </Canvas> )
