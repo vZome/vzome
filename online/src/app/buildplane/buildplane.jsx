@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
-import { useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useReducer, forwardRef, useImperativeHandle } from 'react';
 import { DoubleSide, Matrix4, Quaternion, Vector3 } from 'three';
 import { useFrame } from '@react-three/fiber'
 
 import { normalize, vlength, vscale } from './vectors.js';
+import { reducer, initialState, doToggleDisk, doSetCenter, doStrutPreview, doSelectPlane, doSelectHinge, doToggleBuild } from './planes.js';
+import { createStrut, joinBalls, newDesign } from '../../ui/viewer/store.js';
 
 const makeRotation = ( from, to ) =>
 {
+  if ( !to )
+    return new Quaternion();
   const fromV = new Vector3() .fromArray( from ) .normalize();
   const toV = new Vector3() .fromArray( to ) .normalize();
   const axis = new Vector3() .copy( fromV ) .cross( toV ) .normalize();
@@ -22,6 +25,8 @@ const useCylinderQuaternion = vector => useMemo( () => makeRotation( [0,1,0], ve
 const useOrientation = ( buildPlanes, orientation ) =>
 {
   return useMemo( () => {
+    if ( !buildPlanes )
+      return new Quaternion();
     const array = buildPlanes .orientations[ orientation ];
     const matrix = new Matrix4() .fromArray( array ) .transpose();
     return new Quaternion() .setFromRotationMatrix( matrix );
@@ -29,7 +34,6 @@ const useOrientation = ( buildPlanes, orientation ) =>
 }
 
 const discSize = 35;
-const dotSize = 1/3;
 const cylinderSize = 1/8;
 const TORUS_AXIS = [0,0,1];
 
@@ -168,17 +172,59 @@ const Hinge = ( { state, buildPlanes, actions } ) =>
   )
 }
 
-export const BuildPlane = ( { state, actions } ) =>
+const BuildPlane = ( { worker }, toolRef ) =>
 {
+  const { sendToWorker, subscribe } = worker;
+  const [ state, dispatch ] = useReducer( reducer, initialState ); // dedicated local store
+  useEffect( () => {
+    // Connect the worker store to the local store, to listen to worker events
+    subscribe( {
+      onWorkerError: error => console.log( error ), // TODO show the user!
+      onWorkerMessage: msg => dispatch( msg ),
+    } );
+    sendToWorker( newDesign() );
+  }, [] );
+
+  // This enables the parent component to connect this tool to the scene
+  useImperativeHandle( toolRef, () => ({
+    bkgdClick: () => dispatch( doToggleDisk() ),
+    onClick: ( id, position, type, selected ) => {
+      if ( type === 'ball' ) {
+        if ( state.endPt ) {
+          sendToWorker( joinBalls( state.center.id, id ) );
+        }
+        dispatch( doSetCenter( id, position ) );
+      }
+    },
+    onHover: ( id, position, type, starting ) => {
+      if ( starting && state.buildingStruts && state.center ?.position ) {
+        if ( type === 'ball' ) {
+          const [ x0, y0, z0 ] = state.center.position;
+          const [ x1, y1, z1 ] = position;
+          const vector = [ x1-x0, y1-y0, z1-z0 ];
+          dispatch( doStrutPreview( vector ) );
+        }
+      } else
+        dispatch( doStrutPreview() );
+    },
+  }));
+  const actions = {
+    createStrut: ( plane, zone, index, orientation ) => sendToWorker( createStrut( state.center.id, plane, zone, index, orientation ) ),
+    previewStrut: endPt => dispatch( doStrutPreview( endPt ) ),
+    changePlane: ( name, orientation ) => dispatch( doSelectPlane( name, orientation ) ),
+    changeHinge: ( name, orientation ) => dispatch( doSelectHinge( name, orientation ) ),
+    toggleBuild: endPt => dispatch( doToggleBuild( endPt ) ),
+  }
+
   const { center, diskZone, buildPlanes } = state;
   const { orbit, orientation } = diskZone;
   const [ planeMaterial, planeMaterialRef ] = useState()
 
-  const plane = buildPlanes .planes[ orbit ];
-  const permutation = buildPlanes .permutations[ orientation ];
+  const plane = buildPlanes?.planes[ orbit ];
+  const permutation = buildPlanes?.permutations[ orientation ];
   const doChangeHinge = ( orbit, orientation ) => actions.changeHinge( orbit, permutation[ orientation ] );
-  const diskRotation = useCylinderQuaternion( plane.normal );
-  const hoopRotation = useMemo( () => makeRotation( TORUS_AXIS, plane.normal ), [ plane ] );
+  const diskRotation = useCylinderQuaternion( plane?.normal );
+  const hoopRotation = useMemo( () => makeRotation( TORUS_AXIS, plane?.normal ), [ plane ] );
   const globalRotation = useOrientation( buildPlanes, orientation );
 
   const createZoneStrut = ( zoneIndex ) => ( index ) => actions.createStrut( orbit, zoneIndex, index, orientation );
@@ -203,7 +249,7 @@ export const BuildPlane = ( { state, actions } ) =>
     }
   }
   
-  return (
+  return ( state.buildPlanes && state.enabled && state.center &&
     <group>
       <group position={center.position} quaternion={globalRotation}>
         <meshLambertMaterial ref={planeMaterialRef} transparent={true} opacity={0.5} color={plane.color} />
@@ -229,3 +275,5 @@ export const BuildPlane = ( { state, actions } ) =>
     </group>
   )
 }
+
+export const BuildPlaneTool = forwardRef( BuildPlane );

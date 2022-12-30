@@ -1,13 +1,13 @@
 
-import { Canvas } from './components/canvas.jsx';
 import { CameraControls } from './components/camera.jsx';
 import { StrutBuildPanel } from './components/strutbuilder.jsx';
 import { MenuBar } from './components/menubar.jsx';
 import { createWorkerStore, subController, controllerAction } from './controllers-solid.js';
 import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
 import { solidify } from './solid-react.jsx';
+import { SceneCanvas } from '../../ui/viewer/scenecanvas.jsx';
 
-const GeometryCanvas = solidify( Canvas );
+const SolidSceneCanvas = solidify( SceneCanvas );
 
 export const ClassicEditor = ( { worker } ) =>
 {
@@ -15,7 +15,6 @@ export const ClassicEditor = ( { worker } ) =>
 
   const bkgdColor = () => getScene() ?.lighting .backgroundColor;
 
-  const undoRedoController = () => subController( rootController(), "undoRedo" );
   const bookmarkController = () => subController( rootController(), 'bookmark' );
   const editorController   = () => subController( rootController(), 'editor' );
   const pickingController  = () => subController( editorController(), 'picking' );
@@ -23,34 +22,14 @@ export const ClassicEditor = ( { worker } ) =>
   const symmController     = () => subController( strutBuilder(), 'symmetry' );
   const toolsController    = () => subController( strutBuilder(), 'tools' );
 
-  const handleKeyDown = event => {
-    switch ( event.code ) {
-      case "KeyZ":
-        if ( event .metaKey ) {
-          controllerAction( undoRedoController(), "undo" );
-          event .preventDefault();
-        }
-        break;
-    
-      case "KeyY":
-        if ( event .metaKey ) {
-          controllerAction( undoRedoController(), "redo" );
-          event .preventDefault();
-        }
-        break;
-    
-      default:
-        break;
+  const toolRef = {
+    current: {
+      onClick: ( id, position, type, selected ) =>
+        controllerAction( pickingController(), 'SelectManifestation', { id } ),
+      bkgdClick: () =>
+        controllerAction( editorController(), 'DeselectAll' ),
     }
-  }
-  document .addEventListener( "keydown", handleKeyDown );
-
-  const callbacks = {
-    onClick: ( id, position, type, selected ) =>
-      controllerAction( pickingController(), 'SelectManifestation', { id } ),
-    bkgdClick: () =>
-      controllerAction( editorController(), 'DeselectAll' ),
-  }
+  };
 
   return (
     <div id='classic' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }} class='whitesmoke-bkgd'>
@@ -66,7 +45,7 @@ export const ClassicEditor = ( { worker } ) =>
           <ToolBar symmetryController={symmController()} toolsController={toolsController()} editorController={editorController()} />
           <div id='canvas-and-bookmarks' style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
             <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} symmetryController={symmController()} />
-            <GeometryCanvas scene={getScene()} callbacks={callbacks} style={{ position: 'relative', height: '100%' }} />
+            <SolidSceneCanvas scene={getScene()} toolRef={toolRef} syncCamera={ ()=>{} } style={{ position: 'relative', height: '100%' }} />
           </div>
         </div>
 

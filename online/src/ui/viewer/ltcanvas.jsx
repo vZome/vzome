@@ -67,7 +67,7 @@ const toVector = vector3 =>
 
 const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamera, trackball }) =>
 {
-  // Here we can useThree, etc., which we could not in DesignCanvas
+  // Here we can useThree, etc., which we could not in LightedTrackballCanvas
 
   const [ needsRender, setNeedsRender ] = useState( 20 );
   const trackballChange = evt => {
@@ -148,7 +148,7 @@ const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamer
   // );
 }
 
-export const DesignCanvas = ( { lighting, children, sceneCamera, syncCamera, handleBackgroundClick=()=>{}, trackball=true } ) =>
+export const LightedTrackballCanvas = ( { lighting, children, sceneCamera, syncCamera, handleBackgroundClick=()=>{}, trackball=true } ) =>
 {
   const [ measured, bounds ] = useMeasure();
   const aspect = ( bounds && bounds.height )? bounds.width / bounds.height : 1;
