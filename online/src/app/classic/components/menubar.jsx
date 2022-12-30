@@ -9,9 +9,9 @@ export const MenuBar = ( props ) =>
 {
   return (
     <Toolbar variant="dense" disableGutters="true">
-      <FileMenu />
-      <EditMenu controller={props.controller} />
-      <ConstructMenu />
+      <FileMenu      controller={props.controller} />
+      <EditMenu      controller={props.controller} />
+      <ConstructMenu controller={props.controller} />
     </Toolbar>
   )
 }

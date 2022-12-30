@@ -15,35 +15,12 @@ export const ClassicEditor = ( { worker } ) =>
 
   const bkgdColor = () => getScene() ?.lighting .backgroundColor;
 
-  const undoRedoController = () => subController( rootController(), "undoRedo" );
   const bookmarkController = () => subController( rootController(), 'bookmark' );
   const editorController   = () => subController( rootController(), 'editor' );
   const pickingController  = () => subController( editorController(), 'picking' );
   const strutBuilder       = () => subController( rootController(), 'strutBuilder' );
   const symmController     = () => subController( strutBuilder(), 'symmetry' );
   const toolsController    = () => subController( strutBuilder(), 'tools' );
-
-  const handleKeyDown = event => {
-    switch ( event.code ) {
-      case "KeyZ":
-        if ( event .metaKey ) {
-          controllerAction( undoRedoController(), "undo" );
-          event .preventDefault();
-        }
-        break;
-    
-      case "KeyY":
-        if ( event .metaKey ) {
-          controllerAction( undoRedoController(), "redo" );
-          event .preventDefault();
-        }
-        break;
-    
-      default:
-        break;
-    }
-  }
-  document .addEventListener( "keydown", handleKeyDown );
 
   const toolRef = {
     current: {
@@ -68,7 +45,7 @@ export const ClassicEditor = ( { worker } ) =>
           <ToolBar symmetryController={symmController()} toolsController={toolsController()} editorController={editorController()} />
           <div id='canvas-and-bookmarks' style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
             <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} symmetryController={symmController()} />
-            <SolidSceneCanvas scene={getScene()} toolRef={toolRef} style={{ position: 'relative', height: '100%' }} />
+            <SolidSceneCanvas scene={getScene()} toolRef={toolRef} syncCamera={ ()=>{} } style={{ position: 'relative', height: '100%' }} />
           </div>
         </div>
 
