@@ -1,18 +1,10 @@
 
 import Button from "@suid/material/Button"
 import Menu from "@suid/material/Menu"
-import MenuItem from "@suid/material/MenuItem"
 import Divider from "@suid/material/Divider";
-import Typography from "@suid/material/Typography";
-import ListItemText from "@suid/material/ListItemText";
 import { createSignal } from "solid-js";
-import { controllerAction, subController } from "../controllers-solid";
 
-const isMac = navigator.userAgentData?.platform === 'macOS';
-
-console.log( JSON.stringify( navigator.userAgentData ));
-
-const isMeta = evt => isMac? evt.metaKey : evt.ctrlKey;
+import { createActionItem } from "../components/actionitem.jsx";
 
 export const EditMenu = ( props ) =>
 {
@@ -20,32 +12,7 @@ export const EditMenu = ( props ) =>
   const open = () => Boolean( anchorEl() );
   const doClose = () => setAnchorEl( null );
 
-  const ActionItem = ( innerProps ) =>
-  {
-    const doAction = () => 
-    {
-      doClose();
-      controllerAction( subController( props.controller, innerProps.controller || 'editor' ), innerProps.action );
-    }
-    if ( innerProps.key && !innerProps.disabled ) {
-      document .addEventListener( "keydown", evt => {
-        if ( isMeta( evt ) && evt.key===innerProps.key ) {
-          doAction();
-          evt .preventDefault();
-        }
-      } );
-    }
-    return (
-      <MenuItem disabled={innerProps.disabled} onClick={doAction}>
-        <ListItemText>{innerProps.label}</ListItemText>
-        <Show when={innerProps.key} >
-          <Typography variant="body2" color="text.secondary">
-            { ( isMac? '⌘' : '^' ) + innerProps.key}
-          </Typography>
-        </Show>
-      </MenuItem>
-    );
-  }
+  const ActionItem = createActionItem( props.controller, 'editor', doClose );
 
   return (
     <div>
@@ -58,33 +25,33 @@ export const EditMenu = ( props ) =>
       <Menu id="edit-menu-menu" MenuListProps={{ "aria-labelledby": "edit-menu-button" }}
         anchorEl={anchorEl()} open={open()} onClose={doClose}
       >
-        <ActionItem label="Undo"     action="undo"    key="Z" controller="undoRedo" />
-        <ActionItem label="Redo"     action="redo"    key="Y" controller="undoRedo" />
-        <ActionItem label="Undo All" action="undoAll" controller="undoRedo" />
-        <ActionItem label="Redo All" action="redoAll" controller="undoRedo" />
+        <ActionItem label="Undo"     action="undo"    mods="⌘" key="Z" controller="undoRedo" />
+        <ActionItem label="Redo"     action="redo"    mods="⌘" key="Y" controller="undoRedo" />
+        <ActionItem label="Undo All" action="undoAll" mods="⌥⌘" key="Z" controller="undoRedo" />
+        <ActionItem label="Redo All" action="redoAll" mods="⌥⌘" key="Y" controller="undoRedo" />
 
         <Divider />
 
-        <ActionItem label="Cut"    action="cut"    key="X" disabled={true} />
-        <ActionItem label="Copy"   action="copy"   key="C" disabled={true} />
-        <ActionItem label="Paste"  action="paste"  key="V" disabled={true} />
-        <ActionItem label="Delete" action="delete" disabled={true} />
+        <ActionItem label="Cut"    action="cut"    mods="⌘" key="X" disabled={true} />
+        <ActionItem label="Copy"   action="copy"   mods="⌘" key="C" disabled={true} />
+        <ActionItem label="Paste"  action="paste"  mods="⌘" key="V" disabled={true} />
+        <ActionItem label="Delete" action="Delete" code="Delete|Backspace" />
 
         <Divider />
 
-        <ActionItem label="Select All"       action="SelectAll" key="A" />
-        <ActionItem label="Select Neighbors" action="SelectNeighbors" />
+        <ActionItem label="Select All"       action="SelectAll"       mods="⌘" key="A" />
+        <ActionItem label="Select Neighbors" action="SelectNeighbors" mods="⌥⌘" key="A" />
         <ActionItem label="Invert Selection" action="InvertSelection" />
 
         <Divider />
 
-        <ActionItem label="Group"   action="GroupSelection/group" key="G" />
-        <ActionItem label="Ungroup" action="GroupSelection/ungroup" />
+        <ActionItem label="Group"   action="GroupSelection/group" mods="⌘" key="G" />
+        <ActionItem label="Ungroup" action="GroupSelection/ungroup" mods="⌥⌘" key="G" />
 
         <Divider />
 
-        <ActionItem label="Hide" action="hideball" />
-        <ActionItem label="Show All Hidden" action="ShowHidden" />
+        <ActionItem label="Hide"            action="hideball"   mods="⌃" key="H" />
+        <ActionItem label="Show All Hidden" action="ShowHidden" mods="⌥⌃" key="H" />
 
       </Menu>
     </div>
