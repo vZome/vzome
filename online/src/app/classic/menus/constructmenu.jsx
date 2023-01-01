@@ -4,7 +4,8 @@ import Menu from "@suid/material/Menu"
 import Divider from "@suid/material/Divider";
 import { createSignal } from "solid-js";
 
-import { createActionItem } from "../components/actionitem.jsx";
+import { createMenuAction } from "../components/menuaction.jsx";
+import { subController } from "../controllers-solid.js";
 
 export const ConstructMenu = ( props ) =>
 {
@@ -12,7 +13,7 @@ export const ConstructMenu = ( props ) =>
   const open = () => Boolean( anchorEl() );
   const doClose = () => setAnchorEl( null );
 
-  const ActionItem = createActionItem( props.controller, 'editor', doClose );
+  const EditAction = createMenuAction( props.controller, doClose );
 
   return (
     <div>
@@ -25,39 +26,39 @@ export const ConstructMenu = ( props ) =>
       <Menu id="construct-menu-menu" MenuListProps={{ "aria-labelledby": "construct-menu-button" }}
         anchorEl={anchorEl()} open={open()} onClose={doClose}
       >
-        <ActionItem label="Loop Balls"         action="JoinPoints/CLOSED_LOOP" mods="⌘" key="J" />
-        <ActionItem label="Chain Balls"        action="JoinPoints/CHAIN_BALLS" mods="⌥⌘" key="J" />
-        <ActionItem label="Join Balls to Last" action="JoinPoints/ALL_TO_LAST" />
-        <ActionItem label="Make All Possible Struts" action="JoinPoints/ALL_POSSIBLE" />
+        <EditAction label="Loop Balls"         action="JoinPoints/CLOSED_LOOP" mods="⌘" key="J" />
+        <EditAction label="Chain Balls"        action="JoinPoints/CHAIN_BALLS" mods="⌥⌘" key="J" />
+        <EditAction label="Join Balls to Last" action="JoinPoints/ALL_TO_LAST" />
+        <EditAction label="Make All Possible Struts" action="JoinPoints/ALL_POSSIBLE" />
 
         <Divider />
 
-        <ActionItem label="Panel" action="panel" mods="⌘" key="P" />
-        <ActionItem label="Panel/Strut Vertices" action="ShowVertices" />
-        <ActionItem label="Panel Normals" action="ShowNormals" />
-
-        <Divider />
-        
-        <ActionItem label="Centroid" action="NewCentroid" />
-        <ActionItem label="Strut Midpoint" action="midpoint" />
-        <ActionItem label="Line-Line Intersection"  action="StrutIntersection" />
-        <ActionItem label="Line-Plane Intersection" action="LinePlaneIntersect" />
-        <ActionItem label="Panel-Panel Projection"  action="PanelPanelIntersection" />
-        <ActionItem label="Cross Product" action="CrossProduct" />
-        <ActionItem label="Normal to Skew Lines" action="JoinSkewLines" />
+        <EditAction label="Panel" action="panel" mods="⌘" key="P" />
+        <EditAction label="Panel/Strut Vertices" action="ShowVertices" />
+        <EditAction label="Panel Normals" action="ShowNormals" />
 
         <Divider />
         
-        <ActionItem label="Ball At Origin" action="ShowPoint/origin" />
+        <EditAction label="Centroid" action="NewCentroid" />
+        <EditAction label="Strut Midpoint" action="midpoint" />
+        <EditAction label="Line-Line Intersection"  action="StrutIntersection" />
+        <EditAction label="Line-Plane Intersection" action="LinePlaneIntersect" />
+        <EditAction label="Panel-Panel Projection"  action="PanelPanelIntersection" />
+        <EditAction label="Cross Product" action="CrossProduct" />
+        <EditAction label="Normal to Skew Lines" action="JoinSkewLines" />
 
         <Divider />
         
-        <ActionItem label="2D Convex Hull" action="ConvexHull2d" />
-        <ActionItem label="3D Convex Hull" action="ConvexHull3d" />
+        <EditAction label="Ball At Origin" action="ShowPoint/origin" />
 
         <Divider />
         
-        <ActionItem label="Parallelepiped" action="Parallelepiped" mods="⇧⌘" key="P" disabled={true} />
+        <EditAction label="2D Convex Hull" action="ConvexHull2d" />
+        <EditAction label="3D Convex Hull" action="ConvexHull3d" />
+
+        <Divider />
+        
+        <EditAction label="Parallelepiped" action="Parallelepiped" mods="⇧⌘" key="P" />
       </Menu>
     </div>
   );

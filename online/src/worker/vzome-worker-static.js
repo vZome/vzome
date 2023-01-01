@@ -173,6 +173,8 @@ const clientEvents = report =>
 
   const propertyChanged = ( controllerPath, name, value ) => report( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name, value } } );
 
+  const errorReported = message => report( { type: 'ALERT_RAISED', payload: message } );
+
   const scenesDiscovered = s => {
     scenes = s; // TODO fix this horrible hack
     report( { type: 'SCENES_DISCOVERED', payload: s } );
@@ -180,7 +182,8 @@ const clientEvents = report =>
 
   const designSerialized = xml => report( { type: 'DESIGN_XML_SAVED', payload: xml } );
 
-  return { sceneChanged, shapeDefined, instanceAdded, selectionToggled, symmetryChanged, xmlParsed, scenesDiscovered, designSerialized, propertyChanged };
+  return { sceneChanged, shapeDefined, instanceAdded, selectionToggled, symmetryChanged,
+    xmlParsed, scenesDiscovered, designSerialized, propertyChanged, errorReported, };
 }
 
 const createDesign = ( report, fieldName ) =>
@@ -364,7 +367,7 @@ onmessage = ({ data }) =>
     case 'STRUT_CREATION_TRIGGERED':
     case 'JOIN_BALLS_TRIGGERED':
     {
-      const controller = getNamedController( 'editor:buildPlane' );
+      const controller = getNamedController( 'buildPlane' );
       controller .paramActionPerformed( null, type, new JsProperties( payload ) );
 
       // TODO: this is pretty heavy-handed, sending the whole scene after every edit.

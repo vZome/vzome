@@ -2,15 +2,13 @@
 import Button from "@suid/material/Button"
 import Menu from "@suid/material/Menu"
 import MenuItem from "@suid/material/MenuItem"
-import Divider from "@suid/material/Divider";
 import { createSignal } from "solid-js";
-import { controllerAction, subController } from "../controllers-solid";
 
 export const FileMenu = ( props ) =>
 {
   const [ anchorEl, setAnchorEl ] = createSignal( null );
   const open = () => Boolean( anchorEl() );
-  const handleClose = () => setAnchorEl( null ); 
+  const doClose = () => setAnchorEl( null );
 
   return (
     <div>
@@ -27,12 +25,12 @@ export const FileMenu = ( props ) =>
         id="file-menu-menu"
         anchorEl={anchorEl()}
         open={open()}
-        onClose={handleClose}
+        onClose={doClose}
         MenuListProps={{ "aria-labelledby": "file-menu-button" }}
       >
-        <MenuItem disabled={true} onClick={handleClose}>New Design</MenuItem>
-        <MenuItem disabled={true} onClick={handleClose}>Open</MenuItem>
-        <MenuItem disabled={true} onClick={handleClose}>Save</MenuItem>
+        <MenuItem disabled={true} onClick={doClose}>New Design</MenuItem>
+        <MenuItem disabled={true} onClick={doClose}>Open</MenuItem>
+        <MenuItem disabled={true} onClick={doClose}>Save</MenuItem>
       </Menu>
     </div>
   );

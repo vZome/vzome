@@ -5,6 +5,7 @@ import Link from '@material-ui/core/Link'
 
 import { VZomeAppBar } from '../components/appbar.jsx';
 import { WorkerContext } from '../../ui/viewer/index.jsx';
+import { ErrorAlert } from '../../ui/viewer/alert.jsx';
 
 export const ClassicAppBar = ( { worker } ) => (
   <WorkerContext worker={worker} >
@@ -21,5 +22,6 @@ export const ClassicAppBar = ( { worker } ) => (
           join the <Link target="_blank" rel="noopener" href="https://discord.gg/vhyFsNAFPS">Discord server</Link>.
         </Typography>
       </> } />
+    <ErrorAlert/>
   </WorkerContext>
 )

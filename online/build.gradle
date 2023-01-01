@@ -214,7 +214,6 @@ core.config {
     'com/vzome/core/edits/GhostSymmetry24Cell.java',
     'com/vzome/core/edits/Symmetry4d.java',
     'com/vzome/core/edits/Run*Script.java',
-    'com/vzome/core/edits/Validate2Manifold.java',
     'com/vzome/core/edits/RealizeMetaParts.java',
     'com/vzome/core/edits/ReplaceWithShape.java',
 

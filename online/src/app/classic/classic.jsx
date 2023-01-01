@@ -16,8 +16,7 @@ export const ClassicEditor = ( { worker } ) =>
   const bkgdColor = () => getScene() ?.lighting .backgroundColor;
 
   const bookmarkController = () => subController( rootController(), 'bookmark' );
-  const editorController   = () => subController( rootController(), 'editor' );
-  const pickingController  = () => subController( editorController(), 'picking' );
+  const pickingController  = () => subController( rootController(), 'picking' );
   const strutBuilder       = () => subController( rootController(), 'strutBuilder' );
   const symmController     = () => subController( strutBuilder(), 'symmetry' );
   const toolsController    = () => subController( strutBuilder(), 'tools' );
@@ -27,7 +26,7 @@ export const ClassicEditor = ( { worker } ) =>
       onClick: ( id, position, type, selected ) =>
         controllerAction( pickingController(), 'SelectManifestation', { id } ),
       bkgdClick: () =>
-        controllerAction( editorController(), 'DeselectAll' ),
+        controllerAction( rootController(), 'DeselectAll' ),
     }
   };
 
@@ -42,7 +41,7 @@ export const ClassicEditor = ( { worker } ) =>
             <div id='stats-bar' class='placeholder' style={{ 'min-height': '30px' }} >Status</div>
           </div>
           <ToolFactoryBar controller={symmController()} />
-          <ToolBar symmetryController={symmController()} toolsController={toolsController()} editorController={editorController()} />
+          <ToolBar symmetryController={symmController()} toolsController={toolsController()} editorController={rootController()} />
           <div id='canvas-and-bookmarks' style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
             <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} symmetryController={symmController()} />
             <SolidSceneCanvas scene={getScene()} toolRef={toolRef} syncCamera={ ()=>{} } style={{ position: 'relative', height: '100%' }} />
