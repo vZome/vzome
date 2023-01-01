@@ -16,7 +16,7 @@ export const createActionItem = ( controller, fallback, doClose ) => ( props ) =
   }
 
   let modifiers = props.mods;
-  if ( !isMac )
+  if ( !isMac && modifiers )
     modifiers = modifiers .replace( '⌘', '⌃' );
   if ( !props.disabled ) {
     const targetCodes = props.code?.split( '|' ) || ( props.key && [ "Key" + props.key.toUpperCase() ] );
