@@ -129,15 +129,15 @@ public abstract class AbstractToolFactory implements Factory, SelectionSummary.L
 		} // else
 		   // legacy user tools don't consume NEW_PREFIX id space
 
+        int nextDot = id .indexOf( "." );
+        if ( nextDot > 0 ) {
+            tool .setCategory( id .substring( 0, nextDot ) );
+        } else {
+            tool .setCategory( this .getId() );
+        }
+
 		// Reattach the label and input behaviors, already loaded separately by ToolsModel
 		this .tools .setConfiguration( tool );
-
-		int nextDot = id .indexOf( "." );
-		if ( nextDot > 0 ) {
-			tool .setCategory( id .substring( 0, nextDot ) );
-		} else {
-			tool .setCategory( this .getId() );
-		}
 		return tool;
 	}
 
