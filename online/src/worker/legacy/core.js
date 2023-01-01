@@ -404,8 +404,11 @@ const makeFloatMatrices = ( matrices ) =>
     realizedModel .show( originBall );
 
     const selection = new vzomePkg.core.editor.SelectionImpl();
-    const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp, orbitSource, symmetrySystems )
-    toolsModel.setEditorModel( editor )
+    const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp, orbitSource, symmetrySystems );
+    for ( const symmetrySystem of Object.values( symmetrySystems ) ) {
+      symmetrySystem .setEditorModel( editor );
+    }
+    toolsModel .setEditorModel( editor )
     history .setListener( { publishChanges: () => {
       editor .notifyListeners();
     } } );

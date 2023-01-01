@@ -162,19 +162,26 @@ export const newDesign = ( fieldName, clientEvents ) =>
 const createControllers = ( design, renderHistory, clientEvents ) =>
 {
   const { orbitSource, renderedModel, toolsModel, bookmarkFactory, history } = design;
-  const controller = new com.vzome.desktop.controller.DefaultController(); // this is the equivalent of DocumentController
 
-  // This one has no equivalent in Java, though I've considered it.  Too much change.
-  const editorController = new EditorController( design, clientEvents );
-  controller .addSubController( 'editor', editorController );
+  const controller = new EditorController( design, clientEvents ); // this is the equivalent of DocumentController
+  controller .setErrorChannel( {
+    reportError: ( message, args ) => {
+      console.log( 'controller error:', message, args );
+      if ( message === com.vzome.desktop.api.Controller.UNKNOWN_ERROR_CODE ) {
+        const ex = args[ 0 ];
+        clientEvents .errorReported( ex.message );
+      } else
+        clientEvents .errorReported( message )
+    },
+  } );
 
   // This has similar function to the Java equivalent, but a very different mechanism
   const pickingController = new PickingController( renderedModel );
-  editorController .addSubController( 'picking', pickingController );
+  controller .addSubController( 'picking', pickingController );
 
   // This has no desktop equivalent
   const buildPlaneController = new BuildPlaneController( renderedModel, orbitSource );
-  editorController .addSubController( 'buildPlane', buildPlaneController );
+  controller .addSubController( 'buildPlane', buildPlaneController );
 
   const undoRedoController = new com.vzome.desktop.controller.UndoRedoController( history );
   controller .addSubController( 'undoRedo', undoRedoController );

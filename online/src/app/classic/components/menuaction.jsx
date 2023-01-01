@@ -2,17 +2,16 @@
 import MenuItem from "@suid/material/MenuItem"
 import Typography from "@suid/material/Typography";
 import ListItemText from "@suid/material/ListItemText";
-import { controllerAction, subController } from "../controllers-solid";
+import { controllerAction } from "../controllers-solid";
 
 const isMac = navigator.userAgentData?.platform === 'macOS';
 
-export const createActionItem = ( controller, fallback, doClose ) => ( props ) =>
+export const createMenuAction = ( controller, doClose ) => ( props ) =>
 {
-  const sub = subController( controller, props.controller || fallback );
   const doAction = () => 
   {
     doClose();
-    controllerAction( sub, props.action );
+    controllerAction( controller, props.action );
   }
 
   let modifiers = props.mods;
@@ -21,7 +20,6 @@ export const createActionItem = ( controller, fallback, doClose ) => ( props ) =
   if ( !props.disabled ) {
     const targetCodes = props.code?.split( '|' ) || ( props.key && [ "Key" + props.key.toUpperCase() ] );
     if ( targetCodes ) {
-      console.log( targetCodes );
       const hasMeta = !! modifiers ?.includes( '⌘' );
       const hasControl = !! modifiers ?.includes( '⌃' );
       const hasShift = !! modifiers ?.includes( '⇧' );
