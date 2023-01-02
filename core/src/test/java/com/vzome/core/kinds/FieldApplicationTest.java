@@ -313,7 +313,7 @@ public class FieldApplicationTest
     }
     
     public static void testDirectionAxisVsPrototype(String appName, Symmetry symmetry) {
-        for( Direction dir : symmetry) {
+        for( Direction dir : symmetry .getDirections() ) {
             String symDirName = symmetry.getName() + " " + dir.getName();
             String msg = appName + " " + symDirName;
             // No automatic directions will have been added to these symmetries 
@@ -354,7 +354,7 @@ public class FieldApplicationTest
     private void listDirections(String appName, Symmetry symmetry) {
         final String msg = appName + " " + symmetry.getName() + " ";
         System.out.println(msg);
-        for( Direction dir : symmetry) {
+        for( Direction dir : symmetry .getDirections() ) {
             System.out.println("\"" + dir.getName() + "\",");
         }
     }
@@ -533,7 +533,7 @@ public class FieldApplicationTest
         assertNotNull(name + ".getConnectorShape()", shapes.getConnectorShape());
         AlgebraicField field = symmetry.getField();
         AlgebraicNumber length = field.createPower(1);
-        for(Direction dir : symmetry) {
+        for(Direction dir : symmetry .getDirections() ) {
             assertNotNull(name + ".getStrutShape()", shapes.getStrutShape(dir, length));
         }
     }
@@ -631,7 +631,6 @@ public class FieldApplicationTest
             assertNotNull("createToolFactories()", toolFactoryList);
             
             String name = perspective.getName();
-            String source = appName + "." + name;
             switch(name) {
             case "octahedral":
                 verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 4, 1);
@@ -646,7 +645,7 @@ public class FieldApplicationTest
                 break;
                 
             case "pentagonal":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 4, 4, 1);
                 break;
                 
             case "heptagonal antiprism":
@@ -663,7 +662,13 @@ public class FieldApplicationTest
                 
             default:
                 if(name.startsWith("antiprism") ) {
-                    verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1);
+                	int symmetryToolCount = 3, transformToolCount = 3, linearMapToolCount = 1;
+                	if(perspective.getSymmetry().isTrivial()) {
+                    	// adjust tool counts for even-gon antiprism symmetries 
+                    	symmetryToolCount = 4;
+                    	transformToolCount = 4;
+                    }
+                	verifyToolFactoryCounts(name, kind, toolFactoryList, symmetryToolCount, transformToolCount, linearMapToolCount);
                     break;                    
                 }
                 fail(appName + " has an unexpected perspective name: " + name);

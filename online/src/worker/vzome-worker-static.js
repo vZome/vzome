@@ -1,18 +1,18 @@
 
+import { JsProperties } from './legacy/jsweet2js.js';
+
 // support trampolining to work around worker CORS issue
 //   see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
 export const WORKER_ENTRY_FILE_URL = import.meta.url;
 
-const convertScene = preview =>
-{
-  let { lights, camera, embedding } = preview
-  
-  const dlights = lights.directionalLights.map( ({ direction, color }) => {
-    const { x, y, z } = direction
-    return { direction: [ x, y, z ], color }
-  })
-  const lighting = { ...lights, directionalLights: dlights };
+const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
 
+let scenes;
+let snapshots;
+let previewShapes;
+
+const convertPreviewCamera = camera =>
+{
   const { lookAtPoint, upDirection, lookDirection, viewDistance, width, nearClipDistance, farClipDistance, perspective } = camera
   const lookAt = [ ...Object.values( lookAtPoint ) ]
   const up = [ ...Object.values( upDirection ) ]
@@ -20,33 +20,66 @@ const convertScene = preview =>
   const near = nearClipDistance;
   const far = farClipDistance;
   const distance = viewDistance;
-  camera = {
+  return {
     near, far, width, distance,
     up, lookAt, lookDir,
     perspective
   }
-  return { lighting, camera, embedding };
 }
 
-const convertGeometry = preview =>
+const preparePreviewScene = index =>
 {
-  let { shapes, instances, orientations } = preview
-  const shapesOut = {}
+  const { snapshot, view } = scenes[ index ];
+  const camera = convertPreviewCamera( view );
+  const shapes = {};
+  for (const [ id, shape ] of Object.entries( previewShapes )) {
+    shapes[ id ] = { ...shape, instances: [] };
+  }
+  for (const instance of snapshots[ snapshot ]) {
+    shapes[ instance.shapeId ].instances.push( instance );
+  }
+  return { shapes, camera };
+}
+
+const convertPreview = preview =>
+{
+  const { lights, embedding, orientations, shapes, instances } = preview
+  
+  const dlights = lights.directionalLights.map( ({ direction, color }) => {
+    const { x, y, z } = direction
+    return { direction: [ x, y, z ], color }
+  })
+  const lighting = { ...lights, directionalLights: dlights };
+
+  const convertInstances = ( instances, idPrefix ) =>
+  {
+    let i = 0;
+    return instances.map( ({ position, orientation, color, shape }) => {
+      const id = idPrefix + i++;
+      const { x, y, z } = position;
+      const rotation = [ ...( orientations[ orientation ] || IDENTITY_MATRIX ) ];
+      const instance = { id, position: [ x, y, z ], rotation, color, shapeId: shape, type: 'irrelevant' };
+      return instance;
+    });
+  }
+  // Save the module global snapshots
+  snapshots = preview.snapshots? [ ...preview.snapshots ] .map( (snapshot,i) => {
+    return convertInstances( snapshot, `snap${i}_` );
+  }) : [];
+  snapshots .push( convertInstances( instances, "main_" ) );
+  const defaultSnapshot = snapshots.length-1;
+
+  // Convert the shapes array to the previewShapes object, module global for reuse with other scenes/snapshots
+  previewShapes = {}
   shapes.map( shape => {
-    shapesOut[ shape.id ] = shape;
-    shape.instances = [];
+    previewShapes[ shape.id ] = shape;
   } );
 
-  let i = 0;
-  const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]
-  instances.map( ({ position, orientation, color, shape }) => {
-    const id = "id_" + i++;
-    const { x, y, z } = position;
-    const rotation = [ ...( orientations[ orientation ] || IDENTITY_MATRIX ) ];
-    const instance = { id, position: [ x, y, z ], rotation, color, shapeId: shape };
-    shapesOut[ shape ].instances.push( instance );
-  });
-  return shapesOut
+  // Save the module global scenes
+  const defaultScene = { title: 'default scene', view: preview.camera, snapshot: defaultSnapshot };
+  scenes = preview.scenes? [ defaultScene, ...preview.scenes ] : [ defaultScene ];
+
+  return { lighting, embedding, ...preparePreviewScene( 0 ) };
 }
 
 const fetchUrlText = async ( url ) =>
@@ -82,45 +115,115 @@ const fetchFileText = selected =>
   })
 }
 
-let renderHistory;
+let designController;
+let propertyChanges = {};
 
-const parseAndInterpret = ( xmlLoading, report, debug ) =>
+const getNamedController = controllerPath =>
 {
-  let legacyModule;
-  return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
+  const controllerNames = controllerPath? controllerPath.split( ':' ) : [];
+  const getSubController = ( controller, names ) => {
+    if ( !names || names.length === 0 || ( names.length === 1 && !names[ 0 ] ) )
+      return controller;
+    else {
+      controller = controller .getSubController( names[ 0 ] );
+      if ( !controller )
+        return undefined;
+      return getSubController( controller, names.slice( 1 ) );
+    }
+  }
+  return getSubController( designController, controllerNames );
+}
 
-    .then( ([ module, xml ]) => {
-      legacyModule = module;
-      return module .parse( xml );
-    } )
-
-    .then( design => {
-      const { renderer, camera, lighting, xmlTree, targetEditId, snapshots, field } = design;
-      if ( field.unknown ) {
-        throw new Error( `Field "${field.name}" is not supported.` );
+const registerChangeListener = ( controller, controllerPath, changeName, propName, isList ) =>
+{
+  if ( !changeName )
+    return;
+  if ( ! propertyChanges[ controllerPath ] ) {
+    controller .addPropertyListener( { propertyChange: pce => {
+      const name = pce .getPropertyName();
+      for (const [ cName, changes ] of Object.entries( propertyChanges[ controllerPath ] ) ) {
+        if ( name === cName ) {
+          for ( const [propName, isList] of Object.entries( changes ) ) {
+            const value = isList? controller .getCommandList( propName ) : controller .getProperty( propName );
+            postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name: propName, value } } );
+          }
+        }
       }
-      // the next step may take several seconds, which is why we already reported PARSE_COMPLETED
-      renderHistory = legacyModule .interpretAndRender( design, debug );
-      // TODO: define a better contract for before/after.
-      //  Here we are using before=false with targetEditId, which is meant to be the *next*
-      //  edit to be executed, so this really should be before=true.
-      //  However, the semantics of the HistoryInspector UI require the edit field to contain the "after" edit ID.
-      //  Thus, we are too tightly coupled to the UI here!
-      //  See also the 'EDIT_SELECTED' case in onmessage(), below.
-      const { shapes, edit } = renderHistory .getScene( debug? '--START--' : targetEditId, false );
-      const { embedding } = renderer;
-      const scene = { lighting, camera, embedding, shapes };
-      report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
-      report( { type: 'DESIGN_INTERPRETED', payload: { xmlTree, snapshots } } );
-      const error = renderHistory .getError();
-      if ( !! error ) {
-        throw error;
-      } else
-        return true; // probably nobody should care about the return value
+    } } );
+    propertyChanges[ controllerPath ] = {};
+  }
+  const change = propertyChanges[ controllerPath ][ changeName ] || {};
+  if ( ! change[ propName ] )
+    propertyChanges[ controllerPath ][ changeName ] = { ...change, [ propName ]: isList };
+}
+
+const clientEvents = report =>
+{
+  const sceneChanged = ( scene, edit='--START--' ) => report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
+
+  const shapeDefined = shape => report( { type: 'SHAPE_DEFINED', payload: shape } );
+
+  const instanceAdded = instance => report( { type: 'INSTANCE_ADDED', payload: instance } );
+
+  const selectionToggled = ( shapeId, id, selected ) => report( { type: 'SELECTION_TOGGLED', payload: { shapeId, id, selected } } );
+
+  const symmetryChanged = details => report( { type: 'PLANES_DEFINED', payload: details } );
+
+  const xmlParsed = xmlTree => report( { type: 'DESIGN_XML_PARSED', payload: xmlTree } );
+
+  const propertyChanged = ( controllerPath, name, value ) => report( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name, value } } );
+
+  const errorReported = message => report( { type: 'ALERT_RAISED', payload: message } );
+
+  const scenesDiscovered = s => {
+    scenes = s; // TODO fix this horrible hack
+    report( { type: 'SCENES_DISCOVERED', payload: s } );
+  }
+
+  const designSerialized = xml => report( { type: 'DESIGN_XML_SAVED', payload: xml } );
+
+  return { sceneChanged, shapeDefined, instanceAdded, selectionToggled, symmetryChanged,
+    xmlParsed, scenesDiscovered, designSerialized, propertyChanged, errorReported, };
+}
+
+const createDesign = ( report, fieldName ) =>
+{
+  report( { type: 'FETCH_STARTED', payload: { name: 'untitled.vZome', preview: false } } );
+  return import( './legacy/dynamic.js' )
+
+    .then( module => {
+      propertyChanges = {};
+      designController = module .newDesign( fieldName, clientEvents( report ) );
+      report( { type: 'CONTROLLER_CREATED' } );
     } )
 
     .catch( error => {
-      console.log( `parseAndInterpret failure: ${error.message}` );
+      console.log( `createDesign failure: ${error.message}` );
+      report( { type: 'ALERT_RAISED', payload: 'Failed to create vZome model.' } );
+      return false; // probably nobody should care about the return value
+     } );
+}
+
+const getField = name =>
+{
+  return import( './legacy/dynamic.js' )
+    .then( module => {
+      return module .getField( name );
+    } );
+}
+
+const loadDesign = ( xmlLoading, report, debug ) =>
+{
+  return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
+
+    .then( ([ module, xml ]) => {
+      propertyChanges = {};
+      designController = module .loadDesign( xml, debug, clientEvents( report ) );
+      report( { type: 'CONTROLLER_CREATED' } );
+    } )
+
+    .catch( error => {
+      console.log( `loadDesign failure: ${error.message}` );
       report( { type: 'ALERT_RAISED', payload: 'Failed to load vZome model.' } );
       return false; // probably nobody should care about the return value
      } );
@@ -139,7 +242,7 @@ const fileLoader = ( report, event ) =>
 
   xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { name, text } } ) );
 
-  return parseAndInterpret( xmlLoading, report, debug );
+  return loadDesign( xmlLoading, report, debug );
 }
 
 const urlLoader = ( report, event ) =>
@@ -147,7 +250,8 @@ const urlLoader = ( report, event ) =>
   if ( event.type !== 'URL_PROVIDED' ) {
     return report( event );
   }
-  const { url, preview=false, debug=false } = event.payload;
+  const { url, config } = event.payload;
+  const { preview=false, debug=false, showScenes=false } = config;
   if ( !url ) {
     throw new Error( "No url field in URL_PROVIDED event payload" );
   }
@@ -160,22 +264,29 @@ const urlLoader = ( report, event ) =>
   xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { name, text, url } } ) );
 
   if ( preview ) {
+    // The client prefers to show a preview if possible.
     const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
     return fetchUrlText( previewUrl )
       .then( text => JSON.parse( text ) )
       .then( preview => {
-        const scene = { ...convertScene( preview ), shapes: convertGeometry( preview ) };
+        const scene = convertPreview( preview ); // sets module global scenes as a side-effect
+        if ( showScenes && scenes.length < 2 )
+          // The client expects scenes, but this preview JSON predates the scenes export,
+          //  so fall back on XML.
+          throw new Error( `No scenes in preview ${previewUrl}` );
         report( { type: 'SCENE_RENDERED', payload: { scene } } );
+        if ( scenes )
+          report( { type: 'SCENES_DISCOVERED', payload: scenes } );
         return true; // probably nobody should care about the return value
       } )
       .catch( error => {
         console.log( error.message );
-        console.log( `Failed to load and parse preview: ${previewUrl}` );
-        return parseAndInterpret( xmlLoading, report, debug );
+        console.log( 'Preview failed, falling back to vZome XML' );
+        return loadDesign( xmlLoading, report, debug );
       } )
   }
   else {
-    return parseAndInterpret( xmlLoading, report, debug );
+    return loadDesign( xmlLoading, report, debug );
   }
 }
 
@@ -184,6 +295,8 @@ onmessage = ({ data }) =>
   // console.log( `Worker received: ${JSON.stringify( data, null, 2 )}` );
   const { type, payload } = data;
 
+  try {
+    
   switch (type) {
 
     case 'URL_PROVIDED':
@@ -194,19 +307,81 @@ onmessage = ({ data }) =>
       fileLoader( postMessage, data );
       break;
 
-    case 'EDIT_SELECTED':
+    case 'SCENE_SELECTED': {
+      const index = payload;
+      const { nodeId, camera } = scenes[ index ];
+      let scene;
+      if ( nodeId ) { // XML was parsed by the legacy module
+        scene = { camera, ...designController .getScene( nodeId, true ) };
+      } else // a preview JSON
+        scene = preparePreviewScene( index );
+      postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
+      break;
+    }
+
+    case 'EDIT_SELECTED': {
       const { before, after } = payload; // only one of these will have an edit ID
-      const scene = before? renderHistory .getScene( before, true ) : renderHistory .getScene( after, false );
+      const scene = designController .getScene( before || after, !!before );
       const { edit } = scene;
       postMessage( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
-      const error = renderHistory .getError();
-      if ( !!error ) {
-        console.log( `getScene error: ${error.message}` );
-        postMessage( { type: 'ALERT_RAISED', payload: 'Failed to interpret all edits.' } );
+      break;
+    }
+
+    case 'ACTION_TRIGGERED':
+    {
+      const { controllerPath, action, parameters } = payload;
+      const controller = getNamedController( controllerPath );
+      try {
+        if ( parameters && Object.keys(parameters).length !== 0 )
+          controller .paramActionPerformed( null, action, new JsProperties( parameters ) );
+        else
+          controller .actionPerformed( null, action );
+        
+        // TODO: this is pretty heavy-handed, sending the whole scene after every edit.
+        //  That said, it may perform better than the incremental approach.
+        designController .renderScene();
+        const scene = designController .getScene( '--END--', true );
+        postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
+      } catch (error) {
+        console.log( `${action} actionPerformed error: ${error.message}` );
+        postMessage( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
       }
       break;
+    }
+
+    case 'PROPERTY_REQUESTED':
+    {
+      const { controllerPath, propName, changeName, isList } = payload;
+      const controller = getNamedController( controllerPath );
+      registerChangeListener( controller, controllerPath, changeName, propName, isList );
+      const value = isList? controller .getCommandList( propName ) : controller .getProperty( propName );
+      postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name: propName, value } } );
+      break;
+    }
+
+    case 'NEW_DESIGN_STARTED':
+      const { field } = payload;
+      createDesign( postMessage, field );
+      break;
+
+    case 'STRUT_CREATION_TRIGGERED':
+    case 'JOIN_BALLS_TRIGGERED':
+    {
+      const controller = getNamedController( 'buildPlane' );
+      controller .paramActionPerformed( null, type, new JsProperties( payload ) );
+
+      // TODO: this is pretty heavy-handed, sending the whole scene after every edit.
+      //  That said, it may perform better than the incremental approach.
+      designController .renderScene();
+      const scene = designController .getScene( '--END--', true );
+      postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
+    }
   
     default:
       break;
+  }
+  } catch (error) {
+    console.log( `${type} onmessage error: ${error.message}` );
+    postMessage( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${type}` } );
   }
 }

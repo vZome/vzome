@@ -5,26 +5,18 @@ description:
 published: true
 ---
 
-Since vZome 6.0 build 22, we have been shipping a [Linux version of vZome](https://www.vzome.com/download/7.0/latest/linux/vZome-Linux-7.0.zip).
+Since vZome 7.1, we have been shipping a [Debian package for vZome](https://www.vzome.com/download/7.1/latest/linux/vZome-Linux-7.1.deb).
 
-This is a simpler distribution than either the Mac or Windows variant, since it does not include its own Java Runtime Environment.  It is simply a ZIP file.  Unzip it and you will find <strong>bin</strong> and <strong>lib</strong> folders.  In the <strong>bin</strong> folder, you will find the launch script, named "vZome-7.0".
+Unlike prior vZome packages for Linux, this package does include its own JRE (Java runtime environment).  I have tested it successfully (though slowly) on a virtual machine running Ubuntu 22.04.1 LTS.  When I clicked on the `.deb` file, I was offered a choice of two apps to open it with, and I selected the "Software Installer", which successfully performed the package installation.
 
-If you have not installed Java on your Linux machine, you will see something like this when you run the script:
+If you have difficulties with this or any other Linux distribution, please contact `support@vzome.com`.
 
-<a href="https://www.vzome.com/blog/2018/02/running-vzome-on-linux/linux-no-java/" rel="attachment wp-att-116"><img src="https://www.vzome.com/blog/wp-content/uploads/2018/02/linux-no-java.png" alt="" class="alignnone size-full wp-image-116" /></a>
+Test
 
-You can [download the JRE from Oracle](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html).
-You'll end up with a file like "jre-8u162-linux-x64.tar.gz".  Assuming the file was saved to your Downloads folder, you can unpack it as follows:
 
-```
-cd ~/Downloads
-tar xzvf jre-8u162-linux-x64.tar.gz
-```
-
-This will leave you with a folder named ~/Downloads/jre1.8.0_162.  To enable the vZome launch script, all you have to do is set the JAVA_HOME environment variable appropriately, before running the script:
-
-```
-export JAVA_HOME=~/Downloads/jre1.8.0_162
-```
-
-We won't be providing many guarantees about this distribution, since we don't have the time to do a lot of testing on Linux.  I have a virtual machine running Ubuntu 16.04 LTS, and I did some basic sanity testing of vZome 6.0 build 22.  Most features seem to work fine, but there is a nasty bug associated with article mode.  Since the first thing you see will be the "quick-start" article, this bug may cause a crash right away.  Launch vZome again, and you'll end up with a new document; if you stay out of article mode thereafter, you should be OK.
+<iframe id="three-ball"
+    title="First Three.js"
+    width="600"
+    height="400"
+    src="https://vorth.github.io/vzome-web/">
+</iframe>

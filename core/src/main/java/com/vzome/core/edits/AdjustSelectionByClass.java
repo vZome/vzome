@@ -27,6 +27,7 @@ public class AdjustSelectionByClass extends ChangeSelection
     private ActionEnum strutAction = ActionEnum.IGNORE;
     private ActionEnum panelAction = ActionEnum.IGNORE;
     private final EditorModel editor;
+    private boolean originLast = true; // default is the new behavior
         
     public AdjustSelectionByClass( EditorModel editor )
     {
@@ -66,7 +67,7 @@ public class AdjustSelectionByClass extends ChangeSelection
                 this.panelAction = ActionEnum.DESELECT;
                 break;
 
-            case "unselectStruts":
+            case "unselectStruts": // TODO: this seems out of place. Shouldn't it be moved up with case "deselectStruts"? 
             case "unselectStrutsAndPanels":
                 this.strutAction = ActionEnum.DESELECT;
                 this.panelAction = ActionEnum.DESELECT; // legacy
@@ -85,16 +86,34 @@ public class AdjustSelectionByClass extends ChangeSelection
                 ? this .editor .getRealizedModel()
                 : mSelection;
 
+        Connector originBall = null;
         for (Manifestation man : whichManifestationSet) {
             if ( man .isRendered() ) {
                 if (man instanceof Connector) {
-                    adjustSelection(man, ballAction);
+                	if (originLast && originBall == null && ballAction == ActionEnum.SELECT && man.getLocation().isOrigin()) {
+                    	// The legacy behavior is used when originLast = false.  
+                    	// This is important for edit sequences like (AdjustSelectionByClass(ballAction=SELECT), JoinPoints)
+                    	// as noted in the recent similar fix to SelectAll.
+                		// Save selection of origin for last to match the behavior as SelectAll
+                        originBall = (Connector) man;
+                    } else {
+                    	adjustSelection(man, ballAction);
+                    }
                 } else if (man instanceof Strut) {
                     adjustSelection(man, strutAction);
                 } else if (man instanceof Panel) {
                     adjustSelection(man, panelAction);
                 }
             }
+        }
+        if (originBall != null) {
+        	final boolean ignoreGroups = true;
+            if (mSelection.manifestationSelected(originBall)) {
+                unselect(originBall, ignoreGroups);
+                redo(); // commit the current selection state of all manifestations 
+            }
+            // originBall is the last manifestation to be selected
+            select(originBall, ignoreGroups);
         }
         redo();
     }
@@ -105,6 +124,9 @@ public class AdjustSelectionByClass extends ChangeSelection
         element .setAttribute( "balls", ballAction.name() );
         element .setAttribute( "struts", strutAction.name() );
         element .setAttribute( "panels", panelAction.name() );
+        if ( this .originLast ) {
+            element .setAttribute( "originLast", "true" );    
+        }
     }
 
     @Override
@@ -127,6 +149,8 @@ public class AdjustSelectionByClass extends ChangeSelection
             strutAction = ActionEnum.valueOf(xml.getAttribute( "struts" ));
             panelAction = ActionEnum.valueOf(xml.getAttribute( "panels" ));
         }
+        String mode = xml .getAttribute( "originLast" );
+        this .originLast = "true" .equals( mode );
     }
 
     @Override

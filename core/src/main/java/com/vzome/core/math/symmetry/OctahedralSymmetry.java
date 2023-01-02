@@ -25,7 +25,7 @@ public class OctahedralSymmetry extends AbstractSymmetry
     // Currently only the RootTwoFieldApplication.synestructicsSymmetry does so.
     protected OctahedralSymmetry( AlgebraicField field, String frameColor )
     {
-        super( ORDER, field, frameColor );
+        super( ORDER, field, frameColor, null );
         this.frameColor = frameColor;
         tetrahedralSubgroup = closure( new int[] { 0, 2, 4 } );
     }

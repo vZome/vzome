@@ -10,7 +10,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.vzome.desktop.api.Controller;
-import com.vzome.desktop.awt.GraphicsController;
 
 
 @SuppressWarnings("serial")
@@ -31,10 +30,10 @@ public class StrutBuilderPanel extends JPanel
         constraintsPanel .setLayout( new BorderLayout() );
 
         final Controller symmController = this .controller .getSubController( "symmetry." + symmName );
-
-        final GraphicsController orbitController = (GraphicsController) symmController .getSubController( "buildOrbits" );
+        
+        final Controller orbitController = symmController .getSubController( "buildOrbits" );
         {
-            orbitPanel = new OrbitPanel( orbitController, (GraphicsController) symmController .getSubController( "availableOrbits" ), enabler );
+            orbitPanel = new OrbitPanel( orbitController, symmController .getSubController( "availableOrbits" ), enabler );
             orbitPanel .setBorder( BorderFactory .createTitledBorder( "strut directions" ) );
             orbitPanel .setToolTipText( "Click and drag on a ball to create a strut, using directions selected here." );
             constraintsPanel .add( orbitPanel, BorderLayout.CENTER );
@@ -95,7 +94,7 @@ public class StrutBuilderPanel extends JPanel
     private void systemChanged( String system )
     {
         Controller symmController = this .controller .getSubController( "symmetry." + system );
-        orbitPanel .systemChanged( (GraphicsController) symmController .getSubController( "buildOrbits" ), (GraphicsController) symmController .getSubController( "availableOrbits" ) );
+        orbitPanel .systemChanged( symmController .getSubController( "buildOrbits" ), symmController .getSubController( "availableOrbits" ) );
         final Controller orbitController = symmController .getSubController( "buildOrbits" );
         String dirName = orbitController .getProperty( "selectedOrbit" );
         if ( dirName == null )

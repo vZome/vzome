@@ -53,6 +53,7 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.editor.api.ImplicitSymmetryParameters;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.exporters2d.Java2dSnapshot;
@@ -81,7 +82,9 @@ import com.vzome.desktop.controller.MeasureController;
 import com.vzome.desktop.controller.NumberController;
 import com.vzome.desktop.controller.PartsController;
 import com.vzome.desktop.controller.PolytopesController;
+import com.vzome.desktop.controller.SymmetryController;
 import com.vzome.desktop.controller.ToolFactoryController;
+import com.vzome.desktop.controller.ToolsController;
 import com.vzome.desktop.controller.UndoRedoController;
 import com.vzome.desktop.controller.VectorController;
 
@@ -146,7 +149,9 @@ public class DocumentController extends DefaultGraphicsController implements Sce
     private final NumberController importScaleController;
     private final VectorController quaternionController;
     private String lastObjectColor = "#ffffffff";
-        
+    
+    private boolean mainViewRotation = true;
+
    /*
      * See the javadoc to control the logging:
      * 
@@ -193,7 +198,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
 
         this .addSubController( "bookmark", new ToolFactoryController( this .documentModel .getBookmarkFactory() ) );
         
-        this .addSubController( "polytopes", new PolytopesController( this .documentModel ) );
+        this .addSubController( "polytopes", new PolytopesController( (ImplicitSymmetryParameters) this .documentModel .getEditorModel(), document ) );
         
         this .addSubController( "undoRedo", new UndoRedoController( this .documentModel .getHistoryModel() ) );
                 
@@ -286,8 +291,10 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         }
 
         sceneLighting = this .documentModel .getSceneLighting();
+        
+        mainViewRotation = ! app .propertyIsTrue( "no.main.view.trackball" );
 
-        cameraController = new CameraGraphicsController( document .getCamera(), sceneLighting, maxOrientations );
+        cameraController = new CameraGraphicsController( document .getCamera(), sceneLighting, maxOrientations, mainViewRotation? 0.15d : 0.7d );
         this .addSubController( "camera", cameraController );
         this .articleModeZoom = new CameraZoomWheel( this .cameraController );
 
@@ -299,7 +306,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         for ( SymmetryPerspective symper : document .getFieldApplication() .getSymmetryPerspectives() )
         {
             String name = symper .getName();
-            SymmetryController symmController = new SymmetryController( strutBuilder, (SymmetrySystem) this .documentModel .getSymmetrySystem( name ), mRenderedModel );
+            SymmetryController symmController = new SymmetryController( strutBuilder, (SymmetrySystem) this .documentModel .getEditorModel() .getSymmetrySystem( name ), mRenderedModel );
             strutBuilder .addSubController( "symmetry." + name, symmController );
             this .symmetries .put( name, symmController );
         }
@@ -329,7 +336,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         if ( this .mainScene instanceof PropertyChangeListener )
             this .addPropertyListener( this .mainScene );
 
-        partsController = new PartsController( this .documentModel .getSymmetrySystem() );
+        partsController = new PartsController( this .documentModel .getEditorModel() .getSymmetrySystem() );
         this .addSubController( "parts", partsController );
         mRenderedModel .addListener( partsController );
 
@@ -409,11 +416,11 @@ public class DocumentController extends DefaultGraphicsController implements Sce
     }
     
     @Override
-    public void attachViewer( RenderingViewer viewer, Component canvas )
+    public void attachViewer( GraphicsViewer viewer, Component canvas )
     {
     		// This is called on a UI thread!
         this .modelCanvas = canvas;
-        this .imageCaptureViewer = viewer;
+        this .imageCaptureViewer = (RenderingViewer) viewer;
         
         // clicks become select or deselect all
         selectionClick = new LeftMouseDragAdapter( new ManifestationPicker( imageCaptureViewer )
@@ -434,12 +441,13 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         this .cameraController .addViewer( this .imageCaptureViewer );
         this .addSubController( "monocularPicking", new PickingController( this .imageCaptureViewer, this ) );
 
-        this .strutBuilder .attach( viewer, this .mainScene );
+        this .strutBuilder .attach( (RenderingViewer) viewer, this .mainScene );
         
         if ( this .modelCanvas != null )
             if ( editingModel ) {
                 this .selectionClick .attach( modelCanvas );
-                this .modelModeMainTrackball .attach( modelCanvas );
+                if ( mainViewRotation )
+                    this .modelModeMainTrackball .attach( modelCanvas );
                 this .strutBuilder .attach( modelCanvas );
             } else {
                 this .articleModeMainTrackball .attach( modelCanvas );
@@ -457,7 +465,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
             symmetryName = symmetryName + ((PolygonField) this.documentModel.getField()).polygonSides();
         }
         
-        SymmetrySystem symmetrySystem = (SymmetrySystem) this .documentModel .getSymmetrySystem( symmetryName );
+        SymmetrySystem symmetrySystem = (SymmetrySystem) this .documentModel .getEditorModel() .getSymmetrySystem( symmetryName );
         if(symmetrySystem == null) {
             throw new IllegalStateException("Unable to get SymmetrySystem '" + symmetryName + "'.");
         }
@@ -539,7 +547,8 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                     
                     this .selectionClick .detach( this .modelCanvas );
                     this .strutBuilder .detach( this .modelCanvas );
-                    this .modelModeMainTrackball .detach( this .modelCanvas );
+                    if ( mainViewRotation )
+                        this .modelModeMainTrackball .detach( this .modelCanvas );
                     
                     this .lessonPageClick .attach( this .modelCanvas );
                     this .articleModeMainTrackball .attach( this .modelCanvas );
@@ -580,7 +589,8 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                     this .articleModeZoom .detach( this .modelCanvas );
                     
                     this .selectionClick .attach( this .modelCanvas );
-                    this .modelModeMainTrackball .attach( this .modelCanvas );
+                    if ( mainViewRotation )
+                        this .modelModeMainTrackball .attach( this .modelCanvas );
                     this .strutBuilder .attach( this .modelCanvas );
     
                     this .editingModel = true;
@@ -1485,7 +1495,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
             StringBuffer buf = new StringBuffer();
             if ( pickedManifestation != null ) {
                 final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
-                OrbitSource symmetry  = this .documentModel .getSymmetrySystem();
+                OrbitSource symmetry  = this .documentModel .getEditorModel() .getSymmetrySystem();
                 Manifestation man = pickedManifestation;
                 Axis zone = null;
                 if (man instanceof Connector) {

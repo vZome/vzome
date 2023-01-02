@@ -66,6 +66,8 @@ public class SelectionSummary implements ManifestationChanges
 	        // When it does, we get NPEs in MeasureController.selectionChanged()
 	        // and there is no way to resync it without closing the document.
 	        // DJH - For now, I'm just going to log the error and correct the counts until I can find the root cause.
+	    	// DJH - 10/25/2022 I may have found one cause for this misbehavior.
+	    	// See other comments in the same git commit where this comment was added.
 	        if(LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.warning("Incorrect total for balls, struts and panels: "
                         + balls + " + " + struts + " + " + panels + " != " + selection .size());

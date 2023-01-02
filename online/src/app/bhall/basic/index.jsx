@@ -85,7 +85,7 @@ const metadata = {
     "doubleSpiral": {
       "parts": "10 short reds, 10 medium reds, 20 long reds, 10 short yellows, and 47 balls.",
       "description": "",
-      config: { showSnapshots: false }
+      config: { showScenes: false }
     },
   },
 }
@@ -138,7 +138,15 @@ const BHallBasic = () =>
   };
   return (
     <>
-      <VZomeAppBar oneDesign />
+      <VZomeAppBar oneDesign title='vZome Online Apps'
+        about={ <>
+          <Typography gutterBottom>
+            vZome Online Apps are demonstrations
+            of <Link target="_blank" rel="noopener" href="https://vzome.com/home/">vZome</Link> technology ported to the web,
+            showing how to build web applications that incorporate interactive 3D views.
+          </Typography>
+        </> }
+      />
       <Container maxWidth="md">
         <Paper className={classes.paper}>
           <Typography variant="h2" gutterBottom >

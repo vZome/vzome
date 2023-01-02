@@ -21,8 +21,8 @@ import com.vzome.core.tools.InversionToolFactory;
 import com.vzome.core.tools.LinearMapToolFactory;
 import com.vzome.core.tools.MirrorToolFactory;
 import com.vzome.core.tools.ProjectionToolFactory;
+import com.vzome.core.tools.RotationToolFactory;
 import com.vzome.core.tools.ScalingToolFactory;
-import com.vzome.core.tools.SymmetryToolFactory;
 import com.vzome.core.tools.TetrahedralToolFactory;
 import com.vzome.core.tools.TranslationToolFactory;
 import com.vzome.core.viewing.AbstractShapes;
@@ -43,8 +43,8 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
     private final Command cmdTxTsymmetry;
     private final Command cmdVanOss600cell;
 
-    public IcosahedralSymmetryPerspective(AlgebraicField field) {
-        this( new IcosahedralSymmetry(field) );
+    public IcosahedralSymmetryPerspective(AlgebraicField af) {
+        this( new IcosahedralSymmetry(af) );
     }
     
     protected IcosahedralSymmetryPerspective(IcosahedralSymmetry symm) {
@@ -107,7 +107,7 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
             break;
         case TRANSFORM:
             result.add(new ScalingToolFactory(tools, icosaSymm));
-            result.add(new SymmetryToolFactory(tools, icosaSymm));
+            result.add(new RotationToolFactory(tools, icosaSymm));
 //            result.add(new PlaneSelectionTool.Factory(tools));
             result.add(new TranslationToolFactory(tools));
             result.add(new ProjectionToolFactory(tools));
@@ -142,7 +142,7 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
         case TRANSFORM:
             result.add(new ScalingToolFactory(tools, icosaSymm).createPredefinedTool("scale down"));
             result.add(new ScalingToolFactory(tools, icosaSymm).createPredefinedTool("scale up"));
-            result.add(new SymmetryToolFactory(tools, icosaSymm).createPredefinedTool("rotate around red through origin"));
+            result.add(new RotationToolFactory(tools, icosaSymm, true).createPredefinedTool("rotate around red through origin"));
             result.add(new TranslationToolFactory(tools).createPredefinedTool("b1 move along +X"));
             break;
         default:

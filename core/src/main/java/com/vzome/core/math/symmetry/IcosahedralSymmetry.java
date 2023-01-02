@@ -23,7 +23,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
     
     public IcosahedralSymmetry( AlgebraicField field )
     {
-        super( 60, field, "blue" );
+        super( 60, field, "blue", null );
         
         for ( int i = 0; i < this.INCIDENCES.length; i++ ) {
             this .INCIDENCES[ i ][ 0 ] = getPermutation( i ) .mapIndex( 30 );

@@ -1,0 +1,117 @@
+
+
+img {
+  display: block;
+}
+
+.toolbar {
+  display: flex;
+  min-height: 32px;
+  gap: 1px;
+}
+
+.toolbar-vert {
+  display: flex;
+  min-width: 38px;
+  gap: 1px;
+  flex-direction: column;
+}
+
+.toolbar-button {
+  padding: 0px;
+  border-width: 0px;
+  min-height: 30px;
+  min-width: 36px;
+}
+
+.toolbar-image {
+  border-radius: 3px;
+}
+
+button:disabled > .toolbar-image {
+  filter: saturate(0.1) brightness(2) grayscale(0.9) contrast(0.15);
+}
+
+.toolbar-image:active {
+  filter: brightness(0.5);
+}
+
+.placeholder {
+  border: 3px solid lightgray;
+  color: gray;
+}
+
+.editor-main {
+  display: grid;
+  grid-template-columns: 80% 20%;
+}
+
+.editor-drawer {
+  width: 320px;
+}
+
+.grid-rows-min-1 {
+  display: grid;
+  grid-template-rows: min-content 1fr;
+}
+
+.grid-rows-1-1 {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+}
+
+.grid-rows-fr-min {
+  display: grid;
+  grid-template-rows: 1fr min-content;
+}
+
+.grid-cols-min-1 {
+  display: grid;
+  grid-template-columns: min-content 1fr;
+}
+
+.grid-cols-1-min {
+  display: grid;
+  grid-template-columns: 1fr min-content;
+}
+
+.grid-cols-2-1 {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+}
+
+.pad-4px {
+  padding: 4px;
+}
+
+.whitesmoke-bkgd {
+  background-color: whitesmoke;
+}
+
+.orbit-scale {
+  margin: 3px;
+}
+
+.scale-slider {
+  margin: 9px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 12px;
+  background-color: whitesmoke;
+  max-height: 80%;
+  display: flex;
+  justify-content: center;
+}
+
+@media ( orientation: portrait ) {
+
+  .editor-main {
+    display: grid;
+    grid-template-rows: 100%;
+    grid-template-columns: 100%;
+  }
+
+  .editor-drawer {
+    display: none;
+  }
+}

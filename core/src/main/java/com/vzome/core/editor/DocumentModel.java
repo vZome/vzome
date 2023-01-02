@@ -259,6 +259,14 @@ public class DocumentModel implements Snapshot .Recorder, Context
         }
 
         mHistory = new EditHistory();
+        mHistory .setSerializer( new EditHistory.XmlSerializer()
+        {
+            @Override
+            public String serialize( Element xmlElement )
+            {
+                return DomSerializer .getXmlString( xmlElement );
+            }
+        });
         mHistory .setListener( new EditHistory.Listener() {
 
             @Override
@@ -392,6 +400,7 @@ public class DocumentModel implements Snapshot .Recorder, Context
         return out .toString();
     }
 
+    @Override
     public boolean doEdit( String action, Map<String,Object> props )
     {
         if ( this .editorModel .mSelection .isEmpty() && action .equals( "hideball" ) ) {
@@ -414,7 +423,7 @@ public class DocumentModel implements Snapshot .Recorder, Context
 
         if ( edit == null )
         {
-            logger .warning( "no DocumentModel action for : " + action );
+            logger .warning( "no edit created for : " + action );
             return false;
         }
         if ( mode != null )
@@ -874,27 +883,9 @@ public class DocumentModel implements Snapshot .Recorder, Context
         return (Segment) editorModel .getSelectedConstruction( Segment.class );
     }
 
-    public Segment getSymmetryAxis()
-    {
-        return editorModel .getSymmetrySegment();
-    }
-
     public ToolsModel getToolsModel()
     {
         return this .tools;
-    }
-
-    public OrbitSource getSymmetrySystem()
-    {
-        return this .editorModel .getSymmetrySystem();
-    }
-
-    public OrbitSource getSymmetrySystem( String name )
-    {
-        if ( name == null )
-            return this .getSymmetrySystem();
-        else
-            return this .symmetrySystems .get( name );
     }
 
     public void setSymmetrySystem( SymmetrySystem system )

@@ -604,7 +604,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu .add( createMenuItem( "vZome Tips on YouTube...", "browse-https://www.youtube.com/c/Vzome" ) );
         {
             JMenu submenu3d = new JMenu( "Social Media" );
-            submenu3d .add( createMenuItem( "Blog...", "browse-https://vzome.com/blog" ) );
+            submenu3d .add( createMenuItem( "Geometry Blog...", "browse-https://vorth.github.io/vzome-sharing/" ) );
             submenu3d .add( createMenuItem( "Facebook Page...", "browse-https://www.facebook.com/vZome" ) );
             submenu3d .add( createMenuItem( "Twitter Page...", "browse-https://twitter.com/vZome" ) );
             submenu3d .add( createMenuItem( "Discord Server...", "browse-https://discord.com/invite/vhyFsNAFPS" ) );
@@ -612,10 +612,10 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         }
         {
             JMenu submenu3d = new JMenu( "Misc. Online Documentation" );
-            submenu3d .add( createMenuItem( "The Direction (Orbit) Triangle...", "browse-https://vzome.com/blog/2019/07/vzome-icosahedral-orbits/" ) );
-            submenu3d .add( createMenuItem( "Capturing Vector Graphics...", "browse-https://vzome.com/blog/2018/12/capturing-vector-graphics/" ) );
-            submenu3d .add( createMenuItem( "Toolbars for Diehards...", "browse-https://vzome.com/blog/2018/12/toolbars-for-diehards/" ) );
-            submenu3d .add( createMenuItem( "Content Workflows...", "browse-https://vzome.com/blog/2018/02/vzome-content-workflows/" ) );
+            submenu3d .add( createMenuItem( "The Direction (Orbit) Triangle...", "browse-https://vorth.github.io/vzome-sharing/2019/07/19/vzome-icosahedral-orbits.html" ) );
+            submenu3d .add( createMenuItem( "Capturing Vector Graphics...", "browse-https://vzome.github.io/vzome//capture-vector-graphics.html" ) );
+            submenu3d .add( createMenuItem( "Toolbars for Diehards...", "browse-https://vzome.github.io/vzome//toolbars-for-diehards.html" ) );
+            submenu3d .add( createMenuItem( "Content Workflows...", "browse-https://vzome.github.io/vzome//content-workflows.html" ) );
             menu.add( submenu3d );
         }
         {

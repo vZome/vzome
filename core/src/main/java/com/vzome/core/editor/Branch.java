@@ -88,6 +88,12 @@ public class Branch extends UndoableEdit
                     {
                         return context .createLegacyCommand( cmdName );
                     }
+
+                    @Override
+                    public boolean doEdit( String action, Map<String, Object> props )
+                    {
+                        return false;
+                    }
                 } );
             }
         }

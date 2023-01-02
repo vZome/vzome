@@ -14,17 +14,18 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.Quaternion;
 import com.vzome.core.algebra.VefVectorExporter;
 import com.vzome.core.construction.Segment;
-import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.editor.api.Context;
+import com.vzome.core.editor.api.ImplicitSymmetryParameters;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
-import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.math.symmetry.WythoffConstruction;
 import com.vzome.desktop.api.Controller;
 
 public class PolytopesController extends DefaultController
 {
-    private final DocumentModel model;
+    private final ImplicitSymmetryParameters model;
+    private final Context context;
 
     private String group = "H4";
 
@@ -35,20 +36,19 @@ public class PolytopesController extends DefaultController
     private AlgebraicNumber[] edgeScales = new AlgebraicNumber[4];
     private final AlgebraicField field;
     private final AlgebraicNumber defaultScaleFactor;
-    private final Symmetries4D fieldApp;
 
-    public PolytopesController( DocumentModel document )
+    public PolytopesController( ImplicitSymmetryParameters model, Context context )
     {
-        this .model = document;
-        this .field = document .getField();
-        this .fieldApp = document .getFieldApplication();
+        this .model = model;
+        this.context = context;
+        this .field = model .getRealizedModel() .getField();
         this .defaultScaleFactor = field .createPower( Direction .USER_SCALE + 2 );
         for (int i = 0; i < edgeScales.length; i++)
         {
             edgeScales[ i ] = field .one();
         }
         // TODO: get the list from the field itself
-        if ( null == document .getFieldApplication() .getQuaternionSymmetry( "H_4" ) ) {
+        if ( null == this .field .getGoldenRatio() ) {
             groups = new String[]{ "A4", "B4/C4", "D4", "F4" };
             group = "F4";
         } else {
@@ -73,7 +73,7 @@ public class PolytopesController extends DefaultController
              *     With no quaternion strut selected, the quaternion value defaults to (1,0,0,0).
              *     With a single short blue selected as the quaternion, the quaternion is (0,1,0,0) or similar.
              */
-            Segment strut = model .getSelectedSegment();
+            Segment strut = (Segment) this.model .getSelectedConstruction( Segment.class );
             if ( strut != null ) {
                 AlgebraicVector vector = strut .getOffset();
                 OrbitSource symm = model .getSymmetrySystem();
@@ -104,7 +104,7 @@ public class PolytopesController extends DefaultController
             params .put( "edgesToRender", edgesToRender );
             params .put( "edgeScales", edgeScales );
             params .put( "quaternion", quaternion );
-            model .doEdit( "Polytope4d", params );
+            this .context .doEdit( "Polytope4d", params );
         }
         else if ( action .startsWith( "setGroup." ) )
         {
@@ -152,7 +152,7 @@ public class PolytopesController extends DefaultController
                 quaternion = quaternion .scale( field .createPower( -5 ) );
                 Quaternion rightQuat = new Quaternion( field, quaternion );
                 VefVectorExporter exporter = new VefVectorExporter( out, this .field );
-                this .fieldApp .constructPolytope( group, index, edgesToRender, this .edgeScales, new WythoffConstruction.Listener()
+                this .model .get4dSymmetries() .constructPolytope( group, index, edgesToRender, this .edgeScales, new WythoffConstruction.Listener()
                 {
                     @Override
                     public Object addVertex( AlgebraicVector v )

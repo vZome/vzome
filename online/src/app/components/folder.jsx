@@ -1,6 +1,7 @@
 
 import React, { useRef, useState } from 'react'
 import { useDispatch } from 'react-redux';
+
 import { fetchDesign, openDesignFile } from '../../ui/viewer/store.js';
 
 import IconButton from '@material-ui/core/IconButton'
@@ -75,7 +76,7 @@ export const OpenMenu = props =>
 
   const openUrl = url => {
     if ( url && url.endsWith( ".vZome" ) ) {
-      report( fetchDesign( url, false, forDebugger ) );
+      report( fetchDesign( url, { preview: false, debug: forDebugger } ) );
     }
   }
 
