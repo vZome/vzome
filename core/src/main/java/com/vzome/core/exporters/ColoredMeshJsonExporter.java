@@ -7,7 +7,7 @@ import java.io.Writer;
 import com.vzome.core.model.ColoredMeshJson;
 
 
-public class ColoredMeshJsonExporter extends Exporter3d
+public class ColoredMeshJsonExporter extends GeometryExporter
 {
     @Override
     public void doExport( File directory, Writer writer, int height, int width ) throws IOException

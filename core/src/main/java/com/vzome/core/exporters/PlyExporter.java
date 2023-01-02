@@ -18,7 +18,7 @@ import com.vzome.core.model.Panel;
 import com.vzome.core.render.RenderedManifestation;
 
 
-public class PlyExporter extends Exporter3d
+public class PlyExporter extends GeometryExporter
 {
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 	

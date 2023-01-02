@@ -17,7 +17,7 @@ import com.vzome.core.render.RenderedManifestation;
 // This exporter has been tuned to produce a format identical to that produced by Meshlab,
 //   to guarantee a seamless upload to Shapeways.com
 
-public class StlExporter extends Exporter3d
+public class StlExporter extends GeometryExporter
 {
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 			

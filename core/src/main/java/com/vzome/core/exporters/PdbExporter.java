@@ -20,7 +20,7 @@ import com.vzome.core.model.Strut;
 import com.vzome.core.render.RenderedManifestation;
 
 
-public class PdbExporter extends Exporter3d
+public class PdbExporter extends GeometryExporter
 {
     @Override
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException

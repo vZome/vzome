@@ -8,10 +8,23 @@ export const createWorkerStore = ( worker ) =>
 {
   const [ state, setState ] = createStore( initialState );
 
+  const exportPromises = {};
+
   const onWorkerMessage = ( data ) => {
     // console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
 
     switch ( data.type ) {
+
+      case 'TEXT_EXPORTED': {
+        const { action, text } = data.payload;
+        exportPromises[ action ] .resolve( text );
+        break;
+      }
+
+      case 'TEXT_FETCHED': {
+        setState( { controller: { ...state.controller, source: data.payload } } );
+        break;
+      }
 
       case 'SCENE_RENDERED': {
         // TODO: I wish I had a better before/after contract with the worker
@@ -79,7 +92,16 @@ export const createWorkerStore = ( worker ) =>
 
   const isWorkerReady = () => state.workerReady;
 
-  const store = { postMessage: worker .sendToWorker, isWorkerReady, setState }; // needed for every subcontroller
+  const expectResponse = ( controllerPath, parameters ) =>
+  {
+    return new Promise( ( resolve, reject ) => {
+      const action = "exportText";
+      exportPromises[ action ] = { resolve, reject };
+      worker .sendToWorker( doControllerAction( controllerPath, action, parameters ) );
+    } );
+  }
+
+  const store = { postMessage: worker .sendToWorker, isWorkerReady, setState, expectResponse }; // needed for every subcontroller
 
   const rootController = () =>
   {
@@ -126,4 +148,11 @@ export const controllerAction = ( controller, action, parameters ) =>
 {
   const controllerPath = controller.__path .join( ':' );
   controller.__store.postMessage( doControllerAction( controllerPath, action, parameters ) );
+}
+
+export const controllerExportAction = ( controller, format, parameters={} ) =>
+{
+  const controllerPath = controller.__path .join( ':' );
+  parameters.format = format;
+  return controller.__store .expectResponse( controllerPath, parameters );
 }

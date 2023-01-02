@@ -19,7 +19,7 @@ import com.vzome.core.render.RenderedManifestation;
  * Renders out to POV-Ray using #declare statements to reuse geometry.
  * @author vorth
  */
-public class PartsListExporter extends Exporter3d
+public class PartsListExporter extends GeometryExporter
 {	
     @Override
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException

@@ -42,7 +42,7 @@ import com.vzome.core.model.Strut;
 import com.vzome.core.render.RenderedManifestation;
 
 
-public class DaeExporter extends Exporter3d
+public class DaeExporter extends GeometryExporter
 {
     private static final String DAE_TEMPLATE = "com/vzome/core/exporters/template-dae.xml";
 

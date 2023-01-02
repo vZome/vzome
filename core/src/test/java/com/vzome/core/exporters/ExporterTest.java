@@ -94,7 +94,7 @@ public class ExporterTest {
             StringWriter out = new StringWriter();
             OffExporter exporter = new OffExporter();
             try {
-                exporter.exportDocument( doc, null, new PrintWriter( out ), 0, 0 );
+                exporter.exportGeometry( doc .getRenderedModel(), null, new PrintWriter( out ), 0, 0 );
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -105,7 +105,7 @@ public class ExporterTest {
             StringWriter out = new StringWriter();
             MathTableExporter exporter = new MathTableExporter();
             try {
-                exporter.exportDocument( doc, null, new PrintWriter( out ), 0, 0 );
+                exporter.exportGeometry( doc .getRenderedModel(), null, new PrintWriter( out ), 0, 0 );
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }

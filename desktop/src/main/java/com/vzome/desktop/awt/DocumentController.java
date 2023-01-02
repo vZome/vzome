@@ -55,7 +55,8 @@ import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.editor.api.ImplicitSymmetryParameters;
 import com.vzome.core.editor.api.OrbitSource;
-import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.exporters.DocumentExporter;
+import com.vzome.core.exporters.GeometryExporter;
 import com.vzome.core.exporters2d.Java2dSnapshot;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.QuaternionProjection;
@@ -68,7 +69,6 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Scene;
@@ -813,8 +813,6 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         // TODO set output file types
         if ( logger .isLoggable( Level.FINE ) ) logger .fine( String.format( "doFileAction: %s %s", command, file .getAbsolutePath() ) );
         try {
-            final Colors colors = mApp.getColors();
-
             if ( "save".equals( command ) )
             {               
                 File dir = file .getParentFile();
@@ -886,7 +884,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                 Dimension size = this .modelCanvas .getSize();
                 String format = command .substring( "export2d." .length() ) .toLowerCase();
                 Java2dSnapshot snapshot = Java2dSnapshotController .capture2d( currentSnapshot, size.height, size.width, cameraController .getView(), sceneLighting, false, true );
-                Java2dSnapshotController controller = new Java2dSnapshotController( cameraController .getView(), sceneLighting, currentSnapshot, this .drawOutlines ); 
+                Java2dSnapshotController controller = new Java2dSnapshotController( cameraController .getView(), sceneLighting, currentSnapshot, this .drawOutlines, this .mApp :: get2dExporter ); 
                 controller .export2d( snapshot, format, file, this .drawOutlines, false, true );
                 this .openApplication( file );
                 return;
@@ -898,9 +896,12 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                 try {
                     out = new FileWriter( file );
                     String format = command .substring( "export." .length() ) .toLowerCase();
-                    Exporter3d exporter = this .mApp .getExporter( format ); //, cameraController .getView(), colors, sceneLighting, currentSnapshot );
+                    GeometryExporter exporter = this .mApp .getExporter( format ); //, cameraController .getView(), colors, sceneLighting, currentSnapshot );
                     if ( exporter != null ) {
-                        exporter .exportDocument( documentModel, file, out, size.height, size.width );
+                        if ( exporter instanceof DocumentExporter )
+                            ((DocumentExporter) exporter) .exportDocument( documentModel, file, out, size.height, size.width );
+                        else
+                            exporter .exportGeometry( documentModel .getRenderedModel(), file, out, size.height, size.width );
                     }
                 }
                 catch (Command.Failure f) {
@@ -1250,7 +1251,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
             else if ( propName .startsWith( "exportExtension." ) ) {
                 String format = propName .substring( "exportExtension." .length() );
                 // handle null exporter so that typo in custom menu doesn't throw NPE 
-                Exporter3d exporter = this .mApp .getExporter( format .toLowerCase() );
+                GeometryExporter exporter = this .mApp .getExporter( format .toLowerCase() );
                 return exporter == null ? "" : exporter .getFileExtension();
             }
 
@@ -1275,7 +1276,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         case "snapshot.2d": {
             if ( java2dController == null ) {
                 java2dController = new Java2dSnapshotController( cameraController.getView(), this.sceneLighting,
-                						this.currentSnapshot, this.drawOutlines );
+                						this.currentSnapshot, this.drawOutlines, this .mApp :: get2dExporter );
                 this .addSubController( name, java2dController );
             }
             return java2dController;

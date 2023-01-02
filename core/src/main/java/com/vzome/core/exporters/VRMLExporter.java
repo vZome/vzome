@@ -20,7 +20,7 @@ import com.vzome.core.render.RenderedManifestation;
 /**
  * @author vorth
  */
-public class VRMLExporter extends Exporter3d 
+public class VRMLExporter extends GeometryExporter 
 {
     private static final String PREAMBLE_FILE = "com/vzome/core/exporters/vrml/preamble.wrl";
 	

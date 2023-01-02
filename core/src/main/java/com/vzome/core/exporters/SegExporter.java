@@ -17,7 +17,7 @@ import com.vzome.core.model.Strut;
 import com.vzome.core.render.RenderedManifestation;
 
 
-public class SegExporter extends Exporter3d
+public class SegExporter extends GeometryExporter
 {
     @Override
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException

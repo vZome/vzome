@@ -19,7 +19,7 @@ import com.vzome.core.model.Strut;
 import com.vzome.core.render.RenderedManifestation;
 
 
-public class OffExporter extends Exporter3d
+public class OffExporter extends GeometryExporter
 {
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 	

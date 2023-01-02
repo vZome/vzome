@@ -19,7 +19,7 @@ import com.vzome.xml.DomSerializer;
  * @author vorth
  *
  */
-public class SideEffectsExporter extends Exporter3d
+public class SideEffectsExporter extends DocumentExporter
 {
     @Override
     public void exportDocument( DocumentModel document, File file, Writer writer, int height, int width ) throws Exception

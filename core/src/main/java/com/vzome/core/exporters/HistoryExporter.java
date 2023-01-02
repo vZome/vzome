@@ -13,7 +13,7 @@ import org.w3c.dom.Element;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.xml.DomSerializer;
 
-public class HistoryExporter extends Exporter3d
+public class HistoryExporter extends DocumentExporter
 {
     @Override
     public void exportDocument( DocumentModel document, File file, Writer writer, int height, int width ) throws Exception

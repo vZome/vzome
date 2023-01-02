@@ -7,23 +7,18 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 
-import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RealZomeScaling;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Lights;
-import com.vzome.core.viewing.Camera;
 
-public abstract class Exporter3d implements RealZomeScaling
+public abstract class GeometryExporter implements RealZomeScaling
 {
 	protected transient PrintWriter output;
 	
-	protected transient Camera mScene;
 	protected transient Colors mColors;
-	protected transient Lights mLights;
 	protected transient RenderedModel mModel;
 		
-	public Exporter3d()
+	public GeometryExporter()
 	{
 	    super();
 	}
@@ -67,15 +62,11 @@ public abstract class Exporter3d implements RealZomeScaling
     /**
      * Subclasses can override this if they need to export history, the lesson model, or the selection.
      */
-    public void exportDocument( DocumentModel doc, File file, Writer writer, int height, int width ) throws Exception
+    public void exportGeometry( RenderedModel model, File file, Writer writer, int height, int width ) throws Exception
     {
-        mScene = doc .getCamera();
-        mModel = doc .getRenderedModel();
-        mLights = doc .getSceneLighting();
+        mModel = model;
         this .doExport( file, writer, height, width );
-        mScene = null;
         mModel = null;
-        mLights = null;
     }
 }
 

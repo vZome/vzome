@@ -35,7 +35,7 @@ import com.vzome.core.construction.Color;
 import com.vzome.core.exporters.ColoredMeshJsonExporter;
 import com.vzome.core.exporters.DaeExporter;
 import com.vzome.core.exporters.DxfExporter;
-import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.exporters.GeometryExporter;
 import com.vzome.core.exporters.GeoGebraExporter;
 import com.vzome.core.exporters.HistoryExporter;
 import com.vzome.core.exporters.MathTableExporter;
@@ -83,7 +83,7 @@ public class Application implements AlgebraicField.Registry
 
     private final Properties properties;
 
-    private final Map<String, Exporter3d> exporters = new HashMap<>();
+    private final Map<String, GeometryExporter> exporters = new HashMap<>();
 
     private final Lights mLights = new Lights();
 
@@ -330,7 +330,7 @@ public class Application implements AlgebraicField.Registry
         return this .mColors;
     }
 
-    public Exporter3d getExporter( String format )
+    public GeometryExporter getExporter( String format )
     {
         return this .exporters .get( format );
     }

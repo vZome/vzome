@@ -42,7 +42,7 @@ import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.viewing.Camera;
 
 // Combines features from DaeExporter and OffExporter
-public class GeoGebraExporter extends Exporter3d
+public class GeoGebraExporter extends DocumentExporter
 {
     private static final String GEOGEBRA_TEMPLATE_PATH = "com/vzome/core/exporters/geogebra/";
     private static final String GEOGEBRA_XML = "geogebra.xml";

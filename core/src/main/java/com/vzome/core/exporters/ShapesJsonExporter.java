@@ -19,7 +19,7 @@ import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 
 
-public class ShapesJsonExporter extends Exporter3d
+public class ShapesJsonExporter extends DocumentExporter
 {
     private final JsonMapper mapper = new JsonMapper();
     

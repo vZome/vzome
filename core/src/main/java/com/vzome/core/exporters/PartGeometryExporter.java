@@ -27,15 +27,11 @@ public class PartGeometryExporter extends VefExporter
 
     public void exportDocument( DocumentModel doc, File file, Writer writer, int height, int width ) throws Exception
     {
-        mScene = doc .getCamera();
         mModel = doc .getRenderedModel();
-        mLights = doc .getSceneLighting();
         this .selection = doc .getEditorModel() .getSelection();
         this .doExport( file, writer, height, width );
         this .selection = null;
-        mScene = null;
         mModel = null;
-        mLights = null;
     }
 
 	@Override

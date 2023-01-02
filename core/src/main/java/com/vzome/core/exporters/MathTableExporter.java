@@ -14,7 +14,7 @@ import com.vzome.core.algebra.PolygonField;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.AntiprismSymmetry;
 
-public class MathTableExporter extends Exporter3d {
+public class MathTableExporter extends GeometryExporter {
     private static final int X = AlgebraicVector.X;
     private static final int Y = AlgebraicVector.Y;
     

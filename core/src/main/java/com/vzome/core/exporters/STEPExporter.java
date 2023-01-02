@@ -21,7 +21,7 @@ import com.vzome.core.render.RenderedManifestation;
  * Renders out to POV-Ray using #declare statements to reuse geometry.
  * @author vorth
  */
-public class STEPExporter extends Exporter3d
+public class STEPExporter extends GeometryExporter
 {	
 	private static final String PREAMBLE_FILE = "com/vzome/core/exporters/step/preamble.step";
     

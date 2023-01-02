@@ -189,6 +189,9 @@ core.config {
     'com/vzome/core/render/RenderedManifestation.java',
     'com/vzome/core/render/RenderedModel.java',
 
+    'com/vzome/core/exporters/GeometryExporter.java',
+    'com/vzome/core/exporters/StlExporter.java',
+
     // SymmetryController and its dependencies
     'com/vzome/desktop/api/Controller.java',
     'com/vzome/desktop/controller/*.java',

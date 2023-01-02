@@ -10,11 +10,11 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
+import java.util.function.Function;
 
-import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.exporters2d.Java2dExporter;
-import com.vzome.core.exporters2d.SnapshotExporter;
 import com.vzome.core.exporters2d.Java2dSnapshot;
+import com.vzome.core.exporters2d.SnapshotExporter;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
@@ -40,13 +40,16 @@ public class Java2dSnapshotController extends DefaultGraphicsController
 
     private RenderedModel model;
 
+    private final Function<String, SnapshotExporter> exporters;
+
     
-    public Java2dSnapshotController( Camera camera, Lights lights, RenderedModel model, boolean outlinePanels )
+    public Java2dSnapshotController( Camera camera, Lights lights, RenderedModel model, boolean outlinePanels, Function<String, SnapshotExporter> exporters )
     {
         this .camera = camera;
         this .lights = lights;
         this .model = model;
         this .outlinePanels = outlinePanels;
+        this .exporters = exporters;
     }
 
     private final static String[] DRAW_STYLES = new String[]{ "outlined shapes", "shaded shapes", "shaded, outlined shapes", "colored lines", "black lines" };
@@ -230,7 +233,7 @@ public class Java2dSnapshotController extends DefaultGraphicsController
 
     public void export2d( Java2dSnapshot snapshot, String format, File file, boolean doOutlines, boolean monochrome, boolean showBackground ) throws Exception
     {
-        SnapshotExporter exporter = this .app .getSnapshotExporter( format );
+        SnapshotExporter exporter = this .exporters .apply( format );
         // A try-with-resources block closes the resource even if an exception occurs
         try ( Writer out = new FileWriter( file ) ) {
             exporter .export( snapshot, out, doOutlines, monochrome, showBackground );

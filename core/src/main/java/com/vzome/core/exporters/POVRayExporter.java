@@ -32,7 +32,7 @@ import com.vzome.core.viewing.Camera;
  * Renders out to POV-Ray using #declare statements to reuse geometry.
  * @author vorth
  */
-public class POVRayExporter extends Exporter3d
+public class POVRayExporter extends DocumentExporter
 {
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 	

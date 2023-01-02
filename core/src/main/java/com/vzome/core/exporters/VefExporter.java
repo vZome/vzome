@@ -10,7 +10,7 @@ import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.RenderedManifestation;
 
 
-public class VefExporter extends Exporter3d
+public class VefExporter extends GeometryExporter
 {
     @Override
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
