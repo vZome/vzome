@@ -182,8 +182,10 @@ const clientEvents = report =>
 
   const designSerialized = xml => report( { type: 'DESIGN_XML_SAVED', payload: xml } );
 
+  const textExported = ( action, text ) => report( { type: 'TEXT_EXPORTED', payload: { action, text } } ) ;
+
   return { sceneChanged, shapeDefined, instanceAdded, selectionToggled, symmetryChanged,
-    xmlParsed, scenesDiscovered, designSerialized, propertyChanged, errorReported, };
+    xmlParsed, scenesDiscovered, designSerialized, propertyChanged, errorReported, textExported, };
 }
 
 const createDesign = ( report, fieldName ) =>

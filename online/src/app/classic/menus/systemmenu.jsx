@@ -5,7 +5,7 @@ import Divider from "@suid/material/Divider";
 import { createSignal } from "solid-js";
 
 import { createMenuAction } from "../components/menuaction.jsx";
-import { controllerProperty, subController } from "../controllers-solid.js";
+import { controllerProperty } from "../controllers-solid.js";
 
 export const SystemMenu = ( props ) =>
 {

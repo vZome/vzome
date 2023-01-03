@@ -6,14 +6,8 @@ import { controllerAction } from "../controllers-solid";
 
 const isMac = navigator.userAgentData?.platform === 'macOS';
 
-export const createMenuAction = ( controller, doClose ) => ( props ) =>
+export const MenuAction = ( props ) =>
 {
-  const doAction = () => 
-  {
-    doClose();
-    controllerAction( controller, props.action );
-  }
-
   let modifiers = props.mods;
   if ( !isMac && modifiers )
     modifiers = modifiers .replace( '⌘', '⌃' );
@@ -36,13 +30,13 @@ export const createMenuAction = ( controller, doClose ) => ( props ) =>
         if ( hasOption !== evt.altKey )
           return;
         evt .preventDefault();
-        doAction();
+        props.onClick();
       } );
     }
   }
 
   return (
-    <MenuItem disabled={props.disabled} onClick={doAction}>
+    <MenuItem disabled={props.disabled} onClick={props.onClick}>
       <ListItemText>{props.label}</ListItemText>
       <Show when={props.code || props.key} >
         <Typography variant="body2" color="text.secondary">
@@ -51,4 +45,14 @@ export const createMenuAction = ( controller, doClose ) => ( props ) =>
       </Show>
     </MenuItem>
   );
+}
+
+export const createMenuAction = ( controller, doClose ) => ( props ) =>
+{
+  const onClick = () => 
+  {
+    doClose();
+    controllerAction( controller, props.action );
+  }
+  return MenuAction( { ...props, onClick } );
 }

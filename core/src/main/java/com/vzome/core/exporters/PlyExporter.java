@@ -15,12 +15,10 @@ import java.util.Map;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.viewing.Lights;
 
 
-public class PlyExporter extends Exporter3d
+public class PlyExporter extends GeometryExporter
 {
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 	
@@ -28,10 +26,7 @@ public class PlyExporter extends Exporter3d
 
     private StringBuffer vertices;
 
-	public PlyExporter( Colors colors, Lights lights )
-	{
-	    super( null, colors, lights, null );
-
+	static {
         if (FORMAT instanceof DecimalFormat) {
             ((DecimalFormat) FORMAT) .applyPattern( "0.000000E00" );
         }

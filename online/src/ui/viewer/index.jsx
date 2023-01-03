@@ -30,21 +30,7 @@ import { ErrorAlert } from './alert.jsx'
 import { SettingsDialog } from './settings.jsx';
 import { useVR } from './hooks.js';
 import { SceneMenu } from './scenes.jsx';
-import { serializeVZomeXml } from '../../workerClient/serializer.js';
-
-// from https://www.bitdegree.org/learn/javascript-download
-const download = ( name, text, type ) =>
-{
-  const blob = new Blob( [ text ], { type } );
-  const element = document.createElement( 'a' )
-  const blobURI = URL.createObjectURL( blob )
-  element.setAttribute( 'href', blobURI )
-  element.setAttribute( 'download', `${name}` )
-  element.style.display = 'none'
-  document.body.appendChild( element )
-  element.click()
-  document.body.removeChild( element )
-}
+import { serializeVZomeXml, download } from '../../workerClient/serializer.js';
 
 const encodeUrl = url => url .split( '/' ) .map( encodeURIComponent ) .join( '/' );
 

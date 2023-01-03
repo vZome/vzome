@@ -13,23 +13,14 @@ import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Camera;
-import com.vzome.core.viewing.Lights;
 
 /**
  * Renders out to POV-Ray using #declare statements to reuse geometry.
  * @author vorth
  */
-public class PartsListExporter extends Exporter3d
+public class PartsListExporter extends GeometryExporter
 {	
-	public PartsListExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
-	{
-	    super( scene, colors, lights, model );
-	}
-    
     @Override
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{

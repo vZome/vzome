@@ -28,7 +28,8 @@ import org.vorthmann.zome.ui.ApplicationUI;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.commands.Command.FailureChannel;
 import com.vzome.core.editor.DocumentModel;
-import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.exporters.GeometryExporter;
+import com.vzome.core.exporters2d.SnapshotExporter;
 import com.vzome.core.math.symmetry.AntiprismSymmetry;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Colors;
@@ -615,9 +616,14 @@ public class ApplicationController extends DefaultController
         return this .modelApp .getColors();
     }
 
-    public Exporter3d getExporter( String format )
+    public GeometryExporter getExporter( String format )
     {
         return this .modelApp .getExporter( format );
+    }
+
+    public SnapshotExporter get2dExporter( String format )
+    {
+        return this .modelApp .getSnapshotExporter( format );
     }
 
     // public RenderingViewer.Factory getRenderingViewerFactory()

@@ -1,5 +1,6 @@
 
 import { documentFactory, parse } from './core.js'
+import { java } from "./candies/j4ts-2.1.0-SNAPSHOT/bundle.js"
 import { com } from './core-java.js'
 import { JsProperties } from './jsweet2js.js';
 import { resolveBuildPlanes } from './scenes.js';
@@ -17,9 +18,37 @@ class EditorController extends com.vzome.desktop.controller.DefaultController
   // There are no implementors of doParamAction() in the Java code
   doParamAction( action, params )
   {
-    this.design .configureAndPerformEdit( action, params && params .getConfig() );
-    const text = this .design .serializeToDom() .toIndentedString( "" );
-    this.clientEvents .designSerialized( text );
+    switch ( action ) {
+
+      case "exportText":
+        const format = params .getConfig() .format;  // TODO remove the STL hardcoding!
+
+        switch ( format ) {
+
+          case 'stl': {
+            const exporter = new com.vzome.core.exporters.StlExporter();
+            const out = new java.io.StringWriter();
+            exporter .exportGeometry( this.design .renderedModel, null, out, 500, 800 );
+            this.clientEvents .textExported( action, out .toString() );  // returning the action for Promise correlation on the client
+            return;
+          }
+        
+          default: // vZome
+            const text = this .design .serializeToDom() .toIndentedString( "" );
+            this.clientEvents .textExported( action, text );
+            return;
+        }
+        break;
+    
+      default:
+        this.design .configureAndPerformEdit( action, params && params .getConfig() );
+
+        // For the classic client app, this is redundant, since it can use the exportText action,
+        //   but I still need it for React-based clients.
+        const text = this .design .serializeToDom() .toIndentedString( "" );
+        this.clientEvents .designSerialized( text );
+        break;
+    }
   }
 
   doAction( action )

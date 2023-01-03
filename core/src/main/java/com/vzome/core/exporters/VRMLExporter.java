@@ -15,28 +15,17 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Camera;
-import com.vzome.core.viewing.Lights;
 
 /**
  * @author vorth
  */
-public class VRMLExporter extends Exporter3d 
+public class VRMLExporter extends GeometryExporter 
 {
-	
-	private static final String PREAMBLE_FILE = "com/vzome/core/exporters/vrml/preamble.wrl";
+    private static final String PREAMBLE_FILE = "com/vzome/core/exporters/vrml/preamble.wrl";
 	
     private static final double SCALE = 0.350d;
 
-    public VRMLExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
-    {
-        super( scene, colors, lights, model );
-    }
-    
-    
     private void exportColor( String name, Color color )
     {
 		output .println( "PROTO " + name + " [] {" );

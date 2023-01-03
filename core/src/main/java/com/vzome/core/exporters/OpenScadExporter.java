@@ -34,13 +34,8 @@ import com.vzome.core.render.RenderedManifestation;
  * @author vorth
  *
  */
-public class OpenScadExporter extends Exporter3d
+public class OpenScadExporter extends DocumentExporter
 {
-    public OpenScadExporter()
-    {
-        super( null, null, null, null );
-    }
-
     @Override
     public void exportDocument( DocumentModel doc, File file, Writer writer, int height, int width ) throws Exception
     {

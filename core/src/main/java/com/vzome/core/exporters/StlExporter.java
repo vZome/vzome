@@ -12,25 +12,15 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Camera;
-import com.vzome.core.viewing.Lights;
 
 // This exporter has been tuned to produce a format identical to that produced by Meshlab,
 //   to guarantee a seamless upload to Shapeways.com
 
-public class StlExporter extends Exporter3d
+public class StlExporter extends GeometryExporter
 {
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 			
-	public StlExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
-	{
-	    super( scene, colors, lights, model );
-	}
-
-
     @Override
 	public void doExport( File directory, Writer writer, int height, int width ) throws IOException
 	{
