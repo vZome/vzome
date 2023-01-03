@@ -97,8 +97,9 @@ const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamer
     // This is needed to keep the fog depth correct in desktop.
     //  See the reducer, where the width/distance ratio is maintained.
     const far = camera.far;
+    const near = camera.near;
 
-    syncCamera( { lookAt, up, lookDir, distance, width, far } );
+    syncCamera( { lookAt, up, lookDir, distance, width, far, near } );
     setNeedsRender( 20 );
   }
 

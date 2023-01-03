@@ -11,7 +11,9 @@ const SolidSceneCanvas = solidify( SceneCanvas );
 
 export const ClassicEditor = ( { worker } ) =>
 {
-  const { rootController, getScene } = createWorkerStore( worker );
+  const { rootController, getScene, setState } = createWorkerStore( worker );
+
+  const syncCamera = camera => setState( 'scene', 'liveCamera', camera );
 
   const bkgdColor = () => getScene() ?.lighting .backgroundColor;
 
@@ -32,7 +34,7 @@ export const ClassicEditor = ( { worker } ) =>
 
   return (
     <div id='classic' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }} class='whitesmoke-bkgd'>
-      <MenuBar controller={rootController()} />
+      <MenuBar controller={rootController()} scene={getScene()} />
       <div id='editor-main' class='grid-cols-1-min whitesmoke-bkgd' >
 
         <div id='editor-canvas' style={{ display: 'grid', 'grid-template-rows': 'min-content min-content min-content 1fr' }}>
@@ -44,7 +46,7 @@ export const ClassicEditor = ( { worker } ) =>
           <ToolBar symmetryController={symmController()} toolsController={toolsController()} editorController={rootController()} />
           <div id='canvas-and-bookmarks' style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
             <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} symmetryController={symmController()} />
-            <SolidSceneCanvas scene={getScene()} toolRef={toolRef} syncCamera={ ()=>{} } style={{ position: 'relative', height: '100%' }} />
+            <SolidSceneCanvas scene={getScene()} toolRef={toolRef} syncCamera={syncCamera} style={{ position: 'relative', height: '100%' }} />
           </div>
         </div>
 

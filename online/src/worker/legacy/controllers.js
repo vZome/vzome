@@ -22,14 +22,29 @@ class EditorController extends com.vzome.desktop.controller.DefaultController
 
       case "exportText":
         const format = params .getConfig() .format;  // TODO remove the STL hardcoding!
-        const out = new java.io.StringWriter();
-        const exporter = new com.vzome.core.exporters.StlExporter();
-        exporter .exportGeometry( this.design .renderedModel, null, out, 500, 800 );
-        this.clientEvents .textExported( action, out .toString() );  // returning the action for Promise correlation on the client
+
+        switch ( format ) {
+
+          case 'stl': {
+            const exporter = new com.vzome.core.exporters.StlExporter();
+            const out = new java.io.StringWriter();
+            exporter .exportGeometry( this.design .renderedModel, null, out, 500, 800 );
+            this.clientEvents .textExported( action, out .toString() );  // returning the action for Promise correlation on the client
+            return;
+          }
+        
+          default: // vZome
+            const text = this .design .serializeToDom() .toIndentedString( "" );
+            this.clientEvents .textExported( action, text );
+            return;
+        }
         break;
     
       default:
         this.design .configureAndPerformEdit( action, params && params .getConfig() );
+
+        // For the classic client app, this is redundant, since it can use the exportText action,
+        //   but I still need it for React-based clients.
         const text = this .design .serializeToDom() .toIndentedString( "" );
         this.clientEvents .designSerialized( text );
         break;

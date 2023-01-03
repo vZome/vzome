@@ -12,7 +12,7 @@ export const MenuBar = ( props ) =>
 {
   return (
     <Toolbar variant="dense" disableGutters="true">
-      <FileMenu      controller={props.controller} />
+      <FileMenu      controller={props.controller} scene={props.scene} />
       <EditMenu      controller={props.controller} />
       <ConstructMenu controller={props.controller} />
       <ToolsMenu     controller={props.controller} />

@@ -25,6 +25,18 @@ export const FileMenu = ( props ) =>
       });
   }
 
+  const save = evt =>
+  {
+    doClose();
+    controllerExportAction( props.controller, 'vZome' )
+      .then( text => {
+        const { camera, liveCamera, lighting } = props.scene;
+        const fullText = serializeVZomeXml( text, lighting, liveCamera, camera );
+        const name = props.controller.source?.name || 'untitled.vZome';
+        download( name, fullText, 'application/xml' );
+      });
+  }
+
   return (
     <div>
       <Button
@@ -45,7 +57,7 @@ export const FileMenu = ( props ) =>
       >
         <MenuItem disabled={true} onClick={doClose}>New Design</MenuItem>
         <MenuItem disabled={true} onClick={doClose}>Open</MenuItem>
-        <MenuItem disabled={true} onClick={doClose}>Save</MenuItem>
+        <MenuItem onClick={save}>Save</MenuItem>
 
         <Divider/>
 
