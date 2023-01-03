@@ -25,8 +25,8 @@ public class ParameterizedFieldTest {
         TEST_FIELDS.add( new RootThreeField() );
         TEST_FIELDS.add( new HeptagonField() );
         TEST_FIELDS.add( new SnubDodecField( AlgebraicNumberImpl.FACTORY ) );
+        TEST_FIELDS.add( new SnubDodecahedronField( AlgebraicNumberImpl.FACTORY ) );
         TEST_FIELDS.add( new SqrtPhiField( AlgebraicNumberImpl.FACTORY ) );
-//        TEST_FIELDS.add( new SnubDodecahedronField() );
 //        TEST_FIELDS.add( new SqrtField(2) );
 //        TEST_FIELDS.add( new SqrtField(3) );
 //        TEST_FIELDS.add( new SqrtField(6) );
@@ -42,6 +42,11 @@ public class ParameterizedFieldTest {
     
     @Test
     public void testHaveSameInitialCoefficients() {
+        SnubDodecahedronField newSdField = new SnubDodecahedronField( AlgebraicNumberImpl.FACTORY );
+        SnubDodecField oldSdField = new SnubDodecField(AlgebraicNumberImpl.FACTORY); 
+        assertTrue(AlgebraicFields.haveSameInitialCoefficients(newSdField, SnubDodecField.FIELD_NAME));
+        assertTrue(AlgebraicFields.haveSameInitialCoefficients(oldSdField, SnubDodecahedronField.FIELD_NAME));
+
         PolygonField polyField = new PolygonField(5, AlgebraicNumberImpl.FACTORY ); 
         PentagonField pentField = new PentagonField(); 
         assertTrue(AlgebraicFields.haveSameInitialCoefficients(polyField, PentagonField.FIELD_NAME));

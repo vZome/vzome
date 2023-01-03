@@ -100,6 +100,10 @@ public class AlgebraicFields {
             coefficients = SnubDodecField.getFieldCoefficients();
             break;
 
+        case SnubDodecahedronField.FIELD_NAME:
+            coefficients = SnubDodecahedronField.getFieldCoefficients();
+            break;
+
         case SqrtPhiField.FIELD_NAME:
             coefficients = SqrtPhiField.getFieldCoefficients();
             break;
