@@ -4,9 +4,10 @@ import Menu from "@suid/material/Menu"
 import Divider from "@suid/material/Divider";
 import MenuItem from "@suid/material/MenuItem"
 
-import { createSignal, createEffect } from "solid-js";
+import { createSignal } from "solid-js";
 import { controllerExportAction } from "../controllers-solid.js";
 import { serializeVZomeXml, download } from '../../../workerClient/serializer.js';
+import { MenuAction } from "../components/menuaction.jsx";
 
 export const FileMenu = ( props ) =>
 {
@@ -57,7 +58,7 @@ export const FileMenu = ( props ) =>
       >
         <MenuItem disabled={true} onClick={doClose}>New Design</MenuItem>
         <MenuItem disabled={true} onClick={doClose}>Open</MenuItem>
-        <MenuItem onClick={save}>Save</MenuItem>
+        <MenuAction label="Save" onClick={save} mods="⌘" key="S" />
 
         <Divider/>
 
