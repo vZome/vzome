@@ -8,8 +8,9 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 import Typography from '@material-ui/core/Typography'
 import InfoRoundedIcon from '@material-ui/icons/InfoRounded'
-import Link from '@material-ui/core/Link'
 import Tooltip from '@material-ui/core/Tooltip'
+
+import { REVISION } from '../../revision.js'
 
 const styles = (theme) => ({
   root: {
@@ -64,7 +65,7 @@ export const AboutDialog = ( { title, about} ) =>
       </Tooltip>
       <Dialog onClose={handleClose} aria-labelledby="customized-dialog-title" open={open}>
         <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-          About {title}
+          About {title} (rev {REVISION})
         </DialogTitle>
         <DialogContent dividers>
           {about}
