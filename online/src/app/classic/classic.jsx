@@ -15,7 +15,7 @@ export const ClassicEditor = ( { worker } ) =>
 
   const syncCamera = camera => setState( 'scene', 'liveCamera', camera );
 
-  const bkgdColor = () => getScene() ?.lighting .backgroundColor;
+  const bkgdColor = () => getScene() ?.lighting ?.backgroundColor;
 
   const bookmarkController = () => subController( rootController(), 'bookmark' );
   const pickingController  = () => subController( rootController(), 'picking' );
