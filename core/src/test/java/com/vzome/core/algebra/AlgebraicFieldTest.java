@@ -210,6 +210,7 @@ public class AlgebraicFieldTest {
         List<AlgebraicField> goldenFields = new ArrayList<>();
         goldenFields.add(new PentagonField());
         goldenFields.add(new SnubDodecField( AlgebraicNumberImpl.FACTORY ));
+        goldenFields.add(new SnubDodecahedronField( AlgebraicNumberImpl.FACTORY ));
         goldenFields.add(new SqrtPhiField( AlgebraicNumberImpl.FACTORY ));
         goldenFields.add( new PlasticPhiField( AlgebraicNumberImpl.FACTORY ) );
         
