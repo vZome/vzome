@@ -39,16 +39,16 @@ public class CommandUniformH4Polytope extends CommandTransform
         super.setFixedAttributes( attributes, format );
 
         this.field = format .getField();
-        this.symm = h4Symms .get( field );
+        this.symm = h4Symms .get( field .getName() );
         if ( symm == null )
         {
             symm = new H4Symmetry( field );
-            h4Symms .put( field, symm );
+            h4Symms .put( field .getName(), symm );
         }
         this .mRoots = ((XmlSymmetryFormat) format) .getQuaternionicSymmetry( "H_4" ) .getRoots();
     }
     
-    private final Map<AlgebraicField, H4Symmetry> h4Symms = new HashMap<>();
+    private final Map<String, H4Symmetry> h4Symms = new HashMap<>();
 
     public static final String POLYTOPE_INDEX_ATTR_NAME = "polytope.index";
         
@@ -453,8 +453,6 @@ public class CommandUniformH4Polytope extends CommandTransform
         @Override
         public boolean equals( Object obj )
         {
-            if ( super.equals( obj ) )
-                return true;
             if ( ! ( obj instanceof Edge ) )
                 return false;
             Edge that = (Edge) obj;
