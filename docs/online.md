@@ -2,7 +2,7 @@
 title: vZome Online Web Applications
 description:
   There are several variants of vZome Online, a port of desktop vZome technology to the web.
-published: false
+published: true
 ---
 
 ## Introduction
