@@ -1,9 +1,11 @@
 ---
 title: vZome Online Web Applications
+image: https://user-images.githubusercontent.com/1584024/211131345-202c81ed-3972-4daf-a8f3-3a789a670e2d.png
 description:
   There are several variants of vZome Online, a port of desktop vZome technology to the web.
 published: true
 ---
+<img width="1011" alt="Screen Shot 2023-01-06 at 19 05 18" src="https://user-images.githubusercontent.com/1584024/211131345-202c81ed-3972-4daf-a8f3-3a789a670e2d.png">
 
 ## Introduction
 
@@ -88,4 +90,11 @@ A common pattern is to export a web page when sharing one design,
 then enhance the page with more designs already shared.
 This browser helps you find those existing designs and grab the HTML snippet to include them
 in any web page.  I used it when writing this web page!
+
+By default, the app will display my own GitHub repository.  To display another GitHub user's designs,
+simply add their GitHub username as a query parameter:
+```
+https://vzome.com/app/browser?user=John-Kostick
+```
+
 
