@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { forwardRef, useImperativeHandle } from 'react';
 import { useEmbedding, useRotation, useGeometry } from './hooks.js'
 import { useThree, useFrame } from '@react-three/fiber'
-import { GLTFExporter } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/exporters/GLTFExporter.js';
+import { GLTFExporter } from 'three-stdlib';
 
 const Instance = ( { id, position, rotation, geometry, color, selected, type, toolRef } ) =>
 {
