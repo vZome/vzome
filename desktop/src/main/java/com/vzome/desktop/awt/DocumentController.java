@@ -1548,11 +1548,13 @@ public class DocumentController extends DefaultGraphicsController implements Sce
 
                     zone = symmetry.getAxis(offset);
                     Direction direction = zone.getDirection();
-                    buf.append("\n\ndirection: ");
+                    buf.append("\n\norbit: ");
+                    buf.append( direction.getCanonicalName() );
+                    buf.append(" = ");
                     if (direction.isAutomatic()) {
                         buf.append("Automatic ");
                     }
-                    buf.append(direction.getName());
+                    buf.append( direction.getName() );
 
                     AlgebraicNumber len = zone.getLength(offset);
                     len = zone.getOrbit().getLengthInUnits(len);
@@ -1598,11 +1600,13 @@ public class DocumentController extends DefaultGraphicsController implements Sce
 
                     zone = symmetry.getAxis(normal);
                     Direction direction = zone.getDirection();
-                    buf.append("\n\ndirection: ");
+                    buf.append("\n\norbit: ");
+                    buf.append( direction.getCanonicalName() );
+                    buf.append(" = ");
                     if (direction.isAutomatic()) {
                         buf.append("Automatic ");
                     }
-                    buf.append(direction.getName());
+                    buf.append( direction.getName() );
                 } else {
                     // should never get here
                     return man.getClass().getSimpleName();

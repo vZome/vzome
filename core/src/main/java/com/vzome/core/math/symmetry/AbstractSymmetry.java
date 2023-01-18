@@ -197,8 +197,9 @@ public abstract class AbstractSymmetry implements Symmetry
     public Direction createNewZoneOrbit( String name, int prototype, int rotatedPrototype, AlgebraicVector norm )
     {
         Direction orbit = new Direction( name, this, prototype, rotatedPrototype, norm, false ) .withCorrection();
-        if ( this .dotLocator != null )
-            this .dotLocator .locateOrbitDot( orbit );
+        if ( this .dotLocator == null )
+            this.dotLocator = new OrbitDotLocator( this, this .getOrbitTriangle() );
+        this .dotLocator .locateOrbitDot( orbit );
         return orbit;
     }
 
@@ -524,7 +525,8 @@ public abstract class AbstractSymmetry implements Symmetry
     @Override
     public String computeOrbitDots()
     {
-        this.dotLocator = new OrbitDotLocator( this, this .getOrbitTriangle() );
+        if ( this .dotLocator == null )
+            this.dotLocator = new OrbitDotLocator( this, this .getOrbitTriangle() );
         for ( Direction orbit : mDirectionList ) {
             dotLocator .locateOrbitDot( orbit );
         }

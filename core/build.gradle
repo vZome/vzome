@@ -305,8 +305,8 @@ task regression(type: JavaExec, dependsOn: check) {
     def testOut = 'build/test-results/regression/TEST-output.xml'
     if( project .hasProperty( "regressionOutput" ) ){
         testOut = regressionOutput
-        println "testOut is $testOut"
     }
+    println "testOut is $testOut"
     classpath = sourceSets.regression.runtimeClasspath
     main = 'com.vzome.core.regression.TestVZomeFiles'
     args( testHome, testFile, testOut )
