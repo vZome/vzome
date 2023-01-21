@@ -32,7 +32,7 @@ export class VZomeViewer extends HTMLElement
       onWorkerMessage: data => {
         switch ( data.type ) {
 
-          case 'DESIGN_INTERPRETED':
+          case 'SCENE_RENDERED':
             this .dispatchEvent( new Event( 'vzome-design-rendered' ) );
             break;
         
