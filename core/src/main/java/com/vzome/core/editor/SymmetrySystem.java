@@ -36,7 +36,7 @@ import com.vzome.xml.DomUtils;
 public class SymmetrySystem implements OrbitSource
 {
     private static final Logger logger = Logger .getLogger( "com.vzome.core.editor" );
-    private static int NEXT_NEW_AXIS = 0;
+    private int nextNewAxis = 0;
 
     private final Symmetry symmetry;
     private final OrbitSet orbits;
@@ -50,12 +50,14 @@ public class SymmetrySystem implements OrbitSource
     private final Map<Tool.Kind,List<Tool>> toolLists = new HashMap<>();
     private final Context context;
     private EditorModel editor;
+    private Colors colors;
 
     public SymmetrySystem( Element symmXml, SymmetryPerspective symmetryPerspective,
             Context context, Colors colors, boolean allowNonstandard )
     {
         this .symmetryPerspective = symmetryPerspective;
         this .context = context;
+        this .colors = colors;
         this .symmetry = symmetryPerspective .getSymmetry();
         String styleName = symmetryPerspective .getDefaultGeometry() .getName();
         orbits = new OrbitSet( symmetry );
@@ -92,10 +94,7 @@ public class SymmetrySystem implements OrbitSource
                         orbit .setAutomatic( true );
                         try {
                             int autoNum = Integer .parseInt( name );
-                            if ( autoNum >= NEXT_NEW_AXIS )
-                                NEXT_NEW_AXIS = ++autoNum;  // make sure new auto directions don't collide with this
-                            else if ( autoNum < NEXT_NEW_AXIS )
-                                name = "" + NEXT_NEW_AXIS++;
+                            this .nextNewAxis = Math .max( this .nextNewAxis, autoNum + 1 );
                         } catch ( NumberFormatException e ) {
                             // never mind, these used to be named things like "unnamed_13"
                             System.err.println( e .getMessage() );
@@ -109,11 +108,14 @@ public class SymmetrySystem implements OrbitSource
                     }
                     orbits .add( orbit );
 
+                    Color color = colors .getColor( Colors.DIRECTION + orbit .getCanonicalName() );
                     String str = dirElem .getAttribute( "color" );
-                    if ( str != null && ! str .isEmpty() ) {
-                        Color color = Color .parseColor( str );
-                        orbitColors .put( orbit .getName(), color );
+                    // Always let file colors win, except for automatic white
+                    if ( str != null && ! str .isEmpty() && ! str .equals( "255,255,255" ) ) {
+                        color = Color .parseColor( str );
                     }
+                    orbitColors .put( orbit .getName(), color );
+                    orbitColors .put( orbit .getCanonicalName(), color );
                 }
             }
             // fill in the orbits that might be newer than what the file had
@@ -122,8 +124,9 @@ public class SymmetrySystem implements OrbitSource
                     continue;
                 if ( orbit .isStandard() || allowNonstandard )  // reader
                     orbits .add( orbit );
-                Color color = colors .getColor( Colors.DIRECTION + orbit .getName() );
+                Color color = colors .getColor( Colors.DIRECTION + orbit .getCanonicalName() );
                 orbitColors .put( orbit .getName(), color );
+                orbitColors .put( orbit .getCanonicalName(), color );
             }
         }
         this .setStyle( styleName );
@@ -230,11 +233,15 @@ public class SymmetrySystem implements OrbitSource
         else
             vector = shortVector;
 
-        String colorName = "" + NEXT_NEW_AXIS++;  // we want it easy to keep these unique when loading files (see above)
+        String colorName = "" + nextNewAxis++;  // we want it easy to keep these unique when loading files (see above)
         Direction orbit = symm .createNewZoneOrbit( colorName, 0, Symmetry.NO_ROTATION, vector );
         orbit .setAutomatic( true );
         orbits .add( orbit );
-        this .orbitColors .put( orbit .getName(), Color.WHITE );
+        Color color = this .colors .getColor( Colors.DIRECTION + orbit .getCanonicalName() );
+        if ( color == null )
+            color = Color.WHITE;
+        this .orbitColors .put( orbit .getName(), color );
+        this .orbitColors .put( orbit .getCanonicalName(), color );
         return orbit;
     }
 
@@ -302,6 +309,7 @@ public class SymmetrySystem implements OrbitSource
             if ( dir .isAutomatic() )
                 DomUtils .addAttribute( dirElem, "prototype", dir .getPrototype() .getVectorExpression( AlgebraicField .ZOMIC_FORMAT ) );
             DomUtils .addAttribute( dirElem, "name", dir .getName() );
+            DomUtils .addAttribute( dirElem, "orbit", dir .getCanonicalName() );
             {
                 Color color = getColor( dir );
                 if ( color != null )

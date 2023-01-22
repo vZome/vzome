@@ -43,6 +43,8 @@ public class OrbitSet
     public Direction getDirection( String name )
     {
         for (Direction dir : this .getDirections()) {
+            if ( dir .getCanonicalName() .equals( name ) )
+                return dir;
             if ( dir .getName() .equals( name ) )
                 return dir;
         }
