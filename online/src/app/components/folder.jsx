@@ -13,6 +13,13 @@ import Divider from '@material-ui/core/Divider';
 
 import UrlDialog from './webloader.jsx'
 
+const queryParams = new URLSearchParams( window.location.search );
+const enableDropbox = !! queryParams .get( 'enableDropbox' );
+
+if ( enableDropbox ) {
+  window.localStorage.setItem( 'vzome.enable.dropbox', true );
+}
+
 const models = [
   {
     key: "vZomeLogo",
