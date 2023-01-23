@@ -346,8 +346,9 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                         // don't want a stack trace for a user error
                         LOGGER.log( Level.WARNING, errorCode );
                     } else if ( Controller.UNKNOWN_ERROR_CODE.equals( errorCode ) ) {
-                        errorCode = ( (Exception) arguments[0] ).getMessage();
-                        LOGGER.log( Level.WARNING, "internal error: " + errorCode, ( (Exception) arguments[0] ) );
+                    	Exception e  = (Exception) arguments[0];
+                    	e.printStackTrace();
+                        LOGGER.log( Level.WARNING, "internal error: " + e.getMessage(), e );
                         errorCode = "internal error has been logged";
                     } else {
                         LOGGER.log( Level.WARNING, "reporting error: " + errorCode, arguments );
