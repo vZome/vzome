@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,6 +45,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
 
 import org.vorthmann.j3d.J3dComponentFactory;
@@ -697,81 +699,100 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 			System.exit(-1);
 		}
 
-        new ExclusiveAction( this .getExcluder() )
+        SwingWorker<Exception, Object> finisher = new SwingWorker<Exception, Object>()
         {
-			@Override
-            protected void doAction( ActionEvent e ) throws Exception
+            @Override
+            protected Exception doInBackground() throws Exception
             {
-                mController .actionPerformed( this, "finish.load" );
-
-                String title = mController .getProperty( "window.title" );
-                boolean migrated = mController .propertyIsTrue( "migrated" );
-                
-                boolean asTemplate = mController .propertyIsTrue( "as.template" );
-                URL url = null; // TODO
-
-                if ( ! mController .userHasEntitlement( "model.edit" ) )
-                {
-                    mController .actionPerformed( e .getSource(), "switchToArticle" );
-                    if ( url != null )
-                        title = url .toExternalForm();
-                    migrated = false;
+                try {
+                    mController .actionPerformed( this, "finish.load" );
+                    return null;
+                } catch ( Exception e ) {
+                    logger .log( Level.INFO, e .getMessage(), e );
+                    return e;
                 }
+            }
 
-                if ( ! asTemplate && migrated ) { // a migration
-                    final String NL = System .getProperty( "line.separator" );
-                    if ( mController .propertyIsTrue( "autoFormatConversion" ) )
-                    {
-                        if ( mController .propertyIsTrue( "formatIsSupported" ) )
-                            JOptionPane .showMessageDialog( DocumentFrame.this,
-                                    "This document was created by an older version." + NL + 
-                                    "If you save it now, it will be converted automatically" + NL +
-                                    "to the current format.  It will no longer open using" + NL +
-                                    "the older version.",
-                                    "Automatic Conversion", JOptionPane.INFORMATION_MESSAGE );
-                        else
-                        {
-                            title = null;
-                            DocumentFrame.this .makeUnnamed();
-                            JOptionPane .showMessageDialog( DocumentFrame.this,
-                                    "You have \"autoFormatConversion\" turned on," + NL + 
-                                    "but the behavior is disabled until this version of vZome" + NL +
-                                    "is stable.  This converted document is being opened as" + NL +
-                                    "a new document.",
-                                    "Automatic Conversion Disabled", JOptionPane.INFORMATION_MESSAGE );
-                        }
-                    }
-                    else
-                    {
-                        title = null;
-                        DocumentFrame.this .makeUnnamed();
+            @Override
+            protected void done()
+            {
+                try {
+                    Exception error = get();
+                    if ( error != null ) {
                         JOptionPane .showMessageDialog( DocumentFrame.this,
-                                "This document was created by an older version." + NL + 
-                                "It is being opened as a new document, so you can" + NL +
-                                "still open the original using the older version.",
-                                "Outdated Format", JOptionPane.INFORMATION_MESSAGE );
+                                error .getLocalizedMessage(),
+                                "Error Loading Document", JOptionPane.ERROR_MESSAGE );
+                        // setting "visible" to FALSE will remove this document from the application controller's 
+                        // document collection so its document count is correct and it cleans up correctly 
+                        mController .setProperty( "visible", Boolean.FALSE );
+                        DocumentFrame.this .dispose();
                     }
+                    else {
+                        String title = mController .getProperty( "window.title" );
+                        boolean migrated = mController .propertyIsTrue( "migrated" );
+                        
+                        boolean asTemplate = mController .propertyIsTrue( "as.template" );
+                        URL url = null; // TODO
+
+                        if ( ! mController .userHasEntitlement( "model.edit" ) )
+                        {
+                            mController .actionPerformed( DocumentFrame.this, "switchToArticle" );
+                            if ( url != null )
+                                title = url .toExternalForm();
+                            migrated = false;
+                        }
+
+                        if ( ! asTemplate && migrated ) { // a migration
+                            final String NL = System .getProperty( "line.separator" );
+                            if ( mController .propertyIsTrue( "autoFormatConversion" ) )
+                            {
+                                if ( mController .propertyIsTrue( "formatIsSupported" ) )
+                                    JOptionPane .showMessageDialog( DocumentFrame.this,
+                                            "This document was created by an older version." + NL + 
+                                            "If you save it now, it will be converted automatically" + NL +
+                                            "to the current format.  It will no longer open using" + NL +
+                                            "the older version.",
+                                            "Automatic Conversion", JOptionPane.INFORMATION_MESSAGE );
+                                else
+                                {
+                                    title = null;
+                                    DocumentFrame.this .makeUnnamed();
+                                    JOptionPane .showMessageDialog( DocumentFrame.this,
+                                            "You have \"autoFormatConversion\" turned on," + NL + 
+                                            "but the behavior is disabled until this version of vZome" + NL +
+                                            "is stable.  This converted document is being opened as" + NL +
+                                            "a new document.",
+                                            "Automatic Conversion Disabled", JOptionPane.INFORMATION_MESSAGE );
+                                }
+                            }
+                            else
+                            {
+                                title = null;
+                                DocumentFrame.this .makeUnnamed();
+                                JOptionPane .showMessageDialog( DocumentFrame.this,
+                                        "This document was created by an older version." + NL + 
+                                        "It is being opened as a new document, so you can" + NL +
+                                        "still open the original using the older version.",
+                                        "Outdated Format", JOptionPane.INFORMATION_MESSAGE );
+                            }
+                        }
+
+                        if ( title == null )
+                            title = mController .getProperty( "untitled.title" );
+                        
+                        DocumentFrame.this .setTitle( title );
+                    }
+                    super .done();
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
-
-                if ( title == null )
-                    title = mController .getProperty( "untitled.title" );
-                
-                DocumentFrame.this .setTitle( title );
             }
-
-			@Override
-            protected void showError( Exception e )
-            {
-                JOptionPane .showMessageDialog( DocumentFrame.this,
-                        e .getLocalizedMessage(),
-                        "Error Loading Document", JOptionPane.ERROR_MESSAGE );
-                // setting "visible" to FALSE will remove this document from the application controller's 
-                // document collection so its document count is correct and it cleans up correctly 
-                mController .setProperty( "visible", Boolean.FALSE );
-                DocumentFrame.this .dispose();
-            }
-            
-        } .actionPerformed( null );
+        };
+        finisher .execute();
     }
 
     private ExclusiveAction getExclusiveAction( final String action, final Controller controller )

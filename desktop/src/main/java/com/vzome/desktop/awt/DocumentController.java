@@ -26,10 +26,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
+import javax.swing.SwingWorker;
 import javax.vecmath.Point3f;
 
 import org.vorthmann.j3d.MouseTool;
@@ -478,10 +480,36 @@ public class DocumentController extends DefaultGraphicsController implements Sce
             mErrors.reportError(msg, new Object[] {} );
             throw new IllegalStateException( msg );
         }
+        
+        // The current code is running on the EDT, and we want to load the symmetry model on a background thread,
+        //  and then update the UI on the EDT.
+        SwingWorker<RenderedModel,Object> worker = new SwingWorker<RenderedModel,Object>()
+        {
+            @Override
+            protected RenderedModel doInBackground() throws Exception
+            {
+                String modelResourcePath = symmetryController .getProperty( "modelResourcePath" );
+                RenderedModel model = mApp .getSymmetryModel( modelResourcePath, symmetrySystem .getSymmetry() );
+                return model;
+            }
 
-        String modelResourcePath = this .symmetryController .getProperty( "modelResourcePath" );
-        RenderedModel model = this .mApp .getSymmetryModel( modelResourcePath, symmetrySystem .getSymmetry() );
-        cameraController .setSymmetry( model, symmetryController .getSnapper() );
+            @Override
+            protected void done()
+            {
+                // This runs on the EDT again.  We can be sure it won't run until the current
+                //   thread (calling execute()) has completed, AND doInBackground() has completed.
+                try {
+                    cameraController .setSymmetry( get(), symmetryController .getSnapper() );
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        };
+        worker .execute();  //Start the background thread
 
         firePropertyChange( "symmetry", null, symmetryName  ); // notify UI, so cardpanel can flip, or whatever
 

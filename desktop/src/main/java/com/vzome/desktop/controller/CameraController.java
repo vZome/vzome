@@ -53,8 +53,6 @@ public class CameraController extends DefaultController implements Scene.Provide
 
     protected final Lights sceneLighting;
 
-    private final int maxOrientations;
-
     public static interface Viewer 
     {
         int MONOCULAR = 0; int LEFT_EYE = 1; int RIGHT_EYE = 2;
@@ -99,10 +97,10 @@ public class CameraController extends DefaultController implements Scene.Provide
 
     public CameraController( Camera init, Lights sceneLighting, int maxOrientations )
     {
-        model = init;
-        this.sceneLighting = sceneLighting;
-        this.maxOrientations = maxOrientations;
-        initialCamera = new Camera( model );
+        this .model = init;
+        this .sceneLighting = sceneLighting;
+        this .initialCamera = new Camera( model );
+        this .scene = new Scene( sceneLighting, false, maxOrientations );
     }
 
     // TODO get rid of this
@@ -461,11 +459,6 @@ public class CameraController extends DefaultController implements Scene.Provide
     public void setSymmetry( RenderedModel model, OrbitSnapper snapper )
     {
         this .symmetryModel = model;
-        if ( this .scene == null )
-            // Lazy scene creation
-            this .scene = new Scene( this .sceneLighting, false, this .maxOrientations );
-        else
-            scene .reset();
         for ( RenderedManifestation rm : symmetryModel )
             scene .manifestationAdded( rm );
         this .snapper = snapper;
