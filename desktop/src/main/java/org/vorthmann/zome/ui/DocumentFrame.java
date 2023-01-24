@@ -1070,16 +1070,24 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 	        int response = JOptionPane.showConfirmDialog( DocumentFrame.this, "Do you want to save your changes?",
 	                "file is changed", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE );
 
-	        if ( response == JOptionPane.CANCEL_OPTION )
-	            return false;
-	        if ( response == JOptionPane.YES_OPTION )
+	        switch(response) {
+	        case JOptionPane.YES_OPTION: 
 	            try {
 	                localActions .actionPerformed( new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "save" ) );
-	                return false;
 	            } catch ( RuntimeException re ) {
-	                logger.log( Level.WARNING, "did not save due to error", re );
-	                return false;
+	                logger.log( Level.WARNING, "Did not save due to error", re );
 	            }
+	            return false; // Queued up the file-save action instead of closing the window
+	        case JOptionPane.NO_OPTION:
+	        	break; // Don't want to save, so go ahead close the main window
+	        case JOptionPane.CANCEL_OPTION:
+	        	return false; // Don't close window
+	        case JOptionPane.CLOSED_OPTION:
+	        	return false; // Don't close window
+	        default:
+	        	logger.warning("Ignoring undocumented response: " + response );
+	        	return false; // Don't close window
+	        }
 	    }
 	    dispose();
 	    mController .setProperty( "visible", Boolean.FALSE );
