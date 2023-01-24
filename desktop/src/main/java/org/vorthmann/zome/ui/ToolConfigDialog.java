@@ -32,6 +32,7 @@ import org.vorthmann.ui.CardPanel;
 import com.jogamp.newt.event.KeyEvent;
 import com.vzome.desktop.api.Controller;
 
+@SuppressWarnings("serial")
 public class ToolConfigDialog extends JDialog implements ActionListener
 {
     private final JButton iconButton, hideButton, showParamsButton;

@@ -27,6 +27,7 @@ import com.vzome.desktop.awt.RenderingViewer;
  * 
  * @author Scott Vorthmann 2003
  */
+@SuppressWarnings("serial")
 public class CameraControlPanel extends JPanel {
 
     protected JSlider zslider;

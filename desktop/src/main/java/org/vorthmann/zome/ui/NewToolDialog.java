@@ -25,6 +25,7 @@ import javax.swing.event.ListSelectionListener;
 
 import com.vzome.desktop.api.Controller;
 
+@SuppressWarnings("serial")
 public class NewToolDialog extends EscapeDialog implements ListSelectionListener
 {
     private final JTextField namePanel;

@@ -11,6 +11,7 @@ import javax.swing.JRadioButton;
 
 import com.vzome.desktop.api.Controller;
 
+@SuppressWarnings("serial")
 public class ShapesDialog extends EscapeDialog
 {
     public ShapesDialog( Frame frame, Controller controller )

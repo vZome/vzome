@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 
 import com.vzome.desktop.api.Controller;
 
+@SuppressWarnings("serial")
 public class HyperlinkPanel extends JPanel
 {
     private transient String url;

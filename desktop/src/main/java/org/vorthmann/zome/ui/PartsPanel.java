@@ -41,6 +41,7 @@ public class PartsPanel extends JPanel
     private final PartsTableModel partsTableModel;
     private Point popupTriggerLocation = null;
 
+    @SuppressWarnings("serial")
     public PartsPanel( Controller controller )
     {
         super( new BorderLayout() );

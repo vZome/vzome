@@ -19,6 +19,7 @@ import javax.swing.SwingConstants;
 
 import com.vzome.desktop.api.Controller;
 
+@SuppressWarnings("serial")
 public class PolytopesDialog extends EscapeDialog
 {
 	private final JCheckBox[] renderCheckboxes = new JCheckBox[4];

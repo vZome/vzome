@@ -37,6 +37,7 @@ import com.vzome.desktop.api.Controller;
  *
  * So far, just a stripped-down ZomicEditorPanel with names changed.
  */
+@SuppressWarnings("serial")
 public class PythonConsolePanel extends JPanel implements Tool {
 
     private final FileDialog mFileChooser;

@@ -29,6 +29,7 @@ import java.net.URL;
 * @to.do Can the performance be improved to 1.0 second?
 * @author <a href="http://www.javapractices.com/">javapractices.com</a>
 */
+@SuppressWarnings("serial")
 public final class SplashScreen extends Frame {
 
   /**

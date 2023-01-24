@@ -24,6 +24,7 @@ import javax.swing.text.PlainDocument;
 import com.vzome.desktop.api.Controller;
 import com.vzome.desktop.awt.GraphicsController;
 
+@SuppressWarnings("serial")
 public class LessonPanel extends JPanel implements PropertyChangeListener
 {
     private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.ui" );
