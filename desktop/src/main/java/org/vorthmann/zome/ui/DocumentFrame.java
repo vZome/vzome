@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -157,8 +158,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     // don't want a stack trace for a user error
                     logger.log( Level.WARNING, errorCode );
                 } else if ( Controller.UNKNOWN_ERROR_CODE.equals( errorCode ) ) {
-                    errorCode = ( (Exception) arguments[0] ).getMessage();
-                    logger.log( Level.WARNING, "internal error: " + errorCode, ( (Exception) arguments[0] ) );
+                	Exception e  = (Exception) arguments[0];
+                	e.printStackTrace();
+                    logger.log( Level.WARNING, "internal error: " + e.getMessage(), e );
                     errorCode = "internal error has been logged";
                 } else {
                     logger.log( Level.WARNING, "reporting error: " + errorCode, arguments );
@@ -652,26 +654,51 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 		// Default to opening the window as maximized on the selected (or default) monitor.
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();
-		int bestWidth = 0;
-		int bestHeight = 0;
-		if(gs.length > 0) {
-			int bestIndex = 0;
-			GraphicsDevice bestDevice = gs[bestIndex];
-			DisplayMode bestMode = bestDevice.getDisplayMode();
-			bestWidth = bestMode.getWidth();
-			bestHeight = bestMode.getHeight();
-			int bestArea = bestWidth * bestHeight;
-			for (int i = bestIndex+1; i < gs.length; i++) {
-				GraphicsDevice testDevice = gs[i];
-				DisplayMode testMode = testDevice.getDisplayMode();
-				int testArea = testMode.getHeight() * testMode.getWidth();
-				if(bestArea < testArea) {
-					bestArea = testArea;					
-					bestMode = testMode;					
-					bestDevice = testDevice;
-					bestWidth = bestMode.getWidth();
-					bestHeight = bestMode.getHeight();
+		double bestWidth = 0;
+		double bestHeight = 0;
+		if (gs.length > 0) {
+			GraphicsDevice bestDevice = null;
+			String preferredMonitor = mController.getProperty("preferred.monitor");
+			if (preferredMonitor != null) {
+				try {
+					int monitorIndex = Integer.parseInt(preferredMonitor);
+					if (monitorIndex < 0) {
+						logger.fine("preferred.monitor = " + preferredMonitor + ". Negative values disable the feature.");
+					} else if (monitorIndex < gs.length) {
+						bestDevice = gs[monitorIndex];
+						DisplayMode dm = bestDevice.getDisplayMode();
+						AffineTransform t = bestDevice.getDefaultConfiguration().getDefaultTransform();
+						bestWidth = dm.getWidth() / t.getScaleX();
+						bestHeight = dm.getHeight() / t.getScaleY();;
+						logger.config("Using preferred.monitor = " + preferredMonitor 
+								+ " @ resolution: " + bestWidth + "x" + bestHeight);
+					} else {
+						logger.warning("Ignoring preferred.monitor = " + preferredMonitor + ".\n" 
+								+ "Only " + gs.length + " monitors are available.");
+					}
+				} catch (NumberFormatException ex) {
+					logger.warning("Invalid preferred.monitor = " + preferredMonitor + " in prefs");
 				}
+			}
+			if (bestDevice == null) { // if not specified in prefs file or if value is out of range
+				int bestMonitor = 0;
+				double bestArea = 0;
+				for (int i = 0; i < gs.length; i++) {
+					GraphicsDevice testDevice = gs[i];
+					AffineTransform t = testDevice.getDefaultConfiguration().getDefaultTransform();
+					DisplayMode testMode = testDevice.getDisplayMode();
+					double testWidth = testMode.getWidth() / t.getScaleX();;
+					double testHeight = testMode.getHeight() / t.getScaleY();;
+					double testArea = testHeight * testWidth;
+					if (bestArea < testArea) {
+						bestArea = testArea;
+						bestDevice = testDevice;
+						bestWidth = testWidth;
+						bestHeight = testHeight;
+						bestMonitor = i;
+					}
+				}
+				logger.config("Using monitor[" + bestMonitor + "] @ resolution: " + bestWidth + "x" + bestHeight);
 			}
 			Rectangle bounds = bestDevice.getDefaultConfiguration().getBounds();
 			this.setLocation(bounds.x, bounds.y);
@@ -684,8 +711,11 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 	        this.setVisible( true );
 	        // Java 17 seems to successfully set the frame size and extended state only after the frame is visible.
 	        if(bestWidth > 0 && bestHeight > 0) {
-				int n = 15, d = n + 1; // set NORMAL size to 15/16 of full screen size then maximize it
-				this.setSize(bestWidth * n/d, bestHeight * n/d);
+				double n = 15, d = n + 1; // set NORMAL size to 15/16 of scaled full screen size then maximize it
+				double downSize = n/d;
+				int scaledWidth = (int)(bestWidth * downSize);
+				int scaledHeight = (int)(bestHeight * downSize);
+				this.setSize(scaledWidth, scaledHeight);
 	        }
 	        this.setExtendedState(MAXIMIZED_BOTH);
 	        this.setFocusable( true );
@@ -1040,16 +1070,24 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 	        int response = JOptionPane.showConfirmDialog( DocumentFrame.this, "Do you want to save your changes?",
 	                "file is changed", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE );
 
-	        if ( response == JOptionPane.CANCEL_OPTION )
-	            return false;
-	        if ( response == JOptionPane.YES_OPTION )
+	        switch(response) {
+	        case JOptionPane.YES_OPTION: 
 	            try {
 	                localActions .actionPerformed( new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "save" ) );
-	                return false;
 	            } catch ( RuntimeException re ) {
-	                logger.log( Level.WARNING, "did not save due to error", re );
-	                return false;
+	                logger.log( Level.WARNING, "Did not save due to error", re );
 	            }
+	            return false; // Queued up the file-save action instead of closing the window
+	        case JOptionPane.NO_OPTION:
+	        	break; // Don't want to save, so go ahead close the main window
+	        case JOptionPane.CANCEL_OPTION:
+	        	return false; // Don't close window
+	        case JOptionPane.CLOSED_OPTION:
+	        	return false; // Don't close window
+	        default:
+	        	logger.warning("Ignoring undocumented response: " + response );
+	        	return false; // Don't close window
+	        }
 	    }
 	    dispose();
 	    mController .setProperty( "visible", Boolean.FALSE );

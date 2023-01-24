@@ -27,8 +27,9 @@ public class LoggingErrorChannel implements Controller .ErrorChannel
         }
         else if ( Controller.UNKNOWN_ERROR_CODE .equals( errorCode ) )
         {
-            errorCode = ((Throwable) arguments[0]) .getMessage();
-            logger .log( Level.WARNING, "internal error: " + errorCode, ((Throwable) arguments[0]) );
+        	Throwable e  = (Throwable) arguments[0];
+        	e.printStackTrace();
+            logger.log( Level.WARNING, "internal error: " + e.getMessage(), e );
         }
         else
         {
