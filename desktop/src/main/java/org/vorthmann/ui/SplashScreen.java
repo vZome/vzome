@@ -68,7 +68,8 @@ public final class SplashScreen extends Frame {
       System.out.println("Cannot track image load.");
     }
 
-    SplashWindow splashWindow = new SplashWindow(this,fImage);
+    //SplashWindow splashWindow = 
+    new SplashWindow(this,fImage);
   }
   
   
@@ -119,17 +120,17 @@ public final class SplashScreen extends Frame {
   * Developer test harness shows the splash screen for a fixed length of 
   * time, without launching the full application.
   */
-  private static void main(String[] args){
-    SplashScreen splashScreen = new SplashScreen( "testSplash.gif");
-    splashScreen.splash();
-    try {
-      Thread.sleep(2000);
-    }
-    catch(InterruptedException ex) {
-      System.out.println(ex);
-    }
-    System.exit(0);
-  }
+//  public static void main(String[] args){
+//    SplashScreen splashScreen = new SplashScreen( "testSplash.gif");
+//    splashScreen.splash();
+//    try {
+//      Thread.sleep(2000);
+//    }
+//    catch(InterruptedException ex) {
+//      System.out.println(ex);
+//    }
+//    System.exit(0);
+//  }
 }
  
 

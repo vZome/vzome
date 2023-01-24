@@ -18,7 +18,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -732,13 +731,13 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         boolean migrated = mController .propertyIsTrue( "migrated" );
                         
                         boolean asTemplate = mController .propertyIsTrue( "as.template" );
-                        URL url = null; // TODO
 
+//                        URL url = null; // TODO
                         if ( ! mController .userHasEntitlement( "model.edit" ) )
                         {
                             mController .actionPerformed( DocumentFrame.this, "switchToArticle" );
-                            if ( url != null )
-                                title = url .toExternalForm();
+//                            if ( url != null )
+//                                title = url .toExternalForm();
                             migrated = false;
                         }
 
