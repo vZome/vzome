@@ -36,7 +36,6 @@ task installUnityJars( type: Copy ) {
 }
 
 // used by the 'application' plugin
-// as well as the 'macappbundle' and 'launch4j' Gradle plugins in sub-projects
 ext.jvmArgs = [
     "apple.laf.useScreenMenuBar": "true",
     "apple.awt.antialiasing": "true",
@@ -44,6 +43,8 @@ ext.jvmArgs = [
     "com.apple.macos.use-file-dialog-packages": "true",
     "com.apple.macos.useScreenMenuBar": "true",
     "com.apple.smallTabs": "true",
+    // See, https://forum.jogamp.org/JOGL-broken-with-JRE-8-and-Windows-window-scaling-tp4039122p4039665.html
+    "sun.java2d.uiScale": "1.0", // Avoids bug with high DPI and scaling != 100% on Windows with Java > 8
     "java.util.logging.config.file": "logging.properties" ]
 ext.vzomeArgs = [  // a list, not a map
     '-entitlement.model.edit', 'true', '-entitlement.lesson.edit', 'true', '-entitlement.all.tools', 'true',
