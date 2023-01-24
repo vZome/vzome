@@ -17,7 +17,9 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Point;
 import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.editor.SelectionSummary.Listener;
 import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Selection;
 import com.vzome.core.edits.StrutCreation;
 import com.vzome.core.math.Line;
@@ -26,6 +28,7 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.PlaneOrbitSet;
+import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.render.RenderedModel;
@@ -33,6 +36,7 @@ import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.render.TransparentRendering;
 import com.vzome.desktop.controller.CameraController;
 import com.vzome.desktop.controller.LengthController;
+import com.vzome.desktop.controller.SymmetryController;
 import com.vzome.desktop.controller.ZoneVectorBall;
 
 public class PreviewStrut implements PropertyChangeListener
@@ -72,6 +76,24 @@ public class PreviewStrut implements PropertyChangeListener
 
             @Override
             public Selection getSelection() { return null; }
+
+            @Override
+            public OrbitSource getSymmetrySystem() {
+                return null;
+            }
+
+            @Override
+            public OrbitSource getSymmetrySystem(String name) {
+                return null;
+            }
+
+            @Override
+            public Symmetries4D get4dSymmetries() {
+                return null;
+            }
+
+            @Override
+            public void addSelectionSummaryListener( Listener listener ) {}
         };
 
         zoneBall = new ZoneVectorBall( cameraController )

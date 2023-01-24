@@ -246,6 +246,21 @@ public class AntiprismSymmetry extends AbstractSymmetry {
     }
 
     @Override
+    public double[] embedInR3Double(AlgebraicVector v) {
+    	double[] dv = super.embedInR3Double( v );
+        if (useShear) {
+            double[] sums = new double[3];
+            for (int i = 0; i < shearTransform.length; i++) {
+                sums[ i ] += shearTransform[ i ].x * dv[0];
+                sums[ i ] += shearTransform[ i ].y * dv[1];
+                sums[ i ] += shearTransform[ i ].z * dv[2];
+            }
+            return sums;
+        }
+        return dv;
+    }
+
+    @Override
     public boolean isTrivial() {
         return !useShear; // signals the POV-Ray exporter to generate the tranform
     }

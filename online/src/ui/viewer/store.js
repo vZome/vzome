@@ -1,27 +1,60 @@
 
 import { configureStore } from '@reduxjs/toolkit'
+import { REVISION } from '../../revision.js';
+import { createWorker } from '../../workerClient/client.js';
 
 export const initialState = {
   scene: {
     camera: {
-      near: 0.1,
-      far: 80,
-      width: 18,
-      distance: 40,
+      near: 0.271828,
+      far: 217,
+      width: 48,
+      distance: 108,
       up: [ 0, 1, 0 ],
       lookAt: [ 0, 0, 0 ],
       lookDir: [ 0, 0, -1 ],
       perspective: true,
-    }
+    },
+    lighting: {
+      backgroundColor: '#BBDAED',
+      ambientColor: '#555555',
+      directionalLights: [ // These are the vZome defaults, for consistency
+        { direction: [ 1, -1, -0.3 ], color: '#FDFDFD' },
+        { direction: [ -1, 0, -0.2 ], color: '#B5B5B5' },
+        { direction: [ 0, 0, -1 ], color: '#303030' },
+      ]
+    },
   }
 };
 
-export const selectEditBefore = nodeId => ({ type: 'EDIT_SELECTED', payload: { before: nodeId } } );
-export const selectEditAfter = nodeId => ({ type: 'EDIT_SELECTED', payload: { after: nodeId } } );
+ 
 export const defineCamera = camera => ({ type: 'CAMERA_DEFINED', payload: camera });
 export const setPerspective = value => ({ type: 'PERSPECTIVE_SET', payload: value });
-export const fetchDesign = ( url, preview, debug=false ) => ({ type: 'URL_PROVIDED', payload: { url, preview, debug } });
-export const openDesignFile = ( file, debug=false ) => ({ type: 'FILE_PROVIDED', payload: { file, debug } });
+
+export const whilePerspective = ( perspective, doSetter ) => async dispatch =>
+{
+  const wait = ms => new Promise( (resolve) => setTimeout(resolve, 100) );
+  dispatch( setPerspective( true ) );
+  await wait( 10 );
+  doSetter();
+  await wait( 10 );
+  dispatch( setPerspective( perspective ) );
+}
+
+const workerAction = ( type, payload ) => ({ type, payload, meta: 'WORKER' } );
+
+export const selectScene = index => workerAction( 'SCENE_SELECTED', index );
+export const selectEditBefore = nodeId => workerAction( 'EDIT_SELECTED', { before: nodeId } );
+export const selectEditAfter = nodeId => workerAction( 'EDIT_SELECTED', { after: nodeId } );
+export const fetchDesign = ( url, config={ preview: false, debug: false, showScenes: false } ) => workerAction( 'URL_PROVIDED', { url, config } );
+export const openDesignFile = ( file, debug=false ) => workerAction( 'FILE_PROVIDED', { file, debug } );
+export const newDesign = () => workerAction( 'NEW_DESIGN_STARTED', { field: 'golden' } );
+export const doControllerAction = ( controllerPath='', action, parameters ) => workerAction( 'ACTION_TRIGGERED', { controllerPath, action, parameters } );
+export const requestControllerProperty = ( controllerPath='', propName, changeName=propName, isList=false ) => workerAction( 'PROPERTY_REQUESTED', { controllerPath, propName, changeName, isList } );
+export const createStrut = ( id, plane, zone, index, orientation ) => workerAction( 'STRUT_CREATION_TRIGGERED', { id, plane, zone, index, orientation } );
+export const joinBalls = ( id1, id2 ) => workerAction( 'JOIN_BALLS_TRIGGERED', { id1, id2 } );
+
+export const subcontroller = ( controllerPath, subName ) => controllerPath + ':' + subName;
 
 const reducer = ( state = initialState, event ) =>
 {
@@ -44,8 +77,12 @@ const reducer = ( state = initialState, event ) =>
     case 'TEXT_FETCHED':
       return { ...state, source: event.payload };
 
-    case 'DESIGN_INTERPRETED': {
-      let { xmlTree, snapshots } = event.payload;
+    case 'DESIGN_XML_SAVED': {
+      return { ...state, source: { ...state.source, changedText: event.payload } };
+    }
+
+    case 'DESIGN_XML_PARSED': {
+      let xmlTree = event.payload;
       const attributes = {};
       const indexAttributes = node => node.children && node.children.map( child => {
         attributes[ child.id ] = child.attributes;
@@ -55,14 +92,48 @@ const reducer = ( state = initialState, event ) =>
         indexAttributes( xmlTree );
         xmlTree = branchSelectionBlocks( xmlTree );
       }
-      return { ...state, waiting: false, xmlTree, attributes, snapshots };
+      return { ...state, waiting: false, xmlTree, attributes };
+    }
+
+    case 'SCENES_DISCOVERED': {
+      return { ...state, scenes: event.payload };
     }
 
     case 'SCENE_RENDERED': {
       // TODO: I wish I had a better before/after contract with the worker
       const { scene, edit } = event.payload;
+      const camera = scene.camera || state.scene.camera;
       // may need to merge scene.shapes here, if we ever have an incremental case
-      return { ...state, edit, scene: { ...state.scene, ...scene }, waiting: false };
+      return { ...state, edit, scene: { ...state.scene, ...scene, camera }, waiting: false };
+    }
+
+    case 'SHAPE_DEFINED': {
+      const shape = event.payload;
+      const shapes = { ...state.scene.shapes, [ shape.id ]: shape };
+      return { ...state, scene: { ...state.scene, shapes }, waiting: false };
+      break;
+    }
+
+    case 'INSTANCE_ADDED': {
+      let instance = event.payload;
+      //  TODO: put this granularity in when I've switched to SolidJS for the rendering
+      // const [ selected, setSelected ] = createSignal( instance.selected );
+      // const [ color, setColor ] = createSignal( instance.color );
+      // instance = { ...instance, color, setColor, selected, setSelected };
+      const shape = state.scene.shapes[ instance.shapeId ];
+      const shapes = { ...state.scene.shapes, [ shape.id ]: { ...shape, instances: [ ...shape.instances, instance ] } };
+      return { ...state, scene: { ...state.scene, shapes }, waiting: false, lastInstance: instance };
+      break;
+    }
+
+    case 'SELECTION_TOGGLED': {
+      const { shapeId, id, selected } = event.payload;
+      const shape = state.scene.shapes[ shapeId ];
+      const instances = shape .instances.map( inst => (
+        inst.id !== id ? inst : { ...inst, selected }
+      ));
+      const shapes = { ...state.scene.shapes, [ shapeId ]: { ...shape, instances } };
+      return { ...state, scene: { ...state.scene, shapes }, waiting: false };
     }
 
     case 'CAMERA_DEFINED': {
@@ -76,8 +147,17 @@ const reducer = ( state = initialState, event ) =>
     }
 
     case 'TRACKBALL_MOVED': {
-      const trackball = event.payload;
-      return { ...state, scene: { ...state.scene, trackball } };
+      const liveCamera = { ...state.scene.camera, ...event.payload };
+      return { ...state, scene: { ...state.scene, liveCamera } };
+    }
+
+    case 'CONTROLLER_CREATED': {
+      return { ...state, controller: { isReady: true } };
+    }
+
+    case 'CONTROLLER_PROPERTY_CHANGED': {
+      const { controllerPath, name, value } = event.payload;
+      return { ...state, controller: { ...state.controller, [ subcontroller( controllerPath, name ) ]: value } };
     }
 
     default:
@@ -111,85 +191,40 @@ const branchSelectionBlocks = node =>
     return node;
 }
 
-export const createWorkerStore = customElement =>
+// TODO: Honestly, we don't really need to use the store to dispatch to the worker any more,
+//   if we replace all those uses of dispatch() with sendToWorker().
+//   All we need is the store to subscribe to the worker.
+export const createWorkerStore = ( worker ) =>
 {
-  // trampolining to work around worker CORS issue
-  // see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
-  const workerPromise = import( "../../worker/vzome-worker-static.js" )
-    .then( module => {
-      const blob = new Blob( [ `import "${module.WORKER_ENTRY_FILE_URL}";` ], { type: "text/javascript" } );
-      const worker = new Worker( URL.createObjectURL( blob ), { type: "module" } );
-      worker.onmessage = onWorkerMessage;
-      return worker;
-    } );
-
-  const workerSender = store => report => event =>
+  const workerSender = store => report =>
   {
-    switch ( event.type ) {
+    const onWorkerError = error =>
+      report( { type: 'ALERT_RAISED', payload: error } );
+    const onWorkerMessage = message =>
+      report( message );
+    const workerClient = worker || createWorker();
+    workerClient .subscribe( { onWorkerMessage, onWorkerError } );
 
-      // These are all coming back from the worker
-      case 'ALERT_RAISED':
-      case 'ALERT_DISMISSED':
-      case 'FETCH_STARTED':
-      case 'TEXT_FETCHED':
-      case 'DESIGN_INTERPRETED':
-      case 'SCENE_RENDERED':
-      case 'CAMERA_DEFINED':
-      case 'PERSPECTIVE_SET':
-      case 'TRACKBALL_MOVED':
-        report( event );
-        break;
-
-      // Anything else is to send to the worker
-      default:
-        if ( navigator.userAgent.indexOf( "Firefox" ) > -1 ) {
-            console.log( "The worker is not available in Firefox" );
-            report( { type: 'ALERT_RAISED', payload: 'Module workers are not yet supported in Firefox.  Please try another browser.' } );
-        }
-        else {
-          workerPromise.then( worker => {
-            // console.log( `Message sending to worker: ${JSON.stringify( event, null, 2 )}` );
-            worker.postMessage( event );  // send them all, let the worker filter them out
-          } )
-          .catch( error => {
-            console.log( "The worker is not available" );
-            report( { type: 'ALERT_RAISED', payload: 'The worker is not available.  Module workers are not supported in older versions of other browsers.  Please update your browser.' } );
-          } );
-        }
-        break;    
+    const handleEvent = event =>
+    {
+      if ( event.meta && event.meta === 'WORKER' ) {
+        workerClient .sendToWorker( event );
+      }
+      else
+          report( event );
     }
+
+    return handleEvent;
   }
 
-  const preloadedState = {}
+  const preloadedState = initialState;
 
   const store = configureStore( {
     reducer,
     preloadedState,
-    middleware: getDefaultMiddleware => getDefaultMiddleware().concat( workerSender ),
+    middleware: getDefaultMiddleware => getDefaultMiddleware( { immutableCheck: false } ).concat( workerSender ),
     devTools: true,
   });
-
-  const onWorkerMessage = ({ data }) => {
-    console.log( `Message received from worker: ${JSON.stringify( data.type, null, 2 )}` );
-    store .dispatch( data );
-
-    // Useful for supporting regression testing of the vzome-viewer web component
-    if ( customElement ) {
-      switch (data.type) {
-
-        case 'DESIGN_INTERPRETED':
-          customElement.dispatchEvent( new Event( 'vzome-design-rendered' ) );
-          break;
-      
-        case 'ALERT_RAISED':
-          customElement.dispatchEvent( new Event( 'vzome-design-failed' ) );
-          break;
-      
-        default:
-          break;
-      }
-    }
-  }
 
   return store;
 }

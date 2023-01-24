@@ -55,8 +55,10 @@ import com.vzome.core.construction.Segment;
 import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
+import com.vzome.core.editor.api.ImplicitSymmetryParameters;
 import com.vzome.core.editor.api.OrbitSource;
-import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.exporters.DocumentExporter;
+import com.vzome.core.exporters.GeometryExporter;
 import com.vzome.core.exporters2d.Java2dSnapshot;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.QuaternionProjection;
@@ -69,7 +71,6 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.Scene;
@@ -83,7 +84,9 @@ import com.vzome.desktop.controller.MeasureController;
 import com.vzome.desktop.controller.NumberController;
 import com.vzome.desktop.controller.PartsController;
 import com.vzome.desktop.controller.PolytopesController;
+import com.vzome.desktop.controller.SymmetryController;
 import com.vzome.desktop.controller.ToolFactoryController;
+import com.vzome.desktop.controller.ToolsController;
 import com.vzome.desktop.controller.UndoRedoController;
 import com.vzome.desktop.controller.VectorController;
 
@@ -148,7 +151,9 @@ public class DocumentController extends DefaultGraphicsController implements Sce
     private final NumberController importScaleController;
     private final VectorController quaternionController;
     private String lastObjectColor = "#ffffffff";
-        
+    
+    private boolean mainViewRotation = true;
+
    /*
      * See the javadoc to control the logging:
      * 
@@ -195,7 +200,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
 
         this .addSubController( "bookmark", new ToolFactoryController( this .documentModel .getBookmarkFactory() ) );
         
-        this .addSubController( "polytopes", new PolytopesController( this .documentModel ) );
+        this .addSubController( "polytopes", new PolytopesController( (ImplicitSymmetryParameters) this .documentModel .getEditorModel(), document ) );
         
         this .addSubController( "undoRedo", new UndoRedoController( this .documentModel .getHistoryModel() ) );
                 
@@ -288,8 +293,10 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         }
 
         sceneLighting = this .documentModel .getSceneLighting();
+        
+        mainViewRotation = ! app .propertyIsTrue( "no.main.view.trackball" );
 
-        cameraController = new CameraGraphicsController( document .getCamera(), sceneLighting, maxOrientations );
+        cameraController = new CameraGraphicsController( document .getCamera(), sceneLighting, maxOrientations, mainViewRotation? 0.15d : 0.7d );
         this .addSubController( "camera", cameraController );
         this .articleModeZoom = new CameraZoomWheel( this .cameraController );
 
@@ -301,7 +308,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         for ( SymmetryPerspective symper : document .getFieldApplication() .getSymmetryPerspectives() )
         {
             String name = symper .getName();
-            SymmetryController symmController = new SymmetryController( strutBuilder, (SymmetrySystem) this .documentModel .getSymmetrySystem( name ), mRenderedModel );
+            SymmetryController symmController = new SymmetryController( strutBuilder, (SymmetrySystem) this .documentModel .getEditorModel() .getSymmetrySystem( name ), mRenderedModel );
             strutBuilder .addSubController( "symmetry." + name, symmController );
             this .symmetries .put( name, symmController );
         }
@@ -331,7 +338,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         if ( this .mainScene instanceof PropertyChangeListener )
             this .addPropertyListener( this .mainScene );
 
-        partsController = new PartsController( this .documentModel .getSymmetrySystem() );
+        partsController = new PartsController( this .documentModel .getEditorModel() .getSymmetrySystem() );
         this .addSubController( "parts", partsController );
         mRenderedModel .addListener( partsController );
 
@@ -411,11 +418,11 @@ public class DocumentController extends DefaultGraphicsController implements Sce
     }
     
     @Override
-    public void attachViewer( RenderingViewer viewer, Component canvas )
+    public void attachViewer( GraphicsViewer viewer, Component canvas )
     {
     		// This is called on a UI thread!
         this .modelCanvas = canvas;
-        this .imageCaptureViewer = viewer;
+        this .imageCaptureViewer = (RenderingViewer) viewer;
         
         // clicks become select or deselect all
         selectionClick = new LeftMouseDragAdapter( new ManifestationPicker( imageCaptureViewer )
@@ -436,12 +443,13 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         this .cameraController .addViewer( this .imageCaptureViewer );
         this .addSubController( "monocularPicking", new PickingController( this .imageCaptureViewer, this ) );
 
-        this .strutBuilder .attach( viewer, this .mainScene );
+        this .strutBuilder .attach( (RenderingViewer) viewer, this .mainScene );
         
         if ( this .modelCanvas != null )
             if ( editingModel ) {
                 this .selectionClick .attach( modelCanvas );
-                this .modelModeMainTrackball .attach( modelCanvas );
+                if ( mainViewRotation )
+                    this .modelModeMainTrackball .attach( modelCanvas );
                 this .strutBuilder .attach( modelCanvas );
             } else {
                 this .articleModeMainTrackball .attach( modelCanvas );
@@ -459,7 +467,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
             symmetryName = symmetryName + ((PolygonField) this.documentModel.getField()).polygonSides();
         }
         
-        SymmetrySystem symmetrySystem = (SymmetrySystem) this .documentModel .getSymmetrySystem( symmetryName );
+        SymmetrySystem symmetrySystem = (SymmetrySystem) this .documentModel .getEditorModel() .getSymmetrySystem( symmetryName );
         if(symmetrySystem == null) {
             throw new IllegalStateException("Unable to get SymmetrySystem '" + symmetryName + "'.");
         }
@@ -567,7 +575,8 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                     
                     this .selectionClick .detach( this .modelCanvas );
                     this .strutBuilder .detach( this .modelCanvas );
-                    this .modelModeMainTrackball .detach( this .modelCanvas );
+                    if ( mainViewRotation )
+                        this .modelModeMainTrackball .detach( this .modelCanvas );
                     
                     this .lessonPageClick .attach( this .modelCanvas );
                     this .articleModeMainTrackball .attach( this .modelCanvas );
@@ -608,7 +617,8 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                     this .articleModeZoom .detach( this .modelCanvas );
                     
                     this .selectionClick .attach( this .modelCanvas );
-                    this .modelModeMainTrackball .attach( this .modelCanvas );
+                    if ( mainViewRotation )
+                        this .modelModeMainTrackball .attach( this .modelCanvas );
                     this .strutBuilder .attach( this .modelCanvas );
     
                     this .editingModel = true;
@@ -831,8 +841,6 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         // TODO set output file types
         if ( logger .isLoggable( Level.FINE ) ) logger .fine( String.format( "doFileAction: %s %s", command, file .getAbsolutePath() ) );
         try {
-            final Colors colors = mApp.getColors();
-
             if ( "save".equals( command ) )
             {               
                 File dir = file .getParentFile();
@@ -903,8 +911,9 @@ public class DocumentController extends DefaultGraphicsController implements Sce
             {
                 Dimension size = this .modelCanvas .getSize();
                 String format = command .substring( "export2d." .length() ) .toLowerCase();
-                Java2dSnapshot snapshot = documentModel .capture2d( currentSnapshot, size.height, size.width, cameraController .getView(), sceneLighting, false, true );
-                documentModel .export2d( snapshot, format, file, this .drawOutlines, false, true );
+                Java2dSnapshot snapshot = Java2dSnapshotController .capture2d( currentSnapshot, size.height, size.width, cameraController .getView(), sceneLighting, false, true );
+                Java2dSnapshotController controller = new Java2dSnapshotController( cameraController .getView(), sceneLighting, currentSnapshot, this .drawOutlines, this .mApp :: get2dExporter ); 
+                controller .export2d( snapshot, format, file, this .drawOutlines, false, true );
                 this .openApplication( file );
                 return;
             }
@@ -915,14 +924,12 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                 try {
                     out = new FileWriter( file );
                     String format = command .substring( "export." .length() ) .toLowerCase();
-                    Exporter3d exporter = documentModel .getNaiveExporter( format, cameraController .getView(), colors, sceneLighting, currentSnapshot );
+                    GeometryExporter exporter = this .mApp .getExporter( format ); //, cameraController .getView(), colors, sceneLighting, currentSnapshot );
                     if ( exporter != null ) {
-                        exporter.doExport( file, out, size.height, size.width );
-                    }
-                    else {
-                        exporter = documentModel .getStructuredExporter( format, cameraController .getView(), colors, sceneLighting );
-                        if ( exporter != null )
-                            exporter .exportDocument( documentModel, file, out, size.height, size.width );
+                        if ( exporter instanceof DocumentExporter )
+                            ((DocumentExporter) exporter) .exportDocument( documentModel, file, out, size.height, size.width );
+                        else
+                            exporter .exportGeometry( documentModel .getRenderedModel(), file, out, size.height, size.width );
                     }
                 }
                 catch (Command.Failure f) {
@@ -1268,10 +1275,11 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                     break; // fall through to properties or super
                 }
             }
+            // TODO: move this to ApplicationController!
             else if ( propName .startsWith( "exportExtension." ) ) {
                 String format = propName .substring( "exportExtension." .length() );
                 // handle null exporter so that typo in custom menu doesn't throw NPE 
-                Exporter3d exporter = this .mApp .getExporter( format .toLowerCase() );
+                GeometryExporter exporter = this .mApp .getExporter( format .toLowerCase() );
                 return exporter == null ? "" : exporter .getFileExtension();
             }
 
@@ -1295,8 +1303,8 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         
         case "snapshot.2d": {
             if ( java2dController == null ) {
-                java2dController = new Java2dSnapshotController( this .documentModel, cameraController.getView(), this.sceneLighting,
-                						this.currentSnapshot, this.drawOutlines );
+                java2dController = new Java2dSnapshotController( cameraController.getView(), this.sceneLighting,
+                						this.currentSnapshot, this.drawOutlines, this .mApp :: get2dExporter );
                 this .addSubController( name, java2dController );
             }
             return java2dController;
@@ -1516,7 +1524,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
             StringBuffer buf = new StringBuffer();
             if ( pickedManifestation != null ) {
                 final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
-                OrbitSource symmetry  = this .documentModel .getSymmetrySystem();
+                OrbitSource symmetry  = this .documentModel .getEditorModel() .getSymmetrySystem();
                 Manifestation man = pickedManifestation;
                 Axis zone = null;
                 if (man instanceof Connector) {
@@ -1568,11 +1576,13 @@ public class DocumentController extends DefaultGraphicsController implements Sce
 
                     zone = symmetry.getAxis(offset);
                     Direction direction = zone.getDirection();
-                    buf.append("\n\ndirection: ");
+                    buf.append("\n\norbit: ");
+                    buf.append( direction.getCanonicalName() );
+                    buf.append(" = ");
                     if (direction.isAutomatic()) {
                         buf.append("Automatic ");
                     }
-                    buf.append(direction.getName());
+                    buf.append( direction.getName() );
 
                     AlgebraicNumber len = zone.getLength(offset);
                     len = zone.getOrbit().getLengthInUnits(len);
@@ -1618,11 +1628,13 @@ public class DocumentController extends DefaultGraphicsController implements Sce
 
                     zone = symmetry.getAxis(normal);
                     Direction direction = zone.getDirection();
-                    buf.append("\n\ndirection: ");
+                    buf.append("\n\norbit: ");
+                    buf.append( direction.getCanonicalName() );
+                    buf.append(" = ");
                     if (direction.isAutomatic()) {
                         buf.append("Automatic ");
                     }
-                    buf.append(direction.getName());
+                    buf.append( direction.getName() );
                 } else {
                     // should never get here
                     return man.getClass().getSimpleName();

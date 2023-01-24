@@ -1,22 +1,16 @@
 vzome-desktop
 =============
 
-[vZome](http://vzome.com/) is a desktop application for creating virtual Zome models.  This project contains the source code for just the controllers and views of the user interface; it requires the [vzome-core](https://github.com/vorth/vzome-core/) library to provide all the models and basic behaviors, including loading and saving files.
+[vZome](http://vzome.com/) is a desktop application for creating virtual Zome models.  This subproject contains the source code for just the controllers and views of the user interface; it requires the `../core` subproject to provide all the models and basic behaviors, including loading and saving files.
 
 Build Instructions
 -------------
 
 (These instructions are primarily for Linux or Mac, or any other Unix, but some basic functionality has also been adapted for Windows.)
 
-The build was originally implemented using Maven but now uses Gradle with a local Maven repository.  Most of the dependencies will be pulled from the Maven repositories automatically, but there is one special requirement: the [vzome-core](https://github.com/vorth/vzome-core/) project must be built locally, so that the JAR appears in your local Maven repository to satisfy the dependency.
+The standard Gradle Wrapper build command should work fine:
 
-Having built vzome-core initially, the standard Gradle Wrapper build command should work fine. For Mac or Unix:
-
-    gradlew clean build
-	
-... or in Windows PowerShell:
-
-	./gradlew clean build
+	./gradlew clean desktop:build
 
 Note that the Gradle Wrapper installs Gradle itself, the first time you run one of these commands.	
 

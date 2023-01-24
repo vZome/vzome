@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <title>&lt;vzome-viewer&gt;</title>
+    <link rel="stylesheet" href="./vzome-viewer.css">
+    <script type="module">
+      import "/modules/vzome-viewer.js"; // registers the custom element
+    </script>
+  </head>
+  <body>
+    <article>
+      <section>
+        <vzome-viewer src="./models/orangePurpleChiral.vZome" show-scenes="false" >
+          <img src="./models/orangePurpleChiral.png" >
+        </vzome-viewer>
+      </section>
+      <section>
+        <vzome-viewer src="./models/vZomeLogo.vZome" show-scenes="true" >
+        </vzome-viewer>
+      </section>
+      <section>
+        <vzome-viewer src="https://gist.githubusercontent.com/ThynStyx/47278c6c6e1a00b154a57a71ca1302d5/raw/c3433e180b86a9f4d1122ff5657199d5ae85f100/Nan-24-cell-F4-auto-2%20petrie%20polygon%20and%20hypercube.vZome" show-scenes="true" >
+        </vzome-viewer>
+      </section>
+    </article>
+  </body>
+</html>

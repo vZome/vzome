@@ -11,10 +11,13 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.editor.SelectionSummary.Listener;
 import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Selection;
 import com.vzome.core.edits.Delete;
 import com.vzome.core.math.Projection;
+import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.ConnectorImpl;
 import com.vzome.core.model.RealizedModel;
@@ -35,6 +38,24 @@ public class DeleteTest {
 
             @Override
             public Selection getSelection() { return selection; }
+
+            @Override
+            public OrbitSource getSymmetrySystem() {
+                return null;
+            }
+
+            @Override
+            public OrbitSource getSymmetrySystem(String name) {
+                return null;
+            }
+
+            @Override
+            public Symmetries4D get4dSymmetries() {
+                return null;
+            }
+
+            @Override
+            public void addSelectionSummaryListener(Listener listener) {}
         };
 		assertEquals( 0, realized .size() );
 
@@ -68,6 +89,24 @@ public class DeleteTest {
 
             @Override
             public Selection getSelection() { return selection; }
+
+            @Override
+            public OrbitSource getSymmetrySystem() {
+                return null;
+            }
+
+            @Override
+            public OrbitSource getSymmetrySystem(String name) {
+                return null;
+            }
+
+            @Override
+            public Symmetries4D get4dSymmetries() {
+                return null;
+            }
+
+            @Override
+            public void addSelectionSummaryListener(Listener listener) {}
         };
 		assertEquals( 0, realized .size() );
 		assertTrue( selection .size() == 0 );

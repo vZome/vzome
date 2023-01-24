@@ -1,17 +1,25 @@
 
+import { java } from "./candies/j4ts-2.1.0-SNAPSHOT/bundle.js"
 import { simplify, createNumberFromPairs } from '../fields/common'
 
-export const algebraicNumberFactory =
+class JavaAlgebraicNumberFactory
 {
-  __interfaces: [ "com.vzome.core.algebra.AlgebraicNumberFactory" ],
+  zero ()
+  {
+    return new JavaBigRational( 0n, 1n );
+  }
 
-  zero: () => new JavaBigRational( 0n, 1n ),
+  one ()
+  {
+    return new JavaBigRational( 1n, 1n );
+  }
 
-  one: () => new JavaBigRational( 1n, 1n ),
+  createBigRational( num, denom )
+  {
+    return new JavaBigRational( BigInt(num), BigInt(denom) );
+  }
 
-  createBigRational: ( num, denom ) => new JavaBigRational( BigInt(num), BigInt(denom) ),
-
-  createRational: ( legacyField, num, denom ) =>
+  createRational( legacyField, num, denom )
     {
       const order = legacyField.getOrder()
       const factors = [ new JavaBigRational( num, denom ) ]
@@ -19,18 +27,18 @@ export const algebraicNumberFactory =
         factors.push( ZERO )
       }
       return new JavaAlgebraicNumber( legacyField, factors )
-    },
+    }
 
-  createAlgebraicNumber: ( legacyField, numerators, divisor ) =>
+  createAlgebraicNumber( legacyField, numerators, divisor )
     {
       const bigRats = []
       for (let i = 0; i < numerators.length; i++) {
         bigRats.push( new JavaBigRational( numerators[ i ], divisor ) )
       }
       return new JavaAlgebraicNumber( legacyField, bigRats )
-    },
+    }
 
-  createAlgebraicNumberFromTD: ( legacyField, trailingDivisor ) =>
+  createAlgebraicNumberFromTD( legacyField, trailingDivisor )
     {
       const bigRats = []
       const divisor = trailingDivisor[ trailingDivisor.length-1 ]
@@ -38,9 +46,9 @@ export const algebraicNumberFactory =
         bigRats.push( new JavaBigRational( trailingDivisor[ i ], divisor ) )
       }
       return new JavaAlgebraicNumber( legacyField, bigRats )
-    },
+    }
 
-  createAlgebraicNumberFromPairs: ( legacyField, pairs ) =>
+  createAlgebraicNumberFromPairs( legacyField, pairs )
     {
       const order = pairs.length / 2
       const bigRats = []
@@ -48,9 +56,9 @@ export const algebraicNumberFactory =
         bigRats.push( new JavaBigRational( pairs[ 2*i ], pairs[ 2*i+1 ] ) )
       }
       return new JavaAlgebraicNumber( legacyField, bigRats )
-    },
+    }
   
-  isPrime: prime =>
+  isPrime( prime )
     {
       const n = 2*prime
 
@@ -68,9 +76,9 @@ export const algebraicNumberFactory =
         if ( i === prime )
           return true
       }
-    },
+    }
   
-  nextPrime: prime =>
+  nextPrime( prime )
     {
       const n = 2*prime
       let sawPrevious = false
@@ -88,8 +96,10 @@ export const algebraicNumberFactory =
         if ( i === prime )
           sawPrevious = true
       }
-    },
+    }
 }
+JavaAlgebraicNumberFactory.__interfaces = [ "com.vzome.core.algebra.AlgebraicNumberFactory" ]
+export const algebraicNumberFactory = new JavaAlgebraicNumberFactory();
 
 class JavaAlgebraicNumber
 {
@@ -97,7 +107,6 @@ class JavaAlgebraicNumber
   {
     this.legacyField = legacyField
     this.bigRationals = bigRationals
-    this.__interfaces = [ "com.vzome.core.algebra.AlgebraicNumber" ]
     this[ 'times$com_vzome_core_algebra_AlgebraicNumber' ] = this.times
     this[ 'plus$com_vzome_core_algebra_AlgebraicNumber' ] = this.plus
     this[ 'minus$com_vzome_core_algebra_AlgebraicNumber' ] = this.minus
@@ -211,11 +220,19 @@ class JavaAlgebraicNumber
     return this.times( that.reciprocal() )
   }
 
-  getNumberExpression( sbuf, format )
+  getNumberExpression( sbuf, format=0 )
   {
     return this.legacyField.getNumberExpression( sbuf, this.bigRationals, format )
   }
+
+  toString( format )
+  {
+    const buf = new java.lang.StringBuffer();
+    this.getNumberExpression( buf, format );
+    return buf .toString();
+  }
 }
+JavaAlgebraicNumber.__interfaces = [ "com.vzome.core.algebra.AlgebraicNumber" ]
 
 class JavaBigRational
 {
@@ -323,145 +340,16 @@ class JavaBigRational
 
 const ZERO = new JavaBigRational( 0n, 1n )
 
-class JavaDomNodeList
-{
-  constructor( nodeList, owner=null )
-  {
-    this.nativeNodeList = nodeList
-    this.__interfaces = [ "org.w3c.dom.NodeList" ]
-    this.document = owner || new JavaDomDocument();
-  }
-
-  getLength()
-  {
-    return this.nativeNodeList.length
-  }
-
-  item( i )
-  {
-    const node = this.nativeNodeList[ i ];
-    if ( node.tagName )
-      return new JavaDomElement( node, this.document )
-    else
-      return node
-  }
-}
-
-function sortObj(obj) {
-  return Object.keys(obj).sort().reduce(function (result, key) {
-    result[key] = obj[key];
-    return result;
-  }, {});
-}
-
-// JavaDomAttributes, JavaDomDocument, and the setters on JavaDomElement
-//  are all required just for the edit .getDetailXml() function we need when
-//  doing checkSideEffects() during debugging.
-//
-// The sorting in JavaDomAttributes is required to match the sorting behavior
-//  that happens while serializing XML in the desktop implementation, since
-//  checkSideEffects() completely bypasses XML serialization and parsing.
-
-export class JavaDomAttributes
-{
-  toJSON( key )
-  {
-    return sortObj( this );
-  }
-}
-
-export class JavaDomDocument
-{
-  constructor()
-  {
-    this.__interfaces = [ "org.w3c.dom.Document" ]
-  }
-
-  createElement( tagName )
-  {
-    return new JavaDomElement( { tagName, attributes: new JavaDomAttributes(), children: [] }, this );
-  }
-
-  createTextNode( text )
-  {
-    return text;
-  }
-}
-
-export class JavaDomElement
-{
-  constructor( element, owner=null )
-  {
-    this.nativeElement = element
-    this.__interfaces = [ "org.w3c.dom.Element" ]
-    this.document = owner || new JavaDomDocument();
-  }
-
-  appendChild( child )
-  {
-    if ( typeof( child ) === 'string' )
-      this.nativeElement.children.push( child );
-    else
-      this.nativeElement.children.push( child.nativeElement );
-  }
-
-  setAttribute( name, value )
-  {
-    this.nativeElement.attributes[ name ] = value;
-  }
-
-  getOwnerDocument()
-  {
-    return this.document;
-  }
-
-  getAttribute( name )
-  {
-    return this.nativeElement.attributes[ name ];
-  }
-
-  getLocalName()
-  {
-    return this.nativeElement.tagName
-  }
-
-  getTextContent()
-  {
-    const kids = this.nativeElement.children .filter( kid => kid.tagName !== 'effects' ); // 'effects' appear when parsing a history export
-    if ( kids.length === 1 && ( typeof kids[ 0 ] === 'string' ) )
-      return kids[ 0 ];
-    return null;
-  }
-
-  getChildNodes()
-  {
-    const kids = this.nativeElement.children .filter( kid => kid.tagName !== 'effects' ); // 'effects' appear when parsing a history export
-    if ( kids.length === 1 && ( typeof kids[ 0 ] === 'string' ) )
-      return null;
-    return new JavaDomNodeList( kids, this.document )
-  }
-
-  getChildElement( name )
-  {
-    const nativeChild = this.nativeElement.children.filter( n => n.tagName === name )[ 0 ];
-    return nativeChild && new JavaDomElement( nativeChild, this.document );
-  }
-
-  getElementsByTagName( name )
-  {
-    const results = this.nativeElement.children.filter( n => n.tagName === name );
-    return {
-      getLength: () => results.length,
-      item: i => (i < results.length)? new JavaDomElement( results[ i ], this.document ) : null
-    }
-  }
-}
-
 export class JsProperties
 {
   constructor( config )
   {
     this.config = config
+  }
+
+  getConfig()
+  {
+    return { ...this.config };
   }
 
   getProperty( key )

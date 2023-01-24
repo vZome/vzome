@@ -17,5 +17,5 @@ public interface GraphicsController extends Controller
     
     MouseTool getMouseTool();
 
-    void attachViewer( RenderingViewer viewer, Component canvas );
+    void attachViewer( GraphicsViewer viewer, Component canvas );
 }

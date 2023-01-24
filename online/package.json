@@ -6,19 +6,24 @@
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.57",
-    "@react-three/drei": "^9.16.0",
-    "@react-three/fiber": "^8.0.0",
+    "@react-three/drei": "^9.51.0",
+    "@react-three/fiber": "^8.9.0",
     "@react-three/xr": "^3.5.0",
     "@reduxjs/toolkit": "^1.8.3",
+    "@suid/icons-material": "^0.5.3",
+    "@suid/material": "^0.8.2",
     "react": "^18.0",
     "react-dom": "^18.0",
     "react-redux": "^7.2.6",
     "react-router-dom": "^5.2.0",
+    "react-solid-bridge": "^1.0.1",
     "redux": "^4.0.5",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "redux-undo": "^1.0.1",
+    "solid-js": "^1.5.7",
     "three": "^0.142",
+    "three-stdlib": "^2.21.5",
     "txml": "^5.1.1",
     "workbox-cacheable-response": "^6.4.1",
     "workbox-expiration": "^6.4.1",
@@ -29,8 +34,7 @@
   "scripts": {
     "build": "node scripts/prod-build.mjs",
     "dev": "node scripts/test-app.mjs",
-    "https": "node scripts/test-https.mjs",
-    "wcdev": "node scripts/test-web-component.mjs"
+    "https": "node scripts/test-https.mjs"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -49,6 +53,7 @@
   },
   "devDependencies": {
     "esbuild": "^0.13.12",
+    "esbuild-plugin-solid": "^0.4.2",
     "eslint": "^8.5.0"
   }
 }

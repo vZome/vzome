@@ -2,6 +2,7 @@
 
 package com.vzome.core.math.symmetry;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -76,7 +77,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
 		return true;
 	}
 
-	private String mName;
+	private String mName, canonicalName;
     
     private final Axis[][][] zoneNames;
     
@@ -139,6 +140,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
         this.index = globalIndex++; // we want to just retain the order used to create these
         mStandard = isStd;
         mName = name;
+        canonicalName = null;
         mSymmetryGroup = group;
         for ( int i = 0; i < scales .length; i++ ) {
             scales[ i ] = mSymmetryGroup .getField() .createPower( i - 1 );
@@ -201,7 +203,37 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     
     public String getName()
     {
-        return mName;
+        return this .mName;
+    }
+    
+    public String getCanonicalName()
+    {
+        if ( this .canonicalName == null ) {
+            Axis canonicalAxis = this .getCanonicalAxis( 0, 0 );
+            AlgebraicVector vector = canonicalAxis .normal();
+            
+            // canonicalAxis is on the -Z side of the XY plane, but we want the
+            //  canonical name to reflect the +Z side, to match Observable
+            AlgebraicNumber x = vector .getComponent( 0 );
+            AlgebraicNumber y = vector .getComponent( 1 );
+            AlgebraicNumber z = vector .getComponent( 2 ) .negate();
+            
+            if ( x .isZero() ) {  // TODO generalize this better!
+                // not icosahedral symmetry
+                this .canonicalName = this .mName;
+            } else
+            {
+                // Now we do the Gnomonic projection, to the X=1 plane
+                y = y .dividedBy( x );
+                z = z .dividedBy( x );
+                this .canonicalName = "["
+                        + Arrays.toString( y .toTrailingDivisor() ) .replace( " ", "" )
+                        + ","
+                        + Arrays.toString( z .toTrailingDivisor() ) .replace( " ", "" )
+                        + "]";
+            }
+        }
+        return this .canonicalName;
     }
     
     public Axis getAxis( AlgebraicVector vector )

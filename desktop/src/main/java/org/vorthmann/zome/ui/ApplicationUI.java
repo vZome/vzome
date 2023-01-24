@@ -551,14 +551,18 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
     private static Properties loggingProperties()
     {
         File f = new File(".", "logging.properties");
-        // Use same logic to locate the file as LogManager.getLogManager().readConfiguration() uses...
+        // Use same logic to locate the file as is used 
+        // by LogManager.getLogManager().readConfiguration() in Java8 and
+        // by LogManager.getLogManager().getConfigurationFileName() in Java17
         String fname = System.getProperty("java.util.logging.config.file");
         if (fname == null) {
             fname = System.getProperty("java.home");
             if (fname == null) {
                 throw new Error("Can't find java.home ??");
             }
-            f = new File(fname, "lib");
+            // Java8 used the "lib" folder here
+            // Java17 now uses the "conf" folder.
+            f = new File(fname, "conf");
             f = new File(f, "logging.properties");
         }
         try {
@@ -570,6 +574,8 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
         props.put("default.charset", java.nio.charset.Charset.defaultCharset().name());
         props.put("logging.properties.filename", fname);        
         props.put("logging.properties.file.exists", Boolean.toString(f.exists()));        
+//        System.out.println("logging.properties.filename = " + fname
+//        		+ (f.exists() ? " exists." : " does not exist."));
         return props;
     }
 

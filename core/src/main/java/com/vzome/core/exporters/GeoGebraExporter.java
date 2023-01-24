@@ -38,21 +38,14 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Camera;
-import com.vzome.core.viewing.Lights;
 
 // Combines features from DaeExporter and OffExporter
-public class GeoGebraExporter extends Exporter3d
+public class GeoGebraExporter extends DocumentExporter
 {
     private static final String GEOGEBRA_TEMPLATE_PATH = "com/vzome/core/exporters/geogebra/";
     private static final String GEOGEBRA_XML = "geogebra.xml";
-
-    public GeoGebraExporter(Camera scene, Colors colors, Lights lights, RenderedModel model) {
-        super(scene, colors, lights, model);
-    }
     
     private void addFixedResourceFiles(ZipOutputStream zos) throws IOException {
         final String[] FIXED_RESOURCES = { 

@@ -3,7 +3,6 @@ package com.vzome.core.editor;
 import java.util.List;
 
 import com.vzome.api.Tool;
-import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.commands.Command;
 import com.vzome.core.editor.api.Shapes;

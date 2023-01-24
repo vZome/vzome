@@ -4,14 +4,13 @@ package com.vzome.core.math.symmetry;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.math.RealVector;
 
-public class OrbitSet implements Iterable<Direction>
+public class OrbitSet
 {
     private final Map<String, Direction> contents = new HashMap<>();
     
@@ -43,7 +42,9 @@ public class OrbitSet implements Iterable<Direction>
     
     public Direction getDirection( String name )
     {
-        for (Direction dir : this) {
+        for (Direction dir : this .getDirections()) {
+            if ( dir .getCanonicalName() .equals( name ) )
+                return dir;
             if ( dir .getName() .equals( name ) )
                 return dir;
         }
@@ -70,10 +71,9 @@ public class OrbitSet implements Iterable<Direction>
         }
     }
 
-    @Override
-    public Iterator<Direction> iterator()
+    public Iterable<Direction> getDirections()
     {
-        return this.contents.values().iterator();
+        return this.contents.values();
     }
 
     public boolean remove( Direction orbit )

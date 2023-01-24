@@ -155,7 +155,7 @@ public class View3dActivity implements GLEventListener
 
         Ray ray = new Ray();
         FloatUtil .mapWinToRay(
-                (float) mouseX, (float) (canvas .getHeight() - mouseY - 1), 0.1f, 0.3f,
+                mouseX, canvas .getHeight() - mouseY - 1, 0.1f, 0.3f,
                 mCamera, 0,
                 projection, 0,
                 new int[] { 0, 0, canvas .getWidth(), canvas .getHeight() }, 0,
@@ -178,9 +178,14 @@ public class View3dActivity implements GLEventListener
         }
     }
 
-    protected String doInBackground(String... urls) {
+    protected String doInBackground(String[] urls) {
 
         // params comes from the execute() call: params[0] is the url.
+    	if(urls.length == 0) {
+    		urls = new String[] {"https://www.vzome.com/app/models/vZomeLogo.vZome"};
+    		System.err.println("No argv provided. Using default URL: " + urls[0]);
+    	}
+
         try {
             URL url = new URL( urls[ 0 ] );
             System.out.println( "%%%%%%%%%%%%%%%% opening: " + url);
@@ -228,6 +233,7 @@ public class View3dActivity implements GLEventListener
         final Frame frame = new Frame( "One Triangle AWT" );
         frame.add( glcanvas );
         frame.addWindowListener( new WindowAdapter() {
+            @Override
             public void windowClosing( WindowEvent windowevent ) {
                 frame.remove( glcanvas );
                 frame.dispose();
@@ -236,6 +242,14 @@ public class View3dActivity implements GLEventListener
         });
 
         frame.setSize( 20+987, 610 );
+        
+        // Running with Java17 on Windows 10 will fail here
+        // unless the following JVM args are added when invoking this class per the JOGL docs.
+        /*
+         	--add-exports java.base/java.lang=ALL-UNNAMED
+			--add-exports java.desktop/sun.awt=ALL-UNNAMED
+			--add-exports java.desktop/sun.java2d=ALL-UNNAMED
+         */
         frame.setVisible( true );
 
         new Runnable() {

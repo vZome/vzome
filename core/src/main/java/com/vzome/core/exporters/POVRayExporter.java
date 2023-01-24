@@ -25,28 +25,19 @@ import com.vzome.core.construction.Color;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Camera;
-import com.vzome.core.viewing.Lights;
 
 /**
  * Renders out to POV-Ray using #declare statements to reuse geometry.
  * @author vorth
  */
-public class POVRayExporter extends Exporter3d
+public class POVRayExporter extends DocumentExporter
 {
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 	
 	private static final String PREAMBLE_FILE = "com/vzome/core/exporters/povray/preamble.pov";
 
-	
-	public POVRayExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
-	{
-	    super( scene, colors, lights, model );
-	}
-    
     public void mapViewToWorld( Camera view, Vector3f vector )
     {
         Matrix4f viewTrans = new Matrix4f();

@@ -8,10 +8,12 @@ import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.api.Controller.ErrorChannel;
 
 public class DefaultController implements Controller
 {
@@ -46,6 +48,25 @@ public class DefaultController implements Controller
         }
     }
 
+    /**
+     * This is only overridden or called in Javascript code, in vZome Online.
+     * @param source
+     * @param action
+     * @param params
+     */
+    public void paramActionPerformed( Object source, String action, Properties params )
+    {
+        try {
+            if ( logger .isLoggable( Level .FINE ) )
+                logger.fine( "PARAM ACTION: " + getPath() + "||" + action );
+            doParamAction( action, params );
+        } catch ( Exception ex )
+        {
+            ex .printStackTrace();
+            mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ ex } );
+        }
+    }
+
     private String getPath()
     {
         if ( mNextController == null )
@@ -70,6 +91,20 @@ public class DefaultController implements Controller
     {
         if ( mNextController != null )
             mNextController .doAction( action );
+        else
+            mErrors .reportError( UNKNOWN_ACTION, new Object[]{ action } );
+    }
+
+    /**
+     * This is only overridden or called in Javascript code, in vZome Online.
+     * @param source
+     * @param action
+     * @param params
+     */
+    protected void doParamAction( String action, Properties params ) throws Exception
+    {
+        if ( mNextController != null )
+            mNextController .doParamAction( action, params );
         else
             mErrors .reportError( UNKNOWN_ACTION, new Object[]{ action } );
     }

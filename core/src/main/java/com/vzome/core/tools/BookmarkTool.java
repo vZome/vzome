@@ -15,7 +15,7 @@ import com.vzome.core.model.Manifestation;
 
 public class BookmarkTool extends Tool
 {    
-    static final String ID = "bookmark";
+    public static final String ID = "bookmark";
     static final String LABEL = "Create a selection bookmark";
     static final String TOOLTIP = "<p>" +
             "A selection bookmark lets you re-create<br>any selection at a later time." +

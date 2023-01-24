@@ -31,6 +31,7 @@ public class SelectionImpl implements Selection
     
     private static final Logger logger = Logger .getLogger( "com.vzome.core.editor.selection" );
 
+    @Override
     public void copy( List<Manifestation> target )
     {
         target .addAll( mManifestations );
@@ -47,6 +48,7 @@ public class SelectionImpl implements Selection
     }
     
     
+    @Override
     public boolean manifestationSelected( Manifestation m )
     {
         return mManifestations .contains( m );
@@ -63,6 +65,7 @@ public class SelectionImpl implements Selection
         return mManifestations .iterator();
     }
     
+    @Override
     public void select( Manifestation m )
     {
         if ( mManifestations .contains( m ) )  // TO DO how does this happen?
@@ -75,6 +78,7 @@ public class SelectionImpl implements Selection
         }
     }
     
+    @Override
     public void unselect( Manifestation m )
     {
         if ( mManifestations .remove( m ) )
@@ -87,6 +91,7 @@ public class SelectionImpl implements Selection
         }
     }
     
+    @Override
     public void selectWithGrouping( Manifestation m )
     {
         if ( mManifestations .contains( m ) )
@@ -104,6 +109,7 @@ public class SelectionImpl implements Selection
         mSelectedGroup = group;
     }
     
+    @Override
     public void unselectWithGrouping( Manifestation m )
     {
         if ( mManifestations .contains( m ) ) {
@@ -158,6 +164,7 @@ public class SelectionImpl implements Selection
         }
     }
     
+    @Override
     public Manifestation getSingleSelection( final Class<? extends Manifestation> kind )
     {
         int count = 0;
@@ -174,6 +181,7 @@ public class SelectionImpl implements Selection
             return null;
     }
     
+    @Override
     public boolean isSelectionAGroup()
     {
         return getSelectedGroup( false ) != null;
@@ -201,6 +209,7 @@ public class SelectionImpl implements Selection
         return selectedGroup;
     }
     
+    @Override
     public void gatherGroup()
     {
 //        if ( getSelectedGroup() != null )
@@ -225,6 +234,7 @@ public class SelectionImpl implements Selection
         }
     }
 
+    @Override
     public void scatterGroup()
     {
         Group selectedGroup = getSelectedGroup( true );  // assume there's only one, already tested in isSelectionAGroup()
@@ -239,6 +249,7 @@ public class SelectionImpl implements Selection
         }
     }
 
+    @Override
     public void gatherGroup211()
     {
         if ( mSelectedGroup != null )
@@ -262,6 +273,7 @@ public class SelectionImpl implements Selection
         }
     }
 
+    @Override
     public void scatterGroup211()
     {
         if ( mSelectedGroup == null )
@@ -296,14 +308,41 @@ public class SelectionImpl implements Selection
         }
 	}
 
+    @Override
     public int size()
     {
         return this .mManifestations .size();
     }
 
+	@Override
 	public void clear()
 	{
 		// for ChangeSelection undo when the selection is ordered
-		this .mManifestations .clear();
+		
+		// DJH 10/25/2022
+		// I removed the only call to clear() which was in ChangeSelecion.undo()
+		// but prior to that, I had revised clear() to behave a little better
+		// and at least notify the listeners when the selection is cleared.
+		// I'll leave this new code in place in case we want it some day,
+		// even though it's no longer being called at this time.
+		if(!mManifestations.isEmpty()) {
+			if (logger.isLoggable(Level.FINER)) {
+				logger.finer("clearing selection");
+			}
+			// Removing elements inside a for loop when the collection 
+			// has more than 1 entry will throw a ConcurrentModificationException
+			// To remove elements inside a loop, we could use iterator.remove()
+			// but we still can't call this.unselect(m) since it calls mManifestations.remove()
+			// Instead. we'll make a new temp list with the same contents as mManifestations
+			// and iterate over that list as we remove them from mManifestations
+			Collection<Manifestation> temp = new LinkedHashSet<>(mManifestations);
+			for(Manifestation m : temp) {
+				// This will notify all listeners that we've removed the manifestation 
+				// from the selectionso it will  correctly un-hilight the manifestation.
+				// I expected it to also correct the selection count in the measure tab, 
+				// but that gets handled in the DocumentModel.
+				this.unselect(m);
+			}
+		}
 	}
 }

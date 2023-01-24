@@ -652,11 +652,15 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 		// Default to opening the window as maximized on the selected (or default) monitor.
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] gs = ge.getScreenDevices();
+		int bestWidth = 0;
+		int bestHeight = 0;
 		if(gs.length > 0) {
 			int bestIndex = 0;
 			GraphicsDevice bestDevice = gs[bestIndex];
 			DisplayMode bestMode = bestDevice.getDisplayMode();
-			int bestArea = bestMode.getHeight() * bestMode.getWidth();
+			bestWidth = bestMode.getWidth();
+			bestHeight = bestMode.getHeight();
+			int bestArea = bestWidth * bestHeight;
 			for (int i = bestIndex+1; i < gs.length; i++) {
 				GraphicsDevice testDevice = gs[i];
 				DisplayMode testMode = testDevice.getDisplayMode();
@@ -665,12 +669,12 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 					bestArea = testArea;					
 					bestMode = testMode;					
 					bestDevice = testDevice;
+					bestWidth = bestMode.getWidth();
+					bestHeight = bestMode.getHeight();
 				}
 			}
 			Rectangle bounds = bestDevice.getDefaultConfiguration().getBounds();
 			this.setLocation(bounds.x, bounds.y);
-			int n = 15, d = n + 1; // set size to 15/16 of full screen size then maximize it
-			this.setSize(bestMode.getWidth() * n/d, bestMode.getHeight() * n/d);
 		}
 
 		try {
@@ -678,7 +682,11 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 			// before including the "--add-exports" JVM args to the build 
 			this.pack();
 	        this.setVisible( true );
-	        // Java 17 seems to successfully set the extended state only after the frame is visible.
+	        // Java 17 seems to successfully set the frame size and extended state only after the frame is visible.
+	        if(bestWidth > 0 && bestHeight > 0) {
+				int n = 15, d = n + 1; // set NORMAL size to 15/16 of full screen size then maximize it
+				this.setSize(bestWidth * n/d, bestHeight * n/d);
+	        }
 	        this.setExtendedState(MAXIMIZED_BOTH);
 	        this.setFocusable( true );
 		} catch (Exception ex) {
@@ -691,7 +699,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 			System.exit(-1);
 		}
 
-        new ExclusiveAction( this .getExcluder() )
+        SwingWorker<Exception, Object> finisher = new SwingWorker<Exception, Object>()
         {
             @Override
             protected Exception doInBackground() throws Exception

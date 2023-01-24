@@ -25,6 +25,11 @@ Significant new features get a dedicated YouTube video:
   </iframe>
 </figure>
 
+## [vZome Online Web Applications](./online.html)
+
+vZome code has been ported to run in the browser, and there are several
+web applications you can explore.
+
 ## [Sharing vZome Designs](./sharing.html)
 
 vZome supports sharing designs via GitHub, including generation of simple web pages with embedded interactive 3D views.
@@ -36,7 +41,7 @@ vZome supports sharing designs via GitHub, including generation of simple web pa
     <img src="https://vorth.github.io/vzome-sharing/2022/06/19/22-54-33-Baer-dome-triplet-no-fudge/Baer-dome-triplet-no-fudge.png">
   </vzome-viewer>
   <figcaption style="text-align: center; font-style: italic;">
-    A sample design exported from vZome, using the vzome-viewer custom HTML element
+    A sample design exported from vZome, displayed using the vzome-viewer custom HTML element
   </figcaption>
 </figure>
 

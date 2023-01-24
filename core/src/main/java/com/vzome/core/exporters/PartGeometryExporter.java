@@ -12,28 +12,26 @@ import java.util.TreeSet;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.api.Selection;
 import com.vzome.core.generic.ArrayComparator;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.VefModelExporter;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Camera;
-import com.vzome.core.viewing.Lights;
 
 public class PartGeometryExporter extends VefExporter
 {
-    Selection selection;
+    private transient Selection selection;
 
-    public PartGeometryExporter( Camera scene, Colors colors,
-            Lights lights, RenderedModel model, Selection selection )
+    public void exportDocument( DocumentModel doc, File file, Writer writer, int height, int width ) throws Exception
     {
-        super( scene, colors, lights, model );
-        
-        this.selection = selection;
+        mModel = doc .getRenderedModel();
+        this .selection = doc .getEditorModel() .getSelection();
+        this .doExport( file, writer, height, width );
+        this .selection = null;
+        mModel = null;
     }
 
 	@Override

@@ -193,6 +193,7 @@ public class Axis
     {
         DomUtils .addAttribute( elem, "symm", mDirection .getSymmetry() .getName() );
         DomUtils .addAttribute( elem, "dir", mDirection .getName() );
+        DomUtils .addAttribute( elem, "orbit", mDirection .getCanonicalName() );
         DomUtils .addAttribute( elem, "index", Integer .toString( orientation ) );
         if ( mSense != Symmetry.PLUS )
         	DomUtils .addAttribute( elem, "sense", "minus" );

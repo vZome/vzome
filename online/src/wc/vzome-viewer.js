@@ -6,6 +6,7 @@ import { vZomeViewerCSS } from "./vzome-viewer.css";
 import { muiCSS } from "./mui-styles.css";
 
 import { createWorkerStore, fetchDesign } from '../ui/viewer/store.js';
+import { createWorker } from "../workerClient/client";
 
 export class VZomeViewer extends HTMLElement
 {
@@ -25,13 +26,32 @@ export class VZomeViewer extends HTMLElement
     this.#container = document.createElement("div");
     this.#root.appendChild( this.#container );
 
-    this.#store = createWorkerStore( this );
+    const worker = createWorker();
+    worker .subscribe( {
+      onWorkerError: () => {},
+      onWorkerMessage: data => {
+        switch ( data.type ) {
 
-    this.#config = { showSnapshots: false };
+          case 'SCENE_RENDERED':
+            this .dispatchEvent( new Event( 'vzome-design-rendered' ) );
+            break;
+        
+          case 'ALERT_RAISED':
+            this .dispatchEvent( new Event( 'vzome-design-failed' ) );
+            break;
+        
+          default:
+            break;
+        }
+      }
+    } );
+    this.#store = createWorkerStore( worker );
+
+    this.#config = { preview: true, showScenes: false };
 
     if ( this.hasAttribute( 'show-scenes' ) ) {
-      const showSnapshots = this.getAttribute( 'show-scenes' ) === 'true';
-      this.#config = { showSnapshots };
+      const showScenes = this.getAttribute( 'show-scenes' ) === 'true';
+      this.#config = { ...this.#config, showScenes };
     }
 
     if ( this.hasAttribute( 'src' ) ) {
@@ -45,7 +65,7 @@ export class VZomeViewer extends HTMLElement
         this.#url = new URL( url, window.location ) .toString();
         // Get the fetch started by the worker before we load the dynamic module below,
         //  which is pretty big.
-        this.#store.dispatch( fetchDesign( this.#url, !this.#config.showSnapshots ) );
+        this.#store.dispatch( fetchDesign( this.#url, this.#config ) );
     }
   }
 
@@ -76,17 +96,15 @@ export class VZomeViewer extends HTMLElement
       const newUrl = new URL( _newValue, window.location ) .toString();
       if ( newUrl !== this.#url ) {
         this.#url = newUrl;
-        this.#store.dispatch( fetchDesign( this.#url, !this.#config.showSnapshots ) );
+        this.#store.dispatch( fetchDesign( this.#url, this.#config ) );
       }
       break;
 
     case "show-scenes":
-      const showSnapshots = _newValue === 'true';
-      if ( showSnapshots !== this.#config.showSnapshots ) {
-        this.#config = { ...this.#config, showSnapshots };
-      // The 2nd parameter for fetchDesign means that a preview JSON (if available) is sufficient.
-      //  When "show-scenes" is true, the XML will have to be parsed, so a preview JSON is not sufficient.
-        this.#store.dispatch( fetchDesign( this.#url, !this.#config.showSnapshots ) );
+      const showScenes = _newValue === 'true';
+      if ( showScenes !== this.#config.showScenes ) {
+        this.#config = { ...this.#config, showScenes };
+        this.#store.dispatch( fetchDesign( this.#url, this.#config ) );
       }
       break;
     }

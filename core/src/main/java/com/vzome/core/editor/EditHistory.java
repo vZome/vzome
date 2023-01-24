@@ -22,7 +22,6 @@ import com.vzome.core.editor.api.Context;
 import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.model.Manifestation;
-import com.vzome.xml.DomSerializer;
 import com.vzome.xml.DomUtils;
 import com.vzome.xml.LocationData;
 
@@ -51,6 +50,21 @@ public class EditHistory implements Iterable<UndoableEdit>
     public void setListener( Listener listener )
     {
         this .listener = listener;
+    }
+
+    // This is really dumb.  I had to remove the dependency here on DomSerializer, since it brings
+    //   in too many dependencies to handle in JSweet, and it was seemingly impossible to manage
+    //   a "replacement" implementation using Gradle and the JSweet plugin.
+    private XmlSerializer serializer;
+    
+    public interface XmlSerializer
+    {
+        String serialize( Element xmlElement );
+    }
+    
+    public void setSerializer( XmlSerializer serializer )
+    {
+        this .serializer = serializer;
     }
 
     public void addEdit( UndoableEdit edit, Context context )
@@ -351,7 +365,7 @@ public class EditHistory implements Iterable<UndoableEdit>
             ++ edits;
             DomUtils .addAttribute( edit, "editNumber", Integer.toString( edits ) );
             if ( logger .isLoggable( Level.FINEST ) )
-                logger .finest( "side-effect: " + DomSerializer .getXmlString( edit ) );
+                logger .finest( "side-effect: " + serializer .serialize( edit ) );
             result .appendChild( edit );
             if ( undoable .isSticky() )
                 lastStickyEdit = edits;
@@ -603,7 +617,7 @@ public class EditHistory implements Iterable<UndoableEdit>
             mEdits .remove( --mEditNumber );
 
             if ( logger.isLoggable( Level.FINE ) ) // see the logger declaration to enable FINE
-                logger.fine( "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% " + num + ": " + DomSerializer .getXmlString( xml ) );
+                logger.fine( "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% " + num + ": " + serializer .serialize( xml ) );
 
             UndoableEdit realized = null;
             String cmdName = xml.getLocalName();
@@ -632,7 +646,7 @@ public class EditHistory implements Iterable<UndoableEdit>
 //                            System.out.println( DomUtils .getXmlString( details ) );
                             if ( logger .isLoggable( Level.FINEST ) ) {
                                 Element details = edit .getDetailXml( xml .getOwnerDocument() );
-                                logger .finest( "side-effect: " + DomSerializer .getXmlString( details ) );
+                                logger .finest( "side-effect: " + serializer .serialize( details ) );
                             }
                         } catch (Failure e) {
                             // really hacky tunneling
@@ -654,13 +668,19 @@ public class EditHistory implements Iterable<UndoableEdit>
                     {
                         return context .createLegacyCommand( cmdName );
                     }
+
+                    @Override
+                    public boolean doEdit( String action, Map<String, Object> props )
+                    {
+                        return false;
+                    }
                 } ); // this method needs to have the history, since it may migrate
                 //        		System.out.println();
 
                 // no longer doing redo() and mHistory.replace() here, so each UndoableEdit may
                 // either migrate itself, or determine whether it requires a redo() after deserialization.
             } catch ( RuntimeException e ) {
-                logger.warning( "failure during initial edit replay:\n" + DomSerializer .getXmlString( xml ) );
+                logger.warning( "failure during initial edit replay:\n" + serializer .serialize( xml ) );
                 // errors will be reported by caller!
                 // mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ e } );
                 throw e; // interrupt the redoing

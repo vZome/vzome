@@ -7,8 +7,9 @@ on:
   push:
     branches: [ master ]
     paths:
-      - 'core/src/jsweet/**'
       - 'core/src/main/java/**'
+      - 'desktop/src/main/java/**'
+      - 'online/src/worker/java/**'
 
   workflow_dispatch:
 
@@ -17,16 +18,60 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout vZome source
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Checkout modified jsweet
         uses: actions/checkout@v2
+        with:
+          repository: vorth/jsweet
+          ref: develop
+          path: jsweet
+      - name: Build & deploy jsweet transpiler
+        run: |
+          pwd
+          cd jsweet/transpiler
+          pwd
+          mvn clean install -Dmaven.test.skip=true -DskipJavadoc=true -DskipSigning=true
+          cd ../..
+
+      - name: Checkout modified jsweet-maven-plugin
+        uses: actions/checkout@v2
+        with:
+          repository: vorth/jsweet-maven-plugin
+          path: jsweet-maven
+      - name: Build & deploy jsweet-maven-plugin
+        run: |
+          pwd
+          cd jsweet-maven
+          pwd
+          mvn clean install -Dmaven.test.skip=true -DskipJavadoc=true -DskipSigning=true
+          cd ..
+
+      - name: Checkout modified j4ts
+        uses: actions/checkout@v2
+        with:
+          repository: vorth/j4ts
+          ref: update-jsweet
+          path: j4ts
+      - name: Build & deploy j4ts
+        run: |
+          pwd
+          cd j4ts
+          pwd
+          chmod +x mvnw
+          ./mvnw clean compile install
+          cd ..
 
       - name: Checkout modified jsweet-gradle-plugin
         uses: actions/checkout@v2
         with:
           repository: vorth/jsweet-gradle-plugin
-          ref: issue-35-javaCompilerExtraOptions
+          ref: update-jsweet
           path: plugin
-
       - name: Build & deploy jsweet-gradle-plugin
         run: |
           pwd
@@ -36,12 +81,8 @@ jobs:
           ./gradlew publishToMavenLocal -DskipSigning=true
           cd ..
 
-      - name: Set up JDK
-        uses: actions/setup-java@v2
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
+      - name: Checkout vZome source
+        uses: actions/checkout@v2
       - name: Build with Gradle and JSweet
         run: |
           pwd
@@ -51,8 +92,8 @@ jobs:
       - name: Archive Generated JS
         uses: actions/upload-artifact@v2
         with:
-          name: transpiled-java
-          path: online/src/wc/legacy/transpiled-java.js
+          name: core-java
+          path: online/src/wc/legacy/core-java.js
 
       # TODO: publish to npm.pkg.github.com; see https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
       

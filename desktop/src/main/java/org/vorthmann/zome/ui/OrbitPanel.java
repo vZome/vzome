@@ -21,7 +21,9 @@ import org.vorthmann.ui.CardPanel;
 
 import com.vzome.desktop.api.Controller;
 import com.vzome.desktop.awt.GraphicsController;
+import com.vzome.desktop.awt.OrbitSetGraphicsController;
 
+@SuppressWarnings("serial")
 public class OrbitPanel extends JPanel implements PropertyChangeListener
 {
 	@Override
@@ -38,10 +40,12 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
 	private final CardPanel cardPanel;
 	private MouseListener orbitPopup;
 	private JCheckBox singleCheckbox;
+    private final boolean showLastOrbit;
 	
-	public OrbitPanel( final GraphicsController selectedOrbits, final Controller drawnOrbits, ControlActions enabler )
+	public OrbitPanel( final Controller selectedOrbits, final Controller drawnOrbits, ControlActions enabler )
 	{
-		this .enabledOrbits = selectedOrbits;
+		this .showLastOrbit = enabler != null;
+        this .enabledOrbits = new OrbitSetGraphicsController( selectedOrbits, this .showLastOrbit );
 		this .drawnOrbits = drawnOrbits;
 		
 		orbitTriangle = new JPanel()
@@ -115,7 +119,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
         	directionPopupMenu = null;
         
         modeChanged( enabledOrbits .propertyIsTrue( "useGraphicalViews" ) );
-        systemChanged( selectedOrbits, drawnOrbits );
+        systemChanged( this .enabledOrbits, this .drawnOrbits );
 	}
     
 	void modeChanged( boolean graphical )
@@ -126,7 +130,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
             cardPanel .showCard( "textual" );
 	}
 
-	public void systemChanged( GraphicsController buildOrbits, Controller shownOrbits )
+	public void systemChanged( Controller buildOrbits, Controller shownOrbits )
 	{
         if ( orbitPopup != null )
         	orbitTriangle .removeMouseListener( orbitPopup );
@@ -136,7 +140,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
         this .enabledOrbits .removePropertyListener( this );
 
         this .drawnOrbits = shownOrbits;
-		this .enabledOrbits = buildOrbits;
+        this .enabledOrbits = new OrbitSetGraphicsController( buildOrbits, this .showLastOrbit );
 		
         this .singleCheckbox .setSelected( enabledOrbits .propertyIsTrue( "oneAtATime" ) );
 
@@ -159,36 +163,34 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
 	    enabledOrbits .actionPerformed( orbitTriangle, "refreshDots" );
 
 	    orbitCheckboxes .removeAll();
-	    String[] dirNames = enabledOrbits .getCommandList( "allOrbits" );
-	    for ( int j = 0; j < dirNames.length; j++ )
+	    for ( String orbitName : enabledOrbits .getCommandList( "allOrbits" ) )
 	    {
-	        final String orbitName = dirNames[ j ];
-	        JPanel panel = new JPanel();
-	        panel .setMaximumSize( new Dimension( 600, 20 ) );
-	        panel .setLayout( new BorderLayout() );
-	        final JPanel colorSwatch = new JPanel()
-	        {
-	            @Override
-	            public void paintComponent( Graphics graphics )
-	            {
-	                enabledOrbits .repaintGraphics( "oneOrbit." + orbitName, graphics, getSize() );
-	            }
-	        };
-	        colorSwatch .setMaximumSize( new Dimension( 60, 20 ) );
-	        colorSwatch .setPreferredSize( new Dimension( 60, 20 ) );
-	        colorSwatch .setMinimumSize( new Dimension( 60, 20 ) );
-	        panel .add( colorSwatch, BorderLayout.WEST );
-	        {
-	            JCheckBox checkbox  = new JCheckBox();
-	            checkbox .setText( orbitName );
-	            checkbox .setVisible( true );
-	            checkbox .setSelected( false );
-	            checkbox .setActionCommand( "toggleDirection." + orbitName );
-	            checkbox .addActionListener( new ControllerActionListener(enabledOrbits) );
-	            panel .add( checkbox, BorderLayout.CENTER );
-	        }
-	        orbitCheckboxes .add( panel );
-	    }
+            JPanel panel = new JPanel();
+            panel .setMaximumSize( new Dimension( 600, 20 ) );
+            panel .setLayout( new BorderLayout() );
+            final JPanel colorSwatch = new JPanel()
+            {
+                @Override
+                public void paintComponent( Graphics graphics )
+                {
+                    enabledOrbits .repaintGraphics( "oneOrbit." + orbitName, graphics, getSize() );
+                }
+            };
+            colorSwatch .setMaximumSize( new Dimension( 60, 20 ) );
+            colorSwatch .setPreferredSize( new Dimension( 60, 20 ) );
+            colorSwatch .setMinimumSize( new Dimension( 60, 20 ) );
+            panel .add( colorSwatch, BorderLayout.WEST );
+            {
+                JCheckBox checkbox  = new JCheckBox();
+                checkbox .setText( orbitName );
+                checkbox .setVisible( true );
+                checkbox .setSelected( false );
+                checkbox .setActionCommand( "toggleDirection." + orbitName );
+                checkbox .addActionListener( new ControllerActionListener(enabledOrbits) );
+                panel .add( checkbox, BorderLayout.CENTER );
+            }
+            orbitCheckboxes .add( panel );
+        }
 	    enabledChanged();
 	}
     

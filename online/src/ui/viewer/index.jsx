@@ -1,9 +1,13 @@
 
+import { REVISION } from '../../revision.js'
+export { REVISION } from '../../revision.js'
+
+console.log( `vzome-viewer revision ${REVISION}` );
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
 import { createRoot } from 'react-dom/client';
 
-import { makeStyles } from '@material-ui/core/styles';
 import { StylesProvider, jssPreset } from '@material-ui/styles';
 import IconButton from '@material-ui/core/IconButton'
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded';
@@ -11,85 +15,27 @@ import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser'
 import SettingsIcon from '@material-ui/icons/Settings'
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import UndoIcon from '@material-ui/icons/Undo'
+import RedoIcon from '@material-ui/icons/Redo'
+import Tooltip from '@material-ui/core/Tooltip'
 import Link from '@material-ui/core/Link';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import { create } from 'jss';
 
-import { ShapedGeometry } from './geometry.jsx'
-import { DesignCanvas } from './designcanvas.jsx'
-import { createWorkerStore, defineCamera, fetchDesign, selectEditBefore } from './store.js';
+import { SceneCanvas } from './scenecanvas.jsx';
+import { createWorkerStore, fetchDesign, whilePerspective, doControllerAction } from './store.js';
 import { Spinner } from './spinner.jsx'
 import { ErrorAlert } from './alert.jsx'
 import { SettingsDialog } from './settings.jsx';
 import { useVR } from './hooks.js';
-
-// from https://www.bitdegree.org/learn/javascript-download
-const download = source =>
-{
-  const { name, text } = source;
-  const blob = new Blob( [ text ], { type : 'application/xml' } );
-  const element = document.createElement( 'a' )
-  const blobURI = URL.createObjectURL( blob )
-  element.setAttribute( 'href', blobURI )
-  element.setAttribute( 'download', `${name}` )
-  element.style.display = 'none'
-  document.body.appendChild( element )
-  element.click()
-  document.body.removeChild( element )
-}
-
-const useStyles = makeStyles((theme) => ({
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-}));
-
-export const SceneMenu = ( { snapshots } ) =>
-{
-  const classes = useStyles();
-  const report = useDispatch();
-  const [snapshotIndex, setSnapshotIndex] = React.useState( 0 );
-  const handleChange = (event) =>
-  {
-    const index = event.target.value;
-    setSnapshotIndex( index );
-    const { nodeId, camera } = snapshots[ index ];
-    report( selectEditBefore( nodeId ) );
-    report( defineCamera( camera ) );
-  }
-
-  return (
-    <div style={ { position: 'absolute', background: 'lightgray', top: '0px' } }>
-      <FormControl variant="outlined" className={classes.formControl}>
-        <InputLabel htmlFor="scene-menu-label">Scene</InputLabel>
-        <Select
-          native
-          value={snapshotIndex}
-          onChange={handleChange}
-          label="Scene"
-          inputProps={{
-            name: 'scene',
-            id: 'scene-menu-label',
-          }}
-        >
-          {snapshots.map((snapshot, index) => (
-            <option key={index} value={index}>{
-              snapshot.title || (( index === 0 )? "- none -" : `scene ${index}`)
-            }</option>)
-          )}
-        </Select>
-      </FormControl>
-    </div>
-  );
-}
+import { SceneMenu } from './scenes.jsx';
+import { serializeVZomeXml, download } from '../../workerClient/serializer.js';
 
 const encodeUrl = url => url .split( '/' ) .map( encodeURIComponent ) .join( '/' );
+
+const queryParams = new URLSearchParams( window.location.search );
+const canDownloadScene = !! queryParams .get( 'canDownloadScene' );
 
 const normalStyle = {
   display: 'flex',       // flex is for the light dom content, usually an image
@@ -108,46 +54,117 @@ const fullScreenStyle = {
   zIndex: '1300',
 };
 
-export const DesignViewer = ( { children, children3d, config={} } ) =>
+export const DesignViewer = ( { children, children3d, config={}, toolRef={} } ) =>
 {
-  const { showSnapshots=false, useSpinner=false, allowFullViewport=false } = config;
+  const { showScenes=false, useSpinner=false, allowFullViewport=false, undoRedo=false } = config;
   const source = useSelector( state => state.source );
   const scene = useSelector( state => state.scene );
   const waiting = useSelector( state => !!state.waiting );
-  const snapshots = useSelector( state => state.snapshots );
 
   const [ fullScreen, setFullScreen ] = useState( false );
   const [ showSettings, setShowSettings ] = useState( false );
   const vrAvailable = useVR();
   const containerRef = useRef();
 
+  const report = useDispatch();
+  const sceneCamera = useSelector( state => state.scene && state.scene.camera );
+  const syncCamera = camera => report( { type: 'TRACKBALL_MOVED', payload: camera } );
+
+  const toggleFullScreen = () =>
+  {
+    const { perspective } = sceneCamera || {};
+    // This is a complete hack to work around the issue with resize in OrthographicCamera.
+    //  We simply use a thunk to switch to a perspective camera before we toggle fullScreen.
+    //  Note that this does NOT help with window resize.
+    report( whilePerspective( perspective, () => setFullScreen( !fullScreen ) ) );
+  }
+
+  const [ downloadAnchor, setDownloadAnchor ] = useState( null );
+  const exporterRef = useRef();
+  const showDownloadMenu = (event) => setDownloadAnchor( event.currentTarget );
+  const hideDownloadMenu = () => setDownloadAnchor( null );
+  const downloadVZome = () =>
+  {
+    hideDownloadMenu();
+    const { name, text, changedText } = source;
+    const fileName = name || 'untitled.vZome';
+    if ( changedText ) {
+      const { camera, liveCamera, lighting } = scene;
+      const fullText = serializeVZomeXml( changedText, lighting, liveCamera, camera );
+      download( fileName, fullText, 'application/xml' );
+    }
+    else
+      download( fileName, text, 'application/xml' );
+  }
+  const exportGLTF = () =>
+  {
+    hideDownloadMenu();
+    const vName = source.name || 'untitled.vZome';
+    const name = vName.substring( 0, vName.length-6 ).concat( ".gltf" );
+    if ( !exporterRef.current ) return;
+    const writeFile = text => download( name, text, 'model/gltf+json' );
+    exporterRef.current .exportGltfJson( writeFile );
+  }
+  const exportSceneJSON = () =>
+  {
+    hideDownloadMenu();
+    const vName = source.name || 'untitled.vZome';
+    const name = vName.substring( 0, vName.length-6 ).concat( ".json" );
+    const text = JSON .stringify( scene, null, 2 );
+    download( name, text, 'application/json' );
+  }
+  const historyAction = action =>
+  {
+    return () => report( doControllerAction( 'undoRedo', action ) );
+  }
+
   return (
     <div ref={containerRef} style={ fullScreen? fullScreenStyle : normalStyle }>
       { scene?
-        <DesignCanvas lighting={scene.lighting} camera={ { ...scene.camera } } >
-          { scene.shapes &&
-            <ShapedGeometry embedding={scene.embedding} shapes={scene.shapes} />
-          }
-          {children3d}
-        </DesignCanvas>
+        <SceneCanvas { ...{ scene, toolRef, syncCamera, children3d } } ref={exporterRef} />
         : children // This renders the light DOM if the scene couldn't load
       }
-      { showSnapshots && snapshots && snapshots[1] &&  // There is always >=1 snapshot, and we only want to show 2 or more
-        <SceneMenu snapshots={snapshots} />
-      }
+
+      { showScenes && <SceneMenu/> }
+
       <Spinner visible={useSpinner && waiting} />
-      { allowFullViewport &&
-        <IconButton color="inherit" aria-label="fullscreen"
-            style={ { position: 'absolute', bottom: '5px', right: '5px' } }
-            onClick={() => setFullScreen(!fullScreen)} >
-          { fullScreen? <FullscreenExitIcon fontSize='large'/> : <FullscreenIcon fontSize='large'/> }
-        </IconButton>
+
+      { undoRedo &&
+        <>
+          <Tooltip title={'Undo'} aria-label="undo">
+            <IconButton color="inherit" aria-label="undo"
+                style={ { position: 'absolute', top: '5px', left: '5px' } }
+                onClick={ historyAction( 'undo' ) } >
+              <UndoIcon fontSize='large'/>
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={'Redo'} aria-label="redo">
+            <IconButton color="inherit" aria-label="redo"
+                style={ { position: 'absolute', top: '5px', left: '45px' } }
+                onClick={ historyAction( 'redo' ) } >
+              <RedoIcon fontSize='large'/>
+            </IconButton>
+          </Tooltip>
+        </>
       }
-      <IconButton color="inherit" aria-label="settings"
-          style={ { position: 'absolute', top: '5px', right: '5px' } }
-          onClick={() => setShowSettings(!showSettings)} >
-        <SettingsIcon fontSize='large'/>
-      </IconButton>
+
+      { allowFullViewport &&
+        <Tooltip title={ fullScreen? 'Collapse' : 'Expand' } aria-label="fullscreen">
+          <IconButton color="inherit" aria-label="fullscreen"
+              style={ { position: 'absolute', bottom: '5px', right: '5px' } }
+              onClick={toggleFullScreen} >
+            { fullScreen? <FullscreenExitIcon fontSize='large'/> : <FullscreenIcon fontSize='large'/> }
+          </IconButton>
+        </Tooltip>
+      }
+      <Tooltip title={ 'Settings' } aria-label="settings">
+        <IconButton color="inherit" aria-label="settings"
+            style={ { position: 'absolute', top: '5px', right: '5px' } }
+            onClick={() => setShowSettings(!showSettings)} >
+          <SettingsIcon fontSize='large'/>
+        </IconButton>
+      </Tooltip>
+
       <SettingsDialog {...{ showSettings, setShowSettings }} container={containerRef.current} />
 
       {/* I'm using the legacy preview mode just for me, really, when viewing on my Oculus Quest.
@@ -155,22 +172,41 @@ export const DesignViewer = ( { children, children3d, config={} } ) =>
           limit you to one VR experience.  The preview viewer will open in a new tab, where I can enter VR.
         */}
       { vrAvailable && source && source.url &&
-        <IconButton color="inherit" aria-label="preview"
-          style={ { position: 'absolute', top: '45px', right: '5px' } }
-          component={Link}
-          href={`https://www.vzome.com/app/?url=${encodeUrl(source.url)}`} target="_blank" rel="noopener"
-        >
-          <OpenInBrowserIcon fontSize='large'/>
-        </IconButton>
+        <Tooltip title={ 'Preview' } aria-label="preview">
+          <IconButton color="inherit" aria-label="preview"
+            style={ { position: 'absolute', top: '45px', right: '5px' } }
+            component={Link}
+            href={`https://www.vzome.com/app/?url=${encodeUrl(source.url)}`} target="_blank" rel="noopener"
+          >
+            <OpenInBrowserIcon fontSize='large'/>
+          </IconButton>
+        </Tooltip>
       }
 
-      { source && source.text &&
-        <IconButton color="inherit" aria-label="download"
-            style={ { position: 'absolute', bottom: '5px', left: '5px' } }
-            onClick={() => download( source ) } >
-          <GetAppRoundedIcon fontSize='large'/>
-        </IconButton>
+      { source && ( source.text || source.changedText ) &&
+        <>
+          <Tooltip title={ 'Download' } aria-label="download">
+            <IconButton color="inherit" aria-label="download"
+                style={ { position: 'absolute', bottom: '5px', left: '5px' } }
+                onClick={ showDownloadMenu } >
+              <GetAppRoundedIcon fontSize='large'/>
+            </IconButton>
+          </Tooltip>
+          <Menu
+            id="export-menu"
+            anchorEl={downloadAnchor}
+            container={containerRef.current}
+            keepMounted
+            open={Boolean(downloadAnchor)}
+            onClose={hideDownloadMenu}
+          >
+            <MenuItem onClick={downloadVZome}>.vZome source</MenuItem>
+            <MenuItem onClick={exportGLTF}>glTF scene</MenuItem>
+            { canDownloadScene && <MenuItem onClick={exportSceneJSON}>Scene JSON</MenuItem> }
+          </Menu>
+        </>
       }
+
       <ErrorAlert/>
     </div>
   )
@@ -206,9 +242,10 @@ export const renderViewer = ( store, container, url, config ) =>
 
 // If the worker-store is not injected (as in the web component), it is created here.
 //  This component is used by UrlViewer (below) and by the Online App.
+//  Note that the worker client may also be injected, if the store is not.
 export const WorkerContext = props =>
 {
-  const [ store ] = useState( props.store || createWorkerStore() );
+  const [ store ] = useState( props.store || createWorkerStore( props.worker ) );
   return (
     <Provider store={store}>
       {props.children}
@@ -216,14 +253,14 @@ export const WorkerContext = props =>
   );
 }
 
-export const useVZomeUrl = ( url, preview, forDebugger=false ) =>
+export const useVZomeUrl = ( url, config={ debug: false } ) =>
 {
   const report = useDispatch();
   // TODO: this should be encapsulated in an API on the store
   useEffect( () =>
   {
     if ( !!url ) 
-      report( fetchDesign( url, preview, forDebugger ) );
+      report( fetchDesign( url, config ) );
   }, [ url ] );
 }
 
@@ -232,10 +269,7 @@ export const useVZomeUrl = ( url, preview, forDebugger=false ) =>
 //  got pissy when I didn't.
 export const UrlViewerInner = ({ url, children, config }) =>
 {
-  const { showSnapshots } = config;
-  // "preview" means show a preview if you find one.  When "showSnapshots" is true, the
-  //   XML will have to be parsed, so a preview JSON is not sufficient.
-  useVZomeUrl( url, !showSnapshots );
+  useVZomeUrl( url, config );
   return ( <DesignViewer config={config} >
              {children}
            </DesignViewer> );
@@ -247,7 +281,7 @@ export const UrlViewerInner = ({ url, children, config }) =>
 //  It is also used by the web component, but with the worker-store injected so that the
 //  worker can get initialized and loaded while the main context is still fetching
 //  this module.
-export const UrlViewer = ({ url, store, children, config={ showSnapshots: false } }) => (
+export const UrlViewer = ({ url, store, children, config={ showScenes: false } }) => (
   <WorkerContext store={store} >
     <UrlViewerInner url={url} config={ { ...config, allowFullViewport: true } }>
       {children}
