@@ -288,8 +288,12 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
             for ( int i = 0; i < args.length; i++ ) {
                 if ( args[i] .startsWith( "-" ) ) {
                     String propName = args[i++] .substring( 1 );
-                    String propValue = args[i];
-                    configuration .setProperty( propName, propValue );
+                    if(i < args.length) {
+                        String propValue = args[i];
+                        configuration .setProperty( propName, propValue );
+                    } else {
+                        LOGGER.warning( "Invalid command line argument: " + args[i-1] );
+                    }
                 } else {
                     String arg = args[i];
                     LOGGER.info( "OS file argument: " + arg );
