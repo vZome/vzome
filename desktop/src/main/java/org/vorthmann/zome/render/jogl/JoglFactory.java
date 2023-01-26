@@ -7,11 +7,13 @@ import org.vorthmann.j3d.J3dComponentFactory;
 
 import com.jogamp.nativewindow.CapabilitiesImmutable;
 import com.jogamp.opengl.DefaultGLCapabilitiesChooser;
+import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLCapabilitiesChooser;
 import com.jogamp.opengl.GLCapabilitiesImmutable;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
+import com.jogamp.opengl.awt.GLJPanel;
 import com.vzome.core.render.Scene;
 import com.vzome.desktop.awt.RenderingViewer;
 
@@ -47,8 +49,10 @@ public class JoglFactory implements J3dComponentFactory
     }
 
     @Override
-    public RenderingViewer createRenderingViewer( Scene scene )
+    public RenderingViewer createRenderingViewer( Scene scene, boolean lightweight )
     {
+        System .setProperty( "jogl.gljpanel.noglsl", "true" );
+        
         GLProfile glprofile = GLProfile .getDefault();
         GLCapabilities glcapabilities = new GLCapabilities( glprofile );
         GLCapabilitiesChooser chooser = new MultisampleChooser();
@@ -57,7 +61,7 @@ public class JoglFactory implements J3dComponentFactory
         glcapabilities .setNumSamples(4);
 
         glcapabilities .setDepthBits( 24 );
-        GLCanvas glcanvas = new GLCanvas( glcapabilities, chooser, null );
+        GLAutoDrawable glcanvas = lightweight? new GLJPanel( glcapabilities, chooser ) : new GLCanvas( glcapabilities, chooser, null );
         
         return new JoglRenderingViewer( scene, glcanvas );
     }

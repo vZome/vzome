@@ -58,7 +58,7 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
             logger .finer( "%%%%%%%%%%%%%%%%%%%%%%%%%%    END THUMBNAIL" );
         }
 
-        RenderingViewer viewer = this .rvFactory .createRenderingViewer( scene );
+        RenderingViewer viewer = this .rvFactory .createRenderingViewer( scene, true );
         this .addViewer( viewer );
         viewer .setSize( 80, 70 ); // to control the aspect ratio
 //        BufferedImage lowRes = viewer .captureImage( 80, true );

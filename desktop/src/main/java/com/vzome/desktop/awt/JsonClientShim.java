@@ -97,7 +97,7 @@ public abstract class JsonClientShim implements JsonClientRendering.EventDispatc
         }, props, new J3dComponentFactory()
         {
             @Override
-            public RenderingViewer createRenderingViewer( Scene scene )
+            public RenderingViewer createRenderingViewer( Scene scene, boolean lightweight )
             {
                 // Can't happen, because of "headless.open" property setting above.
                 return null;

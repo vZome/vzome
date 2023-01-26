@@ -697,7 +697,7 @@ public class ApplicationController extends DefaultController
             }, props, new J3dComponentFactory()
             {
                 @Override
-                public RenderingViewer createRenderingViewer( Scene scene )
+                public RenderingViewer createRenderingViewer( Scene scene, boolean lightweight )
                 {
                     // Should never be called
                     return null;

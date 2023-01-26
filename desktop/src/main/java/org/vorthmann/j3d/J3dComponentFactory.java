@@ -7,5 +7,5 @@ import com.vzome.desktop.awt.RenderingViewer;
 
 public interface J3dComponentFactory
 {
-    RenderingViewer createRenderingViewer( Scene scene );
+    RenderingViewer createRenderingViewer( Scene scene, boolean lightweight );
 }
