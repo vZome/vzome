@@ -459,6 +459,7 @@ public class CameraController extends DefaultController implements Scene.Provide
     public void setSymmetry( RenderedModel model, OrbitSnapper snapper )
     {
         this .symmetryModel = model;
+        scene .reset();
         for ( RenderedManifestation rm : symmetryModel )
             scene .manifestationAdded( rm );
         this .snapper = snapper;
