@@ -682,7 +682,7 @@ public class ApplicationController extends DefaultController
             this .ui .openApplication( file );
     }
 
-    public static void main_(String[] args)
+    public static void main(String[] args)
     {
         String filePath = "noFilePath";
         if ( args.length > 0 )
