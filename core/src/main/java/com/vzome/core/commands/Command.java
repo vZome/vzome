@@ -50,6 +50,7 @@ public interface Command
     	void reportFailure( Failure f );
     }
 
+    @SuppressWarnings("serial")
     public static class Failure extends Exception
     {
         private static final Logger logger = Logger .getLogger( "org.vorthmann.zome.commands" );

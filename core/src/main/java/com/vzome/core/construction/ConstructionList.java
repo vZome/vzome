@@ -12,6 +12,7 @@ import java.util.ArrayList;
 /**
  * A selection in the model.
  */
+@SuppressWarnings("serial")
 public class ConstructionList extends ArrayList<Construction>
 {
     

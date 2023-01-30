@@ -34,6 +34,7 @@ import com.vzome.desktop.awt.GraphicsController;
 //import com.vzome.desktop.awt.PickingController;
 import com.vzome.desktop.awt.RenderingViewer;
 
+@SuppressWarnings("serial")
 public class ModelPanel extends JPanel implements PropertyChangeListener, SymmetryToolbarsPanel.ButtonFactory
 {
     private static final String TOOLTIP_PREFIX = "<html><b>";

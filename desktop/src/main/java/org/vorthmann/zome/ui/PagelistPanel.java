@@ -36,7 +36,7 @@ import org.vorthmann.ui.ReorderableJList;
 import com.vzome.desktop.api.Controller;
 import com.vzome.desktop.awt.GraphicsController;
 
-
+@SuppressWarnings("serial")
 public class PagelistPanel extends JPanel implements PropertyChangeListener
 {
     private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.thumbnails" );

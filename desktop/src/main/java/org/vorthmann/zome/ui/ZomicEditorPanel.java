@@ -30,6 +30,7 @@ import org.vorthmann.j3d.Trackball;
 
 import com.vzome.desktop.api.Controller;
 
+@SuppressWarnings("serial")
 public class ZomicEditorPanel extends JPanel implements Tool
 {
     private final FileDialog mFileChooser;

@@ -11,6 +11,7 @@ import javax.swing.SwingConstants;
 
 import com.vzome.desktop.api.Controller;
 
+@SuppressWarnings("serial")
 public class QuaternionPanel extends JPanel
 {   
     private final NumberPanel[] numberPanels = new NumberPanel[4];

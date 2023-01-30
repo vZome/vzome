@@ -23,6 +23,7 @@ public interface ANTLR2XML {
 
     void endElement() throws RecognitionException;
 
+    @SuppressWarnings("serial")
     @Deprecated
 	public class ANTLR2XMLException extends RecognitionException {
         

@@ -3,6 +3,7 @@ package com.vzome.core.zomic;
 
 
 /** * An exception thrown by the Zomic parser or interpreter. * A ZomeException may wrap another exception. * Handlers are obligated to "unwrap" a ZomeException * before reporting it, by calling getCulprit(). */
+@SuppressWarnings("serial")
 public class ZomicException extends Exception{
 
 	private  Exception m_culprit;

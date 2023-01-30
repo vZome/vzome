@@ -78,10 +78,12 @@ public class Google20DeviceAuthorizationGrantExample {
             return EXTRACTOR;
         }
 
+        @Override
         public String getDeviceAuthorizationEndpoint() {
             return "https://github.com/login/device/code";
         }
 
+        @Override
         public OAuth20Service createService( String apiKey, String apiSecret, String callback, String defaultScope,
                 String responseType, OutputStream debugStream, String userAgent, HttpClientConfig httpClientConfig,
                 HttpClient httpClient) {
@@ -96,6 +98,7 @@ public class Google20DeviceAuthorizationGrantExample {
                     return request;
                 }
                 
+                @Override
                 protected OAuthRequest createAccessTokenDeviceAuthorizationGrantRequest( DeviceAuthorization deviceAuthorization )
                 {
                     OAuthRequest request = super .createAccessTokenDeviceAuthorizationGrantRequest( deviceAuthorization );
@@ -109,7 +112,7 @@ public class Google20DeviceAuthorizationGrantExample {
     private Google20DeviceAuthorizationGrantExample() {
     }
 
-    @SuppressWarnings("PMD.SystemPrintln")
+    //@SuppressWarnings("PMD.SystemPrintln")
     public static void main(String... args) throws IOException, InterruptedException, ExecutionException
     {
         // Replace these with your client id and secret
@@ -122,52 +125,52 @@ public class Google20DeviceAuthorizationGrantExample {
                 .responseType( "application/json" )
                 .defaultScope("gist") // replace with desired scope
                 .build(GitHubApi.instance());
-        final Scanner in = new Scanner(System.in, "UTF-8");
+        try (Scanner in = new Scanner(System.in, "UTF-8")) {
+			System.out.println("=== " + NETWORK_NAME + "'s OAuth Workflow ===");
+			System.out.println();
 
-        System.out.println("=== " + NETWORK_NAME + "'s OAuth Workflow ===");
-        System.out.println();
+			System.out.println("Requesting a set of verification codes...");
 
-        System.out.println("Requesting a set of verification codes...");
+			final DeviceAuthorization deviceAuthorization = service.getDeviceAuthorizationCodes();
+			System.out.println("Got the Device Authorization Codes!");
+			System.out.println(deviceAuthorization);
 
-        final DeviceAuthorization deviceAuthorization = service.getDeviceAuthorizationCodes();
-        System.out.println("Got the Device Authorization Codes!");
-        System.out.println(deviceAuthorization);
+			System.out.println("Now go and authorize ScribeJava. Visit: " + deviceAuthorization.getVerificationUri()
+			        + " and enter the code: " + deviceAuthorization.getUserCode());
+			if (deviceAuthorization.getVerificationUriComplete() != null) {
+			    System.out.println("Or visit " + deviceAuthorization.getVerificationUriComplete());
+			}
 
-        System.out.println("Now go and authorize ScribeJava. Visit: " + deviceAuthorization.getVerificationUri()
-                + " and enter the code: " + deviceAuthorization.getUserCode());
-        if (deviceAuthorization.getVerificationUriComplete() != null) {
-            System.out.println("Or visit " + deviceAuthorization.getVerificationUriComplete());
-        }
+			System.out.println("Polling for an Access Token...");
+			final OAuth2AccessToken accessToken = service.pollAccessTokenDeviceAuthorizationGrant(deviceAuthorization);
 
-        System.out.println("Polling for an Access Token...");
-        final OAuth2AccessToken accessToken = service.pollAccessTokenDeviceAuthorizationGrant(deviceAuthorization);
+			System.out.println("Got the Access Token!");
+			System.out.println("(The raw response looks like this: " + accessToken.getRawResponse() + "')");
 
-        System.out.println("Got the Access Token!");
-        System.out.println("(The raw response looks like this: " + accessToken.getRawResponse() + "')");
-
-        // Now let's go and ask for a protected resource!
-        System.out.println("Now we're going to access a protected resource...");
-        while (true) {
-            System.out.println("Paste fieldnames to fetch (leave empty to get profile, 'exit' to stop the example)");
-            System.out.print(">>");
-            final String query = in.nextLine();
-            System.out.println();
-            final String requestUrl;
-            if ("exit".equals(query)) {
-                break;
-            } else if (query == null || query.isEmpty()) {
-                requestUrl = PROTECTED_RESOURCE_URL;
-            } else {
-                requestUrl = PROTECTED_RESOURCE_URL + "?fields=" + query;
-            }
-            final OAuthRequest request = new OAuthRequest(Verb.GET, requestUrl);
-            service.signRequest(accessToken, request);
-            System.out.println();
-            try (Response response = service.execute(request)) {
-                System.out.println(response.getCode());
-                System.out.println(response.getBody());
-            }
-            System.out.println();
-        }
+			// Now let's go and ask for a protected resource!
+			System.out.println("Now we're going to access a protected resource...");
+			while (true) {
+			    System.out.println("Paste fieldnames to fetch (leave empty to get profile, 'exit' to stop the example)");
+			    System.out.print(">>");
+			    final String query = in.nextLine();
+			    System.out.println();
+			    final String requestUrl;
+			    if ("exit".equals(query)) {
+			        break;
+			    } else if (query == null || query.isEmpty()) {
+			        requestUrl = PROTECTED_RESOURCE_URL;
+			    } else {
+			        requestUrl = PROTECTED_RESOURCE_URL + "?fields=" + query;
+			    }
+			    final OAuthRequest request = new OAuthRequest(Verb.GET, requestUrl);
+			    service.signRequest(accessToken, request);
+			    System.out.println();
+			    try (Response response = service.execute(request)) {
+			        System.out.println(response.getCode());
+			        System.out.println(response.getBody());
+			    }
+			    System.out.println();
+			}
+		}
     }
 }

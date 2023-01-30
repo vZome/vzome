@@ -11,7 +11,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import com.vzome.desktop.api.Controller;
-import com.vzome.desktop.awt.GraphicsController;
 
 @SuppressWarnings("serial")
 public class SymmetryDialog extends EscapeDialog

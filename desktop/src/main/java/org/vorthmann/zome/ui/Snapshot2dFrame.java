@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 
 import com.vzome.desktop.awt.GraphicsController;
 
+@SuppressWarnings("serial")
 public class Snapshot2dFrame extends JFrame
 {
     private final GraphicsController controller;
