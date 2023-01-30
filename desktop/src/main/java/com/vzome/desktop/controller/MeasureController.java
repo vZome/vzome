@@ -83,8 +83,8 @@ public class MeasureController extends DefaultController implements SelectionSum
                     Strut strut = Manifestations.getStruts( this .selection ).next();
                     double cm = this .renderedModel .measureLengthCm( strut );
                     this .measurements .put( "length (cm)", twoPlaces .format( cm ) + " cm" );
-                    double in = cm / 2.54;
-                    this .measurements .put( "length (in)", twoPlaces .format( in ) + " in" );
+                    double inches = cm / 2.54;
+                    this .measurements .put( "length (in)", twoPlaces .format( inches ) + " in" );
                 } else if ( balls == 1 ) {
                     Connector conn = Manifestations.getConnectors( this .selection ).next();
                     this .measurements .put( "location", conn.getLocation().toString());
@@ -129,8 +129,8 @@ public class MeasureController extends DefaultController implements SelectionSum
         			}
         			double cm = this .renderedModel .measureDistanceCm( b1, b2 );
         			this .measurements .put( "distance (cm)", twoPlaces .format( cm ) + " cm" );
-        			double in = cm / 2.54;
-        			this .measurements .put( "distance (in)", twoPlaces .format( in ) + " in" );
+        			double inches = cm / 2.54;
+        			this .measurements .put( "distance (in)", twoPlaces .format( inches ) + " in" );
         		}
             }
         }

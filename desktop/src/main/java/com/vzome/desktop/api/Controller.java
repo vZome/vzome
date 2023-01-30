@@ -26,8 +26,8 @@ public interface Controller
     // TODO replace ErrorChannel with JDK logging
     public interface ErrorChannel
     {
-        // TODO: DJH: Use varargs or better yet, typesafe overloads.
-        void reportError( String errorCode, Object[] arguments );
+        // TODO: DJH: Use typesafe overloads???
+        void reportError( String errorCode, Object[] args );
         
         void clearError();
     }
