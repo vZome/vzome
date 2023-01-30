@@ -546,7 +546,11 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 }
 
                 Scene scene = ((Scene.Provider) mController) .getScene();
+                
+                // heavyweight (lightweight==false) renders with a much better frame rate,
+                //   and this canvas always redraws correctly during window resize.
                 RenderingViewer viewer = factory3d .createRenderingViewer( scene, false );
+
                 modelPanel = new ModelPanel( mController, viewer, this, this .isEditor, fullPower );
                 leftCenterPanel .add( modelPanel, BorderLayout.CENTER );
             }
@@ -562,7 +566,11 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
             JPanel rightPanel = new JPanel( new BorderLayout() );
             {
                 Scene scene = ((Scene.Provider) cameraController) .getScene();
+                
+                // lightweight==true lays out correctly during window resize, though
+                //   it delivers a lower frame rate.  See JoglFactory comments.
                 RenderingViewer viewer = factory3d .createRenderingViewer( scene, true );
+                
                 viewControl = new CameraControlPanel( viewer, cameraController );
                 // this is probably moot for reader mode
                 rightPanel .add( viewControl, BorderLayout.PAGE_START );

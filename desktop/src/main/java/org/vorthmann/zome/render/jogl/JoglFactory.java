@@ -51,6 +51,8 @@ public class JoglFactory implements J3dComponentFactory
     @Override
     public RenderingViewer createRenderingViewer( Scene scene, boolean lightweight )
     {
+        // This is apparently necessary to avoid "just black" GLJPanels
+        // See https://forum.jogamp.org/reshape-not-called-in-2nd-GLCanvas-td4042121.html
         System .setProperty( "jogl.gljpanel.noglsl", "true" );
         
         GLProfile glprofile = GLProfile .getDefault();
@@ -61,6 +63,11 @@ public class JoglFactory implements J3dComponentFactory
         glcapabilities .setNumSamples(4);
 
         glcapabilities .setDepthBits( 24 );
+
+        // GLCanvas for the trackball view on the Mac gets "left behind" when resizing the window,
+        //  a defect in JOGL.  The remedy is to use the lightweight GLJPanel for that situation,
+        //  which behaves correctly, though it delivers a much lower frame rate than GLCanvas.
+        
         GLAutoDrawable glcanvas = lightweight? new GLJPanel( glcapabilities, chooser ) : new GLCanvas( glcapabilities, chooser, null );
         
         return new JoglRenderingViewer( scene, glcanvas );
