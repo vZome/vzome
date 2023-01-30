@@ -37,6 +37,7 @@ import com.vzome.desktop.api.Controller;
  *
  * So far, just a stripped-down ZomicEditorPanel with names changed.
  */
+@SuppressWarnings("serial")
 public class PythonConsolePanel extends JPanel implements Tool {
 
     private final FileDialog mFileChooser;
@@ -106,13 +107,14 @@ public class PythonConsolePanel extends JPanel implements Tool {
     private static String readTextFromFile( File file )
     {
         try {
-            InputStream input = new FileInputStream(file);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            byte[] buf = new byte[1024];
-            int num;
-            while ( ( num = input .read( buf, 0, 1024 )) > 0 )
-                    out .write( buf, 0, num );
-            return new String( out .toByteArray() );
+            try (InputStream input = new FileInputStream(file)) {
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				byte[] buf = new byte[1024];
+				int num;
+				while ( ( num = input .read( buf, 0, 1024 )) > 0 )
+				        out .write( buf, 0, num );
+				return new String( out .toByteArray() );
+			}
         }
         catch (IOException exc) {
             exc.printStackTrace();

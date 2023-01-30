@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -92,7 +91,8 @@ public class DapAdapter implements IDebugProtocolServer
                             
                             client = launcher .getRemoteProxy();
 
-                            Future<Void> listening = launcher .startListening();
+                            //Future<Void> listening = 
+                            launcher .startListening();
                         } catch (EOFException ex) {
                             showMsg("\nServer connection closed");
                             try {
@@ -176,6 +176,7 @@ public class DapAdapter implements IDebugProtocolServer
             try {
                 SwingUtilities.invokeAndWait( new Runnable()
                 {
+                    @Override
                     public void run()
                     {
                         appController .doFileAction( "openDeferringRedo", file );
@@ -257,7 +258,7 @@ public class DapAdapter implements IDebugProtocolServer
     {
 //        logArgs( "scopes()", args );
         
-        Scope scope = new Scope();
+//        Scope scope = new Scope();
 
         ScopesResponse response = new ScopesResponse();
         response .setScopes( new Scope[] {} );

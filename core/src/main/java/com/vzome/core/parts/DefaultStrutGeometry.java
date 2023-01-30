@@ -1,8 +1,6 @@
 
 package com.vzome.core.parts;
 
-import java.util.Iterator;
-
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -22,17 +20,17 @@ public class DefaultStrutGeometry implements StrutGeometry
     
     private final Axis mAxis;
     
-    private static <T> Iterable<T>
-    getIterableFromIterator(Iterator<T> iterator)
-    {
-        return new Iterable<T>() {
-            @Override
-            public Iterator<T> iterator()
-            {
-                return iterator;
-            }
-        };
-    }
+//    private static <T> Iterable<T>
+//    getIterableFromIterator(Iterator<T> iterator)
+//    {
+//        return new Iterable<T>() {
+//            @Override
+//            public Iterator<T> iterator()
+//            {
+//                return iterator;
+//            }
+//        };
+//    }
 
     public DefaultStrutGeometry( Direction dir )
     {

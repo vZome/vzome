@@ -18,6 +18,7 @@ import javax.swing.JToolBar;
 
 import com.vzome.desktop.api.Controller;
 
+@SuppressWarnings("serial")
 public class SymmetryToolbarsPanel extends JPanel
 {
 	private final ButtonFactory factory;

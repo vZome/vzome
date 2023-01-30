@@ -13,7 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.vzome.desktop.api.Controller;
-import com.vzome.desktop.api.Controller.ErrorChannel;
 
 public class DefaultController implements Controller
 {

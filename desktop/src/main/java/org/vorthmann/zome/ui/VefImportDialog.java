@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 
 import com.vzome.desktop.api.Controller;
 
+@SuppressWarnings("serial")
 public class VefImportDialog extends EscapeDialog
 {
 	private final NumberPanel numberPanel;

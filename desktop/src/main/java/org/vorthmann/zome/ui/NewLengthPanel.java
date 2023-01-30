@@ -36,6 +36,7 @@ import org.vorthmann.ui.CardPanel;
 
 import com.vzome.desktop.api.Controller;
 
+@SuppressWarnings("serial")
 public class NewLengthPanel extends JPanel implements PropertyChangeListener, ActionListener
 {
     private static final Logger logger = Logger .getLogger( "org.vorthmann.zome.ui" );

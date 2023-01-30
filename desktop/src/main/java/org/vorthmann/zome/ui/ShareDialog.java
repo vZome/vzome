@@ -53,6 +53,7 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 import com.vzome.desktop.api.Controller;
 import com.vzome.xml.ResourceLoader;
 
+@SuppressWarnings("serial")
 public class ShareDialog extends EscapeDialog
 {
     private static final String DEFAULT_REPO_NAME = "vzome-sharing";

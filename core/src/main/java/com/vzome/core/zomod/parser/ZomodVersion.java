@@ -90,6 +90,7 @@ public class ZomodVersion
 		return new ZomodVersion( version, ZOMOD_OUTPUT_VERSION );
 	}
 	
+	@SuppressWarnings("serial")
 	public static class Limitation extends RuntimeException{
 		
 		public Limitation( String mesg ){

@@ -24,6 +24,7 @@ import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.render.Colors;
 
+@SuppressWarnings("serial")
 public class OrbitTrianglePanel extends JPanel
 {
     private static final int RADIUS = 12;
@@ -140,7 +141,8 @@ public class OrbitTrianglePanel extends JPanel
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
+            @Override
+			public void run() {
                 createAndShowGUI();
             }
         });
