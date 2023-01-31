@@ -92,8 +92,8 @@ jobs:
       - name: Archive Generated JS
         uses: actions/upload-artifact@v2
         with:
-          name: core-java
-          path: online/src/wc/legacy/core-java.js
+          name: worker-legacy
+          path: online/src/worker/legacy
 
       # TODO: publish to npm.pkg.github.com; see https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
       
