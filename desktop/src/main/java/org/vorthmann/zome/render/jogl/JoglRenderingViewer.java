@@ -3,6 +3,7 @@ package org.vorthmann.zome.render.jogl;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import javax.vecmath.Matrix4f;
@@ -50,6 +51,8 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
 {
     private final Scene scene;
     private final Component canvas;
+    // cache the value of fixGLCanvasRescaling one time here to improve performance in pickRay() 
+    private final boolean fixGLCanvasRescaling = "true".equals(System.getProperty("vzome.glcanvas.rescaling"));
     
     private JoglOpenGlShim glShim;
     private Renderer outlines = null;
@@ -235,6 +238,14 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         int mouseX = e .getX();
         int mouseY = e .getY();
         
+        // This work-around for scaling issues on Windows and Linux assumes that the canvas 
+        // is a GLCanvas with getWidth() and getHeight() overridden 
+        // to incorporate the scale factor as I've done in JoglFactory.createRenderingViewer()  
+        if(fixGLCanvasRescaling) {
+        	AffineTransform t = canvas.getGraphicsConfiguration().getDefaultTransform(); 
+            mouseX *= t.getScaleX();
+            mouseY *= t.getScaleY();
+        }
         // I wasted a lot of time here looking at the Java3d implementation, which had a bug.
         //  Furthermore, it was based on the Java3d notion of "image plate" coordinates, which
         //  are hard to understand in terms of OpenGL, at least from the documentation I could

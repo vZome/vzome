@@ -27,10 +27,18 @@ public class Platform
         try {
             String os = System .getProperty( "os.name" );
             logger .log(Level.FINE, "os.name: {0}", os);
-            if ( os != null && os .startsWith( "Mac" ) )
-                isMac = true;
-            else if ( os != null && os .startsWith( "Win" ) )
-                isWindows = true;
+			if (os != null && os.startsWith("Mac")) {
+				isMac = true;
+			} else {
+				// "vzome.glcanvas.rescaling" is used 
+				// in JoglFactory.createRenderingViewer()
+                // and JoglRenderingViewer.pickRay()
+                // and DocumentFrame constructor
+				System.setProperty("vzome.glcanvas.rescaling", "true");
+				if (os != null && os.startsWith("Win")) {
+					isWindows = true;
+				}
+			}
             os = System .getProperty( "java.specification.version" );
             logger .log(Level.FINE, "java.specification.version: {0}", os);
         } catch ( SecurityException e ) {
