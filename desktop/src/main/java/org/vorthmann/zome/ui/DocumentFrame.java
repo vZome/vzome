@@ -694,9 +694,12 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 					GraphicsDevice testDevice = gs[i];
 					AffineTransform t = testDevice.getDefaultConfiguration().getDefaultTransform();
 					DisplayMode testMode = testDevice.getDisplayMode();
-					double testWidth = testMode.getWidth() / t.getScaleX();;
-					double testHeight = testMode.getHeight() / t.getScaleY();;
+					int testWidth = testMode.getWidth();
+					int testHeight = testMode.getHeight();
 					double testArea = testHeight * testWidth;
+					if ( "true" .equals( System.getProperty( "vzome.glcanvas.rescaling" ) ) ) {
+					    testArea = testArea / ( t.getScaleX() * t.getScaleY() );
+					}
 					if (bestArea < testArea) {
 						bestArea = testArea;
 						bestDevice = testDevice;

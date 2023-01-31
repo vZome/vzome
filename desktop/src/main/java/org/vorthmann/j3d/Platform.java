@@ -32,7 +32,8 @@ public class Platform
 			} else {
 				// "vzome.glcanvas.rescaling" is used 
 				// in JoglFactory.createRenderingViewer()
-				// and JoglRenderingViewer.pickRay()
+                // and JoglRenderingViewer.pickRay()
+                // and DocumentFrame constructor
 				System.setProperty("vzome.glcanvas.rescaling", "true");
 				if (os != null && os.startsWith("Win")) {
 					isWindows = true;
