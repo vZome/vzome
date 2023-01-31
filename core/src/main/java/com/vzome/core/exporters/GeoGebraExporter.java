@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
@@ -92,7 +91,7 @@ public class GeoGebraExporter extends DocumentExporter
         // Now that we have all of the unique vertices sorted in vertices,
         // we'll need their index for labels, so we copy them into an ArrayList, preserving their sorted order.
         // so we can get their index into that array.
-        ArrayList<AlgebraicVector> indices = new ArrayList<>(vertices);
+//        ArrayList<AlgebraicVector> indices = new ArrayList<>(vertices);
 
         GeoGebraDocument doc = new GeoGebraDocument();
         doc.setScene(mScene, mLights.getBackgroundColor());
@@ -339,7 +338,7 @@ public class GeoGebraExporter extends DocumentExporter
             objColor.setAttribute("g", Integer.toString(color.getGreen()));
             objColor.setAttribute("b", Integer.toString(color.getBlue()));
             objColor.setAttribute("alpha", Float.toString(color.getAlpha() / 255f));
-            ;
+            
         }
         
         // This is mostly copied from DaeExporter

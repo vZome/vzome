@@ -87,7 +87,6 @@ public class AntiprismTrackball {
     private static AlgebraicVector[] getAntiprismTrackballVertices(AntiprismSymmetry symm) {
         PolygonField field = symm.getField();
         
-        AlgebraicNumber n0 = field.zero();
         AlgebraicNumber axisScale = field.createRational(21); // length of the X,Y and Z axis struts
         AlgebraicNumber scale = field.createRational(18); // radius of the trackball
         AlgebraicNumber n1_6 = field.createRational(1,6); // size of the corner panels

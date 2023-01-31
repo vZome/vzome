@@ -26,7 +26,6 @@ public class LocationAnnotator extends XMLFilterImpl
     }
 
     private Locator locator;
-    private Element lastAddedElement;
     private Stack<LocatedElement> locatorStack = new Stack<LocatedElement>();
     private UserDataHandler dataHandler = new LocationDataHandler();
 

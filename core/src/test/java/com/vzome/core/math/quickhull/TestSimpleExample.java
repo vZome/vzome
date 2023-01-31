@@ -165,15 +165,15 @@ public class TestSimpleExample {
         System.out.println(hull.getNumEdges()); // struts
         for (int i = 0; i < faceIndices.length; i++) {
             int b = faceIndices[i][faceIndices[i].length -1];
-            AlgebraicVector beg = vertices[b];
+//            AlgebraicVector beg = vertices[b];
             for (int k = 0; k < faceIndices[i].length; k++) {
                 int e = faceIndices[i][k];
-                AlgebraicVector end = vertices[e];
+//                AlgebraicVector end = vertices[e];
                 if(b < e) {
                     System.out.println(" " + b + " " + e);
                 }
                 b = e;
-                beg = end;
+//                beg = end;
             }
         }
 

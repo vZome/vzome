@@ -5,7 +5,6 @@ package com.vzome.core.commands;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
@@ -43,7 +42,7 @@ public class CommandImportVEFData extends AbstractCommand
     private static final Object[][] ATTR_SIGNATURE =
         new Object[][]{ { VEF_STRING_ATTR_NAME, String.class }, { Command.FIELD_ATTR_NAME, InputStream.class }, { NO_INVERSION_ATTR_NAME, InputStream.class } };
 
-    private static final Logger logger = Logger .getLogger( "com.vzome.core.commands.importVEF" );
+//    private static final Logger logger = Logger .getLogger( "com.vzome.core.commands.importVEF" );
     
     private Projection mProjection;
 

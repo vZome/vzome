@@ -9,7 +9,7 @@ import com.vzome.core.zomic.parser.ErrorHandler;
 import antlr.RecognitionException;
 import antlr.TokenStreamException;
 
-@SuppressWarnings( "deprecation" )
+//@SuppressWarnings( "deprecation" )
 @Deprecated
 public class Parser extends com.vzome.core.zomic.parser.Parser{
 

@@ -84,7 +84,7 @@ public class Adapter
     }
 
     private final String gameObjectName;
-    private final String path;
+//    private final String path;
     private final DocumentModel model;
     private final RenderingChanges renderer;
     private final RenderedModel renderedModel;
@@ -94,7 +94,7 @@ public class Adapter
     private Adapter( String gameObjectName, String path, Document doc )
     {
         this .gameObjectName = gameObjectName;
-        this .path = path;
+//        this .path = path;
         this .model = doc .getDocumentModel();
         this .renderer = new Renderer( this );
 
@@ -286,6 +286,7 @@ public class Adapter
         System.out.println( "%%%%%%%%%%%%%" );
         System.out.println( "%%%%%%%%%%%%%" );
         System.out.println( "%%%%%%%%%%%%%" );
-        Adapter adapter = getAdapter( url );
+        @SuppressWarnings("unused")
+		Adapter adapter = getAdapter( url );
     }
 }

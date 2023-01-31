@@ -4,13 +4,9 @@ import com.vzome.core.editor.AbstractToolFactory;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.editor.api.Selection;
-import com.vzome.core.model.Connector;
-import com.vzome.core.model.Manifestation;
 
 public class InversionToolFactory extends AbstractToolFactory
 {
-	private transient Connector center;  // TODO use this in createToolInternal()
-	
 	public InversionToolFactory( ToolsModel tools )
 	{
 		super( tools, null, InversionTool.ID, InversionTool.LABEL, InversionTool.TOOLTIP );
@@ -36,12 +32,13 @@ public class InversionToolFactory extends AbstractToolFactory
         return result;
     }
 
+//	private transient Connector center;  // TODO use this in createToolInternal()
 	@Override
 	protected boolean bindParameters( Selection selection )
 	{
 		assert selection .size() == 1;
-    	for ( Manifestation man : selection )
-    		center = (Connector) man;
+//    	for ( Manifestation man : selection )
+//    		center = (Connector) man;
 		return true;
 	}
 }

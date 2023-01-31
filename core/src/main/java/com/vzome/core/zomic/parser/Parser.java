@@ -12,7 +12,7 @@ import antlr.RecognitionException;
 import antlr.TokenStreamException;
 import antlr.TokenStreamRecognitionException;
 
-@SuppressWarnings( "deprecation" )
+//@SuppressWarnings( "deprecation" )
 @Deprecated
 public class Parser
 {

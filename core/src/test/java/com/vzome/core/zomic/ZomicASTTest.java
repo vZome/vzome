@@ -553,7 +553,6 @@ public class ZomicASTTest
 			if(stmt instanceof Move) {
 				Move m = (Move)stmt;
 				AlgebraicField algebraicField = m.getLength().getField();
-				String n = algebraicField.getName();
 				assertEquals(3, algebraicField.getOrder());
 			}
 		}
@@ -878,9 +877,7 @@ public class ZomicASTTest
 	@Test 
 	public void testMultipleStruts() {
 		String allColors = "";
-		int n = 0;
 		for ( String color : zomicColors ) {
-			n++;
 			allColors = allColors + color + " -3 ";
 		}
 		Walk program = compileAndCompare(allColors);

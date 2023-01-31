@@ -36,7 +36,7 @@ public class GenerateLinearMaps
 	private AlgebraicField field;
 	private IcosahedralSymmetry symmetry;
 	private Connector origin;
-	private Direction red, yellow, blue, green;
+	private Direction blue;
 	private final ArrayList<String> acceptableOrbitNames;
 
 	public GenerateLinearMaps()
@@ -54,10 +54,7 @@ public class GenerateLinearMaps
 		kind = app .getDocumentKind( "golden" );
 		field = kind .getField();
 	    symmetry = (IcosahedralSymmetry) kind .getSymmetryPerspective( "icosahedral" ) .getSymmetry();
-		red = symmetry .getDirection( "red" );
-		yellow = symmetry .getDirection( "yellow" );
 		blue = symmetry .getDirection( "blue" );
-		green = symmetry .getDirection( "green" );
 		this .acceptableOrbitNames = new ArrayList<String>();
 		acceptableOrbitNames .add( "red" );
 		acceptableOrbitNames .add( "yellow" );
@@ -68,7 +65,7 @@ public class GenerateLinearMaps
 	private transient DocumentModel doc;
 	private transient Strut lastStrut;
 	private transient Connector lastBall;
-	private transient boolean goodOrbits, knownOrbits;
+	private transient boolean knownOrbits; //, goodOrbits;
 	private transient int fileNum = 0;
 	private transient Set<Direction> orbits;
 
@@ -92,25 +89,25 @@ public class GenerateLinearMaps
 					if ( axis == null )
 					{
 						knownOrbits = false;
-						goodOrbits = false;
+//						goodOrbits = false;
 						return;
 					}
 					Direction orbit = axis .getDirection();
 					if ( orbit .isAutomatic() )
 					{
 						knownOrbits = false;
-						goodOrbits = false;
+//						goodOrbits = false;
 						return;
 					}
 					orbits .add( orbit );
-					if ( ! acceptableOrbitNames .contains( orbit .getName() ) )
-						goodOrbits = false;
+//					if ( ! acceptableOrbitNames .contains( orbit .getName() ) )
+//						goodOrbits = false;
 				}
 			}
 		} );
 		origin = lastBall();
 		try {
-			goodOrbits = true;
+//			goodOrbits = true;
 			knownOrbits = true;
 			orbits = new HashSet<Direction>();
 
@@ -118,7 +115,7 @@ public class GenerateLinearMaps
 			Strut strut2 = strut( origin, a2, l2 );
 			select( strut1 );
 			select( strut2 );
-			goodOrbits = true;
+//			goodOrbits = true;
 			knownOrbits = true;
 			doc .doEdit( "affinePentagon" );
 
@@ -170,7 +167,7 @@ public class GenerateLinearMaps
 			deselect();
 			
 			if ( knownOrbits ) {
-				int size = orbits .size();
+//				int size = orbits .size();
 				String fname = axisName( a1 ) + l1 .toString() + "-"
 						+ axisName( a2 ) + l2 .toString() + "-"
 						+ axisName( a3 ) + l3 .toString() + "-";

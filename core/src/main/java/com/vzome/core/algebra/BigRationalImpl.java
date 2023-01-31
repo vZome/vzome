@@ -69,7 +69,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
                         : that.bigNum.signum(); 
     }
 
-    @SuppressWarnings("LeakingThisInConstructor")
+//  @SuppressWarnings("LeakingThisInConstructor") // This annotation is ignored (not supported) by Eclipse, but is used by NetBeans
     public BigRationalImpl( long numerator )
     {
         // no need to reduce since demoninator == 1
@@ -93,7 +93,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
         toString = toString(this);
     }
 
-    @SuppressWarnings("LeakingThisInConstructor")
+//  @SuppressWarnings("LeakingThisInConstructor") // This annotation is ignored (not supported) by Eclipse, but is used by NetBeans
     public BigRationalImpl( long numerator, long denominator )
     {
         long[] factors = new long[] {numerator, denominator};
@@ -117,7 +117,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
         toString = toString(this);
     }
 
-    @SuppressWarnings("LeakingThisInConstructor")
+//  @SuppressWarnings("LeakingThisInConstructor") // This annotation is ignored (not supported) by Eclipse, but is used by NetBeans
     public BigRationalImpl( BigInteger numerator )
     {
         // no need to reduce since demoninator == 1
@@ -141,7 +141,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
         toString = toString(this);
     }
 
-    @SuppressWarnings("LeakingThisInConstructor")
+//  @SuppressWarnings("LeakingThisInConstructor") // This annotation is ignored (not supported) by Eclipse, but is used by NetBeans
     public BigRationalImpl( BigInteger numerator, BigInteger denominator )
     {
         BigInteger[] factors = new BigInteger[] {numerator, denominator};
@@ -199,7 +199,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
      * @param bigDenominator
      * Used internally to construct a new BigInteger from values that are known to already be validated and reduced
      */
-    @SuppressWarnings("LeakingThisInConstructor")
+//  @SuppressWarnings("LeakingThisInConstructor") // This annotation is ignored (not supported) by Eclipse, but is used by NetBeans
     private BigRationalImpl( long numerator, long denominator, BigInteger bigNumerator, BigInteger bigDenominator )
     {
         num = numerator;
@@ -230,7 +230,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
     // 19 or more characters will be parsed as a BigInteger and reduced if possible.
     // check the string length after removing leading 0's but leaving any optional - or + sign
     // Avoid the overhead of reducing whenever we know it's absolutely unnecessary.
-    @SuppressWarnings("LeakingThisInConstructor")
+//  @SuppressWarnings("LeakingThisInConstructor") // This annotation is ignored (not supported) by Eclipse, but is used by NetBeans
     public BigRationalImpl( String s )
     {
         final int definteLong = 18;
@@ -687,6 +687,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
     }
 
     public boolean isPositive() { return signum() == 1; }
+    @Override
     public boolean isNegative() { return signum() == -1; }
     @Override
     public boolean isZero()     { return isZero; }
@@ -731,7 +732,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
      * Use {@link #min( Collection<BigRational> collection )} to return null instead of throwing an exception.
      */
     @SafeVarargs
-    @SuppressWarnings( "varargs" ) // This annotation is ignored (not supported) by Eclipse, but is used by NetBeans
+    @SuppressWarnings( "varargs" ) // This annotation is ignored (not supported) by Eclipse, but is required by Gradle and NetBeans builds
     public static BigRationalImpl min(BigRationalImpl... args) {
         BigRationalImpl result = args[0];
         for(int i = 1; i < args.length; i++) {
@@ -749,7 +750,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
      * Use {@link #max( Collection<BigRational> collection )} to return null instead of throwing an exception.
      */
     @SafeVarargs
-    @SuppressWarnings( "varargs" ) // This annotation is ignored (not supported) by Eclipse, but is used by NetBeans
+    @SuppressWarnings( "varargs" ) // This annotation is ignored (not supported) by Eclipse, but is required by Gradle and NetBeans builds
     public static BigRationalImpl max(BigRationalImpl... args) {
         BigRationalImpl result = args[0];
         for(int i = 1; i < args.length; i++) {
@@ -849,6 +850,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
      * @param n is the value to be multiplied
      * @return this * n
      */
+    @Override
     public BigRationalImpl timesInt( int n )
     {
         return n == 1 ? this : n == 0 ? ZERO : canMultiplyInteger
