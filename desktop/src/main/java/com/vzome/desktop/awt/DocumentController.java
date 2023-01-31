@@ -725,8 +725,16 @@ public class DocumentController extends DefaultGraphicsController implements Sce
     
             case "openTrackballModel": // invoked from custom menu
                 String modelResourcePath = this .symmetryController .getProperty( "modelResourcePath" );
-                if ( modelResourcePath != null )
-                    super .doAction( "newFromResource-" + modelResourcePath );
+                if ( modelResourcePath != null ) {
+					String newAction = "newFromResource-" + modelResourcePath;
+					String symmName = symmetryController.getProperty("name");
+					if(symmName.startsWith("antiprism")) {
+						// use a delimiter character that shouldn't ever be in a path
+						// and doesn't need to be escaped in a regular expression
+						newAction = newAction + ":" + symmName;
+					}
+					super.doAction(newAction);
+                }
                 break;
 
             case "showOrbitTriangle": // invoked from custom menu

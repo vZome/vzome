@@ -287,14 +287,27 @@ public class ApplicationController extends DefaultController
             {
                 Properties docProps = new Properties();
                 docProps .setProperty( "as.template", "true" ); // don't set window.file!
-                String path = action .substring( "newFromResource-" .length() );
+                final String args = action .substring( "newFromResource-" .length() );
+				// use a delimiter character that shouldn't ever be in a path
+				// and doesn't need to be escaped in a regular expression
+                final String[] parts = args.split(":");
+                final String path = parts[0];
                 ClassLoader cl = this .getClass() .getClassLoader();
                 InputStream bytes = cl .getResourceAsStream( path );
                 // handle the special case of "openTrackballModel" for AntiprismSymmetry
-                if(path.endsWith("antiprism-trackball-template.vZome")) {
+                if(parts.length == 2 && path.endsWith("antiprism-trackball-template.vZome")) {
+                	final String targetSymmName = parts[1];
+                	// symmetryModels is a Map, so the values are in no particular order.
+                	// It contains an instance of each symmetry that the application has ever opened
+                	// for all documents including those that have been closed, not just the current document.
+                	// It's possible that other documents have opened fields having different antiprism symmetries
+                	// so we can't just open the first antiprismSymmetry we encounter in the loop.
+                	// Instead, we've appended the symmetry name from the current document to the action
+                	// so we can identify that specific symmetry   
                     for(RenderedModel rm : this.symmetryModels.values()) {
                         Symmetry symm = rm.getOrbitSource().getSymmetry();
-                        if(symm instanceof AntiprismSymmetry) {
+                        if(symm.getName().equals(targetSymmName)) {
+                        	 LOGGER.fine("Loading " + targetSymmName + " trackball model");
                             bytes = AntiprismTrackball.getTrackballModelStream(bytes, (AntiprismSymmetry)symm);
                             break;
                         }
