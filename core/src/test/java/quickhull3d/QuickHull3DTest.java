@@ -301,7 +301,7 @@ public class QuickHull3DTest
 "Error: " + faceIndices.length + " faces vs. " + checkFaces.length);
 	    }
 	   // translate face indices back into original indices
-	   Point3d[] pnts = hull.getVertices();
+	   //Point3d[] pnts = hull.getVertices();
 	   int[] vtxIndices = hull.getVertexPointIndices();
 
 	   for (int j=0; j<faceIndices.length; j++)
@@ -446,7 +446,7 @@ public class QuickHull3DTest
 	   double m12 = sroll * spitch * cyaw - croll * syaw;
 	   double m22 = cpitch * cyaw;
 
-	   double x, y, z;
+	   //double x, y, z;
 
 	   for (int i=0; i<xyz.length-2; i+=3)
 	    {

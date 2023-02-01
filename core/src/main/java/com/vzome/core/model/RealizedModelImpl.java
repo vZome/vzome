@@ -71,15 +71,6 @@ public class RealizedModelImpl implements RealizedModel
         return mManifestations .values() .iterator();
 	}
 
-    /**
-    * @deprecated Consider using a JDK-5 for-loop if possible. Otherwise use {@link #iterator()} instead.
-    */
-    @Deprecated
-	public Iterator<Manifestation> getAllManifestations()
-    {
-        return this .iterator();
-    }
-    
     public Manifestation manifest( Construction c )
     {
         Manifestation m = null;
@@ -112,6 +103,7 @@ public class RealizedModelImpl implements RealizedModel
     
     private static final Logger logger = Logger .getLogger( "com.vzome.core.model" );
     
+    @Override
     public void add( Manifestation m )
     {
         String key = m .toConstruction() .getSignature();
@@ -120,6 +112,7 @@ public class RealizedModelImpl implements RealizedModel
             logger .finer( "add manifestation: " + m .toString() );
     }
     
+    @Override
     public void remove( Manifestation m )
     {
         String key = m .toConstruction() .getSignature();
@@ -144,6 +137,7 @@ public class RealizedModelImpl implements RealizedModel
     /*
      * idempotent: show,show is the same as show
      */
+    @Override
     public void show( Manifestation m )
     {
         if ( doingBatch )
@@ -170,6 +164,7 @@ public class RealizedModelImpl implements RealizedModel
     /*
      * idempotent: hide,hide is the same as hide
      */
+    @Override
     public void hide( Manifestation m )
     {
         if ( doingBatch )
@@ -192,6 +187,7 @@ public class RealizedModelImpl implements RealizedModel
         }
     }
     
+    @Override
     public void setColor( Manifestation m, Color color )
     {
         m .setColor( color );
@@ -203,6 +199,7 @@ public class RealizedModelImpl implements RealizedModel
     }
     
     
+    @Override
     public Manifestation findConstruction( Construction c )
     {
         Manifestation actualMan = mManifestations .get( c .getSignature() );
@@ -212,6 +209,7 @@ public class RealizedModelImpl implements RealizedModel
         return actualMan;
     }
     
+    @Override
     public Manifestation removeConstruction( Construction c )
     {
         Manifestation actualMan = mManifestations .get( c .getSignature() );
@@ -225,11 +223,13 @@ public class RealizedModelImpl implements RealizedModel
      * @param c
      * @return
      */
+    @Override
     public Manifestation getManifestation( Construction c )
     {
         return mManifestations .get( c .getSignature() );
     }
 
+	@Override
 	public int size()
 	{
 		return mManifestations .size();
@@ -291,6 +291,7 @@ public class RealizedModelImpl implements RealizedModel
         this .doingBatch = false;
     }
 
+	@Override
 	public AlgebraicField getField()
 	{
 		return field;

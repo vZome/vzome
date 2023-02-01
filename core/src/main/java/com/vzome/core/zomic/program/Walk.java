@@ -1,7 +1,8 @@
-
 package com.vzome.core.zomic.program;
 
-import java.util .*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import com.vzome.core.zomic.ZomicException;
 
@@ -25,19 +26,8 @@ public class Walk extends ZomicStatement implements Iterable<ZomicStatement>
 	    return stmts .iterator();
 	}
 
-    /**
-    * @deprecated Consider using a JDK-5 for-loop if possible. Otherwise use {@link #iterator()} instead.
-    */
-    @Deprecated	
-    public Iterator<ZomicStatement> getStatements() {
-		return this .iterator();
-	}
-	
 	public int size(){
 		return stmts .size();
 	}
 
-
 }
-
-

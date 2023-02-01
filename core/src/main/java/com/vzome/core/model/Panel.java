@@ -15,12 +15,6 @@ public interface Panel extends Manifestation, Iterable<AlgebraicVector>
 
     public AlgebraicVector getFirstVertex();
 
-    /**
-     * @deprecated Consider using a JDK-5 for-loop if possible. Otherwise use {@link #iterator()} instead.
-     */
-    @Deprecated
-    public Iterator<AlgebraicVector> getVertices();
-
     @Override
     public Iterator<AlgebraicVector> iterator();
 

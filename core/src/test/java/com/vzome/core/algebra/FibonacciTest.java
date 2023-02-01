@@ -31,7 +31,7 @@ public class FibonacciTest {
     // An ordered list of the last numbers in the series is returned
     // The list will contain the same number of elements as the number of seed values provided
     @SafeVarargs
-    @SuppressWarnings("varargs")
+    @SuppressWarnings("varargs") // This annotation is ignored (not supported) by Eclipse, but is required by Gradle and NetBeans builds
     public final <T extends Fields.Element<T>> List<T> variableFibonacci(BinaryOperator<T> op, int reps, T... args) {
         int nArgs = args.length;
         List<T> terms = Arrays.asList(args);

@@ -211,7 +211,7 @@ public class AlgebraicNumberTest
         final int denom = 1, scalePower = 0; // these must be as stated
         final AlgebraicNumberImpl goldenNumber = (AlgebraicNumberImpl) goldenField.createAlgebraicNumber(ones, phis, denom, scalePower);
         System.out.println(goldenField.getName() + ": " + goldenNumber + "\n");
-        final BigRational[] goldenTerms = goldenNumber .getFactors();
+//        final BigRational[] goldenTerms = goldenNumber .getFactors();
         final double goldenEvaluate = goldenNumber.evaluate();
         final double delta = 0.0d;
         

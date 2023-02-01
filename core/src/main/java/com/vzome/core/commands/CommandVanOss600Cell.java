@@ -53,7 +53,7 @@ public class CommandVanOss600Cell extends CommandImportVEFData
 
     private class VefToModel extends VefParser
     {
-        protected final Quaternion mQuaternion;
+//        protected final Quaternion mQuaternion;
         
         protected QuaternionProjection mProjection;
 
@@ -65,7 +65,7 @@ public class CommandVanOss600Cell extends CommandImportVEFData
         
         public VefToModel( Quaternion quaternion, ConstructionChanges effects )
         {
-            mQuaternion = null;
+//            mQuaternion = null;
             mEffects = effects;
         }
 

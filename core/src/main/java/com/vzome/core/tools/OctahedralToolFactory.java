@@ -14,18 +14,18 @@ public class OctahedralToolFactory extends AbstractToolFactory
 {
 	private static final String ID = "octahedral";
 	private static final String LABEL = "Create an octahedral symmetry tool";
-	private static final String TOOLTIP1 = "<p>" +
-    		"Each tool produces up to 23 copies of the input<br>" +
-    		"selection, using the rotation symmetries of a<br>" +
-    		"cube or octahedron.  To create a tool, select a<br>" +
-    		"ball that defines the center of symmetry, and<br>" +
-    		"a single blue or green strut, defining one of<br>" +
-    		"five possible orientations for the symmetry.<br>" +
-    		"<br>" +
-    		"Combine with a point reflection tool to achieve<br>" +
-    		"all 48 symmetries of the octahedron, including<br>" +
-    		"reflections.<br>" +
-		"</p>";
+//	private static final String TOOLTIP1 = "<p>" +
+//    		"Each tool produces up to 23 copies of the input<br>" +
+//    		"selection, using the rotation symmetries of a<br>" +
+//    		"cube or octahedron.  To create a tool, select a<br>" +
+//    		"ball that defines the center of symmetry, and<br>" +
+//    		"a single blue or green strut, defining one of<br>" +
+//    		"five possible orientations for the symmetry.<br>" +
+//    		"<br>" +
+//    		"Combine with a point reflection tool to achieve<br>" +
+//    		"all 48 symmetries of the octahedron, including<br>" +
+//    		"reflections.<br>" +
+//		"</p>";
 	
 	private static final String TOOLTIP2 = "<p>" +
     		"Each tool produces up to 23 copies of the input<br>" +

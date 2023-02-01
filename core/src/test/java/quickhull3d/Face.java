@@ -521,7 +521,7 @@ class Face
 	    }
 
 	   Vertex v0 = he0.head();
-	   Face prevFace = null;
+	   //Face prevFace = null;
 
 	   hedge = he0.next;
 	   HalfEdge oppPrev = hedge.opposite;

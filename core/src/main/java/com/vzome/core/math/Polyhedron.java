@@ -431,7 +431,7 @@ public class Polyhedron implements Cloneable
         int index = 0;
         ArrayList<Integer> result = new ArrayList<>();
         for ( Face face : m_faces ) {
-            for ( Triangle triangle : face .getTriangles() ) {
+            for ( @SuppressWarnings("unused") Triangle triangle : face .getTriangles() ) {
                 // The old indices don't matter here, since we are creating a new tvertices list,
                 //   and normals to match.
                 result .add( index++ );
@@ -464,7 +464,7 @@ public class Polyhedron implements Cloneable
         ArrayList<RealVector> result = new ArrayList<>();
         for ( Face face : m_faces ) {
             RealVector normal = face .getNormal( this .m_vertexList ) .toRealVector();
-            for ( Triangle triangle : face .getTriangles() ) {
+            for ( @SuppressWarnings("unused") Triangle triangle : face .getTriangles() ) {
                 // add a normal for each vertex of each triangle
                 result .add( normal );
                 result .add( normal );
