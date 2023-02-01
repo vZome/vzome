@@ -18,7 +18,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -427,8 +426,7 @@ public class ZomicASTTest
 	public void testZomicNamingConvention() {
 		for (String color : symmetry.getDirectionNames()) {
 			Direction direction = symmetry.getDirection(color);
-			for (Iterator<Axis> axes = direction.getAxes(); axes.hasNext();) {
-				Axis symmetryAxis = axes.next();
+			for (Axis symmetryAxis : direction) {
 				String indexName = namingConvention.getName(symmetryAxis);
 				Axis namingAxis = namingConvention.getAxis(color, indexName);
 				if (namingAxis == null || NamingConvention.UNKNOWN_AXIS.equals(indexName)) {
@@ -547,9 +545,7 @@ public class ZomicASTTest
 	public void testStrutDefaultValues() {
 		Walk program = compileAndCompare("red 0 /* test StrutDefaultValues */");
 		assertProgramSize(1, program);
-		Iterator<ZomicStatement> it = program .getStatements(); 
-		while( it.hasNext() ) {
-			ZomicStatement stmt = it.next();
+		for(ZomicStatement stmt : program) {
 			if(stmt instanceof Move) {
 				Move m = (Move)stmt;
 				AlgebraicField algebraicField = m.getLength().getField();

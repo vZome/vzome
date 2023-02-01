@@ -1,9 +1,13 @@
 
 package com.vzome.core.antlr;
 
-import org.xml.sax .*;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers .AttributesImpl;
-import antlr .*;
+
+import antlr.RecognitionException;
+import antlr.Token;
+import antlr.TokenStreamException;
 
 @Deprecated
 public class ANTLRContentSupplier extends ANTLR2XML .Default{

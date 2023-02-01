@@ -32,6 +32,7 @@ public class PanelImpl extends ManifestationImpl implements Panel
         mVertices = new ArrayList<>(vertices);
     }
 
+    @Override
     public AlgebraicVector getZoneVector()
     {
         if ( this .zoneVector != null )
@@ -40,6 +41,7 @@ public class PanelImpl extends ManifestationImpl implements Panel
             return this .getNormal();
     }
 
+    @Override
     public void setZoneVector( AlgebraicVector vector )
     {
         this .zoneVector = vector;
@@ -51,6 +53,7 @@ public class PanelImpl extends ManifestationImpl implements Panel
         return null;
     }
 
+    @Override
     public AlgebraicVector getFirstVertex()
     {
         return this .mVertices .get( 0 );
@@ -76,21 +79,13 @@ public class PanelImpl extends ManifestationImpl implements Panel
         return new PolygonFromVertices( projected );
     }
 
-    /**
-     * @deprecated Consider using a JDK-5 for-loop if possible. Otherwise use {@link #iterator()} instead.
-     */
-    @Deprecated
-    public Iterator<AlgebraicVector> getVertices()
-    {
-        return this.iterator();
-    }
-
     @Override
     public Iterator<AlgebraicVector> iterator()
     {
         return mVertices.iterator();
     }
 
+    @Override
     public int getVertexCount()
     {
         return mVertices.size();
@@ -168,6 +163,7 @@ public class PanelImpl extends ManifestationImpl implements Panel
         return true;
     }
 
+    @Override
     public AlgebraicVector getNormal( )
     {
         AlgebraicVector v0 = mVertices.get( 0 );
@@ -176,6 +172,7 @@ public class PanelImpl extends ManifestationImpl implements Panel
         return AlgebraicVectors.getNormal(v0, v1, v2);
     }
 
+    @Override
     public RealVector getNormal( Embedding embedding )
     {
         AlgebraicVector v0 = mVertices.get( 0 );

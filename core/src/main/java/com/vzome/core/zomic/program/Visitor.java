@@ -30,7 +30,7 @@ public interface Visitor{
 
     void visitBuild( boolean build, boolean destroy ) throws ZomicException ;
 
-	public class Default extends Object implements Visitor{
+	public class Default implements Visitor{
 
         @Override
 		public  void visitWalk( Walk walk ) throws ZomicException {

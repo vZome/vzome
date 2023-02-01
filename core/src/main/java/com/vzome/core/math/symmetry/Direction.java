@@ -184,17 +184,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     {
         return getZoneVectors() .values() .iterator();
     }
-    
-    /**
-    * @deprecated Consider using a JDK-5 for-loop if possible. Otherwise use {@link #iterator()} instead.
-    */
-    @Deprecated
-    @JsonIgnore
-    public Iterator<Axis> getAxes()
-    {
-        return this .iterator();
-    }
-        
+      
     @JsonIgnore
     public Symmetry getSymmetry()
     {

@@ -1,12 +1,10 @@
-
 package com.vzome.core.zomic.program;
 
 import com.vzome.core.zomic.ZomicException;
 
-public  abstract class ZomicStatement extends Object{
+public  abstract class ZomicStatement {
 
-	public  abstract 
-	void accept( Visitor visitor ) throws ZomicException ;
+	public abstract void accept( Visitor visitor ) throws ZomicException;
 
     public void setErrors( String[] errors ){
         mErrors = errors;
@@ -19,5 +17,3 @@ public  abstract class ZomicStatement extends Object{
     protected String[] mErrors;
 
 }
-
-

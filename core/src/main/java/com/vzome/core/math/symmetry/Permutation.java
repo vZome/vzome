@@ -3,9 +3,7 @@ package com.vzome.core.math.symmetry;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-
-
-public class Permutation extends Object {
+public class Permutation {
 
 	/**
 	    * Since the MINUS side always mirrors the PLUS side,

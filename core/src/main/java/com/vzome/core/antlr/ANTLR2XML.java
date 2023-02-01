@@ -36,7 +36,7 @@ public interface ANTLR2XML {
     }
 
     @Deprecated
-	public abstract class Default extends Object implements ANTLR2XML {
+	public abstract class Default implements ANTLR2XML {
 
         private Stack<String> m_elementNames = new Stack<>();
 
