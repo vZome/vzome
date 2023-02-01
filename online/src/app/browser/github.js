@@ -7,6 +7,7 @@ export const useGitHubShares = githubUser =>
   const [ designs, setDesigns ] = React.useState( [] );
 
   useEffect( () => {
+    localStorage.setItem( 'vzome-github-user', githubUser );
     fetch( `https://api.github.com/repos/${githubUser}/vzome-sharing/git/trees/main?recursive=1` )
       .then( response => response.json() )
       .then( json => {
@@ -14,17 +15,21 @@ export const useGitHubShares = githubUser =>
           .filter( entry => entry.path > "2021/07/31" )
           .map( ({ path }) => {
             const tokens = path .split( '/' );
-            const title = tokens[4] .substring( 0, tokens[4] .indexOf( '.vZome' ) );
             const url = BASE_URL + tokens .map( encodeURIComponent ) .join( '/' );
-            const date = `${ tokens[0] }-${ tokens[1] }-${ tokens[2] }`;
-            const timeTokens = tokens[3] .split( '-' );
-            const details = `${date}     ${ timeTokens[0] }:${ timeTokens[1] }:${ timeTokens[2] }`;
+            const lastToken = tokens[ tokens.length-1 ];
+            const title = lastToken .substring( 0, lastToken .indexOf( '.vZome' ) );
+            let details = 'NONSTANDARD PATH';
+            if ( tokens.length === 5 ) {
+              const date = `${ tokens[0] }-${ tokens[1] }-${ tokens[2] }`;
+              const timeTokens = tokens[3] .split( '-' );
+              details = `${date}     ${ timeTokens[0] }:${ timeTokens[1] }:${ timeTokens[2] }`;
+            }
             return { title, details, path, url };
           } );
         console.log( 'Repo has', designs.length, 'entries.' );
         setDesigns( designs );
       } );
-  }, [] );
+  }, [githubUser] );
 
   return designs;
 }

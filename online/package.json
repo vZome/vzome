@@ -16,6 +16,7 @@
     "react-dom": "^18.0",
     "react-redux": "^7.2.6",
     "react-router-dom": "^5.2.0",
+    "react-select": "^5.7.0",
     "react-solid-bridge": "^1.0.1",
     "redux": "^4.0.5",
     "redux-logger": "^3.0.6",

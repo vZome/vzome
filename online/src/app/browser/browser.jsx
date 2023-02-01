@@ -11,11 +11,13 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button';
+import CreatableSelect from 'react-select/creatable';
+import { useEffect } from 'react';
 
 const queryParams = new URLSearchParams( window.location.search );
-const githubUser = queryParams.get( 'user' ) || "vorth";
+const defaultGithubUser = queryParams.get( 'user' ) || localStorage.getItem( 'vzome-github-user' ) || "vorth";
 
-const DesignList = ( { setUrl } ) =>
+const DesignList = ( { setUrl, githubUser } ) =>
 {
   const designs = useGitHubShares( githubUser );
   const [ selectedIndex, setSelectedIndex ] = React.useState( 0 );
@@ -43,7 +45,7 @@ const DesignList = ( { setUrl } ) =>
   );
 }
 
-const DesignActions = ( { url, path } ) =>
+const DesignActions = ( { githubUser, url, path } ) =>
 {
   const copyHtml = path =>
   {
@@ -87,6 +89,18 @@ const DesignActions = ( { url, path } ) =>
   }
 }
 
+console.log( "defaultGithubUser ", defaultGithubUser );
+const storedUsers = JSON.parse( localStorage.getItem( 'vzome-github-users' ) || "[]" );
+const knownUsers = [ ...storedUsers, defaultGithubUser, 'david-hall', 'John-Kostick', 'ThynStyx', 'vorth', ];
+const uniqueUsers = new Set();
+knownUsers .map( user => uniqueUsers.add( user ) );
+
+const createOption = label => ({ label, value: label.toLowerCase() });
+const defaultOptions = [];
+for ( const user of uniqueUsers ) {
+  defaultOptions .push( createOption( user ) );
+}
+
 export const DesignBrowser = ( { debug } ) =>
 {
   const report = useDispatch();
@@ -98,13 +112,35 @@ export const DesignBrowser = ( { debug } ) =>
     setUrl( url );
     setPath( path );
   }
+  const [ githubUser, setGithubUser ] = useState( createOption( defaultGithubUser ) );
+  const [ options, setOptions ] = useState( defaultOptions );
+  const handleCreate = (inputValue) =>
+  {
+    const newOption = createOption( inputValue );
+    setOptions( (prev) => [...prev, newOption] );
+    setGithubUser( newOption );
+  };
+  useEffect( () => {
+    const value = JSON.stringify( options.map( option => option.label ) );
+    console.log( "storing vzome-github-users ", value );
+    localStorage .setItem( 'vzome-github-users', value );
+  }, [options] );
 
   return (
     <div id='github-browser' style={{ display: 'grid', gridTemplateColumns: '20% 80%', height: '100%' }}>
-      <DesignList setUrl={selectUrl}/>
+      <div>
+        <CreatableSelect
+          isClearable
+          onChange={ (option) => setGithubUser( option ) }
+          onCreateOption={handleCreate}
+          options={options}
+          value={githubUser}
+        />
+        <DesignList githubUser={githubUser?.value} setUrl={selectUrl}/>
+      </div>
       <div id='github-browser' style={{ display: 'grid', gridTemplateRows: 'min-content 1fr' }}>
         <div id='details' style={{ minHeight: '60px', borderBottom: '1px solid gray', backgroundColor: 'whitesmoke' }}>
-          <DesignActions url={url} path={path} />
+          <DesignActions githubUser={githubUser?.value} url={url} path={path} />
         </div>
         <DesignViewer config={ { useSpinner: true } } />
       </div>
