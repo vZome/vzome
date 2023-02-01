@@ -95,7 +95,7 @@ const knownUsers = [ ...storedUsers, defaultGithubUser, 'david-hall', 'John-Kost
 const uniqueUsers = new Set();
 knownUsers .map( user => uniqueUsers.add( user ) );
 
-const createOption = label => ({ label, value: label.toLowerCase() });
+const createOption = label => ({ label, value: label });
 const defaultOptions = [];
 for ( const user of uniqueUsers ) {
   defaultOptions .push( createOption( user ) );
