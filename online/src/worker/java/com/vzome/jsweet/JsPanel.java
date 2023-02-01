@@ -93,19 +93,6 @@ public class JsPanel extends JsManifestation implements Panel
         return this.vectors.length;
     }
 
-    
-    
-    
-    
-    
-    
-
-    @Override
-    public Iterator<AlgebraicVector> getVertices()
-    {
-        throw new RuntimeException( "unimplemented" );
-    }
-
     @Override
     public RealVector getNormal( Embedding embedding )
     {
