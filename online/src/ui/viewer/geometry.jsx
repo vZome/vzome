@@ -1,8 +1,8 @@
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { forwardRef, useImperativeHandle } from 'react';
 import { useEmbedding, useRotation, useGeometry } from './hooks.js'
-import { useThree } from '@react-three/fiber'
+import { useThree, useFrame } from '@react-three/fiber'
 import { GLTFExporter } from 'three-stdlib';
 
 const Instance = ( { id, position, rotation, geometry, color, selected, type, toolRef } ) =>
@@ -50,6 +50,15 @@ const InstancedShape = ( { shape, toolRef } ) =>
 export const ShapedGeometry = forwardRef(( { shapes, embedding, toolRef }, exporterRef ) =>
 {
   const { scene } = useThree();
+
+  const [ dirty, setDirty ] = useState( true );
+  useFrame( ({ gl, scene, camera }) => {
+    if ( dirty ) {
+      gl.render( scene, camera );
+      setDirty( false );
+    }
+  }, 2 );
+  useEffect( () => setDirty( true ), [ shapes ] );
 
   const gltfExporter = {
     exportGltfJson: writeFile =>

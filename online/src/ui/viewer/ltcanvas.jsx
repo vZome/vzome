@@ -69,6 +69,17 @@ const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamer
 {
   // Here we can useThree, etc., which we could not in LightedTrackballCanvas
 
+  const [ needsRender, setNeedsRender ] = useState( 20 );
+  const trackballChange = evt => {
+    setNeedsRender( 20 );
+  };
+  useFrame( ({ gl, scene, camera }) => {
+    if ( needsRender > 0 ) {
+      gl.render( scene, camera );
+      setNeedsRender( needsRender-1 );
+    }
+  }, 1 );
+
   const trackballEnd = evt =>
   {
     const trackball = evt.target;
@@ -89,6 +100,7 @@ const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamer
     const near = camera.near;
 
     syncCamera( { lookAt, up, lookDir, distance, width, far, near } );
+    setNeedsRender( 20 );
   }
 
   const { near, far, width, distance, up, lookAt, lookDir, perspective } = sceneCamera;
@@ -108,7 +120,7 @@ const LightedCameraControls = ({ forVR, lighting, aspect, sceneCamera, syncCamer
       <PerspectiveCamera makeDefault { ...{ fov, position, up } } >
         <Lighting {...(lights)} />
       </PerspectiveCamera>
-      {trackball && <TrackballControls onEnd={trackballEnd} rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={lookAt} />}
+      {trackball && <TrackballControls onChange={trackballChange} onEnd={trackballEnd} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={lookAt} />}
     </>
   );
   // return forVR? (
@@ -145,7 +157,7 @@ export const LightedTrackballCanvas = ( { lighting, children, sceneCamera, syncC
   const vrAvailable = useVR();
   if ( vrAvailable ) {
     return (
-      <VRCanvas frameloop='demand' dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} >
+      <VRCanvas dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} >
         <DefaultXRControllers/>
         <LightedCameraControls forVR {...{ lighting, aspect, sceneCamera, syncCamera }} />
         <VREffects>
@@ -154,7 +166,7 @@ export const LightedTrackballCanvas = ( { lighting, children, sceneCamera, syncC
       </VRCanvas> )
   } else {
     return (
-      <Canvas ref={measured} frameloop='demand' dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
+      <Canvas ref={measured} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }} onPointerMissed={handleBackgroundClick} >
         <LightedCameraControls {...{ lighting, aspect, sceneCamera, syncCamera, trackball }} />
         {children}
       </Canvas> )
