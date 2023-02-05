@@ -415,10 +415,12 @@ public class JsAlgebraicField implements AlgebraicField
     @Override
     public AlgebraicVector parseVector(String nums)
     {
-        StringTokenizer tokens = new StringTokenizer( nums, " " );
+        String noLF = nums .replace( '\n', ' ' );
+        String noCRLF = noLF .replace( '\r', ' ' );
+        StringTokenizer tokens = new StringTokenizer( noCRLF, " " );
         int numToks = tokens .countTokens();
         if ( numToks % getOrder() != 0 )
-            throw new IllegalStateException( "Field order (" + getOrder() + ") does not divide token count: " + numToks + ", for '" + nums + "'" );
+            throw new IllegalStateException( "Field order (" + getOrder() + ") does not divide token count: " + numToks + ", for '" + noCRLF + "'" );
 
         int dims = numToks / getOrder();
         AlgebraicNumber[] coords = new AlgebraicNumber[ dims ];

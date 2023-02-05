@@ -123,7 +123,7 @@ export const createParser = ( documentFactory ) => ( xmlText ) =>
   const scene = vZomeRoot.getChildElement( "sceneModel" )
   const lighting = scene && parseLighting( scene )
 
-  const historyElement = vZomeRoot.getChildElement( "EditHistory" ) || vZomeRoot.getChildElement( "EditHistoryDetails" );
+  const historyElement = vZomeRoot.getChildElement( "EditHistory" ) || vZomeRoot.getChildElement( "editHistory" ) || vZomeRoot.getChildElement( "EditHistoryDetails" );
   const xmlTree = assignIds( historyElement.nativeElement );
   const edits = new LegacyEdit( xmlTree, null, design.interpretEdit );
   const targetEditId = `:${edits.getAttribute( "editNumber" )}:`
