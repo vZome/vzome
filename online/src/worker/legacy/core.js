@@ -278,7 +278,7 @@ const makeFloatMatrices = ( matrices ) =>
   addLegacyField( vzomePkg.core.algebra.PlasticNumberField, vzomePkg.core.kinds.DefaultFieldApplication )
   addLegacyField( vzomePkg.core.algebra.PlasticPhiField, vzomePkg.core.kinds.DefaultFieldApplication )
   addLegacyField( vzomePkg.core.algebra.EdPeggField, vzomePkg.core.kinds.DefaultFieldApplication )
-  const getFieldApp = name =>
+  const getFieldApp = ( name='golden' ) =>
   {
     let fieldApp = fieldApps[ name ]
     if ( ! fieldApp ) {

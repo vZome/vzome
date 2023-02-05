@@ -226,7 +226,7 @@ const loadDesign = ( xmlLoading, report, debug ) =>
 
     .catch( error => {
       console.log( `loadDesign failure: ${error.message}` );
-      report( { type: 'ALERT_RAISED', payload: 'Failed to load vZome model.' } );
+      report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model.  ${error.message}` } );
       return false; // probably nobody should care about the return value
      } );
 }
