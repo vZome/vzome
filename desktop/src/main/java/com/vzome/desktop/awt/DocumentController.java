@@ -16,6 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -869,6 +870,13 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                 // Sample prefs file entry: save.exports=export.dae capture.png capture.jpg export.vef
                 String exports = this .getProperty( "save.exports" );
                 if ( exports != null ) {
+                    Path filePath = file .toPath();
+                    String fileName = filePath .getFileName() .toString();
+                    int index = fileName .lastIndexOf( "." );
+                    if ( index > 0 )
+                    {
+                        fileName = fileName .substring( 0, index );
+                    }
                     for ( String captureOrExport : exports .split( " " ) ) {
                         // captureOrExport should be "capture.png" or "export.dae" or similar
                         String extension = "";
@@ -877,15 +885,17 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                             switch (cmd[0]) {
                             case "capture":
                             case "export2d":
-                            case "export":
                                 extension = cmd[1];
+                                break;
+                            case "export":
+                                extension = this .getProperty( "exportExtension." + cmd[1] );
                                 break;
                             }
                         }
-                        if(extension == "") {
+                        if ( extension == "" ) {
                             mErrors.reportError( UNKNOWN_PROPERTY + " save.exports=" + captureOrExport, null );
                         } else {
-                            File exportFile = new File( dir, file .getName() + "." + extension );
+                            File exportFile = new File( dir, fileName + "." + extension );
                             doFileAction( captureOrExport, exportFile );
                         }
                     }
