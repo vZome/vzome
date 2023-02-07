@@ -981,14 +981,6 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 else if ( command .startsWith( "export." ) ) {
                     String ext = command .substring( "export." .length() );
                     ext = controller .getProperty( "exportExtension." + ext );
-                    switch ( ext ) {
-                    case "vrml": ext = "wrl"; break;
-                    case "size": ext = "txt"; break;
-                    case "partslist": ext = "txt"; break;
-                    case "partgeom": ext = "vef"; break;
-                    default:
-                        break;
-                    }
                     actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
                 }
                 else {
