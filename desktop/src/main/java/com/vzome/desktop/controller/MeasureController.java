@@ -85,6 +85,9 @@ public class MeasureController extends DefaultController implements SelectionSum
                     this .measurements .put( "length (cm)", twoPlaces .format( cm ) + " cm" );
                     double inches = cm / 2.54;
                     this .measurements .put( "length (in)", twoPlaces .format( inches ) + " in" );
+                    
+                    AlgebraicVector offset = strut .getOffset();
+                    this .measurements .put( "quadrance", offset .dot( offset ) .toString() );
                 } else if ( balls == 1 ) {
                     Connector conn = Manifestations.getConnectors( this .selection ).next();
                     this .measurements .put( "location", conn.getLocation().toString());
@@ -118,7 +121,8 @@ public class MeasureController extends DefaultController implements SelectionSum
                     }
                     double radians = this .renderedModel .measureAngle( s1, s2 );
                     this .reportAngles( radians );
-                    this.reportRatio(s1, s2);
+                    this .reportSpread( s1, s2 );
+                    this .reportRatio( s1, s2 );
         		} else if ( balls == 2 ) {
         			Connector b1 = null, b2 = null;
         			for ( Connector conn : Manifestations.getConnectors( this .selection ) ) {
@@ -150,6 +154,28 @@ public class MeasureController extends DefaultController implements SelectionSum
 	        // This shouldn't happen, but if it does, at least we get a visual clue
             this .measurements .put( "angle", Double.toString(radians) );
 	    }
+	}
+	
+	/**
+	 * Use Rational Trigonometry (the cross law) to compute the spread between struts
+	 * @param s1
+	 * @param s2
+	 */
+	private void reportSpread( Strut s1, Strut s2 )
+	{
+	    AlgebraicVector v1 = s1 .getOffset();
+	    AlgebraicVector v2 = s2 .getOffset();
+	    AlgebraicVector v3 = v2 .minus( v1 );
+	    AlgebraicNumber Q1 = v2 .dot( v2 );
+	    AlgebraicNumber Q2 = v1 .dot( v1 );
+	    AlgebraicNumber Q3 = v3 .dot( v3 );
+	    AlgebraicNumber one = Q1 .getField() .one();
+	    AlgebraicNumber four = Q1 .getField() .createRational( 4 );
+	    AlgebraicNumber a = Q1 .plus( Q2 ) .minus( Q3 );
+	    AlgebraicNumber denom = four .times( Q1 ) .times( Q2 );
+	    AlgebraicNumber ratio = a .times( a ) .dividedBy( denom );
+	    AlgebraicNumber spread3 = one .minus( ratio );
+        this .measurements .put( "spread", spread3 .toString() );
 	}
 	
 	private void reportRatio(Strut s1, Strut s2)
