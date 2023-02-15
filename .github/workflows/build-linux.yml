@@ -1,0 +1,40 @@
+
+name: vZome Linux build
+
+on:
+  workflow_dispatch:
+
+env:
+  BUILD_NUMBER: ${{ github.run_number }}
+  GIT_COMMIT: ${{ github.sha }}
+  # TODO connect these to secrets
+  # NOTE: They have nothing to do with running this GitHub Action;
+  #   they are for vZome to make runtime API calls to GitHub.
+  GITHUB_CLIENT_SECRET: ${{ secrets.VZOME_GITHUB_CLIENT_SECRET }}
+  GITHUB_CLIENT_ID: ${{ secrets.VZOME_GITHUB_CLIENT_ID }}
+
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        lfs: 'true'
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        java-version: '17.0.5'
+        distribution: 'temurin'
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    - name: Build with Gradle
+      run: |
+        ./gradlew clean jpackage
+        ls desktop/build/jpackage
+    - name: Archive Linux build
+      uses: actions/upload-artifact@v2
+      with:
+        name: vZome-Linux-7.1.${{ github.run_number }}
+        path: desktop/build/jpackage/vzome_*.deb
