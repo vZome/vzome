@@ -65,7 +65,7 @@ dependencies {
     implementation     group: 'org.antlr',         name: 'antlr4',            version:'4.7.1'
     implementation     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
 //    implementation     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
-    implementation     group: 'org.jogamp', name: 'jogl-all', version:'v2.4.0-rc-20200307'
+    implementation     group: 'org.jogamp.jogl', name: 'jogl-all', version:'2.4.0'
 
     implementation group: 'antlr',             name: 'antlr',             version:'2.7.7'
 
