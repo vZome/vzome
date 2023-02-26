@@ -132,14 +132,12 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
     - name: Build with Gradle
       run: |
-        ./gradlew clean jpackage
+        ./gradlew -i clean jpackage
         ls desktop/build/jpackage
-    - name: Archive Linux build
-      uses: actions/upload-artifact@v3
+    - name: Archive Windows build
+      uses: actions/upload-artifact@v2
       with:
         name: vZome-Windows-7.1.${{ github.run_number }}
         path: desktop/build/jpackage/vZome-*.exe
@@ -147,7 +145,7 @@ jobs:
       run: |
         mkdir -p $env:USERPROFILE/.ssh/
         echo "$SSH_KEY" > $env:USERPROFILE/.ssh/dreamhost.key
-        chmod 600 $env:USERPROFILE/.ssh/dreamhost.key
+        echo "" >> $env:USERPROFILE/.ssh/dreamhost.key
         echo 'Host dreamhost' > $env:USERPROFILE/.ssh/config
         echo '  HostName sandy.dreamhost.com' >> $env:USERPROFILE/.ssh/config
         echo '  User scottvorthmann' >> $env:USERPROFILE/.ssh/config
