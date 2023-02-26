@@ -34,7 +34,7 @@ public class JoglOpenGlShim implements OpenGlShim
     {
         this.gl2 = gl2;
         if(!versionIsLogged) {
-        	LOGGER.config("OpenGL version: " + gl2.glGetString(gl2.GL_VERSION) + "\n" 
+        	LOGGER.config("OpenGL version: " + gl2.glGetString(GL.GL_VERSION) + "\n" 
         			+ "    GLSL: " + getGLSLVersionString());
         	// DJH: FWIW, on my Windows 10 computer, getGLSLVersionString() has a trailing newline.
         	// I don't know if that's typical on other machines, 
