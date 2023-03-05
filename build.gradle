@@ -44,15 +44,8 @@ subprojects {
     // For EGit
     maven { url 'https://repo.eclipse.org/content/groups/releases' }
 
-    ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR downloads for JOGL
-      url "https://jogamp.org/deployment"
-      metadataSources {
-        artifact();
-      }
-      patternLayout {
-        artifact "[revision]/jar/[artifact].[ext]"
-      }
-    }
+    maven { url 'https://jogamp.org/deployment/maven' }
+
     ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR download for vecmath
       url "https://jogamp.org/deployment"
       metadataSources {

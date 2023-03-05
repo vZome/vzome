@@ -85,17 +85,28 @@ follow the [simple instructions](./sharing.html), if you'd like to do the same.
 
 ## [vZome Online GitHub Browser](https://vzome.com/app/browser)
 
-This a utility that comes in handy when [sharing vZome designs via GitHub](./sharing.html) as described above,
+This is a utility that comes in handy when [sharing vZome designs via GitHub](./sharing.html) as described above,
 or more specifically, when composing web pages that show multiple designs.
 A common pattern is to export a web page when sharing one design,
 then enhance the page with more designs already shared.
 This browser helps you find those existing designs and grab the HTML snippet to include them
 in any web page.  I used it when writing this web page!
 
-By default, the app will display my own GitHub repository.  To display another GitHub user's designs,
-simply add their GitHub username as a query parameter:
-```
-https://vzome.com/app/browser?user=John-Kostick
-```
+By default, the app will display my own GitHub repository, but there is a selection control that lets
+you choose from a few others.  Whatever you select, the app will save your choice in browser local storage,
+so that choice will be pre-selected the next time you open the app with the same browser.
 
+To display another GitHub user's (e.g. your own) designs, click on the "X" in the editable selection field
+and type the GitHub username.  The username will be added to the list saved in browser local storage,
+so the list of possible users will grow over time.
 
+If you ever need to delete a bad username from the list, just bring up the browser's developer view,
+enter the "console" tab, and view and modify the saved values as follows:
+```
+> localStorage.getItem( 'vzome-github-users' )
+ '["vorth","david-hall","John-Kostick","ThynStyx","pdmclean","tomgeometer","roice3","pfreire163"]'
+> localStorage.getItem( 'vzome-github-user' )
+ 'vorth'
+> localStorage.setItem( 'vzome-github-users', '["vorth","david-hall","John-Kostick","ThynStyx","pdmclean","thynstyx","tomgeometer"]' )
+```
+The values are always strings, so be careful with those quotes!
