@@ -121,7 +121,7 @@ export const DesignViewer = ( { children, children3d, config={}, toolRef={} } ) 
   return (
     <div ref={containerRef} style={ fullScreen? fullScreenStyle : normalStyle }>
       { scene?
-        <SceneCanvas { ...{ scene, toolRef, syncCamera, children3d } } ref={exporterRef} />
+        <SceneCanvas { ...{ scene, syncCamera, children3d } } toolActions={toolRef.current} ref={exporterRef} />
         : children // This renders the light DOM if the scene couldn't load
       }
 

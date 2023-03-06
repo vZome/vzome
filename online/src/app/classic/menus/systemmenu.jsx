@@ -21,7 +21,7 @@ export const SystemMenu = ( props ) =>
 
   return (
     <div>
-      <Button id="system-menu-button"
+      <Button id="system-menu-button" sx={{ color: 'white', minWidth: 'auto' }}
         aria-controls={open() ? "system-menu-menu" : undefined} aria-haspopup="true" aria-expanded={open() ? "true" : undefined}
         onClick={ (event) => setAnchorEl(event.currentTarget) }
       >

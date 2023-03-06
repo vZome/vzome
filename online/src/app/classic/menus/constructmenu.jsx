@@ -17,7 +17,7 @@ export const ConstructMenu = ( props ) =>
 
   return (
     <div>
-      <Button id="construct-menu-button"
+      <Button id="construct-menu-button" sx={{ color: 'white', minWidth: 'auto' }}
         aria-controls={open() ? "construct-menu-menu" : undefined} aria-haspopup="true" aria-expanded={open() ? "true" : undefined}
         onClick={ (event) => setAnchorEl(event.currentTarget) }
       >
