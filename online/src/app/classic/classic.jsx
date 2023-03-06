@@ -6,8 +6,7 @@ import { createSignal } from "solid-js";
 
 import { CameraControls } from './components/camera.jsx';
 import { StrutBuildPanel } from './components/strutbuilder.jsx';
-import { MenuBar } from './components/menubar.jsx';
-import { createWorkerStore, subController, controllerAction } from './controllers-solid.js';
+import { subController, controllerAction } from './controllers-solid.js';
 import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
 import { solidify } from './solid-react.jsx';
 import { SceneEditor } from "./editor.jsx";
@@ -15,17 +14,15 @@ import { createSwitcherTool } from "./tools/strutdrag.jsx";
 
 const SolidSceneEditor = solidify( SceneEditor );
 
-export const ClassicEditor = ( { worker } ) =>
+export const ClassicEditor = ( props ) =>
 {
-  const { rootController, getScene, setState } = createWorkerStore( worker );
+  const syncCamera = camera => props.setState( 'scene', 'liveCamera', camera );
 
-  const syncCamera = camera => setState( 'scene', 'liveCamera', camera );
+  const bkgdColor = () => props.getScene() ?.lighting ?.backgroundColor;
 
-  const bkgdColor = () => getScene() ?.lighting ?.backgroundColor;
-
-  const bookmarkController = () => subController( rootController(), 'bookmark' );
-  const pickingController  = () => subController( rootController(), 'picking' );
-  const strutBuilder       = () => subController( rootController(), 'strutBuilder' );
+  const bookmarkController = () => subController( props.controller, 'bookmark' );
+  const pickingController  = () => subController( props.controller, 'picking' );
+  const strutBuilder       = () => subController( props.controller, 'strutBuilder' );
   const symmController     = () => subController( strutBuilder(), 'symmetry' );
   const toolsController    = () => subController( strutBuilder(), 'tools' );
 
@@ -38,7 +35,7 @@ export const ClassicEditor = ( { worker } ) =>
     },
     bkgdClick: () =>
     {
-      controllerAction( rootController(), 'DeselectAll' );
+      controllerAction( props.controller, 'DeselectAll' );
     },
     onDragStart: ( id, position, type, starting, evt ) => {
       console.log( 'selectionTool onDragStart?????!!!!!' );
@@ -88,8 +85,7 @@ export const ClassicEditor = ( { worker } ) =>
   // that is a self-contained mouse tool with SolidJS state and React rendering, things would be easier.)
 
   return (
-    <div id='classic' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }} class='whitesmoke-bkgd'>
-      <MenuBar controller={rootController()} scene={getScene()} />
+    <div id='classic' style={{ display: 'grid', 'grid-template-rows': '1fr' }} class='whitesmoke-bkgd'>
       <div id='editor-main' class='grid-cols-1-min whitesmoke-bkgd' >
 
         <div id='editor-canvas' style={{ display: 'grid', 'grid-template-rows': 'min-content min-content min-content 1fr' }}>
@@ -98,10 +94,10 @@ export const ClassicEditor = ( { worker } ) =>
             <div id='stats-bar' class='placeholder' style={{ 'min-height': '30px' }} >Status</div>
           </div>
           <ToolFactoryBar controller={symmController()} />
-          <ToolBar symmetryController={symmController()} toolsController={toolsController()} editorController={rootController()} />
+          <ToolBar symmetryController={symmController()} toolsController={toolsController()} editorController={props.controller} />
           <div id='canvas-and-bookmarks' style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
             <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} symmetryController={symmController()} />
-            <SolidSceneEditor scene={getScene()} strutting={strutting()}
+            <SolidSceneEditor scene={props.getScene()} strutting={strutting()}
               syncCamera={syncCamera} toolActions={switcherTool}
               style={{ position: 'relative', height: '100%' }} />
           </div>

@@ -19,7 +19,7 @@ export const EditMenu = ( props ) =>
 
   return (
     <div>
-      <Button id="edit-menu-button"
+      <Button id="edit-menu-button" sx={{ color: 'white', minWidth: 'auto' }}
         aria-controls={open() ? "edit-menu-menu" : undefined} aria-haspopup="true" aria-expanded={open() ? "true" : undefined}
         onClick={ (event) => setAnchorEl(event.currentTarget) }
       >

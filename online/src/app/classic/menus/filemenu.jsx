@@ -40,7 +40,7 @@ export const FileMenu = ( props ) =>
 
   return (
     <div>
-      <Button
+      <Button sx={{ color: 'white', minWidth: 'auto' }}
         id="file-menu-button"
         aria-controls={open() ? "file-menu-menu" : undefined}
         aria-haspopup="true"

@@ -19,7 +19,7 @@ export const HelpMenu = ( props ) =>
 
   return (
     <div>
-      <Button id="help-menu-button"
+      <Button id="help-menu-button" sx={{ color: 'white', minWidth: 'auto' }}
         aria-controls={open() ? "help-menu-menu" : undefined} aria-haspopup="true" aria-expanded={open() ? "true" : undefined}
         onClick={ (event) => setAnchorEl(event.currentTarget) }
       >
