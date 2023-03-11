@@ -8,12 +8,27 @@ import { createSignal } from "solid-js";
 import { controllerExportAction } from "../controllers-solid.js";
 import { serializeVZomeXml, download } from '../../../workerClient/serializer.js';
 import { MenuAction } from "../components/menuaction.jsx";
+import { openDesignFile } from "../../../ui/viewer/store.js";
 
 export const FileMenu = ( props ) =>
 {
   const [ anchorEl, setAnchorEl ] = createSignal( null );
   const open = () => Boolean( anchorEl() );
   const doClose = () => setAnchorEl( null );
+
+  let inputRef;
+  const openFile = evt =>
+  {
+    doClose();
+    inputRef.click();
+  }
+  const onFileSelected = e => {
+    const selected = e.target.files && e.target.files[0]
+    if ( selected ) {
+      props.controller.__store.postMessage( openDesignFile( selected, false ) );
+    }
+    inputRef.value = null;
+  }
 
   const exportAs = ( format, mimeType ) => evt =>
   {
@@ -56,8 +71,13 @@ export const FileMenu = ( props ) =>
         onClose={doClose}
         MenuListProps={{ "aria-labelledby": "file-menu-button" }}
       >
-        <MenuItem disabled={true} onClick={doClose}>New Design</MenuItem>
-        <MenuItem disabled={true} onClick={doClose}>Open</MenuItem>
+        <MenuItem disabled={true} onClick={doClose}>New Design...</MenuItem>
+        <MenuAction label="Open..." onClick={openFile} mods="⌘" key="O" />
+        <MenuItem disabled={true} onClick={doClose}>Open URL...</MenuItem>
+        <MenuItem disabled={true} onClick={doClose}>Open As New Model...</MenuItem>
+
+        <Divider/>
+
         <MenuAction label="Save" onClick={save} mods="⌘" key="S" />
 
         <Divider/>
@@ -65,6 +85,8 @@ export const FileMenu = ( props ) =>
         <MenuItem onClick={ exportAs( 'stl', 'application/sla' ) }>Export STL</MenuItem>
 
       </Menu>
+      <input style={{ display: 'none' }} type="file" ref={inputRef}
+        onChange={onFileSelected} accept={".vZome"} /> 
     </div>
   );
 }
