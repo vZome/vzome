@@ -2,7 +2,7 @@
 import Button from "@suid/material/Button"
 import Menu from "@suid/material/Menu"
 import Divider from "@suid/material/Divider";
-import { createSignal } from "solid-js";
+import { createSignal } from 'solid-js';
 
 import { createMenuAction } from "../components/menuaction.jsx";
 import { controllerProperty } from "../controllers-solid.js";
@@ -15,7 +15,7 @@ export const SystemMenu = ( props ) =>
 
   const symmetries = () => controllerProperty( props.controller, 'symmetryPerspectives', 'symmetryPerspectives', true );
   const hasIcosa = () => symmetries() .includes( 'icosahedral' );
-  const initSystem = () => controllerProperty( props.controller, 'symmetry', 'symmetry', false );
+  const currentSymm = () => controllerProperty( props.controller, 'symmetry' );
 
   const EditAction = createMenuAction( props.controller, doClose );
 
@@ -31,9 +31,9 @@ export const SystemMenu = ( props ) =>
         anchorEl={anchorEl()} open={open()} onClose={doClose}
       >
         <Show when={ hasIcosa() }>
-          <EditAction label="Icosahedral System" action="setSymmetry.icosahedral" checked={ initSystem() === 'icosahedral' } disabled="true" />
+          <EditAction label="Icosahedral System" action="setSymmetry.icosahedral" checked={ currentSymm() === 'icosahedral' } />
         </Show>
-        <EditAction label="Octahedral System" action="setSymmetry.octahedral" checked={ initSystem() === 'octahedral' } disabled="true" />
+        <EditAction label="Octahedral System" action="setSymmetry.octahedral" checked={ currentSymm() === 'octahedral' } />
 
         <Divider />
         

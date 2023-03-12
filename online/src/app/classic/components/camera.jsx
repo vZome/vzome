@@ -2,18 +2,31 @@
 import { controllerProperty } from '../controllers-solid.js';
 import { solidify } from '../solid-react.jsx';
 import { icosahedralScene } from '../icosahedral-vef.js';
+import { octahedralScene } from '../octahedral-vef.js';
 import { SceneCanvas } from '../../../ui/viewer/scenecanvas.jsx';
+import { createEffect } from 'solid-js';
+
+const scenes = {
+  icosahedral: icosahedralScene,
+  octahedral: octahedralScene,
+};
 
 const SolidSceneCanvas = solidify( SceneCanvas );
 
 export const CameraControls = props =>
 {
-  // TODO: use modelResourcePath to look up the scene to use, somehow, rather than hardcoding icosahedralScene
-  const modelResourcePath = () =>
-    controllerProperty( props.symmController, 'modelResourcePath' );
+  // TODO: use symmetry to look up the scene to use, somehow, rather than hardcoding icosahedralScene
+  const symmetry = () => controllerProperty( props.controller, 'symmetry' );
 
   // Why isn't this reactive when props.bkgdColor changes for a loaded model?
-  const scene = () => ({ ...icosahedralScene, lighting: { ...icosahedralScene.lighting, backgroundColor: props.bkgdColor } } )
+  const scene = () => {
+    const symmScene = scenes[ symmetry() || 'icosahedral' ];
+    return ({ ...symmScene, lighting: { ...symmScene.lighting, backgroundColor: props.bkgdColor } } );
+  }
+
+  // createEffect( () => {
+  //   console.log( "backgroundColor is ", scene() .lighting .backgroundColor );
+  // } );
 
   return (
     <div id='camera-controls' style={{ display: 'grid', 'grid-template-rows': 'min-content min-content' }}>

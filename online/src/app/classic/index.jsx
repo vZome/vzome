@@ -8,8 +8,6 @@ import { createWorkerStore } from './controllers-solid.js';
 import { ClassicEditor } from './classic.jsx';
 import { createWorker } from "../../workerClient/client.js";
 
-// const AppBar = solidify( ClassicAppBar );
-
 const worker = createWorker();
 
 const Classic = () =>

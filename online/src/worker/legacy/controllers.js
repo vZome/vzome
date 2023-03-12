@@ -15,7 +15,35 @@ class EditorController extends com.vzome.desktop.controller.DefaultController
     this.clientEvents = clientEvents;
   }
 
-  // There are no implementors of doParamAction() in the Java code
+  getProperty( name )
+  {
+    switch ( name ) {
+
+      case "symmetry":
+        return this .design .getSymmetrySystem() .getName();
+    
+      default:
+        console.log( "EditorController getProperty fall through: ", name );
+        return super.getProperty( name );
+    }
+  }
+
+  getCommandList( name )
+  {
+    switch ( name ) {
+
+      case "symmetryPerspectives":
+        const { symmetrySystems } = this.design;
+        return Object .keys( symmetrySystems );
+    
+      default:
+        console.log( "EditorController getCommandList fall through: ", name );
+        return super.getCommandList( name );
+    }
+  }
+
+  // There are no implementors of doParamAction() in the Java code, except for
+  //   DefaultController, which just propagates the calls up to the next controller.
   doParamAction( action, params )
   {
     switch ( action ) {
@@ -41,7 +69,23 @@ class EditorController extends com.vzome.desktop.controller.DefaultController
         break;
     
       default:
-        this.design .configureAndPerformEdit( action, params && params .getConfig() );
+        if ( action .startsWith( "setSymmetry." ) ) {
+          const name = action .replace( /^setSymmetry\./, '' );
+          this.design .setSymmetrySystem( name );
+          
+          const orbitSource = this .design .getSymmetrySystem();
+          const strutBuilder = this .getSubController( 'strutBuilder' );
+          const symmController = new com.vzome.desktop.controller.SymmetryController( strutBuilder, orbitSource, null );
+          strutBuilder .addSubController( 'symmetry', symmController );
+
+          this .getSubController( 'buildPlane' ) .setOrbitSource( orbitSource );
+          // TODO: update the PartsController
+          // TODO: cache the SymmetryController
+
+          this.firePropertyChange( 'symmetry', '', name );
+        }
+        else
+          this.design .configureAndPerformEdit( action, params && params .getConfig() );
 
         // For the classic client app, this is redundant, since it can use the exportText action,
         //   but I still need it for React-based clients.
@@ -89,7 +133,13 @@ class BuildPlaneController extends com.vzome.desktop.controller.DefaultControlle
     this.buildPlanes = orbitSource .buildPlanes;
   }
 
-  // There are no implementors of doParamAction() in the Java code
+  setOrbitSource( orbitSource )
+  {
+    this.buildPlanes = orbitSource .buildPlanes;
+  }
+
+  // There are no implementors of doParamAction() in the Java code, except for
+  //   DefaultController, which just propagates the calls up to the next controller.
   doParamAction( action, params )
   {
     const config = params .getConfig();
@@ -174,6 +224,7 @@ export const newDesign = ( fieldName, clientEvents ) =>
   const design = documentFactory( fieldName );
   const { orbitSource } = design;
 
+  // TODO reuse this code here and in loadDesign
   const renderHistory = new RenderHistory( design );
   const { shapes, edit } = renderHistory .getScene( '--START--', false );
   const embedding = orbitSource .getEmbedding();

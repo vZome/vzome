@@ -18,7 +18,8 @@ export const ClassicEditor = ( props ) =>
 {
   const syncCamera = camera => props.setState( 'scene', 'liveCamera', camera );
 
-  const bkgdColor = () => props.getScene() ?.lighting ?.backgroundColor;
+  const bkgdColor = () =>
+    props.getScene() ?.lighting ?.backgroundColor;
 
   const bookmarkController = () => subController( props.controller, 'bookmark' );
   const pickingController  = () => subController( props.controller, 'picking' );
@@ -104,7 +105,7 @@ export const ClassicEditor = ( props ) =>
         </div>
 
         <div id='editor-drawer' class='grid-rows-min-1 editor-drawer'>
-          <CameraControls symmController={symmController()} bkgdColor={bkgdColor()} />
+          <CameraControls controller={props.controller} bkgdColor={bkgdColor()} />
           <div id="build-parts-measure" style={{ height: '100%' }}>
             <StrutBuildPanel symmController={symmController()} />
           </div>

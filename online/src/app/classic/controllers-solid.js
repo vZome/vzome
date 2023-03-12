@@ -67,9 +67,9 @@ export const createWorkerStore = ( worker ) =>
         break;
     
       case 'CONTROLLER_PROPERTY_CHANGED':
-        // console.log( JSON.stringify( e.data, null, 2 ) );
+        // console.log( JSON.stringify( data.payload, null, 2 ) );
         const { controllerPath, name, value } = data.payload;
-        const names = controllerPath .split( ':' );
+        const names = controllerPath? controllerPath .split( ':' ) : []; // for an empty string, split gives ['']
         // This is awesome; we trivially go from the flat model keyed by controllerPath,
         //   to the nested store model.
         for (let index = 0; index < names.length; index++) { // create the parent controllers
@@ -127,7 +127,7 @@ export const subController = ( parent, key ) =>
   return parent[ key ];
 }
 
-export const controllerProperty = ( controller, propName, changeName, isList ) =>
+export const controllerProperty = ( controller, propName, changeName=propName, isList=false ) =>
 {
   if ( ! controller[ propName ] ) {
     // The property has never been requested, so we have to make the initial request
