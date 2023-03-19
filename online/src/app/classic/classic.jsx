@@ -6,7 +6,7 @@ import { createSignal } from "solid-js";
 
 import { CameraControls } from './components/camera.jsx';
 import { StrutBuildPanel } from './components/strutbuilder.jsx';
-import { subController, controllerAction } from './controllers-solid.js';
+import { controllerProperty, subController, controllerAction } from './controllers-solid.js';
 import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
 import { solidify } from './solid-react.jsx';
 import { SceneEditor } from "./editor.jsx";
@@ -24,7 +24,8 @@ export const ClassicEditor = ( props ) =>
   const bookmarkController = () => subController( props.controller, 'bookmark' );
   const pickingController  = () => subController( props.controller, 'picking' );
   const strutBuilder       = () => subController( props.controller, 'strutBuilder' );
-  const symmController     = () => subController( strutBuilder(), 'symmetry' );
+  const symmetry = () => controllerProperty( props.controller, 'symmetry' );
+  const symmController     = () => subController( strutBuilder(), `symmetry.${symmetry()}` );
   const toolsController    = () => subController( strutBuilder(), 'tools' );
 
   const [ strutting, setStrutting ] = createSignal( false );
