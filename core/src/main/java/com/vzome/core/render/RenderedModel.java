@@ -289,13 +289,8 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
             return;
 
         {
-//            int yieldFreq = mRendered .size() / 20;
-            int yieldCount = 0;
             HashSet<RenderedManifestation> newSet = new HashSet<>();
             for ( Iterator<RenderedManifestation> rms = mRendered .iterator(); rms .hasNext(); ) {
-                yieldCount = (++yieldCount) % 20;
-                if ( yieldCount == 0 )
-                    Thread .yield();
                 RenderedManifestation rendered = rms .next();
                 rms .remove();
                 Manifestation m = rendered .getManifestation();

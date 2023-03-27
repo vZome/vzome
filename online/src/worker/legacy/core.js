@@ -360,8 +360,7 @@ const makeFloatMatrices = ( matrices ) =>
 
     // Now overwrite some or all of those default SymmetrySystems with those stored in the file.
     //   This is important mostly for the automatic orbits, but can also carry color overrides.
-    const orbitSource = new vzomePkg.core.editor.SymmetrySystem( systemXml, symmPer, editContext, colors, true )
-    symmetrySystems[ symmPer.getName() ] = orbitSource
+    symmetrySystems[ symmPer.getName() ] = new vzomePkg.core.editor.SymmetrySystem( systemXml, symmPer, editContext, colors, true )
     if ( xml ) {
       const symms = xml.getChildElement( "OtherSymmetries" )
       if ( symms ) {
@@ -375,11 +374,6 @@ const makeFloatMatrices = ( matrices ) =>
         }
       }
     }
-
-    // This has no analogue in Java DocumentModel
-    orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() );
-    orbitSource.permutations = orbitSource .getSymmetry() .getPermutations() .map( p => p .getJsonValue() );
-    collectBuildPlanes( orbitSource );
 
     class OSField {
       constructor(){}
@@ -395,6 +389,8 @@ const makeFloatMatrices = ( matrices ) =>
 
     const projection = new vzomePkg.core.math.Projection.Default( legacyField );
     const realizedModel = new vzomePkg.core.model.RealizedModelImpl( legacyField, projection );
+
+    let orbitSource = symmetrySystems[ symmPer.getName() ];
     const renderedModel = new vzomePkg.core.render.RenderedModel( legacyField, orbitSource );
     realizedModel .addListener( renderedModel );
 
@@ -418,6 +414,29 @@ const makeFloatMatrices = ( matrices ) =>
       manifestationRemoved: m => renderedModel .setManifestationGlow( m, false ),
     } );
 
+    const setSymmetrySystem = symmName =>
+    {
+      // TODO: special case for antiprism
+
+      orbitSource = symmetrySystems[ symmName ];
+
+      if ( !orbitSource.orientations ) {
+        // This has no analogue in Java DocumentModel
+        orbitSource.orientations = makeFloatMatrices( orbitSource.getSymmetry().getMatrices() );
+        orbitSource.permutations = orbitSource .getSymmetry() .getPermutations() .map( p => p .getJsonValue() );
+        collectBuildPlanes( orbitSource );
+      }
+
+      editor .symmetries = orbitSource; // violating encapsulation, sorry
+      renderedModel .setOrbitSource( orbitSource );
+    }
+    setSymmetrySystem( symmPer.getName() ); // updates orbitSource in editor and renderedModel
+
+    const getSymmetrySystem = () =>
+    {
+      return editor .getSymmetrySystem();
+    }
+
     const format = namespace && vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )
     format && format.initialize( legacyField, orbitSetField, 0, "vZome Online", new util.Properties() )
 
@@ -440,7 +459,6 @@ const makeFloatMatrices = ( matrices ) =>
 
     const toolsXml = xml && xml.getChildElement( "Tools" )
     toolsXml && toolsModel.loadFromXml( toolsXml )
-
     // xml && console.log( xml .serialize( "" ) );
 
     const interpretEdit = ( xmlElement, mesh ) =>
@@ -599,7 +617,8 @@ const makeFloatMatrices = ( matrices ) =>
       return root;
     }
 
-    return { interpretEdit, configureAndPerformEdit, field, renderedModel, batchRender, orbitSource, toolsModel, bookmarkFactory, serializeToDom, history };
+    return { interpretEdit, configureAndPerformEdit, batchRender, serializeToDom, setSymmetrySystem, getSymmetrySystem,
+      field, renderedModel, orbitSource, symmetrySystems, toolsModel, bookmarkFactory, history };
   }
 
   export const convertColor = color =>

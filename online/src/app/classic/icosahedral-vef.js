@@ -1,3 +1,6 @@
+
+// Captured by setting a breakpoint on SceneCanvasRef
+
 export const icosahedralScene = {
   "fixedCamera": {
     "near": 0.3320118188858032,
