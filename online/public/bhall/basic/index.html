@@ -17,5 +17,14 @@
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script type="module" src="/modules/bhall-basic.js"></script>
+    <script>
+      // Check that service workers are supported
+      if ('serviceWorker' in navigator) {
+        // Use the window load event to keep the page load performant
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register( '../service-worker.js' );
+        });
+      }
+    </script>
   </body>
 </html>
