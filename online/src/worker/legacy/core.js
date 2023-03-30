@@ -309,7 +309,7 @@ const makeFloatMatrices = ( matrices ) =>
     const symmPersp = fieldApp .getSymmetryPerspective( symmName );
     if ( !symmPersp )
       return { error: `No such symmetry name: ${symmName}` };
-    return new vzomePkg.core.editor.SymmetrySystem( null, symmPersp, {}, colors, true );
+    return symmPersp .getSymmetry();
   }
 
   export const documentFactory = ( fieldName, namespace, xml ) =>
