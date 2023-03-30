@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { fetchDesign } from '../../ui/viewer/store.js';
 import { useGitHubShares, getEmbeddingHtml, getAssetUrl } from './github.js';
@@ -12,14 +12,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography'
 import Button from '@material-ui/core/Button';
 import CreatableSelect from 'react-select/creatable';
-import { useEffect } from 'react';
 
-const queryParams = new URLSearchParams( window.location.search );
-const defaultGithubUser = queryParams.get( 'user' ) || localStorage.getItem( 'vzome-github-user' ) || "vorth";
-
-const DesignList = ( { setUrl, githubUser } ) =>
+const DesignList = ( { setUrl, designs } ) =>
 {
-  const designs = useGitHubShares( githubUser );
   const [ selectedIndex, setSelectedIndex ] = React.useState( 0 );
 
   const handleListItemClick = (url, path, index) =>
@@ -89,17 +84,27 @@ const DesignActions = ( { githubUser, url, path } ) =>
   }
 }
 
-console.log( "defaultGithubUser ", defaultGithubUser );
-const storedUsers = JSON.parse( localStorage.getItem( 'vzome-github-users' ) || "[]" );
-const knownUsers = [ ...storedUsers, defaultGithubUser, 'david-hall', 'John-Kostick', 'ThynStyx', 'vorth', ];
-const uniqueUsers = new Set();
-knownUsers .map( user => uniqueUsers.add( user ) );
+// Invariant:
+//   - storedUsers in MRU order
+//   - storedUsers are unique
 
-const createOption = label => ({ label, value: label });
-const defaultOptions = [];
-for ( const user of uniqueUsers ) {
-  defaultOptions .push( createOption( user ) );
+const filterUniqueUsers = users =>
+{
+  const uniqueUsers = new Set();
+  return users .filter( user => {
+    const lower = user .toLowerCase();
+    return ! uniqueUsers .has( lower ) && uniqueUsers .add( lower ) && true;
+  });
 }
+const createOption = label => ({ label, value: label });
+const mapToOptions = users => users .map( user => createOption( user ) );
+
+const queryParams = new URLSearchParams( window.location.search );
+const defaultGithubUser = queryParams.get( 'user' ) || localStorage.getItem( 'vzome-github-user' ) || "vorth";
+console.log( "defaultGithubUser ", defaultGithubUser );
+const storedUsers = JSON.parse( localStorage.getItem( 'vzome-github-users' ) || '[ "david-hall", "john-kostick", "thynstyx", "vorth" ]' );
+let knownUsers = filterUniqueUsers( [ defaultGithubUser, ...storedUsers ] );
+const defaultOptions = mapToOptions( knownUsers );
 
 export const DesignBrowser = ( { debug } ) =>
 {
@@ -114,29 +119,50 @@ export const DesignBrowser = ( { debug } ) =>
   }
   const [ githubUser, setGithubUser ] = useState( createOption( defaultGithubUser ) );
   const [ options, setOptions ] = useState( defaultOptions );
+  const handleChange = option =>
+  {
+    setGithubUser( option );
+    // This will trigger an attempt to load designs, below
+  }
   const handleCreate = (inputValue) =>
   {
     const newOption = createOption( inputValue );
-    setOptions( (prev) => [...prev, newOption] );
     setGithubUser( newOption );
+    // This will trigger an attempt to load designs, below
   };
-  useEffect( () => {
-    const value = JSON.stringify( options.map( option => option.label ) );
-    console.log( "storing vzome-github-users ", value );
-    localStorage .setItem( 'vzome-github-users', value );
-  }, [options] );
+
+  const designs = useGitHubShares( githubUser?.value );
+
+  useEffect( () =>
+  {
+    if ( designs.length > 0 ) {
+      // current githubUser is a valid one
+      const validUser = githubUser.value .toLowerCase();
+      console.log( "storing vzome-github-user ", validUser );
+      localStorage .setItem( 'vzome-github-user', validUser );
+      // prepend it to the list
+      const newList = [ validUser, ...knownUsers ];
+      // then filter the list for uniqueness, preserving the order
+      knownUsers = filterUniqueUsers( newList );
+      // and finally store it
+      const value = JSON.stringify( knownUsers );
+      console.log( "storing vzome-github-users ", value );
+      localStorage .setItem( 'vzome-github-users', value );
+      // and update the UI
+      setOptions( mapToOptions( knownUsers ) );
+    }
+    else
+      setUrl( null );
+  }, [designs] );
 
   return (
     <div id='github-browser' style={{ display: 'grid', gridTemplateColumns: '20% 80%', height: '100%' }}>
       <div>
-        <CreatableSelect
-          isClearable
-          onChange={ (option) => setGithubUser( option ) }
-          onCreateOption={handleCreate}
-          options={options}
-          value={githubUser}
+        <CreatableSelect isClearable createOptionPosition="first"
+          onChange={handleChange} onCreateOption={handleCreate}
+          options={options} value={githubUser}
         />
-        <DesignList githubUser={githubUser?.value} setUrl={selectUrl}/>
+        <DesignList githubUser={githubUser?.value} designs={designs} setUrl={selectUrl}/>
       </div>
       <div id='github-browser' style={{ display: 'grid', gridTemplateRows: 'min-content 1fr' }}>
         <div id='details' style={{ minHeight: '60px', borderBottom: '1px solid gray', backgroundColor: 'whitesmoke' }}>

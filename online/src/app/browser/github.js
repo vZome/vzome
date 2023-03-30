@@ -7,7 +7,10 @@ export const useGitHubShares = githubUser =>
   const [ designs, setDesigns ] = React.useState( [] );
 
   useEffect( () => {
-    localStorage.setItem( 'vzome-github-user', githubUser );
+    if ( ! githubUser ) {
+      setDesigns( [] );
+      return;
+    }
     fetch( `https://api.github.com/repos/${githubUser}/vzome-sharing/git/trees/main?recursive=1` )
       .then( response => response.json() )
       .then( json => {
@@ -28,7 +31,10 @@ export const useGitHubShares = githubUser =>
           } );
         console.log( 'Repo has', designs.length, 'entries.' );
         setDesigns( designs );
-      } );
+      } )
+      .catch( () => {
+        setDesigns( [] );
+      })
   }, [githubUser] );
 
   return designs;
