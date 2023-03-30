@@ -301,6 +301,17 @@ const makeFloatMatrices = ( matrices ) =>
     return fieldApp.getField();
   }
 
+  export const getSymmetry = ( fieldName, symmName ) =>
+  {
+    const fieldApp = getFieldApp( fieldName )
+    if ( !fieldApp )
+      return { error: `No such field name: ${fieldName}` };
+    const symmPersp = fieldApp .getSymmetryPerspective( symmName );
+    if ( !symmPersp )
+      return { error: `No such symmetry name: ${symmName}` };
+    return new vzomePkg.core.editor.SymmetrySystem( null, symmPersp, {}, colors, true );
+  }
+
   export const documentFactory = ( fieldName, namespace, xml ) =>
   {
     // This reproduces the DocumentModel constructor pretty faithfully
