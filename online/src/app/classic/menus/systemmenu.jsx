@@ -4,8 +4,9 @@ import Menu from "@suid/material/Menu"
 import Divider from "@suid/material/Divider";
 import { createSignal } from 'solid-js';
 
-import { createMenuAction } from "../components/menuaction.jsx";
-import { controllerProperty } from "../controllers-solid.js";
+import { createMenuAction, MenuAction } from "../components/menuaction.jsx";
+import { controllerProperty, subController } from "../controllers-solid.js";
+import { ShapesDialog } from "./shapes.jsx";
 
 export const SystemMenu = ( props ) =>
 {
@@ -13,9 +14,18 @@ export const SystemMenu = ( props ) =>
   const open = () => Boolean( anchorEl() );
   const doClose = () => setAnchorEl( null );
 
+  const [ showShapesDialog, setShowShapesDialog ] = createSignal( false );
+  const closeShapesDialog = () =>
+  {
+    setShowShapesDialog( false );
+    doClose();
+  }
+
   const symmetries = () => controllerProperty( props.controller, 'symmetryPerspectives', 'symmetryPerspectives', true );
   const hasIcosa = () => symmetries() .includes( 'icosahedral' );
   const currentSymm = () => controllerProperty( props.controller, 'symmetry' );
+  const strutBuilder = () => subController( props.controller, 'strutBuilder' );
+  const symmController = () => subController( strutBuilder(), `symmetry.${currentSymm()}` );
 
   const EditAction = createMenuAction( props.controller, doClose );
 
@@ -37,7 +47,8 @@ export const SystemMenu = ( props ) =>
 
         <Divider />
         
-        <EditAction label="Shapes..." action="configureShapes" disabled="true" />
+        <MenuAction label="Shapes..." onClick={ () => setShowShapesDialog(true) } />
+
         <EditAction label="Directions..." action="configureDirections" disabled="true" />
         <EditAction label="Show Directions Graphically" action="toggleOrbitViews" disabled="true" />
         <EditAction label="Show Strut Scales" action="toggleStrutScales" disabled="true" />
@@ -45,6 +56,8 @@ export const SystemMenu = ( props ) =>
         <EditAction label="Show Panel Normals" action="toggleNormals" disabled="true" />
 
       </Menu>
+
+      <ShapesDialog controller={symmController()} open={showShapesDialog()} close={closeShapesDialog} />
     </div>
   );
 }
