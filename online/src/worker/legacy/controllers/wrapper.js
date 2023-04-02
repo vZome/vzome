@@ -164,7 +164,7 @@ export const createControllers = (design, renderHistory, clientEvents) => {
   controller.addSubController('strutBuilder', strutBuilder);
 
   for (const [name, symmetrySystem] of Object.entries(symmetrySystems)) {
-    const symmController = new com.vzome.desktop.controller.SymmetryController(strutBuilder, symmetrySystem, null);
+    const symmController = new com.vzome.desktop.controller.SymmetryController( strutBuilder, symmetrySystem, renderedModel );
     strutBuilder.addSubController(`symmetry.${name}`, symmController);
   }
 
@@ -181,6 +181,15 @@ export const createControllers = (design, renderHistory, clientEvents) => {
 
   // TODO: fix this terrible hack!
   wrapper.renderScene = () => renderHistory.recordSnapshot('--END--', '--END--', []);
+
+  // enable shape changes
+  renderedModel .addListener( {
+    shapesChanged: () => false, // this allows RenderedModel.setShapes() to not fail and re-render all the parts
+    manifestationAdded: () => {},  // We don't need these incremental changes, since we'll batch render after
+    manifestationRemoved: () => {},
+    colorChanged: () => {},
+    glowChanged: () => {},
+  } );
 
   return wrapper;
 };
