@@ -6,7 +6,8 @@ import { createSignal } from 'solid-js';
 
 import { createMenuAction, MenuAction } from "../components/menuaction.jsx";
 import { controllerProperty, subController } from "../controllers-solid.js";
-import { ShapesDialog } from "./shapes.jsx";
+import { ShapesDialog } from "../components/shapes.jsx";
+import { OrbitsDialog } from "../components/orbits.jsx";
 
 export const SystemMenu = ( props ) =>
 {
@@ -15,9 +16,15 @@ export const SystemMenu = ( props ) =>
   const doClose = () => setAnchorEl( null );
 
   const [ showShapesDialog, setShowShapesDialog ] = createSignal( false );
-  const closeShapesDialog = () =>
+  const openShapesDialog = () =>
   {
-    setShowShapesDialog( false );
+    setShowShapesDialog( true );
+    doClose();
+  }
+  const [ showOrbitsDialog, setShowOrbitsDialog ] = createSignal( false );
+  const openOrbitsDialog = () =>
+  {
+    setShowOrbitsDialog( true );
     doClose();
   }
 
@@ -47,9 +54,10 @@ export const SystemMenu = ( props ) =>
 
         <Divider />
         
-        <MenuAction label="Shapes..." onClick={ () => setShowShapesDialog(true) } />
+        <MenuAction label="Shapes..." onClick={ () => openShapesDialog(true) } />
 
-        <EditAction label="Directions..." action="configureDirections" disabled="true" />
+        <MenuAction label="Directions..." onClick={ () => openOrbitsDialog(true) } />
+
         <EditAction label="Show Directions Graphically" action="toggleOrbitViews" disabled="true" />
         <EditAction label="Show Strut Scales" action="toggleStrutScales" disabled="true" />
         <EditAction label="Show Frame Labels" action="toggleFrameLabels" disabled="true" />
@@ -57,7 +65,8 @@ export const SystemMenu = ( props ) =>
 
       </Menu>
 
-      <ShapesDialog controller={symmController()} open={showShapesDialog()} close={closeShapesDialog} />
+      <ShapesDialog controller={symmController()} open={showShapesDialog()} close={ ()=>setShowShapesDialog(false) } />
+      <OrbitsDialog controller={symmController()} open={showOrbitsDialog()} close={ ()=>setShowOrbitsDialog(false) } />
     </div>
   );
 }
