@@ -58,8 +58,9 @@ const InstancedShape = ( props ) =>
     return null;
   return (
     <>
-      { props.shape.instances.map( instance =>
-        <Instance key={instance.id} {...instance} geometry={geometry()} /> ) }
+      <For each={props.shape.instances}>{ instance =>
+        <Instance {...instance} geometry={geometry()} />
+      }</For>
     </>
   )
 }
@@ -71,11 +72,13 @@ export const ShapedGeometry = ( props ) =>
     console.log( 'bkgdClick happened' );
   }
 
-  return ( props.shapes &&
-    <group matrixAutoUpdate={false} onPointerMissed={bkgdClick}>
-      { Object.values( props.shapes ).map( shape =>
-        <InstancedShape key={shape.id} shape={shape} />
-      ) }
-    </group>
-  ) || null
+  return (
+    // <Show when={ () => props.shapes }>
+      <group matrixAutoUpdate={false} onPointerMissed={bkgdClick}>
+        <For each={Object.values( props.shapes || {} )}>{ shape =>
+          <InstancedShape shape={shape} />
+        }</For>
+      </group>
+    // </Show>
+  )
 };

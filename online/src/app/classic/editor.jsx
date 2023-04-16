@@ -1,4 +1,5 @@
 
+import { createEffect, createSignal } from 'solid-js';
 import { Vector3 } from 'three';
 import { SceneCanvas } from './components/scenecanvas.jsx';
 import { octahedralScene } from './octahedral-vef.js';
@@ -28,9 +29,19 @@ const StrutDrag = ( { state } ) =>
 
 export const SceneEditor = ( props ) =>
 {
+  const [ scene, setScene ] = createSignal( octahedralScene );
+  // Start with the octahedral scene, then
+  createEffect( () => {
+    const shapeNames = Object.keys( props.scene?.shapes || {} );
+    if ( shapeNames.length ) {
+      console.log( 'using a new scene', JSON.stringify( shapeNames, null, 2 ) );
+      setScene( props.scene );
+    }
+  } );
+
   return (
     // not using DesignViewer because it has its own UI, not corresponding to classic desktop vZome
-    <SceneCanvas height="600px" width="1000px" scene={octahedralScene} toolActions={props.toolActions}
+    <SceneCanvas height="600px" width="1000px" scene={scene()} toolActions={props.toolActions}
       trackball={!props.strutting} syncCamera={props.syncCamera}
       // children3d={ props.strutting && <StrutDrag state={{}} /> }
     />
