@@ -1,7 +1,7 @@
 import esbuild from 'esbuild';
 import { esbuildConfig } from './esbuild-config.mjs';
 
-esbuild.build( { ...esbuildConfig, minify: true, sourcemap: false, outdir: 'dist/modules' } )
+esbuild.build( { ...esbuildConfig, minify: false, sourcemap: false, outdir: 'dist/modules' } )
 
 esbuild.buildSync( {
   entryPoints: {

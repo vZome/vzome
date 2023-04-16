@@ -1,18 +1,12 @@
 
-// babel workaround
-import "regenerator-runtime/runtime";
-
 import { createSignal } from "solid-js";
 
 import { CameraControls } from './components/camera.jsx';
 import { StrutBuildPanel } from './components/strutbuilder.jsx';
 import { controllerProperty, subController, controllerAction } from './controllers-solid.js';
 import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
-import { solidify } from './solid-react.jsx';
 import { SceneEditor } from "./editor.jsx";
 import { createSwitcherTool } from "./tools/strutdrag.jsx";
-
-const SolidSceneEditor = solidify( SceneEditor );
 
 export const ClassicEditor = ( props ) =>
 {
@@ -99,7 +93,8 @@ export const ClassicEditor = ( props ) =>
           <ToolBar symmetryController={symmController()} toolsController={toolsController()} editorController={props.controller} />
           <div id='canvas-and-bookmarks' style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
             <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} symmetryController={symmController()} />
-            <SolidSceneEditor scene={props.getScene()} strutting={strutting()}
+
+            <SceneEditor scene={props.getScene()} strutting={strutting()}
               syncCamera={syncCamera} toolActions={switcherTool}
               style={{ position: 'relative', height: '100%' }} />
           </div>

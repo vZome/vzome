@@ -1,5 +1,6 @@
 
 import { solidPlugin } from './esbuild-solid-plugin.mjs';
+import { DOMElements, SVGElements } from "solid-js/web/dist/dev.cjs";
 
 /*
   With help and advice from Lucas Garron, I've adopted esbuild as my toolchain, for the
@@ -52,5 +53,25 @@ export const esbuildConfig = {
   splitting: true,
   loader: { '.vef': 'dataurl' },
   format: 'esm',
-  plugins: [solidPlugin()],
+  plugins: [ solidPlugin(
+    {
+      solid: {
+        moduleName: "solid-js/web",
+        // @ts-ignore
+        generate: "dynamic",
+        renderers: [
+          {
+            name: "dom",
+            moduleName: "solid-js/web",
+            elements: [...DOMElements.values(), ...SVGElements.values()],
+          },
+          {
+            name: "universal",
+            moduleName: "solid-three",
+            elements: [],
+          },
+        ],
+      },
+    }
+  )],
 };

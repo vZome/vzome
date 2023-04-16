@@ -1,6 +1,3 @@
-// babel workaround
-import "regenerator-runtime/runtime";
-
 import { render } from 'solid-js/web';
 
 import { VZomeAppBar } from './components/appbar.jsx';
@@ -15,11 +12,11 @@ const Classic = () =>
   const { rootController, getScene, setState } = createWorkerStore( worker );
 
   return (
-  <>
-    <VZomeAppBar getScene={getScene} controller={rootController()} />
-    <ClassicEditor getScene={getScene} setState={setState} controller={rootController()} />
-  </>
-);
+    <>
+      <VZomeAppBar getScene={getScene} controller={rootController()} />
+      <ClassicEditor getScene={getScene} setState={setState} controller={rootController()} />
+    </>
+  );
 }
 
 render( Classic, document.getElementById( 'root' ) );

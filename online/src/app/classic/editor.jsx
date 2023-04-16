@@ -1,12 +1,7 @@
 
-import React, { useRef } from 'react';
-import { TrackballControls } from '@react-three/drei';
 import { Vector3 } from 'three';
-
-import { SceneCanvas } from '../../ui/viewer/scenecanvas.jsx';
-
-// These are pure function React components, with no state, to better
-//  integrate with the SolidJS-based context.
+import { SceneCanvas } from './components/scenecanvas.jsx';
+import { octahedralScene } from './octahedral-vef.js';
 
 const pseudoCamera = {
   position: new Vector3(),
@@ -31,15 +26,13 @@ const StrutDrag = ( { state } ) =>
   );
 }
 
-export const SceneEditor = ( { scene, strutting, toolActions, syncCamera } ) =>
+export const SceneEditor = ( props ) =>
 {
-  const exporterRef = useRef(); // TODO hook this up for export
-
   return (
     // not using DesignViewer because it has its own UI, not corresponding to classic desktop vZome
-    <SceneCanvas scene={scene} toolActions={toolActions} trackball={!strutting} syncCamera={syncCamera} ref={exporterRef}
-      style={{ position: 'relative', height: '100%' }}
-      children3d={ strutting && <StrutDrag state={{}} /> }
+    <SceneCanvas height="600px" width="1000px" scene={octahedralScene} toolActions={props.toolActions}
+      trackball={!props.strutting} syncCamera={props.syncCamera}
+      // children3d={ props.strutting && <StrutDrag state={{}} /> }
     />
   );
 }
