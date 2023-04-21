@@ -66,7 +66,7 @@ public class ShareDialog extends EscapeDialog
     private final JLabel errorLabel;
     private final HyperlinkPanel githubUrlPanel;
     
-    private final String readmeTemplate, readmeNoPostTemplate, postTemplate;
+    private final String indexTemplate, readmeTemplate, githubReadmeBlogPrefixTemplate, postTemplate;
    
     // Services
     private final OAuth20Service oAuthService;
@@ -127,9 +127,11 @@ public class ShareDialog extends EscapeDialog
         this .commitService = new CommitService( client );
         this .dataService = new DataService( client );
         
+        this .indexTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubIndexTemplate.md" );
+        
         this .readmeTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubReadmeTemplate.md" );
 
-        this .readmeNoPostTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubReadmeNoPostTemplate.md" );
+        this .githubReadmeBlogPrefixTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubReadmeBlogPrefixTemplate.md" );
 
         this .postTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubPostTemplate.md" );
 
@@ -190,7 +192,7 @@ public class ShareDialog extends EscapeDialog
                 }
             });
             topPanel .add( generatePageCheckBox, BorderLayout.WEST );
-            topPanel .add( new JLabel( "Generate web page" ), BorderLayout.CENTER );
+            topPanel .add( new JLabel( "Generate blog post" ), BorderLayout.CENTER );
             optionsPanel .add( topPanel, BorderLayout.NORTH );
 
             publishCheckBox = new JCheckBox();
@@ -566,17 +568,30 @@ public class ShareDialog extends EscapeDialog
             String postSrcUrl = repoUrl + "/edit/" + BRANCH_NAME + "/" + postSrcPath;
                      // e.g. https://github.com/vorth/vzome-sharing/edit/main/_posts/2021-11-29-sample-vZome-share-08-01-41.md
                         
+            // Generate a shareable page for the vZome user to use, not a blog post
+            String indexMd = this.indexTemplate
+                    .replace( "${title}", this .title )
+                    .replace( "${siteUrl}", siteUrl )
+                    .replace( "${imagePath}", imagePath )
+                    .replace( "${designPath}", designPath )
+                    .replace( "${assetsUrl}", this .gitUrl );
+            this .addFile( entries, assetPath + "index.md", indexMd, Blob.ENCODING_UTF8 );
+
+            // Generate a README for the vZome user to use, with no blog post
+            String readmeMd = this.readmeTemplate
+                    .replace( "${imageFile}", designName + ".png" )
+                    .replace( "${siteUrl}", siteUrl )
+                    .replace( "${assetPath}", assetPath )
+                    .replace( "${imagePath}", imagePath )
+                    .replace( "${designPath}", designPath )
+                    .replace( "${rawUrl}", rawUrl );
+
             if ( this .controller .propertyIsTrue( "sharing-generatePost" ) ) {
                 // Generate a README for the vZome user to use 
-                String readmeMd = this.readmeTemplate
-                        .replace( "${imageFile}", designName + ".png" )
-                        .replace( "${siteUrl}", siteUrl )
-                        .replace( "${imagePath}", imagePath )
-                        .replace( "${designPath}", designPath )
+                String blogPostPrefix = this.githubReadmeBlogPrefixTemplate
                         .replace( "${postUrl}", postUrl )
-                        .replace( "${postSrcUrl}", postSrcUrl )
-                        .replace( "${rawUrl}", rawUrl );
-                this .addFile( entries, assetPath + "README.md", readmeMd, Blob.ENCODING_UTF8 );
+                        .replace( "${postSrcUrl}", postSrcUrl );
+                readmeMd = blogPostPrefix + readmeMd; // Prepend the extra bits about the blog post to the README
 
                 /*
                  * Generate a design-specific web page, assuming that GitHub Pages is
@@ -590,7 +605,7 @@ public class ShareDialog extends EscapeDialog
                  *    https://jekyllrb.com/
                  */
                 String descriptionClean = this.description .replace( '\n', ' ' ) .replace( '\r', ' ' );
-                String indexMd = this.postTemplate
+                String postMd = this.postTemplate
                         .replace( "${title}", this .title )
                         .replace( "${description}", descriptionClean )
                         .replace( "${published}", this .controller .getProperty( "sharing-publishImmediately" ) )
@@ -599,18 +614,10 @@ public class ShareDialog extends EscapeDialog
                         .replace( "${imagePath}", imagePath )
                         .replace( "${designPath}", designPath )
                         .replace( "${assetsUrl}", this .gitUrl );
-                this .addFile( entries, postSrcPath, indexMd, Blob.ENCODING_UTF8 );
+                this .addFile( entries, postSrcPath, postMd, Blob.ENCODING_UTF8 );
             }
-            else {
-                // Generate a README for the vZome user to use, with no blog post
-                String readmeMd = this.readmeNoPostTemplate
-                        .replace( "${imageFile}", designName + ".png" )
-                        .replace( "${siteUrl}", siteUrl )
-                        .replace( "${imagePath}", imagePath )
-                        .replace( "${designPath}", designPath )
-                        .replace( "${rawUrl}", rawUrl );
-                this .addFile( entries, assetPath + "README.md", readmeMd, Blob.ENCODING_UTF8 );
-            }
+
+            this .addFile( entries, assetPath + "README.md", readmeMd, Blob.ENCODING_UTF8 );
 
             Tree newTree = dataService .createTree( this .repo, entries, (baseTree==null)? null : baseTree.getSha() );
 

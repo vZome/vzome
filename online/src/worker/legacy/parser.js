@@ -2,7 +2,6 @@
 import { LegacyEdit } from './edit.js';
 import * as txml from 'txml/dist/txml.mjs';
 import { JavaDomElement } from './dom.js';
-import { newDesign } from './controllers.js';
 
 
 const assignIds = ( txmlElement, id=':' ) =>

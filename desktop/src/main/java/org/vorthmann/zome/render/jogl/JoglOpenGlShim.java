@@ -1,12 +1,13 @@
 package org.vorthmann.zome.render.jogl;
 
+import java.nio.FloatBuffer;
+import java.util.logging.Logger;
+
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GL2ES2;
 import com.jogamp.opengl.math.FloatUtil;
 import com.vzome.opengl.OpenGlShim;
-
-import java.nio.FloatBuffer;
 
 /**
  * Created by vorth on 2019-12-26, initially copying from
@@ -19,6 +20,9 @@ import java.nio.FloatBuffer;
  */
 public class JoglOpenGlShim implements OpenGlShim
 {
+	private static final Logger LOGGER = Logger.getLogger( new Throwable().getStackTrace()[0].getClassName() );
+
+	private static boolean versionIsLogged = false;
     private final GL2 gl2;
     
     public boolean isSameContext( GL2 gl2 )
@@ -29,6 +33,14 @@ public class JoglOpenGlShim implements OpenGlShim
     public JoglOpenGlShim( GL2 gl2 )
     {
         this.gl2 = gl2;
+        if(!versionIsLogged) {
+        	LOGGER.config("OpenGL version: " + gl2.glGetString(GL.GL_VERSION) + "\n" 
+        			+ "    GLSL: " + getGLSLVersionString());
+        	// DJH: FWIW, on my Windows 10 computer, getGLSLVersionString() has a trailing newline.
+        	// I don't know if that's typical on other machines, 
+        	// so I won't give it any special treatment since it's just used for logging.
+        	versionIsLogged = true; // only the first instance will log its version.
+        }
     }
 
     public void glViewport( int x, int y, int width, int height ) {

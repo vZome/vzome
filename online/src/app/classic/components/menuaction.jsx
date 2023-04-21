@@ -1,8 +1,11 @@
 
 import MenuItem from "@suid/material/MenuItem"
 import Typography from "@suid/material/Typography";
+import ListItemIcon from '@suid/material/ListItemIcon';
 import ListItemText from "@suid/material/ListItemText";
+import CheckIcon from '@suid/icons-material/Check';
 import { controllerAction } from "../controllers-solid";
+import { mergeProps } from "solid-js";
 
 const isMac = navigator.userAgentData?.platform === 'macOS';
 
@@ -37,6 +40,11 @@ export const MenuAction = ( props ) =>
 
   return (
     <MenuItem disabled={props.disabled} onClick={props.onClick}>
+      <Show when={props.checked} >
+        <ListItemIcon>
+          <CheckIcon fontSize="small" />
+        </ListItemIcon>
+      </Show>
       <ListItemText>{props.label}</ListItemText>
       <Show when={props.code || props.key} >
         <Typography variant="body2" color="text.secondary">
@@ -54,5 +62,7 @@ export const createMenuAction = ( controller, doClose ) => ( props ) =>
     doClose();
     controllerAction( controller, props.action );
   }
-  return MenuAction( { ...props, onClick } );
+  // I was destructuring props here, and lost reactivity!
+  //  It usually doesn't matter for menu items, except when there is checkbox state.
+  return MenuAction( mergeProps( { onClick }, props ) );
 }

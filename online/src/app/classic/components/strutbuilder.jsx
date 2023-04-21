@@ -13,9 +13,11 @@ import { controllerProperty, subController } from '../controllers-solid.js';
 export const StrutBuildPanel = props =>
 {
   const availableOrbits = () => subController( props.symmController, 'availableOrbits' );
+  const buildOrbits = () => subController( props.symmController, 'buildOrbits' );
+  const orbits = () => controllerProperty( availableOrbits(), 'orbits', 'orbits', true );
+
   const setOrbitNames = key => controllerAction( availableOrbits(), key );
 
-  const buildOrbits = () => subController( props.symmController, 'buildOrbits' );
   const lastSelected = () => controllerProperty( buildOrbits(), 'selectedOrbit', 'orbits', false );
 
   const [ anchorEl, setAnchorEl ] = createSignal( null );
@@ -27,7 +29,8 @@ export const StrutBuildPanel = props =>
 
   return(
     <div id="build" style={{ display: 'grid', 'grid-template-rows': '1fr min-content', height: '100%' }}>
-      <OrbitPanel controller={props.symmController} lastSelected={lastSelected()} style={{ height: '100%' }} >
+      <OrbitPanel orbits={orbits()} controller={buildOrbits()} lastSelected={lastSelected()}
+          label="build directions" style={{ height: '100%' }} >
         <IconButton color="inherit" aria-label="settings"
             style={ { position: 'absolute', top: '8px', right: '8px' } }
             onClick={revealSettings} >

@@ -116,46 +116,6 @@ const fetchFileText = selected =>
 }
 
 let designController;
-let propertyChanges = {};
-
-const getNamedController = controllerPath =>
-{
-  const controllerNames = controllerPath? controllerPath.split( ':' ) : [];
-  const getSubController = ( controller, names ) => {
-    if ( !names || names.length === 0 || ( names.length === 1 && !names[ 0 ] ) )
-      return controller;
-    else {
-      controller = controller .getSubController( names[ 0 ] );
-      if ( !controller )
-        return undefined;
-      return getSubController( controller, names.slice( 1 ) );
-    }
-  }
-  return getSubController( designController, controllerNames );
-}
-
-const registerChangeListener = ( controller, controllerPath, changeName, propName, isList ) =>
-{
-  if ( !changeName )
-    return;
-  if ( ! propertyChanges[ controllerPath ] ) {
-    controller .addPropertyListener( { propertyChange: pce => {
-      const name = pce .getPropertyName();
-      for (const [ cName, changes ] of Object.entries( propertyChanges[ controllerPath ] ) ) {
-        if ( name === cName ) {
-          for ( const [propName, isList] of Object.entries( changes ) ) {
-            const value = isList? controller .getCommandList( propName ) : controller .getProperty( propName );
-            postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name: propName, value } } );
-          }
-        }
-      }
-    } } );
-    propertyChanges[ controllerPath ] = {};
-  }
-  const change = propertyChanges[ controllerPath ][ changeName ] || {};
-  if ( ! change[ propName ] )
-    propertyChanges[ controllerPath ][ changeName ] = { ...change, [ propName ]: isList };
-}
 
 const clientEvents = report =>
 {
@@ -194,7 +154,6 @@ const createDesign = ( report, fieldName ) =>
   return import( './legacy/dynamic.js' )
 
     .then( module => {
-      propertyChanges = {};
       designController = module .newDesign( fieldName, clientEvents( report ) );
       report( { type: 'CONTROLLER_CREATED' } );
     } )
@@ -219,7 +178,6 @@ const loadDesign = ( xmlLoading, report, debug ) =>
   return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
 
     .then( ([ module, xml ]) => {
-      propertyChanges = {};
       designController = module .loadDesign( xml, debug, clientEvents( report ) );
       report( { type: 'CONTROLLER_CREATED' } );
     } )
@@ -332,16 +290,8 @@ onmessage = ({ data }) =>
     case 'ACTION_TRIGGERED':
     {
       const { controllerPath, action, parameters } = payload;
-      const controller = getNamedController( controllerPath );
       try {
-        if ( parameters && Object.keys(parameters).length !== 0 )
-          controller .paramActionPerformed( null, action, new JsProperties( parameters ) );
-        else
-          controller .actionPerformed( null, action );
-        
-        // TODO: this is pretty heavy-handed, sending the whole scene after every edit.
-        //  That said, it may perform better than the incremental approach.
-        designController .renderScene();
+        designController .doAction( controllerPath, action, parameters );
         const scene = designController .getScene( '--END--', true );
         postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
       } catch (error) {
@@ -354,10 +304,7 @@ onmessage = ({ data }) =>
     case 'PROPERTY_REQUESTED':
     {
       const { controllerPath, propName, changeName, isList } = payload;
-      const controller = getNamedController( controllerPath );
-      registerChangeListener( controller, controllerPath, changeName, propName, isList );
-      const value = isList? controller .getCommandList( propName ) : controller .getProperty( propName );
-      postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name: propName, value } } );
+      designController .registerPropertyInterest( controllerPath, propName, changeName, isList );
       break;
     }
 
@@ -369,12 +316,8 @@ onmessage = ({ data }) =>
     case 'STRUT_CREATION_TRIGGERED':
     case 'JOIN_BALLS_TRIGGERED':
     {
-      const controller = getNamedController( 'buildPlane' );
-      controller .paramActionPerformed( null, type, new JsProperties( payload ) );
+      designController .doAction( 'buildPlane', type, payload );
 
-      // TODO: this is pretty heavy-handed, sending the whole scene after every edit.
-      //  That said, it may perform better than the incremental approach.
-      designController .renderScene();
       const scene = designController .getScene( '--END--', true );
       postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
     }

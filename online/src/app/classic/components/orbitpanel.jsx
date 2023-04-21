@@ -4,21 +4,20 @@ import Stack from "@suid/material/Stack"
 import Button from "@suid/material/Button"
 import Checkbox from "@suid/material/Checkbox";
 import FormControlLabel from "@suid/material/FormControlLabel";
+import InputLabel from "@suid/material/InputLabel";
 
 import { controllerAction, controllerProperty, subController } from '../controllers-solid.js';
 import { hexToWebColor } from './length.jsx';
 
 export const OrbitDot = props =>
 {
-  const availableOrbits = () => subController( props.controller, 'availableOrbits' );
-  const buildOrbits = () => subController( props.controller, 'buildOrbits' );
   const propName = () => `orbitDot.${props.orbit}`;
-  const orbits = () => controllerProperty( buildOrbits(), 'orbits', 'orbits', true ) || [];
-  const selectedOrbit = () => controllerProperty( buildOrbits(), 'selectedOrbit', 'orbits', false );
+  const orbits = () => controllerProperty( props.controller, 'orbits', 'orbits', true ) || [];
+  const selectedOrbit = () => controllerProperty( props.controller, 'selectedOrbit', 'orbits', false );
   const selected = () => orbits() .indexOf( props.orbit ) >= 0;
   const isLastSelected = () => props.orbit === selectedOrbit();
   const details = () => {
-    const value = controllerProperty( availableOrbits(), propName(), 'orbits', false ) || "";
+    const value = controllerProperty( props.controller, propName(), 'orbits', false ) || "";
     const [ colorHex, x=0, y=0 ] = value .split( '/' );
     const color = colorHex && hexToWebColor( colorHex );
     return { color, x, y };
@@ -28,7 +27,7 @@ export const OrbitDot = props =>
   const x = () => details().x;
   const y = () => props.relativeHeight * ( 1 - details().y );
 
-  const toggleDot = evt => controllerAction( buildOrbits(), `toggleDirection.${props.orbit}` );
+  const toggleDot = evt => controllerAction( props.controller, `toggleDirection.${props.orbit}` );
 
   return ( <Show when={color()} >
     <circle cx={x()} cy={y()} r={r} fill={color()} onClick={toggleDot} />
@@ -43,15 +42,11 @@ export const OrbitDot = props =>
 
 export const OrbitPanel = props =>
 {
-  const availableOrbits = () => subController( props.controller, 'availableOrbits' );
-  const buildOrbits = () => subController( props.controller, 'buildOrbits' );
+  const oneAtATime = () => controllerProperty( props.controller, 'oneAtATime', 'orbits', false );
 
-  const orbits = () => controllerProperty( availableOrbits(), 'orbits', 'orbits', true );
-  const oneAtATime = () => controllerProperty( buildOrbits(), 'oneAtATime', 'orbits', false );
-
-  const selectNone = () => controllerAction( buildOrbits(), 'setNoDirections' );
-  const selectAll = () => controllerAction( buildOrbits(), 'setAllDirections' );
-  const singleAction = () => controllerAction( buildOrbits(), 'oneAtATime' );
+  const selectNone = () => controllerAction( props.controller, 'setNoDirections' );
+  const selectAll = () => controllerAction( props.controller, 'setAllDirections' );
+  const singleAction = () => controllerAction( props.controller, 'oneAtATime' );
 
   const marginedStyle = { margin: '8px' }
   const relativeHeight = 0.6;
@@ -60,6 +55,7 @@ export const OrbitPanel = props =>
 
   return (
     <div style={marginedStyle}>
+      <InputLabel id="orbits-label">{props.label}</InputLabel>
       <Stack spacing={2} direction="row">
         <Button variant="outlined" style={marginedStyle} onClick={ selectNone } >None</Button>
         <Button variant="outlined" style={marginedStyle} onClick={ selectAll } >All</Button>
@@ -75,7 +71,7 @@ export const OrbitPanel = props =>
           <g>
             {/* TODO: reversed triangle per the controller */}
             <polygon fill="none" points={triangleCorners}/>  { /* all dot X & Y values are in [0..1] */ }
-            <For each={orbits()}>{ orbit =>
+            <For each={props.orbits}>{ orbit =>
               <OrbitDot orbit={orbit} relativeHeight={relativeHeight} controller={ props.controller } />
             }</For>
           </g>

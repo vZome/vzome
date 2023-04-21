@@ -20,7 +20,7 @@ export const ToolsMenu = ( props ) =>
 
   return (
     <div>
-      <Button id="tools-menu-button"
+      <Button id="tools-menu-button" sx={{ color: 'white', minWidth: 'auto' }}
         aria-controls={open() ? "tools-menu-menu" : undefined} aria-haspopup="true" aria-expanded={open() ? "true" : undefined}
         onClick={ (event) => setAnchorEl(event.currentTarget) }
       >

@@ -5,10 +5,10 @@ import { useEmbedding, useRotation, useGeometry } from './hooks.js'
 import { useThree, useFrame } from '@react-three/fiber'
 import { GLTFExporter } from 'three-stdlib';
 
-const Instance = ( { id, position, rotation, geometry, color, selected, type, toolRef } ) =>
+const Instance = ( { id, position, rotation, geometry, color, selected, type, toolActions } ) =>
 {
   const ref = useRotation( rotation );
-  const { onClick, onHover } = toolRef?.current || {};
+  const { onClick, onHover, onDragStart } = toolActions || {}; // may be undefined when the model is not editable, or when the object is not clickable in the current mode
   
   const handleHover = value => e =>
   {
@@ -17,9 +17,16 @@ const Instance = ( { id, position, rotation, geometry, color, selected, type, to
   }
   const handleClick = ( e ) =>
   {
-    if ( onClick ) { // may be undefined when the model is not editable, or when the object is not clickable in the current mode
+    if ( onClick ) {
       e.stopPropagation()
       onClick( id, position, type, selected )
+    }
+  }
+  const handlePointerDown = ( e ) =>
+  {
+    if ( onDragStart ) {
+      e.stopPropagation()
+      onDragStart( id, position, type, selected, e )
     }
   }
   const emissive = selected? "#f6f6f6" : "black"
@@ -27,14 +34,15 @@ const Instance = ( { id, position, rotation, geometry, color, selected, type, to
   return (
     <group position={ position } >
       <mesh matrixAutoUpdate={false} ref={ ref } geometry={geometry}
-          onPointerOver={handleHover(true)} onPointerOut={handleHover(false)} onClick={handleClick}>
+          onPointerOver={handleHover(true)} onPointerOut={handleHover(false)} onClick={handleClick}
+          onPointerDown={handlePointerDown} >
         <meshLambertMaterial attach="material" color={color} emissive={emissive} />
       </mesh>
     </group>
   )
 }
 
-const InstancedShape = ( { shape, toolRef } ) =>
+const InstancedShape = ( { shape, toolActions } ) =>
 {
   const geometry = useGeometry( shape );
   if ( shape.instances.length === 0 )
@@ -42,12 +50,12 @@ const InstancedShape = ( { shape, toolRef } ) =>
   return (
     <>
       { shape.instances.map( instance =>
-        <Instance key={instance.id} {...instance} geometry={geometry} toolRef={toolRef} /> ) }
+        <Instance key={instance.id} {...instance} geometry={geometry} toolActions={toolActions} /> ) }
     </>
   )
 }
 
-export const ShapedGeometry = forwardRef(( { shapes, embedding, toolRef }, exporterRef ) =>
+export const ShapedGeometry = forwardRef(( { shapes, embedding, toolActions }, exporterRef ) =>
 {
   const { scene } = useThree();
 
@@ -82,7 +90,7 @@ export const ShapedGeometry = forwardRef(( { shapes, embedding, toolRef }, expor
   return ( shapes &&
     <group matrixAutoUpdate={false} ref={ref} onPointerMissed={bkgdClick}>
       { Object.values( shapes ).map( shape =>
-        <InstancedShape key={shape.id} {...{ shape, toolRef }} />
+        <InstancedShape key={shape.id} {...{ shape, toolActions }} />
       ) }
     </group>
   ) || null
