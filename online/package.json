@@ -23,8 +23,8 @@
     "redux-thunk": "^2.3.0",
     "redux-undo": "^1.0.1",
     "solid-js": "^1.7.0",
-    "solid-three": "file:../../../Projects/solid-three",
-    "three": "^0.142",
+    "solid-three": "/Users/vorth/Projects/solid-three/packed/solid-three-0.1.0.tgz",
+    "three": "0.149.0",
     "three-stdlib": "^2.21.5",
     "txml": "^5.1.1",
     "workbox-cacheable-response": "^6.4.1",
@@ -53,8 +53,8 @@
       "last 1 safari version"
     ]
   },
-  "comments" : {
-    "tooling" : "See online/scripts/esbuild-config.mjs for esbuild rationale and bundling strategy."
+  "comments": {
+    "tooling": "See online/scripts/esbuild-config.mjs for esbuild rationale and bundling strategy."
   },
   "devDependencies": {
     "@babel/core": "^7.21.4",
