@@ -2335,9 +2335,10 @@ solid-js@^1.7.0:
     csstype "^3.1.0"
     seroval "^0.5.0"
 
-"solid-three@file:../../../Projects/solid-three/packed/solid-three-0.1.0.tgz":
+solid-three@^0.1.0:
   version "0.1.0"
-  resolved "file:../../../Projects/solid-three/packed/solid-three-0.1.0.tgz#78e0ce01b94a8ab65677e53b92b8ab98f23fa93e"
+  resolved "https://registry.yarnpkg.com/solid-three/-/solid-three-0.1.0.tgz#78e0ce01b94a8ab65677e53b92b8ab98f23fa93e"
+  integrity sha512-K/6K+wZggHwxjTorzMm9QsrPjNlwdx39ZNR3ecfT37jAOSuBBghizOZ/DGSpal4ppBXqROpctRUaDaJReBwqKA==
   dependencies:
     "@types/three" "0.149.0"
     zustand "^3.7.2"
