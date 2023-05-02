@@ -1,27 +1,30 @@
 
-import { Canvas } from "solid-three";
+import { useFrame, useThree, Canvas } from "solid-three";
 import { Color } from "three";
-import { createEffect, createMemo, createSignal } from "solid-js";
-import { useFrame, useThree } from 'solid-three';
+import { createMemo } from "solid-js";
+import { createElementSize } from "@solid-primitives/resize-observer";
+import { PerspectiveCamera } from "./perspectivecamera";
 
 const Lighting = props =>
 {
   const color = createMemo( () => new Color( props.backgroundColor ) .convertLinearToSRGB() );
-  useFrame( ({scene}) => { scene.background = color } )
-  const { scene } = useThree();
-  const centerObject = () => scene.getObjectByName('Center');
+  useFrame( ({scene}) => { scene.background = color() } )
+  // const { scene } = useThree();
+  // const centerObject = () => scene.getObjectByName('Center');
+  let centerObject;
   return (
     <>
-      <group name="Center" position={[0,0,0]} visible={false} />
+      <group ref={centerObject} position={[0,0,0]} visible={false} />
       <ambientLight color={props.ambientColor} intensity={1.5} />
-      { props.directionalLights.map( ( { color, direction } ) =>
-        <directionalLight key={JSON.stringify(direction)} target={centerObject()} intensity={1.7} color={color} position={direction.map( x => -x )} /> ) }
+      <For each={props.directionalLights}>{ ( { color, direction } ) =>
+        <directionalLight target={centerObject} intensity={1.7} color={color} position={direction.map( x => -x )} />
+      }</For>
     </>
   )
 }
 
 const defaultLighting = {
-  backgroundColor: '#BBDAED',
+  backgroundColor: '#88C0ED',
   ambientColor: '#555555',
   directionalLights: [ // These are the vZome defaults, for consistency
     { direction: [ 1, -1, -0.3 ], color: '#FDFDFD' },
@@ -39,20 +42,20 @@ const toVector = vector3 =>
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
-const LightedCameraControls = ({ sceneCamera, syncCamera, trackball }) =>
+const LightedCameraControls = (props) =>
 {
   // Here we can useThree, etc., which we could not in LightedTrackballCanvas
 
-  const [ needsRender, setNeedsRender ] = useState( 20 );
-  const trackballChange = evt => {
-    setNeedsRender( 20 );
-  };
-  useFrame( ({ gl, scene, camera }) => {
-    if ( needsRender > 0 ) {
-      gl.render( scene, camera );
-      setNeedsRender( needsRender-1 );
-    }
-  }, 1 );
+  // const [ needsRender, setNeedsRender ] = createSignal( 20 );
+  // const trackballChange = evt => {
+  //   setNeedsRender( 20 );
+  // };
+  // useFrame( ({ gl, scene, camera }) => {
+  //   if ( needsRender > 0 ) {
+  //     gl.render( scene, camera );
+  //     setNeedsRender( needsRender-1 );
+  //   }
+  // }, 1 );
 
   const trackballEnd = evt =>
   {
@@ -73,30 +76,49 @@ const LightedCameraControls = ({ sceneCamera, syncCamera, trackball }) =>
     const far = camera.far;
     const near = camera.near;
 
-    syncCamera( { lookAt, up, lookDir, distance, width, far, near } );
+    props.syncCamera( { lookAt, up, lookDir, distance, width, far, near } );
     setNeedsRender( 20 );
   }
 
-  const { near, far, width, distance, up, lookAt, lookDir, perspective } = sceneCamera;
-  const halfX = width / 2;
-  const halfY = halfX / props.aspect;
-  const position = useMemo( () => lookAt.map( (e,i) => e - distance * lookDir[ i ] ), [ lookAt, lookDir, distance ] );
-  const fov = useMemo( () =>
-    360 * Math.atan( halfY / distance ) / Math.PI, [ halfY, distance ] );
+  const position = createMemo( () => {
+    const dist = props.sceneCamera?.distance;
+    const lookDir = props.sceneCamera?.lookDir;
+    const result = props.sceneCamera?.lookAt.map( (e,i) => e - props.sceneCamera?.distance * props.sceneCamera?.lookDir[ i ] );
+    return result;
+  } );
+  const fov = createMemo( () => {
+    const halfX = props.sceneCamera?.width / 2;
+    const halfY = halfX / props.aspect;
+    return 360 * Math.atan( halfY / props.sceneCamera?.distance ) / Math.PI;
+  } );
 
-  const lights = useMemo( () => ({
+  const lights = createMemo( () => ({
     ...defaultLighting,
     backgroundColor: (props.lighting?.backgroundColor) || defaultLighting.backgroundColor,
   }));
 
-  return (
+  const camera = useThree( ({ camera }) => camera );
+  const canvas = useThree( ({ gl }) => gl.domElement );
+  // createEffect( () => {
+  //   if ( canvas() && camera() ) {
+  //     const controls = new TrackballControls( camera(), canvas() );
+  //     controls.staticMoving = true;
+  //     controls.rotateSpeed = props.rotationOnly? 2 : 4.5;
+  //     controls.zoomSpeed = 3;
+  //     controls.panSpeed = 1;
+  //   }  
+  // });
+
+  const result = (
     <>
-      <PerspectiveCamera makeDefault { ...{ fov, position, up } } >
-        <Lighting {...(lights)} />
+      <PerspectiveCamera fov={fov()} aspect={props.aspect} position={position()} up={props.sceneCamera?.up} >
+        <Lighting {...(lights())} />
       </PerspectiveCamera>
-      {trackball && <TrackballControls onChange={trackballChange} onEnd={trackballEnd} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={lookAt} />}
+      {/* {props.trackball && <TrackballControls onChange={trackballChange} onEnd={trackballEnd} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={props.sceneCamera?.lookAt} />} */}
     </>
   );
+
+  return result;
 }
 
 const isLeftMouseButton = e =>
@@ -111,9 +133,8 @@ const isLeftMouseButton = e =>
 
 export const LightedTrackballCanvas = ( props ) =>
 {
-  let measured;
-  // const [ measured, bounds ] = useMeasure();
-  // const aspect = ( bounds && bounds.height )? bounds.width / bounds.height : 1;
+  let size;
+  const aspect = () => ( size && size.height )? size.width / size.height : 1;
 
   const handlePointerMissed = ( e ) =>
   {
@@ -123,19 +144,17 @@ export const LightedTrackballCanvas = ( props ) =>
     }
   }
 
-  return (
-    <Canvas ref={measured} dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }}
-      height={props.height ?? "100vh"} width={props.width ?? "100vw"}
-      camera={{
-        position: [0, 0, 144],
-        fov: 20
-      }}
-      onPointerMove={props.toolActions?.onDrag} onPointerUp={props.toolActions?.onDragEnd} onPointerMissed={handlePointerMissed} >
-
-      {/* <LightedCameraControls {...{ lighting, aspect, sceneCamera, syncCamera, trackball }} /> */}
-
+  const canvas =
+    <Canvas dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }}
+        height={props.height ?? "100vh"} width={props.width ?? "100vw"}
+        frameloop="always"
+        onPointerMove={props.toolActions?.onDrag} onPointerUp={props.toolActions?.onDragEnd} onPointerMissed={handlePointerMissed} >
+      <LightedCameraControls lighting={props.lighting} aspect={aspect()}
+        sceneCamera={props.sceneCamera} syncCamera={props.syncCamera} trackball={props.trackball} />
       {props.children}
-      <ambientLight intensity={0.2} />
-      <spotLight position={[100, 100, 100]} intensity={0.6} />
-    </Canvas> )
+    </Canvas>;
+  
+  size = createElementSize( canvas );
+  
+  return canvas;
 }

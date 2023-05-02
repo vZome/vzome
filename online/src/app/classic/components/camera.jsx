@@ -20,10 +20,6 @@ export const CameraControls = props =>
     return ({ ...symmScene, lighting: { ...symmScene.lighting, backgroundColor: props.bkgdColor } } );
   }
 
-  // createEffect( () => {
-  //   console.log( "backgroundColor is ", scene() .lighting .backgroundColor );
-  // } );
-
   return (
     <div id='camera-controls' style={{ display: 'grid', 'grid-template-rows': 'min-content min-content' }}>
       <div id='camera-buttons' class='placeholder' style={{ 'min-height': '60px' }} >perspective | snap | outlines</div>

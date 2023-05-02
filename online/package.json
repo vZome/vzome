@@ -10,6 +10,7 @@
     "@react-three/fiber": "^8.9.0",
     "@react-three/xr": "^3.5.0",
     "@reduxjs/toolkit": "^1.8.3",
+    "@solid-primitives/resize-observer": "^2.0.15",
     "@suid/icons-material": "^0.5.3",
     "@suid/material": "^0.8.2",
     "react": "^18.0",

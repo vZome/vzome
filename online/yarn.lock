@@ -741,6 +741,42 @@
     redux-thunk "^2.4.2"
     reselect "^4.1.8"
 
+"@solid-primitives/event-listener@^2.2.10":
+  version "2.2.10"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/event-listener/-/event-listener-2.2.10.tgz#0e3de30f02a25a82ed31633d0a65035b0ea0c457"
+  integrity sha512-rWBCeF1NRAmLJtVo2wpY9vF3IAQ8VAxGnFDOUqROSdYhUfiCeM7Hw3PKkGCELwNQzZK1W1z+MjzB7fctpjX4Sg==
+  dependencies:
+    "@solid-primitives/utils" "^6.0.0"
+
+"@solid-primitives/resize-observer@^2.0.15":
+  version "2.0.15"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/resize-observer/-/resize-observer-2.0.15.tgz#f1cd27e438e4c79891436aacdf4fef2f637bdd4c"
+  integrity sha512-Wu2KygKhe4wVeZYCvBrD/yUr9oMs7Jtm+cCctroPlTIKOviLhtiNKzi56Jh0FR2G+adeD5662qHpAS/obnM5gQ==
+  dependencies:
+    "@solid-primitives/event-listener" "^2.2.10"
+    "@solid-primitives/rootless" "^1.3.2"
+    "@solid-primitives/static-store" "^0.0.2"
+    "@solid-primitives/utils" "^6.0.0"
+
+"@solid-primitives/rootless@^1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/rootless/-/rootless-1.3.2.tgz#9ad2b5396a091d2196a5683e517f616c3b45ee56"
+  integrity sha512-R1rncXOUcB/i3PyvKhSWcsocPRe1n3HsMIO717RpWFd2knUF8+b0cGgRDEoneGaV/a5kq4cqH3csa66klxuM3A==
+  dependencies:
+    "@solid-primitives/utils" "^6.0.0"
+
+"@solid-primitives/static-store@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/static-store/-/static-store-0.0.2.tgz#43ff64f238f127d89637f7830a977c1bbfb3f5e5"
+  integrity sha512-JR51MmoZbFWE7fmzm0NnfS4RuLHpzXpPqAb7RJu3fHDGHp+q7v4KylseULcailINzDIosHQXbpiDQlj2Lx9zbQ==
+  dependencies:
+    "@solid-primitives/utils" "^6.0.0"
+
+"@solid-primitives/utils@^6.0.0":
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/utils/-/utils-6.1.0.tgz#4814debe3add6092226a0443cdd252747c2070d9"
+  integrity sha512-uTikKFrq33UO+MnKt2WzZr9WYbQe5YX58ytGkL+29DL6o0pZs1wrICbd4ymzSm8azqzMcQqEQOL3HLWjuv9tLw==
+
 "@suid/base@0.5.1":
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/@suid/base/-/base-0.5.1.tgz#95f4e77d66175014622b79f2ef8138805db37aa4"

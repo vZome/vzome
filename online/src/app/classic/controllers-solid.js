@@ -29,7 +29,8 @@ export const createWorkerStore = ( worker ) =>
       case 'SCENE_RENDERED': {
         // TODO: I wish I had a better before/after contract with the worker
         const { scene, edit } = data.payload;
-        setState( { edit, scene: { ...state.scene, ...scene }, waiting: false } );
+        const camera = scene.camera || state.scene.camera;
+        setState( { edit, scene: { ...state.scene, ...scene, camera }, waiting: false } );
         break;
       }
 
