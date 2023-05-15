@@ -30,6 +30,11 @@ import { solidPlugin } from './esbuild-solid-plugin.mjs';
   code is required to parse or interpret a vZome file.
 */
 
+/*
+  This dictionary form for entryPoints does not match the esbuild documentation,
+  but works anyway.  Furthermore, I tried switching to the `{ out:..., in:... }`
+  they document, and the build failed.
+*/
 export const esbuildConfig = {
   entryPoints: {
   // apps
@@ -39,13 +44,13 @@ export const esbuildConfig = {
     'vzome-classic'   : 'src/app/classic/index.jsx',
     'fivecell'        : 'src/app/fivecell/index.jsx',
     'bhall-basic'     : 'src/app/bhall/basic/index.jsx',
-  // web component
+  // web component, not used by apps
     'vzome-viewer'        : 'src/wc/index.js',
-  // client rendering code for dynamic import
+  // client rendering code, dynamically imported for fast time-to-first-render
     'vzome-viewer-dynamic': 'src/ui/viewer/index.jsx',
-  // Worker entry point
+  // Worker entry point, only used as a module worker (which still breaks Firefox)
     'vzome-worker-static' : 'src/worker/vzome-worker-static.js',
-  // Legacy code, dynamically loaded as needed by the worker
+  // Legacy code, dynamically loaded as needed by the worker to parse vZome files or edit designs
     'vzome-legacy'        : 'src/worker/legacy/dynamic.js',
   },
   bundle: true,
