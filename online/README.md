@@ -37,7 +37,6 @@ fine because they are rendered using the `.shapes.json` preview.
 
 ## Legacy Code Dev Workflow
 
-This workflow assumes you have already performed the quick-start workflow above.
 You'll need [Maven](https://maven.apache.org/) installed for these steps.
 
 The vZome legacy code is part of the Java code from this repository (for desktop vZome)
@@ -95,12 +94,8 @@ This gives you several launch profiles.  Using the VS Code debugging view, launc
 ## Testing the Web Component
 
 Periodically, it is a good idea to test the web component on its own.
-In the online shell, run `yarn && yarn dev`, then
-visit this [test app](http://localhost:8532/test/) to view several viewer
-components on a page.
-
-With the dev server running, you can use the `react-vzome` launch profile in VS Code
-to debug the client-side code.  This will launch a separate Chrome instance showing `online/test/index.html`.
+With the dev server running, you can use the `web component` launch profile in VS Code
+to debug the client-side code.  This will launch a separate Chrome instance showing `online/public/test/index.html`.
 
 ## Official Builds
 
