@@ -1,6 +1,7 @@
 import esbuild from 'esbuild';
 import { esbuildConfig } from './esbuild-config.mjs';
 import { argv } from 'node:process';
+import { writeFileSync } from 'node:fs';
 
 const commonConfig = {
   ...esbuildConfig, 
@@ -16,7 +17,9 @@ if ( argv .includes( 'quick' ) ) {
   // Avoid bundling any of the legacy code; the 'vzome-legacy' dynamic bundle will be missing from runtime
   delete commonConfig.entryPoints[ 'vzome-legacy' ];
   commonConfig.external = [ './legacy/*.js' ];
-  
+
+  writeFileSync( 'src/revision.js', 'export const REVISION="QUICKSTART";' );
+
   console.log( '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
   console.log( '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
   console.log( '' );

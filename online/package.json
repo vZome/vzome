@@ -53,8 +53,8 @@
       "last 1 safari version"
     ]
   },
-  "comments" : {
-    "tooling" : "See online/scripts/esbuild-config.mjs for esbuild rationale and bundling strategy."
+  "comments": {
+    "tooling": "See online/scripts/esbuild-config.mjs for esbuild rationale and bundling strategy."
   },
   "devDependencies": {
     "esbuild": "^0.13.12",
