@@ -38,6 +38,7 @@ fine because they are rendered using the `.shapes.json` preview.
 ## Legacy Code Dev Workflow
 
 You'll need [Maven](https://maven.apache.org/) installed for these steps.
+You will also require an installation of [JDK 11](https://www.oracle.com/java/technologies/javase/jdk11-archive-downloads.html).
 
 The vZome legacy code is part of the Java code from this repository (for desktop vZome)
 that has been transpiled into Javascript using
