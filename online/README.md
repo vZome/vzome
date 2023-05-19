@@ -66,17 +66,19 @@ First, in the online shell, execute this script:
 ```
 ./prepare-jsweet.sh
 ```
-This will create a `jsweet-branches` folder as a sibling of `online,
+This will create a `jsweet-branches` folder as a sibling of `online`,
 check out the four branches listed above, and build them in sequence.
 When the script completes, you can delete the `jsweet-branches` folder
 if you wish, since the tools and library will already be installed in your
 local Maven cache.
+Since this steps is not touching any code in this repository,
+you should not need to repeat it unless you set up another machine to work on vZome Online.
 
 Next, from the main shell run:
 ```
 cicd/build-online.bash
 ```
-You'll need to do this whenever the Java source code has changed, since it does the JSweet transpile.  You'll see a number of errors during the transpilation, but that is expected.  The script checks for the expected number of errors, and fails if that changes.
+You'll need to do this whenever the Java source code has changed, since it does the JSweet transpile.  You'll see a number of errors during the transpilation, but that is expected.  The script checks for the expected number of errors, and fails if there are more errors or fewer.
 
 Now, in the online shell do
 ```
@@ -84,11 +86,11 @@ yarn && yarn dev
 ```
 This is a dev server, which means it will detect file changes and update the live server.
 You can leave this running for hours or days as you do your development.
-It is not set up for hot module reloading, so you'll need to refresh your browser
+However, it is not set up for hot module reloading, so you'll need to refresh your browser
 pages manually.
 
 Finally, copy `vscode-launch-template.json` as `.vscode/launch.json` (relative to the main folder).
-This gives you several launch profiles.  Using the VS Code debugging view, launch the `online` profile.  This will start a dedicated Chrome window running vZome Online, with the ability to set breakpoints in the `online` source code in VS Code.  Note that this only starts the client-side Chrome.  You must have the server started also, per the prior paragraph.
+This gives you several launch profiles.  Using the VS Code debugging view, launch the `online` profile.  This will start a dedicated Chrome window running vZome Online, with the ability to set breakpoints in the `online` source code in VS Code.  Note that this only starts the client-side Chrome.  You must have the dev server started also, per the prior paragraph.
 
 ## Testing the Web Component
 
