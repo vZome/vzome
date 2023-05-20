@@ -1,5 +1,4 @@
 
-import { JsProperties } from './legacy/jsweet2js.js';
 
 // support trampolining to work around worker CORS issue
 //   see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671

@@ -9,7 +9,17 @@
       "request": "launch",
       "url": "http://localhost:8532/",
       "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
+        "/": "${workspaceFolder}/online/dist"
+      }
+    },
+    {
+      "name":             "web component",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8532/test/",
+      "pathMapping": {
+        "/": "${workspaceFolder}/online/dist"
       }
     },
     {
@@ -19,7 +29,17 @@
       "request": "launch",
       "url": "http://localhost:8532/browser",
       "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
+        "/": "${workspaceFolder}/online/dist"
+      }
+    },
+    {
+      "name":             "classic",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8532/classic",
+      "pathMapping": {
+        "/": "${workspaceFolder}/online/dist"
       }
     }
   ]
