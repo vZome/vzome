@@ -5,4 +5,4 @@ script:
 - "./gradlew test regression"
 branches:
   only:
-  - master
+  - main
