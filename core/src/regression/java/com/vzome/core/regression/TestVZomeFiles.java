@@ -90,9 +90,9 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
 
     private int exitCode = 0;
 
-    private final static String BROWSER = "https://github.com/vorth/vzome-core/blob/master/src/regression/files";
+    private final static String BROWSER = "https://github.com/vorth/vzome-core/blob/main/src/regression/files";
 
-    private final static String EXPORTS = "https://raw.githubusercontent.com/vorth/vzome-core/master/src/regression/files";
+    private final static String EXPORTS = "https://raw.githubusercontent.com/vorth/vzome-core/main/src/regression/files";
 
     private Element collectResults()
     {

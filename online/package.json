@@ -2,6 +2,12 @@
   "name": "vzome-online",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "build": "node scripts/prod-build.mjs",
+    "quick": "node scripts/test-app.mjs quick",
+    "dev": "node scripts/test-app.mjs",
+    "https": "node scripts/test-https.mjs"
+  },
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
@@ -34,11 +40,6 @@
     "workbox-strategies": "^6.4.1"
   },
   "homepage": "https://vzome.com/app",
-  "scripts": {
-    "build": "node scripts/prod-build.mjs",
-    "dev": "node scripts/test-app.mjs",
-    "https": "node scripts/test-https.mjs"
-  },
   "eslintConfig": {
     "extends": "react-app"
   },

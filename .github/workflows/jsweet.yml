@@ -5,7 +5,7 @@ name: JSweet legacy bundle
 # Controls when the workflow will run
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
       - 'core/src/main/java/**'
       - 'desktop/src/main/java/**'
