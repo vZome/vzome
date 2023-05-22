@@ -67,19 +67,6 @@ export const ClassicEditor = ( props ) =>
 
   const switcherTool = createSwitcherTool( selectionTool, strutPreviewTool, 100 );
 
-  // This React/SolidJS integration is a huge complication.  SolidJS makes for a much
-  // more straightforward interaction with the worker (controllers), but we must use
-  // React because there is no good SolidJS alternative to react-three/fiber for declarative
-  // 3D components rendering.
-  //
-  // It is hard enough to engineer a notion of pluggable mouse tools, each with
-  // its own rendered 3D state, without introducing that wrinkle.
-  // As things stand, it seems that we need to separate the tool rendering (React) from the
-  // tool state (SolidJS), including the state controlling which tool is in use.
-  // We want to pass only properties to a stateless SolidSceneEditor, and no context or children.
-  // (If I could figure out how to make children independent, passing a "tool" property
-  // that is a self-contained mouse tool with SolidJS state and React rendering, things would be easier.)
-
   return (
     <div id='classic' style={{ display: 'grid', 'grid-template-rows': '1fr' }} class='whitesmoke-bkgd'>
       <div id='editor-main' class='grid-cols-1-min whitesmoke-bkgd' >
@@ -95,7 +82,7 @@ export const ClassicEditor = ( props ) =>
             <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} symmetryController={symmController()} />
 
             <SceneEditor scene={props.getScene()} strutting={strutting()}
-              syncCamera={syncCamera} toolActions={switcherTool}
+              syncCamera={syncCamera} toolActions={selectionTool}
               style={{ position: 'relative', height: '100%' }} />
           </div>
         </div>

@@ -10,19 +10,36 @@ const Instance = ( props ) =>
     m.set( ...props.rotation );
     meshRef.matrix = m;
   } );
-  const [hovered, setHovered] = createSignal( false );
 
+  const handleHover = value => e =>
+  {
+    if ( props.toolActions?.onHover ) {
+      e.stopPropagation();
+      props.toolActions?.onHover( props.id, props.position, props.type, value );
+    }
+  }
+  const handleClick = ( e ) =>
+  {
+    if ( props.toolActions?.onClick ) {
+      e.stopPropagation()
+      props.toolActions?.onClick( props.id, props.position, props.type, props.selected )
+    }
+  }
+  const handlePointerDown = ( e ) =>
+  {
+    if ( props.toolActions?.onDragStart ) {
+      e.stopPropagation()
+      props.toolActions?.onDragStart( props.id, props.position, props.type, props.selected, e )
+    }
+  }
   const emissive = () => props.selected? "#f6f6f6" : "black"
   // TODO: cache materials
   return (
     <group position={ props.position } >
       <mesh matrixAutoUpdate={false} ref={meshRef} geometry={props.geometry} 
-        onPointerEnter={ ()=>setHovered(true) }
-        onPointerLeave={ ()=>setHovered(false) }
-      >
-          {/* onPointerOver={handleHover(true)} onPointerOut={handleHover(false)} onClick={handleClick}
-          onPointerDown={handlePointerDown} > */}
-        <meshLambertMaterial attach="material" color={ hovered() ? "blue" : props.color } emissive={emissive()} />
+          onPointerOver={handleHover(true)} onPointerOut={handleHover(false)} onClick={handleClick}
+          onPointerDown={handlePointerDown} >
+        <meshLambertMaterial attach="material" color={props.color} emissive={emissive()} />
       </mesh>
     </group>
   )
@@ -59,7 +76,7 @@ const InstancedShape = ( props ) =>
   return (
     <>
       <For each={props.shape.instances}>{ instance =>
-        <Instance {...instance} geometry={geometry()} />
+        <Instance {...instance} geometry={geometry()} toolActions={props.toolActions} />
       }</For>
     </>
   )
@@ -67,16 +84,11 @@ const InstancedShape = ( props ) =>
 
 export const ShapedGeometry = ( props ) =>
 {
-  const bkgdClick = () =>
-  {
-    console.log( 'bkgdClick happened' );
-  }
-
   return (
     // <Show when={ () => props.shapes }>
-      <group matrixAutoUpdate={false} onPointerMissed={bkgdClick}>
+      <group matrixAutoUpdate={false}>
         <For each={Object.values( props.shapes || {} )}>{ shape =>
-          <InstancedShape shape={shape} />
+          <InstancedShape shape={shape} toolActions={props.toolActions} />
         }</For>
       </group>
     // </Show>

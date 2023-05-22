@@ -23,5 +23,5 @@ export const PerspectiveCamera = (props) =>
     onCleanup(() => set()({ camera: oldCam }));
   });
 
-  return <perspectiveCamera ref={cam} far={2000} near={0.1} fov={40} position={props.position} {...props} />
+  return <perspectiveCamera ref={cam} far={2000} near={0.1} fov={props.fov} position={props.position} {...props} />
 }

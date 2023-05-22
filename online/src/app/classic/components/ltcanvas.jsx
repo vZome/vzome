@@ -4,6 +4,7 @@ import { Color } from "three";
 import { createMemo } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 import { PerspectiveCamera } from "./perspectivecamera";
+import { TrackballControls } from "./trackballcontrols";
 
 const Lighting = props =>
 {
@@ -46,17 +47,6 @@ const LightedCameraControls = (props) =>
 {
   // Here we can useThree, etc., which we could not in LightedTrackballCanvas
 
-  // const [ needsRender, setNeedsRender ] = createSignal( 20 );
-  // const trackballChange = evt => {
-  //   setNeedsRender( 20 );
-  // };
-  // useFrame( ({ gl, scene, camera }) => {
-  //   if ( needsRender > 0 ) {
-  //     gl.render( scene, camera );
-  //     setNeedsRender( needsRender-1 );
-  //   }
-  // }, 1 );
-
   const trackballEnd = evt =>
   {
     const trackball = evt.target;
@@ -77,7 +67,7 @@ const LightedCameraControls = (props) =>
     const near = camera.near;
 
     props.syncCamera( { lookAt, up, lookDir, distance, width, far, near } );
-    setNeedsRender( 20 );
+    // setNeedsRender( 20 );
   }
 
   const position = createMemo( () => {
@@ -97,24 +87,12 @@ const LightedCameraControls = (props) =>
     backgroundColor: (props.lighting?.backgroundColor) || defaultLighting.backgroundColor,
   }));
 
-  const camera = useThree( ({ camera }) => camera );
-  const canvas = useThree( ({ gl }) => gl.domElement );
-  // createEffect( () => {
-  //   if ( canvas() && camera() ) {
-  //     const controls = new TrackballControls( camera(), canvas() );
-  //     controls.staticMoving = true;
-  //     controls.rotateSpeed = props.rotationOnly? 2 : 4.5;
-  //     controls.zoomSpeed = 3;
-  //     controls.panSpeed = 1;
-  //   }  
-  // });
-
   const result = (
     <>
       <PerspectiveCamera fov={fov()} aspect={props.aspect} position={position()} up={props.sceneCamera?.up} >
         <Lighting {...(lights())} />
       </PerspectiveCamera>
-      {/* {props.trackball && <TrackballControls onChange={trackballChange} onEnd={trackballEnd} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={props.sceneCamera?.lookAt} />} */}
+      {props.trackball && <TrackballControls onEnd={trackballEnd} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={props.sceneCamera?.lookAt} />}
     </>
   );
 

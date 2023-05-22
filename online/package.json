@@ -30,7 +30,7 @@
     "redux-thunk": "^2.3.0",
     "redux-undo": "^1.0.1",
     "solid-js": "^1.7.0",
-    "solid-three": "^0.1.0",
+    "solid-three": "^0.2.0",
     "three": "0.149.0",
     "three-stdlib": "^2.21.5",
     "txml": "^5.1.1",
