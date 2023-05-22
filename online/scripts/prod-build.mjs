@@ -1,7 +1,6 @@
 import esbuild from 'esbuild';
 import { esbuildConfig } from './esbuild-config.mjs';
-
-esbuild.build( { ...esbuildConfig, minify: false, sourcemap: false, outdir: 'dist/modules' } )
+import { writeFileSync } from 'node:fs'
 
 esbuild.buildSync( {
   entryPoints: {
@@ -13,3 +12,13 @@ esbuild.buildSync( {
   sourcemap: false,
   outdir: 'dist/app'
 } );
+
+const result = await esbuild.build( {
+  ...esbuildConfig,
+  minify: false,
+  metafile: true,
+  sourcemap: false,
+  outdir: 'dist/modules',
+} )
+
+writeFileSync( 'meta.json', JSON.stringify( result.metafile ) );

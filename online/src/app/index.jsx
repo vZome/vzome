@@ -10,7 +10,7 @@ import Link from '@material-ui/core/Link'
 import { DesignHistoryInspector } from './components/inspector.jsx'
 import { VZomeAppBar } from './components/appbar.jsx'
 import { getModelURL } from './components/folder.jsx';
-import { DesignViewer, WorkerContext, useVZomeUrl } from '../ui/viewer/index.jsx'
+import { DesignViewer, WorkerContext, useVZomeUrl } from '../viewer/react/index.jsx'
 
 const queryParams = new URLSearchParams( window.location.search );
 const relativeUrl = queryParams.get( 'url' ); // support for legacy viewer usage (old vZome shares)

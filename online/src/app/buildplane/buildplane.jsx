@@ -4,7 +4,7 @@ import { useFrame } from '@react-three/fiber'
 
 import { normalize, vlength, vscale } from './vectors.js';
 import { reducer, initialState, doToggleDisk, doSetCenter, doStrutPreview, doSelectPlane, doSelectHinge, doToggleBuild } from './planes.js';
-import { createStrut, joinBalls, newDesign } from '../../ui/viewer/store.js';
+import { createStrut, joinBalls, newDesign } from '../../viewer/react/store.js';
 
 const makeRotation = ( from, to ) =>
 {

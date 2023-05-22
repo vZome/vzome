@@ -5,7 +5,7 @@ import { vZomeViewerCSS } from "./vzome-viewer.css";
 
 import { muiCSS } from "./mui-styles.css";
 
-import { createWorkerStore, fetchDesign } from '../ui/viewer/store.js';
+import { createWorkerStore, fetchDesign } from '../viewer/react/store.js';
 import { createWorker } from "../workerClient/client";
 
 export class VZomeViewer extends HTMLElement
@@ -71,7 +71,7 @@ export class VZomeViewer extends HTMLElement
 
   connectedCallback()
   {
-    import( '../ui/viewer/index.jsx' )
+    import( '../viewer/react/index.jsx' )
       .then( module => {
         this.#reactElement = module.renderViewer( this.#store, this.#container, this.#url, this.#config );
       })

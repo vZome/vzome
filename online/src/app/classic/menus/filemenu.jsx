@@ -9,7 +9,7 @@ import { controllerExportAction } from "../controllers-solid.js";
 import { serializeVZomeXml, download } from '../../../workerClient/serializer.js';
 import { MenuAction } from "../components/menuaction.jsx";
 import { UrlDialog } from '../components/webloader.jsx'
-import { fetchDesign, openDesignFile } from "../../../ui/viewer/store.js";
+import { fetchDesign, openDesignFile } from "../../../viewer/react/store.js";
 
 export const FileMenu = ( props ) =>
 {

@@ -1,8 +1,8 @@
 
+import { SceneCanvas } from '../../../viewer/solid/scenecanvas.jsx';
 import { controllerProperty } from '../controllers-solid.js';
 import { icosahedralScene } from '../icosahedral-vef.js';
 import { octahedralScene } from '../octahedral-vef.js';
-import { SceneCanvas } from './scenecanvas.jsx';
 
 const scenes = {
   icosahedral: icosahedralScene,

@@ -10,7 +10,7 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 
-import { UrlViewer } from '../../ui/viewer/index.jsx'
+import { UrlViewer } from '../../viewer/react/index.jsx'
 import { VZomeAppBar } from '../components/appbar.jsx'
 
 const useStyles = makeStyles( (theme) => ({

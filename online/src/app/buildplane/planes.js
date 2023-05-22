@@ -1,4 +1,3 @@
-import shapes from "../../worker/legacy/resources/com/vzome/core/parts";
 
 export const doStrutPreview= ( position ) =>
 {

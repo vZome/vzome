@@ -5,7 +5,7 @@ import { CameraControls } from './components/camera.jsx';
 import { StrutBuildPanel } from './components/strutbuilder.jsx';
 import { controllerProperty, subController, controllerAction } from './controllers-solid.js';
 import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
-import { SceneEditor } from "./editor.jsx";
+import { SceneEditor } from './components/editor.jsx';
 import { createSwitcherTool } from "./tools/strutdrag.jsx";
 
 export const ClassicEditor = ( props ) =>

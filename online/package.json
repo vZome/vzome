@@ -62,7 +62,7 @@
     "@babel/core": "^7.21.4",
     "@babel/preset-typescript": "^7.21.4",
     "babel-preset-solid": "^1.7.3",
-    "esbuild": "^0.13.12",
+    "esbuild": "^0.17",
     "eslint": "^8.5.0"
   }
 }

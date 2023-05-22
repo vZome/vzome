@@ -1,6 +1,5 @@
 
 import { configureStore } from '@reduxjs/toolkit'
-import { REVISION } from '../../revision.js';
 import { createWorker } from '../../workerClient/client.js';
 
 export const initialState = {

@@ -13,7 +13,7 @@ import Divider from '@material-ui/core/Divider'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 
-import { UrlViewer } from '../../../ui/viewer/index.jsx'
+import { UrlViewer } from '../../../viewer/react/index.jsx'
 import { VZomeAppBar } from '../../components/appbar.jsx'
 
 const metadata = {

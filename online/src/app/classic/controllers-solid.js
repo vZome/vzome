@@ -2,7 +2,7 @@
 import { createEffect } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { initialState, newDesign, requestControllerProperty, doControllerAction } from '../../ui/viewer/store.js';
+import { initialState, newDesign, requestControllerProperty, doControllerAction } from '../../viewer/react/store.js';
 
 export const createWorkerStore = ( worker ) =>
 {

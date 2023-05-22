@@ -3,8 +3,8 @@ import { useFrame, useThree, Canvas } from "solid-three";
 import { Color } from "three";
 import { createMemo } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
-import { PerspectiveCamera } from "./perspectivecamera";
-import { TrackballControls } from "./trackballcontrols";
+import { PerspectiveCamera } from "./perspectivecamera.jsx";
+import { TrackballControls } from "./trackballcontrols.jsx";
 
 const Lighting = props =>
 {
