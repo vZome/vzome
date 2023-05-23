@@ -5,8 +5,8 @@ import { vZomeViewerCSS } from "./vzome-viewer.css";
 
 import { muiCSS } from "./mui-styles.css";
 
-import { createWorkerStore, fetchDesign } from '../viewer/react/store.js';
-import { createWorker } from "../workerClient/client";
+import { createWorkerStore } from '../viewer/react/store.js';
+import { fetchDesign, createWorker } from '../workerClient/index.js';
 
 export class VZomeViewer extends HTMLElement
 {

@@ -49,6 +49,8 @@ const LightedCameraControls = (props) =>
 
   const trackballEnd = evt =>
   {
+    if ( ! props.syncCamera ) return;
+    
     const trackball = evt.target;
     const camera = trackball.object;
     const up = toVector( camera.up );

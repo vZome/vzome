@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
-import { fetchDesign } from '../../viewer/react/store.js';
+import { fetchDesign } from '../../workerClient/index.js';
 import { useGitHubShares, getEmbeddingHtml, getAssetUrl } from './github.js';
 
 import { DesignViewer } from '../../viewer/react/index.jsx'
