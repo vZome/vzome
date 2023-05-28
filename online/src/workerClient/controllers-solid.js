@@ -2,9 +2,9 @@
 import { createEffect } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { initialState, newDesign, requestControllerProperty, doControllerAction } from '../../workerClient/index.js';
+import { initialState, newDesign, requestControllerProperty, doControllerAction } from './actions.js';
 
-export const createWorkerStore = ( worker ) =>
+const createWorkerStore = ( worker ) =>
 {
   const [ state, setState ] = createStore( initialState );
 
@@ -118,7 +118,7 @@ export const createWorkerStore = ( worker ) =>
   return { ...store, rootController, getScene };
 }
 
-export const subController = ( parent, key ) =>
+const subController = ( parent, key ) =>
 {
   if ( ! parent[ key ] ) {
     // The subcontroller does not exist; create it and set its __path array and getStore function
@@ -128,7 +128,7 @@ export const subController = ( parent, key ) =>
   return parent[ key ];
 }
 
-export const controllerProperty = ( controller, propName, changeName=propName, isList=false ) =>
+const controllerProperty = ( controller, propName, changeName=propName, isList=false ) =>
 {
   if ( ! controller[ propName ] ) {
     // The property has never been requested, so we have to make the initial request
@@ -145,15 +145,17 @@ export const controllerProperty = ( controller, propName, changeName=propName, i
   return controller[ propName ];
 }
 
-export const controllerAction = ( controller, action, parameters ) =>
+const controllerAction = ( controller, action, parameters ) =>
 {
   const controllerPath = controller.__path .join( ':' );
   controller.__store.postMessage( doControllerAction( controllerPath, action, parameters ) );
 }
 
-export const controllerExportAction = ( controller, format, parameters={} ) =>
+const controllerExportAction = ( controller, format, parameters={} ) =>
 {
   const controllerPath = controller.__path .join( ':' );
   parameters.format = format;
   return controller.__store .expectResponse( controllerPath, parameters );
 }
+
+export { createWorkerStore, subController, controllerProperty, controllerAction, controllerExportAction };

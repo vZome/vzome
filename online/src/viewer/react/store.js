@@ -114,11 +114,6 @@ const reducer = ( state = initialState, event ) =>
       return { ...state, controller: { isReady: true } };
     }
 
-    case 'CONTROLLER_PROPERTY_CHANGED': {
-      const { controllerPath, name, value } = event.payload;
-      return { ...state, controller: { ...state.controller, [ subcontroller( controllerPath, name ) ]: value } };
-    }
-
     default:
       return state;
   }

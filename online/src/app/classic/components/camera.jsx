@@ -1,6 +1,7 @@
 
 import { SceneCanvas } from '../../../viewer/solid/scenecanvas.jsx';
-import { controllerProperty } from '../controllers-solid.js';
+import { useWorkerClient } from '../../../workerClient/index.js';
+import { controllerProperty } from '../../../workerClient/controllers-solid.js';
 import { icosahedralScene } from '../icosahedral-vef.js';
 import { octahedralScene } from '../octahedral-vef.js';
 
@@ -11,13 +12,15 @@ const scenes = {
 
 export const CameraControls = props =>
 {
-  // TODO: use symmetry to look up the scene to use, somehow, rather than hardcoding icosahedralScene
-  const symmetry = () => controllerProperty( props.controller, 'symmetry' );
+  const { getScene, rootController } = useWorkerClient();
+  const symmetry = () => controllerProperty( rootController(), 'symmetry' );
+  const bkgdColor = () => getScene() ?.lighting ?.backgroundColor;
 
+  // TODO: use symmetry to look up the scene to use, somehow, rather than hardcoding icosahedralScene
   // Why isn't this reactive when props.bkgdColor changes for a loaded model?
   const scene = () => {
     const symmScene = scenes[ symmetry() || 'icosahedral' ];
-    return ({ ...symmScene, lighting: { ...symmScene.lighting, backgroundColor: props.bkgdColor } } );
+    return ({ ...symmScene, lighting: { ...symmScene.lighting, backgroundColor: bkgdColor() } } );
   }
 
   return (

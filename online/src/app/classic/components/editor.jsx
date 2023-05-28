@@ -1,6 +1,7 @@
 
 // import { Vector3 } from 'three';
-import { SceneCanvas } from '../../../viewer/solid/scenecanvas.jsx';
+import { SceneCanvas } from '../../../viewer/solid/index.jsx';
+import { useWorkerClient } from '../../../workerClient/index.js';
 
 // const pseudoCamera = {
 //   position: new Vector3(),
@@ -27,11 +28,13 @@ import { SceneCanvas } from '../../../viewer/solid/scenecanvas.jsx';
 
 export const SceneEditor = ( props ) =>
 {
+  const { getScene } = useWorkerClient();
+
   return (
     // not using DesignViewer because it has its own UI, not corresponding to classic desktop vZome
-    <SceneCanvas height="880px" width="100%" scene={props.scene} toolActions={props.toolActions}
-      trackball={true} syncCamera={props.syncCamera}
-      // trackball={!props.strutting} syncCamera={props.syncCamera}
+    <SceneCanvas height="880px" width="100%" scene={getScene()} toolActions={props.toolActions}
+      trackball={true}
+      // trackball={!props.strutting}
       // children3d={ props.strutting && <StrutDrag state={{}} /> }
     />
   );

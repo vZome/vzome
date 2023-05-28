@@ -8,7 +8,7 @@ import SettingsIcon from '@suid/icons-material/Settings'
 
 import { StrutLengthPanel } from './length.jsx';
 import { OrbitPanel } from './orbitpanel.jsx';
-import { controllerProperty, subController } from '../controllers-solid.js';
+import { controllerProperty, subController } from '../../../workerClient/controllers-solid.js';
 
 export const StrutBuildPanel = props =>
 {

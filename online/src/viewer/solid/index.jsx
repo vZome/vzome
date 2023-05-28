@@ -1,13 +1,18 @@
 
-const useVZomeUrl = ( url, config={ debug: false } ) =>
+import { useWorkerClient } from "../../workerClient/index.js";
+import { SceneCanvas } from "./scenecanvas.jsx";
+
+const DesignViewer = ( props ) =>
 {
-  const report = useDispatch();
-  // TODO: this should be encapsulated in an API on the store
-  useEffect( () =>
-  {
-    if ( !!url ) 
-      report( fetchDesign( url, config ) );
-  }, [ url ] );
+  const { getScene } = useWorkerClient();
+  
+  return (
+    <SceneCanvas toolActions={props.toolActions} scene={getScene()}
+        trackball={props.trackball}
+        height={props.height} width={props.width} >
+      {props.children}
+    </SceneCanvas>
+  );
 }
 
-export { useVZomeUrl };
+export { DesignViewer, SceneCanvas };

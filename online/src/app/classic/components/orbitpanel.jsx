@@ -6,7 +6,7 @@ import Checkbox from "@suid/material/Checkbox";
 import FormControlLabel from "@suid/material/FormControlLabel";
 import InputLabel from "@suid/material/InputLabel";
 
-import { controllerAction, controllerProperty, subController } from '../controllers-solid.js';
+import { controllerAction, controllerProperty, subController } from '../../../workerClient/controllers-solid.js';
 import { hexToWebColor } from './length.jsx';
 
 export const OrbitDot = props =>

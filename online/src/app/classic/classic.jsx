@@ -3,22 +3,20 @@ import { createSignal } from "solid-js";
 
 import { CameraControls } from './components/camera.jsx';
 import { StrutBuildPanel } from './components/strutbuilder.jsx';
-import { controllerProperty, subController, controllerAction } from './controllers-solid.js';
+import { controllerProperty, subController, controllerAction } from '../../workerClient/controllers-solid.js';
 import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
 import { SceneEditor } from './components/editor.jsx';
 import { createSwitcherTool } from "./tools/strutdrag.jsx";
+import { useWorkerClient } from "../../workerClient/index.js";
 
 export const ClassicEditor = ( props ) =>
 {
-  const syncCamera = camera => props.setState( 'scene', 'liveCamera', camera );
+  const { rootController } = useWorkerClient();
 
-  const bkgdColor = () =>
-    props.getScene() ?.lighting ?.backgroundColor;
-
-  const bookmarkController = () => subController( props.controller, 'bookmark' );
-  const pickingController  = () => subController( props.controller, 'picking' );
-  const strutBuilder       = () => subController( props.controller, 'strutBuilder' );
-  const symmetry = () => controllerProperty( props.controller, 'symmetry' );
+  const bookmarkController = () => subController( rootController(), 'bookmark' );
+  const pickingController  = () => subController( rootController(), 'picking' );
+  const strutBuilder       = () => subController( rootController(), 'strutBuilder' );
+  const symmetry = () => controllerProperty( rootController(), 'symmetry' );
   const symmController     = () => subController( strutBuilder(), `symmetry.${symmetry()}` );
   const toolsController    = () => subController( strutBuilder(), 'tools' );
 
@@ -31,7 +29,7 @@ export const ClassicEditor = ( props ) =>
     },
     bkgdClick: () =>
     {
-      controllerAction( props.controller, 'DeselectAll' );
+      controllerAction( rootController(), 'DeselectAll' );
     },
     onDragStart: ( id, position, type, starting, evt ) => {
       console.log( 'selectionTool onDragStart?????!!!!!' );
@@ -77,18 +75,17 @@ export const ClassicEditor = ( props ) =>
             <div id='stats-bar' class='placeholder' style={{ 'min-height': '30px' }} >Status</div>
           </div>
           <ToolFactoryBar controller={symmController()} />
-          <ToolBar symmetryController={symmController()} toolsController={toolsController()} editorController={props.controller} />
+          <ToolBar symmetryController={symmController()} toolsController={toolsController()} editorController={rootController()} />
           <div id='canvas-and-bookmarks' style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
             <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} symmetryController={symmController()} />
 
-            <SceneEditor scene={props.getScene()} strutting={strutting()}
-              syncCamera={syncCamera} toolActions={selectionTool}
+            <SceneEditor strutting={strutting()} toolActions={selectionTool}
               style={{ position: 'relative', height: '100%' }} />
           </div>
         </div>
 
         <div id='editor-drawer' class='grid-rows-min-1 editor-drawer'>
-          <CameraControls controller={props.controller} bkgdColor={bkgdColor()} />
+          <CameraControls/>
           <div id="build-parts-measure" style={{ height: '100%' }}>
             <StrutBuildPanel symmController={symmController()} />
           </div>

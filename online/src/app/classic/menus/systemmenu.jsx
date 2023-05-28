@@ -5,12 +5,14 @@ import Divider from "@suid/material/Divider";
 import { createSignal } from 'solid-js';
 
 import { createMenuAction, MenuAction } from "../components/menuaction.jsx";
-import { controllerProperty, subController } from "../controllers-solid.js";
+import { controllerProperty, subController } from "../../../workerClient/controllers-solid.js";
+import { useWorkerClient } from "../../../workerClient/index.js";
 import { ShapesDialog } from "../components/shapes.jsx";
 import { OrbitsDialog } from "../components/orbits.jsx";
 
-export const SystemMenu = ( props ) =>
+export const SystemMenu = () =>
 {
+  const { rootController } = useWorkerClient();
   const [ anchorEl, setAnchorEl ] = createSignal( null );
   const open = () => Boolean( anchorEl() );
   const doClose = () => setAnchorEl( null );
@@ -28,13 +30,13 @@ export const SystemMenu = ( props ) =>
     doClose();
   }
 
-  const symmetries = () => controllerProperty( props.controller, 'symmetryPerspectives', 'symmetryPerspectives', true );
+  const symmetries = () => controllerProperty( rootController(), 'symmetryPerspectives', 'symmetryPerspectives', true );
   const hasIcosa = () => symmetries() .includes( 'icosahedral' );
-  const currentSymm = () => controllerProperty( props.controller, 'symmetry' );
-  const strutBuilder = () => subController( props.controller, 'strutBuilder' );
+  const currentSymm = () => controllerProperty( rootController(), 'symmetry' );
+  const strutBuilder = () => subController( rootController(), 'strutBuilder' );
   const symmController = () => subController( strutBuilder(), `symmetry.${currentSymm()}` );
 
-  const EditAction = createMenuAction( props.controller, doClose );
+  const EditAction = createMenuAction( rootController(), doClose );
 
   return (
     <div>

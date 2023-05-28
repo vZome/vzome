@@ -4,7 +4,8 @@ import Typography from "@suid/material/Typography";
 import ListItemIcon from '@suid/material/ListItemIcon';
 import ListItemText from "@suid/material/ListItemText";
 import CheckIcon from '@suid/icons-material/Check';
-import { controllerAction } from "../controllers-solid";
+
+import { controllerAction } from "../../../workerClient/controllers-solid.js";
 import { mergeProps } from "solid-js";
 
 const isMac = navigator.userAgentData?.platform === 'macOS';

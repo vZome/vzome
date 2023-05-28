@@ -5,16 +5,18 @@ import Divider from "@suid/material/Divider";
 import { createSignal } from "solid-js";
 
 import { createMenuAction } from "../components/menuaction.jsx";
-import { subController } from "../controllers-solid.js";
+import { subController } from "../../../workerClient/controllers-solid.js";
+import { useWorkerClient } from "../../../workerClient/index.js";
 
-export const EditMenu = ( props ) =>
+export const EditMenu = () =>
 {
   const [ anchorEl, setAnchorEl ] = createSignal( null );
   const open = () => Boolean( anchorEl() );
   const doClose = () => setAnchorEl( null );
 
-  const EditAction = createMenuAction( props.controller, doClose );
-  const undoRedoController = () => subController( props.controller, 'undoRedo' );
+  const { rootController } = useWorkerClient();
+  const EditAction = createMenuAction( rootController(), doClose );
+  const undoRedoController = () => subController( rootController(), 'undoRedo' );
   const UndoRedoAction = createMenuAction( undoRedoController(), doClose );
 
   return (

@@ -5,16 +5,18 @@ import Divider from "@suid/material/Divider";
 import { createSignal } from "solid-js";
 
 import { createMenuAction } from "../components/menuaction.jsx";
-import { subController } from "../controllers-solid.js";
+import { subController } from "../../../workerClient/controllers-solid.js";
+import { useWorkerClient } from "../../../workerClient/index.js";
 
-export const ToolsMenu = ( props ) =>
+export const ToolsMenu = () =>
 {
   const [ anchorEl, setAnchorEl ] = createSignal( null );
   const open = () => Boolean( anchorEl() );
   const doClose = () => setAnchorEl( null );
 
-  const EditAction = createMenuAction( props.controller, doClose );
-  const buildController = () => subController( props.controller, 'strutBuilder' );
+  const { rootController } = useWorkerClient();
+  const EditAction = createMenuAction( rootController(), doClose );
+  const buildController = () => subController( rootController(), 'strutBuilder' );
   const symmetryController = () => subController( buildController(), 'symmetry' );
   const SymmetryAction = createMenuAction( symmetryController(), doClose );
 

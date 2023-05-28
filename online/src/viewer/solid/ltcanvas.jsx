@@ -1,10 +1,12 @@
 
-import { useFrame, useThree, Canvas } from "solid-three";
+import { useFrame, Canvas } from "solid-three";
 import { Color } from "three";
 import { createMemo } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
+
 import { PerspectiveCamera } from "./perspectivecamera.jsx";
 import { TrackballControls } from "./trackballcontrols.jsx";
+import { useWorkerClient } from "../../workerClient/index.js";
 
 const Lighting = props =>
 {
@@ -45,11 +47,12 @@ const toVector = vector3 =>
 
 const LightedCameraControls = (props) =>
 {
+  const { setState } = useWorkerClient();
   // Here we can useThree, etc., which we could not in LightedTrackballCanvas
 
   const trackballEnd = evt =>
   {
-    if ( ! props.syncCamera ) return;
+    if ( ! setState ) return;
     
     const trackball = evt.target;
     const camera = trackball.object;
@@ -68,7 +71,8 @@ const LightedCameraControls = (props) =>
     const far = camera.far;
     const near = camera.near;
 
-    props.syncCamera( { lookAt, up, lookDir, distance, width, far, near } );
+    setState( 'scene', 'liveCamera', { lookAt, up, lookDir, distance, width, far, near } );
+
     // setNeedsRender( 20 );
   }
 
@@ -130,7 +134,7 @@ export const LightedTrackballCanvas = ( props ) =>
         frameloop="always"
         onPointerMove={props.toolActions?.onDrag} onPointerUp={props.toolActions?.onDragEnd} onPointerMissed={handlePointerMissed} >
       <LightedCameraControls lighting={props.lighting} aspect={aspect()}
-        sceneCamera={props.sceneCamera} syncCamera={props.syncCamera} trackball={props.trackball} />
+        sceneCamera={props.sceneCamera} trackball={props.trackball} />
       {props.children}
     </Canvas>;
   
