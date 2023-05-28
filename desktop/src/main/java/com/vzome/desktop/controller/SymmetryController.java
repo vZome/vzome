@@ -141,6 +141,10 @@ public class SymmetryController extends DefaultController
                 }
             }
         } );
+        
+        String presetStyle = parent .getProperty( "defaultShapes." + model .getSymmetry() .getField() .getName() + "." + model .getName() );
+        if ( presetStyle != null )
+            this .symmetrySystem .setStyle( presetStyle );
     }
 
     @Override
