@@ -62,6 +62,18 @@ public class MirrorTool extends TransformationTool
             axis = new SegmentJoiningPoints( center, p2 );
             this .addParameter( axis );
         }
+        else if ( this .getId() .equals( "mirror.builtin/reflection through X=Y green plane" ) )
+        {
+            center = originPoint;
+            this .addParameter( center );
+            AlgebraicField field = originPoint .getField();
+            AlgebraicVector greenAxis = field .basisVector( 3, AlgebraicVector .X )
+                    .plus( field .basisVector( 3, AlgebraicVector .Y ) )
+                    .scale( field .createPower( Direction.USER_SCALE ) );
+            Point p2 = new FreePoint( greenAxis );
+            axis = new SegmentJoiningPoints( center, p2 );
+            this .addParameter( axis );
+        }
         else if ( this .getId() .equals( "mirror.builtin/reflection through red plane" ) )
         {
             center = originPoint;

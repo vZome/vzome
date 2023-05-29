@@ -73,6 +73,7 @@ public final class OctahedralSymmetryPerspective extends AbstractSymmetryPerspec
 			result .add( new TetrahedralToolFactory( tools, this .symmetry ) .createPredefinedTool( "tetrahedral around origin" ) );
 			result .add( new InversionToolFactory( tools ) .createPredefinedTool( "reflection through origin" ) );
 			result .add( new MirrorToolFactory( tools ) .createPredefinedTool( "reflection through XY plane" ) );
+            result .add( new MirrorToolFactory( tools ) .createPredefinedTool( "reflection through X=Y green plane" ) );
 			result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) .createPredefinedTool( "symmetry around green through origin" ) );
 			break;
 
