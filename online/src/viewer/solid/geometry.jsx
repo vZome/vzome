@@ -1,5 +1,6 @@
 import { createEffect, createMemo, createSignal } from "solid-js";
 import { Vector3, Matrix4, BufferGeometry, Float32BufferAttribute } from "three";
+import { useInteractionTool } from "../../app/classic/tools/interaction.jsx";
 
 
 const Instance = ( props ) =>
@@ -11,25 +12,38 @@ const Instance = ( props ) =>
     meshRef.matrix = m;
   } );
 
+  const [ tool ] = useInteractionTool();
+
   const handleHover = value => e =>
   {
-    if ( props.toolActions?.onHover ) {
+    const handler = tool && tool() ?.onHover;
+    if ( handler ) {
       e.stopPropagation();
-      props.toolActions?.onHover( props.id, props.position, props.type, value );
+      handler( props.id, props.position, props.type, value );
     }
   }
   const handleClick = ( e ) =>
   {
-    if ( props.toolActions?.onClick ) {
+    const handler = tool && tool() ?.onClick;
+    if ( handler ) {
       e.stopPropagation()
-      props.toolActions?.onClick( props.id, props.position, props.type, props.selected )
+      handler( props.id, props.position, props.type, props.selected )
     }
   }
   const handlePointerDown = ( e ) =>
   {
-    if ( props.toolActions?.onDragStart ) {
+    const handler = tool && tool() ?.onDragStart;
+    if ( handler ) {
       e.stopPropagation()
-      props.toolActions?.onDragStart( props.id, props.position, props.type, props.selected, e )
+      handler( props.id, props.position, props.type, props.selected, e )
+    }
+  }
+  const handlePointerUp = ( e ) =>
+  {
+    const handler = tool && tool() ?.onDragEnd;
+    if ( handler ) {
+      e.stopPropagation()
+      handler( props.id, props.position, props.type, props.selected, e )
     }
   }
   const emissive = () => props.selected? "#f6f6f6" : "black"
@@ -38,7 +52,7 @@ const Instance = ( props ) =>
     <group position={ props.position } >
       <mesh matrixAutoUpdate={false} ref={meshRef} geometry={props.geometry} 
           onPointerOver={handleHover(true)} onPointerOut={handleHover(false)} onClick={handleClick}
-          onPointerDown={handlePointerDown} >
+          onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} >
         <meshLambertMaterial attach="material" color={props.color} emissive={emissive()} />
       </mesh>
     </group>
@@ -76,7 +90,7 @@ const InstancedShape = ( props ) =>
   return (
     <>
       <For each={props.shape.instances}>{ instance =>
-        <Instance {...instance} geometry={geometry()} toolActions={props.toolActions} />
+        <Instance {...instance} geometry={geometry()} />
       }</For>
     </>
   )
@@ -88,7 +102,7 @@ export const ShapedGeometry = ( props ) =>
     // <Show when={ () => props.shapes }>
       <group matrixAutoUpdate={false}>
         <For each={Object.values( props.shapes || {} )}>{ shape =>
-          <InstancedShape shape={shape} toolActions={props.toolActions} />
+          <InstancedShape shape={shape} />
         }</For>
       </group>
     // </Show>

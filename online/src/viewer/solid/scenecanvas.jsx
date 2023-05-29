@@ -5,13 +5,12 @@ import { ShapedGeometry } from './geometry.jsx';
 const SceneCanvas = ( props ) =>
 {
   return (
-    <LightedTrackballCanvas toolActions={props.toolActions} sceneCamera={props.scene?.camera}
-        trackball={props.trackball}
+    <LightedTrackballCanvas sceneCamera={props.scene?.camera}
         height={props.height} width={props.width} >
       <Show when={ () => props.scene?.shapes }>
-        <ShapedGeometry embedding={props.scene?.embedding} shapes={props.scene?.shapes} toolActions={props.toolActions} />
+        <ShapedGeometry embedding={props.scene?.embedding} shapes={props.scene?.shapes} />
       </Show>
-      {props.children3d}
+      {props.children}
     </LightedTrackballCanvas>
   );
 }

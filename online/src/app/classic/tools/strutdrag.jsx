@@ -1,4 +1,7 @@
 
+import { createEffect } from 'solid-js';
+import { LineBasicMaterial, Vector3, BufferGeometry, SphereGeometry, MeshLambertMaterial } from 'three';
+import { useInteractionTool } from './interaction.jsx';
 
 /*
 
@@ -81,14 +84,60 @@ export const createSwitcherTool = ( selectionTool, strutPreviewTool, minDrag ) =
   return { bkgdClick, onHover, onClick, onDragStart, onDrag, onDragEnd, dragging };
 }
 
-// {
-//   const { sendToWorker, subscribe } = worker;
-//   useEffect( () => {
-//     // Connect the worker store to the local store, to listen to worker events
-//     subscribe( {
-//       onWorkerError: error => {},
-//       onWorkerMessage: msg => {},
-//     } );
-//   }, [] );
-// }
+const pseudoCamera = {
+  position: new Vector3(),
+  up: new Vector3(),
+  lookAt: () => {},
+  isPerspectiveCamera: () => {
+    console.log( 'pseudoCamera isPerspectiveCamera' );
+    return true
+  },
+}
 
+const StrutDragTool = props =>
+{
+  const handlers = {
+
+    allowTrackball: false,
+
+    onClick: ( id, position, type, selected ) => {
+      console.log( 'strutPreviewTool clicked?????!!!!!' );
+    },
+    bkgdClick: () => {},
+    onDragStart: ( id, position, type, starting, evt ) => {
+      console.log( 'strutPreviewTool drag started' );
+    },
+    onDrag: evt => {
+      console.log( 'strutPreviewTool drag ongoing' );
+    },
+    onDragEnd: evt => {
+      console.log( 'strutPreviewTool drag finished' );
+    }
+  };
+
+  const [ _, setTool ] = useInteractionTool();
+  createEffect( () => setTool( handlers ) );
+
+  const color = 0x202020;
+  const lineMaterial = new LineBasicMaterial( {
+    color,
+    linewidth: 6
+  } );
+  const tip = new Vector3( 0, 0, 20 );
+  const points = [];
+  points.push( new Vector3( 0, 0, 0 ) );
+  points.push( tip );
+  const lineGeom = new BufferGeometry().setFromPoints( points );
+  const meshMaterial = new MeshLambertMaterial( { color } );
+  const sphereGeom = new SphereGeometry( 0.2, 9, 9 );
+
+  return (
+    <group>
+      {/* <TrackballControls camera={pseudoCamera} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} /> */}
+      <lineSegments material={lineMaterial} geometry={lineGeom} />
+      <mesh position={tip} material={meshMaterial} geometry={sphereGeom} />
+    </group>
+  );
+}
+
+export { StrutDragTool };

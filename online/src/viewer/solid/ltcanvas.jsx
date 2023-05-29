@@ -7,6 +7,7 @@ import { createElementSize } from "@solid-primitives/resize-observer";
 import { PerspectiveCamera } from "./perspectivecamera.jsx";
 import { TrackballControls } from "./trackballcontrols.jsx";
 import { useWorkerClient } from "../../workerClient/index.js";
+import { useInteractionTool } from "../../app/classic/tools/interaction.jsx";
 
 const Lighting = props =>
 {
@@ -47,6 +48,8 @@ const toVector = vector3 =>
 
 const LightedCameraControls = (props) =>
 {
+  const [ tool ] = useInteractionTool();
+  const trackball = () => ( tool === undefined ) || tool().allowTrackball;
   const { setState } = useWorkerClient();
   // Here we can useThree, etc., which we could not in LightedTrackballCanvas
 
@@ -98,7 +101,7 @@ const LightedCameraControls = (props) =>
       <PerspectiveCamera fov={fov()} aspect={props.aspect} position={position()} up={props.sceneCamera?.up} >
         <Lighting {...(lights())} />
       </PerspectiveCamera>
-      {props.trackball && <TrackballControls onEnd={trackballEnd} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={props.sceneCamera?.lookAt} />}
+      {trackball() && <TrackballControls onEnd={trackballEnd} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={props.sceneCamera?.lookAt} />}
     </>
   );
 
@@ -120,11 +123,14 @@ export const LightedTrackballCanvas = ( props ) =>
   let size;
   const aspect = () => ( size && size.height )? size.width / size.height : 1;
 
+  const [ tool ] = useInteractionTool();
+
   const handlePointerMissed = ( e ) =>
   {
-    if ( isLeftMouseButton( e ) && props.toolActions?.bkgdClick ) {
+    const doClick = tool && tool() ?.bkgdClick;
+    if ( isLeftMouseButton( e ) && doClick ) {
       e.stopPropagation()
-      props.toolActions?.bkgdClick();
+      doClick();
     }
   }
 
@@ -132,9 +138,9 @@ export const LightedTrackballCanvas = ( props ) =>
     <Canvas dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }}
         height={props.height ?? "100vh"} width={props.width ?? "100vw"}
         frameloop="always"
-        onPointerMove={props.toolActions?.onDrag} onPointerUp={props.toolActions?.onDragEnd} onPointerMissed={handlePointerMissed} >
+        onPointerMove={tool && tool()?.onDrag} onPointerUp={tool && tool()?.onDragEnd} onPointerMissed={handlePointerMissed} >
       <LightedCameraControls lighting={props.lighting} aspect={aspect()}
-        sceneCamera={props.sceneCamera} trackball={props.trackball} />
+        sceneCamera={props.sceneCamera} />
       {props.children}
     </Canvas>;
   
