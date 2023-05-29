@@ -137,6 +137,7 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
             result.add(new TetrahedralToolFactory(tools, icosaSymm).createPredefinedTool("tetrahedral around origin"));
             result.add(new InversionToolFactory(tools).createPredefinedTool("reflection through origin"));
             result.add(new MirrorToolFactory(tools).createPredefinedTool("reflection through XY plane"));
+            result.add(new MirrorToolFactory(tools).createPredefinedTool("reflection through X=Y green plane"));
             result.add(new AxialSymmetryToolFactory(tools, icosaSymm).createPredefinedTool("symmetry around red through origin"));
             break;
         case TRANSFORM:
