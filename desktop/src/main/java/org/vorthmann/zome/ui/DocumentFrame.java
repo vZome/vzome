@@ -26,6 +26,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -1073,6 +1074,21 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     String ext = command .substring( "export." .length() );
                     ext = controller .getProperty( "exportExtension." + ext );
                     actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
+                }
+                else if ( command .startsWith( "MACRO/" ) ) {
+                    String rest = command .substring( "MACRO/" .length() );
+                    String[] commands = rest .split( "," );
+                    ActionListener[] actions = Arrays.stream( commands ) .map( ( cmd ) -> getExclusiveAction( cmd, controller ) ) .toArray( ActionListener[]::new );
+                    actionListener = new ActionListener()
+                    {
+                        @Override
+                        public void actionPerformed( ActionEvent e )
+                        {
+                            for ( ActionListener actionListener : actions ) {
+                                actionListener .actionPerformed( e );
+                            }
+                        }
+                    };
                 }
                 else {
                     actionListener = getExclusiveAction( command, controller );
