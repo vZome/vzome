@@ -14,14 +14,16 @@ else
 fi
 
 artifact=$( curl -s https://api.github.com/repos/vZome/vzome/actions/artifacts \
-  | jq "[.artifacts[] | select( .workflow_run.id==$runId)][0]" )
+  | jq "[.artifacts[] | select( .workflow_run.id==$runId)][0]" ) || exit $?
 
 name=$( echo $artifact | jq --raw-output '.name' )
 url=$( echo $artifact | jq --raw-output '.archive_download_url' )
 
 if echo $name | grep 'vZome-Windows-'; then
 
-  curl $url > $name.zip
+  curl --fail-with-body $url > $name.zip || exit $?
+
+  exit 0
 
   suffix=$( echo "$name" | awk -F- '{print $3}' )
   version=$( echo $suffix | awk -F. 'OFS="." {print $1,$2}' )
