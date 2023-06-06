@@ -85,6 +85,7 @@ import com.vzome.desktop.controller.MeasureController;
 import com.vzome.desktop.controller.NumberController;
 import com.vzome.desktop.controller.PartsController;
 import com.vzome.desktop.controller.PolytopesController;
+import com.vzome.desktop.controller.StrutBuilderController;
 import com.vzome.desktop.controller.SymmetryController;
 import com.vzome.desktop.controller.ToolFactoryController;
 import com.vzome.desktop.controller.ToolsController;
@@ -135,6 +136,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
     private final ManifestationChanges selectionRendering;
     
     private final StrutBuilderController strutBuilder;
+    private final StrutBuilderGraphicsController strutBuilderGraphics;
 
     // to LessonController
     //
@@ -301,10 +303,11 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         this .addSubController( "camera", cameraController );
         this .articleModeZoom = new CameraZoomWheel( this .cameraController );
 
-        strutBuilder = new StrutBuilderController( this, cameraController )
+        strutBuilder = new StrutBuilderController( this .documentModel, this .documentModel .getField() )
                 .withGraphicalViews( app .propertyIsTrue( "useGraphicalViews" ) )
                 .withShowStrutScales( app .propertyIsTrue( "showStrutScales" ) );
         this .addSubController( "strutBuilder", strutBuilder );
+        this .strutBuilderGraphics = new StrutBuilderGraphicsController( strutBuilder, cameraController );
         
         for ( SymmetryPerspective symper : document .getFieldApplication() .getSymmetryPerspectives() )
         {
@@ -326,6 +329,11 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         lessonController = new LessonController( this .documentModel .getLesson(), cameraController );
         this .addSubController( "lesson", lessonController );
 
+        this .mainScene = new Scene( this .sceneLighting, this .drawOutlines, maxOrientations );
+        if ( this .mainScene instanceof PropertyChangeListener )
+            this .addPropertyListener( this .mainScene );
+        this .strutBuilder .setMainScene( this .mainScene );
+
         setSymmetrySystem( null );
 
         // can't do this before the setSymmetrySystem() call just above
@@ -334,11 +342,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
             this .documentModel .setRenderedModel( mRenderedModel );
             this .currentSnapshot = mRenderedModel;  // Not too sure if this is necessary
         }
-
-        this .mainScene = new Scene( this .sceneLighting, this .drawOutlines, maxOrientations );
-        if ( this .mainScene instanceof PropertyChangeListener )
-            this .addPropertyListener( this .mainScene );
-
+        
         partsController = new PartsController( this .documentModel .getEditorModel() .getSymmetrySystem() );
         this .addSubController( "parts", partsController );
         mRenderedModel .addListener( partsController );
@@ -444,14 +448,14 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         this .cameraController .addViewer( this .imageCaptureViewer );
         this .addSubController( "monocularPicking", new PickingController( this .imageCaptureViewer, this ) );
 
-        this .strutBuilder .attach( (RenderingViewer) viewer, this .mainScene );
+        this .strutBuilderGraphics .attach( (RenderingViewer) viewer, this .mainScene );
         
         if ( this .modelCanvas != null )
             if ( editingModel ) {
                 this .selectionClick .attach( modelCanvas );
                 if ( mainViewRotation )
                     this .modelModeMainTrackball .attach( modelCanvas );
-                this .strutBuilder .attach( modelCanvas );
+                this .strutBuilderGraphics .attach( modelCanvas );
             } else {
                 this .articleModeMainTrackball .attach( modelCanvas );
                 this .articleModeZoom .attach( modelCanvas );
@@ -575,7 +579,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                     this .currentView = this .cameraController .getView();
                     
                     this .selectionClick .detach( this .modelCanvas );
-                    this .strutBuilder .detach( this .modelCanvas );
+                    this .strutBuilderGraphics .detach( this .modelCanvas );
                     if ( mainViewRotation )
                         this .modelModeMainTrackball .detach( this .modelCanvas );
                     
@@ -620,7 +624,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                     this .selectionClick .attach( this .modelCanvas );
                     if ( mainViewRotation )
                         this .modelModeMainTrackball .attach( this .modelCanvas );
-                    this .strutBuilder .attach( this .modelCanvas );
+                    this .strutBuilderGraphics .attach( this .modelCanvas );
     
                     this .editingModel = true;
                     firePropertyChange( "editor.mode", "article", "model" );

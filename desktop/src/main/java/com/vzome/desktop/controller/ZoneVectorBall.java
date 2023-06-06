@@ -4,10 +4,6 @@ package com.vzome.desktop.controller;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Quat4f;
-import javax.vecmath.Vector3f;
-
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.OrbitSet;
@@ -19,26 +15,19 @@ import com.vzome.core.math.symmetry.OrbitSet;
  *
  */
 public abstract class ZoneVectorBall
-{
-    private final CameraController mViewPlatform;
-    
+{    
     private OrbitSet orbits;
     
-    private Vector3f zoneVector3d;
+    private RealVector zoneVector3d;
 
     private Axis zone = null;
 
     private static Logger logger = Logger .getLogger( "com.vzome.desktop.controller.ZoneVectorBall" );
-
-    public ZoneVectorBall( CameraController viewModel )
-    {
-        mViewPlatform = viewModel;
-    }
     
-    public Axis setOrbits( OrbitSet orbits )
+    public Axis setOrbits( OrbitSet orbits, RealVector worldEye )
     {
         this .orbits = orbits;
-        return resetToZ();
+        return resetToZ( worldEye );
     }
     
     public Axis getZone()
@@ -46,22 +35,20 @@ public abstract class ZoneVectorBall
         return zone;
     }
 
-    public Axis resetToZ()
+    public Axis resetToZ( RealVector worldEye )
     {
-        Vector3f Z = new Vector3f( 0f, 0f, 1f );
-        mViewPlatform .mapViewToWorld( Z );
-        zoneVector3d = new Vector3f( Z.x, Z.y, Z.z );
+        zoneVector3d = new RealVector( worldEye.x, worldEye.y, worldEye.z );
         mapVectorToAxis();
         return zone;
     }
 
-    public void trackballRolled( Quat4f roll )
+    public void trackballRolled( RealVector[] rotation )
     {
-        mViewPlatform .getWorldRotation( roll );
-        Matrix4f rollM = new Matrix4f();
-        rollM.set( roll );
         // roll is now a rotation in world coordinates
-        rollM.transform( zoneVector3d );
+        double x = rotation[ 0 ] .dot( zoneVector3d );
+        double y = rotation[ 1 ] .dot( zoneVector3d );
+        double z = rotation[ 2 ] .dot( zoneVector3d );
+        zoneVector3d = new RealVector( x, y, z );
         mapVectorToAxis();
     }
     
@@ -70,7 +57,7 @@ public abstract class ZoneVectorBall
      * to define a new vector, as for the working plane.
      * @param vector
      */
-    public void setVector( Vector3f vector )
+    public void setVector( RealVector vector )
     {
         zoneVector3d = vector;
         mapVectorToAxis();

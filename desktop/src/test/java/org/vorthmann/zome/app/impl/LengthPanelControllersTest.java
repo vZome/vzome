@@ -17,7 +17,7 @@ import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.render.Colors;
 import com.vzome.desktop.api.Controller;
-import com.vzome.desktop.awt.StrutBuilderController;
+import com.vzome.desktop.controller.StrutBuilderController;
 import com.vzome.desktop.controller.SymmetryController;
 
 public class LengthPanelControllersTest
