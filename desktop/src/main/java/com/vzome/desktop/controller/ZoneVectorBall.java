@@ -24,21 +24,11 @@ public abstract class ZoneVectorBall
 
     private static Logger logger = Logger .getLogger( "com.vzome.desktop.controller.ZoneVectorBall" );
     
-    public Axis setOrbits( OrbitSet orbits, RealVector worldEye )
+    public Axis initializeZone( OrbitSet orbits, RealVector worldEye )
     {
         this .orbits = orbits;
-        return resetToZ( worldEye );
-    }
-    
-    public Axis getZone()
-    {
-        return zone;
-    }
-
-    public Axis resetToZ( RealVector worldEye )
-    {
         zoneVector3d = new RealVector( worldEye.x, worldEye.y, worldEye.z );
-        mapVectorToAxis();
+        mapVectorToAxis( false ); // Just initialize the zone
         return zone;
     }
 
@@ -49,7 +39,7 @@ public abstract class ZoneVectorBall
         double y = rotation[ 1 ] .dot( zoneVector3d );
         double z = rotation[ 2 ] .dot( zoneVector3d );
         zoneVector3d = new RealVector( x, y, z );
-        mapVectorToAxis();
+        mapVectorToAxis( true );
     }
     
     /**
@@ -60,10 +50,10 @@ public abstract class ZoneVectorBall
     public void setVector( RealVector vector )
     {
         zoneVector3d = vector;
-        mapVectorToAxis();
+        mapVectorToAxis( true );
     }
 
-    private void mapVectorToAxis()
+    private void mapVectorToAxis( boolean notify )
     {
         RealVector vector = new RealVector( zoneVector3d.x, zoneVector3d.y, zoneVector3d.z );
         Axis oldAxis = zone;
@@ -80,7 +70,9 @@ public abstract class ZoneVectorBall
         }
 		if ( logger .isLoggable( Level.FINER ) )
 			logger .finer( "preview finished at  " + zone + " for " + vector );
-        zoneChanged( oldAxis, zone );
+
+		if ( notify )
+		    zoneChanged( oldAxis, zone );
     }
     
     protected abstract void zoneChanged( Axis oldZone, Axis newZone );

@@ -58,7 +58,7 @@ public class PreviewStrut implements PropertyChangeListener
     public PreviewStrut( AlgebraicField field, RenderingChanges mainScene, Context context )
     {
         this.context = context;
-        rendering = new RenderedModel( field, true );
+        rendering = new RenderedModel( field, null );
         TransparentRendering transp = new TransparentRendering( mainScene );
         rendering .addListener( transp );
         model = new RealizedModelImpl( field, new Projection.Default( field ) );
@@ -97,7 +97,7 @@ public class PreviewStrut implements PropertyChangeListener
             {
                 if ( length != null )
                     length .removePropertyListener( PreviewStrut .this );
-                zone = newZone;
+                setZone( newZone );
                 if ( newZone == null )
                     return;
                 length = (LengthController) symmetryController.orbitLengths.get( newZone .getDirection() );
@@ -105,6 +105,27 @@ public class PreviewStrut implements PropertyChangeListener
                 length .addPropertyListener( PreviewStrut .this );
             }
         };
+    }
+    
+    /*
+     * Required just for JSweet.  For some reason, it generates l1.equals(l2) when removing
+     * listeners from PCS, so it failed during length .removePropertyListener( this )
+     * unless I added this, which is just equivalent to === in JS.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        return false;
+    }
+
+    private void setZone( Axis zone )
+    {
+        this.zone = zone;
     }
 
     public void startRendering( Point point, AlgebraicVector workingPlaneAxis, RealVector worldEye )
@@ -158,7 +179,7 @@ public class PreviewStrut implements PropertyChangeListener
             this .workingPlaneDual[ 3 ] = P_e120;
         }
 
-        this .zone = zoneBall .setOrbits( orbits, worldEye );
+        this .zone = zoneBall .initializeZone( orbits, worldEye );
         if ( zone == null )
         {
             length = null;

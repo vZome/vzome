@@ -1,7 +1,7 @@
 
 import { useFrame, Canvas } from "solid-three";
 import { Color } from "three";
-import { createMemo } from "solid-js";
+import { createEffect, createMemo, createRenderEffect, onMount } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
 import { PerspectiveCamera } from "./perspectivecamera.jsx";
@@ -125,20 +125,35 @@ export const LightedTrackballCanvas = ( props ) =>
 
   const [ tool ] = useInteractionTool();
 
+  const handlePointerMove = ( e ) =>
+  {
+    const handler = tool && tool() ?.onDrag;
+    if ( isLeftMouseButton( e ) && handler ) {
+      e.stopPropagation()
+      handler();
+    }
+  }
+  const handlePointerUp = ( e ) =>
+  {
+    const handler = tool && tool() ?.onDragEnd;
+    if ( isLeftMouseButton( e ) && handler ) {
+      // e.stopPropagation()
+      handler();
+    }
+  }
   const handlePointerMissed = ( e ) =>
   {
-    const doClick = tool && tool() ?.bkgdClick;
-    if ( isLeftMouseButton( e ) && doClick ) {
+    const handler = tool && tool() ?.bkgdClick;
+    if ( isLeftMouseButton( e ) && handler ) {
       e.stopPropagation()
-      doClick();
+      handler();
     }
   }
 
   const canvas =
     <Canvas dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }}
         height={props.height ?? "100vh"} width={props.width ?? "100vw"}
-        frameloop="always"
-        onPointerMove={tool && tool()?.onDrag} onPointerUp={tool && tool()?.onDragEnd} onPointerMissed={handlePointerMissed} >
+        frameloop="always" onPointerMissed={handlePointerMissed} >
       <LightedCameraControls lighting={props.lighting} aspect={aspect()}
         sceneCamera={props.sceneCamera} />
       {props.children}
@@ -146,5 +161,10 @@ export const LightedTrackballCanvas = ( props ) =>
   
   size = createElementSize( canvas );
   
+  onMount( () => {
+    // canvas .addEventListener( 'pointermove', handlePointerMove );
+    canvas .addEventListener( 'pointerup', handlePointerUp );
+  });
+
   return canvas;
 }

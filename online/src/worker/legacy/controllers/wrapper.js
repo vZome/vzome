@@ -3,6 +3,7 @@ import { JsProperties } from '../jsweet2js.js';
 import { EditorController } from './editor.js';
 import { PickingController } from './picking.js';
 import { BuildPlaneController } from './buildplane.js';
+import { renderedModelTransducer } from '../scenes.js';
 
 class ControllerWrapper{
   
@@ -130,8 +131,9 @@ class ControllerWrapper{
     }
   }
 }
+
 export const createControllers = (design, renderHistory, clientEvents) => {
-  const { orbitSource, renderedModel, toolsModel, bookmarkFactory, history, symmetrySystems } = design;
+  const { orbitSource, renderedModel, toolsModel, bookmarkFactory, history, symmetrySystems, legacyField, editContext } = design;
 
   const controller = new EditorController(design, clientEvents); // this is the equivalent of DocumentController
   controller.setErrorChannel({
@@ -160,19 +162,43 @@ export const createControllers = (design, renderHistory, clientEvents) => {
   const bookmarkController = new com.vzome.desktop.controller.ToolFactoryController(bookmarkFactory);
   controller.addSubController('bookmark', bookmarkController);
 
-  const strutBuilder = new com.vzome.desktop.controller.DefaultController(); // this is the equivalent of StrutBuilderController
+  const strutBuilder = new com.vzome.desktop.controller.StrutBuilderController( editContext, legacyField )
+    .withGraphicalViews( true )   // TODO use preset
+    .withShowStrutScales( true ); // TODO use preset
   controller.addSubController('strutBuilder', strutBuilder);
+  strutBuilder .setMainScene( renderedModelTransducer( renderHistory.getShapes(), clientEvents ) );
 
   for (const [name, symmetrySystem] of Object.entries(symmetrySystems)) {
     const symmController = new com.vzome.desktop.controller.SymmetryController( strutBuilder, symmetrySystem, renderedModel );
     strutBuilder.addSubController(`symmetry.${name}`, symmController);
   }
+  controller .setSymmetrySystem( null );
 
   const toolsController = new com.vzome.desktop.controller.ToolsController(toolsModel);
   toolsController.addTool(toolsModel.get("bookmark.builtin/ball at origin"));
   strutBuilder.addSubController('tools', toolsController);
 
   const wrapper = new ControllerWrapper('', '', controller, clientEvents);
+
+  // hacky, for preview strut
+  wrapper.startPreviewStrut = ( ballId, direction ) => {
+    const [ x, y, z ] = direction;
+    const rm = renderedModel.getRenderedManifestation( ballId );
+    const point = rm ?.getManifestation() ?.toConstruction();
+    if ( point ) {
+      strutBuilder .startRendering( point, new com.vzome.core.math.RealVector( x, y, z ) );
+    } else
+      throw new Error( `No ball for ID ${ballId}` );
+  }
+  wrapper.movePreviewStrut = ( direction ) => {
+    const [ x, y, z ] = direction;
+    strutBuilder .previewStrut .zoneBall .setVector( new com.vzome.core.math.RealVector( x, y, z ) );
+  }
+  wrapper.endPreviewStrut = () =>
+  {
+    strutBuilder .previewStrut .finishPreview();
+    wrapper .renderScene();
+  }
 
   // Not beautiful, but functional
   wrapper.getScene = (editId, before = false) => {

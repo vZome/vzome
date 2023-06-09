@@ -1,7 +1,8 @@
 
-import { createEffect } from 'solid-js';
+import { createEffect, createSignal } from 'solid-js';
 import { LineBasicMaterial, Vector3, BufferGeometry, SphereGeometry, MeshLambertMaterial } from 'three';
 import { useInteractionTool } from './interaction.jsx';
+import { endPreviewStrut, movePreviewStrut, startPreviewStrut, useWorkerClient } from '../../../workerClient/index.js';
 
 /*
 
@@ -96,22 +97,44 @@ const pseudoCamera = {
 
 const StrutDragTool = props =>
 {
+  const { postMessage } = useWorkerClient();
+  const [ line, setLine ] = createSignal( [0,0,1] );
+
+  let operating = false;
+  let animation;
+  let steps;
+  const animate = () => {
+    if ( ! operating ) return;
+    ++steps;
+    setLine( [ Math.sin( steps * Math.PI/50 )+0.5, 0, 1 ] );
+    postMessage( movePreviewStrut( line() ) );
+    animation = window.requestAnimationFrame( animate );
+  }
+
   const handlers = {
 
     allowTrackball: false,
 
-    onClick: ( id, position, type, selected ) => {
-      console.log( 'strutPreviewTool clicked?????!!!!!' );
-    },
+    onClick: () => {},
     bkgdClick: () => {},
+
     onDragStart: ( id, position, type, starting, evt ) => {
-      console.log( 'strutPreviewTool drag started' );
+      operating = true;
+      steps = 0;
+      postMessage( startPreviewStrut( id, line() ) );
+      animate();
     },
     onDrag: evt => {
-      console.log( 'strutPreviewTool drag ongoing' );
+      if ( operating ) {
+        postMessage( movePreviewStrut( line() ) );
+      }
     },
     onDragEnd: evt => {
-      console.log( 'strutPreviewTool drag finished' );
+      if ( operating ) {
+        operating = false;
+        window.cancelAnimationFrame( animation );
+        postMessage( endPreviewStrut() );
+      }
     }
   };
 

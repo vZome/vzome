@@ -34,6 +34,24 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
     }
   }
 
+  setSymmetrySystem( name )
+  {
+    let orbitSource = this.design .getSymmetrySystem( name );
+    name = orbitSource .getName();
+    this.design .setSymmetrySystem( name );
+
+    // TODO: test this change with buildPlane
+    orbitSource = this.design .getSymmetrySystem();
+    this.getSubController('buildPlane').setOrbitSource(orbitSource); // Does this fire sufficient properties?
+
+    const strutBuilder = this .getSubController( 'strutBuilder' );
+    const symmController = strutBuilder .getSubController( `symmetry.${name}` );
+    strutBuilder .setSymmetryController( symmController );
+
+    // TODO: update the PartsController
+    this.firePropertyChange( 'symmetry', '', name );
+  }
+
   // There are no implementors of doParamAction() in the Java code, except for
   //   DefaultController, which just propagates the calls up to the next controller.
   doParamAction(action, params) {
@@ -62,15 +80,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
       default:
         if (action.startsWith("setSymmetry.")) {
           const name = action.replace(/^setSymmetry\./, '');
-          this.design.setSymmetrySystem(name);
-
-          // TODO: test this change with buildPlane
-          const orbitSource = this.design.getSymmetrySystem();
-          this.getSubController('buildPlane').setOrbitSource(orbitSource); // Does this fire sufficient properties?
-
-
-          // TODO: update the PartsController
-          this.firePropertyChange('symmetry', '', name);
+          this.setSymmetrySystem(name);
         }
 
         else

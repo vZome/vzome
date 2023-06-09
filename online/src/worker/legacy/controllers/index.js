@@ -49,7 +49,7 @@ export const newDesign = ( fieldName, clientEvents ) =>
   const renderHistory = new RenderHistory( design );
   const { shapes, edit } = renderHistory .getScene( '--START--', false );
   const embedding = orbitSource .getEmbedding();
-  const scene = { embedding, shapes };
+  const scene = { embedding, shapes }; // let client determine default lighting and camera
   clientEvents .sceneChanged( scene, edit );
 
   const planes = resolveBuildPlanes( orbitSource .buildPlanes );

@@ -85,8 +85,6 @@ const InstancedShape = ( props ) =>
     return geometry;
   } );
 
-  if ( props.shape.instances.length === 0 )
-    return null;
   return (
     <>
       <For each={props.shape.instances}>{ instance =>

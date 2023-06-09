@@ -213,7 +213,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         quaternionController = new VectorController( this .documentModel .getField() .basisVector( 4, AlgebraicVector.W4 ) );
         this .addSubController( "quaternion", quaternionController );
 
-        mRenderedModel = new RenderedModel( this .documentModel .getField(), true );
+        mRenderedModel = new RenderedModel( this .documentModel .getField(), null );
         currentSnapshot = mRenderedModel;
 
         selectionRendering = new ManifestationChanges()

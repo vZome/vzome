@@ -21,6 +21,12 @@ export const createStrut = ( id, plane, zone, index, orientation ) => workerActi
 
 export const joinBalls = ( id1, id2 ) => workerAction( 'JOIN_BALLS_TRIGGERED', { id1, id2 } );
 
+export const startPreviewStrut = ( ballId, direction ) => workerAction( 'PREVIEW_STRUT_START', { ballId, direction } );
+
+export const movePreviewStrut = ( direction ) => workerAction( 'PREVIEW_STRUT_MOVE', { direction } );
+
+export const endPreviewStrut = () => workerAction( 'PREVIEW_STRUT_END', {} );
+
 export const initialState = {
   scene: {
     camera: {
@@ -32,6 +38,7 @@ export const initialState = {
       lookAt: [ 0, 0, 0 ],
       lookDir: [ 0, 0, -1 ],
       perspective: true,
+      default: true,
     },
     lighting: {
       backgroundColor: '#BBDAED',
