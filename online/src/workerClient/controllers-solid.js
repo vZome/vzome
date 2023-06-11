@@ -30,6 +30,11 @@ const createWorkerStore = ( worker ) =>
         setState( 'scene', 'shapes', id, 'instances', shape.instances );
       }
     }
+    // clean up preview strut, which may be a shape otherwise not in the scene
+    for ( const id of Object.keys( state.scene.shapes ) ) {
+      if ( ! (id in shapes) )
+        setState( 'scene', 'shapes', id, 'instances', [] );
+    }
   }
 
   const logShapes = () =>
@@ -40,8 +45,9 @@ const createWorkerStore = ( worker ) =>
     })
   }
 
-  const onWorkerMessage = ( data ) => {
-    console.log( `FROM worker: ${JSON.stringify( data.type, null, 2 )}` );
+  const onWorkerMessage = ( data ) =>
+  {
+    // console.log( `FROM worker: ${JSON.stringify( data.type, null, 2 )}` );
 
     switch ( data.type ) {
 
@@ -85,19 +91,20 @@ const createWorkerStore = ( worker ) =>
 
       case 'INSTANCE_ADDED': {
         let instance = data.payload;
+        console.log( 'INSTANCE_ADDED', instance.id );
         const shape = state.scene.shapes[ instance.shapeId ];
         setState( 'scene', 'shapes', shape.id, 'instances', [ ...shape.instances, instance ] );
-        // logShapes();
+        logShapes();
         break;
       }
 
       case 'INSTANCE_REMOVED': {
-        console.log( 'INSTANCE_REMOVED' );
         let { shapeId, id } = data.payload;
+        console.log( 'INSTANCE_REMOVED', id );
         const shape = state.scene.shapes[ shapeId ];
         const instances = shape.instances .filter( instance => instance.id != id );
         setState( 'scene', 'shapes', shape.id, 'instances', instances );
-        // logShapes();
+        logShapes();
         break;
       }
 

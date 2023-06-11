@@ -15,7 +15,7 @@ const SelectionTool = props =>
     allowTrackball: true,
 
     onClick: ( id, position, type, selected ) => {
-      console.log( 'selectionTool clicked' );
+      // console.log( 'selectionTool clicked' );
       controllerAction( pickingController(), 'SelectManifestation', { id } )
     },
     bkgdClick: () =>
@@ -23,27 +23,20 @@ const SelectionTool = props =>
       controllerAction( rootController(), 'DeselectAll' );
     },
     onDragStart: ( id, position, type, starting, evt ) => {
-      console.log( 'selectionTool onDragStart?????!!!!!' );
+      // console.log( 'selectionTool onDragStart?????!!!!!' );
     },
     onDrag: evt => {
-      console.log( 'selectionTool onDrag?????!!!!!' );
+      // console.log( 'selectionTool onDrag?????!!!!!' );
     },
     onDragEnd: evt => {
-      console.log( 'selectionTool onDragEnd?????!!!!!' );
+      // console.log( 'selectionTool onDragEnd?????!!!!!' );
     }
   };
 
   const [ _, setTool ] = useInteractionTool();
   createEffect( () => setTool( handlers ) );
 
-  return (
-    <group position={ [0,15,0] }>
-      <mesh>
-        <meshLambertMaterial attach="material" color={"orange"} />
-        <boxGeometry attach="geometry" args={[ 8, 4, 4 ]} />
-      </mesh>
-    </group>
-  );
+  return null;
 }
 
 export { SelectionTool };

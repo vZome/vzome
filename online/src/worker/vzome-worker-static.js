@@ -253,7 +253,7 @@ const urlLoader = ( report, event ) =>
 
 onmessage = ({ data }) =>
 {
-  console.log( `TO worker: ${JSON.stringify( data.type, null, 2 )}` );
+  // console.log( `TO worker: ${JSON.stringify( data.type, null, 2 )}` );
   const { type, payload } = data;
 
   try {

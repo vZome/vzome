@@ -16,13 +16,15 @@ export const TrackballControls = (props) => {
   createEffect(() => {
     // SV: This effect is necessary so that we get correctly connected to the domElement
     //   *after* it has been connected to the document and assigned a valid size.
-    console.log( 'height is', size().height ); // This is the change we care about.
+    if ( size().height < 0 ) // should never happen, just making a dependency
+      console.log( 'height is', size().height ); // This is the change we care about.
     trackballControls().connect(gl().domElement);
   });
 
-  const trackballControls = createMemo(
-    () => new TrackballControlsImpl( defaultCamera(), gl().domElement )
-  );
+  const trackballControls = createMemo( () => {
+    const camera = props.camera || defaultCamera();
+    return new TrackballControlsImpl( camera, gl().domElement );
+  } );
 
   useFrame(() => {
     let controls = trackballControls();
@@ -51,8 +53,9 @@ export const TrackballControls = (props) => {
     onCleanup(() => {
       trackballControls().removeEventListener("change", callback);
       if (props.onStart)
-      trackballControls().removeEventListener("start", props.onStart);
-      if (props.onEnd) trackballControls().removeEventListener("end", props.onEnd);
+        trackballControls().removeEventListener("start", props.onStart);
+      if (props.onEnd)
+        trackballControls().removeEventListener("end", props.onEnd);
       trackballControls().dispose();
     });
   });

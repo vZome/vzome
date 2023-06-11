@@ -1,8 +1,12 @@
 
 import { createEffect, createSignal } from 'solid-js';
-import { LineBasicMaterial, Vector3, BufferGeometry, SphereGeometry, MeshLambertMaterial } from 'three';
+import { Vector3 } from 'three';
+import { useThree } from "solid-three";
+
 import { useInteractionTool } from './interaction.jsx';
 import { endPreviewStrut, movePreviewStrut, startPreviewStrut, useWorkerClient } from '../../../workerClient/index.js';
+import { ObjectTrackball } from './trackball.jsx';
+import { VectorArrow } from './arrow.jsx';
 
 /*
 
@@ -10,22 +14,17 @@ After digging through three.js TrackballControls.js
 
    https://github.com/mrdoob/three.js/blob/master/examples/jsm/controls/TrackballControls.js
 
-it seems I can use it to manipulate a "camera" as long as that object has the same
+I thought I could use it to manipulate a "camera" as long as that object had the same
 "up", "position", "lookAt", and "isPerspectiveCamera" fields as an actual camera.
 (Yay, duck typing!)
 
-However, I would have to somehow "reverse" the effect of the transformations
-to the object.
-
-I think it may be better to copy the TrackballControls.js code, discard the pan() and zoom()
-features, and diddle the rotate() function to do what I need... keeping the necessary
-event listening code.
-
-I'll also want to copy part of the lifecycle code from Drei's React wrapper.
+However, I failed miserably, and I found it simpler to just copy the event handling bits
+of TrackballControls.js and implement the transformations myself.  See ObjectTrackball.
 
 */
 
-
+// The switcher tool is not in use, and should probably be discarded in favor
+//   of a fully modal switch between tools.
 export const createSwitcherTool = ( selectionTool, strutPreviewTool, minDrag ) =>
 {
   let currentTool = selectionTool;
@@ -85,31 +84,14 @@ export const createSwitcherTool = ( selectionTool, strutPreviewTool, minDrag ) =
   return { bkgdClick, onHover, onClick, onDragStart, onDrag, onDragEnd, dragging };
 }
 
-const pseudoCamera = {
-  position: new Vector3(),
-  up: new Vector3(),
-  lookAt: () => {},
-  isPerspectiveCamera: () => {
-    console.log( 'pseudoCamera isPerspectiveCamera' );
-    return true
-  },
-}
-
 const StrutDragTool = props =>
 {
   const { postMessage } = useWorkerClient();
-  const [ line, setLine ] = createSignal( [0,0,1] );
+  const eye = useThree(({ camera }) => camera.position);
 
-  let operating = false;
-  let animation;
-  let steps;
-  const animate = () => {
-    if ( ! operating ) return;
-    ++steps;
-    setLine( [ Math.sin( steps * Math.PI/50 )+0.5, 0, 1 ] );
-    postMessage( movePreviewStrut( line() ) );
-    animation = window.requestAnimationFrame( animate );
-  }
+  const [ line, setLine ] = createSignal( [ 0, 0, 1 ] );
+  const [ operating, setOperating ] = createSignal( null );
+  const [ position, setPosition ] = createSignal( [0,0,0] );
 
   const handlers = {
 
@@ -117,49 +99,41 @@ const StrutDragTool = props =>
 
     onClick: () => {},
     bkgdClick: () => {},
+    onDrag: evt => {},
 
     onDragStart: ( id, position, type, starting, evt ) => {
-      operating = true;
-      steps = 0;
-      postMessage( startPreviewStrut( id, line() ) );
-      animate();
-    },
-    onDrag: evt => {
-      if ( operating ) {
-        postMessage( movePreviewStrut( line() ) );
-      }
+      setPosition( position );
+      const { x, y, z } = new Vector3() .copy( eye() ) .sub( new Vector3( ...position ) ) .normalize();
+      setLine( [ x, y, z ] );
+      postMessage( startPreviewStrut( id, [ x, y, z ] ) );
+      setOperating( evt ); // so we can pass it to the ObjectTrackball
     },
     onDragEnd: evt => {
-      if ( operating ) {
-        operating = false;
-        window.cancelAnimationFrame( animation );
+      if ( operating() ) {
+        setOperating( null );
         postMessage( endPreviewStrut() );
       }
     }
   };
 
+  createEffect( () => {
+    if ( operating() ) {
+      postMessage( movePreviewStrut( line() ) );
+    }
+  });
+
   const [ _, setTool ] = useInteractionTool();
   createEffect( () => setTool( handlers ) );
 
-  const color = 0x202020;
-  const lineMaterial = new LineBasicMaterial( {
-    color,
-    linewidth: 6
-  } );
-  const tip = new Vector3( 0, 0, 20 );
-  const points = [];
-  points.push( new Vector3( 0, 0, 0 ) );
-  points.push( tip );
-  const lineGeom = new BufferGeometry().setFromPoints( points );
-  const meshMaterial = new MeshLambertMaterial( { color } );
-  const sphereGeom = new SphereGeometry( 0.2, 9, 9 );
-
   return (
-    <group>
-      {/* <TrackballControls camera={pseudoCamera} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} /> */}
-      <lineSegments material={lineMaterial} geometry={lineGeom} />
-      <mesh position={tip} material={meshMaterial} geometry={sphereGeom} />
-    </group>
+    <Show when={operating()}>
+      <group position={position()}>
+        <ObjectTrackball startEvent={operating()} line={line()} setLine={setLine} rotateSpeed={0.9} debug={props.debug} />
+        <Show when={props.debug}>
+          <VectorArrow vector={line()} />
+        </Show>
+      </group>
+    </Show>
   );
 }
 

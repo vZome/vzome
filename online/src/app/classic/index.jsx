@@ -11,7 +11,7 @@ import { WorkerStateProvider } from '../../workerClient/index.js';
 const Classic = () =>
 {
   return (
-    <ErrorBoundary fallback={err => err}>
+    <ErrorBoundary fallback={ err => <div>{err.toString()}</div> } >
       <WorkerStateProvider>
         <VZomeAppBar menuBar={true}
           about={ <>
