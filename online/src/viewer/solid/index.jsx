@@ -1,5 +1,5 @@
 
-import { useWorkerClient } from "../../workerClient/index.js";
+import { useWorkerClient, WorkerStateProvider } from '../../workerClient/index.js';
 import { SceneCanvas } from "./scenecanvas.jsx";
 
 const DesignViewer = ( props ) =>
@@ -15,4 +15,16 @@ const DesignViewer = ( props ) =>
   );
 }
 
-export { DesignViewer, SceneCanvas };
+const UrlViewer = (props) =>
+{
+  return (
+    <WorkerStateProvider config={{ url: props.url, preview: true, debug: false, showScenes: props.showScenes }}>
+      <DesignViewer config={ { ...props.config, allowFullViewport: true } }
+          height="100%" width="100%" >
+        {props.children}
+      </DesignViewer>
+    </WorkerStateProvider>
+  );
+}
+
+export { DesignViewer, UrlViewer, SceneCanvas };

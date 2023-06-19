@@ -747,6 +747,11 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.7.tgz#ccab5c8f7dc557a52ca3288c10075c9ccd37fff7"
   integrity sha512-Cr4OjIkipTtcXKjAsm8agyleBuDHvxzeBoa1v543lbv1YaIwQjESsVcmjiWiPEbC1FIeHOG/Op9kdCmAmiS3Kw==
 
+"@popperjs/core@^2.11.7":
+  version "2.11.8"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
+  integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
+
 "@react-spring/animated@~9.6.1":
   version "9.6.1"
   resolved "https://registry.yarnpkg.com/@react-spring/animated/-/animated-9.6.1.tgz#ccc626d847cbe346f5f8815d0928183c647eb425"
@@ -887,18 +892,6 @@
   resolved "https://registry.yarnpkg.com/@solid-primitives/utils/-/utils-6.2.0.tgz#7d092eaed9eef8fb77f9fe3d7a717e5ed330d1cf"
   integrity sha512-T62WlLwKkbmicsw/xpwMQyv9MmZRSaVyutXfS5icc9v0cb8qGMUxRxr5LVvZHYQCZ9DEFboZB0r711xsbVBbeA==
 
-"@suid/base@0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@suid/base/-/base-0.5.1.tgz#95f4e77d66175014622b79f2ef8138805db37aa4"
-  integrity sha512-0IbaD/KoJUuT4F6EsKDB1dMX0gAZAGzyUz52RyXRTbEv/e2mgK+00wYRRgxaFcjtfHFutFTkIQ4c0EU+GRECWg==
-  dependencies:
-    "@popperjs/core" "^2.11.6"
-    "@suid/css" "0.1.7"
-    "@suid/system" "0.7.1"
-    "@suid/types" "0.3.0"
-    "@suid/utils" "0.6.0"
-    clsx "^1.2.1"
-
 "@suid/base@0.7.1":
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/@suid/base/-/base-0.7.1.tgz#8c401cb184af21da45f5b5ceeca1b55dfe84766a"
@@ -911,17 +904,27 @@
     "@suid/utils" "0.6.1"
     clsx "^1.2.1"
 
-"@suid/css@0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@suid/css/-/css-0.1.7.tgz#97f186eb1a9b94d29d55490a899d22c1fb48f3aa"
-  integrity sha512-SBRGHwBndin52tgLAyVlu0cNcDeBJVYA0E4cfo7TO0Jmicmn3xgWXG8Ie7kSDnS8tSf9IZuVnXHaq9deZfdvdA==
+"@suid/base@0.8.2":
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/@suid/base/-/base-0.8.2.tgz#54f81b74971a4e4e9c6bbabdc54aa6f7e4d0d8db"
+  integrity sha512-saue6/ss0ylDMz2mOK6kKvxBqkt5wCNTOutsQ6oi+zeeKXp+0SRpfhqmhhBWZw9s00eq+qE17G4ln2yvZ7d9ug==
   dependencies:
-    "@suid/utils" "0.6.0"
+    "@popperjs/core" "^2.11.7"
+    "@suid/css" "0.3.1"
+    "@suid/system" "0.10.2"
+    "@suid/types" "0.5.1"
+    "@suid/utils" "0.7.2"
+    clsx "^1.2.1"
 
 "@suid/css@0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@suid/css/-/css-0.3.0.tgz#62a2d08754dca9fd509698853fea994ebdb4ce2c"
   integrity sha512-B7eXNEqGWTF9rd8VNZItaVjUvJ4e34DjGZqMaBBSu4UxqJwYJ0J0NTQEVRzCtHmjHaqEuMc9llYCT7cmamhA8g==
+
+"@suid/css@0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@suid/css/-/css-0.3.1.tgz#f81bb4c50c72f42b2b3d2433cfae5cbc7f85325b"
+  integrity sha512-OXUgCwKvMy6rIu+tcRybKxFzCBbwaEXG30MmCV26uzwhTxYcmSXU4tdiTenpAD7w1VS0Xysw0pf+tGtzKIMX8g==
 
 "@suid/icons-material@^0.5.3":
   version "0.5.11"
@@ -942,25 +945,17 @@
     "@suid/utils" "0.6.1"
     clsx "^1.2.1"
 
-"@suid/material@^0.8.2":
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/@suid/material/-/material-0.8.2.tgz#7e2b9f447970c3e30a9905c4c87cec8922034d33"
-  integrity sha512-4gA23zlINdC7Wqe77tD4HeERmaL+I0n9JZdTV0RodU7WTfuxFhTxRroR3aSH+6J3yhwHhsYBla2QNmX4nfTbpg==
+"@suid/material@^0.12.2":
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/@suid/material/-/material-0.12.3.tgz#8a678c8edb553fccd8c361477cda3277233bbf6c"
+  integrity sha512-Kcq+HNO6U0rBLfhHRHwsKSQckDqN6Z5qguQWBCn11VlgOWrurG+0ZJVVYi47nTt71w2eb4eyQBneveEO4EdeYQ==
   dependencies:
-    "@suid/base" "0.5.1"
-    "@suid/css" "0.1.7"
-    "@suid/system" "0.7.1"
-    "@suid/types" "0.3.0"
-    "@suid/utils" "0.6.0"
+    "@suid/base" "0.8.2"
+    "@suid/css" "0.3.1"
+    "@suid/system" "0.10.2"
+    "@suid/types" "0.5.1"
+    "@suid/utils" "0.7.2"
     clsx "^1.2.1"
-
-"@suid/styled-engine@0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@suid/styled-engine/-/styled-engine-0.3.0.tgz#3d47084a79081fb4018e15b92e16e81c75aca1ce"
-  integrity sha512-TGpmRizJzDoBHcKPR5MUmK5v3Jkfx4mkVGxskEeGXUoMHSIkDWiNstEmYlLFOKqT2Ku2t0lJ8fOS4K777+dUiA==
-  dependencies:
-    "@suid/css" "0.1.7"
-    "@suid/utils" "0.6.0"
 
 "@suid/styled-engine@0.4.3":
   version "0.4.3"
@@ -970,17 +965,25 @@
     "@suid/css" "0.3.0"
     "@suid/utils" "0.6.1"
 
-"@suid/system@0.7.1":
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/@suid/system/-/system-0.7.1.tgz#0923c2605112ba25697cc5b54f35c20ff617da36"
-  integrity sha512-ltWJULVcbLLTmEWdoy33d5Aa4C37V6nk0d0YoqvGJc8ujZ4SDR5hrszWixQG5i/j76+s++ep+9Z9W1xuw/IlTA==
+"@suid/styled-engine@0.5.2":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@suid/styled-engine/-/styled-engine-0.5.2.tgz#e9622d26e2a52a5083678c915d40759b7343056f"
+  integrity sha512-PVUrs3K0iaXNy2wwiFr9MSGv4Kkvq0HPI6kFdHTwY44u0zZiTqBeZe9dTmmTjfxmiJj0AofzUqU7+HqasDALvw==
   dependencies:
-    "@suid/css" "0.1.7"
-    "@suid/styled-engine" "0.3.0"
-    "@suid/types" "0.3.0"
-    "@suid/utils" "0.6.0"
+    "@suid/css" "0.3.1"
+    "@suid/utils" "0.7.2"
+
+"@suid/system@0.10.2":
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/@suid/system/-/system-0.10.2.tgz#67a61c5f6131213c5e91cdb73769e48b68c34590"
+  integrity sha512-af7LJDS6Z7EM1x9FludSQDjATxsxtC6sYwpYrjuH+bIkArAKkHYNGc2dDl9SCJ1fOeEIiIKMiWbPnMQ1Pobznw==
+  dependencies:
+    "@suid/css" "0.3.1"
+    "@suid/styled-engine" "0.5.2"
+    "@suid/types" "0.5.1"
+    "@suid/utils" "0.7.2"
     clsx "^1.2.1"
-    csstype "^3.1.1"
+    csstype "^3.1.2"
 
 "@suid/system@0.9.1":
   version "0.9.1"
@@ -994,22 +997,15 @@
     clsx "^1.2.1"
     csstype "^3.1.1"
 
-"@suid/types@0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@suid/types/-/types-0.3.0.tgz#ef4bc89b6a287bd1f91a2f897ccc1164983b29da"
-  integrity sha512-MrfSnnI8oyPy+TtSIG6qVZyqVN7GMH49uRbw8ACLEek2T1keG2NtLNgNWhiWv51bP0CwBAalwt+QGcN4b/3OSw==
-
 "@suid/types@0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@suid/types/-/types-0.4.0.tgz#86feb1cb09e5a2b9a229d037e450e5811928bf6f"
   integrity sha512-rafpWrES+G8peLp1L7rm6QHGd+yhMV01jIzFDTzLIYgv8cQk4AsoKfgzZVfPysptF24owD9491Dv4BAzQY+XFA==
 
-"@suid/utils@0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@suid/utils/-/utils-0.6.0.tgz#bae7ba5dcf6923dee4b2fd35a67752ed3dc559d1"
-  integrity sha512-1s5mRYbYCFzzo/t1tCvP72IizDNMjAIsV7SsBHqAQRayfQIlAaQv9D2HAQ0QW2WxHIQTsi4JLPZI/0MdiU12Vw==
-  dependencies:
-    "@suid/types" "0.3.0"
+"@suid/types@0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@suid/types/-/types-0.5.1.tgz#8536cd694343a1e30d84c408bddca6685035ac91"
+  integrity sha512-5Cg/n5Z6veyMdkVXlK32xX+uBawaVeLbnqRhJl/zU5uSWuC5hP7g08Rm3FJ7pH48nvDMlwx7CsIDUWRnGYczag==
 
 "@suid/utils@0.6.1":
   version "0.6.1"
@@ -1017,6 +1013,13 @@
   integrity sha512-Fg6oblOZIjZYnbF/kigE3GcqfVxN2kpmaVPpAeqTDvHNeHWzDI/rEWEXZI4nJ5WzToXDYOLHhYiQYWPDDsXPHA==
   dependencies:
     "@suid/types" "0.4.0"
+
+"@suid/utils@0.7.2":
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/@suid/utils/-/utils-0.7.2.tgz#3588cda33ecbfa636c77743d65c7e97d9afff365"
+  integrity sha512-NVOYWEGFnY2TaVuY/5F+HxtTE4G6HYfag1+/XMEkyYrZlTjrubDQ2GnWW0NIcKnreO0Fq+vxineBWA76HVNHcw==
+  dependencies:
+    "@suid/types" "0.5.1"
 
 "@types/hoist-non-react-statics@^3.3.0":
   version "3.3.1"
@@ -1332,7 +1335,7 @@ csstype@^2.5.2:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-2.6.21.tgz#2efb85b7cc55c80017c66a5ad7cbd931fda3a90e"
   integrity sha512-Z1PhmomIfypOpoMjRQB70jfvy/wxT50qW08YXO5lMIJkrdq4yOTR+AW7FqutScmB9NkLwxo+jU+kZLbofZZq/w==
 
-csstype@^3.0.2, csstype@^3.1.0, csstype@^3.1.1:
+csstype@^3.0.2, csstype@^3.1.0, csstype@^3.1.1, csstype@^3.1.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.2.tgz#1d4bf9d572f11c14031f0436e1c10bc1f571f50b"
   integrity sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==
