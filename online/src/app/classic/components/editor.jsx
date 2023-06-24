@@ -3,7 +3,8 @@ import { Switch, Match, createSignal } from 'solid-js';
 
 import TouchAppIcon from '@suid/icons-material/TouchApp';
 import BuildIcon from '@suid/icons-material/Build';
-import { ToggleButton, ToggleButtonGroup } from "@suid/material";
+import ToggleButton from "@suid/material/ToggleButton";
+import ToggleButtonGroup from "@suid/material/ToggleButtonGroup";
 
 import { SceneCanvas } from '../../../viewer/solid/index.jsx';
 import { useWorkerClient } from '../../../workerClient/index.js';

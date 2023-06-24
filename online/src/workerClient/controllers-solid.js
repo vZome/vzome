@@ -51,6 +51,17 @@ const createWorkerStore = ( worker ) =>
 
     switch ( data.type ) {
 
+      case 'ALERT_RAISED': {
+        console.log( `Alert from the worker: ${data.payload}` );
+        setState( 'problem', data.payload );
+        break;
+      }
+  
+      case 'FETCH_STARTED': {
+        setState( 'waiting', true );
+        break;
+      }
+  
       case 'TEXT_EXPORTED': {
         const { action, text } = data.payload;
         exportPromises[ action ] .resolve( text );
@@ -159,7 +170,7 @@ const createWorkerStore = ( worker ) =>
     } );
   }
 
-  const store = { postMessage: worker .sendToWorker, isWorkerReady, setState, expectResponse }; // needed for every subcontroller
+  const store = { postMessage: worker .sendToWorker, isWorkerReady, state, setState, expectResponse }; // needed for every subcontroller
 
   const rootController = () =>
   {

@@ -5,6 +5,7 @@ import { controllerProperty, subController } from '../../workerClient/controller
 import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
 import { SceneEditor } from './components/editor.jsx';
 import { useWorkerClient } from "../../workerClient/index.js";
+import { ErrorAlert } from '../../viewer/solid/alert.jsx';
 
 export const ClassicEditor = ( props ) =>
 {
@@ -42,6 +43,7 @@ export const ClassicEditor = ( props ) =>
         </div>
 
       </div>
+      <ErrorAlert/>
     </div>
   )
 }

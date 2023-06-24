@@ -19,10 +19,9 @@ const relativeUrl = queryParams.get( 'url' ); // support for legacy viewer usage
 
 // Must make this absolute before the worker tries to, with the wrong base URL
 const url = ( relativeUrl && new URL( relativeUrl, window.location ) .toString() )
-              || getModelURL( 'vZomeLogo' );
+              || getModelURL( '120-cell' );   // TODO REMOVE THIS WHEN DesignHistoryInspector is ready
 
-// const legacyViewerMode = !!relativeUrl;   // TODO UNCOMMENT THIS WHEN DesignHistoryInspector is ready
-const legacyViewerMode = true;
+const legacyViewerMode = !!relativeUrl;
               
 const forDebugger = !legacyViewerMode && queryParams.get( 'debug' ) === 'true';
 
@@ -48,7 +47,7 @@ const Online = () =>
   return (
     <ErrorBoundary fallback={err => err}>
       <WorkerStateProvider config={config}>
-        <VZomeAppBar title={ legacyViewerMode? 'Viewer' : 'Inspector' }
+        <VZomeAppBar title={ 'Viewer' } showOpen={true}
           about={
             <>
               {para_1}
@@ -70,7 +69,7 @@ const Online = () =>
         {/* { legacyViewerMode?
           <DesignViewer config={ { useSpinner: true } } />
         : <DesignHistoryInspector/> } */}
-        <DesignViewer height="100%" width="100%" toolActions={{}} trackball={true} />
+        <DesignViewer height="100%" width="100%" config={ { useSpinner: true } } />
       </WorkerStateProvider>
     </ErrorBoundary>
   );
