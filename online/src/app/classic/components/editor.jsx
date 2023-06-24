@@ -1,6 +1,10 @@
 
 import { Switch, Match, createSignal } from 'solid-js';
 
+import TouchAppIcon from '@suid/icons-material/TouchApp';
+import BuildIcon from '@suid/icons-material/Build';
+import { ToggleButton, ToggleButtonGroup } from "@suid/material";
+
 import { SceneCanvas } from '../../../viewer/solid/index.jsx';
 import { useWorkerClient } from '../../../workerClient/index.js';
 import { InteractionToolProvider } from '../tools/interaction.jsx';
@@ -15,32 +19,52 @@ export const SceneEditor = ( props ) =>
   document .addEventListener( "keydown", evt => {
     if ( evt.code === "AltLeft" || evt.code === "AltRight" ) {
       evt .preventDefault();
-      setStrutting( true );
+      setStrutting( v => !v );
     }
   } );
 
   document .addEventListener( "keyup", evt => {
     if ( evt.code === "AltLeft" || evt.code === "AltRight" ) {
       evt .preventDefault();
-      setStrutting( false );
+      setStrutting( v => !v );
     }
   } );
 
+  const handleToolMode = ( evt, newValue ) =>
+  {
+    if ( newValue ) {
+      setStrutting( newValue === 'strutDrag' );
+    }
+  }
+
+  // not using DesignViewer because it has its own UI, not corresponding to classic desktop vZome
   return (
-    // not using DesignViewer because it has its own UI, not corresponding to classic desktop vZome
-    <InteractionToolProvider>
-      <SceneCanvas height="880px" width="100%" scene={getScene()} >
-        {/* The group is only necessary because of https://github.com/solidjs-community/solid-three/issues/11 */}
-        <group>
-          <Switch fallback={
-              <SelectionTool/>
-            }>
-            <Match when={ strutting() }>
-              <StrutDragTool/>
-            </Match>
-          </Switch>
-        </group>
-      </SceneCanvas>
-    </InteractionToolProvider>
+    <div style={{ position: 'relative' }}>
+      <InteractionToolProvider>
+        <SceneCanvas height="880px" width="100%" scene={getScene()} >
+          {/* The group is only necessary because of https://github.com/solidjs-community/solid-three/issues/11 */}
+          <group>
+            <Switch fallback={
+                <SelectionTool/>
+              }>
+              <Match when={ strutting() }>
+                <StrutDragTool/>
+              </Match>
+            </Switch>
+          </group>
+        </SceneCanvas>
+      </InteractionToolProvider>
+      <ToggleButtonGroup exclusive value={strutting()? 'strutDrag' : 'select' } aria-label="mouse tool mode"
+          style={ { position: 'absolute', top: '1em', right: '1em' } }
+          onChange={handleToolMode}
+        >
+        <ToggleButton value="select" aria-label="selection">
+          <TouchAppIcon fontSize="large" />
+        </ToggleButton>
+        <ToggleButton value="strutDrag" aria-label="strut drag">
+          <BuildIcon    fontSize="large" />
+        </ToggleButton>
+      </ToggleButtonGroup>
+    </div>
   );
 }

@@ -1,6 +1,4 @@
 
-import { createSignal } from "solid-js";
-
 import { CameraControls } from './components/camera.jsx';
 import { StrutBuildPanel } from './components/strutbuilder.jsx';
 import { controllerProperty, subController } from '../../workerClient/controllers-solid.js';

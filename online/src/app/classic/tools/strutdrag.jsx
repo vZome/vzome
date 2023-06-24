@@ -102,6 +102,8 @@ const StrutDragTool = props =>
     onDrag: evt => {},
 
     onDragStart: ( id, position, type, starting, evt ) => {
+      if ( type !== 'ball' )
+        return;
       setPosition( position );
       const { x, y, z } = new Vector3() .copy( eye() ) .sub( new Vector3( ...position ) ) .normalize();
       setLine( [ x, y, z ] );
