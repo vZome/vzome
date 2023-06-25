@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectEditAfter } from '../../ui/viewer/store';
+import { selectEditAfter } from '../../viewer/react/store';
 
 import { withStyles, makeStyles } from '@material-ui/core/styles'
 import Grid from '@material-ui/core/Grid'

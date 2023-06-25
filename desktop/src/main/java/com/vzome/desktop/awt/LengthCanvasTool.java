@@ -3,13 +3,11 @@ package com.vzome.desktop.awt;
 
 import java.awt.Component;
 import java.awt.event.MouseWheelEvent;
-import java.beans.PropertyChangeListener;
 
 import org.vorthmann.j3d.CanvasTool;
 import org.vorthmann.j3d.MouseTool;
 import org.vorthmann.j3d.MouseToolDefault;
 
-import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.desktop.controller.LengthController;
 
 /**
@@ -22,11 +20,8 @@ public class LengthCanvasTool implements CanvasTool
 
     private static final int MOUSE_WHEEL_GAIN = 4;
 
-    private LengthController controller;
-    
     public LengthCanvasTool( LengthController controller )
     {
-        this.controller = controller;
         this .tool = new MouseToolDefault()
         {
             int wheelClicks = 0;
@@ -70,20 +65,5 @@ public class LengthCanvasTool implements CanvasTool
     public void detach( Component canvas )
     {
         this .tool .detach( canvas );
-    }
-
-    public AlgebraicNumber getValue()
-    {
-        return this .controller .getValue();
-    }
-
-    public void addPropertyListener( PropertyChangeListener listener )
-    {
-        this .controller .addPropertyListener( listener );
-    }
-
-    public void removePropertyListener( PropertyChangeListener listener )
-    {
-        this .controller .removePropertyListener( listener );
     }
 }

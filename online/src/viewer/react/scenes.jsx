@@ -7,7 +7,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
-import { selectScene } from './store.js';
+import { selectScene } from '../../workerClient/index.js';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {

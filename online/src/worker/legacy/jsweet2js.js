@@ -361,4 +361,9 @@ export class JsProperties
   {
     return this.config[ key ]
   }
+
+  put( key, value )
+  {
+    this.config[ key ] = value;
+  }
 }

@@ -3,7 +3,7 @@
 
 const Slider = props => <div class='slider'></div>
 
-import { controllerAction, controllerProperty, subController } from '../controllers-solid.js';
+import { controllerAction, controllerProperty, subController } from '../../../workerClient/controllers-solid.js';
 
 const sliderMarks = Array.from( { length: 13 }, (_, i) => i-6 ) .map( i => ({ value: i }));
 sliderMarks[ 6 ].label = 'unit';

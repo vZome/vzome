@@ -1,5 +1,6 @@
 
 import { solidPlugin } from './esbuild-solid-plugin.mjs';
+import { DOMElements, SVGElements } from "solid-js/web/dist/dev.cjs";
 
 /*
   With help and advice from Lucas Garron, I've adopted esbuild as my toolchain, for the
@@ -47,7 +48,7 @@ export const esbuildConfig = {
   // web component, not used by apps
     'vzome-viewer'        : 'src/wc/index.js',
   // client rendering code, dynamically imported for fast time-to-first-render
-    'vzome-viewer-dynamic': 'src/ui/viewer/index.jsx',
+    'vzome-viewer-dynamic': 'src/viewer/react/index.jsx',
   // Worker entry point, only used as a module worker (which still breaks Firefox)
     'vzome-worker-static' : 'src/worker/vzome-worker-static.js',
   // Legacy code, dynamically loaded as needed by the worker to parse vZome files or edit designs
@@ -57,5 +58,27 @@ export const esbuildConfig = {
   splitting: true,
   loader: { '.vef': 'dataurl' },
   format: 'esm',
-  plugins: [solidPlugin()],
+  target: 'es2022',
+  platform: 'browser',
+  plugins: [ solidPlugin(
+    {
+      solid: {
+        moduleName: "solid-js/web",
+        // @ts-ignore
+        generate: "dynamic",
+        renderers: [
+          {
+            name: "dom",
+            moduleName: "solid-js/web",
+            elements: [...DOMElements.values(), ...SVGElements.values()],
+          },
+          {
+            name: "universal",
+            moduleName: "solid-three",
+            elements: [],
+          },
+        ],
+      },
+    }
+  )],
 };

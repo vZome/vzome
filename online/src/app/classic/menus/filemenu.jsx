@@ -5,14 +5,16 @@ import Divider from "@suid/material/Divider";
 import MenuItem from "@suid/material/MenuItem"
 
 import { createSignal } from "solid-js";
-import { controllerExportAction } from "../controllers-solid.js";
+import { controllerExportAction } from "../../../workerClient/controllers-solid.js";
 import { serializeVZomeXml, download } from '../../../workerClient/serializer.js';
 import { MenuAction } from "../components/menuaction.jsx";
 import { UrlDialog } from '../components/webloader.jsx'
-import { fetchDesign, openDesignFile } from "../../../ui/viewer/store.js";
+import { fetchDesign, openDesignFile } from "../../../workerClient/index.js";
+import { useWorkerClient } from "../../../workerClient/index.js";
 
-export const FileMenu = ( props ) =>
+export const FileMenu = () =>
 {
+  const { postMessage, rootController, getScene } = useWorkerClient();
   const [ anchorEl, setAnchorEl ] = createSignal( null );
   const [ showDialog, setShowDialog ] = createSignal( false );
   const open = () => Boolean( anchorEl() );
@@ -27,7 +29,7 @@ export const FileMenu = ( props ) =>
   const onFileSelected = e => {
     const selected = e.target.files && e.target.files[0]
     if ( selected ) {
-      props.controller.__store.postMessage( openDesignFile( selected, false ) );
+      postMessage( openDesignFile( selected, false ) );
     }
     inputRef.value = null;
   }
@@ -38,16 +40,16 @@ export const FileMenu = ( props ) =>
   }
   const openUrl = url => {
     if ( url && url.endsWith( ".vZome" ) ) {
-      props.controller.__store.postMessage( fetchDesign( url, { preview: false, debug: false } ) );
+      postMessage( fetchDesign( url, { preview: false, debug: false } ) );
     }
   }
 
   const exportAs = ( format, mimeType ) => evt =>
   {
     doClose();
-    controllerExportAction( props.controller, format )
+    controllerExportAction( rootController(), format )
       .then( text => {
-        const vName = props.controller.source?.name || 'untitled.vZome';
+        const vName = rootController().source?.name || 'untitled.vZome';
         const name = vName.substring( 0, vName.length-6 ).concat( "." + format );
         download( name, text, mimeType );
       });
@@ -56,11 +58,11 @@ export const FileMenu = ( props ) =>
   const save = evt =>
   {
     doClose();
-    controllerExportAction( props.controller, 'vZome' )
+    controllerExportAction( rootController(), 'vZome' )
       .then( text => {
-        const { camera, liveCamera, lighting } = props.scene;
+        const { camera, liveCamera, lighting } = getScene();
         const fullText = serializeVZomeXml( text, lighting, liveCamera, camera );
-        const name = props.controller.source?.name || 'untitled.vZome';
+        const name = rootController().source?.name || 'untitled.vZome';
         download( name, fullText, 'application/xml' );
       });
   }

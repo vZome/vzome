@@ -10,7 +10,7 @@ const createLinkItem = doClose => ( { href, label } ) => (
   <MenuItem component={Link} href={href} target="_blank" rel="noopener" onClick={doClose}>{label}</MenuItem>
 );
 
-export const HelpMenu = ( props ) =>
+export const HelpMenu = () =>
 {
   const [ anchorEl, setAnchorEl ] = createSignal( null );
   const open = () => Boolean( anchorEl() );

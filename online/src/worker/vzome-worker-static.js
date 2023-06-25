@@ -124,6 +124,8 @@ const clientEvents = report =>
 
   const instanceAdded = instance => report( { type: 'INSTANCE_ADDED', payload: instance } );
 
+  const instanceRemoved = ( shapeId, id ) => report( { type: 'INSTANCE_REMOVED', payload: { shapeId, id } } );
+
   const selectionToggled = ( shapeId, id, selected ) => report( { type: 'SELECTION_TOGGLED', payload: { shapeId, id, selected } } );
 
   const symmetryChanged = details => report( { type: 'PLANES_DEFINED', payload: details } );
@@ -143,7 +145,7 @@ const clientEvents = report =>
 
   const textExported = ( action, text ) => report( { type: 'TEXT_EXPORTED', payload: { action, text } } ) ;
 
-  return { sceneChanged, shapeDefined, instanceAdded, selectionToggled, symmetryChanged,
+  return { sceneChanged, shapeDefined, instanceAdded, instanceRemoved, selectionToggled, symmetryChanged,
     xmlParsed, scenesDiscovered, designSerialized, propertyChanged, errorReported, textExported, };
 }
 
@@ -251,7 +253,7 @@ const urlLoader = ( report, event ) =>
 
 onmessage = ({ data }) =>
 {
-  // console.log( `Worker received: ${JSON.stringify( data, null, 2 )}` );
+  // console.log( `TO worker: ${JSON.stringify( data.type, null, 2 )}` );
   const { type, payload } = data;
 
   try {
@@ -291,8 +293,8 @@ onmessage = ({ data }) =>
       const { controllerPath, action, parameters } = payload;
       try {
         designController .doAction( controllerPath, action, parameters );
-        const scene = designController .getScene( '--END--', true );
-        postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
+        const { shapes, embedding } = designController .getScene( '--END--', true ); // never send camera or lighting!
+        postMessage( { type: 'SCENE_RENDERED', payload: { scene: { shapes, embedding } } } );
       } catch (error) {
         console.log( `${action} actionPerformed error: ${error.message}` );
         postMessage( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
@@ -319,10 +321,33 @@ onmessage = ({ data }) =>
 
       const scene = designController .getScene( '--END--', true );
       postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
+      break;
+    }
+
+    case 'PREVIEW_STRUT_START':
+    {
+      const { ballId, direction } = payload;
+      designController .startPreviewStrut( ballId, direction );
+      break;
+    }
+
+    case 'PREVIEW_STRUT_MOVE':
+    {
+      const { direction } = payload;
+      designController .movePreviewStrut( direction );
+      break;
+    }
+  
+    case 'PREVIEW_STRUT_END':
+    {
+      designController .endPreviewStrut();
+      const scene = designController .getScene( '--END--', true );
+      postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
+      break;
     }
   
     default:
-      break;
+      console.log( 'action not handled:', type, payload );
   }
   } catch (error) {
     console.log( `${type} onmessage error: ${error.message}` );

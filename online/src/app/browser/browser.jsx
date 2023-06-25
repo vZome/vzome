@@ -1,10 +1,10 @@
 
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
-import { fetchDesign } from '../../ui/viewer/store.js';
+import { fetchDesign } from '../../workerClient/index.js';
 import { useGitHubShares, getEmbeddingHtml, getAssetUrl } from './github.js';
 
-import { DesignViewer } from '../../ui/viewer/index.jsx'
+import { DesignViewer } from '../../viewer/react/index.jsx'
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';

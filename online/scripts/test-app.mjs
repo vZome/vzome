@@ -29,10 +29,6 @@ if ( argv .includes( 'quick' ) ) {
   console.log( '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
 }
 
-esbuild.serve(
-  {
-    servedir: 'public',
-    port,
-  },
-  commonConfig
-);
+let ctx = await esbuild.context( commonConfig );
+
+ctx.serve( { servedir: 'public', port } );

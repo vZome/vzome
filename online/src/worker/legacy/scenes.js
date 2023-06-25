@@ -40,6 +40,8 @@ export const renderedModelTransducer = ( shapeCache, clientEvents ) =>
     let shape = shapeCache[ shapeId ];
     if ( ! shape ) {
       shape = realizeShape( rm .getShape() );
+      const orbit = rm .getStrutOrbit();
+      shape.zone = orbit? `${orbit.toString()} ${rm.getStrutZone()}` : 'Ball';
       shapeCache[ shapeId ] = shape;
       clientEvents .shapeDefined( shape );
     }
@@ -48,7 +50,12 @@ export const renderedModelTransducer = ( shapeCache, clientEvents ) =>
     clientEvents .instanceAdded( instance );
   }
 
-  const manifestationRemoved = rm => {}
+  const manifestationRemoved = rm =>
+  {
+    const shapeId = 's' + rm.getShapeId().toString();
+    const id = rm.getGuid().toString();
+    clientEvents .instanceRemoved( shapeId, id );
+  }
 
   const glowChanged = rm =>
   {

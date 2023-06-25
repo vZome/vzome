@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography'
 import Link from '@material-ui/core/Link'
 
 import { VZomeAppBar } from '../components/appbar.jsx'
-import { WorkerContext } from '../../ui/viewer/index.jsx'
+import { WorkerContext } from '../../viewer/react/index.jsx'
 import { DesignBrowser } from './browser.jsx';
 
 const Browser = () => (

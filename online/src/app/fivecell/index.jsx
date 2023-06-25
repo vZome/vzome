@@ -1,55 +1,44 @@
-// babel workaround
-import "regenerator-runtime/runtime";
 
-import React from 'react';
-import { render } from 'react-dom'
+import { render } from 'solid-js/web';
+import { ErrorBoundary } from "solid-js";
 
-import { makeStyles } from '@material-ui/core/styles'
-import Container from '@material-ui/core/Container'
-import Paper from '@material-ui/core/Paper'
-import Typography from '@material-ui/core/Typography'
-import Link from '@material-ui/core/Link'
+import Typography from '@suid/material/Typography'
+import Link from '@suid/material/Link'
+import Container from '@suid/material/Container'
+import Paper from '@suid/material/Paper'
 
-import { UrlViewer } from '../../ui/viewer/index.jsx'
-import { VZomeAppBar } from '../components/appbar.jsx'
-
-const useStyles = makeStyles( (theme) => ({
-  paper: {
-    paddingLeft: "2%",
-    paddingRight: "2%",
-  }
-}));
+import { UrlViewer } from '../../viewer/solid/index.jsx'
+import { VZomeAppBar } from '../classic/components/appbar.jsx';
 
 const viewerStyle = {
   height: "400px",
-  minHeight: "400px",
-  maxHeight: "60vh",
-  marginLeft: "15%",
-  marginRight: "15%",
-  marginTop: "15px",
-  marginBottom: "15px",
-  borderWidth: "medium",
-  borderRadius: "10px",
+  "min-height": "400px",
+  "max-height": "60vh",
+  "margin-left": "15%",
+  "margin-right": "15%",
+  "margin-top": "15px",
+  "margin-bottom": "15px",
+  "border-width": "medium",
+  "border-radius": "10px",
   border: "solid",
 }
 
-const VZomeViewer = ({ name }) =>
+const VZomeViewer = props =>
 {
-  const url = name && new URL( `/models/2007/04-Apr/5cell/${name}.vZome`, window.location ) .toString();
+  const url = () => props.name && new URL( `/models/2007/04-Apr/5cell/${props.name}.vZome`, window.location ) .toString();
 
   return (
     <div style={viewerStyle}>
-      <UrlViewer url={url} />
+      <UrlViewer url={url()} />
     </div>
   )
 }
 
 const Article = () =>
 {
-  const classes = useStyles()
   return (
-    <>
-      <VZomeAppBar oneDesign title='vZome Online Apps'
+    <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
+      <VZomeAppBar oneDesign title='Apps'
         about={ <>
           <Typography gutterBottom>
             vZome Online Apps are demonstrations
@@ -59,7 +48,7 @@ const Article = () =>
         </> }
       />
       <Container maxWidth="md">
-        <Paper className={classes.paper}>
+        <Paper>
           <Typography variant="h2" gutterBottom >
             The 5-Cell and its Family
           </Typography>
@@ -109,8 +98,8 @@ const Article = () =>
           <VZomeViewer name="A4_BD" />
         </Paper>
       </Container>
-    </>
+    </ErrorBoundary>
   );
 }
 
-render( <Article />, document.getElementById( 'root' ) )
+render( Article, document.getElementById( 'root' ) );

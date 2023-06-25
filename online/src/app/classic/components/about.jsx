@@ -8,8 +8,8 @@ import DialogContent from '@suid/material/DialogContent'
 import DialogContentText from '@suid/material/DialogContentText'
 import IconButton from '@suid/material/IconButton'
 import Button from '@suid/material/Button'
-// import Tooltip from '@material-ui/core/Tooltip'    // Tooltip is not provided by SUID yet
 import InfoRoundedIcon from '@suid/icons-material/InfoRounded'
+import { Tooltip } from '../suidstub/tooltip.jsx'
 
 import { REVISION } from '../../../revision.js'
 
@@ -26,14 +26,14 @@ export const AboutDialog = ( { title, about } ) =>
 
   return (
     <>
-      {/* <Tooltip title={`About ${title}`} aria-label="about"> */}
+      <Tooltip title={`About ${title}`} aria-label="about">
         <IconButton color="inherit" aria-label="about" onClick={handleClickOpen}>
           <InfoRoundedIcon fontSize="large"/>
         </IconButton>
-      {/* </Tooltip> */}
+      </Tooltip>
       <Dialog onClose={handleClose} aria-labelledby="about-dialog-title" open={open()}>
         <DialogTitle id="customized-dialog-title" >
-          About {title} (rev {REVISION})
+          About vZome Online {title} (rev {REVISION})
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="about-dialog-description">
