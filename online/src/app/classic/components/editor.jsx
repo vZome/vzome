@@ -18,6 +18,8 @@ export const SceneEditor = ( props ) =>
   const [ strutting, setStrutting ] = createSignal( false );
 
   document .addEventListener( "keydown", evt => {
+    if ( evt.repeat )
+      return;
     if ( evt.code === "AltLeft" || evt.code === "AltRight" ) {
       evt .preventDefault();
       setStrutting( v => !v );

@@ -102,20 +102,18 @@ const createWorkerStore = ( worker ) =>
 
       case 'INSTANCE_ADDED': {
         let instance = data.payload;
-        console.log( 'INSTANCE_ADDED', instance.id );
         const shape = state.scene.shapes[ instance.shapeId ];
         setState( 'scene', 'shapes', shape.id, 'instances', [ ...shape.instances, instance ] );
-        logShapes();
+        // logShapes();
         break;
       }
 
       case 'INSTANCE_REMOVED': {
         let { shapeId, id } = data.payload;
-        console.log( 'INSTANCE_REMOVED', id );
         const shape = state.scene.shapes[ shapeId ];
         const instances = shape.instances .filter( instance => instance.id != id );
         setState( 'scene', 'shapes', shape.id, 'instances', instances );
-        logShapes();
+        // logShapes();
         break;
       }
 
