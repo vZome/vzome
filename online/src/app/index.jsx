@@ -69,7 +69,7 @@ const Online = () =>
         {/* { legacyViewerMode?
           <DesignViewer config={ { useSpinner: true } } />
         : <DesignHistoryInspector/> } */}
-        <DesignViewer height="100%" width="100%" config={ { useSpinner: true } } />
+        <DesignViewer height="100%" width="100%" config={ { useSpinner: true, showScenes: true } } />
       </WorkerStateProvider>
     </ErrorBoundary>
   );

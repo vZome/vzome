@@ -6,7 +6,9 @@ import { initialState, newDesign, requestControllerProperty, doControllerAction 
 
 const createWorkerStore = ( worker ) =>
 {
-  const [ state, setState ] = createStore( initialState );
+  const { camera, lighting } = initialState.scene;
+  // Beware, createStore does not make a copy, shallow or deep!
+  const [ state, setState ] = createStore( { scene: { camera: { ...camera }, lighting }, uuid: worker.uuid } );
 
   const exportPromises = {};
 
@@ -54,6 +56,7 @@ const createWorkerStore = ( worker ) =>
       case 'ALERT_RAISED': {
         console.log( `Alert from the worker: ${data.payload}` );
         setState( 'problem', data.payload );
+        setState( 'waiting', false );
         break;
       }
   
@@ -73,6 +76,11 @@ const createWorkerStore = ( worker ) =>
         break;
       }
 
+      case 'SCENES_DISCOVERED': {
+        setState( 'scenes', data.payload );
+        break;
+      }
+  
       case 'SCENE_RENDERED': {
         // TODO: I wish I had a better before/after contract with the worker
         const { scene, edit } = data.payload;
@@ -149,6 +157,7 @@ const createWorkerStore = ( worker ) =>
         break;
     
       default:
+        console.log( 'UNRECOGNIZED message from worker:', data.type );
         break;
     }
   }
