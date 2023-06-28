@@ -72,7 +72,7 @@ const createWorkerStore = ( worker ) =>
       }
 
       case 'TEXT_FETCHED': {
-        setState( { controller: { ...state.controller, source: data.payload } } );
+        setState( 'source', data.payload );
         break;
       }
 
