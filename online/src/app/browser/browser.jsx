@@ -149,15 +149,18 @@ export const DesignBrowser = () =>
 
   return (
     <div id='github-browser' style={{ display: 'grid', 'grid-template-columns': '20% 80%', height: '100%' }}>
-      <div id='users-designs'>
+      <div id='users-designs' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }}>
         <UsersMenu users={options()} currentUser={githubUser()} setUser={setGithubUser} />
         <DesignList githubUser={githubUser()} designs={designs()} setUrl={selectUrl}/>
       </div>
-      <div id='github-browser' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }}>
+      {/* This '10% 90%' really wants to be 'min-content 1fr', but that triggers an infinite loop
+           involving the solid-three ResizeObserver, at least when DesignViewer height is not fixed.
+           Even different percentages will trigger a resize cascade! */}
+      <div id='github-browser' style={{ display: 'grid', 'grid-template-rows': '10% 90%' }}>
         <div id='details' style={{ 'min-height': '60px', 'border-bottom': '1px solid gray', 'background-color': 'whitesmoke' }}>
           <DesignActions githubUser={githubUser()} url={url()} path={path()} />
         </div>
-        <DesignViewer config={ { useSpinner: true } } style={{ position: 'relative', height: '100%' }} />
+        <DesignViewer config={ { useSpinner: true } } style={{ position: 'relative', height: '100%' }} height='100%' width='100%' />
       </div>
     </div>
   )
