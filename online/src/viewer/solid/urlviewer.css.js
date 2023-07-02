@@ -131,10 +131,10 @@ export const urlViewerCSS = `
   inset: 0;
   z-index: 50;
   background-color: rgb(0 0 0 / 0.2);
-  animation: overlayHide 250ms ease 100ms forwards;
+  // animation: overlayHide 250ms ease 100ms forwards;
 }
 .progress__overlay[data-expanded] {
-  animation: overlayShow 250ms ease;
+  // animation: overlayShow 250ms ease;
 }
 .progress__positioner {
   position: fixed;
@@ -152,10 +152,10 @@ export const urlViewerCSS = `
   padding: 16px;
   background-color: white;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  animation: progress__contentHide 300ms ease-in forwards;
+  // animation: progress__contentHide 300ms ease-in forwards;
 }
 .progress__content[data-expanded] {
-  animation: progress__contentShow 300ms ease-out;
+  // animation: progress__contentShow 300ms ease-out;
 }
 
 

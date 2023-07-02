@@ -64,10 +64,10 @@ const DesignViewer = ( props ) =>
 
   let rootRef;
   return (
-    <div ref={rootRef} style={ fullScreen()? fullScreenStyle : normalStyle }>
+    <div id='design-viewer' ref={rootRef} style={ fullScreen()? fullScreenStyle : normalStyle }>
       {/* This renders the light DOM if the scene couldn't load */}
       <Show when={state.scene} fallback={props.children}>
-        <SceneCanvas scene={state.scene} height={props.height} width={props.width} />
+        <SceneCanvas id='scene-canvas' scene={state.scene} height={props.height} width={props.width} />
       </Show>
 
       <Show when={props.config?.showScenes && state.scenes && state.scenes[1]}>
