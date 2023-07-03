@@ -8,7 +8,7 @@ const createWorkerStore = ( worker ) =>
 {
   const { camera, lighting } = initialState.scene;
   // Beware, createStore does not make a copy, shallow or deep!
-  const [ state, setState ] = createStore( { scene: { camera: { ...camera }, lighting }, uuid: worker.uuid } );
+  const [ state, setState ] = createStore( { scene: { camera: { ...camera }, lighting: { ...lighting } }, uuid: worker.uuid } );
 
   const exportPromises = {};
 
