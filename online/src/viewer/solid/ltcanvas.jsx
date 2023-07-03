@@ -159,6 +159,7 @@ export const LightedTrackballCanvas = ( props ) =>
       {props.children}
     </Canvas>;
   
+  canvas.style.display = 'flex';
   size = createElementSize( canvas );
   
   onMount( () => {
