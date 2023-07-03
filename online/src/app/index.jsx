@@ -7,9 +7,7 @@ import Typography from '@suid/material/Typography'
 import Link from '@suid/material/Link'
 
 // import { DesignHistoryInspector } from './components/inspector.jsx'
-import { getModelURL } from './components/folder.jsx';
-// import { DesignViewer } from '../viewer/react/index.jsx'
-
+import { getModelURL } from './classic/components/folder.jsx';
 import { VZomeAppBar } from './classic/components/appbar.jsx';
 import { WorkerStateProvider } from '../workerClient/index.js';
 import { DesignViewer } from '../viewer/solid/index.jsx';
@@ -69,7 +67,7 @@ const Online = () =>
         {/* { legacyViewerMode?
           <DesignViewer config={ { useSpinner: true } } />
         : <DesignHistoryInspector/> } */}
-        <DesignViewer height="100%" width="100%" config={ { useSpinner: true } } />
+        <DesignViewer height="100%" width="100%" config={ { useSpinner: true, showScenes: true } } />
       </WorkerStateProvider>
     </ErrorBoundary>
   );

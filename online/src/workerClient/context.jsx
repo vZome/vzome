@@ -8,7 +8,7 @@ const WorkerStateContext = createContext( {} );
 
 const WorkerStateProvider = ( props ) =>
 {
-  const workerClient = createWorkerStore( createWorker() );
+  const workerClient = props.store || createWorkerStore( createWorker() );
   const { url } = props.config || {};
   url && workerClient.postMessage( fetchDesign( url, props.config ) );
 

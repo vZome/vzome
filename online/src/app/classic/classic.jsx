@@ -31,7 +31,7 @@ export const ClassicEditor = ( props ) =>
           <div id='canvas-and-bookmarks' style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
             <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} symmetryController={symmController()} />
             <SceneEditor strutting={strutting()}
-              style={{ position: 'relative', height: '100%' }} />
+              style={{ position: 'relative', height: '100%', display: 'flex', overflow: 'hidden' }} />
           </div>
         </div>
 

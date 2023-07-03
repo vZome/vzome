@@ -1,12 +1,7 @@
-// babel workaround
-import "regenerator-runtime/runtime";
 
 import { vZomeViewerCSS } from "./vzome-viewer.css";
 
-import { muiCSS } from "./mui-styles.css";
-
-import { createWorkerStore } from '../viewer/react/store.js';
-import { fetchDesign, createWorker } from '../workerClient/index.js';
+import { fetchDesign, createWorker, createWorkerStore } from '../workerClient/index.js';
 
 export class VZomeViewer extends HTMLElement
 {
@@ -22,7 +17,6 @@ export class VZomeViewer extends HTMLElement
     this.#root = this.attachShadow({ mode: "open" });
 
     this.#root.appendChild( document.createElement("style") ).textContent = vZomeViewerCSS;
-    this.#root.appendChild( document.createElement("style") ).textContent = muiCSS;
     this.#container = document.createElement("div");
     this.#root.appendChild( this.#container );
 
@@ -65,22 +59,16 @@ export class VZomeViewer extends HTMLElement
         this.#url = new URL( url, window.location ) .toString();
         // Get the fetch started by the worker before we load the dynamic module below,
         //  which is pretty big.
-        this.#store.dispatch( fetchDesign( this.#url, this.#config ) );
+        this.#store.postMessage( fetchDesign( this.#url, this.#config ) );
     }
   }
 
   connectedCallback()
   {
-    import( '../viewer/react/index.jsx' )
+    import( '../viewer/solid/index.jsx' )
       .then( module => {
-        this.#reactElement = module.renderViewer( this.#store, this.#container, this.#url, this.#config );
+        module.renderViewer( this.#store, this.#container, this.#url, this.#config );
       })
-  }
-
-  #reactElement = null;
-  get reactElement()
-  {
-    return this.#reactElement;
   }
 
   static get observedAttributes()
@@ -96,7 +84,7 @@ export class VZomeViewer extends HTMLElement
       const newUrl = new URL( _newValue, window.location ) .toString();
       if ( newUrl !== this.#url ) {
         this.#url = newUrl;
-        this.#store.dispatch( fetchDesign( this.#url, this.#config ) );
+        this.#store.postMessage( fetchDesign( this.#url, this.#config ) );
       }
       break;
 
@@ -104,7 +92,7 @@ export class VZomeViewer extends HTMLElement
       const showScenes = _newValue === 'true';
       if ( showScenes !== this.#config.showScenes ) {
         this.#config = { ...this.#config, showScenes };
-        this.#store.dispatch( fetchDesign( this.#url, this.#config ) );
+        this.#store.postMessage( fetchDesign( this.#url, this.#config ) );
       }
       break;
     }

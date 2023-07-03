@@ -151,7 +151,7 @@ export const LightedTrackballCanvas = ( props ) =>
   }
 
   const canvas =
-    <Canvas dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }}
+    <Canvas id='lighted-canvas' dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }}
         height={props.height ?? "100vh"} width={props.width ?? "100vw"}
         frameloop="always" onPointerMissed={handlePointerMissed} >
       <LightedCameraControls lighting={props.lighting} aspect={aspect()}
@@ -159,6 +159,7 @@ export const LightedTrackballCanvas = ( props ) =>
       {props.children}
     </Canvas>;
   
+  canvas.style.display = 'flex';
   size = createElementSize( canvas );
   
   onMount( () => {

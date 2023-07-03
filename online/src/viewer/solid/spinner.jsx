@@ -1,22 +1,26 @@
 
+import { Dialog } from "@kobalte/core";
+import { Progress } from "@kobalte/core";
 
-import Backdrop from '@suid/material/Backdrop';
-import CircularProgress from '@suid/material/CircularProgress';
-
-const backdropStyle = {
-  backdrop: {
-    zIndex: 99,
-    position: "absolute",
-    color: '#fff',
-  },
-};
-
-export const Spinner = ( props ) =>
+export const Spinner = (props) =>
 {
   return (
-    <Backdrop sx={backdropStyle} open={props.visible}>
-      <CircularProgress color="inherit" />
-      {/* <Typography variant="h2">{props.message}</Typography> */}
-    </Backdrop>
+    <Dialog.Root open>
+      <Dialog.Portal mount={props.root}>
+        <Dialog.Overlay class="progress__overlay" />
+        <div class="progress__positioner">
+          <Dialog.Content class="progress__content">
+            <Progress.Root indeterminate class="progress">
+              <div class="progress__label-container">
+                <Progress.Label class="progress__label">Loading...</Progress.Label>
+              </div>
+              <Progress.Track class="progress__track">
+                <Progress.Fill class="progress__fill" />
+              </Progress.Track>
+            </Progress.Root>
+          </Dialog.Content>
+        </div>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

@@ -1,5 +1,5 @@
 
-// Copied from https://github.com/nksaraf/react-three-fiber/commit/581d02376d4304fb3bab5445435a61c53cc5cdc2
+// Adapted from https://github.com/nksaraf/react-three-fiber/commit/581d02376d4304fb3bab5445435a61c53cc5cdc2
 
 import { createEffect, untrack, onCleanup } from 'solid-js';
 import { useThree } from 'solid-three';
@@ -13,6 +13,9 @@ export const PerspectiveCamera = (props) =>
   let cam;
 
   createEffect(() => {
+    cam.near = 0.1;
+    cam.far = 2000;
+    cam.fov = props.fov;
     cam.aspect = size().width / size().height;
     cam.updateProjectionMatrix();
   });
@@ -23,5 +26,5 @@ export const PerspectiveCamera = (props) =>
     onCleanup(() => set()({ camera: oldCam }));
   });
 
-  return <perspectiveCamera ref={cam} far={2000} near={0.1} fov={props.fov} position={props.position} {...props} />
+  return <perspectiveCamera ref={cam} position={props.position} {...props} />
 }

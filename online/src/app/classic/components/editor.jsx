@@ -42,9 +42,9 @@ export const SceneEditor = ( props ) =>
 
   // not using DesignViewer because it has its own UI, not corresponding to classic desktop vZome
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative', display: 'flex', overflow: 'hidden', height: '100%' }}>
       <InteractionToolProvider>
-        <SceneCanvas height="880px" width="100%" scene={getScene()} >
+        <SceneCanvas height="100%" width="100%" scene={getScene()} >
           {/* The group is only necessary because of https://github.com/solidjs-community/solid-three/issues/11 */}
           <group>
             <Switch fallback={

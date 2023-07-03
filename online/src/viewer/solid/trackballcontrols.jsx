@@ -38,11 +38,13 @@ export const TrackballControls = (props) => {
       props.onChange?.(e);
     };
 
-    // SV: these four added
+    // SV: these five added
     trackballControls().staticMoving = true;
     trackballControls().zoomSpeed = props.zoomSpeed;
     trackballControls().rotateSpeed = props.rotateSpeed;
     trackballControls().panSpeed = props.panSpeed;
+    const [ x, y, z ] = props.target;
+    trackballControls().target.set( x, y, z );
 
     trackballControls().connect(gl().domElement);
     trackballControls().addEventListener("change", callback);
