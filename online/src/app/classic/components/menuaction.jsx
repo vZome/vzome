@@ -8,7 +8,7 @@ import CheckIcon from '@suid/icons-material/Check';
 import { controllerAction } from "../../../workerClient/controllers-solid.js";
 import { mergeProps } from "solid-js";
 
-const isMac = navigator.userAgentData?.platform === 'macOS';
+const isMac = navigator.userAgentData?.platform === 'macOS' || navigator.userAgent .includes( 'Macintosh' );
 
 export const MenuAction = ( props ) =>
 {
