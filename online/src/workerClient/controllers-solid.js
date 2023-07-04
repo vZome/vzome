@@ -188,9 +188,7 @@ const createWorkerStore = ( worker ) =>
     return state.controller;
   };
 
-  const getScene = () => state.scene;
-
-  return { ...store, rootController, getScene };
+  return { ...store, rootController };
 }
 
 const subController = ( parent, key ) =>

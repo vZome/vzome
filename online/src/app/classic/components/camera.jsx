@@ -12,9 +12,9 @@ const scenes = {
 
 export const CameraControls = props =>
 {
-  const { getScene, rootController } = useWorkerClient();
+  const { state, rootController } = useWorkerClient();
   const symmetry = () => controllerProperty( rootController(), 'symmetry' );
-  const bkgdColor = () => getScene() ?.lighting ?.backgroundColor;
+  const bkgdColor = () => state.scene ?.lighting ?.backgroundColor;
 
   // TODO: use symmetry to look up the scene to use, somehow, rather than hardcoding icosahedralScene
   // Why isn't this reactive when props.bkgdColor changes for a loaded model?

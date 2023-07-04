@@ -14,7 +14,7 @@ import { useWorkerClient } from "../../../workerClient/index.js";
 
 export const FileMenu = () =>
 {
-  const { postMessage, rootController, getScene } = useWorkerClient();
+  const { postMessage, rootController, state } = useWorkerClient();
   const [ anchorEl, setAnchorEl ] = createSignal( null );
   const [ showDialog, setShowDialog ] = createSignal( false );
   const open = () => Boolean( anchorEl() );
@@ -60,7 +60,7 @@ export const FileMenu = () =>
     doClose();
     controllerExportAction( rootController(), 'vZome' )
       .then( text => {
-        const { camera, liveCamera, lighting } = getScene();
+        const { camera, liveCamera, lighting } = state.scene;
         const fullText = serializeVZomeXml( text, lighting, liveCamera, camera );
         const name = rootController().source?.name || 'untitled.vZome';
         download( name, fullText, 'application/xml' );
