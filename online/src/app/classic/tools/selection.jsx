@@ -2,7 +2,7 @@
 import { createEffect } from "solid-js";
 
 import { useWorkerClient } from "../../../workerClient/index.js";
-import { useInteractionTool } from "./interaction.jsx";
+import { useInteractionTool } from "../../../viewer/solid/interaction.jsx";
 import { controllerAction, subController } from "../../../workerClient/controllers-solid.js";
 
 const SelectionTool = props =>

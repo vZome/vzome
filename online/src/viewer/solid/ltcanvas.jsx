@@ -1,13 +1,13 @@
 
 import { useFrame, Canvas } from "solid-three";
 import { Color } from "three";
-import { createEffect, createMemo, createRenderEffect, onMount } from "solid-js";
+import { createMemo, createRenderEffect, onMount } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
 import { PerspectiveCamera } from "./perspectivecamera.jsx";
 import { TrackballControls } from "./trackballcontrols.jsx";
 import { useWorkerClient } from "../../workerClient/index.js";
-import { useInteractionTool } from "../../app/classic/tools/interaction.jsx";
+import { useInteractionTool } from "./interaction.jsx";
 
 const Lighting = props =>
 {
@@ -161,6 +161,10 @@ export const LightedTrackballCanvas = ( props ) =>
   
   canvas.style.display = 'flex';
   size = createElementSize( canvas );
+
+  createRenderEffect( () => {
+    canvas.style.cursor = (tool && tool().cursor) || 'auto';
+  });
   
   onMount( () => {
     // canvas .addEventListener( 'pointermove', handlePointerMove );

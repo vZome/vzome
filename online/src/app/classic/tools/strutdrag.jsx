@@ -3,7 +3,7 @@ import { createEffect, createSignal } from 'solid-js';
 import { Vector3 } from 'three';
 import { useThree } from "solid-three";
 
-import { useInteractionTool } from './interaction.jsx';
+import { useInteractionTool } from '../../../viewer/solid/interaction.jsx';
 import { endPreviewStrut, movePreviewStrut, startPreviewStrut, useWorkerClient } from '../../../workerClient/index.js';
 import { ObjectTrackball } from './trackball.jsx';
 import { VectorArrow } from './arrow.jsx';
@@ -96,6 +96,8 @@ const StrutDragTool = props =>
   const handlers = {
 
     allowTrackball: false,
+
+    cursor: 'cell',
 
     onClick: () => {},
     bkgdClick: () => {},
