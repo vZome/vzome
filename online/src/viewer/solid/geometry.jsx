@@ -1,6 +1,6 @@
 import { createEffect, createMemo, createSignal } from "solid-js";
 import { Vector3, Matrix4, BufferGeometry, Float32BufferAttribute } from "three";
-import { useInteractionTool } from "../../app/classic/tools/interaction.jsx";
+import { useInteractionTool } from "./interaction.jsx";
 
 
 const Instance = ( props ) =>
