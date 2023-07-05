@@ -46,7 +46,8 @@ const Instance = ( props ) =>
       handler( props.id, props.position, props.type, props.selected, e )
     }
   }
-  const emissive = () => props.selected? "#f6f6f6" : "black"
+  // TODO give users control over emissive color
+  const emissive = () => props.selected? "#dddddd" : "black"
   // TODO: cache materials
   return (
     <group position={ props.position } >

@@ -41,8 +41,8 @@ export const initialState = {
       default: true,
     },
     lighting: {
-      backgroundColor: '#BBDAED',
-      ambientColor: '#555555',
+      backgroundColor: '#8CC2E7',
+      ambientColor: '#333333',
       directionalLights: [ // These are the vZome defaults, for consistency
         { direction: [ 1, -1, -0.3 ], color: '#FDFDFD' },
         { direction: [ -1, 0, -0.2 ], color: '#B5B5B5' },

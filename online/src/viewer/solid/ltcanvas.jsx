@@ -11,7 +11,7 @@ import { useInteractionTool } from "./interaction.jsx";
 
 const Lighting = props =>
 {
-  const color = createMemo( () => new Color( props.backgroundColor ) .convertLinearToSRGB() );
+  const color = createMemo( () => new Color( props.backgroundColor ) );
   useFrame( ({scene}) => { scene.background = color() } )
   // const { scene } = useThree();
   // const centerObject = () => scene.getObjectByName('Center');
@@ -28,8 +28,8 @@ const Lighting = props =>
 }
 
 const defaultLighting = {
-  backgroundColor: '#88C0ED',
-  ambientColor: '#555555',
+  // backgroundColor: '#8CC2E7',
+  ambientColor: '#333333',
   directionalLights: [ // These are the vZome defaults, for consistency
     { direction: [ 1, -1, -0.3 ], color: '#FDFDFD' },
     { direction: [ -1, 0, -0.2 ], color: '#B5B5B5' },
@@ -91,10 +91,10 @@ const LightedCameraControls = (props) =>
     return 360 * Math.atan( halfY / props.sceneCamera?.distance ) / Math.PI;
   } );
 
-  const lights = createMemo( () => ({
-    ...defaultLighting,
-    backgroundColor: (props.lighting?.backgroundColor) || defaultLighting.backgroundColor,
-  }));
+  const lights = createMemo( () => {
+    const backgroundColor = props.lighting?.backgroundColor || defaultLighting.backgroundColor;
+    return { ...defaultLighting, backgroundColor };
+  });
 
   const result = (
     <>
