@@ -91,6 +91,13 @@ const createWorkerStore = ( worker ) =>
           //   For edit responses, there should never be a camera.  This all goes for lighting as well.
           console.log( 'CAMERA FROM WORKER' );
           setState( 'scene', 'camera', scene.camera );
+        }
+        if ( scene.lighting ) {
+          // NOTE: if there is a camera in this scene (first load of existing design, or we requested an article scene,
+          //   or we are previewing), it will replace the existing camera, and rendering will reflect it.
+          //   For edit responses, there should never be a camera.  This all goes for lighting as well.
+          console.log( 'LIGHTING FROM WORKER' );
+          console.log( scene.lighting );
           setState( 'scene', 'lighting', scene.lighting );
         }
         setState( 'edit', edit );
@@ -134,6 +141,7 @@ const createWorkerStore = ( worker ) =>
         ));
         const shapes = { ...state.scene.shapes, [ shapeId ]: { ...shape, instances } };
         setState( { scene: { ...state.scene, shapes }, waiting: false } );
+        // TODO lower ambient light if anything is selected
         break;
       }
 
