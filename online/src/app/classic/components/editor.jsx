@@ -13,7 +13,7 @@ import { StrutDragTool } from '../tools/strutdrag.jsx';
 
 export const SceneEditor = ( props ) =>
 {
-  const { getScene } = useWorkerClient();
+  const { state } = useWorkerClient();
   const [ strutting, setStrutting ] = createSignal( false );
 
   document .addEventListener( "keydown", evt => {
@@ -43,7 +43,7 @@ export const SceneEditor = ( props ) =>
   return (
     <div style={{ position: 'relative', display: 'flex', overflow: 'hidden', height: '100%' }}>
       <InteractionToolProvider>
-        <SceneCanvas height="100%" width="100%" scene={getScene()} >
+        <SceneCanvas height="100%" width="100%" scene={state.scene} >
           {/* The group is only necessary because of https://github.com/solidjs-community/solid-three/issues/11 */}
           <group>
             <Switch fallback={
