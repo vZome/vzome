@@ -1,8 +1,8 @@
 
-import { Show, For } from 'solid-js';
+import { Show, For, createEffect, createSignal } from 'solid-js';
 import Stack from "@suid/material/Stack"
 import Button from "@suid/material/Button"
-import Checkbox from "@suid/material/Checkbox";
+import Switch from "@suid/material/Switch";
 import FormControlLabel from "@suid/material/FormControlLabel";
 import InputLabel from "@suid/material/InputLabel";
 
@@ -42,11 +42,28 @@ export const OrbitDot = props =>
 
 export const OrbitPanel = props =>
 {
-  const oneAtATime = () => controllerProperty( props.controller, 'oneAtATime', 'orbits', false );
+  const oneAtATime = () => {
+    const value = controllerProperty( props.controller, 'oneAtATime', 'orbits', false );
+    return ( value !== undefined ) && value; // can't start out undefined, or the Switch will be uncontrolled
+  }
+  // This is dumb.  The oneAtATime signal should be enough, but somehow the Switch won't work
+  //  correctly with it, so we have to manage a copy of the boolean state here.
+  //  In theory, it could get out of sync.
+  const [ checked, setChecked ] = createSignal( oneAtATime() );
+
+  createEffect( () => {
+    console.log( 'oneAtATime', oneAtATime() );
+  })
 
   const selectNone = () => controllerAction( props.controller, 'setNoDirections' );
-  const selectAll = () => controllerAction( props.controller, 'setAllDirections' );
-  const singleAction = () => controllerAction( props.controller, 'oneAtATime' );
+  const selectAll = () => {
+    controllerAction( props.controller, 'setAllDirections' );
+    setChecked( false );
+  }
+  const singleAction = (evt,value) => {
+    controllerAction( props.controller, `setSingleOrbit.${value}` );
+    setChecked( value );
+  }
 
   const marginedStyle = { margin: '8px' }
   const relativeHeight = 0.6;
@@ -59,12 +76,12 @@ export const OrbitPanel = props =>
       <Stack spacing={2} direction="row">
         <Button variant="outlined" style={marginedStyle} onClick={ selectNone } >None</Button>
         <Button variant="outlined" style={marginedStyle} onClick={ selectAll } >All</Button>
-        {/* <Show when={props.lastSelected}>
-          <FormControlLabel style={marginedStyle}
-            control={<Checkbox checked={oneAtATime()} color="primary" onChange={ singleAction } />}
-            label="Single"
-          />
-        </Show> */}
+        <Show when={props.lastSelected}>
+          <FormControlLabel style={marginedStyle} label="single"
+            control={
+            <Switch checked={checked()} onChange={ singleAction } size='small' inputProps={{ "aria-label": "controlled" }} />
+          }/>
+        </Show>
       </Stack>
       <div style={{ position: 'relative', 'background-color': 'white' }}>
         <svg viewBox={viewBox} stroke="black" stroke-width={0.005} >
