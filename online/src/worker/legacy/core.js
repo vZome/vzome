@@ -470,9 +470,9 @@ const makeFloatMatrices = ( matrices ) =>
     }
     setSymmetrySystem( symmPer.getName() ); // updates orbitSource in editor and renderedModel
 
-    const getSymmetrySystem = () =>
+    const getSymmetrySystem = (name) =>
     {
-      return editor .getSymmetrySystem();
+      return editor .getSymmetrySystem( name? name : undefined );
     }
 
     const format = namespace && vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )

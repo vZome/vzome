@@ -3,17 +3,19 @@ import { createSignal } from "solid-js";
 
 import IconButton from '@suid/material/IconButton'
 import SettingsIcon from '@suid/icons-material/Settings'
-// import Menu from '@suid/material/Menu';
-// import MenuItem from '@suid/material/MenuItem';
+import Menu from '@suid/material/Menu';
+import MenuItem from '@suid/material/MenuItem';
 
 import { StrutLengthPanel } from './length.jsx';
 import { OrbitPanel } from './orbitpanel.jsx';
-import { controllerProperty, subController } from '../../../workerClient/controllers-solid.js';
+import { controllerAction, controllerProperty, subController } from '../../../workerClient/controllers-solid.js';
+import { useSymmetry } from "../classic.jsx";
 
-export const StrutBuildPanel = props =>
+export const StrutBuildPanel = () =>
 {
-  const availableOrbits = () => subController( props.symmController, 'availableOrbits' );
-  const buildOrbits = () => subController( props.symmController, 'buildOrbits' );
+  const { showOrbitsDialog, symmetryController } = useSymmetry();
+  const availableOrbits = () => subController( symmetryController(), 'availableOrbits' );
+  const buildOrbits = () => subController( symmetryController(), 'buildOrbits' );
   const orbits = () => controllerProperty( availableOrbits(), 'orbits', 'orbits', true );
 
   const setOrbitNames = key => controllerAction( availableOrbits(), key );
@@ -21,10 +23,16 @@ export const StrutBuildPanel = props =>
   const lastSelected = () => controllerProperty( buildOrbits(), 'selectedOrbit', 'orbits', false );
 
   const [ anchorEl, setAnchorEl ] = createSignal( null );
-  const revealSettings = evt => setAnchorEl( evt.currentTarget );
+  const revealSettings = evt => {
+    setAnchorEl( evt.currentTarget );
+  }
   const setAvailableOrbits = action => () => {
     setAnchorEl( null );
     setOrbitNames( action );
+  }
+  const showConfiguration = evt => {
+    setAnchorEl( null );
+    showOrbitsDialog();
   }
 
   return(
@@ -36,17 +44,17 @@ export const StrutBuildPanel = props =>
             onClick={revealSettings} >
           <SettingsIcon fontSize='medium'/>
         </IconButton>
-        {/* <Menu
+        <Menu
           id="orbit-settings-menu"
           anchorEl={anchorEl()}
-          keepMounted
           open={Boolean(anchorEl())}
           onClose={ () => setAnchorEl( null ) }
         >
           <MenuItem onClick={ setAvailableOrbits( 'rZomeOrbits' ) }>real Zome</MenuItem>
           <MenuItem onClick={ setAvailableOrbits( 'predefinedOrbits' ) }>predefined</MenuItem>
           <MenuItem onClick={ setAvailableOrbits( 'setAllDirections' ) }>all</MenuItem>
-        </Menu> */}
+          <MenuItem onClick={ showConfiguration }>configure...</MenuItem>
+        </Menu>
       </OrbitPanel>
       <StrutLengthPanel controller={buildOrbits()} />
     </div>

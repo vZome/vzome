@@ -5,8 +5,8 @@ import Divider from "@suid/material/Divider";
 import { createSignal } from "solid-js";
 
 import { createMenuAction } from "../components/menuaction.jsx";
-import { subController } from "../../../workerClient/controllers-solid.js";
 import { useWorkerClient } from "../../../workerClient/index.js";
+import { createSymmetryAction } from "../classic.jsx";
 
 export const ToolsMenu = () =>
 {
@@ -16,9 +16,7 @@ export const ToolsMenu = () =>
 
   const { rootController } = useWorkerClient();
   const EditAction = createMenuAction( rootController(), doClose );
-  const buildController = () => subController( rootController(), 'strutBuilder' );
-  const symmetryController = () => subController( buildController(), 'symmetry' );
-  const SymmetryAction = createMenuAction( symmetryController(), doClose );
+  const SymmetryAction = createSymmetryAction( doClose );
 
   return (
     <div>
