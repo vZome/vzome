@@ -7,8 +7,7 @@ import { createSignal } from 'solid-js';
 import { createMenuAction, MenuAction } from "../components/menuaction.jsx";
 import { controllerProperty, subController } from "../../../workerClient/controllers-solid.js";
 import { useWorkerClient } from "../../../workerClient/index.js";
-import { ShapesDialog } from "../components/shapes.jsx";
-import { OrbitsDialog } from "../components/orbits.jsx";
+import { useSymmetry } from "../classic.jsx";
 
 export const SystemMenu = () =>
 {
@@ -17,24 +16,22 @@ export const SystemMenu = () =>
   const open = () => Boolean( anchorEl() );
   const doClose = () => setAnchorEl( null );
 
-  const [ showShapesDialog, setShowShapesDialog ] = createSignal( false );
+  const { showOrbitsDialog, showShapesDialog } = useSymmetry();
+
   const openShapesDialog = () =>
   {
-    setShowShapesDialog( true );
+    showShapesDialog();
     doClose();
   }
-  const [ showOrbitsDialog, setShowOrbitsDialog ] = createSignal( false );
   const openOrbitsDialog = () =>
   {
-    setShowOrbitsDialog( true );
+    showOrbitsDialog();
     doClose();
   }
 
   const symmetries = () => controllerProperty( rootController(), 'symmetryPerspectives', 'symmetryPerspectives', true );
   const hasIcosa = () => symmetries() .includes( 'icosahedral' );
-  const currentSymm = () => controllerProperty( rootController(), 'symmetry' );
-  const strutBuilder = () => subController( rootController(), 'strutBuilder' );
-  const symmController = () => subController( strutBuilder(), `symmetry.${currentSymm()}` );
+  const currentSymm = () => controllerProperty( rootController(), 'symmetry' ); // TODO move to useSymmetry?
 
   const EditAction = createMenuAction( rootController(), doClose );
 
@@ -66,9 +63,6 @@ export const SystemMenu = () =>
         <EditAction label="Show Panel Normals" action="toggleNormals" disabled="true" />
 
       </Menu>
-
-      <ShapesDialog controller={symmController()} open={showShapesDialog()} close={ ()=>setShowShapesDialog(false) } />
-      <OrbitsDialog controller={symmController()} open={showOrbitsDialog()} close={ ()=>setShowOrbitsDialog(false) } />
     </div>
   );
 }
