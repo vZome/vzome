@@ -1395,26 +1395,10 @@ public class DocumentController extends DefaultGraphicsController implements Sce
             return this .symmetries .keySet() .toArray( new String[]{} );
 
         case "field.irrationals":
-        {
-            AlgebraicField field = this .documentModel .getField();
-            int len = field .getNumIrrationals();
-            String[] result = new String[ len ];
-            for ( int i = 0; i < result.length; i++ ) {
-                result[ i ] = field .getIrrational( i+1 );
-            }
-            return result;
-        }
+            return AlgebraicField .getIrrationals( this.documentModel .getField() );
 
         case "field.multipliers":
-        {
-            AlgebraicField field = this .documentModel .getField();
-            int len = field. getNumMultipliers();
-            String[] result = new String[ len ];
-            for ( int i = 0; i < result.length; i++ ) {
-                result[ i ] = field .getIrrational( i+1 );
-            }
-            return result;
-        }
+            return AlgebraicField .getMultipliers( this.documentModel .getField() );
 
         default:
             return super.getCommandList( listName );

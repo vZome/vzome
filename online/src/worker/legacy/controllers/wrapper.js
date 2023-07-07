@@ -92,6 +92,13 @@ class ControllerWrapper{
     }
   }
 
+  setProperty( controllerPath, name, value )
+  {
+    const controllerNames = controllerPath ? controllerPath.split(':') : [];
+    const wrapper = this.getSubControllerByNames(controllerNames);
+    wrapper.controller.setProperty( name, value );
+  }
+
   doAction(controllerPath, action, parameters = {}) {
     const controllerNames = controllerPath ? controllerPath.split(':') : [];
     const wrapper = this.getSubControllerByNames(controllerNames);

@@ -2,7 +2,7 @@
 import { createEffect } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 
-import { initialState, newDesign, requestControllerProperty, doControllerAction } from './actions.js';
+import { initialState, newDesign, requestControllerProperty, doControllerAction, setControllerProperty } from './actions.js';
 
 const createWorkerStore = ( worker ) =>
 {
@@ -229,7 +229,12 @@ const controllerProperty = ( controller, propName, changeName=propName, isList=f
 const controllerAction = ( controller, action, parameters ) =>
 {
   const controllerPath = controller.__path .join( ':' );
-  controller.__store.postMessage( doControllerAction( controllerPath, action, parameters ) );
+  if ( action === 'setProperty' ) {
+    const { name, value } = parameters;
+    controller.__store.postMessage( setControllerProperty( controllerPath, name, value ) );
+  }
+  else
+    controller.__store.postMessage( doControllerAction( controllerPath, action, parameters ) );
 }
 
 const controllerExportAction = ( controller, format, parameters={} ) =>

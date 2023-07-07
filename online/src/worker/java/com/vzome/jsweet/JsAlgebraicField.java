@@ -487,6 +487,18 @@ public class JsAlgebraicField implements AlgebraicField
         return createAlgebraicNumber( ones, phis, div, 0 );
     }
 
+    @Override
+    public String getIrrational(int i, int format)
+    {
+        return "𝜙";  // TODO fix this!
+    }
+
+    @Override
+    public String getIrrational(int which)
+    {
+        return this.getIrrational( which, 0 );
+    }
+
     
     
     
@@ -502,18 +514,6 @@ public class JsAlgebraicField implements AlgebraicField
     int[] scaleBy( int[] factors, int whichIrrational )
     {
         throw new RuntimeException( "unimplemented JsAlgebraicField.scaleBy" );
-    }
-
-    @Override
-    public String getIrrational(int i, int format)
-    {
-        throw new RuntimeException( "unimplemented JsAlgebraicField.getIrrational" );
-    }
-
-    @Override
-    public String getIrrational(int which)
-    {
-        throw new RuntimeException( "unimplemented JsAlgebraicField.getIrrational" );
     }
 
     @Override
