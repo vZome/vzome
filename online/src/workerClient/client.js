@@ -13,11 +13,6 @@ export const createWorker = () =>
 
   const sendToWorker = event =>
   {
-    if ( navigator.userAgent.indexOf( "Firefox" ) > -1 ) {
-        console.log( "The worker is not available in Firefox" );
-        onWorkerError( 'Module workers are not yet supported in Firefox.  Please try another browser.' );
-    }
-    else {
       workerPromise.then( worker => {
         // console.log( `Message sending to worker: ${JSON.stringify( event, null, 2 )}` );
         worker .postMessage( event );  // send them all, let the worker filter them out
@@ -25,9 +20,8 @@ export const createWorker = () =>
       .catch( error => {
         console.log( error );
         console.log( "The worker is not available" );
-        onWorkerError( 'The worker is not available.  Module workers are supported in newer versions of most browsers.  Please update your browser.' );
+        onWorkerError( 'The worker is not available.  Module workers are supported in the latest versions of most browsers.  Please update your browser.' );
       } );
-    }
   }
 
   const subscribers = [];
