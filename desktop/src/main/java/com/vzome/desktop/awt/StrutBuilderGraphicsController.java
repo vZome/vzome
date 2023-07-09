@@ -33,7 +33,7 @@ public class StrutBuilderGraphicsController extends DefaultGraphicsController im
 
     private final StrutBuilderController parent;
 
-    private LengthCanvasTool mouseLengthTool;
+    private transient LengthCanvasTool mouseLengthTool; // only populated when preview strut drag starts
 
     private PreviewStrut previewStrut;
     
@@ -49,17 +49,15 @@ public class StrutBuilderGraphicsController extends DefaultGraphicsController im
     public void attach( RenderingViewer viewer, RenderingChanges scene )
     {
         this .previewStrut = this.parent .getPreviewStrut();
-        this .mouseLengthTool = new LengthCanvasTool( this .previewStrut .getLengthController() );
         this .previewStrutLength = new MouseToolFilter( new CameraZoomWheel( cameraController ) ) // this filter seems spurious
         {
             @Override
             public void mouseWheelMoved( MouseWheelEvent e )
             {
-                MouseTool lengthWheel = mouseLengthTool .getMouseTool();
-                if ( lengthWheel != null )
+                if ( mouseLengthTool != null )
                 {
                     // scroll to scale the preview strut (when it is rendered)
-                    lengthWheel .mouseWheelMoved( e );
+                    mouseLengthTool .mouseWheelMoved( e );
                     // don't adjustPreviewStrut() here, let the prop change trigger it,
                     // so we don't flicker for every tick of the mousewheel
                 }
@@ -87,6 +85,7 @@ public class StrutBuilderGraphicsController extends DefaultGraphicsController im
                     Point point = (Point) target .getFirstConstruction();
                     Vector3f Z = new Vector3f( 0f, 0f, 1f );
                     cameraController .mapViewToWorld( Z );
+                    mouseLengthTool = new LengthCanvasTool( previewStrut );
                     parent .startRendering( point, new RealVector( Z.x, Z.y, Z.z ) );
                 }
             }
@@ -95,6 +94,7 @@ public class StrutBuilderGraphicsController extends DefaultGraphicsController im
             protected void dragFinished( Manifestation target, boolean b )
             {
                 previewStrut .finishPreview();
+                mouseLengthTool = null;
             }
         } );
 
