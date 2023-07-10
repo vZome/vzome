@@ -166,12 +166,12 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             Boolean lastValue = mOneAtATime;
             String value = action .substring( "setSingleOrbit." .length() );
             mOneAtATime = Boolean.parseBoolean( value );
-            if ( ! mOneAtATime )
-                return;  // no action when releasing the constraint
-            // else, pick one
-            orbits .clear();
-            if ( lastOrbit != null )
-                orbits .add( lastOrbit );
+            if ( mOneAtATime ) {
+                // no action when releasing the constraint, else pick one
+                orbits .clear();
+                if ( lastOrbit != null )
+                    orbits .add( lastOrbit );
+            }
             firePropertyChange( "oneAtATime", lastValue, mOneAtATime );
         }
         else if ( action .startsWith( "enableDirection." ) )

@@ -302,6 +302,18 @@ onmessage = ({ data }) =>
       break;
     }
 
+    case 'PROPERTY_SET':
+    {
+      const { controllerPath, name, value } = payload;
+      try {
+        designController .setProperty( controllerPath, name, value );
+      } catch (error) {
+        console.log( `${action} setProperty error: ${error.message}` );
+        postMessage( { type: 'ALERT_RAISED', payload: `Failed to set property: ${name}` } );
+      }
+      break;
+    }
+
     case 'PROPERTY_REQUESTED':
     {
       const { controllerPath, propName, changeName, isList } = payload;

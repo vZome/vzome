@@ -22,11 +22,17 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
   }
 
   getCommandList(name) {
+    const { symmetrySystems, legacyField } = this.design;
     switch (name) {
 
       case "symmetryPerspectives":
-        const { symmetrySystems } = this.design;
-        return Object.keys(symmetrySystems);
+        return Object.keys( symmetrySystems );
+
+      case "field.irrationals":
+        return com.vzome.core.algebra.AlgebraicField .getIrrationals( legacyField );
+
+      case "field.multipliers":
+        return com.vzome.core.algebra.AlgebraicField .getMultipliers( legacyField );
 
       default:
         console.log("EditorController getCommandList fall through: ", name);

@@ -39,6 +39,7 @@ button:disabled > .toolbar-image {
 .placeholder {
   border: 3px solid lightgray;
   color: gray;
+  background-color: whitesmoke;
 }
 
 .editor-main {
@@ -94,13 +95,15 @@ button:disabled > .toolbar-image {
 
 .scale-slider {
   margin: 9px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: auto;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  width: 4em;
   padding: 12px;
   background-color: whitesmoke;
-  max-height: 80%;
   display: flex;
   justify-content: center;
+  position: relative;
 }
 
 @media ( orientation: portrait ) {
@@ -114,4 +117,11 @@ button:disabled > .toolbar-image {
   .editor-drawer {
     display: none;
   }
+}
+
+#scale-predefs {
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+  margin-block-start: auto;
+  align-content: space-around;
+  display: grid;
 }

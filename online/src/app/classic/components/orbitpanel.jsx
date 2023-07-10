@@ -42,28 +42,11 @@ export const OrbitDot = props =>
 
 export const OrbitPanel = props =>
 {
-  const oneAtATime = () => {
-    const value = controllerProperty( props.controller, 'oneAtATime', 'orbits', false );
-    return ( value !== undefined ) && value; // can't start out undefined, or the Switch will be uncontrolled
-  }
-  // This is dumb.  The oneAtATime signal should be enough, but somehow the Switch won't work
-  //  correctly with it, so we have to manage a copy of the boolean state here.
-  //  In theory, it could get out of sync.
-  const [ checked, setChecked ] = createSignal( oneAtATime() );
-
-  createEffect( () => {
-    console.log( 'oneAtATime', oneAtATime() );
-  })
+  const oneAtATime = () => controllerProperty( props.controller, 'oneAtATime', 'orbits', false ) === 'true';
 
   const selectNone = () => controllerAction( props.controller, 'setNoDirections' );
-  const selectAll = () => {
-    controllerAction( props.controller, 'setAllDirections' );
-    setChecked( false );
-  }
-  const singleAction = (evt,value) => {
-    controllerAction( props.controller, `setSingleOrbit.${value}` );
-    setChecked( value );
-  }
+  const selectAll = () => controllerAction( props.controller, 'setAllDirections' );
+  const singleAction = (evt,value) => controllerAction( props.controller, `setSingleOrbit.${value}` );
 
   const marginedStyle = { margin: '8px' }
   const relativeHeight = 0.6;
@@ -79,7 +62,7 @@ export const OrbitPanel = props =>
         <Show when={props.lastSelected}>
           <FormControlLabel style={marginedStyle} label="single"
             control={
-            <Switch checked={checked()} onChange={ singleAction } size='small' inputProps={{ "aria-label": "controlled" }} />
+            <Switch checked={oneAtATime()} onChange={singleAction} size='small' inputProps={{ "aria-label": "controlled" }} />
           }/>
         </Show>
       </Stack>
