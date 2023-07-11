@@ -2,14 +2,17 @@
 // modified copy from https://github.com/devinxi/vinxi/blob/1514f966d9cdcc2c19e2733a8c7bf03831f7ecf3/packages/solid-drei/src/OrbitControls.tsx
 
 import { createEffect, createMemo, onCleanup } from "solid-js";
-import { Quaternion, Vector3 } from "three";
+import { Vector3 } from "three";
 import { useFrame, useThree } from "solid-three";
 import { TrackballControls as TrackballControlsImpl } from "three-stdlib";
 
 import { useRotation } from "./rotation.jsx";
+import { useInteractionTool } from "./interaction.jsx";
 
 export const TrackballControls = (props) =>
 {
+  const [ tool ] = useInteractionTool();
+  const enabled = () => ( tool === undefined ) || tool().allowTrackball;
   const invalidate = useThree(({ invalidate }) => invalidate);
   const defaultCamera = useThree(({ camera }) => camera);
   const gl = useThree(({ gl }) => gl);
@@ -34,6 +37,10 @@ export const TrackballControls = (props) =>
   useFrame(() => {
     let controls = trackballControls();
     if (controls.enabled) controls.update();
+  });
+
+  createEffect( () => {
+    trackballControls() .enabled = enabled();
   });
 
   const [ lastRotation, publishRotation ] = useRotation();

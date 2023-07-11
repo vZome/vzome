@@ -48,8 +48,6 @@ const toVector = vector3 =>
 
 const LightedCameraControls = (props) =>
 {
-  const [ tool ] = useInteractionTool();
-  const trackball = () => ( tool === undefined ) || tool().allowTrackball;
   const { setState } = useWorkerClient();
   // Here we can useThree, etc., which we could not in LightedTrackballCanvas
 
@@ -101,8 +99,8 @@ const LightedCameraControls = (props) =>
       <PerspectiveCamera fov={fov()} aspect={props.aspect} position={position()} up={props.sceneCamera?.up} >
         <Lighting {...(lights())} />
       </PerspectiveCamera>
-      { trackball() && <TrackballControls onEnd={trackballEnd} rotationOnly={props.rotationOnly}
-          staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={props.sceneCamera?.lookAt} />}
+      <TrackballControls onEnd={trackballEnd} rotationOnly={props.rotationOnly}
+          staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={props.sceneCamera?.lookAt} />
     </>
   );
 
