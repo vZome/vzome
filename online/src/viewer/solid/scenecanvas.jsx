@@ -6,7 +6,7 @@ const SceneCanvas = ( props ) =>
 {
   return (
     <LightedTrackballCanvas sceneCamera={props.scene?.camera} lighting={props.scene?.lighting}
-        height={props.height} width={props.width} >
+        height={props.height} width={props.width} rotationOnly={props.rotationOnly} >
       <Show when={ () => props.scene?.shapes }>
         <ShapedGeometry embedding={props.scene?.embedding} shapes={props.scene?.shapes} />
       </Show>

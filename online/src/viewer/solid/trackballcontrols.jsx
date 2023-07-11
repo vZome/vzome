@@ -2,10 +2,14 @@
 // modified copy from https://github.com/devinxi/vinxi/blob/1514f966d9cdcc2c19e2733a8c7bf03831f7ecf3/packages/solid-drei/src/OrbitControls.tsx
 
 import { createEffect, createMemo, onCleanup } from "solid-js";
+import { Quaternion, Vector3 } from "three";
 import { useFrame, useThree } from "solid-three";
 import { TrackballControls as TrackballControlsImpl } from "three-stdlib";
 
-export const TrackballControls = (props) => {
+import { useRotation } from "./rotation.jsx";
+
+export const TrackballControls = (props) =>
+{
   const invalidate = useThree(({ invalidate }) => invalidate);
   const defaultCamera = useThree(({ camera }) => camera);
   const gl = useThree(({ gl }) => gl);
@@ -21,9 +25,10 @@ export const TrackballControls = (props) => {
     trackballControls().connect(gl().domElement);
   });
 
+  const thisCamera = () => props.camera || defaultCamera();
+
   const trackballControls = createMemo( () => {
-    const camera = props.camera || defaultCamera();
-    return new TrackballControlsImpl( camera, gl().domElement );
+    return new TrackballControlsImpl( thisCamera(), gl().domElement );
   } );
 
   useFrame(() => {
@@ -31,34 +36,56 @@ export const TrackballControls = (props) => {
     if (controls.enabled) controls.update();
   });
 
+  const [ lastRotation, publishRotation ] = useRotation();
+
   createEffect(() => {
+
+    // thisCamera() .vzomeName = props.rotationOnly? 'camera view' : 'main canvas';
 
     const callback = (e) => {
       invalidate();
       props.onChange?.(e);
     };
 
-    // SV: these five added
-    trackballControls().staticMoving = true;
-    trackballControls().zoomSpeed = props.zoomSpeed;
-    trackballControls().rotateSpeed = props.rotateSpeed;
-    trackballControls().panSpeed = props.panSpeed;
+    const controls = trackballControls();
+
+    controls.staticMoving = true;
+    if ( props.rotationOnly ) {
+      controls.noZoom = true;
+      controls.noPan = true;
+    } else {
+      controls.zoomSpeed = props.zoomSpeed;
+      controls.panSpeed = props.panSpeed;
+    }
+    controls.rotateSpeed = props.rotateSpeed;
     const [ x, y, z ] = props.target;
-    trackballControls().target.set( x, y, z );
+    controls.target.set( x, y, z );
 
-    trackballControls().connect(gl().domElement);
-    trackballControls().addEventListener("change", callback);
+    controls.connect(gl().domElement);
+    // controls.addEventListener("change", callback);
 
-    if (props.onStart) trackballControls().addEventListener("start", props.onStart);
-    if (props.onEnd) trackballControls().addEventListener("end", props.onEnd);
+    controls.addEventListener( 'change', (evt) => {
+      if ( ! publishRotation ) return;
+      // filter out pan and zoom changes
+      // HACK! Assumes knowledge of TrackballControls internals
+      if ( controls._state !== 0 && controls._state !== 3 ) // ROTATE, TOUCH_ROTATE
+        return;
+      // TODO: publish absolute values rather than changes
+      const { _lastAxis, _lastAngle } = controls; // the rotation change
+      // console.log( `${thisCamera().vzomeName} publishing rotation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%` );
+      publishRotation( thisCamera().quaternion, thisCamera() );
+    } );
+
+    if (props.onStart) controls.addEventListener("start", props.onStart);
+    if (props.onEnd) controls.addEventListener("end", props.onEnd);
 
     onCleanup(() => {
-      trackballControls().removeEventListener("change", callback);
+      controls.removeEventListener("change", callback);
       if (props.onStart)
-        trackballControls().removeEventListener("start", props.onStart);
+      controls.removeEventListener("start", props.onStart);
       if (props.onEnd)
-        trackballControls().removeEventListener("end", props.onEnd);
-      trackballControls().dispose();
+      controls.removeEventListener("end", props.onEnd);
+      controls.dispose();
     });
   });
 
@@ -67,6 +94,25 @@ export const TrackballControls = (props) => {
       const old = get()().controls;
       set()({ controls: trackballControls() });
       onCleanup(() => set()({ controls: old }));
+    }
+  });
+
+  const _eye = new Vector3(), _up = new Vector3(), _target = new Vector3();
+  createEffect( () => {
+    if ( ! lastRotation ) return;
+    let { quaternion, sourceCamera } = lastRotation();
+    const camera = thisCamera();
+    if ( sourceCamera && sourceCamera !== camera ) {
+      // console.log( `${camera.vzomeName} receiving rotation from ${sourceCamera.vzomeName}` );
+      // Mimic the logic of TrackballControls.update() with rotate(), but for an absolute quaternion
+      _target.set( ...props.target );
+      _eye.copy( camera.position ).sub( _target );
+      const len = _eye.length();
+      _eye .set( 0, 0, 1 ) .applyQuaternion( quaternion ) .multiplyScalar( len );
+      _up .set( 0, 1, 0 ) .applyQuaternion( quaternion );
+      camera.up.copy( _up );
+      camera.position.addVectors( _target, _eye );
+      camera.lookAt( _target );
     }
   });
 

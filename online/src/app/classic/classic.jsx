@@ -11,6 +11,7 @@ import { ErrorAlert } from '../../viewer/solid/alert.jsx';
 import { OrbitsDialog } from "./components/orbits.jsx";
 import { ShapesDialog } from "./components/shapes.jsx";
 import { MenuAction } from "./components/menuaction.jsx";
+import { RotationProvider } from "../../viewer/solid/rotation.jsx";
 
 export const ClassicEditor = ( props ) =>
 {
@@ -21,6 +22,7 @@ export const ClassicEditor = ( props ) =>
   const toolsController    = () => subController( strutBuilder(), 'tools' );
 
   return (
+    <RotationProvider>
     <div id='classic' style={{ display: 'grid', 'grid-template-rows': '1fr' }} class='whitesmoke-bkgd'>
       <div id='editor-main' class='grid-cols-1-min whitesmoke-bkgd' >
 
@@ -47,6 +49,7 @@ export const ClassicEditor = ( props ) =>
       </div>
       <ErrorAlert/>
     </div>
+    </RotationProvider>
   )
 }
 

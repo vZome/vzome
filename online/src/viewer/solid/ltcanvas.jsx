@@ -1,7 +1,7 @@
 
 import { useFrame, Canvas } from "solid-three";
-import { Color } from "three";
-import { createMemo, createRenderEffect, onMount } from "solid-js";
+import { Color, Quaternion, Vector3 } from "three";
+import { createEffect, createMemo, createRenderEffect, onMount } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
 import { PerspectiveCamera } from "./perspectivecamera.jsx";
@@ -101,7 +101,8 @@ const LightedCameraControls = (props) =>
       <PerspectiveCamera fov={fov()} aspect={props.aspect} position={position()} up={props.sceneCamera?.up} >
         <Lighting {...(lights())} />
       </PerspectiveCamera>
-      {trackball() && <TrackballControls onEnd={trackballEnd} staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={props.sceneCamera?.lookAt} />}
+      { trackball() && <TrackballControls onEnd={trackballEnd} rotationOnly={props.rotationOnly}
+          staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={props.sceneCamera?.lookAt} />}
     </>
   );
 
@@ -154,7 +155,7 @@ export const LightedTrackballCanvas = ( props ) =>
     <Canvas id='lighted-canvas' dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }}
         height={props.height ?? "100vh"} width={props.width ?? "100vw"}
         frameloop="always" onPointerMissed={handlePointerMissed} >
-      <LightedCameraControls lighting={props.lighting} aspect={aspect()}
+      <LightedCameraControls lighting={props.lighting} aspect={aspect()} rotationOnly={props.rotationOnly}
         sceneCamera={props.sceneCamera} />
       {props.children}
     </Canvas>;

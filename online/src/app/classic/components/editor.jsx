@@ -43,7 +43,7 @@ export const SceneEditor = ( props ) =>
   return (
     <div style={{ position: 'relative', display: 'flex', overflow: 'hidden', height: '100%' }}>
       <InteractionToolProvider>
-        <SceneCanvas height="100%" width="100%" scene={state.scene} >
+        <SceneCanvas height="100%" width="100%" scene={state.scene} rotationOnly={false} >
           {/* The group is only necessary because of https://github.com/solidjs-community/solid-three/issues/11 */}
           <group>
             <Switch fallback={
