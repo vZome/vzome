@@ -23,8 +23,6 @@ if echo $name | grep 'vZome-Windows-'; then
 
   curl --fail-with-body $url > $name.zip || exit $?
 
-  exit 0
-
   suffix=$( echo "$name" | awk -F- '{print $3}' )
   version=$( echo $suffix | awk -F. 'OFS="." {print $1,$2}' )
   build=$( echo $suffix | awk -F. '{print $3}' )
