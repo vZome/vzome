@@ -630,7 +630,7 @@ const makeFloatMatrices = ( matrices ) =>
       return root;
     }
 
-    return { interpretEdit, configureAndPerformEdit, batchRender, serializeToDom, setSymmetrySystem, getSymmetrySystem,
+    return { interpretEdit, configureAndPerformEdit, batchRender, serializeToDom, setSymmetrySystem, getSymmetrySystem, editor,
       field, legacyField, renderedModel, orbitSource, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };
   }
 

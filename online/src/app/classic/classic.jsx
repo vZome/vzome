@@ -12,6 +12,7 @@ import { OrbitsDialog } from "./components/orbits.jsx";
 import { ShapesDialog } from "./components/shapes.jsx";
 import { MenuAction } from "./components/menuaction.jsx";
 import { RotationProvider } from "../../viewer/solid/rotation.jsx";
+import { PolytopesDialog } from "./components/polytopes.jsx";
 
 export const ClassicEditor = ( props ) =>
 {
@@ -64,10 +65,12 @@ export const SymmetryProvider = (props) =>
 
   const [ showShapesDialog, setShowShapesDialog ] = createSignal( false );
   const [ showOrbitsDialog, setShowOrbitsDialog ] = createSignal( false );
+  const [ showPolytopesDialog, setShowPolytopesDialog ] = createSignal( false );
   const api = {
     symmetryController: () => symmController(),
     showShapesDialog: () => setShowShapesDialog( true ),
     showOrbitsDialog: () => setShowOrbitsDialog( true ),
+    showPolytopesDialog: () => setShowPolytopesDialog( true ),
   };
 
   return (
@@ -78,6 +81,8 @@ export const SymmetryProvider = (props) =>
       <ShapesDialog controller={symmController()} open={showShapesDialog()} close={ ()=>setShowShapesDialog(false) } />
 
       <OrbitsDialog controller={symmController()} open={showOrbitsDialog()} close={ ()=>setShowOrbitsDialog(false) } />
+
+      <PolytopesDialog controller={symmController()} open={showPolytopesDialog()} close={ ()=>setShowPolytopesDialog(false) } />
 
     </SymmetryContext.Provider>
   );
