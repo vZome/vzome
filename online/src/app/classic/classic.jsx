@@ -70,7 +70,10 @@ export const SymmetryProvider = (props) =>
     symmetryController: () => symmController(),
     showShapesDialog: () => setShowShapesDialog( true ),
     showOrbitsDialog: () => setShowOrbitsDialog( true ),
-    showPolytopesDialog: () => setShowPolytopesDialog( true ),
+    showPolytopesDialog: () => {
+      controllerAction( subController( symmController(), 'polytopes' ), 'setQuaternion' );
+      setShowPolytopesDialog( true );
+    },
   };
 
   return (
