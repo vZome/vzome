@@ -4,9 +4,9 @@ import Menu from "@suid/material/Menu"
 import Divider from "@suid/material/Divider";
 import { createSignal } from "solid-js";
 
-import { createMenuAction } from "../components/menuaction.jsx";
+import { MenuAction, createMenuAction } from "../components/menuaction.jsx";
 import { useWorkerClient } from "../../../workerClient/index.js";
-import { createSymmetryAction } from "../classic.jsx";
+import { createSymmetryAction, useSymmetry } from "../classic.jsx";
 
 export const ToolsMenu = () =>
 {
@@ -17,6 +17,13 @@ export const ToolsMenu = () =>
   const { rootController } = useWorkerClient();
   const EditAction = createMenuAction( rootController(), doClose );
   const SymmetryAction = createSymmetryAction( doClose );
+  const { showPolytopesDialog } = useSymmetry();
+
+  const openPolytopes = () =>
+  {
+    doClose();
+    showPolytopesDialog();
+  }
 
   return (
     <div>
@@ -41,7 +48,7 @@ export const ToolsMenu = () =>
 
         <Divider />
         
-        <SymmetryAction label="Generate Polytope..." action="showPolytopesDialog" mods="⌥⌘" key="P" disabled={true} />
+        <MenuAction label="Generate Polytope..." onClick={ openPolytopes } mods="⌥⌘" key="P" />
 
         <Divider />
         

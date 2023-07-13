@@ -140,7 +140,7 @@ class ControllerWrapper{
 }
 
 export const createControllers = (design, renderHistory, clientEvents) => {
-  const { orbitSource, renderedModel, toolsModel, bookmarkFactory, history, symmetrySystems, legacyField, editContext } = design;
+  const { orbitSource, renderedModel, toolsModel, bookmarkFactory, history, symmetrySystems, legacyField, editor, editContext } = design;
 
   const controller = new EditorController(design, clientEvents); // this is the equivalent of DocumentController
   controller.setErrorChannel({
@@ -163,11 +163,17 @@ export const createControllers = (design, renderHistory, clientEvents) => {
   const buildPlaneController = new BuildPlaneController(renderedModel, orbitSource);
   controller.addSubController('buildPlane', buildPlaneController);
 
+  const polytopesController = new com.vzome.desktop.controller.PolytopesController( editor, editContext );
+  controller.addSubController('polytopes', polytopesController);
+
   const undoRedoController = new com.vzome.desktop.controller.UndoRedoController(history);
   controller.addSubController('undoRedo', undoRedoController);
 
   const bookmarkController = new com.vzome.desktop.controller.ToolFactoryController(bookmarkFactory);
   controller.addSubController('bookmark', bookmarkController);
+
+  const quaternionController = new com.vzome.desktop.controller.VectorController( legacyField .basisVector( 4, com.vzome.core.algebra.AlgebraicVector.W4 ) );
+  controller .addSubController( "quaternion", quaternionController );
 
   const strutBuilder = new com.vzome.desktop.controller.StrutBuilderController( editContext, legacyField )
     .withGraphicalViews( true )   // TODO use preset
