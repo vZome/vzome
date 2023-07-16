@@ -67,6 +67,7 @@ export const SymmetryProvider = (props) =>
   const [ showOrbitsDialog, setShowOrbitsDialog ] = createSignal( false );
   const [ showPolytopesDialog, setShowPolytopesDialog ] = createSignal( false );
   const api = {
+    symmetryDefined: () => !!symmetry(),
     symmetryController: () => symmController(),
     showShapesDialog: () => setShowShapesDialog( true ),
     showOrbitsDialog: () => setShowOrbitsDialog( true ),
@@ -81,11 +82,13 @@ export const SymmetryProvider = (props) =>
 
       {props.children}
 
-      <ShapesDialog controller={symmController()} open={showShapesDialog()} close={ ()=>setShowShapesDialog(false) } />
+      <Show when={!!symmetry()}>
+        <ShapesDialog controller={symmController()} open={showShapesDialog()} close={ ()=>setShowShapesDialog(false) } />
 
-      <OrbitsDialog controller={symmController()} open={showOrbitsDialog()} close={ ()=>setShowOrbitsDialog(false) } />
+        <OrbitsDialog controller={symmController()} open={showOrbitsDialog()} close={ ()=>setShowOrbitsDialog(false) } />
 
-      <PolytopesDialog controller={symmController()} open={showPolytopesDialog()} close={ ()=>setShowPolytopesDialog(false) } />
+        <PolytopesDialog controller={symmController()} open={showPolytopesDialog()} close={ ()=>setShowPolytopesDialog(false) } />
+      </Show>
 
     </SymmetryContext.Provider>
   );

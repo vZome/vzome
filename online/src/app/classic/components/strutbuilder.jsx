@@ -1,5 +1,5 @@
 
-import { createSignal } from "solid-js";
+import { Show, createSignal } from "solid-js";
 
 import IconButton from '@suid/material/IconButton'
 import SettingsIcon from '@suid/icons-material/Settings'
@@ -13,7 +13,7 @@ import { useSymmetry } from "../classic.jsx";
 
 export const StrutBuildPanel = () =>
 {
-  const { showOrbitsDialog, symmetryController } = useSymmetry();
+  const { showOrbitsDialog, symmetryController, symmetryDefined } = useSymmetry();
   const availableOrbits = () => subController( symmetryController(), 'availableOrbits' );
   const buildOrbits = () => subController( symmetryController(), 'buildOrbits' );
   const orbits = () => controllerProperty( availableOrbits(), 'orbits', 'orbits', true );
@@ -37,6 +37,7 @@ export const StrutBuildPanel = () =>
 
   return(
     <div id="build" style={{ display: 'grid', 'grid-template-rows': '1fr min-content', height: '100%' }}>
+      <Show when={symmetryDefined()}>
       <OrbitPanel orbits={orbits()} controller={buildOrbits()} lastSelected={lastSelected()}
           label="build directions" style={{ height: '100%' }} >
         <IconButton color="inherit" aria-label="settings"
@@ -57,6 +58,7 @@ export const StrutBuildPanel = () =>
         </Menu>
       </OrbitPanel>
       <StrutLengthPanel controller={buildOrbits()} />
+      </Show>
     </div>
   );
 }
