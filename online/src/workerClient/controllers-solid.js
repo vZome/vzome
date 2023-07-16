@@ -211,7 +211,8 @@ const subController = ( parent, key ) =>
 
 const controllerProperty = ( controller, propName, changeName=propName, isList=false ) =>
 {
-  if ( ! controller[ propName ] ) {
+  // We don't want this to happen just because the property is already defined but false
+  if ( typeof controller[ propName ] === 'undefined' ) {
     // The property has never been requested, so we have to make the initial request
     const controllerPath = controller.__path .join( ':' );
     createEffect( () => {

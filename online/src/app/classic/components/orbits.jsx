@@ -10,20 +10,22 @@ import { OrbitPanel } from "./orbitpanel.jsx";
 
 const OrbitsDialog = props =>
 {
-  const allOrbits = () => controllerProperty( props.controller, 'orbits', 'orbits', true );
   const availableOrbits = () => subController( props.controller, 'availableOrbits' );
-  const orbits = () => controllerProperty( availableOrbits(), 'orbits', 'orbits', true );
-  const snapOrbits = () => subController( props.controller, 'snapOrbits' );
-  const lastSelected = () => controllerProperty( buildOrbits(), 'selectedOrbit', 'orbits', false );
+  const snapOrbits      = () => subController( props.controller, 'snapOrbits' );
+
+  const allOrbits    = () => controllerProperty( props.controller, 'orbits', 'orbits', true );
+  const orbits       = () => controllerProperty( availableOrbits(), 'orbits', 'orbits', true );
+  const lastAvailable = () => controllerProperty( availableOrbits(), 'selectedOrbit', 'orbits', false );
+  const lastSnap = () => controllerProperty( snapOrbits(), 'selectedOrbit', 'orbits', false );
 
   return (
     <Dialog onClose={ () => props.close() } open={props.open} maxWidth='md' fullWidth='true'>
       <DialogTitle id="orbits-dialog">Direction Configuration</DialogTitle>
       <DialogContent>
         <div style={{ display: 'grid', 'grid-template-columns': '1fr 1fr', 'min-width': '550px' }}>
-          <OrbitPanel orbits={allOrbits()} controller={availableOrbits()} lastSelected={lastSelected()}
+          <OrbitPanel orbits={allOrbits()} controller={availableOrbits()} lastSelected={lastAvailable()}
             label="available directions" style={{ height: '100%' }} />
-          <OrbitPanel orbits={orbits()} controller={snapOrbits()} lastSelected={lastSelected()}
+          <OrbitPanel orbits={orbits()} controller={snapOrbits()} lastSelected={lastSnap()}
             label="snap directions" style={{ height: '100%' }} />
         </div>
       </DialogContent>

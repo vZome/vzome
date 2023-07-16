@@ -15,7 +15,7 @@ import { controllerAction, controllerProperty } from "../../../workerClient/cont
 export const ShapesDialog = props =>
 {
   const styles = () => controllerProperty( props.controller, 'styles', 'styles', true );
-  const currStyle = () => controllerProperty( props.controller, 'renderingStyle', 'renderingStyle', false );
+  const currStyle = () => controllerProperty( props.controller, 'renderingStyle', 'renderingStyle', false ) || '';
 
   const handleChange = event =>{
     controllerAction( props.controller, `setStyle.${event.target.value}` );

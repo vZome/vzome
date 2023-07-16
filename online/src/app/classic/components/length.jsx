@@ -88,7 +88,10 @@ export const StrutLengthPanel = props =>
 
   const [ scale, setScale ] = createSignal(0); // TODO should be realScale()?
   createEffect( () => {
-    setScale( realScale() );
+    if ( orbit() ) {
+      const value = realScale()
+      value && setScale( value );
+    }
   });
 
   const changeScale = (change) => (evt) =>
@@ -125,6 +128,7 @@ export const StrutLengthPanel = props =>
       }} onClick={ predefinedScale( props.scale, props.action ) } >{props.label}</Button>;
 
   return (
+    <Show when={orbit()}>
     <div id='strut-length' class='grid-rows-fr-min' >
       <div id='change-size' class='grid-cols-2-1' >
         <div id='scales-and-slider' class='grid-rows-min-1' style={{ 'background-color': backgroundColor() }}>
@@ -175,5 +179,6 @@ export const StrutLengthPanel = props =>
         <div style={{ 'min-height': '22px', 'margin-left': '1em' }}>=  <span class='bold'>{lengthText()}</span></div>
       </div>
     </div>
+    </Show>
   );
 }

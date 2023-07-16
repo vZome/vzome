@@ -271,6 +271,7 @@ public class SymmetryController extends DefaultController
                 String styleName =  action .substring( "setStyle." .length() );
                 this .symmetrySystem .setStyle( styleName );
                 this .renderedModel .setShapes( this .symmetrySystem .getShapes() );
+                firePropertyChange( "renderingStyle", null, styleName );
             }
             else {
                 boolean handled = this .symmetrySystem .doAction( action );

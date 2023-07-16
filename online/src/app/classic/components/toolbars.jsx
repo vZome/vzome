@@ -31,15 +31,14 @@ const ToolFactoryButton = props =>
 
 export const ToolFactoryBar = props =>
 {
-  const { symmetryController } = useSymmetry();
-  const symmFactoryNames = () => {
-    return controllerProperty( symmetryController(), 'symmetryToolFactories', 'symmetryToolFactories', true );
-  }
+  const { symmetryController, symmetryDefined } = useSymmetry();
+  const symmFactoryNames = () => controllerProperty( symmetryController(), 'symmetryToolFactories', 'symmetryToolFactories', true );
   const transFactoryNames = () => controllerProperty( symmetryController(), 'transformToolFactories', 'transformToolFactories', true );
   const mapFactoryNames = () => controllerProperty( symmetryController(), 'linearMapToolFactories', 'linearMapToolFactories', true );
 
   return (
     <div id='factory-bar' class='toolbar'>
+      <Show when={symmetryDefined()}>
       <For each={symmFactoryNames()}>{ factoryName =>
         <ToolFactoryButton factoryName={factoryName}/>
       }</For>
@@ -51,6 +50,7 @@ export const ToolFactoryBar = props =>
       <For each={mapFactoryNames()}>{ factoryName =>
         <ToolFactoryButton factoryName={factoryName}/>
       }</For>
+      </Show>
     </div>
   )
 }
@@ -73,7 +73,7 @@ const ToolButton = props =>
 
 export const ToolBar = props =>
 {
-  const { symmetryController } = useSymmetry();
+  const { symmetryController, symmetryDefined } = useSymmetry();
   const symmToolNames = () => controllerProperty( symmetryController(), 'builtInSymmetryTools', 'builtInSymmetryTools', true );
   const transToolNames = () => controllerProperty( symmetryController(), 'builtInTransformTools', 'builtInTransformTools', true );
   const customToolNames = () => controllerProperty( props.toolsController, 'customTools', 'customTools', true );
@@ -91,17 +91,19 @@ export const ToolBar = props =>
       <CommandButton ctrlr={props.editorController} cmdName='panel' hoverText='Make a panel polygon'/>
       <CommandButton ctrlr={props.editorController} cmdName='NewCentroid' hoverText='Construct centroid of points'/>
       <ToolbarSpacer/>
-      <For each={symmToolNames()}>{ toolName =>
-        <ToolButton controller={subController( props.toolsController, toolName )}/>
-      }</For>
-      <ToolbarSpacer/>
-      <For each={transToolNames()}>{ toolName =>
-        <ToolButton controller={subController( props.toolsController, toolName )}/>
-      }</For>
-      <ToolbarSpacer/>
-      <For each={customToolNames()}>{ toolName =>
-        <ToolButton controller={subController( props.toolsController, toolName )}/>
-      }</For>
+      <Show when={symmetryDefined()}>
+        <For each={symmToolNames()}>{ toolName =>
+          <ToolButton controller={subController( props.toolsController, toolName )}/>
+        }</For>
+        <ToolbarSpacer/>
+        <For each={transToolNames()}>{ toolName =>
+          <ToolButton controller={subController( props.toolsController, toolName )}/>
+        }</For>
+        <ToolbarSpacer/>
+        <For each={customToolNames()}>{ toolName =>
+          <ToolButton controller={subController( props.toolsController, toolName )}/>
+        }</For>
+      </Show>
     </div>
   )
 }
@@ -122,13 +124,15 @@ const BookmarkButton = props =>
 
 export const BookmarkBar = props =>
 {
-  const { symmetryController } = useSymmetry();
+  const { symmetryController, symmetryDefined } = useSymmetry();
   const bookmarkNames = () => controllerProperty( props.toolsController, 'customBookmarks', 'customBookmarks', true );
 
   return (
     <div id='tools-bar' class='toolbar-vert'>
-      <ToolbarSpacer/>
-      <ToolFactoryButton factoryName='bookmark' controller={symmetryController()}/>
+      <Show when={symmetryDefined()}>
+        <ToolbarSpacer/>
+        <ToolFactoryButton factoryName='bookmark' controller={symmetryController()}/>
+      </Show>
       <ToolbarSpacer/>
       <BookmarkButton controller={subController( props.toolsController, 'bookmark.builtin/ball at origin' )}/>
       <For each={bookmarkNames()}>{ toolName =>
