@@ -10,6 +10,26 @@ let scenes;
 let snapshots;
 let previewShapes;
 
+export const getSceneIndex = ( title, list ) =>
+{
+  let index;
+  if ( title.startsWith( '#' ) ) {
+    const indexStr = title.substring( 1 );
+    index = parseInt( indexStr );
+    if ( isNaN( index ) || index < 0 || index > list.length ) {
+      console.log( `WARNING: ${index} is not a scene index` );
+      index = 0;
+    }
+  } else {
+    index = list .map( s => s.title ) .indexOf( title );
+    if ( index < 0 ) {
+      console.log( `WARNING: no scene titled "${title}"` );
+      index = 0;
+    }
+  }
+  return index;
+}
+
 const convertPreviewCamera = camera =>
 {
   const { lookAtPoint, upDirection, lookDirection, viewDistance, width, nearClipDistance, farClipDistance, perspective } = camera
@@ -28,6 +48,10 @@ const convertPreviewCamera = camera =>
 
 const preparePreviewScene = index =>
 {
+  if ( index >= scenes.length ) {
+    console.log( `WARNING: no preview scene index "${index}"` );
+    return {};
+  }
   const { snapshot, view } = scenes[ index ];
   const camera = convertPreviewCamera( view );
   const shapes = {};
@@ -40,7 +64,7 @@ const preparePreviewScene = index =>
   return { shapes, camera };
 }
 
-const convertPreview = preview =>
+const convertPreview = ( preview, sceneTitle ) =>
 {
   const { lights, embedding, orientations, shapes, instances } = preview
   
@@ -78,7 +102,9 @@ const convertPreview = preview =>
   const defaultScene = { title: 'default scene', view: preview.camera, snapshot: defaultSnapshot };
   scenes = preview.scenes? [ defaultScene, ...preview.scenes ] : [ defaultScene ];
 
-  return { lighting, embedding, ...preparePreviewScene( 0 ) };
+  const sceneIndex = getSceneIndex( sceneTitle, scenes );
+
+  return { lighting, embedding, ...preparePreviewScene( sceneIndex ) };
 }
 
 const fetchUrlText = async ( url ) =>
@@ -174,12 +200,12 @@ const getField = name =>
     } );
 }
 
-const loadDesign = ( xmlLoading, report, debug ) =>
+const loadDesign = ( xmlLoading, report, debug, sceneTitle ) =>
 {
   return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
 
     .then( ([ module, xml ]) => {
-      designController = module .loadDesign( xml, debug, clientEvents( report ) );
+      designController = module .loadDesign( xml, debug, clientEvents( report ), sceneTitle );
       report( { type: 'CONTROLLER_CREATED' } );
     } )
 
@@ -212,7 +238,7 @@ const urlLoader = ( report, event ) =>
     return report( event );
   }
   const { url, config } = event.payload;
-  const { preview=false, debug=false, showScenes=false } = config;
+  const { preview=false, debug=false, showScenes=false, sceneTitle } = config;
   if ( !url ) {
     throw new Error( "No url field in URL_PROVIDED event payload" );
   }
@@ -230,8 +256,8 @@ const urlLoader = ( report, event ) =>
     return fetchUrlText( previewUrl )
       .then( text => JSON.parse( text ) )
       .then( preview => {
-        const scene = convertPreview( preview ); // sets module global scenes as a side-effect
-        if ( showScenes && scenes.length < 2 )
+        const scene = convertPreview( preview, sceneTitle ); // sets module global scenes as a side-effect
+        if ( ( showScenes || sceneTitle ) && scenes.length < 2 )
           // The client expects scenes, but this preview JSON predates the scenes export,
           //  so fall back on XML.
           throw new Error( `No scenes in preview ${previewUrl}` );
@@ -243,11 +269,11 @@ const urlLoader = ( report, event ) =>
       .catch( error => {
         console.log( error.message );
         console.log( 'Preview failed, falling back to vZome XML' );
-        return loadDesign( xmlLoading, report, debug );
+        return loadDesign( xmlLoading, report, debug, sceneTitle );
       } )
   }
   else {
-    return loadDesign( xmlLoading, report, debug );
+    return loadDesign( xmlLoading, report, debug, sceneTitle );
   }
 }
 

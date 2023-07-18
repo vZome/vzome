@@ -48,6 +48,13 @@ const DesignViewer = ( props ) =>
     //  Note that this does NOT help with window resize.
     setFullScreen( v => !v );
   }
+  const showSceneMenu = () =>
+  {
+    const { showScenes, sceneTitle } = props.config;
+    // Only show the menu when the scene is not being controlled explicitly,
+    //  and when more than one scene has been discovered.
+    return (typeof sceneTitle === 'undefined' ) && showScenes && state.scenes && state.scenes[1];
+  }
 
   const showSpinner = () => {
     return props.config?.useSpinner && state.waiting;
@@ -70,7 +77,7 @@ const DesignViewer = ( props ) =>
         <SceneCanvas id='scene-canvas' scene={state.scene} height={props.height} width={props.width} />
       </Show>
 
-      <Show when={props.config?.showScenes && state.scenes && state.scenes[1]}>
+      <Show when={showSceneMenu()}>
         <SceneMenu root={rootRef} />
       </Show>
 
