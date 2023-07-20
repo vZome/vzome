@@ -89,15 +89,12 @@ const createWorkerStore = ( worker ) =>
           // NOTE: if there is a camera in this scene (first load of existing design, or we requested an article scene,
           //   or we are previewing), it will replace the existing camera, and rendering will reflect it.
           //   For edit responses, there should never be a camera.  This all goes for lighting as well.
-          console.log( 'CAMERA FROM WORKER' );
           setState( 'scene', 'camera', scene.camera );
         }
         if ( scene.lighting ) {
           // NOTE: if there is a camera in this scene (first load of existing design, or we requested an article scene,
           //   or we are previewing), it will replace the existing camera, and rendering will reflect it.
           //   For edit responses, there should never be a camera.  This all goes for lighting as well.
-          console.log( 'LIGHTING FROM WORKER' );
-          console.log( scene.lighting );
           setState( 'scene', 'lighting', scene.lighting );
         }
         setState( 'edit', edit );
@@ -162,6 +159,11 @@ const createWorkerStore = ( worker ) =>
           setState.apply( null, [ 'controller', ...prefix, controllerName, { __path } ] );
         }
         setState.apply( null, [ 'controller', ...names, name, value ] );
+        break;
+
+      case 'PLANES_DEFINED':
+      case 'DESIGN_XML_PARSED':
+        // TODO these are not implemented yet!
         break;
     
       default:
