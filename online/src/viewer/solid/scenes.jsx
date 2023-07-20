@@ -14,13 +14,13 @@ export const SceneMenu = (props) =>
 {
   const { state, postMessage } = useWorkerClient();
   const sceneTitles = createMemo( () => state.scenes .map( (scene,index) =>
-    scene.title?.trim() || (( index === 0 )? "default scene" : `scene ${index}`) ) );
+    scene.title?.trim() || (( index === 0 )? "default scene" : `#${index}`) ) );
   const [ sceneTitle, setSceneTitle ] = createSignal( sceneTitles()[0] );
 
   const handleChange = (sceneTitle) =>
   {
     setSceneTitle( sceneTitle );
-    postMessage( selectScene( sceneTitles() .indexOf( sceneTitle ) ) );
+    postMessage( selectScene( sceneTitle ) );
   }
 
   return (
