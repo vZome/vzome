@@ -15,8 +15,13 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
       case "symmetry":
         return this.design.getSymmetrySystem().getName();
 
+      case "single.orbit":
+      case "disable.known.directions":
+        return super.getProperty(name);
+
       default:
-        console.log("EditorController getProperty fall through: ", name);
+        if ( ! name.startsWith( "defaultShapes." ) )
+          console.log("EditorController getProperty fall through: ", name);
         return super.getProperty(name);
     }
   }
