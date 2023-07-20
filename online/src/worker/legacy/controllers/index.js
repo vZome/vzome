@@ -3,8 +3,9 @@ import { documentFactory, parse } from '../core.js'
 import { resolveBuildPlanes } from '../scenes.js';
 import { interpret, RenderHistory, Step } from '../interpreter.js';
 import { createControllers } from './wrapper.js';
+import { getSceneIndex } from '../../vzome-worker-static.js';
 
-export const loadDesign = ( xml, debug, clientEvents ) =>
+export const loadDesign = ( xml, debug, clientEvents, sceneTitle ) =>
 {
   const design = parse( xml );
       
@@ -21,15 +22,27 @@ export const loadDesign = ( xml, debug, clientEvents ) =>
     interpret( Step.DONE, renderHistory, [] );
   } // else in debug mode, we'll interpret incrementally
 
+  let before = false;
+  let sceneEditId = targetEditId;
+  let sceneCamera = camera;
+  if ( sceneTitle ) {
+    const targetScene = getSceneIndex( sceneTitle, scenes );
+    if ( targetScene > 0 ) {
+      sceneEditId = scenes[ targetScene ] .nodeId;
+      sceneCamera = scenes[ targetScene ] .camera;
+      before = true;
+    }
+  }
+
   // TODO: define a better contract for before/after.
   //  Here we are using before=false with targetEditId, which is meant to be the *next*
   //  edit to be executed, so this really should be before=true.
   //  However, the semantics of the HistoryInspector UI require the edit field to contain the "after" edit ID.
   //  Thus, we are too tightly coupled to the UI here!
   //  See also the 'EDIT_SELECTED' case in onmessage(), below.
-  const { shapes, edit } = renderHistory .getScene( debug? '--START--' : targetEditId, false );
+  const { shapes, edit } = renderHistory .getScene( debug? '--START--' : sceneEditId, before );
   const embedding = orbitSource .getEmbedding();
-  const scene = { lighting, camera, embedding, shapes };
+  const scene = { lighting, camera: sceneCamera, embedding, shapes };
   clientEvents .sceneChanged( scene, edit );
 
   const planes = resolveBuildPlanes( orbitSource .buildPlanes );

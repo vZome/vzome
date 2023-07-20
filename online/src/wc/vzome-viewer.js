@@ -26,6 +26,11 @@ export class VZomeViewer extends HTMLElement
       onWorkerMessage: data => {
         switch ( data.type ) {
 
+          case 'SCENES_DISCOVERED':
+            const titles = data.payload .map( (scene,i) => scene.title || `#${i}` );
+            this .dispatchEvent( new CustomEvent( 'vzome-scenes-discovered', { detail: titles } ) );
+            break;
+
           case 'SCENE_RENDERED':
             this .dispatchEvent( new Event( 'vzome-design-rendered' ) );
             break;
@@ -46,6 +51,11 @@ export class VZomeViewer extends HTMLElement
     if ( this.hasAttribute( 'show-scenes' ) ) {
       const showScenes = this.getAttribute( 'show-scenes' ) === 'true';
       this.#config = { ...this.#config, showScenes };
+    }
+
+    if ( this.hasAttribute( 'scene' ) ) {
+      const sceneTitle = this.getAttribute( 'scene' );
+      this.#config = { ...this.#config, sceneTitle };
     }
 
     if ( this.hasAttribute( 'src' ) ) {
@@ -110,6 +120,20 @@ export class VZomeViewer extends HTMLElement
   get src()
   {
     return this.getAttribute("src");
+  }
+
+  set scene( newScene )
+  {
+    if (newScene === null) {
+      this.removeAttribute("scene");
+    } else {
+      this.setAttribute("scene", newScene);
+    }
+  }
+
+  get scene()
+  {
+    return this.getAttribute("scene");
   }
 
   set showScenes( newValue )
