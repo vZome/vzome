@@ -1,7 +1,7 @@
 
 import { vZomeViewerCSS } from "./vzome-viewer.css";
 
-import { fetchDesign, createWorker, createWorkerStore } from '../workerClient/index.js';
+import { fetchDesign, createWorker, createWorkerStore, selectScene } from '../workerClient/index.js';
 
 export class VZomeViewer extends HTMLElement
 {
@@ -83,7 +83,7 @@ export class VZomeViewer extends HTMLElement
 
   static get observedAttributes()
   {
-    return [ "src", "show-scenes" ];
+    return [ "src", "show-scenes", "scene" ];
   }
 
   attributeChangedCallback( attributeName, _oldValue, _newValue )
@@ -98,6 +98,14 @@ export class VZomeViewer extends HTMLElement
       }
       break;
 
+    case "scene":
+      if ( _newValue !== this.#config.sceneTitle ) {
+        this.#config = { ...this.#config, sceneTitle: _newValue };
+        // TODO: control the config prop on the viewer component, so the scenes menu behaves right
+        this.#store.postMessage( selectScene( _newValue ) );
+      }
+      break;
+  
     case "show-scenes":
       const showScenes = _newValue === 'true';
       if ( showScenes !== this.#config.showScenes ) {

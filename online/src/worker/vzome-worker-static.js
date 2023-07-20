@@ -295,7 +295,7 @@ onmessage = ({ data }) =>
       break;
 
     case 'SCENE_SELECTED': {
-      const index = payload;
+      const index = getSceneIndex( payload, scenes );
       const { nodeId, camera } = scenes[ index ];
       let scene;
       if ( nodeId ) { // XML was parsed by the legacy module

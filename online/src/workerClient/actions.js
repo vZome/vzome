@@ -1,7 +1,7 @@
 
 const workerAction = ( type, payload ) => ({ type, payload, meta: 'WORKER' } );
 
-export const selectScene = index => workerAction( 'SCENE_SELECTED', index );
+export const selectScene = title => workerAction( 'SCENE_SELECTED', title );
 
 export const selectEditBefore = nodeId => workerAction( 'EDIT_SELECTED', { before: nodeId } );
 

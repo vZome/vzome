@@ -8,7 +8,12 @@
       import "/modules/vzome-viewer.js"; // registers the custom element
 
       const viewer = document.querySelector( "#vZomeLogo" );
-      viewer .addEventListener( "vzome-scenes-discovered", (e) => console.log( 'Scenes:', JSON.stringify( e.detail ) ) );
+      viewer .addEventListener( "vzome-scenes-discovered", (e) => {
+        setTimeout( () => {
+          console.log( 'Scenes:', JSON.stringify( e.detail ) );
+          viewer.scene = e.detail[ 3 ];
+        }, 3000 )
+      });
 
     </script>
   </head>
