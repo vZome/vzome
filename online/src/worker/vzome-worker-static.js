@@ -12,6 +12,8 @@ let previewShapes;
 
 export const getSceneIndex = ( title, list ) =>
 {
+  if ( !title )
+    return 0;
   let index;
   if ( title.startsWith( '#' ) ) {
     const indexStr = title.substring( 1 );
