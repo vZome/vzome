@@ -2,6 +2,7 @@
 import { vZomeViewerCSS } from "./vzome-viewer.css";
 
 import { fetchDesign, createWorker, createWorkerStore, selectScene } from '../workerClient/index.js';
+import { decodeEntities } from "../workerClient/actions";
 
 export class VZomeViewer extends HTMLElement
 {
@@ -27,7 +28,7 @@ export class VZomeViewer extends HTMLElement
         switch ( data.type ) {
 
           case 'SCENES_DISCOVERED':
-            const titles = data.payload .map( (scene,i) => scene.title || `#${i}` );
+            const titles = data.payload .map( (scene,i) =>  scene.title ? decodeEntities( scene.title ) : `#${i}` );
             this .dispatchEvent( new CustomEvent( 'vzome-scenes-discovered', { detail: titles } ) );
             break;
 

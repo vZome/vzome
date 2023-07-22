@@ -2,7 +2,7 @@
 import { createEffect } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 
-import { initialState, newDesign, requestControllerProperty, doControllerAction, setControllerProperty } from './actions.js';
+import { initialState, newDesign, requestControllerProperty, doControllerAction, setControllerProperty, decodeEntities } from './actions.js';
 
 const createWorkerStore = ( worker ) =>
 {
@@ -77,7 +77,10 @@ const createWorkerStore = ( worker ) =>
       }
 
       case 'SCENES_DISCOVERED': {
-        setState( 'scenes', data.payload );
+        const scenes = data.payload .map( scene => {
+          return { ...scene, title: decodeEntities( scene.title ) }
+        });
+        setState( 'scenes', scenes );
         break;
       }
   

@@ -1,7 +1,27 @@
 
+// This is necessary as long as the worker uses tXml, and they haven't fixed issue 44:
+//   https://github.com/TobiasNickel/tXml/issues/44
+// I'm fixing it here simply because I have access to the DOM, which is not supported in the worker.
+export const decodeEntities = (html) =>
+{
+  var txt = document.createElement("textarea");
+  txt.innerHTML = html;
+  return txt.value;
+}
+export const encodeEntities = (title) =>
+{
+  var text = document.createTextNode(title);
+  var p = document.createElement('p');
+  p.appendChild(text);
+  return p.innerHTML;
+}
+
 const workerAction = ( type, payload ) => ({ type, payload, meta: 'WORKER' } );
 
-export const selectScene = title => workerAction( 'SCENE_SELECTED', title );
+export const selectScene = title => 
+{
+  return workerAction( 'SCENE_SELECTED', encodeEntities( title ) );
+}
 
 export const selectEditBefore = nodeId => workerAction( 'EDIT_SELECTED', { before: nodeId } );
 
