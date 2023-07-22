@@ -32,7 +32,7 @@ web applications you can explore.
 
 ## [Sharing vZome Designs](./sharing.html)
 
-vZome supports sharing designs via GitHub, including generation of simple web pages with embedded interactive 3D views.
+vZome supports sharing designs via GitHub, including generation of simple web pages with embedded interactive 3D views like this:
 
 <script type="module" src="https://www.vzome.com/modules/vzome-viewer.js"></script>
 <figure style="margin: 5%">
@@ -44,6 +44,9 @@ vZome supports sharing designs via GitHub, including generation of simple web pa
     A sample design exported from vZome, displayed using the vzome-viewer custom HTML element
   </figcaption>
 </figure>
+
+Furthermore, the `vzome-viewer` web component used above can be in any HTML page.
+See [these instructions](./web-component.html) to enhance your own web pages with interactive vZome viewers.
 
 ## [vZome Toolbars for Diehards](./toolbars-for-diehards.html)
 
