@@ -33,8 +33,6 @@ public class SelectCoplanar extends SelectByBoundary {
     @Override
     protected String setBoundary() {
         for (Manifestation man : mSelection) {
-        	// any selected manifestation is OK to define pointOnPlane 
-        	pointOnPlane = man.getLocation();
             if (man instanceof Connector) {
                 vectors.add(man.getLocation());
             } else if (man instanceof Strut) {
@@ -58,9 +56,10 @@ public class SelectCoplanar extends SelectByBoundary {
         if (!AlgebraicVectors.areCoplanar(vectors)) {
             return "Selected items are not coplanar.";
         }
+        // All validated. Now just save the values to be used later in boundaryContains()
         for(AlgebraicVector v : vectors) {
         	pointOnPlane = v;
-        	break; // We just need any one of the vectors in the set
+        	break; // We can use any one of the vectors in the set
         }
         normal = AlgebraicVectors.getNormal(vectors);
         return null;
