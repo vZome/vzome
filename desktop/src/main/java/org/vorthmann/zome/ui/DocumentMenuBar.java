@@ -264,6 +264,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu.add(submenu);
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        menu.add( enableIf( isEditor, createMenuItem( "Select Coplanar", ( "SelectCoplanar" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Select Half Space", ( "SelectByPlane" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Select by Diameter", ( "SelectByDiameter" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Select by Radius", ( "SelectByRadius" ) ) ) );
