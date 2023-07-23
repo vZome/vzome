@@ -13,19 +13,19 @@ import com.vzome.core.model.Strut;
 
 public class SelectCoplanar extends SelectByBoundary {
 
-	public SelectCoplanar(EditorModel editor) {
-		super(editor);
-	}
+    public SelectCoplanar(EditorModel editor) {
+        super(editor);
+    }
 
-	@Override
-	public String usage() {
-        return  "Select any combination of connectors, struts or panels which will specify\n" +
-                "3 or more points that are all coplanar, but not simply collinear.\n\n" +
-                "All parts that are completely on the corresponding plane will be selected.\n";
-	}
-	
-	// Some manifestations may share common vectors (e.g. a ball at the end of a strut).
-	// Collect them all in a set to remove duplicates.
+    @Override
+    public String usage() {
+        return "Select any combination of connectors, struts or panels to specify\n"
+                + "3 or more points that are all coplanar, but not simply collinear.\n\n"
+                + "All parts that are completely on the corresponding plane will be selected.\n";
+    }
+
+    // Some manifestations may share common vectors (e.g. a ball at the end of a strut).
+    // Collect them all in a set to remove duplicates.
     protected Set<AlgebraicVector> vectors = new HashSet<>();
     protected AlgebraicVector pointOnPlane = null;
     protected AlgebraicVector normal = null;
@@ -39,12 +39,12 @@ public class SelectCoplanar extends SelectByBoundary {
                 vectors.add(man.getLocation());
                 vectors.add(((Strut) man).getEnd());
             } else if (man instanceof Panel) {
-            	for(AlgebraicVector v : (Panel) man) {
-            		vectors.add(v);	
-            	}                
+                for (AlgebraicVector v : (Panel) man) {
+                    vectors.add(v);
+                }
             } else {
-            	// future-proof... shouldn't ever happen 
-            	throw new IllegalStateException("Unknown manifestation: " + man.getClass().getSimpleName());
+                // future-proof... shouldn't ever happen
+                throw new IllegalStateException("Unknown manifestation: " + man.getClass().getSimpleName());
             }
         }
         if (vectors.size() < 3) {
@@ -57,22 +57,23 @@ public class SelectCoplanar extends SelectByBoundary {
             return "Selected items are not coplanar.";
         }
         // All validated. Now just save the values to be used later in boundaryContains()
-        for(AlgebraicVector v : vectors) {
-        	pointOnPlane = v;
-        	break; // We can use any one of the vectors in the set
+        for (AlgebraicVector v : vectors) {
+            pointOnPlane = v;
+            break; // We can use any one of the vectors in the set
         }
         normal = AlgebraicVectors.getNormal(vectors);
         return null;
     }
 
-	@Override
-	protected boolean boundaryContains(AlgebraicVector v) {
-		return vectors.contains(v) || pointOnPlane.minus(v).dot(normal).isZero();
-	}
+    @Override
+    protected boolean boundaryContains(AlgebraicVector v) {
+        return vectors.contains(v) || pointOnPlane.minus(v).dot(normal).isZero();
+    }
 
     public static final String NAME = "SelectCoplanar";
-	@Override
-	protected String getXmlElementName() {
-		return NAME;
-	}
+
+    @Override
+    protected String getXmlElementName() {
+        return NAME;
+    }
 }
