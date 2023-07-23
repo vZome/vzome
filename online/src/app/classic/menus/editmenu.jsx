@@ -50,6 +50,13 @@ export const EditMenu = () =>
 
         <Divider />
 
+        <EditAction label="Select Coplanar"    action="SelectCoplanar" />
+        <EditAction label="Select Half Space"  action="SelectByPlane" />
+        <EditAction label="Select by Diameter" action="SelectByDiameter" />
+        <EditAction label="Select by Radius"   action="SelectByRadius" />
+
+        <Divider />
+
         <EditAction label="Group"   action="GroupSelection/group" mods="⌘" key="G" />
         <EditAction label="Ungroup" action="GroupSelection/ungroup" mods="⌥⌘" key="G" />
 
