@@ -135,7 +135,8 @@ public class StrutBuilderController extends DefaultController
 
     public void startRendering( Point point, RealVector worldEye )
     {
-        this .previewStrut .startRendering( point, this .workingPlaneAxis, worldEye );
+        AlgebraicVector axis = this.useWorkingPlane? this.workingPlaneAxis : null;
+        this .previewStrut .startRendering( point, axis, worldEye );
     }
 
     public void setSymmetryController( SymmetryController symmetryController )
