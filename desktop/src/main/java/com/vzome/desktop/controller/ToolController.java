@@ -39,6 +39,7 @@ public class ToolController extends DefaultController
 
 		case "selectInputs":
 			this .tool .setInputBehaviors( !selectInputs, deleteInputs );
+            this .firePropertyChange( "selectInputs", null, Boolean .toString( this .tool .isSelectInputs() ) );
 			break;
 
 		case "deleteInputs":
@@ -53,10 +54,12 @@ public class ToolController extends DefaultController
         case "copyColors":
             copyColors = ! copyColors;
             this .tool .setCopyColors( copyColors );
+            this .firePropertyChange( "copyColors", null, Boolean .toString( copyColors ) );
             break;
 
         case "selectOutputs":
             this .selectOutputs = ! this .selectOutputs;
+            this .firePropertyChange( "selectOutputs", null, Boolean .toString( this .selectOutputs ) );
             break;
 
 		case "createOutputs":
