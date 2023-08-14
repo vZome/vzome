@@ -131,7 +131,7 @@ export const StrutLengthPanel = props =>
     <Show when={orbit()}>
     <div id='strut-length' class='grid-rows-fr-min' >
       <div id='change-size' class='grid-cols-2-1' >
-        <div id='scales-and-slider' class='grid-rows-min-1' style={{ 'background-color': backgroundColor() }}>
+        <div id='scales-and-slider' class='grid-rows-min-1' style={{ 'background-color': backgroundColor(), 'border-radius': '5px' }}>
           <ScaleBy/>
           <div id='up-down-slider' class='grid-cols-min-1 orbit-scale'>
             <div id='up-down' class='grid-rows-1-1 pad-4px' >

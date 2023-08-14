@@ -28,12 +28,65 @@ img {
   border-radius: 3px;
 }
 
+.tool-config-icon-label {
+  display: grid;
+  grid-template-columns: min-content 1fr;
+  border: 1px solid darkgray;
+}
+
+.tool-config-button {
+  display: flex;
+  justify-content: center;
+  margin: 0.5em;
+}
+
+.tool-config-checkboxes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 1.5rem;
+}
+
+.tool-config-checkbox-pair {
+  margin: auto;
+  padding: 0.5em;
+  border: 1px solid darkgray;
+  border-radius: 4px;
+  position: relative;
+}
+
+.tool-config-param-label {
+  position: absolute;
+  top: -1rem;
+  background-color: white;
+  padding: 0.4rem;
+  font-size: small;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.tool-config-copy-colors {
+  border-bottom: 1px solid darkgray;
+  padding-block: 0.6rem;
+  display: flex;
+}
+
+.hidden-color-input {
+  max-width: 0px;
+  border-width: 0px;
+  position: relative;
+  left: -1rem;
+  z-index: -1;
+}
+
 button:disabled > .toolbar-image {
   filter: saturate(0.1) brightness(2) grayscale(0.9) contrast(0.15);
 }
 
 .toolbar-image:active {
   filter: brightness(0.5);
+}
+
+#change-size {
+  border-top: 1px solid darkgray;
 }
 
 .placeholder {

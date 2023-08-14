@@ -19,7 +19,7 @@ public class Color
 
     public Color( String rgbaHex )
     {
-        int rgba = Integer .parseUnsignedInt( rgbaHex, 16 );
+        int rgba = Integer .parseInt( rgbaHex, 16 );
         int r = ( rgba >> 24 ) & 0xFF;
         int g = ( rgba >> 16 ) & 0xFF;
         int b = ( rgba >> 8 ) & 0xFF;

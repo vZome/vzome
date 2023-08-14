@@ -3,12 +3,13 @@ import { createSignal, createEffect } from "solid-js";
 
 import { controllerAction, controllerProperty, subController } from '../../../workerClient/controllers-solid.js';
 import { useSymmetry } from "../classic.jsx";
+import { ToolConfig } from "./toolconfig.jsx";
 
 const ToolbarSpacer = () => ( <div style={{ 'min-width': '10px', 'min-height': '10px' }}></div> )
 
 const ToolbarButton = props =>
 (
-  <button aria-label={props.label} class='toolbar-button' onClick={props.onClick} disabled={props.disabled}>
+  <button aria-label={props.label} class='toolbar-button' onClick={props.onClick} onContextMenu={props.onContextMenu} disabled={props.disabled}>
     <img src={ `./icons/tools/${props.image}.png`} class='toolbar-image'/>
   </button>
 )
@@ -63,12 +64,44 @@ const CommandButton = props =>
   );
 }
 
+const SetColorButton = props =>
+{
+  let colorInputElement;
+  const handleClick = () =>
+  {
+    colorInputElement.click();
+  }
+  const setColor = color =>
+  {
+    controllerAction( props.ctrlr, `ColorManifestations/${color}ff` );
+  }
+  createEffect( () => {
+    // skip the leading "#"
+    colorInputElement.addEventListener( "change", e => setColor( e.target.value.substring(1) ), false );
+  });
+  return ( <>
+    <ToolbarButton label={props.cmdName} image={`small/setItemColor`} onClick={handleClick} />
+    <input ref={colorInputElement} type="color" id="color-picker" name="color-picker" class='hidden-color-input' />
+  </>);
+}
+
 const ToolButton = props =>
 {
   const kind = () => controllerProperty( props.controller, 'kind', 'kind', false );
   const label = () => controllerProperty( props.controller, 'label', 'label', false );
   const handleClick = () => controllerAction( props.controller, 'apply' );
-  return ( <ToolbarButton label={label()} image={`small/${kind()}`} onClick={handleClick} /> )
+  const [anchorEl, setAnchorEl] = createSignal(null);
+  const handleOpen = (e) =>
+  {
+    setAnchorEl( e.currentTarget );
+    e.preventDefault(); e.stopPropagation();
+  }
+  const handleClose = () => setAnchorEl( null );
+  return ( <>
+    <ToolbarButton label={label()} image={`small/${kind()}`} onClick={handleClick} onContextMenu={handleOpen} />
+    <ToolConfig predefined={props.predefined} image={`small/${kind()}`} controller={props.controller} label={label()}
+      anchor={anchorEl()} onClose={handleClose} onClick={handleClick} />
+  </> )
 }
 
 export const ToolBar = props =>
@@ -82,7 +115,7 @@ export const ToolBar = props =>
     <div id='tools-bar' class='toolbar'>
       <CommandButton ctrlr={props.editorController} cmdName='Delete'/>
       <CommandButton ctrlr={props.editorController} cmdName='hideball'/>
-      <CommandButton ctrlr={props.editorController} cmdName='setItemColor'/>
+      <SetColorButton ctrlr={props.editorController} />
       <ToolbarSpacer/>
       <CommandButton ctrlr={props.editorController} cmdName='JoinPoints/CLOSED_LOOP' hoverText='Connect balls in a loop'/>
       <CommandButton ctrlr={props.editorController} cmdName='JoinPoints/CHAIN_BALLS' hoverText='Connect balls in a chain'/>
@@ -93,11 +126,11 @@ export const ToolBar = props =>
       <ToolbarSpacer/>
       <Show when={symmetryDefined()}>
         <For each={symmToolNames()}>{ toolName =>
-          <ToolButton controller={subController( props.toolsController, toolName )}/>
+          <ToolButton predefined controller={subController( props.toolsController, toolName )}/>
         }</For>
         <ToolbarSpacer/>
         <For each={transToolNames()}>{ toolName =>
-          <ToolButton controller={subController( props.toolsController, toolName )}/>
+          <ToolButton predefined controller={subController( props.toolsController, toolName )}/>
         }</For>
         <ToolbarSpacer/>
         <For each={customToolNames()}>{ toolName =>
@@ -112,14 +145,25 @@ let nextBookmarkIcon = 0;
 
 const BookmarkButton = props =>
 {
-  const label = () => controllerProperty( props.controller, 'label', 'label', false );
+  const label = () => controllerProperty( props.controller, 'label', 'label', false ) || ''; // always defined, to control the ToolConfig
   const [ iconName, setIconName ] = createSignal( null );
   createEffect( () => {
     setIconName( `bookmark_${nextBookmarkIcon}` );
     nextBookmarkIcon = ( nextBookmarkIcon + 1 ) % 4;
   }, [] );
   const handleClick = () => controllerAction( props.controller, 'apply' );
-  return ( <ToolbarButton label={label()} image={`small/${iconName()}`} onClick={handleClick} /> )
+  const [anchorEl, setAnchorEl] = createSignal(null);
+  const handleOpen = (e) =>
+  {
+    setAnchorEl( e.currentTarget );
+    e.preventDefault(); e.stopPropagation();
+  }
+  const handleClose = () => setAnchorEl( null );
+  return ( <>
+    <ToolbarButton label={label()} image={`small/${iconName()}`} onClick={handleClick} onContextMenu={handleOpen} />
+    <ToolConfig bookmark predefined={props.predefined} image={`small/${iconName()}`} controller={props.controller} label={label()}
+      anchor={anchorEl()} onClose={handleClose} onClick={handleClick} />
+  </> )
 }
 
 export const BookmarkBar = props =>
@@ -134,7 +178,7 @@ export const BookmarkBar = props =>
         <ToolFactoryButton factoryName='bookmark' controller={symmetryController()}/>
       </Show>
       <ToolbarSpacer/>
-      <BookmarkButton controller={subController( props.toolsController, 'bookmark.builtin/ball at origin' )}/>
+      <BookmarkButton predefined controller={subController( props.toolsController, 'bookmark.builtin/ball at origin' )}/>
       <For each={bookmarkNames()}>{ toolName =>
         <BookmarkButton controller={subController( props.toolsController, toolName )}/>
       }</For>
