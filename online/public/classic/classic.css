@@ -69,6 +69,14 @@ img {
   display: flex;
 }
 
+.hidden-color-input {
+  max-width: 0px;
+  border-width: 0px;
+  position: relative;
+  left: -1rem;
+  z-index: -1;
+}
+
 button:disabled > .toolbar-image {
   filter: saturate(0.1) brightness(2) grayscale(0.9) contrast(0.15);
 }

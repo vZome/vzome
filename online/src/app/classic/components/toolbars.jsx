@@ -64,6 +64,27 @@ const CommandButton = props =>
   );
 }
 
+const SetColorButton = props =>
+{
+  let colorInputElement;
+  const handleClick = () =>
+  {
+    colorInputElement.click();
+  }
+  const setColor = color =>
+  {
+    controllerAction( props.ctrlr, `ColorManifestations/${color}ff` );
+  }
+  createEffect( () => {
+    // skip the leading "#"
+    colorInputElement.addEventListener( "change", e => setColor( e.target.value.substring(1) ), false );
+  });
+  return ( <>
+    <ToolbarButton label={props.cmdName} image={`small/setItemColor`} onClick={handleClick} />
+    <input ref={colorInputElement} type="color" id="color-picker" name="color-picker" class='hidden-color-input' />
+  </>);
+}
+
 const ToolButton = props =>
 {
   const kind = () => controllerProperty( props.controller, 'kind', 'kind', false );
@@ -94,7 +115,7 @@ export const ToolBar = props =>
     <div id='tools-bar' class='toolbar'>
       <CommandButton ctrlr={props.editorController} cmdName='Delete'/>
       <CommandButton ctrlr={props.editorController} cmdName='hideball'/>
-      <CommandButton ctrlr={props.editorController} cmdName='setItemColor'/>
+      <SetColorButton ctrlr={props.editorController} />
       <ToolbarSpacer/>
       <CommandButton ctrlr={props.editorController} cmdName='JoinPoints/CLOSED_LOOP' hoverText='Connect balls in a loop'/>
       <CommandButton ctrlr={props.editorController} cmdName='JoinPoints/CHAIN_BALLS' hoverText='Connect balls in a chain'/>
