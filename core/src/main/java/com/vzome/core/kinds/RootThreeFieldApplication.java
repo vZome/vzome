@@ -172,7 +172,7 @@ public class RootThreeFieldApplication extends DefaultFieldApplication
         @Override
         public String getModelResourcePath()
         {
-            return "org/vorthmann/zome/app/dodecagonal.vZome";
+            return "org/vorthmann/zome/app/12-gon-trackball-vef.vZome";
         }
     };
 
