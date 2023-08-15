@@ -128,7 +128,7 @@ export const ToolConfig = (props) =>
 
       <div class='tool-config-button'>
         <Button size="small" variant="outlined" onClick={handleRemove} disabled={!!props.predefined} >
-          Remove Bookmark
+          Remove {props.bookmark? 'Bookmark' : 'Tool'}
         </Button>
       </div>
     </Popover>
