@@ -1,36 +1,22 @@
 
-import Button from "@suid/material/Button"
-import Menu from "@suid/material/Menu"
-import MenuItem from "@suid/material/MenuItem"
-import Divider from "@suid/material/Divider";
-import Link from '@suid/material/Link';
-import { createSignal } from "solid-js";
+import { Link } from "@kobalte/core";
+import { Divider, Menu, MenuItem } from "../components/menuaction.jsx";
 
-const createLinkItem = doClose => ( { href, label } ) => (
-  <MenuItem component={Link} href={href} target="_blank" rel="noopener" onClick={doClose}>{label}</MenuItem>
+const LinkItem  = props => (
+  <MenuItem>
+    <Link.Root class="link" href={props.href} target="_blank" rel="noopener">
+      {props.label}
+    </Link.Root>
+  </MenuItem>
 );
 
 export const HelpMenu = () =>
 {
-  const [ anchorEl, setAnchorEl ] = createSignal( null );
-  const open = () => Boolean( anchorEl() );
-  const doClose = () => setAnchorEl( null );
-  const LinkItem = createLinkItem( doClose );
-
   return (
-    <div>
-      <Button id="help-menu-button" sx={{ color: 'white', minWidth: 'auto' }}
-        aria-controls={open() ? "help-menu-menu" : undefined} aria-haspopup="true" aria-expanded={open() ? "true" : undefined}
-        onClick={ (event) => setAnchorEl(event.currentTarget) }
-      >
-        Help
-      </Button>
-      <Menu id="help-menu-menu" MenuListProps={{ "aria-labelledby": "help-menu-button" }}
-        anchorEl={anchorEl()} open={open()} onClose={doClose}
-      >
-        <MenuItem disabled={true} onClick={doClose}>Quick Start...</MenuItem>
-        <MenuItem disabled={true} onClick={doClose}>Symmetry Starters...</MenuItem>
-        <MenuItem disabled={true} onClick={doClose}>3D Printing Starters...</MenuItem>
+      <Menu label="Help">
+        <MenuItem disabled={true}>Quick Start...</MenuItem>
+        <MenuItem disabled={true}>Symmetry Starters...</MenuItem>
+        <MenuItem disabled={true}>3D Printing Starters...</MenuItem>
 
         <Divider/>
 
@@ -59,6 +45,5 @@ export const HelpMenu = () =>
         <LinkItem label='Observable Notebooks...'          href='https://observablehq.com/collection/@vorth/vzome' />
 
       </Menu>
-    </div>
   );
 }

@@ -1,51 +1,24 @@
 
-import Button from "@suid/material/Button"
-import Menu from "@suid/material/Menu"
-import Divider from "@suid/material/Divider";
-import { createSignal } from 'solid-js';
+import { Divider, Menu, MenuAction, createCheckboxItem } from "../components/menuaction.jsx";
 
-import { createMenuAction, MenuAction } from "../components/menuaction.jsx";
-import { controllerProperty, subController } from "../../../workerClient/controllers-solid.js";
+import { controllerProperty } from "../../../workerClient/controllers-solid.js";
 import { useWorkerClient } from "../../../workerClient/index.js";
 import { useSymmetry } from "../classic.jsx";
 
 export const SystemMenu = () =>
 {
   const { rootController } = useWorkerClient();
-  const [ anchorEl, setAnchorEl ] = createSignal( null );
-  const open = () => Boolean( anchorEl() );
-  const doClose = () => setAnchorEl( null );
 
   const { showOrbitsDialog, showShapesDialog } = useSymmetry();
-
-  const openShapesDialog = () =>
-  {
-    showShapesDialog();
-    doClose();
-  }
-  const openOrbitsDialog = () =>
-  {
-    showOrbitsDialog();
-    doClose();
-  }
 
   const symmetries = () => controllerProperty( rootController(), 'symmetryPerspectives', 'symmetryPerspectives', true );
   const hasIcosa = () => symmetries() .includes( 'icosahedral' );
   const currentSymm = () => controllerProperty( rootController(), 'symmetry' ); // TODO move to useSymmetry?
 
-  const EditAction = createMenuAction( rootController(), doClose );
+  const EditAction = createCheckboxItem( rootController() );
 
   return (
-    <div>
-      <Button id="system-menu-button" sx={{ color: 'white', minWidth: 'auto' }}
-        aria-controls={open() ? "system-menu-menu" : undefined} aria-haspopup="true" aria-expanded={open() ? "true" : undefined}
-        onClick={ (event) => setAnchorEl(event.currentTarget) }
-      >
-        System
-      </Button>
-      <Menu id="system-menu-menu" MenuListProps={{ "aria-labelledby": "system-menu-button" }}
-        anchorEl={anchorEl()} open={open()} onClose={doClose}
-      >
+      <Menu label="System">
         <Show when={ hasIcosa() }>
           <EditAction label="Icosahedral System" action="setSymmetry.icosahedral" checked={ currentSymm() === 'icosahedral' } />
         </Show>
@@ -53,16 +26,15 @@ export const SystemMenu = () =>
 
         <Divider />
         
-        <MenuAction label="Shapes..." onClick={ () => openShapesDialog(true) } />
+        <MenuAction label="Shapes..." onClick={ showShapesDialog } />
 
-        <MenuAction label="Directions..." onClick={ () => openOrbitsDialog(true) } />
+        <MenuAction label="Directions..." onClick={ showOrbitsDialog } />
 
-        <EditAction label="Show Directions Graphically" action="toggleOrbitViews" disabled="true" />
-        <EditAction label="Show Strut Scales" action="toggleStrutScales" disabled="true" />
+        <EditAction label="Show Directions Graphically" action="toggleOrbitViews" disabled="true" checked="true" />
+        <EditAction label="Show Strut Scales" action="toggleStrutScales" disabled="true" checked="true" />
         <EditAction label="Show Frame Labels" action="toggleFrameLabels" disabled="true" />
         <EditAction label="Show Panel Normals" action="toggleNormals" disabled="true" />
 
       </Menu>
-    </div>
   );
 }
