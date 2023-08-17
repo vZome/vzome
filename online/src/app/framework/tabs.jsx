@@ -1,32 +1,28 @@
 
-import Box from '@suid/material/Box'
-import FormControl from '@suid/material/FormControl'
-import MenuItem from '@suid/material/MenuItem'
-import Select from '@suid/material/Select'
+import { Tabs as KTabs } from "@kobalte/core";
 
 const Tab = (props) =>
 {
-  return <MenuItem value={props.value}>{props.label}</MenuItem>
+  return (
+    <KTabs.Content class="tabs__content" value={props.value}>
+      {props.children}
+    </KTabs.Content>
+  )
 }
 
 const Tabs = (props) =>
 {
-  const handleChange = (event) => {
-    props.onChange( event, event.target.value );
-  };
-
   return (
-    <Box sx={{ minWidth: 270, maxWidth: 400 }}>
-      <FormControl fullWidth>
-        <Select labelId="tabs-label" id="tabs"
-          value={props.value}
-          onChange={handleChange}
-        >
-          {props.children}
-        </Select>
-      </FormControl>
-    </Box>
-  );
+    <KTabs.Root aria-label={props.label} class="tabs" value={props.value} onChange={props.onChange}>
+      <KTabs.List class="tabs__list">
+        <For each={ props.values }>{ name =>
+          <KTabs.Trigger class="tabs__trigger" value={name}>{name}</KTabs.Trigger>
+        }</For>
+        <KTabs.Indicator class="tabs__indicator" />
+      </KTabs.List>
+      {props.children}
+    </KTabs.Root>
+);
 }
 
 export { Tabs, Tab }

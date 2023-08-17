@@ -8,8 +8,7 @@ import Container from '@suid/material/Container'
 import Paper from '@suid/material/Paper'
 import Divider from '@suid/material/Divider'
 
-// workaround until SUID has Tabs
-import { Tabs, Tab } from '../../framework/tabs.jsx';
+import { Tab, Tabs } from '../../framework/tabs.jsx';
 
 import { UrlViewer } from '../../../viewer/solid/index.jsx'
 import { VZomeAppBar } from '../../classic/components/appbar.jsx';
@@ -87,7 +86,6 @@ const metadata = {
     },
   },
 }
-const labels = Object.keys( metadata )
 
 const viewerStyle = {
   height: "400px",
@@ -120,12 +118,12 @@ const VZomeViewer = (props) =>
 
 const BHallBasic = () =>
 {
-  const [ difficulty, setDifficulty ] = createSignal( 0 );
+  const [ difficulty, setDifficulty ] = createSignal( "easier" );
 
   const handleChange = (event, newValue) => {
-    console.log( newValue );
     setDifficulty( newValue )
   };
+  
   return (
     <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
       <VZomeAppBar oneDesign title='Apps'
@@ -153,19 +151,17 @@ const BHallBasic = () =>
             Note that they are organized into three sections, by difficulty.
           </Typography>
           <Typography gutterBottom color='secondary' >
-            The panels are not images; you can use your mouse to rotate, pan, and zoom.
+            The panels are interactive, not images; you can use your mouse to rotate, pan, and zoom.
           </Typography>
-          <Paper square>
-            <Tabs value={difficulty()} onChange={handleChange} indicatorColor="primary" textColor="primary"
-                centered aria-label="choose difficulty" >
-              <Tab label={labels[0]} value={0} /> {/* value attributes added for my temp Tabs implementation */}
-              <Tab label={labels[1]} value={1} />
-              <Tab label={labels[2]} value={2} />
-            </Tabs>
-          </Paper>
-          <For each={ Object.entries( metadata[ labels[ difficulty() ] ] ) }>{ ([ name, value ]) =>
-            <VZomeViewer name={name} parts={value.parts} config={value.config || {}} />
-          }</For>
+          <Tabs label="choose difficulty" values={ Object.keys( metadata )} value={difficulty()} onChange={handleChange}>
+            <For each={ Object.keys( metadata ) }>{ tabname =>
+              <Tab value={tabname}>
+                <For each={ Object.keys( metadata[ tabname ] ) }>{ name =>
+                  <VZomeViewer name={name} parts={metadata[ tabname ][name].parts} config={metadata[ tabname ][name].config || {}} />
+                }</For>
+              </Tab>
+            }</For>
+          </Tabs>
         </Paper>
       </Container>
     </ErrorBoundary>
