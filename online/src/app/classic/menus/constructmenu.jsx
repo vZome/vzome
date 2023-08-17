@@ -1,5 +1,5 @@
 
-import { Divider, Menu, createMenuAction } from "../components/menuaction.jsx";
+import { Divider, Menu, createMenuAction } from "../../framework/menus.jsx";
 
 import { useWorkerClient } from "../../../workerClient/index.js";
 

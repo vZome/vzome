@@ -1,6 +1,6 @@
 
 import { mergeProps } from "solid-js";
-import { Divider, Menu, MenuAction, createMenuAction } from "../components/menuaction.jsx";
+import { Divider, Menu, MenuAction, createMenuAction } from "../../framework/menus.jsx";
 
 import { useWorkerClient } from "../../../workerClient/index.js";
 import { useSymmetry } from "../classic.jsx";

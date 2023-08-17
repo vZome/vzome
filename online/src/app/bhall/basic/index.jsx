@@ -9,7 +9,7 @@ import Paper from '@suid/material/Paper'
 import Divider from '@suid/material/Divider'
 
 // workaround until SUID has Tabs
-import { Tabs, Tab } from '../../classic/suidstub/tabs.jsx';
+import { Tabs, Tab } from '../../framework/tabs.jsx';
 
 import { UrlViewer } from '../../../viewer/solid/index.jsx'
 import { VZomeAppBar } from '../../classic/components/appbar.jsx';

@@ -1,5 +1,5 @@
 
-import { Divider, Menu, MenuAction, createCheckboxItem } from "../components/menuaction.jsx";
+import { Divider, Menu, MenuAction, createCheckboxItem } from "../../framework/menus.jsx";
 
 import { controllerProperty } from "../../../workerClient/controllers-solid.js";
 import { useWorkerClient } from "../../../workerClient/index.js";
