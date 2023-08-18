@@ -185,13 +185,21 @@ export const createControllers = (design, renderHistory, clientEvents) => {
     const symmController = new com.vzome.desktop.controller.SymmetryController( strutBuilder, symmetrySystem, renderedModel );
     strutBuilder.addSubController(`symmetry.${name}`, symmController);
   }
-  controller .setSymmetrySystem( null );
+
+  controller .setSymmetrySystem( null ); // gets the symmetry name from the design
 
   const toolsController = new com.vzome.desktop.controller.ToolsController(toolsModel);
   toolsController.addTool(toolsModel.get("bookmark.builtin/ball at origin"));
   strutBuilder.addSubController('tools', toolsController);
 
-  const wrapper = new ControllerWrapper('', '', controller, clientEvents);
+  const wrapper = new ControllerWrapper( '', '', controller, clientEvents );
+
+  // hacky, for trackball model
+  wrapper.getTrackballUrl = () => {
+    const symm = controller .getProperty( 'symmetry' );
+    const symmController = strutBuilder .getSubController( `symmetry.${symm}` );
+    return symmController .getProperty( 'modelResourcePath' );
+  }
 
   // hacky, for preview strut
   wrapper.startPreviewStrut = ( ballId, direction ) => {

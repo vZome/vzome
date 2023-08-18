@@ -1,5 +1,6 @@
 import { java } from "../candies/j4ts-2.1.0-SNAPSHOT/bundle.js";
 import { com } from '../core-java.js';
+import { getFieldNames } from "../core.js";
 import { JsProperties } from '../jsweet2js.js';
 
 export class EditorController extends com.vzome.desktop.controller.DefaultController {
@@ -38,6 +39,9 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
 
       case "field.multipliers":
         return com.vzome.core.algebra.AlgebraicField .getMultipliers( legacyField );
+
+      case "fields":
+        return getFieldNames();
 
       default:
         console.log("EditorController getCommandList fall through: ", name);

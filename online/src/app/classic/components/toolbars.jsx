@@ -10,7 +10,7 @@ const ToolbarSpacer = () => ( <div style={{ 'min-width': '10px', 'min-height': '
 const ToolbarButton = props =>
 (
   <button aria-label={props.label} class='toolbar-button' onClick={props.onClick} onContextMenu={props.onContextMenu} disabled={props.disabled}>
-    <img src={ `./icons/tools/${props.image}.png`} class='toolbar-image'/>
+    <img src={ `/resources/icons/tools/${props.image}.png`} class='toolbar-image'/>
   </button>
 )
 

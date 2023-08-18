@@ -292,6 +292,8 @@ const makeFloatMatrices = ( matrices ) =>
     }
     return fieldApp
   }
+
+  export const getFieldNames = () => Object .keys( fieldApps );
   
   export const getField = fieldName =>
   {

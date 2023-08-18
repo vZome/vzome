@@ -6,6 +6,7 @@ export const WORKER_ENTRY_FILE_URL = import.meta.url;
 
 const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
 
+let baseURL;
 let scenes;
 let snapshots;
 let previewShapes;
@@ -185,6 +186,7 @@ const createDesign = ( report, fieldName ) =>
     .then( module => {
       designController = module .newDesign( fieldName, clientEvents( report ) );
       report( { type: 'CONTROLLER_CREATED' } );
+      fetchTrackballScene( designController .getTrackballUrl(), report );
     } )
 
     .catch( error => {
@@ -202,13 +204,16 @@ const getField = name =>
     } );
 }
 
-const loadDesign = ( xmlLoading, report, debug, sceneTitle ) =>
+const loadDesign = ( xmlLoading, report, forEditing, debug, sceneTitle ) =>
 {
   return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
 
     .then( ([ module, xml ]) => {
       designController = module .loadDesign( xml, debug, clientEvents( report ), sceneTitle );
       report( { type: 'CONTROLLER_CREATED' } );
+      if ( forEditing ) {
+        fetchTrackballScene( designController .getTrackballUrl(), report );
+      }
     } )
 
     .catch( error => {
@@ -231,7 +236,7 @@ const fileLoader = ( report, event ) =>
 
   xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { name, text } } ) );
 
-  return loadDesign( xmlLoading, report, debug );
+  return loadDesign( xmlLoading, report, true, debug );
 }
 
 const urlLoader = ( report, event ) =>
@@ -271,12 +276,33 @@ const urlLoader = ( report, event ) =>
       .catch( error => {
         console.log( error.message );
         console.log( 'Preview failed, falling back to vZome XML' );
-        return loadDesign( xmlLoading, report, debug, sceneTitle );
+        return loadDesign( xmlLoading, report, true, debug, sceneTitle );
       } )
   }
   else {
-    return loadDesign( xmlLoading, report, debug, sceneTitle );
+    return loadDesign( xmlLoading, report, true, debug, sceneTitle );
   }
+}
+
+const fetchTrackballScene = ( url, report ) =>
+{
+  const filter = event =>
+  {
+    const { type, payload } = event;
+    switch (type) {
+      case 'SCENE_RENDERED':
+        report( { type: 'TRACKBALL_SCENE_LOADED', payload } );
+        break;
+    
+      default:
+        break;
+    }
+  }
+  Promise.all( [ import( './legacy/dynamic.js' ), fetchUrlText( new URL( `/resources/${url}`, baseURL ) ) ] )
+
+    .then( ([ module, xml ]) => {
+      module .loadDesign( xml, false, clientEvents( filter ) );
+    } )
 }
 
 onmessage = ({ data }) =>
@@ -287,6 +313,10 @@ onmessage = ({ data }) =>
   try {
     
   switch (type) {
+
+    case 'WINDOW_LOCATION':
+      baseURL = payload;
+      break;
 
     case 'URL_PROVIDED':
       urlLoader( postMessage, data );

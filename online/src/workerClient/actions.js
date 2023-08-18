@@ -31,7 +31,7 @@ export const fetchDesign = ( url, config={ preview: false, debug: false, showSce
 
 export const openDesignFile = ( file, debug=false ) => workerAction( 'FILE_PROVIDED', { file, debug } );
 
-export const newDesign = () => workerAction( 'NEW_DESIGN_STARTED', { field: 'golden' } );
+export const newDesign = ( field='golden' ) => workerAction( 'NEW_DESIGN_STARTED', { field } );
 
 export const doControllerAction = ( controllerPath='', action, parameters ) => workerAction( 'ACTION_TRIGGERED', { controllerPath, action, parameters } );
 

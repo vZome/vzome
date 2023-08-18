@@ -1,17 +1,28 @@
 
-import { Divider, Menu, MenuAction, MenuItem } from "../../framework/menus.jsx";
+import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 
 import { createSignal } from "solid-js";
-import { controllerExportAction } from "../../../workerClient/controllers-solid.js";
+import { controllerAction, controllerExportAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
 import { serializeVZomeXml, download } from '../../../workerClient/serializer.js';
 import { UrlDialog } from '../components/webloader.jsx'
-import { fetchDesign, openDesignFile } from "../../../workerClient/index.js";
+import { fetchDesign, openDesignFile, newDesign } from "../../../workerClient/index.js";
 import { useWorkerClient } from "../../../workerClient/index.js";
+
+const NewDesignItem = props =>
+{
+  const { postMessage, rootController } = useWorkerClient();
+  const fieldLabel = () => controllerProperty( rootController(), `field.label.${props.field}` );
+  const onClick = () => postMessage( newDesign( props.field ) );
+  return (
+    <MenuAction label={`${props.field} Field`} onClick={onClick} />
+  )
+}
 
 export const FileMenu = () =>
 {
   const { postMessage, rootController, state } = useWorkerClient();
   const [ showDialog, setShowDialog ] = createSignal( false );
+  const fields = () => controllerProperty( rootController(), 'fields', 'fields', true );
 
   let inputRef;
   const openFile = evt =>
@@ -63,7 +74,12 @@ export const FileMenu = () =>
 
       <UrlDialog show={showDialog()} setShow={setShowDialog} openDesign={openUrl} />
     </>}>
-        <MenuItem disabled={true}>New Design...</MenuItem>
+        <SubMenu label="New Design...">
+          <For each={fields()}>{ field =>
+            <NewDesignItem field={field} />
+          }</For>
+        </SubMenu>
+
         <MenuAction label="Open..." onClick={openFile} />
         <MenuAction label="Open URL..." onClick={handleShowUrlDialog} />
         <MenuItem disabled={true}>Open As New Model...</MenuItem>
