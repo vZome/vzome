@@ -97,9 +97,21 @@ const InstancedShape = ( props ) =>
 
 export const ShapedGeometry = ( props ) =>
 {
+  let groupRef;
+  createEffect( () => {
+    if ( props.embedding && groupRef && groupRef.matrix ) {
+      const m = new Matrix4()
+      m.set( ...props.embedding )
+      m.transpose()
+      groupRef.matrix.identity()  // Required, or applyMatrix4() changes will accumulate
+      // This imperative approach is required because I was unable to decompose the
+      //   embedding matrix (a shear) into a scale and rotation.
+      groupRef.applyMatrix4( m )
+    }
+  })
   return (
     // <Show when={ () => props.shapes }>
-      <group matrixAutoUpdate={false}>
+      <group matrixAutoUpdate={false} ref={groupRef}>
         <For each={Object.values( props.shapes || {} )}>{ shape =>
           <InstancedShape shape={shape} />
         }</For>
