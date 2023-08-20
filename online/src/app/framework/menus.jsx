@@ -122,6 +122,29 @@ export const SubMenu = props =>
   );
 }
 
+export const Choices = props =>
+{
+  return (
+    <DropdownMenu.Group>
+      <DropdownMenu.GroupLabel class="dropdown-menu__group-label">
+        {props.label}
+      </DropdownMenu.GroupLabel>
+      <DropdownMenu.RadioGroup value={props.choice} onChange={props.setChoice}>
+        <For each={props.choices}>{ value =>
+          <DropdownMenu.RadioItem class="dropdown-menu__radio-item" value={value}>
+            <DropdownMenu.ItemIndicator class="dropdown-menu__item-indicator">
+            <svg viewBox="0 0 15 15">
+              <path d="M9.875 7.5C9.875 8.81168 8.81168 9.875 7.5 9.875C6.18832 9.875 5.125 8.81168 5.125 7.5C5.125 6.18832 6.18832 5.125 7.5 5.125C8.81168 5.125 9.875 6.18832 9.875 7.5Z" fill="currentColor"></path>
+            </svg>
+            </DropdownMenu.ItemIndicator>
+            {value}
+          </DropdownMenu.RadioItem>
+        }</For>
+      </DropdownMenu.RadioGroup>
+    </DropdownMenu.Group>
+);
+}
+
 export const createMenuAction = ( controller ) => ( props ) =>
 {
   const onClick = () => 

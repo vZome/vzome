@@ -248,6 +248,7 @@ button:disabled > .toolbar-image {
   position: relative;
   user-select: none;
   outline: none;
+  text-transform: capitalize;
 }
 .dropdown-menu__sub-trigger[data-expanded] {
   background-color: hsl(204 94% 94%);

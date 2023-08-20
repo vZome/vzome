@@ -187,7 +187,7 @@ const createWorkerStore = ( worker ) =>
         setState.apply( null, [ 'controller', ...names, name, value ] );
         break;
 
-      case 'PLANES_DEFINED':
+      case 'SYMMETRY_CHANGED':
       case 'DESIGN_XML_PARSED':
         // TODO these are not implemented yet!
         break;

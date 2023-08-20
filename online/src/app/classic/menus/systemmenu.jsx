@@ -1,7 +1,7 @@
 
-import { Divider, Menu, MenuAction, createCheckboxItem } from "../../framework/menus.jsx";
+import { Choices, Divider, Menu, MenuAction, createCheckboxItem } from "../../framework/menus.jsx";
 
-import { controllerProperty } from "../../../workerClient/controllers-solid.js";
+import { controllerAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
 import { useWorkerClient } from "../../../workerClient/index.js";
 import { useSymmetry } from "../classic.jsx";
 
@@ -12,17 +12,15 @@ export const SystemMenu = () =>
   const { showOrbitsDialog, showShapesDialog } = useSymmetry();
 
   const symmetries = () => controllerProperty( rootController(), 'symmetryPerspectives', 'symmetryPerspectives', true );
-  const hasIcosa = () => symmetries() .includes( 'icosahedral' );
   const currentSymm = () => controllerProperty( rootController(), 'symmetry' ); // TODO move to useSymmetry?
-
   const EditAction = createCheckboxItem( rootController() );
+  const setSymmetry = system => {
+    controllerAction( rootController(), `setSymmetry.${system}` );
+  }
 
   return (
       <Menu label="System">
-        <Show when={ hasIcosa() }>
-          <EditAction label="Icosahedral System" action="setSymmetry.icosahedral" checked={ currentSymm() === 'icosahedral' } />
-        </Show>
-        <EditAction label="Octahedral System" action="setSymmetry.octahedral" checked={ currentSymm() === 'octahedral' } />
+        <Choices label="Symmetry System" choices={symmetries()} choice={currentSymm()} setChoice={setSymmetry} />
 
         <Divider />
         
