@@ -341,6 +341,9 @@ const makeFloatMatrices = ( matrices ) =>
     const history = new vzomePkg.core.editor.EditHistory();
     history .setSerializer( { serialize: element => element .serialize( "" ) } );
 
+    let changeCount = 0;
+    const getChangeCount = () => changeCount;
+
     // This object implements the UndoableEdit.Context interface
     const editContext = {
       // Since we are not creating Branch edits, this should never be used
@@ -361,6 +364,7 @@ const makeFloatMatrices = ( matrices ) =>
         history .mergeSelectionChanges();
         history .addEdit( edit, editContext );
         editor .notifyListeners();
+        ++changeCount;
       },
 
       doEdit: ( className, props ) => {
@@ -640,7 +644,8 @@ const makeFloatMatrices = ( matrices ) =>
       return root;
     }
 
-    return { interpretEdit, configureAndPerformEdit, batchRender, serializeToDom, setSymmetrySystem, getSymmetrySystem, editor,
+    return { interpretEdit, configureAndPerformEdit, batchRender, serializeToDom, setSymmetrySystem, getSymmetrySystem, getChangeCount,
+      editor,
       field, legacyField, fieldApp,
       renderedModel, orbitSource, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };
   }

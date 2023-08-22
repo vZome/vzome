@@ -52,6 +52,7 @@ const createControllers = ( design, renderingChanges, clientEvents ) =>
   {
     strutBuilder .previewStrut .finishPreview();
     wrapper .renderScene();
+    controller.firePropertyChange( 'edited', '', 'true' ); // value really doesn't matter
   }
 
   return wrapper;

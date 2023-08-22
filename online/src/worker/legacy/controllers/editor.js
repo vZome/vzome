@@ -13,6 +13,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
     this.clientEvents = clientEvents;
     this.symmetries = {};
     this.symmController = null;
+    this.changeCount = 0;
   }
 
   initialize( renderingChanges )
@@ -97,9 +98,13 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
   getProperty(name) {
     switch (name) {
 
+      case "edited": {
+        return new Boolean( this.changeCount !== this.design.getChangeCount() ) .toString();
+      }
+
       case "symmetry":
         return this.symmController.getProperty( 'label' );
-
+  
       case "single.orbit":
       case "disable.known.directions":
         return super.getProperty(name);
@@ -157,6 +162,12 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
   doParamAction(action, params) {
     switch (action) {
 
+      case "clearChanges": {
+        this.changeCount = this.design.getChangeCount();
+        this.firePropertyChange( 'edited', '', 'false' );
+        break;
+      }
+
       case "exportText":
         const format = params.getConfig().format; // TODO remove the STL hardcoding!
 
@@ -183,8 +194,10 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
           this.setSymmetryController( name );
         }
 
-        else
+        else {
           this.design.configureAndPerformEdit(action, params && params.getConfig());
+          this.firePropertyChange( 'edited', '', 'true' ); // value really doesn't matter
+        }
 
         // For the classic client app, this is redundant, since it can use the exportText action,
         //   but I still need it for React-based clients.

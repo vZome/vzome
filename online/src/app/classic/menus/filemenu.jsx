@@ -1,23 +1,23 @@
 
 import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 
-import { createSignal } from "solid-js";
-import { controllerExportAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
+import { createEffect, createSignal } from "solid-js";
+import { controllerAction, controllerExportAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
 import { serializeVZomeXml, download } from '../../../workerClient/serializer.js';
 import { UrlDialog } from '../components/webloader.jsx'
 import { fetchDesign, openDesignFile, newDesign } from "../../../workerClient/index.js";
 import { useWorkerClient } from "../../../workerClient/index.js";
+import { Guardrail } from "../components/guardrail.jsx";
 
 const NewDesignItem = props =>
 {
-  const { postMessage, rootController } = useWorkerClient();
+  const { rootController } = useWorkerClient();
   const fieldLabel = () => controllerProperty( rootController(), `field.label.${props.field}` );
   // TODO: enable ⌘N
   const modifiers = () => props.field === 'golden' && '⌘';
   const key = () => props.field === 'golden' && 'N';
-  const onClick = () => postMessage( newDesign( props.field ) );
   return !!fieldLabel() &&
-    <MenuAction label={`${fieldLabel()} Field`} onClick={onClick} />
+    <MenuAction label={`${fieldLabel()} Field`} onClick={props.onClick} />
 }
 
 export const FileMenu = () =>
@@ -25,6 +25,26 @@ export const FileMenu = () =>
   const { postMessage, rootController, state } = useWorkerClient();
   const [ showDialog, setShowDialog ] = createSignal( false );
   const fields = () => controllerProperty( rootController(), 'fields', 'fields', true );
+  const [ showGuardrail, setShowGuardrail ] = createSignal( false );
+  const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
+
+  // Since the initial render of the menu doesn't fetch these properties,
+  //   we have to force this prefetch so the data is ready when we need it.
+  createEffect( () =>
+  {
+    const getLabel = (field) => controllerProperty( rootController(), `field.label.${field}` );
+    const isEdited = edited();
+    for (const field of fields()) {
+      const label = getLabel(field);
+      if ( label === 'no logging' ) // trick the compiler
+        console.log( `never logged: ${isEdited} ${label}`);
+    }
+  });
+
+  const doCreate = field =>
+  {
+    postMessage( newDesign( field ) );
+  }
 
   let inputRef;
   const openFile = evt =>
@@ -48,6 +68,24 @@ export const FileMenu = () =>
     }
   }
 
+  let continuation;
+  const guard = guardedAction =>
+  {
+    if ( edited() ) {
+      continuation = guardedAction;
+      setShowGuardrail( true );
+    }
+    else
+      guardedAction();
+  }
+  const closeGuardrail = continued =>
+  {
+    setShowGuardrail( false );
+    if ( continued )
+      continuation();
+    continuation = undefined;
+  }
+
   const exportAs = ( format, mimeType ) => evt =>
   {
     controllerExportAction( rootController(), format )
@@ -66,6 +104,7 @@ export const FileMenu = () =>
         const fullText = serializeVZomeXml( text, lighting, liveCamera, camera );
         const name = rootController().source?.name || 'untitled.vZome';
         download( name, fullText, 'application/xml' );
+        controllerAction( rootController(), 'clearChanges' );
       });
   }
 
@@ -75,15 +114,17 @@ export const FileMenu = () =>
         onChange={onFileSelected} accept={".vZome"} />
 
       <UrlDialog show={showDialog()} setShow={setShowDialog} openDesign={openUrl} />
+
+      <Guardrail show={showGuardrail()} close={closeGuardrail} />
     </>}>
         <SubMenu label="New Design...">
           <For each={fields()}>{ field =>
-            <NewDesignItem field={field} />
+            <NewDesignItem field={field} onClick={() => guard( () => doCreate(field) )}/>
           }</For>
         </SubMenu>
 
-        <MenuAction label="Open..." onClick={openFile} />
-        <MenuAction label="Open URL..." onClick={handleShowUrlDialog} />
+        <MenuAction label="Open..." onClick={() => guard(openFile)} />
+        <MenuAction label="Open URL..." onClick={() => guard(handleShowUrlDialog)} />
         <MenuItem disabled={true}>Open As New Model...</MenuItem>
 
         <Divider/>
