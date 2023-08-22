@@ -633,7 +633,8 @@ const makeFloatMatrices = ( matrices ) =>
     }
 
     return { interpretEdit, configureAndPerformEdit, batchRender, serializeToDom, setSymmetrySystem, getSymmetrySystem, editor,
-      field, legacyField, renderedModel, orbitSource, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };
+      field, legacyField, fieldApp,
+      renderedModel, orbitSource, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };
   }
 
   export const convertColor = color =>

@@ -78,10 +78,6 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         boolean isHeptagon = "heptagon" .equals( fieldName );
 
-        boolean isSqrtPhi = "sqrtPhi" .equals( fieldName );
-
-        boolean isRootTwo = "rootTwo" .equals( fieldName );
-
         boolean isRootThree = "rootThree" .equals( fieldName );
 
         boolean oldTools = controller .propertyIsTrue( "original.tools" );
@@ -89,19 +85,6 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         List<String> symmetries = Arrays .asList( controller .getCommandList( "symmetryPerspectives" ) );
 
         boolean hasIcosahedral = symmetries .contains( "icosahedral" );
-
-        boolean hasAntiprism = false;
-        for (String symmName : symmetries) {
-            if (symmName.startsWith("antiprism")) {
-                hasAntiprism = true;
-//                if("antiprism".equals(initSystem)) {
-//                    // this is old code that's aparently unnecessary
-//                    // but I'll leave it here as a comment for now in case I break something by removing it. - DJH
-//                    initSystem = symmName; // effectively appends nSides to initSystem
-//                }
-                break;
-            }
-        }
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% File menu
 
@@ -439,72 +422,16 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu = new JMenu( "System" );
         ButtonGroup group = new ButtonGroup();
         JMenuItem rbMenuItem;
-        if ( isSqrtPhi ) {
-            rbMenuItem = actions .setMenuAction( "setSymmetry.pentagonal", controller, new JRadioButtonMenuItem( "Pentagonal System" ) );
-            rbMenuItem .setSelected( "pentagonal".equals( initSystem ) );
-            rbMenuItem .setEnabled( fullPower );
-            group.add( rbMenuItem );
-            menu.add( rbMenuItem );
-        }
-        if ( hasIcosahedral ) {
-            rbMenuItem = actions .setMenuAction( "setSymmetry.icosahedral", controller, new JRadioButtonMenuItem( "Icosahedral System" ) );
-            rbMenuItem .setSelected( "icosahedral".equals( initSystem ) );
-            rbMenuItem .setEnabled( fullPower );
-            group.add( rbMenuItem );
-            menu.add( rbMenuItem );
-        }
-        else if ( isHeptagon ) {
-            rbMenuItem = actions .setMenuAction( "setSymmetry.heptagonal antiprism corrected", controller, new JRadioButtonMenuItem( "Heptagonal Antiprism System" ) );
-            rbMenuItem .setSelected( "heptagonal antiprism corrected".equals( initSystem ) );
-            rbMenuItem .setEnabled( fullPower );
-            group.add( rbMenuItem );
-            menu.add( rbMenuItem );
-            rbMenuItem = actions .setMenuAction( "setSymmetry.triangular antiprism", controller, new JRadioButtonMenuItem( "Triangular Antiprism System" ) );
-            rbMenuItem .setSelected( "triangular antiprism".equals( initSystem ) );
-            rbMenuItem .setEnabled( fullPower );
-            group.add( rbMenuItem );
-            // DISABLED until the symmetry group has been properly implemented
-            // menu.add( rbMenuItem );
-        }
-        if ( hasAntiprism ) {
-            // Specify the antiprism's nSides here since not all code paths go thru setSymmetrySystem()
-            String antiprismName = "antiprism";
-            // AntiprismSymmetry takes a PolygonField in it's c'tor
-            // so no other field is using AntiprismSymmetry at this time,
-            // but I'll add the check anyway in case antiprismSymmetry ever gets generalized to accept other fields
-            if(fieldName.startsWith("polygon")) {
-                antiprismName += fieldName.substring("polygon".length());
-            }
-            rbMenuItem = actions .setMenuAction( "setSymmetry." + antiprismName, controller, new JRadioButtonMenuItem( "Antiprism System" ) );
-            rbMenuItem .setSelected( initSystem.startsWith("antiprism") );
-            rbMenuItem .setEnabled( fullPower );
-            group.add( rbMenuItem );
-            menu.add( rbMenuItem );        
-        }
 
-        rbMenuItem = actions .setMenuAction( "setSymmetry.octahedral", controller, new JRadioButtonMenuItem( "Octahedral System" ) );
-        rbMenuItem .setSelected( "octahedral".equals( initSystem ) );
-        rbMenuItem .setEnabled( fullPower );
-        group.add( rbMenuItem );
-        menu.add( rbMenuItem );
-
-        if ( isRootThree )
-        {
-            rbMenuItem = actions .setMenuAction( "setSymmetry.dodecagonal", controller, new JRadioButtonMenuItem( "Dodecagon System" ) );
-            rbMenuItem .setSelected( "dodecagonal".equals( initSystem ) );
+        for (String symmName : symmetries) {
+            String capitalized = symmName .substring(0,1) .toUpperCase() + symmName .substring(1);
+            rbMenuItem = actions .setMenuAction( "setSymmetry."+symmName, controller, new JRadioButtonMenuItem( capitalized + " System" ) );
+            rbMenuItem .setSelected( symmName .equals( initSystem ) );
             rbMenuItem .setEnabled( fullPower );
             group.add( rbMenuItem );
             menu.add( rbMenuItem );
         }
-        else if ( isRootTwo )
-        {
-            rbMenuItem = actions .setMenuAction( "setSymmetry.synestructics", controller, new JRadioButtonMenuItem( "Synestructics System" ) );
-            rbMenuItem .setSelected( "synestructics".equals( initSystem ) );
-            rbMenuItem .setEnabled( fullPower );
-            group.add( rbMenuItem );
-            menu.add( rbMenuItem );
-        }
-
+        
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
         if ( developerExtras )

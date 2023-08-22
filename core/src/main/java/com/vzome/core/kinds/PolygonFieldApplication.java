@@ -85,6 +85,11 @@ public class PolygonFieldApplication extends DefaultFieldApplication
         }
         
         @Override
+        public String getLabel() {
+            return "antiprism";
+        }
+
+        @Override
         public AntiprismSymmetry getSymmetry() {
             // This cast to AntiprismSymmetry is safe 
             // because an AntiprismSymmetry is used in the c'tor

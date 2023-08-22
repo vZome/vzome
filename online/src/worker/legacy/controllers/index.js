@@ -6,12 +6,10 @@ import { ControllerWrapper } from './wrapper.js';
 import { getSceneIndex } from '../../vzome-worker-static.js';
 import { renderedModelTransducer, resolveBuildPlanes } from '../scenes.js';
 import { EditorController } from './editor.js';
-import { PickingController } from './picking.js';
-import { BuildPlaneController } from './buildplane.js';
 
 const createControllers = ( design, renderingChanges, clientEvents ) =>
 {
-  const { orbitSource, renderedModel, toolsModel, bookmarkFactory, history, symmetrySystems, legacyField, editor, editContext } = design;
+  const { orbitSource, renderedModel } = design;
 
   const planes = resolveBuildPlanes( orbitSource .buildPlanes );
   const { orientations, symmetry, permutations } = orbitSource;
@@ -19,65 +17,13 @@ const createControllers = ( design, renderingChanges, clientEvents ) =>
   const resourcePath = orbitSource .getModelResourcePath();
   clientEvents .symmetryChanged( { orientations, permutations, scalars, planes, resourcePath } );
 
-  const controller = new EditorController(design, clientEvents); // this is the equivalent of DocumentController
-  controller.setErrorChannel({
-    reportError: (message, args) => {
-      console.log('controller error:', message, args);
-      if (message === com.vzome.desktop.api.Controller.UNKNOWN_ERROR_CODE) {
-        const ex = args[0];
-        clientEvents.errorReported(ex.message);
-      }
-      else
-        clientEvents.errorReported(message);
-    },
-  });
-
-  // This has similar function to the Java equivalent, but a very different mechanism
-  const pickingController = new PickingController(renderedModel);
-  controller.addSubController('picking', pickingController);
-
-  // This has no desktop equivalent
-  const buildPlaneController = new BuildPlaneController(renderedModel, orbitSource);
-  controller.addSubController('buildPlane', buildPlaneController);
-
-  const polytopesController = new com.vzome.desktop.controller.PolytopesController( editor, editContext );
-  controller.addSubController('polytopes', polytopesController);
-
-  const undoRedoController = new com.vzome.desktop.controller.UndoRedoController(history);
-  controller.addSubController('undoRedo', undoRedoController);
-
-  const bookmarkController = new com.vzome.desktop.controller.ToolFactoryController(bookmarkFactory);
-  controller.addSubController('bookmark', bookmarkController);
-
-  const quaternionController = new com.vzome.desktop.controller.VectorController( legacyField .basisVector( 4, com.vzome.core.algebra.AlgebraicVector.W4 ) );
-  controller .addSubController( "quaternion", quaternionController );
-
-  const strutBuilder = new com.vzome.desktop.controller.StrutBuilderController( editContext, legacyField )
-    .withGraphicalViews( true )   // TODO use preset
-    .withShowStrutScales( true ); // TODO use preset
-  controller.addSubController('strutBuilder', strutBuilder);
+  const controller = new EditorController( design, clientEvents ); // this is the equivalent of DocumentController
+  const symmLabel = controller .initialize();
+  const strutBuilder = controller .getSubController( 'strutBuilder' );
+  
   strutBuilder .setMainScene( renderingChanges );
-
-  for (const [name, symmetrySystem] of Object.entries(symmetrySystems)) {
-    const symmController = new com.vzome.desktop.controller.SymmetryController( strutBuilder, symmetrySystem, renderedModel );
-    strutBuilder.addSubController(`symmetry.${name}`, symmController);
-  }
-
-  controller .setSymmetrySystem( null ); // gets the symmetry name from the design
-
-  const toolsController = new com.vzome.desktop.controller.ToolsController(toolsModel);
-  toolsController.addTool(toolsModel.get("bookmark.builtin/ball at origin"));
-  strutBuilder.addSubController('tools', toolsController);
-
-  // enable shape changes
-  renderedModel .addListener( {
-    shapesChanged: () => false, // this allows RenderedModel.setShapes() to not fail and re-render all the parts
-    manifestationAdded: () => {},  // We don't need these incremental changes, since we'll batch render after
-    manifestationRemoved: () => {},
-    colorChanged: () => {},
-    glowChanged: () => {},
-  } );
-
+  // preceding call seems required before the next call, or preview strut won't work
+  controller .setSymmetryController( symmLabel );
 
   const wrapper = new ControllerWrapper( '', '', controller, clientEvents );
 

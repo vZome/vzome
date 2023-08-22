@@ -35,6 +35,11 @@ public abstract class AbstractSymmetryPerspective implements SymmetryPerspective
         return getSymmetry().getName();
     }
 
+    @Override
+    public String getLabel() {
+        return getSymmetry().getName();
+    }
+
     protected void addShapes(Shapes shapes) {
         Shapes old = getGeometry(shapes.getName());
         if(old != null) {
