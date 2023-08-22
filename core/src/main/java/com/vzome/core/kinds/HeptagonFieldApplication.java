@@ -39,6 +39,12 @@ public class HeptagonFieldApplication extends DefaultFieldApplication
 		super( field );
 	}
 
+    @Override
+    public String getLabel()
+    {
+        return "Heptagon";
+    }
+
     private final SymmetryPerspective correctedAntiprismPerspective = new HeptagonalSymmetryPerspective(true);
     private final SymmetryPerspective originalAntiprismPerspective = new HeptagonalSymmetryPerspective(false);
 

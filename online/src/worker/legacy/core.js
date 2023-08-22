@@ -303,6 +303,14 @@ const makeFloatMatrices = ( matrices ) =>
     return fieldApp.getField();
   }
 
+  export const getFieldLabel = ( fieldName ) =>
+  {
+    const fieldApp = getFieldApp( fieldName )
+    if ( !fieldApp )
+      return { error: `No such field name: ${fieldName}` };
+    return fieldApp .getLabel();
+  }
+
   export const getSymmetry = ( fieldName, symmName ) =>
   {
     const fieldApp = getFieldApp( fieldName )

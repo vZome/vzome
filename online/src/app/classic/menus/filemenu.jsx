@@ -2,7 +2,7 @@
 import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 
 import { createSignal } from "solid-js";
-import { controllerAction, controllerExportAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
+import { controllerExportAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
 import { serializeVZomeXml, download } from '../../../workerClient/serializer.js';
 import { UrlDialog } from '../components/webloader.jsx'
 import { fetchDesign, openDesignFile, newDesign } from "../../../workerClient/index.js";
@@ -12,10 +12,12 @@ const NewDesignItem = props =>
 {
   const { postMessage, rootController } = useWorkerClient();
   const fieldLabel = () => controllerProperty( rootController(), `field.label.${props.field}` );
+  // TODO: enable ⌘N
+  const modifiers = () => props.field === 'golden' && '⌘';
+  const key = () => props.field === 'golden' && 'N';
   const onClick = () => postMessage( newDesign( props.field ) );
-  return (
-    <MenuAction label={`${props.field} Field`} onClick={onClick} />
-  )
+  return !!fieldLabel() &&
+    <MenuAction label={`${fieldLabel()} Field`} onClick={onClick} />
 }
 
 export const FileMenu = () =>

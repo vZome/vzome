@@ -58,6 +58,12 @@ public class RootTwoFieldApplication extends DefaultFieldApplication
         octahedralPerspective .addShapes( new ExportedVEFShapes( null, "rootTwoBig", "ornate", symmetry, defaultShapes ) );
     }
 
+    @Override
+    public String getLabel()
+    {
+        return "\u221A2";
+    }
+
     /*
      * This is not really a different symmetry, but it uses different colors and default shapes for the orbits.
      * 

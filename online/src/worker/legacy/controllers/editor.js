@@ -1,6 +1,6 @@
 import { java } from "../candies/j4ts-2.1.0-SNAPSHOT/bundle.js";
 import { com } from '../core-java.js';
-import { getFieldNames } from "../core.js";
+import { getFieldNames, getFieldLabel } from "../core.js";
 import { JsProperties } from '../jsweet2js.js';
 import { PickingController } from './picking.js';
 import { BuildPlaneController } from './buildplane.js';
@@ -105,6 +105,9 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
         return super.getProperty(name);
 
       default:
+        if ( name.startsWith( "field.label." ) ) {
+          return getFieldLabel( name .substring( "field.label.".length ) );
+        }
         if ( ! name.startsWith( "defaultShapes." ) )
           console.log("EditorController getProperty fall through: ", name);
         return super.getProperty(name);

@@ -28,7 +28,7 @@ export const MenuAction = ( props ) =>
           return;
         if ( hasOption !== evt.altKey )
           return;
-        evt .preventDefault();
+        evt .preventDefault(); // Why doesn't this work for ⌘N?
         props.onClick();
       } );
     }
