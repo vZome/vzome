@@ -1,35 +1,18 @@
 
-import Button from "@suid/material/Button"
-import Menu from "@suid/material/Menu"
-import Divider from "@suid/material/Divider";
-import { createSignal } from "solid-js";
+import { Divider, Menu, createMenuAction } from "../../framework/menus.jsx";
 
-import { createMenuAction } from "../components/menuaction.jsx";
 import { subController } from "../../../workerClient/controllers-solid.js";
 import { useWorkerClient } from "../../../workerClient/index.js";
 
 export const EditMenu = () =>
 {
-  const [ anchorEl, setAnchorEl ] = createSignal( null );
-  const open = () => Boolean( anchorEl() );
-  const doClose = () => setAnchorEl( null );
-
   const { rootController } = useWorkerClient();
-  const EditAction = createMenuAction( rootController(), doClose );
+  const EditAction = createMenuAction( rootController() );
   const undoRedoController = () => subController( rootController(), 'undoRedo' );
-  const UndoRedoAction = createMenuAction( undoRedoController(), doClose );
+  const UndoRedoAction = createMenuAction( undoRedoController() );
 
   return (
-    <div>
-      <Button id="edit-menu-button" sx={{ color: 'white', minWidth: 'auto' }}
-        aria-controls={open() ? "edit-menu-menu" : undefined} aria-haspopup="true" aria-expanded={open() ? "true" : undefined}
-        onClick={ (event) => setAnchorEl(event.currentTarget) }
-      >
-        Edit
-      </Button>
-      <Menu id="edit-menu-menu" MenuListProps={{ "aria-labelledby": "edit-menu-button" }}
-        anchorEl={anchorEl()} open={open()} onClose={doClose}
-      >
+      <Menu label="Edit">
         <UndoRedoAction label="Undo"     action="undo"    mods="⌘" key="Z" />
         <UndoRedoAction label="Redo"     action="redo"    mods="⌘" key="Y" />
         <UndoRedoAction label="Undo All" action="undoAll" mods="⌥⌘" key="Z" />
@@ -64,8 +47,6 @@ export const EditMenu = () =>
 
         <EditAction label="Hide"            action="hideball"   mods="⌃" key="H" />
         <EditAction label="Show All Hidden" action="ShowHidden" mods="⌥⌃" key="H" />
-
       </Menu>
-    </div>
   );
 }

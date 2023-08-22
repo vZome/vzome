@@ -39,6 +39,12 @@ public class HeptagonFieldApplication extends DefaultFieldApplication
 		super( field );
 	}
 
+    @Override
+    public String getLabel()
+    {
+        return "Heptagon";
+    }
+
     private final SymmetryPerspective correctedAntiprismPerspective = new HeptagonalSymmetryPerspective(true);
     private final SymmetryPerspective originalAntiprismPerspective = new HeptagonalSymmetryPerspective(false);
 
@@ -48,8 +54,11 @@ public class HeptagonFieldApplication extends DefaultFieldApplication
 
     private class HeptagonalSymmetryPerspective extends AbstractSymmetryPerspective
 	{
-	    HeptagonalSymmetryPerspective(boolean corrected) {
+        private boolean corrected;
+
+        HeptagonalSymmetryPerspective(boolean corrected) {
 	        super(new HeptagonalAntiprismSymmetry(getField(), "blue", corrected).createStandardOrbits( "blue" ));
+            this.corrected = corrected;
 	        AbstractShapes octahedralShapes = new OctahedralShapes( "octahedral", "triangular antiprism", symmetry );
 	        AbstractShapes antiprismShapes = new ExportedVEFShapes( null, "heptagon/antiprism", "heptagonal antiprism", symmetry, octahedralShapes );
 	        
@@ -58,6 +67,13 @@ public class HeptagonFieldApplication extends DefaultFieldApplication
 	        addShapes(octahedralShapes);
 	    }
 	    
+        @Override
+        public String getLabel()
+        {
+            return this.corrected? "heptagonal antiprism" : null; // Hide the "corrected" part for the UI
+            //  ... and the null return makes that variant invisible in the UI
+        }
+
         @Override
         public List<Tool.Factory> createToolFactories( Tool.Kind kind, ToolsModel tools )
         {

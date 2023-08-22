@@ -292,6 +292,8 @@ const makeFloatMatrices = ( matrices ) =>
     }
     return fieldApp
   }
+
+  export const getFieldNames = () => Object .keys( fieldApps );
   
   export const getField = fieldName =>
   {
@@ -299,6 +301,14 @@ const makeFloatMatrices = ( matrices ) =>
     if ( !fieldApp )
       return { name: fieldName, unknown: true };
     return fieldApp.getField();
+  }
+
+  export const getFieldLabel = ( fieldName ) =>
+  {
+    const fieldApp = getFieldApp( fieldName )
+    if ( !fieldApp )
+      return { error: `No such field name: ${fieldName}` };
+    return fieldApp .getLabel();
   }
 
   export const getSymmetry = ( fieldName, symmName ) =>
@@ -331,6 +341,9 @@ const makeFloatMatrices = ( matrices ) =>
     const history = new vzomePkg.core.editor.EditHistory();
     history .setSerializer( { serialize: element => element .serialize( "" ) } );
 
+    let changeCount = 0;
+    const getChangeCount = () => changeCount;
+
     // This object implements the UndoableEdit.Context interface
     const editContext = {
       // Since we are not creating Branch edits, this should never be used
@@ -351,6 +364,7 @@ const makeFloatMatrices = ( matrices ) =>
         history .mergeSelectionChanges();
         history .addEdit( edit, editContext );
         editor .notifyListeners();
+        ++changeCount;
       },
 
       doEdit: ( className, props ) => {
@@ -630,8 +644,10 @@ const makeFloatMatrices = ( matrices ) =>
       return root;
     }
 
-    return { interpretEdit, configureAndPerformEdit, batchRender, serializeToDom, setSymmetrySystem, getSymmetrySystem, editor,
-      field, legacyField, renderedModel, orbitSource, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };
+    return { interpretEdit, configureAndPerformEdit, batchRender, serializeToDom, setSymmetrySystem, getSymmetrySystem, getChangeCount,
+      editor,
+      field, legacyField, fieldApp,
+      renderedModel, orbitSource, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };
   }
 
   export const convertColor = color =>

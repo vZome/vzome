@@ -45,7 +45,6 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PentagonField;
-import com.vzome.core.algebra.PolygonField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Color;
@@ -126,7 +125,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
     // to SymmetryRenderingController?
     //
     private SymmetryController symmetryController;
-    private Map<String,SymmetryController> symmetries = new HashMap<>();
+    private Map<String,SymmetryController> symmetries = new HashMap<>(); // keyed by labels, like SymmetryPerspectives, not symmetry names
     private final PartsController partsController;
 
     // to SelectionController (subclass of RenderedModelController?)
@@ -309,12 +308,24 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         this .addSubController( "strutBuilder", strutBuilder );
         this .strutBuilderGraphics = new StrutBuilderGraphicsController( strutBuilder, cameraController );
         
-        for ( SymmetryPerspective symper : document .getFieldApplication() .getSymmetryPerspectives() )
-        {
-            String name = symper .getName();
-            SymmetryController symmController = new SymmetryController( strutBuilder, (SymmetrySystem) this .documentModel .getEditorModel() .getSymmetrySystem( name ), mRenderedModel );
-            strutBuilder .addSubController( "symmetry." + name, symmController );
-            this .symmetries .put( name, symmController );
+        SymmetrySystem docSymmetrySystem = (SymmetrySystem) this .documentModel .getEditorModel() .getSymmetrySystem();
+        
+        // In case we fall through without matching (due to a legacy system in the doc, no longer UI-exposed)
+        String docLabel = document .getFieldApplication() .getDefaultSymmetryPerspective() .getLabel();
+
+        for ( SymmetryPerspective symper : document .getFieldApplication() .getSymmetryPerspectives() ) {
+            String label = symper .getLabel(); // this can be different from name
+            if ( label != null ) // null label means this symmetry is not to expose in the UI
+            {
+                String name = symper .getSymmetry() .getName();
+                SymmetrySystem system = (SymmetrySystem) this .documentModel .getEditorModel() .getSymmetrySystem( name );
+                if ( system.getName() .equals( docSymmetrySystem.getName() ) ) {
+                    docLabel = label; // for setSymmetryController(), below
+                }
+                SymmetryController symmController = new SymmetryController( label, strutBuilder, system, mRenderedModel );
+                strutBuilder .addSubController( "symmetry." + label, symmController );
+                this .symmetries .put( label, symmController );
+            }
         }
 
         mRequireShift = "true".equals( app.getProperty( "multiselect.with.shift" ) );
@@ -334,7 +345,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
             this .addPropertyListener( this .mainScene );
         this .strutBuilder .setMainScene( this .mainScene );
 
-        setSymmetrySystem( null );
+        setSymmetryController( docLabel );
 
         // can't do this before the setSymmetrySystem() call just above
         if ( mRenderedModel != null )
@@ -462,30 +473,21 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                 this .lessonPageClick .attach( modelCanvas );
             }
     }
-
-    /**
-     * @param symmetryName can be null
-     */
-    private void setSymmetrySystem( String symmetryName )
+    
+    private void setSymmetryController( String label )
     {
-        if("antiprism".equals(symmetryName)) {
-            symmetryName = symmetryName + ((PolygonField) this.documentModel.getField()).polygonSides();
-        }
-        
-        SymmetrySystem symmetrySystem = (SymmetrySystem) this .documentModel .getEditorModel() .getSymmetrySystem( symmetryName );
-        if(symmetrySystem == null) {
-            throw new IllegalStateException("Unable to get SymmetrySystem '" + symmetryName + "'.");
-        }
-        symmetryName = symmetrySystem .getName(); // in case it was null before
-        this .documentModel .setSymmetrySystem( symmetrySystem );
-        
-        symmetryController = this .symmetries .get( symmetryName );
-        if(symmetryController == null) {
-            String msg = "Unsupported symmetry: " + symmetryName;
+        this.symmetryController = this .symmetries .get( label );
+        if (this.symmetryController == null) {
+            String msg = "Unsupported symmetry: " + label;
             mErrors.reportError(msg, new Object[] {} );
             throw new IllegalStateException( msg );
         }
         
+        SymmetrySystem symmetrySystem = (SymmetrySystem) this.symmetryController .getOrbitSource();
+        this .documentModel .setSymmetrySystem( symmetrySystem ); // redundant within initSymmetryController() calls,
+        // except when we are replacing a legacy system with a currently supported one
+
+
         // The current code is running on the EDT, and we want to load the symmetry model on a background thread,
         //  and then update the UI on the EDT.
         SwingWorker<RenderedModel,Object> worker = new SwingWorker<RenderedModel,Object>()
@@ -494,7 +496,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
             protected RenderedModel doInBackground() throws Exception
             {
                 String modelResourcePath = symmetryController .getProperty( "modelResourcePath" );
-                RenderedModel model = mApp .getSymmetryModel( modelResourcePath, symmetrySystem .getSymmetry() );
+                RenderedModel model = mApp .getSymmetryModel( modelResourcePath, symmetryController .getSymmetry() );
                 return model;
             }
 
@@ -516,7 +518,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         };
         worker .execute();  //Start the background thread
 
-        firePropertyChange( "symmetry", null, symmetryName  ); // notify UI, so cardpanel can flip, or whatever
+        firePropertyChange( "symmetry", null, label  ); // notify UI, so cardpanel can flip, or whatever
 
         if ( mRenderedModel != null ) {
             if ( partsController != null )
@@ -525,7 +527,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
             if ( partsController != null )
                 partsController .endSwitch();
         }
-        strutBuilder .setSymmetryController( symmetryController );
+        strutBuilder .setSymmetryController( this.symmetryController );
     }
 
 
@@ -732,7 +734,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                 String modelResourcePath = this .symmetryController .getProperty( "modelResourcePath" );
                 if ( modelResourcePath != null ) {
 					String newAction = "newFromResource-" + modelResourcePath;
-					String symmName = symmetryController.getProperty("name");
+					String symmName = symmetryController.getProperty( "name" ); // the name, not the label
 					if(symmName.startsWith("antiprism")) {
 						// use a delimiter character that shouldn't ever be in a path
 						// and doesn't need to be escaped in a regular expression
@@ -769,8 +771,8 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                 
             default:
                 if ( action.startsWith( "setSymmetry." ) ) {
-                    String system = action.substring( "setSymmetry.".length() );
-                    setSymmetrySystem( system );
+                    String label = action.substring( "setSymmetry.".length() );
+                    this .setSymmetryController( label );
                 }
     
                 else if ( action.startsWith( "AdjustSelectionByOrbitLength/" ) )
@@ -1210,7 +1212,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
             return Boolean.toString( this .isEdited() );
 
         case "symmetry":
-            return symmetryController.getSymmetry().getName();
+            return symmetryController .getProperty( "label" );
 
         case "field.name":
             return this .documentModel .getField() .getName();
@@ -1334,6 +1336,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
 
         default:
             if ( name.startsWith( "symmetry." ) )
+                // the substring is a label (for SymmetryController or SymmetryPerspective), not a symmetry name
                 return this.symmetries.get( name.substring( "symmetry.".length() ) );
             else
                 return super .getSubController( name );

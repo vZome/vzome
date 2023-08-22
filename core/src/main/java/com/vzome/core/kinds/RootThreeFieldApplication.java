@@ -55,6 +55,12 @@ public class RootThreeFieldApplication extends DefaultFieldApplication
         octahedralPerspective .setDefaultGeometry( defaultShapes );
     }
 
+    @Override
+    public String getLabel()
+    {
+        return "\u221A3";
+    }
+
     private final SymmetryPerspective dodecagonalPerspective = new AbstractSymmetryPerspective( new DodecagonalSymmetry( getField() ))
     {
         {

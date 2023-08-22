@@ -18,7 +18,9 @@ public interface FieldApplication extends Symmetries4D
 
 	SymmetryPerspective getSymmetryPerspective( String name );
 
-	String getName();
+    String getName();
+
+    String getLabel();
 
     void registerToolFactories( Map<String, Tool.Factory> toolFactories, ToolsModel tools );
 

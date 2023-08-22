@@ -9,7 +9,7 @@ import DialogContentText from '@suid/material/DialogContentText'
 import IconButton from '@suid/material/IconButton'
 import Button from '@suid/material/Button'
 import InfoRoundedIcon from '@suid/icons-material/InfoRounded'
-import { Tooltip } from '../suidstub/tooltip.jsx'
+import { Tooltip } from '../../framework/tooltip.jsx'
 
 import { REVISION } from '../../../revision.js'
 

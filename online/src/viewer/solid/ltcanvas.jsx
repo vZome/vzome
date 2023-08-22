@@ -80,7 +80,7 @@ const LightedCameraControls = (props) =>
   const position = createMemo( () => {
     const dist = props.sceneCamera?.distance;
     const lookDir = props.sceneCamera?.lookDir;
-    const result = props.sceneCamera?.lookAt.map( (e,i) => e - props.sceneCamera?.distance * props.sceneCamera?.lookDir[ i ] );
+    const result = props.sceneCamera?.lookAt.map( (e,i) => e - dist * lookDir[ i ] );
     return result;
   } );
   const fov = createMemo( () => {
@@ -94,7 +94,7 @@ const LightedCameraControls = (props) =>
     return { ...defaultLighting, backgroundColor };
   });
 
-  const result = (
+  const result = ( !!props.sceneCamera &&
     <>
       <PerspectiveCamera fov={fov()} aspect={props.aspect} position={position()} up={props.sceneCamera?.up} >
         <Lighting {...(lights())} />

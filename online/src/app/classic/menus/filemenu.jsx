@@ -1,29 +1,54 @@
 
-import Button from "@suid/material/Button"
-import Menu from "@suid/material/Menu"
-import Divider from "@suid/material/Divider";
-import MenuItem from "@suid/material/MenuItem"
+import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 
-import { createSignal } from "solid-js";
-import { controllerExportAction } from "../../../workerClient/controllers-solid.js";
+import { createEffect, createSignal } from "solid-js";
+import { controllerAction, controllerExportAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
 import { serializeVZomeXml, download } from '../../../workerClient/serializer.js';
-import { MenuAction } from "../components/menuaction.jsx";
 import { UrlDialog } from '../components/webloader.jsx'
-import { fetchDesign, openDesignFile } from "../../../workerClient/index.js";
+import { fetchDesign, openDesignFile, newDesign } from "../../../workerClient/index.js";
 import { useWorkerClient } from "../../../workerClient/index.js";
+import { Guardrail } from "../components/guardrail.jsx";
+
+const NewDesignItem = props =>
+{
+  const { rootController } = useWorkerClient();
+  const fieldLabel = () => controllerProperty( rootController(), `field.label.${props.field}` );
+  // TODO: enable ⌘N
+  const modifiers = () => props.field === 'golden' && '⌘';
+  const key = () => props.field === 'golden' && 'N';
+  return !!fieldLabel() &&
+    <MenuAction label={`${fieldLabel()} Field`} onClick={props.onClick} />
+}
 
 export const FileMenu = () =>
 {
   const { postMessage, rootController, state } = useWorkerClient();
-  const [ anchorEl, setAnchorEl ] = createSignal( null );
   const [ showDialog, setShowDialog ] = createSignal( false );
-  const open = () => Boolean( anchorEl() );
-  const doClose = () => setAnchorEl( null );
+  const fields = () => controllerProperty( rootController(), 'fields', 'fields', true );
+  const [ showGuardrail, setShowGuardrail ] = createSignal( false );
+  const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
+
+  // Since the initial render of the menu doesn't fetch these properties,
+  //   we have to force this prefetch so the data is ready when we need it.
+  createEffect( () =>
+  {
+    const getLabel = (field) => controllerProperty( rootController(), `field.label.${field}` );
+    const isEdited = edited();
+    for (const field of fields()) {
+      const label = getLabel(field);
+      if ( label === 'no logging' ) // trick the compiler
+        console.log( `never logged: ${isEdited} ${label}`);
+    }
+  });
+
+  const doCreate = field =>
+  {
+    postMessage( newDesign( field ) );
+  }
 
   let inputRef;
   const openFile = evt =>
   {
-    doClose();
     inputRef.click();
   }
   const onFileSelected = e => {
@@ -35,7 +60,6 @@ export const FileMenu = () =>
   }
 
   const handleShowUrlDialog = () => {
-    doClose();
     setShowDialog( true );
   }
   const openUrl = url => {
@@ -44,9 +68,26 @@ export const FileMenu = () =>
     }
   }
 
+  let continuation;
+  const guard = guardedAction =>
+  {
+    if ( edited() ) {
+      continuation = guardedAction;
+      setShowGuardrail( true );
+    }
+    else
+      guardedAction();
+  }
+  const closeGuardrail = continued =>
+  {
+    setShowGuardrail( false );
+    if ( continued )
+      continuation();
+    continuation = undefined;
+  }
+
   const exportAs = ( format, mimeType ) => evt =>
   {
-    doClose();
     controllerExportAction( rootController(), format )
       .then( text => {
         const vName = rootController().source?.name || 'untitled.vZome';
@@ -57,38 +98,34 @@ export const FileMenu = () =>
 
   const save = evt =>
   {
-    doClose();
     controllerExportAction( rootController(), 'vZome' )
       .then( text => {
         const { camera, liveCamera, lighting } = state.scene;
         const fullText = serializeVZomeXml( text, lighting, liveCamera, camera );
         const name = rootController().source?.name || 'untitled.vZome';
         download( name, fullText, 'application/xml' );
+        controllerAction( rootController(), 'clearChanges' );
       });
   }
 
   return (
-    <div>
-      <Button sx={{ color: 'white', minWidth: 'auto' }}
-        id="file-menu-button"
-        aria-controls={open() ? "file-menu-menu" : undefined}
-        aria-haspopup="true"
-        aria-expanded={open() ? "true" : undefined}
-        onClick={ (event) => setAnchorEl(event.currentTarget) }
-      >
-        File
-      </Button>
-      <Menu
-        id="file-menu-menu"
-        anchorEl={anchorEl()}
-        open={open()}
-        onClose={doClose}
-        MenuListProps={{ "aria-labelledby": "file-menu-button" }}
-      >
-        <MenuItem disabled={true} onClick={doClose}>New Design...</MenuItem>
-        <MenuAction label="Open..." onClick={openFile} />
-        <MenuAction label="Open URL..." onClick={handleShowUrlDialog} />
-        <MenuItem disabled={true} onClick={doClose}>Open As New Model...</MenuItem>
+    <Menu label="File" dialogs={<>
+      <input style={{ display: 'none' }} type="file" ref={inputRef}
+        onChange={onFileSelected} accept={".vZome"} />
+
+      <UrlDialog show={showDialog()} setShow={setShowDialog} openDesign={openUrl} />
+
+      <Guardrail show={showGuardrail()} close={closeGuardrail} />
+    </>}>
+        <SubMenu label="New Design...">
+          <For each={fields()}>{ field =>
+            <NewDesignItem field={field} onClick={() => guard( () => doCreate(field) )}/>
+          }</For>
+        </SubMenu>
+
+        <MenuAction label="Open..." onClick={() => guard(openFile)} />
+        <MenuAction label="Open URL..." onClick={() => guard(handleShowUrlDialog)} />
+        <MenuItem disabled={true}>Open As New Model...</MenuItem>
 
         <Divider/>
 
@@ -97,13 +134,6 @@ export const FileMenu = () =>
         <Divider/>
 
         <MenuItem onClick={ exportAs( 'stl', 'application/sla' ) }>Export STL</MenuItem>
-
-      </Menu>
-
-      <input style={{ display: 'none' }} type="file" ref={inputRef}
-        onChange={onFileSelected} accept={".vZome"} />
-
-      <UrlDialog show={showDialog()} setShow={setShowDialog} openDesign={openUrl} />
-    </div>
+    </Menu>
   );
 }

@@ -30,7 +30,7 @@ public class LengthPanelControllersTest
         SymmetrySystem system = new SymmetrySystem( null, perspective, null, new Colors( new Properties() ), true );
 
         Controller strutBuilder = new StrutBuilderController( null, null ) .withShowStrutScales( true );
-        Controller symmController = new SymmetryController( strutBuilder, system, null );
+        Controller symmController = new SymmetryController( "", strutBuilder, system, null );
         Controller buildOrbits = getSubController( symmController, "buildOrbits" );
         assertNotNull( buildOrbits );
         

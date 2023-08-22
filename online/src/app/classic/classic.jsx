@@ -10,7 +10,6 @@ import { useWorkerClient } from "../../workerClient/index.js";
 import { ErrorAlert } from '../../viewer/solid/alert.jsx';
 import { OrbitsDialog } from "./components/orbits.jsx";
 import { ShapesDialog } from "./components/shapes.jsx";
-import { MenuAction } from "./components/menuaction.jsx";
 import { RotationProvider } from "../../viewer/solid/rotation.jsx";
 import { PolytopesDialog } from "./components/polytopes.jsx";
 
@@ -95,16 +94,3 @@ export const SymmetryProvider = (props) =>
 }
 
 export const useSymmetry = () => useContext( SymmetryContext );
-
-export const createSymmetryAction = ( doClose ) => ( props ) =>
-{
-  const { symmetryController } = useSymmetry();
-  const onClick = () => 
-  {
-    doClose();
-    controllerAction( symmetryController(), props.action );
-  }
-  // I was destructuring props here, and lost reactivity!
-  //  It usually doesn't matter for menu items, except when there is checkbox state.
-  return MenuAction( mergeProps( { onClick }, props ) );
-}

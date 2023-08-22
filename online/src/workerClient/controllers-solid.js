@@ -8,34 +8,38 @@ const createWorkerStore = ( worker ) =>
 {
   const { camera, lighting } = initialState.scene;
   // Beware, createStore does not make a copy, shallow or deep!
-  const [ state, setState ] = createStore( { scene: { camera: { ...camera }, lighting: { ...lighting } }, uuid: worker.uuid } );
+  const [ state, setState ] = createStore( {
+    scene: { camera: { ...camera }, lighting: { ...lighting } },
+    trackballScene: { camera: { ...camera }, lighting: { ...lighting } },
+    uuid: worker.uuid
+  } );
 
   const exportPromises = {};
 
-  const addShape = shape =>
+  const addShape = ( shape, which='scene' ) =>
   {
-    if ( ! state.scene.shapes ) {
-      setState( 'scene', 'shapes', {} );
+    if ( ! state[ which ] .shapes ) {
+      setState( which, 'shapes', {} );
     }
-    if ( ! state.scene?.shapes[ shape.id ] ) {
-      setState( 'scene', 'shapes', shape.id, shape );
+    if ( ! state[ which ] ?.shapes[ shape.id ] ) {
+      setState( which, 'shapes', shape.id, shape );
       return true;
     }
     return false;
   }
 
-  const updateShapes = shapes =>
+  const updateShapes = ( shapes, which='scene' ) =>
   {
     for (const [id, shape] of Object.entries(shapes)) {
-      if ( ! addShape( shape ) ) {
+      if ( ! addShape( shape, which ) ) {
         // shape is not new, so just replace its instances
-        setState( 'scene', 'shapes', id, 'instances', shape.instances );
+        setState( which, 'shapes', id, 'instances', shape.instances );
       }
     }
     // clean up preview strut, which may be a shape otherwise not in the scene
-    for ( const id of Object.keys( state.scene.shapes ) ) {
+    for ( const id of Object.keys( state[ which ] ?.shapes || {} ) ) {
       if ( ! (id in shapes) )
-        setState( 'scene', 'shapes', id, 'instances', [] );
+        setState( which, 'shapes', id, 'instances', [] );
     }
   }
 
@@ -84,6 +88,25 @@ const createWorkerStore = ( worker ) =>
         break;
       }
   
+      case 'TRACKBALL_SCENE_LOADED': {
+        const { scene } = data.payload;
+        if ( scene.camera ) {
+          // NOTE: if there is a camera in this scene (first load of existing design, or we requested an article scene,
+          //   or we are previewing), it will replace the existing camera, and rendering will reflect it.
+          //   For edit responses, there should never be a camera.  This all goes for lighting as well.
+          setState( 'trackballScene', 'camera', scene.camera );
+        }
+        if ( scene.lighting ) {
+          // NOTE: if there is a camera in this scene (first load of existing design, or we requested an article scene,
+          //   or we are previewing), it will replace the existing camera, and rendering will reflect it.
+          //   For edit responses, there should never be a camera.  This all goes for lighting as well.
+          setState( 'trackballScene', 'lighting', scene.lighting );
+        }
+        setState( 'trackballScene', 'embedding', scene.embedding );
+        updateShapes( scene.shapes, 'trackballScene' );
+        break;
+      }
+
       case 'SCENE_RENDERED': {
         // TODO: I wish I had a better before/after contract with the worker
         const { scene, edit } = data.payload;
@@ -164,7 +187,7 @@ const createWorkerStore = ( worker ) =>
         setState.apply( null, [ 'controller', ...names, name, value ] );
         break;
 
-      case 'PLANES_DEFINED':
+      case 'SYMMETRY_CHANGED':
       case 'DESIGN_XML_PARSED':
         // TODO these are not implemented yet!
         break;

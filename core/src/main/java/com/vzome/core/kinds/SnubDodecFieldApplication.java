@@ -130,6 +130,12 @@ public class SnubDodecFieldApplication extends DefaultFieldApplication
 		return this .getField() .getName();
 	}
 
+    @Override
+    public String getLabel()
+    {
+        return "Snub Dodecahedron";
+    }
+
 	@Override
 	public Collection<SymmetryPerspective> getSymmetryPerspectives()
 	{

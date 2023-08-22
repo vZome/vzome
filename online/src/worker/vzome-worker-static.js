@@ -6,6 +6,7 @@ export const WORKER_ENTRY_FILE_URL = import.meta.url;
 
 const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
 
+let baseURL;
 let scenes;
 let snapshots;
 let previewShapes;
@@ -142,7 +143,7 @@ const fetchFileText = selected =>
   })
 }
 
-let designController;
+let designWrapper;
 
 const clientEvents = report =>
 {
@@ -156,7 +157,7 @@ const clientEvents = report =>
 
   const selectionToggled = ( shapeId, id, selected ) => report( { type: 'SELECTION_TOGGLED', payload: { shapeId, id, selected } } );
 
-  const symmetryChanged = details => report( { type: 'PLANES_DEFINED', payload: details } );
+  const symmetryChanged = details => report( { type: 'SYMMETRY_CHANGED', payload: details } );
 
   const xmlParsed = xmlTree => report( { type: 'DESIGN_XML_PARSED', payload: xmlTree } );
 
@@ -177,14 +178,49 @@ const clientEvents = report =>
     xmlParsed, scenesDiscovered, designSerialized, propertyChanged, errorReported, textExported, };
 }
 
+const trackballScenes = {};
+
+const fetchTrackballScene = ( url, report ) =>
+{
+  const reportTrackballScene = scene => report( { type: 'TRACKBALL_SCENE_LOADED', payload: scene } );
+  const cachedScene = trackballScenes[ url ];
+  if ( !!cachedScene ) {
+    reportTrackballScene( cachedScene );
+    return;
+  }
+  const filter = event =>
+  {
+    const { type, payload } = event;
+    if ( type === 'SCENE_RENDERED' ) {
+      trackballScenes[ url ] = payload;
+      reportTrackballScene( payload );
+    }
+  }
+  Promise.all( [ import( './legacy/dynamic.js' ), fetchUrlText( new URL( `/resources/${url}`, baseURL ) ) ] )
+    .then( ([ module, xml ]) => {
+      module .loadDesign( xml, false, clientEvents( filter ) );
+    } )
+}
+
+const reportDesign = report =>
+{
+  report( { type: 'CONTROLLER_CREATED' } );
+  const trackballUpdater = () => fetchTrackballScene( designWrapper .getTrackballUrl(), report );
+  trackballUpdater();
+  designWrapper.controller .addPropertyListener( { propertyChange: pce =>
+  {
+    if ( 'symmetry' === pce.getPropertyName() ) { trackballUpdater(); }
+  } });
+}
+
 const createDesign = ( report, fieldName ) =>
 {
   report( { type: 'FETCH_STARTED', payload: { name: 'untitled.vZome', preview: false } } );
   return import( './legacy/dynamic.js' )
 
     .then( module => {
-      designController = module .newDesign( fieldName, clientEvents( report ) );
-      report( { type: 'CONTROLLER_CREATED' } );
+      designWrapper = module .newDesign( fieldName, clientEvents( report ) );
+      reportDesign( report );
     } )
 
     .catch( error => {
@@ -207,8 +243,8 @@ const loadDesign = ( xmlLoading, report, debug, sceneTitle ) =>
   return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
 
     .then( ([ module, xml ]) => {
-      designController = module .loadDesign( xml, debug, clientEvents( report ), sceneTitle );
-      report( { type: 'CONTROLLER_CREATED' } );
+      designWrapper = module .loadDesign( xml, debug, clientEvents( report ), sceneTitle );
+      reportDesign( report );
     } )
 
     .catch( error => {
@@ -288,6 +324,10 @@ onmessage = ({ data }) =>
     
   switch (type) {
 
+    case 'WINDOW_LOCATION':
+      baseURL = payload;
+      break;
+
     case 'URL_PROVIDED':
       urlLoader( postMessage, data );
       break;
@@ -301,7 +341,7 @@ onmessage = ({ data }) =>
       const { nodeId, camera } = scenes[ index ];
       let scene;
       if ( nodeId ) { // XML was parsed by the legacy module
-        scene = { camera, ...designController .getScene( nodeId, true ) };
+        scene = { camera, ...designWrapper .getScene( nodeId, true ) };
       } else // a preview JSON
         scene = preparePreviewScene( index );
       postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
@@ -310,7 +350,7 @@ onmessage = ({ data }) =>
 
     case 'EDIT_SELECTED': {
       const { before, after } = payload; // only one of these will have an edit ID
-      const scene = designController .getScene( before || after, !!before );
+      const scene = designWrapper .getScene( before || after, !!before );
       const { edit } = scene;
       postMessage( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
       break;
@@ -320,8 +360,8 @@ onmessage = ({ data }) =>
     {
       const { controllerPath, action, parameters } = payload;
       try {
-        designController .doAction( controllerPath, action, parameters );
-        const { shapes, embedding } = designController .getScene( '--END--', true ); // never send camera or lighting!
+        designWrapper .doAction( controllerPath, action, parameters );
+        const { shapes, embedding } = designWrapper .getScene( '--END--', true ); // never send camera or lighting!
         postMessage( { type: 'SCENE_RENDERED', payload: { scene: { shapes, embedding } } } );
       } catch (error) {
         console.log( `${action} actionPerformed error: ${error.message}` );
@@ -334,7 +374,7 @@ onmessage = ({ data }) =>
     {
       const { controllerPath, name, value } = payload;
       try {
-        designController .setProperty( controllerPath, name, value );
+        designWrapper .setProperty( controllerPath, name, value );
       } catch (error) {
         console.log( `${action} setProperty error: ${error.message}` );
         postMessage( { type: 'ALERT_RAISED', payload: `Failed to set property: ${name}` } );
@@ -345,7 +385,7 @@ onmessage = ({ data }) =>
     case 'PROPERTY_REQUESTED':
     {
       const { controllerPath, propName, changeName, isList } = payload;
-      designController .registerPropertyInterest( controllerPath, propName, changeName, isList );
+      designWrapper .registerPropertyInterest( controllerPath, propName, changeName, isList );
       break;
     }
 
@@ -357,9 +397,9 @@ onmessage = ({ data }) =>
     case 'STRUT_CREATION_TRIGGERED':
     case 'JOIN_BALLS_TRIGGERED':
     {
-      designController .doAction( 'buildPlane', type, payload );
+      designWrapper .doAction( 'buildPlane', type, payload );
 
-      const scene = designController .getScene( '--END--', true );
+      const scene = designWrapper .getScene( '--END--', true );
       postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
       break;
     }
@@ -367,21 +407,21 @@ onmessage = ({ data }) =>
     case 'PREVIEW_STRUT_START':
     {
       const { ballId, direction } = payload;
-      designController .startPreviewStrut( ballId, direction );
+      designWrapper .startPreviewStrut( ballId, direction );
       break;
     }
 
     case 'PREVIEW_STRUT_MOVE':
     {
       const { direction } = payload;
-      designController .movePreviewStrut( direction );
+      designWrapper .movePreviewStrut( direction );
       break;
     }
   
     case 'PREVIEW_STRUT_END':
     {
-      designController .endPreviewStrut();
-      const scene = designController .getScene( '--END--', true );
+      designWrapper .endPreviewStrut();
+      const scene = designWrapper .getScene( '--END--', true );
       postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
       break;
     }

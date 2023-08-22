@@ -75,6 +75,12 @@ public class GoldenFieldApplication extends DefaultFieldApplication
     }
 
     @Override
+    public String getLabel()
+    {
+        return "Zome (Golden)";
+    }
+
+    @Override
     public Collection<SymmetryPerspective> getSymmetryPerspectives()
     {
         return Arrays.asList( this .icosahedralPerspective, super .getDefaultSymmetryPerspective() );

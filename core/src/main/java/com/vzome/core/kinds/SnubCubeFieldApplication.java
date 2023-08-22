@@ -76,6 +76,12 @@ public class SnubCubeFieldApplication extends DefaultFieldApplication {
         symmPerspective.addShapes(snubDualLhShapes); 
     }
 
+    @Override
+    public String getLabel()
+    {
+        return "Snub Cube";
+    }
+
     // This is just to help get the zone orbit vectors compliant with the comment in symmetry.Direction.
 //    private void printUnitVector(AlgebraicVector v) {
 //        AlgebraicNumber recip = v.getComponent(0);
