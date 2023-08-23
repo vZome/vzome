@@ -11,6 +11,16 @@ let scenes;
 let snapshots;
 let previewShapes;
 
+const captureScenes = report => event =>
+{
+  const { type, payload } = event;
+  if ( type === 'SCENES_DISCOVERED' ) {
+    scenes = payload;
+  }
+  report( event );
+}
+
+
 export const getSceneIndex = ( title, list ) =>
 {
   if ( !title )
@@ -165,10 +175,7 @@ const clientEvents = report =>
 
   const errorReported = message => report( { type: 'ALERT_RAISED', payload: message } );
 
-  const scenesDiscovered = s => {
-    scenes = s; // TODO fix this horrible hack
-    report( { type: 'SCENES_DISCOVERED', payload: s } );
-  }
+  const scenesDiscovered = s => report( { type: 'SCENES_DISCOVERED', payload: s } );
 
   const designSerialized = xml => report( { type: 'DESIGN_XML_SAVED', payload: xml } );
 
@@ -188,7 +195,7 @@ const fetchTrackballScene = ( url, report ) =>
     reportTrackballScene( cachedScene );
     return;
   }
-  const filter = event =>
+  const justTheScene = event =>
   {
     const { type, payload } = event;
     if ( type === 'SCENE_RENDERED' ) {
@@ -198,19 +205,21 @@ const fetchTrackballScene = ( url, report ) =>
   }
   Promise.all( [ import( './legacy/dynamic.js' ), fetchUrlText( new URL( `/resources/${url}`, baseURL ) ) ] )
     .then( ([ module, xml ]) => {
-      module .loadDesign( xml, false, clientEvents( filter ) );
+      module .loadDesign( xml, false, clientEvents( justTheScene ) );
     } )
 }
 
-const reportDesign = report =>
+const reportDesign = ( report, preview=false ) =>
 {
-  report( { type: 'CONTROLLER_CREATED' } );
-  const trackballUpdater = () => fetchTrackballScene( designWrapper .getTrackballUrl(), report );
-  trackballUpdater();
-  designWrapper.controller .addPropertyListener( { propertyChange: pce =>
-  {
-    if ( 'symmetry' === pce.getPropertyName() ) { trackballUpdater(); }
-  } });
+  report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
+  if ( !preview ) {
+    const trackballUpdater = () => fetchTrackballScene( designWrapper .getTrackballUrl(), report );
+    trackballUpdater();
+    designWrapper.controller .addPropertyListener( { propertyChange: pce =>
+    {
+      if ( 'symmetry' === pce.getPropertyName() ) { trackballUpdater(); }
+    } });
+  }
 }
 
 const createDesign = ( report, fieldName ) =>
@@ -238,17 +247,17 @@ const getField = name =>
     } );
 }
 
-const loadDesign = ( xmlLoading, report, debug, sceneTitle ) =>
+const openDesign = ( xmlLoading, report, debug, sceneTitle, preview ) =>
 {
   return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
 
     .then( ([ module, xml ]) => {
-      designWrapper = module .loadDesign( xml, debug, clientEvents( report ), sceneTitle );
-      reportDesign( report );
+      designWrapper = module .loadDesign( xml, debug, clientEvents( captureScenes( report ) ), sceneTitle );
+      reportDesign( report, preview );
     } )
 
     .catch( error => {
-      console.log( `loadDesign failure: ${error.message}` );
+      console.log( `openDesign failure: ${error.message}` );
       report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model.  ${error.message}` } );
       return false; // probably nobody should care about the return value
      } );
@@ -256,9 +265,6 @@ const loadDesign = ( xmlLoading, report, debug, sceneTitle ) =>
 
 const fileLoader = ( report, event ) =>
 {
-  if ( event.type !== 'FILE_PROVIDED' ) {
-    return report( event );
-  }
   const { file, debug=false } = event.payload;
   const { name } = file;
   report( { type: 'FETCH_STARTED', payload: { name, preview: false } } );
@@ -267,14 +273,11 @@ const fileLoader = ( report, event ) =>
 
   xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { name, text } } ) );
 
-  return loadDesign( xmlLoading, report, debug );
+  return openDesign( xmlLoading, report, debug );
 }
 
 const urlLoader = ( report, event ) =>
 {
-  if ( event.type !== 'URL_PROVIDED' ) {
-    return report( event );
-  }
   const { url, config } = event.payload;
   const { preview=false, debug=false, showScenes=false, sceneTitle } = config;
   if ( !url ) {
@@ -307,11 +310,11 @@ const urlLoader = ( report, event ) =>
       .catch( error => {
         console.log( error.message );
         console.log( 'Preview failed, falling back to vZome XML' );
-        return loadDesign( xmlLoading, report, debug, sceneTitle );
+        return openDesign( xmlLoading, report, debug, sceneTitle, true );
       } )
   }
   else {
-    return loadDesign( xmlLoading, report, debug, sceneTitle );
+    return openDesign( xmlLoading, report, debug, sceneTitle, false );
   }
 }
 
