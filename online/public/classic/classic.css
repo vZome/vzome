@@ -71,7 +71,9 @@ img {
 
 .hidden-color-input {
   max-width: 0px;
+  max-height: 0px;
   border-width: 0px;
+  padding: 0;
   position: relative;
   left: -1rem;
   z-index: -1;
@@ -237,18 +239,19 @@ button:disabled > .toolbar-image {
 .dropdown-menu__checkbox-item,
 .dropdown-menu__radio-item,
 .dropdown-menu__sub-trigger {
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1;
   color: hsl(240 4% 16%);
   border-radius: 4px;
   display: flex;
   align-items: center;
-  height: 32px;
+  height: 26px;
   padding: 0 8px 0 24px;
   position: relative;
   user-select: none;
   outline: none;
   text-transform: capitalize;
+  position: relative;
 }
 .dropdown-menu__sub-trigger[data-expanded] {
   background-color: hsl(204 94% 94%);

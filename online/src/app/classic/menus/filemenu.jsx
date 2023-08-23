@@ -108,6 +108,9 @@ export const FileMenu = () =>
       });
   }
 
+  const ExportItem = props =>
+    <MenuItem onClick={ exportAs( props.ext, props.mime ) } disabled={props.disabled}>{props.label}</MenuItem>
+
   return (
     <Menu label="File" dialogs={<>
       <input style={{ display: 'none' }} type="file" ref={inputRef}
@@ -129,11 +132,65 @@ export const FileMenu = () =>
 
         <Divider/>
 
-        <MenuAction label="Save" onClick={save} mods="⌘" key="S" />
+        <MenuAction label="Close" disabled={true} />
+        <MenuAction label="Save..." onClick={save} mods="⌘" key="S" />
+        <MenuAction label="Save As..." disabled={true} />
+        <MenuAction label="Save Template..." disabled={true} />
 
         <Divider/>
 
-        <MenuItem onClick={ exportAs( 'stl', 'application/sla' ) }>Export STL</MenuItem>
+        <SubMenu label="Import 3D Mesh">
+          <MenuItem disabled={true}>Simple Mesh JSON</MenuItem>
+          <MenuItem disabled={true}>Color Mesh JSON</MenuItem>
+          <MenuItem disabled={true}>vZome VEF</MenuItem>
+        </SubMenu>
+
+        <Divider/>
+
+        <SubMenu label="Export 3D Rendering">
+          <ExportItem label="Collada DAE" ext="dae" mime="text/plain" disabled={true} />
+          <ExportItem label="POV-Ray" ext="pov" mime="text/plain" disabled={true} />
+          <ExportItem label="vZome Shapes JSON" ext="shapes" mime="text/plain" disabled={true} />
+          <ExportItem label="VRML" ext="vrml" mime="text/plain" disabled={true} />
+        </SubMenu>
+        <SubMenu label="Export 3D Panels">
+          <ExportItem label="StL (mm)" ext="stl" mime="application/sla" />
+          <ExportItem label="OFF" ext="off" mime="text/plain" disabled={true} />
+          <ExportItem label="PLY" ext="ply" mime="text/plain" disabled={true} />
+        </SubMenu>
+        <SubMenu label="Export 3D Mesh">
+          <ExportItem label="Simple Mesh JSON" ext="mesh" mime="text/plain" disabled={true} />
+          <ExportItem label="Color Mesh JSON" ext="cmesh" mime="text/plain" disabled={true} />
+          <ExportItem label="AutoCAD DXF" ext="dxf" mime="text/plain" disabled={true} />
+        </SubMenu>
+
+        <Divider/>
+
+        <MenuItem disabled={true}>Share using GitHub...</MenuItem>
+
+        <Divider/>
+
+        <SubMenu label="Capture Image">
+          <MenuItem disabled={true} action="capture.jpg" >JPEG</MenuItem>
+          <MenuItem disabled={true} action="capture.png" >PNG</MenuItem>
+          <MenuItem disabled={true} action="capture.gif" >GIF</MenuItem>
+          <MenuItem disabled={true} action="capture.bmp" >BMP</MenuItem>
+        </SubMenu>
+
+        <MenuItem disabled={true} action="capture-wiggle-gif" >Capture Animation</MenuItem>
+
+        <SubMenu label="Capture Vector Drawing">
+          <MenuItem disabled={true} action="export2d.pdf" >PDF</MenuItem>
+          <MenuItem disabled={true} action="export2d.svg" >SVG</MenuItem>
+          <MenuItem disabled={true} action="export2d.ps" >Postscript</MenuItem>
+          <Divider/>
+          <MenuItem disabled={true} action="snapshot.2d" >Customize...</MenuItem>
+        </SubMenu>
+
+        <Divider/>
+
+        <MenuItem disabled={true} >Quit</MenuItem>
+
     </Menu>
   );
 }
