@@ -203,7 +203,7 @@ const fetchTrackballScene = ( url, report ) =>
       reportTrackballScene( payload );
     }
   }
-  Promise.all( [ import( './legacy/dynamic.js' ), fetchUrlText( new URL( `/resources/${url}`, baseURL ) ) ] )
+  Promise.all( [ import( './legacy/dynamic.js' ), fetchUrlText( new URL( `./resources/${url}`, baseURL ) ) ] )
     .then( ([ module, xml ]) => {
       module .loadDesign( xml, false, clientEvents( justTheScene ) );
     } )

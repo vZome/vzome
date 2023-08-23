@@ -65,7 +65,7 @@ export const ToolConfig = (props) =>
       <div class='tool-config-icon-label' onKeydown={handleKeyDown} >
         <button aria-label={props.label} class='toolbar-button' onClick={handleToolClick} disabled={props.disabled}
             style={{ padding: '0.5em' }}>
-          <img src={ `/resources/icons/tools/${props.image}.png`} class='toolbar-image'/>
+          <img src={ `./resources/icons/tools/${props.image}.png`} class='toolbar-image'/>
         </button>
         { !!props.predefined?
           <Typography sx={{ margin: 'auto' }}>{props.label}</Typography>
