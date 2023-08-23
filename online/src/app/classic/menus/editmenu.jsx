@@ -1,8 +1,30 @@
 
-import { Divider, Menu, createMenuAction } from "../../framework/menus.jsx";
+import { createEffect } from "solid-js";
+import { Divider, Menu, MenuItem, SubMenu, createMenuAction } from "../../framework/menus.jsx";
 
-import { subController } from "../../../workerClient/controllers-solid.js";
+import { controllerAction, subController } from "../../../workerClient/controllers-solid.js";
 import { useWorkerClient } from "../../../workerClient/index.js";
+
+const SetColorItem = props =>
+{
+  let colorInputElement;
+  const handleClick = () =>
+  {
+    colorInputElement.click();
+  }
+  const setColor = color =>
+  {
+    controllerAction( props.ctrlr, `ColorManifestations/${color}ff` );
+  }
+  createEffect( () => {
+    // skip the leading "#"
+    colorInputElement.addEventListener( "change", e => setColor( e.target.value.substring(1) ), false );
+  });
+  return ( <>
+    <MenuItem onClick={handleClick} >Set Color...</MenuItem>
+    <input ref={colorInputElement} type="color" id="color-picker" name="color-picker" class='hidden-color-input' />
+  </>);
+}
 
 export const EditMenu = () =>
 {
@@ -30,6 +52,18 @@ export const EditMenu = () =>
         <EditAction label="Select All"       action="SelectAll"       mods="⌘" key="A" />
         <EditAction label="Select Neighbors" action="SelectNeighbors" mods="⌥⌘" key="A" />
         <EditAction label="Invert Selection" action="InvertSelection" />
+        <SubMenu label="Select">
+          <EditAction label="Balls" action="AdjustSelectionByClass/selectBalls" />
+          <EditAction label="Struts" action="AdjustSelectionByClass/selectStruts" />
+          <EditAction label="Panels" action="AdjustSelectionByClass/selectPanels" />
+          <EditAction label="Automatic Struts" action="SelectAutomaticStruts" />
+        </SubMenu>
+        <SubMenu label="Deselect">
+          <EditAction label="Balls" action="AdjustSelectionByClass/deselectBalls" />
+          <EditAction label="Struts" action="AdjustSelectionByClass/deselectStruts" />
+          <EditAction label="Panels" action="AdjustSelectionByClass/deselectPanels" />
+          <EditAction label="All" action="DeselectAll" />
+        </SubMenu>
 
         <Divider />
 
@@ -47,6 +81,46 @@ export const EditMenu = () =>
 
         <EditAction label="Hide"            action="hideball"   mods="⌃" key="H" />
         <EditAction label="Show All Hidden" action="ShowHidden" mods="⌥⌃" key="H" />
+
+        <Divider />
+
+        <SetColorItem ctrlr={rootController()} />
+
+        <SubMenu label="Set Opacity">
+          <EditAction label="Opaque" action="TransparencyMapper@255" disabled={true} />
+          <EditAction label="95%"    action="TransparencyMapper@242" disabled={true} />
+          <EditAction label="75%"    action="TransparencyMapper@192" disabled={true} />
+          <EditAction label="50%"    action="TransparencyMapper@127" disabled={true} />
+          <EditAction label="25%"    action="TransparencyMapper@63"  disabled={true} />
+          <EditAction label="5%"     action="TransparencyMapper@13"  disabled={true} />
+        </SubMenu>
+
+        <EditAction label="Copy Last Selected Color"  action="MapToColor/CopyLastSelectedColor" />
+        <EditAction label="Reset Colors"              action="MapToColor/SystemColorMap" />
+
+        <SubMenu label="Color Effects">
+          <EditAction label="Complement"           action="MapToColor/ColorComplementor" />
+          <EditAction label="Invert"               action="MapToColor/ColorInverter" />
+          <EditAction label="Maximize"             action="MapToColor/ColorMaximizer" />
+          <EditAction label="Soften"               action="MapToColor/ColorSoftener" />
+          <EditAction label="Darken with Distance" action="MapToColor/DarkenWithDistance" />
+          <EditAction label="Darken near Origin"   action="MapToColor/DarkenNearOrigin" />
+        </SubMenu>
+
+        <SubMenu label="Map Colors">
+          <EditAction label="To Centroid"              action="MapToColor/RadialCentroidColorMap" />
+          <EditAction label="To Direction"             action="MapToColor/RadialStandardBasisColorMap" />
+          <EditAction label="To Canonical Orientation" action="MapToColor/CanonicalOrientationColorMap" />
+          <EditAction label="To Normal Polarity"       action="MapToColor/NormalPolarityColorMap" />
+          <EditAction label="To Octant"                action="MapToColor/CentroidByOctantAndDirectionColorMap" />
+          <EditAction label="To Coordinate Plane"      action="MapToColor/CoordinatePlaneColorMap" />
+          <EditAction label="System by Centroid"       action="MapToColor/SystemCentroidColorMap" />
+          <EditAction label="Nearest Predefined Orbit"             action="MapToColor/NearestPredefinedOrbitColorMap" />
+          <EditAction label="Nearest Predefined Orbit by Centroid" action="MapToColor/CentroidNearestPredefinedOrbitColorMap" />
+          <EditAction label="Nearest Special Orbit"                action="MapToColor/NearestSpecialOrbitColorMap" />
+          <EditAction label="Nearest Special Orbit by Centroid"    action="MapToColor/CentroidNearestSpecialOrbitColorMap" />
+        </SubMenu>
+
       </Menu>
   );
 }

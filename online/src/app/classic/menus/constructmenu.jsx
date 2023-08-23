@@ -1,5 +1,5 @@
 
-import { Divider, Menu, createMenuAction } from "../../framework/menus.jsx";
+import { Divider, Menu, SubMenu, createMenuAction } from "../../framework/menus.jsx";
 
 import { useWorkerClient } from "../../../workerClient/index.js";
 
@@ -38,7 +38,11 @@ export const ConstructMenu = () =>
         <Divider />
         
         <EditAction label="2D Convex Hull" action="ConvexHull2d" />
-        <EditAction label="3D Convex Hull" action="ConvexHull3d" />
+        <SubMenu label="3D Convex Hull">
+          <EditAction label="Complete" action="ConvexHull3d" />
+          <EditAction label="Panels Only" action="ConvexHull3d/onlyPanels" />
+          <EditAction label="Struts Only" action="ConvexHull3d/noPanels" />
+        </SubMenu>
 
         <Divider />
         
