@@ -82,6 +82,7 @@ const baseField = createField( { name: 'golden', order: 2, times, embed, recipro
 
 const field = {
   ...baseField,
+  getIrrational: () => 'φ',
   goldenRatio: [ 0n, 1n, 1n ],
   quaternions: createQuaternions( baseField ),
   goldenSeries: goldenSeries( baseField )

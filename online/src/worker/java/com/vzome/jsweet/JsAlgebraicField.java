@@ -490,7 +490,8 @@ public class JsAlgebraicField implements AlgebraicField
     @Override
     public String getIrrational(int i, int format)
     {
-        return "𝜙";  // TODO fix this!
+        Function f = (Function) this.delegate .$get( "getIrrational" );
+        return f.$apply( any( i ) );
     }
 
     @Override

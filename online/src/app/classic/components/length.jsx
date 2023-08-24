@@ -2,8 +2,14 @@
 import { Show, createEffect, createSignal, Switch as Case, Match } from 'solid-js';
 
 import Button from '@suid/material/Button';
-import FormControlLabel from '@suid/material/FormControlLabel';
 import Switch from '@suid/material/Switch';
+import Select from "@suid/material/Select";
+import MenuItem from "@suid/material/MenuItem";
+import Radio from '@suid/material/Radio';
+import RadioGroup from '@suid/material/RadioGroup';
+import FormControlLabel from '@suid/material/FormControlLabel';
+import FormControl from '@suid/material/FormControl';
+import FormLabel from '@suid/material/FormLabel';
 // import Slider from '@suid/material/Slider';
 
 import { controllerAction, controllerProperty, subController } from '../../../workerClient/controllers-solid.js';
@@ -48,23 +54,39 @@ export const hexToWebColor = colorHex =>
 
 const ScaleBy = props =>
 {
-  const { rootController } = useWorkerClient();
-  const multipliers = () => controllerProperty( rootController(), 'field.multipliers', 'field.multipliers', true ) || [ ' ' ];
+  const multipliers = () => controllerProperty( props.controller, 'field.multipliers', 'field.multipliers', true ) || [ ' ' ];
   const number = () => multipliers() .length;
+  const setMultiplier = evt => {
+    const multiplier = evt.target.value;
+    controllerAction( props.controller, `setMultiplier.${multiplier}` );
+  }
 
   return (
     <div id='scale-factors' style={{ 'background-color': 'whitesmoke', padding: '0.4em', margin: '0.4em' }}>
-      Scale by: 
-      <Case fallback={
-          <span>2 or 3 multipliers</span>
-        }>
-        <Match when={number() === 1}>
-          <span>{multipliers()[0]}</span>
-        </Match>
-        <Match when={number() > 3}>
-          <span>{'>'} 3 multipliers</span>
-        </Match>
-      </Case>
+      <FormControl sx={{ m: 1, minWidth: 90 }} size="small" >
+        <FormLabel id="scale-by-label">Scale by</FormLabel>
+
+        <Case
+          fallback={
+            <span>{multipliers()[0]}</span>
+          }>
+          <Match when={ [2,3] .includes( number() )}>
+            <RadioGroup row name="scale-radio-group" aria-labelledby="scale-by-label" defaultValue={0} onChange={setMultiplier} >
+              <For each={multipliers()}>{ (m,i) => { console.log( 'mult', m, i() );
+                return <FormControlLabel value={i()} control={<Radio />} label={m} /> }
+              }</For>
+            </RadioGroup>
+          </Match>
+          <Match when={number() > 3}>
+            <Select id="multiplier" label="multiplier" defaultValue={0} onChange={setMultiplier} >
+              <For each={multipliers()}>{ (m,i) =>
+                <MenuItem value={i()}>{m}</MenuItem>
+              }</For>
+            </Select>
+          </Match>
+        </Case>
+
+      </FormControl>
     </div>
   );
 }
@@ -132,7 +154,7 @@ export const StrutLengthPanel = props =>
     <div id='strut-length' class='grid-rows-fr-min' >
       <div id='change-size' class='grid-cols-2-1' >
         <div id='scales-and-slider' class='grid-rows-min-1' style={{ 'background-color': backgroundColor(), 'border-radius': '5px' }}>
-          <ScaleBy/>
+          <ScaleBy controller={lengthController()} />
           <div id='up-down-slider' class='grid-cols-min-1 orbit-scale'>
             <div id='up-down' class='grid-rows-1-1 pad-4px' >
               <button aria-label='scale-up' class='scale-button' onClick={scaleUp}>
