@@ -19,11 +19,24 @@ public class Color
 
     public Color( String rgbaHex )
     {
-        int rgba = Integer .parseInt( rgbaHex, 16 );
-        int r = ( rgba >> 24 ) & 0xFF;
-        int g = ( rgba >> 16 ) & 0xFF;
-        int b = ( rgba >> 8 ) & 0xFF;
-        int a = ( rgba >> 0 ) & 0xFF;
+    	// I think that parseUnsignedInt() has problems transpiling to JS
+    	// since JS has no concept of unsigned ints but in Java, parseInt() 
+    	// throws a NumberFormatException when parsing rgbaHex 
+    	// as a full 64 bit hex number if the high bit 
+    	// of the color is set (e.g. RED component > 127 as in ffffffff = WHITE).
+    	// Also, BLACK may be passed in as "ff" rather than "000000ff",
+    	// or a fully transparent BLACK may be simply "0" since the alpha channel is also 0. 
+    	// Therefore we need to pad enough leading zeroes to be sure rgbaHex has 8 characters.
+    	// We could do this only if rgbaHex.length() < 8, but that would be true 
+    	// any time the RED component is less than 128, so let's just do it always.  
+    	String padded = "00000000" + rgbaHex;
+    	rgbaHex = padded.substring( padded.length() - 8);
+    	// Now I'm going back to the older method of chopping up the string before parsing it 
+    	// to its four byte components so that this code will hopefully work in JS too.
+        int r = Integer.parseInt( rgbaHex.substring( 0, 2 ), 16 );
+        int g = Integer.parseInt( rgbaHex.substring( 2, 4 ), 16 );
+        int b = Integer.parseInt( rgbaHex.substring( 4, 6 ), 16 );
+        int a = Integer.parseInt( rgbaHex.substring( 6, 8 ), 16 );
         red = r > 0xFF? 0xFF : ( r < 0? 0 : r );
         green = g > 0xFF? 0xFF : ( g < 0? 0 : g );
         blue = b > 0xFF? 0xFF : ( b < 0? 0 : b );
