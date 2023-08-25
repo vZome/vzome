@@ -4,6 +4,7 @@ import { getFieldNames, getFieldLabel } from "../core.js";
 import { JsProperties } from '../jsweet2js.js';
 import { PickingController } from './picking.js';
 import { BuildPlaneController } from './buildplane.js';
+import { modelToJS } from "../json.js";
 
 export class EditorController extends com.vzome.desktop.controller.DefaultController
 {
@@ -172,6 +173,14 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
         const format = params.getConfig().format; // TODO remove the STL hardcoding!
 
         switch (format) {
+
+          case 'mesh':
+          case 'cmesh': {
+            const mesh = modelToJS( this.design .editor .getRealizedModel(), format==='cmesh' );
+            const text = JSON.stringify( mesh, null, 2 );
+            this.clientEvents.textExported( action, text ); // returning the action for Promise correlation on the client
+            return;
+          }
 
           case 'stl': {
             const exporter = new com.vzome.core.exporters.StlExporter();

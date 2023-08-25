@@ -1,7 +1,7 @@
 
 import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 
-import { createEffect, createSignal } from "solid-js";
+import { createEffect, createSignal, mergeProps } from "solid-js";
 import { controllerAction, controllerExportAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
 import { serializeVZomeXml, download } from '../../../workerClient/serializer.js';
 import { UrlDialog } from '../components/webloader.jsx'
@@ -86,12 +86,12 @@ export const FileMenu = () =>
     continuation = undefined;
   }
 
-  const exportAs = ( format, mimeType ) => evt =>
+  const exportAs = ( format, mimeType, extension ) => evt =>
   {
     controllerExportAction( rootController(), format )
       .then( text => {
         const vName = rootController().source?.name || 'untitled.vZome';
-        const name = vName.substring( 0, vName.length-6 ).concat( "." + format );
+        const name = vName.substring( 0, vName.length-6 ).concat( "." + extension );
         download( name, text, mimeType );
       });
   }
@@ -109,7 +109,10 @@ export const FileMenu = () =>
   }
 
   const ExportItem = props =>
-    <MenuItem onClick={ exportAs( props.ext, props.mime ) } disabled={props.disabled}>{props.label}</MenuItem>
+  {
+    props = mergeProps( { format: props.ext }, props );
+    return <MenuItem onClick={ exportAs( props.format, props.mime, props.ext ) } disabled={props.disabled}>{props.label}</MenuItem>
+  }
 
   return (
     <Menu label="File" dialogs={<>
@@ -159,8 +162,8 @@ export const FileMenu = () =>
           <ExportItem label="PLY" ext="ply" mime="text/plain" disabled={true} />
         </SubMenu>
         <SubMenu label="Export 3D Mesh">
-          <ExportItem label="Simple Mesh JSON" ext="mesh" mime="text/plain" disabled={true} />
-          <ExportItem label="Color Mesh JSON" ext="cmesh" mime="text/plain" disabled={true} />
+          <ExportItem label="Simple Mesh JSON" format="mesh" ext="mesh.json" mime="text/plain" />
+          <ExportItem label="Color Mesh JSON" format="cmesh" ext="cmesh.json" mime="application/json" />
           <ExportItem label="AutoCAD DXF" ext="dxf" mime="text/plain" disabled={true} />
         </SubMenu>
 
