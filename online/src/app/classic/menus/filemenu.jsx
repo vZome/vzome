@@ -1,11 +1,11 @@
 
 import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 
-import { createEffect, createSignal } from "solid-js";
+import { createEffect, createSignal, mergeProps } from "solid-js";
 import { controllerAction, controllerExportAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
 import { serializeVZomeXml, download } from '../../../workerClient/serializer.js';
 import { UrlDialog } from '../components/webloader.jsx'
-import { fetchDesign, openDesignFile, newDesign } from "../../../workerClient/index.js";
+import { fetchDesign, openDesignFile, newDesign, importMeshFile } from "../../../workerClient/index.js";
 import { useWorkerClient } from "../../../workerClient/index.js";
 import { Guardrail } from "../components/guardrail.jsx";
 
@@ -47,16 +47,26 @@ export const FileMenu = () =>
   }
 
   let inputRef;
+  const onFileSelected = e => {
+    const selected = e.target.files && e.target.files[0];
+    const actionFn = inputRef[ 'data-action' ];
+    if ( selected && actionFn ) {
+      postMessage( actionFn( selected ) );
+    }
+    delete inputRef.accept;
+    delete inputRef[ 'data-action' ];
+  }
   const openFile = evt =>
   {
+    inputRef[ 'data-action' ] = selected => openDesignFile( selected, false );
+    inputRef.accept = '.vZome';
     inputRef.click();
   }
-  const onFileSelected = e => {
-    const selected = e.target.files && e.target.files[0]
-    if ( selected ) {
-      postMessage( openDesignFile( selected, false ) );
-    }
-    inputRef.value = null;
+  const importFile = ( extension, format ) => evt =>
+  {
+    inputRef[ 'data-action' ] = selected => importMeshFile( selected, format );
+    inputRef.accept = extension;
+    inputRef.click();
   }
 
   const handleShowUrlDialog = () => {
@@ -86,12 +96,12 @@ export const FileMenu = () =>
     continuation = undefined;
   }
 
-  const exportAs = ( format, mimeType ) => evt =>
+  const exportAs = ( format, mimeType, extension ) => evt =>
   {
     controllerExportAction( rootController(), format )
       .then( text => {
         const vName = rootController().source?.name || 'untitled.vZome';
-        const name = vName.substring( 0, vName.length-6 ).concat( "." + format );
+        const name = vName.substring( 0, vName.length-6 ).concat( "." + extension );
         download( name, text, mimeType );
       });
   }
@@ -109,12 +119,14 @@ export const FileMenu = () =>
   }
 
   const ExportItem = props =>
-    <MenuItem onClick={ exportAs( props.ext, props.mime ) } disabled={props.disabled}>{props.label}</MenuItem>
+  {
+    props = mergeProps( { format: props.ext }, props );
+    return <MenuItem onClick={ exportAs( props.format, props.mime, props.ext ) } disabled={props.disabled}>{props.label}</MenuItem>
+  }
 
   return (
     <Menu label="File" dialogs={<>
-      <input style={{ display: 'none' }} type="file" ref={inputRef}
-        onChange={onFileSelected} accept={".vZome"} />
+      <input style={{ display: 'none' }} type="file" ref={inputRef} onChange={onFileSelected} />
 
       <UrlDialog show={showDialog()} setShow={setShowDialog} openDesign={openUrl} />
 
@@ -140,9 +152,9 @@ export const FileMenu = () =>
         <Divider/>
 
         <SubMenu label="Import 3D Mesh">
-          <MenuItem disabled={true}>Simple Mesh JSON</MenuItem>
-          <MenuItem disabled={true}>Color Mesh JSON</MenuItem>
-          <MenuItem disabled={true}>vZome VEF</MenuItem>
+          <MenuItem onClick={importFile( '.json', 'mesh' )}  >Simple Mesh JSON</MenuItem>
+          <MenuItem onClick={importFile( '.json', 'cmesh' )} >Color Mesh JSON</MenuItem>
+          <MenuItem onClick={importFile( '.vef', 'vef' )}    >vZome VEF</MenuItem>
         </SubMenu>
 
         <Divider/>
@@ -159,8 +171,8 @@ export const FileMenu = () =>
           <ExportItem label="PLY" ext="ply" mime="text/plain" disabled={true} />
         </SubMenu>
         <SubMenu label="Export 3D Mesh">
-          <ExportItem label="Simple Mesh JSON" ext="mesh" mime="text/plain" disabled={true} />
-          <ExportItem label="Color Mesh JSON" ext="cmesh" mime="text/plain" disabled={true} />
+          <ExportItem label="Simple Mesh JSON" format="mesh" ext="mesh.json" mime="text/plain" />
+          <ExportItem label="Color Mesh JSON" format="cmesh" ext="cmesh.json" mime="application/json" />
           <ExportItem label="AutoCAD DXF" ext="dxf" mime="text/plain" disabled={true} />
         </SubMenu>
 

@@ -11,6 +11,18 @@ export const realizeShape = ( shape ) =>
   return { id, vertices, faces, instances: [] };
 }
 
+export const toWebColor = color =>
+{
+  const componentToHex = c => {
+    let hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+  }
+  let result = "#ffffff";
+  if ( color )
+    result = "#" + componentToHex(color.getRed()) + componentToHex(color.getGreen()) + componentToHex(color.getBlue());
+  return result;
+}
+
 export const normalizeRenderedManifestation = rm =>
 {
   const id = rm.getGuid().toString();
@@ -24,10 +36,7 @@ export const normalizeRenderedManifestation = rm =>
     let hex = c.toString(16);
     return hex.length == 1 ? "0" + hex : hex;
   }
-  let color = "#ffffff";
-  const rmc = rm.getColor();
-  if ( rmc )
-    color = "#" + componentToHex(rmc.getRed()) + componentToHex(rmc.getGreen()) + componentToHex(rmc.getBlue());
+  let color = toWebColor( rm.getColor() );
 
   return { id, position: [ x, y, z ], rotation, color, selected, shapeId, type };
 }
