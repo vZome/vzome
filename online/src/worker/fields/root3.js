@@ -21,6 +21,8 @@ function embed( a )
   return ( Number(a0) + SQRT3 * Number(a1) ) / Number(ad)
 }
 
-const field = createField( { name: 'rootThree', order: 2, times, embed, reciprocal } )
+const getIrrational = () => '√3';
+
+const field = { ...createField( { name: 'rootThree', order: 2, times, embed, reciprocal } ), getIrrational }
 
 export default field

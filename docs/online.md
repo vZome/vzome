@@ -24,8 +24,10 @@ most of the headings below are links to the applications being described.
 This application is intended to be a faithful port of desktop vZome to the web,
 preserving almost all aspects of the desktop user interface for the sake of
 familiarity.
-It still has a long way to go, but check back often, as it is continually improving.
 It can already open and save vZome files, and so is fully interoperable with desktop vZome.
+However, it still has a long way to go; the most glaring omission currently is a strut building tool.
+Check back often, or join the [Discord server](https://discord.gg/vhyFsNAFPS) to see updates,
+as vZome Online Classic is continually improving.
 
 ## [vZome Online Build Plane](https://vzome.com/app/buildplane)
 

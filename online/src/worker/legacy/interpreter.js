@@ -119,6 +119,11 @@ export class RenderHistory
     this.recordSnapshot( '--START--', firstEdit? firstEdit.id() : '--END--' );
   }
 
+  getShapes()
+  {
+    return this.shapes;
+  }
+
   getNextEdit()
   {
     return this.nextEdit;
@@ -150,6 +155,8 @@ export class RenderHistory
     let shape = this.shapes[ shapeId ];
     if ( ! shape ) {
       shape = realizeShape( rm .getShape() );
+      const orbit = rm .getStrutOrbit();
+      shape.zone = orbit? `${orbit.toString()} ${rm.getStrutZone()}` : 'Ball';
       this.shapes[ shapeId ] = shape;
     }
     let instance = normalizeRenderedManifestation( rm );

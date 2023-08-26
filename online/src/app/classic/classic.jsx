@@ -1,40 +1,29 @@
 
+import { createSignal, createContext, useContext, mergeProps } from "solid-js";
+
 import { CameraControls } from './components/camera.jsx';
 import { StrutBuildPanel } from './components/strutbuilder.jsx';
-import { MenuBar } from './components/menubar.jsx';
-import { createWorkerStore, subController, controllerAction } from './controllers-solid.js';
+import { controllerAction, controllerProperty, subController } from '../../workerClient/controllers-solid.js';
 import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
-import { solidify } from './solid-react.jsx';
-import { SceneCanvas } from '../../ui/viewer/scenecanvas.jsx';
+import { SceneEditor } from './components/editor.jsx';
+import { useWorkerClient } from "../../workerClient/index.js";
+import { ErrorAlert } from '../../viewer/solid/alert.jsx';
+import { OrbitsDialog } from "./components/orbits.jsx";
+import { ShapesDialog } from "./components/shapes.jsx";
+import { RotationProvider } from "../../viewer/solid/rotation.jsx";
+import { PolytopesDialog } from "./components/polytopes.jsx";
 
-const SolidSceneCanvas = solidify( SceneCanvas );
-
-export const ClassicEditor = ( { worker } ) =>
+export const ClassicEditor = ( props ) =>
 {
-  const { rootController, getScene, setState } = createWorkerStore( worker );
-
-  const syncCamera = camera => setState( 'scene', 'liveCamera', camera );
-
-  const bkgdColor = () => getScene() ?.lighting ?.backgroundColor;
+  const { rootController } = useWorkerClient();
 
   const bookmarkController = () => subController( rootController(), 'bookmark' );
-  const pickingController  = () => subController( rootController(), 'picking' );
   const strutBuilder       = () => subController( rootController(), 'strutBuilder' );
-  const symmController     = () => subController( strutBuilder(), 'symmetry' );
   const toolsController    = () => subController( strutBuilder(), 'tools' );
 
-  const toolRef = {
-    current: {
-      onClick: ( id, position, type, selected ) =>
-        controllerAction( pickingController(), 'SelectManifestation', { id } ),
-      bkgdClick: () =>
-        controllerAction( rootController(), 'DeselectAll' ),
-    }
-  };
-
   return (
-    <div id='classic' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }} class='whitesmoke-bkgd'>
-      <MenuBar controller={rootController()} scene={getScene()} />
+    <RotationProvider>
+    <div id='classic' style={{ display: 'grid', 'grid-template-rows': '1fr' }} class='whitesmoke-bkgd'>
       <div id='editor-main' class='grid-cols-1-min whitesmoke-bkgd' >
 
         <div id='editor-canvas' style={{ display: 'grid', 'grid-template-rows': 'min-content min-content min-content 1fr' }}>
@@ -42,22 +31,66 @@ export const ClassicEditor = ( { worker } ) =>
             <div id='model-article' class='placeholder' style={{ 'min-width': '250px' }} >Model | Capture | Article</div>
             <div id='stats-bar' class='placeholder' style={{ 'min-height': '30px' }} >Status</div>
           </div>
-          <ToolFactoryBar controller={symmController()} />
-          <ToolBar symmetryController={symmController()} toolsController={toolsController()} editorController={rootController()} />
+          <ToolFactoryBar/>
+          <ToolBar toolsController={toolsController()} editorController={rootController()} />
           <div id='canvas-and-bookmarks' style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
-            <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} symmetryController={symmController()} />
-            <SolidSceneCanvas scene={getScene()} toolRef={toolRef} syncCamera={syncCamera} style={{ position: 'relative', height: '100%' }} />
+            <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} />
+            <SceneEditor/>
           </div>
         </div>
 
         <div id='editor-drawer' class='grid-rows-min-1 editor-drawer'>
-          <CameraControls symmController={symmController()} bkgdColor={bkgdColor()} />
+          <CameraControls/>
           <div id="build-parts-measure" style={{ height: '100%' }}>
-            <StrutBuildPanel symmController={symmController()} />
+            <StrutBuildPanel/>
           </div>
         </div>
 
       </div>
+      <ErrorAlert/>
     </div>
+    </RotationProvider>
   )
 }
+
+const SymmetryContext = createContext();
+
+export const SymmetryProvider = (props) =>
+{
+  const { rootController } = useWorkerClient();
+  const symmetry = () => controllerProperty( rootController(), 'symmetry' );
+  const strutBuilder = () => subController( rootController(), 'strutBuilder' );
+  const symmController = () => subController( strutBuilder(), `symmetry.${symmetry()}` );
+
+  const [ showShapesDialog, setShowShapesDialog ] = createSignal( false );
+  const [ showOrbitsDialog, setShowOrbitsDialog ] = createSignal( false );
+  const [ showPolytopesDialog, setShowPolytopesDialog ] = createSignal( false );
+  const api = {
+    symmetryDefined: () => !!symmetry(),
+    symmetryController: () => symmController(),
+    showShapesDialog: () => setShowShapesDialog( true ),
+    showOrbitsDialog: () => setShowOrbitsDialog( true ),
+    showPolytopesDialog: () => {
+      controllerAction( subController( symmController(), 'polytopes' ), 'setQuaternion' );
+      setShowPolytopesDialog( true );
+    },
+  };
+
+  return (
+    <SymmetryContext.Provider value={api}>
+
+      {props.children}
+
+      <Show when={!!symmetry()}>
+        <ShapesDialog controller={symmController()} open={showShapesDialog()} close={ ()=>setShowShapesDialog(false) } />
+
+        <OrbitsDialog controller={symmController()} open={showOrbitsDialog()} close={ ()=>setShowOrbitsDialog(false) } />
+
+        <PolytopesDialog controller={symmController()} open={showPolytopesDialog()} close={ ()=>setShowPolytopesDialog(false) } />
+      </Show>
+
+    </SymmetryContext.Provider>
+  );
+}
+
+export const useSymmetry = () => useContext( SymmetryContext );

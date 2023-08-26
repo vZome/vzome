@@ -31,6 +31,9 @@ public class SymmetryController extends DefaultController
     {
         switch ( string ) {
         
+        case "label":
+            return this .label;
+
         case "name":
             return this .symmetrySystem .getName();
 
@@ -70,6 +73,7 @@ public class SymmetryController extends DefaultController
     private final Map<String, Controller> transformToolFactories = new LinkedHashMap<>();
     private final Map<String, Controller> linearMapToolFactories = new LinkedHashMap<>();
     private final RenderedModel renderedModel;
+    private final String label;
 
     public Symmetry getSymmetry()
     {
@@ -81,8 +85,9 @@ public class SymmetryController extends DefaultController
         return snapper;
     }
 
-    public SymmetryController( Controller parent, SymmetrySystem model, RenderedModel mRenderedModel )
+    public SymmetryController( String label, Controller parent, SymmetrySystem model, RenderedModel mRenderedModel )
     {
+        this.label = label;
         this .symmetrySystem = model;
         renderedModel = mRenderedModel;
         Symmetry symmetry = model .getSymmetry();
@@ -141,6 +146,10 @@ public class SymmetryController extends DefaultController
                 }
             }
         } );
+        
+        String presetStyle = parent .getProperty( "defaultShapes." + model .getSymmetry() .getField() .getName() + "." + model .getName() );
+        if ( presetStyle != null )
+            this .symmetrySystem .setStyle( presetStyle );
     }
 
     @Override
@@ -267,6 +276,7 @@ public class SymmetryController extends DefaultController
                 String styleName =  action .substring( "setStyle." .length() );
                 this .symmetrySystem .setStyle( styleName );
                 this .renderedModel .setShapes( this .symmetrySystem .getShapes() );
+                firePropertyChange( "renderingStyle", null, styleName );
             }
             else {
                 boolean handled = this .symmetrySystem .doAction( action );

@@ -2,7 +2,7 @@
 import React, { useRef, useState } from 'react'
 import { useDispatch } from 'react-redux';
 
-import { fetchDesign, openDesignFile } from '../../ui/viewer/store.js';
+import { fetchDesign, openDesignFile } from '../../workerClient/index.js';
 
 import IconButton from '@material-ui/core/IconButton'
 import Tooltip from '@material-ui/core/Tooltip'

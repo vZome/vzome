@@ -15,8 +15,8 @@ public interface SymmetryPerspective
 	
 	Shapes getDefaultGeometry();
 	
-	String getName();
-	
+    String getName();
+    
 	Symmetry getSymmetry();
 
 	List<Tool.Factory> createToolFactories( Tool.Kind kind, ToolsModel model );
@@ -38,4 +38,13 @@ public interface SymmetryPerspective
     boolean orbitIsBuildDefault( Direction orbit );
 
     AlgebraicNumber getOrbitUnitLength( Direction orbit );
+    
+    /*
+     * Allows for a perspective that has been duped and renamed, like "heptagon antiprism corrected".
+     * Both the original and corrected symmetries exist in vZome files, but the UI exposes the
+     * corrected one with the label "heptagon antiprism".
+     * 
+     * Also, a null return indicates the UI should not expose this legacy perspective.
+     */
+    String getLabel();
 }

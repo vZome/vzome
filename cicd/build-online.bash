@@ -25,10 +25,12 @@ yarn install || exit $?
 rm -rf dist || exit $?
 yarn run build || exit $?
 
-rm -rf public/classic/icons || exit $?
-mkdir -p public/classic/icons/misc || exit $?
-cp -R ../desktop/src/main/resources/icons/* public/classic/icons || exit $?
-cp -R ../desktop/src/main/resources/org/vorthmann/zome/ui/*.gif public/classic/icons/misc || exit $?
+# Remove the detritus of earlier builds (& dev server)
+rm -rf public/modules || exit $?
+rm -rf public/classic/resources || exit $?
+
+mkdir -p public/classic/resources || exit $?
+cp -R ../desktop/src/main/resources/* public/classic/resources || exit $?
 
 pushd dist
 
@@ -39,5 +41,5 @@ banner 'Creating the online.tgz archive'
   echo ${REVISION} > modules/revision.txt && \
   tar czvf online.tgz app modules
 
-banner 'finished building the vZome Online app and web component'
+banner 'finished building the vZome Online apps and web component'
 

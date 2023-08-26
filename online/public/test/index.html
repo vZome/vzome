@@ -6,17 +6,26 @@
     <link rel="stylesheet" href="./vzome-viewer.css">
     <script type="module">
       import "/modules/vzome-viewer.js"; // registers the custom element
+
+      const viewer = document.querySelector( "#vZomeLogo" );
+      viewer .addEventListener( "vzome-scenes-discovered", (e) => {
+        setTimeout( () => {
+          console.log( 'Scenes:', JSON.stringify( e.detail ) );
+          viewer.scene = e.detail[ 3 ];
+        }, 3000 )
+      });
+
     </script>
   </head>
   <body>
     <article>
       <section>
-        <vzome-viewer src="./models/orangePurpleChiral.vZome" show-scenes="false" >
+        <vzome-viewer src="./models/orangePurpleChiral.vZome" show-scenes="true" scene="5-fold axis" id="orangePurpleChiral" >
           <img src="./models/orangePurpleChiral.png" >
         </vzome-viewer>
       </section>
       <section>
-        <vzome-viewer src="./models/vZomeLogo.vZome" show-scenes="true" >
+        <vzome-viewer src="./models/vZomeLogo.vZome" show-scenes="true" id="vZomeLogo" >
         </vzome-viewer>
       </section>
       <section>

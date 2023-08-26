@@ -1,5 +1,4 @@
 
-import { JsProperties } from './legacy/jsweet2js.js';
 
 // support trampolining to work around worker CORS issue
 //   see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
@@ -7,9 +6,42 @@ export const WORKER_ENTRY_FILE_URL = import.meta.url;
 
 const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
 
+let baseURL;
 let scenes;
 let snapshots;
 let previewShapes;
+
+const captureScenes = report => event =>
+{
+  const { type, payload } = event;
+  if ( type === 'SCENES_DISCOVERED' ) {
+    scenes = payload;
+  }
+  report( event );
+}
+
+
+export const getSceneIndex = ( title, list ) =>
+{
+  if ( !title )
+    return 0;
+  let index;
+  if ( title.startsWith( '#' ) ) {
+    const indexStr = title.substring( 1 );
+    index = parseInt( indexStr );
+    if ( isNaN( index ) || index < 0 || index > list.length ) {
+      console.log( `WARNING: ${index} is not a scene index` );
+      index = 0;
+    }
+  } else {
+    index = list .map( s => s.title ) .indexOf( title );
+    if ( index < 0 ) {
+      console.log( `WARNING: no scene titled "${title}"` );
+      index = 0;
+    }
+  }
+  return index;
+}
 
 const convertPreviewCamera = camera =>
 {
@@ -29,6 +61,10 @@ const convertPreviewCamera = camera =>
 
 const preparePreviewScene = index =>
 {
+  if ( index >= scenes.length ) {
+    console.log( `WARNING: no preview scene index "${index}"` );
+    return {};
+  }
   const { snapshot, view } = scenes[ index ];
   const camera = convertPreviewCamera( view );
   const shapes = {};
@@ -41,7 +77,7 @@ const preparePreviewScene = index =>
   return { shapes, camera };
 }
 
-const convertPreview = preview =>
+const convertPreview = ( preview, sceneTitle ) =>
 {
   const { lights, embedding, orientations, shapes, instances } = preview
   
@@ -79,7 +115,9 @@ const convertPreview = preview =>
   const defaultScene = { title: 'default scene', view: preview.camera, snapshot: defaultSnapshot };
   scenes = preview.scenes? [ defaultScene, ...preview.scenes ] : [ defaultScene ];
 
-  return { lighting, embedding, ...preparePreviewScene( 0 ) };
+  const sceneIndex = getSceneIndex( sceneTitle, scenes );
+
+  return { lighting, embedding, ...preparePreviewScene( sceneIndex ) };
 }
 
 const fetchUrlText = async ( url ) =>
@@ -115,47 +153,7 @@ const fetchFileText = selected =>
   })
 }
 
-let designController;
-let propertyChanges = {};
-
-const getNamedController = controllerPath =>
-{
-  const controllerNames = controllerPath? controllerPath.split( ':' ) : [];
-  const getSubController = ( controller, names ) => {
-    if ( !names || names.length === 0 || ( names.length === 1 && !names[ 0 ] ) )
-      return controller;
-    else {
-      controller = controller .getSubController( names[ 0 ] );
-      if ( !controller )
-        return undefined;
-      return getSubController( controller, names.slice( 1 ) );
-    }
-  }
-  return getSubController( designController, controllerNames );
-}
-
-const registerChangeListener = ( controller, controllerPath, changeName, propName, isList ) =>
-{
-  if ( !changeName )
-    return;
-  if ( ! propertyChanges[ controllerPath ] ) {
-    controller .addPropertyListener( { propertyChange: pce => {
-      const name = pce .getPropertyName();
-      for (const [ cName, changes ] of Object.entries( propertyChanges[ controllerPath ] ) ) {
-        if ( name === cName ) {
-          for ( const [propName, isList] of Object.entries( changes ) ) {
-            const value = isList? controller .getCommandList( propName ) : controller .getProperty( propName );
-            postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name: propName, value } } );
-          }
-        }
-      }
-    } } );
-    propertyChanges[ controllerPath ] = {};
-  }
-  const change = propertyChanges[ controllerPath ][ changeName ] || {};
-  if ( ! change[ propName ] )
-    propertyChanges[ controllerPath ][ changeName ] = { ...change, [ propName ]: isList };
-}
+let designWrapper;
 
 const clientEvents = report =>
 {
@@ -165,9 +163,11 @@ const clientEvents = report =>
 
   const instanceAdded = instance => report( { type: 'INSTANCE_ADDED', payload: instance } );
 
+  const instanceRemoved = ( shapeId, id ) => report( { type: 'INSTANCE_REMOVED', payload: { shapeId, id } } );
+
   const selectionToggled = ( shapeId, id, selected ) => report( { type: 'SELECTION_TOGGLED', payload: { shapeId, id, selected } } );
 
-  const symmetryChanged = details => report( { type: 'PLANES_DEFINED', payload: details } );
+  const symmetryChanged = details => report( { type: 'SYMMETRY_CHANGED', payload: details } );
 
   const xmlParsed = xmlTree => report( { type: 'DESIGN_XML_PARSED', payload: xmlTree } );
 
@@ -175,17 +175,51 @@ const clientEvents = report =>
 
   const errorReported = message => report( { type: 'ALERT_RAISED', payload: message } );
 
-  const scenesDiscovered = s => {
-    scenes = s; // TODO fix this horrible hack
-    report( { type: 'SCENES_DISCOVERED', payload: s } );
-  }
+  const scenesDiscovered = s => report( { type: 'SCENES_DISCOVERED', payload: s } );
 
   const designSerialized = xml => report( { type: 'DESIGN_XML_SAVED', payload: xml } );
 
   const textExported = ( action, text ) => report( { type: 'TEXT_EXPORTED', payload: { action, text } } ) ;
 
-  return { sceneChanged, shapeDefined, instanceAdded, selectionToggled, symmetryChanged,
+  return { sceneChanged, shapeDefined, instanceAdded, instanceRemoved, selectionToggled, symmetryChanged,
     xmlParsed, scenesDiscovered, designSerialized, propertyChanged, errorReported, textExported, };
+}
+
+const trackballScenes = {};
+
+const fetchTrackballScene = ( url, report ) =>
+{
+  const reportTrackballScene = scene => report( { type: 'TRACKBALL_SCENE_LOADED', payload: scene } );
+  const cachedScene = trackballScenes[ url ];
+  if ( !!cachedScene ) {
+    reportTrackballScene( cachedScene );
+    return;
+  }
+  const justTheScene = event =>
+  {
+    const { type, payload } = event;
+    if ( type === 'SCENE_RENDERED' ) {
+      trackballScenes[ url ] = payload;
+      reportTrackballScene( payload );
+    }
+  }
+  Promise.all( [ import( './legacy/dynamic.js' ), fetchUrlText( new URL( `./resources/${url}`, baseURL ) ) ] )
+    .then( ([ module, xml ]) => {
+      module .loadDesign( xml, false, clientEvents( justTheScene ) );
+    } )
+}
+
+const reportDesign = ( report, preview=false ) =>
+{
+  report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
+  if ( !preview ) {
+    const trackballUpdater = () => fetchTrackballScene( designWrapper .getTrackballUrl(), report );
+    trackballUpdater();
+    designWrapper.controller .addPropertyListener( { propertyChange: pce =>
+    {
+      if ( 'symmetry' === pce.getPropertyName() ) { trackballUpdater(); }
+    } });
+  }
 }
 
 const createDesign = ( report, fieldName ) =>
@@ -194,9 +228,8 @@ const createDesign = ( report, fieldName ) =>
   return import( './legacy/dynamic.js' )
 
     .then( module => {
-      propertyChanges = {};
-      designController = module .newDesign( fieldName, clientEvents( report ) );
-      report( { type: 'CONTROLLER_CREATED' } );
+      designWrapper = module .newDesign( fieldName, clientEvents( report ) );
+      reportDesign( report );
     } )
 
     .catch( error => {
@@ -214,18 +247,17 @@ const getField = name =>
     } );
 }
 
-const loadDesign = ( xmlLoading, report, debug ) =>
+const openDesign = ( xmlLoading, report, debug, sceneTitle, preview ) =>
 {
   return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
 
     .then( ([ module, xml ]) => {
-      propertyChanges = {};
-      designController = module .loadDesign( xml, debug, clientEvents( report ) );
-      report( { type: 'CONTROLLER_CREATED' } );
+      designWrapper = module .loadDesign( xml, debug, clientEvents( captureScenes( report ) ), sceneTitle );
+      reportDesign( report, preview );
     } )
 
     .catch( error => {
-      console.log( `loadDesign failure: ${error.message}` );
+      console.log( `openDesign failure: ${error.message}` );
       report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model.  ${error.message}` } );
       return false; // probably nobody should care about the return value
      } );
@@ -233,9 +265,6 @@ const loadDesign = ( xmlLoading, report, debug ) =>
 
 const fileLoader = ( report, event ) =>
 {
-  if ( event.type !== 'FILE_PROVIDED' ) {
-    return report( event );
-  }
   const { file, debug=false } = event.payload;
   const { name } = file;
   report( { type: 'FETCH_STARTED', payload: { name, preview: false } } );
@@ -244,16 +273,40 @@ const fileLoader = ( report, event ) =>
 
   xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { name, text } } ) );
 
-  return loadDesign( xmlLoading, report, debug );
+  return openDesign( xmlLoading, report, debug );
+}
+
+const fileImporter = ( report, event ) =>
+{
+  const IMPORT_ACTIONS = {
+    'mesh' : 'ImportSimpleMeshJson',
+    'cmesh': 'ImportColoredMeshJson',
+    'vef'  : 'LoadVEF',
+  }
+  const { file, format } = event.payload;
+  const { name } = file;
+  fetchFileText( file )
+
+    .then( text => {
+      try {
+        designWrapper .doAction( '', IMPORT_ACTIONS[ format ], { vef: text } );
+        const { shapes, embedding } = designWrapper .getScene( '--END--', true ); // never send camera or lighting!
+        report( { type: 'SCENE_RENDERED', payload: { scene: { shapes, embedding } } } );
+      } catch (error) {
+        console.log( `${action} actionPerformed error: ${error.message}` );
+        report( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
+      }
+    } )
+    .catch( error => {
+      console.log( error.message );
+      console.log( 'Import failed' );
+    } )
 }
 
 const urlLoader = ( report, event ) =>
 {
-  if ( event.type !== 'URL_PROVIDED' ) {
-    return report( event );
-  }
   const { url, config } = event.payload;
-  const { preview=false, debug=false, showScenes=false } = config;
+  const { preview=false, debug=false, showScenes=false, sceneTitle } = config;
   if ( !url ) {
     throw new Error( "No url field in URL_PROVIDED event payload" );
   }
@@ -271,8 +324,8 @@ const urlLoader = ( report, event ) =>
     return fetchUrlText( previewUrl )
       .then( text => JSON.parse( text ) )
       .then( preview => {
-        const scene = convertPreview( preview ); // sets module global scenes as a side-effect
-        if ( showScenes && scenes.length < 2 )
+        const scene = convertPreview( preview, sceneTitle ); // sets module global scenes as a side-effect
+        if ( ( showScenes || sceneTitle ) && scenes.length < 2 )
           // The client expects scenes, but this preview JSON predates the scenes export,
           //  so fall back on XML.
           throw new Error( `No scenes in preview ${previewUrl}` );
@@ -284,22 +337,26 @@ const urlLoader = ( report, event ) =>
       .catch( error => {
         console.log( error.message );
         console.log( 'Preview failed, falling back to vZome XML' );
-        return loadDesign( xmlLoading, report, debug );
+        return openDesign( xmlLoading, report, debug, sceneTitle, true );
       } )
   }
   else {
-    return loadDesign( xmlLoading, report, debug );
+    return openDesign( xmlLoading, report, debug, sceneTitle, false );
   }
 }
 
 onmessage = ({ data }) =>
 {
-  // console.log( `Worker received: ${JSON.stringify( data, null, 2 )}` );
+  // console.log( `TO worker: ${JSON.stringify( data.type, null, 2 )}` );
   const { type, payload } = data;
 
   try {
     
   switch (type) {
+
+    case 'WINDOW_LOCATION':
+      baseURL = payload;
+      break;
 
     case 'URL_PROVIDED':
       urlLoader( postMessage, data );
@@ -309,12 +366,16 @@ onmessage = ({ data }) =>
       fileLoader( postMessage, data );
       break;
 
+    case 'MESH_FILE_PROVIDED':
+      fileImporter( postMessage, data );
+      break;
+
     case 'SCENE_SELECTED': {
-      const index = payload;
+      const index = getSceneIndex( payload, scenes );
       const { nodeId, camera } = scenes[ index ];
       let scene;
       if ( nodeId ) { // XML was parsed by the legacy module
-        scene = { camera, ...designController .getScene( nodeId, true ) };
+        scene = { camera, ...designWrapper .getScene( nodeId, true ) };
       } else // a preview JSON
         scene = preparePreviewScene( index );
       postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
@@ -323,7 +384,7 @@ onmessage = ({ data }) =>
 
     case 'EDIT_SELECTED': {
       const { before, after } = payload; // only one of these will have an edit ID
-      const scene = designController .getScene( before || after, !!before );
+      const scene = designWrapper .getScene( before || after, !!before );
       const { edit } = scene;
       postMessage( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
       break;
@@ -332,18 +393,10 @@ onmessage = ({ data }) =>
     case 'ACTION_TRIGGERED':
     {
       const { controllerPath, action, parameters } = payload;
-      const controller = getNamedController( controllerPath );
       try {
-        if ( parameters && Object.keys(parameters).length !== 0 )
-          controller .paramActionPerformed( null, action, new JsProperties( parameters ) );
-        else
-          controller .actionPerformed( null, action );
-        
-        // TODO: this is pretty heavy-handed, sending the whole scene after every edit.
-        //  That said, it may perform better than the incremental approach.
-        designController .renderScene();
-        const scene = designController .getScene( '--END--', true );
-        postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
+        designWrapper .doAction( controllerPath, action, parameters );
+        const { shapes, embedding } = designWrapper .getScene( '--END--', true ); // never send camera or lighting!
+        postMessage( { type: 'SCENE_RENDERED', payload: { scene: { shapes, embedding } } } );
       } catch (error) {
         console.log( `${action} actionPerformed error: ${error.message}` );
         postMessage( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
@@ -351,13 +404,22 @@ onmessage = ({ data }) =>
       break;
     }
 
+    case 'PROPERTY_SET':
+    {
+      const { controllerPath, name, value } = payload;
+      try {
+        designWrapper .setProperty( controllerPath, name, value );
+      } catch (error) {
+        console.log( `${action} setProperty error: ${error.message}` );
+        postMessage( { type: 'ALERT_RAISED', payload: `Failed to set property: ${name}` } );
+      }
+      break;
+    }
+
     case 'PROPERTY_REQUESTED':
     {
       const { controllerPath, propName, changeName, isList } = payload;
-      const controller = getNamedController( controllerPath );
-      registerChangeListener( controller, controllerPath, changeName, propName, isList );
-      const value = isList? controller .getCommandList( propName ) : controller .getProperty( propName );
-      postMessage( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name: propName, value } } );
+      designWrapper .registerPropertyInterest( controllerPath, propName, changeName, isList );
       break;
     }
 
@@ -369,18 +431,37 @@ onmessage = ({ data }) =>
     case 'STRUT_CREATION_TRIGGERED':
     case 'JOIN_BALLS_TRIGGERED':
     {
-      const controller = getNamedController( 'buildPlane' );
-      controller .paramActionPerformed( null, type, new JsProperties( payload ) );
+      designWrapper .doAction( 'buildPlane', type, payload );
 
-      // TODO: this is pretty heavy-handed, sending the whole scene after every edit.
-      //  That said, it may perform better than the incremental approach.
-      designController .renderScene();
-      const scene = designController .getScene( '--END--', true );
+      const scene = designWrapper .getScene( '--END--', true );
       postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
+      break;
+    }
+
+    case 'PREVIEW_STRUT_START':
+    {
+      const { ballId, direction } = payload;
+      designWrapper .startPreviewStrut( ballId, direction );
+      break;
+    }
+
+    case 'PREVIEW_STRUT_MOVE':
+    {
+      const { direction } = payload;
+      designWrapper .movePreviewStrut( direction );
+      break;
+    }
+  
+    case 'PREVIEW_STRUT_END':
+    {
+      designWrapper .endPreviewStrut();
+      const scene = designWrapper .getScene( '--END--', true );
+      postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
+      break;
     }
   
     default:
-      break;
+      console.log( 'action not handled:', type, payload );
   }
   } catch (error) {
     console.log( `${type} onmessage error: ${error.message}` );

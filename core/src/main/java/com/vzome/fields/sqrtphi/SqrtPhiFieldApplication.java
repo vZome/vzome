@@ -81,7 +81,13 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 		AbstractShapes defaultShapes = new OctahedralShapes( "octahedral", "octahedra", symm );
 		octahedralPerspective .setDefaultGeometry( defaultShapes );
 	}
-	
+
+    @Override
+    public String getLabel()
+    {
+        return "\u221A\u03C6";
+    }
+
     private final IcosahedralSymmetryPerspective icosahedralPerspective = new IcosahedralSymmetryPerspective( 
             new IcosahedralSymmetry( getField() ) ) 
     {

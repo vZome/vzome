@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@material-ui/core/Grid'
 
 import { HistoryInspector } from './debugger.jsx'
-import { DesignViewer } from '../../ui/viewer/index.jsx'
+import { DesignViewer } from '../../viewer/react/index.jsx'
 // import BuildPlane from './buildplane.jsx'
 // import { UndoRedoButtons } from './undoredo.jsx'
 // import { selectionToggled } from '../bundles/mesh.js'

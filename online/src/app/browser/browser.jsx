@@ -1,59 +1,53 @@
 
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux';
-import { fetchDesign } from '../../ui/viewer/store.js';
-import { useGitHubShares, getEmbeddingHtml, getAssetUrl } from './github.js';
+import { Show, createEffect, createMemo, createResource, createSignal } from 'solid-js';
 
-import { DesignViewer } from '../../ui/viewer/index.jsx'
+import { DesignViewer } from '../../viewer/solid/index.jsx'
+import { useWorkerClient } from '../../workerClient/context.jsx';
+import { fetchGitHubShares, getEmbeddingHtml, getAssetUrl } from './github.js';
 
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography'
-import Button from '@material-ui/core/Button';
-import CreatableSelect from 'react-select/creatable';
-import { useEffect } from 'react';
+import List from '@suid/material/List';
+import ListItem from '@suid/material/ListItem';
+import ListItemText from '@suid/material/ListItemText';
+import Typography from '@suid/material/Typography'
+import Button from '@suid/material/Button';
+import { fetchDesign } from '../../workerClient/actions.js';
+import { UsersMenu } from './users.jsx';
 
-const queryParams = new URLSearchParams( window.location.search );
-const defaultGithubUser = queryParams.get( 'user' ) || localStorage.getItem( 'vzome-github-user' ) || "vorth";
-
-const DesignList = ( { setUrl, githubUser } ) =>
+const DesignList = (props) =>
 {
-  const designs = useGitHubShares( githubUser );
-  const [ selectedIndex, setSelectedIndex ] = React.useState( 0 );
+  const [ selectedIndex, setSelectedIndex ] = createSignal( 0 );
 
   const handleListItemClick = (url, path, index) =>
   {
     setSelectedIndex( index );
-    setUrl( url, path );
+    props.setUrl( url, path );
   };
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <List dense component="nav" aria-label="vzome designs" style={{ overflow: 'auto', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }} >
-      { designs.map( ( { title, details, url, path }, i ) => (
-        <ListItem key={i}
-          button
-          selected={selectedIndex === i}
-          onClick={() => handleListItemClick( url, path, i )}
-        >
-          <ListItemText primary={title} secondary={details} />
-        </ListItem>
-      ))}
+        <For each={props.designs} >{ ( { title, details, url, path }, i ) =>
+          <ListItem button
+            selected={selectedIndex() === i}
+            onClick={() => handleListItemClick( url, path, i )}
+          >
+            <ListItemText primary={title} secondary={details} />
+          </ListItem>
+        }</For>
       </List>
     </div>
   );
 }
 
-const DesignActions = ( { githubUser, url, path } ) =>
+const DesignActions = (props) =>
 {
   const copyHtml = path =>
   {
-    const html = getEmbeddingHtml( githubUser, path );
+    const html = getEmbeddingHtml( props.githubUser, path );
     navigator.clipboard.writeText( html ) .then( () => {
-      console.log( `HTML copied to the clipboard: ${url}` );
+      console.log( `HTML copied to the clipboard: ${props.url}` );
     }, () => {
-      console.log( `HTML copy FAILED: ${url}` );
+      console.log( `HTML copy FAILED: ${props.url}` );
     });
   }
 
@@ -66,83 +60,106 @@ const DesignActions = ( { githubUser, url, path } ) =>
     });
   }
 
-  if ( url ) {
-    return (
-      <div style={{ display: 'flex', gap: '1rem', margin: '12px', justifyContent: 'space-evenly' }}>
-        <Button variant="contained" color="primary" onClick={() => copyHtml( path )}>
+  return (
+    <Show when={ props.url } fallback={
+      <Typography variant='h6' gutterBottom style={{ 'text-align': 'center', 'margin-top': '13px' }}>
+        <em>Select any design from the list on the left</em>
+      </Typography>
+    }>
+      <div style={{ display: 'flex', gap: '1rem', margin: '12px', 'justify-content': 'space-evenly' }}>
+        <Button variant="contained" color="primary" onClick={() => copyHtml( props.path )}>
           Copy Embeddable HTML
         </Button>
-        <Button variant="contained" color="secondary" onClick={() => copyUrl( url )}>
+        <Button variant="contained" color="secondary" onClick={() => copyUrl( props.url )}>
           Copy Raw vZome URL
         </Button>
-        <Button variant="contained" target="_blank" rel="noopener" href={ getAssetUrl( githubUser, path ) }>
+        <Button variant="contained" target="_blank" rel="noopener" href={ getAssetUrl( props.githubUser, props.path ) }>
           Show GitHub Assets
         </Button>
       </div>
-    );
-  } else {
-    return (
-      <Typography variant='h6' gutterBottom style={{ textAlign: 'center', marginTop: '13px' }}>
-        <em>Select any design from the list on the left</em>
-      </Typography>
-    );
-  }
+    </Show>
+  );
 }
 
-console.log( "defaultGithubUser ", defaultGithubUser );
-const storedUsers = JSON.parse( localStorage.getItem( 'vzome-github-users' ) || "[]" );
-const knownUsers = [ ...storedUsers, defaultGithubUser, 'david-hall', 'John-Kostick', 'ThynStyx', 'vorth', ];
-const uniqueUsers = new Set();
-knownUsers .map( user => uniqueUsers.add( user ) );
+// Invariant:
+//   - storedUsers in MRU order
+//   - storedUsers are unique
 
-const createOption = label => ({ label, value: label });
-const defaultOptions = [];
-for ( const user of uniqueUsers ) {
-  defaultOptions .push( createOption( user ) );
-}
-
-export const DesignBrowser = ( { debug } ) =>
+const filterUniqueUsers = users =>
 {
-  const report = useDispatch();
-  const [ url, setUrl ] = useState( null );
-  const [ path, setPath ] = useState( null );
-  const selectUrl = ( url, path ) =>
+  const uniqueUsers = new Set();
+  return users .filter( user => {
+    const lower = user .toLowerCase();
+    return ! uniqueUsers .has( lower ) && uniqueUsers .add( lower ) && true;
+  });
+}
+
+const queryParams = new URLSearchParams( window.location.search );
+const defaultGithubUser = queryParams.get( 'user' ) || localStorage.getItem( 'vzome-github-user' ) || "vorth";
+console.log( "defaultGithubUser ", defaultGithubUser );
+const storedUsers = JSON.parse( localStorage.getItem( 'vzome-github-users' ) || '[ "david-hall", "john-kostick", "thynstyx", "vorth" ]' );
+let knownUsers = filterUniqueUsers( [ defaultGithubUser, ...storedUsers ] );
+
+export const DesignBrowser = () =>
+{
+  const { postMessage } = useWorkerClient();
+  const [ url, setUrl ] = createSignal( null );
+  const [ path, setPath ] = createSignal( null );
+  const selectUrl = ( newUrl, path ) =>
   {
-    report( fetchDesign( url, { preview: true } ) );
-    setUrl( url );
+    if ( newUrl === url() )
+      return;
+    postMessage( fetchDesign( newUrl, { preview: true } ) );
     setPath( path );
+    setUrl( newUrl );
   }
-  const [ githubUser, setGithubUser ] = useState( createOption( defaultGithubUser ) );
-  const [ options, setOptions ] = useState( defaultOptions );
-  const handleCreate = (inputValue) =>
+  const [ githubUser, setGithubUser ] = createSignal( defaultGithubUser );
+  const [ options, setOptions ] = createSignal( [ ...knownUsers ] );
+
+  // const handleCreate = (inputValue) =>
+  // {
+  //   const newOption = createOption( inputValue );
+  //   setGithubUser( newOption );
+  //   // This will trigger an attempt to load designs, below
+  // };
+
+  const [ designs ] = createResource( githubUser, fetchGitHubShares );
+
+  createEffect( () =>
   {
-    const newOption = createOption( inputValue );
-    setOptions( (prev) => [...prev, newOption] );
-    setGithubUser( newOption );
-  };
-  useEffect( () => {
-    const value = JSON.stringify( options.map( option => option.label ) );
-    console.log( "storing vzome-github-users ", value );
-    localStorage .setItem( 'vzome-github-users', value );
-  }, [options] );
+    if ( designs()?.length > 0 ) {
+      // current githubUser is a valid one
+      const validUser = githubUser() .toLowerCase();
+      console.log( "storing vzome-github-user ", validUser );
+      localStorage .setItem( 'vzome-github-user', validUser );
+      // prepend it to the list
+      const newList = [ validUser, ...knownUsers ];
+      // then filter the list for uniqueness, preserving the order
+      knownUsers = filterUniqueUsers( newList );
+      // and finally store it
+      const value = JSON.stringify( knownUsers );
+      console.log( "storing vzome-github-users ", value );
+      localStorage .setItem( 'vzome-github-users', value );
+      // and update the UI
+      setOptions( [ ...knownUsers ] );
+    }
+    else
+      setUrl( null );
+  });
 
   return (
-    <div id='github-browser' style={{ display: 'grid', gridTemplateColumns: '20% 80%', height: '100%' }}>
-      <div>
-        <CreatableSelect
-          isClearable
-          onChange={ (option) => setGithubUser( option ) }
-          onCreateOption={handleCreate}
-          options={options}
-          value={githubUser}
-        />
-        <DesignList githubUser={githubUser?.value} setUrl={selectUrl}/>
+    <div id='github-browser' style={{ display: 'grid', 'grid-template-columns': '20% 80%', height: '100%' }}>
+      <div id='users-designs' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }}>
+        <UsersMenu users={options()} currentUser={githubUser()} setUser={setGithubUser} />
+        <DesignList githubUser={githubUser()} designs={designs()} setUrl={selectUrl}/>
       </div>
-      <div id='github-browser' style={{ display: 'grid', gridTemplateRows: 'min-content 1fr' }}>
-        <div id='details' style={{ minHeight: '60px', borderBottom: '1px solid gray', backgroundColor: 'whitesmoke' }}>
-          <DesignActions githubUser={githubUser?.value} url={url} path={path} />
+      {/* This 'min-content 1fr' triggers an infinite loop involving the solid-three ResizeObserver,
+           unless DesignViewer and LightedTrackballCanvas both have height=100%, display=flex, and overflow=hidden. */}
+      <div id='github-browser' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }}>
+        <div id='details' style={{ 'min-height': '60px', 'border-bottom': '1px solid gray', 'background-color': 'whitesmoke' }}>
+          <DesignActions githubUser={githubUser()} url={url()} path={path()} />
         </div>
-        <DesignViewer config={ { useSpinner: true } } />
+        <DesignViewer config={ { useSpinner: true } } style={{ position: 'relative', height: '100%' }} height='100%' width='100%' />
       </div>
     </div>
   )

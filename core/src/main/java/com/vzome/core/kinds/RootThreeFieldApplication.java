@@ -55,6 +55,12 @@ public class RootThreeFieldApplication extends DefaultFieldApplication
         octahedralPerspective .setDefaultGeometry( defaultShapes );
     }
 
+    @Override
+    public String getLabel()
+    {
+        return "\u221A3";
+    }
+
     private final SymmetryPerspective dodecagonalPerspective = new AbstractSymmetryPerspective( new DodecagonalSymmetry( getField() ))
     {
         {
@@ -172,7 +178,7 @@ public class RootThreeFieldApplication extends DefaultFieldApplication
         @Override
         public String getModelResourcePath()
         {
-            return "org/vorthmann/zome/app/dodecagonal.vZome";
+            return "org/vorthmann/zome/app/12-gon-trackball-vef.vZome";
         }
     };
 

@@ -465,7 +465,7 @@ public class ApplicationController extends DefaultController
             if ( propName .startsWith( "field.label." ) )
             {
                 String fieldName = propName .substring( "field.label." .length() );
-                // TODO implement AlgebraicField.getLabel()
+                // TODO use FieldApplication.getLabel(), without requiring FieldApplication instantiation?!
                 switch ( fieldName ) {
 
                 case "golden":

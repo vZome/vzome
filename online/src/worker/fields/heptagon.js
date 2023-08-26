@@ -31,6 +31,8 @@ function embed( a )
   return ( Number(a0) + RHO * Number(a1) + SIGMA * Number(a2) ) / Number(ad)
 }
 
-const field = createField( { name: 'heptagon', order: 3, times, embed, reciprocal } )
+const getIrrational = (i) => (i===1)? '𝜌' : '𝜎';
+
+const field = { ...createField( { name: 'heptagon', order: 3, times, embed, reciprocal } ), getIrrational }
 
 export default field

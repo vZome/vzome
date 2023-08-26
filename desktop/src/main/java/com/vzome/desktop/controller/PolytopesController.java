@@ -108,7 +108,9 @@ public class PolytopesController extends DefaultController
         }
         else if ( action .startsWith( "setGroup." ) )
         {
+            String oldGroup = group;
             group = action .substring( "setGroup." .length() );
+            firePropertyChange( "group", oldGroup, group );
         }
         else if ( action .startsWith( "edge." ) )
         {
@@ -116,6 +118,7 @@ public class PolytopesController extends DefaultController
             int edge = Integer .parseInt( edgeName );
             boolean state = generateEdge[ edge ];
             generateEdge[ edge ] = ! state;
+            firePropertyChange( "edge."+edge, state, generateEdge[ edge ] );
         }
         else if ( action .startsWith( "render." ) )
         {

@@ -59,11 +59,17 @@ public class DefaultFieldApplication implements FieldApplication
 		this .field = field;
 	}
 
-	@Override
-	public String getName()
-	{
-		return this .field .getName();
-	}
+    @Override
+    public String getName()
+    {
+        return this .field .getName();
+    }
+
+    @Override
+    public String getLabel()
+    {
+        return null; // signals that the field is not to be shown in the "new design" menu
+    }
 
 	@Override
 	public AlgebraicField getField()

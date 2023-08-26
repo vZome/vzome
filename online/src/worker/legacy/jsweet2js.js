@@ -352,6 +352,14 @@ export class JsProperties
     return { ...this.config };
   }
 
+  getOrDefault( key, defaultValue )
+  {
+    if ( this.config .hasOwnProperty( key ) )
+      return this.get( key );
+    else 
+      return defaultValue;
+  }
+
   getProperty( key )
   {
     return this.config[ key ]
@@ -360,5 +368,10 @@ export class JsProperties
   get( key )
   {
     return this.config[ key ]
+  }
+
+  put( key, value )
+  {
+    this.config[ key ] = value;
   }
 }
