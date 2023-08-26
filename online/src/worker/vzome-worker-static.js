@@ -296,7 +296,11 @@ const fileImporter = ( report, event ) =>
         console.log( `${action} actionPerformed error: ${error.message}` );
         report( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
       }
-    } );
+    } )
+    .catch( error => {
+      console.log( error.message );
+      console.log( 'Import failed' );
+    } )
 }
 
 const urlLoader = ( report, event ) =>
