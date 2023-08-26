@@ -55,6 +55,7 @@ export const FileMenu = () =>
     }
     delete inputRef.accept;
     delete inputRef[ 'data-action' ];
+    inputRef.value = null;
   }
   const openFile = evt =>
   {
