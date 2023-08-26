@@ -5,7 +5,7 @@ import { createEffect, createSignal, mergeProps } from "solid-js";
 import { controllerAction, controllerExportAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
 import { serializeVZomeXml, download } from '../../../workerClient/serializer.js';
 import { UrlDialog } from '../components/webloader.jsx'
-import { fetchDesign, openDesignFile, newDesign } from "../../../workerClient/index.js";
+import { fetchDesign, openDesignFile, newDesign, importMeshFile } from "../../../workerClient/index.js";
 import { useWorkerClient } from "../../../workerClient/index.js";
 import { Guardrail } from "../components/guardrail.jsx";
 
@@ -47,16 +47,26 @@ export const FileMenu = () =>
   }
 
   let inputRef;
+  const onFileSelected = e => {
+    const selected = e.target.files && e.target.files[0];
+    const actionFn = inputRef[ 'data-action' ];
+    if ( selected && actionFn ) {
+      postMessage( actionFn( selected ) );
+    }
+    delete inputRef.accept;
+    delete inputRef[ 'data-action' ];
+  }
   const openFile = evt =>
   {
+    inputRef[ 'data-action' ] = selected => openDesignFile( selected, false );
+    inputRef.accept = '.vZome';
     inputRef.click();
   }
-  const onFileSelected = e => {
-    const selected = e.target.files && e.target.files[0]
-    if ( selected ) {
-      postMessage( openDesignFile( selected, false ) );
-    }
-    inputRef.value = null;
+  const importFile = ( extension, format ) => evt =>
+  {
+    inputRef[ 'data-action' ] = selected => importMeshFile( selected, format );
+    inputRef.accept = extension;
+    inputRef.click();
   }
 
   const handleShowUrlDialog = () => {
@@ -116,8 +126,7 @@ export const FileMenu = () =>
 
   return (
     <Menu label="File" dialogs={<>
-      <input style={{ display: 'none' }} type="file" ref={inputRef}
-        onChange={onFileSelected} accept={".vZome"} />
+      <input style={{ display: 'none' }} type="file" ref={inputRef} onChange={onFileSelected} />
 
       <UrlDialog show={showDialog()} setShow={setShowDialog} openDesign={openUrl} />
 
@@ -143,9 +152,9 @@ export const FileMenu = () =>
         <Divider/>
 
         <SubMenu label="Import 3D Mesh">
-          <MenuItem disabled={true}>Simple Mesh JSON</MenuItem>
-          <MenuItem disabled={true}>Color Mesh JSON</MenuItem>
-          <MenuItem disabled={true}>vZome VEF</MenuItem>
+          <MenuItem onClick={importFile( '.json', 'mesh' )}  >Simple Mesh JSON</MenuItem>
+          <MenuItem onClick={importFile( '.json', 'cmesh' )} >Color Mesh JSON</MenuItem>
+          <MenuItem onClick={importFile( '.vef', 'vef' )}    >vZome VEF</MenuItem>
         </SubMenu>
 
         <Divider/>

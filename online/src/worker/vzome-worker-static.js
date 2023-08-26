@@ -276,6 +276,29 @@ const fileLoader = ( report, event ) =>
   return openDesign( xmlLoading, report, debug );
 }
 
+const fileImporter = ( report, event ) =>
+{
+  const IMPORT_ACTIONS = {
+    'mesh' : 'ImportSimpleMeshJson',
+    'cmesh': 'ImportColoredMeshJson',
+    'vef'  : 'LoadVEF',
+  }
+  const { file, format } = event.payload;
+  const { name } = file;
+  fetchFileText( file )
+
+    .then( text => {
+      try {
+        designWrapper .doAction( '', IMPORT_ACTIONS[ format ], { vef: text } );
+        const { shapes, embedding } = designWrapper .getScene( '--END--', true ); // never send camera or lighting!
+        report( { type: 'SCENE_RENDERED', payload: { scene: { shapes, embedding } } } );
+      } catch (error) {
+        console.log( `${action} actionPerformed error: ${error.message}` );
+        report( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
+      }
+    } );
+}
+
 const urlLoader = ( report, event ) =>
 {
   const { url, config } = event.payload;
@@ -337,6 +360,10 @@ onmessage = ({ data }) =>
   
     case 'FILE_PROVIDED':
       fileLoader( postMessage, data );
+      break;
+
+    case 'MESH_FILE_PROVIDED':
+      fileImporter( postMessage, data );
       break;
 
     case 'SCENE_SELECTED': {
