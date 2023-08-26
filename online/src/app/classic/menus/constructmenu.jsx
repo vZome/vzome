@@ -1,31 +1,15 @@
 
-import Button from "@suid/material/Button"
-import Menu from "@suid/material/Menu"
-import Divider from "@suid/material/Divider";
-import { createSignal } from "solid-js";
+import { Divider, Menu, SubMenu, createMenuAction } from "../../framework/menus.jsx";
 
-import { createMenuAction } from "../components/menuaction.jsx";
-import { subController } from "../controllers-solid.js";
+import { useWorkerClient } from "../../../workerClient/index.js";
 
-export const ConstructMenu = ( props ) =>
+export const ConstructMenu = () =>
 {
-  const [ anchorEl, setAnchorEl ] = createSignal( null );
-  const open = () => Boolean( anchorEl() );
-  const doClose = () => setAnchorEl( null );
-
-  const EditAction = createMenuAction( props.controller, doClose );
+  const { rootController } = useWorkerClient();
+  const EditAction = createMenuAction( rootController() );
 
   return (
-    <div>
-      <Button id="construct-menu-button" sx={{ color: 'white', minWidth: 'auto' }}
-        aria-controls={open() ? "construct-menu-menu" : undefined} aria-haspopup="true" aria-expanded={open() ? "true" : undefined}
-        onClick={ (event) => setAnchorEl(event.currentTarget) }
-      >
-        Construct
-      </Button>
-      <Menu id="construct-menu-menu" MenuListProps={{ "aria-labelledby": "construct-menu-button" }}
-        anchorEl={anchorEl()} open={open()} onClose={doClose}
-      >
+    <Menu label="Construct">
         <EditAction label="Loop Balls"         action="JoinPoints/CLOSED_LOOP" mods="⌘" key="J" />
         <EditAction label="Chain Balls"        action="JoinPoints/CHAIN_BALLS" mods="⌥⌘" key="J" />
         <EditAction label="Join Balls to Last" action="JoinPoints/ALL_TO_LAST" />
@@ -54,12 +38,15 @@ export const ConstructMenu = ( props ) =>
         <Divider />
         
         <EditAction label="2D Convex Hull" action="ConvexHull2d" />
-        <EditAction label="3D Convex Hull" action="ConvexHull3d" />
+        <SubMenu label="3D Convex Hull">
+          <EditAction label="Complete" action="ConvexHull3d" />
+          <EditAction label="Panels Only" action="ConvexHull3d/onlyPanels" />
+          <EditAction label="Struts Only" action="ConvexHull3d/noPanels" />
+        </SubMenu>
 
         <Divider />
         
         <EditAction label="Parallelepiped" action="Parallelepiped" mods="⇧⌘" key="P" />
-      </Menu>
-    </div>
+    </Menu>
   );
 }

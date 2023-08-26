@@ -13,6 +13,9 @@ import com.vzome.core.editor.api.Selection;
 import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.model.RealizedModel;
+import com.vzome.core.model.Connector;
+import com.vzome.core.model.Manifestation;
+import com.vzome.core.model.Strut;
 
 import def.js.Object;
 
@@ -120,11 +123,19 @@ public class JsEditorModel implements EditorModel, LegacyEditorModel, SymmetryAw
         this .selectionSummary .notifyListeners();
     }
 
-
-
     @Override
     public Construction getSelectedConstruction( Class<? extends Construction> kind )
     {
-        throw new RuntimeException( "unimplemented getSelectedConstruction" );
+        Class<? extends Manifestation> manifestationClass;
+        if ( kind == Point .class )
+            manifestationClass = Connector.class;
+        else if ( kind == Segment .class )
+            manifestationClass = Strut .class;
+        else
+            return null;
+        Manifestation focus = selection .getSingleSelection( manifestationClass );
+        if ( focus != null )
+            return focus .getFirstConstruction();
+        return null;
     }
 }

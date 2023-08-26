@@ -1,16 +1,13 @@
 
-import React, { useEffect } from 'react'
-
-export const useGitHubShares = githubUser =>
+export const fetchGitHubShares = async githubUser =>
 {
   const BASE_URL = `https://raw.githubusercontent.com/${githubUser}/vzome-sharing/main/`;
-  const [ designs, setDesigns ] = React.useState( [] );
 
-  useEffect( () => {
-    if ( ! githubUser ) {
-      setDesigns( [] );
-      return;
-    }
+  if ( ! githubUser ) {
+    return [];
+  }
+
+  return (
     fetch( `https://api.github.com/repos/${githubUser}/vzome-sharing/git/trees/main?recursive=1` )
       .then( response => response.json() )
       .then( json => {
@@ -30,14 +27,12 @@ export const useGitHubShares = githubUser =>
             return { title, details, path, url };
           } );
         console.log( 'Repo has', designs.length, 'entries.' );
-        setDesigns( designs );
+        return designs;
       } )
       .catch( () => {
-        setDesigns( [] );
+        return [];
       })
-  }, [githubUser] );
-
-  return designs;
+  )
 }
 
 export const getAssetUrl = ( githubUser, path ) =>

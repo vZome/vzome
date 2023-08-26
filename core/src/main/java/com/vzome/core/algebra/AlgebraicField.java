@@ -251,4 +251,24 @@ public interface AlgebraicField
         // See SqrtPhiField.prepareAlgebraicNumberTerms() for an example.
         return fieldName .equals( "golden" ) && this.getGoldenRatio() != null;
     }
+
+    public static String[] getIrrationals( AlgebraicField field )
+    {
+        int len = field .getNumIrrationals();
+        String[] result = new String[ len ];
+        for ( int i = 0; i < result.length; i++ ) {
+            result[ i ] = field .getIrrational( i+1 );
+        }
+        return result;
+    }
+
+    public static String[] getMultipliers( AlgebraicField field )
+    {
+        int len = field. getNumMultipliers();
+        String[] result = new String[ len ];
+        for ( int i = 0; i < result.length; i++ ) {
+            result[ i ] = field .getIrrational( i+1 );
+        }
+        return result;
+    }
 }

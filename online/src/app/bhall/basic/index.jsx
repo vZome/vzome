@@ -1,20 +1,17 @@
-// babel workaround
-import "regenerator-runtime/runtime";
 
-import React from 'react';
-import { render } from 'react-dom'
+import { render } from 'solid-js/web';
+import { ErrorBoundary, For, createSignal } from "solid-js";
 
-import { makeStyles } from '@material-ui/core/styles'
-import Container from '@material-ui/core/Container'
-import Paper from '@material-ui/core/Paper'
-import Typography from '@material-ui/core/Typography'
-import Link from '@material-ui/core/Link'
-import Divider from '@material-ui/core/Divider'
-import Tabs from '@material-ui/core/Tabs'
-import Tab from '@material-ui/core/Tab'
+import Typography from '@suid/material/Typography'
+import Link from '@suid/material/Link'
+import Container from '@suid/material/Container'
+import Paper from '@suid/material/Paper'
+import Divider from '@suid/material/Divider'
 
-import { UrlViewer } from '../../../ui/viewer/index.jsx'
-import { VZomeAppBar } from '../../components/appbar.jsx'
+import { Tab, Tabs } from '../../framework/tabs.jsx';
+
+import { UrlViewer } from '../../../viewer/solid/index.jsx'
+import { VZomeAppBar } from '../../classic/components/appbar.jsx';
 
 const metadata = {
   easier: {
@@ -90,13 +87,6 @@ const metadata = {
   },
 }
 
-const useStyles = makeStyles( (theme) => ({
-  paper: {
-    paddingLeft: "2%",
-    paddingRight: "2%",
-  }
-}));
-
 const viewerStyle = {
   height: "400px",
   minHeight: "400px",
@@ -110,35 +100,33 @@ const viewerStyle = {
   border: "solid",
 }
 
-const VZomeViewer = ({ name, parts, config }) =>
+const VZomeViewer = (props) =>
 {
-  const url = name && new URL( `/bhall/basics/${name}.vZome`, window.location ) .toString();
+  const url = () => props.name && new URL( `/bhall/basics/${props.name}.vZome`, window.location ) .toString();
 
   return (
     <>
       <Divider />
       <div style={viewerStyle}>
-        <UrlViewer url={url} config={config} />
+        <UrlViewer url={url()} config={props.config} />
       </div>
-      <Typography gutterBottom align='center' variant="h6" >{name}</Typography>
-      <Typography gutterBottom align='center' >Build with {parts}</Typography>
+      <Typography gutterBottom align='center' variant="h6" >{props.name}</Typography>
+      <Typography gutterBottom align='center' >Build with {props.parts}</Typography>
     </>
   )
 }
 
 const BHallBasic = () =>
 {
-  const classes = useStyles()
-  const [difficulty, setDifficulty] = React.useState( 0 );
-  const labels = Object.keys( metadata )
+  const [ difficulty, setDifficulty ] = createSignal( "easier" );
 
   const handleChange = (event, newValue) => {
-    console.log( newValue );
     setDifficulty( newValue )
   };
+  
   return (
-    <>
-      <VZomeAppBar oneDesign title='vZome Online Apps'
+    <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
+      <VZomeAppBar oneDesign title='Apps'
         about={ <>
           <Typography gutterBottom>
             vZome Online Apps are demonstrations
@@ -148,7 +136,7 @@ const BHallBasic = () =>
         </> }
       />
       <Container maxWidth="md">
-        <Paper className={classes.paper}>
+        <Paper>
           <Typography variant="h2" gutterBottom >
             Brian Hall's Zometool Designs
           </Typography>
@@ -163,22 +151,21 @@ const BHallBasic = () =>
             Note that they are organized into three sections, by difficulty.
           </Typography>
           <Typography gutterBottom color='secondary' >
-            The panels are not images; you can use your mouse to rotate, pan, and zoom.
+            The panels are interactive, not images; you can use your mouse to rotate, pan, and zoom.
           </Typography>
-          <Paper square>
-            <Tabs value={difficulty} onChange={handleChange} indicatorColor="primary" textColor="primary"
-                centered aria-label="choose difficulty" >
-              <Tab label={labels[0]} />
-              <Tab label={labels[1]} />
-              <Tab label={labels[2]} />
-            </Tabs>
-          </Paper>
-          { Object.entries( metadata[ labels[ difficulty ] ] ).map( ([ name, value, config={} ]) =>
-            <VZomeViewer name={name} parts={value.parts} config={config} /> )}
+          <Tabs label="choose difficulty" values={ Object.keys( metadata )} value={difficulty()} onChange={handleChange}>
+            <For each={ Object.keys( metadata ) }>{ tabname =>
+              <Tab value={tabname}>
+                <For each={ Object.keys( metadata[ tabname ] ) }>{ name =>
+                  <VZomeViewer name={name} parts={metadata[ tabname ][name].parts} config={metadata[ tabname ][name].config || {}} />
+                }</For>
+              </Tab>
+            }</For>
+          </Tabs>
         </Paper>
       </Container>
-    </>
+    </ErrorBoundary>
   );
 }
 
-render( <BHallBasic />, document.getElementById( 'root' ) )
+render( BHallBasic, document.getElementById( 'root' ) )

@@ -1,5 +1,5 @@
 
-package com.vzome.desktop.awt;
+package com.vzome.desktop.controller;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -8,16 +8,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.vecmath.Quat4f;
-import javax.vecmath.Vector3f;
-
-import org.vorthmann.j3d.MouseTool;
-
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Point;
-import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.SelectionSummary.Listener;
+import com.vzome.core.editor.api.Context;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Selection;
@@ -34,10 +29,6 @@ import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.render.RenderingChanges;
 import com.vzome.core.render.TransparentRendering;
-import com.vzome.desktop.controller.CameraController;
-import com.vzome.desktop.controller.LengthController;
-import com.vzome.desktop.controller.SymmetryController;
-import com.vzome.desktop.controller.ZoneVectorBall;
 
 public class PreviewStrut implements PropertyChangeListener
 {
@@ -48,13 +39,15 @@ public class PreviewStrut implements PropertyChangeListener
 
     private final ZoneVectorBall zoneBall;
 
-    private Point point;
+    private final Context context;
+
+    private transient Point point;
 
     private Axis zone;
 
-    private SymmetryController symmetryController;
+    private transient SymmetryController symmetryController;
 
-    private LengthCanvasTool length;
+    private transient LengthController length;
 
     private StrutCreation strut;
 
@@ -62,9 +55,10 @@ public class PreviewStrut implements PropertyChangeListener
 
     private static Logger logger = Logger .getLogger( "org.vorthmann.zome.app.impl.PreviewStrut" );
 
-    public PreviewStrut( AlgebraicField field, RenderingChanges mainScene, CameraController cameraController )
+    public PreviewStrut( AlgebraicField field, RenderingChanges mainScene, Context context )
     {
-        rendering = new RenderedModel( field, true );
+        this.context = context;
+        rendering = new RenderedModel( field, null );
         TransparentRendering transp = new TransparentRendering( mainScene );
         rendering .addListener( transp );
         model = new RealizedModelImpl( field, new Projection.Default( field ) );
@@ -96,34 +90,54 @@ public class PreviewStrut implements PropertyChangeListener
             public void addSelectionSummaryListener( Listener listener ) {}
         };
 
-        zoneBall = new ZoneVectorBall( cameraController )
+        zoneBall = new ZoneVectorBall()
         {
             @Override
             protected void zoneChanged( Axis oldZone, Axis newZone )
             {
                 if ( length != null )
                     length .removePropertyListener( PreviewStrut .this );
-                zone = newZone;
+                setZone( newZone );
                 if ( newZone == null )
                     return;
-                length = new LengthCanvasTool( (LengthController) symmetryController.orbitLengths.get( newZone .getDirection() ) );
+                length = (LengthController) symmetryController.orbitLengths.get( newZone .getDirection() );
                 adjustStrut();
                 length .addPropertyListener( PreviewStrut .this );
             }
         };
     }
+    
+    /*
+     * Required just for JSweet.  For some reason, it generates l1.equals(l2) when removing
+     * listeners from PCS, so it failed during length .removePropertyListener( this )
+     * unless I added this, which is just equivalent to === in JS.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        return false;
+    }
 
-    public void startRendering( SymmetryController symmetryController, Point point, AlgebraicVector workingPlaneNormal )
+    private void setZone( Axis zone )
+    {
+        this.zone = zone;
+    }
+
+    public void startRendering( Point point, AlgebraicVector workingPlaneAxis, RealVector worldEye )
     {
         this .point = point;
 
-        setSymmetryController( symmetryController );
-        OrbitSet orbits = symmetryController .getBuildOrbits();
-        if ( workingPlaneNormal != null )
+        OrbitSet orbits = this .symmetryController .getBuildOrbits();
+        if ( workingPlaneAxis != null )
         {
-            orbits = new PlaneOrbitSet( orbits, workingPlaneNormal );
+            orbits = new PlaneOrbitSet( orbits, workingPlaneAxis );
 
-            RealVector normal = workingPlaneNormal .toRealVector();
+            RealVector normal = workingPlaneAxis .toRealVector();
             RealVector other = new RealVector( 1d, 0d, 0d );
             RealVector v1 = normal .cross( other );
             double len = v1 .length();
@@ -165,18 +179,18 @@ public class PreviewStrut implements PropertyChangeListener
             this .workingPlaneDual[ 3 ] = P_e120;
         }
 
-        this .zone = zoneBall .setOrbits( orbits );
+        this .zone = zoneBall .initializeZone( orbits, worldEye );
         if ( zone == null )
         {
             length = null;
             return;
         }
-        this .length = new LengthCanvasTool( (LengthController) symmetryController.orbitLengths.get( zone .getDirection() ) );
+        this .length = (LengthController) symmetryController.orbitLengths.get( zone .getDirection() );
         adjustStrut();
         length .addPropertyListener( this );
     }
 
-    public void finishPreview( DocumentModel document )
+    public void finishPreview()
     {
         if ( length == null )
             return;
@@ -189,16 +203,11 @@ public class PreviewStrut implements PropertyChangeListener
         params .put( "anchor", point );
         params .put( "zone", zone );
         params .put( "length", length .getValue() );
-        document .doEdit( "StrutCreation", params );
+        context .doEdit( "StrutCreation", params );
         point = null;
         zone = null;
         length = null;
         this .workingPlaneDual = null;
-    }
-
-    MouseTool getLengthMouseWheel()
-    {
-        return this.length == null? null : this .length .getMouseTool();
     }
 
     private void adjustStrut()
@@ -232,10 +241,10 @@ public class PreviewStrut implements PropertyChangeListener
         return this .workingPlaneDual != null;
     }
 
-    public void trackballRolled( Quat4f roll )
+    public void trackballRolled( RealVector[] rowMajor )
     {
         if ( point != null && ! usingWorkingPlane() )
-            zoneBall .trackballRolled( roll );  // some of these events will trigger the zone change
+            zoneBall .trackballRolled( rowMajor );  // some of these events will trigger the zone change
     }
 
     public void workingPlaneDrag( Line ray )
@@ -249,8 +258,7 @@ public class PreviewStrut implements PropertyChangeListener
             RealVector planeIntersection = this .intersectWorkingPlane( ray );
             RealVector vectorInPlane = planeIntersection .minus( this .point .getLocation() .toRealVector() );
 
-            Vector3f almostPlanarVector = new Vector3f();
-            almostPlanarVector .set( vectorInPlane.x, vectorInPlane.y, vectorInPlane.z );
+            RealVector almostPlanarVector = new RealVector( vectorInPlane.x, vectorInPlane.y, vectorInPlane.z );
             zoneBall .setVector( almostPlanarVector );
         }
     }
@@ -279,5 +287,10 @@ public class PreviewStrut implements PropertyChangeListener
         
         // Convert from homogeneous to normal 3D coordinates
         return new RealVector( x_e1 / x_e0, x_e2 / x_e0, x_e3 / x_e0 );
+    }
+
+    public LengthController getLengthController()
+    {
+        return this .length;
     }
 }

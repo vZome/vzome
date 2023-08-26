@@ -1,34 +1,36 @@
 
-import Button from "@suid/material/Button"
-import Menu from "@suid/material/Menu"
-import Divider from "@suid/material/Divider";
-import { createSignal } from "solid-js";
+import { mergeProps } from "solid-js";
+import { Divider, Menu, MenuAction, createMenuAction } from "../../framework/menus.jsx";
 
-import { createMenuAction } from "../components/menuaction.jsx";
-import { subController } from "../controllers-solid.js";
+import { useWorkerClient } from "../../../workerClient/index.js";
+import { useSymmetry } from "../classic.jsx";
+import { controllerAction } from "../../../workerClient/controllers-solid.js";
 
-export const ToolsMenu = ( props ) =>
+export const SymmetryAction = ( props ) =>
 {
-  const [ anchorEl, setAnchorEl ] = createSignal( null );
-  const open = () => Boolean( anchorEl() );
-  const doClose = () => setAnchorEl( null );
+  const { symmetryController } = useSymmetry();
+  const onClick = () => 
+  {
+    controllerAction( symmetryController(), props.action );
+  }
+  // I was destructuring props here, and lost reactivity!
+  //  It usually doesn't matter for menu items, except when there is checkbox state.
+  return MenuAction( mergeProps( { onClick }, props ) );
+}
 
-  const EditAction = createMenuAction( props.controller, doClose );
-  const buildController = () => subController( props.controller, 'strutBuilder' );
-  const symmetryController = () => subController( buildController(), 'symmetry' );
-  const SymmetryAction = createMenuAction( symmetryController(), doClose );
+export const ToolsMenu = () =>
+{
+  const { rootController } = useWorkerClient();
+  const EditAction = createMenuAction( rootController() );
+  const { showPolytopesDialog } = useSymmetry();
+
+  const openPolytopes = () =>
+  {
+    showPolytopesDialog();
+  }
 
   return (
-    <div>
-      <Button id="tools-menu-button" sx={{ color: 'white', minWidth: 'auto' }}
-        aria-controls={open() ? "tools-menu-menu" : undefined} aria-haspopup="true" aria-expanded={open() ? "true" : undefined}
-        onClick={ (event) => setAnchorEl(event.currentTarget) }
-      >
-        Tools
-      </Button>
-      <Menu id="tools-menu-menu" MenuListProps={{ "aria-labelledby": "tools-menu-button" }}
-        anchorEl={anchorEl()} open={open()} onClose={doClose}
-      >
+      <Menu label="Tools">
         <SymmetryAction label="Icosahedral Symmetry"         action="icosasymm" mods="⌘" key="I" />
         <SymmetryAction label="Cubic / Octahedral Symmetry"  action="octasymm"  mods="⌥⌘" key="C" />
         <SymmetryAction label="Tetrahedral Symmetry"         action="tetrasymm" mods="⌥⌘" key="T" />
@@ -41,13 +43,12 @@ export const ToolsMenu = ( props ) =>
 
         <Divider />
         
-        <SymmetryAction label="Generate Polytope..." action="showPolytopesDialog" mods="⌥⌘" key="P" disabled={true} />
+        <MenuAction label="Generate Polytope..." onClick={ openPolytopes } mods="⌥⌘" key="P" />
 
         <Divider />
         
         <EditAction label="Validate Paneled Surface" action="Validate2Manifold" />
 
       </Menu>
-    </div>
   );
 }

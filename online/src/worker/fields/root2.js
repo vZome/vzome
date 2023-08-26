@@ -21,6 +21,8 @@ function embed( a )
   return ( Number(a0) + SQRT2 * Number(a1) ) / Number(ad)
 }
 
-const field = createField( { name: 'rootTwo', order: 2, times, embed, reciprocal } )
+const getIrrational = () => '√2';
+
+const field = { ...createField( { name: 'rootTwo', order: 2, times, embed, reciprocal } ), getIrrational }
 
 export default field

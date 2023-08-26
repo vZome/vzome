@@ -22,7 +22,7 @@ export function solidPlugin(options = {}) {
           return undefined; // fall through to the built-in JSX processor
 
         const { code } = await transformAsync(source, {
-          presets: [[solid, options], ts],
+          presets: [[solid, options?.solid || {}], [ts, options?.typescript || {}]],
           filename,
           sourceMaps: "inline",
         });

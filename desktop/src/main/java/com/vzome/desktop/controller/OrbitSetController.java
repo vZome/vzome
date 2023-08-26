@@ -161,6 +161,19 @@ public class OrbitSetController extends DefaultController implements PropertyCha
             if ( lastOrbit != null )
                 orbits .add( lastOrbit );
         }
+        else if ( action .startsWith( "setSingleOrbit." ) ) // new for online classic, which cannot use "oneAtATime" toggle
+        {
+            Boolean lastValue = mOneAtATime;
+            String value = action .substring( "setSingleOrbit." .length() );
+            mOneAtATime = Boolean.parseBoolean( value );
+            if ( mOneAtATime ) {
+                // no action when releasing the constraint, else pick one
+                orbits .clear();
+                if ( lastOrbit != null )
+                    orbits .add( lastOrbit );
+            }
+            firePropertyChange( "oneAtATime", lastValue, mOneAtATime );
+        }
         else if ( action .startsWith( "enableDirection." ) )
         {
             String dirName = action .substring( "enableDirection." .length() );

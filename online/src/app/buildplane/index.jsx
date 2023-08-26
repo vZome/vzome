@@ -9,8 +9,8 @@ import Link from '@material-ui/core/Link'
 
 import { VZomeAppBar } from '../components/appbar.jsx'
 import { BuildPlaneTool } from './buildplane.jsx'
-import { DesignViewer, WorkerContext } from '../../ui/viewer/index.jsx'
-import { createWorker } from "../../workerClient/client.js";
+import { DesignViewer, WorkerContext } from '../../viewer/react/index.jsx'
+import { createWorker } from "../../workerClient/index.js";
 
 const worker = createWorker();
 

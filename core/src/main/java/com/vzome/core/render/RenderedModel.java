@@ -112,22 +112,11 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         this .orbitSource = orbitSource;
         this .mPolyhedra = ( orbitSource == null )? null : orbitSource .getShapes();
     }
-    
+        
     public RenderedModel( final Symmetry symmetry )
     {
         this( symmetry .getField(), new SymmetryOrbitSource( symmetry ));
-    }
-    
-    public RenderedModel( final Symmetry symmetry, boolean enabled )
-    {
-        this( symmetry .getField(), new SymmetryOrbitSource( symmetry ));
-        this .enabled = enabled;
-    }
-        
-    public RenderedModel( final AlgebraicField field, boolean enabled )
-    {
-        this( field, null );
-        this .enabled = enabled;
+        this .enabled = false;
     }
     
     public RenderedModel withColorPanels( boolean setting )
@@ -344,7 +333,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 
     public RenderedModel snapshot()
     {
-        RenderedModel snapshot = new RenderedModel( this .orbitSource .getSymmetry(), false );
+        RenderedModel snapshot = new RenderedModel( this .orbitSource .getSymmetry() );
         for (RenderedManifestation rm : mRendered) {
             RenderedManifestation copy = rm .copy();
             snapshot .mRendered .add( copy );

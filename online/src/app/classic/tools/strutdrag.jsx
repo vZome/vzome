@@ -1,4 +1,12 @@
 
+import { createEffect, createSignal } from 'solid-js';
+import { Vector3 } from 'three';
+import { useThree } from "solid-three";
+
+import { useInteractionTool } from '../../../viewer/solid/interaction.jsx';
+import { endPreviewStrut, movePreviewStrut, startPreviewStrut, useWorkerClient } from '../../../workerClient/index.js';
+import { ObjectTrackball } from './trackball.jsx';
+import { VectorArrow } from './arrow.jsx';
 
 /*
 
@@ -6,22 +14,17 @@ After digging through three.js TrackballControls.js
 
    https://github.com/mrdoob/three.js/blob/master/examples/jsm/controls/TrackballControls.js
 
-it seems I can use it to manipulate a "camera" as long as that object has the same
+I thought I could use it to manipulate a "camera" as long as that object had the same
 "up", "position", "lookAt", and "isPerspectiveCamera" fields as an actual camera.
 (Yay, duck typing!)
 
-However, I would have to somehow "reverse" the effect of the transformations
-to the object.
-
-I think it may be better to copy the TrackballControls.js code, discard the pan() and zoom()
-features, and diddle the rotate() function to do what I need... keeping the necessary
-event listening code.
-
-I'll also want to copy part of the lifecycle code from Drei's React wrapper.
+However, I failed miserably, and I found it simpler to just copy the event handling bits
+of TrackballControls.js and implement the transformations myself.  See ObjectTrackball.
 
 */
 
-
+// The switcher tool is not in use, and should probably be discarded in favor
+//   of a fully modal switch between tools.
 export const createSwitcherTool = ( selectionTool, strutPreviewTool, minDrag ) =>
 {
   let currentTool = selectionTool;
@@ -81,14 +84,61 @@ export const createSwitcherTool = ( selectionTool, strutPreviewTool, minDrag ) =
   return { bkgdClick, onHover, onClick, onDragStart, onDrag, onDragEnd, dragging };
 }
 
-// {
-//   const { sendToWorker, subscribe } = worker;
-//   useEffect( () => {
-//     // Connect the worker store to the local store, to listen to worker events
-//     subscribe( {
-//       onWorkerError: error => {},
-//       onWorkerMessage: msg => {},
-//     } );
-//   }, [] );
-// }
+const StrutDragTool = props =>
+{
+  const { postMessage } = useWorkerClient();
+  const eye = useThree(({ camera }) => camera.position);
 
+  const [ line, setLine ] = createSignal( [ 0, 0, 1 ] );
+  const [ operating, setOperating ] = createSignal( null );
+  const [ position, setPosition ] = createSignal( [0,0,0] );
+
+  const handlers = {
+
+    allowTrackball: false,
+
+    cursor: 'cell',
+
+    onClick: () => {},
+    bkgdClick: () => {},
+    onDrag: evt => {},
+
+    onDragStart: ( id, position, type, starting, evt ) => {
+      if ( type !== 'ball' )
+        return;
+      setPosition( position );
+      const { x, y, z } = new Vector3() .copy( eye() ) .sub( new Vector3( ...position ) ) .normalize();
+      setLine( [ x, y, z ] );
+      postMessage( startPreviewStrut( id, [ x, y, z ] ) );
+      setOperating( evt ); // so we can pass it to the ObjectTrackball
+    },
+    onDragEnd: evt => {
+      if ( operating() ) {
+        setOperating( null );
+        postMessage( endPreviewStrut() );
+      }
+    }
+  };
+
+  createEffect( () => {
+    if ( operating() ) {
+      postMessage( movePreviewStrut( line() ) );
+    }
+  });
+
+  const [ _, setTool ] = useInteractionTool();
+  createEffect( () => setTool( handlers ) );
+
+  return (
+    <Show when={operating()}>
+      <group position={position()}>
+        <ObjectTrackball startEvent={operating()} line={line()} setLine={setLine} rotateSpeed={0.9} debug={props.debug} />
+        <Show when={props.debug}>
+          <VectorArrow vector={line()} />
+        </Show>
+      </group>
+    </Show>
+  );
+}
+
+export { StrutDragTool };

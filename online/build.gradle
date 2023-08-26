@@ -188,6 +188,7 @@ core.config {
     'com/vzome/core/render/RenderingChanges.java',
     'com/vzome/core/render/RenderedManifestation.java',
     'com/vzome/core/render/RenderedModel.java',
+    'com/vzome/core/render/TransparentRendering.java',
 
     'com/vzome/core/exporters/GeometryExporter.java',
     'com/vzome/core/exporters/StlExporter.java',
@@ -226,7 +227,6 @@ core.config {
     'com/vzome/core/exporters/ShapesJsonExporter.java',
 
     'com/vzome/desktop/controller/CameraController.java',
-    'com/vzome/desktop/controller/ZoneVectorBall.java',
     'com/vzome/desktop/controller/JsonClientRendering.java',
 
   ]

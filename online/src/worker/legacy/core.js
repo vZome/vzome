@@ -292,6 +292,8 @@ const makeFloatMatrices = ( matrices ) =>
     }
     return fieldApp
   }
+
+  export const getFieldNames = () => Object .keys( fieldApps );
   
   export const getField = fieldName =>
   {
@@ -299,6 +301,14 @@ const makeFloatMatrices = ( matrices ) =>
     if ( !fieldApp )
       return { name: fieldName, unknown: true };
     return fieldApp.getField();
+  }
+
+  export const getFieldLabel = ( fieldName ) =>
+  {
+    const fieldApp = getFieldApp( fieldName )
+    if ( !fieldApp )
+      return { error: `No such field name: ${fieldName}` };
+    return fieldApp .getLabel();
   }
 
   export const getSymmetry = ( fieldName, symmName ) =>
@@ -331,6 +341,9 @@ const makeFloatMatrices = ( matrices ) =>
     const history = new vzomePkg.core.editor.EditHistory();
     history .setSerializer( { serialize: element => element .serialize( "" ) } );
 
+    let changeCount = 0;
+    const getChangeCount = () => changeCount;
+
     // This object implements the UndoableEdit.Context interface
     const editContext = {
       // Since we are not creating Branch edits, this should never be used
@@ -351,11 +364,39 @@ const makeFloatMatrices = ( matrices ) =>
         history .mergeSelectionChanges();
         history .addEdit( edit, editContext );
         editor .notifyListeners();
+        ++changeCount;
       },
 
-      doEdit: ( action, props ) => {
-        throw new Error( `${action} command is not implemented yet` );
+      doEdit: ( className, props ) => {
+        if ( editor .selection .isEmpty() && className === "hideball" ) {
+          className = "ShowHidden";
+        }
+  
+        const command = fieldApp .getLegacyCommand( className );
+        if ( command )
+        {
+          const edit = new vzomePkg.core.editor.CommandEdit( command, editor );
+          editContext .performAndRecord( edit );
+          return;
+        }
+  
+        const [ action, mode ] = className .split( '/' );
+        if ( mode )
+          props .put( "mode", mode );
+
+        const edit = editFactory( editor, toolFactories, toolsModel )( new JavaDomElement( { tagName: action } ) )
+        if ( ! edit )
+          return
+        // editor.setAdapter( adapter );
+        edit.configure( props );
+        editContext .performAndRecord( edit );
       }
+    }
+
+    const configureAndPerformEdit = ( className, config, adapter ) =>
+    {
+      const props = new JsProperties( config );
+      editContext .doEdit( className, props );
     }
 
     const toolsModel = new vzomePkg.core.editor.ToolsModel( editContext, originPoint )
@@ -443,9 +484,9 @@ const makeFloatMatrices = ( matrices ) =>
     }
     setSymmetrySystem( symmPer.getName() ); // updates orbitSource in editor and renderedModel
 
-    const getSymmetrySystem = () =>
+    const getSymmetrySystem = (name) =>
     {
-      return editor .getSymmetrySystem();
+      return editor .getSymmetrySystem( name? name : undefined );
     }
 
     const format = namespace && vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )
@@ -543,31 +584,6 @@ const makeFloatMatrices = ( matrices ) =>
       return result
     }
 
-    const configureAndPerformEdit = ( className, config, adapter ) =>
-    {
-      if ( editor .selection .isEmpty() && className === "hideball" ) {
-        className = "ShowHidden";
-      }
-
-      const command = fieldApp .getLegacyCommand( className );
-      if ( command )
-      {
-        const edit = new vzomePkg.core.editor.CommandEdit( command, editor );
-        editContext .performAndRecord( edit );
-        return;
-      }
-
-      const [ action, mode ] = className .split( '/' );
-      if ( mode ) config .mode = mode;
-
-      const edit = editFactory( editor, toolFactories, toolsModel )( new JavaDomElement( { tagName: action } ) )
-      if ( ! edit )
-        return
-      // editor.setAdapter( adapter );
-      edit.configure( new JsProperties( config ) );
-      editContext .performAndRecord( edit );
-    }
-
     const batchRender = renderingListener => {
       const RM = vzomePkg.core.render.RenderedModel;
       RM.renderChange( new RM( null, null ), renderedModel, renderingListener );
@@ -628,8 +644,10 @@ const makeFloatMatrices = ( matrices ) =>
       return root;
     }
 
-    return { interpretEdit, configureAndPerformEdit, batchRender, serializeToDom, setSymmetrySystem, getSymmetrySystem,
-      field, renderedModel, orbitSource, symmetrySystems, toolsModel, bookmarkFactory, history };
+    return { interpretEdit, configureAndPerformEdit, batchRender, serializeToDom, setSymmetrySystem, getSymmetrySystem, getChangeCount,
+      editor,
+      field, legacyField, fieldApp,
+      renderedModel, orbitSource, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };
   }
 
   export const convertColor = color =>

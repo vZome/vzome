@@ -1,10 +1,6 @@
-import { com } from '../core-java.js';
 import { JsProperties } from '../jsweet2js.js';
-import { EditorController } from './editor.js';
-import { PickingController } from './picking.js';
-import { BuildPlaneController } from './buildplane.js';
 
-class ControllerWrapper{
+export class ControllerWrapper{
   
   constructor(path, name, controller, clientEvents) {
     this.__path = path;
@@ -91,6 +87,13 @@ class ControllerWrapper{
     }
   }
 
+  setProperty( controllerPath, name, value )
+  {
+    const controllerNames = controllerPath ? controllerPath.split(':') : [];
+    const wrapper = this.getSubControllerByNames(controllerNames);
+    wrapper.controller.setProperty( name, value );
+  }
+
   doAction(controllerPath, action, parameters = {}) {
     const controllerNames = controllerPath ? controllerPath.split(':') : [];
     const wrapper = this.getSubControllerByNames(controllerNames);
@@ -130,66 +133,3 @@ class ControllerWrapper{
     }
   }
 }
-export const createControllers = (design, renderHistory, clientEvents) => {
-  const { orbitSource, renderedModel, toolsModel, bookmarkFactory, history, symmetrySystems } = design;
-
-  const controller = new EditorController(design, clientEvents); // this is the equivalent of DocumentController
-  controller.setErrorChannel({
-    reportError: (message, args) => {
-      console.log('controller error:', message, args);
-      if (message === com.vzome.desktop.api.Controller.UNKNOWN_ERROR_CODE) {
-        const ex = args[0];
-        clientEvents.errorReported(ex.message);
-      }
-      else
-        clientEvents.errorReported(message);
-    },
-  });
-
-  // This has similar function to the Java equivalent, but a very different mechanism
-  const pickingController = new PickingController(renderedModel);
-  controller.addSubController('picking', pickingController);
-
-  // This has no desktop equivalent
-  const buildPlaneController = new BuildPlaneController(renderedModel, orbitSource);
-  controller.addSubController('buildPlane', buildPlaneController);
-
-  const undoRedoController = new com.vzome.desktop.controller.UndoRedoController(history);
-  controller.addSubController('undoRedo', undoRedoController);
-
-  const bookmarkController = new com.vzome.desktop.controller.ToolFactoryController(bookmarkFactory);
-  controller.addSubController('bookmark', bookmarkController);
-
-  const strutBuilder = new com.vzome.desktop.controller.DefaultController(); // this is the equivalent of StrutBuilderController
-  controller.addSubController('strutBuilder', strutBuilder);
-
-  for (const [name, symmetrySystem] of Object.entries(symmetrySystems)) {
-    const symmController = new com.vzome.desktop.controller.SymmetryController( strutBuilder, symmetrySystem, renderedModel );
-    strutBuilder.addSubController(`symmetry.${name}`, symmController);
-  }
-
-  const toolsController = new com.vzome.desktop.controller.ToolsController(toolsModel);
-  toolsController.addTool(toolsModel.get("bookmark.builtin/ball at origin"));
-  strutBuilder.addSubController('tools', toolsController);
-
-  const wrapper = new ControllerWrapper('', '', controller, clientEvents);
-
-  // Not beautiful, but functional
-  wrapper.getScene = (editId, before = false) => {
-    return renderHistory.getScene(editId, before);
-  };
-
-  // TODO: fix this terrible hack!
-  wrapper.renderScene = () => renderHistory.recordSnapshot('--END--', '--END--', []);
-
-  // enable shape changes
-  renderedModel .addListener( {
-    shapesChanged: () => false, // this allows RenderedModel.setShapes() to not fail and re-render all the parts
-    manifestationAdded: () => {},  // We don't need these incremental changes, since we'll batch render after
-    manifestationRemoved: () => {},
-    colorChanged: () => {},
-    glowChanged: () => {},
-  } );
-
-  return wrapper;
-};

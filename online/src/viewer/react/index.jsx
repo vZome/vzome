@@ -24,13 +24,14 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { create } from 'jss';
 
 import { SceneCanvas } from './scenecanvas.jsx';
-import { createWorkerStore, fetchDesign, whilePerspective, doControllerAction } from './store.js';
+import { fetchDesign, doControllerAction } from '../../workerClient/index.js';
 import { Spinner } from './spinner.jsx'
 import { ErrorAlert } from './alert.jsx'
 import { SettingsDialog } from './settings.jsx';
 import { useVR } from './hooks.js';
 import { SceneMenu } from './scenes.jsx';
 import { serializeVZomeXml, download } from '../../workerClient/serializer.js';
+import { createWorkerStore } from './store.js';
 
 const encodeUrl = url => url .split( '/' ) .map( encodeURIComponent ) .join( '/' );
 
@@ -72,11 +73,11 @@ export const DesignViewer = ( { children, children3d, config={}, toolRef={} } ) 
 
   const toggleFullScreen = () =>
   {
-    const { perspective } = sceneCamera || {};
+    // const { perspective } = sceneCamera || {};
     // This is a complete hack to work around the issue with resize in OrthographicCamera.
     //  We simply use a thunk to switch to a perspective camera before we toggle fullScreen.
     //  Note that this does NOT help with window resize.
-    report( whilePerspective( perspective, () => setFullScreen( !fullScreen ) ) );
+    report( /* whilePerspective( perspective, () => */ setFullScreen( !fullScreen ) );
   }
 
   const [ downloadAnchor, setDownloadAnchor ] = useState( null );
@@ -157,13 +158,13 @@ export const DesignViewer = ( { children, children3d, config={}, toolRef={} } ) 
           </IconButton>
         </Tooltip>
       }
-      <Tooltip title={ 'Settings' } aria-label="settings">
+      {/* <Tooltip title={ 'Settings' } aria-label="settings">
         <IconButton color="inherit" aria-label="settings"
             style={ { position: 'absolute', top: '5px', right: '5px' } }
             onClick={() => setShowSettings(!showSettings)} >
           <SettingsIcon fontSize='large'/>
         </IconButton>
-      </Tooltip>
+      </Tooltip> */}
 
       <SettingsDialog {...{ showSettings, setShowSettings }} container={containerRef.current} />
 

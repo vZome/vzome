@@ -1,4 +1,3 @@
-import shapes from "../../worker/legacy/resources/com/vzome/core/parts";
 
 export const doStrutPreview= ( position ) =>
 {
@@ -77,7 +76,7 @@ export const reducer = ( state=initialState, action ) =>
       return { ...state, center: undefined, buildPlanes: undefined };
     }
 
-    case 'PLANES_DEFINED': {
+    case 'SYMMETRY_CHANGED': {
       const buildPlanes = action.payload;
       const diskZone = {};
       diskZone .orbit = Object.keys( buildPlanes .planes )[ 0 ]; // TODO: use the camera look-at to find a plane

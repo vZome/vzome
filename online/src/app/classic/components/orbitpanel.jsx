@@ -1,12 +1,12 @@
 
-import { Show, For } from 'solid-js';
+import { Show, For, createEffect, createSignal } from 'solid-js';
 import Stack from "@suid/material/Stack"
 import Button from "@suid/material/Button"
-import Checkbox from "@suid/material/Checkbox";
+import Switch from "@suid/material/Switch";
 import FormControlLabel from "@suid/material/FormControlLabel";
 import InputLabel from "@suid/material/InputLabel";
 
-import { controllerAction, controllerProperty, subController } from '../controllers-solid.js';
+import { controllerAction, controllerProperty } from '../../../workerClient/controllers-solid.js';
 import { hexToWebColor } from './length.jsx';
 
 export const OrbitDot = props =>
@@ -42,11 +42,11 @@ export const OrbitDot = props =>
 
 export const OrbitPanel = props =>
 {
-  const oneAtATime = () => controllerProperty( props.controller, 'oneAtATime', 'orbits', false );
+  const oneAtATime = () => controllerProperty( props.controller, 'oneAtATime', 'orbits', false ) === 'true';
 
   const selectNone = () => controllerAction( props.controller, 'setNoDirections' );
   const selectAll = () => controllerAction( props.controller, 'setAllDirections' );
-  const singleAction = () => controllerAction( props.controller, 'oneAtATime' );
+  const singleAction = (evt,value) => controllerAction( props.controller, `setSingleOrbit.${value}` );
 
   const marginedStyle = { margin: '8px' }
   const relativeHeight = 0.6;
@@ -59,12 +59,12 @@ export const OrbitPanel = props =>
       <Stack spacing={2} direction="row">
         <Button variant="outlined" style={marginedStyle} onClick={ selectNone } >None</Button>
         <Button variant="outlined" style={marginedStyle} onClick={ selectAll } >All</Button>
-        {/* <Show when={props.lastSelected}>
-          <FormControlLabel style={marginedStyle}
-            control={<Checkbox checked={oneAtATime()} color="primary" onChange={ singleAction } />}
-            label="Single"
-          />
-        </Show> */}
+        <Show when={props.lastSelected}>
+          <FormControlLabel style={marginedStyle} label="single"
+            control={
+            <Switch checked={oneAtATime()} onChange={singleAction} size='small' inputProps={{ "aria-label": "controlled" }} />
+          }/>
+        </Show>
       </Stack>
       <div style={{ position: 'relative', 'background-color': 'white' }}>
         <svg viewBox={viewBox} stroke="black" stroke-width={0.005} >
@@ -76,7 +76,7 @@ export const OrbitPanel = props =>
             }</For>
           </g>
         </svg>
-        {/* { children } */}
+        { props.children }
       </div>
     </div>
   )

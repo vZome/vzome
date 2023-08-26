@@ -349,7 +349,7 @@ public class LengthController extends DefaultController
         {
             String html = "";
             for ( int i = 0; i < this .currentScales.length; i++ ) {
-                html += field .getIrrational( i+1 ) + "<font size=+1>" + currentScales[ i ] .getProperty( "scaleHtml" ) + "</font>  \u2715  ";
+                html += field .getIrrational( i+1 ) + currentScales[ i ] .getProperty( "scaleHtml" ) + "  \u2715  ";
             }
             return html;
         }

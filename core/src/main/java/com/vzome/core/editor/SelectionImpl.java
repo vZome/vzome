@@ -12,10 +12,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.vzome.core.editor.api.Selection;
+import com.vzome.core.model.Connector;
 import com.vzome.core.model.Group;
 import com.vzome.core.model.GroupElement;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
+import com.vzome.core.model.Panel;
+import com.vzome.core.model.Strut;
 
 /**
  * @author Scott Vorthmann
@@ -170,7 +173,11 @@ public class SelectionImpl implements Selection
         int count = 0;
         Manifestation result = null;
         for (Manifestation next : mManifestations) {
-            if ( kind .isAssignableFrom( next.getClass() ) ) {
+            // Bad practice to enumerate these cases, but this allows it to work in JSweet
+            if ( ( kind == Connector.class && next instanceof Connector )
+                    || ( kind == Strut.class && next instanceof Strut )
+                    || ( kind == Panel.class && next instanceof Panel )
+            ) {
                 ++count;
                 result = next;                    
             }
