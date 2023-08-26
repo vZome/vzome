@@ -1,6 +1,6 @@
 
 import { DropdownMenu } from "@kobalte/core";
-import { mergeProps } from "solid-js";
+import { createEffect, createSignal, mergeProps } from "solid-js";
 import { controllerAction } from "../../workerClient/controllers-solid";
 
 const isMac = navigator.userAgentData?.platform === 'macOS' || navigator.userAgent .includes( 'Macintosh' );
@@ -86,13 +86,23 @@ export const Divider = ( props ) =>
 
 export const Menu = ( props ) =>
 {
+  const [ open, setOpen ] = createSignal( true );
+  const [ contentClass, setContentClass ] = createSignal( 'dropdown-menu__content dropdown-menu__hidden' );
+
+  createEffect( () =>
+  {
+    // Menu is open but hidden initially, so that the MenuItem keyboard listeners get registered
+    setOpen( false );
+    setContentClass( 'dropdown-menu__content' );
+  });
+
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu.Root open={open()} onOpenChange={setOpen} >
       <DropdownMenu.Trigger class="dropdown-menu__trigger">
         {props.label}
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <DropdownMenu.Content class="dropdown-menu__content">
+        <DropdownMenu.Content class={contentClass()}>
           {props.children}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>

@@ -170,13 +170,15 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
       }
 
       case "exportText":
-        const format = params.getConfig().format; // TODO remove the STL hardcoding!
+        const format = params.getConfig().format;
+        const useSelection = params.getConfig().selection;
 
         switch (format) {
 
           case 'mesh':
           case 'cmesh': {
-            const mesh = modelToJS( this.design .editor .getRealizedModel(), format==='cmesh' );
+            const source = useSelection? this.design .editor .selection : this.design .editor .getRealizedModel();
+            const mesh = modelToJS( source, format==='cmesh' );
             const text = JSON.stringify( mesh, null, 2 );
             this.clientEvents.textExported( action, text ); // returning the action for Promise correlation on the client
             return;

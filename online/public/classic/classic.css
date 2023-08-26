@@ -181,6 +181,10 @@ button:disabled > .toolbar-image {
   display: grid;
 }
 
+.dropdown-menu__hidden {
+  display: none;
+}
+
 .dropdown-menu__trigger {
   appearance: none;
   display: inline-flex;

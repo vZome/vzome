@@ -1,8 +1,8 @@
 
 import { createEffect } from "solid-js";
-import { Divider, Menu, MenuItem, SubMenu, createMenuAction } from "../../framework/menus.jsx";
+import { Divider, Menu, MenuAction, MenuItem, SubMenu, createMenuAction } from "../../framework/menus.jsx";
 
-import { controllerAction, subController } from "../../../workerClient/controllers-solid.js";
+import { controllerAction, controllerExportAction, subController } from "../../../workerClient/controllers-solid.js";
 import { useWorkerClient } from "../../../workerClient/index.js";
 
 const SetColorItem = props =>
@@ -28,10 +28,38 @@ const SetColorItem = props =>
 
 export const EditMenu = () =>
 {
-  const { rootController } = useWorkerClient();
+  const { rootController, setState } = useWorkerClient();
   const EditAction = createMenuAction( rootController() );
   const undoRedoController = () => subController( rootController(), 'undoRedo' );
   const UndoRedoAction = createMenuAction( undoRedoController() );
+
+  const doCut = () =>
+  {
+    controllerExportAction( rootController(), 'cmesh', { selection: true } )
+      .then( text => {
+        navigator.clipboard .writeText( text );
+        controllerAction( rootController(), 'Delete' );
+        });
+  }
+  const doCopy = () =>
+  {
+    controllerExportAction( rootController(), 'cmesh', { selection: true } )
+      .then( text => {
+        navigator.clipboard .writeText( text );
+        });
+  }
+  const doPaste = () =>
+  {
+    if ( ! navigator.clipboard .readText ) {
+      console.warn( 'Clipboard paste is not supported in this browser.' );
+      setState( 'problem', 'Clipboard paste is not supported in this browser.' );
+      return;
+    }
+    navigator.clipboard .readText()
+      .then( text => {
+        controllerAction( rootController(), "ImportColoredMeshJson/clipboard", { vef: text } )
+      });
+  }
 
   return (
       <Menu label="Edit">
@@ -42,9 +70,9 @@ export const EditMenu = () =>
 
         <Divider />
 
-        <EditAction label="Cut"    action="cut"    mods="⌘" key="X" disabled={true} />
-        <EditAction label="Copy"   action="copy"   mods="⌘" key="C" disabled={true} />
-        <EditAction label="Paste"  action="paste"  mods="⌘" key="V" disabled={true} />
+        <EditAction label="Cut"    onClick={doCut}   mods="⌘" key="X" />
+        <EditAction label="Copy"   onClick={doCopy}  mods="⌘" key="C" />
+        <MenuAction label="Paste"  onClick={doPaste} mods="⌘" key="V" />
         <EditAction label="Delete" action="Delete" code="Delete|Backspace" />
 
         <Divider />
