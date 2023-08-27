@@ -19,13 +19,13 @@ jobs:
 
     steps:
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: '11'
           distribution: 'temurin'
 
       - name: Checkout modified jsweet
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: vorth/jsweet
           ref: develop
@@ -39,7 +39,7 @@ jobs:
           cd ../..
 
       - name: Checkout modified jsweet-maven-plugin
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: vorth/jsweet-maven-plugin
           path: jsweet-maven
@@ -52,7 +52,7 @@ jobs:
           cd ..
 
       - name: Checkout modified j4ts
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: vorth/j4ts
           ref: update-jsweet
@@ -67,7 +67,7 @@ jobs:
           cd ..
 
       - name: Checkout modified jsweet-gradle-plugin
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: vorth/jsweet-gradle-plugin
           ref: update-jsweet
@@ -82,7 +82,7 @@ jobs:
           cd ..
 
       - name: Checkout vZome source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Build with Gradle and JSweet
         run: |
           pwd
@@ -90,7 +90,7 @@ jobs:
           cicd/jsweet-legacy-code.bash
 
       - name: Archive Generated JS
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: worker-legacy
           path: online/src/worker/legacy
