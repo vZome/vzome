@@ -137,7 +137,7 @@ jobs:
         ./gradlew -i clean jpackage
         ls desktop/build/jpackage
     - name: Archive Windows build
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: vZome-Windows-7.1.${{ github.run_number }}
         path: desktop/build/jpackage/vZome-*.exe
