@@ -19,11 +19,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         lfs: 'true'
     - name: Set up JDK
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3
       with:
         java-version: '17.0.5'
         distribution: 'temurin'
@@ -34,7 +34,7 @@ jobs:
         ./gradlew clean jpackage
         ls desktop/build/jpackage
     - name: Archive Linux build
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: vZome-Linux-7.1.${{ github.run_number }}
         path: desktop/build/jpackage/vzome_*.deb
