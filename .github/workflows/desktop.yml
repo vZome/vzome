@@ -21,16 +21,16 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         lfs: 'true'
     - name: Set up JDK
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'temurin'
     - name: Control Timezone
-      uses: szenius/set-timezone@v1.0
+      uses: szenius/set-timezone@v1.1
       with:
         timezoneMacos: "America/Los_Angeles"
     - name: Get current date
@@ -80,11 +80,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         lfs: 'true'
     - name: Set up JDK
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'temurin'
@@ -124,21 +124,19 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         lfs: 'true'
     - name: Set up JDK
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'temurin'
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
     - name: Build with Gradle
       run: |
-        ./gradlew clean jpackage
+        ./gradlew -i clean jpackage
         ls desktop/build/jpackage
-    - name: Archive Linux build
+    - name: Archive Windows build
       uses: actions/upload-artifact@v2
       with:
         name: vZome-Windows-7.1.${{ github.run_number }}
@@ -147,7 +145,7 @@ jobs:
       run: |
         mkdir -p $env:USERPROFILE/.ssh/
         echo "$SSH_KEY" > $env:USERPROFILE/.ssh/dreamhost.key
-        chmod 600 $env:USERPROFILE/.ssh/dreamhost.key
+        echo "" >> $env:USERPROFILE/.ssh/dreamhost.key
         echo 'Host dreamhost' > $env:USERPROFILE/.ssh/config
         echo '  HostName sandy.dreamhost.com' >> $env:USERPROFILE/.ssh/config
         echo '  User scottvorthmann' >> $env:USERPROFILE/.ssh/config
