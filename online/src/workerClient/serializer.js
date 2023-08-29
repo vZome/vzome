@@ -123,17 +123,3 @@ export const serializeVZomeXml = ( xmlStr, lighting, camera, originalCamera ) =>
   const serializer = new XMLSerializer();
   return '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + serializer .serializeToString( doc );
 }
-
-// from https://www.bitdegree.org/learn/javascript-download
-export const download = ( name, text, type ) =>
-{
-  const blob = new Blob( [ text ], { type } );
-  const element = document.createElement( 'a' )
-  const blobURI = URL.createObjectURL( blob )
-  element.setAttribute( 'href', blobURI )
-  element.setAttribute( 'download', `${name}` )
-  element.style.display = 'none'
-  document.body.appendChild( element )
-  element.click()
-  document.body.removeChild( element )
-}

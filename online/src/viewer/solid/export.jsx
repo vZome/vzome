@@ -1,7 +1,7 @@
 
 import { DropdownMenu } from "@kobalte/core";
 
-import { download, serializeVZomeXml, useWorkerClient } from "../../workerClient";
+import { saveFileAs, serializeVZomeXml, useWorkerClient } from "../../workerClient";
 
 export const ExportMenu = (props) =>
 {
@@ -13,10 +13,10 @@ export const ExportMenu = (props) =>
     if ( changedText ) {
       const { camera, liveCamera, lighting } = scene;
       const fullText = serializeVZomeXml( changedText, lighting, liveCamera, camera );
-      download( fileName, fullText, 'application/xml' );
+      saveFileAs( fileName, fullText, 'application/xml' );
     }
     else
-      download( fileName, text, 'application/xml' );
+      saveFileAs( fileName, text, 'application/xml' );
   }
 
   return (
