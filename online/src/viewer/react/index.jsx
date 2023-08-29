@@ -30,7 +30,8 @@ import { ErrorAlert } from './alert.jsx'
 import { SettingsDialog } from './settings.jsx';
 import { useVR } from './hooks.js';
 import { SceneMenu } from './scenes.jsx';
-import { serializeVZomeXml, download } from '../../workerClient/serializer.js';
+import { serializeVZomeXml } from '../../workerClient/serializer.js';
+import { saveFileAs } from '../../workerClient/files.js';
 import { createWorkerStore } from './store.js';
 
 const encodeUrl = url => url .split( '/' ) .map( encodeURIComponent ) .join( '/' );
@@ -92,10 +93,10 @@ export const DesignViewer = ( { children, children3d, config={}, toolRef={} } ) 
     if ( changedText ) {
       const { camera, liveCamera, lighting } = scene;
       const fullText = serializeVZomeXml( changedText, lighting, liveCamera, camera );
-      download( fileName, fullText, 'application/xml' );
+      saveFileAs( fileName, fullText, 'application/xml' );
     }
     else
-      download( fileName, text, 'application/xml' );
+    saveFileAs( fileName, text, 'application/xml' );
   }
   const exportGLTF = () =>
   {
@@ -103,7 +104,7 @@ export const DesignViewer = ( { children, children3d, config={}, toolRef={} } ) 
     const vName = source.name || 'untitled.vZome';
     const name = vName.substring( 0, vName.length-6 ).concat( ".gltf" );
     if ( !exporterRef.current ) return;
-    const writeFile = text => download( name, text, 'model/gltf+json' );
+    const writeFile = text => saveFileAs( name, text, 'model/gltf+json' );
     exporterRef.current .exportGltfJson( writeFile );
   }
   const exportSceneJSON = () =>
@@ -112,7 +113,7 @@ export const DesignViewer = ( { children, children3d, config={}, toolRef={} } ) 
     const vName = source.name || 'untitled.vZome';
     const name = vName.substring( 0, vName.length-6 ).concat( ".json" );
     const text = JSON .stringify( scene, null, 2 );
-    download( name, text, 'application/json' );
+    saveFileAs( name, text, 'application/json' );
   }
   const historyAction = action =>
   {

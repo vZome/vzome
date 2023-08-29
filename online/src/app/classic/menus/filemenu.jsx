@@ -3,7 +3,7 @@ import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/me
 
 import { createEffect, createSignal, mergeProps } from "solid-js";
 import { controllerAction, controllerExportAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
-import { serializeVZomeXml, download } from '../../../workerClient/serializer.js';
+import { serializeVZomeXml, saveFile, saveFileAs, openFile } from '../../../workerClient/index.js';
 import { UrlDialog } from '../components/webloader.jsx'
 import { fetchDesign, openDesignFile, newDesign, importMeshFile } from "../../../workerClient/index.js";
 import { useWorkerClient } from "../../../workerClient/index.js";
@@ -22,7 +22,7 @@ const NewDesignItem = props =>
 
 export const FileMenu = () =>
 {
-  const { postMessage, rootController, state } = useWorkerClient();
+  const { postMessage, rootController, state, setState } = useWorkerClient();
   const [ showDialog, setShowDialog ] = createSignal( false );
   const fields = () => controllerProperty( rootController(), 'fields', 'fields', true );
   const [ showGuardrail, setShowGuardrail ] = createSignal( false );
@@ -46,28 +46,22 @@ export const FileMenu = () =>
     postMessage( newDesign( field ) );
   }
 
-  let inputRef;
-  const onFileSelected = e => {
-    const selected = e.target.files && e.target.files[0];
-    const actionFn = inputRef[ 'data-action' ];
-    if ( selected && actionFn ) {
-      postMessage( actionFn( selected ) );
-    }
-    delete inputRef.accept;
-    delete inputRef[ 'data-action' ];
-    inputRef.value = null;
-  }
-  const openFile = evt =>
+  const handleOpen = evt =>
   {
-    inputRef[ 'data-action' ] = selected => openDesignFile( selected, false );
-    inputRef.accept = '.vZome';
-    inputRef.click();
+    const fileType = { description: 'vZome design file', accept: { '*/*' : [ '.vZome' ] } }
+    openFile( [fileType] )
+      .then( file => {
+        postMessage( openDesignFile( file, false ) );
+        setState( { source: { handle: file.handle } } );
+      });
   }
   const importFile = ( extension, format ) => evt =>
   {
-    inputRef[ 'data-action' ] = selected => importMeshFile( selected, format );
-    inputRef.accept = extension;
-    inputRef.click();
+    const fileType = { description: `${format} file`, accept: { '*/*' : [ extension ] } }
+    openFile( [fileType] )
+      .then( file => {
+        postMessage( importMeshFile( file, format ) );
+      });
   }
 
   const handleShowUrlDialog = () => {
@@ -101,22 +95,32 @@ export const FileMenu = () =>
   {
     controllerExportAction( rootController(), format )
       .then( text => {
-        const vName = rootController().source?.name || 'untitled.vZome';
+        const vName = state.source?.name || 'untitled.vZome';
         const name = vName.substring( 0, vName.length-6 ).concat( "." + extension );
-        download( name, text, mimeType );
+        saveFileAs( name, text, mimeType );
       });
   }
 
-  const save = evt =>
+  const doSave = ( chooseFile = false ) =>
   {
     controllerExportAction( rootController(), 'vZome' )
       .then( text => {
         const { camera, liveCamera, lighting } = state.scene;
+        let { name, handle } = state?.source || {};
         const fullText = serializeVZomeXml( text, lighting, liveCamera, camera );
-        const name = rootController().source?.name || 'untitled.vZome';
-        download( name, fullText, 'application/xml' );
+        name = name || 'untitled.vZome';
+        const mimeType = 'application/xml';
+        if ( handle && !chooseFile )
+          return saveFile( handle, fullText, mimeType )
+        else
+          return saveFileAs( name, fullText, mimeType );
+      })
+      .then( handle => {
+        if ( handle ) { // file system API supported
+          setState( { source: { handle, name: handle.name } } );
+        }
         controllerAction( rootController(), 'clearChanges' );
-      });
+      })
   }
 
   const ExportItem = props =>
@@ -127,8 +131,6 @@ export const FileMenu = () =>
 
   return (
     <Menu label="File" dialogs={<>
-      <input style={{ display: 'none' }} type="file" ref={inputRef} onChange={onFileSelected} />
-
       <UrlDialog show={showDialog()} setShow={setShowDialog} openDesign={openUrl} />
 
       <Guardrail show={showGuardrail()} close={closeGuardrail} />
@@ -139,15 +141,15 @@ export const FileMenu = () =>
           }</For>
         </SubMenu>
 
-        <MenuAction label="Open..." onClick={() => guard(openFile)} />
+        <MenuAction label="Open..." onClick={() => guard(handleOpen)} />
         <MenuAction label="Open URL..." onClick={() => guard(handleShowUrlDialog)} />
         <MenuItem disabled={true}>Open As New Model...</MenuItem>
 
         <Divider/>
 
         <MenuAction label="Close" disabled={true} />
-        <MenuAction label="Save..." onClick={save} mods="⌘" key="S" />
-        <MenuAction label="Save As..." disabled={true} />
+        <MenuAction label="Save..." onClick={ () => doSave() } mods="⌘" key="S" />
+        <MenuAction label="Save As..." onClick={ () => doSave( true ) } />
         <MenuAction label="Save Template..." disabled={true} />
 
         <Divider/>
