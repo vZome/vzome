@@ -35,7 +35,6 @@ export const openFile = async ( types ) => {
     const input = document.createElement('input');
     input.style.display = 'none';
     input.type = 'file';
-    input.accept = accept;
     document.body.append(input);
     // The `change` event fires when the user interacts with the dialog.
     input.addEventListener('change', () => {
