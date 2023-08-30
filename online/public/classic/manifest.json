@@ -1,11 +1,12 @@
 {
-  "name": "vZome Classic",
+  "name": "vZome Online Classic",
   "short_name": "vZome Classic",
   "start_url": ".",
+  "id": "vzome-online-classic",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "white",
-  "theme_color": "#5FAAE5",
+  "background_color": "#01203D",
+  "theme_color": "#01203D",
   "icons": [
     {
       "src": "../icons/maskable_icon_x48.png",

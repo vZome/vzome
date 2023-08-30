@@ -4,6 +4,36 @@ img {
   display: block;
 }
 
+.persistence {
+  flex: 1 1 auto;
+  display: inline-flex;
+}
+.persistence-box {
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  display: inherit;
+  margin: auto;
+  padding: 3px 13px;
+}
+.persistence-icon-saved {
+  fill: rgba(211, 211, 211, 0.3);
+  height: 1.2em;
+  font-size: 1.43rem;
+}
+.persistence-icon {
+  fill: whitesmoke;
+  height: 1.2em;
+  font-size: 1.43rem;
+}
+.persistence-title {
+  text-align: center;
+  font-size: large;
+  color: lightgray;
+  padding-left: 10px;
+  padding-right: 2px;
+  margin: auto;
+}
+
 .toolbar {
   display: flex;
   min-height: 32px;

@@ -70,8 +70,9 @@ export const saveFile = async ( handle, text, type ) =>
     if (err.name !== 'AbortError') {
       console.error(err.name, err.message);
     }
+    return { success: false };
   }
-  return null;
+  return { success: true };
 }
 
 export const saveFileAs = async ( suggestedName, text, type ) =>
@@ -97,13 +98,13 @@ export const saveFileAs = async ( suggestedName, text, type ) =>
       const writable = await handle.createWritable();
       await writable.write(blob);
       await writable.close();
-      return handle;
+      return { handle, success: true };
     } catch (err) {
       // Fail silently if the user has simply canceled the dialog.
       if (err.name !== 'AbortError') {
         console.error(err.name, err.message);
       }
-      return null;
+      return { success: false };
     }
   }
   // Fallback if the File System Access API is not supported…
@@ -122,5 +123,5 @@ export const saveFileAs = async ( suggestedName, text, type ) =>
     URL.revokeObjectURL(blobURL);
     a.remove();
   }, 1000);
-  return null;
+  return { success: false }; // we really can't tell, but we know we don't want to set the name in this case
 };

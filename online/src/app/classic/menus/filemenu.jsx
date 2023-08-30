@@ -43,6 +43,8 @@ export const FileMenu = () =>
 
   const doCreate = field =>
   {
+    setState( 'designName', undefined ); // cooperatively managed by both worker and client
+    setState( 'fileHandle', undefined );
     postMessage( newDesign( field ) );
   }
 
@@ -51,8 +53,10 @@ export const FileMenu = () =>
     const fileType = { description: 'vZome design file', accept: { '*/*' : [ '.vZome' ] } }
     openFile( [fileType] )
       .then( file => {
-        postMessage( openDesignFile( file, false ) );
-        setState( { source: { handle: file.handle } } );
+        if ( !!file ) {
+          postMessage( openDesignFile( file, false ) );
+          setState( 'fileHandle', file.handle );
+        }
       });
   }
   const importFile = ( extension, format ) => evt =>
@@ -60,7 +64,7 @@ export const FileMenu = () =>
     const fileType = { description: `${format} file`, accept: { '*/*' : [ extension ] } }
     openFile( [fileType] )
       .then( file => {
-        postMessage( importMeshFile( file, format ) );
+        !!file && postMessage( importMeshFile( file, format ) );
       });
   }
 
@@ -69,6 +73,7 @@ export const FileMenu = () =>
   }
   const openUrl = url => {
     if ( url && url.endsWith( ".vZome" ) ) {
+      setState( 'fileHandle', undefined );
       postMessage( fetchDesign( url, { preview: false, debug: false } ) );
     }
   }
@@ -95,29 +100,33 @@ export const FileMenu = () =>
   {
     controllerExportAction( rootController(), format )
       .then( text => {
-        const vName = state.source?.name || 'untitled.vZome';
-        const name = vName.substring( 0, vName.length-6 ).concat( "." + extension );
+        const vName = state.designName || 'untitled';
+        const name = vName .concat( "." + extension );
         saveFileAs( name, text, mimeType );
       });
   }
 
   const doSave = ( chooseFile = false ) =>
   {
+    let name;
     controllerExportAction( rootController(), 'vZome' )
       .then( text => {
-        const { camera, liveCamera, lighting } = state.scene;
-        let { name, handle } = state?.source || {};
-        const fullText = serializeVZomeXml( text, lighting, liveCamera, camera );
-        name = name || 'untitled.vZome';
+        const { camera, lighting } = state.scene;
+        name = state?.designName || 'untitled';
+        const fullText = serializeVZomeXml( text, lighting, {...state.liveCamera}, camera );
         const mimeType = 'application/xml';
-        if ( handle && !chooseFile )
-          return saveFile( handle, fullText, mimeType )
+        if ( state.fileHandle && !chooseFile )
+          return saveFile( state.fileHandle, fullText, mimeType )
         else
-          return saveFileAs( name, fullText, mimeType );
+          return saveFileAs( name + '.vZome', fullText, mimeType );
       })
-      .then( handle => {
-        if ( handle ) { // file system API supported
-          setState( { source: { handle, name: handle.name } } );
+      .then( result => {
+        const { handle, success } = result;
+        if ( success ) {
+          setState( 'designName', name ); // cooperatively managed by both worker and client
+          if ( handle ) { // file system API supported
+            setState( 'fileHandle', handle );
+          }
         }
         controllerAction( rootController(), 'clearChanges' );
       })

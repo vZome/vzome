@@ -51,7 +51,7 @@ export const movePreviewStrut = ( direction ) => workerAction( 'PREVIEW_STRUT_MO
 
 export const endPreviewStrut = () => workerAction( 'PREVIEW_STRUT_END', {} );
 
-export const initialState = {
+export const initialState = () => ({
   scene: {
     camera: {
       near: 0.271828,
@@ -74,4 +74,4 @@ export const initialState = {
       ]
     },
   }
-};
+});

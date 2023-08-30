@@ -22,6 +22,8 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
     const { orbitSource, renderedModel, toolsModel, bookmarkFactory, history, symmetrySystems,
       fieldApp, legacyField, editor, editContext } = this.design;
 
+    this.changeCount = this.design.getChangeCount();
+
     this.setErrorChannel({
       reportError: (message, args) => {
         console.log('controller error:', message, args);
