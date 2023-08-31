@@ -175,7 +175,7 @@ const Hinge = ( { state, buildPlanes, actions } ) =>
 const BuildPlane = ( { worker }, toolRef ) =>
 {
   const { sendToWorker, subscribe } = worker;
-  const [ state, dispatch ] = useReducer( reducer, initialState() ); // dedicated local store
+  const [ state, dispatch ] = useReducer( reducer, initialState ); // dedicated local store
   useEffect( () => {
     // Connect the worker store to the local store, to listen to worker events
     subscribe( {

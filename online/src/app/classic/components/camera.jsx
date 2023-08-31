@@ -1,16 +1,21 @@
 
+import { createEffect } from 'solid-js';
 import { SceneCanvas } from '../../../viewer/solid/scenecanvas.jsx';
 import { useWorkerClient } from '../../../workerClient/index.js';
+import { controllerAction } from '../../../workerClient/controllers-solid.js';
 
 export const CameraControls = props =>
 {
-  const { state } = useWorkerClient();
+  const { state, rootController, isWorkerReady } = useWorkerClient();
   const bkgdColor = () => state.scene ?.lighting ?.backgroundColor;
 
   const scene = () => {
     const symmScene = state.trackballScene;
     return ({ ...symmScene, lighting: { ...symmScene?.lighting, backgroundColor: bkgdColor() } } );
   }
+
+  // A special action that will result in state.trackballScene being set
+  createEffect( () => isWorkerReady() && controllerAction( rootController(), 'connectTrackballScene' ) );
 
   return (
     <div id='camera-controls' style={{ display: 'grid', 'grid-template-rows': 'min-content min-content' }}>

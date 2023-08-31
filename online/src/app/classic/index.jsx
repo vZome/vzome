@@ -3,10 +3,41 @@ import { ErrorBoundary } from "solid-js";
 
 import Typography from '@suid/material/Typography'
 import Link from '@suid/material/Link'
+import { DiskIcon, WorldIcon } from '../framework/icons.jsx';
+import { FileMenu } from './menus/filemenu.jsx';
+import { EditMenu } from './menus/editmenu.jsx';
+import { ConstructMenu } from './menus/constructmenu.jsx';
+import { ToolsMenu } from './menus/toolsmenu.jsx';
+import { SystemMenu } from './menus/systemmenu.jsx';
+import { HelpMenu } from './menus/help.jsx';
 
+import { useWorkerClient } from '../../workerClient/context.jsx'
+import { controllerProperty } from '../../workerClient/controllers-solid.js'
 import { VZomeAppBar } from './components/appbar.jsx';
 import { ClassicEditor, SymmetryProvider } from './classic.jsx';
 import { WorkerStateProvider } from '../../workerClient/index.js';
+
+const Persistence = () =>
+{
+  const { state, rootController } = useWorkerClient();
+  const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
+  return (
+    <div class='persistence' >
+      <Show when={state?.designName} >
+        <div class='persistence-box' >
+          <div class={ edited()? 'persistence-icon' : 'persistence-icon-saved' }>
+            <Show when={state?.fileHandle} fallback={
+              <WorldIcon/>
+            }>
+              <DiskIcon/>
+            </Show>
+          </div>
+          <div class='persistence-title' >{state?.designName}</div>
+        </div>
+      </Show>
+    </div>
+  )
+}
 
 const Classic = () =>
 {
@@ -15,6 +46,15 @@ const Classic = () =>
       <WorkerStateProvider>
         <SymmetryProvider>
           <VZomeAppBar menuBar={true}
+            spacer={ <>
+              <FileMenu/>
+              <EditMenu/>
+              <ConstructMenu/>
+              <ToolsMenu/>
+              <SystemMenu/>
+              <HelpMenu/>
+              <Persistence/>
+            </>}
             about={ <>
               <Typography gutterBottom>
                 vZome Online Classic is a work in progress, still at the proof-of-concept stage.  It will be part of a web-based modeling tool
