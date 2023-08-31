@@ -10,12 +10,12 @@ export const ExportMenu = (props) =>
   {
     const { name, text, changedText } = state.source;
     const fileName = name || 'untitled.vZome';
-    if ( changedText ) {
-      const { camera, liveCamera, lighting } = scene;
-      const fullText = serializeVZomeXml( changedText, lighting, liveCamera, camera );
-      saveFileAs( fileName, fullText, 'application/xml' );
-    }
-    else
+    // if ( changedText ) {
+    //   const { camera, liveCamera, lighting } = scene;
+    //   const fullText = serializeVZomeXml( changedText, lighting, liveCamera, camera );
+    //   saveFileAs( fileName, fullText, 'application/xml' );
+    // }
+    // else
       saveFileAs( fileName, text, 'application/xml' );
   }
 

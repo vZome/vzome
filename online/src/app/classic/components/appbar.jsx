@@ -1,5 +1,5 @@
 
-import { mergeProps } from 'solid-js'
+import { Show, mergeProps } from 'solid-js'
 import AppBar from '@suid/material/AppBar'
 import Toolbar from '@suid/material/Toolbar'
 import Typography from '@suid/material/Typography'
@@ -13,7 +13,32 @@ import { ConstructMenu } from '../menus/constructmenu.jsx';
 import { ToolsMenu } from '../menus/toolsmenu.jsx';
 import { SystemMenu } from '../menus/systemmenu.jsx';
 import { HelpMenu } from '../menus/help.jsx';
-import { AboutDialog } from './about.jsx'
+import { AboutDialog } from './about.jsx';
+import { DiskIcon, WorldIcon } from '../../framework/icons.jsx';
+import { useWorkerClient } from '../../../workerClient/context.jsx'
+import { controllerProperty } from '../../../workerClient/controllers-solid.js'
+
+const Persistence = () =>
+{
+  const { state, rootController } = useWorkerClient();
+  const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
+  return (
+    <div class='persistence' >
+      <Show when={state?.designName} >
+        <div class='persistence-box' >
+          <div class={ edited()? 'persistence-icon' : 'persistence-icon-saved' }>
+            <Show when={state?.fileHandle} fallback={
+              <WorldIcon/>
+            }>
+              <DiskIcon/>
+            </Show>
+          </div>
+          <div class='persistence-title' >{state?.designName}</div>
+        </div>
+      </Show>
+    </div>
+  )
+}
 
 // export const VZomeAppBar = ( { oneDesign, pathToRoot='.', forDebugger=false, title, about } ) =>
 export const VZomeAppBar = ( props ) =>
@@ -36,7 +61,7 @@ export const VZomeAppBar = ( props ) =>
             <SystemMenu/>
             <HelpMenu/>
           </Show>
-          <div style={{ flex: '1 1 auto' }}></div>
+          <Persistence/>
           <Show when={merged.showOpen}>
             <OpenMenu pathToRoot={merged.pathToRoot} forDebugger={merged.forDebugger} />
           </Show>

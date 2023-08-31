@@ -15,7 +15,7 @@ export const whilePerspective = ( perspective, doSetter ) => async dispatch =>
   dispatch( setPerspective( perspective ) );
 }
 
-const reducer = ( state = initialState, event ) =>
+const reducer = ( state = initialState(), event ) =>
 {
   switch ( event.type ) {
 
@@ -171,7 +171,7 @@ export const createWorkerStore = ( worker ) =>
     return handleEvent;
   }
 
-  const preloadedState = initialState;
+  const preloadedState = initialState();
 
   const store = configureStore( {
     reducer,

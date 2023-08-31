@@ -4,21 +4,28 @@ import http from 'node:http';
 import https from 'node:https';
 import fs from 'node:fs';
 
-const options = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
+const commonConfig = {
+  ...esbuildConfig, 
+  conditions: ["development", "browser"],
+  minify: false,
+  sourcemap: true,
+  outdir: 'public/modules',
+};
+let ctx = await esbuild.context( commonConfig );
+
+const security = {
+  key: fs.readFileSync('public/localhost-key.pem'),
+  cert: fs.readFileSync('public/localhost.pem')
 };
 
 // Start esbuild's server on a random local port
-esbuild .serve(
-  { servedir: 'public' },
-  { ...esbuildConfig, minify: false, sourcemap: true, outdir: 'public/modules' }
-) .then( result => {
+ctx .serve( { servedir: 'public' } )
+.then( result => {
   // The result tells us where esbuild's local server is
   const { host, port } = result;
 
   // Then start a proxy server on port 8532
-  https.createServer( options, (req, res) => {
+  https.createServer( security, (req, res) => {
     const options = {
       hostname: host,
       port: port,
@@ -28,7 +35,7 @@ esbuild .serve(
     }
 
     // Forward each incoming request to esbuild
-    const proxyReq = http.request(options, proxyRes => {
+    const proxyReq = http.request( options, proxyRes => {
       // If esbuild returns "not found", send a custom 404 page
       if (proxyRes.statusCode === 404) {
         res.writeHead(404, { 'Content-Type': 'text/html' });

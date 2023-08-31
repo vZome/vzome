@@ -72,7 +72,7 @@ const LightedCameraControls = (props) =>
     const far = camera.far;
     const near = camera.near;
 
-    setState( 'scene', 'liveCamera', { lookAt, up, lookDir, distance, width, far, near } );
+    setState( 'liveCamera', { lookAt, up, lookDir, distance, width, far, near } );
 
     // setNeedsRender( 20 );
   }
