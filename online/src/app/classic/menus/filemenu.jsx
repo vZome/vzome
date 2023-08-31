@@ -8,6 +8,7 @@ import { UrlDialog } from '../components/webloader.jsx'
 import { fetchDesign, openDesignFile, newDesign, importMeshFile } from "../../../workerClient/index.js";
 import { useWorkerClient } from "../../../workerClient/index.js";
 import { Guardrail } from "../components/guardrail.jsx";
+import { NoSave } from "../components/nosave.jsx";
 
 const NewDesignItem = props =>
 {
@@ -26,6 +27,7 @@ export const FileMenu = () =>
   const [ showDialog, setShowDialog ] = createSignal( false );
   const fields = () => controllerProperty( rootController(), 'fields', 'fields', true );
   const [ showGuardrail, setShowGuardrail ] = createSignal( false );
+  const [ showNoSave, setShowNoSave ] = createSignal( true );
   const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
 
   // Since the initial render of the menu doesn't fetch these properties,
@@ -142,6 +144,7 @@ export const FileMenu = () =>
     <Menu label="File" dialogs={<>
       <UrlDialog show={showDialog()} setShow={setShowDialog} openDesign={openUrl} />
 
+      <NoSave show={showNoSave()} close={()=>setShowNoSave(false)} />
       <Guardrail show={showGuardrail()} close={closeGuardrail} />
     </>}>
         <SubMenu label="New Design...">
@@ -157,8 +160,8 @@ export const FileMenu = () =>
         <Divider/>
 
         <MenuAction label="Close" disabled={true} />
-        <MenuAction label="Save..." onClick={ () => doSave() } mods="⌘" key="S" />
-        <MenuAction label="Save As..." onClick={ () => doSave( true ) } />
+        <MenuAction label="Save..." onClick={ () => doSave() } mods="⌘" key="S" disabled={true} />
+        <MenuAction label="Save As..." onClick={ () => doSave( true ) } disabled={true} />
         <MenuAction label="Save Template..." disabled={true} />
 
         <Divider/>
