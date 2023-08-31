@@ -99,7 +99,7 @@ const LightedCameraControls = (props) =>
       <PerspectiveCamera fov={fov()} aspect={props.aspect} position={position()} up={props.sceneCamera?.up} >
         <Lighting {...(lights())} />
       </PerspectiveCamera>
-      <TrackballControls onEnd={trackballEnd} rotationOnly={props.rotationOnly}
+      <TrackballControls onEnd={props.rotationOnly? undefined : trackballEnd} rotationOnly={props.rotationOnly}
           staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={props.sceneCamera?.lookAt} />
     </>
   );

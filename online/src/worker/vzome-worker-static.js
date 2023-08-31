@@ -227,7 +227,6 @@ const createDesign = ( report, fieldName ) =>
     .then( module => {
       report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
       designWrapper = module .newDesign( fieldName, clientEvents( report ) );
-      connectTrackballScene( report );
     } )
 
     .catch( error => {
@@ -244,7 +243,6 @@ const openDesign = ( xmlLoading, report, debug, sceneTitle, preview ) =>
     .then( ([ module, xml ]) => {
       report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
       designWrapper = module .loadDesign( xml, debug, clientEvents( captureScenes( report ) ), sceneTitle );
-      !preview && connectTrackballScene( report );
     } )
 
     .catch( error => {
@@ -384,6 +382,10 @@ onmessage = ({ data }) =>
     case 'ACTION_TRIGGERED':
     {
       const { controllerPath, action, parameters } = payload;
+      if ( action === 'connectTrackballScene' ) {
+        connectTrackballScene( postMessage );
+        return;
+      }
       try {
         designWrapper .doAction( controllerPath, action, parameters );
         const { shapes, embedding } = designWrapper .getScene( '--END--', true ); // never send camera or lighting!
