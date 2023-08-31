@@ -127,8 +127,8 @@ export const FileMenu = () =>
           if ( handle ) { // file system API supported
             setState( 'fileHandle', handle );
           }
+          controllerAction( rootController(), 'clearChanges' );
         }
-        controllerAction( rootController(), 'clearChanges' );
       })
   }
 
