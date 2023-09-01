@@ -1,48 +1,43 @@
 
+import { com } from './core-java.js';
 import { realizeShape, normalizeRenderedManifestation } from './scenes.js';
 
 //  Right now this is duplicated!
 export const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
 
-export const interpret = ( action, state, stack=[] ) =>
+// TODO: move this to 4 methods of EditCursor
+export const interpret = ( action, cursor, effects, stack=[] ) =>
 {
-  let edit = state .getNextEdit();
-
   const step = () =>
   {
+    let edit = cursor .getNextEdit();
     if ( ! edit )
       return Step.DONE;
-    if ( edit.isBranch() ) {
-      const branchState = state.clone();
-      stack.push( { branch: edit, state } );
-      branchState .recordSnapshot( edit.id(), edit.firstChild().id(), stack );
-      if ( edit.nextSibling() ) {
-        branchState .recordSnapshot( edit.id(), edit.nextSibling().id() );
+    if ( edit .isBranch() ) {
+      stack .push( { branch: edit, cursor } );
+      cursor = cursor .startBranch( edit );
+      effects .recordSnapshot( edit.id(), edit .firstChild().id() );
+      if ( edit .nextSibling() ) {
+        effects .recordSnapshot( edit.id(), edit .nextSibling().id() );
       }
-      edit = edit.firstChild(); // this assumes there are no empty branches
-      state .setNextEdit( edit );
-      state = branchState;
       return Step.IN;
     } else {
-      state = state.clone();  // each command builds on the last
-      edit.perform( state ); // here we may create a legacy edit object
-      const breakpointHit = state .atBreakpoint( edit );
-      if ( edit.nextSibling() ) {
-        state .recordSnapshot( edit.id(), edit.nextSibling().id() );
-        edit = edit.nextSibling();
-        state .setNextEdit( edit );
+      edit.perform( cursor.editContext ); // here we may create a legacy edit object
+      const breakpointHit = cursor .atBreakpoint( edit );
+      if ( edit .nextSibling() ) {
+        effects .recordSnapshot( edit.id(), edit .nextSibling() .id() );
+        cursor .setNextEdit( edit .nextSibling() );
         return breakpointHit? Step.DONE : Step.OVER;
       } else {
-        state .recordSnapshot( edit.id(), '--END--' ); // last one will be the real before-end
+        effects .recordSnapshot( edit.id(), '--END--' ); // last one will be the real before-end
         let top;
         do {
-          top = stack.pop();
-        } while ( top && ! top.branch.nextSibling() )
+          top = stack .pop();
+        } while ( top && ! top.branch .nextSibling() )
         if ( top ) {
-          state = top.state.clone();  // overwrite and discard the prior value
-          top.branch.undoChildren();
-          edit = top.branch.nextSibling();
-          state .setNextEdit( edit );
+          cursor = top.cursor;  // overwrite and discard the prior value
+          cursor .endBranch( top.branch );
+          cursor .setNextEdit( top.branch .nextSibling() );
           return breakpointHit? Step.DONE : Step.OUT;
         } else {
           // at the end of the editHistory
@@ -104,47 +99,18 @@ export const interpret = ( action, state, stack=[] ) =>
   }
 }
 
+// TODO: record snapshots only for Snapshots, unless debugging
 export class RenderHistory
 {
   constructor( design )
   {
-    const { firstEdit, batchRender } = design;
+    const { firstEdit } = design;
     this.shapes = {};
     this.snapshotsAfter = {};
     this.shapshotsBefore = {};
-    this.batchRender = batchRender;
+    this.design = design;
     this.currentSnapshot = [];
-    this.nextEdit = firstEdit;
-    this.lastEdit = '--START--';
     this.recordSnapshot( '--START--', firstEdit? firstEdit.id() : '--END--' );
-  }
-
-  getShapes()
-  {
-    return this.shapes;
-  }
-
-  getNextEdit()
-  {
-    return this.nextEdit;
-  }
-
-  setNextEdit( edit )
-  {
-    this.nextEdit = edit;
-  }
-
-  atBreakpoint( edit )
-  {
-    return ( edit.id() === this.breakpoint );
-  }
-
-  clone()
-  {
-    // Because we're not actually recording RealizedModel state, but recording
-    //   RenderedModel snapshots, we don't need to do anything here.  This
-    //   just satisfies the requirements of interpret().
-    return this;
   }
 
   // partial implementation of legacy RenderListener
@@ -164,13 +130,13 @@ export class RenderHistory
     this.currentSnapshot .push( instance );
   }
 
-  recordSnapshot( afterId, beforeId, stack ) // stack is unused here, but part of the `state` contract for interpret()
+  recordSnapshot( afterId, beforeId )
   {
     this.lastEdit = afterId;
     this.currentSnapshot = []; // prior value overwritten, but it was already captured in snapshotsAfter and snapshotsBefore
     this.snapshotsAfter[ afterId ] = this.currentSnapshot;
     this.shapshotsBefore[ beforeId ] = this.currentSnapshot;
-    this.batchRender( this ); // will make many callbacks to manifestationAdded()
+    this.design .batchRender( this ); // will make many callbacks to manifestationAdded()
   }
 
   getScene( editId, before=false )
@@ -180,13 +146,15 @@ export class RenderHistory
     let snapshot = before? this.shapshotsBefore[ editId ] : this.snapshotsAfter[ editId ];
     if ( !snapshot ) {
 
-      this.breakpoint = editId;
-      try {
-        interpret( Step.DONE, this, [] );
-      } catch (error) {
-        this .setError( error );
-      }
-      this.breakpoint = null;
+      // TODO: disabled until we have a debugger again.
+      //  NOTE: we will need to pass in or link to the editCursor somehow
+      // this.breakpoint = editId;
+      // try {
+      //   interpret( Step.DONE, editCursor, this, [] );
+      // } catch (error) {
+      //   this .setError( error );
+      // }
+      // this.breakpoint = null;
 
       editId = before? '--END--' : this.lastEdit;
       snapshot = before? this.shapshotsBefore[ editId ] : this.snapshotsAfter[ editId ];
@@ -201,6 +169,11 @@ export class RenderHistory
     return { shapes, edit: editId };
   }
 
+  getShapes()
+  {
+    return this.shapes;
+  }
+
   setError( error )
   {
     this.error = error;
@@ -209,5 +182,65 @@ export class RenderHistory
   getError()
   {
     return this.error;
+  }
+}
+
+// TODO: rename Interpreter, and incorporate 4 methods from interpret
+export class EditCursor
+{
+  constructor( design, history=design.history, firstEdit=design.firstEdit )
+  {
+    this.design = design;
+    this.history = history;
+    this.editContext = {
+      performAndRecord: edit => {
+        edit .perform();
+        history .addEdit( edit );
+      },
+      createLegacyCommand: name => this.design.editContext .createLegacyCommand( name ),
+    };
+    this.nextEdit = firstEdit;
+    this.context
+  }
+
+  toString()
+  {
+    return this.nextEdit?.name() || 'nameless';
+  }
+
+  getNextEdit()
+  {
+    return this.nextEdit;
+  }
+
+  setNextEdit( edit )
+  {
+    this.nextEdit = edit;
+  }
+
+  atBreakpoint( edit )
+  {
+    // Unused until we have a debugger again
+    return ( edit.id() === this.breakpoint );
+  }
+
+  startBranch( parsedEdit )
+  {
+    const branch = new com.vzome.core.editor.Branch( this.design.editContext );
+    this.history .addEdit( branch, this.design.editContext );
+    parsedEdit .legacyEdit = branch; // oops, violating encapsulation
+    return new EditCursor( this.design, branch, parsedEdit.firstChild() );
+  }
+
+  endBranch( parsedEdit )
+  {
+    const reversed = parsedEdit.children .toReversed();
+    for (const edit of reversed) {
+      const trueEdit = edit .legacyEdit;
+      if ( trueEdit ) {
+        trueEdit .undo();
+      } else
+        console.log( 'No true edit?' );
+    }
   }
 }

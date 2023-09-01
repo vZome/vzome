@@ -513,17 +513,13 @@ const makeFloatMatrices = ( matrices ) =>
     toolsXml && toolsModel.loadFromXml( toolsXml )
     // xml && console.log( xml .serialize( "" ) );
 
-    const interpretEdit = ( xmlElement, mesh ) =>
+    const interpretEdit = ( xmlElement, context ) =>
     {
       const wrappedElement = new JavaDomElement( xmlElement )
-      // Note that we do not do editor.setAdapter() yet.  This means that we cannot
-      //  deal with edits that have side-effects in their constructors!
       const edit = editFactory( editor, toolFactories, toolsModel )( wrappedElement )
       if ( ! edit )   // Null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit.
         return null  //  Not indicating failure, just indicating nothing to record in history
-      // const { shown, selected, hidden, groups } = mesh
-      // editor.setAdapter( new Adapter( shown, selected, hidden, groups ) );
-      edit.loadAndPerform( wrappedElement, format, editContext )
+      edit.loadAndPerform( wrappedElement, format, context )
 
       checkSideEffects( edit, wrappedElement );
 

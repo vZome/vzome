@@ -6,7 +6,7 @@ import DialogContentText from '@suid/material/DialogContentText';
 import DialogTitle from '@suid/material/DialogTitle';
 import Button from '@suid/material/Button';
 
-export const NoSave = ( props ) =>
+export const Beta = ( props ) =>
 {
   const handleCancel = () =>
   {
@@ -15,16 +15,17 @@ export const NoSave = ( props ) =>
 
   return (
     <Dialog open={props.show} onClose={handleCancel} aria-labelledby="form-dialog-title" >
-      <DialogTitle id="form-dialog-title">Save Not Supported</DialogTitle>
+      <DialogTitle id="form-dialog-title">Beta Version</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          There is a bug in file saving, causing garbling of the command history.
-          Save is therefore disabled.  The bug will be fixed soon.
+          vZome Online is still a beta release.
+          You can open most existing vZome design files, but not all of them.
+          If you open an existing file, never save back to the same file, to avoid corrupting it.
         </DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleCancel} color="primary">
-          Cancel
+          Continue
         </Button>
       </DialogActions>
     </Dialog>
