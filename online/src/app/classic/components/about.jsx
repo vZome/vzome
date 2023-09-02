@@ -15,7 +15,7 @@ import { REVISION } from '../../../revision.js'
 
 export const AboutDialog = ( { title, about } ) =>
 {
-  const [open, setOpen] = createSignal(false);
+  const [open, setOpen] = createSignal(true);
 
   const handleClickOpen = () => {
     setOpen( true );

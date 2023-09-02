@@ -73,9 +73,9 @@ public class Polytope4d extends ChangeManifestations
         if ( quaternion != null )
             DomUtils .addAttribute( xml, "quaternion", quaternion .toParsableString() );        
         DomUtils .addAttribute( xml, "group", this.groupName );
-        DomUtils .addAttribute( xml, "wythoff", Integer .toString( this.index, 2 ) );
+        DomUtils .addAttribute( xml, "wythoff", DomUtils.byteToBinary( this.index ) );
         if ( this .edgesToRender != 0xF )
-            DomUtils .addAttribute( xml, "renderEdges", Integer .toString( this.edgesToRender, 2 ) );
+            DomUtils .addAttribute( xml, "renderEdges", DomUtils.byteToBinary( this.edgesToRender ) );
         if ( ! this .renderGroupName .equals( this .groupName ) )
             DomUtils .addAttribute( xml, "renderGroup", this.renderGroupName );
     }
