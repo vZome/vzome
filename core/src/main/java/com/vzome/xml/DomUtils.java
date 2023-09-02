@@ -55,4 +55,28 @@ public class DomUtils
         }
 		return null;
 	}
+	
+	/**
+	 * This is required for JSweet, which ignores the radix in Integer.toString( i, 2 )
+	 * @param i
+	 * @return
+	 */
+	public static String byteToBinary( int i )
+	{
+	    // I tried to be more performant with a byte array, but JSweet screwed that up, too.
+	    String result = "";
+        result += ( i / 8 == 1 )? "1" : "0"; i = i % 8;
+        result += ( i / 4 == 1 )? "1" : "0"; i = i % 4;
+        result += ( i / 2 == 1 )? "1" : "0"; i = i % 2;
+        result += ( i     == 1 )? "1" : "0";
+
+        return result;
+    }
+
+	public static void main( String[] args )
+	{
+	    for (int i = 1; i < 16; i++) {
+	        System.out.println( byteToBinary( i ));
+        }
+    }
 }
