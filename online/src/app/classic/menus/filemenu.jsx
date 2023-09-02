@@ -8,7 +8,6 @@ import { UrlDialog } from '../components/webloader.jsx'
 import { fetchDesign, openDesignFile, newDesign, importMeshFile } from "../../../workerClient/index.js";
 import { useWorkerClient } from "../../../workerClient/index.js";
 import { Guardrail } from "../components/guardrail.jsx";
-import { Beta } from "../components/beta.jsx";
 
 const NewDesignItem = props =>
 {
@@ -27,7 +26,6 @@ export const FileMenu = () =>
   const [ showDialog, setShowDialog ] = createSignal( false );
   const fields = () => controllerProperty( rootController(), 'fields', 'fields', true );
   const [ showGuardrail, setShowGuardrail ] = createSignal( false );
-  const [ showBeta, setShowBeta ] = createSignal( true );
   const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
 
   // Since the initial render of the menu doesn't fetch these properties,
@@ -147,8 +145,6 @@ export const FileMenu = () =>
   return (
     <Menu label="File" dialogs={<>
       <UrlDialog show={showDialog()} setShow={setShowDialog} openDesign={openUrl} />
-
-      <Beta show={showBeta()} close={()=>setShowBeta(false)} />
 
       <Guardrail show={showGuardrail()} close={closeGuardrail} />
     </>}>
