@@ -1,5 +1,5 @@
 
-export class LegacyEdit
+export class ParsedEdit
 {
   constructor( txmlElement, parent, interpretEdit )
   {
@@ -11,7 +11,7 @@ export class LegacyEdit
     if ( kids.length === 1 && ( typeof kids[ 0 ] === 'string' ) )
       this.children = [];
     else
-      this.children = kids .map( child => new LegacyEdit( child, this, interpretEdit ) );
+      this.children = kids .map( child => new ParsedEdit( child, this, interpretEdit ) );
   }
 
   // these are for the interpreter
@@ -39,17 +39,9 @@ export class LegacyEdit
     return this.parentEdit.children[ next ];
   }
 
-  perform( mesh )
+  perform( context )
   {
-    this.legacyEdit = this.interpret.call( this, this.nativeElement, mesh );
-  }
-
-  undoChildren()
-  {
-    for ( let index = this.children.length-1; index >= 0; index--) {
-      const edit = this.children[ index ] .legacyEdit;
-      edit && edit .undo();
-    }
+    this.legacyEdit = this.interpret.call( this, this.nativeElement, context );
   }
 
   // these are for the debugger UI
@@ -57,6 +49,11 @@ export class LegacyEdit
   name()
   {
     return this.nativeElement.tagName;
+  }
+
+  toString()
+  {
+    return this.name();
   }
 
   getAttributeNames()

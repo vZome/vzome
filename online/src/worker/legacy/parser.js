@@ -1,5 +1,5 @@
 
-import { LegacyEdit } from './edit.js';
+import { ParsedEdit } from './edit.js';
 import * as txml from 'txml/dist/txml.mjs';
 import { JavaDomElement } from './dom.js';
 
@@ -124,7 +124,7 @@ export const createParser = ( documentFactory ) => ( xmlText ) =>
 
   const historyElement = vZomeRoot.getChildElement( "EditHistory" ) || vZomeRoot.getChildElement( "editHistory" ) || vZomeRoot.getChildElement( "EditHistoryDetails" );
   const xmlTree = assignIds( historyElement.nativeElement );
-  const edits = new LegacyEdit( xmlTree, null, design.interpretEdit );
+  const edits = new ParsedEdit( xmlTree, null, design.interpretEdit );
   const targetEditId = `:${edits.getAttribute( "editNumber" )}:`
   const firstEdit = edits.firstChild()
 

@@ -1,7 +1,7 @@
 
 import { com } from '../core-java.js';
 import { documentFactory, parse } from '../core.js'
-import { interpret, RenderHistory, Step } from '../interpreter.js';
+import { EditCursor, interpret, RenderHistory, Step } from '../interpreter.js';
 import { ControllerWrapper } from './wrapper.js';
 import { getSceneIndex } from '../../vzome-worker-static.js';
 import { renderedModelTransducer, resolveBuildPlanes } from '../scenes.js';
@@ -69,12 +69,13 @@ export const loadDesign = ( xml, debug, clientEvents, sceneTitle ) =>
   clientEvents .xmlParsed( xmlTree );
   clientEvents .scenesDiscovered( scenes );
 
-  // the next step may take several seconds, which is why we already reported PARSE_COMPLETED
   const renderHistory = new RenderHistory( design );
   const renderingChanges = renderedModelTransducer( renderHistory.getShapes(), clientEvents );
+  const editCursor = new EditCursor( design );
 
   if ( ! debug ) {
-    interpret( Step.DONE, renderHistory, [] );
+    // interpretation may take several seconds, which is why we already reported PARSE_COMPLETED
+    interpret( Step.DONE, editCursor, renderHistory, [] );
   } // else in debug mode, we'll interpret incrementally
 
   // TODO: define a better contract for before/after.
