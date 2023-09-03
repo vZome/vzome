@@ -1,5 +1,5 @@
 
-import { createSignal, createContext, useContext, mergeProps } from "solid-js";
+import { createSignal, createContext, useContext } from "solid-js";
 
 import { CameraControls } from './components/camera.jsx';
 import { StrutBuildPanel } from './components/strutbuilder.jsx';
@@ -7,11 +7,11 @@ import { controllerAction, controllerProperty, subController } from '../../worke
 import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
 import { SceneEditor } from './components/editor.jsx';
 import { useWorkerClient } from "../../workerClient/index.js";
-import { ErrorAlert } from '../../viewer/solid/alert.jsx';
 import { OrbitsDialog } from "./components/orbits.jsx";
 import { ShapesDialog } from "./components/shapes.jsx";
 import { RotationProvider } from "../../viewer/solid/rotation.jsx";
 import { PolytopesDialog } from "./components/polytopes.jsx";
+import { ErrorAlert } from "./components/alert.jsx";
 
 export const ClassicEditor = ( props ) =>
 {
@@ -21,9 +21,10 @@ export const ClassicEditor = ( props ) =>
   const strutBuilder       = () => subController( rootController(), 'strutBuilder' );
   const toolsController    = () => subController( strutBuilder(), 'tools' );
 
+  let alertRoot;
   return (
     <RotationProvider>
-    <div id='classic' style={{ display: 'grid', 'grid-template-rows': '1fr' }} class='whitesmoke-bkgd'>
+    <div id='classic' ref={alertRoot} style={{ display: 'grid', 'grid-template-rows': '1fr' }} class='whitesmoke-bkgd'>
       <div id='editor-main' class='grid-cols-1-min whitesmoke-bkgd' >
 
         <div id='editor-canvas' style={{ display: 'grid', 'grid-template-rows': 'min-content min-content min-content 1fr' }}>
