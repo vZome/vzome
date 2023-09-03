@@ -515,6 +515,8 @@ const makeFloatMatrices = ( matrices ) =>
 
     const interpretEdit = ( xmlElement, context ) =>
     {
+      if ( xmlElement .tagName === 'RunZomicScript' )
+        throw new Error( 'Zomic script commands are not yet supported in Online.' );
       const wrappedElement = new JavaDomElement( xmlElement )
       const edit = editFactory( editor, toolFactories, toolsModel )( wrappedElement )
       if ( ! edit )   // Null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit.
