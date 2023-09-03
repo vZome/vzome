@@ -241,6 +241,10 @@ const openDesign = ( xmlLoading, report, debug, sceneTitle, preview ) =>
   return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
 
     .then( ([ module, xml ]) => {
+      if ( !xml ) {
+        report( { type: 'ALERT_RAISED', payload: 'The file is empty' } );
+        return;
+      }
       report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
       designWrapper = module .loadDesign( xml, debug, clientEvents( captureScenes( report ) ), sceneTitle );
     } )
