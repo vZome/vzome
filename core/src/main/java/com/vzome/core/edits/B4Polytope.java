@@ -57,7 +57,7 @@ public class B4Polytope extends ChangeManifestations
     @Override
     public void getXmlAttributes( Element result )
     {
-        DomUtils .addAttribute( result, "dynkin", Integer .toString( this.index, 2 ) );
+        DomUtils .addAttribute( result, "dynkin", DomUtils.byteToBinary( this.index ) );
         if ( symmAxis != null )
             XmlSaveFormat .serializeSegment( result, "start", "end", symmAxis );
     }

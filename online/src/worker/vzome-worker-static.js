@@ -209,17 +209,14 @@ const fetchTrackballScene = ( url, report ) =>
     } )
 }
 
-const reportDesign = ( report, preview=false ) =>
+const connectTrackballScene = ( report ) =>
 {
-  report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
-  if ( !preview ) {
-    const trackballUpdater = () => fetchTrackballScene( designWrapper .getTrackballUrl(), report );
-    trackballUpdater();
-    designWrapper.controller .addPropertyListener( { propertyChange: pce =>
-    {
-      if ( 'symmetry' === pce.getPropertyName() ) { trackballUpdater(); }
-    } });
-  }
+  const trackballUpdater = () => fetchTrackballScene( designWrapper .getTrackballUrl(), report );
+  trackballUpdater();
+  designWrapper.controller .addPropertyListener( { propertyChange: pce =>
+  {
+    if ( 'symmetry' === pce.getPropertyName() ) { trackballUpdater(); }
+  } });
 }
 
 const createDesign = ( report, fieldName ) =>
@@ -228,8 +225,8 @@ const createDesign = ( report, fieldName ) =>
   return import( './legacy/dynamic.js' )
 
     .then( module => {
+      report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
       designWrapper = module .newDesign( fieldName, clientEvents( report ) );
-      reportDesign( report );
     } )
 
     .catch( error => {
@@ -239,21 +236,13 @@ const createDesign = ( report, fieldName ) =>
      } );
 }
 
-const getField = name =>
-{
-  return import( './legacy/dynamic.js' )
-    .then( module => {
-      return module .getField( name );
-    } );
-}
-
 const openDesign = ( xmlLoading, report, debug, sceneTitle, preview ) =>
 {
   return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
 
     .then( ([ module, xml ]) => {
+      report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
       designWrapper = module .loadDesign( xml, debug, clientEvents( captureScenes( report ) ), sceneTitle );
-      reportDesign( report, preview );
     } )
 
     .catch( error => {
@@ -393,6 +382,10 @@ onmessage = ({ data }) =>
     case 'ACTION_TRIGGERED':
     {
       const { controllerPath, action, parameters } = payload;
+      if ( action === 'connectTrackballScene' ) {
+        connectTrackballScene( postMessage );
+        return;
+      }
       try {
         designWrapper .doAction( controllerPath, action, parameters );
         const { shapes, embedding } = designWrapper .getScene( '--END--', true ); // never send camera or lighting!

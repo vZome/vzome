@@ -1,0 +1,106 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+
+    {
+      "name":             "online",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8532/",
+      "pathMapping": {
+        "/": "${workspaceFolder}/online/src"
+      }
+    },
+    {
+      "name":             "browser",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8532/browser",
+      "pathMapping": {
+        "/": "${workspaceFolder}/online/src"
+      }
+    },
+    {
+      "name":             "build plane",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8532/buildplane",
+      "pathMapping": {
+        "/": "${workspaceFolder}/online/src"
+      }
+    },
+    {
+      "name":             "classic",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8532/classic?debug=true",
+      "pathMapping": {
+        "/": "${workspaceFolder}/online/src"
+      }
+    },
+    {
+      "name":             "classic PWA",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "https://localhost:8532/classic?debug=true",
+      "pathMapping": {
+        "/": "${workspaceFolder}/online/src"
+      }
+    },
+    {
+      "name":             "web component",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8532/test/",
+      "pathMapping": {
+        "/": "${workspaceFolder}/online/src"
+      }
+    },
+    {
+      "name":             "fivecell",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8532/fivecell?debug=true",
+      "pathMapping": {
+        "/": "${workspaceFolder}/online/src"
+      }
+    },
+    {
+      "name":             "bhall",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8532/bhall/basic?debug=true",
+      "pathMapping": {
+        "/": "${workspaceFolder}/online/src"
+      }
+    },
+    {
+      "name":             "JK regression",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8532/test/regression.html",
+      "pathMapping": {
+        "/": "${workspaceFolder}/online/src"
+      }
+    },
+    {
+      "name":             "GitHub orbit scan",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8532/test/orbitscan.html",
+      "pathMapping": {
+        "/": "${workspaceFolder}/online/public"
+      }
+    }
+  ]
+}

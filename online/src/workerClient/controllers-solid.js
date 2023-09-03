@@ -4,15 +4,12 @@ import { createStore, reconcile } from "solid-js/store";
 
 import { initialState, newDesign, requestControllerProperty, doControllerAction, setControllerProperty, decodeEntities } from './actions.js';
 
+const initialScenes = () => ( { ...initialState(), trackballScene: initialState().scene, liveCamera: initialState().scene.camera } );
+
 const createWorkerStore = ( worker ) =>
 {
-  const { camera, lighting } = initialState.scene;
   // Beware, createStore does not make a copy, shallow or deep!
-  const [ state, setState ] = createStore( {
-    scene: { camera: { ...camera }, lighting: { ...lighting } },
-    trackballScene: { camera: { ...camera }, lighting: { ...lighting } },
-    uuid: worker.uuid
-  } );
+  const [ state, setState ] = createStore( { ...initialScenes(), uuid: worker.uuid } );
 
   const exportPromises = {};
 
@@ -59,7 +56,7 @@ const createWorkerStore = ( worker ) =>
 
       case 'ALERT_RAISED': {
         console.log( `Alert from the worker: ${data.payload}` );
-        setState( 'problem', data.payload );
+        setState( 'problem', data.payload ); // cooperatively managed by both worker and client
         setState( 'waiting', false );
         break;
       }
@@ -76,6 +73,11 @@ const createWorkerStore = ( worker ) =>
       }
 
       case 'TEXT_FETCHED': {
+        let { name } = data.payload;
+        if ( name && name .endsWith( '.vZome' ) ){
+          name = name .substring( 0, name .length - 6 );
+        }
+        setState( 'designName', name ); // cooperatively managed by both worker and client
         setState( 'source', data.payload );
         break;
       }
@@ -169,7 +171,11 @@ const createWorkerStore = ( worker ) =>
       }
 
       case 'CONTROLLER_CREATED':
-        setState( { workerReady: true, controller: { __store: store, __path: [] } } );
+        setState( {
+          ...initialScenes(),
+          workerReady: true,
+          controller: { __store: store, __path: [] }
+        } );
         break;
     
       case 'CONTROLLER_PROPERTY_CHANGED':
