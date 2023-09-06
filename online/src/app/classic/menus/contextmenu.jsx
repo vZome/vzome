@@ -2,7 +2,6 @@
 import { ContextMenu } from "@kobalte/core";
 import { ContextMenuItem, ContextMenuSeparator } from "../../framework/menus";
 import { useWorkerClient } from "../../../workerClient";
-import { createSignal } from "solid-js";
 
 export const ContextualMenu = props =>
 {
