@@ -2,10 +2,12 @@
 import { ContextMenu } from "@kobalte/core";
 import { ContextMenuItem, ContextMenuSeparator } from "../../framework/menus";
 import { useWorkerClient } from "../../../workerClient";
+import { controllerAction, subController } from "../../../workerClient/controllers-solid";
 
 export const ContextualMenu = props =>
 {
-  const { state, setState } = useWorkerClient();
+  const { state, setState, rootController } = useWorkerClient();
+  const pickingController  = () => subController( rootController(), 'picking' );
   const notPicking = () => ! state.picked;
 
   const lookAt = position =>
@@ -17,6 +19,12 @@ export const ContextualMenu = props =>
 
   const lookAtThis   = () => lookAt( state.picked.position );
   const lookAtOrigin = () => lookAt( [0,0,0] );
+
+  const doAction = action =>
+  {
+    controllerAction( pickingController(), action, { id: state.picked.id } );
+  }
+  const PickingItem = props => <ContextMenuItem onSelect={()=>doAction( props.action )} label={props.label} disabled={notPicking()} />;
 
   return (
     <ContextMenu.Content class="context-menu__content">
@@ -43,9 +51,9 @@ export const ContextualMenu = props =>
 
       <ContextMenuSeparator/>
 
-      <ContextMenuItem action='SelectCollinear' label='Select Collinear' disabled />
-      <ContextMenuItem action='SelectParallelStruts' label='Select Parallel Struts' disabled />
-      <ContextMenuItem action='AdjustSelectionByOrbitLength/selectSimilarStruts' label='Select Similar Struts' disabled />
+      <PickingItem action='SelectCollinear' label='Select Collinear' />
+      <PickingItem action='SelectParallelStruts' label='Select Parallel Struts' />
+      <PickingItem action='AdjustSelectionByOrbitLength/selectSimilarStruts' label='Select Similar Struts' />
 
       <ContextMenuItem action='undoToManifestation' label='Undo Including This' disabled />
 
