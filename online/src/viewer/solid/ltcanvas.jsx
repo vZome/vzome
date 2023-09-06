@@ -1,7 +1,7 @@
 
 import { useFrame, Canvas } from "solid-three";
-import { Color, Quaternion, Vector3 } from "three";
-import { createEffect, createMemo, createRenderEffect, onMount } from "solid-js";
+import { Color } from "three";
+import { createMemo, createRenderEffect, onMount } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
 import { PerspectiveCamera } from "./perspectivecamera.jsx";

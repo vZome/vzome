@@ -13,7 +13,6 @@ export const TrackballControls = (props) =>
 {
   const [ tool ] = useInteractionTool();
   const enabled = () => ( tool === undefined ) || tool().allowTrackball;
-  const invalidate = useThree(({ invalidate }) => invalidate);
   const defaultCamera = useThree(({ camera }) => camera);
   const gl = useThree(({ gl }) => gl);
   const set = useThree(({ set }) => set);
@@ -45,15 +44,8 @@ export const TrackballControls = (props) =>
 
   const [ lastRotation, publishRotation ] = useRotation();
 
-  createEffect(() => {
-
-    // thisCamera() .vzomeName = props.rotationOnly? 'camera view' : 'main canvas';
-
-    const callback = (e) => {
-      invalidate();
-      props.onChange?.(e);
-    };
-
+  createEffect(() =>
+  {
     const controls = trackballControls();
 
     controls.staticMoving = true;
@@ -68,8 +60,7 @@ export const TrackballControls = (props) =>
     const [ x, y, z ] = props.target;
     controls.target.set( x, y, z );
 
-    controls.connect(gl().domElement);
-    // controls.addEventListener("change", callback);
+    controls.connect( gl().domElement );
 
     controls.addEventListener( 'change', (evt) => {
       if ( ! publishRotation ) return;
@@ -77,21 +68,17 @@ export const TrackballControls = (props) =>
       // HACK! Assumes knowledge of TrackballControls internals
       if ( controls._state !== 0 && controls._state !== 3 ) // ROTATE, TOUCH_ROTATE
         return;
-      // TODO: publish absolute values rather than changes
       const { _lastAxis, _lastAngle } = controls; // the rotation change
       // console.log( `${thisCamera().vzomeName} publishing rotation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%` );
       publishRotation( thisCamera().quaternion, thisCamera() );
     } );
 
     if (props.onStart) controls.addEventListener("start", props.onStart);
-    if (props.onEnd) controls.addEventListener("end", props.onEnd);
+    if (props.onEnd)   controls.addEventListener("end", props.onEnd);
 
     onCleanup(() => {
-      controls.removeEventListener("change", callback);
-      if (props.onStart)
-      controls.removeEventListener("start", props.onStart);
-      if (props.onEnd)
-      controls.removeEventListener("end", props.onEnd);
+      if (props.onStart) controls.removeEventListener("start", props.onStart);
+      if (props.onEnd)   controls.removeEventListener("end", props.onEnd);
       controls.dispose();
     });
   });

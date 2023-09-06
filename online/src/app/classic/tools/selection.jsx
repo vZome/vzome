@@ -7,12 +7,12 @@ import { controllerAction, subController } from "../../../workerClient/controlle
 
 const SelectionTool = props =>
 {
-  const { rootController } = useWorkerClient();
+  const { rootController, setState } = useWorkerClient();
   const pickingController  = () => subController( rootController(), 'picking' );
 
   const handlers = {
 
-    allowTrackball: true,
+    allowTrackball: false,
 
     onClick: ( id, position, type, selected ) => {
       // console.log( 'selectionTool clicked' );
@@ -30,6 +30,9 @@ const SelectionTool = props =>
     },
     onDragEnd: evt => {
       // console.log( 'selectionTool onDragEnd?????!!!!!' );
+    },
+    onContextMenu: ( id, position, type, selected ) => {
+      setState( 'picked', { id, position, type, selected } );
     }
   };
 
