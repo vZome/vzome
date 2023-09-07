@@ -20,6 +20,15 @@ export const ContextualMenu = props =>
   const lookAtThis   = () => lookAt( state.picked.position );
   const lookAtOrigin = () => lookAt( [0,0,0] );
 
+  const copyOfCamera = camera =>
+  {
+    const { up, lookAt, lookDir, ...rest } = camera; // don't want copy-by-reference for the arrays
+    const result = { ...rest, up: [...up], lookAt: [...lookAt], lookDir: [...lookDir] };
+    return result;
+  }
+  const copyCamera = () => setState( 'copiedCamera', copyOfCamera( state.liveCamera ) );
+  const useCopiedCamera = () => setState( 'scene', 'camera', copyOfCamera( state.copiedCamera ) );
+
   const doAction = action =>
   {
     controllerAction( pickingController(), action, { id: state.picked.id } );
@@ -29,8 +38,8 @@ export const ContextualMenu = props =>
   return (
     <ContextMenu.Content class="context-menu__content">
 
-      <ContextMenuItem action='copyThisView' label='Copy This View' disabled />
-      <ContextMenuItem action='useCopiedView' label='Use Copied View' disabled />
+      <ContextMenuItem onSelect={copyCamera} label='Copy This View' />
+      <ContextMenuItem onSelect={useCopiedCamera} label='Use Copied View' />
 
       <ContextMenuSeparator/>
 

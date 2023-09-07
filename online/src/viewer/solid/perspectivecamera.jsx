@@ -12,7 +12,14 @@ export const PerspectiveCamera = (props) =>
 
   let cam;
 
+  createEffect( () => {
+    // console.log( 'PerspectiveCamera lookAt' );
+    const [ x, y, z ] = props.target;
+    cam .lookAt( x, y, z );
+  });
+
   createEffect(() => {
+    // console.log( 'PerspectiveCamera updateProjectionMatrix' );
     cam.near = 0.1;
     cam.far = 2000;
     cam.fov = props.fov;
@@ -21,6 +28,7 @@ export const PerspectiveCamera = (props) =>
   });
 
   createEffect(() => {
+    // console.log( 'PerspectiveCamera lifecycle' );
     const oldCam = untrack(() => camera());
     set()({ camera: cam });
     onCleanup(() => set()({ camera: oldCam }));
