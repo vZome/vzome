@@ -24,6 +24,8 @@ const Instance = ( props ) =>
   }
   const handleClick = ( e ) =>
   {
+    if ( e.button !== 0 ) // left-clicks only, please
+      return;
     const handler = tool && tool() ?.onClick;
     if ( handler ) {
       e.stopPropagation()
@@ -34,12 +36,14 @@ const Instance = ( props ) =>
   {
     const handler = tool && tool() ?.onContextMenu;
     if ( handler ) {
-      e.stopPropagation()
+      e.stopPropagation();
       handler( props.id, props.position, props.type, props.selected )
     }
   }
   const handlePointerDown = ( e ) =>
   {
+    if ( e.button !== 0 ) // left-clicks only, please
+      return;
     const handler = tool && tool() ?.onDragStart;
     if ( handler ) {
       e.stopPropagation()
@@ -48,6 +52,8 @@ const Instance = ( props ) =>
   }
   const handlePointerUp = ( e ) =>
   {
+    if ( e.button !== 0 ) // left-clicks only, please
+      return;
     const handler = tool && tool() ?.onDragEnd;
     if ( handler ) {
       e.stopPropagation()

@@ -4,7 +4,12 @@ import { createStore, reconcile } from "solid-js/store";
 
 import { initialState, newDesign, requestControllerProperty, doControllerAction, setControllerProperty, decodeEntities } from './actions.js';
 
-const initialScenes = () => ( { ...initialState(), trackballScene: initialState().scene, liveCamera: initialState().scene.camera } );
+const initialScenes = () => ( {
+  ...initialState(), 
+  trackballScene: initialState().scene,
+  liveCamera: initialState().scene.camera,
+  copiedCamera: initialState().scene.camera,
+} );
 
 const createWorkerStore = ( worker ) =>
 {

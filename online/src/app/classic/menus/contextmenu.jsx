@@ -2,10 +2,12 @@
 import { ContextMenu } from "@kobalte/core";
 import { ContextMenuItem, ContextMenuSeparator } from "../../framework/menus";
 import { useWorkerClient } from "../../../workerClient";
+import { controllerAction, subController } from "../../../workerClient/controllers-solid";
 
 export const ContextualMenu = props =>
 {
-  const { state, setState } = useWorkerClient();
+  const { state, setState, rootController } = useWorkerClient();
+  const pickingController  = () => subController( rootController(), 'picking' );
   const notPicking = () => ! state.picked;
 
   const lookAt = position =>
@@ -18,11 +20,26 @@ export const ContextualMenu = props =>
   const lookAtThis   = () => lookAt( state.picked.position );
   const lookAtOrigin = () => lookAt( [0,0,0] );
 
+  const copyOfCamera = camera =>
+  {
+    const { up, lookAt, lookDir, ...rest } = camera; // don't want copy-by-reference for the arrays
+    const result = { ...rest, up: [...up], lookAt: [...lookAt], lookDir: [...lookDir] };
+    return result;
+  }
+  const copyCamera = () => setState( 'copiedCamera', copyOfCamera( state.liveCamera ) );
+  const useCopiedCamera = () => setState( 'scene', 'camera', copyOfCamera( state.copiedCamera ) );
+
+  const doAction = action =>
+  {
+    controllerAction( pickingController(), action, { id: state.picked.id } );
+  }
+  const PickingItem = props => <ContextMenuItem onSelect={()=>doAction( props.action )} label={props.label} disabled={notPicking()} />;
+
   return (
     <ContextMenu.Content class="context-menu__content">
 
-      <ContextMenuItem action='copyThisView' label='Copy This View' disabled />
-      <ContextMenuItem action='useCopiedView' label='Use Copied View' disabled />
+      <ContextMenuItem onSelect={copyCamera} label='Copy This View' />
+      <ContextMenuItem onSelect={useCopiedCamera} label='Use Copied View' />
 
       <ContextMenuSeparator/>
 
@@ -43,9 +60,9 @@ export const ContextualMenu = props =>
 
       <ContextMenuSeparator/>
 
-      <ContextMenuItem action='SelectCollinear' label='Select Collinear' disabled />
-      <ContextMenuItem action='SelectParallelStruts' label='Select Parallel Struts' disabled />
-      <ContextMenuItem action='AdjustSelectionByOrbitLength/selectSimilarStruts' label='Select Similar Struts' disabled />
+      <PickingItem action='SelectCollinear' label='Select Collinear' />
+      <PickingItem action='SelectParallelStruts' label='Select Parallel Struts' />
+      <PickingItem action='AdjustSelectionByOrbitLength/selectSimilarStruts' label='Select Similar Struts' />
 
       <ContextMenuItem action='undoToManifestation' label='Undo Including This' disabled />
 
