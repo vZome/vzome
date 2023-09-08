@@ -642,10 +642,13 @@ const makeFloatMatrices = ( matrices ) =>
       return root;
     }
 
+    const getOrbitSource = () => orbitSource;
+
     return { interpretEdit, configureAndPerformEdit, batchRender, serializeToDom, setSymmetrySystem, getSymmetrySystem, getChangeCount,
+      getOrbitSource,
       editor,
       field, legacyField, fieldApp,
-      renderedModel, orbitSource, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };
+      renderedModel, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };
   }
 
   export const convertColor = color =>

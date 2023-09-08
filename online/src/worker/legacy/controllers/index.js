@@ -9,8 +9,9 @@ import { EditorController } from './editor.js';
 
 const createControllers = ( design, renderingChanges, clientEvents ) =>
 {
-  const { orbitSource, renderedModel } = design;
+  const { getOrbitSource, renderedModel } = design;
 
+  const orbitSource = getOrbitSource();
   const planes = resolveBuildPlanes( orbitSource .buildPlanes );
   const { orientations, symmetry, permutations } = orbitSource;
   const scalars = [ symmetry .getField() .getAffineScalar() .evaluate() ]; //TODO get them all!
@@ -100,7 +101,7 @@ export const loadDesign = ( xml, debug, clientEvents, sceneTitle ) =>
   }
 
   const { shapes, edit } = renderHistory .getScene( sceneEditId, before );
-  const embedding = design .orbitSource .getEmbedding();
+  const embedding = design .getOrbitSource() .getEmbedding();
   const scene = { lighting, camera: sceneCamera, embedding, shapes };
   clientEvents .sceneChanged( scene, edit );
 
@@ -108,7 +109,8 @@ export const loadDesign = ( xml, debug, clientEvents, sceneTitle ) =>
 
   // Not beautiful, but functional
   wrapper.getScene = (editId, before = false) => {
-    return renderHistory.getScene(editId, before);
+    const embedding = design .getOrbitSource() .getEmbedding();
+    return { ...renderHistory.getScene(editId, before), embedding };
   };
 
   // TODO: fix this terrible hack!
@@ -125,14 +127,15 @@ export const newDesign = ( fieldName, clientEvents ) =>
   const renderingChanges = renderedModelTransducer( renderHistory.getShapes(), clientEvents );
 
   const { shapes, edit } = renderHistory .getScene( '--START--', false );
-  const embedding = design .orbitSource .getEmbedding();
+  const embedding = design .getOrbitSource() .getEmbedding();
   clientEvents .sceneChanged( { embedding, shapes }, edit ); // let client determine default lighting and camera
 
   const wrapper = createControllers( design, renderingChanges, clientEvents );
 
   // Not beautiful, but functional
   wrapper.getScene = (editId, before = false) => {
-    return renderHistory.getScene(editId, before);
+    const embedding = design .getOrbitSource() .getEmbedding();
+    return { ...renderHistory.getScene(editId, before), embedding };
   };
 
   // TODO: fix this terrible hack!
