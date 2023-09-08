@@ -1,13 +1,14 @@
 
-import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
-
 import { createEffect, createSignal, mergeProps } from "solid-js";
+
 import { controllerAction, controllerExportAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
 import { serializeVZomeXml, saveFile, saveFileAs, openFile } from '../../../workerClient/index.js';
-import { UrlDialog } from '../components/webloader.jsx'
 import { fetchDesign, openDesignFile, newDesign, importMeshFile } from "../../../workerClient/index.js";
 import { useWorkerClient } from "../../../workerClient/index.js";
-import { Guardrail } from "../components/guardrail.jsx";
+
+import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
+import { UrlDialog } from '../dialogs/webloader.jsx'
+import { Guardrail } from "../dialogs/guardrail.jsx";
 
 const NewDesignItem = props =>
 {
