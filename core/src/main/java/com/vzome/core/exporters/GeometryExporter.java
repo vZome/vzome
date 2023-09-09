@@ -1,15 +1,13 @@
 package com.vzome.core.exporters;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 
 import com.vzome.core.render.Colors;
 import com.vzome.core.render.RealZomeScaling;
 import com.vzome.core.render.RenderedModel;
+import com.vzome.xml.ResourceLoader;
 
 public abstract class GeometryExporter implements RealZomeScaling
 {
@@ -46,17 +44,7 @@ public abstract class GeometryExporter implements RealZomeScaling
     
     protected String getBoilerplate( String resourcePath )
     {
-        InputStream input = getClass() .getClassLoader() .getResourceAsStream( resourcePath );
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
-        int num;
-        try {
-            while ( ( num = input .read( buf, 0, 1024 )) > 0 )
-                out .write( buf, 0, num );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new String( out .toByteArray() );
+        return ResourceLoader .loadStringResource( resourcePath );
     }
 
     /**
