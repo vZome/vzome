@@ -15,6 +15,15 @@ import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.viewing.ExportedVEFShapes;
 
+/*
+ * This was created for vZome Online (mostly), to establish a new, more explicit data format
+ * for strut shapes.  The initial Zome ball for Online was rendered from one of the JSON files
+ * produced here, for a short time, but Online has since switched to using transpiled legacy
+ * code for shapes.
+ * 
+ * See Git commit 9dfe8c150bfe047aacc4c73beb564ecd44ea1f30.
+ */
+
 public class PartsJsonConverter
 {
     public static void main( String[] args )
