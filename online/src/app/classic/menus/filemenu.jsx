@@ -179,17 +179,21 @@ export const FileMenu = () =>
           <ExportItem label="Collada DAE" ext="dae" mime="text/plain" disabled={true} />
           <ExportItem label="POV-Ray" ext="pov" mime="text/plain" disabled={true} />
           <ExportItem label="vZome Shapes JSON" ext="shapes" mime="text/plain" disabled={true} />
-          <ExportItem label="VRML" ext="vrml" mime="text/plain" disabled={true} />
+          <ExportItem label="VRML" ext="vrml" mime="text/plain" />
         </SubMenu>
         <SubMenu label="Export 3D Panels">
           <ExportItem label="StL (mm)" ext="stl" mime="application/sla" />
-          <ExportItem label="OFF" ext="off" mime="text/plain" disabled={true} />
-          <ExportItem label="PLY" ext="ply" mime="text/plain" disabled={true} />
+          <ExportItem label="OFF" ext="off" mime="text/plain" />
+          <ExportItem label="PLY" ext="ply" mime="text/plain" />
         </SubMenu>
-        <SubMenu label="Export 3D Mesh">
+        <SubMenu label="Export 3D Points & Lines">
           <ExportItem label="Simple Mesh JSON" format="mesh" ext="mesh.json" mime="text/plain" />
           <ExportItem label="Color Mesh JSON" format="cmesh" ext="cmesh.json" mime="application/json" />
-          <ExportItem label="AutoCAD DXF" ext="dxf" mime="text/plain" disabled={true} />
+          <ExportItem label="AutoCAD DXF" ext="dxf" mime="text/plain" />
+        </SubMenu>
+        <SubMenu label="Export 3D Balls & Sticks">
+          <ExportItem label="OpenSCAD" ext="scad" mime="text/plain" />
+          <ExportItem label="Python build123d" ext="py" format="build123d" mime="text/plain" />
         </SubMenu>
 
         <Divider/>

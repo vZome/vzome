@@ -1,9 +1,6 @@
 package com.vzome.core.exporters;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.HashMap;
@@ -43,18 +40,7 @@ public class VRMLExporter extends GeometryExporter
     {
         output = new PrintWriter( writer );
 
-        InputStream input = getClass() .getClassLoader()
-                                    .getResourceAsStream( PREAMBLE_FILE );
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
-        int num;
-        try {
-            while ( ( num = input .read( buf, 0, 1024 )) > 0 )
-                    out .write( buf, 0, num );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        output .println( new String( out .toByteArray() ) );
+        output .println( this.getBoilerplate( PREAMBLE_FILE ) );
         output .println();
 
         AlgebraicField field = null;

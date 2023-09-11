@@ -1,4 +1,5 @@
 
+import { resourceIndex } from '../revision.js';
 
 // support trampolining to work around worker CORS issue
 //   see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
@@ -350,6 +351,8 @@ onmessage = ({ data }) =>
 
     case 'WINDOW_LOCATION':
       baseURL = payload;
+      import( './legacy/dynamic.js' )
+        .then( module => Promise.all( resourceIndex .map( path => module.loadAndInjectResource( path, new URL( `./resources/${path}`, baseURL ) ) ) ) );
       break;
 
     case 'URL_PROVIDED':

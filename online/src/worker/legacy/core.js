@@ -225,7 +225,7 @@ const makeFloatMatrices = ( matrices ) =>
 
   const resources = {}
 
-  const loadAndInjectResource = async ( path, url ) =>
+  export const loadAndInjectResource = async ( path, url ) =>
   {
     const response = await fetch( url )
     if ( ! response.ok ) {
