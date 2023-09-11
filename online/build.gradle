@@ -190,8 +190,7 @@ core.config {
     'com/vzome/core/render/RenderedModel.java',
     'com/vzome/core/render/TransparentRendering.java',
 
-    'com/vzome/core/exporters/GeometryExporter.java',
-    'com/vzome/core/exporters/StlExporter.java',
+    'com/vzome/core/exporters/*.java',
 
     // SymmetryController and its dependencies
     'com/vzome/desktop/api/Controller.java',
@@ -225,6 +224,16 @@ core.config {
     'com/vzome/core/exporters/SimpleMeshJsonExporter.java',
     'com/vzome/core/exporters/HistoryExporter.java',
     'com/vzome/core/exporters/ShapesJsonExporter.java',
+    'com/vzome/core/exporters/GeoGebraExporter.java',
+    'com/vzome/core/exporters/DocumentExporter.java',
+    'com/vzome/core/exporters/OpenScadExporter.java',
+    'com/vzome/core/exporters/POVRayExporter.java',
+    'com/vzome/core/exporters/PartGeometryExporter.java',
+    'com/vzome/core/exporters/SideEffectsExporter.java',
+    'com/vzome/core/exporters/DaeExporter.java',
+    'com/vzome/core/exporters/STEPExporter.java',
+    'com/vzome/core/exporters/PartsListExporter.java',
+    'com/vzome/core/exporters/MathTableExporter.java',
 
     'com/vzome/desktop/controller/CameraController.java',
     'com/vzome/desktop/controller/JsonClientRendering.java',
