@@ -1,6 +1,6 @@
 
 import { useFrame, Canvas } from "solid-three";
-import { Color, Quaternion, Vector3 } from "three";
+import { Color } from "three";
 import { createEffect, createMemo, createRenderEffect, onMount } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
@@ -72,6 +72,7 @@ const LightedCameraControls = (props) =>
     const far = camera.far;
     const near = camera.near;
 
+    // console.log( 'trackballEnd setState liveCamera' );
     setState( 'liveCamera', { lookAt, up, lookDir, distance, width, far, near } );
 
     // setNeedsRender( 20 );
@@ -96,7 +97,7 @@ const LightedCameraControls = (props) =>
 
   const result = ( !!props.sceneCamera &&
     <>
-      <PerspectiveCamera fov={fov()} aspect={props.aspect} position={position()} up={props.sceneCamera?.up} >
+      <PerspectiveCamera fov={fov()} aspect={props.aspect} position={position()} up={props.sceneCamera?.up} target={props.sceneCamera?.lookAt} >
         <Lighting {...(lights())} />
       </PerspectiveCamera>
       <TrackballControls onEnd={props.rotationOnly? undefined : trackballEnd} rotationOnly={props.rotationOnly}

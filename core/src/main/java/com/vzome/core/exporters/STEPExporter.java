@@ -18,7 +18,8 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.render.RenderedManifestation;
 
 /**
- * Renders out to POV-Ray using #declare statements to reuse geometry.
+ * This only exports shapes, no instances yet.
+ * 
  * @author vorth
  */
 public class STEPExporter extends GeometryExporter
@@ -37,9 +38,10 @@ public class STEPExporter extends GeometryExporter
     private static final double SCALE = 0.350d;
     
     @Override
-    public void doExport( File directory, Writer writer, int height, int width ) throws Exception
+    public void doExport( File file, Writer writer, int height, int width ) throws Exception
     {
         int numShapes = 0;
+        File directory = file .getParentFile();
         HashMap<Polyhedron, String> shapes = new HashMap<>();
         for (RenderedManifestation rm : mModel) {
             Polyhedron shape = rm .getShape();

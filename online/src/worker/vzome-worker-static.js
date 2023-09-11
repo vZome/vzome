@@ -1,4 +1,5 @@
 
+import { resourceIndex } from '../revision.js';
 
 // support trampolining to work around worker CORS issue
 //   see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
@@ -236,18 +237,23 @@ const createDesign = ( report, fieldName ) =>
      } );
 }
 
-const openDesign = ( xmlLoading, report, debug, sceneTitle, preview ) =>
+const openDesign = ( xmlLoading, name, report, debug, sceneTitle ) =>
 {
   return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
 
     .then( ([ module, xml ]) => {
+      if ( !xml ) {
+        report( { type: 'ALERT_RAISED', payload: 'The file is empty' } );
+        return;
+      }
       report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
       designWrapper = module .loadDesign( xml, debug, clientEvents( captureScenes( report ) ), sceneTitle );
+      report( { type: 'TEXT_FETCHED', payload: { text: xml, name } } ); // NOW it is safe to send the name
     } )
 
     .catch( error => {
       console.log( `openDesign failure: ${error.message}` );
-      report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model.  ${error.message}` } );
+      report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model: ${error.message}` } );
       return false; // probably nobody should care about the return value
      } );
 }
@@ -260,9 +266,9 @@ const fileLoader = ( report, event ) =>
   console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% editing ${name}` );
   const xmlLoading = fetchFileText( file );
 
-  xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { name, text } } ) );
+  xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { text } } ) ); // Don't send the name yet, parse/interpret may fail
 
-  return openDesign( xmlLoading, report, debug );
+  return openDesign( xmlLoading, name, report, debug );
 }
 
 const fileImporter = ( report, event ) =>
@@ -305,7 +311,7 @@ const urlLoader = ( report, event ) =>
   console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${preview? "previewing" : "interpreting " } ${url}` );
   const xmlLoading = fetchUrlText( url );
 
-  xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { name, text, url } } ) );
+  xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { text, url } } ) ); // Don't send the name yet, parse/interpret may fail
 
   if ( preview ) {
     // The client prefers to show a preview if possible.
@@ -326,11 +332,11 @@ const urlLoader = ( report, event ) =>
       .catch( error => {
         console.log( error.message );
         console.log( 'Preview failed, falling back to vZome XML' );
-        return openDesign( xmlLoading, report, debug, sceneTitle, true );
+        return openDesign( xmlLoading, name, report, debug, sceneTitle );
       } )
   }
   else {
-    return openDesign( xmlLoading, report, debug, sceneTitle, false );
+    return openDesign( xmlLoading, name, report, debug, sceneTitle );
   }
 }
 
@@ -345,6 +351,8 @@ onmessage = ({ data }) =>
 
     case 'WINDOW_LOCATION':
       baseURL = payload;
+      import( './legacy/dynamic.js' )
+        .then( module => Promise.all( resourceIndex .map( path => module.loadAndInjectResource( path, new URL( `./resources/${path}`, baseURL ) ) ) ) );
       break;
 
     case 'URL_PROVIDED':

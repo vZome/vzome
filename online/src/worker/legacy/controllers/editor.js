@@ -6,6 +6,25 @@ import { PickingController } from './picking.js';
 import { BuildPlaneController } from './buildplane.js';
 import { modelToJS } from "../json.js";
 
+const exporterClasses = {
+  'stl'      : 'StlExporter',
+  'scad'     : 'OpenScadMeshExporter',
+  'build123d': 'PythonBuild123dExporter',
+  'dxf'      : 'DxfExporter',
+  'off'      : 'OffExporter',
+  'ply'      : 'PlyExporter',
+  'vrml'     : 'VRMLExporter',
+//
+//   TODO: These may not all be ResourceLoader-enabled (using GeometryExporter.getBoilerplate), or otherwise web-ready,
+//     but they all successfully transpiled with JSweet
+//
+// 'FORMAT'  : 'VefVectorExporter',
+// 'FORMAT'  : 'PdbExporter',
+// 'FORMAT'  : 'VefExporter',
+// 'FORMAT'  : 'SegExporter',
+// 'FORMAT'  : 'VefModelExporter',
+}
+
 export class EditorController extends com.vzome.desktop.controller.DefaultController
 {
   constructor(design, clientEvents) {
@@ -19,7 +38,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
 
   initialize( renderingChanges )
   {
-    const { orbitSource, renderedModel, toolsModel, bookmarkFactory, history, symmetrySystems,
+    const { getOrbitSource, renderedModel, toolsModel, bookmarkFactory, history, symmetrySystems,
       fieldApp, legacyField, editor, editContext } = this.design;
 
     this.changeCount = this.design.getChangeCount();
@@ -41,7 +60,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
     this.addSubController('picking', pickingController);
 
     // This has no desktop equivalent
-    const buildPlaneController = new BuildPlaneController(renderedModel, orbitSource);
+    const buildPlaneController = new BuildPlaneController( renderedModel, getOrbitSource() );
     this.addSubController('buildPlane', buildPlaneController);
 
     const polytopesController = new com.vzome.desktop.controller.PolytopesController( editor, editContext );
@@ -186,18 +205,19 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
             return;
           }
 
-          case 'stl': {
-            const exporter = new com.vzome.core.exporters.StlExporter();
-            const out = new java.io.StringWriter();
-            exporter.exportGeometry(this.design.renderedModel, null, out, 500, 800);
-            this.clientEvents.textExported(action, out.toString()); // returning the action for Promise correlation on the client
-            return;
-          }
-
-          default: // vZome
+          case 'vZome': {
             const text = this.design.serializeToDom().toIndentedString("");
             this.clientEvents.textExported(action, text);
             return;
+          }
+
+          default: {
+            const exporter = new com.vzome.core.exporters[ exporterClasses[ format ] ]();
+            const out = new java.io.StringWriter();
+            exporter .exportGeometry( this.design.renderedModel, null, out, 500, 800 );
+            this.clientEvents .textExported( action, out.toString() ); // returning the action for Promise correlation on the client
+            return;
+          }
         }
         break;
 

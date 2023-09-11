@@ -16,9 +16,15 @@ REVISION=${BUILD_NUMBER:-'DEV'}
 
 cicd/jsweet-legacy-code.bash || exit $?
 
-pushd online
+cd online
 
-echo "export const REVISION=\"${REVISION}\"" > src/revision.js
+echo "export const REVISION=\"${REVISION}\";" > src/revision.js
+
+# banner 'Indexing resources'
+( cd public/classic/resources
+  echo 'export const resourceIndex = ['
+  find com/vzome/core/exporters -type f -exec echo "  \"{}\"", \;
+  echo '  "" ];' ) >> src/revision.js
 
 banner 'Preparing the distribution folder with NPM'
 yarn install || exit $?
@@ -29,10 +35,11 @@ yarn run build || exit $?
 rm -rf public/modules || exit $?
 rm -rf public/classic/resources || exit $?
 
-mkdir -p public/classic/resources || exit $?
+mkdir -p public/classic/resources/com/vzome/core/exporters || exit $?
 cp -R ../desktop/src/main/resources/* public/classic/resources || exit $?
+cp -R ../core/src/main/resources/com/vzome/core/exporters/* public/classic/resources/com/vzome/core/exporters || exit $?
 
-pushd dist
+cd dist
 
 banner 'Creating the online.tgz archive'
   cp -R ../public/* app && \

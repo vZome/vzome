@@ -45,7 +45,7 @@ public class PrintWriter extends Writer
     public void print( Object x )
     {
         if ( ! (x instanceof String) )
-            throw new RuntimeException( "PrintWriter only accepts strings" );
+            x = x .toString();
         char[] chars = ((String) x) .toCharArray();
         this .write( chars, 0, chars.length );
     }

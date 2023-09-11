@@ -24,14 +24,26 @@ const Instance = ( props ) =>
   }
   const handleClick = ( e ) =>
   {
+    if ( e.button !== 0 ) // left-clicks only, please
+      return;
     const handler = tool && tool() ?.onClick;
     if ( handler ) {
       e.stopPropagation()
       handler( props.id, props.position, props.type, props.selected )
     }
   }
+  const handleContextMenu = ( e ) =>
+  {
+    const handler = tool && tool() ?.onContextMenu;
+    if ( handler ) {
+      e.stopPropagation();
+      handler( props.id, props.position, props.type, props.selected )
+    }
+  }
   const handlePointerDown = ( e ) =>
   {
+    if ( e.button !== 0 ) // left-clicks only, please
+      return;
     const handler = tool && tool() ?.onDragStart;
     if ( handler ) {
       e.stopPropagation()
@@ -40,6 +52,8 @@ const Instance = ( props ) =>
   }
   const handlePointerUp = ( e ) =>
   {
+    if ( e.button !== 0 ) // left-clicks only, please
+      return;
     const handler = tool && tool() ?.onDragEnd;
     if ( handler ) {
       e.stopPropagation()
@@ -53,7 +67,7 @@ const Instance = ( props ) =>
     <group position={ props.position } >
       <mesh matrixAutoUpdate={false} ref={meshRef} geometry={props.geometry} 
           onPointerOver={handleHover(true)} onPointerOut={handleHover(false)} onClick={handleClick}
-          onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} >
+          onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onContextMenu={handleContextMenu}>
         <meshLambertMaterial attach="material" color={props.color} emissive={emissive()} />
       </mesh>
     </group>

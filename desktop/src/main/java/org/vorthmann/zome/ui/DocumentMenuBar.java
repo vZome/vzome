@@ -145,7 +145,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         submenu .add( createMenuItem( "OFF", "export.off" ) );
         submenu .add( createMenuItem( "PLY", "export.ply" ) );
         menu .add( submenu );
-        submenu = new JMenu( "Export 3D Mesh..." );
+
+        submenu = new JMenu( "Export 3D Points & Lines..." );
         submenu .add( createMenuItem( "Simple Mesh JSON", "export.mesh" ) );
         submenu .add( createMenuItem( "Color Mesh JSON", "export.cmesh" ) );
         submenu .add( createMenuItem( "AutoCAD DXF", "export.dxf" ) );
@@ -158,6 +159,12 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             submenu .add( createMenuItem( "Mark Stock .seg", "export.seg" ) );
         }
         menu .add( submenu );
+
+        submenu = new JMenu( "Export 3D Balls & Sticks..." );
+        submenu .add( createMenuItem( "OpenSCAD", "export.scad" ) );
+        submenu .add( createMenuItem( "Python build123d", "export.build123d" ) );
+        menu .add( submenu );
+
         submenu .setEnabled( fullPower && canSave );
 
         if ( developerExtras )

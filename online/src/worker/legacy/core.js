@@ -225,7 +225,7 @@ const makeFloatMatrices = ( matrices ) =>
 
   const resources = {}
 
-  const loadAndInjectResource = async ( path, url ) =>
+  export const loadAndInjectResource = async ( path, url ) =>
   {
     const response = await fetch( url )
     if ( ! response.ok ) {
@@ -515,6 +515,8 @@ const makeFloatMatrices = ( matrices ) =>
 
     const interpretEdit = ( xmlElement, context ) =>
     {
+      if ( xmlElement .tagName === 'RunZomicScript' )
+        throw new Error( 'Zomic script commands are not yet supported in Online.' );
       const wrappedElement = new JavaDomElement( xmlElement )
       const edit = editFactory( editor, toolFactories, toolsModel )( wrappedElement )
       if ( ! edit )   // Null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit.
@@ -640,10 +642,13 @@ const makeFloatMatrices = ( matrices ) =>
       return root;
     }
 
+    const getOrbitSource = () => orbitSource;
+
     return { interpretEdit, configureAndPerformEdit, batchRender, serializeToDom, setSymmetrySystem, getSymmetrySystem, getChangeCount,
+      getOrbitSource,
       editor,
       field, legacyField, fieldApp,
-      renderedModel, orbitSource, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };
+      renderedModel, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };
   }
 
   export const convertColor = color =>

@@ -1,5 +1,6 @@
 
 import { DropdownMenu } from "@kobalte/core";
+import { ContextMenu } from "@kobalte/core";
 import { createEffect, createSignal, mergeProps } from "solid-js";
 import { controllerAction } from "../../workerClient/controllers-solid";
 
@@ -152,8 +153,33 @@ export const Choices = props =>
         }</For>
       </DropdownMenu.RadioGroup>
     </DropdownMenu.Group>
-);
+  );
 }
+
+export const ContextualMenuArea = props =>
+{
+  return (
+    <ContextMenu.Root onOpenChange={props.onOpenChange}>
+      <ContextMenu.Trigger class="context-menu__trigger" disabled={props.disabled}>
+        {props.children}
+      </ContextMenu.Trigger>
+      <ContextMenu.Portal>
+        {props.menu}
+      </ContextMenu.Portal>
+    </ContextMenu.Root>
+  );
+}
+
+export const ContextMenuItem = props =>
+{
+  return (
+    <ContextMenu.Item class="context-menu__item" onSelect={props.onSelect} disabled={props.disabled}>
+      {props.label}
+    </ContextMenu.Item>
+  );
+}
+
+export const ContextMenuSeparator = props => <ContextMenu.Separator class="context-menu__separator" />
 
 export const createMenuAction = ( controller ) => ( props ) =>
 {
