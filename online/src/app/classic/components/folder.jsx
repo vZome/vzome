@@ -5,7 +5,7 @@ import Menu from '@suid/material/Menu'
 import MenuItem from '@suid/material/MenuItem'
 import Divider from '@suid/material/Divider';
 
-import { UrlDialog } from './webloader.jsx';
+import { UrlDialog } from '../dialogs/webloader.jsx';
 import { Tooltip } from '../../framework/tooltip.jsx';
 import { For, createSignal } from 'solid-js';
 import { useWorkerClient } from '../../../workerClient';

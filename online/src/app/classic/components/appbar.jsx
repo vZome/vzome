@@ -7,7 +7,7 @@ import Box from '@suid/material/Box'
 
 import { OpenMenu } from './folder.jsx'
 import { VZomeLogo } from './logo.jsx'
-import { AboutDialog } from './about.jsx';
+import { AboutDialog } from '../dialogs/about.jsx';
 
 export const Spacer = () => <div style={{ flex: '1 1 auto' }}></div>
 

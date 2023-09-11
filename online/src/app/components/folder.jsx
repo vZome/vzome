@@ -11,7 +11,7 @@ import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import Divider from '@material-ui/core/Divider';
 
-import UrlDialog from './webloader.jsx'
+import { UrlDialog } from '../classic/dialogs/webloader.jsx';
 
 const queryParams = new URLSearchParams( window.location.search );
 const enableDropbox = !! queryParams .get( 'enableDropbox' );
