@@ -12,6 +12,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vzome.core.math.RealMatrix4;
+import com.vzome.core.math.RealVector;
 import com.vzome.xml.DomUtils;
 
 public class Camera
@@ -159,71 +161,6 @@ public class Camera
 
     static final double EPSILON_ABSOLUTE = 1.0e-5;
 
-    /**
-     * Helping function that specifies the position and orientation of a
-     * view matrix. The inverse of this transform can be used to control
-     * the ViewPlatform object within the scene graph.
-     * @param eye the location of the eye
-     * @param center a point in the virtual world where the eye is looking
-     * @param up an up vector specifying the frustum's up direction
-     */
-    private static void lookAt( float[] mat, Point3f eye, Point3f center, Vector3f up)
-    {
-        float forwardx,forwardy,forwardz,invMag;
-        float upx,upy,upz;
-        float sidex,sidey,sidez;
-
-        forwardx =  eye.x - center.x;
-        forwardy =  eye.y - center.y;
-        forwardz =  eye.z - center.z;
-
-        invMag = (float) (1.0/Math.sqrt( forwardx*forwardx + forwardy*forwardy + forwardz*forwardz));
-        forwardx = forwardx*invMag;
-        forwardy = forwardy*invMag;
-        forwardz = forwardz*invMag;
-
-
-        invMag = (float) (1.0/Math.sqrt( up.x*up.x + up.y*up.y + up.z*up.z));
-        upx = up.x*invMag;
-        upy = up.y*invMag;
-        upz = up.z*invMag;
-
-        // side = Up cross forward
-        sidex = upy*forwardz-forwardy*upz;
-        sidey = upz*forwardx-upx*forwardz;
-        sidez = upx*forwardy-upy*forwardx;
-
-        invMag = (float) (1.0/Math.sqrt( sidex*sidex + sidey*sidey + sidez*sidez));
-        sidex *= invMag;
-        sidey *= invMag;
-        sidez *= invMag;
-
-        // recompute up = forward cross side
-
-        upx = forwardy*sidez-sidey*forwardz;
-        upy = forwardz*sidex-forwardx*sidez;
-        upz = forwardx*sidey-forwardy*sidex;
-
-        // transpose because we calculated the inverse of what we want
-        mat[0] = sidex;
-        mat[1] = sidey;
-        mat[2] = sidez;
-
-        mat[4] = upx;
-        mat[5] = upy;
-        mat[6] = upz;
-
-        mat[8] =  forwardx;
-        mat[9] =  forwardy;
-        mat[10] = forwardz;
-
-        mat[3] = -eye.x*mat[0] + -eye.y*mat[1] + -eye.z*mat[2];
-        mat[7] = -eye.x*mat[4] + -eye.y*mat[5] + -eye.z*mat[6];
-        mat[11] = -eye.x*mat[8] + -eye.y*mat[9] + -eye.z*mat[10];
-
-        mat[12] = mat[13] = mat[14] = 0;
-        mat[15] = 1;
-    }
 
 
     /**
@@ -232,11 +169,38 @@ public class Camera
      */
     public void getViewTransform( Matrix4f matrix )
     {
-        Point3f eyePoint = getPosition();
+        RealMatrix4 rm4 = getViewMatrix();
+        matrix .set( rm4 .toArray() );
+    }
 
-        float[] mat = new float[16];
-        lookAt( mat, eyePoint, mLookAtPoint, mUpDirection );
-        matrix .set( mat );
+    public RealMatrix4 getViewMatrix()
+    {
+        Point3f eyePoint = getPosition();
+        RealVector eye = new RealVector( eyePoint.x, eyePoint.y, eyePoint.z );
+        RealVector lookAt = new RealVector( mLookAtPoint.x, mLookAtPoint.y, mLookAtPoint.z );
+        RealVector up = new RealVector( mUpDirection.x, mUpDirection.y, mUpDirection.z );
+        return RealMatrix4.lookAt( eye, lookAt, up );
+    }
+    
+    public RealMatrix4 getEyeMatrix()
+    {
+        if ( ! this .isPerspective() )
+            return ortho();
+        else
+            return perspective();// TODO - make aspect ratio track the screen window shape
+    }
+
+    public RealMatrix4 perspective()
+    {
+        return RealMatrix4.perspective( getFieldOfView(), 1.0f, mNear, mFar ); // FIX this aspect ratio
+    }
+
+    private RealMatrix4 ortho()
+    {
+        float edge = this .getWidth() / 2;
+        float left = -edge, bottom = -edge;
+        float right = edge, top = edge;
+        return RealMatrix4.ortho( left, right, bottom, top, mNear, mFar );
     }
 
     public Point3f getPosition()

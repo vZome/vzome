@@ -9,6 +9,7 @@ import { useWorkerClient } from "../../../workerClient/index.js";
 import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 import { UrlDialog } from '../dialogs/webloader.jsx'
 import { Guardrail } from "../dialogs/guardrail.jsx";
+import { unwrap } from "solid-js/store";
 
 const NewDesignItem = props =>
 {
@@ -100,7 +101,9 @@ export const FileMenu = () =>
 
   const exportAs = ( format, mimeType, extension ) => evt =>
   {
-    controllerExportAction( rootController(), format )
+    const camera = unwrap( state.liveCamera );
+    const { lighting } = unwrap( state.scene );
+    controllerExportAction( rootController(), format, { camera, lighting } )
       .then( text => {
         const vName = state.designName || 'untitled';
         const name = vName .concat( "." + extension );
@@ -213,9 +216,9 @@ export const FileMenu = () =>
         <MenuItem disabled={true} action="capture-wiggle-gif" >Capture Animation</MenuItem>
 
         <SubMenu label="Capture Vector Drawing">
-          <MenuItem disabled={true} action="export2d.pdf" >PDF</MenuItem>
-          <MenuItem disabled={true} action="export2d.svg" >SVG</MenuItem>
-          <MenuItem disabled={true} action="export2d.ps" >Postscript</MenuItem>
+          <ExportItem label="PDF" ext="pdf" mime="application/pdf" />
+          <ExportItem label="SVG" ext="svg" mime="image/svg+xml" />
+          <ExportItem label="Postscript" ext="ps" mime="application/postscript" />
           <Divider/>
           <MenuItem disabled={true} action="snapshot.2d" >Customize...</MenuItem>
         </SubMenu>

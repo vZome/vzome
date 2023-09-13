@@ -93,6 +93,8 @@ core.config {
     'java/text/*.java',
     'java/util/*.java',
     'java/beans/*.java',
+    'java/awt/geom/*.java',
+    'java/awt/*.java',
     'org/w3c/dom/*.java',
 
     'com/vzome/jsweet/*.java',
@@ -174,6 +176,7 @@ core.config {
     'com/vzome/core/editor/Branch.java',
     
     'com/vzome/core/render/Colors.java',
+    'com/vzome/core/viewing/Lights.java',
     'com/vzome/core/viewing/AbstractShapes.java',
     'com/vzome/core/viewing/AntiprismShapes.java',
     'com/vzome/core/viewing/OctahedralShapes.java',
@@ -191,6 +194,7 @@ core.config {
     'com/vzome/core/render/TransparentRendering.java',
 
     'com/vzome/core/exporters/*.java',
+    'com/vzome/core/exporters2d/*.java',
 
     // SymmetryController and its dependencies
     'com/vzome/desktop/api/Controller.java',

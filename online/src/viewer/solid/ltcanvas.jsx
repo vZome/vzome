@@ -1,13 +1,14 @@
 
 import { useFrame, Canvas } from "solid-three";
 import { Color } from "three";
-import { createEffect, createMemo, createRenderEffect, onMount } from "solid-js";
+import { createMemo, createRenderEffect, onMount } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
 import { PerspectiveCamera } from "./perspectivecamera.jsx";
 import { TrackballControls } from "./trackballcontrols.jsx";
 import { useWorkerClient } from "../../workerClient/index.js";
 import { useInteractionTool } from "./interaction.jsx";
+import { FAR_FACTOR, NEAR_FACTOR } from "../../workerClient/actions.js";
 
 const Lighting = props =>
 {
@@ -43,6 +44,25 @@ const toVector = vector3 =>
   return [ x, y, z ];
 }
 
+const extractCanonicalCamera = ( camera, target ) =>
+{
+  const up = toVector( camera.up );
+  const position = toVector( camera.position );
+  const lookAt = toVector( target );
+  const [ x, y, z ] = lookAt.map( (e,i) => e - position[ i ] );
+  const distance = Math.sqrt( x*x + y*y + z*z );
+  const lookDir = [ x/distance, y/distance, z/distance ];
+
+  // This was missing, and vZome reads width to set FOV
+  const fovX = camera.fov * (Math.PI/180) * camera.aspect; // Switch from Y-based FOV degrees to X-based radians
+  const width = 2 * distance * Math.tan( fovX / 2 );
+  // This is needed to keep the fog depth correct in desktop.
+  const far = camera.far;
+  const near = camera.near;
+
+  return { lookAt, up, lookDir, distance, width, far, near };
+}
+
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
@@ -51,31 +71,23 @@ const LightedCameraControls = (props) =>
   const { setState } = useWorkerClient();
   // Here we can useThree, etc., which we could not in LightedTrackballCanvas
 
+  const trackballChange = evt =>
+  {
+    if ( ! setState ) return;
+    const { object, target } = evt.target;
+    const { distance } = extractCanonicalCamera( object, target );
+    // Keep the view frustum at a constant shape, adjusting near & far to track distance
+    const near = distance * NEAR_FACTOR;
+    const far = distance * FAR_FACTOR;
+    setState( 'scene', 'camera', { far, near } );
+  }
+
   const trackballEnd = evt =>
   {
     if ( ! setState ) return;
     
-    const trackball = evt.target;
-    const camera = trackball.object;
-    const up = toVector( camera.up );
-    const position = toVector( camera.position );
-    const lookAt = toVector( trackball.target );
-    const [ x, y, z ] = lookAt.map( (e,i) => e - position[ i ] );
-    const distance = Math.sqrt( x*x + y*y + z*z );
-    const lookDir = [ x/distance, y/distance, z/distance ];
-
-    // This was missing, and vZome reads width to set FOV
-    const fovX = camera.fov * (Math.PI/180) * camera.aspect; // Switch from Y-based FOV degrees to X-based radians
-    const width = 2 * distance * Math.tan( fovX / 2 );
-    // This is needed to keep the fog depth correct in desktop.
-    //  See the reducer, where the width/distance ratio is maintained.
-    const far = camera.far;
-    const near = camera.near;
-
-    // console.log( 'trackballEnd setState liveCamera' );
-    setState( 'liveCamera', { lookAt, up, lookDir, distance, width, far, near } );
-
-    // setNeedsRender( 20 );
+    const { object, target } = evt.target;
+    setState( 'liveCamera', extractCanonicalCamera( object, target ) );
   }
 
   const position = createMemo( () => {
@@ -97,10 +109,12 @@ const LightedCameraControls = (props) =>
 
   const result = ( !!props.sceneCamera &&
     <>
-      <PerspectiveCamera fov={fov()} aspect={props.aspect} position={position()} up={props.sceneCamera?.up} target={props.sceneCamera?.lookAt} >
+      <PerspectiveCamera fov={fov()} aspect={props.aspect} position={position()} up={props.sceneCamera?.up}
+          near={props.sceneCamera?.near} far={props.sceneCamera?.far} target={props.sceneCamera?.lookAt} >
         <Lighting {...(lights())} />
       </PerspectiveCamera>
-      <TrackballControls onEnd={props.rotationOnly? undefined : trackballEnd} rotationOnly={props.rotationOnly}
+      <TrackballControls onEnd={props.rotationOnly? undefined : trackballEnd} onChange={props.rotationOnly? undefined : trackballChange}
+          rotationOnly={props.rotationOnly}
           staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={props.sceneCamera?.lookAt} />
     </>
   );

@@ -78,10 +78,12 @@ export const TrackballControls = (props) =>
     } );
 
     if (props.onStart) controls.addEventListener("start", props.onStart);
+    if (props.onChange) controls.addEventListener("change", props.onChange);
     if (props.onEnd)   controls.addEventListener("end", props.onEnd);
 
     onCleanup(() => {
       if (props.onStart) controls.removeEventListener("start", props.onStart);
+      if (props.onChange) controls.removeEventListener("change", props.onChange);
       if (props.onEnd)   controls.removeEventListener("end", props.onEnd);
       controls.dispose();
     });

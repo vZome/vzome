@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.vecmath.Vector3f;
+import com.vzome.core.math.RealVector;
 
 public class Java2dSnapshot
 {
@@ -38,7 +38,7 @@ public class Java2dSnapshot
         this .polygons .add( polygon );
     }
     
-    public void addLineSegment( Color color, Vector3f start, Vector3f end )
+    public void addLineSegment( Color color, RealVector start, RealVector end )
     {
         this .lines .add( new LineSegment( color, start, end ) );
     }
@@ -98,7 +98,7 @@ public class Java2dSnapshot
             return mPath;
         }
         
-        public LineSegment( Color color, Vector3f start, Vector3f end )
+        public LineSegment( Color color, RealVector start, RealVector end )
         {
             mPolyColor = color;
             mPath = new GeneralPath();
@@ -141,7 +141,7 @@ public class Java2dSnapshot
             return mSize;
         }
         
-        public void addVertex( Vector3f vertex )
+        public void addVertex( RealVector vertex )
         {
             ++ mSize;
             if ( mSize == 1 ) {
@@ -182,13 +182,13 @@ public class Java2dSnapshot
             return 0;
         }
 
-        public void applyLighting( Vector3f normal, Vector3f[] lightDirs, Color[] lightColors, Color ambient )
+        public void applyLighting( RealVector normal, RealVector[] lightDirs, Color[] lightColors, Color ambient )
         {
             float redIntensity = ambient .getRed() / 255f;
             float greenIntensity = ambient .getGreen() / 255f;
             float blueIntensity = ambient .getBlue() / 255f;
             for ( int i = 0; i < lightColors.length; i++ ) {
-                float intensity = Math .max( normal .dot( lightDirs[ i ] ), 0f );
+                double intensity = Math .max( normal .dot( lightDirs[ i ] ), 0f );
                 redIntensity += intensity * ( lightColors[ i ].getRed() / 255f );
                 greenIntensity += intensity * ( lightColors[ i ].getGreen() / 255f );
                 blueIntensity += intensity * ( lightColors[ i ].getBlue() / 255f );

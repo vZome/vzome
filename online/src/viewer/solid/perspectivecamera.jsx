@@ -13,6 +13,10 @@ export const PerspectiveCamera = (props) =>
   let cam;
 
   createEffect( () => {
+    // console.log( 'PerspectiveCamera frustum', camera().near, camera().far );
+  });
+
+  createEffect( () => {
     // console.log( 'PerspectiveCamera lookAt' );
     const [ x, y, z ] = props.target;
     cam .lookAt( x, y, z );
@@ -20,8 +24,8 @@ export const PerspectiveCamera = (props) =>
 
   createEffect(() => {
     // console.log( 'PerspectiveCamera updateProjectionMatrix' );
-    cam.near = 0.1;
-    cam.far = 2000;
+    cam.near = props.near;
+    cam.far = props.far;
     cam.fov = props.fov;
     cam.aspect = size().width / size().height;
     cam.updateProjectionMatrix();

@@ -9,11 +9,13 @@ import { InteractionToolProvider } from '../../../viewer/solid/interaction.jsx';
 export const CameraControls = props =>
 {
   const { state, rootController, isWorkerReady } = useWorkerClient();
-  const bkgdColor = () => state.scene ?.lighting ?.backgroundColor;
 
   const scene = () => {
-    const symmScene = state.trackballScene;
-    return ({ ...symmScene, lighting: { ...symmScene?.lighting, backgroundColor: bkgdColor() } } );
+    let { camera, lighting, ...other } = state.trackballScene;
+    const { camera: { lookDir, up }, lighting: { backgroundColor } } = state.scene;
+    camera = { ...camera, lookDir, up }; // override just the orientation
+    lighting = { ...lighting, backgroundColor }; // override just the background
+    return ( { ...other, camera, lighting } );
   }
 
   // A special action that will result in state.trackballScene being set

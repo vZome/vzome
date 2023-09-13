@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.vecmath.Vector3f;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -19,6 +17,7 @@ import org.w3c.dom.NodeList;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vzome.core.construction.Color;
+import com.vzome.core.math.RealVector;
 import com.vzome.xml.DomUtils;
 
 /**
@@ -30,19 +29,24 @@ public class Lights implements Iterable<Lights.DirectionalLight>
 {
     public static class DirectionalLight
     {
-        public DirectionalLight( Vector3f direction, Color color )
+        public DirectionalLight( RealVector direction, Color color )
         {
             super();
             this.direction = direction;
             this.color = color;
         }
 
-        public Vector3f direction;
+        public RealVector direction;
         private Color color;
         
         public String getColor()
         {
             return this.color.toWebString();
+        }
+        
+        public float[] getDirection()
+        {
+            return new float[] { direction.x, direction.y, direction.z };
         }
     }
 
@@ -105,7 +109,7 @@ public class Lights implements Iterable<Lights.DirectionalLight>
                 Element viewElem = (Element) node;
                 str = viewElem .getAttribute( "color" );
                 Color color = Color .parseColor( str );
-                Vector3f pos = new Vector3f( 
+                RealVector pos = new RealVector( 
                         Float .parseFloat( viewElem .getAttribute( "x" ) ),  
                         Float .parseFloat( viewElem .getAttribute( "y" ) ),  
                         Float .parseFloat( viewElem .getAttribute( "z" ) )
@@ -142,17 +146,7 @@ public class Lights implements Iterable<Lights.DirectionalLight>
         return mAmbientLightColor.toWebString();
     }
     
-    public void getDirectionalLights()
-    {
-        
-    }
-
-    public Color getDirectionalLight( int i, Vector3f direction )
-    {
-        DirectionalLight light = this .directionalLights .get( i );
-        direction .set( light .direction );
-        return light .color;
-    }
+    public void getDirectionalLights() {}
 
     @JsonIgnore
     public Color getBackgroundColor()
@@ -195,8 +189,20 @@ public class Lights implements Iterable<Lights.DirectionalLight>
         return this .directionalLights .iterator();
     }
 
-    public void addDirectionLight( Color color, Vector3f dir )
+    public void addDirectionLight( Color color, RealVector dir )
     {
         this .addDirectionLight( new DirectionalLight( dir, color ) );
+    }
+
+    public RealVector getDirectionalLightVector( int i )
+    {
+        DirectionalLight light = this .directionalLights .get( i );
+        return new RealVector( light.direction.x, light.direction.y, light.direction.z );
+    }
+
+    public Color getDirectionalLightColor( int i )
+    {
+        DirectionalLight light = this .directionalLights .get( i );
+        return light .color;
     }
 }
