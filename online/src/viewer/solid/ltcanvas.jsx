@@ -6,9 +6,8 @@ import { createElementSize } from "@solid-primitives/resize-observer";
 
 import { PerspectiveCamera } from "./perspectivecamera.jsx";
 import { TrackballControls } from "./trackballcontrols.jsx";
-import { useWorkerClient } from "../../workerClient/index.js";
 import { useInteractionTool } from "./interaction.jsx";
-import { FAR_FACTOR, NEAR_FACTOR } from "../../workerClient/actions.js";
+import { useCamera } from "./cameracontext.jsx";
 
 const Lighting = props =>
 {
@@ -38,56 +37,24 @@ const defaultLighting = {
   ]
 }
 
-const toVector = vector3 =>
-{
-  const { x, y, z } = vector3;
-  return [ x, y, z ];
-}
-
-const extractCanonicalCamera = ( camera, target ) =>
-{
-  const up = toVector( camera.up );
-  const position = toVector( camera.position );
-  const lookAt = toVector( target );
-  const [ x, y, z ] = lookAt.map( (e,i) => e - position[ i ] );
-  const distance = Math.sqrt( x*x + y*y + z*z );
-  const lookDir = [ x/distance, y/distance, z/distance ];
-
-  // This was missing, and vZome reads width to set FOV
-  const fovX = camera.fov * (Math.PI/180) * camera.aspect; // Switch from Y-based FOV degrees to X-based radians
-  const width = 2 * distance * Math.tan( fovX / 2 );
-  // This is needed to keep the fog depth correct in desktop.
-  const far = camera.far;
-  const near = camera.near;
-
-  return { lookAt, up, lookDir, distance, width, far, near };
-}
-
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
 //   https://github.com/react-spring/react-three-fiber/discussions/609
 
 const LightedCameraControls = (props) =>
 {
-  const { setState } = useWorkerClient();
+  const { adjustFrustum, recordCamera } = useCamera();
   // Here we can useThree, etc., which we could not in LightedTrackballCanvas
 
   const trackballChange = evt =>
   {
-    if ( ! setState ) return;
     const { object, target } = evt.target;
-    const { distance } = extractCanonicalCamera( object, target );
-    // Keep the view frustum at a constant shape, adjusting near & far to track distance
-    const near = distance * NEAR_FACTOR;
-    const far = distance * FAR_FACTOR;
-    setState( 'scene', 'camera', { far, near } );
+    adjustFrustum && adjustFrustum( object, target );
   }
 
   const trackballEnd = evt =>
   {
-    if ( ! setState ) return;
-    
     const { object, target } = evt.target;
-    setState( 'liveCamera', extractCanonicalCamera( object, target ) );
+    recordCamera && recordCamera( object, target );
   }
 
   const position = createMemo( () => {

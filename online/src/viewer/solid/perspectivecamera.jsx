@@ -13,10 +13,6 @@ export const PerspectiveCamera = (props) =>
   let cam;
 
   createEffect( () => {
-    // console.log( 'PerspectiveCamera frustum', camera().near, camera().far );
-  });
-
-  createEffect( () => {
     // console.log( 'PerspectiveCamera lookAt' );
     const [ x, y, z ] = props.target;
     cam .lookAt( x, y, z );
