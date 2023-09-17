@@ -51,13 +51,18 @@ export const movePreviewStrut = ( direction ) => workerAction( 'PREVIEW_STRUT_MO
 
 export const endPreviewStrut = () => workerAction( 'PREVIEW_STRUT_END', {} );
 
+const INITIAL_DISTANCE = 108;
+export const NEAR_FACTOR = 0.1 / INITIAL_DISTANCE;
+export const FAR_FACTOR = 2.0;
+export const WIDTH_FACTOR = 0.5;
+
 export const initialState = () => ({
   scene: {
     camera: {
-      near: 0.271828,
-      far: 217,
-      width: 48,
-      distance: 108,
+      distance: INITIAL_DISTANCE,
+      near: INITIAL_DISTANCE * NEAR_FACTOR,
+      far: INITIAL_DISTANCE * FAR_FACTOR,
+      width: INITIAL_DISTANCE * WIDTH_FACTOR,
       up: [ 0, 1, 0 ],
       lookAt: [ 0, 0, 0 ],
       lookDir: [ 0, 0, -1 ],

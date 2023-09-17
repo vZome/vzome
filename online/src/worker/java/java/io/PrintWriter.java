@@ -37,6 +37,15 @@ public class PrintWriter extends Writer
         }
     }
     
+    public void write( String str )
+		{
+        try {
+          this .w .write( str );
+        } catch ( java.io.IOException e ) {
+            e .printStackTrace();
+        }
+		}
+
     public void println()
     {
         print( "\n" );

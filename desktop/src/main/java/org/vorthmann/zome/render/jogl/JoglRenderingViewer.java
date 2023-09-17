@@ -7,7 +7,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import javax.vecmath.Matrix4f;
-import javax.vecmath.Vector3f;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -82,8 +81,8 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         this .lightDirections = new float[num][];
         this .lightColors = new float[num][];
         for ( int i = 0; i < num; i++ ) {
-            Vector3f direction = new Vector3f();
-            Color color = lights.getDirectionalLight( i, direction ); // sets direction as a side-effect
+            RealVector direction = lights .getDirectionalLightVector( i );
+            Color color = lights.getDirectionalLightColor( i );
             this .lightColors[i] = new float[4];
             color .getRGBColorComponents( this .lightColors[i] );
             this .lightDirections[i] = new float[3];

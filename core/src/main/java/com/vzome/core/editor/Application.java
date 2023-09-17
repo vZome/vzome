@@ -10,8 +10,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
-import javax.vecmath.Vector3f;
-
 import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicField;
@@ -35,8 +33,8 @@ import com.vzome.core.construction.Color;
 import com.vzome.core.exporters.ColoredMeshJsonExporter;
 import com.vzome.core.exporters.DaeExporter;
 import com.vzome.core.exporters.DxfExporter;
-import com.vzome.core.exporters.GeometryExporter;
 import com.vzome.core.exporters.GeoGebraExporter;
+import com.vzome.core.exporters.GeometryExporter;
 import com.vzome.core.exporters.HistoryExporter;
 import com.vzome.core.exporters.MathTableExporter;
 import com.vzome.core.exporters.OffExporter;
@@ -69,6 +67,7 @@ import com.vzome.core.kinds.RootThreeFieldApplication;
 import com.vzome.core.kinds.RootTwoFieldApplication;
 import com.vzome.core.kinds.SnubCubeFieldApplication;
 import com.vzome.core.kinds.SnubDodecFieldApplication;
+import com.vzome.core.math.RealVector;
 import com.vzome.core.render.Colors;
 import com.vzome.core.viewing.Lights;
 import com.vzome.fields.sqrtphi.SqrtPhiField;
@@ -110,7 +109,8 @@ public class Application implements AlgebraicField.Registry
 
         for ( int i = 1; i <= 3; i++ ) {
             Color color = mColors .getColorPref( "light.directional." + i );
-            Vector3f dir = new Vector3f( mColors .getVectorPref( "direction.light." + i ) );
+            float[] vec = mColors .getVectorPref( "direction.light." + i );
+            RealVector dir = new RealVector( vec[0], vec[1], vec[2] );
             mLights.addDirectionLight( color, dir );
         }
         mLights .setAmbientColor( mColors .getColorPref( "light.ambient" ) );

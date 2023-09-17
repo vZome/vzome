@@ -1,29 +1,12 @@
-import { java } from "../candies/j4ts-2.1.0-SNAPSHOT/bundle.js";
+
 import { com } from '../core-java.js';
 import { getFieldNames, getFieldLabel } from "../core.js";
 import { JsProperties } from '../jsweet2js.js';
 import { PickingController } from './picking.js';
 import { BuildPlaneController } from './buildplane.js';
 import { modelToJS } from "../json.js";
+import { export2d, export3d } from "../exporters.js";
 
-const exporterClasses = {
-  'stl'      : 'StlExporter',
-  'scad'     : 'OpenScadMeshExporter',
-  'build123d': 'PythonBuild123dExporter',
-  'dxf'      : 'DxfExporter',
-  'off'      : 'OffExporter',
-  'ply'      : 'PlyExporter',
-  'vrml'     : 'VRMLExporter',
-//
-//   TODO: These may not all be ResourceLoader-enabled (using GeometryExporter.getBoilerplate), or otherwise web-ready,
-//     but they all successfully transpiled with JSweet
-//
-// 'FORMAT'  : 'VefVectorExporter',
-// 'FORMAT'  : 'PdbExporter',
-// 'FORMAT'  : 'VefExporter',
-// 'FORMAT'  : 'SegExporter',
-// 'FORMAT'  : 'VefModelExporter',
-}
 
 export class EditorController extends com.vzome.desktop.controller.DefaultController
 {
@@ -191,34 +174,41 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
       }
 
       case "exportText":
-        const format = params.getConfig().format;
-        const useSelection = params.getConfig().selection;
+        const { format, selection, camera, lighting, height=500, width=800,
+                useShapes=true, drawOutlines=true, monochrome=false, showBackground=true } = params.getConfig();
+        let exported;
 
         switch (format) {
 
           case 'mesh':
           case 'cmesh': {
-            const source = useSelection? this.design .editor .selection : this.design .editor .getRealizedModel();
+            const source = selection? this.design .editor .selection : this.design .editor .getRealizedModel();
             const mesh = modelToJS( source, format==='cmesh' );
-            const text = JSON.stringify( mesh, null, 2 );
-            this.clientEvents.textExported( action, text ); // returning the action for Promise correlation on the client
-            return;
+            exported = JSON.stringify( mesh, null, 2 );
+            break;
           }
 
           case 'vZome': {
-            const text = this.design.serializeToDom().toIndentedString("");
-            this.clientEvents.textExported(action, text);
-            return;
+            exported = this.design.serializeToDom().toIndentedString("");
+            break;
+          }
+
+          case 'pdf':
+          case 'ps':
+          case 'svg': {
+            const { renderedModel } = this.design;
+            const config = { format, height, width, useShapes, drawOutlines, monochrome, showBackground };
+            exported = export2d( { renderedModel, camera, lighting }, config );
+            break;
           }
 
           default: {
-            const exporter = new com.vzome.core.exporters[ exporterClasses[ format ] ]();
-            const out = new java.io.StringWriter();
-            exporter .exportGeometry( this.design.renderedModel, null, out, 500, 800 );
-            this.clientEvents .textExported( action, out.toString() ); // returning the action for Promise correlation on the client
-            return;
+            const { renderedModel } = this.design;
+            exported = export3d( { renderedModel, camera, lighting }, { format, height, width } );
+            break;
           }
         }
+        this.clientEvents .textExported( action, exported ); // returning the action for Promise correlation on the client
         break;
 
       default:
