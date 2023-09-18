@@ -6,7 +6,7 @@ import { Vector3 } from "three";
 import { useFrame, useThree } from "solid-three";
 import { TrackballControls as TrackballControlsImpl } from "three-stdlib";
 
-import { useCamera } from "./cameracontext.jsx";
+import { useRotation } from "./rotation.jsx";
 import { useInteractionTool } from "./interaction.jsx";
 
 export const TrackballControls = (props) =>
@@ -48,7 +48,7 @@ export const TrackballControls = (props) =>
     trackballControls() .enabled = enabled();
   });
 
-  const { lastRotation, publishRotation } = useCamera();
+  const { lastRotation, publishRotation } = useRotation();
 
   createEffect(() =>
   {

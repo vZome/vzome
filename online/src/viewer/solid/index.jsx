@@ -38,7 +38,7 @@ const fullScreenStyle = {
 const DesignViewer = ( props ) =>
 {
   const config = mergeProps( { showScenes: false, useSpinner: false, allowFullViewport: false, undoRedo: false }, props.config );
-  const { state, postMessage } = useWorkerClient();
+  const { state } = useWorkerClient();
   const [ fullScreen, setFullScreen ] = createSignal( false );
   const toggleFullScreen = () =>
   {
