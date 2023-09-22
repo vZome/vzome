@@ -2,12 +2,12 @@
 // modified copy from https://github.com/devinxi/vinxi/blob/1514f966d9cdcc2c19e2733a8c7bf03831f7ecf3/packages/solid-drei/src/OrbitControls.tsx
 
 import { createEffect, createMemo, onCleanup } from "solid-js";
-import { Vector3 } from "three";
 import { useFrame, useThree } from "solid-three";
 import { TrackballControls as TrackballControlsImpl } from "three-stdlib";
 
 import { useRotation } from "./rotation.jsx";
 import { useInteractionTool } from "./interaction.jsx";
+import { extractCameraState, injectCameraOrientation, useWorkerClient } from "../../workerClient/context.jsx";
 
 export const TrackballControls = (props) =>
 {
@@ -49,6 +49,7 @@ export const TrackballControls = (props) =>
   });
 
   const { lastRotation, publishRotation } = useRotation();
+  const { state } = useWorkerClient();
 
   createEffect(() =>
   {
@@ -72,9 +73,8 @@ export const TrackballControls = (props) =>
       // HACK! Assumes knowledge of TrackballControls internals
       if ( controls._state !== 0 && controls._state !== 3 ) // ROTATE, TOUCH_ROTATE
         return;
-      const { _lastAxis, _lastAngle } = controls; // the rotation change
       // if ( !props.rotationOnly ) console.log( 'TrackballControls publishing rotation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
-      publishRotation( thisCamera().quaternion, thisCamera() );
+      publishRotation( extractCameraState( thisCamera(), controls.target ), thisCamera() );
     } );
 
     if (props.onStart) controls.addEventListener("start", props.onStart);
@@ -104,23 +104,15 @@ export const TrackballControls = (props) =>
     }
   });
 
-  const _eye = new Vector3(), _up = new Vector3(), _target = new Vector3();
   createEffect( () => {
     // if ( !props.rotationOnly ) console.log( 'TrackballControls createEffect 6 lastRotation' );
     if ( ! lastRotation ) return;
-    let { quaternion, sourceCamera } = lastRotation();
+    let { cameraState, sourceCamera } = lastRotation();
     const camera = thisCamera();
     if ( sourceCamera && sourceCamera !== camera ) {
       // console.log( `${camera.vzomeName} receiving rotation from ${sourceCamera.vzomeName}` );
-      // Mimic the logic of TrackballControls.update() with rotate(), but for an absolute quaternion
-      _target.set( ...props.target );
-      _eye.copy( camera.position ).sub( _target );
-      const len = _eye.length();
-      _eye .set( 0, 0, 1 ) .applyQuaternion( quaternion ) .multiplyScalar( len );
-      _up .set( 0, 1, 0 ) .applyQuaternion( quaternion );
-      camera.up.copy( _up );
-      camera.position.addVectors( _target, _eye );
-      camera.lookAt( _target );
+      // Can't use props.target here, since it is not up-to-date in some cases
+      injectCameraOrientation( cameraState, state.liveCamera.lookAt, camera );
     }
   });
 

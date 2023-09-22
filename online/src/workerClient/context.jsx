@@ -1,5 +1,7 @@
 
 import { createContext, useContext } from "solid-js";
+import { Vector3 } from "three";
+
 import { createWorker } from "./client.js";
 import { createWorkerStore } from "./controllers-solid.js";
 import { NEAR_FACTOR, FAR_FACTOR, fetchDesign } from "./actions.js";
@@ -10,7 +12,7 @@ const toVector = vector3 =>
   return [ x, y, z ];
 }
 
-const extractCanonicalCamera = ( camera, target ) =>
+export const extractCameraState = ( camera, target ) =>
 {
   const up = toVector( camera.up );
   const position = toVector( camera.position );
@@ -29,6 +31,34 @@ const extractCanonicalCamera = ( camera, target ) =>
   return { lookAt, up, lookDir, distance, width, far, near };
 }
 
+export const cameraPosition = ( cameraState ) =>
+{
+  const { distance, lookAt, lookDir } = cameraState;
+  return lookAt .map( (e,i) => e - distance * lookDir[ i ] );
+}
+
+export const cameraFieldOfViewY = ( cameraState, aspectWtoH ) =>
+{
+  const { width, distance } = cameraState;
+  const halfX = width / 2;
+  const halfY = halfX / aspectWtoH;
+  return 360 * Math.atan( halfY / distance ) / Math.PI;
+}
+
+const _offset = new Vector3(), _target = new Vector3();
+
+export const injectCameraOrientation = ( cameraState, target, camera ) =>
+{
+  const { up, lookDir } = cameraState; // ignore distance, lookAt, etc.
+  _target.set( ...target );
+  _offset .copy( camera.position ) .sub( _target );
+  const distance = _offset .length();
+  _offset .set( ...lookDir ) .multiplyScalar( -distance );
+  camera.up.set( ...up );
+  camera.position.addVectors( _target, _offset );
+  camera.lookAt( _target );
+}
+
 const WorkerStateContext = createContext( {} );
 
 const WorkerStateProvider = ( props ) =>
@@ -39,7 +69,7 @@ const WorkerStateProvider = ( props ) =>
 
   const adjustFrustum = ( camera, target ) =>
   {
-    const { distance } = extractCanonicalCamera( camera, target );
+    const { distance } = extractCameraState( camera, target );
     // Keep the view frustum at a constant shape, adjusting near & far to track distance
     const near = distance * NEAR_FACTOR;
     const far = distance * FAR_FACTOR;
@@ -47,9 +77,7 @@ const WorkerStateProvider = ( props ) =>
   }
 
   const recordCamera = ( camera, target ) =>
-  {
-    workerClient.setState( 'liveCamera', extractCanonicalCamera( camera, target ) );
-  }
+    workerClient.setState( 'liveCamera', extractCameraState( camera, target ) );
   
   return (
     <WorkerStateContext.Provider value={ { ...workerClient, adjustFrustum, recordCamera } }>
