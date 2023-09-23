@@ -7,7 +7,7 @@ import { createElementSize } from "@solid-primitives/resize-observer";
 import { PerspectiveCamera } from "./perspectivecamera.jsx";
 import { TrackballControls } from "./trackballcontrols.jsx";
 import { useInteractionTool } from "./interaction.jsx";
-import { useWorkerClient } from "../../workerClient/context.jsx";
+import { cameraFieldOfViewY, cameraPosition, useWorkerClient } from "../../workerClient/context.jsx";
 
 const Lighting = props =>
 {
@@ -55,17 +55,9 @@ const LightedCameraControls = (props) =>
     recordCamera && recordCamera( object, target );
   }
 
-  const position = createMemo( () => {
-    const dist = props.sceneCamera?.distance;
-    const lookDir = props.sceneCamera?.lookDir;
-    const result = props.sceneCamera?.lookAt.map( (e,i) => e - dist * lookDir[ i ] );
-    return result;
-  } );
-  const fov = createMemo( () => {
-    const halfX = props.sceneCamera?.width / 2;
-    const halfY = halfX / props.aspect;
-    return 360 * Math.atan( halfY / props.sceneCamera?.distance ) / Math.PI;
-  } );
+  const position = createMemo( () => cameraPosition( props.sceneCamera ) );
+
+  const fov = createMemo( () => cameraFieldOfViewY( props.sceneCamera, props.aspect ) );
 
   const lights = createMemo( () => {
     const backgroundColor = props.lighting?.backgroundColor || defaultLighting.backgroundColor;
@@ -79,8 +71,8 @@ const LightedCameraControls = (props) =>
         <Lighting {...(lights())} />
       </PerspectiveCamera>
       <TrackballControls onEnd={props.rotationOnly? undefined : trackballEnd} onChange={props.rotationOnly? undefined : trackballChange}
-          rotationOnly={props.rotationOnly}
-          staticMoving='true' rotateSpeed={4.5} zoomSpeed={3} panSpeed={1} target={props.sceneCamera?.lookAt} />
+          rotationOnly={props.rotationOnly} rotateSpeed={props.rotateSpeed}
+          staticMoving='true' zoomSpeed={3} panSpeed={1} target={props.sceneCamera?.lookAt} />
     </>
   );
 
@@ -133,7 +125,7 @@ export const LightedTrackballCanvas = ( props ) =>
     <Canvas id='lighted-canvas' dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }}
         height={props.height ?? "100vh"} width={props.width ?? "100vw"}
         frameloop="always" onPointerMissed={handlePointerMissed} >
-      <LightedCameraControls lighting={props.lighting} aspect={aspect()} rotationOnly={props.rotationOnly}
+      <LightedCameraControls lighting={props.lighting} aspect={aspect()} rotationOnly={props.rotationOnly} rotateSpeed={props.rotateSpeed}
         sceneCamera={props.sceneCamera} />
       {props.children}
     </Canvas>;
