@@ -1,5 +1,6 @@
 
 import { createEffect, createSignal, mergeProps } from "solid-js";
+import { unwrap } from "solid-js/store";
 
 import { controllerAction, controllerExportAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
 import { serializeVZomeXml, saveFile, saveFileAs, openFile } from '../../../workerClient/index.js';
@@ -9,7 +10,7 @@ import { useWorkerClient } from "../../../workerClient/index.js";
 import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 import { UrlDialog } from '../dialogs/webloader.jsx'
 import { Guardrail } from "../dialogs/guardrail.jsx";
-import { unwrap } from "solid-js/store";
+import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
 
 const NewDesignItem = props =>
 {
@@ -99,7 +100,9 @@ export const FileMenu = () =>
     continuation = undefined;
   }
 
-  const exportAs = ( format, mimeType, extension ) => evt =>
+  const [ svgPreview, setSvgPreview ] = createSignal( false );
+
+  const exportAs = ( extension, mimeType, format=extension ) => evt =>
   {
     const camera = unwrap( state.liveCamera );
     const { lighting } = unwrap( state.scene );
@@ -143,7 +146,7 @@ export const FileMenu = () =>
   const ExportItem = props =>
   {
     props = mergeProps( { format: props.ext }, props );
-    return <MenuItem onClick={ exportAs( props.format, props.mime, props.ext ) } disabled={props.disabled}>{props.label}</MenuItem>
+    return <MenuItem onClick={ exportAs( props.ext, props.mime, props.format ) } disabled={props.disabled}>{props.label}</MenuItem>
   }
 
   return (
@@ -151,6 +154,8 @@ export const FileMenu = () =>
       <UrlDialog show={showDialog()} setShow={setShowDialog} openDesign={openUrl} />
 
       <Guardrail show={showGuardrail()} close={closeGuardrail} />
+
+      <SvgPreviewDialog open={svgPreview()} close={()=>setSvgPreview(false)} exportAs={exportAs} />
     </>}>
         <SubMenu label="New Design...">
           <For each={fields()}>{ field =>
@@ -220,7 +225,7 @@ export const FileMenu = () =>
           <ExportItem label="SVG" ext="svg" mime="image/svg+xml" />
           <ExportItem label="Postscript" ext="ps" mime="application/postscript" />
           <Divider/>
-          <MenuItem disabled={true} action="snapshot.2d" >Customize...</MenuItem>
+          <MenuItem onClick={ ()=>setSvgPreview(true) } >Customize...</MenuItem>
         </SubMenu>
 
         <Divider/>

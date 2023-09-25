@@ -175,7 +175,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
 
       case "exportText":
         const { format, selection, camera, lighting, height=500, width=800,
-                useShapes=true, drawOutlines=true, monochrome=false, showBackground=true } = params.getConfig();
+                useShapes=true, drawOutlines=true, monochrome=false, showBackground=true, useLighting=true } = params.getConfig();
         let exported;
 
         switch (format) {
@@ -197,7 +197,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
           case 'ps':
           case 'svg': {
             const { renderedModel } = this.design;
-            const config = { format, height, width, useShapes, drawOutlines, monochrome, showBackground };
+            const config = { format, height, width, useShapes, drawOutlines, monochrome, showBackground, useLighting };
             exported = export2d( { renderedModel, camera, lighting }, config );
             break;
           }

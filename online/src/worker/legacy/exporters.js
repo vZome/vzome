@@ -79,13 +79,13 @@ const createProjectionMatrix = ( camera, aspectRatio ) =>
 
 export const export2d = ( scene, configuration ) =>
 {
-  const { format, height, width, useShapes, drawOutlines, monochrome, showBackground } = configuration;
+  const { format, height, width, useShapes, drawOutlines, monochrome, showBackground, useLighting } = configuration;
   const { renderedModel, camera, lighting } = scene;
   const viewTransform = createViewMatrix( camera );
   const projection = createProjectionMatrix( camera, 1.0 ); // TODO why can aspectRatio = width/height?
   const snapshotter = new com.vzome.core.exporters2d.Java2dExporter();
   const lights = createLights( lighting );
-  const snapshot = snapshotter .render2d( renderedModel, viewTransform, projection, lights, height, width, !useShapes, !!lighting );
+  const snapshot = snapshotter .render2d( renderedModel, viewTransform, projection, lights, height, width, !useShapes, useLighting );
   const exporter = new com.vzome.core.exporters2d[ exporterClasses[ format ] ]();
   const out = new java.io.StringWriter();
   exporter .export( snapshot, out, drawOutlines, monochrome, showBackground );
