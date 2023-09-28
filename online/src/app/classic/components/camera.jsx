@@ -3,8 +3,7 @@ import { createEffect } from 'solid-js';
 import { SceneCanvas } from '../../../viewer/solid/scenecanvas.jsx';
 import { useWorkerClient } from '../../../workerClient/index.js';
 import { controllerAction } from '../../../workerClient/controllers-solid.js';
-import { DummyTool } from '../tools/dummy.jsx';
-import { InteractionToolProvider } from '../../../viewer/solid/interaction.jsx';
+import { CameraTool, InteractionToolProvider } from '../../../viewer/solid/interaction.jsx';
 
 export const CameraControls = props =>
 {
@@ -23,8 +22,8 @@ export const CameraControls = props =>
 
   return (
     <InteractionToolProvider>
-      {/* provider and DummyTool just to get the desired cursor */}
-      <DummyTool/>
+      {/* provider and CameraTool just to get the desired cursor */}
+      <CameraTool/>
       <div id='camera-controls' style={{ display: 'grid', 'grid-template-rows': 'min-content min-content' }}>
         <div id='camera-buttons' class='placeholder' style={{ 'min-height': '60px' }} >perspective | snap | outlines</div>
         <div id="ball-and-slider" style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>

@@ -7,10 +7,9 @@ import ToggleButtonGroup from "@suid/material/ToggleButtonGroup";
 
 import { SceneCanvas } from '../../../viewer/solid/index.jsx';
 import { useWorkerClient } from '../../../workerClient/index.js';
-import { InteractionToolProvider } from '../../../viewer/solid/interaction.jsx';
+import { CameraTool, InteractionToolProvider } from '../../../viewer/solid/interaction.jsx';
 import { SelectionTool } from '../tools/selection.jsx';
 import { StrutDragTool } from '../tools/strutdrag.jsx';
-import { DummyTool } from '../tools/dummy.jsx';
 import { ContextualMenuArea } from '../../framework/menus.jsx';
 import { ContextualMenu } from '../menus/contextmenu.jsx';
 
@@ -66,7 +65,7 @@ export const SceneEditor = ( props ) =>
                   <SelectionTool/>
                 }>
                 <Match when={ viewing() }>
-                  <DummyTool/>
+                  <CameraTool/>
                 </Match>
                 <Match when={ strutting() }>
                   <StrutDragTool/>

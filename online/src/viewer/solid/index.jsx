@@ -15,6 +15,7 @@ import { ErrorAlert } from './alert.jsx';
 import { SceneMenu } from './scenes.jsx';
 import { FullscreenButton } from './fullscreen.jsx';
 import { ExportMenu } from './export.jsx';
+import { InteractionToolProvider } from './interaction.jsx';
 
 let stylesAdded = false; // for the onMount in DesignViewer
 
@@ -71,10 +72,13 @@ const DesignViewer = ( props ) =>
 
   let rootRef;
   return (
+    <InteractionToolProvider>
     <div id='design-viewer' ref={rootRef} style={ fullScreen()? fullScreenStyle : normalStyle }>
       {/* This renders the light DOM if the scene couldn't load */}
       <Show when={state.scene} fallback={props.children}>
-        <SceneCanvas id='scene-canvas' scene={state.scene} height={props.height} width={props.width} />
+        <SceneCanvas id='scene-canvas' scene={state.scene} height={props.height} width={props.width} >
+          {props.children3d}
+        </SceneCanvas>
       </Show>
 
       <Show when={showSceneMenu()}>
@@ -94,7 +98,8 @@ const DesignViewer = ( props ) =>
       </Show>
 
       <ErrorAlert root={rootRef} />
-    </div>
+    </div>      
+    </InteractionToolProvider>
   );
 }
 
