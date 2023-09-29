@@ -98,7 +98,7 @@ export const reducer = ( state=initialState, action ) =>
           for ( const instance of shape .instances ) {
             if ( instance .type === 'ball' ) {
               if ( instance .id === state.center .id ) {
-                center = instance;
+                center = { ...instance };
                 break;
               }
             } else
@@ -112,7 +112,7 @@ export const reducer = ( state=initialState, action ) =>
             if ( shape .instances .length === 1 ) {
               const instance = shape .instances[ 0 ];
               if ( instance ?.type === 'ball' ) {
-                center = instance;
+                center = { ...instance };
                 // TODO: create a more first-class contract for this event
                 break;
               }

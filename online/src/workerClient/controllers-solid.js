@@ -225,7 +225,11 @@ const createWorkerStore = ( worker ) =>
     } );
   }
 
-  const store = { postMessage: worker .sendToWorker, isWorkerReady, state, setState, expectResponse }; // needed for every subcontroller
+  const store = {
+    postMessage: worker .sendToWorker,
+    subscribe: worker .subscribe,
+    isWorkerReady, state, setState, expectResponse,
+  }; // needed for every subcontroller
 
   const rootController = () =>
   {

@@ -13,9 +13,10 @@ import { RotationProvider } from "../../viewer/solid/rotation.jsx";
 import { PolytopesDialog } from "./dialogs/polytopes.jsx";
 import { ErrorAlert } from "./components/alert.jsx";
 
-export const ClassicEditor = ( props ) =>
+export const ClassicEditor = () =>
 {
-  const { rootController } = useWorkerClient();
+  const { rootController, postMessage } = useWorkerClient();
+  postMessage( { type: 'WINDOW_LOCATION', payload: window.location.toString() } );
 
   const bookmarkController = () => subController( rootController(), 'bookmark' );
   const strutBuilder       = () => subController( rootController(), 'strutBuilder' );

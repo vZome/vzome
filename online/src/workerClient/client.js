@@ -8,7 +8,6 @@ export const createWorker = () =>
       const blob = new Blob( [ `import "${module.WORKER_ENTRY_FILE_URL}";` ], { type: "text/javascript" } );
       const worker = new Worker( URL.createObjectURL( blob ), { type: "module" } );
       worker.onmessage = onWorkerMessage;
-      worker .postMessage( { type: 'WINDOW_LOCATION', payload: window.location.toString() } );
       return worker;
     } );
 
