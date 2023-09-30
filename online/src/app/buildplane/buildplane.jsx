@@ -40,7 +40,7 @@ const StrutPreview = props =>
 {
   const strutCenter = () => vscale( props.endPt, 1/2 );
   const strutLength = () => vlength( props.endPt );
-  const strutQuaternion = createMemo( () => makeRotation( CYLINDER_AXIS, props.endPt ) );
+  const strutQuaternion = () => makeRotation( CYLINDER_AXIS, props.endPt );
 
   return (
     <mesh position={strutCenter()} quaternion={strutQuaternion()}
@@ -200,7 +200,7 @@ export const BuildPlaneTool = props =>
 
     onClick: ( id, position, type, selected ) => {
       if ( type === 'ball' ) {
-        if ( state.endPt ) {
+        if ( state.preview ) {
           postMessage( joinBalls( state.center.id, id ) );
         }
         dispatch( doSetCenter( id, position ) );
@@ -212,8 +212,8 @@ export const BuildPlaneTool = props =>
         if ( type === 'ball' ) {
           const [ x0, y0, z0 ] = state.center.position;
           const [ x1, y1, z1 ] = position;
-          const vector = [ x1-x0, y1-y0, z1-z0 ];
-          dispatch( doStrutPreview( vector ) );
+          const endPt = [ x1-x0, y1-y0, z1-z0 ];
+          dispatch( doStrutPreview( { endPt, forBall: true } ) );
         }
       } else
         dispatch( doStrutPreview() );
@@ -225,7 +225,7 @@ export const BuildPlaneTool = props =>
 
   const actions = {
     createStrut: ( plane, zone, index, orientation ) => postMessage( createStrut( state.center.id, plane, zone, index, orientation ) ),
-    previewStrut: endPt => dispatch( doStrutPreview( endPt ) ),
+    previewStrut: endPt => dispatch( doStrutPreview( !!endPt? { endPt, forBall: false } : undefined ) ),
     changePlane: ( name, orientation ) => dispatch( doSelectPlane( name, orientation ) ),
     changeHinge: ( name, orientation ) => dispatch( doSelectHinge( name, orientation ) ),
     toggleBuild: endPt => dispatch( doToggleBuild( endPt ) ),
@@ -250,25 +250,37 @@ export const BuildPlaneTool = props =>
   return (
     <group>
     <Show when={state.buildPlanes && state.enabled && state.center}>
-      <group position={state.center.position} quaternion={globalRotation()}>
-        <mesh quaternion={diskRotation()} onClick={diskClick}
-            geometry={ new CylinderGeometry( discSize, discSize, 0.05, 60 ) } >
-          <meshLambertMaterial transparent={true} opacity={0.5} color={plane().color} />
-        </mesh>
-        <mesh quaternion={hoopRotation()}
-            geometry={ new TorusGeometry( discSize, 0.5, 15, 60 ) } >
-          <meshLambertMaterial transparent={true} opacity={0.5} color={plane().color} />
-        </mesh>
-        <For each={ plane().zones }>{ ( zone, zoneIndex ) =>
-          <Show when={state.buildingStruts} fallback={
-            <HingeOption zone={zone} changeHinge={doChangeHinge} />
-          }>
-            <BuildZone zone={zone} diskRotation={diskRotation()}
-              previewStrut={actions.previewStrut} createStrut={ createZoneStrut( zoneIndex() ) } />
+      <group position={state.center.position}>
+        <group quaternion={globalRotation()}>
+          <mesh quaternion={diskRotation()} onClick={diskClick}
+              geometry={ new CylinderGeometry( discSize, discSize, 0.05, 60 ) } >
+            <meshLambertMaterial transparent={true} opacity={0.5} color={plane().color} />
+          </mesh>
+          <mesh quaternion={hoopRotation()}
+              geometry={ new TorusGeometry( discSize, 0.5, 15, 60 ) } >
+            <meshLambertMaterial transparent={true} opacity={0.5} color={plane().color} />
+          </mesh>
+          <For each={ plane().zones }>{ ( zone, zoneIndex ) =>
+            <Show when={state.buildingStruts} fallback={
+              <HingeOption zone={zone} changeHinge={doChangeHinge} />
+            }>
+              <BuildZone zone={zone} diskRotation={diskRotation()}
+                previewStrut={actions.previewStrut} createStrut={ createZoneStrut( zoneIndex() ) } />
+            </Show>
+          }</For>
+          <group>
+            {/* This one is relative to the state.center AND oriented the global rotation */}
+            <Show when={ state.preview && ! state.preview?.forBall }>
+              <StrutPreview endPt={state.preview.endPt} />
+            </Show>
+          </group>
+        </group>
+        <group>
+          {/* This one is relative to the state.center only */}
+          <Show when={ state.preview?.forBall }>
+            <StrutPreview endPt={state.preview.endPt} />
           </Show>
-        }</For>
-        {state.endPt &&
-          <StrutPreview endPt={state.endPt} />}
+        </group>
       </group>
       <group>
         <Show when={ !state.buildingStruts }>
