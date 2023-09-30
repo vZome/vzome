@@ -39,11 +39,10 @@ a modern UI more in the style of [Desmos](https://www.desmos.com/geometry) or [G
 For now, it is fun to play with.
 Even so, it already supports saving designs that you can open with desktop vZome 7.1.14 or later.
 
-## [vZome Online History Inspector](https://vzome.com/app)
+## [vZome Online Viewer](https://vzome.com/app)
 
 This URL will be the eventual home of the main vZome Online application.
-For now, it hosts an application that allows you to inspect the edit history of a vZome design,
-viewing the changes with every edit.
+For now, it hosts an application that allows you to open and view vZome designs on your computer or from the internet.
 
 ## The vZome Online Web Component
 
