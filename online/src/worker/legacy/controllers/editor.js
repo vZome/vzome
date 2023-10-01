@@ -43,7 +43,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
     this.addSubController('picking', pickingController);
 
     // This has no desktop equivalent
-    const buildPlaneController = new BuildPlaneController( renderedModel, getOrbitSource() );
+    const buildPlaneController = new BuildPlaneController( renderedModel, getOrbitSource(), this.clientEvents );
     this.addSubController('buildPlane', buildPlaneController);
 
     const polytopesController = new com.vzome.desktop.controller.PolytopesController( editor, editContext );

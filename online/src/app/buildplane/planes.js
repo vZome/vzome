@@ -49,7 +49,8 @@ export const reducer = ( state=initialState, action ) =>
     case 'STRUT_PREVIEW_TOGGLED':
       return { ...state, preview: action.payload }
         
-    case 'CENTER_SET':
+      case 'LAST_BALL_CREATED': // This one is actually from the worker
+      case 'CENTER_SET':
       const { id, position } = action.payload
       return { ...state, enabled: true, buildingStruts: true, center: { id, position }, preview: undefined }
     
@@ -85,41 +86,6 @@ export const reducer = ( state=initialState, action ) =>
       const { name, orientation } = plane .zones[ 0 ];
       const hingeZone = { orbit: name, orientation };
       return { ...state, buildPlanes, diskZone, hingeZone }
-    }
-
-    case 'SCENE_RENDERED': {
-      const { scene } = action.payload;
-      let center = state.center;
-      if ( center ) {
-        // Make sure the center is still in the scene
-        center = undefined;
-        for ( const shapeId in scene.shapes ) {
-          const shape = scene.shapes[ shapeId ];
-          for ( const instance of shape .instances ) {
-            if ( instance .type === 'ball' ) {
-              if ( instance .id === state.center .id ) {
-                center = { ...instance };
-                break;
-              }
-            } else
-              break; // only need to check balls, of course
-          }
-        }
-      } else {
-        if ( Object.keys( scene.shapes ) .length === 1 ) // This is a one-shot deal, designed to give us a plane center for a new design
-          for ( const shapeId in scene.shapes ) {
-            const shape = scene.shapes[ shapeId ];
-            if ( shape .instances .length === 1 ) {
-              const instance = shape .instances[ 0 ];
-              if ( instance ?.type === 'ball' ) {
-                center = { ...instance };
-                // TODO: create a more first-class contract for this event
-                break;
-              }
-            }
-          }
-      }
-      return { ...state, enabled: true, buildingStruts: true, center, preview: undefined }
     }
 
     default:

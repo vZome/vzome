@@ -12,7 +12,7 @@ import { WorkerStateProvider } from '../../workerClient/context.jsx';
 const Browser = () => (
   <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
     <WorkerStateProvider>
-      <VZomeAppBar oneDesign={true} title='Browser'
+      <VZomeAppBar title='Browser'
         about={ <>
           <Typography gutterBottom>
             vZome Online Browser shows all of

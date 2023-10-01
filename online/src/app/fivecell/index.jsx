@@ -38,7 +38,7 @@ const Article = () =>
 {
   return (
     <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
-      <VZomeAppBar oneDesign title='Apps'
+      <VZomeAppBar title='Apps'
         about={ <>
           <Typography gutterBottom>
             vZome Online Apps are demonstrations

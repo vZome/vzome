@@ -11,7 +11,6 @@ import { AboutDialog } from '../dialogs/about.jsx';
 
 export const Spacer = () => <div style={{ flex: '1 1 auto' }}></div>
 
-// export const VZomeAppBar = ( { oneDesign, pathToRoot='.', forDebugger=false, title, about } ) =>
 export const VZomeAppBar = ( props ) =>
 {
   const spacer = <Spacer/>;
