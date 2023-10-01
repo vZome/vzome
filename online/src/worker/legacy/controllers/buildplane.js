@@ -1,20 +1,40 @@
 import { com } from '../core-java.js';
 import { JsProperties } from '../jsweet2js.js';
+import { normalizeRenderedManifestation } from '../scenes.js';
 
-export class BuildPlaneController extends com.vzome.desktop.controller.DefaultController {
-  constructor(renderedModel, orbitSource) {
+export class BuildPlaneController extends com.vzome.desktop.controller.DefaultController
+{
+  constructor( renderedModel, orbitSource, clientEvents )
+  {
     super();
+    this.clientEvents = clientEvents;
     this.renderedModel = renderedModel;
     this.buildPlanes = orbitSource.buildPlanes;
+
+    renderedModel .addListener( {
+      shapesChanged: () => false, // important so RenderedModel.setShapes() will not fail and re-render all the parts
+      manifestationAdded: ( rm ) => {
+        if ( rm .getManifestation() ?.constructor["__interfaces"] ?.indexOf("com.vzome.core.model.Connector") >= 0 )
+          this.latestBall = normalizeRenderedManifestation( rm );
+      },
+      manifestationRemoved: () => {},
+      colorChanged: () => {},
+      glowChanged: () => {},
+    } );
   }
 
-  setOrbitSource(orbitSource) {
+  setOrbitSource( orbitSource )
+  {
     this.buildPlanes = orbitSource.buildPlanes;
+
+    // by this time, the initial origin ball has already been rendered
+    this.clientEvents .latestBallAdded( this.latestBall );
   }
 
   // There are no implementors of doParamAction() in the Java code, except for
   //   DefaultController, which just propagates the calls up to the next controller.
-  doParamAction(action, params) {
+  doParamAction(action, params)
+  {
     const config = params.getConfig();
     switch (action) {
 
@@ -34,6 +54,8 @@ export class BuildPlaneController extends com.vzome.desktop.controller.DefaultCo
           const length = buildZone.vectors[index].scale;
 
           super.doParamAction('StrutCreation', new JsProperties({ anchor, zone: axis, length }));
+
+          this.clientEvents .latestBallAdded( this.latestBall );
           return;
         } // else fall through
       }
