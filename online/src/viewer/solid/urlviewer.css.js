@@ -325,11 +325,20 @@ export const urlViewerCSS = `
 }
 
 
-.fullscreen__trigger {
+.undo {
+  top: 0.5em;
+  left: 0.5em;
+}
+.redo {
+  top: 0.5em;
+  left: 4.5em;
+}
+.fullscreen {
   bottom: 0.5em;
   right: 0.5em;
 }
-.fullscreen__content {
+
+.iconbutton__content {
   z-index: 50;
   max-width: min(calc(100vw - 16px), 380px);
   border: 1px solid hsl(240 5% 84%);
@@ -340,12 +349,12 @@ export const urlViewerCSS = `
   font-size: 14px;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   transform-origin: var(--kb-tooltip-content-transform-origin);
-  animation: fullscreen__contentHide 250ms ease-in forwards;
+  animation: iconbutton__contentHide 250ms ease-in forwards;
 }
-.fullscreen__content[data-expanded] {
-  animation: fullscreen__contentShow 250ms ease-out;
+.iconbutton__content[data-expanded] {
+  animation: iconbutton__contentShow 250ms ease-out;
 }
-@keyframes fullscreen__contentShow {
+@keyframes iconbutton__contentShow {
   from {
     opacity: 0;
     transform: scale(0.96);
@@ -355,7 +364,7 @@ export const urlViewerCSS = `
     transform: scale(1);
   }
 }
-@keyframes fullscreen__contentHide {
+@keyframes iconbutton__contentHide {
   from {
     opacity: 1;
     transform: scale(1);

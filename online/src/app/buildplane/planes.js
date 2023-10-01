@@ -88,6 +88,29 @@ export const reducer = ( state=initialState, action ) =>
       return { ...state, buildPlanes, diskZone, hingeZone }
     }
 
+    case 'SCENE_RENDERED': {
+      const { scene } = action.payload;
+      let center = state.center;
+      if ( center ) {
+        // Make sure the center is still in the scene
+        center = undefined;
+        for ( const shapeId in scene.shapes ) {
+          const shape = scene.shapes[ shapeId ];
+          for ( const instance of shape .instances ) {
+            if ( instance .type === 'ball' ) {
+              if ( instance .id === state.center .id ) {
+                center = { ...instance };
+                break;
+              }
+            } else
+              break; // only need to check balls, of course
+          }
+        }
+      }
+      return { ...state, enabled: true, buildingStruts: true, center, preview: undefined }
+    }
+
+
     default:
       return state
   }
