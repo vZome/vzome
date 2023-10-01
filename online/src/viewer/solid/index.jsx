@@ -16,6 +16,7 @@ import { SceneMenu } from './scenes.jsx';
 import { FullscreenButton } from './fullscreen.jsx';
 import { ExportMenu } from './export.jsx';
 import { InteractionToolProvider } from './interaction.jsx';
+import { UndoRedoButtons } from './undoredo.jsx';
 
 let stylesAdded = false; // for the onMount in DesignViewer
 
@@ -79,6 +80,10 @@ const DesignViewer = ( props ) =>
         <SceneCanvas id='scene-canvas' scene={state.scene} height={props.height} width={props.width} >
           {props.children3d}
         </SceneCanvas>
+      </Show>
+
+      <Show when={config.undoRedo} >
+        <UndoRedoButtons root={rootRef} />
       </Show>
 
       <Show when={showSceneMenu()}>
