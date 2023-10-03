@@ -184,8 +184,10 @@ const clientEvents = report =>
 
   const textExported = ( action, text ) => report( { type: 'TEXT_EXPORTED', payload: { action, text } } ) ;
 
+  const buildPlaneSelected = ( center, diskZone, hingeZone ) => report( { type: 'PLANE_CHANGED', payload: { center, diskZone, hingeZone } } );
+
   return { sceneChanged, shapeDefined, instanceAdded, instanceRemoved, selectionToggled, symmetryChanged, latestBallAdded,
-    xmlParsed, scenesDiscovered, designSerialized, propertyChanged, errorReported, textExported, };
+    xmlParsed, scenesDiscovered, designSerialized, propertyChanged, errorReported, textExported, buildPlaneSelected, };
 }
 
 const trackballScenes = {};
@@ -435,6 +437,12 @@ onmessage = ({ data }) =>
 
       const scene = designWrapper .getScene( '--END--', true );
       postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
+      break;
+    }
+
+    case 'HINGE_STRUT_SELECTED':
+    {
+      designWrapper .doAction( 'buildPlane', type, payload );
       break;
     }
 

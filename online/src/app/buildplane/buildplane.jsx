@@ -1,12 +1,13 @@
 
 import { For, Show, createEffect, createMemo } from 'solid-js';
-import { createStore, reconcile } from 'solid-js/store';
+import { createStore, reconcile, unwrap } from 'solid-js/store';
 import { DoubleSide, Matrix4, Quaternion, Vector3, CylinderGeometry, TorusGeometry } from 'three';
 
 import { normalize, vlength, vscale } from './vectors.js';
 import { reducer, initialState, doToggleDisk, doSetCenter, doStrutPreview, doSelectPlane, doSelectHinge, doToggleBuild } from './planes.js';
 import { createStrut, joinBalls, newDesign, useWorkerClient } from '../../workerClient/index.js';
 import { useInteractionTool } from '../../viewer/solid/interaction.jsx';
+import { setHingeStrut } from '../../workerClient/actions.js';
 
 const makeRotation = ( from, to ) =>
 {
@@ -204,6 +205,8 @@ export const BuildPlaneTool = props =>
           postMessage( joinBalls( state.center.id, id ) );
         }
         dispatch( doSetCenter( id, position ) );
+      } else {
+        postMessage( setHingeStrut( id, unwrap(state.center.id), unwrap(state.diskZone), unwrap(state.hingeZone) ) );
       }
     },
     

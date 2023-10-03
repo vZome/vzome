@@ -51,6 +51,9 @@ export const movePreviewStrut = ( direction ) => workerAction( 'PREVIEW_STRUT_MO
 
 export const endPreviewStrut = () => workerAction( 'PREVIEW_STRUT_END', {} );
 
+// This is for buildplane
+export const setHingeStrut = ( strutId, centerId, diskZone, hingeZone ) => workerAction( 'HINGE_STRUT_SELECTED', { strutId, centerId, diskZone, hingeZone } );
+
 const INITIAL_DISTANCE = 108;
 export const NEAR_FACTOR = 0.1 / INITIAL_DISTANCE;
 export const FAR_FACTOR = 2.0;

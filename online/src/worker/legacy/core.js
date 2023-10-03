@@ -451,6 +451,8 @@ const makeFloatMatrices = ( matrices ) =>
     realizedModel .add( originBall );
     realizedModel .show( originBall );
 
+    const getBall = location => realizedModel .getManifestation( new vzomePkg.core.construction.FreePoint( location ) );
+
     const selection = new vzomePkg.core.editor.SelectionImpl();
     const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp, orbitSource, symmetrySystems );
     for ( const symmetrySystem of Object.values( symmetrySystems ) ) {
@@ -645,7 +647,7 @@ const makeFloatMatrices = ( matrices ) =>
     const getOrbitSource = () => orbitSource;
 
     return { interpretEdit, configureAndPerformEdit, batchRender, serializeToDom, setSymmetrySystem, getSymmetrySystem, getChangeCount,
-      getOrbitSource,
+      getOrbitSource, getBall,
       editor,
       field, legacyField, fieldApp,
       renderedModel, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };

@@ -49,8 +49,8 @@ export const reducer = ( state=initialState, action ) =>
     case 'STRUT_PREVIEW_TOGGLED':
       return { ...state, preview: action.payload }
         
-      case 'LAST_BALL_CREATED': // This one is actually from the worker
-      case 'CENTER_SET':
+    case 'LAST_BALL_CREATED': // This one is actually from the worker
+    case 'CENTER_SET':
       const { id, position } = action.payload
       return { ...state, enabled: true, buildingStruts: true, center: { id, position }, preview: undefined }
     
@@ -88,6 +88,11 @@ export const reducer = ( state=initialState, action ) =>
       return { ...state, buildPlanes, diskZone, hingeZone }
     }
 
+    case 'PLANE_CHANGED': {
+      const { center, diskZone, hingeZone } = action.payload;
+      return { ...state, center, diskZone, hingeZone };
+    }
+
     case 'SCENE_RENDERED': {
       const { scene } = action.payload;
       let center = state.center;
@@ -109,7 +114,6 @@ export const reducer = ( state=initialState, action ) =>
       }
       return { ...state, enabled: true, buildingStruts: true, center, preview: undefined }
     }
-
 
     default:
       return state

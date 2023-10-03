@@ -1,17 +1,20 @@
 import { com } from '../core-java.js';
+import { java } from '../candies/j4ts-2.1.0-SNAPSHOT/bundle.js';
 import { JsProperties } from '../jsweet2js.js';
 import { normalizeRenderedManifestation } from '../scenes.js';
 
 export class BuildPlaneController extends com.vzome.desktop.controller.DefaultController
 {
-  constructor( renderedModel, orbitSource, clientEvents )
+  constructor( design, clientEvents )
   {
     super();
+    this.design = design;
     this.clientEvents = clientEvents;
-    this.renderedModel = renderedModel;
-    this.buildPlanes = orbitSource.buildPlanes;
+    this.renderedModel = design.renderedModel;
+    this.orbitSource = design .getOrbitSource();
+    this.buildPlanes = this.orbitSource .buildPlanes;
 
-    renderedModel .addListener( {
+    this.renderedModel .addListener( {
       shapesChanged: () => false, // important so RenderedModel.setShapes() will not fail and re-render all the parts
       manifestationAdded: ( rm ) => {
         if ( rm .getManifestation() ?.constructor["__interfaces"] ?.indexOf("com.vzome.core.model.Connector") >= 0 )
@@ -25,6 +28,7 @@ export class BuildPlaneController extends com.vzome.desktop.controller.DefaultCo
 
   setOrbitSource( orbitSource )
   {
+    this.orbitSource = orbitSource;
     this.buildPlanes = orbitSource.buildPlanes;
 
     // by this time, the initial origin ball has already been rendered
@@ -72,8 +76,81 @@ export class BuildPlaneController extends com.vzome.desktop.controller.DefaultCo
         } // else fall through
       }
 
+      case 'HINGE_STRUT_SELECTED': {
+        const { strutId, centerId, hingeZone: oldHingeZone } = config;
+        const vectorAlgebra = com.vzome.core.algebra.AlgebraicVectors;
+
+        const oldCenterRm = this.renderedModel .getRenderedManifestation( centerId );
+        if ( !oldCenterRm ) return;
+        const id = oldCenterRm .getGuid() .toString();
+        const oldCenter = oldCenterRm .getLocationAV();
+        const { x, y, z } = oldCenter .toRealVector();
+        let center = { id, position: [ x, y, z ] };
+
+        const strutRm = this.renderedModel .getRenderedManifestation( strutId );
+        if ( !strutRm ) return;
+        const strut = strutRm .getManifestation();
+        const start = strut .getLocation();
+        const end = strut .getEnd();
+        // In all cases, we want the hingeZone to reflect the selected strut
+        const hingeZone = { orbit: strutRm .getStrutOrbit() .getName(), orientation: strutRm .getStrutZone() };
+
+        const normal = vectorAlgebra .getNormal( oldCenter, start, end );
+        if ( normal .isOrigin() ) {
+          // old center is collinear with strut
+          const strutEnds = new java.util.ArrayList();
+          strutEnds .add( start ); strutEnds .add( end );
+          let { diskZone } = config;
+          let { orbit, orientation } = diskZone;
+          const diskNormal = this.orbitSource .getZone( orbit, orientation ) .normal();
+          if ( vectorAlgebra .areOrthogonalTo( diskNormal, strutEnds ) ) {
+            // strut lies in the existing plane, so just set the new hingeZone
+            this.clientEvents .buildPlaneSelected( center, diskZone, hingeZone );
+            return;
+          } else {
+            // strut lies out of the existing plane
+            // Set the diskZone to include the old hinge
+            const { orbit: hingeOrbit, orientation: hingeOrientation } = oldHingeZone;
+            const hingeNormal = this.orbitSource .getZone( hingeOrbit, hingeOrientation ) .normal();
+            const planeNormal = hingeNormal .cross( strut .getOffset() );
+            const diskZone = this .getZone( planeNormal );
+            if ( !diskZone ) return;
+            this.clientEvents .buildPlaneSelected( center, diskZone, hingeZone );
+            return;
+          }
+        } else {
+          // strut is not collinear with the current center
+          // new plane defined, so set all new plane, hinge, and center if the plane is acceptable
+          const ball = this.design .getBall( start );
+          if ( !ball ) return;
+          const newCenter = ball .getLocation();
+          const newCenterRm = ball .getRenderedObject();
+          const id = newCenterRm .getGuid() .toString();
+          const { x, y, z } = newCenter .toRealVector();
+          let center = { id, position: [ x, y, z ] };
+
+          const planeNormal = newCenter .minus( oldCenter ) .cross( strut .getOffset() );
+          const diskZone = this .getZone( planeNormal );
+          if ( !diskZone ) return;
+
+          this.clientEvents .buildPlaneSelected( center, diskZone, hingeZone );
+          return;
+        }
+      }
+
       default:
         super.doParamAction(action, params);
     }
   }
+
+  getZone( normal )
+  {
+    const planeAxis = this.orbitSource .getAxis( normal );
+    if ( ! planeAxis ) return null;
+    const planeDir = planeAxis .getOrbit();
+    if ( ! planeDir .isStandard() ) return null; // TODO: support all planes
+    const orbit = planeDir .getName();
+    const orientation = planeAxis .getOrientation();
+    return { orbit, orientation };
+}
 }

@@ -21,7 +21,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
 
   initialize( renderingChanges )
   {
-    const { getOrbitSource, renderedModel, toolsModel, bookmarkFactory, history, symmetrySystems,
+    const { renderedModel, toolsModel, bookmarkFactory, history,
       fieldApp, legacyField, editor, editContext } = this.design;
 
     this.changeCount = this.design.getChangeCount();
@@ -43,7 +43,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
     this.addSubController('picking', pickingController);
 
     // This has no desktop equivalent
-    const buildPlaneController = new BuildPlaneController( renderedModel, getOrbitSource(), this.clientEvents );
+    const buildPlaneController = new BuildPlaneController( this.design, this.clientEvents );
     this.addSubController('buildPlane', buildPlaneController);
 
     const polytopesController = new com.vzome.desktop.controller.PolytopesController( editor, editContext );
