@@ -26,6 +26,11 @@ public interface OrbitSource
 
     String getName();  // used in serializing edits, and in rendering
     
+    default Axis getZone( String orbit, int orientation )
+    {
+        return getSymmetry() .getDirection( orbit ) .getAxis( Symmetry.PLUS, orientation );
+    }
+    
     default float[] getEmbedding()
     {
         Symmetry symmetry = this .getSymmetry();
