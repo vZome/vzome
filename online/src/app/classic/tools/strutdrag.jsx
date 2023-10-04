@@ -23,67 +23,6 @@ of TrackballControls.js and implement the transformations myself.  See ObjectTra
 
 */
 
-// The switcher tool is not in use, and should probably be discarded in favor
-//   of a fully modal switch between tools.
-export const createSwitcherTool = ( selectionTool, strutPreviewTool, minDrag ) =>
-{
-  let currentTool = selectionTool;
-  let timer = 0;
-
-  const dragging = () =>
-  {
-    return currentTool === strutPreviewTool;
-  }
-
-  const bkgdClick = () =>
-  {
-    selectionTool.bkgdClick();
-  }
-
-  const onHover = ( id, position, type, starting ) =>
-  {
-
-  }
-
-  const onClick = ( id, position, type, selected ) =>
-  {
-    if ( currentTool === selectionTool ) { // drag hasn't started
-      console.log( 'SwitcherTool onClick', new Date().getTime() );
-      // abort the pending drag, forward the click to the selectionTool
-      clearTimeout( timer );
-      selectionTool .onClick( id, position, type, selected );
-    }
-  }
-
-  const onDragStart = ( id, position, type, selected, evt ) =>
-  {
-    if ( type === 'ball' ) {
-      timer = setTimeout(() => {
-        console.log( 'SwitcherTool timer done', new Date().getTime() );
-        currentTool = strutPreviewTool;
-        strutPreviewTool .onDragStart( id, position, type, selected, evt );
-      }, minDrag );
-    }
-  }
-
-  const onDrag = evt =>
-  {
-    if ( currentTool === strutPreviewTool ) {
-      strutPreviewTool .onDrag( evt );
-    }
-  }
-
-  const onDragEnd = evt =>
-  {
-    if ( currentTool === strutPreviewTool ) {
-      strutPreviewTool .onDragEnd( evt );
-      currentTool = selectionTool;
-    }
-  }
-
-  return { bkgdClick, onHover, onClick, onDragStart, onDrag, onDragEnd, dragging };
-}
-
 const StrutDragTool = props =>
 {
   const { postMessage } = useWorkerClient();

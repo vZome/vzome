@@ -226,7 +226,7 @@ public class Java2dSnapshotController extends DefaultGraphicsController
             boolean drawLines, boolean doLighting ) throws Exception
     {
         Java2dExporter captureSnapshot = new Java2dExporter();
-        Java2dSnapshot snapshot = captureSnapshot .render2d( model, camera, lights, height, width, drawLines, doLighting );
+        Java2dSnapshot snapshot = captureSnapshot .render2d( model, camera .getViewMatrix(), camera .getEyeMatrix(), lights, height, width, drawLines, doLighting );
 
         return snapshot;
     }

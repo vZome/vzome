@@ -29,10 +29,10 @@ export const doSelectHinge = ( orbit, orientation ) =>
 }
 
 export const initialState = {
-  endPt: undefined,
+  preview: undefined,
   diskZone: {
     orbit: 'blue',
-    orientation: 2,
+    orientation: 11,
   },
   hingeZone: {
     orbit: 'blue',
@@ -47,11 +47,12 @@ export const reducer = ( state=initialState, action ) =>
   switch ( action.type )
   {
     case 'STRUT_PREVIEW_TOGGLED':
-      return { ...state, endPt: action.payload }
+      return { ...state, preview: action.payload }
         
+    case 'LAST_BALL_CREATED': // This one is actually from the worker
     case 'CENTER_SET':
       const { id, position } = action.payload
-      return { ...state, enabled: true, buildingStruts: true, center: { id, position }, endPt: undefined }
+      return { ...state, enabled: true, buildingStruts: true, center: { id, position }, preview: undefined }
     
     case 'PLANE_TOGGLED':
       if ( state.center ?.id )
@@ -60,7 +61,7 @@ export const reducer = ( state=initialState, action ) =>
         return state;
     
     case 'BUILD_TOGGLED':
-      return { ...state, enabled: true, buildingStruts: !state.buildingStruts, endPt: undefined };
+      return { ...state, enabled: true, buildingStruts: !state.buildingStruts, preview: undefined };
 
     case 'PLANE_SELECTED':
       return { ...state, enabled: true, diskZone: action.payload };
@@ -81,10 +82,15 @@ export const reducer = ( state=initialState, action ) =>
       const diskZone = {};
       diskZone .orbit = Object.keys( buildPlanes .planes )[ 0 ]; // TODO: use the camera look-at to find a plane
       const plane = buildPlanes .planes[ diskZone .orbit ];
-      diskZone .orientation = plane .orientation;
+      diskZone .orientation = 2;
       const { name, orientation } = plane .zones[ 0 ];
       const hingeZone = { orbit: name, orientation };
       return { ...state, buildPlanes, diskZone, hingeZone }
+    }
+
+    case 'PLANE_CHANGED': {
+      const { center, diskZone, hingeZone } = action.payload;
+      return { ...state, center, diskZone, hingeZone };
     }
 
     case 'SCENE_RENDERED': {
@@ -98,28 +104,15 @@ export const reducer = ( state=initialState, action ) =>
           for ( const instance of shape .instances ) {
             if ( instance .type === 'ball' ) {
               if ( instance .id === state.center .id ) {
-                center = instance;
+                center = { ...instance };
                 break;
               }
             } else
               break; // only need to check balls, of course
           }
         }
-      } else {
-        if ( Object.keys( scene.shapes ) .length === 1 ) // This is a one-shot deal, designed to give us a plane center for a new design
-          for ( const shapeId in scene.shapes ) {
-            const shape = scene.shapes[ shapeId ];
-            if ( shape .instances .length === 1 ) {
-              const instance = shape .instances[ 0 ];
-              if ( instance ?.type === 'ball' ) {
-                center = instance;
-                // TODO: create a more first-class contract for this event
-                break;
-              }
-            }
-          }
       }
-      return { ...state, enabled: true, buildingStruts: true, center, endPt: undefined }
+      return { ...state, enabled: true, buildingStruts: true, center, preview: undefined }
     }
 
     default:

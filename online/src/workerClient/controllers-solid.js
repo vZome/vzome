@@ -123,6 +123,7 @@ const createWorkerStore = ( worker ) =>
           //   or we are previewing), it will replace the existing camera, and rendering will reflect it.
           //   For edit responses, there should never be a camera.  This all goes for lighting as well.
           setState( 'scene', 'camera', scene.camera );
+          setState( 'liveCamera', scene.camera );
         }
         if ( scene.lighting ) {
           // NOTE: if there is a camera in this scene (first load of existing design, or we requested an article scene,
@@ -224,7 +225,11 @@ const createWorkerStore = ( worker ) =>
     } );
   }
 
-  const store = { postMessage: worker .sendToWorker, isWorkerReady, state, setState, expectResponse }; // needed for every subcontroller
+  const store = {
+    postMessage: worker .sendToWorker,
+    subscribe: worker .subscribe,
+    isWorkerReady, state, setState, expectResponse,
+  }; // needed for every subcontroller
 
   const rootController = () =>
   {

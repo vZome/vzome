@@ -15,6 +15,8 @@ import { ErrorAlert } from './alert.jsx';
 import { SceneMenu } from './scenes.jsx';
 import { FullscreenButton } from './fullscreen.jsx';
 import { ExportMenu } from './export.jsx';
+import { InteractionToolProvider } from './interaction.jsx';
+import { UndoRedoButtons } from './undoredo.jsx';
 
 let stylesAdded = false; // for the onMount in DesignViewer
 
@@ -38,7 +40,7 @@ const fullScreenStyle = {
 const DesignViewer = ( props ) =>
 {
   const config = mergeProps( { showScenes: false, useSpinner: false, allowFullViewport: false, undoRedo: false }, props.config );
-  const { state, postMessage } = useWorkerClient();
+  const { state } = useWorkerClient();
   const [ fullScreen, setFullScreen ] = createSignal( false );
   const toggleFullScreen = () =>
   {
@@ -71,10 +73,17 @@ const DesignViewer = ( props ) =>
 
   let rootRef;
   return (
+    <InteractionToolProvider>
     <div id='design-viewer' ref={rootRef} style={ fullScreen()? fullScreenStyle : normalStyle }>
       {/* This renders the light DOM if the scene couldn't load */}
       <Show when={state.scene} fallback={props.children}>
-        <SceneCanvas id='scene-canvas' scene={state.scene} height={props.height} width={props.width} />
+        <SceneCanvas id='scene-canvas' scene={state.scene} height={props.height} width={props.width} >
+          {props.children3d}
+        </SceneCanvas>
+      </Show>
+
+      <Show when={config.undoRedo} >
+        <UndoRedoButtons root={rootRef} />
       </Show>
 
       <Show when={showSceneMenu()}>
@@ -94,7 +103,8 @@ const DesignViewer = ( props ) =>
       </Show>
 
       <ErrorAlert root={rootRef} />
-    </div>
+    </div>      
+    </InteractionToolProvider>
   );
 }
 

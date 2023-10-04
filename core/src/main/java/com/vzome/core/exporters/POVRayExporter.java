@@ -102,7 +102,7 @@ public class POVRayExporter extends DocumentExporter
 
 		Vector3f dir = new Vector3f();
 		for ( int i = 0; i<3; i++ ) {
-			Color color = mLights .getDirectionalLight( i, dir );
+			Color color = mLights .getDirectionalLightColor( i );
 			mapViewToWorld( mScene, dir );
 			output .print( "light_source { -light_distance * " + printTuple3d( new Vector3f( dir ) ) );
 			output .print( " " );

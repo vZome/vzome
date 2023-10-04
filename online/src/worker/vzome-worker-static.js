@@ -164,6 +164,8 @@ const clientEvents = report =>
 
   const instanceAdded = instance => report( { type: 'INSTANCE_ADDED', payload: instance } );
 
+  const latestBallAdded = instance => report( { type: 'LAST_BALL_CREATED', payload: instance } );
+
   const instanceRemoved = ( shapeId, id ) => report( { type: 'INSTANCE_REMOVED', payload: { shapeId, id } } );
 
   const selectionToggled = ( shapeId, id, selected ) => report( { type: 'SELECTION_TOGGLED', payload: { shapeId, id, selected } } );
@@ -182,8 +184,10 @@ const clientEvents = report =>
 
   const textExported = ( action, text ) => report( { type: 'TEXT_EXPORTED', payload: { action, text } } ) ;
 
-  return { sceneChanged, shapeDefined, instanceAdded, instanceRemoved, selectionToggled, symmetryChanged,
-    xmlParsed, scenesDiscovered, designSerialized, propertyChanged, errorReported, textExported, };
+  const buildPlaneSelected = ( center, diskZone, hingeZone ) => report( { type: 'PLANE_CHANGED', payload: { center, diskZone, hingeZone } } );
+
+  return { sceneChanged, shapeDefined, instanceAdded, instanceRemoved, selectionToggled, symmetryChanged, latestBallAdded,
+    xmlParsed, scenesDiscovered, designSerialized, propertyChanged, errorReported, textExported, buildPlaneSelected, };
 }
 
 const trackballScenes = {};
@@ -220,24 +224,21 @@ const connectTrackballScene = ( report ) =>
   } });
 }
 
-const createDesign = ( report, fieldName ) =>
+const createDesign = async ( report, fieldName ) =>
 {
   report( { type: 'FETCH_STARTED', payload: { name: 'untitled.vZome', preview: false } } );
-  return import( './legacy/dynamic.js' )
-
-    .then( module => {
-      report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
-      designWrapper = module .newDesign( fieldName, clientEvents( report ) );
-    } )
-
-    .catch( error => {
-      console.log( `createDesign failure: ${error.message}` );
-      report( { type: 'ALERT_RAISED', payload: 'Failed to create vZome model.' } );
-      return false; // probably nobody should care about the return value
-     } );
+  try {
+    const module = await import('./legacy/dynamic.js');
+    report({ type: 'CONTROLLER_CREATED' }); // do we really need this for previewing?
+    designWrapper = module.newDesign(fieldName, clientEvents(report));
+  } catch (error) {
+    console.log(`createDesign failure: ${error.message}`);
+    report({ type: 'ALERT_RAISED', payload: 'Failed to create vZome model.' });
+    return false;
+  }
 }
 
-const openDesign = ( xmlLoading, name, report, debug, sceneTitle ) =>
+const openDesign = async ( xmlLoading, name, report, debug, sceneTitle ) =>
 {
   return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
 
@@ -298,7 +299,7 @@ const fileImporter = ( report, event ) =>
     } )
 }
 
-const urlLoader = ( report, event ) =>
+const urlLoader = async ( report, event ) =>
 {
   const { url, config } = event.payload;
   const { preview=false, debug=false, showScenes=false, sceneTitle } = config;
@@ -436,6 +437,12 @@ onmessage = ({ data }) =>
 
       const scene = designWrapper .getScene( '--END--', true );
       postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
+      break;
+    }
+
+    case 'HINGE_STRUT_SELECTED':
+    {
+      designWrapper .doAction( 'buildPlane', type, payload );
       break;
     }
 

@@ -22,4 +22,6 @@ public class NumberFormat
     {
         return Double .toString( x );
     }
+
+    public void setGroupingUsed( boolean newValue ) {}
 }

@@ -42,6 +42,22 @@ public class RealVector
         this .y = (float) y;
         this .z = (float) z;
     }
+    
+    public RealVector( RealVector that )
+    {
+        this( that.x, that.y, that.z );
+    }
+
+    @Override
+    public Object clone()
+    {
+        return new RealVector( this );
+    }
+    
+    public boolean isZero()
+    {
+        return this.x == 0 && this.y == 0 && this.z == 0;
+    }
 
     /**
      * Return a string representing this vector as XML attribute values.
@@ -93,6 +109,11 @@ public class RealVector
      */
     public RealVector minus( RealVector other ) {
         return new RealVector( x - other .x, y - other .y, z - other .z );
+    }
+
+    public RealVector negate()
+    {
+        return new RealVector( -this.x, -this.y, -this.z );
     }
 
     /**
