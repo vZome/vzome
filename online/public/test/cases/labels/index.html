@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test labels</title>
+
+  <link rel="stylesheet" href="../../vzome-viewer.css">
+  <style>
+    #testShowScenes {
+      --vzome-label-color: aquamarine;
+      --vzome-label-size: x-large;
+      --vzome-label-weight: bold;
+    }
+    vzome-viewer {
+      --vzome-label-background: black;
+      --vzome-label-color: red;
+    }
+  </style>
+
+  <script type="module" src="/modules/vzome-viewer.js"></script>
+
+</head>
+<body>
+  <article>
+    <section>
+      <vzome-viewer src="./test-show-scenes.vZome" id="testShowScenes" show-scenes="named" labels="true" >
+      </vzome-viewer>
+    </section>
+  </article>
+</body>
+</html>

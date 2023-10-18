@@ -5,6 +5,7 @@ import { EditCursor, interpret, RenderHistory, Step } from '../interpreter.js';
 import { ControllerWrapper } from './wrapper.js';
 import { renderedModelTransducer, resolveBuildPlanes } from '../scenes.js';
 import { EditorController } from './editor.js';
+import { DEFAULT_SNAPSHOT } from '../parser.js';
 
 const createControllers = ( design, renderingChanges, clientEvents ) =>
 {
@@ -58,29 +59,6 @@ const createControllers = ( design, renderingChanges, clientEvents ) =>
   return wrapper;
 };
 
-// Duplicated here to avoid a weird dependency back to the static module.
-const getSceneIndex = ( title, list ) =>
-{
-  if ( !title )
-    return 0;
-  let index;
-  if ( title.startsWith( '#' ) ) {
-    const indexStr = title.substring( 1 );
-    index = parseInt( indexStr );
-    if ( isNaN( index ) || index < 0 || index > list.length ) {
-      console.log( `WARNING: ${index} is not a scene index` );
-      index = 0;
-    }
-  } else {
-    index = list .map( s => s.title ) .indexOf( title );
-    if ( index < 0 ) {
-      console.log( `WARNING: no scene titled "${title}"` );
-      index = 0;
-    }
-  }
-  return index;
-}
-
 export const snapCamera = ( symmController, upArray, lookArray ) =>
 {
   const snapper = symmController .getSnapper();
@@ -95,24 +73,16 @@ export const snapCamera = ( symmController, upArray, lookArray ) =>
   return { up: toArray( up ), lookDir: toArray( look ) };
 }
 
-export const loadDesign = ( xml, debug, clientEvents, sceneTitle ) =>
+const initializeDesign = ( loading, legacyDesign, clientEvents ) =>
 {
-  const design = parse( xml );
-      
-  const { camera, lighting, xmlTree, targetEditId, field, scenes } = design;
-  if ( field.unknown ) {
-    throw new Error( `Field "${field.name}" is not supported.` );
-  }
-  clientEvents .xmlParsed( xmlTree );
-  clientEvents .scenesDiscovered( scenes );
+  const { lighting, scenes, snapshotNodes } = legacyDesign;
+  const renderHistory = new RenderHistory( legacyDesign );                                     // used for all normal rendering
+  const renderingChanges = renderedModelTransducer( renderHistory.getShapes(), clientEvents ); // used only for preview struts
 
-  const renderHistory = new RenderHistory( design );
-  const renderingChanges = renderedModelTransducer( renderHistory.getShapes(), clientEvents );
-  const editCursor = new EditCursor( design );
-
-  if ( ! debug ) {
+  if ( loading ) {
     // interpretation may take several seconds, which is why we already reported PARSE_COMPLETED
-    interpret( Step.DONE, editCursor, renderHistory, [] );
+    // TODO: why is EditCursor created here, not internally to interpret?
+    interpret( Step.DONE, new EditCursor( legacyDesign ), renderHistory, [] );
   } // else in debug mode, we'll interpret incrementally
 
   // TODO: define a better contract for before/after.
@@ -120,64 +90,45 @@ export const loadDesign = ( xml, debug, clientEvents, sceneTitle ) =>
   //  edit to be executed, so this really should be before=true.
   //  However, the semantics of the HistoryInspector UI require the edit field to contain the "after" edit ID.
   //  Thus, we are too tightly coupled to the UI here!
-  //  See also the 'EDIT_SELECTED' case in onmessage(), below.
-  let before = false;
-  let sceneEditId = targetEditId;
-  let sceneCamera = camera;
-  if ( debug ) {
-    sceneEditId = '--START--';
-  }
-  else if ( sceneTitle ) {
-    const targetScene = getSceneIndex( sceneTitle, scenes );
-    if ( targetScene > 0 ) {
-      sceneEditId = scenes[ targetScene ] .nodeId;
-      sceneCamera = scenes[ targetScene ] .camera;
-      before = true;
-    }
-  }
+  //  See also the 'EDIT_SELECTED' case in onmessage().
 
-  const { shapes, edit } = renderHistory .getScene( sceneEditId, before );
-  const embedding = design .getOrbitSource() .getEmbedding();
-  const scene = { lighting, camera: sceneCamera, embedding, shapes, polygons: true };
-  clientEvents .sceneChanged( scene, edit );
+  const shapes = renderHistory .getShapes();
+  const orbitSource = legacyDesign .getOrbitSource();
+  const { orientations } = orbitSource;
+  const embedding = orbitSource .getEmbedding();
+  const snapshots = snapshotNodes .map( nodeId => renderHistory .getSnapshot( nodeId, true ) );
+  const instances = snapshots .pop();
 
-  const wrapper = createControllers( design, renderingChanges, clientEvents );
+  const wrapper = createControllers( legacyDesign, renderingChanges, clientEvents );
 
-  // Not beautiful, but functional
-  wrapper.getScene = (editId, before = false) => {
-    const embedding = design .getOrbitSource() .getEmbedding();
-    return { ...renderHistory.getScene(editId, before), embedding, polygons: true };
-  };
   wrapper.snapCamera = snapCamera;
 
-  // TODO: fix this terrible hack!
-  wrapper.renderScene = () => renderHistory.recordSnapshot('--END--', '--END--', []);
+  wrapper.renderScene = () => {
+    renderHistory .recordSnapshot( '--END--', '--END--', [] );
+    // replace instances content with the new snapshot... don't change the ref!
+    instances .splice( 0, Infinity, ...renderHistory.currentSnapshot );
+  } // happens at end of every wrapper.doAction()
 
-  return wrapper;
+  const rendered = { lighting, embedding, orientations, polygons: true, shapes, instances, snapshots, scenes };
+  return { wrapper, rendered };
 }
 
 export const newDesign = ( fieldName, clientEvents ) =>
+  {
+    const legacyDesign = documentFactory( fieldName );
+    legacyDesign .snapshotNodes = [ '--END--' ];
+    legacyDesign .scenes = [ { title: 'default scene', camera: {}, snapshot: DEFAULT_SNAPSHOT } ];
+    return initializeDesign( false, legacyDesign, clientEvents );
+  }
+  
+export const loadDesign = ( xml, debug, clientEvents ) =>
 {
-  const design = documentFactory( fieldName );
+  const legacyDesign = parse( xml );
+  const { xmlTree, field } = legacyDesign;
+  if ( field.unknown ) {
+    throw new Error( `Field "${field.name}" is not supported.` );
+  }
+  clientEvents .xmlParsed( xmlTree );
 
-  const renderHistory = new RenderHistory( design );
-  const renderingChanges = renderedModelTransducer( renderHistory.getShapes(), clientEvents );
-
-  const { shapes, edit } = renderHistory .getScene( '--START--', false );
-  const embedding = design .getOrbitSource() .getEmbedding();
-  clientEvents .sceneChanged( { embedding, shapes, polygons: true }, edit ); // let client determine default lighting and camera
-
-  const wrapper = createControllers( design, renderingChanges, clientEvents );
-
-  // Not beautiful, but functional
-  wrapper.getScene = (editId, before = false) => {
-    const embedding = design .getOrbitSource() .getEmbedding();
-    return { ...renderHistory.getScene(editId, before), embedding, polygons: true };
-  };
-  wrapper.snapCamera = snapCamera;
-
-  // TODO: fix this terrible hack!
-  wrapper.renderScene = () => renderHistory.recordSnapshot('--END--', '--END--', []);
-
-  return wrapper;
+  return initializeDesign( !debug, legacyDesign, clientEvents );
 }

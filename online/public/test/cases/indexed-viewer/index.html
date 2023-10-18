@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <link rel="stylesheet" href="../../vzome-viewer.css">
+
+                          <title>Indexed viewer</title>
+
+    <style>
+      .vzome-viewer-index-button {
+        min-width: 90px;
+        font-size: large;
+        border-radius: 6px;
+        border-style: solid;
+        border-color: black;
+        background-color: aliceblue;
+      }
+    </style>
+    <script type="module">
+      import "/modules/vzome-viewer.js"; // registers the custom element
+
+      console.log( '%%%%%%%%%%%%%%%%%% starting my script!');
+
+      const title = document.querySelector( "#title" );
+      const welcomeViewer = document.querySelector( "#welcome" );
+
+      welcomeViewer .addEventListener( "vzome-design-rendered", (e) => {
+        const { index, title: sceneTitle } = e.detail;
+        title .innerHTML = `Step ${index}: ${sceneTitle}`;
+      } );
+
+      welcomeViewer .addEventListener( "vzome-scenes-discovered", (e) => {
+        console.log( 'welcome scenes:', JSON.stringify( e.detail, null, 2 ) );
+      } );
+
+      const prevBtn = document.querySelector( "#prevBtn" );
+      prevBtn .addEventListener( 'click', () => console.log( 'prev button hit!' ) );
+
+      console.log( '%%%%%%%%%%%%%%%%%% ending my script!');
+
+    </script>
+  </head>
+  <body>
+    <article>
+      <section>
+        <div>
+          <vzome-viewer-previous viewer="welcome" label="back" id="prevBtn"></vzome-viewer-previous>
+          <vzome-viewer-next viewer="welcome" label="forward" load-camera="true"></vzome-viewer-next>
+          <h3 id="title"></h3>
+        </div>
+        <vzome-viewer id="welcome" indexed="true" show-scenes="all" scene="#5"
+               src="https://vorth.github.io/vzome-sharing/2022/06/19/06-37-55-welcomeDodec/welcomeDodec.vZome" >
+          <img src="https://vorth.github.io/vzome-sharing/2022/06/19/06-37-55-welcomeDodec/watermarked.png" >
+        </vzome-viewer>
+      </section>
+    </article>
+  </body>
+</html>

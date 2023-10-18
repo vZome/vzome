@@ -10,9 +10,8 @@ html, body {
 
 section {
   width: 80vw;
-  max-width: 780px;
   margin: auto;
-  height: 40vh;
+  height: 75vh;
   overflow: hidden;
   resize: both;
   gap: 1em;

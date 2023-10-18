@@ -8,7 +8,7 @@ export const realizeShape = ( shape ) =>
   })
   const faces = shape.getFaceSet().toArray().map( (value) => ({ vertices: [...value.array] }) ); // not a no-op, converts to POJS
   const id = 's' + shape.getGuid().toString();
-  return { id, vertices, faces, instances: [] };
+  return { id, vertices, faces };
 }
 
 export const toWebColor = color =>
@@ -31,7 +31,7 @@ export const normalizeRenderedManifestation = rm =>
   const shapeId = 's' + rm.getShapeId().toString();
   const positionAV = rm.getLocationAV();
   const { x, y, z } = ( positionAV && positionAV.toRealVector() ) || { x:0, y:0, z:0 };
-  const rotation = rm .getOrientation() .getRowMajorRealElements();
+  const orientation = rm .getStrutZone();
   const selected = rm .getGlow() > 0.001;
   const componentToHex = c => {
     let hex = c.toString(16);
@@ -39,7 +39,7 @@ export const normalizeRenderedManifestation = rm =>
   }
   let color = toWebColor( rm.getColor() );
 
-  return { id, position: [ x, y, z ], rotation, color, selected, shapeId, type, label };
+  return { id, position: [ x, y, z ], orientation, color, selected, shapeId, type, label };
 }
 
 export const renderedModelTransducer = ( shapeCache, clientEvents ) =>

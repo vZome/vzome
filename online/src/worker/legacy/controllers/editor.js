@@ -236,11 +236,6 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
           this.design.configureAndPerformEdit(action, params && params.getConfig());
           this.firePropertyChange( 'edited', '', 'true' ); // value really doesn't matter
         }
-
-        // For the classic client app, this is redundant, since it can use the exportText action,
-        //   but I still need it for React-based clients.
-        const text = this.design.serializeToDom().toIndentedString("");
-        this.clientEvents.designSerialized(text);
         break;
     }
   }
