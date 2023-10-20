@@ -174,7 +174,7 @@ const origin3 = dimensions =>
   return result
 }
 
-const Format = { DEFAULT: 0, EXPRESSION: 1, ZOMIC: 2, VEF: 3 }
+const Format = { DEFAULT: 0, EXPRESSION: 1, ZOMIC: 2, VEF: 3, MATHML: 4 }
 
 function bigRationalToString( num, denom )
 {
@@ -184,11 +184,20 @@ function bigRationalToString( num, denom )
     return num.toString() + "/" + denom.toString()
 }
 
-function toString2( trailingDivisor, format )
+function bigRationalToMathML( num, denom )
+{
+  if ( denom === 1n )
+    return `<mn>${num.toString()}</mn>`;
+  else
+    return `<mfrac><mn>${num.toString()}</mn><mn>${denom.toString()}</mn></mfrac>`;
+}
+
+const toString2 = getIrrational => ( trailingDivisor, format ) =>
 {
   const [ a0=0n, a1=0n, d=1n ] = trailingDivisor
   const [ n0, d0 ] = simplify( [ BigInt(a0), BigInt(d) ] );
   const [ n1, d1 ] = simplify( [ BigInt(a1), BigInt(d) ] );
+  const irrat = getIrrational();
   switch (format)
   {
     case Format.ZOMIC:
@@ -197,23 +206,39 @@ function toString2( trailingDivisor, format )
     case Format.VEF:
       return "(" + bigRationalToString( n1, d1 ) + "," + bigRationalToString( n0, d0 ) + ")";
 
+    case Format.MATHML:
+      if ( a0 === 0n ) {
+        if ( a1 === 0n )
+          return "<mn>0</mn>";
+        else
+          return `<mrow>${bigRationalToMathML( a1, d )}<mi>${irrat}</mi></mrow>`;
+      }
+      else {
+        if ( a1 === 0n )
+          return bigRationalToMathML( a0, d );
+        else if ( a1 < 0n )
+          return `<mrow>${bigRationalToMathML( a0, d )}<mo>-</mo>${bigRationalToMathML( 0n-a1, d )}<mi>${irrat}</mi></mrow>"`;
+        else
+          return `<mrow>${bigRationalToMathML( a0, d )}<mo>+</mo>${bigRationalToMathML( a1, d )}<mi>${irrat}</mi></mrow>"`;
+      }
+
     default:
       if ( a0 === 0n ) {
         if ( a1 === 0n )
           return "0";
         else
-          return bigRationalToString( a1, d ) + "*𝜙";
+          return bigRationalToString( a1, d ) + "*" + irrat;
       }
       else {
         if ( a1 === 0n )
           return bigRationalToString( a0, d );
         else
-          return bigRationalToString( a0, d ) + "+" + bigRationalToString( a1, d ) + "*𝜙";
+          return bigRationalToString( a0, d ) + "+" + bigRationalToString( a1, d ) + "*" + irrat;
       }
   }
 }
 
-function toString3( trailingDivisor, format )
+const toString3 = getIrrational => ( trailingDivisor, format ) =>
 {
   const [ a0=0n, a1=0n, a2=0n, d=1n ] = trailingDivisor
   const [ n0, d0 ] = simplify( [ BigInt(a0), BigInt(d) ] );
@@ -227,6 +252,33 @@ function toString3( trailingDivisor, format )
     case Format.VEF:
       return "(" + bigRationalToString( n2, d2 ) + "," + bigRationalToString( n1, d1 ) + "," + bigRationalToString( n0, d0 ) + ")";
 
+    case Format.MATHML:
+      let result = '';
+      if ( a0 !== 0n ) {
+        result += bigRationalToMathML( a0, d );
+      }
+      if ( a1 !== 0n ) {
+        if ( a1 < 0n )
+          result += `<mo>-</mo>${bigRationalToMathML( 0n-a1, d )}<mi>${getIrrational(1)}</mi>`;
+        else {
+          if ( result )
+            result += '<mo>+</mo>';
+          result += `${bigRationalToMathML( a1, d )}<mi>${getIrrational(1)}</mi>`;
+        }
+      }
+      if ( a2 !== 0n ) {
+        if ( a2 < 0n )
+          result += `<mo>-</mo>${bigRationalToMathML( 0n-a2, d )}<mi>${getIrrational(2)}</mi>`;
+        else {
+          if ( result )
+            result += '<mo>+</mo>';
+          result += `${bigRationalToMathML( a2, d )}<mi>${getIrrational(2)}</mi>`;
+        }
+      }
+      if ( !result )
+        return '<mn>0</mn>';
+      return '<mrow>' + result + '</mrow>';
+  
     default:
       // NOTE: this is untested code as of this writing
       if ( a0 === 0n ) {
@@ -260,7 +312,7 @@ function toString3( trailingDivisor, format )
   }
 }
 
-export const createField = ( { name, order, times, embed, reciprocal } ) =>
+export const createField = ( { name, order, times, embed, reciprocal, getIrrational } ) =>
 {
   let scalarTerm = 1
   let zero = [ 0n, 0n, 1n ]
@@ -271,7 +323,7 @@ export const createField = ( { name, order, times, embed, reciprocal } ) =>
   let minus = minus2
   let createNumberFromPairs = createNumberFromPairs2
   let createNumber = createNumber2
-  let toString = toString2
+  let toString = toString2( getIrrational )
   if ( order === 3 ) {
     scalarTerm = 2
     zero = [ 0n, 0n, 0n, 1n ]
@@ -282,7 +334,7 @@ export const createField = ( { name, order, times, embed, reciprocal } ) =>
     minus = minus3
     createNumberFromPairs = createNumberFromPairs3
     createNumber = createNumber3
-    toString = toString3
+    toString = toString3( getIrrational )
   }
 
   const scalarmul = ( s, v ) => [ ...v.values() ].map( ( vi=[0n] ) => times( s, vi ) )
@@ -316,7 +368,7 @@ export const createField = ( { name, order, times, embed, reciprocal } ) =>
   return {
     name, order,
     scalarTerm, zero, one, origin,
-    plus, minus, times, embed, reciprocal, negate,
+    plus, minus, times, embed, reciprocal, negate, getIrrational,
     scalarmul, vectoradd, quatTransform, quatmul,
     embedv: (v) => v.map( embed ),
     createNumberFromPairs, createNumber, toString,

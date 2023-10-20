@@ -1,5 +1,5 @@
 
-import { Show, createEffect, createSignal, Switch as Case, Match } from 'solid-js';
+import { Show, createEffect, createSignal, Switch as Case, Match, createMemo } from 'solid-js';
 
 import Button from '@suid/material/Button';
 import Switch from '@suid/material/Switch';
@@ -106,7 +106,12 @@ export const StrutLengthPanel = props =>
   const realScale = () => controllerProperty( lengthController(), 'scale', 'length', false );
   const unitText = () => controllerProperty( lengthController(), 'unitText', 'length', false );
   const scaleFactorHtml = () => controllerProperty( lengthController(), 'scaleFactorHtml', 'length', false );
-  const lengthText = () => controllerProperty( lengthController(), 'lengthText', 'length', false );
+  const lengthText = () => controllerProperty( lengthController(), 'lengthMathML', 'length', false );
+  const mathML = createMemo( () => {
+    const el = <math></math>;
+    el .innerHTML = lengthText();
+    return el;
+  })
 
   const [ scale, setScale ] = createSignal(0); // TODO should be realScale()?
   createEffect( () => {
@@ -198,7 +203,7 @@ export const StrutLengthPanel = props =>
       <div id='length-display' style={{ 'background-color': 'whitesmoke', 'margin-left': '1em' }}>
         <div style={{ 'min-height': '22px' }}><span>unit  = </span><span class='bold'>{unitText()}</span></div>
         <div style={{ 'min-height': '22px' }}>{scaleFactorHtml()} unit</div>
-        <div style={{ 'min-height': '22px', 'margin-left': '1em' }}>=  <span class='bold'>{lengthText()}</span></div>
+        <div style={{ 'min-height': '30px', 'margin-left': '1em' }}>=  <span class='bold'>{mathML()}</span></div>
       </div>
     </div>
     </Show>

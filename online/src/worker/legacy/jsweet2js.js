@@ -231,6 +231,11 @@ class JavaAlgebraicNumber
     this.getNumberExpression( buf, format );
     return buf .toString();
   }
+
+  getMathML()
+  {
+    return this.legacyField .getMathML( this.bigRationals );
+  }
 }
 JavaAlgebraicNumber.__interfaces = [ "com.vzome.core.algebra.AlgebraicNumber" ]
 
@@ -254,6 +259,14 @@ class JavaBigRational
       return this.num.toString()
     else
       return this.num.toString() + "/" + this.denom.toString()
+  }
+
+  getMathML()
+  {
+    if ( this.denom === 1n )
+      return `<mn>${this.num.toString()}</mn>`
+    else
+      return `<mfrac><mn>${this.num.toString()}</mn><mn>${this.denom.toString()}</mn></mfrac>`
   }
 
   evaluate()

@@ -33,6 +33,6 @@ function embed( a )
 
 const getIrrational = (i) => (i===1)? '𝜌' : '𝜎';
 
-const field = { ...createField( { name: 'heptagon', order: 3, times, embed, reciprocal } ), getIrrational }
+const field = createField( { name: 'heptagon', order: 3, times, embed, reciprocal, getIrrational } );
 
 export default field

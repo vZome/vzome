@@ -33,6 +33,8 @@ public class Fields
         boolean isOne();
 
         double evaluate();
+        
+        String getMathML();
     }
 
     public static final int rows(Object[][] matrix) {

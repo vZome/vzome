@@ -110,6 +110,12 @@ public class JsAlgebraicField implements AlgebraicField
         return (String) f.$apply( any( factors ), any( format ) );
     }
 
+    public String getMathML( int[] v1 )
+    {
+        Function f = (Function) this.delegate .$get( "toString" );
+        return (String) f.$apply( any( v1 ), any( 4 ) );
+    }
+
     @Override
     public AlgebraicNumber zero()
     {

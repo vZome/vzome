@@ -172,6 +172,12 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     }
 
     @Override
+    public String getMathML()
+    {
+      return this.field .getMathML( this.factors );
+    }
+
+    @Override
     public int compareTo( AlgebraicNumber other )
     {
         if ( this == other ) {
