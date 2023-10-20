@@ -614,13 +614,24 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
 
     private static String toString(BigRationalImpl that)
     {
-        return (that.bigNum == null) 
-                ? that.den == 1
-                ? Long.toString(that.num)
-                        : that.num + "/" + that.den
-                        : that.bigDen .equals( BigInteger.ONE )
-                        ? that.bigNum.toString()
-                                : that.bigNum + "/" + that.bigDen;
+        return ( that.bigNum == null )?
+                that.den == 1 ?
+                    Long.toString(that.num)
+                   :that.num + "/" + that.den
+               :that.bigDen .equals( BigInteger.ONE )?
+                    that.bigNum.toString()
+                   :that.bigNum + "/" + that.bigDen;
+    }
+
+    public String getMathML()
+    {
+        return ( this.bigNum == null )?
+                this.den == 1 ?
+                    "<mn>" + Long.toString(this.num) + "</mn>"
+                   :"<mfrac><mn>" + this.num + "</mn><mn>" + this.den + "</mn></mfrac>"
+               :this.bigDen .equals( BigInteger.ONE )?
+                    "<mn>" + this.bigNum.toString() + "</mn>"
+                   :"<mfrac><mn>" + this.bigNum + "</mn><mn>" + this.bigDen + "</mn></mfrac>";
     }
 
     /**
