@@ -14,10 +14,11 @@ const Lighting = props =>
   const color = createMemo( () => new Color( props.backgroundColor ) );
   useFrame( ({scene}) => { scene.background = color() } )
   let centerObject;
+  // The ambientLight has to be "invisible" so we don't get an empty node in glTF export.
   return (
     <>
-      <group ref={centerObject} position={[0,0,0]} visible={false} />
-      <ambientLight color={props.ambientColor} intensity={1.5} />
+      <object3D ref={centerObject} visible={false} />
+      <ambientLight color={props.ambientColor} intensity={1.5} visible={false} />
       <For each={props.directionalLights}>{ ( { color, direction } ) =>
         <directionalLight target={centerObject} intensity={1.7} color={color} position={direction.map( x => -x )} />
       }</For>
