@@ -1,6 +1,10 @@
-import { createEffect, createMemo, createSignal } from "solid-js";
+
+import { createContext, createEffect, createMemo, createSignal, useContext } from "solid-js";
 import { Vector3, Matrix4, BufferGeometry, Float32BufferAttribute } from "three";
+import { useThree } from "solid-three";
+
 import { useInteractionTool } from "./interaction.jsx";
+import { GLTFExporter } from "three-stdlib";
 
 
 const Instance = ( props ) =>
@@ -64,8 +68,8 @@ const Instance = ( props ) =>
   const emissive = () => props.selected? "#dddddd" : "black"
   // TODO: cache materials
   return (
-    <group position={ props.position } >
-      <mesh matrixAutoUpdate={false} ref={meshRef} geometry={props.geometry} 
+    <group position={ props.position } name={props.id} >
+      <mesh matrixAutoUpdate={false} ref={meshRef} geometry={props.geometry}
           onPointerOver={handleHover(true)} onPointerOut={handleHover(false)} onClick={handleClick}
           onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onContextMenu={handleContextMenu}>
         <meshLambertMaterial attach="material" color={props.color} emissive={emissive()} />
@@ -111,6 +115,15 @@ const InstancedShape = ( props ) =>
 
 export const ShapedGeometry = ( props ) =>
 {
+  const scene = useThree(({ scene }) => scene);
+  const exportGltf = callback => {
+    const exporter = new GLTFExporter();
+    // Parse the input and generate the glTF output
+    exporter.parse( scene(), callback, { onlyVisible: false } );
+  };
+  const { setExporter } = useContext( GltfExportContext );
+  setExporter( { exportGltf } );
+
   let groupRef;
   createEffect( () => {
     if ( props.embedding && groupRef && groupRef.matrix ) {
@@ -120,12 +133,12 @@ export const ShapedGeometry = ( props ) =>
       groupRef.matrix.identity()  // Required, or applyMatrix4() changes will accumulate
       // This imperative approach is required because I was unable to decompose the
       //   embedding matrix (a shear) into a scale and rotation.
-      groupRef.applyMatrix4( m )
+      groupRef.applyMatrix4( m );
     }
   })
   return (
     // <Show when={ () => props.shapes }>
-      <group matrixAutoUpdate={false} ref={groupRef}>
+      <group matrixAutoUpdate={false} ref={groupRef} onClick={exportGltf}>
         <For each={Object.values( props.shapes || {} )}>{ shape =>
           <InstancedShape shape={shape} />
         }</For>
@@ -133,3 +146,18 @@ export const ShapedGeometry = ( props ) =>
     // </Show>
   )
 };
+
+const GltfExportContext = createContext( {} );
+
+export const GltfExportProvider = (props) =>
+{
+  const [ exporter, setExporter ] = createSignal( {} );
+
+  return (
+    <GltfExportContext.Provider value={ { exporter, setExporter } }>
+      {props.children}
+    </GltfExportContext.Provider>
+  );
+}
+
+export const useGltfExporter = () => { return useContext( GltfExportContext ); };

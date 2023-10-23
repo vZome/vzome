@@ -17,6 +17,7 @@ import { FullscreenButton } from './fullscreen.jsx';
 import { ExportMenu } from './export.jsx';
 import { InteractionToolProvider } from './interaction.jsx';
 import { UndoRedoButtons } from './undoredo.jsx';
+import { GltfExportProvider } from './geometry.jsx';
 
 let stylesAdded = false; // for the onMount in DesignViewer
 
@@ -74,6 +75,8 @@ const DesignViewer = ( props ) =>
   let rootRef;
   return (
     <InteractionToolProvider>
+      <GltfExportProvider>
+
     <div id='design-viewer' ref={rootRef} style={ fullScreen()? fullScreenStyle : normalStyle }>
       {/* This renders the light DOM if the scene couldn't load */}
       <Show when={state.scene} fallback={props.children}>
@@ -104,6 +107,7 @@ const DesignViewer = ( props ) =>
 
       <ErrorAlert root={rootRef} />
     </div>      
+      </GltfExportProvider>
     </InteractionToolProvider>
   );
 }

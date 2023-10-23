@@ -2,10 +2,22 @@
 import { DropdownMenu } from "@kobalte/core";
 
 import { saveFileAs, useWorkerClient } from "../../workerClient";
+import { useGltfExporter } from "./geometry";
 
 export const ExportMenu = (props) =>
 {
   const { state } = useWorkerClient();
+  const { exporter } = useGltfExporter();
+
+  const downloadGltf = () =>
+  {
+    const { name } = state.source;
+    const vName = name || 'untitled.vZome';
+    const fileName = vName .substring( 0, vName.length-6 ) .concat( ".gltf" );
+    const { exportGltf } = exporter();
+    exportGltf( gltf => saveFileAs( fileName, JSON.stringify( gltf, null, 2 ), 'model/gltf+json' ) );
+  }
+
   const downloadVZome = () =>
   {
     const { name, text, changedText } = state.source;
@@ -31,7 +43,7 @@ export const ExportMenu = (props) =>
           <DropdownMenu.Item onSelect={downloadVZome} closeOnSelect={true} class="exports__item">
             .vZome source
           </DropdownMenu.Item>
-          <DropdownMenu.Item closeOnSelect={true} class="exports__item" disabled>
+          <DropdownMenu.Item closeOnSelect={true} class="exports__item" onSelect={downloadGltf} >
             glTF scene
           </DropdownMenu.Item>
           {/* <Show when={canDownloadScene}>
