@@ -147,7 +147,7 @@ export const ShapedGeometry = ( props ) =>
   )
 };
 
-const GltfExportContext = createContext( {} );
+const GltfExportContext = createContext( { setExporter: ()=>{}, exporter: ()=>{} } );
 
 export const GltfExportProvider = (props) =>
 {
