@@ -13,6 +13,16 @@
       }
     },
     {
+      "name":             "59icosahedra",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8532/59icosahedra",
+      "pathMapping": {
+        "/": "${workspaceFolder}/online/src"
+      }
+    },
+    {
       "name":             "browser",
 
       "type": "chrome",

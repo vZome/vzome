@@ -138,7 +138,7 @@ export const ShapedGeometry = ( props ) =>
   })
   return (
     // <Show when={ () => props.shapes }>
-      <group matrixAutoUpdate={false} ref={groupRef} onClick={exportGltf}>
+      <group matrixAutoUpdate={false} ref={groupRef} >
         <For each={Object.values( props.shapes || {} )}>{ shape =>
           <InstancedShape shape={shape} />
         }</For>

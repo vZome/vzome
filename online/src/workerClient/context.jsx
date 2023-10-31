@@ -67,6 +67,7 @@ const WorkerStateProvider = ( props ) =>
   const { url } = props.config || {};
   url && workerClient.postMessage( fetchDesign( url, props.config ) );
 
+  // TODO: find a more appropriate place to implement this
   const adjustFrustum = ( camera, target ) =>
   {
     const { distance } = extractCameraState( camera, target );
@@ -76,6 +77,7 @@ const WorkerStateProvider = ( props ) =>
     workerClient.setState( 'scene', 'camera', { far, near } );
   }
 
+  // TODO: find a more appropriate place to implement this
   const recordCamera = ( camera, target ) =>
     workerClient.setState( 'liveCamera', extractCameraState( camera, target ) );
   
