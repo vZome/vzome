@@ -1072,7 +1072,7 @@
     </SelectManifestation>
     <EndBlock/>
     <ApplyTool copyColors="true" name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
-    <GroupSelection/>
+    <GroupSelection label="a"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>
@@ -1097,7 +1097,7 @@
       <polygonVertex at="21 34 21 34 21 34"/>
     </SelectManifestation>
     <EndBlock/>
-    <GroupSelection/>
+    <GroupSelection label="g2"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>
@@ -1126,7 +1126,7 @@
       <polygonVertex at="0 0 13 21 34 55"/>
     </SelectManifestation>
     <EndBlock/>
-    <GroupSelection/>
+    <GroupSelection label="g1"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>
@@ -1151,7 +1151,7 @@
       <polygonVertex at="13/2 21/2 21/2 17 17 55/2"/>
     </SelectManifestation>
     <EndBlock/>
-    <GroupSelection/>
+    <GroupSelection label="e2"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>
@@ -1185,7 +1185,7 @@
       <polygonVertex at="0 0 13 21 8 13"/>
     </SelectManifestation>
     <EndBlock/>
-    <GroupSelection/>
+    <GroupSelection label="c"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>
@@ -1281,7 +1281,7 @@
       <polygonVertex at="17 55/2 13/2 21/2 21/2 17"/>
     </SelectManifestation>
     <EndBlock/>
-    <GroupSelection/>
+    <GroupSelection label="e1"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>

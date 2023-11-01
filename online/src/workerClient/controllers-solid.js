@@ -201,6 +201,8 @@ const createWorkerStore = ( worker ) =>
 
       case 'SYMMETRY_CHANGED':
       case 'DESIGN_XML_PARSED':
+      case 'LAST_BALL_CREATED':
+      case 'DESIGN_XML_SAVED':
         // TODO these are not implemented yet!
         break;
     

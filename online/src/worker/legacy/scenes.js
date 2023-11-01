@@ -26,6 +26,7 @@ export const toWebColor = color =>
 export const normalizeRenderedManifestation = rm =>
 {
   const id = rm.getGuid().toString();
+  const label = rm.label;
   const type = rm .getShape() .name;
   const shapeId = 's' + rm.getShapeId().toString();
   const positionAV = rm.getLocationAV();
@@ -38,7 +39,7 @@ export const normalizeRenderedManifestation = rm =>
   }
   let color = toWebColor( rm.getColor() );
 
-  return { id, position: [ x, y, z ], rotation, color, selected, shapeId, type };
+  return { id, position: [ x, y, z ], rotation, color, selected, shapeId, type, label };
 }
 
 export const renderedModelTransducer = ( shapeCache, clientEvents ) =>

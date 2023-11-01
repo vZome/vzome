@@ -217,8 +217,20 @@ const makeFloatMatrices = ( matrices ) =>
     }
 
     const editClass = xmlToEditClass( editName )
-    if ( editClass )
-      return new editClass( editor )
+    if ( editClass ) {
+      const edit = new editClass( editor );
+
+      // HACK! This works only when the .vZome file has been hand-edited to add label
+      //   attributes to GroupSelection commands.
+      if ( editName === 'GroupSelection' ) {
+        const label = xmlElement .getAttribute( "label" );
+        if ( label ) {
+          edit .label = label;
+        }
+      }
+
+      return edit;
+    }
     else
       return new vzomePkg.core.editor.CommandEdit( null, editor )
   }
@@ -523,6 +535,18 @@ const makeFloatMatrices = ( matrices ) =>
       const edit = editFactory( editor, toolFactories, toolsModel )( wrappedElement )
       if ( ! edit )   // Null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit.
         return null  //  Not indicating failure, just indicating nothing to record in history
+
+      // HACK! This works only when the .vZome file has been hand-edited to add label
+      //   attributes to GroupSelection commands.
+      if ( xmlElement.tagName === 'GroupSelection' && !!edit.label ) {
+        console.log( `Performed GroupSelection with label ${edit.label}`);
+        const selection = edit.mSelection; // HACK! violating encapsulation
+        for (let index = selection.mManifestations.iterator(); index.hasNext(); ) {
+          let m = index.next();
+          m .mRendered .label = edit.label;
+        }
+      }
+      
       edit.loadAndPerform( wrappedElement, format, context )
 
       checkSideEffects( edit, wrappedElement );

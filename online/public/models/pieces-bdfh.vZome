@@ -1037,7 +1037,7 @@
       <polygonVertex at="13 21 8 13 0 0"/>
     </SelectManifestation>
     <EndBlock/>
-    <GroupSelection/>
+    <GroupSelection label="b"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>
@@ -1126,7 +1126,7 @@
       <polygonVertex at="47/5 76/5 47/5 76/5 21 34"/>
     </SelectManifestation>
     <EndBlock/>
-    <GroupSelection/>
+    <GroupSelection label="f2"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>
@@ -1162,7 +1162,7 @@
       <polygonVertex at="13 21 8 13 16 26"/>
     </SelectManifestation>
     <EndBlock/>
-    <GroupSelection/>
+    <GroupSelection label="f1L"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>
@@ -1187,7 +1187,7 @@
       <polygonVertex at="13 21 8 13 16 26"/>
       <polygonVertex at="13/2 21/2 21/2 17 17 55/2"/>
     </SelectManifestation>
-    <GroupSelection/>
+    <GroupSelection label="d"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>
@@ -1230,7 +1230,7 @@
       <polygonVertex at="0 0 13 21 34 55"/>
     </SelectManifestation>
     <EndBlock/>
-    <GroupSelection/>
+    <GroupSelection label="f1R"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>
@@ -1281,7 +1281,7 @@
       <polygonVertex at="55 89 34 55 110 178"/>
     </SelectManifestation>
     <EndBlock/>
-    <GroupSelection/>
+    <GroupSelection label="h"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>

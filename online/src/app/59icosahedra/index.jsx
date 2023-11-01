@@ -11,7 +11,7 @@ import { SceneCanvas } from '../../viewer/solid/index.jsx'
 import { getModelURL } from '../classic/components/folder.jsx';
 import { RotationProvider } from "../../viewer/solid/rotation.jsx";
 import { InteractionToolProvider } from '../../viewer/solid/interaction.jsx';
-import { CellSelectorTool } from './selector.jsx';
+import { CellSelectorTool, MacroTriggerTool } from './selector.jsx';
 
 // We must have this split using WorkerStateProvider and useWorkerClient because
 //  LightedCameraControls and TrackballControls require the WorkerStateProvider anyway.
@@ -85,8 +85,11 @@ const App = () => (
           </div>
         </RotationProvider>
       </div>
-      <ModelWorker model='pieces-all' >
-        <ModelScene freeCamera={true} />
+      <ModelWorker model='icosahedron-stellation-faces' >
+        <InteractionToolProvider>
+          <MacroTriggerTool/>
+          <ModelScene freeCamera={true} />
+        </InteractionToolProvider>
       </ModelWorker>
     </div>
   </ErrorBoundary>
