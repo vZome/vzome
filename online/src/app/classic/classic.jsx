@@ -9,7 +9,7 @@ import { SceneEditor } from './components/editor.jsx';
 import { useWorkerClient } from "../../workerClient/index.js";
 import { OrbitsDialog } from "./dialogs/orbits.jsx";
 import { ShapesDialog } from "./dialogs/shapes.jsx";
-import { RotationProvider } from "../../viewer/solid/rotation.jsx";
+import { RotationProvider } from "../../viewer/solid/camera.jsx";
 import { PolytopesDialog } from "./dialogs/polytopes.jsx";
 import { ErrorAlert } from "./components/alert.jsx";
 

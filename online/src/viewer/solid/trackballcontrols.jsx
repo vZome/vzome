@@ -5,9 +5,9 @@ import { createEffect, createMemo, onCleanup } from "solid-js";
 import { useFrame, useThree } from "solid-three";
 import { TrackballControls as TrackballControlsImpl } from "three-stdlib";
 
-import { useRotation } from "./rotation.jsx";
+import { useRotation } from "./camera.jsx";
 import { useInteractionTool } from "./interaction.jsx";
-import { extractCameraState, injectCameraOrientation, useWorkerClient } from "../../workerClient/context.jsx";
+import { extractCameraState, injectCameraOrientation, useCameraState } from "./camera.jsx";
 
 export const TrackballControls = (props) =>
 {
@@ -49,7 +49,7 @@ export const TrackballControls = (props) =>
   });
 
   const { lastRotation, publishRotation } = useRotation();
-  const { state } = useWorkerClient();
+  const { state } = useCameraState();
 
   createEffect(() =>
   {

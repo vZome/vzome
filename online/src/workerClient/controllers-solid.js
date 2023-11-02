@@ -291,4 +291,4 @@ const controllerExportAction = ( controller, format, parameters={} ) =>
   return controller.__store .expectResponse( controllerPath, parameters );
 }
 
-export { createWorkerStore, subController, controllerProperty, controllerAction, controllerExportAction };
+export { initialScenes, createWorkerStore, subController, controllerProperty, controllerAction, controllerExportAction };

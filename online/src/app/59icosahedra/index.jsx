@@ -1,6 +1,6 @@
 
 import { render } from 'solid-js/web';
-import { ErrorBoundary } from "solid-js";
+import { ErrorBoundary, createEffect } from "solid-js";
 
 import Typography from '@suid/material/Typography'
 import Link from '@suid/material/Link'
@@ -9,13 +9,13 @@ import { VZomeAppBar } from '../classic/components/appbar.jsx';
 import { WorkerStateProvider, useWorkerClient } from '../../workerClient/context.jsx';
 import { SceneCanvas } from '../../viewer/solid/index.jsx'
 import { getModelURL } from '../classic/components/folder.jsx';
-import { RotationProvider } from "../../viewer/solid/rotation.jsx";
+import { CameraStateProvider, RotationProvider, useCameraState } from "../../viewer/solid/camera.jsx";
 import { InteractionToolProvider } from '../../viewer/solid/interaction.jsx';
-import { CellSelectorTool, MacroTriggerTool } from './selector.jsx';
+import { CellOrbitProvider, CellSelectorTool, useCellOrbits } from './selector.jsx';
+import { LightedTrackballCanvas } from '../../viewer/solid/ltcanvas.jsx';
+import { ShapedGeometry } from '../../viewer/solid/geometry.jsx';
 
-// We must have this split using WorkerStateProvider and useWorkerClient because
-//  LightedCameraControls and TrackballControls require the WorkerStateProvider anyway.
-const ModelScene = props =>
+const ModelCanvas = () =>
 {
   const { state } = useWorkerClient();
 
@@ -27,7 +27,7 @@ const ModelScene = props =>
   }
 
   return (
-    <SceneCanvas rotationOnly={!props.freeCamera} scene={scene()}
+    <SceneCanvas rotationOnly={true} scene={scene()}
       style={{ position: 'relative', height: '100%' }} height='100%' width='100%' />
   )
 }
@@ -49,14 +49,52 @@ const Selector = props =>
     <div style={{
       border: '2px solid darkgrey', 'border-radius' : '5px',
     }}>
-      <ModelWorker model={props.model} >
-        <InteractionToolProvider>
-          <CellSelectorTool/>
-          <ModelScene freeCamera={false} />
-        </InteractionToolProvider>
-      </ModelWorker>
+      <CameraStateProvider>
+        <ModelWorker model={props.model} >
+          <InteractionToolProvider>
+            <CellSelectorTool/>
+            <ModelCanvas/>
+          </InteractionToolProvider>
+        </ModelWorker>
+      </CameraStateProvider>
     </div>
   )
+}
+
+const CellOrbitScene = props =>
+{
+  const { state: geometry } = useWorkerClient();
+  const { state: toggles } = useCellOrbits();
+  const showCell = () => toggles[ props.cell ];
+
+  return (
+    <group>
+      <Show when={ showCell() }>
+        <ShapedGeometry embedding={geometry.scene?.embedding} shapes={geometry.scene?.shapes} />
+      </Show>
+    </group>
+  );
+}
+
+const CellOrbit = props =>
+{
+  return (
+    <ModelWorker model={props.cell} >
+      <CellOrbitScene cell={props.cell} />
+    </ModelWorker>
+  );
+}
+
+const StellationCanvas = props =>
+{
+  const { state } = useCameraState();
+  return (
+    <LightedTrackballCanvas sceneCamera={state.scene?.camera} lighting={state.scene?.lighting}
+        style={{ position: 'relative', height: '100%' }} height='100%' width='100%'
+        rotationOnly={false} rotateSpeed={4.5} >
+      {props.children}
+    </LightedTrackballCanvas>
+  );
 }
 
 const App = () => (
@@ -72,25 +110,37 @@ const App = () => (
         </Typography>
       </> } />
     <div id='selectors-and-model' style={{ position: 'relative', display: 'grid', 'grid-template-columns': '2fr 3fr', height: '100%' }}>
-      <div id='text-and-selectors' style={{ display: 'grid', 'grid-template-rows': '20% 80%', height: '100%',
-          'border-right': '2px solid darkgrey' }}>
-        <Typography gutterBottom sx={{ margin: '1em' }}>
-          To toggle different shapes in the stellation shown on the right,
-          click on the shapes below. (Stellation changes are not yet implemented.)
-        </Typography>
-        <RotationProvider>
-          <div id='selectors' style={{ display: 'grid', 'grid-template-rows': '1fr 1fr', margin: '1em' }}>
-            <Selector model='pieces-aceg' />
-            <Selector model='pieces-bdfh' />
-          </div>
-        </RotationProvider>
-      </div>
-      <ModelWorker model='icosahedron-stellation-faces' >
-        <InteractionToolProvider>
-          <MacroTriggerTool/>
-          <ModelScene freeCamera={true} />
-        </InteractionToolProvider>
-      </ModelWorker>
+      <CellOrbitProvider>
+        <div id='text-and-selectors' style={{ display: 'grid', 'grid-template-rows': '15% 85%', height: '100%',
+            'border-right': '2px solid darkgrey' }}>
+          <Typography gutterBottom sx={{ margin: '1em' }}>
+            To toggle different shapes in the stellation shown on the right,
+            click on the shapes below.
+          </Typography>
+          <RotationProvider>
+            <div id='selectors' style={{ display: 'grid', 'grid-template-rows': '1fr 1fr', margin: '1em' }}>
+              <Selector model='pieces-aceg' />
+              <Selector model='pieces-bdfh' />
+            </div>
+          </RotationProvider>
+        </div>
+        <CameraStateProvider>
+          <StellationCanvas>
+            <CellOrbit cell='a'/>
+            <CellOrbit cell='b'/>
+            <CellOrbit cell='c'/>
+            <CellOrbit cell='d'/>
+            <CellOrbit cell='e1'/>
+            <CellOrbit cell='e2'/>
+            <CellOrbit cell='f1L'/>
+            <CellOrbit cell='f1R'/>
+            <CellOrbit cell='f2'/>
+            <CellOrbit cell='g1'/>
+            <CellOrbit cell='g2'/>
+            <CellOrbit cell='h'/>
+          </StellationCanvas>
+        </CameraStateProvider>
+      </CellOrbitProvider>
     </div>
   </ErrorBoundary>
 )
