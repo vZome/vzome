@@ -117,6 +117,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         return mExcluder;
     }
     
+    private static final JColorChooser colorChooser = new JColorChooser();
+    
     void setAppUI( PropertyChangeListener appUI )
     {
     	this .appUI = appUI;
@@ -350,26 +352,48 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     zomodFrame .setVisible( true );
                     break;
                 
-                case "setItemColor":
+                case "setItemColor": {
                     Long intval = Long.decode( mController .getProperty( "lastObjectColor" ) );
                     int i = intval.intValue();
                     Color color = new Color((i >> 24) & 0xFF, (i >> 16) & 0xFF, (i >> 8) & 0xFF, i & 0xFF);
-                    color = JColorChooser.showDialog( DocumentFrame.this, "Choose Object Color", color );
-                    if ( color == null )
-                        return;
-                    int rgb = color .getRGB() & 0xffffff;
-                    int alpha = color .getAlpha() & 0xff;
-                    String colorString = Integer.toHexString( ( rgb << 8 ) | alpha );
-                    mController .setProperty( "lastObjectColor", "#"+colorString );
-                    String command = "ColorManifestations/" + colorString;
-                    mController .actionPerformed( e .getSource(), command );
+                    colorChooser .setColor( color );
+                    final JDialog dialog = JColorChooser.createDialog( DocumentFrame.this, "Choose Object Color", true, colorChooser,
+                        new ActionListener() {
+                            
+                            @Override
+                            public void actionPerformed( ActionEvent e )
+                            {
+                                Color color = colorChooser .getColor();
+                                if ( color == null )
+                                    return;
+                                int rgb = color .getRGB() & 0xffffff;
+                                int alpha = color .getAlpha() & 0xff;
+                                String colorString = Integer.toHexString( ( rgb << 8 ) | alpha );
+                                mController .setProperty( "lastObjectColor", "#"+colorString );
+                                String command = "ColorManifestations/" + colorString;
+                                mController .actionPerformed( e .getSource(), command );
+                            }
+                        }, null );
+                    dialog .setVisible( true );
+                }
                     break;
                     
-                case "setBackgroundColor":
-                    color = Color.decode( mController .getProperty( "backgroundColor" ) );
-                    color = JColorChooser.showDialog( DocumentFrame.this, "Choose Background Color", color );
-                    if ( color != null )
-                        mController .setProperty( "backgroundColor", Integer.toHexString( color.getRGB() & 0xffffff ) );
+                case "setBackgroundColor": {
+                    Color color = Color.decode( mController .getProperty( "backgroundColor" ) );
+                    colorChooser .setColor( color );
+                    final JDialog dialog = JColorChooser.createDialog( DocumentFrame.this, "Choose Background Color", true, colorChooser,
+                        new ActionListener() {
+                            
+                            @Override
+                            public void actionPerformed( ActionEvent e )
+                            {
+                                Color color = colorChooser .getColor();
+                                if ( color != null )
+                                    mController .setProperty( "backgroundColor", Integer.toHexString( color.getRGB() & 0xffffff ) );
+                            }
+                        }, null );
+                    dialog .setVisible( true );
+                }
                     break;
                 
                 case "usedOrbits":
