@@ -34,7 +34,7 @@ const ModelCanvas = () =>
 
 const ModelWorker = props =>
 {
-  const config = { url: getModelURL( props.model ), preview: false, debug: false };
+  const config = { url: getModelURL( props.model ), preview: props.preview, debug: false };
 
   return (
     <WorkerStateProvider config={config} >
@@ -50,7 +50,7 @@ const Selector = props =>
       border: '2px solid darkgrey', 'border-radius' : '5px',
     }}>
       <CameraStateProvider>
-        <ModelWorker model={props.model} >
+        <ModelWorker model={props.model} preview={false} >
           <InteractionToolProvider>
             <CellSelectorTool model={props.model}/>
             <ModelCanvas/>
@@ -79,7 +79,7 @@ const CellOrbitScene = props =>
 const CellOrbit = props =>
 {
   return (
-    <ModelWorker model={props.cell} >
+    <ModelWorker model={props.cell} preview={true} >
       <CellOrbitScene cell={props.cell} />
     </ModelWorker>
   );
