@@ -14,21 +14,31 @@ export const Spacer = () => <div style={{ flex: '1 1 auto' }}></div>
 export const VZomeAppBar = ( props ) =>
 {
   const spacer = <Spacer/>;
-  const merged = mergeProps( { spacer, showOpen: false, pathToRoot: '.', forDebugger: false }, props );
+  const merged = mergeProps( {
+    spacer,
+    showOpen: false,
+    pathToRoot: '.',
+    forDebugger: false,
+    customTitle: false,
+  }, props );
 
   return (
     <div id="appbar" >
       <AppBar position="static" sx={{ backgroundColor: '#01203d' }}>
         <Toolbar>
-          <VZomeLogo/>
-          <Typography variant="h5" sx={{ paddingLeft: '12px', paddingRight: '40px' }}>
-            vZome Online <Box component="span" fontStyle="oblique">{props.title}</Box>
-          </Typography>
+          <Show when={ !merged.customTitle } fallback={
+            <Typography variant="h5" sx={{ paddingLeft: '12px', paddingRight: '40px' }}>{props.title}</Typography>
+          }>
+            <VZomeLogo/>
+            <Typography variant="h5" sx={{ paddingLeft: '12px', paddingRight: '40px' }}>
+              vZome Online <Box component="span" fontStyle="oblique">{props.title}</Box>
+            </Typography>
+          </Show>
           {merged.spacer}
           <Show when={merged.showOpen} >
             <OpenMenu pathToRoot={merged.pathToRoot} forDebugger={merged.forDebugger} />
           </Show>
-          <AboutDialog title={props.title} about={props.about} />
+          <AboutDialog title={props.customTitle? props.title : 'vZome Online '+ props.title} about={props.about} />
         </Toolbar>
       </AppBar>
     </div>
