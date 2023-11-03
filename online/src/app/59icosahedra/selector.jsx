@@ -23,7 +23,7 @@ export const CellOrbitProvider = ( props ) =>
 
 export const useCellOrbits = () => { return useContext( CellOrbitContext ); };
 
-export const CellSelectorTool = () =>
+export const CellSelectorTool = props =>
 {
   const { rootController } = useWorkerClient();
   const pickingController  = () => subController( rootController(), 'picking' );
@@ -43,7 +43,21 @@ export const CellSelectorTool = () =>
     bkgdClick: () =>
     {
       controllerAction( rootController(), 'DeselectAll' );
-      setState( () => {} );
+      if ( props.model === 'pieces-aceg' ) {
+        setState( 'a', false );
+        setState( 'c', false );
+        setState( 'e1', false );
+        setState( 'e2', false );
+        setState( 'g1', false );
+        setState( 'g2', false );
+      } else {
+        setState( 'b', false );
+        setState( 'd', false );
+        setState( 'f1L', false );
+        setState( 'f1R', false );
+        setState( 'f2', false );
+        setState( 'h', false );  
+      }
     },
 
     onDragStart: ( id, position, type, starting, evt ) => {},

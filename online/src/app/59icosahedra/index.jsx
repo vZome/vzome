@@ -52,7 +52,7 @@ const Selector = props =>
       <CameraStateProvider>
         <ModelWorker model={props.model} >
           <InteractionToolProvider>
-            <CellSelectorTool/>
+            <CellSelectorTool model={props.model}/>
             <ModelCanvas/>
           </InteractionToolProvider>
         </ModelWorker>
@@ -99,24 +99,35 @@ const StellationCanvas = props =>
 
 const App = () => (
   <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
-    <VZomeAppBar title='59 Icosahedra'
+    <VZomeAppBar title='The 59 Icosahedra' customTitle={true}
       about={ <>
         <Typography gutterBottom>
-          This application is a work-in-progress.  When completed, it will let you explore
-          the <Link target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/The_Fifty-Nine_Icosahedra/">
-            59 stellations of the icosahedron
-          </Link> identified by H. S. M. Coxeter.
-          It is built using <Link target="_blank" rel="noopener" href='https://vzome.com'>vZome</Link> technology.
+          This application is built using <Link target="_blank" rel="noopener" href='https://vzome.com'>vZome</Link> technology.
+          To share feedback, please join
+          the <Link target="_blank" rel="noopener" href="https://discord.gg/vhyFsNAFPS">
+            vZome Discord server
+          </Link>.
         </Typography>
       </> } />
     <div id='selectors-and-model' style={{ position: 'relative', display: 'grid', 'grid-template-columns': '2fr 3fr', height: '100%' }}>
       <CellOrbitProvider>
         <div id='text-and-selectors' style={{ display: 'grid', 'grid-template-rows': '15% 85%', height: '100%',
             'border-right': '2px solid darkgrey' }}>
-          <Typography gutterBottom sx={{ margin: '1em' }}>
-            To toggle different shapes in the stellation shown on the right,
-            click on the shapes below.
-          </Typography>
+          <div>
+            <Typography gutterBottom sx={{ margin: '1em' }}>
+              This application lets you explore
+              the <Link target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/The_Fifty-Nine_Icosahedra">
+                59 stellations of the icosahedron
+              </Link> identified by H. S. M. Coxeter.
+              It was inspired by <Link target="_blank" rel="noopener" href="https://www.instructables.com/The-Magnetic-59-Icosahedra/">
+                Bob Hearn's physical magnetic model
+              </Link>.
+            </Typography>
+            <Typography gutterBottom sx={{ margin: '1em' }}>
+              To toggle different shapes in the stellation shown on the right,
+              click on the shapes below.
+            </Typography>
+          </div>
           <RotationProvider>
             <div id='selectors' style={{ display: 'grid', 'grid-template-rows': '1fr 1fr', margin: '1em' }}>
               <Selector model='pieces-aceg' />
