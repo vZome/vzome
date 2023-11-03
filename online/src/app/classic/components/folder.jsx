@@ -57,7 +57,7 @@ const models = [
   },
 ]
 
-export const getModelURL = ( key, pathToRoot='.' ) => new URL( `${pathToRoot}/models/${key}.vZome`, window.location ) .toString();
+export const getModelURL = ( key, pathToRoot='./models' ) => new URL( `${pathToRoot}/${key}.vZome`, window.location ) .toString();
 
 export const OpenMenu = props =>
 {

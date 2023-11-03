@@ -17,7 +17,7 @@ export const VZomeAppBar = ( props ) =>
   const merged = mergeProps( {
     spacer,
     showOpen: false,
-    pathToRoot: '.',
+    pathToRoot: './models',
     forDebugger: false,
     customTitle: false,
   }, props );

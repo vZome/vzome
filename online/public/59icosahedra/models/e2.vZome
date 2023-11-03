@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="32" field="golden" version="7.1">
-  <EditHistory editNumber="53" lastStickyEdit="17">
+  <EditHistory editNumber="117" lastStickyEdit="117">
     <Branch>
       <StrutCreation anchor="0 0 0 0 0 0" index="7" len="2 4"/>
       <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="32" len="1 2"/>
@@ -185,8 +185,191 @@
     <AdjustSelectionByClass balls="IGNORE" originLast="true" panels="IGNORE" struts="SELECT"/>
     <ApplyTool copyColors="true" name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
     <DeselectAll/>
+    <Snapshot id="0"/>
+    <Branch>
+      <ApplyTool copyColors="true" name="bookmark.builtin/ball at origin" selectInputs="true"/>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="7" len="1 1"/>
+      <SelectManifestation endSegment="0 0 1 1 2 3" startSegment="0 0 0 0 0 0"/>
+      <RotationTool corrected="true" full="true" name="tool-10" symmetry="icosahedral"/>
+    </Branch>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="-18/5 -29/5 47/5 76/5 58/5 94/5"/>
+      <polygonVertex at="-4 -13/2 13/2 21/2 21/2 17"/>
+      <polygonVertex at="0 0 8 13 11 18"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-4 -13/2 13/2 21/2 21/2 17"/>
+      <polygonVertex at="-18/5 -29/5 47/5 76/5 58/5 94/5"/>
+      <polygonVertex at="-5 -8 10 16 8 13"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-5 -8 10 16 8 13"/>
+      <polygonVertex at="-18/5 -29/5 47/5 76/5 58/5 94/5"/>
+      <polygonVertex at="0 0 8 13 11 18"/>
+      <polygonVertex at="0 0 8 13 5 8"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-29/5 -47/5 29/5 47/5 13 21"/>
+      <polygonVertex at="-4 -13/2 13/2 21/2 21/2 17"/>
+      <polygonVertex at="-8 -13 5 8 10 16"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-4 -13/2 13/2 21/2 21/2 17"/>
+      <polygonVertex at="-29/5 -47/5 29/5 47/5 13 21"/>
+      <polygonVertex at="-3 -5 3 5 13 21"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-3 -5 3 5 13 21"/>
+      <polygonVertex at="-29/5 -47/5 29/5 47/5 13 21"/>
+      <polygonVertex at="-8 -13 5 8 10 16"/>
+      <polygonVertex at="-5 -8 0 0 8 13"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-21/2 -17 4 13/2 13/2 21/2"/>
+      <polygonVertex at="-58/5 -94/5 18/5 29/5 47/5 76/5"/>
+      <polygonVertex at="-8 -13 5 8 10 16"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-58/5 -94/5 18/5 29/5 47/5 76/5"/>
+      <polygonVertex at="-21/2 -17 4 13/2 13/2 21/2"/>
+      <polygonVertex at="-11 -18 0 0 8 13"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-8 -13 5 8 10 16"/>
+      <polygonVertex at="-58/5 -94/5 18/5 29/5 47/5 76/5"/>
+      <polygonVertex at="-11 -18 0 0 8 13"/>
+      <polygonVertex at="-5 -8 0 0 8 13"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool copyColors="true" name="tool-10" selectInputs="true"/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="-8 -13 5 8 10 16"/>
+      <polygonVertex at="-21/2 -17 4 13/2 13/2 21/2"/>
+      <polygonVertex at="-5 -8 0 0 8 13"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-21/2 -17 4 13/2 13/2 21/2"/>
+      <polygonVertex at="-11 -18 0 0 8 13"/>
+      <polygonVertex at="-5 -8 0 0 8 13"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-4 -13/2 13/2 21/2 21/2 17"/>
+      <polygonVertex at="-8 -13 5 8 10 16"/>
+      <polygonVertex at="-5 -8 0 0 8 13"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-3 -5 3 5 13 21"/>
+      <polygonVertex at="-4 -13/2 13/2 21/2 21/2 17"/>
+      <polygonVertex at="-5 -8 0 0 8 13"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 0 0 0 13 21"/>
+      <polygonVertex at="-3 -5 3 5 13 21"/>
+      <polygonVertex at="-5 -8 0 0 8 13"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-3 -5 -3 -5 13 21"/>
+      <polygonVertex at="0 0 0 0 13 21"/>
+      <polygonVertex at="-5 -8 0 0 8 13"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-8 -13 -5 -8 10 16"/>
+      <polygonVertex at="-29/5 -47/5 -29/5 -47/5 13 21"/>
+      <polygonVertex at="-3 -5 -3 -5 13 21"/>
+      <polygonVertex at="-5 -8 0 0 8 13"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-29/5 -47/5 -29/5 -47/5 13 21"/>
+      <polygonVertex at="-4 -13/2 -13/2 -21/2 21/2 17"/>
+      <polygonVertex at="-3 -5 -3 -5 13 21"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-4 -13/2 -13/2 -21/2 21/2 17"/>
+      <polygonVertex at="-29/5 -47/5 -29/5 -47/5 13 21"/>
+      <polygonVertex at="-8 -13 -5 -8 10 16"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool copyColors="true" name="tool-10" selectInputs="true"/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="-8 -13 -5 -8 10 16"/>
+      <polygonVertex at="-4 -13/2 -13/2 -21/2 21/2 17"/>
+      <polygonVertex at="-5 -8 0 0 8 13"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-4 -13/2 -13/2 -21/2 21/2 17"/>
+      <polygonVertex at="-3 -5 -3 -5 13 21"/>
+      <polygonVertex at="-5 -8 0 0 8 13"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool copyColors="true" name="tool-10" selectInputs="true"/>
+    <Delete/>
+    <Branch>
+      <ApplyTool copyColors="true" name="bookmark.builtin/ball at origin" selectInputs="true"/>
+      <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="32" len="1 2"/>
+      <SelectManifestation endSegment="-1 -2 0 0 2 3" startSegment="0 0 0 0 0 0"/>
+      <RotationTool corrected="true" full="true" name="tool-11" symmetry="icosahedral"/>
+    </Branch>
+    <BeginBlock/>
+    <SelectManifestation endSegment="-29/5 -47/5 29/5 47/5 13 21" startSegment="-4 -13/2 13/2 21/2 21/2 17"/>
+    <SelectManifestation endSegment="-8 -13 5 8 10 16" startSegment="-4 -13/2 13/2 21/2 21/2 17"/>
+    <SelectManifestation endSegment="-3 -5 3 5 13 21" startSegment="-4 -13/2 13/2 21/2 21/2 17"/>
+    <SelectManifestation endSegment="-5 -8 0 0 8 13" startSegment="-4 -13/2 13/2 21/2 21/2 17"/>
+    <SelectManifestation endSegment="-8 -13 5 8 10 16" startSegment="-29/5 -47/5 29/5 47/5 13 21"/>
+    <SelectManifestation endSegment="-29/5 -47/5 29/5 47/5 13 21" startSegment="-3 -5 3 5 13 21"/>
+    <SelectManifestation endSegment="-5 -8 0 0 8 13" startSegment="-8 -13 5 8 10 16"/>
+    <EndBlock/>
+    <ApplyTool copyColors="true" name="tool-11" selectInputs="true"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="-58/5 -94/5 -18/5 -29/5 47/5 76/5" startSegment="-11 -18 0 0 8 13"/>
+    <SelectManifestation>
+      <polygonVertex at="3 5 3 5 -13 -21"/>
+      <polygonVertex at="4 13/2 13/2 21/2 -21/2 -17"/>
+      <polygonVertex at="5 8 0 0 -8 -13"/>
+    </SelectManifestation>
+    <SelectManifestation endSegment="-58/5 -94/5 -18/5 -29/5 47/5 76/5" startSegment="-21/2 -17 -4 -13/2 13/2 21/2"/>
+    <SelectManifestation endSegment="-8 -13 -5 -8 10 16" startSegment="-58/5 -94/5 -18/5 -29/5 47/5 76/5"/>
+    <SelectManifestation endSegment="-8 -13 -5 -8 10 16" startSegment="-21/2 -17 -4 -13/2 13/2 21/2"/>
+    <SelectManifestation endSegment="-5 -8 0 0 8 13" startSegment="-8 -13 -5 -8 10 16"/>
+    <SelectManifestation endSegment="-5 -8 0 0 8 13" startSegment="-11 -18 0 0 8 13"/>
+    <SelectManifestation endSegment="-11 -18 0 0 8 13" startSegment="-21/2 -17 -4 -13/2 13/2 21/2"/>
+    <SelectManifestation endSegment="-5 -8 0 0 8 13" startSegment="-21/2 -17 -4 -13/2 13/2 21/2"/>
+    <SelectManifestation endSegment="-5 -8 0 0 8 13" startSegment="-21/2 -17 4 13/2 13/2 21/2"/>
+    <SelectManifestation endSegment="-11 -18 0 0 8 13" startSegment="-21/2 -17 4 13/2 13/2 21/2"/>
+    <SelectManifestation endSegment="-5 -8 0 0 8 13" startSegment="-4 -13/2 -13/2 -21/2 21/2 17"/>
+    <SelectManifestation endSegment="-8 -13 -5 -8 10 16" startSegment="-4 -13/2 -13/2 -21/2 21/2 17"/>
+    <SelectManifestation>
+      <polygonVertex at="3 5 3 5 -13 -21"/>
+      <polygonVertex at="4 13/2 13/2 21/2 -21/2 -17"/>
+      <polygonVertex at="5 8 0 0 -8 -13"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ApplyTool copyColors="true" name="tool-10" selectInputs="true"/>
+    <Delete/>
+    <Snapshot id="1"/>
   </EditHistory>
-  <notes/>
+  <notes>
+    <page snapshot="0" title="full">
+      <ViewModel distance="432.1961669921875" far="864.3912963867188" near="1.0804909467697144" parallel="false" stereoAngle="0.0" width="194.48831176757812">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.04692453891038895" y="0.5923576354980469" z="0.8043097853660583"/>
+        <LookDirection x="0.03843101114034653" y="0.8035273551940918" z="-0.594029426574707"/>
+      </ViewModel>
+      <content xml:space="preserve"/>
+    </page>
+    <page snapshot="1" title="cutaway">
+      <ViewModel distance="432.1961669921875" far="864.3912963867188" near="1.0804909467697144" parallel="false" stereoAngle="0.0" width="194.48831176757812">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.04692453891038895" y="0.5923576354980469" z="0.8043097853660583"/>
+        <LookDirection x="0.03843101114034653" y="0.8035273551940918" z="-0.594029426574707"/>
+      </ViewModel>
+      <content xml:space="preserve"/>
+    </page>
+  </notes>
   <sceneModel ambientLight="41,41,41" background="175,200,220">
     <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
     <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
@@ -195,8 +378,8 @@
   <Viewing>
     <ViewModel distance="487.29974365234375" far="974.5985717773438" near="1.2182490825653076" parallel="false" stereoAngle="0.0" width="219.2848663330078">
       <LookAtPoint x="0.0" y="0.0" z="0.0"/>
-      <UpDirection x="-0.0010187344159930944" y="0.9887286424636841" z="-0.14972619712352753"/>
-      <LookDirection x="-0.21924401819705963" y="-0.1463080644607544" z="-0.9646400809288025"/>
+      <UpDirection x="-0.29052042961120605" y="0.5035725831985474" z="-0.8136440515518188"/>
+      <LookDirection x="0.1607474833726883" y="-0.8125523328781128" z="-0.5602890849113464"/>
     </ViewModel>
   </Viewing>
   <SymmetrySystem name="icosahedral" renderingStyle="tiny connectors">
@@ -243,6 +426,8 @@
     <Tool copyColors="true" deleteInputs="false" id="tetrahedral.tool-4" label="tetrahedral 4" selectInputs="true"/>
     <Tool copyColors="true" deleteInputs="false" id="tetrahedral.tool-5" label="tetrahedral 5" selectInputs="true"/>
     <Tool copyColors="false" deleteInputs="false" id="tool-0" label="rotation 0" selectInputs="false"/>
+    <Tool copyColors="true" deleteInputs="false" id="tool-10" label="axial symmetry 10" selectInputs="true"/>
+    <Tool copyColors="true" deleteInputs="false" id="tool-11" label="axial symmetry 11" selectInputs="true"/>
     <Tool copyColors="true" deleteInputs="false" hidden="true" id="tool-6" label="bookmark 6" selectInputs="true"/>
     <Tool copyColors="true" deleteInputs="false" hidden="true" id="tool-7" label="bookmark 7" selectInputs="true"/>
     <Tool copyColors="true" deleteInputs="false" hidden="true" id="tool-8" label="bookmark 8" selectInputs="true"/>
