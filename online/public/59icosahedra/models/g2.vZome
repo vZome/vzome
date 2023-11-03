@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="32" field="golden" version="7.1">
-  <EditHistory editNumber="45" lastStickyEdit="13">
+  <EditHistory editNumber="74" lastStickyEdit="74">
     <Branch>
       <StrutCreation anchor="0 0 0 0 0 0" index="7" len="2 4"/>
       <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="32" len="1 2"/>
@@ -171,18 +171,119 @@
     <setItemColor blue="102" green="102" red="102"/>
     <AdjustSelectionByClass balls="SELECT" originLast="true" panels="IGNORE" struts="IGNORE"/>
     <Delete/>
+    <Snapshot id="0"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="18/5 29/5 -47/5 -76/5 58/5 94/5"/>
+      <polygonVertex at="0 0 -8 -13 21 34"/>
+      <polygonVertex at="0 0 -34 -55 21 34"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="18/5 29/5 -47/5 -76/5 58/5 94/5"/>
+      <polygonVertex at="0 0 -8 -13 21 34"/>
+      <polygonVertex at="0 0 -34 -55 21 34"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="0 0 -34 -55 21 34"/>
+      <polygonVertex at="13 21 -13 -21 13 21"/>
+      <polygonVertex at="18/5 29/5 -47/5 -76/5 58/5 94/5"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="29/5 47/5 -13 -21 29/5 47/5"/>
+      <polygonVertex at="13 21 -13 -21 13 21"/>
+      <polygonVertex at="0 0 -34 -55 21 34"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ConvexHull3d mode="noPanels"/>
+    <BeginBlock/>
+    <AdjustSelectionByClass balls="IGNORE" originLast="true" panels="IGNORE" struts="DESELECT"/>
+    <SelectManifestation point="29/5 47/5 -13 -21 29/5 47/5"/>
+    <SelectManifestation point="29/5 47/5 -13 -21 29/5 47/5"/>
+    <EndBlock/>
+    <SelectByPlane/>
+    <InvertSelection/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="18/5 29/5 -47/5 -76/5 58/5 94/5"/>
+      <polygonVertex at="0 0 -8 -13 11 18"/>
+      <polygonVertex at="-18/5 -29/5 -47/5 -76/5 58/5 94/5"/>
+      <polygonVertex at="0 0 -34 -55 21 34"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-13 -21 29/5 47/5 29/5 47/5"/>
+      <polygonVertex at="-10 -16 8 13 5 8"/>
+      <polygonVertex at="-47/5 -76/5 58/5 94/5 18/5 29/5"/>
+      <polygonVertex at="-34 -55 21 34 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="47/5 76/5 58/5 94/5 18/5 29/5"/>
+      <polygonVertex at="10 16 8 13 5 8"/>
+      <polygonVertex at="13 21 29/5 47/5 29/5 47/5"/>
+      <polygonVertex at="34 55 21 34 0 0"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="8 13 21 34 0 0"/>
+      <polygonVertex at="0 0 76/5 123/5 11/5 18/5"/>
+      <polygonVertex at="3 5 13 21 3 5"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-8 -13 21 34 0 0"/>
+      <polygonVertex at="0 0 76/5 123/5 11/5 18/5"/>
+      <polygonVertex at="-3 -5 13 21 3 5"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-21 -34 0 0 8 13"/>
+      <polygonVertex at="-58/5 -94/5 -18/5 -29/5 47/5 76/5"/>
+      <polygonVertex at="-11 -18 0 0 8 13"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-13 -21 -13 -21 13 21"/>
+      <polygonVertex at="-58/5 -94/5 -18/5 -29/5 47/5 76/5"/>
+      <polygonVertex at="-8 -13 -5 -8 10 16"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="13 21 -13 -21 13 21"/>
+      <polygonVertex at="58/5 94/5 -18/5 -29/5 47/5 76/5"/>
+      <polygonVertex at="8 13 -5 -8 10 16"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="21 34 0 0 8 13"/>
+      <polygonVertex at="58/5 94/5 -18/5 -29/5 47/5 76/5"/>
+      <polygonVertex at="11 18 0 0 8 13"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Delete/>
+    <Snapshot id="1"/>
   </EditHistory>
-  <notes/>
+  <notes>
+    <page snapshot="0" title="full">
+      <ViewModel distance="712.5709838867188" far="1425.1402587890625" near="1.781427025794983" parallel="false" stereoAngle="0.0" width="320.6570129394531">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="-0.1756480187177658" y="0.2582276165485382" z="0.9499829411506653"/>
+        <LookDirection x="-0.5929229259490967" y="-0.798072099685669" z="0.10730744898319244"/>
+      </ViewModel>
+      <content xml:space="preserve"/>
+    </page>
+    <page snapshot="1" title="cutaway">
+      <ViewModel distance="712.5709838867188" far="1425.1402587890625" near="1.781427025794983" parallel="false" stereoAngle="0.0" width="320.6570129394531">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="-0.1756480187177658" y="0.2582276165485382" z="0.9499829411506653"/>
+        <LookDirection x="-0.5929229259490967" y="-0.798072099685669" z="0.10730744898319244"/>
+      </ViewModel>
+      <content xml:space="preserve"/>
+    </page>
+  </notes>
   <sceneModel ambientLight="41,41,41" background="175,200,220">
     <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
     <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
     <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
   </sceneModel>
   <Viewing>
-    <ViewModel distance="1128.7650146484375" far="2257.52783203125" near="2.8219125270843506" parallel="false" stereoAngle="0.0" width="507.9441833496094">
+    <ViewModel distance="905.8551025390625" far="1811.7086181640625" near="2.2646377086639404" parallel="false" stereoAngle="0.0" width="407.6347961425781">
       <LookAtPoint x="0.0" y="0.0" z="0.0"/>
-      <UpDirection x="0.04918912053108215" y="-0.9016808867454529" z="-0.42959824204444885"/>
-      <LookDirection x="-0.4039740264415741" y="0.37540173530578613" z="-0.8341885209083557"/>
+      <UpDirection x="0.024517064914107323" y="0.4797770082950592" z="0.8770492076873779"/>
+      <LookDirection x="-0.05232474207878113" y="0.8767226338386536" z="-0.47813284397125244"/>
     </ViewModel>
   </Viewing>
   <SymmetrySystem name="icosahedral" renderingStyle="tiny connectors">

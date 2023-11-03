@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="32" field="golden" version="7.1">
-  <EditHistory editNumber="46" lastStickyEdit="13">
+  <EditHistory editNumber="70" lastStickyEdit="70">
     <Branch>
       <StrutCreation anchor="0 0 0 0 0 0" index="7" len="2 4"/>
       <StrutCreation anchor="0 0 0 0 0 0" dir="red" index="32" len="1 2"/>
@@ -181,8 +181,81 @@
     <setItemColor blue="102" green="102" red="102"/>
     <AdjustSelectionByClass balls="SELECT" originLast="true" panels="IGNORE" struts="IGNORE"/>
     <Delete/>
+    <Snapshot id="0"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="21 34 0 0 8 13"/>
+      <polygonVertex at="58/5 94/5 -18/5 -29/5 47/5 76/5"/>
+      <polygonVertex at="13 21 -13 -21 13 21"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="13 21 -13 -21 13 21"/>
+      <polygonVertex at="13 21 -29/5 -47/5 29/5 47/5"/>
+      <polygonVertex at="21 34 0 0 8 13"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <ConvexHull3d mode="noPanels"/>
+    <BeginBlock/>
+    <AdjustSelectionByClass balls="IGNORE" originLast="true" panels="IGNORE" struts="DESELECT"/>
+    <SelectManifestation point="13 21 -29/5 -47/5 29/5 47/5"/>
+    <SelectManifestation point="13 21 -29/5 -47/5 29/5 47/5"/>
+    <EndBlock/>
+    <SelectByPlane/>
+    <InvertSelection/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="-8 -13 21 34 0 0"/>
+      <polygonVertex at="-47/5 -76/5 58/5 94/5 18/5 29/5"/>
+      <polygonVertex at="-13/2 -21/2 21/2 17 4 13/2"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-21 -34 0 0 8 13"/>
+      <polygonVertex at="-21/2 -17 4 13/2 13/2 21/2"/>
+      <polygonVertex at="-13 -21 29/5 47/5 29/5 47/5"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="-13 -21 -13 -21 13 21"/>
+      <polygonVertex at="-18/5 -29/5 -47/5 -76/5 58/5 94/5"/>
+      <polygonVertex at="-4 -13/2 -13/2 -21/2 21/2 17"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="13 21 -13 -21 13 21"/>
+      <polygonVertex at="4 13/2 -13/2 -21/2 21/2 17"/>
+      <polygonVertex at="18/5 29/5 -47/5 -76/5 58/5 94/5"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="21 34 0 0 8 13"/>
+      <polygonVertex at="13 21 29/5 47/5 29/5 47/5"/>
+      <polygonVertex at="21/2 17 4 13/2 13/2 21/2"/>
+    </SelectManifestation>
+    <SelectManifestation>
+      <polygonVertex at="8 13 21 34 0 0"/>
+      <polygonVertex at="13/2 21/2 21/2 17 4 13/2"/>
+      <polygonVertex at="47/5 76/5 58/5 94/5 18/5 29/5"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <Delete/>
+    <Snapshot id="1"/>
   </EditHistory>
-  <notes/>
+  <notes>
+    <page snapshot="0" title="full">
+      <ViewModel distance="487.29974365234375" far="974.598876953125" near="1.218248963356018" parallel="false" stereoAngle="0.0" width="219.284912109375">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="-0.00920119322836399" y="0.5129054188728333" z="0.8583981990814209"/>
+        <LookDirection x="-0.028447791934013367" y="0.8579500317573547" z="-0.5129448771476746"/>
+      </ViewModel>
+      <content xml:space="preserve"/>
+    </page>
+    <page snapshot="1" title="cutaway">
+      <ViewModel distance="487.29974365234375" far="974.598876953125" near="1.218248963356018" parallel="false" stereoAngle="0.0" width="219.284912109375">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="-0.00920119322836399" y="0.5129054188728333" z="0.8583981990814209"/>
+        <LookDirection x="-0.028447791934013367" y="0.8579500317573547" z="-0.5129448771476746"/>
+      </ViewModel>
+      <content xml:space="preserve"/>
+    </page>
+  </notes>
   <sceneModel ambientLight="41,41,41" background="175,200,220">
     <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
     <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
