@@ -167,12 +167,14 @@ public class Camera
      * Get the mapping from view to world coordinates
      * @param trans
      */
+    @JsonIgnore
     public void getViewTransform( Matrix4f matrix )
     {
         RealMatrix4 rm4 = getViewMatrix();
         matrix .set( rm4 .toArray() );
     }
 
+    @JsonIgnore
     public RealMatrix4 getViewMatrix()
     {
         Point3f eyePoint = getPosition();
@@ -182,6 +184,7 @@ public class Camera
         return RealMatrix4.lookAt( eye, lookAt, up );
     }
     
+    @JsonIgnore
     public RealMatrix4 getEyeMatrix()
     {
         if ( ! this .isPerspective() )
