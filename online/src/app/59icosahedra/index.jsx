@@ -34,7 +34,7 @@ const ModelCanvas = () =>
 
 const ModelWorker = props =>
 {
-  const config = { url: getModelURL( props.model, '..' ), preview: false, debug: false };
+  const config = { url: getModelURL( props.model ), preview: false, debug: false };
 
   return (
     <WorkerStateProvider config={config} >

@@ -11,8 +11,6 @@ const CellOrbitContext = createContext( {} );
 export const CellOrbitProvider = ( props ) =>
 {
   const [ state, setState ] = createStore( {} );
-
-  createEffect( () => console.log( JSON.stringify( state, null, 2 ) ) );
   
   return (
     <CellOrbitContext.Provider value={ { state, setState } }>
