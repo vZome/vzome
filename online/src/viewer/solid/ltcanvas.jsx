@@ -7,7 +7,7 @@ import { createElementSize } from "@solid-primitives/resize-observer";
 import { PerspectiveCamera } from "./perspectivecamera.jsx";
 import { TrackballControls } from "./trackballcontrols.jsx";
 import { useInteractionTool } from "./interaction.jsx";
-import { cameraFieldOfViewY, cameraPosition, useWorkerClient } from "../../workerClient/context.jsx";
+import { cameraFieldOfViewY, cameraPosition, useCameraState } from "./camera.jsx";
 
 const Lighting = props =>
 {
@@ -41,7 +41,7 @@ const defaultLighting = {
 
 const LightedCameraControls = (props) =>
 {
-  const { adjustFrustum, recordCamera } = useWorkerClient();
+  const { adjustFrustum, recordCamera } = useCameraState();
   // Here we can useThree, etc., which we could not in LightedTrackballCanvas
 
   const trackballChange = evt =>

@@ -388,6 +388,22 @@ onmessage = ({ data }) =>
       break;
     }
 
+    case 'MACRO_TRIGGERED':
+    {
+      try {
+        for (const actionData of payload) {
+          const { controllerPath, action, parameters } = actionData;
+          designWrapper .doAction( controllerPath, action, parameters );
+        }
+        const { shapes, embedding } = designWrapper .getScene( '--END--', true ); // never send camera or lighting!
+        postMessage( { type: 'SCENE_RENDERED', payload: { scene: { shapes, embedding } } } );
+      } catch (error) {
+        console.log( `Macro error: ${error.message}` );
+        postMessage( { type: 'ALERT_RAISED', payload: `Failed to complete macro.` } );
+      }
+      break;
+    }
+
     case 'ACTION_TRIGGERED':
     {
       const { controllerPath, action, parameters } = payload;

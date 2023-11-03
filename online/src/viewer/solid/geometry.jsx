@@ -33,7 +33,7 @@ const Instance = ( props ) =>
     const handler = tool && tool() ?.onClick;
     if ( handler ) {
       e.stopPropagation()
-      handler( props.id, props.position, props.type, props.selected )
+      handler( props.id, props.position, props.type, props.selected, props.label )
     }
   }
   const handleContextMenu = ( e ) =>

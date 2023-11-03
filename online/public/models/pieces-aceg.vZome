@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="30" field="golden" version="7.1">
-  <EditHistory editNumber="316" lastStickyEdit="-1">
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="32" field="golden" version="7.1">
+  <EditHistory editNumber="328" lastStickyEdit="-1">
     <ImportColoredMeshJson scale="1 0">{
   "field" : "golden",
   "vertices" : [ [ [ -3, -5, 1 ], [ -2, -3, 1 ], [ 0, 0, 1 ] ], [ [ -3, -5, 1 ], [ 2, 3, 1 ], [ 0, 0, 1 ] ], [ [ -2, -3, 1 ], [ 0, 0, 1 ], [ -3, -5, 1 ] ], [ [ -2, -3, 1 ], [ 0, 0, 1 ], [ 3, 5, 1 ] ], [ [ 0, 0, 1 ], [ -3, -5, 1 ], [ -2, -3, 1 ] ], [ [ 0, 0, 1 ], [ -3, -5, 1 ], [ 2, 3, 1 ] ], [ [ 0, 0, 1 ], [ 0, 0, 1 ], [ 0, 0, 1 ] ], [ [ 0, 0, 1 ], [ 7, 11, 5 ], [ 18, 29, 5 ] ], [ [ 0, 0, 1 ], [ 3, 5, 1 ], [ -2, -3, 1 ] ], [ [ 0, 0, 1 ], [ 3, 5, 1 ], [ 2, 3, 1 ] ], [ [ 0, 0, 1 ], [ 3, 5, 1 ], [ 4, 7, 1 ] ], [ [ 0, 0, 1 ], [ 3, 5, 1 ], [ 8, 13, 1 ] ], [ [ 4, 7, 5 ], [ 0, 0, 1 ], [ 29, 47, 5 ] ], [ [ 1, 2, 1 ], [ -1, -2, 1 ], [ 5, 8, 1 ] ], [ [ 1, 2, 1 ], [ 1, 2, 1 ], [ 5, 8, 1 ] ], [ [ 7, 11, 5 ], [ 18, 29, 5 ], [ 22, 36, 5 ] ], [ [ 3, 5, 2 ], [ 5, 8, 2 ], [ 8, 13, 2 ] ], [ [ 2, 3, 1 ], [ 0, 0, 1 ], [ -3, -5, 1 ] ], [ [ 2, 3, 1 ], [ 0, 0, 1 ], [ 3, 5, 1 ] ], [ [ 2, 3, 1 ], [ 4, 6, 1 ], [ 3, 5, 1 ] ], [ [ 11, 18, 5 ], [ -11, -18, 5 ], [ 5, 8, 1 ] ], [ [ 11, 18, 5 ], [ 11, 18, 5 ], [ 11, 18, 5 ] ], [ [ 11, 18, 5 ], [ 11, 18, 5 ], [ 5, 8, 1 ] ], [ [ 5, 8, 2 ], [ 8, 13, 2 ], [ 3, 5, 2 ] ], [ [ 3, 5, 1 ], [ -2, -3, 1 ], [ 0, 0, 1 ] ], [ [ 3, 5, 1 ], [ -2, -3, 1 ], [ 4, 6, 1 ] ], [ [ 3, 5, 1 ], [ 2, 3, 1 ], [ 0, 0, 1 ] ], [ [ 3, 5, 1 ], [ 2, 3, 1 ], [ 4, 6, 1 ] ], [ [ 4, 6, 1 ], [ 3, 5, 1 ], [ 2, 3, 1 ] ], [ [ 8, 13, 2 ], [ 3, 5, 2 ], [ 5, 8, 2 ] ], [ [ 4, 7, 1 ], [ 0, 0, 1 ], [ 3, 5, 1 ] ], [ [ 22, 36, 5 ], [ -7, -11, 5 ], [ 18, 29, 5 ] ], [ [ 22, 36, 5 ], [ 7, 11, 5 ], [ 18, 29, 5 ] ], [ [ 5, 8, 1 ], [ 5, 8, 1 ], [ 5, 8, 1 ] ], [ [ 8, 13, 1 ], [ 0, 0, 1 ], [ 13, 21, 1 ] ], [ [ 13, 21, 1 ], [ 8, 13, 1 ], [ 26, 42, 1 ] ] ],
@@ -1049,10 +1049,14 @@
       <polygonVertex at="0 0 13 21 8 13"/>
     </SelectManifestation>
     <EndBlock/>
-    <Hide/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
     <ApplyTool copyColors="true" name="bookmark.builtin/ball at origin" selectInputs="true"/>
     <AdjustSelectionByClass balls="IGNORE" originLast="true" panels="SELECT" struts="IGNORE"/>
-    <Hide/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
     <ApplyTool copyColors="true" name="bookmark.builtin/ball at origin" selectInputs="true"/>
     <DeselectAll/>
     <StrutCreation anchor="0 0 0 0 0 0" dir="purple" index="14" len="8 13"/>
@@ -1072,7 +1076,7 @@
     </SelectManifestation>
     <EndBlock/>
     <ApplyTool copyColors="true" name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
-    <GroupSelection/>
+    <GroupSelection label="a"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>
@@ -1097,7 +1101,7 @@
       <polygonVertex at="21 34 21 34 21 34"/>
     </SelectManifestation>
     <EndBlock/>
-    <GroupSelection/>
+    <GroupSelection label="g2"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>
@@ -1126,7 +1130,7 @@
       <polygonVertex at="0 0 13 21 34 55"/>
     </SelectManifestation>
     <EndBlock/>
-    <GroupSelection/>
+    <GroupSelection label="g1"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>
@@ -1151,7 +1155,7 @@
       <polygonVertex at="13/2 21/2 21/2 17 17 55/2"/>
     </SelectManifestation>
     <EndBlock/>
-    <GroupSelection/>
+    <GroupSelection label="e2"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>
@@ -1185,7 +1189,7 @@
       <polygonVertex at="0 0 13 21 8 13"/>
     </SelectManifestation>
     <EndBlock/>
-    <GroupSelection/>
+    <GroupSelection label="c"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>
@@ -1281,7 +1285,7 @@
       <polygonVertex at="17 55/2 13/2 21/2 21/2 17"/>
     </SelectManifestation>
     <EndBlock/>
-    <GroupSelection/>
+    <GroupSelection label="e1"/>
     <BeginBlock/>
     <DeselectAll/>
     <SelectManifestation>
@@ -1289,12 +1293,37 @@
       <polygonVertex at="13 21 -8 -13 0 0"/>
       <polygonVertex at="0 0 -13 -21 8 13"/>
     </SelectManifestation>
-    <EndBlock/>
     <SelectManifestation>
       <polygonVertex at="8 13 0 0 13 21"/>
       <polygonVertex at="13 21 -8 -13 0 0"/>
       <polygonVertex at="0 0 -13 -21 8 13"/>
     </SelectManifestation>
+    <SelectAll originLast="true"/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="34 55 0 0 55 89"/>
+      <polygonVertex at="94/5 152/5 29/5 47/5 76/5 123/5"/>
+      <polygonVertex at="13 21 8 13 16 26"/>
+      <polygonVertex at="47/5 76/5 47/5 76/5 21 34"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <setItemColor blue="0" green="102" red="255"/>
+    <BeginBlock/>
+    <SelectManifestation>
+      <polygonVertex at="34 55 0 0 55 89"/>
+      <polygonVertex at="94/5 152/5 29/5 47/5 76/5 123/5"/>
+      <polygonVertex at="13 21 8 13 16 26"/>
+      <polygonVertex at="47/5 76/5 47/5 76/5 21 34"/>
+    </SelectManifestation>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="34 55 0 0 55 89"/>
+      <polygonVertex at="94/5 152/5 29/5 47/5 76/5 123/5"/>
+      <polygonVertex at="13 21 8 13 16 26"/>
+      <polygonVertex at="47/5 76/5 47/5 76/5 21 34"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <DeselectAll/>
   </EditHistory>
   <notes/>
   <sceneModel ambientLight="41,41,41" background="175,200,220">
