@@ -26,16 +26,6 @@ const Instance = ( props ) =>
       handler( props.id, props.position, props.type, value );
     }
   }
-  const handleClick = ( e ) =>
-  {
-    if ( e.button !== 0 ) // left-clicks only, please
-      return;
-    const handler = tool && tool() ?.onClick;
-    if ( handler ) {
-      e.stopPropagation()
-      handler( props.id, props.position, props.type, props.selected, props.label )
-    }
-  }
   const handleContextMenu = ( e ) =>
   {
     const handler = tool && tool() ?.onContextMenu;
@@ -58,10 +48,15 @@ const Instance = ( props ) =>
   {
     if ( e.button !== 0 ) // left-clicks only, please
       return;
-    const handler = tool && tool() ?.onDragEnd;
+    let handler = tool && tool() ?.onDragEnd;
     if ( handler ) {
       e.stopPropagation()
       handler( props.id, props.position, props.type, props.selected, e )
+    }
+    handler = tool && tool() ?.onClick;
+    if ( handler ) {
+      e.stopPropagation()
+      handler( props.id, props.position, props.type, props.selected, props.label )
     }
   }
   // TODO give users control over emissive color
@@ -70,7 +65,7 @@ const Instance = ( props ) =>
   return (
     <group position={ props.position } name={props.id} >
       <mesh matrixAutoUpdate={false} ref={meshRef} geometry={props.geometry}
-          onPointerOver={handleHover(true)} onPointerOut={handleHover(false)} onClick={handleClick}
+          onPointerOver={handleHover(true)} onPointerOut={handleHover(false)}
           onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onContextMenu={handleContextMenu}>
         <meshLambertMaterial attach="material" color={props.color} emissive={emissive()} />
       </mesh>

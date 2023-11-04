@@ -102,7 +102,8 @@ const App = () => (
     <VZomeAppBar title='The 59 Icosahedra' customTitle={true}
       about={ <>
         <Typography gutterBottom>
-          This application is built using <Link target="_blank" rel="noopener" href='https://vzome.com'>vZome</Link> technology.
+          This application is a PROTOTYPE; please be patient with defects.
+          It is built using <Link target="_blank" rel="noopener" href='https://vzome.com'>vZome</Link> technology.
           To share feedback, please join
           the <Link target="_blank" rel="noopener" href="https://discord.gg/vhyFsNAFPS">
             vZome Discord server
@@ -111,7 +112,7 @@ const App = () => (
       </> } />
     <div id='selectors-and-model' style={{ position: 'relative', display: 'grid', 'grid-template-columns': '2fr 3fr', height: '100%' }}>
       <CellOrbitProvider>
-        <div id='text-and-selectors' style={{ display: 'grid', 'grid-template-rows': '20% 80%', height: '100%',
+        <div id='text-and-selectors' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr', height: '100%',
             'border-right': '2px solid darkgrey' }}>
           <div>
             <Typography gutterBottom sx={{ margin: '1em' }}>
