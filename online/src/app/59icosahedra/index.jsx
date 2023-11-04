@@ -111,7 +111,7 @@ const App = () => (
       </> } />
     <div id='selectors-and-model' style={{ position: 'relative', display: 'grid', 'grid-template-columns': '2fr 3fr', height: '100%' }}>
       <CellOrbitProvider>
-        <div id='text-and-selectors' style={{ display: 'grid', 'grid-template-rows': '15% 85%', height: '100%',
+        <div id='text-and-selectors' style={{ display: 'grid', 'grid-template-rows': '20% 80%', height: '100%',
             'border-right': '2px solid darkgrey' }}>
           <div>
             <Typography gutterBottom sx={{ margin: '1em' }}>
