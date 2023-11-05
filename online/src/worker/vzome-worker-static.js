@@ -35,6 +35,8 @@ export const getSceneIndex = ( title, list ) =>
       index = 0;
     }
   } else {
+    if ( !list )
+      return 0;
     index = list .map( s => s.title ) .indexOf( title );
     if ( index < 0 ) {
       console.log( `WARNING: no scene titled "${title}"` );
@@ -370,6 +372,8 @@ onmessage = ({ data }) =>
 
     case 'SCENE_SELECTED': {
       const index = getSceneIndex( payload, scenes );
+      if ( !index )
+        break;
       const { nodeId, camera } = scenes[ index ];
       let scene;
       if ( nodeId ) { // XML was parsed by the legacy module

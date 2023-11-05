@@ -1,9 +1,11 @@
 
 import { render } from 'solid-js/web';
-import { ErrorBoundary, createEffect } from "solid-js";
+import { ErrorBoundary, createContext, createEffect, createSignal, useContext } from "solid-js";
 
-import Typography from '@suid/material/Typography'
-import Link from '@suid/material/Link'
+import Typography from '@suid/material/Typography';
+import Link from '@suid/material/Link';
+import FormControlLabel from '@suid/material/FormControlLabel';
+import Switch from '@suid/material/Switch';
 
 import { VZomeAppBar } from '../classic/components/appbar.jsx';
 import { WorkerStateProvider, useWorkerClient } from '../../workerClient/context.jsx';
@@ -14,6 +16,7 @@ import { InteractionToolProvider } from '../../viewer/solid/interaction.jsx';
 import { CellOrbitProvider, CellSelectorTool, useCellOrbits } from './selector.jsx';
 import { LightedTrackballCanvas } from '../../viewer/solid/ltcanvas.jsx';
 import { ShapedGeometry } from '../../viewer/solid/geometry.jsx';
+import { selectScene } from '../../workerClient/actions.js';
 
 const ModelCanvas = () =>
 {
@@ -34,7 +37,7 @@ const ModelCanvas = () =>
 
 const ModelWorker = props =>
 {
-  const config = { url: getModelURL( props.model ), preview: props.preview, debug: false };
+  const config = { url: getModelURL( props.model ), preview: props.preview, debug: false, sceneTitle: props.sceneTitle };
 
   return (
     <WorkerStateProvider config={config} >
@@ -63,10 +66,16 @@ const Selector = props =>
 
 const CellOrbitScene = props =>
 {
-  const { state: geometry } = useWorkerClient();
+  const { state: geometry, postMessage } = useWorkerClient();
   const { state: toggles } = useCellOrbits();
   const showCell = () => toggles[ props.cell ];
+  const { showCutaway } = useContext( ViewOptions );
 
+  createEffect( () => {
+    postMessage( selectScene( showCutaway()? 'cutaway' : 'full' ) );
+  });
+
+  // The group is necessary due to a defect in solid-three regarding conditional components
   return (
     <group>
       <Show when={ showCell() }>
@@ -76,10 +85,26 @@ const CellOrbitScene = props =>
   );
 }
 
+const ViewOptions = createContext( { showCutaway: () => true } );
+
+export const ViewOptionsProvider = ( props ) =>
+{
+  const [ showCutaway, setShowCutaway ] = createSignal( false );
+  
+  return (
+    <ViewOptions.Provider value={ { showCutaway, setShowCutaway } }>
+      {props.children}
+    </ViewOptions.Provider>
+  );
+}
+
 const CellOrbit = props =>
 {
+  const { showCutaway } = useContext( ViewOptions );
+
+
   return (
-    <ModelWorker model={props.cell} preview={true} >
+    <ModelWorker model={props.cell} preview={true} sceneTitle={ showCutaway()? 'cutaway' : 'full' } >
       <CellOrbitScene cell={props.cell} />
     </ModelWorker>
   );
@@ -88,12 +113,28 @@ const CellOrbit = props =>
 const StellationCanvas = props =>
 {
   const { state } = useCameraState();
+  const { showCutaway, setShowCutaway } = useContext( ViewOptions );
+  const toggleCutaway = () => setShowCutaway( value => !value );
+
+  const scene = () => {
+    let { camera, lighting, ...other } = state.scene;
+    const backgroundColor = 'lightblue';
+    lighting = { ...lighting, backgroundColor }; // override just the background
+    return ( { ...other, camera, lighting } );
+  }
+
   return (
-    <LightedTrackballCanvas sceneCamera={state.scene?.camera} lighting={state.scene?.lighting}
-        style={{ position: 'relative', height: '100%' }} height='100%' width='100%'
-        rotationOnly={false} rotateSpeed={4.5} >
-      {props.children}
-    </LightedTrackballCanvas>
+    <>
+      <FormControlLabel label="Cutaway View" sx={{ margin: 'auto', position: 'absolute', bottom: '1em', right: '1em', 'z-index': '50' }}
+        control={
+          <Switch checked={showCutaway()} onChange={ toggleCutaway } size='medium' inputProps={{ "aria-label": "cutaway" }} />
+        }/>
+      <LightedTrackballCanvas sceneCamera={scene().camera} lighting={scene().lighting}
+          height='100%' width='100%'
+          rotationOnly={false} rotateSpeed={4.5} >
+        {props.children}
+      </LightedTrackballCanvas>
+    </>
   );
 }
 
@@ -137,20 +178,22 @@ const App = () => (
           </RotationProvider>
         </div>
         <CameraStateProvider>
-          <StellationCanvas>
-            <CellOrbit cell='a'/>
-            <CellOrbit cell='b'/>
-            <CellOrbit cell='c'/>
-            <CellOrbit cell='d'/>
-            <CellOrbit cell='e1'/>
-            <CellOrbit cell='e2'/>
-            <CellOrbit cell='f1L'/>
-            <CellOrbit cell='f1R'/>
-            <CellOrbit cell='f2'/>
-            <CellOrbit cell='g1'/>
-            <CellOrbit cell='g2'/>
-            <CellOrbit cell='h'/>
-          </StellationCanvas>
+          <ViewOptionsProvider>
+            <StellationCanvas>
+              <CellOrbit cell='a'/>
+              <CellOrbit cell='b'/>
+              <CellOrbit cell='c'/>
+              <CellOrbit cell='d'/>
+              <CellOrbit cell='e1'/>
+              <CellOrbit cell='e2'/>
+              <CellOrbit cell='f1L'/>
+              <CellOrbit cell='f1R'/>
+              <CellOrbit cell='f2'/>
+              <CellOrbit cell='g1'/>
+              <CellOrbit cell='g2'/>
+              <CellOrbit cell='h'/>
+            </StellationCanvas>
+          </ViewOptionsProvider>
         </CameraStateProvider>
       </CellOrbitProvider>
     </div>
