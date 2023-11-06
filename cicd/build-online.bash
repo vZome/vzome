@@ -19,6 +19,7 @@ cicd/jsweet-legacy-code.bash || exit $?
 cd online
 
 echo "export const REVISION=\"${REVISION}\";" > src/revision.js
+echo "export const importLegacy = async () => import( './worker/legacy/dynamic.js' );" >> src/revision.js
 
 # banner 'Indexing resources'
 ( cd public/classic/resources
