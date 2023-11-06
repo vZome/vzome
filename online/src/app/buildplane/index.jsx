@@ -14,7 +14,7 @@ import { DesignViewer } from '../../viewer/solid/index.jsx';
 const WorkerApp = () => (
   <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
     <WorkerStateProvider>
-      <VZomeAppBar showOpen pathToRoot='..' forDebugger={false} title='Buildplane'
+      <VZomeAppBar showOpen pathToRoot='../models' forDebugger={false} title='Buildplane'
         about={ <>
           <Typography gutterBottom>
             This is an experimental web-based modeling tool

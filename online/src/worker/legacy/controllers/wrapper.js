@@ -9,6 +9,7 @@ export class ControllerWrapper{
     this.__clientEvents = clientEvents;
     this.__changeTables = {};
     this.children = {};
+    this.macro = [];
   }
 
   createChildWrapper(name, controller) {
@@ -94,7 +95,17 @@ export class ControllerWrapper{
     wrapper.controller.setProperty( name, value );
   }
 
-  doAction(controllerPath, action, parameters = {}) {
+  doAction( controllerPath, action, parameters = {} )
+  {
+    // Macro recording
+    // if ( action === 'undoAll' ) {
+    //   if ( !!this.macro.length )
+    //     console.log( JSON.stringify( this.macro, null, 2 ) );
+    //   this.macro = [];
+    // } else {
+    //   this.macro .push( { controllerPath, action, parameters } );
+    // }
+
     const controllerNames = controllerPath ? controllerPath.split(':') : [];
     const wrapper = this.getSubControllerByNames(controllerNames);
     if (parameters && Object.keys(parameters).length !== 0)

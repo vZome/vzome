@@ -32,16 +32,19 @@ public class AlgebraicNumberTest
             AlgebraicNumber zero = field.zero();
             assertTrue(zero.isZero());
             assertFalse(zero.isOne());
+            assertEquals( "<mn>0</mn>", zero .getMathML() );
         }
         {
             AlgebraicNumber one = field.one();
             assertFalse(one.isZero());
             assertTrue(one.isOne());
+            assertEquals( "<mn>1</mn>", one .getMathML() );
         }
         {
             AlgebraicNumber phi = field.createAlgebraicNumber(new int[]{0, 1});
             assertFalse(phi.isZero());
             assertFalse(phi.isOne());
+            assertEquals( "<mi>φ</mi>", phi .getMathML() );
         }
     }
 
@@ -90,6 +93,7 @@ public class AlgebraicNumberTest
         assertEquals("-7/5 +3/5*phi", n1.toString(EXPRESSION_FORMAT));
         assertEquals("-7/5 3/5", n1.toString(ZOMIC_FORMAT));
         assertEquals("(3/5,-7/5)", n1.toString(VEF_FORMAT)); // irrational is listed first in VEF format
+        assertEquals( "<mrow><mo>-</mo><mfrac><mn>7</mn><mn>5</mn></mfrac><mo>+</mo><mfrac><mn>3</mn><mn>5</mn></mfrac><mi>φ</mi></mrow>", n1 .getMathML() );
     }
 
     @Test
@@ -340,24 +344,28 @@ public class AlgebraicNumberTest
         assertEquals( "11/3 +5/2*phi", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
         assertEquals( "11/3 5/2", number.toString( AlgebraicField.ZOMIC_FORMAT ) );
         assertEquals( "(5/2,11/3)", number.toString( AlgebraicField.VEF_FORMAT ) );
-        
+        assertEquals( "<mrow><mfrac><mn>11</mn><mn>3</mn></mfrac><mo>+</mo><mfrac><mn>5</mn><mn>2</mn></mfrac><mi>φ</mi></mrow>", number .getMathML() );
+
         number = field .createRational( 0 );
 
         assertEquals( "0", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "0", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
         assertEquals( "0 0", number.toString( AlgebraicField.ZOMIC_FORMAT ) );
         assertEquals( "(0,0)", number.toString( AlgebraicField.VEF_FORMAT ) );
-        
+        assertEquals( "<mn>0</mn>", number .getMathML() );
+
         number = field .createAlgebraicNumber( new int[]{1, 0} );
 
         assertEquals( "1", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "1", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
+        assertEquals( "<mn>1</mn>", number .getMathML() );
         
         number = field .createAlgebraicNumber( new int[]{0, 1} );
 
         assertEquals( "\u03C6", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "phi", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
-        
+        assertEquals( "<mi>φ</mi>", number .getMathML() );
+
         field = new HeptagonField();
         number = field .createAlgebraicNumber( new int[]{ 6, 11, 14 } );
         
@@ -365,7 +373,8 @@ public class AlgebraicNumberTest
         assertEquals( "6 +11*rho +14*sigma", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
         assertEquals( "6 11 14", number.toString( AlgebraicField.ZOMIC_FORMAT ) );
         assertEquals( "(14,11,6)", number.toString( AlgebraicField.VEF_FORMAT ) );
-        
+        assertEquals( "<mrow><mn>6</mn><mo>+</mo><mn>11</mn><mi>ρ</mi><mo>+</mo><mn>14</mn><mi>σ</mi></mrow>", number .getMathML() );
+
         field = new SnubDodecField( AlgebraicNumberImpl.FACTORY );
         number = field .createAlgebraicNumber( new int[]{ -12, 8, 2, -1, 6, -4 } );
         
@@ -373,21 +382,25 @@ public class AlgebraicNumberTest
         assertEquals( "-12 +8*phi +2*xi -phi*xi +6*xi^2 -4*phi*xi^2", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
         assertEquals( "-12 8 2 -1 6 -4", number.toString( AlgebraicField.ZOMIC_FORMAT ) );
         assertEquals( "(-4,6,-1,2,8,-12)", number.toString( AlgebraicField.VEF_FORMAT ) );
+        assertEquals( "<mrow><mo>-</mo><mn>12</mn><mo>+</mo><mn>8</mn><mi>φ</mi><mo>+</mo><mn>2</mn><mi>ξ</mi><mo>-</mo><mi>φξ</mi><mo>+</mo><mn>6</mn><mi>ξ²</mi><mo>-</mo><mn>4</mn><mi>φξ²</mi></mrow>", number .getMathML() );
 
         number = field .createAlgebraicNumber( new int[]{0, 0, 0, 0, 0, 0} );
         
         assertEquals( "0", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "0", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
+        assertEquals( "<mn>0</mn>", number .getMathML() );
 
         number = field .createAlgebraicNumber( new int[]{0, 0, 1, 0, 0, 0} );
         
         assertEquals( "\u03BE", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "xi", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
+        assertEquals( "<mi>ξ</mi>", number .getMathML() );
 
         number = field .createAlgebraicNumber( new int[]{0, 1, 0, 0, 0, 1} );
         
         assertEquals( "\u03C6 +\u03C6\u03BE\u00B2", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "phi +phi*xi^2", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
+        assertEquals( "<mrow><mi>φ</mi><mo>+</mo><mi>φξ²</mi></mrow>", number .getMathML() );
     }
 
     @Test

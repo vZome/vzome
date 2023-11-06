@@ -369,6 +369,8 @@ onmessage = ({ data }) =>
       break;
 
     case 'SCENE_SELECTED': {
+      if ( !scenes )
+        break;
       const index = getSceneIndex( payload, scenes );
       const { nodeId, camera } = scenes[ index ];
       let scene;
@@ -385,6 +387,22 @@ onmessage = ({ data }) =>
       const scene = designWrapper .getScene( before || after, !!before );
       const { edit } = scene;
       postMessage( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
+      break;
+    }
+
+    case 'MACRO_TRIGGERED':
+    {
+      try {
+        for (const actionData of payload) {
+          const { controllerPath, action, parameters } = actionData;
+          designWrapper .doAction( controllerPath, action, parameters );
+        }
+        const { shapes, embedding } = designWrapper .getScene( '--END--', true ); // never send camera or lighting!
+        postMessage( { type: 'SCENE_RENDERED', payload: { scene: { shapes, embedding } } } );
+      } catch (error) {
+        console.log( `Macro error: ${error.message}` );
+        postMessage( { type: 'ALERT_RAISED', payload: `Failed to complete macro.` } );
+      }
       break;
     }
 

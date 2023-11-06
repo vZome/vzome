@@ -78,11 +78,12 @@ const createQuaternions = ({ scalarmul, quatmul }) =>
   return vZomeIcosahedralQuaternions
 }
 
-const baseField = createField( { name: 'golden', order: 2, times, embed, reciprocal } )
+const getIrrational = () => 'φ';
+
+const baseField = createField( { name: 'golden', order: 2, times, embed, reciprocal, getIrrational } )
 
 const field = {
   ...baseField,
-  getIrrational: () => 'φ',
   goldenRatio: [ 0n, 1n, 1n ],
   quaternions: createQuaternions( baseField ),
   goldenSeries: goldenSeries( baseField )

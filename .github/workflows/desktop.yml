@@ -57,13 +57,14 @@ jobs:
         chmod 600 ~/.ssh/dreamhost.key
         cat >>~/.ssh/config <<END
         Host dreamhost
-          HostName sandy.dreamhost.com
+          HostName $HOSTING_FQDN
           User scottvorthmann
           IdentityFile ~/.ssh/dreamhost.key
           StrictHostKeyChecking no
         END
       env:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        HOSTING_FQDN: ${{ secrets.HOSTING_FQDN }}
     - name: Publish MacOS build to DreamHost
       run: |
         source desktop/build/buildPropsResource/build.properties  # to set the version variable
@@ -101,13 +102,14 @@ jobs:
         chmod 600 ~/.ssh/dreamhost.key
         cat >>~/.ssh/config <<END
         Host dreamhost
-          HostName sandy.dreamhost.com
+          HostName $HOSTING_FQDN
           User scottvorthmann
           IdentityFile ~/.ssh/dreamhost.key
           StrictHostKeyChecking no
         END
       env:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        HOSTING_FQDN: ${{ secrets.HOSTING_FQDN }}
     - name: Publish Linux build to DreamHost
       run: |
         source desktop/build/buildPropsResource/build.properties  # to set the version variable
@@ -147,12 +149,13 @@ jobs:
         echo "$SSH_KEY" > $env:USERPROFILE/.ssh/dreamhost.key
         echo "" >> $env:USERPROFILE/.ssh/dreamhost.key
         echo 'Host dreamhost' > $env:USERPROFILE/.ssh/config
-        echo '  HostName sandy.dreamhost.com' >> $env:USERPROFILE/.ssh/config
+        echo "  HostName $HOSTING_FQDN" >> $env:USERPROFILE/.ssh/config
         echo '  User scottvorthmann' >> $env:USERPROFILE/.ssh/config
         echo "  IdentityFile $env:USERPROFILE\.ssh\dreamhost.key" >> $env:USERPROFILE/.ssh/config
         echo '  StrictHostKeyChecking no' >> $env:USERPROFILE/.ssh/config
       env:
         SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY_WINDOWS }}
+        HOSTING_FQDN: ${{ secrets.HOSTING_FQDN }}
     - name: Publish Windows build to DreamHost
       run: |
         echo "cd vzome.com/download/${version}/" >> batchfile.txt

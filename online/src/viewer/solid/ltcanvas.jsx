@@ -7,17 +7,18 @@ import { createElementSize } from "@solid-primitives/resize-observer";
 import { PerspectiveCamera } from "./perspectivecamera.jsx";
 import { TrackballControls } from "./trackballcontrols.jsx";
 import { useInteractionTool } from "./interaction.jsx";
-import { cameraFieldOfViewY, cameraPosition, useWorkerClient } from "../../workerClient/context.jsx";
+import { cameraFieldOfViewY, cameraPosition, useCameraState } from "./camera.jsx";
 
 const Lighting = props =>
 {
   const color = createMemo( () => new Color( props.backgroundColor ) );
   useFrame( ({scene}) => { scene.background = color() } )
   let centerObject;
+  // The ambientLight has to be "invisible" so we don't get an empty node in glTF export.
   return (
     <>
-      <group ref={centerObject} position={[0,0,0]} visible={false} />
-      <ambientLight color={props.ambientColor} intensity={1.5} />
+      <object3D ref={centerObject} visible={false} />
+      <ambientLight color={props.ambientColor} intensity={1.5} visible={false} />
       <For each={props.directionalLights}>{ ( { color, direction } ) =>
         <directionalLight target={centerObject} intensity={1.7} color={color} position={direction.map( x => -x )} />
       }</For>
@@ -40,7 +41,7 @@ const defaultLighting = {
 
 const LightedCameraControls = (props) =>
 {
-  const { adjustFrustum, recordCamera } = useWorkerClient();
+  const { adjustFrustum, recordCamera } = useCameraState();
   // Here we can useThree, etc., which we could not in LightedTrackballCanvas
 
   const trackballChange = evt =>

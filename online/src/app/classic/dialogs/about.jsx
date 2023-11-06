@@ -33,7 +33,7 @@ export const AboutDialog = ( { title, about } ) =>
       </Tooltip>
       <Dialog onClose={handleClose} aria-labelledby="about-dialog-title" open={open()}>
         <DialogTitle id="customized-dialog-title" >
-          About vZome Online {title} (rev {REVISION})
+          About {title} (rev {REVISION})
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="about-dialog-description">

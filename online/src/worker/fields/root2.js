@@ -23,6 +23,6 @@ function embed( a )
 
 const getIrrational = () => '√2';
 
-const field = { ...createField( { name: 'rootTwo', order: 2, times, embed, reciprocal } ), getIrrational }
+const field = createField( { name: 'rootTwo', order: 2, times, embed, reciprocal, getIrrational } );
 
 export default field

@@ -592,4 +592,10 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
             }
         }
     }
+
+    @Override
+    public String getMathML()
+    {
+        return field .getMathML( factors );
+    }
 }

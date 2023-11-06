@@ -892,4 +892,49 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         }
         return new AlgebraicSeries( this, power );
     }
+
+    public String getMathML( BigRational[] factors )
+    {
+        StringBuffer buf = new StringBuffer();
+        int first = 0;
+        for ( int i = 0; i < factors.length; i++ )
+        {
+            BigRational factor = factors[ i ];
+            if ( factor .isZero() ) {
+                ++ first;
+                continue;
+            }
+            
+            if ( factor .isNegative() )
+            {
+                factor = factor .negate();
+                buf .append( "<mo>-</mo>" );
+            }
+            else if ( i > first )
+            {
+                buf .append( "<mo>+</mo>" );
+            }
+            
+            if ( i == 0 )
+                buf .append( factor .getMathML() );
+            else
+            {
+                if ( ! factor .isOne() )
+                {
+                    buf .append( factor .getMathML() );
+                }
+                String multiplier = this .getIrrational( i, DEFAULT_FORMAT );
+                buf .append( "<mi>" );
+                buf .append( multiplier );
+                buf .append( "</mi>" );
+            }
+        }
+        if ( first == factors.length )
+            // all factors were zero
+            return "<mn>0</mn>";
+        else if ( factors.length - first > 1 )
+            return "<mrow>" + buf .toString() + "</mrow>";
+        else
+            return buf .toString();
+    }
 }

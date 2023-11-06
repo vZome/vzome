@@ -45,6 +45,7 @@ export const esbuildConfig = {
     'vzome-classic'   : 'src/app/classic/index.jsx',
     'fivecell'        : 'src/app/fivecell/index.jsx',
     'bhall-basic'     : 'src/app/bhall/basic/index.jsx',
+    '59icosahedra'    : 'src/app/59icosahedra/index.jsx',
   // web component, not used by apps
     'vzome-viewer'        : 'src/wc/index.js',
   // client rendering code, dynamically imported for fast time-to-first-render

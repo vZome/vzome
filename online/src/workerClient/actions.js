@@ -37,6 +37,8 @@ export const newDesign = ( field='golden' ) => workerAction( 'NEW_DESIGN_STARTED
 
 export const doControllerAction = ( controllerPath='', action, parameters ) => workerAction( 'ACTION_TRIGGERED', { controllerPath, action, parameters } );
 
+export const doControllerMacro = ( actions ) => workerAction( 'MACRO_TRIGGERED', actions );
+
 export const requestControllerProperty = ( controllerPath='', propName, changeName=propName, isList=false ) => workerAction( 'PROPERTY_REQUESTED', { controllerPath, propName, changeName, isList } );
 
 export const setControllerProperty = ( controllerPath='', name, value ) => workerAction( 'PROPERTY_SET', { controllerPath, name, value } );

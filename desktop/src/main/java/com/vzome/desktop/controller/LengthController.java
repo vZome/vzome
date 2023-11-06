@@ -344,7 +344,14 @@ public class LengthController extends DefaultController
             result = applyScales( result );
             return readable( result );
         }
-    
+        
+        case "lengthMathML":
+        {
+            AlgebraicNumber result = this .unitFactor;
+            result = applyScales( result );
+            return result .getMathML();
+        }
+
         case "scaleFactorHtml":
         {
             String html = "";
