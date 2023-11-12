@@ -18,12 +18,12 @@ if ( argv .includes( 'quick' ) ) {
   delete commonConfig.entryPoints[ 'vzome-legacy' ];
   commonConfig.external = [ './legacy/*.js' ];
 
-  writeFileSync( 'src/revision.js', 'export const REVISION="QUICKSTART";' );
+  writeFileSync( 'src/revision.js', 'export const REVISION="QUICKSTART"; export const resourceIndex = []; export const importLegacy = async () => import( "https://www.vzome.com/modules/vzome-legacy.js" );' );
 
   console.log( '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
   console.log( '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
   console.log( '' );
-  console.log( `       visit  http://localhost:${port}/browser` );
+  console.log( `       visit  http://localhost:${port}/59icosahedra` );
   console.log( '' );
   console.log( '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
   console.log( '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );

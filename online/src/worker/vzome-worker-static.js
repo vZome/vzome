@@ -1,5 +1,5 @@
 
-import { resourceIndex } from '../revision.js';
+import { resourceIndex, importLegacy } from '../revision.js';
 
 // support trampolining to work around worker CORS issue
 //   see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
@@ -208,7 +208,7 @@ const fetchTrackballScene = ( url, report ) =>
       reportTrackballScene( payload );
     }
   }
-  Promise.all( [ import( './legacy/dynamic.js' ), fetchUrlText( new URL( `./resources/${url}`, baseURL ) ) ] )
+  Promise.all( [ importLegacy(), fetchUrlText( new URL( `./resources/${url}`, baseURL ) ) ] )
     .then( ([ module, xml ]) => {
       module .loadDesign( xml, false, clientEvents( justTheScene ) );
     } )
@@ -228,7 +228,7 @@ const createDesign = async ( report, fieldName ) =>
 {
   report( { type: 'FETCH_STARTED', payload: { name: 'untitled.vZome', preview: false } } );
   try {
-    const module = await import('./legacy/dynamic.js');
+    const module = await importLegacy();
     report({ type: 'CONTROLLER_CREATED' }); // do we really need this for previewing?
     designWrapper = module.newDesign(fieldName, clientEvents(report));
   } catch (error) {
@@ -240,7 +240,7 @@ const createDesign = async ( report, fieldName ) =>
 
 const openDesign = async ( xmlLoading, name, report, debug, sceneTitle ) =>
 {
-  return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
+  return Promise.all( [ importLegacy(), xmlLoading ] )
 
     .then( ([ module, xml ]) => {
       if ( !xml ) {
@@ -352,7 +352,7 @@ onmessage = ({ data }) =>
 
     case 'WINDOW_LOCATION':
       baseURL = payload;
-      import( './legacy/dynamic.js' )
+      importLegacy()
         .then( module => Promise.all( resourceIndex .map( path => module.loadAndInjectResource( path, new URL( `./resources/${path}`, baseURL ) ) ) ) );
       break;
 
