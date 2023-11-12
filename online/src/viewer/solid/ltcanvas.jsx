@@ -1,7 +1,7 @@
 
 import { useFrame, Canvas } from "solid-three";
 import { Color } from "three";
-import { createMemo, createRenderEffect, onMount } from "solid-js";
+import { createEffect, createMemo, createRenderEffect, onMount } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
 import { PerspectiveCamera } from "./perspectivecamera.jsx";
@@ -123,7 +123,7 @@ export const LightedTrackballCanvas = ( props ) =>
   }
 
   const canvas =
-    <Canvas id='lighted-canvas' dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }}
+    <Canvas class='canvas3d' dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }}
         height={props.height ?? "100vh"} width={props.width ?? "100vw"}
         frameloop="always" onPointerMissed={handlePointerMissed} >
       <LightedCameraControls lighting={props.lighting} aspect={aspect()} rotationOnly={props.rotationOnly} rotateSpeed={props.rotateSpeed}
@@ -133,6 +133,7 @@ export const LightedTrackballCanvas = ( props ) =>
   
   canvas.style.display = 'flex';
   size = createElementSize( canvas );
+  createEffect( () => console.log( 'size', size.width, size.height ) );
 
   createRenderEffect( () => {
     canvas.style.cursor = (tool && tool().cursor) || 'auto';

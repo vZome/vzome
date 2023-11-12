@@ -1,0 +1,69 @@
+
+#below-appbar {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr 40vh;
+  height: 100%;
+}
+
+#stellation {
+  /* max-height: 120px; */
+  position: relative;
+}
+
+#text-and-selectors {
+  position: relative;
+  height: 100%;
+  display: grid;
+  grid-template-rows: min-content 1fr;
+  /* border-right: 2px solid darkgrey; */
+}
+
+#selectors {
+  height: 100%;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-inline: 1rem;
+  margin-bottom: 1rem;
+}
+
+.selector {
+  border: 2px solid darkgrey;
+  border-radius: 5px;
+  max-height: 30vh;
+}
+
+#full-text {
+  display: none;
+}
+#minimal-text {
+  display: block;
+  margin: auto;
+}
+
+/* 
+@media ( min-width: 900px ) {
+  
+  #below-appbar {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    height: 100%;
+  }
+
+  #text-and-selectors {
+    display: grid;
+    grid-template-rows: min-content 1fr;
+    height: 100%;
+    border-right: 2px solid darkgrey;
+  }
+
+  #minimal-text {
+    display: none;
+  }
+  #full-text {
+    display: block;
+  }
+  
+} */
