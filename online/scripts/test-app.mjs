@@ -23,7 +23,10 @@ if ( argv .includes( 'quick' ) ) {
   console.log( '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
   console.log( '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
   console.log( '' );
-  console.log( `       visit  http://localhost:${port}/59icosahedra` );
+  console.log( `       Visit  http://localhost:${port}/59icosahedra` );
+  console.log( `       or     http://localhost:${port}/classic` );
+  console.log( `       or     http://localhost:${port}/browser` );
+  console.log( '       or any other vZome app on the same port.' );
   console.log( '' );
   console.log( '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
   console.log( '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );

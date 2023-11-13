@@ -1,4 +1,5 @@
 
+
 #below-appbar {
   position: relative;
   display: grid;
@@ -7,7 +8,6 @@
 }
 
 #stellation {
-  /* max-height: 120px; */
   position: relative;
 }
 
@@ -16,7 +16,8 @@
   height: 100%;
   display: grid;
   grid-template-rows: min-content 1fr;
-  /* border-right: 2px solid darkgrey; */
+  padding-inline: 1rem;
+  padding-bottom: 1rem;
 }
 
 #selectors {
@@ -24,14 +25,11 @@
   position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  margin-inline: 1rem;
-  margin-bottom: 1rem;
 }
 
 .selector {
   border: 2px solid darkgrey;
   border-radius: 5px;
-  max-height: 30vh;
 }
 
 #full-text {
@@ -42,23 +40,34 @@
   margin: auto;
 }
 
-/* 
+
 @media ( min-width: 900px ) {
   
-  #below-appbar {
-    position: relative;
-    display: grid;
-    grid-template-columns: 2fr 3fr;
+  #root {
     height: 100%;
   }
 
+  #below-appbar {
+    grid-template-rows: 1fr;
+    grid-template-columns: 2fr 3fr;
+  }
+
+  #stellation {
+    grid-row-start: 1;
+    grid-column-start: 2;
+  }
+  
   #text-and-selectors {
-    display: grid;
-    grid-template-rows: min-content 1fr;
-    height: 100%;
+    grid-row-start: 1;
+    grid-column-start: 1;
     border-right: 2px solid darkgrey;
   }
 
+  #selectors {
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr;
+  }
+  
   #minimal-text {
     display: none;
   }
@@ -66,4 +75,4 @@
     display: block;
   }
   
-} */
+}

@@ -1,21 +1,22 @@
 html,
 body {
-  height: 100%;  /* This makes the root div fill the viewport vertically. */
-}
-
-#root {
-  height: 100%;  /* This makes the root div fill the viewport vertically. */
-  display: grid; /* This is the key to getting the Canvas to fill the area below the AppBar. */
-  grid-template-rows: min-content 1fr; /*  This makes it "below", not "to the right of". */
-}
-
-body {
   margin: 0; /* This is essential to avoid a small white border around the whole main div. */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+#root {
+  position: absolute;
+  inset: 0;
+  display: grid; /* This is the key to getting the Canvas to fill the area below the AppBar. */
+  grid-template-rows: min-content 1fr; /*  This makes it "below", not "to the right of". */
 }
 
 .FileInput {
