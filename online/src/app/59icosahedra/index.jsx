@@ -49,9 +49,7 @@ const ModelWorker = props =>
 const Selector = props =>
 {
   return (
-    <div style={{
-      border: '2px solid darkgrey', 'border-radius' : '5px',
-    }}>
+    <div class='selector' >
       <CameraStateProvider>
         <ModelWorker model={props.model} preview={false} >
           <InteractionToolProvider>
@@ -125,7 +123,7 @@ const StellationCanvas = props =>
 
   return (
     <>
-      <FormControlLabel label="Cutaway View" sx={{ margin: 'auto', position: 'absolute', bottom: '1em', right: '1em', 'z-index': '50' }}
+      <FormControlLabel label="Cutaway View" sx={{ margin: 'auto', position: 'absolute', bottom: '0.2rem', right: '1rem', 'z-index': '50' }}
         control={
           <Switch checked={showCutaway()} onChange={ toggleCutaway } size='medium' inputProps={{ "aria-label": "cutaway" }} />
         }/>
@@ -143,6 +141,15 @@ const App = () => (
     <VZomeAppBar title='The 59 Icosahedra' customTitle={true}
       about={ <>
         <Typography gutterBottom>
+          This application lets you explore
+          the <Link target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/The_Fifty-Nine_Icosahedra">
+            59 stellations of the icosahedron
+          </Link> identified by H. S. M. Coxeter.
+          It was inspired by <Link target="_blank" rel="noopener" href="https://www.instructables.com/The-Magnetic-59-Icosahedra/">
+            Bob Hearn's physical magnetic model
+          </Link>.
+        </Typography>
+        <Typography gutterBottom>
           This application is a PROTOTYPE; please be patient with defects.
           It is built using <Link target="_blank" rel="noopener" href='https://vzome.com'>vZome</Link> technology.
           To share feedback, please join
@@ -151,50 +158,47 @@ const App = () => (
           </Link>.
         </Typography>
       </> } />
-    <div id='selectors-and-model' style={{ position: 'relative', display: 'grid', 'grid-template-columns': '2fr 3fr', height: '100%' }}>
+    <div id='below-appbar' >
       <CellOrbitProvider>
-        <div id='text-and-selectors' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr', height: '100%',
-            'border-right': '2px solid darkgrey' }}>
-          <div>
+        <div id='stellation' >
+          <CameraStateProvider>
+            <ViewOptionsProvider>
+              <StellationCanvas>
+                <CellOrbit cell='a'/>
+                <CellOrbit cell='b'/>
+                <CellOrbit cell='c'/>
+                <CellOrbit cell='d'/>
+                <CellOrbit cell='e1'/>
+                <CellOrbit cell='e2'/>
+                <CellOrbit cell='f1L'/>
+                <CellOrbit cell='f1R'/>
+                <CellOrbit cell='f2'/>
+                <CellOrbit cell='g1'/>
+                <CellOrbit cell='g2'/>
+                <CellOrbit cell='h'/>
+              </StellationCanvas>
+            </ViewOptionsProvider>
+          </CameraStateProvider>
+        </div>
+        <div id='text-and-selectors' >
+          <div id='full-text'>
             <Typography gutterBottom sx={{ margin: '1em' }}>
-              This application lets you explore
-              the <Link target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/The_Fifty-Nine_Icosahedra">
-                59 stellations of the icosahedron
-              </Link> identified by H. S. M. Coxeter.
-              It was inspired by <Link target="_blank" rel="noopener" href="https://www.instructables.com/The-Magnetic-59-Icosahedra/">
-                Bob Hearn's physical magnetic model
-              </Link>.
+              To toggle different subsets of the stellation in the main view,
+              click on or touch the shapes below.
             </Typography>
+          </div>
+          <div id='minimal-text'>
             <Typography gutterBottom sx={{ margin: '1em' }}>
-              To toggle different shapes in the stellation shown on the right,
-              click on the shapes below.
+              Click on or touch the shapes below.
             </Typography>
           </div>
           <RotationProvider>
-            <div id='selectors' style={{ display: 'grid', 'grid-template-rows': '1fr 1fr', margin: '1em' }}>
+            <div id='selectors' >
               <Selector model='pieces-aceg' />
               <Selector model='pieces-bdfh' />
             </div>
           </RotationProvider>
         </div>
-        <CameraStateProvider>
-          <ViewOptionsProvider>
-            <StellationCanvas>
-              <CellOrbit cell='a'/>
-              <CellOrbit cell='b'/>
-              <CellOrbit cell='c'/>
-              <CellOrbit cell='d'/>
-              <CellOrbit cell='e1'/>
-              <CellOrbit cell='e2'/>
-              <CellOrbit cell='f1L'/>
-              <CellOrbit cell='f1R'/>
-              <CellOrbit cell='f2'/>
-              <CellOrbit cell='g1'/>
-              <CellOrbit cell='g2'/>
-              <CellOrbit cell='h'/>
-            </StellationCanvas>
-          </ViewOptionsProvider>
-        </CameraStateProvider>
       </CellOrbitProvider>
     </div>
   </ErrorBoundary>
