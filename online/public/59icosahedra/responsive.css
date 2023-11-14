@@ -41,7 +41,7 @@
 }
 
 
-@media ( min-width: 900px ) {
+@media ( min-aspect-ratio: 1/1 ) {
   
   #root {
     height: 100%;
@@ -67,12 +67,16 @@
     grid-template-rows: 1fr 1fr;
     grid-template-columns: 1fr;
   }
-  
+}
+
+@media ( min-width: 900px ) {
+
   #minimal-text {
     display: none;
   }
   #full-text {
     display: block;
+    margin: auto;
   }
   
 }

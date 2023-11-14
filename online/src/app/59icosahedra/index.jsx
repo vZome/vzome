@@ -141,6 +141,15 @@ const App = () => (
     <VZomeAppBar title='The 59 Icosahedra' customTitle={true}
       about={ <>
         <Typography gutterBottom>
+          This application lets you explore
+          the <Link target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/The_Fifty-Nine_Icosahedra">
+            59 stellations of the icosahedron
+          </Link> identified by H. S. M. Coxeter.
+          It was inspired by <Link target="_blank" rel="noopener" href="https://www.instructables.com/The-Magnetic-59-Icosahedra/">
+            Bob Hearn's physical magnetic model
+          </Link>.
+        </Typography>
+        <Typography gutterBottom>
           This application is a PROTOTYPE; please be patient with defects.
           It is built using <Link target="_blank" rel="noopener" href='https://vzome.com'>vZome</Link> technology.
           To share feedback, please join
@@ -173,15 +182,6 @@ const App = () => (
         </div>
         <div id='text-and-selectors' >
           <div id='full-text'>
-            <Typography gutterBottom sx={{ margin: '1em' }}>
-              This application lets you explore
-              the <Link target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/The_Fifty-Nine_Icosahedra">
-                59 stellations of the icosahedron
-              </Link> identified by H. S. M. Coxeter.
-              It was inspired by <Link target="_blank" rel="noopener" href="https://www.instructables.com/The-Magnetic-59-Icosahedra/">
-                Bob Hearn's physical magnetic model
-              </Link>.
-            </Typography>
             <Typography gutterBottom sx={{ margin: '1em' }}>
               To toggle different subsets of the stellation in the main view,
               click on or touch the shapes below.
