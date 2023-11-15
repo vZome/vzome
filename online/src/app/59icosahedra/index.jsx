@@ -51,7 +51,7 @@ const Selector = props =>
   return (
     <div class='selector' >
       <CameraStateProvider>
-        <ModelWorker model={props.model} preview={false} >
+        <ModelWorker model={props.model} preview={true} >
           <InteractionToolProvider>
             <CellSelectorTool model={props.model}/>
             <ModelCanvas/>
