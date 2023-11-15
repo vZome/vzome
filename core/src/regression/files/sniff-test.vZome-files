@@ -170,3 +170,6 @@ format-2.1.0-models.vZome-files
 
 #Add PanelMidpoints and PanelPerimeters
 2023/11-Nov/15-David-Panels/PanelMidpoints-and-PanelPerimeters.vZome
+
+#SelectCoplanar can now be called from a panel's context menu
+2023/11-Nov/15-David-SelectCoplanar/SelectCoplanar-from-context-menu.vZome

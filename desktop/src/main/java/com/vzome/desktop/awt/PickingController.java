@@ -43,6 +43,7 @@ public class PickingController extends DefaultGraphicsController
         case "setWorkingPlaneAxis":
         case "setWorkingPlane":
         case "lookAtThis":
+        case "SelectCoplanar":
         case "SelectCollinear":
         case "SelectParallelStruts":
         case "AdjustSelectionByOrbitLength/selectSimilarStruts":
@@ -103,6 +104,7 @@ public class PickingController extends DefaultGraphicsController
                 result[ i ] = pickedManifestation instanceof Strut || pickedManifestation instanceof Connector;
                 break;
 
+            case "SelectCoplanar":
             case "setWorkingPlane":
             case "showPanelVertices":
                 result[ i ] = pickedManifestation instanceof Panel;

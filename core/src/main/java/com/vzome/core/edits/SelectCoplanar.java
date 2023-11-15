@@ -1,15 +1,23 @@
 package com.vzome.core.edits;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import org.w3c.dom.Element;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
+import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
+import com.vzome.xml.DomUtils;
 
 public class SelectCoplanar extends SelectByBoundary {
 
@@ -26,10 +34,23 @@ public class SelectCoplanar extends SelectByBoundary {
 
     // Some manifestations may share common vectors (e.g. a ball at the end of a strut).
     // Collect them all in a set to remove duplicates.
+    protected List<AlgebraicVector> pickedVectors = new ArrayList<>(); // vertices of a single panel picked from the context menu
     protected Set<AlgebraicVector> vectors = new HashSet<>();
     protected AlgebraicVector pointOnPlane = null;
     protected AlgebraicVector normal = null;
 
+    @Override
+    public void configure( Map<String,Object> props ) {
+        Panel panel = (Panel) props .get( "picked" );
+        if ( panel != null ) { // first creation from the editor
+        	for (AlgebraicVector v : panel) {
+        		// picked vertices are unkown when loading from a file
+        		// so save then in the XML
+        		pickedVectors.add(v);  
+            }
+        }
+    }
+    
     @Override
     protected String setBoundary() {
         for (Manifestation man : mSelection) {
@@ -47,6 +68,14 @@ public class SelectCoplanar extends SelectByBoundary {
                 throw new IllegalStateException("Unknown manifestation: " + man.getClass().getSimpleName());
             }
         }
+        // Note that pickedVectors may be populated from a single panel's context menu 
+        // or when loading the model from a file or not at all.
+        // The ability to invoke SelectCoplanar from the context menu
+        // was added several releases after it was available from the main menu.
+        // THe difference in the vZome file is that a "picked" panel 
+        // must be serialized to and from the XML. 
+        // If there is no picked panel, then an older version will be able to open the file. 
+        vectors.addAll(pickedVectors);
         if (vectors.size() < 3) {
             return "Additional connectors, struts or panels must be selected to define a plane.";
         }
@@ -76,4 +105,26 @@ public class SelectCoplanar extends SelectByBoundary {
     protected String getXmlElementName() {
         return NAME;
     }
+    
+    @Override
+    protected void getXmlAttributes(Element element) {
+    	if(!pickedVectors.isEmpty()) {
+    		DomUtils.addAttribute(element, "nPickedVectors", Integer.toString(pickedVectors.size()));
+    		for(int i = 0; i < pickedVectors.size(); i++) {
+    			DomUtils.addAttribute(element, "vector" + i, pickedVectors.get(i).toParsableString());
+    		}
+    	}
+    }
+
+    @Override
+    protected void setXmlAttributes(Element xml, XmlSaveFormat format) throws Failure {
+    	String nPickedVectors = xml .getAttribute( "nPickedVectors" );
+        if( nPickedVectors != null && ! nPickedVectors.isEmpty() ) {
+        	int nPicked = Integer.parseInt(nPickedVectors);
+        	for(int i = 0; i < nPicked; i++) {
+        		pickedVectors.add(format.parseRationalVector(xml, "vector" + i));
+        	}
+        }
+    }
+
 }

@@ -454,6 +454,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
 
             this .addSeparator();
 
+            this .add( setMenuAction( "SelectCoplanar", new JMenuItem( "Select Coplanar" ) ) );
             this .add( setMenuAction( "SelectCollinear", new JMenuItem( "Select Collinear" ) ) );
             this .add( setMenuAction( "SelectParallelStruts", new JMenuItem( "Select Parallel Struts" ) ) );
             this .add( setMenuAction( "AdjustSelectionByOrbitLength/selectSimilarStruts", new JMenuItem( "Select Similar Struts" ) ) );
