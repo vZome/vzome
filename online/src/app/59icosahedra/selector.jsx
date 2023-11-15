@@ -4,7 +4,6 @@ import { createStore } from "solid-js/store";
 
 import { useWorkerClient } from "../../workerClient/index.js";
 import { useInteractionTool } from "../../viewer/solid/interaction.jsx";
-import { controllerAction, subController } from "../../workerClient/controllers-solid.js";
 
 const CellOrbitContext = createContext( {} );
 
@@ -23,9 +22,23 @@ export const useCellOrbits = () => { return useContext( CellOrbitContext ); };
 
 export const CellSelectorTool = props =>
 {
-  const { rootController } = useWorkerClient();
-  const pickingController  = () => subController( rootController(), 'picking' );
-  const { setState } = useCellOrbits();
+  const { state: orbits, setState: setOrbit } = useCellOrbits();
+  const { state: sceneOwner, setState: setSceneState } = useWorkerClient();
+
+  const updateOrbit = ( label, value ) =>
+  {
+    setOrbit( label, value );
+    // Toggle all the panels labeled the same.
+    //   This could be more performant, but we don't have too many objects to loop over.
+    const scene = sceneOwner .scene;
+    for ( const [id,shape] of Object.entries( scene.shapes ) ) {
+      for ( const [i,instance] of shape.instances.entries() ) {
+        if ( instance.label === label ) {
+          setSceneState( 'scene', 'shapes', id, 'instances', i, 'selected', value );
+        }
+      }
+    }
+  }
 
   const handlers = {
 
@@ -33,28 +46,27 @@ export const CellSelectorTool = props =>
 
     onClick: ( id, position, type, selected, label ) => {
       if ( !!label ) { // a labeled panel
-        controllerAction( pickingController(), 'SelectManifestation', { id } );
-        setState( label, !selected );
+        updateOrbit( label, !selected );
+
       }
     },
     
     bkgdClick: () =>
     {
-      controllerAction( rootController(), 'DeselectAll' );
       if ( props.model === 'pieces-aceg' ) {
-        setState( 'a', false );
-        setState( 'c', false );
-        setState( 'e1', false );
-        setState( 'e2', false );
-        setState( 'g1', false );
-        setState( 'g2', false );
+        updateOrbit( 'a', false );
+        updateOrbit( 'c', false );
+        updateOrbit( 'e1', false );
+        updateOrbit( 'e2', false );
+        updateOrbit( 'g1', false );
+        updateOrbit( 'g2', false );
       } else {
-        setState( 'b', false );
-        setState( 'd', false );
-        setState( 'f1L', false );
-        setState( 'f1R', false );
-        setState( 'f2', false );
-        setState( 'h', false );  
+        updateOrbit( 'b', false );
+        updateOrbit( 'd', false );
+        updateOrbit( 'f1L', false );
+        updateOrbit( 'f1R', false );
+        updateOrbit( 'f2', false );
+        updateOrbit( 'h', false );  
       }
     },
 
