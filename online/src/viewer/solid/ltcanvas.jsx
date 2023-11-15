@@ -1,7 +1,7 @@
 
 import { useFrame, Canvas } from "solid-three";
 import { Color } from "three";
-import { createEffect, createMemo, createRenderEffect, onMount } from "solid-js";
+import { createEffect, createMemo, createRenderEffect, mergeProps, onMount } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
 import { PerspectiveCamera } from "./perspectivecamera.jsx";
@@ -43,6 +43,7 @@ const LightedCameraControls = (props) =>
 {
   const { adjustFrustum, recordCamera } = useCameraState();
   // Here we can useThree, etc., which we could not in LightedTrackballCanvas
+  props = mergeProps( { rotateSpeed: 4.5, zoomSpeed: 3, panSpeed: 1 }, props );
 
   const trackballChange = evt =>
   {
@@ -72,8 +73,8 @@ const LightedCameraControls = (props) =>
         <Lighting {...(lights())} />
       </PerspectiveCamera>
       <TrackballControls onEnd={props.rotationOnly? undefined : trackballEnd} onChange={props.rotationOnly? undefined : trackballChange}
-          rotationOnly={props.rotationOnly} rotateSpeed={props.rotateSpeed}
-          staticMoving='true' zoomSpeed={3} panSpeed={1} target={props.sceneCamera?.lookAt} />
+          rotationOnly={props.rotationOnly} rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed}
+          staticMoving='true' target={props.sceneCamera?.lookAt} />
     </>
   );
 
@@ -126,7 +127,8 @@ export const LightedTrackballCanvas = ( props ) =>
     <Canvas class='canvas3d' dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }}
         height={props.height ?? "100vh"} width={props.width ?? "100vw"}
         frameloop="always" onPointerMissed={handlePointerMissed} >
-      <LightedCameraControls lighting={props.lighting} aspect={aspect()} rotationOnly={props.rotationOnly} rotateSpeed={props.rotateSpeed}
+      <LightedCameraControls lighting={props.lighting} aspect={aspect()}
+        rotationOnly={props.rotationOnly} rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed}
         sceneCamera={props.sceneCamera} />
       {props.children}
     </Canvas>;
