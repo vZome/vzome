@@ -91,11 +91,11 @@ const convertPreview = ( preview, sceneTitle ) =>
   const convertInstances = ( instances, idPrefix ) =>
   {
     let i = 0;
-    return instances.map( ({ position, orientation, color, shape }) => {
+    return instances.map( ({ position, orientation, color, shape, label }) => {
       const id = idPrefix + i++;
       const { x, y, z } = position;
       const rotation = [ ...( orientations[ orientation ] || IDENTITY_MATRIX ) ];
-      const instance = { id, position: [ x, y, z ], rotation, color, shapeId: shape, type: 'irrelevant' };
+      const instance = { id, position: [ x, y, z ], rotation, color, shapeId: shape, type: 'irrelevant', label };
       return instance;
     });
   }
