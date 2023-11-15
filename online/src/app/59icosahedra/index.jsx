@@ -18,7 +18,7 @@ import { LightedTrackballCanvas } from '../../viewer/solid/ltcanvas.jsx';
 import { ShapedGeometry } from '../../viewer/solid/geometry.jsx';
 import { selectScene } from '../../workerClient/actions.js';
 
-const ModelCanvas = () =>
+const SelectorCanvas = () =>
 {
   const { state } = useWorkerClient();
 
@@ -30,7 +30,7 @@ const ModelCanvas = () =>
   }
 
   return (
-    <SceneCanvas rotationOnly={true} scene={scene()}
+    <SceneCanvas rotationOnly={false} panSpeed={0} scene={scene()}
       style={{ position: 'relative', height: '100%' }} height='100%' width='100%' />
   )
 }
@@ -54,7 +54,7 @@ const Selector = props =>
         <ModelWorker model={props.model} preview={true} >
           <InteractionToolProvider>
             <CellSelectorTool model={props.model}/>
-            <ModelCanvas/>
+            <SelectorCanvas/>
           </InteractionToolProvider>
         </ModelWorker>
       </CameraStateProvider>

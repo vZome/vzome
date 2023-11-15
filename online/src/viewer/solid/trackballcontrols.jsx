@@ -20,7 +20,6 @@ export const TrackballControls = (props) =>
   const size = useThree(({ size }) => size);
 
   createEffect(() => {
-    // if ( !props.rotationOnly ) console.log( 'TrackballControls createEffect 1 connect' );
     // SV: This effect is necessary so that we get correctly connected to the domElement
     //   *after* it has been connected to the document and assigned a valid size.
     if ( size().height < 0 ) // should never happen, just making a dependency
@@ -31,20 +30,17 @@ export const TrackballControls = (props) =>
   const thisCamera = () => props.camera || defaultCamera();
 
   const trackballControls = createMemo( () => {
-    // if ( !props.rotationOnly ) console.log( 'TrackballControls CREATION memo' );
     return new TrackballControlsImpl( thisCamera(), gl().domElement );
   } );
 
   useFrame(() => {
     let controls = trackballControls();
     if ( controls.enabled ) {
-      // if ( !props.rotationOnly ) console.log( 'TrackballControls frame update' );
       controls.update();
     }
   });
 
   createEffect( () => {
-    // if ( !props.rotationOnly ) console.log( `TrackballControls enabled or disabled` );
     trackballControls() .enabled = enabled();
   });
 
@@ -60,7 +56,9 @@ export const TrackballControls = (props) =>
       controls.noZoom = true;
       controls.noPan = true;
     } else {
+      controls.noZoom = props.zoomSpeed===0;
       controls.zoomSpeed = props.zoomSpeed;
+      controls.noPan = props.panSpeed===0;
       controls.panSpeed = props.panSpeed;
     }
     controls.rotateSpeed = props.rotateSpeed;
@@ -73,7 +71,6 @@ export const TrackballControls = (props) =>
       // HACK! Assumes knowledge of TrackballControls internals
       if ( controls._state !== 0 && controls._state !== 3 ) // ROTATE, TOUCH_ROTATE
         return;
-      // if ( !props.rotationOnly ) console.log( 'TrackballControls publishing rotation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
       publishRotation( extractCameraState( thisCamera(), controls.target ), thisCamera() );
     } );
 
@@ -91,12 +88,10 @@ export const TrackballControls = (props) =>
 
   createEffect(() => {
     const [ x, y, z ] = props.target;
-    // if ( !props.rotationOnly ) console.log( 'trackballControls target', x, y, z );
     trackballControls() .target .set( x, y, z );
   });
 
   createEffect(() => {
-    // if ( !props.rotationOnly ) console.log( 'TrackballControls createEffect 5 lifecycle' );
     if (props.makeDefault) {
       const old = get()().controls;
       set()({ controls: trackballControls() });
@@ -105,7 +100,6 @@ export const TrackballControls = (props) =>
   });
 
   createEffect( () => {
-    // if ( !props.rotationOnly ) console.log( 'TrackballControls createEffect 6 lastRotation' );
     if ( ! lastRotation ) return;
     let { cameraState, sourceCamera } = lastRotation();
     const camera = thisCamera();
