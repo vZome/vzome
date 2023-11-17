@@ -20,14 +20,30 @@ import { selectScene } from '../../workerClient/actions.js';
 
 const SelectorCanvas = () =>
 {
-  const { state } = useWorkerClient();
+  const { state, subscribe } = useWorkerClient();
+  const { camera, lighting, setCamera } = useCameraState();
 
-  const scene = () => {
-    let { camera, lighting, ...other } = state.scene;
-    const backgroundColor = 'lightblue';
-    lighting = { ...lighting, backgroundColor }; // override just the background
-    return ( { ...other, camera, lighting } );
-  }
+  subscribe( {
+    onWorkerError: () => {},
+    onWorkerMessage: data => {
+      switch ( data.type ) {
+
+        case 'SCENE_RENDERED':
+          const { scene } = data.payload;
+          if ( scene.camera ) {
+            const { distance, near, far, width } = camera();
+            // Use the camera from the loaded scene, except for the zoom.
+            setCamera( { ...scene.camera, distance, near, far, width } );
+          }
+          break;
+
+        default:
+          break;
+      }
+    }
+  } );
+
+  const scene = () => ({ ...state.scene, camera: camera(), lighting: lighting() }); // override camera and lighting from the document
 
   return (
     <SceneCanvas rotationOnly={false} panSpeed={0} scene={scene()}
@@ -50,7 +66,7 @@ const Selector = props =>
 {
   return (
     <div class='selector' >
-      <CameraStateProvider>
+      <CameraStateProvider distance={500}>
         <ModelWorker model={props.model} preview={true} >
           <InteractionToolProvider>
             <CellSelectorTool model={props.model}/>
@@ -110,16 +126,9 @@ const CellOrbit = props =>
 
 const StellationCanvas = props =>
 {
-  const { state } = useCameraState();
+  const { camera, lighting } = useCameraState();
   const { showCutaway, setShowCutaway } = useContext( ViewOptions );
   const toggleCutaway = () => setShowCutaway( value => !value );
-
-  const scene = () => {
-    let { camera, lighting, ...other } = state.scene;
-    const backgroundColor = 'lightblue';
-    lighting = { ...lighting, backgroundColor }; // override just the background
-    return ( { ...other, camera, lighting } );
-  }
 
   return (
     <>
@@ -127,7 +136,7 @@ const StellationCanvas = props =>
         control={
           <Switch checked={showCutaway()} onChange={ toggleCutaway } size='medium' inputProps={{ "aria-label": "cutaway" }} />
         }/>
-      <LightedTrackballCanvas sceneCamera={scene().camera} lighting={scene().lighting}
+      <LightedTrackballCanvas sceneCamera={camera()} lighting={lighting()}
           height='100%' width='100%'
           rotationOnly={false} rotateSpeed={4.5} >
         {props.children}
@@ -161,7 +170,7 @@ const App = () => (
     <div id='below-appbar' >
       <CellOrbitProvider>
         <div id='stellation' >
-          <CameraStateProvider>
+          <CameraStateProvider distance={500}>
             <ViewOptionsProvider>
               <StellationCanvas>
                 <CellOrbit cell='a'/>

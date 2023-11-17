@@ -2,15 +2,44 @@
 import { createContext, createSignal, useContext } from 'solid-js';
 import { Vector3 } from "three";
 
-import { NEAR_FACTOR, FAR_FACTOR } from "../../workerClient/actions.js";
-import { initialState } from '../../workerClient/index.js';
-import { initialScenes } from '../../workerClient/controllers-solid.js';
 import { createStore } from 'solid-js/store';
+
+const INITIAL_DISTANCE = 108;
+const NEAR_FACTOR = 0.1 / INITIAL_DISTANCE;
+const FAR_FACTOR = 2.0;
+const WIDTH_FACTOR = 0.5;
+
+export const defaultCamera = () => ({
+  distance: INITIAL_DISTANCE,
+  near: INITIAL_DISTANCE * NEAR_FACTOR,
+  far: INITIAL_DISTANCE * FAR_FACTOR,
+  width: INITIAL_DISTANCE * WIDTH_FACTOR,
+  up: [ 0, 1, 0 ],
+  lookAt: [ 0, 0, 0 ],
+  lookDir: [ 0, 0, -1 ],
+  perspective: true,
+  default: true,
+});
+
+const defaultLighting = () => ({
+  backgroundColor: '#8CC2E7',
+  ambientColor: '#333333',
+  directionalLights: [ // These are the vZome defaults, for consistency
+    { direction: [ 1, -1, -0.3 ], color: '#FDFDFD' },
+    { direction: [ -1, 0, -0.2 ], color: '#B5B5B5' },
+    { direction: [ 0, 0, -1 ], color: '#303030' },
+  ]
+});
+
+export const defaultScene = () => ({
+  camera: defaultCamera(),
+  lighting: defaultLighting(),
+});
 
 // We need to record the sourceCamera so we can make sure that trackball changes
 //  don't try to drive the camera for the same scene
 
-const defaultRotation = { cameraState: initialState().camera, sourceCamera: null };
+const defaultRotation = { cameraState: defaultCamera(), sourceCamera: null };
 
 // TODO: combine RotationContext and CameraStateContext?
 const RotationContext = createContext( {} );
@@ -92,7 +121,17 @@ const CameraStateContext = createContext( {} );
 
 const CameraStateProvider = ( props ) =>
 {
-  const [ state, setState ] = createStore( { ...initialScenes() } );
+  const [ state, setState ] = createStore( { ...defaultScene() } );
+  const camera = () => state.camera;
+  const lighting = () => state.lighting;
+
+  if ( !! props.distance ) {
+    const distance = props.distance;
+    const near = distance * NEAR_FACTOR;
+    const far = distance * FAR_FACTOR;
+    const width = distance * WIDTH_FACTOR;
+    setState( 'camera', { distance, far, near, width } );
+  }
 
   const adjustFrustum = ( camera, target ) =>
   {
@@ -100,15 +139,21 @@ const CameraStateProvider = ( props ) =>
     // Keep the view frustum at a constant shape, adjusting near & far to track distance
     const near = distance * NEAR_FACTOR;
     const far = distance * FAR_FACTOR;
-    setState( 'scene', 'camera', { far, near } );
+    const width = distance * WIDTH_FACTOR;
+    setState( 'camera', { far, near, width } );
   }
 
   // TODO: find a more appropriate place to implement this
   const recordCamera = ( camera, target ) =>
     setState( 'liveCamera', extractCameraState( camera, target ) );
+
+  const setCamera = camera =>
+    setState( 'camera', camera );
   
+  const lookAt = () => state.liveCamera.lookAt;
+
   return (
-    <CameraStateContext.Provider value={ { adjustFrustum, recordCamera, state } }>
+    <CameraStateContext.Provider value={ { adjustFrustum, recordCamera, lookAt, camera, lighting, setCamera } }>
       {props.children}
     </CameraStateContext.Provider>
   );
