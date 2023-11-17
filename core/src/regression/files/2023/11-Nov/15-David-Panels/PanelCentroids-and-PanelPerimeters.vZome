@@ -6,7 +6,7 @@
     <SelectAll originLast="true"/>
     <Polygon/>
     <ApplyTool copyColors="true" name="tetrahedral.builtin/tetrahedral around origin" selectInputs="true"/>
-    <PanelMidpoints/>
+    <PanelCentroids/>
     <ConvexHull3d mode="noPanels"/>
     <BeginBlock/>
     <DeselectAll/>

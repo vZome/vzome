@@ -7,9 +7,9 @@ import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 
-public class PanelMidpoints extends ChangeManifestations {
+public class PanelCentroids extends ChangeManifestations {
 
-	public PanelMidpoints(EditorModel editorModel) {
+	public PanelCentroids(EditorModel editorModel) {
 		super(editorModel);
 	}
 
@@ -28,7 +28,7 @@ public class PanelMidpoints extends ChangeManifestations {
 
     @Override
 	protected String getXmlElementName() {
-		return "PanelMidpoints";
+		return "PanelCentroids";
 	}
 
 }
