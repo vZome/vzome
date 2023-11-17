@@ -1,6 +1,8 @@
 
 import { resourceIndex, importLegacy } from '../revision.js';
 
+const uniqueId = Math.random();
+
 // support trampolining to work around worker CORS issue
 //   see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
 export const WORKER_ENTRY_FILE_URL = import.meta.url;
@@ -22,7 +24,7 @@ const captureScenes = report => event =>
 }
 
 
-export const getSceneIndex = ( title, list ) =>
+const getSceneIndex = ( title, list ) =>
 {
   if ( !title )
     return 0;
@@ -216,6 +218,7 @@ const fetchTrackballScene = ( url, report ) =>
 
 const connectTrackballScene = ( report ) =>
 {
+  console.log( "call", uniqueId );
   const trackballUpdater = () => fetchTrackballScene( designWrapper .getTrackballUrl(), report );
   trackballUpdater();
   designWrapper.controller .addPropertyListener( { propertyChange: pce =>
@@ -249,6 +252,7 @@ const openDesign = async ( xmlLoading, name, report, debug, sceneTitle ) =>
       }
       report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
       designWrapper = module .loadDesign( xml, debug, clientEvents( captureScenes( report ) ), sceneTitle );
+      console.log( "open", uniqueId );
       report( { type: 'TEXT_FETCHED', payload: { text: xml, name } } ); // NOW it is safe to send the name
     } )
 
@@ -414,6 +418,7 @@ onmessage = ({ data }) =>
         return;
       }
       try {
+        console.log( "action", uniqueId );
         designWrapper .doAction( controllerPath, action, parameters );
         const { shapes, embedding } = designWrapper .getScene( '--END--', true ); // never send camera or lighting!
         postMessage( { type: 'SCENE_RENDERED', payload: { scene: { shapes, embedding } } } );
