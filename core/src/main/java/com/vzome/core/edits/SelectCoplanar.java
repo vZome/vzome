@@ -45,7 +45,7 @@ public class SelectCoplanar extends SelectByBoundary {
         if ( panel != null ) { // first creation from the editor
         	for (AlgebraicVector v : panel) {
         		// picked vertices are unkown when loading from a file
-        		// so save then in the XML
+        		// so save them in the XML
         		pickedVectors.add(v);  
             }
         }
@@ -53,38 +53,50 @@ public class SelectCoplanar extends SelectByBoundary {
     
     @Override
     protected String setBoundary() {
-        for (Manifestation man : mSelection) {
-            if (man instanceof Connector) {
-                vectors.add(man.getLocation());
-            } else if (man instanceof Strut) {
-                vectors.add(man.getLocation());
-                vectors.add(((Strut) man).getEnd());
-            } else if (man instanceof Panel) {
-                for (AlgebraicVector v : (Panel) man) {
-                    vectors.add(v);
-                }
-            } else {
-                // future-proof... shouldn't ever happen
-                throw new IllegalStateException("Unknown manifestation: " + man.getClass().getSimpleName());
-            }
-        }
         // Note that pickedVectors may be populated from a single panel's context menu 
         // or when loading the model from a file or not at all.
         // The ability to invoke SelectCoplanar from the context menu
         // was added several releases after it was available from the main menu.
-        // THe difference in the vZome file is that a "picked" panel 
+        // The difference in the vZome file is that a "picked" panel 
         // must be serialized to and from the XML. 
-        // If there is no picked panel, then an older version will be able to open the file. 
-        vectors.addAll(pickedVectors);
-        if (vectors.size() < 3) {
-            return "Additional connectors, struts or panels must be selected to define a plane.";
-        }
-        if (AlgebraicVectors.areCollinear(vectors)) {
-            return "Selected items are collinear. Select another non-collinear ball to specify the plane.";
-        }
-        if (!AlgebraicVectors.areCoplanar(vectors)) {
-            return "Selected items are not coplanar.";
-        }
+        // If there is no picked panel, then the selection is used 
+    	// and an older version will be able to open the file.
+    	if(pickedVectors.isEmpty()) {
+    		// The plane is based on the selection
+	        for (Manifestation man : mSelection) {
+	            if (man instanceof Connector) {
+	                vectors.add(man.getLocation());
+	            } else if (man instanceof Strut) {
+	                vectors.add(man.getLocation());
+	                vectors.add(((Strut) man).getEnd());
+	            } else if (man instanceof Panel) {
+	                for (AlgebraicVector v : (Panel) man) {
+	                    vectors.add(v);
+	                }
+	            } else {
+	                // future-proof... shouldn't ever happen
+	                throw new IllegalStateException("Unknown manifestation: " + man.getClass().getSimpleName());
+	            }
+	        }
+	        if (vectors.size() < 3) {
+	            return "Additional connectors, struts or panels must be selected to define a plane.";
+	        }
+	        if (AlgebraicVectors.areCollinear(vectors)) {
+	            return "Selected items are collinear. Select another non-collinear ball to specify the plane.";
+	        }
+	        if (!AlgebraicVectors.areCoplanar(vectors)) {
+	            return "Selected items are not coplanar.";
+	        }
+    	} else {
+	        // load vectors from pickedVectors rather than from the selection.
+	        vectors.addAll(pickedVectors);
+    		// The plane is based solely on the picked panel.
+    		// The selection is unused so it needn't be coplanar.
+	        // unselectAll is not really necessary.
+	        // It's just here so the behavior is consistent with SelectCollinear. 
+	        unselectAll(); 
+	        redo(); // commit the unselects so they can be reselected later if necessary. 
+    	}
         // All validated. Now just save the values to be used later in boundaryContains()
         for (AlgebraicVector v : vectors) {
             pointOnPlane = v;
