@@ -45,7 +45,7 @@ export const TrackballControls = (props) =>
   });
 
   const { lastRotation, publishRotation } = useRotation();
-  const { state } = useCameraState();
+  const { lookAt } = useCameraState();
 
   createEffect(() =>
   {
@@ -106,7 +106,7 @@ export const TrackballControls = (props) =>
     if ( sourceCamera && sourceCamera !== camera ) {
       // console.log( `${camera.vzomeName} receiving rotation from ${sourceCamera.vzomeName}` );
       // Can't use props.target here, since it is not up-to-date in some cases
-      injectCameraOrientation( cameraState, state.liveCamera.lookAt, camera );
+      injectCameraOrientation( cameraState, lookAt(), camera );
     }
   });
 

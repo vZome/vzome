@@ -2,13 +2,16 @@
 import { createEffect } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 
-import { initialState, newDesign, requestControllerProperty, doControllerAction, setControllerProperty, decodeEntities } from './actions.js';
+import { newDesign, requestControllerProperty, doControllerAction, setControllerProperty, decodeEntities } from './actions.js';
+
+// TODO: refactor to remove this up-dependency
+import { defaultCamera, defaultScene } from "../viewer/solid/camera.jsx";
 
 const initialScenes = () => ( {
-  ...initialState(), 
-  trackballScene: initialState().scene,
-  liveCamera: initialState().scene.camera,
-  copiedCamera: initialState().scene.camera,
+  scene: { ...defaultScene() }, 
+  trackballScene: defaultScene(),
+  liveCamera: defaultCamera(),
+  copiedCamera: defaultCamera(),
 } );
 
 const createWorkerStore = ( worker ) =>
@@ -291,4 +294,4 @@ const controllerExportAction = ( controller, format, parameters={} ) =>
   return controller.__store .expectResponse( controllerPath, parameters );
 }
 
-export { initialScenes, createWorkerStore, subController, controllerProperty, controllerAction, controllerExportAction };
+export { createWorkerStore, subController, controllerProperty, controllerAction, controllerExportAction };
