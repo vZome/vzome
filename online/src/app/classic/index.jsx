@@ -16,7 +16,7 @@ import { controllerProperty } from '../../workerClient/controllers-solid.js'
 import { VZomeAppBar } from './components/appbar.jsx';
 import { ClassicEditor, SymmetryProvider } from './classic.jsx';
 import { WorkerStateProvider } from '../../workerClient/index.js';
-import { CameraStateProvider } from '../../viewer/solid/camera.jsx';
+import { CameraStateProvider } from '../../workerClient/camera.jsx';
 
 const Persistence = () =>
 {

@@ -88,7 +88,7 @@ const serializeCamera = ( camera, doc ) =>
   return viewing;
 }
 
-export const serializeVZomeXml = ( xmlStr, lighting, camera, originalCamera ) =>
+export const serializeVZomeXml = ( xmlStr, lighting, camera ) =>
 {
   const parser = new DOMParser();
   const doc = parser .parseFromString( xmlStr, "application/xml" );
@@ -107,7 +107,7 @@ export const serializeVZomeXml = ( xmlStr, lighting, camera, originalCamera ) =>
 
   const sceneModel = serializeLighting( lighting, doc );
 
-  const frustumRatio = originalCamera.far / originalCamera.distance;
+  const frustumRatio = camera.far / camera.distance;
   camera .far = camera .distance * frustumRatio;
   const viewing = serializeCamera( camera, doc );
 

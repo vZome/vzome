@@ -3,7 +3,7 @@ import { ContextMenu } from "@kobalte/core";
 import { ContextMenuItem, ContextMenuSeparator } from "../../framework/menus";
 import { useWorkerClient } from "../../../workerClient";
 import { controllerAction, subController } from "../../../workerClient/controllers-solid";
-import { useRotation } from "../../../viewer/solid/camera.jsx";
+import { useRotation } from "../../../workerClient/camera.jsx";
 
 export const ContextualMenu = props =>
 {

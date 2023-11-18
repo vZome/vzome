@@ -8,9 +8,11 @@ import Link from '@suid/material/Link'
 import { VZomeAppBar } from '../classic/components/appbar.jsx';
 import { DesignBrowser } from './browser.jsx';
 import { WorkerStateProvider } from '../../workerClient/context.jsx';
+import { CameraStateProvider } from '../../workerClient/camera.jsx';
 
 const Browser = () => (
   <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
+    <CameraStateProvider>
     <WorkerStateProvider>
       <VZomeAppBar title='Browser'
         about={ <>
@@ -40,6 +42,7 @@ const Browser = () => (
         </> } />
       <DesignBrowser />
     </WorkerStateProvider>
+    </CameraStateProvider>
   </ErrorBoundary>
 )
 

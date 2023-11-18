@@ -12,13 +12,25 @@ import { SelectionTool } from '../tools/selection.jsx';
 import { StrutDragTool } from '../tools/strutdrag.jsx';
 import { ContextualMenuArea } from '../../framework/menus.jsx';
 import { ContextualMenu } from '../menus/contextmenu.jsx';
+import { useCameraState } from '../../../workerClient/camera.jsx';
 
 export const SceneEditor = ( props ) =>
 {
-  const { state, setState } = useWorkerClient();
+  const { state, setState, subscribeFor } = useWorkerClient();
+  const { state: cameraState, setCamera, setLighting } = useCameraState();
   const [ strutting, setStrutting ] = createSignal( true );
   const [ viewing, setViewing ] = createSignal( false );
   const toolValue = () => viewing()? 'camera' : strutting()? 'strutDrag' : 'select';
+
+  subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
+    if ( scene.camera ) {
+      setCamera( scene.camera );
+    }
+    if ( scene.lighting ) {
+      const { backgroundColor } = scene.lighting;
+      setLighting( { ...cameraState.lighting, backgroundColor } );
+    }
+  });
 
   document .addEventListener( "keydown", evt => {
     if ( evt.repeat )

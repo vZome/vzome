@@ -9,9 +9,9 @@ import { SceneEditor } from './components/editor.jsx';
 import { useWorkerClient } from "../../workerClient/index.js";
 import { OrbitsDialog } from "./dialogs/orbits.jsx";
 import { ShapesDialog } from "./dialogs/shapes.jsx";
-import { RotationProvider } from "../../viewer/solid/camera.jsx";
 import { PolytopesDialog } from "./dialogs/polytopes.jsx";
 import { ErrorAlert } from "./components/alert.jsx";
+import { CameraStateProvider, RotationProvider } from "../../workerClient/camera.jsx";
 
 export const ClassicEditor = () =>
 {
@@ -42,7 +42,9 @@ export const ClassicEditor = () =>
         </div>
 
         <div id='editor-drawer' class='grid-rows-min-1 editor-drawer'>
-          <CameraControls/>
+          <CameraStateProvider>
+            <CameraControls/>
+          </CameraStateProvider>
           <div id="build-parts-measure" style={{ height: '100%' }}>
             <StrutBuildPanel/>
           </div>

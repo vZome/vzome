@@ -3,21 +3,18 @@ import { createEffect } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 
 import { newDesign, requestControllerProperty, doControllerAction, setControllerProperty, decodeEntities } from './actions.js';
+import { useCameraState, defaultCamera } from "./camera.jsx";
 
-// TODO: refactor to remove this up-dependency
-import { defaultCamera, defaultScene } from "../viewer/solid/camera.jsx";
-
-const initialScenes = () => ( {
-  scene: { ...defaultScene() }, 
-  trackballScene: defaultScene(),
-  liveCamera: defaultCamera(),
-  copiedCamera: defaultCamera(),
+const initialState = () => ( {
+  scene: {}, 
+  trackballScene: {},
+  copiedCamera: defaultCamera(), // TODO: this is probably too static, not related to useCameraState
 } );
 
 const createWorkerStore = ( worker ) =>
 {
   // Beware, createStore does not make a copy, shallow or deep!
-  const [ state, setState ] = createStore( { ...initialScenes(), uuid: worker.uuid } );
+  const [ state, setState ] = createStore( { ...initialState(), uuid: worker.uuid } );
 
   const exportPromises = {};
 
@@ -98,42 +95,9 @@ const createWorkerStore = ( worker ) =>
         break;
       }
   
-      case 'TRACKBALL_SCENE_LOADED': {
-        const { scene } = data.payload;
-        if ( scene.camera ) {
-          // NOTE: if there is a camera in this scene (first load of existing design, or we requested an article scene,
-          //   or we are previewing), it will replace the existing camera, and rendering will reflect it.
-          //   For edit responses, there should never be a camera.  This all goes for lighting as well.
-          setState( 'trackballScene', 'camera', scene.camera );
-        }
-        if ( scene.lighting ) {
-          // NOTE: if there is a camera in this scene (first load of existing design, or we requested an article scene,
-          //   or we are previewing), it will replace the existing camera, and rendering will reflect it.
-          //   For edit responses, there should never be a camera.  This all goes for lighting as well.
-          setState( 'trackballScene', 'lighting', scene.lighting );
-        }
-        setState( 'trackballScene', 'embedding', scene.embedding );
-        updateShapes( scene.shapes, 'trackballScene' );
-        break;
-      }
-
       case 'SCENE_RENDERED': {
         // TODO: I wish I had a better before/after contract with the worker
         const { scene, edit } = data.payload;
-
-        if ( scene.camera ) {
-          // NOTE: if there is a camera in this scene (first load of existing design, or we requested an article scene,
-          //   or we are previewing), it will replace the existing camera, and rendering will reflect it.
-          //   For edit responses, there should never be a camera.  This all goes for lighting as well.
-          setState( 'scene', 'camera', scene.camera );
-          setState( 'liveCamera', scene.camera );
-        }
-        if ( scene.lighting ) {
-          // NOTE: if there is a camera in this scene (first load of existing design, or we requested an article scene,
-          //   or we are previewing), it will replace the existing camera, and rendering will reflect it.
-          //   For edit responses, there should never be a camera.  This all goes for lighting as well.
-          setState( 'scene', 'lighting', scene.lighting );
-        }
         setState( 'edit', edit );
         setState( 'waiting', false );
         setState( 'scene', 'embedding', reconcile( scene.embedding ) );
@@ -181,7 +145,7 @@ const createWorkerStore = ( worker ) =>
 
       case 'CONTROLLER_CREATED':
         setState( {
-          ...initialScenes(),
+          ...initialState(),
           workerReady: true,
           controller: { __store: store, __path: [] }
         } );
@@ -230,9 +194,21 @@ const createWorkerStore = ( worker ) =>
     } );
   }
 
+  const subscribeFor = ( type, callback ) =>
+  {
+    const subscriber = {
+      onWorkerError,
+      onWorkerMessage: data => {
+        if ( type === data.type )
+          callback( data.payload );
+      }
+    }
+    worker .subscribe( subscriber )
+  }
+
   const store = {
     postMessage: worker .sendToWorker,
-    subscribe: worker .subscribe,
+    subscribe: worker .subscribe, subscribeFor,
     isWorkerReady, state, setState, expectResponse,
   }; // needed for every subcontroller
 

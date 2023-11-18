@@ -7,33 +7,25 @@ import { createElementSize } from "@solid-primitives/resize-observer";
 import { PerspectiveCamera } from "./perspectivecamera.jsx";
 import { TrackballControls } from "./trackballcontrols.jsx";
 import { useInteractionTool } from "./interaction.jsx";
-import { cameraFieldOfViewY, cameraPosition, useCameraState } from "./camera.jsx";
+import { cameraFieldOfViewY, cameraPosition, useCameraState } from "../../workerClient/camera.jsx";
 
-const Lighting = props =>
+const Lighting = () =>
 {
-  const color = createMemo( () => new Color( props.backgroundColor ) );
+  const { state } = useCameraState();
+  const color = createMemo( () => new Color( state.lighting.backgroundColor ) );
   useFrame( ({scene}) => { scene.background = color() } )
   let centerObject;
   // The ambientLight has to be "invisible" so we don't get an empty node in glTF export.
+
   return (
     <>
       <object3D ref={centerObject} visible={false} />
-      <ambientLight color={props.ambientColor} intensity={1.5} visible={false} />
-      <For each={props.directionalLights}>{ ( { color, direction } ) =>
+      <ambientLight color={state.lighting.ambientColor} intensity={1.5} visible={false} />
+      <For each={state.lighting.directionalLights}>{ ( { color, direction } ) =>
         <directionalLight target={centerObject} intensity={1.7} color={color} position={direction.map( x => -x )} />
       }</For>
     </>
   )
-}
-
-const defaultLighting = {
-  // backgroundColor: '#8CC2E7',
-  ambientColor: '#333333',
-  directionalLights: [ // These are the vZome defaults, for consistency
-    { direction: [ 1, -1, -0.3 ], color: '#FDFDFD' },
-    { direction: [ -1, 0, -0.2 ], color: '#B5B5B5' },
-    { direction: [ 0, 0, -1 ], color: '#303030' },
-  ]
 }
 
 // Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
@@ -41,7 +33,7 @@ const defaultLighting = {
 
 const LightedCameraControls = (props) =>
 {
-  const { adjustFrustum, recordCamera } = useCameraState();
+  const { state, adjustFrustum, recordCamera } = useCameraState();
   // Here we can useThree, etc., which we could not in LightedTrackballCanvas
   props = mergeProps( { rotateSpeed: 4.5, zoomSpeed: 3, panSpeed: 1 }, props );
 
@@ -57,24 +49,19 @@ const LightedCameraControls = (props) =>
     recordCamera && recordCamera( object, target );
   }
 
-  const position = createMemo( () => cameraPosition( props.sceneCamera ) );
+  const position = createMemo( () => cameraPosition( state.camera ) );
 
-  const fov = createMemo( () => cameraFieldOfViewY( props.sceneCamera, props.aspect ) );
+  const fov = createMemo( () => cameraFieldOfViewY( state.camera, props.aspect ) );
 
-  const lights = createMemo( () => {
-    const backgroundColor = props.lighting?.backgroundColor || defaultLighting.backgroundColor;
-    return { ...defaultLighting, backgroundColor };
-  });
-
-  const result = ( !!props.sceneCamera &&
+  const result = (
     <>
-      <PerspectiveCamera fov={fov()} aspect={props.aspect} position={position()} up={props.sceneCamera?.up}
-          near={props.sceneCamera?.near} far={props.sceneCamera?.far} target={props.sceneCamera?.lookAt} >
-        <Lighting {...(lights())} />
+      <PerspectiveCamera fov={fov()} aspect={props.aspect} position={position()} up={state.camera.up}
+          near={state.camera.near} far={state.camera.far} target={state.camera.lookAt} >
+        <Lighting/>
       </PerspectiveCamera>
       <TrackballControls onEnd={props.rotationOnly? undefined : trackballEnd} onChange={props.rotationOnly? undefined : trackballChange}
           rotationOnly={props.rotationOnly} rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed}
-          staticMoving='true' target={props.sceneCamera?.lookAt} />
+          staticMoving='true' target={state.camera.lookAt} />
     </>
   );
 
@@ -127,15 +114,15 @@ export const LightedTrackballCanvas = ( props ) =>
     <Canvas class='canvas3d' dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false }}
         height={props.height ?? "100vh"} width={props.width ?? "100vw"}
         frameloop="always" onPointerMissed={handlePointerMissed} >
-      <LightedCameraControls lighting={props.lighting} aspect={aspect()}
-        rotationOnly={props.rotationOnly} rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed}
-        sceneCamera={props.sceneCamera} />
+      <LightedCameraControls aspect={aspect()}
+        rotationOnly={props.rotationOnly} rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} />
+
       {props.children}
+
     </Canvas>;
   
   canvas.style.display = 'flex';
   size = createElementSize( canvas );
-  createEffect( () => console.log( 'size', size.width, size.height ) );
 
   createRenderEffect( () => {
     canvas.style.cursor = (tool && tool().cursor) || 'auto';

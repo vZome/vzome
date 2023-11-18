@@ -34,6 +34,7 @@ const defaultLighting = () => ({
 export const defaultScene = () => ({
   camera: defaultCamera(),
   lighting: defaultLighting(),
+  liveCamera: defaultCamera(),
 });
 
 // We need to record the sourceCamera so we can make sure that trackball changes
@@ -117,13 +118,11 @@ export const injectCameraOrientation = ( cameraState, target, camera ) =>
 }
 
 // TODO: combine RotationContext and CameraStateContext?
-const CameraStateContext = createContext( {} );
+const CameraStateContext = createContext( { state: defaultScene(), setCamera: ()=>{}, setLighting: ()=>{} } );
 
 const CameraStateProvider = ( props ) =>
 {
   const [ state, setState ] = createStore( { ...defaultScene() } );
-  const camera = () => state.camera;
-  const lighting = () => state.lighting;
 
   if ( !! props.distance ) {
     const distance = props.distance;
@@ -148,12 +147,17 @@ const CameraStateProvider = ( props ) =>
     setState( 'liveCamera', extractCameraState( camera, target ) );
 
   const setCamera = camera =>
+  {
     setState( 'camera', camera );
+    setState( 'liveCamera', camera );
+  }
+
+  const setLighting = lighting => setState( 'lighting', lighting );
   
   const lookAt = () => state.liveCamera.lookAt;
 
   return (
-    <CameraStateContext.Provider value={ { adjustFrustum, recordCamera, lookAt, camera, lighting, setCamera } }>
+    <CameraStateContext.Provider value={ { adjustFrustum, recordCamera, lookAt, state, setCamera, setLighting } }>
       {props.children}
     </CameraStateContext.Provider>
   );

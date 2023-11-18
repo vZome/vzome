@@ -10,9 +10,11 @@ import { WorkerStateProvider } from '../../workerClient/context.jsx';
 
 import { BuildPlaneTool } from './buildplane.jsx'
 import { DesignViewer } from '../../viewer/solid/index.jsx';
+import { CameraStateProvider } from '../../workerClient/camera.jsx';
 
 const WorkerApp = () => (
   <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
+    <CameraStateProvider>
     <WorkerStateProvider>
       <VZomeAppBar showOpen pathToRoot='../models' forDebugger={false} title='Buildplane'
         about={ <>
@@ -41,6 +43,7 @@ const WorkerApp = () => (
       <DesignViewer height="100%" width="100%" config={ { useSpinner: true, undoRedo: true } }
         children3d={ <BuildPlaneTool/> } />
     </WorkerStateProvider>
+    </CameraStateProvider>
   </ErrorBoundary>
 );
 

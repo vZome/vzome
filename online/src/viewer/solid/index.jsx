@@ -18,6 +18,7 @@ import { ExportMenu } from './export.jsx';
 import { InteractionToolProvider } from './interaction.jsx';
 import { UndoRedoButtons } from './undoredo.jsx';
 import { GltfExportProvider } from './geometry.jsx';
+import { CameraStateProvider, useCameraState } from '../../workerClient/camera.jsx';
 
 let stylesAdded = false; // for the onMount in DesignViewer
 
@@ -41,7 +42,8 @@ const fullScreenStyle = {
 const DesignViewer = ( props ) =>
 {
   const config = mergeProps( { showScenes: false, useSpinner: false, allowFullViewport: false, undoRedo: false }, props.config );
-  const { state } = useWorkerClient();
+  const { state, subscribeFor } = useWorkerClient();
+  const { state: cameraState, setCamera, setLighting } = useCameraState();
   const [ fullScreen, setFullScreen ] = createSignal( false );
   const toggleFullScreen = () =>
   {
@@ -69,6 +71,16 @@ const DesignViewer = ( props ) =>
       document.body .appendChild( document.createElement("style") ).textContent = urlViewerCSS;
       // We don't want to add multiple identical style elements, one for each DesignViewer on the page.
       stylesAdded = true;
+    }
+  });
+
+  subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
+    if ( scene.camera ) {
+      setCamera( scene.camera );
+    }
+    if ( scene.lighting ) {
+      const { backgroundColor } = scene.lighting;
+      setLighting( { ...cameraState.lighting, backgroundColor } );
     }
   });
 
@@ -115,6 +127,7 @@ const DesignViewer = ( props ) =>
 const UrlViewer = (props) =>
 {
   return (
+    <CameraStateProvider>
     <WorkerStateProvider store={props.store} config={{ url: props.url, preview: true, debug: false, showScenes: props.showScenes }}>
       <DesignViewer config={ { ...props.config, allowFullViewport: true } }
           componentRoot={props.componentRoot}
@@ -122,6 +135,7 @@ const UrlViewer = (props) =>
         {props.children}
       </DesignViewer>
     </WorkerStateProvider>
+    </CameraStateProvider>
   );
 }
 

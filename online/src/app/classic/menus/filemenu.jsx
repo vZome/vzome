@@ -11,6 +11,7 @@ import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/me
 import { UrlDialog } from '../dialogs/webloader.jsx'
 import { Guardrail } from "../dialogs/guardrail.jsx";
 import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
+import { useCameraState } from "../../../workerClient/camera.jsx";
 
 const NewDesignItem = props =>
 {
@@ -26,6 +27,7 @@ const NewDesignItem = props =>
 export const FileMenu = () =>
 {
   const { postMessage, rootController, state, setState } = useWorkerClient();
+  const { state: cameraState } = useCameraState();
   const [ showDialog, setShowDialog ] = createSignal( false );
   const fields = () => controllerProperty( rootController(), 'fields', 'fields', true );
   const [ showGuardrail, setShowGuardrail ] = createSignal( false );
@@ -119,9 +121,8 @@ export const FileMenu = () =>
     let name;
     controllerExportAction( rootController(), 'vZome' )
       .then( text => {
-        const { camera, lighting } = state.scene;
         name = state?.designName || 'untitled';
-        const fullText = serializeVZomeXml( text, lighting, {...state.liveCamera}, camera );
+        const fullText = serializeVZomeXml( text, cameraState.lighting, {...cameraState.liveCamera} );
         const mimeType = 'application/xml';
         if ( state.fileHandle && !chooseFile )
           return saveFile( state.fileHandle, fullText, mimeType )

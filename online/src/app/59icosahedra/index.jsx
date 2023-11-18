@@ -11,7 +11,7 @@ import { VZomeAppBar } from '../classic/components/appbar.jsx';
 import { WorkerStateProvider, useWorkerClient } from '../../workerClient/context.jsx';
 import { SceneCanvas } from '../../viewer/solid/index.jsx'
 import { getModelURL } from '../classic/components/folder.jsx';
-import { CameraStateProvider, RotationProvider, useCameraState } from "../../viewer/solid/camera.jsx";
+import { CameraStateProvider, RotationProvider, useCameraState } from "../../workerClient/camera.jsx";
 import { InteractionToolProvider } from '../../viewer/solid/interaction.jsx';
 import { CellOrbitProvider, CellSelectorTool, useCellOrbits } from './selector.jsx';
 import { LightedTrackballCanvas } from '../../viewer/solid/ltcanvas.jsx';
@@ -20,33 +20,19 @@ import { selectScene } from '../../workerClient/actions.js';
 
 const SelectorCanvas = () =>
 {
-  const { state, subscribe } = useWorkerClient();
-  const { camera, lighting, setCamera } = useCameraState();
+  const { state, subscribeFor } = useWorkerClient();
+  const { state: { camera }, setCamera } = useCameraState();
 
-  subscribe( {
-    onWorkerError: () => {},
-    onWorkerMessage: data => {
-      switch ( data.type ) {
-
-        case 'SCENE_RENDERED':
-          const { scene } = data.payload;
-          if ( scene.camera ) {
-            const { distance, near, far, width } = camera();
-            // Use the camera from the loaded scene, except for the zoom.
-            setCamera( { ...scene.camera, distance, near, far, width } );
-          }
-          break;
-
-        default:
-          break;
-      }
+  subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
+    if ( scene.camera ) {
+      const { distance, near, far, width } = camera;  // This looks circular, but it is not reactive code.
+      // Use the camera from the loaded scene, except for the zoom.
+      setCamera( { ...scene.camera, distance, near, far, width } );
     }
-  } );
-
-  const scene = () => ({ ...state.scene, camera: camera(), lighting: lighting() }); // override camera and lighting from the document
+  });
 
   return (
-    <SceneCanvas rotationOnly={false} panSpeed={0} scene={scene()}
+    <SceneCanvas rotationOnly={false} panSpeed={0} scene={state.scene}
       style={{ position: 'relative', height: '100%' }} height='100%' width='100%' />
   )
 }
@@ -126,7 +112,7 @@ const CellOrbit = props =>
 
 const StellationCanvas = props =>
 {
-  const { camera, lighting } = useCameraState();
+  const { state } = useCameraState();
   const { showCutaway, setShowCutaway } = useContext( ViewOptions );
   const toggleCutaway = () => setShowCutaway( value => !value );
 
@@ -136,7 +122,7 @@ const StellationCanvas = props =>
         control={
           <Switch checked={showCutaway()} onChange={ toggleCutaway } size='medium' inputProps={{ "aria-label": "cutaway" }} />
         }/>
-      <LightedTrackballCanvas sceneCamera={camera()} lighting={lighting()}
+      <LightedTrackballCanvas sceneCamera={state.camera} lighting={state.lighting}
           height='100%' width='100%'
           rotationOnly={false} rotateSpeed={4.5} >
         {props.children}
