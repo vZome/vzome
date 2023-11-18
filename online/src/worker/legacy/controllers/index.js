@@ -3,7 +3,6 @@ import { com } from '../core-java.js';
 import { documentFactory, parse } from '../core.js'
 import { EditCursor, interpret, RenderHistory, Step } from '../interpreter.js';
 import { ControllerWrapper } from './wrapper.js';
-import { getSceneIndex } from '../../vzome-worker-static.js';
 import { renderedModelTransducer, resolveBuildPlanes } from '../scenes.js';
 import { EditorController } from './editor.js';
 
@@ -58,6 +57,29 @@ const createControllers = ( design, renderingChanges, clientEvents ) =>
 
   return wrapper;
 };
+
+// Duplicated here to avoid a weird dependency back to the static module.
+const getSceneIndex = ( title, list ) =>
+{
+  if ( !title )
+    return 0;
+  let index;
+  if ( title.startsWith( '#' ) ) {
+    const indexStr = title.substring( 1 );
+    index = parseInt( indexStr );
+    if ( isNaN( index ) || index < 0 || index > list.length ) {
+      console.log( `WARNING: ${index} is not a scene index` );
+      index = 0;
+    }
+  } else {
+    index = list .map( s => s.title ) .indexOf( title );
+    if ( index < 0 ) {
+      console.log( `WARNING: no scene titled "${title}"` );
+      index = 0;
+    }
+  }
+  return index;
+}
 
 export const loadDesign = ( xml, debug, clientEvents, sceneTitle ) =>
 {
