@@ -24,7 +24,12 @@ export const ConstructMenu = () =>
         <Divider />
         
         <EditAction label="Centroid" action="NewCentroid" />
-        <EditAction label="Strut Midpoint" action="midpoint" />
+        <EditAction label="Strut Midpoints" action="midpoint" />
+        <EditAction label="Panel Centroids" action="PanelCentroids" />
+        <EditAction label="Panel Perimeters" action="PanelPerimeters" />
+
+        <Divider />
+
         <EditAction label="Line-Line Intersection"  action="StrutIntersection" />
         <EditAction label="Line-Plane Intersection" action="LinePlaneIntersect" />
         <EditAction label="Panel-Panel Projection"  action="PanelPanelIntersection" />
