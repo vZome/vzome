@@ -333,7 +333,11 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu.add( enableIf( isEditor, createMenuItem( "Centroid", ( "NewCentroid" ) ) ) );
-        menu.add( enableIf( isEditor, createMenuItem( "Strut Midpoint", ( "midpoint" ) ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Strut Midpoints", ( "midpoint" ) ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Panel Centroids", ( "PanelCentroids" ) ) ) );
+        menu.add( enableIf( isEditor, createMenuItem( "Panel Perimeters", ( "PanelPerimeters" ) ) ) );
+        
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         menu.add( enableIf( isEditor, createMenuItem( "Line-Line Intersection", ( "StrutIntersection" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Line-Plane Intersection", ( "LinePlaneIntersect" ) ) ) );
         menu.add( enableIf( isEditor, createMenuItem( "Panel-Panel Projection", ( "PanelPanelIntersection" ) ) ) );

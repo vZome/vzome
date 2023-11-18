@@ -167,3 +167,9 @@ format-2.1.0-models.vZome-files
 2022/10-Oct/22-origin-last-fixes/select-all-origin-last-true.vZome
 2022/10-Oct/23-origin-last-fixes/AdjustSelectionByClass-origin-last-false.vZome
 2022/10-Oct/23-origin-last-fixes/AdjustSelectionByClass-origin-last-true.vZome
+
+#Add PanelMidpoints and PanelPerimeters
+2023/11-Nov/15-David-Panels/PanelCentroids-and-PanelPerimeters.vZome
+
+#SelectCoplanar can now be called from a panel's context menu
+2023/11-Nov/15-David-SelectCoplanar/SelectCoplanar-from-context-menu.vZome
