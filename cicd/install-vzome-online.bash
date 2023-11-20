@@ -17,9 +17,4 @@ revision=`cat modules/revision.txt`
 mkdir modules/r$revision
 cp modules/*.js modules/r$revision
 
-# The vZome Online history inspector has been gone since I dropped React.
-#  This restores it, using the last revision where it was supported.
-cat app/index.html | \
-  sed 's-modules/-modules/r114/-' > app/inspector.html
-
 chmod a+x app/embed.py
