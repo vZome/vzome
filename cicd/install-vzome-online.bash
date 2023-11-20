@@ -17,4 +17,11 @@ revision=`cat modules/revision.txt`
 mkdir modules/r$revision
 cp modules/*.js modules/r$revision
 
+# recreate the old inspector app
+cat app/index.html | \
+  sed 's-modules/-modules/r114/-' > app/inspector.html
+# marshall models for the new inspector app
+mkdir -p app/inspector/models
+cp app/models/* app/inspector/models
+
 chmod a+x app/embed.py
