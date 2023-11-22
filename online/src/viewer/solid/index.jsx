@@ -18,7 +18,7 @@ import { ExportMenu } from './export.jsx';
 import { InteractionToolProvider } from './interaction.jsx';
 import { UndoRedoButtons } from './undoredo.jsx';
 import { GltfExportProvider } from './geometry.jsx';
-import { CameraStateProvider, useCameraState } from '../../workerClient/camera.jsx';
+import { CameraProvider, useCamera } from '../../workerClient/camera.jsx';
 
 let stylesAdded = false; // for the onMount in DesignViewer
 
@@ -43,7 +43,7 @@ const DesignViewer = ( props ) =>
 {
   const config = mergeProps( { showScenes: false, useSpinner: false, allowFullViewport: false, undoRedo: false }, props.config );
   const { state, subscribeFor } = useWorkerClient();
-  const { state: cameraState, setCamera, setLighting } = useCameraState();
+  const { state: cameraState, setCamera, setLighting } = useCamera();
   const [ fullScreen, setFullScreen ] = createSignal( false );
   const toggleFullScreen = () =>
   {
@@ -127,7 +127,7 @@ const DesignViewer = ( props ) =>
 const UrlViewer = (props) =>
 {
   return (
-    <CameraStateProvider>
+    <CameraProvider>
     <WorkerStateProvider store={props.store} config={{ url: props.url, preview: true, debug: false, showScenes: props.showScenes }}>
       <DesignViewer config={ { ...props.config, allowFullViewport: true } }
           componentRoot={props.componentRoot}
@@ -135,7 +135,7 @@ const UrlViewer = (props) =>
         {props.children}
       </DesignViewer>
     </WorkerStateProvider>
-    </CameraStateProvider>
+    </CameraProvider>
   );
 }
 

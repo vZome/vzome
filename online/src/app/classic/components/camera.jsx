@@ -5,12 +5,13 @@ import { useWorkerClient } from '../../../workerClient/index.js';
 import { controllerAction } from '../../../workerClient/controllers-solid.js';
 import { CameraTool, InteractionToolProvider } from '../../../viewer/solid/interaction.jsx';
 import { createStore } from 'solid-js/store';
-import { useCameraState } from '../../../workerClient/camera.jsx';
+import { CameraProvider, useCamera } from '../../../workerClient/camera.jsx';
 
-export const CameraControls = () =>
+export const CameraControls = (props) =>
 {
+  const context = useCamera();
   const { subscribeFor, rootController, isWorkerReady } = useWorkerClient();
-  const { state, setCamera } = useCameraState();
+  const { state, setCamera } = useCamera();
   const [ scene, setScene ] = createStore( null );
 
   // TODO: encapsulate these and createStore() in a new createScene()... 
@@ -44,9 +45,9 @@ export const CameraControls = () =>
 
   subscribeFor( 'TRACKBALL_SCENE_LOADED', ( { scene } ) => {
     if ( scene.camera ) {
-      const { distance, near, far, width } = state.camera;  // This looks circular, but it is not reactive code.
-      // Use the camera from the loaded scene, except for the zoom.
-      setCamera( { ...scene.camera, distance, near, far, width } );
+      const { lookAt, distance, near, far, width } = state.camera;  // This looks circular, but it is not reactive code.
+      // Ignore the rotation from the loaded scene.
+      setCamera( { lookAt, distance, near, far, width } );
     }
     setScene( 'embedding', scene.embedding );
     updateShapes( scene.shapes );
@@ -64,6 +65,7 @@ export const CameraControls = () =>
   createEffect( () => isWorkerReady() && controllerAction( rootController(), 'connectTrackballScene' ) );
 
   return (
+    <CameraProvider name='trackball' context={context}>
     <InteractionToolProvider>
       {/* provider and CameraTool just to get the desired cursor */}
       <CameraTool/>
@@ -77,5 +79,6 @@ export const CameraControls = () =>
         </div>
       </div>
     </InteractionToolProvider>
+    </CameraProvider>
   )
 }

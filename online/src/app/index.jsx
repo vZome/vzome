@@ -11,7 +11,7 @@ import { getModelURL } from './classic/components/folder.jsx';
 import { VZomeAppBar } from './classic/components/appbar.jsx';
 import { WorkerStateProvider } from '../workerClient/index.js';
 import { DesignViewer } from '../viewer/solid/index.jsx';
-import { CameraStateProvider } from '../workerClient/camera.jsx';
+import { CameraProvider } from '../workerClient/camera.jsx';
 
 const queryParams = new URLSearchParams( window.location.search );
 const relativeUrl = queryParams.get( 'url' ); // support for legacy viewer usage (old vZome shares)
@@ -45,7 +45,7 @@ const Online = () =>
   
   return (
     <ErrorBoundary fallback={err => err}>
-      <CameraStateProvider>
+      <CameraProvider>
       <WorkerStateProvider config={config}>
         <VZomeAppBar title={ 'Viewer' } showOpen={true}
           about={
@@ -71,7 +71,7 @@ const Online = () =>
         : <DesignHistoryInspector/> } */}
         <DesignViewer height="100%" width="100%" config={ { useSpinner: true, showScenes: true } } />
       </WorkerStateProvider>
-      </CameraStateProvider>
+      </CameraProvider>
     </ErrorBoundary>
   );
 }

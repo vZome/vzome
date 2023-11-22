@@ -11,7 +11,7 @@ import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/me
 import { UrlDialog } from '../dialogs/webloader.jsx'
 import { Guardrail } from "../dialogs/guardrail.jsx";
 import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
-import { useCameraState } from "../../../workerClient/camera.jsx";
+import { useCamera } from "../../../workerClient/camera.jsx";
 
 const NewDesignItem = props =>
 {
@@ -27,7 +27,7 @@ const NewDesignItem = props =>
 export const FileMenu = () =>
 {
   const { postMessage, rootController, state, setState } = useWorkerClient();
-  const { state: cameraState } = useCameraState();
+  const { state: cameraState } = useCamera();
   const [ showDialog, setShowDialog ] = createSignal( false );
   const fields = () => controllerProperty( rootController(), 'fields', 'fields', true );
   const [ showGuardrail, setShowGuardrail ] = createSignal( false );

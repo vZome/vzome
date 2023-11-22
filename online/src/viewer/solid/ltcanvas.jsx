@@ -1,17 +1,17 @@
 
 import { useFrame, Canvas } from "solid-three";
 import { Color } from "three";
-import { createEffect, createMemo, createRenderEffect, mergeProps, onMount } from "solid-js";
+import { createMemo, createRenderEffect, mergeProps, onMount } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
 import { PerspectiveCamera } from "./perspectivecamera.jsx";
 import { TrackballControls } from "./trackballcontrols.jsx";
 import { useInteractionTool } from "./interaction.jsx";
-import { cameraFieldOfViewY, cameraPosition, useCameraState } from "../../workerClient/camera.jsx";
+import { useCamera } from "../../workerClient/camera.jsx";
 
 const Lighting = () =>
 {
-  const { state } = useCameraState();
+  const { state } = useCamera();
   const color = createMemo( () => new Color( state.lighting.backgroundColor ) );
   useFrame( ({scene}) => { scene.background = color() } )
   let centerObject;
@@ -28,44 +28,26 @@ const Lighting = () =>
   )
 }
 
-// Thanks to Paul Henschel for this, to fix the camera.lookAt by adjusting the Controls target
-//   https://github.com/react-spring/react-three-fiber/discussions/609
-
 const LightedCameraControls = (props) =>
 {
-  const { state, adjustFrustum, recordCamera } = useCameraState();
-  // Here we can useThree, etc., which we could not in LightedTrackballCanvas
+  const { perspectiveProps, trackballProps, name } = useCamera();
+  console.log( 'LightedCameraControls sees', name );
+  const [ tool ] = useInteractionTool();
+  const enableTrackball = () => ( tool === undefined ) || tool().allowTrackball;
   props = mergeProps( { rotateSpeed: 4.5, zoomSpeed: 3, panSpeed: 1 }, props );
 
-  const trackballChange = evt =>
-  {
-    const { object, target } = evt.target;
-    adjustFrustum && adjustFrustum( object, target );
-  }
-
-  const trackballEnd = evt =>
-  {
-    const { object, target } = evt.target;
-    recordCamera && recordCamera( object, target );
-  }
-
-  const position = createMemo( () => cameraPosition( state.camera ) );
-
-  const fov = createMemo( () => cameraFieldOfViewY( state.camera, props.aspect ) );
-
-  const result = (
+  return (
     <>
-      <PerspectiveCamera fov={fov()} aspect={props.aspect} position={position()} up={state.camera.up}
-          near={state.camera.near} far={state.camera.far} target={state.camera.lookAt} >
+      <PerspectiveCamera aspect={props.aspect} name={name}
+          position={perspectiveProps.position} up={perspectiveProps.up} fov={perspectiveProps.fov( props.aspect )}
+          near={perspectiveProps.near} far={perspectiveProps.far} target={perspectiveProps.target} >
         <Lighting/>
       </PerspectiveCamera>
-      <TrackballControls onEnd={props.rotationOnly? undefined : trackballEnd} onChange={props.rotationOnly? undefined : trackballChange}
-          rotationOnly={props.rotationOnly} rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed}
-          staticMoving='true' target={state.camera.lookAt} />
+      <TrackballControls enabled={enableTrackball()} rotationOnly={props.rotationOnly}
+        camera={trackballProps.camera} target={perspectiveProps.target} sync={trackballProps.sync}
+        rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} />
     </>
   );
-
-  return result;
 }
 
 const isLeftMouseButton = e =>

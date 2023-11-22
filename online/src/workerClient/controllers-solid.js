@@ -3,12 +3,12 @@ import { createEffect } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 
 import { newDesign, requestControllerProperty, doControllerAction, setControllerProperty, decodeEntities } from './actions.js';
-import { useCameraState, defaultCamera } from "./camera.jsx";
+import { useCamera, defaultCamera } from "./camera.jsx";
 
 const initialState = () => ( {
   scene: {}, 
   trackballScene: {},
-  copiedCamera: defaultCamera(), // TODO: this is probably too static, not related to useCameraState
+  copiedCamera: defaultCamera(), // TODO: this is probably too static, not related to useCamera
 } );
 
 const createWorkerStore = ( worker ) =>

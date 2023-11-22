@@ -11,7 +11,7 @@ import { OrbitsDialog } from "./dialogs/orbits.jsx";
 import { ShapesDialog } from "./dialogs/shapes.jsx";
 import { PolytopesDialog } from "./dialogs/polytopes.jsx";
 import { ErrorAlert } from "./components/alert.jsx";
-import { CameraStateProvider, RotationProvider } from "../../workerClient/camera.jsx";
+import { CameraProvider } from "../../workerClient/camera.jsx";
 
 export const ClassicEditor = () =>
 {
@@ -24,7 +24,7 @@ export const ClassicEditor = () =>
 
   let alertRoot;
   return (
-    <RotationProvider>
+    <CameraProvider name='common'>
     <div id='classic' ref={alertRoot} style={{ display: 'grid', 'grid-template-rows': '1fr' }} class='whitesmoke-bkgd'>
       <div id='editor-main' class='grid-cols-1-min whitesmoke-bkgd' >
 
@@ -42,9 +42,7 @@ export const ClassicEditor = () =>
         </div>
 
         <div id='editor-drawer' class='grid-rows-min-1 editor-drawer'>
-          <CameraStateProvider>
-            <CameraControls/>
-          </CameraStateProvider>
+          <CameraControls/>
           <div id="build-parts-measure" style={{ height: '100%' }}>
             <StrutBuildPanel/>
           </div>
@@ -53,7 +51,7 @@ export const ClassicEditor = () =>
       </div>
       <ErrorAlert/>
     </div>
-    </RotationProvider>
+    </CameraProvider>
   )
 }
 

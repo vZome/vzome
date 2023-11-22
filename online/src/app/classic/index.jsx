@@ -16,7 +16,6 @@ import { controllerProperty } from '../../workerClient/controllers-solid.js'
 import { VZomeAppBar } from './components/appbar.jsx';
 import { ClassicEditor, SymmetryProvider } from './classic.jsx';
 import { WorkerStateProvider } from '../../workerClient/index.js';
-import { CameraStateProvider } from '../../workerClient/camera.jsx';
 
 const Persistence = () =>
 {
@@ -44,7 +43,6 @@ const Classic = () =>
 {
   return (
     <ErrorBoundary fallback={ err => <div>{err.toString()}</div> } >
-      <CameraStateProvider>
       <WorkerStateProvider>
         <SymmetryProvider>
           <VZomeAppBar menuBar={true} title='BETA'
@@ -79,7 +77,6 @@ const Classic = () =>
           <ClassicEditor/>
         </SymmetryProvider>
       </WorkerStateProvider>
-      </CameraStateProvider>
     </ErrorBoundary>
   );
 }

@@ -11,7 +11,7 @@ import { VZomeAppBar } from '../classic/components/appbar.jsx';
 import { WorkerStateProvider, useWorkerClient } from '../../workerClient/context.jsx';
 import { SceneCanvas } from '../../viewer/solid/index.jsx'
 import { getModelURL } from '../classic/components/folder.jsx';
-import { CameraStateProvider, RotationProvider, useCameraState } from "../../workerClient/camera.jsx";
+import { CameraProvider, useCamera } from "../../workerClient/camera.jsx";
 import { InteractionToolProvider } from '../../viewer/solid/interaction.jsx';
 import { CellOrbitProvider, CellSelectorTool, useCellOrbits } from './selector.jsx';
 import { LightedTrackballCanvas } from '../../viewer/solid/ltcanvas.jsx';
@@ -21,7 +21,7 @@ import { selectScene } from '../../workerClient/actions.js';
 const SelectorCanvas = () =>
 {
   const { state, subscribeFor } = useWorkerClient();
-  const { state: { camera }, setCamera } = useCameraState();
+  const { state: { camera }, setCamera } = useCamera();
 
   subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
     if ( scene.camera ) {
@@ -39,7 +39,7 @@ const SelectorCanvas = () =>
 
 const ModelWorker = props =>
 {
-  const config = { url: getModelURL( props.model ), preview: props.preview, debug: false, sceneTitle: props.sceneTitle };
+  const config = { url: getModelURL( props.model ), preview: true, debug: false, sceneTitle: props.sceneTitle };
 
   return (
     <WorkerStateProvider config={config} >
@@ -52,14 +52,12 @@ const Selector = props =>
 {
   return (
     <div class='selector' >
-      <CameraStateProvider distance={500}>
-        <ModelWorker model={props.model} preview={true} >
-          <InteractionToolProvider>
-            <CellSelectorTool model={props.model}/>
-            <SelectorCanvas/>
-          </InteractionToolProvider>
-        </ModelWorker>
-      </CameraStateProvider>
+      <ModelWorker model={props.model} >
+        <InteractionToolProvider>
+          <CellSelectorTool model={props.model}/>
+          <SelectorCanvas/>
+        </InteractionToolProvider>
+      </ModelWorker>
     </div>
   )
 }
@@ -102,9 +100,8 @@ const CellOrbit = props =>
 {
   const { showCutaway } = useContext( ViewOptions );
 
-
   return (
-    <ModelWorker model={props.cell} preview={true} sceneTitle={ showCutaway()? 'cutaway' : 'full' } >
+    <ModelWorker model={props.cell} sceneTitle={ showCutaway()? 'cutaway' : 'full' } >
       <CellOrbitScene cell={props.cell} />
     </ModelWorker>
   );
@@ -112,7 +109,6 @@ const CellOrbit = props =>
 
 const StellationCanvas = props =>
 {
-  const { state } = useCameraState();
   const { showCutaway, setShowCutaway } = useContext( ViewOptions );
   const toggleCutaway = () => setShowCutaway( value => !value );
 
@@ -122,9 +118,7 @@ const StellationCanvas = props =>
         control={
           <Switch checked={showCutaway()} onChange={ toggleCutaway } size='medium' inputProps={{ "aria-label": "cutaway" }} />
         }/>
-      <LightedTrackballCanvas sceneCamera={state.camera} lighting={state.lighting}
-          height='100%' width='100%'
-          rotationOnly={false} rotateSpeed={4.5} >
+      <LightedTrackballCanvas height='100%' width='100%' rotationOnly={false} rotateSpeed={4.5} >
         {props.children}
       </LightedTrackballCanvas>
     </>
@@ -156,7 +150,7 @@ const App = () => (
     <div id='below-appbar' >
       <CellOrbitProvider>
         <div id='stellation' >
-          <CameraStateProvider distance={500}>
+          <CameraProvider distance={500}>
             <ViewOptionsProvider>
               <StellationCanvas>
                 <CellOrbit cell='a'/>
@@ -173,7 +167,7 @@ const App = () => (
                 <CellOrbit cell='h'/>
               </StellationCanvas>
             </ViewOptionsProvider>
-          </CameraStateProvider>
+          </CameraProvider>
         </div>
         <div id='text-and-selectors' >
           <div id='full-text'>
@@ -187,12 +181,12 @@ const App = () => (
               Click on or touch the shapes below.
             </Typography>
           </div>
-          <RotationProvider>
+          <CameraProvider distance={500}>
             <div id='selectors' >
               <Selector model='pieces-aceg' />
               <Selector model='pieces-bdfh' />
             </div>
-          </RotationProvider>
+          </CameraProvider>
         </div>
       </CellOrbitProvider>
     </div>

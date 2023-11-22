@@ -5,14 +5,8 @@ import { createEffect, createMemo, onCleanup } from "solid-js";
 import { useFrame, useThree } from "solid-three";
 import { TrackballControls as TrackballControlsImpl } from "three-stdlib";
 
-import { useInteractionTool } from "./interaction.jsx";
-import { useRotation, extractCameraState, injectCameraOrientation, useCameraState } from "../../workerClient/camera.jsx";
-
 export const TrackballControls = (props) =>
 {
-  const [ tool ] = useInteractionTool();
-  const enabled = () => ( tool === undefined ) || tool().allowTrackball;
-  const defaultCamera = useThree(({ camera }) => camera);
   const gl = useThree(({ gl }) => gl);
   const set = useThree(({ set }) => set);
   const get = useThree(({ get }) => get);
@@ -26,10 +20,8 @@ export const TrackballControls = (props) =>
     trackballControls() .connect( gl().domElement );
   });
 
-  const thisCamera = () => props.camera || defaultCamera();
-
   const trackballControls = createMemo( () => {
-    return new TrackballControlsImpl( thisCamera(), gl().domElement );
+    return new TrackballControlsImpl( props.camera, gl().domElement );
   } );
 
   useFrame(() => {
@@ -40,11 +32,8 @@ export const TrackballControls = (props) =>
   });
 
   createEffect( () => {
-    trackballControls() .enabled = enabled();
+    trackballControls() .enabled = props.enabled;
   });
-
-  const { lastRotation, publishRotation } = useRotation();
-  const { lookAt } = useCameraState();
 
   createEffect(() =>
   {
@@ -64,24 +53,12 @@ export const TrackballControls = (props) =>
 
     controls.connect( gl().domElement );
 
-    controls.addEventListener( 'change', (evt) => {
-      if ( ! publishRotation ) return;
-      // filter out pan and zoom changes
-      // HACK! Assumes knowledge of TrackballControls internals
-      if ( controls._state !== 0 && controls._state !== 3 ) // ROTATE, TOUCH_ROTATE
-        return;
-      publishRotation( extractCameraState( thisCamera(), controls.target ), thisCamera() );
-    } );
-
-    if (props.onStart) controls.addEventListener("start", props.onStart);
-    if (props.onChange) controls.addEventListener("change", props.onChange);
-    if (props.onEnd)   controls.addEventListener("end", props.onEnd);
+    const onChange = () => props.sync( trackballControls() .target );
+    controls .addEventListener( "change", onChange );
 
     onCleanup(() => {
-      if (props.onStart) controls.removeEventListener("start", props.onStart);
-      if (props.onChange) controls.removeEventListener("change", props.onChange);
-      if (props.onEnd)   controls.removeEventListener("end", props.onEnd);
-      controls.dispose();
+      controls .removeEventListener( "change", onChange );
+      controls .dispose();
     });
   });
 
@@ -95,17 +72,6 @@ export const TrackballControls = (props) =>
       const old = get()().controls;
       set()({ controls: trackballControls() });
       onCleanup(() => set()({ controls: old }));
-    }
-  });
-
-  createEffect( () => {
-    if ( ! lastRotation ) return;
-    let { cameraState, sourceCamera } = lastRotation();
-    const camera = thisCamera();
-    if ( sourceCamera && sourceCamera !== camera ) {
-      // console.log( `${camera.vzomeName} receiving rotation from ${sourceCamera.vzomeName}` );
-      // Can't use props.target here, since it is not up-to-date in some cases
-      injectCameraOrientation( cameraState, lookAt(), camera );
     }
   });
 

@@ -3,20 +3,20 @@ import { ContextMenu } from "@kobalte/core";
 import { ContextMenuItem, ContextMenuSeparator } from "../../framework/menus";
 import { useWorkerClient } from "../../../workerClient";
 import { controllerAction, subController } from "../../../workerClient/controllers-solid";
-import { useRotation } from "../../../workerClient/camera.jsx";
+import { useCamera } from "../../../workerClient/camera";
 
 export const ContextualMenu = props =>
 {
   const { state, setState, rootController } = useWorkerClient();
-  const { publishRotation } = useRotation();
+  const { state: cameraState, setCamera } = useCamera();
   const pickingController  = () => subController( rootController(), 'picking' );
   const notPicking = () => ! state.picked;
 
   const lookAt = position =>
   {
-    const { lookAt, ...others } = state.liveCamera;
+    const { lookAt, ...others } = cameraState.camera;
     // discard old lookAt
-    setState( 'scene', 'camera', { lookAt: position, ...others } );
+    setCamera( { lookAt: position, ...others } );
   }
 
   const lookAtThis   = () => lookAt( state.picked.position );
@@ -27,13 +27,11 @@ export const ContextualMenu = props =>
     const { up, lookAt, lookDir, ...rest } = camera; // don't want copy-by-reference for the arrays
     return { ...rest, up: [...up], lookAt: [...lookAt], lookDir: [...lookDir] };
   }
-  const copyCamera = () => setState( 'copiedCamera', copyOfCamera( state.liveCamera ) );
+  const copyCamera = () => setState( 'copiedCamera', copyOfCamera( cameraState.camera ) );
   
   const useCopiedCamera = () =>
   {
-    setState( 'scene', 'camera', copyOfCamera( state.copiedCamera ) );
-    setState( 'scene', 'liveCamera', copyOfCamera( state.copiedCamera ) );
-    publishRotation( copyOfCamera( state.copiedCamera ), {} ); // source camera cannot be null
+    setCamera( copyOfCamera( state.copiedCamera ) );
   }
 
   const doAction = action =>

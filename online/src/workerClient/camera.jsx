@@ -1,6 +1,6 @@
 
-import { createContext, createSignal, useContext } from 'solid-js';
-import { Vector3 } from "three";
+import { createContext, createEffect, useContext } from 'solid-js';
+import { PerspectiveCamera } from "three";
 
 import { createStore } from 'solid-js/store';
 
@@ -9,14 +9,18 @@ const NEAR_FACTOR = 0.1 / INITIAL_DISTANCE;
 const FAR_FACTOR = 2.0;
 const WIDTH_FACTOR = 0.5;
 
-export const defaultCamera = () => ({
+const defaultCamera = () => ({
+  // zoom
   distance: INITIAL_DISTANCE,
   near: INITIAL_DISTANCE * NEAR_FACTOR,
   far: INITIAL_DISTANCE * FAR_FACTOR,
   width: INITIAL_DISTANCE * WIDTH_FACTOR,
-  up: [ 0, 1, 0 ],
+  // pan
   lookAt: [ 0, 0, 0 ],
+  // rotation
+  up: [ 0, 1, 0 ],
   lookDir: [ 0, 0, -1 ],
+  // other
   perspective: true,
   default: true,
 });
@@ -31,38 +35,10 @@ const defaultLighting = () => ({
   ]
 });
 
-export const defaultScene = () => ({
+const defaultScene = () => ({
   camera: defaultCamera(),
   lighting: defaultLighting(),
-  liveCamera: defaultCamera(),
 });
-
-// We need to record the sourceCamera so we can make sure that trackball changes
-//  don't try to drive the camera for the same scene
-
-const defaultRotation = { cameraState: defaultCamera(), sourceCamera: null };
-
-// TODO: combine RotationContext and CameraStateContext?
-const RotationContext = createContext( {} );
-
-const RotationProvider = (props) =>
-{
-  const [ lastRotation, setLastRotation ] = createSignal( defaultRotation );
-  const publishRotation = ( cameraState, sourceCamera ) => setLastRotation( { cameraState, sourceCamera } );
-
-  const value = {
-    lastRotation, publishRotation,
-  };
-
-  return (
-    <RotationContext.Provider value={value}>
-      {props.children}
-    </RotationContext.Provider>
-  );
-}
-
-function useRotation() { return useContext( RotationContext ); }
-
 
 const toVector = vector3 =>
 {
@@ -70,7 +46,7 @@ const toVector = vector3 =>
   return [ x, y, z ];
 }
 
-export const extractCameraState = ( camera, target ) =>
+const extractCameraState = ( camera, target ) =>
 {
   const up = toVector( camera.up );
   const position = toVector( camera.position );
@@ -83,19 +59,19 @@ export const extractCameraState = ( camera, target ) =>
   const fovX = camera.fov * (Math.PI/180) * camera.aspect; // Switch from Y-based FOV degrees to X-based radians
   const width = 2 * distance * Math.tan( fovX / 2 );
   // This is needed to keep the fog depth correct in desktop.
-  const far = camera.far;
-  const near = camera.near;
+  const near = distance * NEAR_FACTOR;
+  const far = distance * FAR_FACTOR;
 
   return { lookAt, up, lookDir, distance, width, far, near };
 }
 
-export const cameraPosition = ( cameraState ) =>
+const cameraPosition = ( cameraState ) =>
 {
   const { distance, lookAt, lookDir } = cameraState;
   return lookAt .map( (e,i) => e - distance * lookDir[ i ] );
 }
 
-export const cameraFieldOfViewY = ( cameraState, aspectWtoH ) =>
+const cameraFieldOfViewY = ( cameraState ) => ( aspectWtoH ) =>
 {
   const { width, distance } = cameraState;
   const halfX = width / 2;
@@ -103,24 +79,18 @@ export const cameraFieldOfViewY = ( cameraState, aspectWtoH ) =>
   return 360 * Math.atan( halfY / distance ) / Math.PI;
 }
 
-const _offset = new Vector3(), _target = new Vector3();
-
-export const injectCameraOrientation = ( cameraState, target, camera ) =>
+const injectCameraState = ( cameraState, camera ) =>
 {
-  const { up, lookDir } = cameraState; // ignore distance, lookAt, etc.
-  _target.set( ...target );
-  _offset .copy( camera.position ) .sub( _target );
-  const distance = _offset .length();
-  _offset .set( ...lookDir ) .multiplyScalar( -distance );
-  camera.up.set( ...up );
-  camera.position.addVectors( _target, _offset );
-  camera.lookAt( _target );
+  const { up, lookAt } = cameraState;
+  camera.up .set( ...up );
+  camera.position .set( ...cameraPosition( cameraState ) );
+  camera .lookAt( ...lookAt );
+  camera.fov = cameraFieldOfViewY( cameraState )( 1.0 );
 }
 
-// TODO: combine RotationContext and CameraStateContext?
-const CameraStateContext = createContext( { state: defaultScene(), setCamera: ()=>{}, setLighting: ()=>{} } );
+const CameraContext = createContext( { state: defaultScene(), setCamera: ()=>{}, setLighting: ()=>{} } );
 
-const CameraStateProvider = ( props ) =>
+const CameraProvider = ( props ) =>
 {
   const [ state, setState ] = createStore( { ...defaultScene() } );
 
@@ -132,39 +102,65 @@ const CameraStateProvider = ( props ) =>
     setState( 'camera', { distance, far, near, width } );
   }
 
-  const adjustFrustum = ( camera, target ) =>
-  {
-    const { distance } = extractCameraState( camera, target );
-    // Keep the view frustum at a constant shape, adjusting near & far to track distance
-    const near = distance * NEAR_FACTOR;
-    const far = distance * FAR_FACTOR;
-    const width = distance * WIDTH_FACTOR;
-    setState( 'camera', { far, near, width } );
+  if ( !!props.context ) {
+    // Sync rotation from the context
+    createEffect( () => {
+      const { up, lookDir } = props.context.state.camera;
+      setState( 'camera', { up, lookDir } );
+      injectCameraState( state.camera, trackballCamera );
+      console.log( props.name, 'synced rotation from context' );
+    });
   }
 
-  // TODO: find a more appropriate place to implement this
-  const recordCamera = ( camera, target ) =>
-    setState( 'liveCamera', extractCameraState( camera, target ) );
+  const fov = cameraFieldOfViewY( state.camera );
+  const [ perspectiveProps, setPerspectiveProps ] = createStore( { fov } );  
+  // This effect keeps the perspectiveProps in sync with the recorded camera state,
+  //   thus propagating to all client LightedCameraControls.
+  createEffect( () => {
+    const position = cameraPosition( state.camera );
+    const { near, far, up, lookAt } = state.camera;
+    // I had a nasty bug for days because I used lookAt by reference, causing the CameraControls canvas
+    //  to respond very oddly to shared rotations.
+    setPerspectiveProps( { position, up, target: [ ...lookAt ], near, far } );
+    console.log( props.name, 'setPerspectiveProps' );
+  })
 
-  const setCamera = camera =>
+  const trackballCamera = new PerspectiveCamera(); // for the TrackballControls only, never used to render
+  injectCameraState( state.camera, trackballCamera );
+  const sync = target =>
   {
-    setState( 'camera', camera );
-    setState( 'liveCamera', camera );
+    // This gets hooked up to TrackballControls changes, and updates the main camera state
+    //   from the captive trackballCamera in response.
+    const extractedCamera = extractCameraState( trackballCamera, target );
+    const { up, lookDir } = extractedCamera;
+    if ( !! props.context ) {
+      props.context.setCamera( { up, lookDir } );
+      console.log( props.name, 'synced rotation up to context' );
+    } else {
+      setState( 'camera', extractedCamera );
+    }
+  }
+  const trackballProps = { camera: trackballCamera, sync }; // no need (or desire) for reactivity here
+
+  const setCamera = loadedCamera =>
+  {
+    setState( 'camera', loadedCamera );
+    // important: update trackballCamera synchronously, NOT as an effect.
+    injectCameraState( state.camera, trackballCamera );
   }
 
   const setLighting = lighting => setState( 'lighting', lighting );
   
-  const lookAt = () => state.liveCamera.lookAt;
-
+  // The perspectiveProps is used to initialize PerspectiveCamera in clients.
+  // The trackballProps is used to initialize TrackballControls in clients.
+  // The perspectiveProps reacts to changes in state, which reacts to changes in the trackballCamera.
   return (
-    <CameraStateContext.Provider value={ { adjustFrustum, recordCamera, lookAt, state, setCamera, setLighting } }>
+    <CameraContext.Provider value={ { perspectiveProps, trackballProps, state, setCamera, setLighting, name: props.name } }>
       {props.children}
-    </CameraStateContext.Provider>
+    </CameraContext.Provider>
   );
 }
 
-const useCameraState = () => { return useContext( CameraStateContext ); };
+const useCamera = () => { return useContext( CameraContext ); };
 
-// TODO: combine RotationContext and CameraStateContext?
-export { useCameraState, CameraStateProvider };
-export { useRotation,    RotationProvider };
+export { defaultCamera, useCamera, CameraProvider };

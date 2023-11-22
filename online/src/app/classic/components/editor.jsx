@@ -12,12 +12,12 @@ import { SelectionTool } from '../tools/selection.jsx';
 import { StrutDragTool } from '../tools/strutdrag.jsx';
 import { ContextualMenuArea } from '../../framework/menus.jsx';
 import { ContextualMenu } from '../menus/contextmenu.jsx';
-import { useCameraState } from '../../../workerClient/camera.jsx';
+import { useCamera } from '../../../workerClient/camera.jsx';
 
 export const SceneEditor = ( props ) =>
 {
   const { state, setState, subscribeFor } = useWorkerClient();
-  const { state: cameraState, setCamera, setLighting } = useCameraState();
+  const { state: cameraState, setCamera, setLighting } = useCamera();
   const [ strutting, setStrutting ] = createSignal( true );
   const [ viewing, setViewing ] = createSignal( false );
   const toolValue = () => viewing()? 'camera' : strutting()? 'strutDrag' : 'select';
