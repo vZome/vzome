@@ -2,7 +2,7 @@
 title: vZome Online Web Applications
 image: https://user-images.githubusercontent.com/1584024/211131345-202c81ed-3972-4daf-a8f3-3a789a670e2d.png
 description:
-  There are several variants of vZome Online, a port of desktop vZome technology to the web.
+  There are several variants and derivatives of vZome Online, a port of desktop vZome technology to the web.
 published: true
 ---
 
@@ -19,13 +19,32 @@ feature parity with desktop vZome.  Along the way, I've implemented a number of 
 using the same core software.  This page is an introduction to the whole menagerie;
 most of the headings below are links to the applications being described.
 
+## [The Zometool Tetrahedra Challenge](https://vzome.github.io/zome-tetras/)
+
+This app is a solution to the tetrahedra challenge posed in the [Zometool manual](https://www.zometool.com/content/Manual2.3web.pdf),
+with the complete table duplicated from there, and an interactive viewer for the solutions.
+Don't peek until you're stumped!  (This one was a collaborative effort by several
+community members, coordinated on the [Discord server](https://discord.gg/vhyFsNAFPS).
+
+## [Brian Hall's Zometool Designs](https://www.vzome.com/app/bhall/basic/)
+
+My friend Brian Hall, a mathematical physicist at Notre Dame, has designed a number of intriguing
+models you can build with [Zometool](https://zometool.com), at three levels of difficulty.
+Embrace the challenge!
+
+## [The 59 Icosahedra](https://www.vzome.com/app/59icosahedra)
+
+This application lets you explore the [59 stellations of the icosahedron](https://en.wikipedia.org/wiki/The_Fifty-Nine_Icosahedra) identified by H. S. M. Coxeter.
+It was inspired by [Bob Hearn's physical magnetic model](https://www.instructables.com/The-Magnetic-59-Icosahedra/).
+
 ## [Classic vZome Online](https://vzome.com/app/classic)
 
 This application is intended to be a faithful port of desktop vZome to the web,
 preserving almost all aspects of the desktop user interface for the sake of
 familiarity.
-It can already open and save vZome files, and so is fully interoperable with desktop vZome.
-However, it still has a long way to go; the most glaring omission currently is a strut building tool.
+It can already open and save vZome files, and so is fully interoperable with desktop vZome,
+and supports nearly all of the editing operations familiar from desktop vZome.
+However, it still has a little way to go; the most glaring omission currently is GitHub sharing.
 Check back often, or join the [Discord server](https://discord.gg/vhyFsNAFPS) to see updates,
 as vZome Online Classic is continually improving.
 
@@ -43,6 +62,11 @@ Even so, it already supports saving designs that you can open with desktop vZome
 
 This URL will be the eventual home of the main vZome Online application.
 For now, it hosts an application that allows you to open and view vZome designs on your computer or from the internet.
+
+## [vZome History Inspector](https://www.vzome.com/app/inspector)
+
+This app lets you browse the command history stored in a vZome file, viewing the state of the design for each recorded command.
+It is very helpful for understanding how someone constructed a particular design.
 
 ## The vZome Online Web Component
 
