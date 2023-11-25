@@ -47,7 +47,7 @@ export class VZomeViewer extends HTMLElement
     } );
     this.#store = createWorkerStore( worker );
 
-    this.#config = { preview: true, showScenes: false };
+    this.#config = { preview: true, showScenes: false, loadCamera: 'always', };
 
     if ( this.hasAttribute( 'show-scenes' ) ) {
       const showScenes = this.getAttribute( 'show-scenes' ) === 'true';
@@ -57,6 +57,11 @@ export class VZomeViewer extends HTMLElement
     if ( this.hasAttribute( 'scene' ) ) {
       const sceneTitle = this.getAttribute( 'scene' );
       this.#config = { ...this.#config, sceneTitle };
+    }
+
+    if ( this.hasAttribute( 'load-camera' ) ) {
+      let loadCamera = this.getAttribute( 'load-camera' );
+      this.#config = { ...this.#config, loadCamera };
     }
 
     if ( this.hasAttribute( 'src' ) ) {
@@ -84,7 +89,7 @@ export class VZomeViewer extends HTMLElement
 
   static get observedAttributes()
   {
-    return [ "src", "show-scenes", "scene" ];
+    return [ "src", "show-scenes", "scene", "load-camera" ];
   }
 
   attributeChangedCallback( attributeName, _oldValue, _newValue )
@@ -99,6 +104,14 @@ export class VZomeViewer extends HTMLElement
       }
       break;
 
+    case "load-camera":
+      if ( _newValue !== this.#config.loadCamera ) {
+        this.#config = { ...this.#config, loadCamera: _newValue };
+        // re-fetch because that's the only time loadCamera applies
+        this.#store.postMessage( fetchDesign( this.#url, this.#config ) );
+      }
+      break;
+  
     case "scene":
       if ( _newValue !== this.#config.sceneTitle ) {
         this.#config = { ...this.#config, sceneTitle: _newValue };
@@ -157,6 +170,20 @@ export class VZomeViewer extends HTMLElement
   get showScenes()
   {
     return this.getAttribute( "show-scenes" );
+  }
+
+  set loadCamera( newValue )
+  {
+    if ( newValue === null ) {
+      this.removeAttribute( "load-camera" );
+    } else {
+      this.setAttribute( "load-camera", newValue );
+    }
+  }
+
+  get loadCamera()
+  {
+    return this.getAttribute( "load-camera" );
   }
 }
 
