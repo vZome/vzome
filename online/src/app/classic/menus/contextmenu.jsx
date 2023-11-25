@@ -65,6 +65,7 @@ export const ContextualMenu = props =>
 
       <ContextMenuSeparator/>
 
+      <PickingItem action='SelectCoplanar' label='Select Coplanar' />
       <PickingItem action='SelectCollinear' label='Select Collinear' />
       <PickingItem action='SelectParallelStruts' label='Select Parallel Struts' />
       <PickingItem action='AdjustSelectionByOrbitLength/selectSimilarStruts' label='Select Similar Struts' />
