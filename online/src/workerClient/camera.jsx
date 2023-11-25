@@ -108,7 +108,6 @@ const CameraProvider = ( props ) =>
       const { up, lookDir } = props.context.state.camera;
       setState( 'camera', { up, lookDir } );
       injectCameraState( state.camera, trackballCamera );
-      console.log( props.name, 'synced rotation from context' );
     });
   }
 
@@ -122,7 +121,6 @@ const CameraProvider = ( props ) =>
     // I had a nasty bug for days because I used lookAt by reference, causing the CameraControls canvas
     //  to respond very oddly to shared rotations.
     setPerspectiveProps( { position, up, target: [ ...lookAt ], near, far } );
-    console.log( props.name, 'setPerspectiveProps' );
   })
 
   const trackballCamera = new PerspectiveCamera(); // for the TrackballControls only, never used to render
@@ -135,7 +133,6 @@ const CameraProvider = ( props ) =>
     const { up, lookDir } = extractedCamera;
     if ( !! props.context ) {
       props.context.setCamera( { up, lookDir } );
-      console.log( props.name, 'synced rotation up to context' );
     } else {
       setState( 'camera', extractedCamera );
     }

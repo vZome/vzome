@@ -31,7 +31,6 @@ const Lighting = () =>
 const LightedCameraControls = (props) =>
 {
   const { perspectiveProps, trackballProps, name } = useCamera();
-  console.log( 'LightedCameraControls sees', name );
   const [ tool ] = useInteractionTool();
   const enableTrackball = () => ( tool === undefined ) || tool().allowTrackball;
   props = mergeProps( { rotateSpeed: 4.5, zoomSpeed: 3, panSpeed: 1 }, props );

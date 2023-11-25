@@ -252,7 +252,6 @@ const openDesign = async ( xmlLoading, name, report, debug, sceneTitle ) =>
       }
       report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
       designWrapper = module .loadDesign( xml, debug, clientEvents( captureScenes( report ) ), sceneTitle );
-      console.log( "open", uniqueId );
       report( { type: 'TEXT_FETCHED', payload: { text: xml, name } } ); // NOW it is safe to send the name
     } )
 
