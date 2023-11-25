@@ -3,7 +3,7 @@ import { createWorker } from "./client.js";
 import { serializeVZomeXml } from "./serializer.js";
 import { openFile, saveFile, saveFileAs } from "./files.js";
 import { selectScene, selectEditBefore, selectEditAfter, fetchDesign, openDesignFile, importMeshFile,
-  newDesign, doControllerAction, requestControllerProperty, createStrut, joinBalls, initialState,
+  newDesign, doControllerAction, requestControllerProperty, createStrut, joinBalls,
   startPreviewStrut, movePreviewStrut, endPreviewStrut } from './actions.js';
 import { createWorkerStore } from "./controllers-solid.js";
 import { WorkerStateProvider, useWorkerClient } from "./context.jsx";
@@ -13,6 +13,6 @@ export {
   serializeVZomeXml, openFile, saveFile, saveFileAs,
   selectScene, selectEditBefore, selectEditAfter,
   fetchDesign, openDesignFile, newDesign, importMeshFile,
-  doControllerAction, requestControllerProperty, createStrut, joinBalls, initialState,
+  doControllerAction, requestControllerProperty, createStrut, joinBalls,
   startPreviewStrut, movePreviewStrut, endPreviewStrut,
 };

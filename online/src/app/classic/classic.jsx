@@ -9,9 +9,9 @@ import { SceneEditor } from './components/editor.jsx';
 import { useWorkerClient } from "../../workerClient/index.js";
 import { OrbitsDialog } from "./dialogs/orbits.jsx";
 import { ShapesDialog } from "./dialogs/shapes.jsx";
-import { RotationProvider } from "../../viewer/solid/camera.jsx";
 import { PolytopesDialog } from "./dialogs/polytopes.jsx";
 import { ErrorAlert } from "./components/alert.jsx";
+import { CameraProvider } from "../../workerClient/camera.jsx";
 
 export const ClassicEditor = () =>
 {
@@ -24,7 +24,7 @@ export const ClassicEditor = () =>
 
   let alertRoot;
   return (
-    <RotationProvider>
+    <CameraProvider name='common'>
     <div id='classic' ref={alertRoot} style={{ display: 'grid', 'grid-template-rows': '1fr' }} class='whitesmoke-bkgd'>
       <div id='editor-main' class='grid-cols-1-min whitesmoke-bkgd' >
 
@@ -51,7 +51,7 @@ export const ClassicEditor = () =>
       </div>
       <ErrorAlert/>
     </div>
-    </RotationProvider>
+    </CameraProvider>
   )
 }
 

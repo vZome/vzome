@@ -218,7 +218,7 @@ const fetchTrackballScene = ( url, report ) =>
 
 const connectTrackballScene = ( report ) =>
 {
-  console.log( "call", uniqueId );
+  // console.log( "call", uniqueId );
   const trackballUpdater = () => fetchTrackballScene( designWrapper .getTrackballUrl(), report );
   trackballUpdater();
   designWrapper.controller .addPropertyListener( { propertyChange: pce =>
@@ -418,7 +418,7 @@ onmessage = ({ data }) =>
         return;
       }
       try {
-        console.log( "action", uniqueId );
+        // console.log( "action", uniqueId );
         designWrapper .doAction( controllerPath, action, parameters );
         const { shapes, embedding } = designWrapper .getScene( '--END--', true ); // never send camera or lighting!
         postMessage( { type: 'SCENE_RENDERED', payload: { scene: { shapes, embedding } } } );

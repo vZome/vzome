@@ -55,33 +55,3 @@ export const endPreviewStrut = () => workerAction( 'PREVIEW_STRUT_END', {} );
 
 // This is for buildplane
 export const setHingeStrut = ( strutId, centerId, diskZone, hingeZone ) => workerAction( 'HINGE_STRUT_SELECTED', { strutId, centerId, diskZone, hingeZone } );
-
-const INITIAL_DISTANCE = 108;
-export const NEAR_FACTOR = 0.1 / INITIAL_DISTANCE;
-export const FAR_FACTOR = 2.0;
-export const WIDTH_FACTOR = 0.5;
-
-export const initialState = () => ({
-  scene: {
-    camera: {
-      distance: INITIAL_DISTANCE,
-      near: INITIAL_DISTANCE * NEAR_FACTOR,
-      far: INITIAL_DISTANCE * FAR_FACTOR,
-      width: INITIAL_DISTANCE * WIDTH_FACTOR,
-      up: [ 0, 1, 0 ],
-      lookAt: [ 0, 0, 0 ],
-      lookDir: [ 0, 0, -1 ],
-      perspective: true,
-      default: true,
-    },
-    lighting: {
-      backgroundColor: '#8CC2E7',
-      ambientColor: '#333333',
-      directionalLights: [ // These are the vZome defaults, for consistency
-        { direction: [ 1, -1, -0.3 ], color: '#FDFDFD' },
-        { direction: [ -1, 0, -0.2 ], color: '#B5B5B5' },
-        { direction: [ 0, 0, -1 ], color: '#303030' },
-      ]
-    },
-  }
-});

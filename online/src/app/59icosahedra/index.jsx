@@ -11,33 +11,35 @@ import { VZomeAppBar } from '../classic/components/appbar.jsx';
 import { WorkerStateProvider, useWorkerClient } from '../../workerClient/context.jsx';
 import { SceneCanvas } from '../../viewer/solid/index.jsx'
 import { getModelURL } from '../classic/components/folder.jsx';
-import { CameraStateProvider, RotationProvider, useCameraState } from "../../viewer/solid/camera.jsx";
+import { CameraProvider, useCamera } from "../../workerClient/camera.jsx";
 import { InteractionToolProvider } from '../../viewer/solid/interaction.jsx';
 import { CellOrbitProvider, CellSelectorTool, useCellOrbits } from './selector.jsx';
 import { LightedTrackballCanvas } from '../../viewer/solid/ltcanvas.jsx';
 import { ShapedGeometry } from '../../viewer/solid/geometry.jsx';
 import { selectScene } from '../../workerClient/actions.js';
 
-const ModelCanvas = () =>
+const SelectorCanvas = () =>
 {
-  const { state } = useWorkerClient();
+  const { state, subscribeFor } = useWorkerClient();
+  const { state: { camera }, setCamera } = useCamera();
 
-  const scene = () => {
-    let { camera, lighting, ...other } = state.scene;
-    const backgroundColor = 'lightblue';
-    lighting = { ...lighting, backgroundColor }; // override just the background
-    return ( { ...other, camera, lighting } );
-  }
+  subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
+    if ( scene.camera ) {
+      const { distance, near, far, width } = camera;  // This looks circular, but it is not reactive code.
+      // Use the camera from the loaded scene, except for the zoom.
+      setCamera( { ...scene.camera, distance, near, far, width } );
+    }
+  });
 
   return (
-    <SceneCanvas rotationOnly={true} scene={scene()}
+    <SceneCanvas rotationOnly={false} panSpeed={0} scene={state.scene}
       style={{ position: 'relative', height: '100%' }} height='100%' width='100%' />
   )
 }
 
 const ModelWorker = props =>
 {
-  const config = { url: getModelURL( props.model ), preview: props.preview, debug: false, sceneTitle: props.sceneTitle };
+  const config = { url: getModelURL( props.model ), preview: true, debug: false, sceneTitle: props.sceneTitle };
 
   return (
     <WorkerStateProvider config={config} >
@@ -50,14 +52,12 @@ const Selector = props =>
 {
   return (
     <div class='selector' >
-      <CameraStateProvider>
-        <ModelWorker model={props.model} preview={true} >
-          <InteractionToolProvider>
-            <CellSelectorTool model={props.model}/>
-            <ModelCanvas/>
-          </InteractionToolProvider>
-        </ModelWorker>
-      </CameraStateProvider>
+      <ModelWorker model={props.model} >
+        <InteractionToolProvider>
+          <CellSelectorTool model={props.model}/>
+          <SelectorCanvas/>
+        </InteractionToolProvider>
+      </ModelWorker>
     </div>
   )
 }
@@ -100,9 +100,8 @@ const CellOrbit = props =>
 {
   const { showCutaway } = useContext( ViewOptions );
 
-
   return (
-    <ModelWorker model={props.cell} preview={true} sceneTitle={ showCutaway()? 'cutaway' : 'full' } >
+    <ModelWorker model={props.cell} sceneTitle={ showCutaway()? 'cutaway' : 'full' } >
       <CellOrbitScene cell={props.cell} />
     </ModelWorker>
   );
@@ -110,16 +109,8 @@ const CellOrbit = props =>
 
 const StellationCanvas = props =>
 {
-  const { state } = useCameraState();
   const { showCutaway, setShowCutaway } = useContext( ViewOptions );
   const toggleCutaway = () => setShowCutaway( value => !value );
-
-  const scene = () => {
-    let { camera, lighting, ...other } = state.scene;
-    const backgroundColor = 'lightblue';
-    lighting = { ...lighting, backgroundColor }; // override just the background
-    return ( { ...other, camera, lighting } );
-  }
 
   return (
     <>
@@ -127,9 +118,7 @@ const StellationCanvas = props =>
         control={
           <Switch checked={showCutaway()} onChange={ toggleCutaway } size='medium' inputProps={{ "aria-label": "cutaway" }} />
         }/>
-      <LightedTrackballCanvas sceneCamera={scene().camera} lighting={scene().lighting}
-          height='100%' width='100%'
-          rotationOnly={false} rotateSpeed={4.5} >
+      <LightedTrackballCanvas height='100%' width='100%' rotationOnly={false} rotateSpeed={4.5} >
         {props.children}
       </LightedTrackballCanvas>
     </>
@@ -161,7 +150,7 @@ const App = () => (
     <div id='below-appbar' >
       <CellOrbitProvider>
         <div id='stellation' >
-          <CameraStateProvider>
+          <CameraProvider distance={500}>
             <ViewOptionsProvider>
               <StellationCanvas>
                 <CellOrbit cell='a'/>
@@ -178,7 +167,7 @@ const App = () => (
                 <CellOrbit cell='h'/>
               </StellationCanvas>
             </ViewOptionsProvider>
-          </CameraStateProvider>
+          </CameraProvider>
         </div>
         <div id='text-and-selectors' >
           <div id='full-text'>
@@ -192,12 +181,12 @@ const App = () => (
               Click on or touch the shapes below.
             </Typography>
           </div>
-          <RotationProvider>
+          <CameraProvider distance={500}>
             <div id='selectors' >
               <Selector model='pieces-aceg' />
               <Selector model='pieces-bdfh' />
             </div>
-          </RotationProvider>
+          </CameraProvider>
         </div>
       </CellOrbitProvider>
     </div>
