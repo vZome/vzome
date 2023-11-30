@@ -32,6 +32,7 @@ import com.vzome.core.tools.LinearMapToolFactory;
 import com.vzome.core.tools.MirrorToolFactory;
 import com.vzome.core.tools.ModuleToolFactory;
 import com.vzome.core.tools.OctahedralToolFactory;
+import com.vzome.core.tools.PerspectiveProjectionToolFactory;
 import com.vzome.core.tools.PlaneSelectionToolFactory;
 import com.vzome.core.tools.ProjectionToolFactory;
 import com.vzome.core.tools.RotationToolFactory;
@@ -124,6 +125,7 @@ public class DefaultFieldApplication implements FieldApplication
 	    toolFactories .put( "MirrorTool", new MirrorToolFactory( tools ) );
         toolFactories .put( "TranslationTool", new TranslationToolFactory( tools ) );
         toolFactories .put( "ProjectionTool", new ProjectionToolFactory( tools ) );
+        toolFactories .put( "PerspectiveProjectionTool", new PerspectiveProjectionToolFactory( tools ) );
 	    toolFactories .put( "BookmarkTool", new BookmarkToolFactory( tools ) );
 	    toolFactories .put( "LinearTransformTool", new LinearMapToolFactory( tools, null, false ) );
 	

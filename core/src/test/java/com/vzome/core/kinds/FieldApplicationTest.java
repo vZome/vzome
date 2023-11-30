@@ -633,11 +633,11 @@ public class FieldApplicationTest
             String name = perspective.getName();
             switch(name) {
             case "octahedral":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 4, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 5, 1);
                 break;
                 
             case "icosahedral":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 4, 7);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 5, 7);
                 break;
                 
             case "dodecagonal":

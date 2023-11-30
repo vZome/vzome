@@ -12,6 +12,7 @@ import com.vzome.core.tools.InversionToolFactory;
 import com.vzome.core.tools.LinearMapToolFactory;
 import com.vzome.core.tools.MirrorToolFactory;
 import com.vzome.core.tools.OctahedralToolFactory;
+import com.vzome.core.tools.PerspectiveProjectionToolFactory;
 import com.vzome.core.tools.ProjectionToolFactory;
 import com.vzome.core.tools.RotationToolFactory;
 import com.vzome.core.tools.ScalingToolFactory;
@@ -50,6 +51,7 @@ public final class OctahedralSymmetryPerspective extends AbstractSymmetryPerspec
 			result .add( new RotationToolFactory( tools, this .symmetry ) );
             result .add( new TranslationToolFactory( tools ) );
             result .add( new ProjectionToolFactory( tools ) );
+            result .add( new PerspectiveProjectionToolFactory( tools ) );
 			break;
 
 		case LINEAR_MAP:
