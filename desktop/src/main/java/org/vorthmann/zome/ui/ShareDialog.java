@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -57,7 +58,7 @@ import com.vzome.xml.ResourceLoader;
 public class ShareDialog extends EscapeDialog
 {
     private static final String DEFAULT_REPO_NAME = "vzome-sharing";
-    private static final String BRANCH_NAME = "main";
+    private static final String DEFAULT_BRANCH_NAME = "main";
 
     private final Controller controller;
     private final CardPanel cardPanel;
@@ -78,7 +79,7 @@ public class ShareDialog extends EscapeDialog
 
     // State markers
     private transient DeviceAuthorization deviceAuthorization;
-    private transient String authToken, repoName;
+    private transient String authToken, repoName, branchName;
     private transient Repository repo;
     private transient boolean configuring, configured;
     private transient String designName, title, description;
@@ -92,7 +93,9 @@ public class ShareDialog extends EscapeDialog
     private JTextField titleText;
     private JTextArea descriptionText;
     private JLabel publishLabel;
-        
+
+    static final Logger logger = Logger.getLogger( "org.vorthmann.zome.ui.githubsharing" );
+
     /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      * First, the code that runs on the Swing event dispatcher thread...
      *   we cannot do anything time-consuming here, such as contacting Github.
@@ -109,6 +112,10 @@ public class ShareDialog extends EscapeDialog
         if ( repoNameOverride == null || "".equals( repoNameOverride ) )
             repoNameOverride = DEFAULT_REPO_NAME;
         this .repoName = repoNameOverride;
+        String branchNameOverride = controller .getProperty( "githubBranchName" );
+        if ( branchNameOverride == null || "".equals( branchNameOverride ) )
+            branchNameOverride = DEFAULT_BRANCH_NAME;
+        this .branchName = branchNameOverride;
         String clientId = controller .getProperty( "githubClientId" );
         String clientSecret = controller .getProperty( "githubClientSecret" );
         String scope = "repo";
@@ -389,6 +396,7 @@ public class ShareDialog extends EscapeDialog
             {
                 e2 .printStackTrace();
                 this .error = "Device authorization verification URI format incorrect: " + loginUrl;
+                logger .severe( this.error );
                 errorLabel .setText( "<html>" + this.error + "</html>" );
                 this .cardPanel .showCard( "error" );
             }
@@ -473,8 +481,8 @@ public class ShareDialog extends EscapeDialog
                             error = "Unable to find repository '" + repoName + "'";
                         }
                     } catch ( IOException e ) {
-                        e .printStackTrace();
                         error = "Unable to fetch repositories.  Your authorization may have expired or been revoked.  Try again, to reauthorize.";
+                        logger .warning( error );
                         authToken = null;
                         controller .setProperty( "githubAccessToken", "" );
                     }
@@ -489,8 +497,8 @@ public class ShareDialog extends EscapeDialog
                         client .setOAuth2Token( authToken );
                     }
                     catch ( InterruptedException | ExecutionException | IOException e ) {
-                        e .printStackTrace();
                         error = "Github authorization failed.";
+                        logger .severe( error );
                     }
                 }
                 else
@@ -498,8 +506,8 @@ public class ShareDialog extends EscapeDialog
                     try {
                         deviceAuthorization = oAuthService .getDeviceAuthorizationCodes();
                     } catch (InterruptedException | ExecutionException | IOException e) {
-                        e .printStackTrace();
                         error = "Github device code access failed.";
+                        logger .severe( error );
                     }
                 }
                 
@@ -559,13 +567,13 @@ public class ShareDialog extends EscapeDialog
                      // e.g. https://vorth.github.io/vzome-sharing
             String repoUrl = "https://github.com/" + username + "/" + repoName;
                      // e.g. https://github.com/vorth/vzome-sharing
-            this .gitUrl = repoUrl + "/tree/" + BRANCH_NAME + "/" + assetPath;
+            this .gitUrl = repoUrl + "/tree/" + this.branchName + "/" + assetPath;
                      // e.g. https://github.com/vorth/vzome-sharing/tree/main/2021/11/29/08-01-41-sample-vZome-share/
-            String rawUrl = "https://raw.githubusercontent.com/" + username + "/" + repoName + "/" + BRANCH_NAME + "/" + designPath;
+            String rawUrl = "https://raw.githubusercontent.com/" + username + "/" + repoName + "/" + this.branchName + "/" + designPath;
                      // e.g. https://raw.githubusercontent.com/vorth/vzome-sharing/main/2021/11/29/08-01-41-sample-vZome-share/sample-vZome-share.vZome
             String postUrl = siteUrl + "/" + postPath;
                      // e.g. https://vorth.github.io/vzome-sharing/2021/11/29/sample-vZome-share-08-01-41.html
-            String postSrcUrl = repoUrl + "/edit/" + BRANCH_NAME + "/" + postSrcPath;
+            String postSrcUrl = repoUrl + "/edit/" + this.branchName + "/" + postSrcPath;
                      // e.g. https://github.com/vorth/vzome-sharing/edit/main/_posts/2021-11-29-sample-vZome-share-08-01-41.md
                         
             // Generate a shareable page for the vZome user to use, not a blog post
@@ -651,14 +659,14 @@ public class ShareDialog extends EscapeDialog
             commitResource .setUrl( newCommit .getUrl() );
 
             // get main reference and update it
-            Reference reference = dataService .getReference( this .repo, "heads/" + BRANCH_NAME );
+            Reference reference = dataService .getReference( this .repo, "heads/" + this.branchName );
             reference .setObject( commitResource );
-            dataService .editReference( this .repo, reference, true );
+            dataService .editReference( this .repo, reference, false );
             controller .setProperty( "clipboard", gitUrl );
         }
         catch (Exception e) {
-            e .printStackTrace();
             this .error = "Unable to upload files to the repository: " + e .getMessage();
+            logger .severe( this.error );
         }
     }
     
