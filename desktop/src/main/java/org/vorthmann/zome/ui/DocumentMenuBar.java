@@ -269,6 +269,10 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+        menu .add( enableIf( isEditor, createMenuItem( "Reverse Orientations", ( "ReverseOrientations" ) ) ) );
+
+        menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
         this .setColorMenuItem = enableIf( isEditor, createMenuItem( "Set Color...", "setItemColor", KeyEvent.VK_C, COMMAND_SHIFT ) );
         menu .add( this .setColorMenuItem );
         final String MAP_TO_COLOR = "MapToColor/";
