@@ -16,18 +16,32 @@ export const encodeEntities = (title) =>
   return p.innerHTML;
 }
 
+const defaultLoad = {
+  camera: true,
+  lighting: true,
+  design: true,
+};
+
+const defaultConfig = {
+  preview: false,
+  debug: false,
+  showScenes: false,
+  load: defaultLoad,
+};
+
 const workerAction = ( type, payload ) => ({ type, payload, meta: 'WORKER' } );
 
-export const selectScene = title => 
+export const selectScene = ( title, load=defaultLoad ) => 
 {
-  return workerAction( 'SCENE_SELECTED', encodeEntities( title ) );
+  title = encodeEntities( title );
+  return workerAction( 'SCENE_SELECTED', { title, load } );
 }
 
 export const selectEditBefore = nodeId => workerAction( 'EDIT_SELECTED', { before: nodeId } );
 
 export const selectEditAfter = nodeId => workerAction( 'EDIT_SELECTED', { after: nodeId } );
 
-export const fetchDesign = ( url, config={ preview: false, debug: false, showScenes: false } ) => workerAction( 'URL_PROVIDED', { url, config } );
+export const fetchDesign = ( url, config=defaultConfig ) => workerAction( 'URL_PROVIDED', { url, config } );
 
 export const openDesignFile = ( file, debug=false ) => workerAction( 'FILE_PROVIDED', { file, debug } );
 

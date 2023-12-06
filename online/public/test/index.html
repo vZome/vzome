@@ -7,18 +7,56 @@
     <script type="module">
       import "/modules/vzome-viewer.js"; // registers the custom element
 
-      const viewer = document.querySelector( "#vZomeLogo" );
-      viewer .addEventListener( "vzome-scenes-discovered", (e) => {
+      const logoViewer = document.querySelector( "#vZomeLogo" );
+      logoViewer .addEventListener( "vzome-scenes-discovered", (e) => {
         setTimeout( () => {
           console.log( 'Scenes:', JSON.stringify( e.detail ) );
-          viewer.scene = e.detail[ 3 ];
+          logoViewer.scene = e.detail[ 3 ];
         }, 3000 )
       });
+
+      let scenes;
+      let index = 1; // Yes, skipping the default scene 0 intentionally
+      let camera = false;
+
+      const prevButton = document.querySelector( "#prev" );
+      const nextButton = document.querySelector( "#next" );
+      const title = document.querySelector( "#title" );
+      const welcomeViewer = document.querySelector( "#welcome" );
+      welcomeViewer.reactive = false;
+
+      const changeScene = delta =>
+      {
+        index = Math.min( Math.max( index + delta, 1 ), scenes.length-1 );
+        title .innerHTML = scenes[index];
+        welcomeViewer .scene = scenes[index];
+        welcomeViewer .update( { camera } );
+      }
+
+      welcomeViewer .addEventListener( "vzome-scenes-discovered", (e) => {
+        scenes = e.detail;
+        console.log( JSON.stringify( scenes, null, 2 ) );
+        console.log( 'NOTE: we are intentionally bypassing the default scene for this page.' );
+        title .innerHTML = scenes[index];
+        prevButton .addEventListener( "click", e => changeScene( -1 ) );
+        nextButton .addEventListener( "click", e => changeScene( +1 ) );
+      } );
 
     </script>
   </head>
   <body>
     <article>
+      <section>
+        <div>
+          <button id="prev">prev</button>
+          <button id="next">next</button>
+          <h2 id="title"></h2>
+        </div>
+        <vzome-viewer id="welcome" scene="will be replaced"
+               src="https://vorth.github.io/vzome-sharing/2022/06/19/06-37-55-welcomeDodec/welcomeDodec.vZome" >
+          <img src="https://vorth.github.io/vzome-sharing/2022/06/19/06-37-55-welcomeDodec/watermarked.png" >
+        </vzome-viewer>
+      </section>
       <section>
         <vzome-viewer src="./models/orangePurpleChiral.vZome" id="orangePurpleChiral" >
           <img src="./models/orangePurpleChiral.png" >

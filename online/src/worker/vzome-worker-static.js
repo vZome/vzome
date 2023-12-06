@@ -23,6 +23,17 @@ const captureScenes = report => event =>
   report( event );
 }
 
+const filterScene = ( report, load ) => event =>
+{
+  const { type, payload } = event;
+  if ( type === 'SCENE_RENDERED' ) {
+    const { camera, lighting, shapes, embedding } = payload.scene;
+    event.payload.scene = { shapes, embedding };
+    if ( load.camera )   event.payload.scene.camera   = camera;
+    if ( load.lighting ) event.payload.scene.lighting = lighting;
+  }
+  report( event );
+}
 
 const getSceneIndex = ( title, list ) =>
 {
@@ -233,7 +244,7 @@ const createDesign = async ( report, fieldName ) =>
   try {
     const module = await importLegacy();
     report({ type: 'CONTROLLER_CREATED' }); // do we really need this for previewing?
-    designWrapper = module.newDesign(fieldName, clientEvents(report));
+    designWrapper = module .newDesign( fieldName, clientEvents( report ) );
   } catch (error) {
     console.log(`createDesign failure: ${error.message}`);
     report({ type: 'ALERT_RAISED', payload: 'Failed to create vZome model.' });
@@ -302,10 +313,12 @@ const fileImporter = ( report, event ) =>
     } )
 }
 
+const defaultLoad = { camera: true, lighting: true, design: true, };
+
 const urlLoader = async ( report, event ) =>
 {
   const { url, config } = event.payload;
-  const { preview=false, debug=false, showScenes=false, sceneTitle } = config;
+  const { preview=false, debug=false, showScenes=false, sceneTitle, load=defaultLoad } = config;
   if ( !url ) {
     throw new Error( "No url field in URL_PROVIDED event payload" );
   }
@@ -317,6 +330,7 @@ const urlLoader = async ( report, event ) =>
 
   xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { text, url } } ) ); // Don't send the name yet, parse/interpret may fail
 
+  report = filterScene( report, load );
   if ( preview ) {
     // The client prefers to show a preview if possible.
     const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
@@ -324,13 +338,17 @@ const urlLoader = async ( report, event ) =>
       .then( text => JSON.parse( text ) )
       .then( preview => {
         const scene = convertPreview( preview, sceneTitle ); // sets module global scenes as a side-effect
-        if ( ( showScenes || sceneTitle ) && scenes.length < 2 )
+        if ( ( showScenes || sceneTitle ) && scenes.length < 2 ) {
           // The client expects scenes, but this preview JSON predates the scenes export,
           //  so fall back on XML.
-          throw new Error( `No scenes in preview ${previewUrl}` );
-        report( { type: 'SCENE_RENDERED', payload: { scene } } );
+          console.log( `No scenes in preview ${previewUrl}` );
+          console.log( 'Preview failed, falling back to vZome XML' );
+          return openDesign( xmlLoading, name, report, debug, sceneTitle );
+        }
+        const events = clientEvents( report );
+        events .sceneChanged( scene );
         if ( scenes )
-          report( { type: 'SCENES_DISCOVERED', payload: scenes } );
+          events .scenesDiscovered( scenes );
         return true; // probably nobody should care about the return value
       } )
       .catch( error => {
@@ -374,14 +392,15 @@ onmessage = ({ data }) =>
     case 'SCENE_SELECTED': {
       if ( !scenes )
         break;
-      const index = getSceneIndex( payload, scenes );
+      const { title, load } = payload;
+      const index = getSceneIndex( title, scenes );
       const { nodeId, camera } = scenes[ index ];
       let scene;
       if ( nodeId ) { // XML was parsed by the legacy module
         scene = { camera, ...designWrapper .getScene( nodeId, true ) };
       } else // a preview JSON
         scene = preparePreviewScene( index );
-      postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
+      filterScene( postMessage, load )( { type: 'SCENE_RENDERED', payload: { scene } } );
       break;
     }
 
