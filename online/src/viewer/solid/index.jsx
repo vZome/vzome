@@ -41,7 +41,7 @@ const fullScreenStyle = {
 
 const DesignViewer = ( props ) =>
 {
-  const config = mergeProps( { showScenes: false, useSpinner: false, allowFullViewport: false, undoRedo: false, loadCamera: 'always' }, props.config );
+  const config = mergeProps( { showScenes: false, useSpinner: false, allowFullViewport: false, undoRedo: false }, props.config );
   const { state, subscribeFor } = useWorkerClient();
   const { state: cameraState, setCamera, setLighting } = useCamera();
   const [ fullScreen, setFullScreen ] = createSignal( false );
@@ -74,14 +74,9 @@ const DesignViewer = ( props ) =>
     }
   });
 
-  let cameraLoaded = false;
   subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
     if ( scene.camera ) {
-      const { loadCamera } = props.config;
-      if ( loadCamera === 'always' || ( loadCamera === 'once' && !cameraLoaded ) ) {
-        setCamera( scene.camera );
-        cameraLoaded = true;
-      }
+      setCamera( scene.camera );
     }
     if ( scene.lighting ) {
       const { backgroundColor } = scene.lighting;

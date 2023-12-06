@@ -9,8 +9,10 @@ export class VZomeViewer extends HTMLElement
   #root;
   #container;
   #store;
-  #url;
   #config;
+  #reactive;
+  #urlChanged;
+  #sceneChanged;
 
   constructor()
   {
@@ -47,7 +49,14 @@ export class VZomeViewer extends HTMLElement
     } );
     this.#store = createWorkerStore( worker );
 
-    this.#config = { preview: true, showScenes: false, loadCamera: 'always', };
+    this.#config = { preview: true, showScenes: false, camera: true, lighting: true, design: true, };
+
+    this.#urlChanged = true;
+    this.#sceneChanged = true;
+    this.#reactive = true;
+    if ( this.hasAttribute( 'reactive' ) ) {
+      this.#reactive = this.getAttribute( 'reactive' ) !== 'false';
+    }
 
     if ( this.hasAttribute( 'show-scenes' ) ) {
       const showScenes = this.getAttribute( 'show-scenes' ) === 'true';
@@ -59,23 +68,32 @@ export class VZomeViewer extends HTMLElement
       this.#config = { ...this.#config, sceneTitle };
     }
 
-    if ( this.hasAttribute( 'load-camera' ) ) {
-      let loadCamera = this.getAttribute( 'load-camera' );
-      this.#config = { ...this.#config, loadCamera };
-    }
-
     if ( this.hasAttribute( 'src' ) ) {
-      const url = this.getAttribute( 'src' );
+      let url = this.getAttribute( 'src' );
       if ( ! url.endsWith( ".vZome" ) ) {
         // This is the only case in which we don't resolve the promise with text,
         //  since there is no point in allowing download of non-vZome text.
         alert( `Unrecognized file name: ${url}` );
       }
       else
-        this.#url = new URL( url, window.location ) .toString();
+        url = new URL( url, window.location ) .toString();
+        this.#config = { ...this.#config, url };
         // Get the fetch started by the worker before we load the dynamic module below,
         //  which is pretty big.
-        this.#store.postMessage( fetchDesign( this.#url, this.#config ) );
+        this.update();
+    }
+  }
+
+  update( loadFlags={} )
+  {
+    const { camera=true, lighting=true, design=true } = loadFlags;
+    const load = { camera, lighting, design };
+    const config = { ...this.#config, load };
+    if ( this.#urlChanged ) {
+      this.#store.postMessage( fetchDesign( this.#config.url, config ) );
+      this.#urlChanged = false;
+    } else if ( this.#sceneChanged ) {
+      this.#store.postMessage( selectScene( this.#config.sceneTitle, load ) );
     }
   }
 
@@ -83,13 +101,13 @@ export class VZomeViewer extends HTMLElement
   {
     import( '../viewer/solid/index.jsx' )
       .then( module => {
-        module.renderViewer( this.#store, this.#container, this.#url, this.#config );
-      })
+        module.renderViewer( this.#store, this.#container, this.#config.url, this.#config );
+      });
   }
 
   static get observedAttributes()
   {
-    return [ "src", "show-scenes", "scene", "load-camera" ];
+    return [ "src", "show-scenes", "scene", "load-camera", "reactive" ];
   }
 
   attributeChangedCallback( attributeName, _oldValue, _newValue )
@@ -98,34 +116,31 @@ export class VZomeViewer extends HTMLElement
 
     case "src":
       const newUrl = new URL( _newValue, window.location ) .toString();
-      if ( newUrl !== this.#url ) {
-        this.#url = newUrl;
-        this.#store.postMessage( fetchDesign( this.#url, this.#config ) );
-      }
-      break;
-
-    case "load-camera":
-      if ( _newValue !== this.#config.loadCamera ) {
-        this.#config = { ...this.#config, loadCamera: _newValue };
-        // re-fetch because that's the only time loadCamera applies
-        this.#store.postMessage( fetchDesign( this.#url, this.#config ) );
+      if ( newUrl !== this.#config.url ) {
+        this.#config.url = newUrl;
+        this.#urlChanged = true;
+        if ( this.#reactive )
+          this.update();
       }
       break;
   
     case "scene":
       if ( _newValue !== this.#config.sceneTitle ) {
         this.#config = { ...this.#config, sceneTitle: _newValue };
+        this.#sceneChanged = true;
         // TODO: control the config prop on the viewer component, so the scenes menu behaves right
-        this.#store.postMessage( selectScene( _newValue ) );
+        if ( this.#reactive )
+          this.update();
       }
       break;
   
     case "show-scenes":
       const showScenes = _newValue === 'true';
-      if ( showScenes !== this.#config.showScenes ) {
-        this.#config = { ...this.#config, showScenes };
-        this.#store.postMessage( fetchDesign( this.#url, this.#config ) );
-      }
+      this.#config = { ...this.#config, showScenes };
+      break;
+  
+    case "reactive":
+      this.#reactive = _newValue === 'true';
       break;
     }
   }
@@ -172,18 +187,26 @@ export class VZomeViewer extends HTMLElement
     return this.getAttribute( "show-scenes" );
   }
 
-  set loadCamera( newValue )
+  set reactive( value )
   {
-    if ( newValue === null ) {
-      this.removeAttribute( "load-camera" );
-    } else {
-      this.setAttribute( "load-camera", newValue );
-    }
+    this .setAttribute( "reactive", value );
   }
 
+  get reactive()
+  {
+    return this .getAttribute( "reactive" );
+  }
+
+  // These were briefly supported, so I don't want to break anyone's client code.
+  //   We don't support the behavior any more.
+  set loadCamera( newValue )
+  {
+    console.log( 'loadCamera is no longer supported.' );
+  }
   get loadCamera()
   {
-    return this.getAttribute( "load-camera" );
+    console.log( 'loadCamera is no longer supported.' );
+    return undefined;
   }
 }
 
