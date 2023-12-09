@@ -1,7 +1,7 @@
 
 import { ContextMenu } from "@kobalte/core";
 import { ContextMenuItem, ContextMenuSeparator } from "../../framework/menus";
-import { useWorkerClient } from "../../../viewer/context/context.jsx";
+import { useWorkerClient } from "../../../viewer/context/worker.jsx";
 import { controllerAction, subController } from "../../../viewer/util/controllers-solid";
 import { useCamera } from "../../../viewer/context/camera";
 

@@ -13,7 +13,7 @@ import FormLabel from '@suid/material/FormLabel';
 // import Slider from '@suid/material/Slider';
 
 import { controllerAction, controllerProperty, subController } from '../../../viewer/util/controllers-solid.js';
-import { useWorkerClient } from '../../../viewer/context/context.jsx';
+import { useWorkerClient } from '../../../viewer/context/worker.jsx';
 
 const sliderLimit = 6;
 const sliderMarks = Array.from( { length: 2*sliderLimit+1 }, (_, i) => i-sliderLimit ) .map( i => ({ value: i }));

@@ -1,7 +1,7 @@
 
 import { DropdownMenu } from "@kobalte/core";
 
-import { useWorkerClient } from "../viewer/context/context.jsx";
+import { useWorkerClient } from "./context/worker.jsx";
 import { saveFileAs } from "../viewer/util/files.js";
 import { useGltfExporter } from "./geometry";
 

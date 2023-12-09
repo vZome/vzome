@@ -1,29 +1,8 @@
 
 import { createContext, useContext } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
-
-import { createWorker } from "../../viewer/util/client.js";
-import { createWorkerStore } from "../../viewer/util/controllers-solid.js";
-import { fetchDesign, selectScene } from "../../viewer/util/actions.js";
-
-
-const WorkerStateContext = createContext( {} );
-
-const WorkerStateProvider = ( props ) =>
-{
-  const workerClient = props.store || createWorkerStore( createWorker() );
-  const { url } = props.config || {};
-  url && workerClient.postMessage( fetchDesign( url, props.config ) );
-  
-  return (
-    <WorkerStateContext.Provider value={ { ...workerClient } }>
-      {props.children}
-    </WorkerStateContext.Provider>
-  );
-}
-
-const useWorkerClient = () => { return useContext( WorkerStateContext ); };
-
+import { useWorkerClient } from "./worker.jsx";
+import { selectScene } from "../util/actions.js";
 
 const SceneContext = createContext( { scene: ()=> { console.log( 'NO SceneProvider' ); } } );
 
@@ -117,4 +96,4 @@ const SceneProvider = ( props ) =>
 
 const useScene = () => { return useContext( SceneContext ); };
 
-export { WorkerStateProvider, useWorkerClient, SceneProvider, useScene };
+export { SceneProvider, useScene };

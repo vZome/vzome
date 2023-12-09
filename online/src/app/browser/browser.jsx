@@ -2,7 +2,7 @@
 import { Show, createEffect, createMemo, createResource, createSignal } from 'solid-js';
 
 import { DesignViewer } from '../../viewer/index.jsx'
-import { useWorkerClient } from '../../viewer/context/context.jsx';
+import { useWorkerClient } from '../../viewer/context/worker.jsx';
 import { fetchGitHubShares, getEmbeddingHtml, getAssetUrl } from './github.js';
 
 import List from '@suid/material/List';

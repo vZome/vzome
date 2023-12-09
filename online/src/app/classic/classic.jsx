@@ -6,7 +6,7 @@ import { StrutBuildPanel } from './components/strutbuilder.jsx';
 import { controllerAction, controllerProperty, subController } from '../../viewer/util/controllers-solid.js';
 import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
 import { SceneEditor } from './components/editor.jsx';
-import { useWorkerClient } from "../../viewer/context/context.jsx";
+import { useWorkerClient } from "../../viewer/context/worker.jsx";
 import { OrbitsDialog } from "./dialogs/orbits.jsx";
 import { ShapesDialog } from "./dialogs/shapes.jsx";
 import { PolytopesDialog } from "./dialogs/polytopes.jsx";

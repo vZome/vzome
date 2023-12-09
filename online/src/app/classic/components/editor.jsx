@@ -5,15 +5,16 @@ import SvgIcon from '@suid/material/SvgIcon'
 import ToggleButton from "@suid/material/ToggleButton";
 import ToggleButtonGroup from "@suid/material/ToggleButtonGroup";
 
-import { SceneCanvas } from '../../../viewer/index.jsx';
-import { useWorkerClient } from '../../../viewer/context/context.jsx';
+import { useWorkerClient } from '../../../viewer/context/worker.jsx';
+import { useCamera } from '../../../viewer/context/camera.jsx';
+import { useScene } from '../../../viewer/context/scene.jsx';
 import { CameraTool, InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
+
+import { SceneCanvas } from '../../../viewer/index.jsx';
 import { SelectionTool } from '../tools/selection.jsx';
 import { StrutDragTool } from '../tools/strutdrag.jsx';
 import { ContextualMenuArea } from '../../framework/menus.jsx';
 import { ContextualMenu } from '../menus/contextmenu.jsx';
-import { useCamera } from '../../../viewer/context/camera.jsx';
-import { useScene } from '../../../viewer/context/context.jsx';
 
 export const SceneEditor = ( props ) =>
 {

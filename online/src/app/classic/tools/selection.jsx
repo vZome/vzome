@@ -1,7 +1,7 @@
 
 import { createEffect } from "solid-js";
 
-import { useWorkerClient } from "../../../viewer/context/context.jsx";
+import { useWorkerClient } from "../../../viewer/context/worker.jsx";
 import { useInteractionTool } from "../../../viewer/context/interaction.jsx";
 import { controllerAction, subController } from "../../../viewer/util/controllers-solid.js";
 

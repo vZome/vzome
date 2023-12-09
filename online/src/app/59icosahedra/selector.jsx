@@ -2,7 +2,7 @@
 import { createContext, createEffect, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { useScene } from "../../viewer/context/context.jsx";
+import { useScene } from "../../viewer/context/scene.jsx";
 import { useInteractionTool } from "../../viewer/context/interaction.jsx";
 
 const CellOrbitContext = createContext( {} );

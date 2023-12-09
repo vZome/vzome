@@ -11,11 +11,11 @@ import { ToolsMenu } from './menus/toolsmenu.jsx';
 import { SystemMenu } from './menus/systemmenu.jsx';
 import { HelpMenu } from './menus/help.jsx';
 
-import { useWorkerClient } from '../../viewer/context/context.jsx'
+import { useWorkerClient, WorkerStateProvider } from '../../viewer/context/worker.jsx';
 import { controllerProperty } from '../../viewer/util/controllers-solid.js'
 import { VZomeAppBar } from './components/appbar.jsx';
 import { ClassicEditor, SymmetryProvider } from './classic.jsx';
-import { WorkerStateProvider, SceneProvider } from '../../viewer/context/context.jsx';
+import { SceneProvider } from '../../viewer/context/scene.jsx';
 
 const Persistence = () =>
 {

@@ -10,7 +10,7 @@ import Button from "@suid/material/Button"
 import Switch from "@suid/material/Switch";
 import FormControlLabel from "@suid/material/FormControlLabel";
 
-import { useWorkerClient } from "../../../viewer/context/context.jsx"
+import { useWorkerClient } from "../../../viewer/context/worker.jsx"
 import { controllerExportAction } from "../../../viewer/util/controllers-solid"
 import { useCamera } from "../../../viewer/context/camera"
 

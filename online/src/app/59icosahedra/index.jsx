@@ -7,12 +7,14 @@ import Link from '@suid/material/Link';
 import FormControlLabel from '@suid/material/FormControlLabel';
 import Switch from '@suid/material/Switch';
 
-import { VZomeAppBar } from '../classic/components/appbar.jsx';
-import { SceneProvider, WorkerStateProvider, useScene, useWorkerClient } from '../../viewer/context/context.jsx';
-import { SceneCanvas } from '../../viewer/index.jsx'
-import { getModelURL } from '../classic/components/folder.jsx';
+import { WorkerStateProvider, useWorkerClient } from '../../viewer/context/worker.jsx';
 import { CameraProvider, useCamera } from "../../viewer/context/camera.jsx";
 import { InteractionToolProvider } from '../../viewer/context/interaction.jsx';
+import { SceneProvider, useScene } from '../../viewer/context/scene.jsx';
+
+import { VZomeAppBar } from '../classic/components/appbar.jsx';
+import { SceneCanvas } from '../../viewer/index.jsx'
+import { getModelURL } from '../classic/components/folder.jsx';
 import { CellOrbitProvider, CellSelectorTool, useCellOrbits } from './selector.jsx';
 import { LightedTrackballCanvas } from '../../viewer/ltcanvas.jsx';
 import { ShapedGeometry } from '../../viewer/geometry.jsx';

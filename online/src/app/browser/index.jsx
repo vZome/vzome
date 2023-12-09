@@ -7,7 +7,8 @@ import Link from '@suid/material/Link'
 
 import { VZomeAppBar } from '../classic/components/appbar.jsx';
 import { DesignBrowser } from './browser.jsx';
-import { WorkerStateProvider, SceneProvider } from '../../viewer/context/context.jsx';
+import { WorkerStateProvider } from '../../viewer/context/worker.jsx';
+import { SceneProvider } from '../../viewer/context/scene.jsx';
 import { CameraProvider } from '../../viewer/context/camera.jsx';
 
 const Browser = () => (

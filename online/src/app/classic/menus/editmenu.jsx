@@ -3,7 +3,7 @@ import { createEffect } from "solid-js";
 import { Divider, Menu, MenuAction, MenuItem, SubMenu, createMenuAction } from "../../framework/menus.jsx";
 
 import { controllerAction, controllerExportAction, subController } from "../../../viewer/util/controllers-solid.js";
-import { useWorkerClient } from "../../../viewer/context/context.jsx";
+import { useWorkerClient } from "../../../viewer/context/worker.jsx";
 
 const SetColorItem = props =>
 {

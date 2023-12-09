@@ -6,7 +6,7 @@ import { controllerAction, controllerExportAction, controllerProperty } from "..
 import { serializeVZomeXml } from '../../../viewer/util/serializer.js';
 import { saveFile, saveFileAs, openFile } from "../../../viewer/util/files.js";
 import { fetchDesign, openDesignFile, newDesign, importMeshFile } from "../../../viewer/util/actions.js";
-import { useWorkerClient } from "../../../viewer/context/context.jsx";
+import { useWorkerClient } from "../../../viewer/context/worker.jsx";
 
 import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 import { UrlDialog } from '../dialogs/webloader.jsx'

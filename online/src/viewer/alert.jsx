@@ -1,7 +1,7 @@
 
 import { AlertDialog } from "@kobalte/core";
 
-import { useWorkerClient } from '../viewer/context/context.jsx';
+import { useWorkerClient } from './context/worker.jsx';
 
 export const ErrorAlert = (props) =>
 {

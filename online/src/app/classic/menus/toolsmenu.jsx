@@ -2,7 +2,7 @@
 import { mergeProps } from "solid-js";
 import { Divider, Menu, MenuAction, createMenuAction } from "../../framework/menus.jsx";
 
-import { useWorkerClient } from "../../../viewer/context/context.jsx";
+import { useWorkerClient } from "../../../viewer/context/worker.jsx";
 import { useSymmetry } from "../classic.jsx";
 import { controllerAction } from "../../../viewer/util/controllers-solid.js";
 

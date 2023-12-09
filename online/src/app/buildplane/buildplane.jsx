@@ -5,7 +5,7 @@ import { DoubleSide, Matrix4, Quaternion, Vector3, CylinderGeometry, TorusGeomet
 
 import { normalize, vlength, vscale } from './vectors.js';
 import { reducer, initialState, doToggleDisk, doSetCenter, doStrutPreview, doSelectPlane, doSelectHinge, doToggleBuild } from './planes.js';
-import { useWorkerClient } from '../../viewer/context/context.jsx';
+import { useWorkerClient } from '../../viewer/context/worker.jsx';
 import { createStrut, joinBalls, newDesign } from '../../viewer/util/actions.js';
 import { useInteractionTool } from '../../viewer/context/interaction.jsx';
 import { setHingeStrut } from '../../viewer/util/actions.js';

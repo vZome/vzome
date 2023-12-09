@@ -1,5 +1,5 @@
 
-import { useWorkerClient } from "../viewer/context/context.jsx";
+import { useWorkerClient } from "./context/worker.jsx";
 import { doControllerAction } from "../viewer/util/actions.js";
 import { IconButton } from "./iconbutton";
 

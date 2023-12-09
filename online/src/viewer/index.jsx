@@ -8,9 +8,10 @@ import { urlViewerCSS } from "./urlviewer.css";
 import { createSignal, mergeProps, onMount, Show } from 'solid-js';
 import { render } from 'solid-js/web';
 
-import { useWorkerClient, WorkerStateProvider, SceneProvider, useScene } from '../viewer/context/context.jsx';
-import { InteractionToolProvider } from '../viewer/context/interaction.jsx';
-import { CameraProvider, useCamera } from '../viewer/context/camera.jsx';
+import { useWorkerClient, WorkerStateProvider } from './context/worker.jsx';
+import { SceneProvider, useScene } from './context/scene.jsx';
+import { InteractionToolProvider } from './context/interaction.jsx';
+import { CameraProvider, useCamera } from './context/camera.jsx';
 
 import { SceneCanvas } from "./scenecanvas.jsx";
 import { Spinner } from './spinner.jsx';

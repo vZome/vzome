@@ -3,7 +3,7 @@ import { createMemo, createSignal } from 'solid-js';
 
 import { Select } from "@kobalte/core";
 
-import { useWorkerClient } from '../viewer/context/context.jsx';
+import { useWorkerClient } from './context/worker.jsx';
 import { selectScene } from '../viewer/util/actions.js';
 
 const styles = {

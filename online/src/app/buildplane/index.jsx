@@ -6,7 +6,8 @@ import Typography from '@suid/material/Typography'
 import Link from '@suid/material/Link'
 
 import { VZomeAppBar } from '../classic/components/appbar.jsx';
-import { WorkerStateProvider, SceneProvider } from '../../viewer/context/context.jsx';
+import { WorkerStateProvider } from '../../viewer/context/worker.jsx';
+import { SceneProvider } from '../../viewer/context/scene.jsx';
 
 import { BuildPlaneTool } from './buildplane.jsx'
 import { DesignViewer } from '../../viewer/index.jsx';
