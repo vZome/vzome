@@ -8,7 +8,7 @@ import FormGroup from '@suid/material/FormGroup';
 import FormControlLabel from '@suid/material/FormControlLabel';
 import Checkbox from '@suid/material/Checkbox';
 import CloseIcon from '@suid/icons-material/Close';
-import { controllerAction, controllerProperty } from '../../../workerClient/controllers-solid';
+import { controllerAction, controllerProperty } from '../../../viewer/util/controllers-solid';
 
 const ConfigDialogTitle = (props) =>
 {

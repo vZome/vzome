@@ -1,9 +1,9 @@
 
 import { createEffect } from "solid-js";
-import { createStore, reconcile } from "solid-js/store";
+import { createStore } from "solid-js/store";
 
 import { newDesign, requestControllerProperty, doControllerAction, setControllerProperty, decodeEntities } from './actions.js';
-import { defaultCamera } from "./camera.jsx";
+import { defaultCamera } from "../context/camera.jsx";
 
 const initialState = () => ( {
   copiedCamera: defaultCamera(), // TODO: this is probably too static, not related to useCamera

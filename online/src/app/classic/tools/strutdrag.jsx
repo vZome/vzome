@@ -3,9 +3,9 @@ import { createEffect, createSignal } from 'solid-js';
 import { Vector3 } from 'three';
 import { useThree } from "solid-three";
 
-import { useInteractionTool } from '../../../viewer/solid/interaction.jsx';
-import { useWorkerClient } from '../../../workerClient/context.jsx';
-import { endPreviewStrut, movePreviewStrut, startPreviewStrut } from '../../../workerClient/actions.js';
+import { useInteractionTool } from '../../../viewer/context/interaction.jsx';
+import { useWorkerClient } from '../../../viewer/context/context.jsx';
+import { endPreviewStrut, movePreviewStrut, startPreviewStrut } from '../../../viewer/util/actions.js';
 import { ObjectTrackball } from './trackball.jsx';
 import { VectorArrow } from './arrow.jsx';
 

@@ -2,9 +2,9 @@
 import { mergeProps } from "solid-js";
 import { Divider, Menu, MenuAction, createMenuAction } from "../../framework/menus.jsx";
 
-import { useWorkerClient } from "../../../workerClient/context.jsx";
+import { useWorkerClient } from "../../../viewer/context/context.jsx";
 import { useSymmetry } from "../classic.jsx";
-import { controllerAction } from "../../../workerClient/controllers-solid.js";
+import { controllerAction } from "../../../viewer/util/controllers-solid.js";
 
 export const SymmetryAction = ( props ) =>
 {

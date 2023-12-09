@@ -8,7 +8,7 @@ import MenuItem from '@suid/material/MenuItem';
 
 import { StrutLengthPanel } from './length.jsx';
 import { OrbitPanel } from './orbitpanel.jsx';
-import { controllerAction, controllerProperty, subController } from '../../../workerClient/controllers-solid.js';
+import { controllerAction, controllerProperty, subController } from '../../../viewer/util/controllers-solid.js';
 import { useSymmetry } from "../classic.jsx";
 
 export const StrutBuildPanel = () =>

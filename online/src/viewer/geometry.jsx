@@ -3,7 +3,7 @@ import { createContext, createEffect, createMemo, createSignal, useContext } fro
 import { Vector3, Matrix4, BufferGeometry, Float32BufferAttribute } from "three";
 import { useThree } from "solid-three";
 
-import { useInteractionTool } from "./interaction.jsx";
+import { useInteractionTool } from "./context/interaction.jsx";
 import { GLTFExporter } from "three-stdlib";
 
 

@@ -6,11 +6,11 @@ import Typography from '@suid/material/Typography'
 import Link from '@suid/material/Link'
 
 import { VZomeAppBar } from '../classic/components/appbar.jsx';
-import { WorkerStateProvider, SceneProvider } from '../../workerClient/context.jsx';
+import { WorkerStateProvider, SceneProvider } from '../../viewer/context/context.jsx';
 
 import { BuildPlaneTool } from './buildplane.jsx'
-import { DesignViewer } from '../../viewer/solid/index.jsx';
-import { CameraProvider } from '../../workerClient/camera.jsx';
+import { DesignViewer } from '../../viewer/index.jsx';
+import { CameraProvider } from '../../viewer/context/camera.jsx';
 
 const WorkerApp = () => (
   <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >

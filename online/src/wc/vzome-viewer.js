@@ -1,10 +1,10 @@
 
 import { vZomeViewerCSS } from "./vzome-viewer.css";
 
-import { createWorker } from '../workerClient/client.js';
-import { createWorkerStore } from '../workerClient/controllers-solid.js';
-import { fetchDesign, selectScene } from '../workerClient/actions.js';
-import { decodeEntities } from "../workerClient/actions";
+import { createWorker } from '../viewer/util/client.js';
+import { createWorkerStore } from '../viewer/util/controllers-solid.js';
+import { fetchDesign, selectScene } from '../viewer/util/actions.js';
+import { decodeEntities } from "../viewer/util/actions";
 
 export class VZomeViewer extends HTMLElement
 {
@@ -101,7 +101,7 @@ export class VZomeViewer extends HTMLElement
 
   connectedCallback()
   {
-    import( '../viewer/solid/index.jsx' )
+    import( '../viewer/index.jsx' )
       .then( module => {
         module.renderViewer( this.#store, this.#container, this.#config.url, this.#config );
       });

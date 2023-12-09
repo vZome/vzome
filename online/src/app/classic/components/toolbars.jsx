@@ -1,7 +1,7 @@
 
 import { createSignal, createEffect } from "solid-js";
 
-import { controllerAction, controllerProperty, subController } from '../../../workerClient/controllers-solid.js';
+import { controllerAction, controllerProperty, subController } from '../../../viewer/util/controllers-solid.js';
 import { useSymmetry } from "../classic.jsx";
 import { ToolConfig } from "../dialogs/toolconfig.jsx";
 

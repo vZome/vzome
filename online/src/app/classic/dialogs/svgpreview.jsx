@@ -10,9 +10,9 @@ import Button from "@suid/material/Button"
 import Switch from "@suid/material/Switch";
 import FormControlLabel from "@suid/material/FormControlLabel";
 
-import { useWorkerClient } from "../../../workerClient/context.jsx"
-import { controllerExportAction } from "../../../workerClient/controllers-solid"
-import { useCamera } from "../../../workerClient/camera"
+import { useWorkerClient } from "../../../viewer/context/context.jsx"
+import { controllerExportAction } from "../../../viewer/util/controllers-solid"
+import { useCamera } from "../../../viewer/context/camera"
 
 const SvgPreviewDialog = props =>
 {

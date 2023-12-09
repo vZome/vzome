@@ -10,7 +10,7 @@ import RadioGroup from "@suid/material/RadioGroup";
 import Radio from "@suid/material/Radio";
 import { For } from 'solid-js';
 
-import { controllerAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
+import { controllerAction, controllerProperty } from "../../../viewer/util/controllers-solid.js";
 
 export const ShapesDialog = props =>
 {

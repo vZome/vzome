@@ -6,7 +6,7 @@ import Switch from "@suid/material/Switch";
 import FormControlLabel from "@suid/material/FormControlLabel";
 import InputLabel from "@suid/material/InputLabel";
 
-import { controllerAction, controllerProperty } from '../../../workerClient/controllers-solid.js';
+import { controllerAction, controllerProperty } from '../../../viewer/util/controllers-solid.js';
 import { hexToWebColor } from './length.jsx';
 
 export const OrbitDot = props =>

@@ -1,5 +1,5 @@
 
-import { REVISION } from '../revision.js';
+import { REVISION } from '../../revision.js';
 
 const asIndentedText = ( element, indentation ) =>
 {

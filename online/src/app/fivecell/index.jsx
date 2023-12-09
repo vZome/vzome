@@ -7,7 +7,7 @@ import Link from '@suid/material/Link'
 import Container from '@suid/material/Container'
 import Paper from '@suid/material/Paper'
 
-import { UrlViewer } from '../../viewer/solid/index.jsx'
+import { UrlViewer } from '../../viewer/index.jsx'
 import { VZomeAppBar } from '../classic/components/appbar.jsx';
 
 const viewerStyle = {

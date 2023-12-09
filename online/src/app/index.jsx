@@ -9,9 +9,9 @@ import Link from '@suid/material/Link'
 // import { DesignHistoryInspector } from './components/inspector.jsx'
 import { getModelURL } from './classic/components/folder.jsx';
 import { VZomeAppBar } from './classic/components/appbar.jsx';
-import { WorkerStateProvider, SceneProvider } from '../workerClient/context.jsx';
-import { DesignViewer } from '../viewer/solid/index.jsx';
-import { CameraProvider } from '../workerClient/camera.jsx';
+import { WorkerStateProvider, SceneProvider } from '../viewer/context/context.jsx';
+import { DesignViewer } from '../viewer/index.jsx';
+import { CameraProvider } from '../viewer/context/camera.jsx';
 
 const queryParams = new URLSearchParams( window.location.search );
 const relativeUrl = queryParams.get( 'url' ); // support for legacy viewer usage (old vZome shares)

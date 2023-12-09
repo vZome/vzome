@@ -8,14 +8,14 @@ import FormControlLabel from '@suid/material/FormControlLabel';
 import Switch from '@suid/material/Switch';
 
 import { VZomeAppBar } from '../classic/components/appbar.jsx';
-import { SceneProvider, WorkerStateProvider, useScene, useWorkerClient } from '../../workerClient/context.jsx';
-import { SceneCanvas } from '../../viewer/solid/index.jsx'
+import { SceneProvider, WorkerStateProvider, useScene, useWorkerClient } from '../../viewer/context/context.jsx';
+import { SceneCanvas } from '../../viewer/index.jsx'
 import { getModelURL } from '../classic/components/folder.jsx';
-import { CameraProvider, useCamera } from "../../workerClient/camera.jsx";
-import { InteractionToolProvider } from '../../viewer/solid/interaction.jsx';
+import { CameraProvider, useCamera } from "../../viewer/context/camera.jsx";
+import { InteractionToolProvider } from '../../viewer/context/interaction.jsx';
 import { CellOrbitProvider, CellSelectorTool, useCellOrbits } from './selector.jsx';
-import { LightedTrackballCanvas } from '../../viewer/solid/ltcanvas.jsx';
-import { ShapedGeometry } from '../../viewer/solid/geometry.jsx';
+import { LightedTrackballCanvas } from '../../viewer/ltcanvas.jsx';
+import { ShapedGeometry } from '../../viewer/geometry.jsx';
 
 const SelectorCanvas = () =>
 {

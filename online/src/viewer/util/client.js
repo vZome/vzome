@@ -3,7 +3,7 @@ export const createWorker = () =>
 {
   // trampolining to work around worker CORS issue
   // see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
-  const workerPromise = import( "../worker/vzome-worker-static.js" )
+  const workerPromise = import( "../../worker/vzome-worker-static.js" )
     .then( module => {
       const blob = new Blob( [ `import "${module.WORKER_ENTRY_FILE_URL}";` ], { type: "text/javascript" } );
       const worker = new Worker( URL.createObjectURL( blob ), { type: "module" } );

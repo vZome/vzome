@@ -7,8 +7,8 @@ import Link from '@suid/material/Link'
 
 import { VZomeAppBar } from '../classic/components/appbar.jsx';
 import { DesignBrowser } from './browser.jsx';
-import { WorkerStateProvider, SceneProvider } from '../../workerClient/context.jsx';
-import { CameraProvider } from '../../workerClient/camera.jsx';
+import { WorkerStateProvider, SceneProvider } from '../../viewer/context/context.jsx';
+import { CameraProvider } from '../../viewer/context/camera.jsx';
 
 const Browser = () => (
   <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >

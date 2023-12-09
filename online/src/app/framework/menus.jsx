@@ -2,7 +2,7 @@
 import { DropdownMenu } from "@kobalte/core";
 import { ContextMenu } from "@kobalte/core";
 import { createEffect, createSignal, mergeProps } from "solid-js";
-import { controllerAction } from "../../workerClient/controllers-solid";
+import { controllerAction } from "../../viewer/util/controllers-solid";
 
 const isMac = navigator.userAgentData?.platform === 'macOS' || navigator.userAgent .includes( 'Macintosh' );
 

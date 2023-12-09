@@ -1,9 +1,9 @@
 
 import { ContextMenu } from "@kobalte/core";
 import { ContextMenuItem, ContextMenuSeparator } from "../../framework/menus";
-import { useWorkerClient } from "../../../workerClient/context.jsx";
-import { controllerAction, subController } from "../../../workerClient/controllers-solid";
-import { useCamera } from "../../../workerClient/camera";
+import { useWorkerClient } from "../../../viewer/context/context.jsx";
+import { controllerAction, subController } from "../../../viewer/util/controllers-solid";
+import { useCamera } from "../../../viewer/context/camera";
 
 export const ContextualMenu = props =>
 {

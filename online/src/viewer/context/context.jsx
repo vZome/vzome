@@ -1,10 +1,10 @@
 
 import { createContext, useContext } from "solid-js";
-
-import { createWorker } from "./client.js";
-import { createWorkerStore } from "./controllers-solid.js";
-import { fetchDesign, selectScene } from "./actions.js";
 import { createStore, reconcile } from "solid-js/store";
+
+import { createWorker } from "../../viewer/util/client.js";
+import { createWorkerStore } from "../../viewer/util/controllers-solid.js";
+import { fetchDesign, selectScene } from "../../viewer/util/actions.js";
 
 
 const WorkerStateContext = createContext( {} );

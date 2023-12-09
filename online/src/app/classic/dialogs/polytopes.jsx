@@ -10,7 +10,7 @@ import InputLabel from "@suid/material/InputLabel";
 import MenuItem from "@suid/material/MenuItem";
 import Select from "@suid/material/Select";
 
-import { controllerAction, controllerProperty, subController } from "../../../workerClient/controllers-solid.js";
+import { controllerAction, controllerProperty, subController } from "../../../viewer/util/controllers-solid.js";
 
 const indices = [ 0, 1, 2, 3 ];
 const alt = Math.sqrt( 3 ) / 2;

@@ -2,17 +2,17 @@
 import { createEffect, createSignal, mergeProps } from "solid-js";
 import { unwrap } from "solid-js/store";
 
-import { controllerAction, controllerExportAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
-import { serializeVZomeXml } from '../../../workerClient/serializer.js';
-import { saveFile, saveFileAs, openFile } from "../../../workerClient/files.js";
-import { fetchDesign, openDesignFile, newDesign, importMeshFile } from "../../../workerClient/actions.js";
-import { useWorkerClient } from "../../../workerClient/context.jsx";
+import { controllerAction, controllerExportAction, controllerProperty } from "../../../viewer/util/controllers-solid.js";
+import { serializeVZomeXml } from '../../../viewer/util/serializer.js';
+import { saveFile, saveFileAs, openFile } from "../../../viewer/util/files.js";
+import { fetchDesign, openDesignFile, newDesign, importMeshFile } from "../../../viewer/util/actions.js";
+import { useWorkerClient } from "../../../viewer/context/context.jsx";
 
 import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 import { UrlDialog } from '../dialogs/webloader.jsx'
 import { Guardrail } from "../dialogs/guardrail.jsx";
 import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
-import { useCamera } from "../../../workerClient/camera.jsx";
+import { useCamera } from "../../../viewer/context/camera.jsx";
 
 const NewDesignItem = props =>
 {

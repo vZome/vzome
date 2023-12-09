@@ -3,15 +3,15 @@ import { createSignal, createContext, useContext } from "solid-js";
 
 import { CameraControls } from './components/camera.jsx';
 import { StrutBuildPanel } from './components/strutbuilder.jsx';
-import { controllerAction, controllerProperty, subController } from '../../workerClient/controllers-solid.js';
+import { controllerAction, controllerProperty, subController } from '../../viewer/util/controllers-solid.js';
 import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
 import { SceneEditor } from './components/editor.jsx';
-import { useWorkerClient } from "../../workerClient/context.jsx";
+import { useWorkerClient } from "../../viewer/context/context.jsx";
 import { OrbitsDialog } from "./dialogs/orbits.jsx";
 import { ShapesDialog } from "./dialogs/shapes.jsx";
 import { PolytopesDialog } from "./dialogs/polytopes.jsx";
 import { ErrorAlert } from "./components/alert.jsx";
-import { CameraProvider } from "../../workerClient/camera.jsx";
+import { CameraProvider } from "../../viewer/context/camera.jsx";
 
 export const ClassicEditor = () =>
 {

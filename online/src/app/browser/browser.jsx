@@ -1,8 +1,8 @@
 
 import { Show, createEffect, createMemo, createResource, createSignal } from 'solid-js';
 
-import { DesignViewer } from '../../viewer/solid/index.jsx'
-import { useWorkerClient } from '../../workerClient/context.jsx';
+import { DesignViewer } from '../../viewer/index.jsx'
+import { useWorkerClient } from '../../viewer/context/context.jsx';
 import { fetchGitHubShares, getEmbeddingHtml, getAssetUrl } from './github.js';
 
 import List from '@suid/material/List';
@@ -10,7 +10,7 @@ import ListItem from '@suid/material/ListItem';
 import ListItemText from '@suid/material/ListItemText';
 import Typography from '@suid/material/Typography'
 import Button from '@suid/material/Button';
-import { fetchDesign } from '../../workerClient/actions.js';
+import { fetchDesign } from '../../viewer/util/actions.js';
 import { UsersMenu } from './users.jsx';
 
 const DesignList = (props) =>

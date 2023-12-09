@@ -3,8 +3,8 @@ import { createMemo, createSignal } from 'solid-js';
 
 import { Select } from "@kobalte/core";
 
-import { useWorkerClient } from '../../workerClient/context.jsx';
-import { selectScene } from '../../workerClient/actions.js';
+import { useWorkerClient } from '../viewer/context/context.jsx';
+import { selectScene } from '../viewer/util/actions.js';
 
 const styles = {
   margin: '1em',

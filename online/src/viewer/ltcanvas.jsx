@@ -6,8 +6,8 @@ import { createElementSize } from "@solid-primitives/resize-observer";
 
 import { PerspectiveCamera } from "./perspectivecamera.jsx";
 import { TrackballControls } from "./trackballcontrols.jsx";
-import { useInteractionTool } from "./interaction.jsx";
-import { useCamera } from "../../workerClient/camera.jsx";
+import { useInteractionTool } from "../viewer/context/interaction.jsx";
+import { useCamera } from "../viewer/context/camera.jsx";
 
 const Lighting = () =>
 {

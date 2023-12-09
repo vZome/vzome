@@ -1,5 +1,5 @@
 
-import { REVISION } from '../../revision.js'
+import { REVISION } from '../revision.js'
 
 console.log( `vzome-viewer revision ${REVISION}` );
 
@@ -8,18 +8,18 @@ import { urlViewerCSS } from "./urlviewer.css";
 import { createSignal, mergeProps, onMount, Show } from 'solid-js';
 import { render } from 'solid-js/web';
 
-import { useWorkerClient, WorkerStateProvider, SceneProvider } from '../../workerClient/context.jsx';
+import { useWorkerClient, WorkerStateProvider, SceneProvider, useScene } from '../viewer/context/context.jsx';
+import { InteractionToolProvider } from '../viewer/context/interaction.jsx';
+import { CameraProvider, useCamera } from '../viewer/context/camera.jsx';
+
 import { SceneCanvas } from "./scenecanvas.jsx";
 import { Spinner } from './spinner.jsx';
 import { ErrorAlert } from './alert.jsx';
 import { SceneMenu } from './scenes.jsx';
 import { FullscreenButton } from './fullscreen.jsx';
 import { ExportMenu } from './export.jsx';
-import { InteractionToolProvider } from './interaction.jsx';
 import { UndoRedoButtons } from './undoredo.jsx';
 import { GltfExportProvider } from './geometry.jsx';
-import { CameraProvider, useCamera } from '../../workerClient/camera.jsx';
-import { useScene } from '../../workerClient/context.jsx';
 
 let stylesAdded = false; // for the onMount in DesignViewer
 

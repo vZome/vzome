@@ -1,11 +1,11 @@
 
 import { createEffect } from 'solid-js';
-import { SceneCanvas } from '../../../viewer/solid/scenecanvas.jsx';
-import { useWorkerClient } from '../../../workerClient/context.jsx';
-import { controllerAction } from '../../../workerClient/controllers-solid.js';
-import { CameraTool, InteractionToolProvider } from '../../../viewer/solid/interaction.jsx';
+import { SceneCanvas } from '../../../viewer/scenecanvas.jsx';
+import { useWorkerClient } from '../../../viewer/context/context.jsx';
+import { controllerAction } from '../../../viewer/util/controllers-solid.js';
+import { CameraTool, InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
 import { createStore } from 'solid-js/store';
-import { CameraProvider, useCamera } from '../../../workerClient/camera.jsx';
+import { CameraProvider, useCamera } from '../../../viewer/context/camera.jsx';
 
 export const CameraControls = (props) =>
 {

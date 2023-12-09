@@ -10,7 +10,7 @@ import Divider from '@suid/material/Divider'
 
 import { Tab, Tabs } from '../../framework/tabs.jsx';
 
-import { UrlViewer } from '../../../viewer/solid/index.jsx'
+import { UrlViewer } from '../../../viewer/index.jsx'
 import { VZomeAppBar } from '../../classic/components/appbar.jsx';
 
 const metadata = {
