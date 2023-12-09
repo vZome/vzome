@@ -15,7 +15,7 @@ import { useWorkerClient } from '../../workerClient/context.jsx'
 import { controllerProperty } from '../../workerClient/controllers-solid.js'
 import { VZomeAppBar } from './components/appbar.jsx';
 import { ClassicEditor, SymmetryProvider } from './classic.jsx';
-import { WorkerStateProvider } from '../../workerClient/index.js';
+import { WorkerStateProvider, SceneProvider } from '../../workerClient/context.jsx';
 
 const Persistence = () =>
 {
@@ -44,6 +44,7 @@ const Classic = () =>
   return (
     <ErrorBoundary fallback={ err => <div>{err.toString()}</div> } >
       <WorkerStateProvider>
+      <SceneProvider>
         <SymmetryProvider>
           <VZomeAppBar menuBar={true} title='BETA'
             spacer={ <>
@@ -76,6 +77,7 @@ const Classic = () =>
           />
           <ClassicEditor/>
         </SymmetryProvider>
+      </SceneProvider>
       </WorkerStateProvider>
     </ErrorBoundary>
   );

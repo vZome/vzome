@@ -3,11 +3,9 @@ import { createEffect } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 
 import { newDesign, requestControllerProperty, doControllerAction, setControllerProperty, decodeEntities } from './actions.js';
-import { useCamera, defaultCamera } from "./camera.jsx";
+import { defaultCamera } from "./camera.jsx";
 
 const initialState = () => ( {
-  scene: {}, 
-  trackballScene: {},
   copiedCamera: defaultCamera(), // TODO: this is probably too static, not related to useCamera
 } );
 
@@ -17,41 +15,6 @@ const createWorkerStore = ( worker ) =>
   const [ state, setState ] = createStore( { ...initialState(), uuid: worker.uuid } );
 
   const exportPromises = {};
-
-  const addShape = ( shape, which='scene' ) =>
-  {
-    if ( ! state[ which ] .shapes ) {
-      setState( which, 'shapes', {} );
-    }
-    if ( ! state[ which ] ?.shapes[ shape.id ] ) {
-      setState( which, 'shapes', shape.id, shape );
-      return true;
-    }
-    return false;
-  }
-
-  const updateShapes = ( shapes, which='scene' ) =>
-  {
-    for (const [id, shape] of Object.entries(shapes)) {
-      if ( ! addShape( shape, which ) ) {
-        // shape is not new, so just replace its instances
-        setState( which, 'shapes', id, 'instances', shape.instances );
-      }
-    }
-    // clean up preview strut, which may be a shape otherwise not in the scene
-    for ( const id of Object.keys( state[ which ] ?.shapes || {} ) ) {
-      if ( ! (id in shapes) )
-        setState( which, 'shapes', id, 'instances', [] );
-    }
-  }
-
-  const logShapes = () =>
-  {
-    console.log( 'SHAPES:' );
-    Object.values( state.scene.shapes ) .forEach( shape => {
-      console.log( `  ${shape.id} ${shape.zone} [${shape.instances.length}]` );
-    })
-  }
 
   const onWorkerMessage = ( data ) =>
   {
@@ -97,49 +60,9 @@ const createWorkerStore = ( worker ) =>
   
       case 'SCENE_RENDERED': {
         // TODO: I wish I had a better before/after contract with the worker
-        const { scene, edit } = data.payload;
+        const { edit } = data.payload;
         setState( 'edit', edit );
         setState( 'waiting', false );
-        setState( 'scene', 'embedding', reconcile( scene.embedding ) );
-        updateShapes( scene.shapes );
-        // logShapes();
-        break;
-      }
-
-      case 'SHAPE_DEFINED': {
-        setState( 'waiting', false );
-        addShape( data.payload );
-        // logShapes();
-        break;
-      }
-
-      case 'INSTANCE_ADDED': {
-        let instance = data.payload;
-        const shape = state.scene.shapes[ instance.shapeId ];
-        setState( 'scene', 'shapes', shape.id, 'instances', [ ...shape.instances, instance ] );
-        // logShapes();
-        break;
-      }
-
-      case 'INSTANCE_REMOVED': {
-        let { shapeId, id } = data.payload;
-        const shape = state.scene.shapes[ shapeId ];
-        const instances = shape.instances .filter( instance => instance.id != id );
-        setState( 'scene', 'shapes', shape.id, 'instances', instances );
-        // logShapes();
-        break;
-      }
-
-      case 'SELECTION_TOGGLED': {
-        const { shapeId, id, selected } = data.payload;
-        // TODO use nested signal
-        const shape = state.scene.shapes[ shapeId ];
-        const instances = shape .instances.map( inst => (
-          inst.id !== id ? inst : { ...inst, selected }
-        ));
-        const shapes = { ...state.scene.shapes, [ shapeId ]: { ...shape, instances } };
-        setState( { scene: { ...state.scene, shapes }, waiting: false } );
-        // TODO lower ambient light if anything is selected
         break;
       }
 

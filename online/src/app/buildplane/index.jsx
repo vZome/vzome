@@ -6,7 +6,7 @@ import Typography from '@suid/material/Typography'
 import Link from '@suid/material/Link'
 
 import { VZomeAppBar } from '../classic/components/appbar.jsx';
-import { WorkerStateProvider } from '../../workerClient/context.jsx';
+import { WorkerStateProvider, SceneProvider } from '../../workerClient/context.jsx';
 
 import { BuildPlaneTool } from './buildplane.jsx'
 import { DesignViewer } from '../../viewer/solid/index.jsx';
@@ -16,6 +16,7 @@ const WorkerApp = () => (
   <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
     <CameraProvider>
     <WorkerStateProvider>
+    <SceneProvider>
       <VZomeAppBar showOpen pathToRoot='../models' forDebugger={false} title='Buildplane'
         about={ <>
           <Typography gutterBottom>
@@ -42,6 +43,7 @@ const WorkerApp = () => (
         </> } />
       <DesignViewer height="100%" width="100%" config={ { useSpinner: true, undoRedo: true } }
         children3d={ <BuildPlaneTool/> } />
+    </SceneProvider>
     </WorkerStateProvider>
     </CameraProvider>
   </ErrorBoundary>

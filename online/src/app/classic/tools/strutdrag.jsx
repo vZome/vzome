@@ -4,7 +4,8 @@ import { Vector3 } from 'three';
 import { useThree } from "solid-three";
 
 import { useInteractionTool } from '../../../viewer/solid/interaction.jsx';
-import { endPreviewStrut, movePreviewStrut, startPreviewStrut, useWorkerClient } from '../../../workerClient/index.js';
+import { useWorkerClient } from '../../../workerClient/context.jsx';
+import { endPreviewStrut, movePreviewStrut, startPreviewStrut } from '../../../workerClient/actions.js';
 import { ObjectTrackball } from './trackball.jsx';
 import { VectorArrow } from './arrow.jsx';
 

@@ -8,7 +8,7 @@ import Divider from '@suid/material/Divider';
 import { UrlDialog } from '../dialogs/webloader.jsx';
 import { Tooltip } from '../../framework/tooltip.jsx';
 import { For, createSignal } from 'solid-js';
-import { useWorkerClient } from '../../../workerClient';
+import { useWorkerClient } from '../../../workerClient/context.jsx';
 import { fetchDesign, openDesignFile } from '../../../workerClient/actions.js';
 
 const queryParams = new URLSearchParams( window.location.search );

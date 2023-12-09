@@ -50,7 +50,7 @@ export const esbuildConfig = {
     'vzome-viewer'        : 'src/wc/index.js',
   // client rendering code, dynamically imported for fast time-to-first-render
     'vzome-viewer-dynamic': 'src/viewer/solid/index.jsx',
-  // Worker entry point, only used as a module worker (which still breaks Firefox)
+  // Worker entry point, only used as a module worker
     'vzome-worker-static' : 'src/worker/vzome-worker-static.js',
   // Legacy code, dynamically loaded as needed by the worker to parse vZome files or edit designs
     'vzome-legacy'        : 'src/worker/legacy/dynamic.js',

@@ -10,12 +10,14 @@ import Button from "@suid/material/Button"
 import Switch from "@suid/material/Switch";
 import FormControlLabel from "@suid/material/FormControlLabel";
 
-import { useWorkerClient } from "../../../workerClient"
+import { useWorkerClient } from "../../../workerClient/context.jsx"
 import { controllerExportAction } from "../../../workerClient/controllers-solid"
+import { useCamera } from "../../../workerClient/camera"
 
 const SvgPreviewDialog = props =>
 {
-  const { rootController, state } = useWorkerClient();
+  const { rootController } = useWorkerClient();
+  const { state } = useCamera();
   const [ useLighting, setUseLighting ] = createSignal( true );
   const [ useShapes, setUseShapes ] = createSignal( true );
   const [ drawOutlines, setDrawOutlines ] = createSignal( true );
@@ -25,8 +27,8 @@ const SvgPreviewDialog = props =>
   let svgRef;
   createEffect( () => {
     if ( ! props.open ) return;
-    const camera = unwrap( state.liveCamera );
-    const { lighting } = unwrap( state.scene );
+    const camera = unwrap( state.camera );
+    const lighting = unwrap( state.lighting );
     const params = { camera, lighting,
       useShapes     : useShapes(),
       drawOutlines  : drawOutlines(),

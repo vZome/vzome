@@ -8,7 +8,7 @@ import FormControlLabel from '@suid/material/FormControlLabel';
 import Switch from '@suid/material/Switch';
 
 import { VZomeAppBar } from '../classic/components/appbar.jsx';
-import { WorkerStateProvider, useWorkerClient } from '../../workerClient/context.jsx';
+import { SceneProvider, WorkerStateProvider, useScene, useWorkerClient } from '../../workerClient/context.jsx';
 import { SceneCanvas } from '../../viewer/solid/index.jsx'
 import { getModelURL } from '../classic/components/folder.jsx';
 import { CameraProvider, useCamera } from "../../workerClient/camera.jsx";
@@ -16,11 +16,11 @@ import { InteractionToolProvider } from '../../viewer/solid/interaction.jsx';
 import { CellOrbitProvider, CellSelectorTool, useCellOrbits } from './selector.jsx';
 import { LightedTrackballCanvas } from '../../viewer/solid/ltcanvas.jsx';
 import { ShapedGeometry } from '../../viewer/solid/geometry.jsx';
-import { selectScene } from '../../workerClient/actions.js';
 
 const SelectorCanvas = () =>
 {
-  const { state, subscribeFor } = useWorkerClient();
+  const { subscribeFor } = useWorkerClient();
+  const { scene } = useScene();
   const { state: { camera }, setCamera } = useCamera();
 
   subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
@@ -32,7 +32,7 @@ const SelectorCanvas = () =>
   });
 
   return (
-    <SceneCanvas rotationOnly={false} panSpeed={0} scene={state.scene}
+    <SceneCanvas rotationOnly={false} panSpeed={0} scene={scene}
       style={{ position: 'relative', height: '100%' }} height='100%' width='100%' />
   )
 }
@@ -43,7 +43,9 @@ const ModelWorker = props =>
 
   return (
     <WorkerStateProvider config={config} >
-      {props.children}
+      <SceneProvider>
+        {props.children}
+      </SceneProvider>
     </WorkerStateProvider>
   )
 }
@@ -64,20 +66,20 @@ const Selector = props =>
 
 const CellOrbitScene = props =>
 {
-  const { state: geometry, postMessage } = useWorkerClient();
+  const { scene, requestScene } = useScene();
   const { state: toggles } = useCellOrbits();
   const showCell = () => toggles[ props.cell ];
   const { showCutaway } = useContext( ViewOptions );
 
   createEffect( () => {
-    postMessage( selectScene( showCutaway()? 'cutaway' : 'full' ) );
+    requestScene( showCutaway()? 'cutaway' : 'full', { camera: false, lighting: false } );
   });
 
   // The group is necessary due to a defect in solid-three regarding conditional components
   return (
     <group>
       <Show when={ showCell() }>
-        <ShapedGeometry embedding={geometry.scene?.embedding} shapes={geometry.scene?.shapes} />
+        <ShapedGeometry embedding={scene?.embedding} shapes={scene?.shapes} />
       </Show>
     </group>
   );

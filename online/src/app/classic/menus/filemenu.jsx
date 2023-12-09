@@ -3,9 +3,10 @@ import { createEffect, createSignal, mergeProps } from "solid-js";
 import { unwrap } from "solid-js/store";
 
 import { controllerAction, controllerExportAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
-import { serializeVZomeXml, saveFile, saveFileAs, openFile } from '../../../workerClient/index.js';
-import { fetchDesign, openDesignFile, newDesign, importMeshFile } from "../../../workerClient/index.js";
-import { useWorkerClient } from "../../../workerClient/index.js";
+import { serializeVZomeXml } from '../../../workerClient/serializer.js';
+import { saveFile, saveFileAs, openFile } from "../../../workerClient/files.js";
+import { fetchDesign, openDesignFile, newDesign, importMeshFile } from "../../../workerClient/actions.js";
+import { useWorkerClient } from "../../../workerClient/context.jsx";
 
 import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 import { UrlDialog } from '../dialogs/webloader.jsx'
@@ -106,7 +107,7 @@ export const FileMenu = () =>
 
   const exportAs = ( extension, mimeType, format=extension ) => evt =>
   {
-    const camera = unwrap( state.liveCamera );
+    const camera = unwrap( cameraState.camera );
     const { lighting } = unwrap( state.scene );
     controllerExportAction( rootController(), format, { camera, lighting } )
       .then( text => {
@@ -122,7 +123,7 @@ export const FileMenu = () =>
     controllerExportAction( rootController(), 'vZome' )
       .then( text => {
         name = state?.designName || 'untitled';
-        const fullText = serializeVZomeXml( text, cameraState.lighting, {...cameraState.liveCamera} );
+        const fullText = serializeVZomeXml( text, cameraState.lighting, {...cameraState.camera} );
         const mimeType = 'application/xml';
         if ( state.fileHandle && !chooseFile )
           return saveFile( state.fileHandle, fullText, mimeType )

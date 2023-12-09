@@ -1,7 +1,8 @@
 
 import { DropdownMenu } from "@kobalte/core";
 
-import { saveFileAs, useWorkerClient } from "../../workerClient";
+import { useWorkerClient } from "../../workerClient/context.jsx";
+import { saveFileAs } from "../../workerClient/files.js";
 import { useGltfExporter } from "./geometry";
 
 export const ExportMenu = (props) =>

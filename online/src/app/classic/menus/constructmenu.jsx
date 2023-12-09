@@ -1,7 +1,7 @@
 
 import { Divider, Menu, SubMenu, createMenuAction } from "../../framework/menus.jsx";
 
-import { useWorkerClient } from "../../../workerClient/index.js";
+import { useWorkerClient } from "../../../workerClient/context.jsx";
 
 export const ConstructMenu = () =>
 {

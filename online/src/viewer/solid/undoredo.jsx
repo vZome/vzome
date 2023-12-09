@@ -1,5 +1,6 @@
 
-import { doControllerAction, useWorkerClient } from "../../workerClient";
+import { useWorkerClient } from "../../workerClient/context.jsx";
+import { doControllerAction } from "../../workerClient/actions.js";
 import { IconButton } from "./iconbutton";
 
 export const UndoRedoButtons = (props) =>

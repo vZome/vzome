@@ -1,7 +1,9 @@
 
 import { vZomeViewerCSS } from "./vzome-viewer.css";
 
-import { fetchDesign, createWorker, createWorkerStore, selectScene } from '../workerClient/index.js';
+import { createWorker } from '../workerClient/client.js';
+import { createWorkerStore } from '../workerClient/controllers-solid.js';
+import { fetchDesign, selectScene } from '../workerClient/actions.js';
 import { decodeEntities } from "../workerClient/actions";
 
 export class VZomeViewer extends HTMLElement

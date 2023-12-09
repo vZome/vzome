@@ -6,17 +6,19 @@ import ToggleButton from "@suid/material/ToggleButton";
 import ToggleButtonGroup from "@suid/material/ToggleButtonGroup";
 
 import { SceneCanvas } from '../../../viewer/solid/index.jsx';
-import { useWorkerClient } from '../../../workerClient/index.js';
+import { useWorkerClient } from '../../../workerClient/context.jsx';
 import { CameraTool, InteractionToolProvider } from '../../../viewer/solid/interaction.jsx';
 import { SelectionTool } from '../tools/selection.jsx';
 import { StrutDragTool } from '../tools/strutdrag.jsx';
 import { ContextualMenuArea } from '../../framework/menus.jsx';
 import { ContextualMenu } from '../menus/contextmenu.jsx';
 import { useCamera } from '../../../workerClient/camera.jsx';
+import { useScene } from '../../../workerClient/context.jsx';
 
 export const SceneEditor = ( props ) =>
 {
-  const { state, setState, subscribeFor } = useWorkerClient();
+  const { setState, subscribeFor } = useWorkerClient();
+  const { scene } = useScene();
   const { state: cameraState, setCamera, setLighting } = useCamera();
   const [ strutting, setStrutting ] = createSignal( true );
   const [ viewing, setViewing ] = createSignal( false );
@@ -70,7 +72,7 @@ export const SceneEditor = ( props ) =>
     <div style={{ position: 'relative', display: 'flex', overflow: 'hidden', height: '100%' }}>
       <InteractionToolProvider>
         <ContextualMenuArea menu={<ContextualMenu/>} disabled={viewing() || strutting()} onOpenChange={resetPicked}>
-          <SceneCanvas height="100%" width="100%" scene={state.scene} rotationOnly={false} >
+          <SceneCanvas height="100%" width="100%" scene={scene} rotationOnly={false} >
             {/* The group is only necessary because of https://github.com/solidjs-community/solid-three/issues/11 */}
             <group>
               <Switch fallback={

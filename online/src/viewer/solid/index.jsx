@@ -8,7 +8,7 @@ import { urlViewerCSS } from "./urlviewer.css";
 import { createSignal, mergeProps, onMount, Show } from 'solid-js';
 import { render } from 'solid-js/web';
 
-import { useWorkerClient, WorkerStateProvider } from '../../workerClient/index.js';
+import { useWorkerClient, WorkerStateProvider, SceneProvider } from '../../workerClient/context.jsx';
 import { SceneCanvas } from "./scenecanvas.jsx";
 import { Spinner } from './spinner.jsx';
 import { ErrorAlert } from './alert.jsx';
@@ -19,6 +19,7 @@ import { InteractionToolProvider } from './interaction.jsx';
 import { UndoRedoButtons } from './undoredo.jsx';
 import { GltfExportProvider } from './geometry.jsx';
 import { CameraProvider, useCamera } from '../../workerClient/camera.jsx';
+import { useScene } from '../../workerClient/context.jsx';
 
 let stylesAdded = false; // for the onMount in DesignViewer
 
@@ -43,6 +44,7 @@ const DesignViewer = ( props ) =>
 {
   const config = mergeProps( { showScenes: false, useSpinner: false, allowFullViewport: false, undoRedo: false }, props.config );
   const { state, subscribeFor } = useWorkerClient();
+  const { scene } = useScene();
   const { state: cameraState, setCamera, setLighting } = useCamera();
   const [ fullScreen, setFullScreen ] = createSignal( false );
   const toggleFullScreen = () =>
@@ -91,8 +93,8 @@ const DesignViewer = ( props ) =>
 
     <div id='design-viewer' ref={rootRef} style={ fullScreen()? fullScreenStyle : normalStyle }>
       {/* This renders the light DOM if the scene couldn't load */}
-      <Show when={state.scene} fallback={props.children}>
-        <SceneCanvas id='scene-canvas' scene={state.scene} height={props.height} width={props.width} >
+      <Show when={scene} fallback={props.children}>
+        <SceneCanvas id='scene-canvas' scene={scene} height={props.height} width={props.width} >
           {props.children3d}
         </SceneCanvas>
       </Show>
@@ -129,11 +131,13 @@ const UrlViewer = (props) =>
   return (
     <CameraProvider>
     <WorkerStateProvider store={props.store} config={{ url: props.url, preview: true, debug: false, showScenes: props.showScenes }}>
+    <SceneProvider>
       <DesignViewer config={ { ...props.config, allowFullViewport: true } }
           componentRoot={props.componentRoot}
           height="100%" width="100%" >
         {props.children}
       </DesignViewer>
+    </SceneProvider>
     </WorkerStateProvider>
     </CameraProvider>
   );

@@ -3,7 +3,7 @@ import Alert from '@suid/material/Alert';
 import AlertTitle from '@suid/material/AlertTitle';
 import Backdrop from '@suid/material/Backdrop';
 
-import { useWorkerClient } from '../../../workerClient';
+import { useWorkerClient } from '../../../workerClient/context.jsx';
 
 export const ErrorAlert = () =>
 {

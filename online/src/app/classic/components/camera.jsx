@@ -1,7 +1,7 @@
 
 import { createEffect } from 'solid-js';
 import { SceneCanvas } from '../../../viewer/solid/scenecanvas.jsx';
-import { useWorkerClient } from '../../../workerClient/index.js';
+import { useWorkerClient } from '../../../workerClient/context.jsx';
 import { controllerAction } from '../../../workerClient/controllers-solid.js';
 import { CameraTool, InteractionToolProvider } from '../../../viewer/solid/interaction.jsx';
 import { createStore } from 'solid-js/store';
