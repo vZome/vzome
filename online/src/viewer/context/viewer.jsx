@@ -1,21 +1,30 @@
 
-import { createContext, useContext } from "solid-js";
+import { createContext, createSignal, useContext } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 import { useWorkerClient } from "./worker.jsx";
-import { selectScene } from "../util/actions.js";
+import { decodeEntities, fetchDesign, selectScene } from "../util/actions.js";
 
-const SceneContext = createContext( { scene: ()=> { console.log( 'NO SceneProvider' ); } } );
+const ViewerContext = createContext( { scene: ()=> { console.log( 'NO ViewerProvider' ); } } );
 
-const SceneProvider = ( props ) =>
+const ViewerProvider = ( props ) =>
 {
   const [ scene, setScene ] = createStore( {} );
+  const [ scenes, setScenes ] = createStore( [] );
+  const [ source, setSource ] = createStore( {} );
+  const [ problem, setProblem ] = createSignal( false ); // cooperatively managed by both worker and client
+  const [ waiting, setWaiting ] = createSignal( false );
+  const clearProblem = () => setProblem( false );
   const { postMessage, subscribeFor } = useWorkerClient();
-  console.log( 'creating SceneProvider' );
+  console.log( 'creating ViewerProvider' );
 
-  const requestScene = ( name, config ) =>
+  const requestDesign = ( url, config ) =>
   {
-    postMessage( selectScene( name, config ) );
+    setWaiting( true );
+    postMessage( fetchDesign( url, config ) );
   }
+
+  const { url } = props.config || {};
+  url && postMessage( fetchDesign( url, props.config ) );
 
   const addShape = ( shape ) =>
   {
@@ -52,7 +61,15 @@ const SceneProvider = ( props ) =>
     })
   }
 
+  subscribeFor( 'SCENES_DISCOVERED', ( payload ) => {
+    const newScenes = payload .map( scene => {
+      return { ...scene, title: decodeEntities( scene.title ) }
+    });
+    setScenes( newScenes );
+  } );
+
   subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
+    setWaiting( false );
     setScene( 'embedding', reconcile( scene.embedding ) );
     updateShapes( scene.shapes );
     // logShapes();
@@ -87,13 +104,27 @@ const SceneProvider = ( props ) =>
     // TODO lower ambient light if anything is selected
   } );
   
+  subscribeFor( 'TEXT_FETCHED', ( source ) => {
+    setSource( source );
+  } );
+  
+  subscribeFor( 'ALERT_RAISED', ( problem ) => {
+    setProblem( problem );
+  } );
+  
+  const providerValue = {
+    scene, setScene, requestDesign, scenes, source, problem, clearProblem, waiting,
+    requestScene: ( name, config ) => postMessage( selectScene( name, config ) ),
+    fetchPreview: ( url, config )  => postMessage( fetchDesign( url, config ) ),
+  };
+
   return (
-    <SceneContext.Provider value={ { scene, setScene, requestScene } }>
+    <ViewerContext.Provider value={ providerValue }>
       {props.children}
-    </SceneContext.Provider>
+    </ViewerContext.Provider>
   );
 }
 
-const useScene = () => { return useContext( SceneContext ); };
+const useViewer = () => { return useContext( ViewerContext ); };
 
-export { SceneProvider, useScene };
+export { ViewerProvider, useViewer };

@@ -2,12 +2,12 @@
 import { mergeProps } from "solid-js";
 import { Divider, Menu, MenuAction, createMenuAction } from "../../framework/menus.jsx";
 
-import { useWorkerClient } from "../../../viewer/context/worker.jsx";
 import { useSymmetry } from "../classic.jsx";
-import { controllerAction } from "../../../viewer/util/controllers-solid.js";
+import { useEditor } from "../../../viewer/context/editor.jsx";
 
 export const SymmetryAction = ( props ) =>
 {
+  const { controllerAction } = useEditor();
   const { symmetryController } = useSymmetry();
   const onClick = () => 
   {
@@ -20,7 +20,7 @@ export const SymmetryAction = ( props ) =>
 
 export const ToolsMenu = () =>
 {
-  const { rootController } = useWorkerClient();
+  const { rootController } = useEditor();
   const EditAction = createMenuAction( rootController() );
   const { showPolytopesDialog } = useSymmetry();
 

@@ -6,13 +6,15 @@ import SettingsIcon from '@suid/icons-material/Settings'
 import Menu from '@suid/material/Menu';
 import MenuItem from '@suid/material/MenuItem';
 
+import { controllerProperty, subController, useEditor } from '../../../viewer/context/editor.jsx';
+
 import { StrutLengthPanel } from './length.jsx';
 import { OrbitPanel } from './orbitpanel.jsx';
-import { controllerAction, controllerProperty, subController } from '../../../viewer/util/controllers-solid.js';
 import { useSymmetry } from "../classic.jsx";
 
 export const StrutBuildPanel = () =>
 {
+  const { controllerAction } = useEditor();
   const { showOrbitsDialog, symmetryController, symmetryDefined } = useSymmetry();
   const availableOrbits = () => subController( symmetryController(), 'availableOrbits' );
   const buildOrbits = () => subController( symmetryController(), 'buildOrbits' );

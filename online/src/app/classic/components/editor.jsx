@@ -7,8 +7,9 @@ import ToggleButtonGroup from "@suid/material/ToggleButtonGroup";
 
 import { useWorkerClient } from '../../../viewer/context/worker.jsx';
 import { useCamera } from '../../../viewer/context/camera.jsx';
-import { useScene } from '../../../viewer/context/scene.jsx';
+import { useViewer } from '../../../viewer/context/viewer.jsx';
 import { CameraTool, InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
+import { useEditor } from '../../../viewer/context/editor.jsx';
 
 import { SceneCanvas } from '../../../viewer/index.jsx';
 import { SelectionTool } from '../tools/selection.jsx';
@@ -18,13 +19,15 @@ import { ContextualMenu } from '../menus/contextmenu.jsx';
 
 export const SceneEditor = ( props ) =>
 {
-  const { setState, subscribeFor } = useWorkerClient();
-  const { scene } = useScene();
+  const { subscribeFor } = useWorkerClient();
+  const { setState } = useEditor();
+  const { scene } = useViewer();
   const { state: cameraState, setCamera, setLighting } = useCamera();
   const [ strutting, setStrutting ] = createSignal( true );
   const [ viewing, setViewing ] = createSignal( false );
   const toolValue = () => viewing()? 'camera' : strutting()? 'strutDrag' : 'select';
 
+  // TODO: move this to EditorProvider?
   subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
     if ( scene.camera ) {
       setCamera( scene.camera );

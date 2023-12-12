@@ -19,6 +19,16 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
     this.changeCount = 0;
   }
 
+  reportError( message, args ) {
+    console.log('controller error:', message, args);
+    if (message === com.vzome.desktop.api.Controller.UNKNOWN_ERROR_CODE) {
+      const ex = args[0];
+      this.clientEvents .errorReported(ex.message);
+    }
+    else
+      this.clientEvents .errorReported(message);
+  }
+
   initialize( renderingChanges )
   {
     const { renderedModel, toolsModel, bookmarkFactory, history,
@@ -27,15 +37,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
     this.changeCount = this.design.getChangeCount();
 
     this.setErrorChannel({
-      reportError: (message, args) => {
-        console.log('controller error:', message, args);
-        if (message === com.vzome.desktop.api.Controller.UNKNOWN_ERROR_CODE) {
-          const ex = args[0];
-          clientEvents.errorReported(ex.message);
-        }
-        else
-          clientEvents.errorReported(message);
-      },
+      reportError: ( message, args ) => this.reportError( message, args ),
     });
     
     // This has similar function to the Java equivalent, but a very different mechanism

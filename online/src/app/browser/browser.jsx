@@ -1,16 +1,16 @@
 
-import { Show, createEffect, createMemo, createResource, createSignal } from 'solid-js';
+import { Show, createEffect, createResource, createSignal } from 'solid-js';
+
+import { fetchGitHubShares, getEmbeddingHtml, getAssetUrl } from './github.js';
+import { useViewer } from '../../viewer/context/viewer.jsx';
 
 import { DesignViewer } from '../../viewer/index.jsx'
-import { useWorkerClient } from '../../viewer/context/worker.jsx';
-import { fetchGitHubShares, getEmbeddingHtml, getAssetUrl } from './github.js';
 
 import List from '@suid/material/List';
 import ListItem from '@suid/material/ListItem';
 import ListItemText from '@suid/material/ListItemText';
 import Typography from '@suid/material/Typography'
 import Button from '@suid/material/Button';
-import { fetchDesign } from '../../viewer/util/actions.js';
 import { UsersMenu } from './users.jsx';
 
 const DesignList = (props) =>
@@ -102,14 +102,14 @@ let knownUsers = filterUniqueUsers( [ defaultGithubUser, ...storedUsers ] );
 
 export const DesignBrowser = () =>
 {
-  const { postMessage } = useWorkerClient();
+  const { fetchPreview } = useViewer();
   const [ url, setUrl ] = createSignal( null );
   const [ path, setPath ] = createSignal( null );
   const selectUrl = ( newUrl, path ) =>
   {
     if ( newUrl === url() )
       return;
-    postMessage( fetchDesign( newUrl, { preview: true } ) );
+    fetchPreview( newUrl, { preview: true } );
     setPath( path );
     setUrl( newUrl );
   }

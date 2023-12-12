@@ -1,18 +1,24 @@
 
-import { createEffect } from "solid-js";
+import { createContext, createEffect, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { newDesign, requestControllerProperty, doControllerAction, setControllerProperty, decodeEntities } from './actions.js';
-import { defaultCamera } from "../context/camera.jsx";
+import * as actions from '../util/actions.js';
+import { defaultCamera } from "./camera.jsx";
+import { useWorkerClient } from "./worker.jsx";
 
 const initialState = () => ( {
   copiedCamera: defaultCamera(), // TODO: this is probably too static, not related to useCamera
 } );
 
-const createWorkerStore = ( worker ) =>
+const EditorContext = createContext( {} );
+
+const useEditor = () => { return useContext( EditorContext ); };
+
+const EditorProvider = props =>
 {
+  const workerClient = useWorkerClient();
   // Beware, createStore does not make a copy, shallow or deep!
-  const [ state, setState ] = createStore( { ...initialState(), uuid: worker.uuid } );
+  const [ state, setState ] = createStore( { ...initialState() } );
 
   const exportPromises = {};
 
@@ -22,18 +28,6 @@ const createWorkerStore = ( worker ) =>
 
     switch ( data.type ) {
 
-      case 'ALERT_RAISED': {
-        console.log( `Alert from the worker: ${data.payload}` );
-        setState( 'problem', data.payload ); // cooperatively managed by both worker and client
-        setState( 'waiting', false );
-        break;
-      }
-  
-      case 'FETCH_STARTED': {
-        setState( 'waiting', true );
-        break;
-      }
-  
       case 'TEXT_EXPORTED': {
         const { action, text } = data.payload;
         exportPromises[ action ] .resolve( text );
@@ -46,15 +40,6 @@ const createWorkerStore = ( worker ) =>
           name = name .substring( 0, name .length - 6 );
         }
         setState( 'designName', name ); // cooperatively managed by both worker and client
-        setState( 'source', data.payload );
-        break;
-      }
-
-      case 'SCENES_DISCOVERED': {
-        const scenes = data.payload .map( scene => {
-          return { ...scene, title: decodeEntities( scene.title ) }
-        });
-        setState( 'scenes', scenes );
         break;
       }
   
@@ -62,7 +47,6 @@ const createWorkerStore = ( worker ) =>
         // TODO: I wish I had a better before/after contract with the worker
         const { edit } = data.payload;
         setState( 'edit', edit );
-        setState( 'waiting', false );
         break;
       }
 
@@ -102,49 +86,62 @@ const createWorkerStore = ( worker ) =>
     }
   }
 
-  const onWorkerError = error => { console.log( error ); };  // TODO: handle the errors in a way the user can see
+  const onWorkerError = () =>
+  {
+    console.log( error );   // TODO: handle the errors in a way the user can see
+  }
 
-  worker .subscribe( { onWorkerMessage, onWorkerError } );
-
-  const isWorkerReady = () => state.workerReady;
+  workerClient .subscribe( { onWorkerMessage, onWorkerError } );
 
   const expectResponse = ( controllerPath, parameters ) =>
   {
     return new Promise( ( resolve, reject ) => {
       const action = "exportText";
       exportPromises[ action ] = { resolve, reject };
-      worker .sendToWorker( doControllerAction( controllerPath, action, parameters ) );
+      workerClient .postMessage( actions.doControllerAction( controllerPath, action, parameters ) );
     } );
   }
 
-  const subscribeFor = ( type, callback ) =>
-  {
-    const subscriber = {
-      onWorkerError,
-      onWorkerMessage: data => {
-        if ( type === data.type )
-          callback( data.payload );
-      }
-    }
-    worker .subscribe( subscriber )
-  }
-
-  const store = {
-    postMessage: worker .sendToWorker,
-    subscribe: worker .subscribe, subscribeFor,
-    isWorkerReady, state, setState, expectResponse,
-  }; // needed for every subcontroller
+  const store = { state, setState, expectResponse, }; // needed for every subcontroller
 
   const rootController = () =>
   {
     if ( ! state.controller ) {
       setState( 'controller', { __store: store, __path: [] } ); // empower every subcontroller to access this store
-      worker .sendToWorker( newDesign() );
+      workerClient .postMessage( actions.newDesign() );
     }
     return state.controller;
   };
 
-  return { ...store, rootController };
+  const controllerAction = ( controller, action, parameters ) =>
+  {
+    const controllerPath = controller.__path .join( ':' );
+    if ( action === 'setProperty' ) {
+      const { name, value } = parameters;
+      workerClient.postMessage( actions.setControllerProperty( controllerPath, name, value ) );
+    }
+    else
+      workerClient.postMessage( actions.doControllerAction( controllerPath, action, parameters ) );
+  }
+
+  const providerValue = {
+    ...store,
+    rootController,
+    controllerAction,
+    createDesign:   ( field )        => workerClient .postMessage( actions.newDesign( field ) ),
+    openDesignFile: ( file, debug )  => workerClient .postMessage( actions.openDesignFile( file, debug ) ),
+    fetchDesignUrl: ( url, config )  => workerClient .postMessage( actions.fetchDesign( url, config ) ),
+    importMeshFile: ( file, format ) => workerClient .postMessage( actions.importMeshFile( file, format ) ),
+    startPreviewStrut: ( id, dir )   => workerClient .postMessage( actions.startPreviewStrut( id, dir ) ),
+    movePreviewStrut:  ( direction ) => workerClient .postMessage( actions.movePreviewStrut( direction ) ),
+    endPreviewStrut:   ()            => workerClient .postMessage( actions.endPreviewStrut() ),
+  };
+
+  return (
+    <EditorContext.Provider value={ providerValue } >
+      {props.children}
+    </EditorContext.Provider>
+  );
 }
 
 const subController = ( parent, key ) =>
@@ -163,27 +160,17 @@ const controllerProperty = ( controller, propName, changeName=propName, isList=f
   if ( typeof controller[ propName ] === 'undefined' ) {
     // The property has never been requested, so we have to make the initial request
     const controllerPath = controller.__path .join( ':' );
+    const workerClient = useWorkerClient();
     createEffect( () => {
       // This is reactive code, so it should get recomputed
-      if ( controller.__store.isWorkerReady() ) {
-        controller.__store.postMessage( requestControllerProperty( controllerPath, propName, changeName, isList ) );
+      if ( workerClient.isWorkerReady() ) {
+        workerClient.postMessage( actions.requestControllerProperty( controllerPath, propName, changeName, isList ) );
       }
     });
   }
   if ( isList )
     return controller[ propName ] || [];
   return controller[ propName ];
-}
-
-const controllerAction = ( controller, action, parameters ) =>
-{
-  const controllerPath = controller.__path .join( ':' );
-  if ( action === 'setProperty' ) {
-    const { name, value } = parameters;
-    controller.__store.postMessage( setControllerProperty( controllerPath, name, value ) );
-  }
-  else
-    controller.__store.postMessage( doControllerAction( controllerPath, action, parameters ) );
 }
 
 const controllerExportAction = ( controller, format, parameters={} ) =>
@@ -193,4 +180,4 @@ const controllerExportAction = ( controller, format, parameters={} ) =>
   return controller.__store .expectResponse( controllerPath, parameters );
 }
 
-export { createWorkerStore, subController, controllerProperty, controllerAction, controllerExportAction };
+export { EditorProvider, useEditor, subController, controllerProperty, controllerExportAction };

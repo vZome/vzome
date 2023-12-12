@@ -11,15 +11,16 @@ import { ToolsMenu } from './menus/toolsmenu.jsx';
 import { SystemMenu } from './menus/systemmenu.jsx';
 import { HelpMenu } from './menus/help.jsx';
 
-import { useWorkerClient, WorkerStateProvider } from '../../viewer/context/worker.jsx';
-import { controllerProperty } from '../../viewer/util/controllers-solid.js'
+import { WorkerStateProvider } from '../../viewer/context/worker.jsx';
+import { EditorProvider, controllerProperty, useEditor } from '../../viewer/context/editor.jsx';
+import { ViewerProvider } from '../../viewer/context/viewer.jsx';
+
 import { VZomeAppBar } from './components/appbar.jsx';
 import { ClassicEditor, SymmetryProvider } from './classic.jsx';
-import { SceneProvider } from '../../viewer/context/scene.jsx';
 
 const Persistence = () =>
 {
-  const { state, rootController } = useWorkerClient();
+  const { state, rootController } = useEditor();
   const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
   return (
     <div class='persistence' >
@@ -44,7 +45,8 @@ const Classic = () =>
   return (
     <ErrorBoundary fallback={ err => <div>{err.toString()}</div> } >
       <WorkerStateProvider>
-      <SceneProvider>
+      <ViewerProvider>
+      <EditorProvider>
         <SymmetryProvider>
           <VZomeAppBar menuBar={true} title='BETA'
             spacer={ <>
@@ -77,7 +79,8 @@ const Classic = () =>
           />
           <ClassicEditor/>
         </SymmetryProvider>
-      </SceneProvider>
+      </EditorProvider>
+      </ViewerProvider>
       </WorkerStateProvider>
     </ErrorBoundary>
   );

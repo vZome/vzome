@@ -10,13 +10,12 @@ import Button from "@suid/material/Button"
 import Switch from "@suid/material/Switch";
 import FormControlLabel from "@suid/material/FormControlLabel";
 
-import { useWorkerClient } from "../../../viewer/context/worker.jsx"
-import { controllerExportAction } from "../../../viewer/util/controllers-solid"
+import { controllerExportAction, useEditor } from "../../../viewer/context/editor.jsx"
 import { useCamera } from "../../../viewer/context/camera"
 
 const SvgPreviewDialog = props =>
 {
-  const { rootController } = useWorkerClient();
+  const { rootController } = useEditor();
   const { state } = useCamera();
   const [ useLighting, setUseLighting ] = createSignal( true );
   const [ useShapes, setUseShapes ] = createSignal( true );

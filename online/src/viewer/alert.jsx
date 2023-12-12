@@ -1,16 +1,14 @@
 
 import { AlertDialog } from "@kobalte/core";
 
-import { useWorkerClient } from './context/worker.jsx';
+import { useViewer } from "./context/viewer.jsx";
 
 export const ErrorAlert = (props) =>
 {
-  const { state, setState } = useWorkerClient();
-
-  const dismissed = () => setState( 'problem', undefined );
+  const { problem, clearProblem } = useViewer();
 
   return (
-    <AlertDialog.Root modal={false} open={!!state.problem} onOpenChange={dismissed}>
+    <AlertDialog.Root modal={false} open={!!problem()} onOpenChange={ () => clearProblem() }>
       <AlertDialog.Portal mount={props.root}>
         <AlertDialog.Overlay class="alert-dialog__overlay" />
         <div class="alert-dialog__positioner">
@@ -22,7 +20,7 @@ export const ErrorAlert = (props) =>
               </AlertDialog.CloseButton>
             </div>
             <AlertDialog.Description class="alert-dialog__description">
-              {state.problem}
+              {problem()}
             </AlertDialog.Description>
           </AlertDialog.Content>
         </div>

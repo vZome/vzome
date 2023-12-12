@@ -1,18 +1,18 @@
 
 import { DropdownMenu } from "@kobalte/core";
 
-import { useWorkerClient } from "./context/worker.jsx";
+import { useViewer } from "./context/viewer.jsx";
 import { saveFileAs } from "../viewer/util/files.js";
-import { useGltfExporter } from "./geometry";
+import { useGltfExporter } from "./geometry.jsx";
 
 export const ExportMenu = (props) =>
 {
-  const { state } = useWorkerClient();
+  const { source } = useViewer();
   const { exporter } = useGltfExporter();
 
   const downloadGltf = () =>
   {
-    const { name } = state.source;
+    const { name } = source;
     const vName = name || 'untitled.vZome';
     const fileName = vName .substring( 0, vName.length-6 ) .concat( ".gltf" );
     const { exportGltf } = exporter();
@@ -21,7 +21,7 @@ export const ExportMenu = (props) =>
 
   const downloadVZome = () =>
   {
-    const { name, text, changedText } = state.source;
+    const { name, text, changedText } = source;
     const fileName = name || 'untitled.vZome';
     // if ( changedText ) {
     //   const { camera, liveCamera, lighting } = scene;
@@ -33,6 +33,7 @@ export const ExportMenu = (props) =>
   }
 
   return (
+    <Show when={ source?.text || source?.changedText }>
     <DropdownMenu.Root modal={true}>
       <DropdownMenu.Trigger class="exports__trigger corner__icon__button">
         <svg focusable="false" viewBox="0 0 24 24" aria-hidden="true">
@@ -56,5 +57,6 @@ export const ExportMenu = (props) =>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
+    </Show>
   );
 }

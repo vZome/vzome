@@ -1,7 +1,7 @@
 
 import { createSignal, createEffect } from "solid-js";
 
-import { controllerAction, controllerProperty, subController } from '../../../viewer/util/controllers-solid.js';
+import { controllerProperty, subController, useEditor } from '../../../viewer/context/editor.jsx';
 import { useSymmetry } from "../classic.jsx";
 import { ToolConfig } from "../dialogs/toolconfig.jsx";
 
@@ -16,6 +16,7 @@ const ToolbarButton = props =>
 
 const ToolFactoryButton = props =>
 {
+  const { controllerAction } = useEditor();
   const { symmetryController } = useSymmetry();
   const controller = () => subController( symmetryController(), props.factoryName );
   const enabled = () =>
@@ -58,6 +59,7 @@ export const ToolFactoryBar = props =>
 
 const CommandButton = props =>
 {
+  const { controllerAction } = useEditor();
   const handleClick = () => controllerAction( props.ctrlr, props.cmdName );
   return (
     <ToolbarButton label={props.cmdName} image={`small/${props.cmdName}`} onClick={handleClick} />
@@ -66,6 +68,7 @@ const CommandButton = props =>
 
 const SetColorButton = props =>
 {
+  const { controllerAction } = useEditor();
   let colorInputElement;
   const handleClick = () =>
   {
@@ -87,6 +90,7 @@ const SetColorButton = props =>
 
 const ToolButton = props =>
 {
+  const { controllerAction } = useEditor();
   const kind = () => controllerProperty( props.controller, 'kind', 'kind', false );
   const label = () => controllerProperty( props.controller, 'label', 'label', false );
   const handleClick = () => controllerAction( props.controller, 'apply' );
@@ -145,6 +149,7 @@ let nextBookmarkIcon = 0;
 
 const BookmarkButton = props =>
 {
+  const { controllerAction } = useEditor();
   const label = () => controllerProperty( props.controller, 'label', 'label', false ) || ''; // always defined, to control the ToolConfig
   const [ iconName, setIconName ] = createSignal( null );
   createEffect( () => {

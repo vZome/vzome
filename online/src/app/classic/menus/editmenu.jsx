@@ -2,11 +2,11 @@
 import { createEffect } from "solid-js";
 import { Divider, Menu, MenuAction, MenuItem, SubMenu, createMenuAction } from "../../framework/menus.jsx";
 
-import { controllerAction, controllerExportAction, subController } from "../../../viewer/util/controllers-solid.js";
-import { useWorkerClient } from "../../../viewer/context/worker.jsx";
+import { controllerExportAction, subController, useEditor } from "../../../viewer/context/editor.jsx";
 
 const SetColorItem = props =>
 {
+  const { controllerAction } = useEditor();
   let colorInputElement;
   const handleClick = () =>
   {
@@ -28,7 +28,7 @@ const SetColorItem = props =>
 
 export const EditMenu = () =>
 {
-  const { rootController, setState } = useWorkerClient();
+  const { rootController, setState, controllerAction } = useEditor();
   const EditAction = createMenuAction( rootController() );
   const undoRedoController = () => subController( rootController(), 'undoRedo' );
   const UndoRedoAction = createMenuAction( undoRedoController() );

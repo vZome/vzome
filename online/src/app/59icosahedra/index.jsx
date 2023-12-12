@@ -10,7 +10,7 @@ import Switch from '@suid/material/Switch';
 import { WorkerStateProvider, useWorkerClient } from '../../viewer/context/worker.jsx';
 import { CameraProvider, useCamera } from "../../viewer/context/camera.jsx";
 import { InteractionToolProvider } from '../../viewer/context/interaction.jsx';
-import { SceneProvider, useScene } from '../../viewer/context/scene.jsx';
+import { ViewerProvider, useViewer } from '../../viewer/context/viewer.jsx';
 
 import { VZomeAppBar } from '../classic/components/appbar.jsx';
 import { SceneCanvas } from '../../viewer/index.jsx'
@@ -22,7 +22,7 @@ import { ShapedGeometry } from '../../viewer/geometry.jsx';
 const SelectorCanvas = () =>
 {
   const { subscribeFor } = useWorkerClient();
-  const { scene } = useScene();
+  const { scene } = useViewer();
   const { state: { camera }, setCamera } = useCamera();
 
   subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
@@ -44,10 +44,10 @@ const ModelWorker = props =>
   const config = { url: getModelURL( props.model ), preview: true, debug: false, sceneTitle: props.sceneTitle };
 
   return (
-    <WorkerStateProvider config={config} >
-      <SceneProvider>
+    <WorkerStateProvider>
+      <ViewerProvider config={config} >
         {props.children}
-      </SceneProvider>
+      </ViewerProvider>
     </WorkerStateProvider>
   )
 }
@@ -68,7 +68,7 @@ const Selector = props =>
 
 const CellOrbitScene = props =>
 {
-  const { scene, requestScene } = useScene();
+  const { scene, requestScene } = useViewer();
   const { state: toggles } = useCellOrbits();
   const showCell = () => toggles[ props.cell ];
   const { showCutaway } = useContext( ViewOptions );

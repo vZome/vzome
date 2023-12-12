@@ -6,11 +6,12 @@ import Switch from "@suid/material/Switch";
 import FormControlLabel from "@suid/material/FormControlLabel";
 import InputLabel from "@suid/material/InputLabel";
 
-import { controllerAction, controllerProperty } from '../../../viewer/util/controllers-solid.js';
+import { controllerProperty, useEditor } from '../../../viewer/context/editor.jsx';
 import { hexToWebColor } from './length.jsx';
 
 export const OrbitDot = props =>
 {
+  const { controllerAction } = useEditor();
   const propName = () => `orbitDot.${props.orbit}`;
   const orbits = () => controllerProperty( props.controller, 'orbits', 'orbits', true ) || [];
   const selectedOrbit = () => controllerProperty( props.controller, 'selectedOrbit', 'orbits', false );
@@ -42,6 +43,7 @@ export const OrbitDot = props =>
 
 export const OrbitPanel = props =>
 {
+  const { controllerAction } = useEditor();
   const oneAtATime = () => controllerProperty( props.controller, 'oneAtATime', 'orbits', false ) === 'true';
 
   const selectNone = () => controllerAction( props.controller, 'setNoDirections' );

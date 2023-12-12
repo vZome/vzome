@@ -2,7 +2,7 @@
 import { DropdownMenu } from "@kobalte/core";
 import { ContextMenu } from "@kobalte/core";
 import { createEffect, createSignal, mergeProps } from "solid-js";
-import { controllerAction } from "../../viewer/util/controllers-solid";
+import { useEditor } from "../../viewer/context/editor";
 
 const isMac = navigator.userAgentData?.platform === 'macOS' || navigator.userAgent .includes( 'Macintosh' );
 
@@ -183,6 +183,7 @@ export const ContextMenuSeparator = props => <ContextMenu.Separator class="conte
 
 export const createMenuAction = ( controller ) => ( props ) =>
 {
+  const { controllerAction } = useEditor();
   const onClick = () => 
   {
     controllerAction( controller, props.action );
@@ -194,6 +195,7 @@ export const createMenuAction = ( controller ) => ( props ) =>
 
 export const createCheckboxItem = ( controller ) => ( props ) =>
 {
+  const { controllerAction } = useEditor();
   const onClick = () => 
   {
     controllerAction( controller, props.action );

@@ -1,22 +1,21 @@
 
 import { createSignal, createContext, useContext } from "solid-js";
 
+import { CameraProvider } from "../../viewer/context/camera.jsx";
+import { controllerProperty, subController, useEditor } from '../../viewer/context/editor.jsx';
+
 import { CameraControls } from './components/camera.jsx';
 import { StrutBuildPanel } from './components/strutbuilder.jsx';
-import { controllerAction, controllerProperty, subController } from '../../viewer/util/controllers-solid.js';
 import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
 import { SceneEditor } from './components/editor.jsx';
-import { useWorkerClient } from "../../viewer/context/worker.jsx";
 import { OrbitsDialog } from "./dialogs/orbits.jsx";
 import { ShapesDialog } from "./dialogs/shapes.jsx";
 import { PolytopesDialog } from "./dialogs/polytopes.jsx";
 import { ErrorAlert } from "./components/alert.jsx";
-import { CameraProvider } from "../../viewer/context/camera.jsx";
 
 export const ClassicEditor = () =>
 {
-  const { rootController, postMessage } = useWorkerClient();
-  postMessage( { type: 'WINDOW_LOCATION', payload: window.location.toString() } );
+  const { rootController } = useEditor();
 
   const bookmarkController = () => subController( rootController(), 'bookmark' );
   const strutBuilder       = () => subController( rootController(), 'strutBuilder' );
@@ -59,7 +58,7 @@ const SymmetryContext = createContext();
 
 export const SymmetryProvider = (props) =>
 {
-  const { rootController } = useWorkerClient();
+  const { rootController, controllerAction } = useEditor();
   const symmetry = () => controllerProperty( rootController(), 'symmetry' );
   const strutBuilder = () => subController( rootController(), 'strutBuilder' );
   const symmController = () => subController( strutBuilder(), `symmetry.${symmetry()}` );

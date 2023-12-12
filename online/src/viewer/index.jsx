@@ -9,7 +9,7 @@ import { createSignal, mergeProps, onMount, Show } from 'solid-js';
 import { render } from 'solid-js/web';
 
 import { useWorkerClient, WorkerStateProvider } from './context/worker.jsx';
-import { SceneProvider, useScene } from './context/scene.jsx';
+import { ViewerProvider, useViewer } from './context/viewer.jsx';
 import { InteractionToolProvider } from './context/interaction.jsx';
 import { CameraProvider, useCamera } from './context/camera.jsx';
 
@@ -44,8 +44,8 @@ const fullScreenStyle = {
 const DesignViewer = ( props ) =>
 {
   const config = mergeProps( { showScenes: false, useSpinner: false, allowFullViewport: false, undoRedo: false }, props.config );
-  const { state, subscribeFor } = useWorkerClient();
-  const { scene } = useScene();
+  const { subscribeFor } = useWorkerClient();
+  const { scene, scenes, waiting } = useViewer();
   const { state: cameraState, setCamera, setLighting } = useCamera();
   const [ fullScreen, setFullScreen ] = createSignal( false );
   const toggleFullScreen = () =>
@@ -61,11 +61,11 @@ const DesignViewer = ( props ) =>
     const { showScenes, sceneTitle } = props.config;
     // Only show the menu when the scene is not being controlled explicitly,
     //  and when more than one scene has been discovered.
-    return (typeof sceneTitle === 'undefined' ) && showScenes && state.scenes && state.scenes[1];
+    return (typeof sceneTitle === 'undefined' ) && showScenes && scenes && scenes[1];
   }
 
   const showSpinner = () => {
-    return props.config?.useSpinner && state.waiting;
+    return props.config?.useSpinner && waiting();
   }
 
   onMount( () => {
@@ -108,9 +108,7 @@ const DesignViewer = ( props ) =>
         <SceneMenu root={rootRef} />
       </Show>
 
-      <Show when={ state.source?.text || state.source?.changedText }>
-        <ExportMenu root={rootRef} />
-      </Show>
+      <ExportMenu root={rootRef} />
 
       <Show when={config.allowFullViewport}>
         <FullscreenButton fullScreen={fullScreen()} root={rootRef} toggle={toggleFullScreen} />
@@ -131,20 +129,20 @@ const UrlViewer = (props) =>
 {
   return (
     <CameraProvider>
-    <WorkerStateProvider store={props.store} config={{ url: props.url, preview: true, debug: false, showScenes: props.showScenes }}>
-    <SceneProvider>
+    <WorkerStateProvider workerClient={props.workerClient}>
+    <ViewerProvider config={{ url: props.url, preview: true, debug: false, showScenes: props.showScenes }}>
       <DesignViewer config={ { ...props.config, allowFullViewport: true } }
           componentRoot={props.componentRoot}
           height="100%" width="100%" >
         {props.children}
       </DesignViewer>
-    </SceneProvider>
+    </ViewerProvider>
     </WorkerStateProvider>
     </CameraProvider>
   );
 }
 
-const renderViewer = ( store, container, url, config ) =>
+const renderViewer = ( workerClient, container, config ) =>
 {
   // if ( url === null || url === "" ) {
   //   ReactDOM.unmountComponentAtNode( container );
@@ -169,7 +167,7 @@ const renderViewer = ( store, container, url, config ) =>
   const bindComponent = () =>
   {
     return (
-      <UrlViewer store={store} config={config} componentRoot={container} >
+      <UrlViewer workerClient={workerClient} config={config} componentRoot={container} >
         {/* Make a slot for the light DOM, somehow! */}
       </UrlViewer>
     );

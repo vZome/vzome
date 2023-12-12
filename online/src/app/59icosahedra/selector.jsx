@@ -2,7 +2,7 @@
 import { createContext, createEffect, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { useScene } from "../../viewer/context/scene.jsx";
+import { useViewer } from "../../viewer/context/viewer.jsx";
 import { useInteractionTool } from "../../viewer/context/interaction.jsx";
 
 const CellOrbitContext = createContext( {} );
@@ -23,7 +23,7 @@ export const useCellOrbits = () => { return useContext( CellOrbitContext ); };
 export const CellSelectorTool = props =>
 {
   const { setState: setOrbit } = useCellOrbits();
-  const { scene, setScene } = useScene();
+  const { scene, setScene } = useViewer();
 
   const updateOrbit = ( label, value ) =>
   {
