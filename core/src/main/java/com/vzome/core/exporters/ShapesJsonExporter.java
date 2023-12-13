@@ -21,10 +21,11 @@ import com.vzome.core.render.RenderedModel;
 
 public class ShapesJsonExporter extends DocumentExporter
 {
-    private final JsonMapper mapper = new JsonMapper();
+    private transient JsonMapper mapper;
     
     public void exportDocument( DocumentModel doc, File file, Writer writer, int height, int width ) throws Exception
     {
+        mapper = new JsonMapper();
         mScene = doc .getCamera();
         mModel = doc .getRenderedModel();
         mLights = doc .getSceneLighting();
