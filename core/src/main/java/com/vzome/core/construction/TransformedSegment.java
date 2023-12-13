@@ -30,6 +30,8 @@ public class TransformedSegment extends Segment
             return setStateVariables( null, null, true );
         AlgebraicVector loc = mTransform .transform( mPrototype .getStart() .projectTo3d( true ) );
         AlgebraicVector end = mTransform .transform( mPrototype .getEnd() .projectTo3d( true ) );
+        if ( end == null || loc == null )
+            return setStateVariables( null, null, true );
         return setStateVariables( loc, end .minus( loc ), false );
     }
 }

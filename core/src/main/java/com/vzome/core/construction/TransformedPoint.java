@@ -28,7 +28,7 @@ public class TransformedPoint extends Point
         if ( mTransform .isImpossible() || mPrototype .isImpossible() )
             return setStateVariable( null, true );
         AlgebraicVector loc = mTransform .transform( mPrototype .getLocation() );
-        return setStateVariable( loc, false );
+        return setStateVariable( loc, loc == null );
     }
 
 }
