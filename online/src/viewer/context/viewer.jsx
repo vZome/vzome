@@ -11,9 +11,8 @@ const ViewerProvider = ( props ) =>
   const [ scene, setScene ] = createStore( {} );
   const [ scenes, setScenes ] = createStore( [] );
   const [ source, setSource ] = createStore( {} );
-  const [ problem, setProblem ] = createSignal( false ); // cooperatively managed by both worker and client
+  const [ problem, setProblem ] = createSignal( '' ); // cooperatively managed by both worker and client
   const [ waiting, setWaiting ] = createSignal( false );
-  const clearProblem = () => setProblem( false );
   const { postMessage, subscribeFor } = useWorkerClient();
   console.log( 'creating ViewerProvider' );
 
@@ -113,7 +112,8 @@ const ViewerProvider = ( props ) =>
   } );
   
   const providerValue = {
-    scene, setScene, requestDesign, scenes, source, problem, clearProblem, waiting,
+    scene, setScene, requestDesign, scenes, source, problem, waiting,
+    clearProblem: () => setProblem( '' ),
     requestScene: ( name, config ) => postMessage( selectScene( name, config ) ),
     fetchPreview: ( url, config )  => postMessage( fetchDesign( url, config ) ),
   };
