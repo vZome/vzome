@@ -1,7 +1,9 @@
 
 import { createContext, createSignal, useContext } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
+
 import { useWorkerClient } from "./worker.jsx";
+import { useCamera } from "./camera.jsx";
 import { decodeEntities, fetchDesign, selectScene } from "../util/actions.js";
 
 const ViewerContext = createContext( { scene: ()=> { console.log( 'NO ViewerProvider' ); } } );
@@ -14,7 +16,7 @@ const ViewerProvider = ( props ) =>
   const [ problem, setProblem ] = createSignal( '' ); // cooperatively managed by both worker and client
   const [ waiting, setWaiting ] = createSignal( false );
   const { postMessage, subscribeFor } = useWorkerClient();
-  console.log( 'creating ViewerProvider' );
+  const { state, setCamera, setLighting } = useCamera();
 
   const requestDesign = ( url, config ) =>
   {
@@ -65,10 +67,17 @@ const ViewerProvider = ( props ) =>
       return { ...scene, title: decodeEntities( scene.title ) }
     });
     setScenes( newScenes );
-  } );
+  });
 
   subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
     setWaiting( false );
+    if ( scene.camera ) {
+      setCamera( scene.camera );
+    }
+    if ( scene.lighting ) {
+      const { backgroundColor } = scene.lighting;
+      setLighting( { ...state.lighting, backgroundColor } );
+    }
     setScene( 'embedding', reconcile( scene.embedding ) );
     updateShapes( scene.shapes );
     // logShapes();

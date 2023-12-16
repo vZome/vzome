@@ -73,7 +73,7 @@ const ScaleBy = props =>
           }>
           <Match when={ [2,3] .includes( number() )}>
             <RadioGroup row name="scale-radio-group" aria-labelledby="scale-by-label" defaultValue={0} onChange={setMultiplier} >
-              <For each={multipliers()}>{ (m,i) => { console.log( 'mult', m, i() );
+              <For each={multipliers()}>{ (m,i) => {
                 return <FormControlLabel value={i()} control={<Radio />} label={m} /> }
               }</For>
             </RadioGroup>

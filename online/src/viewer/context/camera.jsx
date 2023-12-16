@@ -88,7 +88,7 @@ const injectCameraState = ( cameraState, camera ) =>
   camera.fov = cameraFieldOfViewY( cameraState )( 1.0 );
 }
 
-const CameraContext = createContext( { state: defaultScene(), setCamera: ()=>{}, setLighting: ()=>{} } );
+const CameraContext = createContext( {} );
 
 const CameraProvider = ( props ) =>
 {
@@ -103,6 +103,11 @@ const CameraProvider = ( props ) =>
   }
 
   if ( !!props.context ) {
+    // Sync background from the context
+    createEffect( () => {
+      const { backgroundColor } = props.context.state.lighting;
+      setLighting( { backgroundColor } );
+    });
     // Sync rotation from the context
     createEffect( () => {
       const { up, lookDir } = props.context.state.camera;
@@ -147,12 +152,24 @@ const CameraProvider = ( props ) =>
   }
 
   const setLighting = lighting => setState( 'lighting', lighting );
+
+  const resetCamera = () =>
+  {
+    setState( 'camera', defaultCamera() );
+    setState( 'lighting', defaultLighting() );
+  }
+
+  const providerValue = {
+    name: props.name,
+    perspectiveProps, trackballProps, state,
+    resetCamera, setCamera, setLighting,
+  };
   
   // The perspectiveProps is used to initialize PerspectiveCamera in clients.
   // The trackballProps is used to initialize TrackballControls in clients.
   // The perspectiveProps reacts to changes in state, which reacts to changes in the trackballCamera.
   return (
-    <CameraContext.Provider value={ { perspectiveProps, trackballProps, state, setCamera, setLighting, name: props.name } }>
+    <CameraContext.Provider value={ providerValue }>
       {props.children}
     </CameraContext.Provider>
   );

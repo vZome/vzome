@@ -27,17 +27,6 @@ export const SceneEditor = ( props ) =>
   const [ viewing, setViewing ] = createSignal( false );
   const toolValue = () => viewing()? 'camera' : strutting()? 'strutDrag' : 'select';
 
-  // TODO: move this to EditorProvider?
-  subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
-    if ( scene.camera ) {
-      setCamera( scene.camera );
-    }
-    if ( scene.lighting ) {
-      const { backgroundColor } = scene.lighting;
-      setLighting( { ...cameraState.lighting, backgroundColor } );
-    }
-  });
-
   document .addEventListener( "keydown", evt => {
     if ( evt.repeat )
       return;

@@ -1,7 +1,6 @@
 
 import { createSignal, createContext, useContext } from "solid-js";
 
-import { CameraProvider } from "../../viewer/context/camera.jsx";
 import { controllerProperty, subController, useEditor } from '../../viewer/context/editor.jsx';
 
 import { CameraControls } from './components/camera.jsx';
@@ -23,7 +22,6 @@ export const ClassicEditor = () =>
 
   let alertRoot;
   return (
-    <CameraProvider name='common'>
     <div id='classic' ref={alertRoot} style={{ display: 'grid', 'grid-template-rows': '1fr' }} class='whitesmoke-bkgd'>
       <div id='editor-main' class='grid-cols-1-min whitesmoke-bkgd' >
 
@@ -50,7 +48,6 @@ export const ClassicEditor = () =>
       </div>
       <ErrorAlert/>
     </div>
-    </CameraProvider>
   )
 }
 

@@ -14,6 +14,7 @@ import { HelpMenu } from './menus/help.jsx';
 import { WorkerStateProvider } from '../../viewer/context/worker.jsx';
 import { EditorProvider, controllerProperty, useEditor } from '../../viewer/context/editor.jsx';
 import { ViewerProvider } from '../../viewer/context/viewer.jsx';
+import { CameraProvider } from '../../viewer/context/camera.jsx';
 
 import { VZomeAppBar } from './components/appbar.jsx';
 import { ClassicEditor, SymmetryProvider } from './classic.jsx';
@@ -45,8 +46,9 @@ const Classic = () =>
   return (
     <ErrorBoundary fallback={ err => <div>{err.toString()}</div> } >
       <WorkerStateProvider>
-      <ViewerProvider>
+      <CameraProvider name='common'>
       <EditorProvider>
+      <ViewerProvider>
         <SymmetryProvider>
           <VZomeAppBar menuBar={true} title='BETA'
             spacer={ <>
@@ -79,8 +81,9 @@ const Classic = () =>
           />
           <ClassicEditor/>
         </SymmetryProvider>
-      </EditorProvider>
       </ViewerProvider>
+      </EditorProvider>
+      </CameraProvider>
       </WorkerStateProvider>
     </ErrorBoundary>
   );

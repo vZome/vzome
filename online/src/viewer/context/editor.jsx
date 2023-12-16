@@ -3,7 +3,7 @@ import { createContext, createEffect, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import * as actions from '../util/actions.js';
-import { defaultCamera } from "./camera.jsx";
+import { defaultCamera, useCamera } from "./camera.jsx";
 import { useWorkerClient } from "./worker.jsx";
 
 const initialState = () => ( {
@@ -17,6 +17,7 @@ const useEditor = () => { return useContext( EditorContext ); };
 const EditorProvider = props =>
 {
   const workerClient = useWorkerClient();
+  const { resetCamera } = useCamera();
   // Beware, createStore does not make a copy, shallow or deep!
   const [ state, setState ] = createStore( { ...initialState() } );
 
@@ -124,11 +125,17 @@ const EditorProvider = props =>
       workerClient.postMessage( actions.doControllerAction( controllerPath, action, parameters ) );
   }
 
+  const createDesign = ( field ) =>
+  {
+    resetCamera();
+    workerClient .postMessage( actions.newDesign( field ) );
+  }
+
   const providerValue = {
     ...store,
     rootController,
     controllerAction,
-    createDesign:   ( field )        => workerClient .postMessage( actions.newDesign( field ) ),
+    createDesign,
     openDesignFile: ( file, debug )  => workerClient .postMessage( actions.openDesignFile( file, debug ) ),
     fetchDesignUrl: ( url, config )  => workerClient .postMessage( actions.fetchDesign( url, config ) ),
     importMeshFile: ( file, format ) => workerClient .postMessage( actions.importMeshFile( file, format ) ),
