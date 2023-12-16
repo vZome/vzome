@@ -1,16 +1,20 @@
 
 import { createEffect } from 'solid-js';
-import { SceneCanvas } from '../../../viewer/solid/scenecanvas.jsx';
-import { useWorkerClient } from '../../../workerClient/index.js';
-import { controllerAction } from '../../../workerClient/controllers-solid.js';
-import { CameraTool, InteractionToolProvider } from '../../../viewer/solid/interaction.jsx';
 import { createStore } from 'solid-js/store';
-import { CameraProvider, useCamera } from '../../../workerClient/camera.jsx';
+
+import { useWorkerClient } from '../../../viewer/context/worker.jsx';
+import { useEditor } from '../../../viewer/context/editor.jsx';
+import { CameraProvider, useCamera } from '../../../viewer/context/camera.jsx';
+import { CameraTool, InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
+
+import { SceneCanvas } from '../../../viewer/scenecanvas.jsx';
+
 
 export const CameraControls = (props) =>
 {
   const context = useCamera();
-  const { subscribeFor, rootController, isWorkerReady } = useWorkerClient();
+  const { isWorkerReady, subscribeFor } = useWorkerClient();
+  const { rootController, controllerAction } = useEditor();
   const { state, setCamera } = useCamera();
   const [ scene, setScene ] = createStore( null );
 

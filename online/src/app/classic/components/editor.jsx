@@ -5,32 +5,27 @@ import SvgIcon from '@suid/material/SvgIcon'
 import ToggleButton from "@suid/material/ToggleButton";
 import ToggleButtonGroup from "@suid/material/ToggleButtonGroup";
 
-import { SceneCanvas } from '../../../viewer/solid/index.jsx';
-import { useWorkerClient } from '../../../workerClient/index.js';
-import { CameraTool, InteractionToolProvider } from '../../../viewer/solid/interaction.jsx';
+import { useWorkerClient } from '../../../viewer/context/worker.jsx';
+import { useCamera } from '../../../viewer/context/camera.jsx';
+import { useViewer } from '../../../viewer/context/viewer.jsx';
+import { CameraTool, InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
+import { useEditor } from '../../../viewer/context/editor.jsx';
+
+import { SceneCanvas } from '../../../viewer/index.jsx';
 import { SelectionTool } from '../tools/selection.jsx';
 import { StrutDragTool } from '../tools/strutdrag.jsx';
 import { ContextualMenuArea } from '../../framework/menus.jsx';
 import { ContextualMenu } from '../menus/contextmenu.jsx';
-import { useCamera } from '../../../workerClient/camera.jsx';
 
 export const SceneEditor = ( props ) =>
 {
-  const { state, setState, subscribeFor } = useWorkerClient();
+  const { subscribeFor } = useWorkerClient();
+  const { setState } = useEditor();
+  const { scene } = useViewer();
   const { state: cameraState, setCamera, setLighting } = useCamera();
   const [ strutting, setStrutting ] = createSignal( true );
   const [ viewing, setViewing ] = createSignal( false );
   const toolValue = () => viewing()? 'camera' : strutting()? 'strutDrag' : 'select';
-
-  subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
-    if ( scene.camera ) {
-      setCamera( scene.camera );
-    }
-    if ( scene.lighting ) {
-      const { backgroundColor } = scene.lighting;
-      setLighting( { ...cameraState.lighting, backgroundColor } );
-    }
-  });
 
   document .addEventListener( "keydown", evt => {
     if ( evt.repeat )
@@ -70,7 +65,7 @@ export const SceneEditor = ( props ) =>
     <div style={{ position: 'relative', display: 'flex', overflow: 'hidden', height: '100%' }}>
       <InteractionToolProvider>
         <ContextualMenuArea menu={<ContextualMenu/>} disabled={viewing() || strutting()} onOpenChange={resetPicked}>
-          <SceneCanvas height="100%" width="100%" scene={state.scene} rotationOnly={false} >
+          <SceneCanvas height="100%" width="100%" scene={scene} rotationOnly={false} >
             {/* The group is only necessary because of https://github.com/solidjs-community/solid-three/issues/11 */}
             <group>
               <Switch fallback={

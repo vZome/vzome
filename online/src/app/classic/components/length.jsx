@@ -12,8 +12,8 @@ import FormControl from '@suid/material/FormControl';
 import FormLabel from '@suid/material/FormLabel';
 // import Slider from '@suid/material/Slider';
 
-import { controllerAction, controllerProperty, subController } from '../../../workerClient/controllers-solid.js';
-import { useWorkerClient } from '../../../workerClient/context.jsx';
+import { controllerProperty, subController, useEditor } from '../../../viewer/context/editor.jsx';
+
 
 const sliderLimit = 6;
 const sliderMarks = Array.from( { length: 2*sliderLimit+1 }, (_, i) => i-sliderLimit ) .map( i => ({ value: i }));
@@ -54,6 +54,7 @@ export const hexToWebColor = colorHex =>
 
 const ScaleBy = props =>
 {
+  const { controllerAction } = useEditor();
   const multipliers = () => controllerProperty( props.controller, 'field.multipliers', 'field.multipliers', true ) || [ ' ' ];
   const number = () => multipliers() .length;
   const setMultiplier = evt => {
@@ -72,7 +73,7 @@ const ScaleBy = props =>
           }>
           <Match when={ [2,3] .includes( number() )}>
             <RadioGroup row name="scale-radio-group" aria-labelledby="scale-by-label" defaultValue={0} onChange={setMultiplier} >
-              <For each={multipliers()}>{ (m,i) => { console.log( 'mult', m, i() );
+              <For each={multipliers()}>{ (m,i) => {
                 return <FormControlLabel value={i()} control={<Radio />} label={m} /> }
               }</For>
             </RadioGroup>
@@ -93,6 +94,7 @@ const ScaleBy = props =>
 
 export const StrutLengthPanel = props =>
 {
+  const { controllerAction } = useEditor();
   const orbit = () => controllerProperty( props.controller, 'selectedOrbit' );
   const halfSizes = () => controllerProperty( props.controller, 'halfSizes', 'selectedOrbit', false ) === 'true';
   const color = () => controllerProperty( props.controller, 'color', 'selectedOrbit', false );

@@ -3,10 +3,12 @@ import { createEffect, createSignal } from 'solid-js';
 import { Vector3 } from 'three';
 import { useThree } from "solid-three";
 
-import { useInteractionTool } from '../../../viewer/solid/interaction.jsx';
-import { endPreviewStrut, movePreviewStrut, startPreviewStrut, useWorkerClient } from '../../../workerClient/index.js';
+import { useInteractionTool } from '../../../viewer/context/interaction.jsx';
+import { useWorkerClient } from '../../../viewer/context/worker.jsx';
+import { endPreviewStrut, movePreviewStrut, startPreviewStrut } from '../../../viewer/util/actions.js';
 import { ObjectTrackball } from './trackball.jsx';
 import { VectorArrow } from './arrow.jsx';
+import { useEditor } from '../../../viewer/context/editor.jsx';
 
 /*
 
@@ -25,8 +27,8 @@ of TrackballControls.js and implement the transformations myself.  See ObjectTra
 
 const StrutDragTool = props =>
 {
-  const { postMessage } = useWorkerClient();
   const eye = useThree(({ camera }) => camera.position);
+  const { startPreviewStrut, endPreviewStrut, movePreviewStrut } = useEditor();
 
   const [ line, setLine ] = createSignal( [ 0, 0, 1 ] );
   const [ operating, setOperating ] = createSignal( null );
@@ -48,20 +50,20 @@ const StrutDragTool = props =>
       setPosition( position );
       const { x, y, z } = new Vector3() .copy( eye() ) .sub( new Vector3( ...position ) ) .normalize();
       setLine( [ x, y, z ] );
-      postMessage( startPreviewStrut( id, [ x, y, z ] ) );
+      startPreviewStrut( id, [ x, y, z ] );
       setOperating( evt ); // so we can pass it to the ObjectTrackball
     },
     onDragEnd: evt => {
       if ( operating() ) {
         setOperating( null );
-        postMessage( endPreviewStrut() );
+        endPreviewStrut();
       }
     }
   };
 
   createEffect( () => {
     if ( operating() ) {
-      postMessage( movePreviewStrut( line() ) );
+      movePreviewStrut( line() );
     }
   });
 

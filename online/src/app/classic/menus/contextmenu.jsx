@@ -1,13 +1,14 @@
 
 import { ContextMenu } from "@kobalte/core";
+
+import { subController, useEditor } from '../../../viewer/context/editor.jsx';
+import { useCamera } from "../../../viewer/context/camera";
+
 import { ContextMenuItem, ContextMenuSeparator } from "../../framework/menus";
-import { useWorkerClient } from "../../../workerClient";
-import { controllerAction, subController } from "../../../workerClient/controllers-solid";
-import { useCamera } from "../../../workerClient/camera";
 
 export const ContextualMenu = props =>
 {
-  const { state, setState, rootController } = useWorkerClient();
+  const { state, setState, rootController, controllerAction } = useEditor();
   const { state: cameraState, setCamera } = useCamera();
   const pickingController  = () => subController( rootController(), 'picking' );
   const notPicking = () => ! state.picked;

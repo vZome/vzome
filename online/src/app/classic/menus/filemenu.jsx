@@ -2,20 +2,19 @@
 import { createEffect, createSignal, mergeProps } from "solid-js";
 import { unwrap } from "solid-js/store";
 
-import { controllerAction, controllerExportAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
-import { serializeVZomeXml, saveFile, saveFileAs, openFile } from '../../../workerClient/index.js';
-import { fetchDesign, openDesignFile, newDesign, importMeshFile } from "../../../workerClient/index.js";
-import { useWorkerClient } from "../../../workerClient/index.js";
+import { controllerExportAction, controllerProperty, useEditor } from "../../../viewer/context/editor.jsx";
+import { serializeVZomeXml } from '../../../viewer/util/serializer.js';
+import { saveFile, saveFileAs, openFile } from "../../../viewer/util/files.js";
 
 import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 import { UrlDialog } from '../dialogs/webloader.jsx'
 import { Guardrail } from "../dialogs/guardrail.jsx";
 import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
-import { useCamera } from "../../../workerClient/camera.jsx";
+import { useCamera } from "../../../viewer/context/camera.jsx";
 
 const NewDesignItem = props =>
 {
-  const { rootController } = useWorkerClient();
+  const { rootController } = useEditor();
   const fieldLabel = () => controllerProperty( rootController(), `field.label.${props.field}` );
   // TODO: enable ⌘N
   const modifiers = () => props.field === 'golden' && '⌘';
@@ -26,7 +25,9 @@ const NewDesignItem = props =>
 
 export const FileMenu = () =>
 {
-  const { postMessage, rootController, state, setState } = useWorkerClient();
+  const { rootController, controllerAction,
+    state, setState,
+    createDesign, openDesignFile, fetchDesignUrl, importMeshFile } = useEditor();
   const { state: cameraState } = useCamera();
   const [ showDialog, setShowDialog ] = createSignal( false );
   const fields = () => controllerProperty( rootController(), 'fields', 'fields', true );
@@ -50,7 +51,8 @@ export const FileMenu = () =>
   {
     setState( 'designName', undefined ); // cooperatively managed by both worker and client
     setState( 'fileHandle', undefined );
-    postMessage( newDesign( field ) );
+    // TODO: reset the camera
+    createDesign( field );
   }
 
   const handleOpen = evt =>
@@ -59,7 +61,7 @@ export const FileMenu = () =>
     openFile( [fileType] )
       .then( file => {
         if ( !!file ) {
-          postMessage( openDesignFile( file, false ) );
+          openDesignFile( file, false );
           // TODO: re-enable this once we have more confidence in serialization
           // setState( 'fileHandle', file.handle );
         }
@@ -70,7 +72,7 @@ export const FileMenu = () =>
     const fileType = { description: `${format} file`, accept: { '*/*' : [ extension ] } }
     openFile( [fileType] )
       .then( file => {
-        !!file && postMessage( importMeshFile( file, format ) );
+        !!file && importMeshFile( file, format );
       });
   }
 
@@ -80,7 +82,7 @@ export const FileMenu = () =>
   const openUrl = url => {
     if ( url && url.endsWith( ".vZome" ) ) {
       setState( 'fileHandle', undefined );
-      postMessage( fetchDesign( url, { preview: false, debug: false } ) );
+      fetchDesignUrl( url, { preview: false, debug: false } );
     }
   }
 
@@ -106,8 +108,8 @@ export const FileMenu = () =>
 
   const exportAs = ( extension, mimeType, format=extension ) => evt =>
   {
-    const camera = unwrap( state.liveCamera );
-    const { lighting } = unwrap( state.scene );
+    const camera = unwrap( cameraState.camera );
+    const lighting = unwrap( cameraState.lighting );
     controllerExportAction( rootController(), format, { camera, lighting } )
       .then( text => {
         const vName = state.designName || 'untitled';
@@ -122,7 +124,7 @@ export const FileMenu = () =>
     controllerExportAction( rootController(), 'vZome' )
       .then( text => {
         name = state?.designName || 'untitled';
-        const fullText = serializeVZomeXml( text, cameraState.lighting, {...cameraState.liveCamera} );
+        const fullText = serializeVZomeXml( text, cameraState.lighting, {...cameraState.camera} );
         const mimeType = 'application/xml';
         if ( state.fileHandle && !chooseFile )
           return saveFile( state.fileHandle, fullText, mimeType )

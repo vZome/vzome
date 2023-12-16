@@ -9,9 +9,10 @@ import Link from '@suid/material/Link'
 // import { DesignHistoryInspector } from './components/inspector.jsx'
 import { getModelURL } from './classic/components/folder.jsx';
 import { VZomeAppBar } from './classic/components/appbar.jsx';
-import { WorkerStateProvider } from '../workerClient/index.js';
-import { DesignViewer } from '../viewer/solid/index.jsx';
-import { CameraProvider } from '../workerClient/camera.jsx';
+import { WorkerStateProvider } from '../viewer/context/worker.jsx';
+import { ViewerProvider } from '../viewer/context/viewer.jsx';
+import { DesignViewer } from '../viewer/index.jsx';
+import { CameraProvider } from '../viewer/context/camera.jsx';
 
 const queryParams = new URLSearchParams( window.location.search );
 const relativeUrl = queryParams.get( 'url' ); // support for legacy viewer usage (old vZome shares)
@@ -46,7 +47,8 @@ const Online = () =>
   return (
     <ErrorBoundary fallback={err => err}>
       <CameraProvider>
-      <WorkerStateProvider config={config}>
+      <WorkerStateProvider>
+      <ViewerProvider config={config}>
         <VZomeAppBar title={ 'Viewer' } showOpen={true}
           about={
             <>
@@ -70,6 +72,7 @@ const Online = () =>
           <DesignViewer config={ { useSpinner: true } } />
         : <DesignHistoryInspector/> } */}
         <DesignViewer height="100%" width="100%" config={ { useSpinner: true, showScenes: true } } />
+      </ViewerProvider>
       </WorkerStateProvider>
       </CameraProvider>
     </ErrorBoundary>

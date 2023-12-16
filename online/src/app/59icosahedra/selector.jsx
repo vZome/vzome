@@ -2,8 +2,8 @@
 import { createContext, createEffect, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 
-import { useWorkerClient } from "../../workerClient/index.js";
-import { useInteractionTool } from "../../viewer/solid/interaction.jsx";
+import { useViewer } from "../../viewer/context/viewer.jsx";
+import { useInteractionTool } from "../../viewer/context/interaction.jsx";
 
 const CellOrbitContext = createContext( {} );
 
@@ -22,19 +22,18 @@ export const useCellOrbits = () => { return useContext( CellOrbitContext ); };
 
 export const CellSelectorTool = props =>
 {
-  const { state: orbits, setState: setOrbit } = useCellOrbits();
-  const { state: sceneOwner, setState: setSceneState } = useWorkerClient();
+  const { setState: setOrbit } = useCellOrbits();
+  const { scene, setScene } = useViewer();
 
   const updateOrbit = ( label, value ) =>
   {
     setOrbit( label, value );
     // Toggle all the panels labeled the same.
     //   This could be more performant, but we don't have too many objects to loop over.
-    const scene = sceneOwner .scene;
     for ( const [id,shape] of Object.entries( scene.shapes ) ) {
       for ( const [i,instance] of shape.instances.entries() ) {
         if ( instance.label === label ) {
-          setSceneState( 'scene', 'shapes', id, 'instances', i, 'selected', value );
+          setScene( 'shapes', id, 'instances', i, 'selected', value );
         }
       }
     }

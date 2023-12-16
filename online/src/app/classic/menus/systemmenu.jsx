@@ -1,13 +1,12 @@
 
 import { Choices, Divider, Menu, MenuAction, createCheckboxItem } from "../../framework/menus.jsx";
 
-import { controllerAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
-import { useWorkerClient } from "../../../workerClient/index.js";
+import { controllerProperty, useEditor } from "../../../viewer/context/editor.jsx";
 import { useSymmetry } from "../classic.jsx";
 
 export const SystemMenu = () =>
 {
-  const { rootController } = useWorkerClient();
+  const { rootController, controllerAction } = useEditor();
 
   const { showOrbitsDialog, showShapesDialog } = useSymmetry();
 

@@ -24,9 +24,6 @@
     "workbox-strategies": "^6.4.1"
   },
   "homepage": "https://vzome.com/app",
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "browserslist": {
     "production": [
       ">0.2%",

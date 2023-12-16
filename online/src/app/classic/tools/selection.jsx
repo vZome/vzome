@@ -1,13 +1,12 @@
 
 import { createEffect } from "solid-js";
 
-import { useWorkerClient } from "../../../workerClient/index.js";
-import { useInteractionTool } from "../../../viewer/solid/interaction.jsx";
-import { controllerAction, subController } from "../../../workerClient/controllers-solid.js";
+import { useInteractionTool } from "../../../viewer/context/interaction.jsx";
+import { subController, useEditor } from "../../../viewer/context/editor.jsx";
 
 const SelectionTool = props =>
 {
-  const { rootController, setState } = useWorkerClient();
+  const { rootController, setState, controllerAction } = useEditor();
   const pickingController  = () => subController( rootController(), 'picking' );
 
   const handlers = {

@@ -11,15 +11,17 @@ import { ToolsMenu } from './menus/toolsmenu.jsx';
 import { SystemMenu } from './menus/systemmenu.jsx';
 import { HelpMenu } from './menus/help.jsx';
 
-import { useWorkerClient } from '../../workerClient/context.jsx'
-import { controllerProperty } from '../../workerClient/controllers-solid.js'
+import { WorkerStateProvider } from '../../viewer/context/worker.jsx';
+import { EditorProvider, controllerProperty, useEditor } from '../../viewer/context/editor.jsx';
+import { ViewerProvider } from '../../viewer/context/viewer.jsx';
+import { CameraProvider } from '../../viewer/context/camera.jsx';
+
 import { VZomeAppBar } from './components/appbar.jsx';
 import { ClassicEditor, SymmetryProvider } from './classic.jsx';
-import { WorkerStateProvider } from '../../workerClient/index.js';
 
 const Persistence = () =>
 {
-  const { state, rootController } = useWorkerClient();
+  const { state, rootController } = useEditor();
   const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
   return (
     <div class='persistence' >
@@ -44,6 +46,9 @@ const Classic = () =>
   return (
     <ErrorBoundary fallback={ err => <div>{err.toString()}</div> } >
       <WorkerStateProvider>
+      <CameraProvider name='common'>
+      <EditorProvider>
+      <ViewerProvider>
         <SymmetryProvider>
           <VZomeAppBar menuBar={true} title='BETA'
             spacer={ <>
@@ -76,6 +81,9 @@ const Classic = () =>
           />
           <ClassicEditor/>
         </SymmetryProvider>
+      </ViewerProvider>
+      </EditorProvider>
+      </CameraProvider>
       </WorkerStateProvider>
     </ErrorBoundary>
   );

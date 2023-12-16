@@ -1,16 +1,16 @@
 
-import { doControllerAction, useWorkerClient } from "../../workerClient";
+import { useEditor } from "./context/editor";
 import { IconButton } from "./iconbutton";
 
 export const UndoRedoButtons = (props) =>
 {
-  const { postMessage } = useWorkerClient();
+  const { controllerAction } = useEditor();
   const historyAction = action => () =>
   {
-    postMessage( doControllerAction( 'undoRedo', action ) );
+    controllerAction( 'undoRedo', action );  // TODO this won't work!  Wrong signature.
   }
 
-return ( <>
+  return ( <>
     <IconButton class='undo' tooltip='Undo' onClick={ historyAction( 'undo' ) } root={props.root}>
       <svg focusable="false" aria-hidden="true" viewBox="0 0 24 24" >
         <path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"></path>

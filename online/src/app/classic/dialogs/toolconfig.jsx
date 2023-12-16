@@ -8,7 +8,8 @@ import FormGroup from '@suid/material/FormGroup';
 import FormControlLabel from '@suid/material/FormControlLabel';
 import Checkbox from '@suid/material/Checkbox';
 import CloseIcon from '@suid/icons-material/Close';
-import { controllerAction, controllerProperty } from '../../../workerClient/controllers-solid';
+
+import { controllerProperty, useEditor } from '../../../viewer/context/editor.jsx';
 
 const ConfigDialogTitle = (props) =>
 {
@@ -26,6 +27,7 @@ const ConfigDialogTitle = (props) =>
 
 export const ToolConfig = (props) =>
 {
+  const { controllerAction } = useEditor();
   const open = () => !!props.anchor;
   const id = () => (open() ? "tool-config-popper" : undefined);
 

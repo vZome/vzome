@@ -1,14 +1,14 @@
 
 import { vZomeViewerCSS } from "./vzome-viewer.css";
 
-import { fetchDesign, createWorker, createWorkerStore, selectScene } from '../workerClient/index.js';
-import { decodeEntities } from "../workerClient/actions";
+import { createWorker } from '../viewer/context/worker.jsx';
+import { fetchDesign, selectScene, decodeEntities } from "../viewer/util/actions.js";
 
 export class VZomeViewer extends HTMLElement
 {
   #root;
   #container;
-  #store;
+  #workerclient;
   #config;
   #reactive;
   #urlChanged;
@@ -23,8 +23,8 @@ export class VZomeViewer extends HTMLElement
     this.#container = document.createElement("div");
     this.#root.appendChild( this.#container );
 
-    const worker = createWorker();
-    worker .subscribe( {
+    this.#workerclient = createWorker();
+    this.#workerclient .subscribe( {
       onWorkerError: () => {},
       onWorkerMessage: data => {
         switch ( data.type ) {
@@ -47,7 +47,6 @@ export class VZomeViewer extends HTMLElement
         }
       }
     } );
-    this.#store = createWorkerStore( worker );
 
     this.#config = { preview: true, showScenes: false, camera: true, lighting: true, design: true, };
 
@@ -90,18 +89,18 @@ export class VZomeViewer extends HTMLElement
     const load = { camera, lighting, design };
     const config = { ...this.#config, load };
     if ( this.#urlChanged ) {
-      this.#store.postMessage( fetchDesign( this.#config.url, config ) );
+      this.#workerclient.postMessage( fetchDesign( this.#config.url, config ) );
       this.#urlChanged = false;
     } else if ( this.#sceneChanged ) {
-      this.#store.postMessage( selectScene( this.#config.sceneTitle, load ) );
+      this.#workerclient.postMessage( selectScene( this.#config.sceneTitle, load ) );
     }
   }
 
   connectedCallback()
   {
-    import( '../viewer/solid/index.jsx' )
+    import( '../viewer/index.jsx' )
       .then( module => {
-        module.renderViewer( this.#store, this.#container, this.#config.url, this.#config );
+        module.renderViewer( this.#workerclient, this.#container, this.#config );
       });
   }
 

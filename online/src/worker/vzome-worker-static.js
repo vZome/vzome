@@ -294,12 +294,12 @@ const fileImporter = ( report, event ) =>
     'vef'  : 'LoadVEF',
   }
   const { file, format } = event.payload;
-  const { name } = file;
+  const action = IMPORT_ACTIONS[ format ];
   fetchFileText( file )
 
     .then( text => {
       try {
-        designWrapper .doAction( '', IMPORT_ACTIONS[ format ], { vef: text } );
+        designWrapper .doAction( '', action, { vef: text } );
         const { shapes, embedding } = designWrapper .getScene( '--END--', true ); // never send camera or lighting!
         report( { type: 'SCENE_RENDERED', payload: { scene: { shapes, embedding } } } );
       } catch (error) {

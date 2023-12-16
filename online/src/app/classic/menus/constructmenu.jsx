@@ -1,11 +1,11 @@
 
 import { Divider, Menu, SubMenu, createMenuAction } from "../../framework/menus.jsx";
 
-import { useWorkerClient } from "../../../workerClient/index.js";
+import { useEditor } from "../../../viewer/context/editor.jsx";
 
 export const ConstructMenu = () =>
 {
-  const { rootController } = useWorkerClient();
+  const { rootController } = useEditor();
   const EditAction = createMenuAction( rootController() );
 
   return (
