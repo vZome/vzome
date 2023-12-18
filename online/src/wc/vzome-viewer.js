@@ -23,29 +23,13 @@ export class VZomeViewer extends HTMLElement
     this.#container = document.createElement("div");
     this.#root.appendChild( this.#container );
 
+    // I'd like to remove #workerclient, but I have to set up these subscriptions somehow...
     this.#workerclient = createWorker();
-    this.#workerclient .subscribe( {
-      onWorkerError: () => {},
-      onWorkerMessage: data => {
-        switch ( data.type ) {
-
-          case 'SCENES_DISCOVERED':
-            const titles = data.payload .map( (scene,i) =>  scene.title ? decodeEntities( scene.title ) : `#${i}` );
-            this .dispatchEvent( new CustomEvent( 'vzome-scenes-discovered', { detail: titles } ) );
-            break;
-
-          case 'SCENE_RENDERED':
-            this .dispatchEvent( new Event( 'vzome-design-rendered' ) );
-            break;
-        
-          case 'ALERT_RAISED':
-            this .dispatchEvent( new Event( 'vzome-design-failed' ) );
-            break;
-        
-          default:
-            break;
-        }
-      }
+    this.#workerclient .subscribeFor( 'ALERT_RAISED', () => this .dispatchEvent( new Event( 'vzome-design-failed' ) ) );
+    this.#workerclient .subscribeFor( 'SCENE_RENDERED', () => this .dispatchEvent( new Event( 'vzome-design-rendered' ) ) );
+    this.#workerclient .subscribeFor( 'SCENES_DISCOVERED', payload => {
+      const titles = payload .map( (scene,i) =>  scene.title ? decodeEntities( scene.title ) : `#${i}` );
+      this .dispatchEvent( new CustomEvent( 'vzome-scenes-discovered', { detail: titles } ) );
     } );
 
     this.#config = { preview: true, showScenes: 'none', camera: true, lighting: true, design: true, };
@@ -53,34 +37,6 @@ export class VZomeViewer extends HTMLElement
     this.#urlChanged = true;
     this.#sceneChanged = true;
     this.#reactive = true;
-    if ( this.hasAttribute( 'reactive' ) ) {
-      this.#reactive = this.getAttribute( 'reactive' ) !== 'false';
-    }
-
-    if ( this.hasAttribute( 'show-scenes' ) ) {
-      const showScenes = this.getAttribute( 'show-scenes' );
-      this.#config = { ...this.#config, showScenes };
-    }
-
-    if ( this.hasAttribute( 'scene' ) ) {
-      const sceneTitle = this.getAttribute( 'scene' );
-      this.#config = { ...this.#config, sceneTitle };
-    }
-
-    if ( this.hasAttribute( 'src' ) ) {
-      let url = this.getAttribute( 'src' );
-      if ( ! url.endsWith( ".vZome" ) ) {
-        // This is the only case in which we don't resolve the promise with text,
-        //  since there is no point in allowing download of non-vZome text.
-        alert( `Unrecognized file name: ${url}` );
-      }
-      else
-        url = new URL( url, window.location ) .toString();
-        this.#config = { ...this.#config, url };
-        // Get the fetch started by the worker before we load the dynamic module below,
-        //  which is pretty big.
-        this.update();
-    }
   }
 
   update( loadFlags={} )
@@ -101,6 +57,11 @@ export class VZomeViewer extends HTMLElement
     import( '../viewer/index.jsx' )
       .then( module => {
         module.renderViewer( this.#workerclient, this.#container, this.#config );
+        
+        // We used to do this in the constructor, after worker creation, for better responsiveness.
+        // However, that causes a race condition on slow networks -- the model loads before the viewer
+        //   is ready for the results, leaving a blank canvas.
+        this.update();
       });
   }
 
