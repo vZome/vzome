@@ -10,7 +10,7 @@
       const logoViewer = document.querySelector( "#vZomeLogo" );
       logoViewer .addEventListener( "vzome-scenes-discovered", (e) => {
         setTimeout( () => {
-          console.log( 'Scenes:', JSON.stringify( e.detail ) );
+          console.log( 'logo scenes:', JSON.stringify( e.detail ) );
           logoViewer.scene = e.detail[ 3 ];
         }, 3000 )
       });
@@ -35,7 +35,7 @@
 
       welcomeViewer .addEventListener( "vzome-scenes-discovered", (e) => {
         scenes = e.detail;
-        console.log( JSON.stringify( scenes, null, 2 ) );
+        console.log( 'welcome scenes:', JSON.stringify( scenes, null, 2 ) );
         console.log( 'NOTE: we are intentionally bypassing the default scene for this page.' );
         title .innerHTML = scenes[index];
         prevButton .addEventListener( "click", e => changeScene( -1 ) );
@@ -58,12 +58,11 @@
         </vzome-viewer>
       </section>
       <section>
-        <vzome-viewer src="./models/orangePurpleChiral.vZome" id="orangePurpleChiral" >
-          <img src="./models/orangePurpleChiral.png" >
+        <vzome-viewer src="./models/test-show-scenes.vZome" id="testShowScenes" show-scenes="named" >
         </vzome-viewer>
       </section>
       <section>
-        <vzome-viewer src="./models/vZomeLogo.vZome" show-scenes="true" id="vZomeLogo" >
+        <vzome-viewer src="./models/vZomeLogo.vZome" show-scenes="named" id="vZomeLogo" >
         </vzome-viewer>
       </section>
       <section>

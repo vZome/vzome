@@ -68,8 +68,6 @@ const WorkerStateProvider = ( props ) =>
   const workerClient = props.workerClient || createWorker();
   const [ isWorkerReady, setReady ] = createSignal( false );
 
-  workerClient .postMessage( { type: 'WINDOW_LOCATION', payload: window.location.toString() } );
-
   workerClient .subscribeFor( 'CONTROLLER_CREATED', () => setReady( true ) ); // TODO: change to a specific WORKER_READY message
   
   return (

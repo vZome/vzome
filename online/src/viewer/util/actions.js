@@ -25,7 +25,7 @@ const defaultLoad = {
 const defaultConfig = {
   preview: false,
   debug: false,
-  showScenes: false,
+  showScenes: 'none',
   load: defaultLoad,
 };
 

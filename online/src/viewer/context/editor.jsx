@@ -131,9 +131,12 @@ const EditorProvider = props =>
     workerClient .postMessage( actions.newDesign( field ) );
   }
 
+  const indexResources = () => workerClient .postMessage( { type: 'WINDOW_LOCATION', payload: window.location.toString() } );
+
   const providerValue = {
     ...store,
     rootController,
+    indexResources,
     controllerAction,
     createDesign,
     openDesignFile: ( file, debug )  => workerClient .postMessage( actions.openDesignFile( file, debug ) ),
