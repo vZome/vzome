@@ -43,9 +43,9 @@ const fullScreenStyle = {
 
 const DesignViewer = ( props ) =>
 {
-  const config = mergeProps( { showScenes: false, useSpinner: false, allowFullViewport: false, undoRedo: false }, props.config );
+  const config = mergeProps( { showScenes: 'none', useSpinner: false, allowFullViewport: false, undoRedo: false }, props.config );
   const { subscribeFor } = useWorkerClient();
-  const { scene, scenes, waiting } = useViewer();
+  const { scene, waiting } = useViewer();
   const { state: cameraState, setCamera, setLighting } = useCamera();
   const [ fullScreen, setFullScreen ] = createSignal( false );
   const toggleFullScreen = () =>
@@ -56,12 +56,22 @@ const DesignViewer = ( props ) =>
     //  Note that this does NOT help with window resize.
     setFullScreen( v => !v );
   }
+  const whichScenes = () =>
+  {
+    switch (config.showScenes) {
+      case 'true':
+      case 'all':
+        return 'all';
+      case 'named':
+        return 'named';
+      default:
+        return 'none';
+    }
+  }
   const showSceneMenu = () =>
   {
-    const { showScenes, sceneTitle } = props.config;
-    // Only show the menu when the scene is not being controlled explicitly,
-    //  and when more than one scene has been discovered.
-    return (typeof sceneTitle === 'undefined' ) && showScenes && scenes && scenes[1];
+    const { sceneTitle } = props.config;
+    return (typeof sceneTitle === 'undefined' ) && whichScenes() !== 'none';
   }
 
   const showSpinner = () => {
@@ -105,7 +115,7 @@ const DesignViewer = ( props ) =>
       </Show>
 
       <Show when={showSceneMenu()}>
-        <SceneMenu root={rootRef} />
+        <SceneMenu root={rootRef} show={whichScenes()} />
       </Show>
 
       <ExportMenu root={rootRef} />

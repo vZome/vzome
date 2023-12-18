@@ -1,5 +1,5 @@
 
-import { createMemo, createSignal } from 'solid-js';
+import { createEffect, createMemo, createSignal } from 'solid-js';
 
 import { Select } from "@kobalte/core";
 
@@ -10,12 +10,16 @@ const styles = {
   minWidth: 120,
 };
 
+const unnamedScene = ( scene, index ) => !scene.title?.trim() || ( index===0 && 'default scene' === scene.title );
+
 export const SceneMenu = (props) =>
 {
   const { scenes, requestScene } = useViewer();
-  const sceneTitles = createMemo( () => scenes .map( (scene,index) =>
-    scene.title?.trim() || (( index === 0 )? "default scene" : `#${index}`) ) );
-  const [ sceneTitle, setSceneTitle ] = createSignal( sceneTitles()[0] );
+  const namedScenes = () => scenes .filter( ( scene, index ) => !unnamedScene( scene, index ) ) .map( scene => scene.title );
+  const sceneTitles = () =>
+    ( props.show === 'named' )? namedScenes()
+    : scenes .map( (scene,index) => scene.title?.trim() || (( index === 0 )? "default scene" : `#${index}`) );
+  const [ sceneTitle, setSceneTitle ] = createSignal( sceneTitles()[0] || '' );
 
   const handleChange = (sceneTitle) =>
   {
@@ -24,6 +28,7 @@ export const SceneMenu = (props) =>
   }
 
   return (
+    <Show when={ sceneTitles() .length > 1 }>
     <div style={ { position: 'absolute', background: 'lightgray', top: '1em', left: '1em' } }>
       <Select.Root
         value={sceneTitle()}
@@ -60,5 +65,6 @@ export const SceneMenu = (props) =>
         </Select.Portal>
       </Select.Root>
     </div>
+    </Show>
   );
 }

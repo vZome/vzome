@@ -48,7 +48,7 @@ export class VZomeViewer extends HTMLElement
       }
     } );
 
-    this.#config = { preview: true, showScenes: false, camera: true, lighting: true, design: true, };
+    this.#config = { preview: true, showScenes: 'none', camera: true, lighting: true, design: true, };
 
     this.#urlChanged = true;
     this.#sceneChanged = true;
@@ -58,7 +58,7 @@ export class VZomeViewer extends HTMLElement
     }
 
     if ( this.hasAttribute( 'show-scenes' ) ) {
-      const showScenes = this.getAttribute( 'show-scenes' ) === 'true';
+      const showScenes = this.getAttribute( 'show-scenes' );
       this.#config = { ...this.#config, showScenes };
     }
 
@@ -134,7 +134,7 @@ export class VZomeViewer extends HTMLElement
       break;
   
     case "show-scenes":
-      const showScenes = _newValue === 'true';
+      const showScenes = _newValue;
       this.#config = { ...this.#config, showScenes };
       break;
   

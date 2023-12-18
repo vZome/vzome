@@ -14,7 +14,8 @@ import { ErrorAlert } from "./components/alert.jsx";
 
 export const ClassicEditor = () =>
 {
-  const { rootController } = useEditor();
+  const { rootController, indexResources } = useEditor();
+  indexResources();
 
   const bookmarkController = () => subController( rootController(), 'bookmark' );
   const strutBuilder       = () => subController( rootController(), 'strutBuilder' );

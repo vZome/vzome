@@ -13,6 +13,7 @@ import { WorkerStateProvider } from '../viewer/context/worker.jsx';
 import { ViewerProvider } from '../viewer/context/viewer.jsx';
 import { DesignViewer } from '../viewer/index.jsx';
 import { CameraProvider } from '../viewer/context/camera.jsx';
+import { EditorProvider } from '../viewer/context/editor.jsx';
 
 const queryParams = new URLSearchParams( window.location.search );
 const relativeUrl = queryParams.get( 'url' ); // support for legacy viewer usage (old vZome shares)
@@ -48,6 +49,7 @@ const Online = () =>
     <ErrorBoundary fallback={err => err}>
       <CameraProvider>
       <WorkerStateProvider>
+      <EditorProvider>
       <ViewerProvider config={config}>
         <VZomeAppBar title={ 'Viewer' } showOpen={true}
           about={
@@ -71,8 +73,9 @@ const Online = () =>
         {/* { legacyViewerMode?
           <DesignViewer config={ { useSpinner: true } } />
         : <DesignHistoryInspector/> } */}
-        <DesignViewer height="100%" width="100%" config={ { useSpinner: true, showScenes: true } } />
+        <DesignViewer height="100%" width="100%" config={ { useSpinner: true, showScenes: 'named' } } />
       </ViewerProvider>
+      </EditorProvider>
       </WorkerStateProvider>
       </CameraProvider>
     </ErrorBoundary>
