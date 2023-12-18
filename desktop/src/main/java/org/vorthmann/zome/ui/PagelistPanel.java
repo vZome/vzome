@@ -47,9 +47,9 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
     
     private final Controller controller;
 
-    private static final String dupeString = "Add";
+    private static final String dupeString = "Add Scene";
 
-    private static final String remString = "Remove";
+    private static final String remString = "Remove Scene";
 
     private JButton removeButton;
 

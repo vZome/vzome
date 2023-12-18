@@ -318,7 +318,6 @@ public class ApplicationController extends DefaultController
             else if ( action .startsWith( "openURL-" ) )
             {
                 Properties docProps = new Properties();
-                docProps .setProperty( "as.template", "true" );
                 String path = action .substring( "openURL-" .length() );
                 docProps .setProperty( "window.title", path );
                 try {
