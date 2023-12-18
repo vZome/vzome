@@ -84,7 +84,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
     private JButton snapshotButton;
 
-    private JRadioButton articleButton, modelButton;
+    private JRadioButton scenesButton, designButton;
 
     private JPanel viewControl, modelArticleEditPanel;
 
@@ -518,17 +518,33 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 if ( this .isEditor )
                 {
                     JPanel modeAndStatusPanel = new JPanel( new BorderLayout() );
-                    JPanel articleButtonsPanel = new JPanel();
-                    modeAndStatusPanel .add( articleButtonsPanel, BorderLayout.LINE_START );
+                    JPanel designScenesToggle = new JPanel();
+                    modeAndStatusPanel .add( designScenesToggle, BorderLayout.LINE_START );
+                    
+                    designScenesToggle .add( new JLabel( "Show:" ) );
 
                     ButtonGroup group = new ButtonGroup();
-                    modelButton  = new JRadioButton( "Model" );
-                    modelButton .setSelected( true );
-                    articleButtonsPanel .add( modelButton );
-                    group .add( modelButton );
-                    modelButton .setActionCommand( "switchToModel" );
-                    modelButton .addActionListener( actionListener );
-                    snapshotButton = new JButton( "-> capture ->" );
+                    
+                    designButton  = new JRadioButton( "Design" );
+                    designButton .setSelected( true );
+                    designScenesToggle .add( designButton );
+                    group .add( designButton );
+                    designButton .setActionCommand( "switchToModel" );
+                    designButton .addActionListener( actionListener );
+                    
+                    scenesButton  = new JRadioButton( "Scenes" );
+                    scenesButton .setEnabled( false ); // don't check the model, which may be loading concurrently.  PCE will come in due course
+                    scenesButton .setSelected( false );
+                    designScenesToggle .add( scenesButton );
+                    group .add( scenesButton );
+                    scenesButton .setActionCommand( "switchToArticle" );
+                    scenesButton .addActionListener( actionListener );
+
+                    JPanel spacer = new JPanel();
+                    spacer .setMinimumSize( new Dimension( 13, 0 ) );
+                    designScenesToggle .add( spacer );
+
+                    snapshotButton = new JButton( "Capture Scene" );
                     //                String imgLocation = "/icons/snapshot.png";
                     //                URL imageURL = getClass().getResource( imgLocation );
                     //                if ( imageURL != null ) {
@@ -539,26 +555,19 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     //                    snapshotButton .setMaximumSize( dim );
                     //                }
                     if ( controller .propertyIsTrue( "enable.article.creation" ) )
-                        articleButtonsPanel .add( snapshotButton );
+                        designScenesToggle .add( snapshotButton );
                     snapshotButton .setActionCommand( "takeSnapshot" );
                     snapshotButton .addActionListener( new ActionListener()
                     {
-						@Override
+                        @Override
                         public void actionPerformed( ActionEvent e )
                         {
                             mController .actionPerformed( e .getSource(), e .getActionCommand() ); // sends thumbnailChanged propertyChange, but no listener...
-                            articleButton .doClick();  // switch to article mode, so now there's a listener
+                            scenesButton .doClick();  // switch to article mode, so now there's a listener
                             // now trigger the propertyChange again
                             lessonController .actionPerformed( DocumentFrame.this, "setView" );
                         }
                     } );
-                    articleButton  = new JRadioButton( "Article" );
-                    articleButton .setEnabled( false ); // don't check the model, which may be loading concurrently.  PCE will come in due course
-                    articleButton .setSelected( false );
-                    articleButtonsPanel .add( articleButton );
-                    group .add( articleButton );
-                    articleButton .setActionCommand( "switchToArticle" );
-                    articleButton .addActionListener( actionListener );
 
                     JPanel statusPanel = new JPanel( new BorderLayout() );
                     statusPanel .setBorder( BorderFactory .createEmptyBorder( 4, 4, 4, 4 ) );
@@ -1065,12 +1074,12 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 			break;
 
 		case "has.pages":
-            if ( articleButton != null )
+            if ( scenesButton != null )
             {
                 boolean enable = e .getNewValue() .toString() .equals( "true" );
-                articleButton .setEnabled( enable );
+                scenesButton .setEnabled( enable );
                 if ( ! enable )
-                    modelButton .doClick();
+                    designButton .doClick();
             }
 			break;
 			
