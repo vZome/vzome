@@ -318,7 +318,7 @@ const defaultLoad = { camera: true, lighting: true, design: true, };
 const urlLoader = async ( report, event ) =>
 {
   const { url, config } = event.payload;
-  const { preview=false, debug=false, showScenes=false, sceneTitle, load=defaultLoad } = config;
+  const { preview=false, debug=false, showScenes='none', sceneTitle, load=defaultLoad } = config;
   if ( !url ) {
     throw new Error( "No url field in URL_PROVIDED event payload" );
   }
@@ -338,7 +338,7 @@ const urlLoader = async ( report, event ) =>
       .then( text => JSON.parse( text ) )
       .then( preview => {
         const scene = convertPreview( preview, sceneTitle ); // sets module global scenes as a side-effect
-        if ( ( showScenes || sceneTitle ) && scenes.length < 2 ) {
+        if ( ( showScenes !== 'none' || sceneTitle ) && scenes.length < 2 ) {
           // The client expects scenes, but this preview JSON predates the scenes export,
           //  so fall back on XML.
           console.log( `No scenes in preview ${previewUrl}` );
