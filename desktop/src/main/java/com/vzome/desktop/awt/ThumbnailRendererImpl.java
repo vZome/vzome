@@ -20,10 +20,12 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
 {
     private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.thumbnails" );
     private J3dComponentFactory rvFactory;
+    private final int maxOrientations;
 
     public ThumbnailRendererImpl( Lights sceneLighting, int maxOrientations )
     {
         super( new Camera(), sceneLighting, maxOrientations );
+        this.maxOrientations = maxOrientations;
     }
     
     public void setFactory( J3dComponentFactory rvFactory )
@@ -43,7 +45,7 @@ public class ThumbnailRendererImpl extends CameraController implements Thumbnail
         }
         super .restoreView( camera );
 
-        Scene scene = new Scene( this .sceneLighting, false, 60 ); // TODO: reuse the shapes from the main scene
+        Scene scene = new Scene( this .sceneLighting, false, this.maxOrientations ); // TODO: reuse the shapes from the main scene
 
         if ( logger .isLoggable( Level.FINER ) )
         {
