@@ -5,7 +5,6 @@ import SvgIcon from '@suid/material/SvgIcon'
 import ToggleButton from "@suid/material/ToggleButton";
 import ToggleButtonGroup from "@suid/material/ToggleButtonGroup";
 
-import { useWorkerClient } from '../../../viewer/context/worker.jsx';
 import { useCamera } from '../../../viewer/context/camera.jsx';
 import { useViewer } from '../../../viewer/context/viewer.jsx';
 import { CameraTool, InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
@@ -19,7 +18,6 @@ import { ContextualMenu } from '../menus/contextmenu.jsx';
 
 export const SceneEditor = ( props ) =>
 {
-  const { subscribeFor } = useWorkerClient();
   const { setState } = useEditor();
   const { scene } = useViewer();
   const { state: cameraState, setCamera, setLighting } = useCamera();
