@@ -84,7 +84,7 @@ const SetColorButton = props =>
   });
   return ( <>
     <ToolbarButton label={props.cmdName} image={`small/setItemColor`} onClick={handleClick} />
-    <input ref={colorInputElement} type="color" id="color-picker" name="color-picker" class='hidden-color-input' />
+    <input ref={colorInputElement} type="color" name="color-picker" class='hidden-color-input' />
   </>);
 }
 

@@ -22,7 +22,7 @@ const SetColorItem = props =>
   });
   return ( <>
     <MenuItem onClick={handleClick} >Set Color...</MenuItem>
-    <input ref={colorInputElement} type="color" id="color-picker" name="color-picker" class='hidden-color-input' />
+    <input ref={colorInputElement} type="color" name="color-picker" class='hidden-color-input' />
   </>);
 }
 

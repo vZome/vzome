@@ -1,11 +1,10 @@
 
-import { Switch, Match, createSignal } from 'solid-js';
+import { Switch, Match, createSignal, createEffect } from 'solid-js';
 
 import SvgIcon from '@suid/material/SvgIcon'
 import ToggleButton from "@suid/material/ToggleButton";
 import ToggleButtonGroup from "@suid/material/ToggleButtonGroup";
 
-import { useWorkerClient } from '../../../viewer/context/worker.jsx';
 import { useCamera } from '../../../viewer/context/camera.jsx';
 import { useViewer } from '../../../viewer/context/viewer.jsx';
 import { CameraTool, InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
@@ -19,10 +18,9 @@ import { ContextualMenu } from '../menus/contextmenu.jsx';
 
 export const SceneEditor = ( props ) =>
 {
-  const { subscribeFor } = useWorkerClient();
   const { setState } = useEditor();
+  const { setLighting } = useCamera();
   const { scene } = useViewer();
-  const { state: cameraState, setCamera, setLighting } = useCamera();
   const [ strutting, setStrutting ] = createSignal( true );
   const [ viewing, setViewing ] = createSignal( false );
   const toolValue = () => viewing()? 'camera' : strutting()? 'strutDrag' : 'select';
@@ -60,11 +58,22 @@ export const SceneEditor = ( props ) =>
       setState( 'picked', undefined );
   }
 
+  let colorPicker;
+  const showColorPicker = () => colorPicker .click();
+  createEffect( () => {
+    colorPicker .addEventListener( "input", e => {
+      const color = e.target.value;
+      console.log( 'new background is', color );
+      setLighting( { backgroundColor: color } )
+    }, false );
+  });
+
   // not using DesignViewer because it has its own UI, not corresponding to classic desktop vZome
   return (
     <div style={{ position: 'relative', display: 'flex', overflow: 'hidden', height: '100%' }}>
+      <input ref={colorPicker} type="color" name="color-picker" class='hidden-color-input' />
       <InteractionToolProvider>
-        <ContextualMenuArea menu={<ContextualMenu/>} disabled={viewing() || strutting()} onOpenChange={resetPicked}>
+        <ContextualMenuArea menu={<ContextualMenu showColorPicker={showColorPicker} />} disabled={viewing() || strutting()} onOpenChange={resetPicked}>
           <SceneCanvas height="100%" width="100%" scene={scene} rotationOnly={false} >
             {/* The group is only necessary because of https://github.com/solidjs-community/solid-three/issues/11 */}
             <group>
