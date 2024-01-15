@@ -2,7 +2,7 @@
 import { ContextMenu } from "@kobalte/core";
 
 import { subController, useEditor } from '../../../viewer/context/editor.jsx';
-import { useCamera } from "../../../viewer/context/camera";
+import { useCamera } from "../../../viewer/context/camera.jsx";
 
 import { ContextMenuItem, ContextMenuSeparator } from "../../framework/menus";
 
@@ -11,7 +11,6 @@ export const ContextualMenu = props =>
   const { state, setState, rootController, controllerAction } = useEditor();
   const { state: cameraState, setCamera } = useCamera();
   const pickingController  = () => subController( rootController(), 'picking' );
-  const notPicking = () => ! state.picked;
   const typeMatches = type =>
   {
     switch (type) {
@@ -60,13 +59,13 @@ export const ContextualMenu = props =>
 
   return (
       <Switch fallback={
-        <ContextMenu.Content class="context-menu__content">
-          <ContextMenuItem onSelect={copyCamera} label='Copy This View' />
+          <ContextMenu.Content class="context-menu__content">
+            <ContextMenuItem onSelect={copyCamera} label='Copy This View' />
             <ContextMenuItem onSelect={useCopiedCamera} label='Use Copied View' />
             <ContextMenuSeparator/>
             <ContextMenuItem onSelect={lookAtOrigin} label='Look At Origin' />
             <ContextMenuSeparator/>
-            <ContextMenuItem label='Set Background Color...' disabled />
+            <ContextMenuItem onSelect={props.showColorPicker} label='Set Background Color...' />
           </ContextMenu.Content>
         }>
         <Match when={ !!state.picked }>
@@ -113,6 +112,5 @@ export const ContextualMenu = props =>
 
         </Match>
       </Switch>
-
   );
 }

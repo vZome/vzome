@@ -100,13 +100,25 @@ img {
 }
 
 .hidden-color-input {
-  max-width: 0px;
-  max-height: 0px;
-  border-width: 0px;
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  width: 1px;
+  margin: -1px;
   padding: 0;
-  position: relative;
-  left: -1rem;
-  z-index: -1;
+  border: 0;
+}
+
+.visually-hidden {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  width: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
 }
 
 button:disabled > .toolbar-image {
