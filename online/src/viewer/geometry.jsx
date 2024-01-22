@@ -60,7 +60,7 @@ const Instance = ( props ) =>
     }
   }
   // TODO give users control over emissive color
-  const emissive = () => props.selected? "#dddddd" : "black"
+  const emissive = () => props.selected? "#b0b0b0" : "black"
   // TODO: cache materials
   return (
     <group position={ props.position } name={props.id} >
