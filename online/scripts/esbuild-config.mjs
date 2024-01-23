@@ -46,8 +46,9 @@ export const esbuildConfig = {
     'fivecell'        : 'src/app/fivecell/index.jsx',
     'bhall-basic'     : 'src/app/bhall/basic/index.jsx',
     '59icosahedra'    : 'src/app/59icosahedra/index.jsx',
-  // web component, not used by apps
-    'vzome-viewer'        : 'src/wc/index.js',
+  // web components, not used by apps
+    'vzome-viewer'        : 'src/wc/vzome-viewer.js',
+    'gltf-viewer'         : 'src/wc/gltf-viewer.js',
   // client rendering code, dynamically imported for fast time-to-first-render
     'vzome-viewer-dynamic': 'src/viewer/index.jsx',
   // Worker entry point, only used as a module worker

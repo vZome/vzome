@@ -73,6 +73,16 @@
       }
     },
     {
+      "name":             "gltf component",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8532/test/gltf.html",
+      "pathMapping": {
+        "/": "${workspaceFolder}/online/src"
+      }
+    },
+    {
       "name":             "fivecell",
 
       "type": "chrome",
