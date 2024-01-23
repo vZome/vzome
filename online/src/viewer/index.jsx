@@ -8,10 +8,10 @@ import { urlViewerCSS } from "./urlviewer.css";
 import { createSignal, mergeProps, onMount, Show } from 'solid-js';
 import { render } from 'solid-js/web';
 
-import { useWorkerClient, WorkerStateProvider } from './context/worker.jsx';
+import { WorkerStateProvider } from './context/worker.jsx';
 import { ViewerProvider, useViewer } from './context/viewer.jsx';
 import { InteractionToolProvider } from './context/interaction.jsx';
-import { CameraProvider, useCamera } from './context/camera.jsx';
+import { CameraProvider } from './context/camera.jsx';
 
 import { SceneCanvas } from "./scenecanvas.jsx";
 import { Spinner } from './spinner.jsx';
@@ -21,6 +21,7 @@ import { FullscreenButton } from './fullscreen.jsx';
 import { ExportMenu } from './export.jsx';
 import { UndoRedoButtons } from './undoredo.jsx';
 import { GltfExportProvider } from './geometry.jsx';
+import { GltfModel } from './gltf.jsx';
 
 let stylesAdded = false; // for the onMount in DesignViewer
 
@@ -44,9 +45,7 @@ const fullScreenStyle = {
 const DesignViewer = ( props ) =>
 {
   const config = mergeProps( { showScenes: 'none', useSpinner: false, allowFullViewport: false, undoRedo: false }, props.config );
-  const { subscribeFor } = useWorkerClient();
   const { scene, waiting } = useViewer();
-  const { state: cameraState, setCamera, setLighting } = useCamera();
   const [ fullScreen, setFullScreen ] = createSignal( false );
   const toggleFullScreen = () =>
   {
@@ -84,16 +83,6 @@ const DesignViewer = ( props ) =>
       document.body .appendChild( document.createElement("style") ).textContent = urlViewerCSS;
       // We don't want to add multiple identical style elements, one for each DesignViewer on the page.
       stylesAdded = true;
-    }
-  });
-
-  subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
-    if ( scene.camera ) {
-      setCamera( scene.camera );
-    }
-    if ( scene.lighting ) {
-      const { backgroundColor } = scene.lighting;
-      setLighting( { ...cameraState.lighting, backgroundColor } );
     }
   });
 
@@ -139,15 +128,15 @@ const UrlViewer = (props) =>
 {
   return (
     <CameraProvider>
-    <WorkerStateProvider workerClient={props.workerClient}>
-    <ViewerProvider config={{ url: props.url, preview: true, debug: false, showScenes: props.showScenes }}>
-      <DesignViewer config={ { ...props.config, allowFullViewport: true } }
-          componentRoot={props.componentRoot}
-          height="100%" width="100%" >
-        {props.children}
-      </DesignViewer>
-    </ViewerProvider>
-    </WorkerStateProvider>
+      <WorkerStateProvider workerClient={props.workerClient}>
+        <ViewerProvider config={{ url: props.url, preview: true, debug: false, showScenes: props.showScenes }}>
+          <DesignViewer config={ { ...props.config, allowFullViewport: true } }
+              componentRoot={props.componentRoot}
+              height="100%" width="100%" >
+            {props.children}
+          </DesignViewer>
+        </ViewerProvider>
+      </WorkerStateProvider>
     </CameraProvider>
   );
 }
@@ -187,5 +176,24 @@ const renderViewer = ( workerClient, container, config ) =>
   render( bindComponent, container );
 }
 
+const renderGlTFViewer = ( container, config ) =>
+{
+  const bindComponent = () =>
+  {
+    return (
+      <CameraProvider>
+        <DesignViewer config={ { ...config, allowFullViewport: true } }
+            componentRoot={container}
+            children3d={ <GltfModel url={config.url} /> }
+            height="100%" width="100%" >
+        </DesignViewer>
+      </CameraProvider>
+    );
+  }
 
-export { DesignViewer, UrlViewer, SceneCanvas, renderViewer };
+  container .appendChild( document.createElement("style") ).textContent = urlViewerCSS;
+  render( bindComponent, container );
+}
+
+
+export { DesignViewer, UrlViewer, SceneCanvas, renderViewer, renderGlTFViewer };

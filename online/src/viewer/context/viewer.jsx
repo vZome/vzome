@@ -6,7 +6,7 @@ import { useWorkerClient } from "./worker.jsx";
 import { useCamera } from "./camera.jsx";
 import { decodeEntities, fetchDesign, selectScene } from "../util/actions.js";
 
-const ViewerContext = createContext( { scene: ()=> { console.log( 'NO ViewerProvider' ); } } );
+const ViewerContext = createContext( { scene: ()=> { console.log( 'NO ViewerProvider' ); }, problem: ()=>null } );
 
 const ViewerProvider = ( props ) =>
 {
