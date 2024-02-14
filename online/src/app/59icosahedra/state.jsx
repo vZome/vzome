@@ -67,9 +67,11 @@ export const CellOrbitProvider = ( props ) =>
     setState( Object.fromEntries( ALL_ORBITS .map( orbit => [ orbit, false ] ) ) );
     setState( Object.fromEntries( orbits .map( orbit => [ orbit, true ] ) ) );
   }
+
+  const initialize = () => setOrbitList( resolveOrbits( [ 'E', 'f1R' ] ) ); // default to 5 tetra compound
   
   return (
-    <CellOrbitContext.Provider value={ { state, setState, enabledOrbits, setOrbitList } }>
+    <CellOrbitContext.Provider value={ { state, setState, enabledOrbits, setOrbitList, initialize } }>
       {props.children}
     </CellOrbitContext.Provider>
   );

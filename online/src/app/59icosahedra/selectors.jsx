@@ -50,7 +50,7 @@ const SelectorCanvas = () =>
   const { scene, setScene } = useViewer();
   const { state: { camera }, setCamera } = useCamera();
   const orbitPanels = {}; // yes, this is not reactive
-  const { state: toggles } = useCellOrbits();
+  const { state: toggles, initialize } = useCellOrbits();
 
   subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
     if ( scene.camera ) {
@@ -74,7 +74,7 @@ const SelectorCanvas = () =>
 
   createEffect( () => {
     // index all the panels for later selection toggling by orbit
-    if ( !! scene?.shapes )
+    if ( !! scene?.shapes ) {
       for ( const [id,shape] of Object.entries( scene.shapes ) ) {
         for ( const [i,instance] of shape.instances.entries() ) {
           if ( !! instance.label ) {
@@ -88,6 +88,8 @@ const SelectorCanvas = () =>
           }
         }
       }
+      initialize();
+    }
   });
 
   return (

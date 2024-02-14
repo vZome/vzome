@@ -79,7 +79,7 @@ const StellationCanvas = props =>
 export const Stellation = () =>
 {
   return (
-    <CameraProvider distance={500}>
+    <CameraProvider distance={200}>
       <ViewOptionsProvider>
         <StellationCanvas>
           <For each={ ALL_ORBITS } >{ orbit =>
