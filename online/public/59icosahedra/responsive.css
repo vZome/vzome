@@ -29,6 +29,7 @@
 }
 
 #stellation-label {
+  user-select: none;
   margin: auto;
   position: absolute;
   top: 1rem;
@@ -71,6 +72,10 @@
   display: block;
   margin: auto;
   line-height: 0.5;
+}
+
+td {
+  user-select: none;
 }
 
 /* Customize kobalte.css */

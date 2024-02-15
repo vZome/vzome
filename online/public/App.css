@@ -13,6 +13,8 @@ body {
 }
 
 #root {
+  user-select: none;
+
   position: absolute;
   inset: 0;
   display: grid; /* This is the key to getting the Canvas to fill the area below the AppBar. */
