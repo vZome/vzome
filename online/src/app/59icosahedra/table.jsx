@@ -41,7 +41,7 @@ const coxeterTable = [
     orbits: [ 'G' ],
   },
   {
-    name: '',
+    name: 'echidnahedron',
     orbits: [ 'H' ],
   },
   {
