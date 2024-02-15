@@ -10,7 +10,7 @@ import { LightedTrackballCanvas } from '../../viewer/ltcanvas.jsx';
 import { ShapedGeometry } from '../../viewer/geometry.jsx';
 import { CameraProvider } from "../../viewer/context/camera.jsx";
 
-import { ALL_ORBITS, ModelWorker, useCellOrbits } from './state.jsx';
+import { ALL_ORBITS, ModelWorker, labelString, useCellOrbits } from './state.jsx';
 
 
 const CellOrbitScene = props =>
@@ -60,12 +60,17 @@ const CellOrbit = props =>
 
 const StellationCanvas = props =>
 {
+  const { enabledOrbits } = useCellOrbits();
+  const label = () => labelString( enabledOrbits() );
   const { showCutaway, setShowCutaway } = useContext( ViewOptions );
   const toggleCutaway = () => setShowCutaway( value => !value );
 
   return (
     <>
-      <FormControlLabel label="Cutaway View" sx={{ margin: 'auto', position: 'absolute', bottom: '0.2rem', right: '1rem', 'z-index': '50' }}
+      <h1 id='stellation-label'>
+        {label()}
+      </h1>
+      <FormControlLabel label="Cutaway View" sx={{ margin: 'auto', position: 'absolute', bottom: '0.5rem', right: '1.5rem', 'z-index': '50' }}
         control={
           <Switch checked={showCutaway()} onChange={ toggleCutaway } size='medium' inputProps={{ "aria-label": "cutaway" }} />
         }/>
