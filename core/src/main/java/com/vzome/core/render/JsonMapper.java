@@ -115,6 +115,10 @@ public class JsonMapper
                 node .put( "color", rm .getColor() .toWebString() );
 
                 node .set( "position", this .getLocation( rm ) );
+                
+                float glow = rm .getGlow();
+                if ( glow != 0f )
+                    node .put( "glow", glow );
 
                 if ( sharedOrientations )
                     node .put( "orientation", rm .getStrutZone() );
@@ -136,6 +140,10 @@ public class JsonMapper
                 node .put( "color", color .toWebString() );
 
                 node .set( "position", this .getLocation( rm ) );
+                
+                float glow = rm .getGlow();
+                if ( glow != 0f )
+                    node .put( "glow", glow );
 
                 return node;
             }
@@ -150,6 +158,10 @@ public class JsonMapper
                 node .put( "color", color .toWebString() );
 
                 node .set( "position", this .getLocation( rm ) );
+                
+                float glow = rm .getGlow();
+                if ( glow != 0f )
+                    node .put( "glow", glow );
 
                 return node;
             }
@@ -164,6 +176,10 @@ public class JsonMapper
                 node .put( "color", color .toWebString() );
 
                 node .set( "position", this .getLocation( rm ) );
+                
+                float glow = rm .getGlow();
+                if ( glow != 0f )
+                    node .put( "glow", glow );
 
                 if ( sharedOrientations ) {
                     int orientation = rm .getStrutZone();

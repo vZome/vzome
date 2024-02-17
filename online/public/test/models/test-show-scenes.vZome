@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="37" field="golden" version="7.1">
-  <EditHistory editNumber="485" lastStickyEdit="485">
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="DEV" field="golden" version="7.1">
+  <EditHistory editNumber="484" lastStickyEdit="500">
     <StrutCreation anchor="0 0 0 0 0 0" index="2" len="2 4"/>
     <SelectManifestation point="0 0 0 0 2 4"/>
     <ApplyTool copyColors="true" name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
@@ -703,6 +703,21 @@
     <EndBlock/>
     <Delete/>
     <Snapshot id="4"/>
+    <ShowHidden/>
+    <BeginBlock/>
+    <AdjustSelectionByClass balls="DESELECT" originLast="true" panels="IGNORE" struts="IGNORE"/>
+    <AdjustSelectionByClass balls="IGNORE" originLast="true" panels="IGNORE" struts="DESELECT"/>
+    <EndBlock/>
+    <Delete/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="2 3 -1 -1 1 2" startSegment="1 1 -1 -2 2 3"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Snapshot id="5"/>
   </EditHistory>
   <notes>
     <page snapshot="3" title="Faces">
@@ -753,6 +768,14 @@
       </ViewModel>
       <content xml:space="preserve"/>
     </page>
+    <page snapshot="5" title="glowing">
+      <ViewModel distance="146.77186584472656" far="293.5437316894531" near="0.36692968010902405" parallel="true" stereoAngle="0.0" width="66.04734802246094">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="-0.1283818632364273" y="-0.19179362058639526" z="-0.9730018377304077"/>
+        <LookDirection x="-0.6177521347999573" y="0.7829908132553101" z="-0.07283170521259308"/>
+      </ViewModel>
+      <content xml:space="preserve"/>
+    </page>
   </notes>
   <sceneModel ambientLight="41,41,41" background="175,200,220">
     <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
@@ -762,8 +785,8 @@
   <Viewing>
     <ViewModel distance="146.77186584472656" far="293.5437316894531" near="0.36692968010902405" parallel="true" stereoAngle="0.0" width="66.04734802246094">
       <LookAtPoint x="0.0" y="0.0" z="0.0"/>
-      <UpDirection x="-0.44400420784950256" y="-0.42726683616638184" z="-0.7875915169715881"/>
-      <LookDirection x="-0.7015045285224915" y="-0.38108864426612854" z="0.60221266746521"/>
+      <UpDirection x="-0.7427941560745239" y="-0.34775373339653015" z="-0.5721205472946167"/>
+      <LookDirection x="0.22287976741790771" y="-0.9342213273048401" z="0.2784821391105652"/>
     </ViewModel>
   </Viewing>
   <SymmetrySystem name="icosahedral" renderingStyle="lifelike">

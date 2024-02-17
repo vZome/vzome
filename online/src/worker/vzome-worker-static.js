@@ -104,11 +104,12 @@ const convertPreview = ( preview, sceneTitle ) =>
   const convertInstances = ( instances, idPrefix ) =>
   {
     let i = 0;
-    return instances.map( ({ position, orientation, color, shape, label }) => {
+    return instances.map( ({ position, orientation, color, shape, label, glow }) => {
       const id = idPrefix + i++;
       const { x, y, z } = position;
+      const selected = !!glow && glow > 0.001;
       const rotation = [ ...( orientations[ orientation ] || IDENTITY_MATRIX ) ];
-      const instance = { id, position: [ x, y, z ], rotation, color, shapeId: shape, type: 'irrelevant', label };
+      const instance = { id, position: [ x, y, z ], rotation, color, selected, shapeId: shape, type: 'irrelevant', label };
       return instance;
     });
   }
