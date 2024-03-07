@@ -122,15 +122,15 @@ const CameraProvider = ( props ) =>
   //   thus propagating to all client LightedCameraControls.
   createEffect( () => {
     const position = cameraPosition( state.camera );
-    const { near, far, up, lookAt } = state.camera;
+    const { near, far, up, lookAt, width } = state.camera;
     // I had a nasty bug for days because I used lookAt by reference, causing the CameraControls canvas
     //  to respond very oddly to shared rotations.
-    setPerspectiveProps( { position, up, target: [ ...lookAt ], near, far } );
+    setPerspectiveProps( { position, up, target: [ ...lookAt ], near, far, width } );
   })
 
   const trackballCamera = new PerspectiveCamera(); // for the TrackballControls only, never used to render
   injectCameraState( state.camera, trackballCamera );
-  const sync = target =>
+  const sync = ( target, name ) =>
   {
     // This gets hooked up to TrackballControls changes, and updates the main camera state
     //   from the captive trackballCamera in response.
@@ -152,6 +152,7 @@ const CameraProvider = ( props ) =>
   }
 
   const setLighting = lighting => setState( 'lighting', lighting );
+  const togglePerspective = () => setState( 'camera', 'perspective', val => !val );
 
   const resetCamera = () =>
   {
@@ -162,7 +163,7 @@ const CameraProvider = ( props ) =>
   const providerValue = {
     name: props.name,
     perspectiveProps, trackballProps, state,
-    resetCamera, setCamera, setLighting,
+    resetCamera, setCamera, setLighting, togglePerspective,
   };
   
   // The perspectiveProps is used to initialize PerspectiveCamera in clients.

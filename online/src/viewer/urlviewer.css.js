@@ -455,4 +455,44 @@ export const urlViewerCSS = `
     opacity: 0;
   }
 }
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+}
+.switch__control {
+  display: inline-flex;
+  align-items: center;
+  height: 19px;
+  width: 33px;
+  border: 1px solid hsl(240 5% 84%);
+  border-radius: 12px;
+  padding: 0 2px;
+  background-color: hsl(240 6% 90%);
+  transition: 250ms background-color;
+}
+.switch__input:focus-visible + .switch__control {
+  outline: 2px solid hsl(200 98% 39%);
+  outline-offset: 2px;
+}
+.switch__control[data-checked] {
+  border-color: hsl(200 98% 39%);
+  background-color: hsl(200 98% 39%);
+}
+.switch__thumb {
+  height: 17px;
+  width: 17px;
+  border-radius: 10px;
+  background-color: white;
+  transition: 250ms transform;
+}
+.switch__thumb[data-checked] {
+  transform: translateX(calc(100% - 1px));
+}
+.switch__label {
+  margin-right: 6px;
+  color: hsl(240 6% 10%);
+  font-size: 14px;
+  user-select: none;
+}
 `;

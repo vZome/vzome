@@ -23,6 +23,7 @@ import { UndoRedoButtons } from './undoredo.jsx';
 import { GltfExportProvider } from './geometry.jsx';
 import { GltfModel } from './gltf.jsx';
 import { VrmlModel } from './vrml.jsx';
+import { CameraMode } from './cameramode.jsx';
 
 let stylesAdded = false; // for the onMount in DesignViewer
 
@@ -103,6 +104,8 @@ const DesignViewer = ( props ) =>
       <Show when={config.undoRedo} >
         <UndoRedoButtons root={rootRef} />
       </Show>
+
+      <CameraMode/>
 
       <Show when={showSceneMenu()}>
         <SceneMenu root={rootRef} show={whichScenes()} />
