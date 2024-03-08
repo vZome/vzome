@@ -4,9 +4,16 @@
     <meta charset="utf8">
     <title>&lt;vzome-viewer&gt;</title>
     <link rel="stylesheet" href="./vzome-viewer.css">
+
     <script type="module">
       import "/modules/gltf-viewer.js"; // registers the custom element
+
+      const vrmlViewer = document .getElementById( 'vrml' );
+      setTimeout( () => {
+        vrmlViewer.src='./models/icosahedron_(5_colors).vrml';
+      }, 10000 );
     </script>
+
   </head>
   <body>
     <article>
@@ -16,7 +23,7 @@
         </gltf-viewer>
       </section>
       <section>
-        <gltf-viewer src="./models/george-hart-bookball-3.gltf" id="gltf" >
+        <gltf-viewer src="./models/george-hart-bookball-3.vrml" id="vrml" >
           <img src="./models/george-hart-bookball-3.png" >
         </gltf-viewer>
       </section>

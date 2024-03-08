@@ -22,6 +22,7 @@ import { ExportMenu } from './export.jsx';
 import { UndoRedoButtons } from './undoredo.jsx';
 import { GltfExportProvider } from './geometry.jsx';
 import { GltfModel } from './gltf.jsx';
+import { VrmlModel } from './vrml.jsx';
 
 let stylesAdded = false; // for the onMount in DesignViewer
 
@@ -195,5 +196,24 @@ const renderGlTFViewer = ( container, config ) =>
   render( bindComponent, container );
 }
 
+const renderVrmlViewer = ( container, src, config ) =>
+{
+  const bindComponent = () =>
+  {
+    return (
+      <CameraProvider>
+        <DesignViewer config={ { ...config, allowFullViewport: true } }
+            componentRoot={container}
+            children3d={ <VrmlModel url={src()} /> }
+            height="100%" width="100%" >
+        </DesignViewer>
+      </CameraProvider>
+    );
+  }
 
-export { DesignViewer, UrlViewer, SceneCanvas, renderViewer, renderGlTFViewer };
+  container .appendChild( document.createElement("style") ).textContent = urlViewerCSS;
+  render( bindComponent, container );
+}
+
+
+export { DesignViewer, UrlViewer, SceneCanvas, renderViewer, renderGlTFViewer, renderVrmlViewer };
