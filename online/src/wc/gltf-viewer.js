@@ -1,4 +1,5 @@
 
+import { createSignal } from "solid-js";
 import { vZomeViewerCSS } from "./vzome-viewer.css";
 
 export class GltfViewerElement extends HTMLElement
@@ -6,11 +7,17 @@ export class GltfViewerElement extends HTMLElement
   #root;
   #container;
   #config;
+  #src
+  #setSrc;
 
   constructor()
   {
     super();
     this.#root = this.attachShadow({ mode: "open" });
+    
+    const [ src, setSrc ] = createSignal( null );
+    this.#src = src;
+    this.#setSrc = setSrc;
 
     this.#root.appendChild( document.createElement("style") ).textContent = vZomeViewerCSS;
     this.#container = document.createElement("div");
@@ -23,7 +30,10 @@ export class GltfViewerElement extends HTMLElement
   {
     import( '../viewer/index.jsx' )
       .then( module => {
-        module.renderGlTFViewer( this.#container, this.#config );
+        if ( this.#config.url .toLowerCase() .endsWith( 'gltf' ) )
+          module.renderGlTFViewer( this.#container, this.#config );
+        else if ( this.#config.url .toLowerCase() .endsWith( 'vrml' ) )
+          module.renderVrmlViewer( this.#container, this.#src, this.#config );
       });
   }
 
@@ -40,6 +50,7 @@ export class GltfViewerElement extends HTMLElement
       const newUrl = new URL( _newValue, window.location ) .toString();
       if ( newUrl !== this.#config.url ) {
         this.#config.url = newUrl;
+        this.#setSrc( newUrl );
       }
       break;
     }
