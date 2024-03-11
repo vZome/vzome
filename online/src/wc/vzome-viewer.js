@@ -13,6 +13,7 @@ export class VZomeViewer extends HTMLElement
   #reactive;
   #urlChanged;
   #sceneChanged;
+  #moduleLoaded;
 
   constructor()
   {
@@ -37,6 +38,7 @@ export class VZomeViewer extends HTMLElement
     this.#urlChanged = true;
     this.#sceneChanged = true;
     this.#reactive = true;
+    this.#moduleLoaded = false;
   }
 
   update( loadFlags={} )
@@ -57,6 +59,7 @@ export class VZomeViewer extends HTMLElement
     import( '../viewer/index.jsx' )
       .then( module => {
         module.renderViewer( this.#workerclient, this.#container, this.#config );
+        this.#moduleLoaded = true;
         
         // We used to do this in the constructor, after worker creation, for better responsiveness.
         // However, that causes a race condition on slow networks -- the model loads before the viewer
@@ -70,6 +73,7 @@ export class VZomeViewer extends HTMLElement
     return [ "src", "show-scenes", "scene", "load-camera", "reactive" ];
   }
 
+  // This callback can happen *before* connectedCallback()!
   attributeChangedCallback( attributeName, _oldValue, _newValue )
   {
     switch (attributeName) {
@@ -79,7 +83,7 @@ export class VZomeViewer extends HTMLElement
       if ( newUrl !== this.#config.url ) {
         this.#config.url = newUrl;
         this.#urlChanged = true;
-        if ( this.#reactive )
+        if ( this.#reactive && this.#moduleLoaded )
           this.update();
       }
       break;
@@ -89,7 +93,7 @@ export class VZomeViewer extends HTMLElement
         this.#config = { ...this.#config, sceneTitle: _newValue };
         this.#sceneChanged = true;
         // TODO: control the config prop on the viewer component, so the scenes menu behaves right
-        if ( this.#reactive )
+        if ( this.#reactive && this.#moduleLoaded )
           this.update();
       }
       break;
