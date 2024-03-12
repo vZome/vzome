@@ -4,6 +4,7 @@ import { vZomeViewerCSS } from "./vzome-viewer.css";
 import { createWorker } from '../viewer/context/worker.jsx';
 import { fetchDesign, selectScene, decodeEntities } from "../viewer/util/actions.js";
 
+const debug = false;
 export class VZomeViewer extends HTMLElement
 {
   #root;
@@ -14,6 +15,7 @@ export class VZomeViewer extends HTMLElement
   #urlChanged;
   #sceneChanged;
   #moduleLoaded;
+  #loadFlags;
 
   constructor()
   {
@@ -39,32 +41,55 @@ export class VZomeViewer extends HTMLElement
     this.#sceneChanged = true;
     this.#reactive = true;
     this.#moduleLoaded = false;
+    this.#loadFlags = {};
+    debug && console.log( 'custom element constructed' );
   }
 
   update( loadFlags={} )
   {
-    const { camera=true, lighting=true, design=true } = loadFlags;
+    debug && console.log( 'User called update()' );
+    this.#loadFlags = loadFlags;
+    if ( this.#reactive ) {
+      console.log( 'This update call ignored the component is reactive to attribute changes' );
+      return;
+    }
+    this.#update();
+  }
+
+  #update()
+  {
+    if ( ! this.#moduleLoaded ) {
+      // User code called update() in initialization, before the dynamic import, which will do the initial #update() anyway.
+      debug && console.log( 'update ignored; module not loaded' );
+      return;
+    }
+    const { camera=true, lighting=true, design=true } = this.#loadFlags;
     const load = { camera, lighting, design };
     const config = { ...this.#config, load };
     if ( this.#urlChanged ) {
+      debug && console.log( 'sending fetchDesign to worker' );
       this.#workerclient.postMessage( fetchDesign( this.#config.url, config ) );
       this.#urlChanged = false;
     } else if ( this.#sceneChanged ) {
+      debug && console.log( 'sending selectScene to worker' );
       this.#workerclient.postMessage( selectScene( this.#config.sceneTitle, load ) );
     }
   }
 
   connectedCallback()
   {
+    debug && console.log( 'custom element connected' );
     import( '../viewer/index.jsx' )
       .then( module => {
+        debug && console.log( 'dynamic module loaded' );
         module.renderViewer( this.#workerclient, this.#container, this.#config );
         this.#moduleLoaded = true;
         
         // We used to do this in the constructor, after worker creation, for better responsiveness.
         // However, that causes a race condition on slow networks -- the model loads before the viewer
         //   is ready for the results, leaving a blank canvas.
-        this.update();
+        // User updates could also cause this, so now those are prevented before this moment.
+        this.#update();
       });
   }
 
@@ -76,6 +101,7 @@ export class VZomeViewer extends HTMLElement
   // This callback can happen *before* connectedCallback()!
   attributeChangedCallback( attributeName, _oldValue, _newValue )
   {
+    debug && console.log( 'custom element attribute changed' );
     switch (attributeName) {
 
     case "src":
@@ -83,8 +109,8 @@ export class VZomeViewer extends HTMLElement
       if ( newUrl !== this.#config.url ) {
         this.#config.url = newUrl;
         this.#urlChanged = true;
-        if ( this.#reactive && this.#moduleLoaded )
-          this.update();
+        if ( this.#reactive )
+          this.#update();
       }
       break;
   
@@ -93,8 +119,8 @@ export class VZomeViewer extends HTMLElement
         this.#config = { ...this.#config, sceneTitle: _newValue };
         this.#sceneChanged = true;
         // TODO: control the config prop on the viewer component, so the scenes menu behaves right
-        if ( this.#reactive && this.#moduleLoaded )
-          this.update();
+        if ( this.#reactive )
+          this.#update();
       }
       break;
   

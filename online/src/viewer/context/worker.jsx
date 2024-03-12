@@ -32,6 +32,14 @@ const createWorker = () =>
 
   const subscribe = subscriber => subscribers .push( subscriber );
 
+  const unsubscribe = subscriber =>
+  {
+    const index = subscribers .indexOf( subscriber );
+    if (index > -1) { // only splice array when item is found
+      subscribers .splice( index, 1 ); // 2nd parameter means remove one item only
+    }
+  }
+
   const subscribeFor = ( type, callback ) =>
   {
     const subscriber = {
@@ -43,7 +51,8 @@ const createWorker = () =>
           callback( data.payload );
       }
     }
-    subscribe( subscriber )
+    subscribe( subscriber );
+    return () => unsubscribe( subscriber );
   }
 
   const onWorkerMessage = message =>
@@ -51,7 +60,7 @@ const createWorker = () =>
   const onWorkerError = message =>
     subscribers .forEach( subscriber => subscriber .onWorkerError( message ) );
 
-  return { postMessage, subscribe, subscribeFor };
+  return { postMessage, subscribe, subscribeFor, unsubscribe };
 }
 
 const stubContext = {
