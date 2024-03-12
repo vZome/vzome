@@ -7,6 +7,8 @@
     <script type="module">
       import "/modules/vzome-viewer.js"; // registers the custom element
 
+      console.log( '%%%%%%%%%%%%%%%%%% starting my script!');
+
       const logoViewer = document.querySelector( "#vZomeLogo" );
       logoViewer .addEventListener( "vzome-scenes-discovered", (e) => {
         setTimeout( () => {
@@ -24,6 +26,7 @@
       const title = document.querySelector( "#title" );
       const welcomeViewer = document.querySelector( "#welcome" );
       welcomeViewer.reactive = false;
+      welcomeViewer.update();
 
       const changeScene = delta =>
       {
@@ -41,6 +44,8 @@
         prevButton .addEventListener( "click", e => changeScene( -1 ) );
         nextButton .addEventListener( "click", e => changeScene( +1 ) );
       } );
+
+      console.log( '%%%%%%%%%%%%%%%%%% ending my script!');
 
     </script>
   </head>
