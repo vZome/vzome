@@ -8,6 +8,8 @@ import { PerspectiveCamera } from "./perspectivecamera.jsx";
 import { TrackballControls } from "./trackballcontrols.jsx";
 import { useInteractionTool } from "../viewer/context/interaction.jsx";
 import { useCamera } from "../viewer/context/camera.jsx";
+import { Labels } from "./labels.jsx";
+import { useViewer } from "./context/viewer.jsx";
 
 const Lighting = () =>
 {
@@ -63,6 +65,8 @@ export const LightedTrackballCanvas = ( props ) =>
 {
   let size;
   const aspect = () => ( size && size.height )? size.width / size.height : 1;
+  const canvasSize = () => size;
+  const { labels } = useViewer();
 
   const [ tool ] = useInteractionTool();
 
@@ -100,6 +104,7 @@ export const LightedTrackballCanvas = ( props ) =>
 
       {props.children}
 
+      {labels && labels() && <Labels size={canvasSize()} />}
     </Canvas>;
   
   canvas.style.display = 'flex';

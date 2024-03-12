@@ -6806,6 +6806,7 @@
   }, {
     "shape" : "128d4215-0a03-454b-b718-166b77c027d5",
     "color" : "#F7CF7F",
+    "label" : "TRIANGLE",
     "position" : {
       "x" : 0.0,
       "y" : 0.0,
@@ -7068,7 +7069,8 @@
     },
     "snapshot" : 5
   } ],
-  "snapshots" : [ [ {
+  "snapshots" : [
+    [ {
     "shape" : "cb7e5bd1-e3b3-4bc3-a324-19137331bf75",
     "color" : "#D77F7F",
     "position" : {

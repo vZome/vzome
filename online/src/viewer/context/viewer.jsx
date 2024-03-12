@@ -10,11 +10,13 @@ const ViewerContext = createContext( { scene: ()=> { console.log( 'NO ViewerProv
 
 const ViewerProvider = ( props ) =>
 {
+  const { url, labels: showLabels } = props.config || {};
   const [ scene, setScene ] = createStore( {} );
   const [ scenes, setScenes ] = createStore( [] );
   const [ source, setSource ] = createStore( {} );
   const [ problem, setProblem ] = createSignal( '' ); // cooperatively managed by both worker and client
   const [ waiting, setWaiting ] = createSignal( false );
+  const [ labels, setLabels ] = createSignal( showLabels );
   const { postMessage, subscribeFor } = useWorkerClient();
   const { state, setCamera, setLighting } = useCamera();
 
@@ -24,7 +26,6 @@ const ViewerProvider = ( props ) =>
     postMessage( fetchDesign( url, config ) );
   }
 
-  const { url } = props.config || {};
   url && postMessage( fetchDesign( url, props.config ) );
 
   const addShape = ( shape ) =>
@@ -121,7 +122,7 @@ const ViewerProvider = ( props ) =>
   } );
   
   const providerValue = {
-    scene, setScene, requestDesign, scenes, source, problem, waiting,
+    scene, setScene, requestDesign, scenes, source, problem, waiting, labels,
     clearProblem: () => setProblem( '' ),
     requestScene: ( name, config ) => postMessage( selectScene( name, config ) ),
     fetchPreview: ( url, config )  => postMessage( fetchDesign( url, config ) ),

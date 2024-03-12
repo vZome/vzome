@@ -104,7 +104,7 @@ const Selector = props =>
     <div class='selector safe-grid-item' >
       <div class="centered-scroller">
         <div class='scroller-content'>
-          <ModelWorker model={props.model} >
+          <ModelWorker model={props.model} labels={false} >
             <InteractionToolProvider>
               <CellSelectorTool model={props.model} orbits={props.orbits} />
               <SelectorCanvas/>

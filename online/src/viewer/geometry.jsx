@@ -1,10 +1,11 @@
 
-import { createContext, createEffect, createMemo, createSignal, useContext } from "solid-js";
+import { createContext, createEffect, createMemo, createSignal, onMount, useContext } from "solid-js";
 import { Vector3, Matrix4, BufferGeometry, Float32BufferAttribute } from "three";
 import { useThree } from "solid-three";
 
 import { useInteractionTool } from "./context/interaction.jsx";
 import { GLTFExporter } from "three-stdlib";
+import { Label } from "./labels.jsx";
 
 
 const Instance = ( props ) =>
@@ -69,8 +70,19 @@ const Instance = ( props ) =>
           onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onContextMenu={handleContextMenu}>
         <meshLambertMaterial attach="material" color={props.color} emissive={emissive()} />
       </mesh>
+      {!!props.label && <Label parent={meshRef} position={props.geometry.shapeCentroid} text={props.label} />}
     </group>
   )
+}
+
+const centroid = vertices =>
+{
+  let [ sx, sy, sz ] = [ 0,0,0 ];
+  vertices .forEach( ({ x, y, z }) => {
+    sx += x; sy += y; sz += z;
+  });
+  const num = vertices .length;
+  return { x: sx/num, y: sy/num, z: sz/num };
 }
 
 const InstancedShape = ( props ) =>
@@ -96,6 +108,7 @@ const InstancedShape = ( props ) =>
     geometry.setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
     geometry.setAttribute( 'normal', new Float32BufferAttribute( normals, 3 ) );
     geometry.computeBoundingSphere();
+    geometry.shapeCentroid = centroid( vertices );
     return geometry;
   } );
 
