@@ -81,7 +81,7 @@ export const useCellOrbits = () => { return useContext( CellOrbitContext ); };
 
 export const ModelWorker = props =>
 {
-  const config = { url: getModelURL( props.model ), preview: true, debug: false, sceneTitle: props.sceneTitle };
+  const config = { url: getModelURL( props.model ), preview: true, debug: false, sceneTitle: props.sceneTitle, labels: props.labels };
 
   return (
     <WorkerStateProvider>

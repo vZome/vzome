@@ -130,7 +130,7 @@ const UrlViewer = (props) =>
   return (
     <CameraProvider>
       <WorkerStateProvider workerClient={props.workerClient}>
-        <ViewerProvider config={{ url: props.url, preview: true, debug: false, showScenes: props.showScenes }}>
+        <ViewerProvider config={{ url: props.url, preview: true, debug: false, showScenes: props.showScenes, labels: props.config.labels }}>
           <DesignViewer config={ { ...props.config, allowFullViewport: true } }
               componentRoot={props.componentRoot}
               height="100%" width="100%" >
