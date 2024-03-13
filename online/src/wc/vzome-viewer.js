@@ -15,6 +15,7 @@ export class VZomeViewer extends HTMLElement
   #urlChanged;
   #sceneChanged;
   #moduleLoaded;
+  #updateCalled;
   #loadFlags;
 
   constructor()
@@ -41,6 +42,7 @@ export class VZomeViewer extends HTMLElement
     this.#sceneChanged = true;
     this.#reactive = true;
     this.#moduleLoaded = false;
+    this.#updateCalled = false;
     this.#loadFlags = {};
     debug && console.log( 'custom element constructed' );
   }
@@ -50,16 +52,17 @@ export class VZomeViewer extends HTMLElement
     debug && console.log( 'User called update()' );
     this.#loadFlags = loadFlags;
     if ( this.#reactive ) {
-      console.log( 'This update call ignored the component is reactive to attribute changes' );
+      console.log( 'This update call ignored; the component is reactive to attribute changes.  Set reactive to false if you want programmatic control of the viewer.' );
       return;
     }
-    this.#update();
+    this.#updateCalled = true;
+    this.#triggerWorker();
   }
 
-  #update()
+  #triggerWorker()
   {
     if ( ! this.#moduleLoaded ) {
-      // User code called update() in initialization, before the dynamic import, which will do the initial #update() anyway.
+      // User code called update() in initialization or an event handler, before the dynamic import has completed
       debug && console.log( 'update ignored; module not loaded' );
       return;
     }
@@ -89,7 +92,10 @@ export class VZomeViewer extends HTMLElement
         // However, that causes a race condition on slow networks -- the model loads before the viewer
         //   is ready for the results, leaving a blank canvas.
         // User updates could also cause this, so now those are prevented before this moment.
-        this.#update();
+        if ( this.#reactive || this.#updateCalled )
+          // #reactive means that there is no active control, so we need an initial #triggerWorker.
+          // #updateCalled means that the user has called update() on a controlled component.
+          this.#triggerWorker();
       });
   }
 
@@ -110,7 +116,7 @@ export class VZomeViewer extends HTMLElement
         this.#config.url = newUrl;
         this.#urlChanged = true;
         if ( this.#reactive )
-          this.#update();
+          this.#triggerWorker();
       }
       break;
   
@@ -120,7 +126,7 @@ export class VZomeViewer extends HTMLElement
         this.#sceneChanged = true;
         // TODO: control the config prop on the viewer component, so the scenes menu behaves right
         if ( this.#reactive )
-          this.#update();
+          this.#triggerWorker();
       }
       break;
   
