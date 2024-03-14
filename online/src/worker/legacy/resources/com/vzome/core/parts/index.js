@@ -2,6 +2,7 @@
 import defaultShapes from './default/index.js'
 import dodecagon3d from './dodecagon3d/index.js'
 import dodecs from './dodecs/index.js'
+import dimtool from './dimtool/index.js'
 import lifelike from './lifelike/index.js'
 import octahedral from './octahedral/index.js'
 import octahedralFast from './octahedralFast/index.js'
@@ -26,6 +27,7 @@ const shapes = {
   'default': defaultShapes,  // default is a keyword in Javascript
   dodecagon3d,
   dodecs,
+  dimtool,
   lifelike,
   octahedral,
   octahedralFast,
