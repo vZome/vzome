@@ -52,6 +52,17 @@ public abstract class JsManifestation implements Manifestation
     }
 
     @Override
+    public String getLabel()
+    {
+        return null;
+    }
+
+    @Override
+    public void setLabel( String label )
+    {
+    }
+
+    @Override
     public void setColor( Color color )
     {
         if ( color != null )

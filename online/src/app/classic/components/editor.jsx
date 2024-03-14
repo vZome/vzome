@@ -5,6 +5,8 @@ import SvgIcon from '@suid/material/SvgIcon'
 import ToggleButton from "@suid/material/ToggleButton";
 import ToggleButtonGroup from "@suid/material/ToggleButtonGroup";
 
+import { LabelDialog } from '../dialogs/label.jsx';
+
 import { useCamera } from '../../../viewer/context/camera.jsx';
 import { useViewer } from '../../../viewer/context/viewer.jsx';
 import { CameraTool, InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
@@ -59,7 +61,6 @@ export const SceneEditor = ( props ) =>
   }
 
   let colorPicker;
-  const showColorPicker = () => colorPicker .click();
   createEffect( () => {
     colorPicker .addEventListener( "input", e => {
       const color = e.target.value;
@@ -67,13 +68,31 @@ export const SceneEditor = ( props ) =>
       setLighting( { backgroundColor: color } )
     }, false );
   });
+  const [ labeling, setLabeling ] = createSignal( null );
+  const showDialog = (key,id) =>
+  {
+    switch (key) {
+
+      case 'color':
+        colorPicker .click();
+        break;
+    
+      case 'label':
+        setLabeling( id );
+        break;
+    
+      default:
+        break;
+    }
+  }
 
   // not using DesignViewer because it has its own UI, not corresponding to classic desktop vZome
   return (
     <div style={{ position: 'relative', display: 'flex', overflow: 'hidden', height: '100%' }}>
       <input ref={colorPicker} type="color" name="color-picker" class='hidden-color-input' />
+      <LabelDialog open={!!labeling()} close={()=>setLabeling(null)} id={labeling()} />
       <InteractionToolProvider>
-        <ContextualMenuArea menu={<ContextualMenu showColorPicker={showColorPicker} />} disabled={viewing() || strutting()} onOpenChange={resetPicked}>
+        <ContextualMenuArea menu={<ContextualMenu showDialog={showDialog} />} disabled={viewing() || strutting()} onOpenChange={resetPicked}>
           <SceneCanvas height="100%" width="100%" scene={scene} rotationOnly={false} >
             {/* The group is only necessary because of https://github.com/solidjs-community/solid-three/issues/11 */}
             <group>

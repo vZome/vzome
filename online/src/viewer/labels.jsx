@@ -35,14 +35,12 @@ export const Labels = (props) =>
 
 export const Label = (props) =>
 {
-  const scene = useThree(({ scene }) => scene);
-
   let label;  
   onMount( () => {
     const elem = document .createElement( 'div' );
     elem.className = 'vzome-label';
+    elem.id = `vzome-label-${props.text}`;
     elem.textContent = props.text;
-    elem.style.backgroundColor = 'transparent';
     label = new CSS2DObject( elem );
     props.parent .add( label );
   });

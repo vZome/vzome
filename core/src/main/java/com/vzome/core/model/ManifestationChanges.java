@@ -10,4 +10,6 @@ public interface ManifestationChanges
     void manifestationRemoved( Manifestation m );
     
     void manifestationColored( Manifestation m, Color color );
+
+    void manifestationLabeled( Manifestation m, String label );
 }

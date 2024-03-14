@@ -116,6 +116,10 @@ public class JsonMapper
 
                 node .set( "position", this .getLocation( rm ) );
                 
+                String label = rm .getLabel();
+                if ( label != null )
+                    node .put( "label", label );
+                
                 float glow = rm .getGlow();
                 if ( glow != 0f )
                     node .put( "glow", glow );
@@ -133,6 +137,10 @@ public class JsonMapper
             {
                 ObjectNode node = this .objectMapper .createObjectNode();
                 node .put( "shape", shapeId );
+                
+                String label = rm .getLabel();
+                if ( label != null )
+                    node .put( "label", label );
 
                 Color color = rm .getColor();
                 if ( color == null )
@@ -151,6 +159,10 @@ public class JsonMapper
             {
                 ObjectNode node = this .objectMapper .createObjectNode();
                 node .put( "shape", shapeId );
+                
+                String label = rm .getLabel();
+                if ( label != null )
+                    node .put( "label", label );
 
                 Color color = rm .getColor();
                 if ( color == null )
@@ -169,6 +181,10 @@ public class JsonMapper
             {
                 ObjectNode node = this .objectMapper .createObjectNode();
                 node .put( "shape", shapeId );
+                
+                String label = rm .getLabel();
+                if ( label != null )
+                    node .put( "label", label );
 
                 Color color = rm .getColor();
                 if ( color == null )

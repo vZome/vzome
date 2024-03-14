@@ -95,6 +95,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
       shapesChanged: () => false, // this allows RenderedModel.setShapes() to not fail and re-render all the parts
       manifestationAdded: () => {},  // We don't need these incremental changes, since we'll batch render after
       manifestationRemoved: () => {},
+      labelChanged: () => {},
       colorChanged: () => {},
       glowChanged: () => {},
     } );

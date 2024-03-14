@@ -39,6 +39,12 @@ public class TransparentRendering implements RenderingChanges
     }
 
     @Override
+    public void labelChanged( RenderedManifestation manifestation )
+    {
+        mRealOne .labelChanged( manifestation );
+    }
+
+    @Override
     public void colorChanged( RenderedManifestation manifestation )
     {
         mRealOne .colorChanged( manifestation );

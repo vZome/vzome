@@ -109,6 +109,12 @@ public class JsRealizedModel implements RealizedModel {
     }
 
     @Override
+    public void setLabel( Manifestation man, String label )
+    {
+        ((JsManifestation) man) .setLabel( label );
+    }
+
+    @Override
     public void add( Manifestation man )
     {
         int[][][] vectors = ((JsManifestation) man) .getVectors();

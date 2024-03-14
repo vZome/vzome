@@ -31,6 +31,8 @@ public interface RenderingChanges {
 
     void shapeChanged( RenderedManifestation manifestation );
 
+    void labelChanged( RenderedManifestation manifestation );
+
     /**
      * Change shapes all at once, if supported.
      * @param shapes

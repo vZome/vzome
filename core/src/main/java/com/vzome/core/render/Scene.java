@@ -148,7 +148,13 @@ public class Scene implements RenderingChanges, PropertyChangeListener
     }
 
 	@Override
-	public void colorChanged( RenderedManifestation rm )
+	public void labelChanged( RenderedManifestation rm )
+	{
+        System.out.println( "label changed: " + rm .getLabel() );
+	}
+
+    @Override
+    public void colorChanged( RenderedManifestation rm )
 	{
         String symmetryName = rm .getOrbitSource() .getSymmetry() .getName();
         this .symmetries .get( symmetryName ) .colorChanged( rm );

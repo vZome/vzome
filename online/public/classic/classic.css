@@ -4,6 +4,12 @@ img {
   display: block;
 }
 
+.vzome-label {
+  font-weight: bold;
+  font-size: large;
+  background-color: white;
+}
+
 .persistence {
   flex: 1 1 auto;
   display: inline-flex;

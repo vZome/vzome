@@ -48,7 +48,7 @@ const Classic = () =>
       <WorkerStateProvider>
       <CameraProvider name='common'>
       <EditorProvider>
-      <ViewerProvider>
+      <ViewerProvider config={{ labels: true }}>
         <SymmetryProvider>
           <VZomeAppBar menuBar={true} title='BETA'
             spacer={ <>
