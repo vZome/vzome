@@ -4,26 +4,28 @@
 import { createEffect, untrack, onCleanup } from 'solid-js';
 import { useThree } from 'solid-three';
 
-export const PerspectiveCamera = (props) =>
+export const OrthographicCamera = (props) =>
 {
   const set = useThree(({ set }) => set);
   const scene = useThree(({ scene }) => scene);
   const camera = useThree(({ camera }) => camera);
-  const size = useThree(({ size }) => size);
 
   let cam;
-
-  createEffect( () => {
-    const [ x, y, z ] = props.target;
-    cam .lookAt( x, y, z );
-  });
 
   createEffect(() => {
     cam.near = props.near;
     cam.far = props.far;
-    cam.fov = props.fov;
-    cam.aspect = size().width / size().height;
+    cam.left = -props.halfWidth;
+    cam.right = props.halfWidth;
+    const halfHeight = props.halfWidth / props.aspect;
+    cam.top = halfHeight;
+    cam.bottom = -halfHeight;
     cam.updateProjectionMatrix();
+  });
+
+  createEffect( () => {
+    const [ x, y, z ] = props.target;
+    cam .lookAt( x, y, z );
   });
 
   createEffect(() => {
@@ -36,5 +38,5 @@ export const PerspectiveCamera = (props) =>
     });
   });
 
-  return <perspectiveCamera ref={cam} position={props.position} {...props} />
+  return <orthographicCamera ref={cam} position={props.position} {...props} />
 }

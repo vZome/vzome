@@ -1,5 +1,5 @@
 
-import { Show, For, createEffect, createSignal } from 'solid-js';
+import { Show, For } from 'solid-js';
 import Stack from "@suid/material/Stack"
 import Button from "@suid/material/Button"
 import Switch from "@suid/material/Switch";

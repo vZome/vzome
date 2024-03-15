@@ -53,7 +53,7 @@ export const TrackballControls = (props) =>
 
     controls.connect( gl().domElement );
 
-    const onChange = () => props.sync( trackballControls() .target );
+    const onChange = () => props.sync( controls .target, props.name );
     controls .addEventListener( "change", onChange );
 
     onCleanup(() => {

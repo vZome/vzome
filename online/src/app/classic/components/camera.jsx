@@ -2,6 +2,10 @@
 import { createEffect } from 'solid-js';
 import { createStore } from 'solid-js/store';
 
+import Stack from "@suid/material/Stack"
+import Switch from "@suid/material/Switch";
+import FormControlLabel from "@suid/material/FormControlLabel";
+
 import { useWorkerClient } from '../../../viewer/context/worker.jsx';
 import { useEditor } from '../../../viewer/context/editor.jsx';
 import { CameraProvider, useCamera } from '../../../viewer/context/camera.jsx';
@@ -15,8 +19,10 @@ export const CameraControls = (props) =>
   const context = useCamera();
   const { isWorkerReady, subscribeFor } = useWorkerClient();
   const { rootController, controllerAction } = useEditor();
-  const { state, setCamera } = useCamera();
+  const { state, setCamera, togglePerspective } = useCamera();
   const [ scene, setScene ] = createStore( null );
+
+  const isPerspective = () => state.camera.perspective;
 
   // TODO: encapsulate these and createStore() in a new createScene()... 
   //  OR...
@@ -74,7 +80,15 @@ export const CameraControls = (props) =>
       {/* provider and CameraTool just to get the desired cursor */}
       <CameraTool/>
       <div id='camera-controls' style={{ display: 'grid', 'grid-template-rows': 'min-content min-content' }}>
-        <div id='camera-buttons' class='placeholder' style={{ 'min-height': '60px' }} >perspective | snap | outlines</div>
+        <Stack spacing={2} direction="row" style={{ padding: '8px' }}>
+          <FormControlLabel label="perspective"
+            control={
+              <Switch checked={isPerspective()} onChange={togglePerspective} size='small' inputProps={{ "aria-label": "controlled" }} />
+          }/>
+          <div id='snap-switch' class='placeholder' >snap</div>
+          <div id='outlines-switch' class='placeholder' >outlines</div>
+        </Stack>
+
         <div id="ball-and-slider" style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
           <div id="camera-trackball" style={{ border: '1px solid' }}>
             <SceneCanvas scene={scene} height="200px" width="240px" rotationOnly={true} rotateSpeed={0.7}/>
