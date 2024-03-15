@@ -105,7 +105,9 @@ const DesignViewer = ( props ) =>
         <UndoRedoButtons root={rootRef} />
       </Show>
 
-      <CameraMode/>
+      <Show when={config.showPerspective} >
+        <CameraMode/>
+      </Show>
 
       <Show when={showSceneMenu()}>
         <SceneMenu root={rootRef} show={whichScenes()} />
