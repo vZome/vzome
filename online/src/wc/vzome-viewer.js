@@ -36,7 +36,7 @@ export class VZomeViewer extends HTMLElement
       this .dispatchEvent( new CustomEvent( 'vzome-scenes-discovered', { detail: titles } ) );
     } );
 
-    this.#config = { preview: true, showScenes: 'none', camera: true, lighting: true, design: true, labels: false };
+    this.#config = { preview: true, showScenes: 'none', camera: true, lighting: true, design: true, labels: false, showPerspective: true };
 
     this.#urlChanged = true;
     this.#sceneChanged = true;
@@ -101,7 +101,7 @@ export class VZomeViewer extends HTMLElement
 
   static get observedAttributes()
   {
-    return [ "src", "show-scenes", "scene", "load-camera", "reactive", "labels" ];
+    return [ "src", "show-scenes", "scene", "load-camera", "reactive", "labels", "show-perspective" ];
   }
 
   // This callback can happen *before* connectedCallback()!
@@ -138,6 +138,11 @@ export class VZomeViewer extends HTMLElement
     case "labels":
       const labels = _newValue === 'true';
       this.#config = { ...this.#config, labels };
+      break;
+
+    case "show-perspective":
+      const showPerspective = _newValue === 'true';
+      this.#config = { ...this.#config, showPerspective };
       break;
   
     case "reactive":
@@ -200,6 +205,20 @@ export class VZomeViewer extends HTMLElement
   get labels()
   {
     return this.getAttribute( "labels" );
+  }
+
+  set showPerspective( newValue )
+  {
+    if ( newValue === null ) {
+      this.removeAttribute( "show-perspective" );
+    } else {
+      this.setAttribute( "show-perspective", newValue );
+    }
+  }
+
+  get showPerspective()
+  {
+    return this.getAttribute( "show-perspective" );
   }
 
   set reactive( value )
