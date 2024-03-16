@@ -4,6 +4,17 @@
     <meta charset="utf8">
     <title>&lt;vzome-viewer&gt;</title>
     <link rel="stylesheet" href="./vzome-viewer.css">
+    <style>
+      #testShowScenes {
+        --vzome-label-color: aquamarine;
+        --vzome-label-size: x-large;
+        --vzome-label-weight: bold;
+      }
+      vzome-viewer {
+        --vzome-label-background: black;
+        --vzome-label-color: red;
+      }
+    </style>
     <script type="module">
       import "/modules/vzome-viewer.js"; // registers the custom element
 

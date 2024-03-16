@@ -1,4 +1,13 @@
 export const urlViewerCSS = `
+
+.vzome-label {
+  color: var(--vzome-label-color);
+  background-color: var(--vzome-label-background);
+  font-size: var(--vzome-label-size);
+  font-style: var(--vzome-label-style);
+  font-weight: var(--vzome-label-weight);
+}
+
 .select__trigger {
   display: inline-flex;
   align-items: center;

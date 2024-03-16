@@ -5,6 +5,8 @@ export const vZomeViewerCSS = `
   height: 256px;
   overflow: hidden;
   position: relative;
+
+  --vzome-label-background: white;
 }
 
 :host > div {
