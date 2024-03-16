@@ -30,8 +30,8 @@ const SelectionTool = props =>
     onDragEnd: evt => {
       // console.log( 'selectionTool onDragEnd?????!!!!!' );
     },
-    onContextMenu: ( id, position, type, selected ) => {
-      setState( 'picked', { id, position, type, selected } );
+    onContextMenu: ( id, position, type, selected, label ) => {
+      setState( 'picked', { id, position, type, selected, label } );
     }
   };
 

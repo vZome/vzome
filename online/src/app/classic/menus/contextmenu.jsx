@@ -81,7 +81,7 @@ export const ContextualMenu = props =>
 
             <ContextMenuSeparator/>
 
-            <ContextMenuItem onSelect={props.showDialog( 'label', state.picked.id )} label='Label This' />
+            <ContextMenuItem onSelect={props.showDialog( 'label', state.picked.id, state.picked.label )} label='Label This' />
 
             <ContextMenuSeparator/>
 

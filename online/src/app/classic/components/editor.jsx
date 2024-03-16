@@ -15,7 +15,7 @@ import { useEditor } from '../../../viewer/context/editor.jsx';
 import { SceneCanvas } from '../../../viewer/index.jsx';
 import { SelectionTool } from '../tools/selection.jsx';
 import { StrutDragTool } from '../tools/strutdrag.jsx';
-import { ContextualMenuArea } from '../../framework/menus.jsx';
+import { ContextualMenuArea, resumeMenuKeyEvents, suspendMenuKeyEvents } from '../../framework/menus.jsx';
 import { ContextualMenu } from '../menus/contextmenu.jsx';
 
 export const SceneEditor = ( props ) =>
@@ -69,7 +69,8 @@ export const SceneEditor = ( props ) =>
     }, false );
   });
   const [ labeling, setLabeling ] = createSignal( null );
-  const showDialog = (key,id) =>
+  const [ label, setLabel ] = createSignal( null );
+  const showDialog = (key,...rest) =>
   {
     switch (key) {
 
@@ -78,6 +79,9 @@ export const SceneEditor = ( props ) =>
         break;
     
       case 'label':
+        const [ id, label ] = rest;
+        setLabel( label );
+        suspendMenuKeyEvents();
         setLabeling( id );
         break;
     
@@ -85,12 +89,17 @@ export const SceneEditor = ( props ) =>
         break;
     }
   }
+  const hideLabelDialog = () =>
+  {
+    resumeMenuKeyEvents();
+    setLabeling( null );
+  }
 
   // not using DesignViewer because it has its own UI, not corresponding to classic desktop vZome
   return (
     <div style={{ position: 'relative', display: 'flex', overflow: 'hidden', height: '100%' }}>
       <input ref={colorPicker} type="color" name="color-picker" class='hidden-color-input' />
-      <LabelDialog open={!!labeling()} close={()=>setLabeling(null)} id={labeling()} />
+      <LabelDialog open={!!labeling()} close={hideLabelDialog} id={labeling()} label={label()} />
       <InteractionToolProvider>
         <ContextualMenuArea menu={<ContextualMenu showDialog={showDialog} />} disabled={viewing() || strutting()} onOpenChange={resetPicked}>
           <SceneCanvas height="100%" width="100%" scene={scene} rotationOnly={false} >

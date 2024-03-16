@@ -6,6 +6,11 @@ import { useEditor } from "../../viewer/context/editor";
 
 const isMac = navigator.userAgentData?.platform === 'macOS' || navigator.userAgent .includes( 'Macintosh' );
 
+let menuKeyEventsSuspended = false;
+
+export const suspendMenuKeyEvents = () => menuKeyEventsSuspended = true;
+export const resumeMenuKeyEvents = () => menuKeyEventsSuspended = false;
+
 export const MenuAction = ( props ) =>
 {
   let modifiers = props.mods;
@@ -18,7 +23,9 @@ export const MenuAction = ( props ) =>
       const hasControl = !! modifiers ?.includes( '⌃' );
       const hasShift = !! modifiers ?.includes( '⇧' );
       const hasOption = !! modifiers ?.includes( '⌥' );
-      document .addEventListener( "keydown", evt => {
+      document.body .addEventListener( "keydown", evt => {
+        if ( menuKeyEventsSuspended )
+          return;
         if ( targetCodes .indexOf( evt.code ) < 0 )
           return;
         if ( hasMeta !== evt.metaKey )

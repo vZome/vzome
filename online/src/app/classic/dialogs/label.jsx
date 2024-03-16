@@ -7,13 +7,17 @@ import Button from "@suid/material/Button"
 import TextField from "@suid/material/TextField"
 
 import { subController, useEditor } from '../../../viewer/context/editor.jsx';
-import { createSignal } from "solid-js"
+import { createEffect, createSignal } from "solid-js"
 
 export const LabelDialog = props =>
 {
-  const { rootController, controllerAction, state } = useEditor();
+  const { rootController, controllerAction } = useEditor();
   const controller  = () => subController( rootController(), 'picking' );
   const [ value, setValue ] = createSignal( '' );
+  createEffect( () => {
+    if ( !! props.label )
+      setValue( props.label );
+  })
 
   const perform = event =>
   {
@@ -25,7 +29,7 @@ export const LabelDialog = props =>
     <Dialog onClose={ () => props.close() } open={props.open}>
       <DialogTitle id="label-dialog">Label an Object</DialogTitle>
       <DialogContent sx={{ 'padding-bottom': '0px' }}>
-        <TextField id="label-value" label="value" variant="outlined" fullWidth value={value()} sx={{ margin: '5px' }}
+        <TextField autoFocus id="label-value" label="value" variant="outlined" fullWidth value={value()} sx={{ margin: '5px' }}
             onChange={(event, value) => setValue( value )}
           />
       </DialogContent>
