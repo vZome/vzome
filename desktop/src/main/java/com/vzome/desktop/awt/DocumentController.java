@@ -1654,6 +1654,12 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                 buf.append("\n\ncolor (RGB): ");
                 buf.append(man.getColor().toString());
                 
+                String label = man.getLabel();
+                if(label != null) {
+                    buf.append("\n\nlabel: ");
+                    buf.append(label);
+                }
+                
                 if( devExtras) {
                     if( zone != null) {
                         buf.append( "\n\nzone: " + zone .toString() );
