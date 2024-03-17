@@ -26,7 +26,9 @@ public interface RealizedModel extends Iterable<Manifestation>
     void remove( Manifestation mManifestation );
 
     void setColor( Manifestation manifestation, Color color );
-    
+
+    void setLabel( Manifestation m, String label );
+
     // new for better performance in Javascript
 
     Manifestation findPerEditManifestation( String signature );

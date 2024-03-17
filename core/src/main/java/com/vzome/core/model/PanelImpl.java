@@ -20,6 +20,7 @@ public class PanelImpl extends ManifestationImpl implements Panel
 {
     private final List<AlgebraicVector> mVertices;
     private AlgebraicVector zoneVector;
+    private String label;
 
     /**
      * Create a panel from a list of AlgebraicVectors
@@ -195,4 +196,15 @@ public class PanelImpl extends ManifestationImpl implements Panel
         return buf.toString();
     }
 
+    @Override
+    public void setLabel( String label )
+    {
+        this.label = label;
+    }
+
+    @Override
+    public String getLabel()
+    {
+        return this .label;
+    }
 }

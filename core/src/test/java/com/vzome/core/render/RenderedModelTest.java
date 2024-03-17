@@ -98,7 +98,13 @@ public class RenderedModelTest
 		}
 
 		@Override
-		public void colorChanged( RenderedManifestation manifestation )
+		public void labelChanged( RenderedManifestation manifestation )
+	    {
+            fail( "should not be called" );
+	    }
+
+	    @Override
+	    public void colorChanged( RenderedManifestation manifestation )
 		{
 			fail( "should not be called" );
 		}

@@ -231,6 +231,9 @@ public class DocumentController extends DefaultGraphicsController implements Sce
 
             @Override
             public void manifestationColored( Manifestation m, Color c ) {}
+
+            @Override
+            public void manifestationLabeled( Manifestation m, String label ) {}
         };
         this .documentModel .addSelectionListener( selectionRendering );
         

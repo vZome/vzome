@@ -65,6 +65,8 @@ public class RenderedManifestation implements RenderedObject
 
     private OrbitSource orbitSource;
 
+    private String label;
+
     public RenderedManifestation( Manifestation m, OrbitSource orbitSource )
     {
         mManifestation = m;
@@ -274,6 +276,7 @@ public class RenderedManifestation implements RenderedObject
         copy .mTransparency = this .mTransparency;
         copy .strutLength = this .strutLength;
         copy .strutZone = this .strutZone;
+        copy .label = this .label;
         return copy;
     }
 
@@ -334,6 +337,10 @@ public class RenderedManifestation implements RenderedObject
 
     public void resetAttributes( boolean oneSidedPanels, boolean colorPanels )
     {
+        String label = this.mManifestation .getLabel();
+        if ( null != label ) {
+            this .setLabel( label );
+        }
         if ( this .mManifestation instanceof Panel ) {
             resetPanelAttributes( oneSidedPanels, colorPanels );
         }
@@ -499,5 +506,15 @@ public class RenderedManifestation implements RenderedObject
     public OrbitSource getOrbitSource()
     {
         return this.orbitSource;
+    }
+
+    public String getLabel()
+    {
+        return this.label;
+    }
+
+    public void setLabel( String label )
+    {
+        this.label = label;
     }
 }

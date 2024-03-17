@@ -95,6 +95,11 @@ public class SelectionSummary implements ManifestationChanges
 	@Override
 	public void manifestationColored( Manifestation m, Color color ) {}
 	
+
+    @Override
+    public void manifestationLabeled( Manifestation m, String label ) {}
+
+	
 	public void addListener( Listener listener )
 	{
 		this .listeners .add( listener );

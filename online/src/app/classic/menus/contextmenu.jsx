@@ -65,7 +65,7 @@ export const ContextualMenu = props =>
             <ContextMenuSeparator/>
             <ContextMenuItem onSelect={lookAtOrigin} label='Look At Origin' />
             <ContextMenuSeparator/>
-            <ContextMenuItem onSelect={props.showColorPicker} label='Set Background Color...' />
+            <ContextMenuItem onSelect={props.showDialog('color')} label='Set Background Color...' />
           </ContextMenu.Content>
         }>
         <Match when={ !!state.picked }>
@@ -78,6 +78,10 @@ export const ContextualMenu = props =>
                 <PickingItem action='SymmetryCenterChange' label='Set Symmetry Center' disabled />
                 <PickingItem action='SymmetryAxisChange' label='Set Symmetry Axis' disabled />
             } */}
+
+            <ContextMenuSeparator/>
+
+            <ContextMenuItem onSelect={props.showDialog( 'label', state.picked.id, state.picked.label )} label='Label This' />
 
             <ContextMenuSeparator/>
 

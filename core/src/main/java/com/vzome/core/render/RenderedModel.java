@@ -232,6 +232,19 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         }
     }
 
+    public void setManifestationLabel( Manifestation m, String label )
+    {
+        RenderedManifestation rendered = (RenderedManifestation) ((HasRenderedObject) m) .getRenderedObject();
+        if ( rendered == null )
+            return; // could not find a shape for m, probably
+        rendered .setLabel( label );
+        if ( mainListener != null )
+            mainListener .labelChanged( rendered );
+        for (RenderingChanges listener : mListeners) {
+            listener .labelChanged( rendered );
+        }
+    }
+
     
     public void setManifestationTransparency( Manifestation m, boolean on )
     {
@@ -329,6 +342,13 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     {
 		if ( this .enabled )
 			this .setManifestationColor( m, color );
+    }
+
+    @Override
+    public void manifestationLabeled (Manifestation m, String label )
+    {
+        if ( this .enabled )
+            this .setManifestationLabel( m, label );
     }
 
     public RenderedModel snapshot()

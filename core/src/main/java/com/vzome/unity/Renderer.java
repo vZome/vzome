@@ -70,6 +70,9 @@ class Renderer implements RenderingChanges
     public void glowChanged( RenderedManifestation rm ) {}
 
     @Override
+    public void labelChanged( RenderedManifestation rm ) {}
+
+    @Override
     public void colorChanged( RenderedManifestation rm )
     {
         ObjectNode node = this .mapper .getObjectNode( rm, false );

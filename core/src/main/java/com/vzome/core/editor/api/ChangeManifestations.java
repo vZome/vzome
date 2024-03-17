@@ -121,6 +121,11 @@ public abstract class ChangeManifestations extends ChangeSelection
         plan( new ColorManifestation( m, color ) );
     }
 
+    public void labelManifestation( Manifestation m, String label )
+    {
+        plan( new LabelManifestation( m, label ) );
+    }
+
     protected void hideConnectors()
     {
         for ( Connector connector : Manifestations .getVisibleConnectors( this .mManifestations ) )
@@ -360,6 +365,41 @@ public abstract class ChangeManifestations extends ChangeSelection
             Element man = mManifestation .getXml( doc );
             result .appendChild( man );
             return result;
+        }
+    }
+
+    private class LabelManifestation implements SideEffect
+    {
+        private final Manifestation mManifestation;
+        private final String oldLabel, newLabel;
+        
+        public LabelManifestation( Manifestation m, String label )
+        {
+            this.mManifestation = m;
+            this.newLabel = label;
+            this.oldLabel = m .getLabel();
+        }
+
+        @Override
+        public void undo()
+        {
+            mManifestations .setLabel( mManifestation, oldLabel );
+        }
+
+        @Override
+        public Element getXml( Document doc )
+        {
+            Element result = doc .createElement( "label" );
+            DomUtils .addAttribute( result, "text", newLabel );
+            Element man = mManifestation .getXml( doc );
+            result .appendChild( man );
+            return result;
+        }
+
+        @Override
+        public void redo()
+        {
+            mManifestations .setLabel( mManifestation, newLabel );
         }
     }
 
