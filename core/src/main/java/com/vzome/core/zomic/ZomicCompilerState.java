@@ -92,13 +92,13 @@ public class ZomicCompilerState
     public interface IHaveAxisInfo {
         // e.g. red -2+
         String axisColor();             // red
-        void axisColor(String s);
+        void setAxisColor(String s);
 
         String indexNumber();           // -2
-        void indexNumber(String s);
+        void setIndexNumber(String s);
 
         String handedness();            // +
-        void handedness(String s);
+        void setHandedness(String s);
 
         String indexFullName();         // -2+
     }
@@ -128,24 +128,24 @@ public class ZomicCompilerState
                 //} catch( NullPointerException  ex ) {
             } catch( RuntimeException ex) {
                 String msg = "bad axis specification: '" + axisColor + " " + indexFullName() + "'";
-                throw new Exception( msg, ex);
+                throw new Exception( msg );
             } 
         }
 
         @Override
         public String axisColor() { return axisColor; }
         @Override
-        public void axisColor(String s) { axisColor = s; }
+        public void setAxisColor(String s) { axisColor = s; }
 
         @Override
         public String indexNumber() { return indexNumber; }
         @Override
-        public void indexNumber(String s) { indexNumber = s; }
+        public void setIndexNumber(String s) { indexNumber = s; }
 
         @Override
         public String handedness() { return handedness; }
         @Override
-        public void handedness(String s) { handedness = s; }
+        public void setHandedness(String s) { handedness = s; }
 
         @Override
         public String indexFullName() { return indexNumber + handedness; }
@@ -247,17 +247,17 @@ public class ZomicCompilerState
         @Override
         public String axisColor() { return axisInfo.axisColor; }
         @Override
-        public void axisColor(String s) { axisInfo.axisColor(s); }
+        public void setAxisColor(String s) { axisInfo.setAxisColor(s); }
 
         @Override
         public String indexNumber() { return axisInfo.indexNumber; }
         @Override
-        public void indexNumber(String s) { axisInfo.indexNumber(s); }
+        public void setIndexNumber(String s) { axisInfo.setIndexNumber(s); }
         @Override
 
         public String handedness() { return axisInfo.handedness; }
         @Override
-        public void handedness(String s) { axisInfo.handedness(s); }
+        public void setHandedness(String s) { axisInfo.setHandedness(s); }
 
 
         @Override
@@ -279,17 +279,17 @@ public class ZomicCompilerState
         @Override
         public String axisColor() { return axisInfo.axisColor; }
         @Override
-        public void axisColor(String s) { axisInfo.axisColor(s); }
+        public void setAxisColor(String s) { axisInfo.setAxisColor(s); }
 
         @Override
         public String indexNumber() { return axisInfo.indexNumber; }
         @Override
-        public void indexNumber(String s) { axisInfo.indexNumber(s); }
+        public void setIndexNumber(String s) { axisInfo.setIndexNumber(s); }
         @Override
 
         public String handedness() { return axisInfo.handedness; }
         @Override
-        public void handedness(String s) { axisInfo.handedness(s); }
+        public void setHandedness(String s) { axisInfo.setHandedness(s); }
 
 
         @Override
@@ -311,7 +311,7 @@ public class ZomicCompilerState
             Reflect result = new Reflect();
             if( !isThroughCenter ) {
                 if( "".equals(axisColor()) && !"".equals(indexNumber()) ) {
-                    axisColor("blue");
+                    setAxisColor("blue");
                 }
                 Axis axis = axisInfo.generate();
                 result.setAxis(axis);
@@ -322,34 +322,35 @@ public class ZomicCompilerState
         @Override
         public String axisColor() { return axisInfo.axisColor; }
         @Override
-        public void axisColor(String s) {
+        public void setAxisColor(String s) {
             if( !"blue".equals(s)) {
                 enforceBlueAxis();
             } else {
-                axisInfo.axisColor(s); 
+                axisInfo.setAxisColor(s); 
             }
         }
 
         @Override
         public String indexNumber() { return axisInfo.indexNumber; }
         @Override
-        public void indexNumber(String s) {
+        public void setIndexNumber(String s) {
             // Old way silently removes any negative sign on the axis index
             // so we always reflect around the positive axis.
             // Don't know if that matters, but we'll do it the same way here.
             // Note that the "symmetry around axis" statement does not strip the sign.
             // but "symmetry through blueAxisIndex" does, just like ReflectTemplate.
-            s = s.replaceFirst("-", "");
-            axisInfo.indexNumber(s);
+            if ( s .startsWith( "-" ) )
+                s = s .substring(1);
+            axisInfo.setIndexNumber(s);
             if( isThroughCenter && !"".equals(indexNumber())) {
-                axisColor("blue");
+                setAxisColor("blue");
             }
         }
 
         @Override
         public String handedness() { return axisInfo.handedness; }
         @Override
-        public void handedness(String s) {
+        public void setHandedness(String s) {
             enforceBlueAxis();
         }
 
@@ -420,28 +421,29 @@ public class ZomicCompilerState
         @Override
         public String axisColor() { return axisInfo.axisColor; }
         @Override
-        public void axisColor(String s) { axisInfo.axisColor(s); }
+        public void setAxisColor(String s) { axisInfo.setAxisColor(s); }
 
         @Override
         public String indexNumber() { return axisInfo.indexNumber; }
         @Override
-        public void indexNumber(String s) {
+        public void setIndexNumber(String s) {
             // Note that the "symmetry around axis" statement does not strip the sign.
             // but "symmetry through blueAxisIndex" does, just like ReflectTemplate.
             // Don't know if that matters, but we'll do it the same way here.
             if(symmetryMode == SymmetryModeEnum.MirrorThroughBlueAxis) {
-                s = s.replaceFirst("-", "");
+                if ( s .startsWith( "-" ) )
+                    s = s .substring(1);
             }
-            axisInfo.indexNumber(s);
+            axisInfo.setIndexNumber(s);
             if( symmetryMode == SymmetryModeEnum.MirrorThroughBlueAxis ) {
-                axisColor("blue");
+                setAxisColor("blue");
             }
         }
 
         @Override
         public String handedness() { return axisInfo.handedness; }
         @Override
-        public void handedness(String s) { axisInfo.handedness(s); }
+        public void setHandedness(String s) { axisInfo.setHandedness(s); }
 
         @Override
         public String indexFullName() { return axisInfo.indexFullName(); }

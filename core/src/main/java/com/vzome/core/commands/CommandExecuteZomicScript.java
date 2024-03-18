@@ -2,17 +2,11 @@
 
 package com.vzome.core.commands;
 
-import java.util.ArrayList;
-
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.ConstructionList;
 import com.vzome.core.construction.Point;
 import com.vzome.core.math.symmetry.IcosahedralSymmetry;
-import com.vzome.core.zomic.Interpreter;
-import com.vzome.core.zomic.ZomicException;
-import com.vzome.core.zomic.parser.ErrorHandler;
-import com.vzome.core.zomic.program.Walk;
 import com.vzome.core.zomic.program.ZomicStatement;
 
 /**
@@ -67,12 +61,6 @@ public class CommandExecuteZomicScript extends AbstractCommand
     throws Command.Failure
     {
         String script = (String) attrs .get( SCRIPT_ATTR );
-        ArrayList<String> errors = new ArrayList<>();
-		ErrorHandler errorHandler = new ErrorHandler.Default( errors );
-        Walk program = this .symmetry .compileScript( script, "zomic", errorHandler );
-        if ( !errors.isEmpty() ) {
-            throw new Failure( errors.get(0) );
-		}
 
         ConstructionList result = new ConstructionList();
         if ( parameters .size() != 1 )
@@ -82,13 +70,15 @@ public class CommandExecuteZomicScript extends AbstractCommand
             throw new Failure( "start parameter must be a connector" );
 		
         Point pt1 = (Point) c;
-        ZomicVirtualMachine builder = new ZomicVirtualMachine( pt1, effects, symmetry );
         try {
-            program .accept( new Interpreter( builder, symmetry ) );
-        } catch ( ZomicException e ) {
-            throw new Failure( e );
+            symmetry .interpretScript( script, "zomic", pt1, symmetry, effects );
+        } catch (Exception e) {
+            throw new Failure( e.getMessage(), e );
         }
-        result .addConstruction( builder .getLastPoint() );
+        
+        // TODO this probably breaks things unless I find a way to implement it.
+        // The builder (ZomicVirtualMachine) is now an internal detail.
+//        result .addConstruction( builder .getLastPoint() );
         return result;
     }
 }

@@ -36,6 +36,7 @@ fi
 banner 'Generating src/revision.js'
 echo "export const REVISION=\"${REVISION}\";" > src/revision.js
 echo "export const importLegacy = async () => import( './worker/legacy/dynamic.js' );" >> src/revision.js
+echo "export const importZomic = async () => import( './worker/legacy/zomic/index.js' );" >> src/revision.js
 # index exporter resources
 ( cd public/classic/resources
   echo 'export const resourceIndex = ['

@@ -1,10 +1,10 @@
 
 package com.vzome.core.algebra;
 
+import com.vzome.core.construction.ConstructionChanges;
+import com.vzome.core.construction.Point;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Symmetry;
-import com.vzome.core.zomic.parser.ErrorHandler;
-import com.vzome.core.zomic.program.Walk;
 
 public interface AlgebraicField
 {
@@ -275,5 +275,5 @@ public interface AlgebraicField
         return result;
     }
 
-    Walk compileScript( String script, String language, ErrorHandler errors, Symmetry symmetry );
+    public void interpretScript( String script, String language, Point offset, Symmetry symmetry, ConstructionChanges effects ) throws Exception;
 }

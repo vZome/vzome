@@ -1,5 +1,5 @@
 
-import { resourceIndex, importLegacy } from '../revision.js';
+import { resourceIndex, importLegacy, importZomic } from '../revision.js';
 
 const uniqueId = Math.random();
 
@@ -262,9 +262,25 @@ const openDesign = async ( xmlLoading, name, report, debug, sceneTitle ) =>
         report( { type: 'ALERT_RAISED', payload: 'The file is empty' } );
         return;
       }
-      report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
-      designWrapper = module .loadDesign( xml, debug, clientEvents( captureScenes( report ) ), sceneTitle );
-      report( { type: 'TEXT_FETCHED', payload: { text: xml, name } } ); // NOW it is safe to send the name
+      const doLoad = () => {
+        report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
+        designWrapper = module .loadDesign( xml, debug, clientEvents( captureScenes( report ) ), sceneTitle );
+        report( { type: 'TEXT_FETCHED', payload: { text: xml, name } } ); // NOW it is safe to send the name
+      }
+      if ( xml .includes( 'Zomic' ) ) {
+        importZomic() .then( (zomic) => {
+          const field = module .getField( 'golden' );
+          field .setInterpreterModule( zomic, module .vzomePkg );
+          doLoad();
+        })
+        .catch( error => {
+          console.log( `openDesign failure: ${error.message}` );
+          report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model: ${error.message}` } );
+          return false; // probably nobody should care about the return value
+         } );
+      }
+      else
+        doLoad();
     } )
 
     .catch( error => {

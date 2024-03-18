@@ -13,6 +13,7 @@
     "@solid-primitives/resize-observer": "^2.0.15",
     "@suid/icons-material": "^0.5.3",
     "@suid/material": "^0.12.2",
+    "antlr4": "^4.13.1-patch-1",
     "solid-js": "^1.7.0",
     "solid-three": "^0.2.0",
     "three": "0.149.0",

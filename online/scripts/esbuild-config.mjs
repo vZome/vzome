@@ -55,7 +55,9 @@ export const esbuildConfig = {
     'vzome-worker-static' : 'src/worker/vzome-worker-static.js',
   // Legacy code, dynamically loaded as needed by the worker to parse vZome files or edit designs
     'vzome-legacy'        : 'src/worker/legacy/dynamic.js',
-  },
+  // Legacy Zomic code, dynamically loaded as needed by the worker to parse Zomic scripts
+    'vzome-zomic'         : 'src/worker/legacy/zomic/index.js',
+},
   bundle: true,
   splitting: true,
   loader: { '.vef': 'dataurl' },
