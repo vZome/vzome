@@ -1,56 +1,58 @@
 package com.vzome.core.generic;
 
-import com.vzome.core.algebra.BigRational;
 import java.util.ArrayList;
+
 import org.junit.Test;
+
+import com.vzome.core.algebra.BigRationalImpl;
 
 /**
  * @author David Hall
  * Tests the BigRational implementation of Comparable interface.
  */
-public class ComparableBigRationalTest extends ComparableTest<BigRational> {
-	private final BigRational[] testValues;
-	private final BigRational[] diffValues;
-	private final BigRational[] ordered3Values;
+public class ComparableBigRationalTest extends ComparableTest<BigRationalImpl> {
+	private final BigRationalImpl[] testValues;
+	private final BigRationalImpl[] diffValues;
+	private final BigRationalImpl[] ordered3Values;
 
 	public ComparableBigRationalTest() {
-		ArrayList<BigRational> list = new ArrayList<>();
-        list.add(new BigRational( Integer.MIN_VALUE ));
-        list.add(new BigRational( Integer.MAX_VALUE ));
-        list.add(new BigRational( -31 ));
-        list.add(new BigRational( 2 ));
-        list.add(new BigRational( 0 ));
-        list.add(new BigRational( 1 ));
-        list.add(new BigRational( -1 ));
-		testValues = list.toArray(new BigRational[list.size()]);
+		ArrayList<BigRationalImpl> list = new ArrayList<>();
+        list.add(new BigRationalImpl( Integer.MIN_VALUE ));
+        list.add(new BigRationalImpl( Integer.MAX_VALUE ));
+        list.add(new BigRationalImpl( -31 ));
+        list.add(new BigRationalImpl( 2 ));
+        list.add(new BigRationalImpl( 0 ));
+        list.add(new BigRationalImpl( 1 ));
+        list.add(new BigRationalImpl( -1 ));
+		testValues = list.toArray(new BigRationalImpl[list.size()]);
 
 		list.clear();
-        list.add(new BigRational( -63, 2 ));
-        list.add(new BigRational( 12, 7));
-        list.add(new BigRational( 37, 4));
-        list.add(new BigRational( 1234, 11));
-        list.add(new BigRational( -999 , 5));
-		diffValues = list.toArray(new BigRational[list.size()]);
+        list.add(new BigRationalImpl( -63, 2 ));
+        list.add(new BigRationalImpl( 12, 7));
+        list.add(new BigRationalImpl( 37, 4));
+        list.add(new BigRationalImpl( 1234, 11));
+        list.add(new BigRationalImpl( -999 , 5));
+		diffValues = list.toArray(new BigRationalImpl[list.size()]);
 
 		list.clear();
-		list.add(new BigRational( -123 ));
-		list.add(new BigRational( 456 ));
-		list.add(new BigRational( 789 ));
-		ordered3Values = list.toArray(new BigRational[list.size()]);
+		list.add(new BigRationalImpl( -123 ));
+		list.add(new BigRationalImpl( 456 ));
+		list.add(new BigRationalImpl( 789 ));
+		ordered3Values = list.toArray(new BigRationalImpl[list.size()]);
 	}
 
 	@Override
-	protected BigRational[] getTestValues() {
+	protected BigRationalImpl[] getTestValues() {
 		return testValues;
 	}
 
 	@Override
-	protected BigRational[] getDiffValues() {
+	protected BigRationalImpl[] getDiffValues() {
 		return diffValues;
 	}
 
 	@Override
-	protected BigRational[] get3OrderedValues() {
+	protected BigRationalImpl[] get3OrderedValues() {
 		return ordered3Values;
 	}
 

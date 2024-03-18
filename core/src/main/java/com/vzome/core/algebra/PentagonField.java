@@ -31,7 +31,7 @@ public final class PentagonField extends AbstractAlgebraicField
 
     public PentagonField()
     {
-        super( FIELD_NAME, 2 );
+        super( FIELD_NAME, 2, AlgebraicNumberImpl.FACTORY );
     };
 
     public static final double PHI_VALUE = ( 1.0 + Math.sqrt( 5.0 ) ) / 2.0;
@@ -66,18 +66,16 @@ public final class PentagonField extends AbstractAlgebraicField
     @Override
     protected BigRational[] reciprocal( BigRational[] v2 )
     {
+        BigRational ones = v2[1] .plus( v2[0] );
+        BigRational phis = v2[1] .negate();
+        
         BigRational denominator = v2[0].times(v2[0]) .plus( v2[0].times(v2[1]) ) .minus( v2[1].times(v2[1]) );
-
-        BigRational ones = v2[1] .plus( v2[0] ) .dividedBy( denominator );
-        BigRational phis = v2[1] .negate() .dividedBy( denominator );
-
+        if ( ! denominator .isOne() ) {
+            BigRational reciprocal = denominator .reciprocal();
+            ones = ones .times( reciprocal );
+            phis = phis .times( reciprocal );
+        }
         return new BigRational[]{ ones, phis };
-    }
-
-    @Override
-    public void defineMultiplier( StringBuffer buf, int which )
-    {
-        buf.append( "phi = ( 1 + sqrt(5) ) / 2" );
     }
 
     /**
@@ -93,12 +91,6 @@ public final class PentagonField extends AbstractAlgebraicField
     public AlgebraicNumber getGoldenRatio()
     {
         return getUnitTerm(1);
-    }
-
-    @Override
-    public String getIrrational( int which )
-    {
-        return this .getIrrational( which, DEFAULT_FORMAT );
     }
 
     @Override
@@ -135,13 +127,15 @@ public final class PentagonField extends AbstractAlgebraicField
         return output;
     }
 
+    private static final String[][] IRRATIONAL_LABELS = new String[][] {
+        {" ", " "},
+        {"\u03C6", "phi"}
+    };
+    
     @Override
-    public String getIrrational( int which, int format )
+    public String getIrrational( int i, int format )
     {
-        if ( format == DEFAULT_FORMAT )
-            return "\u03C6";
-        else
-            return "phi";
+        return IRRATIONAL_LABELS[i][format];
     }
 
     @Override

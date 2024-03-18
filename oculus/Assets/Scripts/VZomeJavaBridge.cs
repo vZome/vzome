@@ -15,6 +15,7 @@ public class VZomeJavaBridge : MonoBehaviour
 
     private Text msgText;
     private GameObject template;
+    private string currentFilePath;
 
     public AudioClip snapReleaseSound; 
     public AudioClip modelReadySound; 
@@ -24,8 +25,9 @@ public class VZomeJavaBridge : MonoBehaviour
     public Dropdown dropdown;
     int selectedFile;
 
-    private const string VZOME_PATH = "/mnt/sdcard/Oculus/vZome/";
+    private const string VZOME_PATH = "/mnt/sdcard/Download/";
     private const string VZOME_EXTENSION = ".vzome";
+    private const string XML_EXTENSION = ".xml";
     private List<string> fileNames = new List<string>();
     private List<string> paths = new List<string>();
 
@@ -44,13 +46,19 @@ public class VZomeJavaBridge : MonoBehaviour
             adapterClass .CallStatic( "registerShape", vef.name, ((TextAsset) vef).text );
         }
 
+        Debug.Log( "%%%%%%%%%%%%%% Discovering files in " + VZOME_PATH );
         foreach (string path in Directory .GetFiles( VZOME_PATH ) )
         {
             string ext = Path .GetExtension( path ) .ToLower();
+            string filename = Path .GetFileNameWithoutExtension( path );
+            if ( XML_EXTENSION .Equals( ext ) ) {
+                ext = Path .GetExtension( filename ) .ToLower();
+                filename = Path .GetFileNameWithoutExtension( filename );
+            }
             if ( VZOME_EXTENSION .Equals( ext ) ) {
-                string filename = Path .GetFileNameWithoutExtension( path );
                 fileNames .Add( filename );
                 paths .Add( path );
+                Debug.Log( "%%%%%%%%%%%%%% Discovered file " + path );
             }
         }
         dropdown .AddOptions( fileNames );
@@ -66,22 +74,23 @@ public class VZomeJavaBridge : MonoBehaviour
     {
         template = this .transform .Find( "vZomeTemplate" ) .gameObject;
 
-        Transform panel = canvas .Find( "Panel" );
+        Transform panel = canvas .Find( "Load Panel" );
         GameObject messages = panel .Find( "JavaMessages" ) .gameObject;
 
         msgText = messages .GetComponent<Text>();
         msgText .text = "Loading file: " + fileNames[ selectedFile ];
         LoadVZomeJob job = new LoadVZomeJob();
 
-        string filePath = paths[ selectedFile ];
-        job .pathN = new NativeArray<byte>( filePath.Length, Allocator.Temp );
-        job .pathN .CopyFrom( Encoding.ASCII.GetBytes( filePath ) );
+        currentFilePath = paths[ selectedFile ];
+        job .pathN = new NativeArray<byte>( currentFilePath.Length, Allocator.Temp );
+        job .pathN .CopyFrom( Encoding.ASCII.GetBytes( currentFilePath ) );
 
         string anchor = this .name;
         job .objectNameN = new NativeArray<byte>( anchor.Length, Allocator.Temp );
         job .objectNameN .CopyFrom( Encoding.ASCII.GetBytes( anchor ) );
 
         JobHandle jh = job .Schedule();
+        JobHandle .ScheduleBatchedJobs();
         Debug.Log( "%%%%%%%%%%%%%% LoadVZomeJob scheduled. " );
     }
 
@@ -143,9 +152,9 @@ public class VZomeJavaBridge : MonoBehaviour
         MeshCollider collider = copy .GetComponent<MeshCollider>();
         collider .sharedMesh = meshFilter .mesh;
 
-        GrabSnapper snapper = copy .GetComponent<GrabSnapper>();
-        snapper .vZomeId = instance.id;
-        snapper .bridge = this;
+        // GrabSnapper snapper = copy .GetComponent<GrabSnapper>();
+        // snapper .vZomeId = instance.id;
+        // snapper .bridge = this;
 
         copy .transform .localPosition = instance .position;
         copy .transform .localRotation = instance .rotation;
@@ -153,6 +162,25 @@ public class VZomeJavaBridge : MonoBehaviour
 
         instances .Add( instance .id, copy );
         Debug.Log( "%%%%%%%%%%%%%% CreateGameObject from Java: " + instance.id );
+    }
+
+    void ChangeObjectColor( string json )
+    { 
+        Instance instance = JsonUtility.FromJson<Instance>(json);
+        Debug.Log( "%%%%%%%%%%%%%% ChangeObjectColor from Java: " + instance .id );
+        GameObject toChange = instances[ instance .id ];
+        Material material;
+        if ( materials .ContainsKey( instance .color ) ) {
+            material = materials[ instance .color ];
+        } else {
+            material = new Material( Shader.Find("Standard") );
+            Debug.Log( "&&&&& material created for " + instance.color );
+            Color color;
+            ColorUtility .TryParseHtmlString( instance .color, out color );
+            material .color = color;
+            materials .Add( instance .color, material );
+        }
+        toChange .GetComponent<MeshRenderer>() .sharedMaterial = material;
     }
 
     void DeleteGameObject( string json )
@@ -182,10 +210,18 @@ public class VZomeJavaBridge : MonoBehaviour
     public void DoSimpleAction( String action )
     {
         if ( adapter != null ) {
-            Debug .Log( "%%%%%%%%%%%%%% Calling DoSimpleAction: " + action );
-            SimpleAction pa = new SimpleAction();
-            pa .action = action;
-            DoModelAction( pa );
+            msgText .text = "DoSimpleAction: " + action;
+            EditJob job = new EditJob();
+
+            job .pathN = new NativeArray<byte>( currentFilePath.Length, Allocator.Temp );
+            job .pathN .CopyFrom( Encoding.ASCII.GetBytes( currentFilePath ) );
+
+            job .actionN = new NativeArray<byte>( action.Length, Allocator.Temp );
+            job .actionN .CopyFrom( Encoding.ASCII.GetBytes( action ) );
+
+            JobHandle jh = job .Schedule();
+            JobHandle .ScheduleBatchedJobs();
+            Debug.Log( "%%%%%%%%%%%%%% DoSimpleAction scheduled. " );
         }
     }
 

@@ -29,8 +29,7 @@ public class RealizedModelImpl implements RealizedModel
 {
     private final List<ManifestationChanges> mListeners = new ArrayList<>( 1 );
 
-    // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
-    private final HashMap<Manifestation, Manifestation> mManifestations = new LinkedHashMap<>( 1000 );
+    private final HashMap<String, Manifestation> mManifestations = new LinkedHashMap<>( 1000 );
     
     private Projection mProjection;
 
@@ -49,7 +48,7 @@ public class RealizedModelImpl implements RealizedModel
         for (Manifestation man : mManifestations .values()) {
             if ( man .isHidden() )
                 continue;
-            Manifestation doppel = other .mManifestations .get( man );
+            Manifestation doppel = other .mManifestations .get( man .toConstruction() .getSignature() );
             if ( doppel == null || doppel .isHidden() )
                 result .add( man );
         }
@@ -69,18 +68,9 @@ public class RealizedModelImpl implements RealizedModel
 	@Override
 	public Iterator<Manifestation> iterator()
 	{
-        return mManifestations .keySet() .iterator();
+        return mManifestations .values() .iterator();
 	}
 
-    /**
-    * @deprecated Consider using a JDK-5 for-loop if possible. Otherwise use {@link #iterator()} instead.
-    */
-    @Deprecated
-	public Iterator<Manifestation> getAllManifestations()
-    {
-        return this .iterator();
-    }
-    
     public Manifestation manifest( Construction c )
     {
         Manifestation m = null;
@@ -113,24 +103,27 @@ public class RealizedModelImpl implements RealizedModel
     
     private static final Logger logger = Logger .getLogger( "com.vzome.core.model" );
     
+    @Override
     public void add( Manifestation m )
     {
-        // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
-        mManifestations .put( m, m );
+        String key = m .toConstruction() .getSignature();
+        mManifestations .put( key, m );
         if ( logger .isLoggable( Level .FINER ) )
             logger .finer( "add manifestation: " + m .toString() );
     }
     
+    @Override
     public void remove( Manifestation m )
     {
-        mManifestations .remove( m );
+        String key = m .toConstruction() .getSignature();
+        mManifestations .remove( key );
         if ( logger .isLoggable( Level .FINER ) )
             logger .finer( "remove manifestation: " + m .toString() );
     }
     
     public void refresh( boolean on, RealizedModelImpl unused )
     {
-        for (Manifestation man : mManifestations .keySet()) {
+        for (Manifestation man : mManifestations .values()) {
             if ( ! man .isHidden() )
             {
                 if ( on )
@@ -144,6 +137,7 @@ public class RealizedModelImpl implements RealizedModel
     /*
      * idempotent: show,show is the same as show
      */
+    @Override
     public void show( Manifestation m )
     {
         if ( doingBatch )
@@ -170,6 +164,7 @@ public class RealizedModelImpl implements RealizedModel
     /*
      * idempotent: hide,hide is the same as hide
      */
+    @Override
     public void hide( Manifestation m )
     {
         if ( doingBatch )
@@ -192,6 +187,7 @@ public class RealizedModelImpl implements RealizedModel
         }
     }
     
+    @Override
     public void setColor( Manifestation m, Color color )
     {
         m .setColor( color );
@@ -202,41 +198,49 @@ public class RealizedModelImpl implements RealizedModel
         }
     }
     
+    @Override
+    public void setLabel( Manifestation m, String label )
+    {
+        m .setLabel( label );
+        if ( m .isRendered() ) {
+            for (ManifestationChanges next : mListeners) {
+                next .manifestationLabeled( m, label );
+            }
+        }
+    }
     
+    
+    @Override
     public Manifestation findConstruction( Construction c )
     {
-        Manifestation testMan = manifest( c );
-        if ( testMan == null )
-            return null;
-        
-        Manifestation actualMan = mManifestations .get( testMan );
+        Manifestation actualMan = mManifestations .get( c .getSignature() );
         if ( actualMan == null )
-            actualMan = testMan;
+            actualMan = manifest( c );
         
         return actualMan;
     }
     
+    @Override
     public Manifestation removeConstruction( Construction c )
     {
-        Manifestation testMan = manifest( c );
-        if ( testMan == null )
-            return null;
-        Manifestation actualMan = mManifestations .get( testMan );
+        Manifestation actualMan = mManifestations .get( c .getSignature() );
         if ( actualMan == null )
             return null;
-        return testMan;
+        // This is just bizarre, but it matches the old logic!
+        return manifest( c );
     }
 
     /**
      * @param c
      * @return
      */
+    @Override
     public Manifestation getManifestation( Construction c )
     {
-        Manifestation m = manifest( c );
-        return mManifestations .get( m );
+        return mManifestations .get( c .getSignature() );
     }
 
+	@Override
 	public int size()
 	{
 		return mManifestations .size();
@@ -258,8 +262,8 @@ public class RealizedModelImpl implements RealizedModel
 
         if ( this.size() != that.size() )
             return false;
-        for (Manifestation man : mManifestations .keySet()) {
-            if ( ! that .mManifestations .keySet() .contains( man ) ) {
+        for (Manifestation man : mManifestations.values() ) {
+            if ( ! that .mManifestations .values() .contains( man ) ) {
                 return false;
             }
         }
@@ -298,6 +302,7 @@ public class RealizedModelImpl implements RealizedModel
         this .doingBatch = false;
     }
 
+	@Override
 	public AlgebraicField getField()
 	{
 		return field;
@@ -307,19 +312,18 @@ public class RealizedModelImpl implements RealizedModel
      * This records the NEW manifestations produced by manifestConstruction for this edit,
      * to avoid creating colliding manifestations.
      */
-    // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
-    private transient Map<Manifestation, Manifestation> mManifestedNow;  // used only while calling manifest
+    private transient Map<String, Manifestation> mManifestedNow;  // used only while calling manifest
 
     @Override
-    public Manifestation findPerEditManifestation( Manifestation m )
+    public Manifestation findPerEditManifestation( String signature )
     {
-        return this .mManifestedNow .get( m ); // If it weren't for this get, we could use a Set
+        return this .mManifestedNow .get( signature );
     }
 
     @Override
-    public void addPerEditManifestation( Manifestation m )
+    public void addPerEditManifestation( String signature, Manifestation m )
     {
-        this .mManifestedNow .put( m, m );
+        this .mManifestedNow .put( signature, m );
     }
 
     @Override

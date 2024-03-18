@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="76" field="golden" version="7.0">
+  <EditHistory editNumber="38" lastStickyEdit="46">
+    <StrutCreation anchor="0 0 0 0 0 0" dir="yellow" index="7" len="0 1"/>
+    <StrutCreation anchor="0 0 0 1 1 2" dir="yellow" index="4" len="0 1"/>
+    <SelectManifestation point="-1 -1 1 2 2 3"/>
+    <Symmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Symmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 0 0"/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <SelectNeighbors/>
+    <EndBlock/>
+    <Hide>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Hide>
+    <BeginBlock/>
+    <SelectManifestation point="-1 -2 2 3 1 1"/>
+    <SelectManifestation point="0 0 0 0 2 4"/>
+    <EndBlock/>
+    <Branch>
+      <JoinPoints/>
+      <Symmetry>
+        <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+      </Symmetry>
+      <DeselectAll/>
+      <StrutCreation anchor="1 1 -1 -2 -2 -3" dir="orange" index="31" len="1 2"/>
+      <BeginBlock/>
+      <SelectManifestation endSegment="-1 -1 1 2 -2 -3" startSegment="1 1 -1 -2 -2 -3"/>
+      <SelectManifestation endSegment="3/2 2 -3 -11/2 -3/2 -5/2" startSegment="1 1 -1 -2 -2 -3"/>
+      <EndBlock/>
+      <ScalingTool name="scaling.1/scaling.1" symmetry="icosahedral"/>
+    </Branch>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 2 4"/>
+    <SelectManifestation point="-1 -2 -2 -3 1 1"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <Symmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Symmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation point="0 0 0 0 2 4"/>
+    <SelectManifestation point="-2 -3 -1 -1 -1 -2"/>
+    <EndBlock/>
+    <JoinPoints/>
+    <Symmetry>
+      <Boolean attrName="org.vorthmann.zome.editor.Command.LOADING_FROM_FILE" value="true"/>
+    </Symmetry>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectAll/>
+    <EndBlock/>
+    <ApplyTool copyColors="true" deselectOutputs="true" hideInputs="true" name="scaling.1/scaling.1"/>
+    <Snapshot id="0"/>
+    <Snapshot id="1"/>
+    <StrutCreation anchor="0 0 2 3 0 0" index="1" len="2 4"/>
+    <BeginBlock/>
+    <SelectManifestation endSegment="0 0 4 7 0 0" startSegment="0 0 2 3 0 0"/>
+    <SelectManifestation point="0 0 4 7 0 0"/>
+    <EndBlock/>
+    <ApplyTool copyColors="true" name="icosahedral.builtin/icosahedral around origin" selectInputs="true"/>
+    <DeselectAll/>
+    <Snapshot id="2"/>
+  </EditHistory>
+  <notes>
+    <page snapshot="0" title="3-fold axis">
+      <ViewModel distance="89.02163696289062" far="135.48757934570312" near="0.169359490275383" parallel="false" stereoAngle="0.0" width="30.484697341918945">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.80901700258255" y="0.30901700258255005" z="-0.5000000596046448"/>
+        <LookDirection x="0.5773502588272095" y="-0.5773502588272095" z="0.5773502588272095"/>
+      </ViewModel>
+      <content xml:space="preserve"/>
+    </page>
+    <page snapshot="1" title="5-fold axis">
+      <ViewModel distance="89.02163696289062" far="135.48757934570312" near="0.169359490275383" parallel="false" stereoAngle="0.0" width="30.484697341918945">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.9510564804077148" y="-0.1624598503112793" z="-0.2628655731678009"/>
+        <LookDirection x="0.0" y="-0.8506507873535156" z="0.525731086730957"/>
+      </ViewModel>
+      <content xml:space="preserve"/>
+    </page>
+    <page snapshot="2" title="vertex rays">
+      <ViewModel distance="141.01686096191406" far="214.62234497070312" near="0.26827794313430786" parallel="false" stereoAngle="0.0" width="48.29001235961914">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.9511484503746033" y="0.1432134062051773" z="-0.2735077738761902"/>
+        <LookDirection x="0.30845677852630615" y="-0.47833412885665894" z="0.8222231268882751"/>
+      </ViewModel>
+      <content xml:space="preserve"/>
+    </page>
+  </notes>
+  <sceneModel ambientLight="41,41,41" background="188,215,242">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="141.01686096191406" far="214.62234497070312" near="0.26827794313430786" parallel="false" stereoAngle="0.0" width="48.29001235961914">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="0.9511484503746033" y="0.1432134062051773" z="-0.2735077738761902"/>
+      <LookDirection x="0.30845677852630615" y="-0.47833412885665894" z="0.8222231268882751"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="icosahedral" renderingStyle="lifelike">
+    <Direction color="0,160,228" name="blue"/>
+    <Direction color="0,141,54" name="green"/>
+    <Direction color="154,117,74" name="sand"/>
+    <Direction color="18,73,48" name="spruce"/>
+    <Direction color="175,0,0" name="red"/>
+    <Direction color="255,126,106" name="coral"/>
+    <Direction color="30,30,30" name="black"/>
+    <Direction color="117,0,50" name="maroon"/>
+    <Direction color="240,160,0" name="yellow"/>
+    <Direction color="230,245,62" name="sulfur"/>
+    <Direction color="255,51,143" name="rose"/>
+    <Direction color="18,205,148" name="turquoise"/>
+    <Direction color="116,195,0" name="apple"/>
+    <Direction color="136,37,0" name="cinnamon"/>
+    <Direction color="108,0,198" name="purple"/>
+    <Direction color="220,76,0" name="orange"/>
+    <Direction color="0,0,153" name="navy"/>
+    <Direction color="107,53,26" name="brown"/>
+    <Direction color="175,135,255" name="lavender"/>
+    <Direction color="100,113,0" name="olive"/>
+  </SymmetrySystem>
+  <OtherSymmetries>
+    <SymmetrySystem name="octahedral" renderingStyle="trapezoids">
+      <Direction color="0,118,149" name="blue"/>
+      <Direction color="175,135,255" name="lavender"/>
+      <Direction color="18,205,148" name="turquoise"/>
+      <Direction color="30,30,30" name="black"/>
+      <Direction color="0,141,54" name="green"/>
+      <Direction color="100,113,0" name="olive"/>
+      <Direction color="117,0,50" name="maroon"/>
+      <Direction color="107,53,26" name="brown"/>
+      <Direction color="240,160,0" name="yellow"/>
+      <Direction color="175,0,0" name="red"/>
+      <Direction color="108,0,198" name="purple"/>
+    </SymmetrySystem>
+  </OtherSymmetries>
+  <Tools>
+    <Tool copyColors="true" deleteInputs="true" id="scaling.1/scaling.1" label="" selectInputs="false"/>
+  </Tools>
+</vzome:vZome>

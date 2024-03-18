@@ -8,7 +8,6 @@ import com.vzome.api.Tool.Factory;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.SnubDodecField;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandTauDivision;
 import com.vzome.core.commands.CommandUniformH4Polytope;
@@ -33,11 +32,10 @@ public class SnubDodecFieldApplication extends DefaultFieldApplication
 {
     private final IcosahedralSymmetryPerspective icosahedralPerspective;
 
-	public SnubDodecFieldApplication()
+	public SnubDodecFieldApplication( AlgebraicField field )
 	{
-        super( new SnubDodecField() );
+        super( field );
         
-        AlgebraicField field = this.getField();
         IcosahedralSymmetry icosaSymm = new IcosahedralSymmetry( field ) 
         {
             @Override
@@ -131,6 +129,12 @@ public class SnubDodecFieldApplication extends DefaultFieldApplication
 	{
 		return this .getField() .getName();
 	}
+
+    @Override
+    public String getLabel()
+    {
+        return "Snub Dodecahedron";
+    }
 
 	@Override
 	public Collection<SymmetryPerspective> getSymmetryPerspectives()

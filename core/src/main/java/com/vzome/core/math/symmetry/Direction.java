@@ -2,6 +2,7 @@
 
 package com.vzome.core.math.symmetry;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -76,7 +77,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
 		return true;
 	}
 
-	private String mName;
+	private String mName, canonicalName;
     
     private final Axis[][][] zoneNames;
     
@@ -127,15 +128,19 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     
     private static int globalIndex = 0;
     
-    private final int index;
+    private final int index, prototype, rotatedPrototype;
 
     public int canonicalize = 0;
+    private boolean needsCanonicalization = false;
     
     public Direction( String name, Symmetry group, int prototype, int rotatedPrototype, AlgebraicVector vector, boolean isStd )
     {
+        this.prototype = prototype;
+        this.rotatedPrototype = rotatedPrototype;
         this.index = globalIndex++; // we want to just retain the order used to create these
         mStandard = isStd;
         mName = name;
+        canonicalName = null;
         mSymmetryGroup = group;
         for ( int i = 0; i < scales .length; i++ ) {
             scales[ i ] = mSymmetryGroup .getField() .createPower( i - 1 );
@@ -143,21 +148,24 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
         mPrototype = vector;
         int order = group .getChiralOrder();
         zoneNames = new Axis[ 2 ][ 2 ][ order ];
-        for ( int i = 0; i < order; i++ ) {
-            AlgebraicMatrix transform = group .getMatrix( i );
-            if ( transform == null )
-                return; // only happens for the "frame orbit", like "blue" for icosa
-            Permutation perm = group .getPermutation( i );
-            int j = perm .mapIndex( prototype );
-            int rotated = perm .mapIndex( rotatedPrototype );
-            AlgebraicVector normal = transform .timesColumn( vector );
-
-//            if ( ! Arrays.equals( field .dot( normal, normal ), field .dot( vector, vector ) ) )
-//                throw new IllegalStateException( "rotated normal has bad length" );
-
-            int rot = group .getMapping( j, rotated );
-            createAxis( j, rot, normal );
+    }
+    
+    private final Map<String, Axis> getZoneVectors()
+    {
+        if ( this.zoneVectors .isEmpty() ) {
+            if ( logger .isLoggable( Level.FINER ) )
+                logger .finer( "creating zone vectors: " + this .toString() );
+            for ( int i = 0; i < this.mSymmetryGroup .getChiralOrder(); i++ ) {
+                AlgebraicMatrix transform = this.mSymmetryGroup .getMatrix( i );
+                Permutation perm = this.mSymmetryGroup .getPermutation( i );
+                int j = perm .mapIndex( this.prototype );
+                int rotated = perm .mapIndex( this.rotatedPrototype );
+                AlgebraicVector normal = transform .timesColumn( this.mPrototype );
+                int rot = this.mSymmetryGroup .getMapping( j, rotated );
+                this .createAxis( j, rot, normal );
+            }
         }
+        return zoneVectors;
     }
     
     @Override
@@ -174,19 +182,9 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     @Override
     public Iterator<Axis> iterator()
     {
-        return zoneVectors .values() .iterator();
+        return getZoneVectors() .values() .iterator();
     }
-    
-    /**
-    * @deprecated Consider using a JDK-5 for-loop if possible. Otherwise use {@link #iterator()} instead.
-    */
-    @Deprecated
-    @JsonIgnore
-    public Iterator<Axis> getAxes()
-    {
-        return this .iterator();
-    }
-        
+      
     @JsonIgnore
     public Symmetry getSymmetry()
     {
@@ -195,12 +193,42 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     
     public String getName()
     {
-        return mName;
+        return this .mName;
+    }
+    
+    public String getCanonicalName()
+    {
+        if ( this .canonicalName == null ) {
+            Axis canonicalAxis = this .getCanonicalAxis( 0, 0 );
+            AlgebraicVector vector = canonicalAxis .normal();
+            
+            // canonicalAxis is on the -Z side of the XY plane, but we want the
+            //  canonical name to reflect the +Z side, to match Observable
+            AlgebraicNumber x = vector .getComponent( 0 );
+            AlgebraicNumber y = vector .getComponent( 1 );
+            AlgebraicNumber z = vector .getComponent( 2 ) .negate();
+            
+            if ( x .isZero() ) {  // TODO generalize this better!
+                // not icosahedral symmetry
+                this .canonicalName = this .mName;
+            } else
+            {
+                // Now we do the Gnomonic projection, to the X=1 plane
+                y = y .dividedBy( x );
+                z = z .dividedBy( x );
+                this .canonicalName = "["
+                        + Arrays.toString( y .toTrailingDivisor() ) .replace( " ", "" )
+                        + ","
+                        + Arrays.toString( z .toTrailingDivisor() ) .replace( " ", "" )
+                        + "]";
+            }
+        }
+        return this .canonicalName;
     }
     
     public Axis getAxis( AlgebraicVector vector )
     {
-        for (Axis axis : zoneVectors .values()) {
+        for (Axis axis : getZoneVectors() .values()) {
             AlgebraicVector normal = axis .normal();
             if ( AlgebraicVectors.areParallel( normal, vector ) ) {
                 // parallel
@@ -298,7 +326,13 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
 		}
         return closestAxis;
     }
-    
+
+    // default visibility; only used for creating frame orbits
+    boolean zoneInitialized( int sense, int unit )
+    {
+        return zoneNames[ 1 ][ sense ][ unit ] != null;
+    }
+
     public final Axis getAxis( int sense, int index )
     {
         return this .getAxis( sense, index, true );
@@ -306,15 +340,13 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     
     public final Axis getAxis( int sense, int index, boolean outbound )
     {
+        this.getZoneVectors(); // force initialization of zones
         return zoneNames[ outbound? 1 : 0 ][ sense ][ index ];
     }
     
     public Direction withCorrection()
     {
-        Axis treatedAs0 = this .getAxisBruteForce( RealVector.DIRECTION_0 );
-        this .canonicalize = treatedAs0 .getOrientation();
-        if ( treatedAs0 .getSense() == Symmetry.MINUS )
-            this .canonicalize *= -1;
+        this .needsCanonicalization = true;
         return this;
     }
     
@@ -328,6 +360,14 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
      */
     public Axis getCanonicalAxis( int sense, int index )
     {
+        if ( this .needsCanonicalization ) {
+            // making this lazy so that Direction init doesn't have to compute all zones
+            Axis treatedAs0 = this .getAxisBruteForce( RealVector.DIRECTION_0 );
+            this .canonicalize = treatedAs0 .getOrientation();
+            if ( treatedAs0 .getSense() == Symmetry.MINUS )
+                this .canonicalize *= -1;
+            this .needsCanonicalization = false;
+        }
         if ( this.canonicalize != 0 )
         {
             if ( this .canonicalize < 0 )
@@ -387,12 +427,12 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
     
     private final void recordZone( Direction dir, int orientation, int sense, int rotation, Permutation rotPerm, AlgebraicVector normal, boolean outbound )
     {
-        Axis zone =  zoneVectors .get( normal .toString() );
+        Axis zone = this.zoneVectors .get( normal .toString() );
         if ( zone == null )
         {
             // vector never seen before
             zone = new Axis( this, orientation, sense, rotation, rotPerm, normal, outbound );
-            this .zoneVectors .put( normal .toString(), zone );
+            this.zoneVectors .put( normal .toString(), zone );
             if ( logger .isLoggable( Level.FINER ) )
                 logger .finer( "creating zone " + zone .toString() + " " + normal .toString() );
         }

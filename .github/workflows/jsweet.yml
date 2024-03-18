@@ -1,0 +1,98 @@
+# This is a basic workflow to help you get started with Actions
+
+name: JSweet legacy bundle
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'core/src/main/java/**'
+      - 'desktop/src/main/java/**'
+      - 'online/src/worker/java/**'
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Checkout modified jsweet
+        uses: actions/checkout@v3
+        with:
+          repository: vorth/jsweet
+          ref: develop
+          path: jsweet
+      - name: Build & deploy jsweet transpiler
+        run: |
+          pwd
+          cd jsweet/transpiler
+          pwd
+          mvn clean install -Dmaven.test.skip=true -DskipJavadoc=true -DskipSigning=true
+          cd ../..
+
+      - name: Checkout modified jsweet-maven-plugin
+        uses: actions/checkout@v3
+        with:
+          repository: vorth/jsweet-maven-plugin
+          path: jsweet-maven
+      - name: Build & deploy jsweet-maven-plugin
+        run: |
+          pwd
+          cd jsweet-maven
+          pwd
+          mvn clean install -Dmaven.test.skip=true -DskipJavadoc=true -DskipSigning=true
+          cd ..
+
+      - name: Checkout modified j4ts
+        uses: actions/checkout@v3
+        with:
+          repository: vorth/j4ts
+          path: j4ts
+      - name: Build & deploy j4ts
+        run: |
+          pwd
+          cd j4ts
+          pwd
+          chmod +x mvnw
+          ./mvnw clean compile install
+          cd ..
+
+      - name: Checkout modified jsweet-gradle-plugin
+        uses: actions/checkout@v3
+        with:
+          repository: vorth/jsweet-gradle-plugin
+          ref: update-jsweet
+          path: plugin
+      - name: Build & deploy jsweet-gradle-plugin
+        run: |
+          pwd
+          cd plugin
+          pwd
+          chmod +x gradlew
+          ./gradlew publishToMavenLocal -DskipSigning=true
+          cd ..
+
+      - name: Checkout vZome source
+        uses: actions/checkout@v3
+      - name: Build with Gradle and JSweet
+        run: |
+          pwd
+          chmod +x gradlew cicd/jsweet-legacy-code.bash
+          cicd/jsweet-legacy-code.bash
+
+      - name: Archive Generated JS
+        uses: actions/upload-artifact@v3
+        with:
+          name: worker-legacy
+          path: online/src/worker/legacy
+
+      # TODO: publish to npm.pkg.github.com; see https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+      

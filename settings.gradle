@@ -1,19 +1,4 @@
 
-include 'core', 'desktop', 'server', 'client'
+include 'core', 'desktop', 'server'
 
 rootProject.name = 'vzome'
-
-def platformName = System.properties['os.name']
-def macSubProjectName = ':desktop:platform:mac'
-def winSubProjectName = ':desktop:platform:windows'
-
-if ( platformName.toLowerCase().contains('mac') ) {
-    println "Platform is ${platformName}, so including ${macSubProjectName}"
-	include macSubProjectName
-}
-
-// The Windows subproject is used only for generating installers and jar wrappers for distribution.
-// It does not generate any components of the actual vzome-desktop java application.
-// The launch4j program must already be be installed on the local platform before the launch4j plugin will work.
-// The following line can safely be commented out if launch4j is not installed on the local platform.
-include winSubProjectName

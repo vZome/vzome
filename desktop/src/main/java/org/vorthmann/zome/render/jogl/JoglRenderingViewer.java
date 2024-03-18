@@ -3,14 +3,15 @@ package org.vorthmann.zome.render.jogl;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
 import javax.vecmath.Matrix4f;
-import javax.vecmath.Vector3f;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLCapabilitiesChooser;
 import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLDrawableFactory;
 import com.jogamp.opengl.GLEventListener;
@@ -26,7 +27,7 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.Scene;
 import com.vzome.core.viewing.Lights;
-import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.desktop.awt.RenderingViewer;
 import com.vzome.opengl.OutlineRenderer;
 import com.vzome.opengl.Renderer;
 import com.vzome.opengl.SolidRenderer;
@@ -49,6 +50,8 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
 {
     private final Scene scene;
     private final Component canvas;
+    // cache the value of fixGLCanvasRescaling one time here to improve performance in pickRay() 
+    private final boolean fixGLCanvasRescaling = "true".equals(System.getProperty("vzome.glcanvas.rescaling"));
     
     private JoglOpenGlShim glShim;
     private Renderer outlines = null;
@@ -78,8 +81,8 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         this .lightDirections = new float[num][];
         this .lightColors = new float[num][];
         for ( int i = 0; i < num; i++ ) {
-            Vector3f direction = new Vector3f();
-            Color color = lights.getDirectionalLight( i, direction ); // sets direction as a side-effect
+            RealVector direction = lights .getDirectionalLightVector( i );
+            Color color = lights.getDirectionalLightColor( i );
             this .lightColors[i] = new float[4];
             color .getRGBColorComponents( this .lightColors[i] );
             this .lightDirections[i] = new float[3];
@@ -179,14 +182,20 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     @Override
     public void reshape( GLAutoDrawable drawable, int x, int y, int width, int height )
     {
+        this .setSize( width, height );
+    }
+
+    @Override
+    public void setSize( int width, int height )
+    {
         this.width = width;
-        this.height = height;
-        this .aspectRatio = (float) width / (float) height;
+        this.height = height;                               // width and height are only further used for image capture
+        this .aspectRatio = (float) width / (float) height; // aspectRatio is used for rendering
         this .setProjection();
     }
 
     @Override
-    public void setPerspective( double fovX, double aspectRatio, double near, double far )
+    public void setPerspective( double fovX, double near, double far )
     {
         this .fovX = (float) fovX;
         this .near = (float) near;
@@ -228,6 +237,14 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         int mouseX = e .getX();
         int mouseY = e .getY();
         
+        // This work-around for scaling issues on Windows and Linux assumes that the canvas 
+        // is a GLCanvas with getWidth() and getHeight() overridden 
+        // to incorporate the scale factor as I've done in JoglFactory.createRenderingViewer()  
+        if(fixGLCanvasRescaling) {
+        	AffineTransform t = canvas.getGraphicsConfiguration().getDefaultTransform(); 
+            mouseX *= t.getScaleX();
+            mouseY *= t.getScaleY();
+        }
         // I wasted a lot of time here looking at the Java3d implementation, which had a bug.
         //  Furthermore, it was based on the Java3d notion of "image plate" coordinates, which
         //  are hard to understand in terms of OpenGL, at least from the documentation I could
@@ -248,7 +265,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     }
     
     @Override
-    public void captureImage( int maxSize, boolean withAlpha, ImageCapture capture )
+    public BufferedImage captureImage( int maxSize, boolean withAlpha )
     {
         // Key parts of this copied from TestGLOffscreenAutoDrawableBug1044AWT in the Github jogl repo,
         //   now modified with changes to fix the capture on Windows, thanks to David Hall.
@@ -271,7 +288,12 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         glcapabilities .setDepthBits( 32 );
         // Without line below, there is an error on Windows.
         glcapabilities .setDoubleBuffered( false );
-        final GLOffscreenAutoDrawable drawable = fac.createOffscreenAutoDrawable( null, glcapabilities, null, imageWidth, imageHeight );
+        
+        GLCapabilitiesChooser chooser = null;// new JoglFactory.MultisampleChooser();  // THIS YIELDS BLACK OR EMPTY IMAGES!
+//        glcapabilities .setSampleBuffers(true);
+//        glcapabilities .setNumSamples(4);
+
+        final GLOffscreenAutoDrawable drawable = fac.createOffscreenAutoDrawable( null, glcapabilities, chooser, imageWidth, imageHeight );
         drawable.display();
         final GLContext context = drawable .getContext();
         context .makeCurrent();
@@ -294,12 +316,11 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
 
         final AWTGLReadBufferUtil agb = new AWTGLReadBufferUtil( glprofile, withAlpha );
         final BufferedImage image = agb .readPixelsToBufferedImage( gl2, true );
-        
-        capture .captureImage( image );
 
         context .destroy();
         drawable .setRealized( false );
-        System.out.println( "Done!" );
+        
+        return image;
     }
 
     @Override

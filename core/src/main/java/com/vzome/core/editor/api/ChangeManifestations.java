@@ -53,15 +53,16 @@ public abstract class ChangeManifestations extends ChangeSelection
         //        if ( realizer != null )
         //            return realizeConstruction( c );
         //        
-        Manifestation m = mManifestations .findConstruction( c );
+    	String sig = c .getSignature();
+    	Manifestation m = mManifestations .findConstruction( c );
         if ( m == null )
             return null;
-        Manifestation made = mManifestations .findPerEditManifestation( m );
+        Manifestation made = mManifestations .findPerEditManifestation( sig );
         if ( made != null )
             return made;
         if ( m .isUnnecessary() )  { // just manifested, not added yet
             // TODO: DJH: Can this be replaced by a HashSet since the key is always equal to the value.
-            mManifestations .addPerEditManifestation( m );
+            mManifestations .addPerEditManifestation( sig, m );
             plan( new ManifestConstruction( c, m, true ) );
         }
         else {
@@ -118,6 +119,11 @@ public abstract class ChangeManifestations extends ChangeSelection
     public void colorManifestation( Manifestation m, Color color )
     {
         plan( new ColorManifestation( m, color ) );
+    }
+
+    public void labelManifestation( Manifestation m, String label )
+    {
+        plan( new LabelManifestation( m, label ) );
     }
 
     protected void hideConnectors()
@@ -193,11 +199,12 @@ public abstract class ChangeManifestations extends ChangeSelection
         public void redo()
         {
             if ( mShowing ) {
-                if ( mManifestation .isUnnecessary() )
+                if ( mManifestation .isUnnecessary() ) {
+                    mManifestation .addConstruction( mConstruction );
                     mManifestations .add(  mManifestation );
+                }
                 // note the asymmetry... we want to unhide when adding
                 mManifestations .show( mManifestation ); // TODO make this more immediate, call renderer here
-                mManifestation .addConstruction( mConstruction );
             }
             else {
                 mManifestation .removeConstruction( mConstruction );
@@ -358,6 +365,41 @@ public abstract class ChangeManifestations extends ChangeSelection
             Element man = mManifestation .getXml( doc );
             result .appendChild( man );
             return result;
+        }
+    }
+
+    private class LabelManifestation implements SideEffect
+    {
+        private final Manifestation mManifestation;
+        private final String oldLabel, newLabel;
+        
+        public LabelManifestation( Manifestation m, String label )
+        {
+            this.mManifestation = m;
+            this.newLabel = label;
+            this.oldLabel = m .getLabel();
+        }
+
+        @Override
+        public void undo()
+        {
+            mManifestations .setLabel( mManifestation, oldLabel );
+        }
+
+        @Override
+        public Element getXml( Document doc )
+        {
+            Element result = doc .createElement( "label" );
+            DomUtils .addAttribute( result, "text", newLabel );
+            Element man = mManifestation .getXml( doc );
+            result .appendChild( man );
+            return result;
+        }
+
+        @Override
+        public void redo()
+        {
+            mManifestations .setLabel( mManifestation, newLabel );
         }
     }
 

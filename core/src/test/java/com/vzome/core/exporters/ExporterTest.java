@@ -3,9 +3,12 @@ package com.vzome.core.exporters;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -14,6 +17,7 @@ import org.junit.Test;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicNumberImpl;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.algebra.PentagonField;
@@ -77,10 +81,10 @@ public class ExporterTest {
 
         public String exportPartGeometry() {
             StringWriter out = new StringWriter();
-            PartGeometryExporter exporter = (PartGeometryExporter) doc.getStructuredExporter("partgeom", null, null, null );
+            PartGeometryExporter exporter = new PartGeometryExporter();
             try {
-                exporter.doExport(null, new PrintWriter( out ), 0, 0 );
-            } catch (IOException ex) {
+                exporter.exportDocument( doc, null, new PrintWriter( out ), 0, 0 );
+            } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
             return out.toString();
@@ -88,13 +92,66 @@ public class ExporterTest {
 
         public String exportModelAsOFF() {
             StringWriter out = new StringWriter();
-            OffExporter exporter = new OffExporter(null, null, null, doc.getRenderedModel() );
+            OffExporter exporter = new OffExporter();
             try {
-                exporter.doExport(null, new PrintWriter( out ), 0, 0 );
-            } catch (IOException ex) {
+                exporter.exportGeometry( doc .getRenderedModel(), null, new PrintWriter( out ), 0, 0 );
+            } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
             return out.toString();
+        }
+
+        public String exportMathTables() {
+            StringWriter out = new StringWriter();
+            MathTableExporter exporter = new MathTableExporter();
+            try {
+                exporter.exportGeometry( doc .getRenderedModel(), null, new PrintWriter( out ), 0, 0 );
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+            return out.toString();
+        }
+    }
+    
+//    @Test
+    public void exportMathTables() {
+        String path = "";
+        // uncomment this line to generate the json as files
+        //path = "C:\\Users\\DHall\\Documents\\GitHub\\vzome-sharing\\2022\\04\\20\\algebraic-field-math-tables\\";
+        String[] fieldNames = {
+            "golden",
+            "rootTwo",
+            "rootThree",
+            "snubCube",
+            "snubDodec",
+            "sqrtPhi",
+            "plasticNumber",
+            "plasticPhi",
+            "superGolden",
+            "edPegg"
+        };
+        for(String fieldName : fieldNames) {
+            exportMathTable(fieldName, path);
+        }
+        for(int i=4; i <= 100; i++) {
+            exportMathTable("polygon" + i, path);
+        }
+    }
+    
+    private void exportMathTable(String fieldName, String path) {
+        TestApp app = new TestApp (fieldName);
+        String json = app.exportMathTables();
+        if(! "".equals(path) ) {
+            File file = new File(path + fieldName + ".math.json");
+            System.out.println("Exporting math table to " + file.getAbsolutePath());
+            // A try-with-resources block closes the resource even if an exception occurs
+            try ( Writer out = new FileWriter( file ) ) {
+                out.write(json);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println(json);    
         }
     }
 
@@ -653,7 +710,7 @@ public class ExporterTest {
             new RootTwoField(),
             new RootThreeField(),
             new HeptagonField(),
-            new SnubDodecField(),
+            new SnubDodecField( AlgebraicNumberImpl.FACTORY ),
         };
         final String[] expectations = new String[]{
             "(0,0) (3/5,7/5) (0,0) (0,0)",      // 1D: 0 X 0 0

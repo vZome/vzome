@@ -20,6 +20,7 @@ public class ConnectorImpl extends ManifestationImpl implements Connector
 	}
 
 	private final AlgebraicVector m_center;
+    private String label;
 
 	@Override
 	public AlgebraicVector getLocation()
@@ -37,7 +38,7 @@ public class ConnectorImpl extends ManifestationImpl implements Connector
     public Construction toConstruction()
     {
         Construction first = this .getFirstConstruction();
-        if ( first .is3d() )
+        if ( first != null && first .is3d() )
             return first;
         
         AlgebraicField field = m_center .getField();
@@ -78,5 +79,17 @@ public class ConnectorImpl extends ManifestationImpl implements Connector
     public String toString()
     {
         return "connector at " + m_center .toString();
+    }
+
+    @Override
+    public void setLabel( String label )
+    {
+        this.label = label;
+    }
+
+    @Override
+    public String getLabel()
+    {
+        return this .label;
     }
 }

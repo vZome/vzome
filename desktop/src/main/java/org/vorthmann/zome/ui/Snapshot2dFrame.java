@@ -15,11 +15,12 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.awt.GraphicsController;
 
+@SuppressWarnings("serial")
 public class Snapshot2dFrame extends JFrame
 {
-    private final Controller controller;
+    private final GraphicsController controller;
     
     private final Snapshot2dPanel snapshotPanel;
     
@@ -29,7 +30,7 @@ public class Snapshot2dFrame extends JFrame
     
     private final String[] FORMATS = new String[]{ SAVE_AS_PDF, SAVE_AS_POSTSCRIPT, SAVE_AS_SVG };
         
-    public Snapshot2dFrame( final Controller controller, final FileDialog mFileChooser )
+    public Snapshot2dFrame( final GraphicsController controller, final FileDialog mFileChooser )
     {
         super( "vZome 2D snapshot" );
         

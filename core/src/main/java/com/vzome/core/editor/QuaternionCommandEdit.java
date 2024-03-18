@@ -17,13 +17,13 @@ import com.vzome.core.math.symmetry.QuaternionicSymmetry;
  */
 public class QuaternionCommandEdit extends CommandEdit
 {
-    private final QuaternionicSymmetry left, right;
+//    private final QuaternionicSymmetry left, right;
 
     public QuaternionCommandEdit( AbstractCommand cmd, EditorModel editor, QuaternionicSymmetry left, QuaternionicSymmetry right )
     {
         super( cmd, editor );
-        this.left = left;
-        this.right = right;
+//        this.left = left;
+//        this.right = right;
     }
 
     // TODO construct this at the right time, and set attributes for apply

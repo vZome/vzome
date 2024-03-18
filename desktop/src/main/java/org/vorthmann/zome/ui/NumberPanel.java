@@ -1,17 +1,24 @@
 package org.vorthmann.zome.ui;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.api.Controller;
 
+@SuppressWarnings("serial")
 public class NumberPanel extends JPanel
 {
     private final JTextPane[] fields;
@@ -36,6 +43,9 @@ public class NumberPanel extends JPanel
         StyleConstants.setAlignment(fieldAttribs, StyleConstants.ALIGN_RIGHT);
         StyleConstants.setFontSize(fieldAttribs, 14);
 
+        JPopupMenu contextMenu = getContextMenu();
+        setComponentPopupMenu(contextMenu);
+
         int labelsWidthTotal = 0;
         for ( int i = 0; i < values.length; i++ )
         {
@@ -58,11 +68,70 @@ public class NumberPanel extends JPanel
             fields[ i ] .setBorder( BorderFactory .createBevelBorder( BevelBorder .LOWERED ) );
             fields[ i ] .setMaximumSize( maxSize );
             fields[ i ] .setPreferredSize( maxSize );
+            fields[ i ] .setComponentPopupMenu(contextMenu);
             this .add( fields[ i ] );
 
             labelsWidthTotal += (maxSize.width * 2); // leave space for the static text too
         }
         totalLabelWidth = labelsWidthTotal;
+	}
+
+	protected JPopupMenu getContextMenu() {
+	    JPopupMenu popup = new JPopupMenu();
+        String[] mathOps = controller .getCommandList( "math.operations" );
+        if(mathOps.length > 0) {
+            for(String label : mathOps) {
+                if(label.equals("seperator")) {
+                    popup.addSeparator();
+                } else {
+                    popup.add(new JMenuItem(new AbstractAction(label) {
+                        @Override
+                        public void actionPerformed(ActionEvent ae) {
+                            syncToModel();
+                            controller.setProperty("math.operation", label);
+                            syncFromModel();
+                        }
+                    }));
+                }
+            }
+            popup.addSeparator();
+        }
+        //////////////////////////////////////////////////////////////
+        String[] namedValues = controller .getCommandList( "named-values" );
+        if(namedValues.length > 0) {
+            for(String label : namedValues) {
+                if(label.equals("seperator")) {
+                    popup.addSeparator();
+                } else {
+                    popup.add(new JMenuItem(new AbstractAction(label) {
+                        @Override
+                        public void actionPerformed(ActionEvent ae) {
+                            syncToModel();
+                            controller.setProperty("named-value", label);
+                            syncFromModel();
+                        }
+                    }));
+                }
+            }
+            popup.addSeparator();
+        }
+        //////////////////////////////////////////////////////////////
+        popup.add(new JMenuItem(new AbstractAction("Show Decimal Value") {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                String msg = null;
+                try {
+                    syncToModel();
+                    msg = controller.getProperty("value") + " = " + controller.getProperty("evaluate");
+                    System.out.println(msg);
+                }
+                catch(NumberFormatException ex) {
+                    msg = ex.getClass().getSimpleName() + " " + ex.getMessage();
+                }
+                JOptionPane.showMessageDialog( null, msg, "Decimal Value", JOptionPane.PLAIN_MESSAGE );
+            }
+        }));
+	    return popup;
 	}
 
     public int totalLabelWidth() {

@@ -19,9 +19,6 @@ import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import org.vorthmann.j3d.J3dComponentFactory;
-import org.vorthmann.ui.Controller;
-import org.vorthmann.zome.app.impl.ApplicationController;
-import org.vorthmann.zome.app.impl.DocumentController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -29,8 +26,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vzome.core.render.Scene;
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.awt.ApplicationController;
+import com.vzome.desktop.awt.DocumentController;
+import com.vzome.desktop.awt.RenderingViewer;
 import com.vzome.desktop.controller.JsonClientRendering;
-import com.vzome.desktop.controller.RenderingViewer;
 
 public class ControllerWebSocket implements WebSocketListener, JsonClientRendering.EventDispatcher
 {
@@ -41,6 +41,7 @@ public class ControllerWebSocket implements WebSocketListener, JsonClientRenderi
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ObjectWriter objectWriter = objectMapper .writer();
 
+    @Override
     public void onWebSocketClose( int statusCode, String reason )
     {
         this.outbound = null;
@@ -58,6 +59,7 @@ public class ControllerWebSocket implements WebSocketListener, JsonClientRenderi
         }
     }
 
+    @Override
     public void dispatchEvent( String type, JsonNode payload )
     {
         ObjectNode event = this .objectMapper .createObjectNode();
@@ -74,6 +76,7 @@ public class ControllerWebSocket implements WebSocketListener, JsonClientRenderi
         publish( event );
     }
 
+    @Override
     public void onWebSocketConnect( Session session )
     {
         this.outbound = session;
@@ -134,12 +137,14 @@ public class ControllerWebSocket implements WebSocketListener, JsonClientRenderi
         }
     }
 
+    @Override
     public void onWebSocketError( Throwable cause )
     {
         LOG.warn( "WebSocket Error", cause );
         cause .printStackTrace();
     }
 
+    @Override
     public void onWebSocketText( String message )
     {
         if ((outbound != null) && (outbound.isOpen()))
@@ -211,7 +216,7 @@ public class ControllerWebSocket implements WebSocketListener, JsonClientRenderi
         }, props, new J3dComponentFactory()
         {
             @Override
-            public RenderingViewer createRenderingViewer( Scene scene )
+            public RenderingViewer createRenderingViewer( Scene scene, boolean lightweight )
             {
                 // Should never be called
                 return null;

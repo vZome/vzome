@@ -18,8 +18,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.api.Controller;
 
+@SuppressWarnings("serial")
 public class HyperlinkPanel extends JPanel
 {
     private transient String url;
@@ -66,7 +67,7 @@ public class HyperlinkPanel extends JPanel
         hyperlink .addMouseListener( new MouseAdapter()
         {
             @Override
-            public void mouseClicked( MouseEvent e )
+            public void mousePressed( MouseEvent e )
             {
                 try {
                     Desktop .getDesktop() .browse( new URI( url ) );

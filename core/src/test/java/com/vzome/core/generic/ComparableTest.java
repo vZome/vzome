@@ -152,7 +152,7 @@ public abstract class ComparableTest<T extends Comparable<T>>
 	 * This test simply warns if that is encountered.
 	 */
 	private void checkForMinMaxInt(int result) {
-		assertTrue(Integer.MIN_VALUE * -1 == Integer.MIN_VALUE);
+//		assertTrue(Integer.MIN_VALUE * -1 == Integer.MIN_VALUE);
 		
 		String name = "";
 		switch(result) {

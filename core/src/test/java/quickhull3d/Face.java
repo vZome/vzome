@@ -487,30 +487,30 @@ class Face
 	   return numDiscarded;
 	 }
 
-	private double areaSquared (HalfEdge hedge0, HalfEdge hedge1)
-	 {
-	   // return the squared area of the triangle defined
-	   // by the half edge hedge0 and the point at the
-	   // head of hedge1.
-
-	   Point3d p0 = hedge0.tail().pnt;
-	   Point3d p1 = hedge0.head().pnt;
-	   Point3d p2 = hedge1.head().pnt;
-
-	   double dx1 = p1.x - p0.x;
-	   double dy1 = p1.y - p0.y;
-	   double dz1 = p1.z - p0.z;
-
-	   double dx2 = p2.x - p0.x;
-	   double dy2 = p2.y - p0.y;
-	   double dz2 = p2.z - p0.z;
-
-	   double x = dy1*dz2 - dz1*dy2;
-	   double y = dz1*dx2 - dx1*dz2;
-	   double z = dx1*dy2 - dy1*dx2;
-
-	   return x*x + y*y + z*z;	   
-	 }
+//	private double areaSquared (HalfEdge hedge0, HalfEdge hedge1)
+//	 {
+//	   // return the squared area of the triangle defined
+//	   // by the half edge hedge0 and the point at the
+//	   // head of hedge1.
+//
+//	   Point3d p0 = hedge0.tail().pnt;
+//	   Point3d p1 = hedge0.head().pnt;
+//	   Point3d p2 = hedge1.head().pnt;
+//
+//	   double dx1 = p1.x - p0.x;
+//	   double dy1 = p1.y - p0.y;
+//	   double dz1 = p1.z - p0.z;
+//
+//	   double dx2 = p2.x - p0.x;
+//	   double dy2 = p2.y - p0.y;
+//	   double dz2 = p2.z - p0.z;
+//
+//	   double x = dy1*dz2 - dz1*dy2;
+//	   double y = dz1*dx2 - dx1*dz2;
+//	   double z = dx1*dy2 - dy1*dx2;
+//
+//	   return x*x + y*y + z*z;	   
+//	 }
 
 	public void triangulate (FaceList newFaces, double minArea)
 	 {
@@ -521,7 +521,7 @@ class Face
 	    }
 
 	   Vertex v0 = he0.head();
-	   Face prevFace = null;
+	   //Face prevFace = null;
 
 	   hedge = he0.next;
 	   HalfEdge oppPrev = hedge.opposite;

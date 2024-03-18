@@ -218,7 +218,7 @@ public class ManifestationIteratorTest {
         assertEquals(expC, nc);
         
         int nv = 0;
-        for(Manifestation man : Manifestations.visibleManifestations(selection)) {
+        for(@SuppressWarnings("unused") Manifestation man : Manifestations.visibleManifestations(selection)) {
             nv++;
         }
         assertTrue(nv > 0);

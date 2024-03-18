@@ -1,8 +1,5 @@
 package com.vzome.core.math.symmetry;
 
-import javax.vecmath.Matrix3d;
-import javax.vecmath.Vector3d;
-
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -18,7 +15,7 @@ public class AntiprismSymmetry extends AbstractSymmetry {
 
     private Axis preferredAxis;
     private final boolean useShear;
-    private final Matrix3d shearTransform;
+    private final RealVector[] shearTransform; // stored as rows
 
     public AntiprismSymmetry(PolygonField field) {
         super(field.polygonSides() * 2, field, "blue",
@@ -38,11 +35,12 @@ public class AntiprismSymmetry extends AbstractSymmetry {
         }
 
         // Shear transformation will only be applied in the Y direction. X and Z will be unchanged.
-        shearTransform = new Matrix3d(
-                1, m10, 0, 
-                0, m11, 0, 
-                0,   0, 1
-            );
+        //  We can't use javax.vecmath because we'd have to shim it for JSweet.
+        shearTransform = new RealVector[] { // rows
+                new RealVector( 1, m10, 0 ), 
+                new RealVector( 0, m11, 0 ), 
+                new RealVector( 0,   0, 1 )
+        };
     }
 
     @Override
@@ -236,11 +234,30 @@ public class AntiprismSymmetry extends AbstractSymmetry {
     public RealVector embedInR3(AlgebraicVector v) {
         RealVector rv = super.embedInR3(v);
         if (useShear) {
-            Vector3d v3d = new Vector3d(rv.x, rv.y, rv.z);
-            shearTransform.transform(v3d);
-            return new RealVector(v3d.x, v3d.y, v3d.z);
+            float[] sums = new float[3];
+            for (int i = 0; i < shearTransform.length; i++) {
+                sums[ i ] += shearTransform[ i ].x * rv.x;
+                sums[ i ] += shearTransform[ i ].y * rv.y;
+                sums[ i ] += shearTransform[ i ].z * rv.z;
+            }
+            return new RealVector( sums[ 0 ], sums[ 1 ], sums[ 2 ] );
         }
         return rv;
+    }
+
+    @Override
+    public double[] embedInR3Double(AlgebraicVector v) {
+    	double[] dv = super.embedInR3Double( v );
+        if (useShear) {
+            double[] sums = new double[3];
+            for (int i = 0; i < shearTransform.length; i++) {
+                sums[ i ] += shearTransform[ i ].x * dv[0];
+                sums[ i ] += shearTransform[ i ].y * dv[1];
+                sums[ i ] += shearTransform[ i ].z * dv[2];
+            }
+            return sums;
+        }
+        return dv;
     }
 
     @Override

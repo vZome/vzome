@@ -400,7 +400,7 @@ public class QuickHull3D {
         }
     }
 
-    private void printPoints(PrintStream ps) {
+    protected void printPoints(PrintStream ps) {
         for (int i = 0; i < numPoints; i++) {
             Point3d pnt = pointBuffer[i].pnt;
             ps.println(pnt.x + ", " + pnt.y + ", " + pnt.z + ",");

@@ -5,22 +5,41 @@
     {
       "name":             "online",
 
-      "type": "pwa-chrome",
+      "type": "chrome",
       "request": "launch",
-      "url": "http://localhost:8080/app/?debug=true",
+      "url": "http://localhost:8532/",
       "pathMapping": {
-        "/app": "${workspaceFolder}/online/src",
-        "/@vzome/react-vzome": "${workspaceFolder}/react-library/src",
+        "/": "${workspaceFolder}/online/dist"
       }
     },
     {
-      "name":             "react-vzome",
+      "name":             "web component",
 
-      "type": "pwa-chrome",
+      "type": "chrome",
       "request": "launch",
-      "url": "http://localhost:8080/",
+      "url": "http://localhost:8532/test/",
       "pathMapping": {
-        "/": "${workspaceFolder}/react-library/src",
+        "/": "${workspaceFolder}/online/dist"
+      }
+    },
+    {
+      "name":             "browser",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8532/browser",
+      "pathMapping": {
+        "/": "${workspaceFolder}/online/dist"
+      }
+    },
+    {
+      "name":             "classic",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8532/classic",
+      "pathMapping": {
+        "/": "${workspaceFolder}/online/dist"
       }
     }
   ]

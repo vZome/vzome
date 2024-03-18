@@ -38,44 +38,18 @@ public class Polytope4d extends ChangeManifestations
     private String renderGroupName;
     private Symmetries4D symmetries;
 
-    private Polytope4d( EditorModel editor,
-            Symmetries4D symmetries,
-            AlgebraicVector quaternion, int index, String groupName,
-            int edgesToRender, AlgebraicNumber[] edgeScales,
-            String renderGroupName )
-    {
-        super( editor );
-        this.symmetries = symmetries;
-        this.field = editor .getRealizedModel() .getField();
-
-        this.index = index;
-        this.quaternion = quaternion;
-        this.groupName = groupName;
-
-        this .renderGroupName = renderGroupName;
-        this .edgesToRender = edgesToRender;
-        if ( edgeScales != null )
-            this .edgeScales = edgeScales;
-        else
-            for (int i = 0; i < this .edgeScales .length; i++)
-            {
-                this .edgeScales[ i ] = this .field .one();
-            }
-    }
-    
     public Polytope4d( EditorModel editor )
     {
-        this( editor, ((SymmetryAware) editor) .get4dSymmetries(), null, 0, null );
-    }
+        super( editor );
+        this.symmetries = ((SymmetryAware) editor) .get4dSymmetries();
+        this.field = editor .getRealizedModel() .getField();
 
-    public Polytope4d( EditorModel editor, Symmetries4D symmetries,
-            Segment symmAxis, int index, String groupName )
-    {
-        this( editor, symmetries,
-                ( symmAxis == null )? null : symmAxis .getOffset() .inflateTo4d(),
-                        index, groupName, index, null, groupName );
+        for (int i = 0; i < this .edgeScales .length; i++)
+        {
+            this .edgeScales[ i ] = this .field .one();
+        }
     }
-
+    
     @Override
     public void configure( Map<String, Object> params )
     {
@@ -99,9 +73,9 @@ public class Polytope4d extends ChangeManifestations
         if ( quaternion != null )
             DomUtils .addAttribute( xml, "quaternion", quaternion .toParsableString() );        
         DomUtils .addAttribute( xml, "group", this.groupName );
-        DomUtils .addAttribute( xml, "wythoff", Integer .toString( this.index, 2 ) );
+        DomUtils .addAttribute( xml, "wythoff", DomUtils.byteToBinary( this.index ) );
         if ( this .edgesToRender != 0xF )
-            DomUtils .addAttribute( xml, "renderEdges", Integer .toString( this.edgesToRender, 2 ) );
+            DomUtils .addAttribute( xml, "renderEdges", DomUtils.byteToBinary( this.edgesToRender ) );
         if ( ! this .renderGroupName .equals( this .groupName ) )
             DomUtils .addAttribute( xml, "renderGroup", this.renderGroupName );
     }

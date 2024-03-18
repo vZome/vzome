@@ -1,7 +1,7 @@
 
 package com.vzome.core.edits;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.vzome.core.algebra.AlgebraicVector;
@@ -30,9 +30,9 @@ public class SelectNeighbors extends ChangeSelection
     public void perform() throws Failure
     {
         RealizedModel model = this.editor .getRealizedModel();
-        Set<Panel> panels = new HashSet<>();
-        Set<Strut> struts = new HashSet<>();
-        Set<Connector> balls = new HashSet<>();
+        Set<Panel> panels = new LinkedHashSet<>();
+        Set<Strut> struts = new LinkedHashSet<>();
+        Set<Connector> balls = new LinkedHashSet<>();
         for (Manifestation man : mSelection) {
             if ( man instanceof Strut )
                 struts .add( (Strut) man );

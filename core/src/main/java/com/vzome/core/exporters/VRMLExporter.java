@@ -1,9 +1,6 @@
 package com.vzome.core.exporters;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.HashMap;
@@ -11,42 +8,21 @@ import java.util.Map;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
-import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.construction.Color;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Camera;
-import com.vzome.core.viewing.Lights;
 
 /**
  * @author vorth
  */
-public class VRMLExporter extends Exporter3d 
+public class VRMLExporter extends GeometryExporter 
 {
+    private static final String PREAMBLE_FILE = "com/vzome/core/exporters/vrml/preamble.wrl";
 	
-	private static final String PREAMBLE_FILE = "com/vzome/core/exporters/vrml/preamble.wrl";
-	
-	private static final PentagonField FIELD = new PentagonField();
+    private static final double SCALE = 0.350d;
 
-    private static final AlgebraicNumber MODEL_BALL_RADIUS = FIELD .createAlgebraicNumber( 6, 10, 1, 0 );
-    /**
-     * This scale factor is appropriate for making true-to-scale VRML renderings of strut models built
-     *   in vZome with a model ball radius (blue) of one long blue strut.  In other terms, the edges of the
-     *   ball model are short and medium blue struts.
-     */
-    private static final double SCALE = 0.350d / MODEL_BALL_RADIUS .evaluate();
-
-    public VRMLExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
-    {
-        super( scene, colors, lights, model );
-    }
-    
-    
     private void exportColor( String name, Color color )
     {
 		output .println( "PROTO " + name + " [] {" );
@@ -64,18 +40,7 @@ public class VRMLExporter extends Exporter3d
     {
         output = new PrintWriter( writer );
 
-        InputStream input = getClass() .getClassLoader()
-                                    .getResourceAsStream( PREAMBLE_FILE );
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
-        int num;
-        try {
-            while ( ( num = input .read( buf, 0, 1024 )) > 0 )
-                    out .write( buf, 0, num );
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        output .println( new String( out .toByteArray() ) );
+        output .println( this.getBoilerplate( PREAMBLE_FILE ) );
         output .println();
 
         AlgebraicField field = null;

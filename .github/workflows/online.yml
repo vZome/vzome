@@ -1,0 +1,124 @@
+# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: vZome Online build
+
+on:
+  workflow_dispatch:
+
+env:
+  BUILD_NUMBER: ${{ github.run_number }}
+  GIT_COMMIT: ${{ github.sha }}
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.3.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        lfs: 'true'
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+
+    - name: Checkout modified jsweet
+      uses: actions/checkout@v3
+      with:
+        repository: vorth/jsweet
+        ref: develop
+        path: jsweet
+    - name: Build & deploy jsweet transpiler
+      run: |
+        pwd
+        cd jsweet/transpiler
+        pwd
+        mvn clean install -Dmaven.test.skip=true -DskipJavadoc=true -DskipSigning=true
+        cd ../..
+
+    - name: Checkout modified jsweet-maven-plugin
+      uses: actions/checkout@v3
+      with:
+        repository: vorth/jsweet-maven-plugin
+        path: jsweet-maven
+    - name: Build & deploy jsweet-maven-plugin
+      run: |
+        pwd
+        cd jsweet-maven
+        pwd
+        mvn clean install -Dmaven.test.skip=true -DskipJavadoc=true -DskipSigning=true
+        cd ..
+
+    - name: Checkout modified j4ts
+      uses: actions/checkout@v3
+      with:
+        repository: vorth/j4ts
+        path: j4ts
+    - name: Build & deploy j4ts
+      run: |
+        pwd
+        cd j4ts
+        pwd
+        chmod +x mvnw
+        ./mvnw clean compile install
+        cd ..
+
+    - name: Checkout modified jsweet-gradle-plugin
+      uses: actions/checkout@v3
+      with:
+        repository: vorth/jsweet-gradle-plugin
+        ref: update-jsweet
+        path: plugin
+    - name: Build & deploy jsweet-gradle-plugin
+      run: |
+        pwd
+        cd plugin
+        pwd
+        chmod +x gradlew
+        ./gradlew publishToMavenLocal -DskipSigning=true
+        cd ..
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Build with Gradle and Yarn
+      run: |
+        chmod +x gradlew cicd/build-online.bash
+        cicd/build-online.bash
+
+    - name: Configure SSH
+      run: |
+        mkdir -p ~/.ssh/
+        echo "$SSH_KEY" > ~/.ssh/dreamhost.key
+        chmod 600 ~/.ssh/dreamhost.key
+        cat >>~/.ssh/config <<END
+        Host dreamhost
+          HostName $HOSTING_FQDN
+          User scottvorthmann
+          IdentityFile ~/.ssh/dreamhost.key
+          StrictHostKeyChecking no
+        END
+        cat ~/.ssh/config
+      env:
+        SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        HOSTING_FQDN: ${{ secrets.HOSTING_FQDN }}
+
+    - name: Publish Online build to DreamHost
+      run: |
+        sftp -b - dreamhost <<END
+          cd vzome.com/
+          put online/dist/online.tgz	
+        END
+        ssh dreamhost ./install-vzome-online.bash
+
+

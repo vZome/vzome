@@ -5,7 +5,7 @@ import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.math.symmetry.Symmetry;
 
 
-public class AxialSymmetryToolFactory extends RotationTool.Factory
+public class AxialSymmetryToolFactory extends RotationToolFactory
 {
 	private static final String ID = "axial symmetry";
 	private static final String LABEL = "Create a rotational symmetry tool";

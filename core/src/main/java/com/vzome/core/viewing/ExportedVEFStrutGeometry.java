@@ -11,6 +11,7 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.math.Polyhedron;
+import com.vzome.core.math.Polyhedron.Face;
 import com.vzome.core.parts.StrutGeometry;
 
 public class ExportedVEFStrutGeometry implements StrutGeometry
@@ -42,6 +43,11 @@ public class ExportedVEFStrutGeometry implements StrutGeometry
     public ExportedVEFStrutGeometry( List<AlgebraicVector> vertices, List< List<Integer> > faces, AlgebraicVector prototype, Set<Integer> fullScaleVertices, AlgebraicField field )
     {
         this( vertices, faces, prototype, fullScaleVertices, null, field );
+    }
+    
+    public List<Face.Triangle> getTriangles()
+    {
+        return getStrutPolyhedron( this.field.one() ) .getTriangleFaces();
     }
 
     @Override

@@ -27,12 +27,14 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import org.vorthmann.ui.CardPanel;
-import org.vorthmann.ui.Controller;
-import org.vorthmann.zome.app.impl.DocumentController;
-import org.vorthmann.zome.app.impl.PickingController;
 
-import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.desktop.api.Controller;
+//import com.vzome.desktop.awt.DocumentController;
+import com.vzome.desktop.awt.GraphicsController;
+//import com.vzome.desktop.awt.PickingController;
+import com.vzome.desktop.awt.RenderingViewer;
 
+@SuppressWarnings("serial")
 public class ModelPanel extends JPanel implements PropertyChangeListener, SymmetryToolbarsPanel.ButtonFactory
 {
     private static final String TOOLTIP_PREFIX = "<html><b>";
@@ -51,7 +53,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
     private final ToolConfigDialog bookmarkConfigDialog;
     private final Map<String,JButton> bookmarkButtons = new HashMap<>(); // to support hiding bookmarks
 
-    public ModelPanel( Controller controller, RenderingViewer viewer, ControlActions enabler, boolean isEditor, boolean fullPower )
+    public ModelPanel( GraphicsController controller, RenderingViewer viewer, ControlActions enabler, boolean isEditor, boolean fullPower )
     {
         super( new BorderLayout() );
         this .controller = controller;
@@ -76,10 +78,9 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
 
         mMonocularPanel .setPreferredSize( new Dimension( 2000, 2000 ) );
         monocularCanvas = viewer .getCanvas();
-        ((DocumentController) controller) .attachViewer( viewer, monocularCanvas );
+        controller .attachViewer( viewer, monocularCanvas );
 
-        Controller monoController = new PickingController( viewer, (DocumentController) controller );
-        controller .addSubController( "monocularPicking", monoController );
+        GraphicsController monoController = (GraphicsController) controller .getSubController( "monocularPicking" );
         mMonocularPanel .add( monocularCanvas, BorderLayout.CENTER );
 
         monoStereoPanel .add( mMonocularPanel, "mono" );
@@ -453,6 +454,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
 
             this .addSeparator();
 
+            this .add( setMenuAction( "SelectCoplanar", new JMenuItem( "Select Coplanar" ) ) );
             this .add( setMenuAction( "SelectCollinear", new JMenuItem( "Select Collinear" ) ) );
             this .add( setMenuAction( "SelectParallelStruts", new JMenuItem( "Select Parallel Struts" ) ) );
             this .add( setMenuAction( "AdjustSelectionByOrbitLength/selectSimilarStruts", new JMenuItem( "Select Similar Struts" ) ) );

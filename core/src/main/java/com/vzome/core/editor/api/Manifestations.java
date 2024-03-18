@@ -1,7 +1,9 @@
 package com.vzome.core.editor.api;
 
+import java.util.SortedSet;
 import java.util.function.Predicate;
 
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.generic.FilteredIterator;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
@@ -189,5 +191,40 @@ public class Manifestations {
         {
             return true;
         }
+    }
+    
+    /**
+     * 
+     * @param manifestations
+     * @param output
+     * @return last selected Connector location, or last selected Strut location, or last vertex of last selected Panel
+     */
+    public static AlgebraicVector sortVertices( Iterable<Manifestation> manifestations, SortedSet<AlgebraicVector> output )
+    {
+        AlgebraicVector lastBall = null;
+        AlgebraicVector lastVertex = null;
+
+        // phase one: find and index all vertices
+        for ( Manifestation man : manifestations ) {
+            if ( man instanceof Connector )
+            {
+                lastBall = man .getLocation();
+                output .add( lastBall );
+            }
+            else if ( man instanceof Strut )
+            {
+                lastVertex = man .getLocation();
+                output .add( lastVertex );
+                output .add( ((Strut) man) .getEnd() );
+            }
+            else if ( man instanceof Panel )
+            {
+                for ( AlgebraicVector vertex : (Panel) man ) {
+                    lastVertex = vertex;
+                    output .add( vertex );
+                }
+            }
+        }
+        return ( lastBall != null )? lastBall : lastVertex;
     }
 }

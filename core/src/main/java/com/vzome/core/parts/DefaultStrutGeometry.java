@@ -1,8 +1,6 @@
 
 package com.vzome.core.parts;
 
-import java.util.Iterator;
-
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -22,6 +20,18 @@ public class DefaultStrutGeometry implements StrutGeometry
     
     private final Axis mAxis;
     
+//    private static <T> Iterable<T>
+//    getIterableFromIterator(Iterator<T> iterator)
+//    {
+//        return new Iterable<T>() {
+//            @Override
+//            public Iterator<T> iterator()
+//            {
+//                return iterator;
+//            }
+//        };
+//    }
+
     public DefaultStrutGeometry( Direction dir )
     {
         AlgebraicField field = dir .getSymmetry() .getField();
@@ -33,10 +43,8 @@ public class DefaultStrutGeometry implements StrutGeometry
         Symmetry symm = dir .getSymmetry();
         AlgebraicVector x = unitVector( field, field .basisVector( 3, AlgebraicVector.Z ) );  // just a default
         double minDot = 99d;
-        for ( Iterator<Direction> orbits = symm .getDirections(); orbits .hasNext(); )
-        {
-            dir = orbits .next();
-            for (Axis ortho : dir) {
+        for ( Direction orbit : symm .getDirections() )
+            for ( Axis ortho : orbit ) {
                 AlgebraicNumber dot = ortho .normal() .dot( unitNormal );
                 double dotVal = Math .abs( dot .evaluate() );
                 if ( dotVal < minDot ) {
@@ -44,7 +52,6 @@ public class DefaultStrutGeometry implements StrutGeometry
                     x = unitVector( field, ortho .normal() );
                 }
             }
-        }
         AlgebraicVector y = AlgebraicVectors.getNormal( x, unitNormal );
         AlgebraicNumber scaleFactor = field .createAlgebraicNumber( 1, 0, 2, -2 );
         x = x .scale( scaleFactor );

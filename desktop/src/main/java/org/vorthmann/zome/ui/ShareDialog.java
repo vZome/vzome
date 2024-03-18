@@ -13,8 +13,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -22,11 +20,15 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import org.eclipse.egit.github.core.Blob;
@@ -44,28 +46,28 @@ import org.eclipse.egit.github.core.service.DataService;
 import org.eclipse.egit.github.core.service.RepositoryService;
 import org.eclipse.egit.github.core.service.UserService;
 import org.vorthmann.ui.CardPanel;
-import org.vorthmann.ui.Controller;
-import org.vorthmann.zome.app.impl.GitHubApi;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.DeviceAuthorization;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import com.vzome.desktop.api.Controller;
 import com.vzome.xml.ResourceLoader;
 
+@SuppressWarnings("serial")
 public class ShareDialog extends EscapeDialog
 {
-    private static final String REPO_NAME = "vzome-sharing";
-    private static final String BRANCH_NAME = "main";
+    private static final String DEFAULT_REPO_NAME = "vzome-sharing";
+    private static final String DEFAULT_BRANCH_NAME = "main";
 
     private final Controller controller;
     private final CardPanel cardPanel;
     private final JLabel codeLabel;
     private final JButton authzButton;
     private final JLabel errorLabel;
-    private final HyperlinkPanel viewUrlPanel, githubUrlPanel;
+    private final HyperlinkPanel githubUrlPanel;
     
-    private final String readmeBoilerplate;
+    private final String indexTemplate, readmeTemplate, githubReadmeBlogPrefixTemplate, postTemplate;
    
     // Services
     private final OAuth20Service oAuthService;
@@ -77,16 +79,23 @@ public class ShareDialog extends EscapeDialog
 
     // State markers
     private transient DeviceAuthorization deviceAuthorization;
-    private transient String authToken;
+    private transient String authToken, repoName, branchName;
     private transient Repository repo;
+    private transient boolean configuring, configured;
+    private transient String designName, title, description;
     private transient String gitUrl, error; // marks success or failure state
+    private transient Thread workerThread;
     
     // Inputs
-    private transient String fileName, png, xml;
-    
-    // Outputs
-    private transient String embedUrl;
-    
+    private transient String png, xml, shapesJson;
+    private LocalDateTime createTime;
+    private JCheckBox generatePageCheckBox, publishCheckBox;
+    private JTextField titleText;
+    private JTextArea descriptionText;
+    private JLabel publishLabel;
+
+    static final Logger logger = Logger.getLogger( "org.vorthmann.zome.ui.githubsharing" );
+
     /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      * First, the code that runs on the Swing event dispatcher thread...
      *   we cannot do anything time-consuming here, such as contacting Github.
@@ -99,6 +108,14 @@ public class ShareDialog extends EscapeDialog
         this.controller = controller;
 
         this .authToken = controller .getProperty( "githubAccessToken" );
+        String repoNameOverride = controller .getProperty( "githubRepoName" );
+        if ( repoNameOverride == null || "".equals( repoNameOverride ) )
+            repoNameOverride = DEFAULT_REPO_NAME;
+        this .repoName = repoNameOverride;
+        String branchNameOverride = controller .getProperty( "githubBranchName" );
+        if ( branchNameOverride == null || "".equals( branchNameOverride ) )
+            branchNameOverride = DEFAULT_BRANCH_NAME;
+        this .branchName = branchNameOverride;
         String clientId = controller .getProperty( "githubClientId" );
         String clientSecret = controller .getProperty( "githubClientSecret" );
         String scope = "repo";
@@ -117,7 +134,13 @@ public class ShareDialog extends EscapeDialog
         this .commitService = new CommitService( client );
         this .dataService = new DataService( client );
         
-        this .readmeBoilerplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubReadmeBoilerplate.md" );
+        this .indexTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubIndexTemplate.md" );
+        
+        this .readmeTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubReadmeTemplate.md" );
+
+        this .githubReadmeBlogPrefixTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubReadmeBlogPrefixTemplate.md" );
+
+        this .postTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubPostTemplate.md" );
 
         JPanel loginPanel = new JPanel();
         {
@@ -129,7 +152,7 @@ public class ShareDialog extends EscapeDialog
                             + "vZome can upload a file to Github repository named 'vzome-sharing', if you have a Github account."
                             + " (Accounts are free.)<br/><br/>Once you have created the 'vzome-sharing' repository,"
                             + " enable GitHub Pages in the settings for the repository,"
-                            + " so your uploaded files can be shared through vZome Online."
+                            + " so you can share the generated web pages for your uploaded designs."
                           +"</html>" );
 
             codeLabel = new JLabel();
@@ -147,6 +170,7 @@ public class ShareDialog extends EscapeDialog
                 public void actionPerformed( ActionEvent e )
                 {
                     setVisible( false );
+                    workerThread .interrupt();
                 }
             } );
             JPanel buttons = new JPanel();
@@ -155,6 +179,98 @@ public class ShareDialog extends EscapeDialog
             loginPanel .add( help, BorderLayout.NORTH );
             loginPanel .add( codePanel, BorderLayout.CENTER );
             loginPanel .add( buttons, BorderLayout .SOUTH );
+        }
+
+        JPanel optionsPanel = new JPanel();
+        {
+            optionsPanel .setLayout( new BorderLayout() );
+            optionsPanel .setBorder( BorderFactory.createEmptyBorder( 15, 15, 15, 15 ) );
+
+            JPanel topPanel = new JPanel( new BorderLayout() );
+            generatePageCheckBox = new JCheckBox();
+            generatePageCheckBox .addActionListener( new ActionListener()
+            {
+                @Override
+                public void actionPerformed( ActionEvent e )
+                {
+                    boolean generatePost = controller .propertyIsTrue( "sharing-generatePost" );
+                    controller .setProperty( "sharing-generatePost", !generatePost );
+                    enableConfigurations();
+                }
+            });
+            topPanel .add( generatePageCheckBox, BorderLayout.WEST );
+            topPanel .add( new JLabel( "Generate blog post" ), BorderLayout.CENTER );
+            optionsPanel .add( topPanel, BorderLayout.NORTH );
+
+            publishCheckBox = new JCheckBox();
+            publishCheckBox .addActionListener( new ActionListener()
+            {
+                @Override
+                public void actionPerformed( ActionEvent e )
+                {
+                    boolean publish = controller .propertyIsTrue( "sharing-publishImmediately" );
+                    controller .setProperty( "sharing-publishImmediately", !publish );
+                }
+            });
+            JPanel cboxPanel = new JPanel( new BorderLayout() );
+            cboxPanel .add( publishCheckBox, BorderLayout.WEST );
+            publishLabel = new JLabel( "Publish immediately" );
+            cboxPanel .add( publishLabel, BorderLayout.CENTER );
+
+            titleText = new JTextField( 0 );
+            titleText .setBorder(
+                    BorderFactory.createCompoundBorder(
+                            BorderFactory.createCompoundBorder(
+                                    BorderFactory.createTitledBorder( "Title" ),
+                                    BorderFactory.createEmptyBorder( 5,5,5,5 ) ),
+                            titleText .getBorder()));
+
+            descriptionText = new JTextArea();
+            descriptionText .setLineWrap( true );
+            descriptionText .setWrapStyleWord( true );
+            descriptionText .setBorder(
+                    BorderFactory.createCompoundBorder(
+                            BorderFactory.createCompoundBorder(
+                                    BorderFactory.createTitledBorder( "Description" ),
+                                    BorderFactory.createEmptyBorder( 5,5,5,5 ) ),
+                            descriptionText .getBorder()));
+
+            //Put everything together.
+            JPanel inputsPane = new JPanel( new BorderLayout() );
+            inputsPane .add( titleText, BorderLayout.NORTH );
+            inputsPane .add( descriptionText, BorderLayout.CENTER );
+            inputsPane .add( cboxPanel, BorderLayout.SOUTH );
+            inputsPane .setBorder( BorderFactory.createEmptyBorder( 5,5,5,5 ) );
+            optionsPanel .add( inputsPane, BorderLayout.CENTER );
+
+            JButton uploadButton = new JButton( "Upload to GitHub" );
+            uploadButton .addActionListener( new ActionListener()
+            {
+                @Override
+                public void actionPerformed( ActionEvent e )
+                {
+                    title = titleText .getText();
+                    description = descriptionText .getText();
+                    configured = true;
+                    updateDialog();
+                }
+            });
+            JButton cancel = new JButton( "Cancel" );
+            cancel .addActionListener( new ActionListener()
+            {
+                @Override
+                public void actionPerformed( ActionEvent e )
+                {
+                    setVisible( false );
+                    workerThread .interrupt();
+                }
+            } );
+            JPanel buttons = new JPanel();
+            buttons .add( cancel );
+            buttons .add( uploadButton );
+            optionsPanel .add( buttons, BorderLayout.SOUTH );
+            
+            enableConfigurations();
         }
 
         JPanel uploadPanel = new JPanel();
@@ -175,17 +291,15 @@ public class ShareDialog extends EscapeDialog
         {
             JLabel help = new JLabel();
             help .setBorder( BorderFactory.createEmptyBorder( 15, 15, 15, 15 ) );
-            help .setText( "<html>Your vZome file has uploaded successfully.</html>" );
-            this .viewUrlPanel = new HyperlinkPanel( "View design in vZome Online", controller );
-            this .githubUrlPanel = new HyperlinkPanel( "View GitHub folder", controller, false );
+            help .setText( "<html>Your vZome file has uploaded successfully, and the URL below is copied to the clipboard.</html>" );
+            this .githubUrlPanel = new HyperlinkPanel( "View GitHub Folder", controller, false );
             JPanel linksPanel = new JPanel();
             linksPanel .setLayout( new FlowLayout() );
-            linksPanel .add( this .viewUrlPanel );
             linksPanel .add( this .githubUrlPanel );
             resultsPanel .setLayout( new BorderLayout() );
             resultsPanel .add( help, BorderLayout.NORTH );
             resultsPanel .add( linksPanel, BorderLayout.CENTER );
-            this .getRootPane() .setDefaultButton( viewUrlPanel .getCopyButton() );
+            this .getRootPane() .setDefaultButton( this .githubUrlPanel .getCopyButton() );
         }
 
         JPanel errorPanel = new JPanel();
@@ -201,17 +315,27 @@ public class ShareDialog extends EscapeDialog
 
         this .cardPanel = new CardPanel();
         this .cardPanel .add( "authz",   loginPanel );
+        this .cardPanel .add( "options", optionsPanel );
         this .cardPanel .add( "upload",  uploadPanel );
         this .cardPanel .add( "success", resultsPanel );
         this .cardPanel .add( "error",   errorPanel );
         this .cardPanel .showCard( "authz" );
         content .add( this .cardPanel );
         
-        this .setSize( new Dimension( 450, 250 ) );
+        this .setSize( new Dimension( 500, 300 ) );
         this .setResizable( false );
         this .setLocationRelativeTo( frame );
     }
     
+    protected void enableConfigurations()
+    {
+        boolean generatePost = this .controller .propertyIsTrue( "sharing-generatePost" );
+        publishCheckBox .setEnabled( generatePost );
+        publishLabel .setEnabled( generatePost );
+        descriptionText .setEnabled( generatePost );
+        titleText .setEnabled( generatePost );
+    }
+
     private void updateDialog()
     {
         if ( this.error != null )
@@ -223,15 +347,25 @@ public class ShareDialog extends EscapeDialog
         else if ( this.gitUrl != null )
         {
             // the terminal success state
-            this .viewUrlPanel .setUrl( this .embedUrl );
             this .githubUrlPanel .setUrl( this .gitUrl );
             cardPanel .showCard( "success" );
-            getRootPane() .setDefaultButton( this .viewUrlPanel .getCopyButton() );
-            this .viewUrlPanel .getCopyButton() .requestFocusInWindow();
+            getRootPane() .setDefaultButton( this .githubUrlPanel .getCopyButton() );
+            this .githubUrlPanel .getCopyButton() .requestFocusInWindow();
+        }
+        else if ( this.configured )
+        {
+            this .cardPanel .showCard( "upload" );
         }
         else if ( this.repo != null || this.authToken != null )
         {
-            this .cardPanel .showCard( "upload" );
+            if ( ! this .configuring ) {
+                this .titleText .setText( this .title );
+                this .descriptionText .setText( this .description );
+                this .cardPanel .showCard( "options" );
+                this .generatePageCheckBox .setSelected( this .controller .propertyIsTrue( "sharing-generatePost" ) );
+                this .publishCheckBox .setSelected( this .controller .propertyIsTrue( "sharing-publishImmediately" ) );
+                this .configuring = true;
+            }
         }
         else if ( this.deviceAuthorization != null )
         {
@@ -262,6 +396,7 @@ public class ShareDialog extends EscapeDialog
             {
                 e2 .printStackTrace();
                 this .error = "Device authorization verification URI format incorrect: " + loginUrl;
+                logger .severe( this.error );
                 errorLabel .setText( "<html>" + this.error + "</html>" );
                 this .cardPanel .showCard( "error" );
             }
@@ -274,19 +409,33 @@ public class ShareDialog extends EscapeDialog
         }
     }
 
-    public void startUpload( String fileName, String xml, String png )
+    public void startUpload( String fileName, LocalDateTime createTime, String xml, String png, String shapesJson )
     {
-        this.fileName = fileName;
+        this.createTime = createTime;
         this.xml = xml;
         this.png = png;
+        this.shapesJson = shapesJson;
         
         // Initialize the transient, file-specific state
+        this.designName = fileName .trim() .replaceAll( " ", "-" ); // we don't want spaces in our URLs
+        int index = designName .toLowerCase() .lastIndexOf( ".vZome" .toLowerCase() );
+        if ( index > 0 )
+            designName = designName .substring( 0, index );
+        while ( designName .startsWith( "-" ) ) // leading hyphens can break things for Jekyll posts
+            designName = designName .substring( 1 );
+        while ( designName .endsWith( "-" ) ) // so can trailing hyphens
+            designName = designName .substring( 0, designName .lastIndexOf( '-' ) );
+        this.title = designName .replaceAll( "-", " " ) .trim();    // but we do want spaces in the title
+        this.description = "A 3D design created in vZome.  Use your mouse or touch to interact.";
         this.error = null;
         this.gitUrl = null;
+        this.configured = false;
+        this.configuring = false;
         
         this .updateDialog();
         
-        new Thread( new Worker() ).start();  // TODO kill this thread if the user cancels
+        this.workerThread = new Thread( new Worker() );
+        this.workerThread .start();
 
         this .setVisible( true );
     }
@@ -306,21 +455,34 @@ public class ShareDialog extends EscapeDialog
         {
             while ( error == null && gitUrl == null )
             {
-                if ( repo != null )
+                if ( Thread.currentThread().isInterrupted() )
+                    return;
+                
+                if ( configured )
                 {
                     doUpload();
+                }
+                else if ( repo != null )
+                {
+                    // just wait for the user
+                    try {
+                        Thread.sleep( 300 );
+                        continue; // skip the updateDialog()
+                    } catch (InterruptedException e) {
+                        // no problem, will exit at the top of the loop
+                    }
                 }
                 else if ( authToken != null && authToken != "" )
                 {
                     try {
                         List<Repository> repositories = repositoryService .getRepositories();
-                        repo = repositories .stream() .filter( r -> r.getName() .equals( REPO_NAME ) ) .findFirst() .orElse( null );
+                        repo = repositories .stream() .filter( r -> r.getName() .equals( repoName ) ) .findFirst() .orElse( null );
                         if ( repo == null ) {
-                            error = "Unable to find repository '" + REPO_NAME + "'";
+                            error = "Unable to find repository '" + repoName + "'";
                         }
                     } catch ( IOException e ) {
-                        e .printStackTrace();
                         error = "Unable to fetch repositories.  Your authorization may have expired or been revoked.  Try again, to reauthorize.";
+                        logger .warning( error );
                         authToken = null;
                         controller .setProperty( "githubAccessToken", "" );
                     }
@@ -335,8 +497,8 @@ public class ShareDialog extends EscapeDialog
                         client .setOAuth2Token( authToken );
                     }
                     catch ( InterruptedException | ExecutionException | IOException e ) {
-                        e .printStackTrace();
                         error = "Github authorization failed.";
+                        logger .severe( error );
                     }
                 }
                 else
@@ -344,8 +506,8 @@ public class ShareDialog extends EscapeDialog
                     try {
                         deviceAuthorization = oAuthService .getDeviceAuthorizationCodes();
                     } catch (InterruptedException | ExecutionException | IOException e) {
-                        e .printStackTrace();
                         error = "Github device code access failed.";
+                        logger .severe( error );
                     }
                 }
                 
@@ -379,58 +541,107 @@ public class ShareDialog extends EscapeDialog
 
             Tree baseTree = dataService .getTree( this .repo, baseTreeSha );
 
-            // Encode the name to avoid problems with spaces, etc.
-            String designName = this .fileName;
-            int index = designName .toLowerCase() .lastIndexOf( ".vZome" .toLowerCase() );
-            if ( index > 0 )
-                designName = designName .substring( 0, index );
-            String encodedName = URLEncoder.encode( designName, StandardCharsets.UTF_8.toString() );
+            // prepare the substitutions
+            String time = DateTimeFormatter.ofPattern( "HH-mm-ss" ) .format( this .createTime );
+            String date = DateTimeFormatter.ofPattern( "yyyy-MM-dd" ) .format( createTime );
+            String dateFolder = DateTimeFormatter.ofPattern( "yyyy/MM/dd" ) .format( createTime );
             
-            // prepare the timestamp path
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern( "yyyy/MM/dd/HH-mm-ss-" );
-            String timestampPath = formatter .format( LocalDateTime.now() );
-            String path = timestampPath + encodedName + "/";
+            String postSrcPath = "_posts/" + date + "-" + designName + "-" + time + ".md";// e.g. _posts/2021-11-29-sample-vZome-share-08-01-41.md
+            String postPath = dateFolder + "/" + designName + "-" + time + ".html";       // e.g. 2021/11/29/sample-vZome-share-08-01-41.html
+            String assetPath = dateFolder + "/" + time + "-" + designName + "/";          // e.g. 2021/11/29/08-01-41-sample-vZome-share
 
+            String designPath = assetPath + designName + ".vZome"; // e.g. 2021/11/29/08-01-41-sample-vZome-share/sample-vZome-share.vZome
+            String imagePath = assetPath + designName + ".png";    // e.g. 2021/11/29/08-01-41-sample-vZome-share/sample-vZome-share.png
+            
+            // Now generate the content
+            
             Collection<TreeEntry> entries = new ArrayList<TreeEntry>();
 
-            this .addFile( entries, path + this .fileName, this.xml, Blob.ENCODING_UTF8 );
+            this .addFile( entries, designPath, this.xml, Blob.ENCODING_UTF8 );
             
-            String imageFileName = designName + ".png";
-            this .addFile( entries, path + imageFileName, png, Blob.ENCODING_BASE64 );
+            this .addFile( entries, imagePath, png, Blob.ENCODING_BASE64 );
 
-            String baseUrl = "https://raw.githubusercontent.com/" + username + "/" + REPO_NAME + "/" + BRANCH_NAME + "/" + timestampPath;
-            String rawUrl = baseUrl + encodedName + "/" + this .fileName;
-
-            // I'm cheating a bit here, not encoding the entire rawUrl, so that the
-            //  embedUrl is not so hideous.  It doesn't seem to matter, as long as
-            //  the path and name are encoded (or doubly encoded) correctly.
-            String encodedRawTail = URLEncoder.encode( encodedName,    StandardCharsets.UTF_8.toString() )
-                            + "/" + URLEncoder.encode( this .fileName, StandardCharsets.UTF_8.toString() );
-
-            String embedUrl  = "https://vzome.com/app/embed.py?url=" + baseUrl + encodedRawTail;
-            String gitUrl   = "https://github.com/" + username + "/" + REPO_NAME + "/tree/" + BRANCH_NAME + "/" + path;
+            this .addFile( entries, assetPath + designName + ".shapes.json", shapesJson, Blob.ENCODING_UTF8 );
             
-            String markdown = this.readmeBoilerplate + "(<" + imageFileName + ">)\n\n\n";
-            markdown += "[embed]: <" + embedUrl + ">\n";
-            markdown += "[raw]: <" + rawUrl + ">\n";
-            this .addFile( entries, path + "README.md", markdown, Blob.ENCODING_UTF8 );                
+            String siteUrl = "https://" + username + ".github.io/" + repoName;
+                     // e.g. https://vorth.github.io/vzome-sharing
+            String repoUrl = "https://github.com/" + username + "/" + repoName;
+                     // e.g. https://github.com/vorth/vzome-sharing
+            this .gitUrl = repoUrl + "/tree/" + this.branchName + "/" + assetPath;
+                     // e.g. https://github.com/vorth/vzome-sharing/tree/main/2021/11/29/08-01-41-sample-vZome-share/
+            String rawUrl = "https://raw.githubusercontent.com/" + username + "/" + repoName + "/" + this.branchName + "/" + designPath;
+                     // e.g. https://raw.githubusercontent.com/vorth/vzome-sharing/main/2021/11/29/08-01-41-sample-vZome-share/sample-vZome-share.vZome
+            String postUrl = siteUrl + "/" + postPath;
+                     // e.g. https://vorth.github.io/vzome-sharing/2021/11/29/sample-vZome-share-08-01-41.html
+            String postSrcUrl = repoUrl + "/edit/" + this.branchName + "/" + postSrcPath;
+                     // e.g. https://github.com/vorth/vzome-sharing/edit/main/_posts/2021-11-29-sample-vZome-share-08-01-41.md
+                        
+            // Generate a shareable page for the vZome user to use, not a blog post
+            String indexMd = this.indexTemplate
+                    .replace( "${title}", this .title )
+                    .replace( "${siteUrl}", siteUrl )
+                    .replace( "${imagePath}", imagePath )
+                    .replace( "${designPath}", designPath )
+                    .replace( "${assetsUrl}", this .gitUrl );
+            this .addFile( entries, assetPath + "index.md", indexMd, Blob.ENCODING_UTF8 );
+
+            // Generate a README for the vZome user to use, with no blog post
+            String readmeMd = this.readmeTemplate
+                    .replace( "${imageFile}", designName + ".png" )
+                    .replace( "${siteUrl}", siteUrl )
+                    .replace( "${assetPath}", assetPath )
+                    .replace( "${imagePath}", imagePath )
+                    .replace( "${designPath}", designPath )
+                    .replace( "${rawUrl}", rawUrl );
+
+            if ( this .controller .propertyIsTrue( "sharing-generatePost" ) ) {
+                // Generate a README for the vZome user to use 
+                String blogPostPrefix = this.githubReadmeBlogPrefixTemplate
+                        .replace( "${postUrl}", postUrl )
+                        .replace( "${postSrcUrl}", postSrcUrl );
+                readmeMd = blogPostPrefix + readmeMd; // Prepend the extra bits about the blog post to the README
+
+                /*
+                 * Generate a design-specific web page, assuming that GitHub Pages is
+                 * enabled for the repo.  The "front-matter" format is defined by
+                 * Jekyll, and these properties specifically are defined by the Jekyll SEO plugin.
+                 *    https://github.com/jekyll/jekyll-seo-tag/tree/master/docs
+                 * This guarantees good OpenGraph metadata for embedding in social media.
+                 * TODO: let the user define a description (and a title).
+                 * See also:
+                 *    https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll
+                 *    https://jekyllrb.com/
+                 */
+                String descriptionClean = this.description .replace( '\n', ' ' ) .replace( '\r', ' ' );
+                String postMd = this.postTemplate
+                        .replace( "${title}", this .title )
+                        .replace( "${description}", descriptionClean )
+                        .replace( "${published}", this .controller .getProperty( "sharing-publishImmediately" ) )
+                        .replace( "${siteUrl}", siteUrl )
+                        .replace( "${postPath}", postPath )
+                        .replace( "${imagePath}", imagePath )
+                        .replace( "${designPath}", designPath )
+                        .replace( "${assetsUrl}", this .gitUrl );
+                this .addFile( entries, postSrcPath, postMd, Blob.ENCODING_UTF8 );
+            }
+
+            this .addFile( entries, assetPath + "README.md", readmeMd, Blob.ENCODING_UTF8 );
 
             Tree newTree = dataService .createTree( this .repo, entries, (baseTree==null)? null : baseTree.getSha() );
 
             // create commit
             Commit commit = new Commit();
-            commit.setMessage( "shared from vZome" );
+            commit.setMessage( this .title );
             commit.setTree( newTree );
             
             // Due to an error with github api we have to do this
-            Calendar now = Calendar.getInstance();
             String email = controller .getProperty( "githubEmail" );
             if ( email == null || "" .equals( email ) )
                 email = "vZomeUser@example.com";
             CommitUser author = new CommitUser();
             author .setName( username );
             author .setEmail( email );
-            author .setDate( now.getTime() );
+            author .setDate( Calendar .getInstance() .getTime() );
             commit .setAuthor( author );
             commit .setCommitter( author );
             
@@ -448,16 +659,14 @@ public class ShareDialog extends EscapeDialog
             commitResource .setUrl( newCommit .getUrl() );
 
             // get main reference and update it
-            Reference reference = dataService .getReference( this .repo, "heads/" + BRANCH_NAME );
+            Reference reference = dataService .getReference( this .repo, "heads/" + this.branchName );
             reference .setObject( commitResource );
-            dataService .editReference( this .repo, reference, true );
-            this .gitUrl = gitUrl;
-            this .embedUrl = embedUrl;
-            controller .setProperty( "clipboard", embedUrl );
+            dataService .editReference( this .repo, reference, false );
+            controller .setProperty( "clipboard", gitUrl );
         }
         catch (Exception e) {
-            e .printStackTrace();
             this .error = "Unable to upload files to the repository: " + e .getMessage();
+            logger .severe( this.error );
         }
     }
     

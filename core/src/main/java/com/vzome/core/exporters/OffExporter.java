@@ -16,20 +16,14 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Camera;
-import com.vzome.core.viewing.Lights;
 
 
-public class OffExporter extends Exporter3d
+public class OffExporter extends GeometryExporter
 {
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 	
-	public OffExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
-	{
-	    super( scene, colors, lights, model );
+	static {
 		FORMAT .setMinimumFractionDigits( 16 ); // https://github.com/vZome/vzome/issues/313
 	}
 

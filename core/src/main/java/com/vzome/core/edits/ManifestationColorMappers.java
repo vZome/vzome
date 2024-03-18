@@ -702,15 +702,15 @@ public class ManifestationColorMappers {
 
         @Override
         protected Color applyToStrut(Strut strut, int alpha) {
-            return applyTo(strut.getOffset());
+            return applyToVector(strut.getOffset());
         }
 
         @Override
         protected Color applyToPanel(Panel panel, int alpha) {
-            return applyTo(panel.getNormal()).getPastel();
+            return applyToVector(panel.getNormal()).getPastel();
         }
 
-        protected Color applyTo(AlgebraicVector vector) {
+        protected Color applyToVector(AlgebraicVector vector) {
             return symmetrySystem.getVectorColor(vector);
         }
 
@@ -781,21 +781,21 @@ public class ManifestationColorMappers {
 
         @Override
         protected Color applyToBall(Connector ball, int alpha) {
-            return applyTo(ball.getLocation());
+            return applyToVector(ball.getLocation());
         }
 
         @Override
         protected Color applyToStrut(Strut strut, int alpha) {
-            return applyTo(strut.getOffset());
+            return applyToVector(strut.getOffset());
         }
 
         @Override
         protected Color applyToPanel(Panel panel, int alpha) {
-            return applyTo(panel.getNormal()).getPastel();
+            return applyToVector(panel.getNormal()).getPastel();
         }
 
         @Override
-        protected Color applyTo(AlgebraicVector vector) {
+        protected Color applyToVector(AlgebraicVector vector) {
             if(vector.isOrigin()) {
                 return Color.WHITE;
             }
@@ -822,17 +822,17 @@ public class ManifestationColorMappers {
 
         @Override
         protected Color applyToBall(Connector ball, int alpha) {
-            return applyTo(ball.getCentroid());
+            return applyToVector(ball.getCentroid());
         }
 
         @Override
         protected Color applyToStrut(Strut strut, int alpha) {
-            return applyTo(strut.getCentroid());
+            return applyToVector(strut.getCentroid());
         }
 
         @Override
         protected Color applyToPanel(Panel panel, int alpha) {
-            return applyTo(panel.getCentroid()).getPastel();
+            return applyToVector(panel.getCentroid()).getPastel();
         }
     }
 

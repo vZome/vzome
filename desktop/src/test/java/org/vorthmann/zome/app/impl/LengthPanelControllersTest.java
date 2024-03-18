@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Properties;
 
 import org.junit.Test;
-import org.vorthmann.ui.Controller;
 
 import com.vzome.core.algebra.HeptagonField;
 import com.vzome.core.editor.FieldApplication;
@@ -17,6 +16,9 @@ import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.kinds.HeptagonFieldApplication;
 import com.vzome.core.render.Colors;
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.controller.StrutBuilderController;
+import com.vzome.desktop.controller.SymmetryController;
 
 public class LengthPanelControllersTest
 {
@@ -28,7 +30,7 @@ public class LengthPanelControllersTest
         SymmetrySystem system = new SymmetrySystem( null, perspective, null, new Colors( new Properties() ), true );
 
         Controller strutBuilder = new StrutBuilderController( null, null ) .withShowStrutScales( true );
-        Controller symmController = new SymmetryController( strutBuilder, system, null );
+        Controller symmController = new SymmetryController( "", strutBuilder, system, null );
         Controller buildOrbits = getSubController( symmController, "buildOrbits" );
         assertNotNull( buildOrbits );
         

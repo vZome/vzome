@@ -66,7 +66,7 @@ public class PDFExporter extends SnapshotExporter
     @Override
 	protected void outputPrologue( Rectangle2D rect, float strokeWidth )
 	{
-		includeFile( "org/vorthmann/zome/export/java2d/prologue.pdf" );
+		includeFile( "com/vzome/core/exporters/prologue.pdf" );
 		streamStart = output .getBytesTotal();
 		if ( strokeWidth > 0 )
 		    output .print( strokeWidth + " w 1 j\n" );
@@ -106,7 +106,7 @@ public class PDFExporter extends SnapshotExporter
 		
 		int startXref = output .getBytesTotal();
 		
-		includeFile( "org/vorthmann/zome/export/java2d/postlogue.pdf" );
+		includeFile( "com/vzome/core/exporters/postlogue.pdf" );
 		
 		String num = Integer .toString( sizeOffset );
 		for ( int i = 0; i + num.length() < 10; i++ )

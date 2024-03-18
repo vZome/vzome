@@ -9,11 +9,14 @@ import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.commands.Command.Failure;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
+import com.vzome.core.editor.SelectionSummary.Listener;
 import com.vzome.core.editor.api.EditorModel;
+import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Selection;
 import com.vzome.core.edits.Symmetry4d;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
+import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.RealizedModelImpl;
@@ -33,6 +36,24 @@ public class TestSymmetry4d {
 
             @Override
             public Selection getSelection() { return selection; }
+
+            @Override
+            public OrbitSource getSymmetrySystem() {
+                return null;
+            }
+
+            @Override
+            public OrbitSource getSymmetrySystem(String name) {
+                return null;
+            }
+
+            @Override
+            public Symmetries4D get4dSymmetries() {
+                return null;
+            }
+
+            @Override
+            public void addSelectionSummaryListener( Listener listener ) {}
         };
 		
 		AlgebraicVector location = golden .createVector( new int[][]{ {0,1, 0,1}, {2,1, 0,1}, {2,1, 0,1}, {0,1, 0,1} } );

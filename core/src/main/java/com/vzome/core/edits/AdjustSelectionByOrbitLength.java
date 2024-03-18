@@ -7,12 +7,12 @@ import org.w3c.dom.Element;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.editor.api.ActionEnum;
 import com.vzome.core.editor.api.ChangeSelection;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.SymmetryAware;
-import com.vzome.core.commands.XmlSaveFormat;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.model.Manifestation;
@@ -147,8 +147,8 @@ public class AdjustSelectionByOrbitLength extends ChangeSelection
         if (length != null) {
             XmlSaveFormat.serializeNumber(element, "length", length);
         }
-        element .setAttribute( "struts", strutAction.toString() );
-        element .setAttribute( "panels", panelAction.toString() );
+        element .setAttribute( "struts", strutAction.name() );
+        element .setAttribute( "panels", panelAction.name() );
     }
 
     @Override

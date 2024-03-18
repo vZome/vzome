@@ -16,8 +16,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.api.Controller;
 
+@SuppressWarnings("serial")
 public class SymmetryToolbarsPanel extends JPanel
 {
 	private final ButtonFactory factory;
@@ -81,7 +82,7 @@ public class SymmetryToolbarsPanel extends JPanel
             @Override
             public void propertyChange( PropertyChangeEvent evt )
             {
-                if ( "window.file" .equals( evt .getPropertyName() ) )
+                if ( "original.path" .equals( evt .getPropertyName() ) )
                 {
                     shareButton .setEnabled( evt .getNewValue() != null );
                 }

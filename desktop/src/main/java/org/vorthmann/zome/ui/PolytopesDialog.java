@@ -17,8 +17,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.api.Controller;
 
+@SuppressWarnings("serial")
 public class PolytopesDialog extends EscapeDialog
 {
 	private final JCheckBox[] renderCheckboxes = new JCheckBox[4];

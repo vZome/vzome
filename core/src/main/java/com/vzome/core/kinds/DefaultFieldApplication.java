@@ -26,17 +26,18 @@ import com.vzome.core.math.symmetry.D4Group;
 import com.vzome.core.math.symmetry.F4Group;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction;
-import com.vzome.core.tools.BookmarkTool;
-import com.vzome.core.tools.InversionTool;
-import com.vzome.core.tools.LinearMapTool;
-import com.vzome.core.tools.MirrorTool;
-import com.vzome.core.tools.ModuleTool;
+import com.vzome.core.tools.BookmarkToolFactory;
+import com.vzome.core.tools.InversionToolFactory;
+import com.vzome.core.tools.LinearMapToolFactory;
+import com.vzome.core.tools.MirrorToolFactory;
+import com.vzome.core.tools.ModuleToolFactory;
 import com.vzome.core.tools.OctahedralToolFactory;
-import com.vzome.core.tools.PlaneSelectionTool;
-import com.vzome.core.tools.ProjectionTool;
-import com.vzome.core.tools.RotationTool;
-import com.vzome.core.tools.ScalingTool;
-import com.vzome.core.tools.TranslationTool;
+import com.vzome.core.tools.PerspectiveProjectionToolFactory;
+import com.vzome.core.tools.PlaneSelectionToolFactory;
+import com.vzome.core.tools.ProjectionToolFactory;
+import com.vzome.core.tools.RotationToolFactory;
+import com.vzome.core.tools.ScalingToolFactory;
+import com.vzome.core.tools.TranslationToolFactory;
 
 public class DefaultFieldApplication implements FieldApplication
 {
@@ -59,11 +60,17 @@ public class DefaultFieldApplication implements FieldApplication
 		this .field = field;
 	}
 
-	@Override
-	public String getName()
-	{
-		return this .field .getName();
-	}
+    @Override
+    public String getName()
+    {
+        return this .field .getName();
+    }
+
+    @Override
+    public String getLabel()
+    {
+        return null; // signals that the field is not to be shown in the "new design" menu
+    }
 
 	@Override
 	public AlgebraicField getField()
@@ -111,21 +118,22 @@ public class DefaultFieldApplication implements FieldApplication
 	    // These symm parameters can be null since it will be overwritten by SymmetryTool.setXmlAttributes()
         // Any SymmetryTool factory here is good enough
 	    toolFactories .put( "SymmetryTool", new OctahedralToolFactory( tools, null ) );
-	    toolFactories .put( "RotationTool", new RotationTool.Factory( tools, null ) );
-	    toolFactories .put( "ScalingTool", new ScalingTool.Factory( tools, null ) );
+	    toolFactories .put( "RotationTool", new RotationToolFactory( tools, null ) );
+	    toolFactories .put( "ScalingTool", new ScalingToolFactory( tools, null ) );
 	    
-	    toolFactories .put( "InversionTool", new InversionTool.Factory( tools ) );
-	    toolFactories .put( "MirrorTool", new MirrorTool.Factory( tools ) );
-        toolFactories .put( "TranslationTool", new TranslationTool.Factory( tools ) );
-        toolFactories .put( "ProjectionTool", new ProjectionTool.Factory( tools ) );
-	    toolFactories .put( "BookmarkTool", new BookmarkTool.Factory( tools ) );
-	    toolFactories .put( "LinearTransformTool", new LinearMapTool.Factory( tools, null, false ) );
+	    toolFactories .put( "InversionTool", new InversionToolFactory( tools ) );
+	    toolFactories .put( "MirrorTool", new MirrorToolFactory( tools ) );
+        toolFactories .put( "TranslationTool", new TranslationToolFactory( tools ) );
+        toolFactories .put( "ProjectionTool", new ProjectionToolFactory( tools ) );
+        toolFactories .put( "PerspectiveProjectionTool", new PerspectiveProjectionToolFactory( tools ) );
+	    toolFactories .put( "BookmarkTool", new BookmarkToolFactory( tools ) );
+	    toolFactories .put( "LinearTransformTool", new LinearMapToolFactory( tools, null, false ) );
 	
 	    // These tool factories have to be available for loading legacy documents.
 	    
-	    toolFactories .put( "LinearMapTool", new LinearMapTool.Factory( tools, null, true ) );
-	    toolFactories .put( "ModuleTool", new ModuleTool.Factory( tools ) );
-	    toolFactories .put( "PlaneSelectionTool", new PlaneSelectionTool.Factory( tools ) );
+	    toolFactories .put( "LinearMapTool", new LinearMapToolFactory( tools, null, true ) );
+	    toolFactories .put( "ModuleTool", new ModuleToolFactory( tools ) );
+	    toolFactories .put( "PlaneSelectionTool", new PlaneSelectionToolFactory( tools ) );
 	}
 
 	@Override

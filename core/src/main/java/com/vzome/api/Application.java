@@ -14,7 +14,7 @@ import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.FieldApplication;
 import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.api.Shapes;
-import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.exporters.GeometryExporter;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.render.Colors;
 
@@ -121,7 +121,7 @@ public class Application
 
     public Exporter getExporter( String format )
     {
-        Exporter3d privateExp = this .delegate .getExporter( format );
+        GeometryExporter privateExp = this .delegate .getExporter( format );
         return new Exporter( privateExp );
     }
 

@@ -9,10 +9,7 @@ import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.PointToPointTranslation;
 import com.vzome.core.construction.Transformation;
-import com.vzome.core.editor.AbstractToolFactory;
-import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
-import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 
@@ -24,9 +21,9 @@ public class TranslationTool extends TransformationTool
         this .setInputBehaviors( false, true );
     }
     
-	private static final String ID = "translation";
-	private static final String LABEL = "Create a translation tool";
-	private static final String TOOLTIP = "<p>" +
+	static final String ID = "translation";
+	static final String LABEL = "Create a translation tool";
+	static final String TOOLTIP = "<p>" +
     		"Each tool moves the selected objects to a new location.<br>" +
     		"To create a tool, select two balls that are separated by<br>" +
     		"your desired translation offset.  Order of selection<br>" +
@@ -38,33 +35,7 @@ public class TranslationTool extends TransformationTool
     		"right-click after creating the tool, to configure it.<br>" +
 		"</p>";
 	
-	public static class Factory extends AbstractToolFactory
-	{
-		public Factory( ToolsModel tools )
-		{
-			super( tools, null, ID, LABEL, TOOLTIP );
-		}
-
-		@Override
-		protected boolean countsAreValid( int total, int balls, int struts, int panels )
-		{
-			return ( total == 2 && balls == 2 );
-		}
-
-		@Override
-		public Tool createToolInternal( String id )
-		{
-			return new TranslationTool( id, getToolsModel() );
-		}
-
-		@Override
-		protected boolean bindParameters( Selection selection )
-		{
-			return true;
-		}
-	}
-
-    @Override
+	@Override
     protected String checkSelection( boolean prepareTool )
     {
         Point p1 = null, p2 = null;

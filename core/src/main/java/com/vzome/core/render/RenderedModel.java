@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -14,7 +13,6 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Shapes;
-import com.vzome.core.exporters.Exporter3d;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Axis;
@@ -26,7 +24,6 @@ import com.vzome.core.model.Connector;
 import com.vzome.core.model.HasRenderedObject;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
-import com.vzome.core.model.ManifestationImpl;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 
@@ -40,7 +37,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 
 	protected final HashSet<RenderedManifestation> mRendered = new HashSet<>();
 	
-	protected final HashMap<UUID, RenderedManifestation> byID = new HashMap<>();
+	protected final HashMap<String, RenderedManifestation> byID = new HashMap<>();
 
 	private final AlgebraicField field;
 
@@ -115,22 +112,11 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         this .orbitSource = orbitSource;
         this .mPolyhedra = ( orbitSource == null )? null : orbitSource .getShapes();
     }
-    
+        
     public RenderedModel( final Symmetry symmetry )
     {
         this( symmetry .getField(), new SymmetryOrbitSource( symmetry ));
-    }
-    
-    public RenderedModel( final Symmetry symmetry, boolean enabled )
-    {
-        this( symmetry .getField(), new SymmetryOrbitSource( symmetry ));
-        this .enabled = enabled;
-    }
-        
-    public RenderedModel( final AlgebraicField field, boolean enabled )
-    {
-        this( field, null );
-        this .enabled = enabled;
+        this .enabled = false;
     }
     
     public RenderedModel withColorPanels( boolean setting )
@@ -169,10 +155,9 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     @Override
 	public void manifestationAdded( Manifestation m )
 	{
-        ManifestationImpl mi = (ManifestationImpl) m;
 		if ( ! this .enabled )
 		{
-		    mi .setRenderedObject( new RenderedManifestation( m, this .orbitSource ) );
+		    m .setRenderedObject( new RenderedManifestation( m, this .orbitSource ) );
 			return;
 		}
 		
@@ -180,10 +165,10 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         Polyhedron poly = rm .getShape();
 	    if ( poly == null )
 	        return; // no direction for this strut
-	    mi .setRenderedObject( rm );
+	    m .setRenderedObject( rm );
         
 	    mRendered .add( rm );
-	    this .byID .put( rm .getGuid(), rm );
+	    this .byID .put( rm .getGuid() .toString(), rm );
 	    if ( mainListener != null )
 	        mainListener .manifestationAdded( rm );
         for (RenderingChanges listener : mListeners) {
@@ -194,9 +179,8 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
     @Override
 	public void manifestationRemoved( Manifestation m )
 	{
-        ManifestationImpl mi = (ManifestationImpl) m;
 		if ( ! this .enabled ) {
-			mi .setRenderedObject( null );
+			m .setRenderedObject( null );
 			return;
 		}
 		
@@ -212,13 +196,13 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 	    if ( ! mRendered .remove( rendered ) )
 	        throw new IllegalStateException( "unable to remove RenderedManifestation" );
 	    
-        this .byID .remove( rendered .getGuid() );
-        mi .setRenderedObject( null );
+        this .byID .remove( rendered .getGuid() .toString() );
+        m .setRenderedObject( null );
 	}
     
     public RenderedManifestation getRenderedManifestation( String guid )
     {
-        return this .byID .get( UUID .fromString( guid ) );
+        return this .byID .get( guid );
     }
 
 	public void setManifestationGlow( Manifestation m, boolean on )
@@ -245,6 +229,19 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
             mainListener .colorChanged( rendered );
         for (RenderingChanges listener : mListeners) {
             listener .colorChanged( rendered );
+        }
+    }
+
+    public void setManifestationLabel( Manifestation m, String label )
+    {
+        RenderedManifestation rendered = (RenderedManifestation) ((HasRenderedObject) m) .getRenderedObject();
+        if ( rendered == null )
+            return; // could not find a shape for m, probably
+        rendered .setLabel( label );
+        if ( mainListener != null )
+            mainListener .labelChanged( rendered );
+        for (RenderingChanges listener : mListeners) {
+            listener .labelChanged( rendered );
         }
     }
 
@@ -294,13 +291,8 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
             return;
 
         {
-//            int yieldFreq = mRendered .size() / 20;
-            int yieldCount = 0;
             HashSet<RenderedManifestation> newSet = new HashSet<>();
             for ( Iterator<RenderedManifestation> rms = mRendered .iterator(); rms .hasNext(); ) {
-                yieldCount = (++yieldCount) % 20;
-                if ( yieldCount == 0 )
-                    Thread .yield();
                 RenderedManifestation rendered = rms .next();
                 rms .remove();
                 Manifestation m = rendered .getManifestation();
@@ -338,7 +330,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
             }
             mRendered .addAll( newSet );
             for ( RenderedManifestation rm : newSet ) {
-                this .byID .put( rm .getGuid(), rm );
+                this .byID .put( rm .getGuid() .toString(), rm );
             }
         }
 	    
@@ -352,9 +344,16 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 			this .setManifestationColor( m, color );
     }
 
+    @Override
+    public void manifestationLabeled (Manifestation m, String label )
+    {
+        if ( this .enabled )
+            this .setManifestationLabel( m, label );
+    }
+
     public RenderedModel snapshot()
     {
-        RenderedModel snapshot = new RenderedModel( this .orbitSource .getSymmetry(), false );
+        RenderedModel snapshot = new RenderedModel( this .orbitSource .getSymmetry() );
         for (RenderedManifestation rm : mRendered) {
             RenderedManifestation copy = rm .copy();
             snapshot .mRendered .add( copy );
@@ -438,7 +437,7 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 
     public static double measureLengthCm( RealVector rv )
     {
-        return rv.length() * Exporter3d.RZOME_CM_SCALING;
+        return rv.length() * RealZomeScaling.RZOME_CM_SCALING;
     }
 
     public double measureLengthCm( Strut strut )

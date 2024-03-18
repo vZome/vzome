@@ -43,6 +43,7 @@ import javax.swing.JPanel;
  * one can add a Border, see JComponent.setBorder().
  */
 
+@SuppressWarnings("serial")
 public class CardPanel extends JPanel
 {
     private static class Layout implements LayoutManager 

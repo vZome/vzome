@@ -12,8 +12,9 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.api.Controller;
 
+@SuppressWarnings("serial")
 public class LengthDialog extends EscapeDialog
 {
 	private final NumberPanel numberPanel;

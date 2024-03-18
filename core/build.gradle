@@ -1,4 +1,5 @@
 
+
 ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
 
 description = "vzome-core"
@@ -39,13 +40,6 @@ configurations {
 sourceSets {
     main {
         java {
-            //  Uncomment these for the jsweet target, and adjust compileJava above
-            println( project.gradle.startParameter.taskNames )
-            if( project.gradle.startParameter.taskNames.contains( 'core:jsweet' ) ) {
-                srcDir file( 'src/main/java' )
-                srcDir file( 'src/jsweet/java' )
-            }
-            
             exclude 'com/vzome/opengl/FancyRenderer.java'
         }
     }
@@ -69,35 +63,30 @@ processResources {
 
 
 dependencies {
-    compile     group: 'org.antlr',         name: 'antlr4',            version:'4.7.1'
-    compile     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
-    compile     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
-    compile     group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
-    compile     group: 'org.jogamp', name: 'jogl-all', version:'v2.4.0-rc-20200307'
+    implementation     group: 'org.antlr',         name: 'antlr4',            version:'4.7.1'
+    implementation     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
+//    implementation     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
+    implementation     group: 'org.jogamp.jogl', name: 'jogl-all', version:'2.4.0'
 
-    compile group: 'antlr',             name: 'antlr',             version:'2.7.7'
+    implementation group: 'antlr',             name: 'antlr',             version:'2.7.7'
 
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.3'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.3'
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.3'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.3'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.3'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
 
-    compile group: 'org.jsweet', name: 'jsweet-transpiler', version: '3.0.0'
-    compile group: 'org.jsweet', name: 'jsweet-core', version: "6.1.0"
-    compile group: 'org.jsweet', name: 'j4ts', version: '2.0.0'
+    // runtimeOnly     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
+    runtimeOnly     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
+    runtimeOnly     group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.2'
 
-    runtime     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
-    runtime     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
-    runtime     group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.2'
-
-    testCompile group: 'antlr',             name: 'antlr',             version:'2.7.7'
-    testCompile group: 'junit',             name: 'junit',             version:'4.12'
+    testImplementation group: 'antlr',             name: 'antlr',             version:'2.7.7'
+    testImplementation group: 'junit',             name: 'junit',             version:'4.12'
 
     antlr4      group: 'org.antlr',         name: 'antlr4',            version: '4.7.1'
 
-    regressionCompile sourceSets.main.output
-    regressionCompile configurations.testCompile
-    regressionCompile sourceSets.test.output
-    regressionRuntime configurations.testRuntime
+    regressionImplementation sourceSets.main.output
+    regressionImplementation configurations.testImplementation
+    regressionImplementation sourceSets.test.output
+    regressionRuntimeOnly configurations.testRuntimeOnly
 }
 
 // These options apply to all java projects
@@ -116,9 +105,7 @@ gradle.projectsEvaluated {
 		<< "-Xlint:path" \
 		<< "-Xlint:rawtypes" \
 		<< "-Xlint:unchecked" \
-		<< "-Xlint:-serial" 
-		// TODO: Enable the serial warning and look into fixing ~33 issues. 
-		// Most of them are classes which extend a generic Collection or Exception.
+		<< "-Xlint:serial" 
 	}
 }
 
@@ -177,6 +164,9 @@ test {
 		}
 	}
 	testLogging {
+
+            events 'started', 'passed'
+
 		// Only set showStandardStreams=true from the gradle command line.
 		//  using -P"testLogging.showStandardStreams"
 		// Otherwise, it normally defaults to false which is correct for the NetBeans IDE.
@@ -270,7 +260,7 @@ compileJava {
     source antlr4.destinationDir
 }
 
-task cleanAntlr {
+task cleanAntlr(type: Delete) {
 	doLast() {
 		// Be sure to wrap this inside doLast(). 
 		// Otherwise it will run during the initialization or configuration phase, even when an unrelated task is is run.
@@ -315,8 +305,8 @@ task regression(type: JavaExec, dependsOn: check) {
     def testOut = 'build/test-results/regression/TEST-output.xml'
     if( project .hasProperty( "regressionOutput" ) ){
         testOut = regressionOutput
-        println "testOut is $testOut"
     }
+    println "testOut is $testOut"
     classpath = sourceSets.regression.runtimeClasspath
     main = 'com.vzome.core.regression.TestVZomeFiles'
     args( testHome, testFile, testOut )
@@ -397,14 +387,6 @@ jar {
     }
 }
 
-uploadArchives {
-    repositories {
-       flatDir {
-           dirs 'repos'
-       }
-    }
-}
-
 
 def writeProjectProperties( keys, propsFile )
 {
@@ -423,158 +405,4 @@ def writeProjectProperties( keys, propsFile )
     }
 }
 
-
-buildscript {
-	repositories {
-		mavenCentral()
-		maven { url "http://repository.jsweet.org/artifactory/libs-release-local" }
-		maven { url "http://repository.jsweet.org/artifactory/plugins-release-local" }
-	}
-	dependencies {
-		classpath("org.jsweet:jsweet-gradle-plugin:2.3.7") { transitive = true }
-	}
-}
-
-apply plugin: 'org.jsweet.jsweet-gradle-plugin'
-
-jsweet {
-	veryVerbose = true
-	encoding = 'UTF-8'
-	sourceMap = false  // I can't set breakpoints if the browser cannot find the Java file, so disabling for now.
-
-    // module = 'es2015'
-
-    // bundle = true
-
-	outDir = new File( 'react-library/jsweetOut/js' )
-
-    // The TS compile seems to fail when I set this!  Bug in the Gradle plugin?
-	// tsOut = new File( 'react-library/jsweetOut/ts' )
-
-	targetVersion = 'ES6'
-    tsOnly = false
-	includes = [
-        'java/io/*.java',
-        'java/nio/*.java',
-        'java/text/*.java',
-        'java/util/*.java',
-        'java/beans/*.java',
-        'org/w3c/dom/*.java',
-
-        'com/vzome/jsweet/*.java',
-
-        'com/vzome/xml/DomUtils.java',
-        'com/vzome/xml/ResourceLoader.java',
-
-        'com/vzome/core/generic/*.java',
-
-        'com/vzome/core/math/*.java',
-
-        'com/vzome/core/math/symmetry/*.java',
-
-        'com/vzome/core/math/convexhull/*.java',
-
-        'com/vzome/core/algebra/*.java',
-
-        'com/vzome/core/construction/*.java',
-
-        'com/vzome/core/commands/*.java',
-
-        'com/vzome/core/model/Group.java',
-        'com/vzome/core/model/GroupElement.java',
-        'com/vzome/core/model/Manifestation.java',
-        'com/vzome/core/model/ManifestationChanges.java',
-        'com/vzome/core/model/Connector.java',
-        'com/vzome/core/model/Strut.java',
-        'com/vzome/core/model/Panel.java',
-        'com/vzome/core/model/RealizedModel.java',
-        'com/vzome/core/model/JsonImportEvents.java',
-
-        'com/vzome/core/editor/api/*.java',
-
-        'com/vzome/core/edits/*.java',
-
-        // This gets us past javac, but of course introduces >800 ANTLR-related errors
-        //  in the TypeScript phase.  We don't want to transpile ANTLR itself, so we
-        //  need to shim to the ANTLR-generated JavaScript parser, instead.
-        // Probably this is a good time to write a JSweet extension to handle the shimming.
-        // 'com/vzome/core/antlr/generated/*.java',
-
-        'com/vzome/core/zomic/*.java',
-        'com/vzome/core/zomic/parser/ErrorHandler.java',
-        'com/vzome/core/zomic/program/*.java',
-
-        'com/vzome/core/kinds/DefaultFieldApplication.java',
-        'com/vzome/core/kinds/GoldenFieldApplication.java',
-        'com/vzome/core/kinds/RootTwoFieldApplication.java',
-        'com/vzome/core/kinds/RootThreeFieldApplication.java',
-        'com/vzome/core/kinds/HeptagonFieldApplication.java',
-
-        'com/vzome/fields/heptagon/HeptagonalAntiprismSymmetry.java',
-
-        'com/vzome/api/Tool.java',
-        'com/vzome/api/InputBehaviors.java',
-        'com/vzome/core/tools/*.java',
-        'com/vzome/core/editor/Duplicator.java',
-        'com/vzome/core/editor/AbstractToolFactory.java',
-        'com/vzome/core/editor/CommandEdit.java',
-        'com/vzome/core/editor/Tool.java',
-        'com/vzome/core/editor/ToolsModel.java',
-        'com/vzome/core/editor/BeginBlock.java',
-        'com/vzome/core/editor/EndBlock.java',
-        'com/vzome/core/editor/ApplyTool.java',
-        'com/vzome/core/editor/SelectToolParameters.java',
-        'com/vzome/core/editor/FieldApplication.java',
-        'com/vzome/core/editor/SymmetrySystem.java',
-        'com/vzome/core/editor/SymmetryPerspective.java',
-        'com/vzome/core/editor/SelectionSummary.java',
-        'com/vzome/core/kinds/AbstractSymmetryPerspective.java',
-        'com/vzome/core/kinds/OctahedralSymmetryPerspective.java',
-        'com/vzome/core/kinds/IcosahedralSymmetryPerspective.java',
-        'com/vzome/core/model/RenderedObject.java',
-        'com/vzome/core/parts/StrutGeometry.java',
-        'com/vzome/core/parts/FastDefaultStrutGeometry.java',
-        'com/vzome/core/render/Colors.java',
-        'com/vzome/core/render/RenderedManifestation.java',
-        'com/vzome/core/render/ZomicEventHandler.java',
-        'com/vzome/core/render/AbstractZomicEventHandler.java',
-        'com/vzome/core/viewing/AbstractShapes.java',
-        'com/vzome/core/viewing/OctahedralShapes.java',
-        'com/vzome/core/viewing/DodecagonalShapes.java',
-        'com/vzome/core/viewing/ExportedVEFShapes.java',
-        'com/vzome/core/viewing/ExportedVEFStrutGeometry.java'
-    ]
-    excludes = [
-        
-        'com/vzome/core/math/symmetry/AntiprismSymmetry.java',
-        
-        'com/vzome/core/algebra/BigRational.java',
-        'com/vzome/core/algebra/RootThreeField.java',
-        'com/vzome/core/algebra/AbstractAlgebraicField.java',
-        'com/vzome/core/algebra/RootTwoField.java',
-        'com/vzome/core/algebra/SnubDodecField.java',
-        'com/vzome/core/algebra/PentagonField.java',
-        'com/vzome/core/algebra/ParameterizedField.java',
-        'com/vzome/core/algebra/HeptagonField.java',
-        'com/vzome/core/algebra/AlgebraicSeries.java',
-        'com/vzome/core/algebra/*Impl.java',
-        'com/vzome/core/algebra/AlgebraicFields.java',
-        'com/vzome/core/algebra/PolygonField.java',
-
-        'com/vzome/core/commands/CommandExecutePythonScript.java',
-
-        'com/vzome/core/zomic/ZomicASTCompiler.java',
-
-        'com/vzome/core/edits/ImportSimpleMeshJson.java',
-        'com/vzome/core/edits/ImportColoredMeshJson.java',
-        'com/vzome/core/edits/DodecagonSymmetry.java',
-        'com/vzome/core/edits/GhostSymmetry24Cell.java',
-        'com/vzome/core/edits/Symmetry4d.java',
-        'com/vzome/core/edits/RunPythonScript.java',
-        'com/vzome/core/edits/RunZomodScript.java',
-        'com/vzome/core/edits/Validate2Manifold.java',
-        'com/vzome/core/edits/RealizeMetaParts.java',
-        'com/vzome/core/edits/ReplaceWithShape.java'
-    ]
-}
 

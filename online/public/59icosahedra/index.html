@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta property="og:type" content="website"/>
+
+
+    <title>The 59 Icosahedra</title>
+    <meta property="og:site_name"  content="The 59 Icosahedra"/>
+    <meta property="og:title"      content="The 59 Icosahedra"/>
+    <meta property="twitter:title" content="The 59 Icosahedra"/>
+
+    <meta name="author" content="Scott Vorthmann"/>
+  
+    <meta name="description"             content="Explore the 59 stellations of the icosahedron"/>
+    <meta property="og:description"      content="Explore the 59 stellations of the icosahedron"/>
+    <meta property="twitter:description" content="Explore the 59 stellations of the icosahedron"/>
+
+    <meta name="keywords" content="coxeter,icosahedron,stellation,geometry,zome,vzome"/>
+    
+    <meta property="og:image"  content="https://www.vzome.com/app/59icosahedra/59-icosahedra-cutaway.png"/>
+    <meta name="twitter:image" content="https://www.vzome.com/app/59icosahedra/59-icosahedra-cutaway.png"/>
+    
+    <meta property="og:url" content="https://www.vzome.com/app/59icosahedra/"/>
+    <link rel="canonical"      href="https://www.vzome.com/app/59icosahedra/">
+    
+  
+    <link rel="stylesheet" href="../../kobalte.css">
+    <link rel="stylesheet" href="../App.css">
+    <link rel="stylesheet" href="./responsive.css">
+    <link rel="manifest" href="./manifest.json">
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/modules/59icosahedra.js"></script>
+    <script>
+      // Check that service workers are supported
+      if ('serviceWorker' in navigator) {
+        // Use the window load event to keep the page load performant
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register( '../service-worker.js' );
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -88,7 +88,7 @@ format-2.1.0-models.vZome-files
 2008/08-Aug/11-Brian-foam/weairePhelan5.vZome
 
 # uses new tools
-2010/04-Apr/17-Scott-shapeways/orange-short.vZome
+#2010/04-Apr/17-Scott-shapeways/orange-short.vZome
 
 # has some very bad anonymous orbits, with large prototypes that causes overflow;
 #  also has panels with anonymous orbits
@@ -158,3 +158,18 @@ format-2.1.0-models.vZome-files
 
 # storing auto orbits from *all* symmetries
 2020/11-Nov/21-Scott-regression
+
+# ProjectionTool can now be generated from a ball and strut, not just a panel
+2021/08-Aug/03-David-ProjectionTool-from-ball-and-strut/ProjectionTool-from-ball-and-strut.vZome
+
+# SelectAll must set originLast explicitly
+2022/10-Oct/22-origin-last-fixes/select-all-origin-last-false.vZome
+2022/10-Oct/22-origin-last-fixes/select-all-origin-last-true.vZome
+2022/10-Oct/23-origin-last-fixes/AdjustSelectionByClass-origin-last-false.vZome
+2022/10-Oct/23-origin-last-fixes/AdjustSelectionByClass-origin-last-true.vZome
+
+#Add PanelMidpoints and PanelPerimeters
+2023/11-Nov/15-David-Panels/PanelCentroids-and-PanelPerimeters.vZome
+
+#SelectCoplanar can now be called from a panel's context menu
+2023/11-Nov/15-David-SelectCoplanar/SelectCoplanar-from-context-menu.vZome

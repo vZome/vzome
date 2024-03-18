@@ -57,9 +57,66 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     }
 
     @Override
-    public String getIrrational( int which )
+    public AlgebraicNumber getNumberByName(String name)
     {
-        return this .getIrrational( which, DEFAULT_FORMAT );
+        switch(name) {
+        case "zero":
+            return zero();
+            
+        case "one":
+            return one();
+            
+        case "phi": case "\u03C6":
+            return getGoldenRatio();
+            
+        case "\u221A5": case "root5": case "sqrt5":
+        {
+            // this allows sqrt5 to behave consistently in any field that supports phi
+            AlgebraicNumber n = getGoldenRatio();
+            return n == null ? null : n.plus(n).minus(one());
+        }
+        case "\u221A8": case "root8": case "sqrt8":
+        {
+            // this allows sqrt8 to behave consistently in any field that supports sqrt2
+            AlgebraicNumber n = getNumberByName("sqrt2");
+            return n == null ? null : n.times(createRational(2));
+        }
+        default:
+            // try to match irrational names
+            for(int format = DEFAULT_FORMAT; format <= EXPRESSION_FORMAT; format++) {
+                // start from 1 to skip the rational term
+                for(int i=1; i < getOrder(); i++) {
+                    if(getIrrational(i, format).equals(name)) {
+                        return getUnitTerm(i);
+                    }
+                }
+            }
+            // DJH: I changed my mind. This method probably shouldn't be parsing anything
+            // and for the initial use case, this is all unnecesary overhead that never returns any result.
+            // I'll just comment it all out for now until we get a use-case where it makes sense.
+//            try {
+//                // try to parse as a rational number
+//                String[] parts = name.split( "/" );
+//                long numerator = Long.parseLong( parts[0] );
+//                switch(parts.length) {
+//                case 1:
+//                    return createRational(numerator);
+//                case 2:
+//                    long denominator = Long.parseLong( parts[1] );
+//                    return createRational(numerator, denominator);
+//                }
+//            }
+//            catch(NumberFormatException ex) {
+//                // This is OK. Just means name isn't a rational number
+//            }
+        }
+        return null;
+    }
+
+    @Override
+    public String getIrrational( int i )
+    {
+        return this .getIrrational( i, DEFAULT_FORMAT );
     }
 
     protected final String name;
@@ -86,22 +143,18 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
 
     private AlgebraicSeries smallSeries;
 
+    protected final AlgebraicNumberFactory numberFactory;
+
     // Eclipse says that rawtypes is unnecessary here, but without it,
     // Netbeans and the gradle command line both generate the rawtypes warning 
     @SuppressWarnings({"unchecked", "rawtypes"})  
-	public AbstractAlgebraicField( String name, int order )
+	public AbstractAlgebraicField( String name, int order, AlgebraicNumberFactory factory )
     {
         this.name = name;
         this.order = order;
-        // Since derived class constructors are not fully initialized,
-        // it's possible that they may not be able to perform some operations including multiply.
-        // Specifically, reciprocal() depends on scaleBy()
-        // which, in the case of ParameterizedField classes,
-        // depends on the constructor being fully executed beforehand.
-        // Also, normalize() may not work for some AlgebraicNumbers with non-zero irrational factors
-        // although createRational() can safely be called at this point.
-        zero = this .createRational( BigRational.ZERO );
-        one = this .createRational( BigRational.ONE );
+        this.numberFactory = factory;
+        zero = this .numberFactory .createRational( this, 0, 1 );
+        one = this .numberFactory .createRational( this, 1, 1 );
         positivePowers = new ArrayList[ order-1 ];
         negativePowers = new ArrayList[ order-1 ];
     }
@@ -177,7 +230,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         if (obj == null) {
             return false;
         }
-        if(!AbstractAlgebraicField.class.isAssignableFrom(obj.getClass())) {
+        if( ! ( obj instanceof AbstractAlgebraicField ) ) {
             return false;
         }
         AbstractAlgebraicField that = (AbstractAlgebraicField) obj;
@@ -201,32 +254,28 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     }
 
     /**
-     * The AlgebraicNumber constructor already validates the number of terms.
-     * It pads the array with ZEROs if it's too short,
-     * throws an exception if it's too long,
-     * and replaces all nulls with ZERO.
-     * No need to duplicate any of that here.
-     * This method is called by the AlgebraicNumber constructor. 
-     * It is primarily intended to allow subclasses to intercept
-     * a pair of terms from the golden field and remap them as needed for that field.
+     * This method is intended to allow subclasses to intercept a 4 element int array 
+     * representing the numerators and denominators of a pair of terms (units and phis) 
+     * from the golden field and remap them as needed for that field.
      * Otherwise, the terms are returned unchanged.
      * @param terms
      * @return
      */
-    protected BigRational[] prepareAlgebraicNumberTerms(BigRational[] terms) {
-        return terms;
+    protected long[] convertGoldenNumberPairs( long[] pairs )
+    {
+        if ( pairs.length == 2 * this.order )
+            return pairs;
+        else {
+            // Assume that phi is the first irrational, but we still need to expand to the right length
+            long[] newPairs = new long[ 2 * this.order ];
+            for (int i = 0; i < this.order; i++) {
+                newPairs[ 2*i + 0 ] = ( i >= 2 )? 0 : pairs[ 2*i + 0 ];
+                newPairs[ 2*i + 1 ] = ( i >= 2 )? 1 : pairs[ 2*i + 1 ];
+            }
+            return newPairs;
+        }
     }
     
-    /**
-     * Generates an AlgebraicNumber with the specified {@code BigRational} factors.
-     * @param factors
-     * @return
-     */
-    public final AlgebraicNumber createAlgebraicNumber( BigRational[] factors )
-    {
-        return new AlgebraicNumberImpl( this, factors );
-    }
-
     /**
      * Generates an AlgebraicNumber with integer terms (having only unit denominators).
      * Use {@code createAlgebraicNumber( int[] numerators, int denominator )} 
@@ -238,7 +287,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     @Override
     public final AlgebraicNumber createAlgebraicNumber( int[] terms )
     {
-        return createAlgebraicNumber( terms, 1 );
+        return this.numberFactory .createAlgebraicNumber( this, terms, 1 );
     }
 
     /**
@@ -249,17 +298,29 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     @Override
     public final AlgebraicNumber createAlgebraicNumberFromTD( int[] trailingDivisorForm )
     {
-        int n = trailingDivisorForm .length;
-        int denominator = 1;
-        if ( n == this .order + 1 ) {
-            --n;
-            denominator = trailingDivisorForm[ n ];
+        int terms = trailingDivisorForm.length - 1;
+        if ( terms == 2 && this.getOrder() > 2 ) {
+            
+            // Momentarily switch to rational pairs (not reduced), in order to call convertGoldenNumberPairs
+            //  [ a1, a2, d ] => [ a1, d, a2, d, ... aN, d ]
+            long[] pairs = new long[ 2*terms ];
+            int divisor = trailingDivisorForm[ terms ];
+            for (int i = 0; i < terms; i++) {
+                pairs[ 2*i + 0 ] = trailingDivisorForm[ i ];
+                pairs[ 2*i + 1 ] = divisor;
+            }
+            
+            pairs = this .convertGoldenNumberPairs( pairs );
+            
+            // Now switch back.  Since only zero-valued terms were introduced, we don't need to reduce the fractions.
+            terms = pairs.length/2;
+            trailingDivisorForm = new int[ terms + 1 ];
+            trailingDivisorForm[ terms ] = (int) pairs[ 1 ];
+            for ( int i = 0; i < pairs.length/2; i++ ) {
+                trailingDivisorForm[ i ] = (int) pairs[ 2*i ];
+            }
         }
-        BigRational[] brs = new BigRational[ n ];
-        for ( int j = 0; j < n; j++ ) {
-            brs[ j ] = new BigRational( trailingDivisorForm[ j ], denominator );
-        }
-        return createAlgebraicNumber( brs );
+        return this.numberFactory .createAlgebraicNumberFromTD( this, trailingDivisorForm );
     }
 
     /**
@@ -272,28 +333,26 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     @Override
     public final AlgebraicNumber createAlgebraicNumber( int[] numerators, int denominator )
     {
-        BigRational[] brs = new BigRational[ numerators .length ];
-        for ( int j = 0; j < numerators.length; j++ ) {
-            brs[ j ] = new BigRational( numerators[ j ], denominator );
-        }
-        return createAlgebraicNumber( brs );
+        return this.numberFactory .createAlgebraicNumber( this, numerators, denominator );
     }
 
     @Override
     public final AlgebraicNumber createAlgebraicNumber( int ones, int irrat, int denominator, int scalePower )
     {
-        BigRational[] factors = new BigRational[ this .getOrder() ];
-        factors[ 0 ] = new BigRational( ones, denominator );
-        factors[ 1 ] = new BigRational( irrat, denominator );
-        for ( int i = 2; i < factors.length; i++ ) {
-            factors[ i ] = new BigRational( 0 );
+        int[] factors = new int[ this .order + 1 ];
+        factors[ 0 ] = ones;
+        factors[ 1 ] = irrat;
+        for ( int i = 2; i < this .order; i++ ) {
+            factors[ i ] = 0;
         }
+        factors[ this .order ] = denominator;
+        AlgebraicNumber result = this.numberFactory .createAlgebraicNumberFromTD( this, factors );
         if ( scalePower != 0 ) {
             AlgebraicNumber multiplier = this .createPower( scalePower );
-            return createAlgebraicNumber(factors ) .times( multiplier );
+            return result .times( multiplier );
         }
         else
-            return createAlgebraicNumber( factors );
+            return result;
     }
 
     /**
@@ -321,8 +380,9 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     @Override
     public final AlgebraicNumber createPower( int power, int irr )
     {
+        AlgebraicNumber one = this .one();
         if ( power == 0 || irr == 0 )
-            return this .one;
+            return one;
         irr -= 1;  // no powers recorded for 0
         if ( power > 0 )
         {
@@ -376,7 +436,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     @Override
     public final AlgebraicNumber createRational( long wholeNumber )
     {
-        return createRational( wholeNumber, 1 );
+        return this .numberFactory .createRational( this, wholeNumber, 1 );
     }
 
     /**
@@ -387,18 +447,9 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     @Override
     public final AlgebraicNumber createRational( long numerator, long denominator )
     {
-        return createRational( new BigRational( numerator, denominator) );
+        return this .numberFactory .createRational( this, numerator, denominator );
     }
-    
-    /**
-     * @param rationalNumber is the value in the units term 
-     * @return AlgebraicNumber
-     */
-    public final AlgebraicNumber createRational( BigRational rationalNumber )
-    {
-        return new AlgebraicNumberImpl( this, rationalNumber );
-    }
-    
+        
     /**
      * @return The AlgebraicNumber to be use for the Chord Ratio construction in the given field.
      * This method can be used to generalize an AffinePolygon tool and a PolygonalAntiprismSymmetry.
@@ -419,15 +470,14 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * @return an AlgebraicNumber with the factor specified by {@code n} set to one.
      */
     @Override
-    public final AlgebraicNumber getUnitTerm(int n) {
-        if(n < 0) {
+    public final AlgebraicNumber getUnitTerm( int n )
+    {
+        if ( n < 0 ) {
             return zero();
         }
-        // This is safe since AlgebraicNumber is immutable 
-        // and getFactors() returns a copy of its factors rather than the actual array
-        BigRational[] factors = ((AlgebraicNumberImpl) zero) .getFactors();
-        factors[n] = BigRational.ONE;
-        return createAlgebraicNumber(factors);
+        int[] factors = this .zero() .toTrailingDivisor(); // makes a copy
+        factors[ n ] = factors[ factors.length - 1 ]; // copies the 1n denominator
+        return this .numberFactory .createAlgebraicNumberFromTD( this, factors );
     }
 
     /**
@@ -488,7 +538,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         // create an identity matrix
         for ( int j = 0; j < length; j++ ) {
             for ( int i = 0; i < length; i++ ) {
-                reciprocal[ j ][ i ] = ( i == j ) ? BigRational.ONE : BigRational.ZERO;
+                reciprocal[ j ][ i ] = ( i == j ) ? this.numberFactory.one() : this.numberFactory.zero();
             }
         }
         int rank = Fields .gaussJordanReduction( representation, reciprocal );
@@ -540,13 +590,11 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * to new fields of higher order having golden subfields as their first two factors.
      {@code
         field.createVector( new int[]  {  0,1,2,3,   4,5,6,7,   8,9,0,1  } );   // older code like this...
-        field.createVector( new int[][]{ {0,1,2,3}, {4,5,6,7}, {8,9,0,1} } );   // should be replaced by this...
-        field.createVector( new int[][]{ {0,1,2,3}, {4,5,6,7}, {8,9    } } );   // ... or even this.
+        field.createVector( new int[][]{ {0,1,2,3}, {4,5,6,7}, {8,9,0,1} } );   // should be replaced by this.
      }
      * The older code shown in the first example requires an order 2 field.
      * The second example will work with any field of order 2 or greater.
      * This new overload has the advantage that the internal arrays representing the individual dimensions are more clearly delineated and controlled.
-     * As shown in the third example, the internal arrays need not be all the same length. Trailing zero terms can be omitted as shown.
      * Inner arrays require an even number of elements since they represent a sequence of numerator/denominator pairs.
      * 
      * createVector is currently limited to int valued vectors, not long, and definitely not BigInteger
@@ -566,19 +614,20 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
             if ( coordLength % 2 != 0 ) {
                 throw new IllegalStateException( "Vector dimension " + c + " has " + coordLength + " components. An even number is required." );
             }
-            int nFactors = coordLength / 2;
-            if ( nFactors > getOrder() ) {
+            int nTerms = coordLength / 2;
+            if ( nTerms > getOrder() ) {
                 throw new IllegalStateException( "Vector dimension " + c + " has " + (coordLength /2) + " terms." 
                         + " Each dimension of the " + this.getName() + " field is limited to " + getOrder() + " terms."
                         + " Each term consists of a numerator and a denominator." );
             }
-            BigRational[] factors = new BigRational[nFactors];
-            for (int f = 0; f < nFactors; f++) {
-                int numerator   = nums[c][(f*2)  ];
-                int denominator = nums[c][(f*2)+1];
-                factors[f] = new BigRational(numerator, denominator);
+            long[] pairs = new long[ nums[ c ] .length ];
+            for (int i = 0; i < pairs.length; i++) {
+                pairs[ i ] = nums[ c ][ i ];
             }
-            coords[c] = createAlgebraicNumber(factors);
+            if ( pairs.length == 4 && getOrder() > 2 ) {
+                pairs = this .convertGoldenNumberPairs( pairs );
+            }
+            coords[c] = this.numberFactory .createAlgebraicNumberFromPairs( this, pairs );
         }
         return new AlgebraicVector( coords );
     }
@@ -611,24 +660,6 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         return result;
     }
     
-    /**
-     * Generates an AlgebraicVector with all AlgebraicNumber terms in "trailing divisor" int array form.
-     * @param nums is a 2 dimensional integer array. The length of nums becomes the number of dimensions in the resulting AlgebraicVector.
-     * For example, {@code (new PentagonField()).createIntegerVectorFromTDs( new int[][]{ {0,-1,1}, {2,3,2}, {4,5,2} } ); } 
-     * generates the 3 dimensional vector (-φ, 1 +3φ/2, 2 +5φ/2). 
-     * @return an AlgebraicVector
-     */
-    @Override
-    public AlgebraicVector createIntegerVectorFromTDs( int[][] nums )
-    {
-        final int dims = nums.length;
-        AlgebraicVector result = origin( dims );
-        for (int dim = 0; dim < dims; dim++) {
-            result .setComponent( dim, createAlgebraicNumberFromTD( nums[dim] ) );
-        }
-        return result;
-    }
-
     /**
      * Create a 3x3 square matrix from integer data.
      * TODO: Generalize this method to create a matrix with dimensions matching the dimensions of the data array
@@ -736,13 +767,18 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     @Override
     public AlgebraicNumber parseVefNumber( String string, boolean isRational )
     {
-        BigRational[] factors = new BigRational[ this.order ];
+        long[] pairs = new long[ this .getOrder() * 2 ];
+        // The pairs array is pre-initialized with zeros since it's a native type (not Integer)
+        // so we can simply set all of the denominators to 1.
+        for ( int i = 1; i < pairs.length; i+=2 ) {
+            pairs[ i ] = 1;
+        }
         // if the field is declared as rational, then we won't allow the irrational syntax using parenthesis
         // if the field is NOT declared as rational, then we will still allow the rational format as shorthand with no parenthesis
         // or we will allow any order N string representation where N <= field.getOrder().
         if( (!isRational) &&  string.startsWith("(") && string.endsWith(")") ) {
             // strip "(" and ")", tokenize on ","
-            StringTokenizer tokens = new StringTokenizer(string.substring(1, string.length() - 1), ",");
+            StringTokenizer tokens = new StringTokenizer( string.substring( 1, string.length() - 1 ), "," );
             // The tokens get pushed into the factors array in reverse order 
             // from the string representation so the last token becomes the 0th factor.
             // For example, with an order 2 field, the factors for "(3,-2)" are parsed to a 2 element array as {-2, 3}
@@ -751,25 +787,33 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
             // With an order 6 field, if only 2 factors are provided, "(3,-2)" must still be parsed into a 6 element array as {-2, 3, 0, 0, 0, 0}
             // Since VEF version 7 no longer requires that all factors be provided, we need to push the factors onto a stack
             // and pop them off to reverse the order as they are inserted into the begining of the factors array.
-            Stack<BigRational> stack = new Stack<>();
-            while(tokens.hasMoreElements()) {
-                if(stack.size() >= this .getOrder()) {
+            Stack<Integer> numStack = new Stack<>();
+            Stack<Integer> denomStack = new Stack<>();
+            while( tokens .hasMoreTokens() ) {
+                if( numStack.size() >= this .getOrder() ) {
                     throw new RuntimeException( "VEF format error: \"" + string + "\" has too many factors for " + this.getName() + " field" );
                 }
-                stack.push( new BigRational( tokens.nextToken() ) );
+                String[] parts = tokens .nextToken() .split( "/" );
+                numStack   .push( Integer .parseInt( parts[ 0 ] ) );
+                denomStack .push( (parts.length > 1)? Integer .parseInt( parts[ 1 ] ) : 1 );
             }
             int i = 0;
-            while(! stack.empty() ) {
-               factors[i++] = stack.pop();
+            while( ! numStack.empty() ) {
+                pairs[ i++ ] = numStack   .pop();
+                pairs[ i++ ] = denomStack .pop();
             }
-            return new AlgebraicNumberImpl( this, factors );
-        } else {
+            if ( i == 4 && getOrder() > 2 ) {
+                pairs = this .convertGoldenNumberPairs( new long[] { pairs[0], pairs[1], pairs[2], pairs[3] } );
+            }
+        }
+        else {
             // format >= 7 supports the rational numeric format which expects no irrational factors,
             // so there are no parentheses or commas, but still allows the optional "/" if a denominator is specified.
-            factors[0] = new BigRational( string );
-            // count on createAlgebraicNumber to set all of the null irrational factors to zero
+            String[] parts = string .split( "/" );
+            pairs[ 0 ] = Integer .parseInt( parts[ 0 ] );
+            pairs[ 1 ] = (parts.length > 1)? Integer .parseInt( parts[ 1 ] ) : 1;
         }
-        return new AlgebraicNumberImpl( this, factors );
+        return this.numberFactory .createAlgebraicNumberFromPairs( this, pairs );
     }
 
     @Override
@@ -784,13 +828,20 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * @param tokenizer
      * @return
      */
-    private AlgebraicNumber parseNumber( StringTokenizer tokenizer )
+    private AlgebraicNumber parseNumber( StringTokenizer tokens )
     {
-        BigRational[] rats = new BigRational[ this .getOrder() ];
-        for ( int i = 0; i < rats.length; i++ ) {
-            rats[ i ] = new BigRational( tokenizer .nextToken() );
+        int order = this .getOrder();
+        long[] pairs = new long[ order * 2 ];
+        for ( int i = 0; i < order; i++ ) {
+            String digit = tokens .nextToken();
+            String[] parts = digit.split( "/" );
+            pairs[ i * 2 ] = Long.parseLong( parts[ 0 ] );
+            if ( parts.length > 1 )
+                pairs[ i * 2 + 1 ] = Long.parseLong( parts[ 1 ] );
+            else
+                pairs[ i * 2 + 1 ] = 1;
         }
-        return createAlgebraicNumber( rats );
+        return this.numberFactory .createAlgebraicNumberFromPairs( this, pairs );
     }
 
     @Override
@@ -843,6 +894,51 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
             ++ power;
         }
         return new AlgebraicSeries( this, power );
+    }
+
+    public String getMathML( BigRational[] factors )
+    {
+        StringBuffer buf = new StringBuffer();
+        int first = 0;
+        for ( int i = 0; i < factors.length; i++ )
+        {
+            BigRational factor = factors[ i ];
+            if ( factor .isZero() ) {
+                ++ first;
+                continue;
+            }
+            
+            if ( factor .isNegative() )
+            {
+                factor = factor .negate();
+                buf .append( "<mo>-</mo>" );
+            }
+            else if ( i > first )
+            {
+                buf .append( "<mo>+</mo>" );
+            }
+            
+            if ( i == 0 )
+                buf .append( factor .getMathML() );
+            else
+            {
+                if ( ! factor .isOne() )
+                {
+                    buf .append( factor .getMathML() );
+                }
+                String multiplier = this .getIrrational( i, DEFAULT_FORMAT );
+                buf .append( "<mi>" );
+                buf .append( multiplier );
+                buf .append( "</mi>" );
+            }
+        }
+        if ( first == factors.length )
+            // all factors were zero
+            return "<mn>0</mn>";
+        else if ( factors.length - first > 1 )
+            return "<mrow>" + buf .toString() + "</mrow>";
+        else
+            return buf .toString();
     }
 
     @Override

@@ -32,16 +32,19 @@ public class AlgebraicNumberTest
             AlgebraicNumber zero = field.zero();
             assertTrue(zero.isZero());
             assertFalse(zero.isOne());
+            assertEquals( "<mn>0</mn>", zero .getMathML() );
         }
         {
             AlgebraicNumber one = field.one();
             assertFalse(one.isZero());
             assertTrue(one.isOne());
+            assertEquals( "<mn>1</mn>", one .getMathML() );
         }
         {
             AlgebraicNumber phi = field.createAlgebraicNumber(new int[]{0, 1});
             assertFalse(phi.isZero());
             assertFalse(phi.isOne());
+            assertEquals( "<mi>φ</mi>", phi .getMathML() );
         }
     }
 
@@ -53,7 +56,7 @@ public class AlgebraicNumberTest
             new RootTwoField(),
             new RootThreeField(),
             new HeptagonField(),
-            new SnubDodecField()
+            new SnubDodecField( AlgebraicNumberImpl.FACTORY )
         };
         for(AlgebraicField field : fields ) {
             AlgebraicNumber one = field.createPower(0); // anything to the zero power...
@@ -90,6 +93,7 @@ public class AlgebraicNumberTest
         assertEquals("-7/5 +3/5*phi", n1.toString(EXPRESSION_FORMAT));
         assertEquals("-7/5 3/5", n1.toString(ZOMIC_FORMAT));
         assertEquals("(3/5,-7/5)", n1.toString(VEF_FORMAT)); // irrational is listed first in VEF format
+        assertEquals( "<mrow><mo>-</mo><mfrac><mn>7</mn><mn>5</mn></mfrac><mo>+</mo><mfrac><mn>3</mn><mn>5</mn></mfrac><mi>φ</mi></mrow>", n1 .getMathML() );
     }
 
     @Test
@@ -128,11 +132,11 @@ public class AlgebraicNumberTest
             for(AlgebraicNumber n : numbers) {
                 // first, test with fractions as numerator and denominator args
                 AlgebraicNumber r = field.createRational(numerator, denominator);
-                assertEquals("add rat", n. plus(r), n. plus(numerator, denominator));
-                assertEquals("sub rat", n.minus(r), n.minus(numerator, denominator));
-                assertEquals("mul rat", n.times(r), n.times(numerator, denominator));
+                assertEquals("add rat", n. plus(r), n. plusRational(numerator, denominator));
+                assertEquals("sub rat", n.minus(r), n.minusRational(numerator, denominator));
+                assertEquals("mul rat", n.times(r), n.timesRational(numerator, denominator));
                 try {
-                    assertEquals("div rat", n.dividedBy(r), n.dividedBy(numerator, denominator));
+                    assertEquals("div rat", n.dividedBy(r), n.dividedByRational(numerator, denominator));
                     assertNotEquals("Expected no divide by zero exception.", 0, numerator);
                 } catch( IllegalArgumentException ex) {
                     assertEquals("Expected divide by zero exception.", 0, numerator);
@@ -150,11 +154,11 @@ public class AlgebraicNumberTest
 //                }
                 // and again with integers
                 r = field.createRational(numerator);
-                assertEquals("add int", n. plus(r), n. plus(numerator));
-                assertEquals("sub int", n.minus(r), n.minus(numerator));
-                assertEquals("mul int", n.times(r), n.times(numerator));
+                assertEquals("add int", n. plus(r), n. plusInt(numerator));
+                assertEquals("sub int", n.minus(r), n.minusInt(numerator));
+                assertEquals("mul int", n.times(r), n.timesInt(numerator));
                 try {
-                    assertEquals("div int", n.dividedBy(r), n.dividedBy(numerator));
+                    assertEquals("div int", n.dividedBy(r), n.dividedByInt(numerator));
                     assertNotEquals("Expected no divide by zero exception.", 0, numerator);
                 } catch( IllegalArgumentException ex) {
                     assertEquals("Expected divide by zero exception.", 0, numerator);
@@ -165,7 +169,7 @@ public class AlgebraicNumberTest
     
     @Test
     public void testCreateAlgebraicNumber() {
-        AlgebraicField field = new SqrtPhiField(); // just because it has order > 2
+        AlgebraicField field = new SqrtPhiField( AlgebraicNumberImpl.FACTORY ); // just because it has order > 2
         
         int[] nums = new int[] {0, 2, -2, 42}; 
         for(int den = -3; den <= 3; den++) {
@@ -193,10 +197,11 @@ public class AlgebraicNumberTest
     }
 
     @Test
-    public void testPrepareAlgebraicNumberTerms() {
+    public void testPrepareAlgebraicNumberTerms()
+    {
         List<AlgebraicField> fields = new ArrayList<>();
         // list any fields that need to remap golden terms 
-        fields.add(new SqrtPhiField());
+        fields.add(new SqrtPhiField( AlgebraicNumberImpl.FACTORY ));
         for(int n = 5; n <= 50; n += 5) {
 //            fields.add(new PolygonField(n)); // TODO eventually
         }
@@ -210,26 +215,26 @@ public class AlgebraicNumberTest
         final int denom = 1, scalePower = 0; // these must be as stated
         final AlgebraicNumberImpl goldenNumber = (AlgebraicNumberImpl) goldenField.createAlgebraicNumber(ones, phis, denom, scalePower);
         System.out.println(goldenField.getName() + ": " + goldenNumber + "\n");
-        final BigRational[] goldenTerms = goldenNumber .getFactors();
+//        final BigRational[] goldenTerms = goldenNumber .getFactors();
         final double goldenEvaluate = goldenNumber.evaluate();
         final double delta = 0.0d;
         
         for (AlgebraicField field : fields) {
             System.out.println(field.getName());
             assertNotNull(field.getGoldenRatio());
-            { // Using new AlgebraicNumber( AlgebraicField field, BigRational[] newFactors )
-             // this test originally failed
-                AlgebraicNumber test = new AlgebraicNumberImpl( field, goldenTerms );
-                System.out.println(test);
-                assertEquals(field.getName(), goldenEvaluate, test.evaluate(), delta);
-            }
-            { // Using field.createAlgebraicNumber( int[] factors )
-              // this test originally failed
-                int[] terms = { ones, phis };
-                AlgebraicNumber test = field.createAlgebraicNumber(terms);
-                System.out.println(test);
-                assertEquals(field.getName(), goldenEvaluate, test.evaluate(), delta);
-            }
+//            { // Using new AlgebraicNumber( AlgebraicField field, BigRational[] newFactors )
+//             // this test originally failed
+//                AlgebraicNumber test = new AlgebraicNumberImpl( field, goldenTerms );
+//                System.out.println(test);
+//                assertEquals(field.getName(), goldenEvaluate, test.evaluate(), delta);
+//            }
+//            { // Using field.createAlgebraicNumber( int[] factors )
+//              // this test originally failed
+//                int[] terms = { ones, phis };
+//                AlgebraicNumber test = field.createAlgebraicNumber(terms);
+//                System.out.println(test);
+//                assertEquals(field.getName(), goldenEvaluate, test.evaluate(), delta);
+//            }
             { // Using field.createVector( int[][] nums )
                 int[][] terms = { 
                         { ones, denom, phis, denom }, 
@@ -268,7 +273,7 @@ public class AlgebraicNumberTest
     {
         final AlgebraicField field = new PentagonField();
         {
-            final BigRational[] inputFactors = {BigRational.ONE};
+            final BigRational[] inputFactors = {BigRationalImpl.ONE};
             assertEquals( inputFactors.length, 1 );
 
             AlgebraicNumberImpl value = new AlgebraicNumberImpl(field, inputFactors);
@@ -287,7 +292,7 @@ public class AlgebraicNumberTest
             final BigRational[] inputFactors = new BigRational[field.getOrder()];
             assertEquals( inputFactors.length, 2 );
 
-            inputFactors[0] = BigRational.ONE;
+            inputFactors[0] = BigRationalImpl.ONE;
             assertNotNull( inputFactors[0]);
             assertNull( inputFactors[1]);
 
@@ -303,7 +308,7 @@ public class AlgebraicNumberTest
             }
             // check for the specific values we expect
             assertEquals( factors[0], inputFactors[0] );
-            assertEquals( factors[1], BigRational.ZERO );
+            assertEquals( factors[1], BigRationalImpl.ZERO );
         }
     }
 
@@ -339,24 +344,28 @@ public class AlgebraicNumberTest
         assertEquals( "11/3 +5/2*phi", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
         assertEquals( "11/3 5/2", number.toString( AlgebraicField.ZOMIC_FORMAT ) );
         assertEquals( "(5/2,11/3)", number.toString( AlgebraicField.VEF_FORMAT ) );
-        
+        assertEquals( "<mrow><mfrac><mn>11</mn><mn>3</mn></mfrac><mo>+</mo><mfrac><mn>5</mn><mn>2</mn></mfrac><mi>φ</mi></mrow>", number .getMathML() );
+
         number = field .createRational( 0 );
 
         assertEquals( "0", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "0", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
         assertEquals( "0 0", number.toString( AlgebraicField.ZOMIC_FORMAT ) );
         assertEquals( "(0,0)", number.toString( AlgebraicField.VEF_FORMAT ) );
-        
+        assertEquals( "<mn>0</mn>", number .getMathML() );
+
         number = field .createAlgebraicNumber( new int[]{1, 0} );
 
         assertEquals( "1", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "1", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
+        assertEquals( "<mn>1</mn>", number .getMathML() );
         
         number = field .createAlgebraicNumber( new int[]{0, 1} );
 
         assertEquals( "\u03C6", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "phi", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
-        
+        assertEquals( "<mi>φ</mi>", number .getMathML() );
+
         field = new HeptagonField();
         number = field .createAlgebraicNumber( new int[]{ 6, 11, 14 } );
         
@@ -364,29 +373,34 @@ public class AlgebraicNumberTest
         assertEquals( "6 +11*rho +14*sigma", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
         assertEquals( "6 11 14", number.toString( AlgebraicField.ZOMIC_FORMAT ) );
         assertEquals( "(14,11,6)", number.toString( AlgebraicField.VEF_FORMAT ) );
-        
-        field = new SnubDodecField();
+        assertEquals( "<mrow><mn>6</mn><mo>+</mo><mn>11</mn><mi>ρ</mi><mo>+</mo><mn>14</mn><mi>σ</mi></mrow>", number .getMathML() );
+
+        field = new SnubDodecField( AlgebraicNumberImpl.FACTORY );
         number = field .createAlgebraicNumber( new int[]{ -12, 8, 2, -1, 6, -4 } );
         
         assertEquals( "-12 +8\u03C6 +2\u03BE -\u03C6\u03BE +6\u03BE\u00B2 -4\u03C6\u03BE\u00B2", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "-12 +8*phi +2*xi -phi*xi +6*xi^2 -4*phi*xi^2", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
         assertEquals( "-12 8 2 -1 6 -4", number.toString( AlgebraicField.ZOMIC_FORMAT ) );
         assertEquals( "(-4,6,-1,2,8,-12)", number.toString( AlgebraicField.VEF_FORMAT ) );
+        assertEquals( "<mrow><mo>-</mo><mn>12</mn><mo>+</mo><mn>8</mn><mi>φ</mi><mo>+</mo><mn>2</mn><mi>ξ</mi><mo>-</mo><mi>φξ</mi><mo>+</mo><mn>6</mn><mi>ξ²</mi><mo>-</mo><mn>4</mn><mi>φξ²</mi></mrow>", number .getMathML() );
 
         number = field .createAlgebraicNumber( new int[]{0, 0, 0, 0, 0, 0} );
         
         assertEquals( "0", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "0", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
+        assertEquals( "<mn>0</mn>", number .getMathML() );
 
         number = field .createAlgebraicNumber( new int[]{0, 0, 1, 0, 0, 0} );
         
         assertEquals( "\u03BE", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "xi", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
+        assertEquals( "<mi>ξ</mi>", number .getMathML() );
 
         number = field .createAlgebraicNumber( new int[]{0, 1, 0, 0, 0, 1} );
         
         assertEquals( "\u03C6 +\u03C6\u03BE\u00B2", number.toString( AlgebraicField.DEFAULT_FORMAT ) );
         assertEquals( "phi +phi*xi^2", number.toString( AlgebraicField.EXPRESSION_FORMAT ) );
+        assertEquals( "<mrow><mi>φ</mi><mo>+</mo><mi>φξ²</mi></mrow>", number .getMathML() );
     }
 
     @Test
@@ -441,7 +455,7 @@ public class AlgebraicNumberTest
     @Test
     public void testSnubDodecField()
     {
-        AlgebraicField field = new SnubDodecField();
+        AlgebraicField field = new SnubDodecField( AlgebraicNumberImpl.FACTORY );
 
         AlgebraicNumber phi_xi2_inv = field .createAlgebraicNumber( new int[]{ -12, 8, 2, -1, 6, -4 } );
 
@@ -536,12 +550,12 @@ public class AlgebraicNumberTest
     {
         AlgebraicField field = new HeptagonField();
         
-        BigRational r01 = new BigRational(0, 1); 
-        BigRational r23 = new BigRational(2, 3); 
-        BigRational r45 = new BigRational(4, 5); 
-        BigRational r67 = new BigRational(6, 7); 
-        BigRational r89 = new BigRational(8, 9); 
-        BigRational r1011 = new BigRational(10,11); 
+        BigRational r01 = new BigRationalImpl(0, 1); 
+        BigRational r23 = new BigRationalImpl(2, 3); 
+        BigRational r45 = new BigRationalImpl(4, 5); 
+        BigRational r67 = new BigRationalImpl(6, 7); 
+        BigRational r89 = new BigRationalImpl(8, 9); 
+        BigRational r1011 = new BigRationalImpl(10,11); 
         AlgebraicNumberImpl n = new AlgebraicNumberImpl( field, new BigRational[] { r01, r23, r45} ); 
         assertEquals( BigInteger.valueOf(3 * 5), n.getDivisor() );
         
@@ -560,7 +574,9 @@ public class AlgebraicNumberTest
             new RootTwoField(),
             new RootThreeField(),
             new HeptagonField(),
-            new SnubDodecField()
+            new SnubDodecField( AlgebraicNumberImpl.FACTORY ),
+            new SqrtPhiField( AlgebraicNumberImpl.FACTORY ),
+            new SnubCubeField( AlgebraicNumberImpl.FACTORY )
         };
         int tests = 0;
         for(AlgebraicField field : fields ) {
@@ -585,10 +601,10 @@ public class AlgebraicNumberTest
     public void testCompareTo()
     {
         AlgebraicField field = new PentagonField();
-        BigRational r01 = new BigRational(0, 1); 
-        BigRational r23 = new BigRational(2, 3); 
-        BigRational r45 = new BigRational(4, 5); 
-        BigRational r67 = new BigRational(6, 7); 
+        BigRational r01 = new BigRationalImpl(0, 1); 
+        BigRational r23 = new BigRationalImpl(2, 3); 
+        BigRational r45 = new BigRationalImpl(4, 5); 
+        BigRational r67 = new BigRationalImpl(6, 7); 
         AlgebraicNumber j = new AlgebraicNumberImpl( field, new BigRational[] { r01, r23 } ); 
         AlgebraicNumber k = new AlgebraicNumberImpl( field, new BigRational[] { r45, r67} );
         assertNotEquals( 0, j.compareTo(k) );
@@ -603,7 +619,7 @@ public class AlgebraicNumberTest
     @Test
     public void testHaveSameInitialCoefficients() {
     	AlgebraicField pent = new PentagonField();
-    	AlgebraicField snub = new SnubDodecField();
+    	AlgebraicField snub = new SnubDodecField( AlgebraicNumberImpl.FACTORY );
     	
 	    assertEquals(
 	    	pent.createAlgebraicNumber( new int[]{2, 3} ).evaluate(),

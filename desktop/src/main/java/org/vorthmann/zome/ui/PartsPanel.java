@@ -25,14 +25,13 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
-import org.vorthmann.ui.Controller;
-import org.vorthmann.zome.app.impl.PartsController.PartInfo;
-
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.controller.PartsController.PartInfo;
 
 public class PartsPanel extends JPanel
 {
@@ -42,6 +41,7 @@ public class PartsPanel extends JPanel
     private final PartsTableModel partsTableModel;
     private Point popupTriggerLocation = null;
 
+    @SuppressWarnings("serial")
     public PartsPanel( Controller controller )
     {
         super( new BorderLayout() );

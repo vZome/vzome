@@ -122,9 +122,12 @@ public class ZomeCADImporter
         events .beginModel();
         data .skipBytes( 8 );  // skip the header
 
-        int majorVersion = readInt();
-        int minorVersion = data .readUnsignedByte();
-        int build = data .readUnsignedByte();
+        @SuppressWarnings("unused")
+		int majorVersion = readInt();
+        @SuppressWarnings("unused")
+		int minorVersion = data .readUnsignedByte();
+        @SuppressWarnings("unused")
+		int build = data .readUnsignedByte();
 
         boolean fileStarted = false, fileDone = false;
         do {
@@ -132,7 +135,6 @@ public class ZomeCADImporter
             int packetType = readInt();
             float x = 0, y = 0, z = 0;
             AlgebraicVector start = null;
-            AlgebraicVector end = null;
             int orbit = 0, zone = 0, size = 0;
 
             // --------- 1. the orbit is encoded in the packet type
@@ -204,7 +206,8 @@ public class ZomeCADImporter
                 x = readFloat();
                 y = readFloat();
                 z = readFloat();
-                end = inferVector( x, y, z );
+                @SuppressWarnings("unused") 
+                AlgebraicVector end = inferVector( x, y, z );
                 break;
             default:
                 break;

@@ -20,7 +20,7 @@ public class PlaneOrbitSet extends OrbitSet
 		
 		this .normal = normal;
 
-        for (Direction dir : delegate) {
+        for (Direction dir : delegate .getDirections()) {
             for (Axis axis : dir) {
                 if ( axis .normal() .dot( this .normal ) .isZero() )
                     this .zones .add( axis );

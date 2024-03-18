@@ -9,7 +9,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.api.Controller;
 
 
 @SuppressWarnings("serial")
@@ -30,7 +30,7 @@ public class StrutBuilderPanel extends JPanel
         constraintsPanel .setLayout( new BorderLayout() );
 
         final Controller symmController = this .controller .getSubController( "symmetry." + symmName );
-
+        
         final Controller orbitController = symmController .getSubController( "buildOrbits" );
         {
             orbitPanel = new OrbitPanel( orbitController, symmController .getSubController( "availableOrbits" ), enabler );

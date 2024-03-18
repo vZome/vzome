@@ -84,22 +84,22 @@ public class FileSystemVisitor2 {
 		public void actOnFileLines( File file, String extension, FileSystemVisitor2 visitor ) throws IOException {
 			try  {
 				boolean links = fileContainsLinks( extension );
-				BufferedReader in = new BufferedReader( new FileReader( file ) );
-				String line;
-				while ( (line = in .readLine()) != null ) {
-					line = line .trim();
-					if ( line .startsWith( "#" ) )
-						continue;
-					if ( line .length() == 0 )
-						continue;
-					if ( links )
-					{
-						File link = new File( file .getParentFile(), line );
-						// this is not a visit because we are simulating visitFolder
-						actOnFileOrFolder( link, visitor );
+				try (BufferedReader in = new BufferedReader( new FileReader( file ) )) {
+					String line;
+					while ( (line = in .readLine()) != null ) {
+						line = line .trim();
+						if ( line .startsWith( "#" ) )
+							continue;
+						if ( line .length() == 0 )
+							continue;
+						if ( links ) {
+							File link = new File( file .getParentFile(), line );
+							// this is not a visit because we are simulating visitFolder
+							actOnFileOrFolder( link, visitor );
+						} else {
+							actOnFileLine( file, line, visitor );
+						}
 					}
-					else
-						actOnFileLine( file, line, visitor );
 				}
 			} catch( IOException ioe ) {
 				ioe .printStackTrace();

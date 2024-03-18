@@ -84,31 +84,37 @@ public class Adapter
     }
 
     private final String gameObjectName;
-    private final String path;
+//    private final String path;
     private final DocumentModel model;
     private final RenderingChanges renderer;
     private final RenderedModel renderedModel;
     private final ObjectMapper objectMapper;
+    private static final boolean batchRendering = true;
 
     private Adapter( String gameObjectName, String path, Document doc )
     {
         this .gameObjectName = gameObjectName;
-        this .path = path;
+//        this .path = path;
         this .model = doc .getDocumentModel();
         this .renderer = new Renderer( this );
 
         this .objectMapper = new ObjectMapper();
 //
-        logInfo( "loaded: " + path );
+        logInfo( "loading and rendering... please wait..." );
         renderedModel = model .getRenderedModel();
-        renderedModel .addListener( this .renderer );
-
-        // This just to render the center ball
-        RenderedModel .renderChange( new RenderedModel( null, null ), renderedModel, this .renderer );
+        if ( !batchRendering ) {
+            renderedModel .addListener( this .renderer );
+            // This just to render the center ball
+            RenderedModel .renderChange( new RenderedModel( null, null ), renderedModel, this .renderer );
+        }
 
         try {
             model .finishLoading( false, false );
+            if ( batchRendering ) {
+                RenderedModel .renderChange( new RenderedModel( null, null ), renderedModel, this .renderer );
+            }
             this .logInfo( "DONE rendering!" );
+            renderedModel .addListener( this .renderer );
         }
         catch ( Failure e )
         {
@@ -118,14 +124,15 @@ public class Adapter
     
     protected void sendMessage( String callbackFn, String message )
     {
-        System.out.println( "Adapter.sendMessage(): " + callbackFn + " : " + message );
-        try {
-            SEND_MESSAGE_METHOD .invoke( null, this .gameObjectName, callbackFn, message );
-        }
-        catch ( SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e )
-        {
-            e.printStackTrace();
-        }
+        System.out.println( "[com.vzome.unity.Adapter.sendMessage()] " + callbackFn + " : " + message );
+        if ( SEND_MESSAGE_METHOD != null )
+            try {
+                SEND_MESSAGE_METHOD .invoke( null, this .gameObjectName, callbackFn, message );
+            }
+            catch ( SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e )
+            {
+                e.printStackTrace();
+            }
     }
 
     protected void logInfo( String message )
@@ -269,7 +276,7 @@ public class Adapter
                 "0\n" + 
                 "";
         registerShape( "default-connector", twoPanels );
-        String url = "http://vzome.com/models/2008/02-Feb/06-Scott-K4more/K4more.vZome";
+        String url = "https://raw.githubusercontent.com/vorth/vzome-sharing/main/2022/07/04/16-28-03-test-demo-johnK/test-demo-johnK.vZome";
         loadUrl( url, null );
         System.out.println( "%%%%%%%%%%%%%" );
         System.out.println( "%%%%%%%%%%%%%" );
@@ -279,6 +286,7 @@ public class Adapter
         System.out.println( "%%%%%%%%%%%%%" );
         System.out.println( "%%%%%%%%%%%%%" );
         System.out.println( "%%%%%%%%%%%%%" );
-        Adapter adapter = getAdapter( url );
+        @SuppressWarnings("unused")
+		Adapter adapter = getAdapter( url );
     }
 }

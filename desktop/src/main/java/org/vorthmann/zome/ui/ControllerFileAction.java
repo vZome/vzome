@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.api.Controller;
 
 public class ControllerFileAction implements ActionListener
 {
@@ -106,8 +106,22 @@ public class ControllerFileAction implements ActionListener
             logger .info( "file action cancelled" );
             return;
         }
-        if ( ! mOpening && ! fileName .endsWith( "." + mExtension ) ) {
-            fileName = fileName + "." + mExtension;
+        if ( ! mOpening ) {
+	        // If fileName already has the correct extension, be sure it's the same case as mExtension.
+	        // This doesn't matter on an OS that's not case sensitive like Mac or Windows, but it would on Linux.
+        	// Mainly, this avoids the situation where a fileName like "foo.vzome" 
+        	// is incorrectly given an additional extension that differs only in case, such as "foo.vzome.vZome".
+        	//
+        	// Use "while" instead of just an "if", so that "foo.vzome.vzome.vzome.vzome" 
+        	// will always be reduced to "foo.vZome".
+        	// This only affects saving files, not opening existing files with repeated extensions 
+        	// because mOpening is false at this point.
+	        while (fileName.toLowerCase() .endsWith( "." + mExtension.toLowerCase() ) ) {
+	        	// strip off the "." and any potentially wrong cased extension
+	        	fileName = fileName.substring(0, fileName.length() - 1 - mExtension.length());
+	        }
+	        // Append the correct extension whether it was missing or we stripped it off to ensure proper case 
+	        fileName = fileName + "." + mExtension;
         }
         directory = mFileChooser .getDirectory();  // cache this for convenience, for the next use
         this .mController .setProperty( this .getDirectoryProperty(), directory ); // set it for other windows

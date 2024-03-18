@@ -21,12 +21,14 @@ import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
 import com.vzome.core.tools.AxialStretchTool;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
 import com.vzome.core.tools.IcosahedralToolFactory;
-import com.vzome.core.tools.LinearMapTool;
-import com.vzome.core.tools.MirrorTool;
-import com.vzome.core.tools.RotationTool;
-import com.vzome.core.tools.ScalingTool;
-import com.vzome.core.tools.SymmetryTool;
-import com.vzome.core.tools.TranslationTool;
+import com.vzome.core.tools.InversionToolFactory;
+import com.vzome.core.tools.LinearMapToolFactory;
+import com.vzome.core.tools.MirrorToolFactory;
+import com.vzome.core.tools.ProjectionToolFactory;
+import com.vzome.core.tools.RotationToolFactory;
+import com.vzome.core.tools.ScalingToolFactory;
+import com.vzome.core.tools.SymmetryToolFactory;
+import com.vzome.core.tools.TranslationToolFactory;
 import com.vzome.core.viewing.AbstractShapes;
 import com.vzome.core.viewing.AntiprismShapes;
 import com.vzome.core.viewing.OctahedralShapes;
@@ -42,12 +44,12 @@ import com.vzome.core.viewing.OctahedralShapes;
  */
 public class PolygonFieldApplication extends DefaultFieldApplication
 {
-    public PolygonFieldApplication(int polygonSides)
+    public PolygonFieldApplication( PolygonField field )
     {
-        super( new PolygonField(polygonSides) );
+        super( field );
         symmetryPerspectives.add( new AntiprismSymmetryPerspective());    
         
-        if(polygonSides == 5) { // TODO: eventually use getField().getGoldenRatio() != null here 
+        if( field .polygonSides() == 5) { // TODO: eventually use getField().getGoldenRatio() != null here 
             // when we eventually generalize icosa symm and strut rendering to work with any 5N-gon.
             // Until then, enable icosa symm only for polygon(5) since it only works in that case for now.
             icosahedralPerspective = new IcosahedralSymmetryPerspective(getField());
@@ -83,6 +85,11 @@ public class PolygonFieldApplication extends DefaultFieldApplication
         }
         
         @Override
+        public String getLabel() {
+            return "antiprism";
+        }
+
+        @Override
         public AntiprismSymmetry getSymmetry() {
             // This cast to AntiprismSymmetry is safe 
             // because an AntiprismSymmetry is used in the c'tor
@@ -91,23 +98,39 @@ public class PolygonFieldApplication extends DefaultFieldApplication
         
         @Override
         public List<Tool.Factory> createToolFactories(Tool.Kind kind, ToolsModel tools) {
+        	final boolean isTrivial = this.symmetry.isTrivial();
             List<Tool.Factory> result = new ArrayList<>();
             switch (kind) {
 
             case SYMMETRY:
-                result.add(new SymmetryTool.Factory(tools, this.symmetry));
-                result.add(new MirrorTool.Factory(tools));
+                result.add(new SymmetryToolFactory(tools, this.symmetry));
+                if(isTrivial) {
+                	// InversionTool should be OK as long as there is no embedding
+                	// which is always the case when PolygonField.getField().isEven().
+                	result .add( new InversionToolFactory( tools ) );
+                }
+                result.add(new MirrorToolFactory(tools));
                 result.add(new AxialSymmetryToolFactory(tools, this.symmetry));
                 break;
 
             case TRANSFORM:
-                result.add(new ScalingTool.Factory(tools, this.symmetry));
-                result.add(new RotationTool.Factory(tools, this.symmetry));
-                result.add(new TranslationTool.Factory(tools));
+                result.add(new ScalingToolFactory(tools, this.symmetry));
+                result.add(new RotationToolFactory(tools, this.symmetry));
+                result.add(new TranslationToolFactory(tools));
+                if(isTrivial) {
+                	// ProjectionTool should be OK as long as there is no embedding
+                	// which is always the case when PolygonField.getField().isEven().
+                	// TODO: I think if we make the ProjectionToolFactory check that neither 
+                	// the projection plane's normal nor the projection direction (usually the same as the normal)
+                	// are changed by the embedding (I think that might be an eigenvector of the embedding matrix)
+                	// then we could allow ProjectionTools in non-trivial embeddings as well.
+                	// For now, just allow it for the trivial embeddings.
+                	result .add( new ProjectionToolFactory( tools ) );
+                }
                 break;
 
             case LINEAR_MAP:
-                result.add(new LinearMapTool.Factory(tools, this.symmetry, false));
+                result.add(new LinearMapToolFactory(tools, this.symmetry, false));
                 break;
 
             default:
@@ -122,15 +145,15 @@ public class PolygonFieldApplication extends DefaultFieldApplication
             switch (kind) {
 
             case SYMMETRY:
-                result.add(new SymmetryTool.Factory(tools, this.symmetry).createPredefinedTool("polygonal antiprism around origin"));
-                result.add(new MirrorTool.Factory(tools).createPredefinedTool("reflection through XY plane"));
+                result.add(new SymmetryToolFactory(tools, this.symmetry).createPredefinedTool("polygonal antiprism around origin"));
+                result.add(new MirrorToolFactory(tools).createPredefinedTool("reflection through XY plane"));
                 result.add(new AxialSymmetryToolFactory(tools, this.symmetry, true).createPredefinedTool("symmetry around red through origin"));
                 break;
 
             case TRANSFORM:
-                result.add(new ScalingTool.Factory(tools, this.symmetry).createPredefinedTool("scale down"));
-                result.add(new ScalingTool.Factory(tools, this.symmetry).createPredefinedTool("scale up"));
-                result.add(new RotationTool.Factory(tools, this.symmetry, true).createPredefinedTool("rotate around red through origin"));
+                result.add(new ScalingToolFactory(tools, this.symmetry).createPredefinedTool("scale down"));
+                result.add(new ScalingToolFactory(tools, this.symmetry).createPredefinedTool("scale up"));
+                result.add(new RotationToolFactory(tools, this.symmetry, true).createPredefinedTool("rotate around red through origin"));
                 break;
 
             default:

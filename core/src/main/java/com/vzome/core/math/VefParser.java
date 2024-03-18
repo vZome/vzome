@@ -93,22 +93,6 @@ public abstract class VefParser
         return mVersion >= VERSION_W_FIRST;
     }
     
-    public static boolean fieldsAreCompatible(final AlgebraicField field, String fieldName) {
-        // most common, so check this first
-        if (fieldName.equals(field .getName()) )
-            return true;
-        
-        //  I'm disabling this as unimportant, and very hard to work around.
-//        if (AlgebraicFields.haveSameInitialCoefficients(field, fieldName) )
-//            return true;
-
-        // any field that returns a non-null goldenRatio is expected to be able 
-        // to map a pair of golden field terms to the coresponding terms in that field
-        // by overriding prepareAlgebraicNumberTerms().
-        // See SqrtPhiField.prepareAlgebraicNumberTerms() for an example.
-        return fieldName.equals("golden") && field.getGoldenRatio() != null;
-    }
-
     public void parseVEF( String vefData, final AlgebraicField field )
     {
         this.field = field;
@@ -155,7 +139,7 @@ public abstract class VefParser
                 isRational = true;
                 token = field .getName();
             }
-            if(! fieldsAreCompatible(field, token) ) {
+            if(! field.supportsSubfield( token) ) {
                 throw new IllegalStateException( "VEF field mismatch error: VEF field name (\"" + token + "\") does not match current model field name (\"" + field .getName() + "\")." );
             }
             token = tokens .nextToken();

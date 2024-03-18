@@ -4,12 +4,9 @@ package com.vzome.core.editor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,13 +47,7 @@ import com.vzome.core.editor.api.Context;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.UndoableEdit;
-import com.vzome.core.exporters.Exporter3d;
-import com.vzome.core.exporters.POVRayExporter;
-import com.vzome.core.exporters.PartGeometryExporter;
 import com.vzome.core.exporters.ShapesJsonExporter;
-import com.vzome.core.exporters2d.Java2dExporter;
-import com.vzome.core.exporters2d.Java2dSnapshot;
-import com.vzome.core.exporters2d.SnapshotExporter;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.OrbitSet;
@@ -71,9 +62,8 @@ import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.model.Strut;
 import com.vzome.core.model.VefModelExporter;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedModel;
-import com.vzome.core.tools.BookmarkTool;
+import com.vzome.core.tools.BookmarkToolFactory;
 import com.vzome.core.viewing.Camera;
 import com.vzome.core.viewing.Lights;
 import com.vzome.xml.DomSerializer;
@@ -130,8 +120,6 @@ public class DocumentModel implements Snapshot .Recorder, Context
 
     private final FieldApplication kind;
 
-    private final Application app;
-
     public void addPropertyChangeListener( PropertyChangeListener listener )
     {
         propertyChangeSupport .addPropertyChangeListener( listener );
@@ -156,7 +144,6 @@ public class DocumentModel implements Snapshot .Recorder, Context
     {
         super();
         this .kind = kind;
-        this .app = app;
         this .field = kind .getField();
         AlgebraicVector origin = this .field .origin( 3 );
         this .originPoint = new FreePoint( origin );
@@ -243,7 +230,7 @@ public class DocumentModel implements Snapshot .Recorder, Context
 
         kind .registerToolFactories( this .toolFactories, this .tools );
 
-        this .bookmarkFactory = new BookmarkTool.Factory( tools );
+        this .bookmarkFactory = new BookmarkToolFactory( tools );
         this .editorModel .addSelectionSummaryListener( this .bookmarkFactory );
 
         this .bookmarkFactory .createPredefinedTool( "ball at origin" );
@@ -269,6 +256,14 @@ public class DocumentModel implements Snapshot .Recorder, Context
         }
 
         mHistory = new EditHistory();
+        mHistory .setSerializer( new EditHistory.XmlSerializer()
+        {
+            @Override
+            public String serialize( Element xmlElement )
+            {
+                return DomSerializer .getXmlString( xmlElement );
+            }
+        });
         mHistory .setListener( new EditHistory.Listener() {
 
             @Override
@@ -402,6 +397,7 @@ public class DocumentModel implements Snapshot .Recorder, Context
         return out .toString();
     }
 
+    @Override
     public boolean doEdit( String action, Map<String,Object> props )
     {
         if ( this .editorModel .mSelection .isEmpty() && action .equals( "hideball" ) ) {
@@ -424,7 +420,7 @@ public class DocumentModel implements Snapshot .Recorder, Context
 
         if ( edit == null )
         {
-            logger .warning( "no DocumentModel action for : " + action );
+            logger .warning( "no edit created for : " + action );
             return false;
         }
         if ( mode != null )
@@ -680,6 +676,7 @@ public class DocumentModel implements Snapshot .Recorder, Context
             }
         }
     }
+    
     private final long startTime = System.nanoTime();
 
     boolean fileIsTooNew( String fileVersion )
@@ -701,13 +698,15 @@ public class DocumentModel implements Snapshot .Recorder, Context
         return false;
     }
 
-    public Element getDetailsXml( Document doc )
+    public Element getDetailsXml( Document doc, boolean includeSymmetriesAndTools )
     {
         Element vZomeRoot = doc .createElementNS( XmlSaveFormat.CURRENT_FORMAT, "vzome:vZome" );
         vZomeRoot .setAttribute( "xmlns:vzome", XmlSaveFormat.CURRENT_FORMAT );
         vZomeRoot .setAttribute( "field", field.getName() );
         Element result = mHistory .getDetailXml( doc );
         vZomeRoot .appendChild( result );
+        if ( includeSymmetriesAndTools )
+            this .serializeSymmetriesAndTools( vZomeRoot );
         return vZomeRoot;
     }
 
@@ -722,6 +721,34 @@ public class DocumentModel implements Snapshot .Recorder, Context
         props .setProperty( "edition", "vZome" );
         props .setProperty( "version", "5.0" );
         this .serialize( out, props );
+    }
+    
+    private void serializeSymmetriesAndTools( Element vZomeRoot )
+    {
+        Document doc = vZomeRoot .getOwnerDocument();
+        Element childElement = ((SymmetrySystem) this .editorModel .getSymmetrySystem()) .getXml( doc );
+        vZomeRoot .appendChild( childElement );
+
+        // We have to store all symmetries, not just the current one, due to sequences like this:
+        //   1. drag an icosahedral olive strut
+        //   2. switch to octahedral symmetry
+        //   3. do "build with this" on the olive strut
+        //   4. drag out a strut
+        //   5. switch back to icosahedral symmetry
+        // The end result is that the command in step 4 records the name of an automatic orbit.
+        // That automatic orbit must be captured in the file.
+        childElement = doc .createElement( "OtherSymmetries" );
+        for ( Iterator<OrbitSource> iterator = this .editorModel .getSymmetrySystems(); iterator.hasNext(); ) {
+            OrbitSource symmetry = iterator.next();
+            if ( symmetry == this .editorModel .getSymmetrySystem() )
+                continue; // already serialized above
+            Element symmElement = ((SymmetrySystem) symmetry) .getXml( doc );
+            childElement .appendChild( symmElement );
+        }
+        vZomeRoot .appendChild( childElement );
+
+        childElement = this .tools .getXml( doc );
+        vZomeRoot .appendChild( childElement );
     }
 
     public void serialize( OutputStream out, Properties editorProps ) throws Exception
@@ -742,7 +769,6 @@ public class DocumentModel implements Snapshot .Recorder, Context
         value = editorProps .getProperty( "buildNumber" );
         if ( value != null )
             vZomeRoot .setAttribute( "buildNumber", value );
-        vZomeRoot .setAttribute( "coreVersion", this .coreVersion );
         vZomeRoot .setAttribute( "field", field.getName() );
 
         Element childElement;
@@ -771,29 +797,7 @@ public class DocumentModel implements Snapshot .Recorder, Context
         childElement .appendChild( viewXml );
         vZomeRoot .appendChild( childElement );
 
-        childElement = ((SymmetrySystem) this .editorModel .getSymmetrySystem()) .getXml( doc );
-        vZomeRoot .appendChild( childElement );
-
-        // We have to store all symmetries, not just the current one, due to sequences like this:
-        //   1. drag an icosahedral olive strut
-        //   2. switch to octahedral symmetry
-        //   3. do "build with this" on the olive strut
-        //   4. drag out a strut
-        //   5. switch back to icosahedral symmetry
-        // The end result is that the command in step 4 records the name of an automatic orbit.
-        // That automatic orbit must be captured in the file.
-        childElement = doc .createElement( "OtherSymmetries" );
-        for ( Iterator<OrbitSource> iterator = this .editorModel .getSymmetrySystems(); iterator.hasNext(); ) {
-            OrbitSource symmetry = iterator.next();
-            if ( symmetry == this .editorModel .getSymmetrySystem() )
-                continue; // already serialized above
-            Element symmElement = ((SymmetrySystem) symmetry) .getXml( doc );
-            childElement .appendChild( symmElement );
-        }
-        vZomeRoot .appendChild( childElement );
-
-        childElement = this .tools .getXml( doc );
-        vZomeRoot .appendChild( childElement );
+        this .serializeSymmetriesAndTools( vZomeRoot );
 
         DomSerializer .serialize( doc, out );
     }
@@ -814,58 +818,6 @@ public class DocumentModel implements Snapshot .Recorder, Context
     {
         mHistory .undoToManifestation( man );
         this .editorModel .notifyListeners();
-    }
-
-    public Exporter3d getNaiveExporter( String format, Camera camera, Colors colors, Lights lights, RenderedModel currentSnapshot )
-    {
-        Exporter3d exporter = null;
-        switch ( format ) {
-
-        case "pov":
-            exporter = new POVRayExporter( camera, colors, lights, currentSnapshot );
-            break;
-
-        default:
-            break;
-        }
-
-        boolean inArticleMode = (renderedModel != currentSnapshot);
-        if ( exporter != null && exporter.needsManifestations() && inArticleMode ) {
-            throw new IllegalStateException("The " + format + " exporter can only operate on the current model, not article pages.");
-        }
-        return exporter;
-    }
-
-    /*
-     * These exporters fall in two categories: rendering and geometry.  The ones that support the currentSnapshot
-     * (the current article page, or the main model) can do rendering export, and can work with just a rendered
-     * model (a snapshot), which has lost its attached Manifestation objects.
-     * 
-     * The ones that require mRenderedModel need access to the RealizedModel objects hanging from it (the
-     * Manifestations).  These are the geometry exporters.  They can be aware of the structure of field elements,
-     * as well as the orbits and zones.
-     * 
-     * POV-Ray is a bit of a special case, but only because the .pov language supports coordinate values as expressions,
-     * and supports enough modeling that the different strut shapes can be defined, and so on.
-     * 
-     * The POV-Ray export reuses shapes, etc. just as vZome does, so really works just with the RenderedManifestations
-     * (except when the Manifestation is available for structured coordinate expressions).  Again, any rendering exporter
-     * could apply the same reuse tricks, working just with RenderedManifestations, so the current limitations to
-     * mRenderedModel for many of these is spurious.
-     *
-     * The base Exporter3d class now has a boolean needsManifestations() method which subclasses should override
-     * if they don't rely on Manifestations and therefore can operate on article pages.
-     */
-
-    // TODO move all the parameters inside this object!
-
-    public Exporter3d getStructuredExporter( String format, Camera camera, Colors colors, Lights lights )
-    {
-        if ( format.equals( "partgeom" ) )
-            // the rendered model must be set before export
-            return new PartGeometryExporter( camera, colors, lights, this .renderedModel, this .editorModel .getSelection() );
-        else
-            return this .app .getExporter( format );
     }
 
     public LessonModel getLesson()
@@ -891,6 +843,17 @@ public class DocumentModel implements Snapshot .Recorder, Context
     @Override
     public void actOnSnapshot( int id, SnapshotAction action )
     {
+        if (id >= snapshots.length) {
+            // This avoids an ArrayIndexOutOfBoundsException.
+            // Since 8 is the initial size of snapshots[], 
+            // this should only happen if we're using VSCode to debug a vZome file
+            // having more than 8 snapshots with lastStickyEdit = -1.
+            snapshots = Arrays.copyOf(snapshots, id + 1);
+            // Since the new array element is null, 
+            // I could just return early to avoid the overhead of actOnSnapshot()
+            // but it correctly handles null snapshots and this should only happen 
+            // when debugging, so I won't change the code path.
+        }
         RenderedModel snapshot = snapshots[ id ];
         action .actOnSnapshot( snapshot );
     }
@@ -917,27 +880,9 @@ public class DocumentModel implements Snapshot .Recorder, Context
         return (Segment) editorModel .getSelectedConstruction( Segment.class );
     }
 
-    public Segment getSymmetryAxis()
-    {
-        return editorModel .getSymmetrySegment();
-    }
-
     public ToolsModel getToolsModel()
     {
         return this .tools;
-    }
-
-    public OrbitSource getSymmetrySystem()
-    {
-        return this .editorModel .getSymmetrySystem();
-    }
-
-    public OrbitSource getSymmetrySystem( String name )
-    {
-        if ( name == null )
-            return this .getSymmetrySystem();
-        else
-            return this .symmetrySystems .get( name );
     }
 
     public void setSymmetrySystem( SymmetrySystem system )
@@ -965,24 +910,6 @@ public class DocumentModel implements Snapshot .Recorder, Context
         return this .editorModel;
     }
 
-    public Java2dSnapshot capture2d( RenderedModel model, int height, int width, Camera camera, Lights lights,
-            boolean drawLines, boolean doLighting ) throws Exception
-    {
-        Java2dExporter captureSnapshot = new Java2dExporter();
-        Java2dSnapshot snapshot = captureSnapshot .render2d( model, camera, lights, height, width, drawLines, doLighting );
-
-        return snapshot;
-    }
-
-    public void export2d( Java2dSnapshot snapshot, String format, File file, boolean doOutlines, boolean monochrome ) throws Exception
-    {
-        SnapshotExporter exporter = this .app .getSnapshotExporter( format );
-        // A try-with-resources block closes the resource even if an exception occurs
-        try ( Writer out = new FileWriter( file ) ) {
-            exporter .export( snapshot, out, doOutlines, monochrome );
-        }
-    }
-
     public Lights getSceneLighting()
     {
         return this.sceneLighting;
@@ -999,5 +926,10 @@ public class DocumentModel implements Snapshot .Recorder, Context
         } catch ( Exception e ) {
             throw new Command.Failure( UNKNOWN_COMMAND + " " + cmdName );
         }
+    }
+
+    public RenderedModel[] getSnapshots()
+    {
+        return snapshots;
     }
 }

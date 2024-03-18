@@ -110,7 +110,7 @@ public class Polyhedron implements Cloneable
 
     public void addVertex( AlgebraicVector location ) throws Error
     {
-    m_vertexList .add( location );
+        m_vertexList .add( location );
     }
 
     /**
@@ -431,7 +431,7 @@ public class Polyhedron implements Cloneable
         int index = 0;
         ArrayList<Integer> result = new ArrayList<>();
         for ( Face face : m_faces ) {
-            for ( Triangle triangle : face .getTriangles() ) {
+            for ( @SuppressWarnings("unused") Triangle triangle : face .getTriangles() ) {
                 // The old indices don't matter here, since we are creating a new tvertices list,
                 //   and normals to match.
                 result .add( index++ );
@@ -453,6 +453,22 @@ public class Polyhedron implements Cloneable
                     AlgebraicVector vertex = this .m_vertexList .get( index );
                     result .add( vertex .toRealVector() );
                 }
+            }
+        }
+        return result;
+    }
+
+    @JsonIgnore // don't want these showing up in JSON automatically; they are explicitly used for Unity only
+    public List<RealVector> getNormals()
+    {
+        ArrayList<RealVector> result = new ArrayList<>();
+        for ( Face face : m_faces ) {
+            RealVector normal = face .getNormal( this .m_vertexList ) .toRealVector();
+            for ( @SuppressWarnings("unused") Triangle triangle : face .getTriangles() ) {
+                // add a normal for each vertex of each triangle
+                result .add( normal );
+                result .add( normal );
+                result .add( normal );
             }
         }
         return result;

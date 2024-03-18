@@ -12,48 +12,36 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
-import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.algebra.PentagonField;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderedModel;
-import com.vzome.core.viewing.Camera;
-import com.vzome.core.viewing.Lights;
 
 /**
- * Renders out to POV-Ray using #declare statements to reuse geometry.
+ * This only exports shapes, no instances yet.
+ * 
  * @author vorth
  */
-public class STEPExporter extends Exporter3d{
-	
+public class STEPExporter extends GeometryExporter
+{	
 	private static final String PREAMBLE_FILE = "com/vzome/core/exporters/step/preamble.step";
     
     private static final String POSTLUDE = "ENDSEC;\nEND-ISO-10303-21;";
     
     private static final int START_INDEX = 300;
 
-    private static final PentagonField FIELD = new PentagonField();
-
-    private static final AlgebraicNumber MODEL_BALL_RADIUS = FIELD .createAlgebraicNumber( 1, 0, 1, 0 );
     /**
      * This scale factor is appropriate for making true-to-scale STEP renderings of strut models built
      *   in vZome with a model ball radius (blue) of one long blue strut.  In other terms, the edges of the
      *   ball model are short and medium blue struts.
      */
-    private static final double SCALE = 0.350d / MODEL_BALL_RADIUS .evaluate();
-
-    public STEPExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
-    {
-        super( scene, colors, lights, model );
-    }
+    private static final double SCALE = 0.350d;
     
     @Override
-    public void doExport( File directory, Writer writer, int height, int width ) throws Exception
+    public void doExport( File file, Writer writer, int height, int width ) throws Exception
     {
         int numShapes = 0;
+        File directory = file .getParentFile();
         HashMap<Polyhedron, String> shapes = new HashMap<>();
         for (RenderedManifestation rm : mModel) {
             Polyhedron shape = rm .getShape();

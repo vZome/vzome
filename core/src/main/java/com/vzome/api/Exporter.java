@@ -3,13 +3,14 @@ package com.vzome.api;
 
 import java.io.Writer;
 
-import com.vzome.core.exporters.Exporter3d;
+import com.vzome.core.exporters.DocumentExporter;
+import com.vzome.core.exporters.GeometryExporter;
 
 public class Exporter
 {
-    private Exporter3d delegate;
+    private GeometryExporter delegate;
     
-    Exporter( Exporter3d privateExp )
+    Exporter( GeometryExporter privateExp )
     {
         this .delegate = privateExp;
     }
@@ -21,7 +22,10 @@ public class Exporter
 
     public void doExport( Document model, Writer out, int height, int width ) throws Exception
     {
-        this .delegate .exportDocument( model .delegate, null, out, height, width );
+        if ( this .delegate instanceof DocumentExporter )
+            ((DocumentExporter) this .delegate) .exportDocument( model .delegate, null, out, height, width );
+        else
+            this .delegate .exportGeometry( model .delegate .getRenderedModel(), null, out, height, width );
     }
 
     public String getContentType()

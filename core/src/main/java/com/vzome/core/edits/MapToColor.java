@@ -53,7 +53,8 @@ public class MapToColor extends ChangeManifestations {
         }
         colorMapper.initialize( getRenderedSelection() );
         for( Manifestation man : getRenderedSelection() ) {
-            plan( new ColorMapManifestation( man, colorMapper.apply(man) ) );
+            Color newColor = colorMapper .apply( man );
+            plan( new ColorMapManifestation( man, newColor ) );
             unselect( man, true );
         }
         redo();

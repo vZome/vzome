@@ -148,6 +148,7 @@ public class AlgebraicMatrixTest {
         assertEquals("matrix rows", nCols, matrix[2].length);
         
         try {
+            @SuppressWarnings("unused")
             AlgebraicMatrix i = m.inverse(); // illegal attempt to invert a non-square matrix
             fail("can't invert a non-square matrix");
         } catch(IllegalArgumentException ex) {
@@ -155,6 +156,7 @@ public class AlgebraicMatrixTest {
         }
         
         try {
+            @SuppressWarnings("unused")
             AlgebraicNumber d = m.determinant(); // illegal attempt to calculate the determinant of a non-square matrix
             fail("can't calculate the determinant of a non-square matrix");
         } catch(IllegalArgumentException ex) {
@@ -162,6 +164,7 @@ public class AlgebraicMatrixTest {
         }
         
         try {
+            @SuppressWarnings("unused")
             AlgebraicNumber t = m.trace(); // illegal attempt to calculate the trace of a non-square matrix
             fail("can't calculate the trace of a non-square matrix");
         } catch(IllegalArgumentException ex) {

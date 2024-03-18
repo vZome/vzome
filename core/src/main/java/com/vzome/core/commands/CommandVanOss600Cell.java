@@ -53,7 +53,7 @@ public class CommandVanOss600Cell extends CommandImportVEFData
 
     private class VefToModel extends VefParser
     {
-        protected final Quaternion mQuaternion;
+//        protected final Quaternion mQuaternion;
         
         protected QuaternionProjection mProjection;
 
@@ -65,7 +65,7 @@ public class CommandVanOss600Cell extends CommandImportVEFData
         
         public VefToModel( Quaternion quaternion, ConstructionChanges effects )
         {
-            mQuaternion = null;
+//            mQuaternion = null;
             mEffects = effects;
         }
 
@@ -142,7 +142,6 @@ public class CommandVanOss600Cell extends CommandImportVEFData
         @Override
         protected void addEdge( int index, int v1, int v2 )
         {
-            if ( 2 == 1 ) return;
             Point p1 = mVertices[ v1 ], p2 = mVertices[ v2 ];
             if ( p1 == null || p2 == null ) {
                 System .out .println( "skipping " + v1 + " " + v2 );

@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.NumberFormat;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -24,28 +25,19 @@ import com.vzome.core.construction.Color;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
-import com.vzome.core.render.Colors;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.render.RenderedModel;
 import com.vzome.core.viewing.Camera;
-import com.vzome.core.viewing.Lights;
 
 /**
  * Renders out to POV-Ray using #declare statements to reuse geometry.
  * @author vorth
  */
-public class POVRayExporter extends Exporter3d
+public class POVRayExporter extends DocumentExporter
 {
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
 	
 	private static final String PREAMBLE_FILE = "com/vzome/core/exporters/povray/preamble.pov";
 
-	
-	public POVRayExporter( Camera scene, Colors colors, Lights lights, RenderedModel model )
-	{
-	    super( scene, colors, lights, model );
-	}
-    
     public void mapViewToWorld( Camera view, Vector3f vector )
     {
         Matrix4f viewTrans = new Matrix4f();
@@ -110,7 +102,7 @@ public class POVRayExporter extends Exporter3d
 
 		Vector3f dir = new Vector3f();
 		for ( int i = 0; i<3; i++ ) {
-			Color color = mLights .getDirectionalLight( i, dir );
+			Color color = mLights .getDirectionalLightColor( i );
 			mapViewToWorld( mScene, dir );
 			output .print( "light_source { -light_distance * " + printTuple3d( new Vector3f( dir ) ) );
 			output .print( " " );
@@ -131,19 +123,11 @@ public class POVRayExporter extends Exporter3d
         output .println( " }" );
         output .println();
 		
-		FORMAT .setMaximumFractionDigits( 3 );
+//		FORMAT .setMaximumFractionDigits( 3 );
 
 		StringBuffer instances = new StringBuffer();
 
         AlgebraicField field = mModel .getField();
-        for ( int o = 1; o <= field .getNumMultipliers(); o++ )
-        {
-            instances .append( "#declare " );
-            field .defineMultiplier( instances, o );
-            instances .append( ";\n" );
-        }
-        output .print( instances );
-        instances = new StringBuffer();
         
         Embedding embedding = mModel .getEmbedding();
         String embeddingTransform = " ";
@@ -166,17 +150,15 @@ public class POVRayExporter extends Exporter3d
             output .flush();
         }
         
-		int numShapes = 0, numTransforms = 0;
-		HashMap<Polyhedron, String> shapes = new HashMap<>();
+		int numTransforms = 0;
+		HashSet<String> shapes = new HashSet<>();
 		Map<AlgebraicMatrix, String> transforms = new HashMap<>();
 		Map<Color, String> colors = new HashMap<>();
         for (RenderedManifestation rm : mModel) {
-            Polyhedron shape = rm .getShape();
-            String shapeName = shapes .get( shape );
-            if ( shapeName == null ) {
-                shapeName = "shape" + numShapes++;
-                shapes .put( shape, shapeName );
-                exportShape( shapeName, shape );
+            String shapeName = "S" + rm .getShapeId() .toString() .replaceAll( "-", "" );
+            if ( ! shapes .contains( shapeName ) ) {
+                shapes .add( shapeName );
+                exportShape( shapeName, rm .getShape() );
             }
             AlgebraicMatrix transform = rm .getOrientation();
             String transformName = transforms .get( transform );
@@ -279,33 +261,28 @@ public class POVRayExporter extends Exporter3d
      */
 	protected void appendVector( AlgebraicVector loc, StringBuffer buf )
 	{
-        loc .getComponent( 0 ) .getNumberExpression( buf, AlgebraicField.EXPRESSION_FORMAT );
+	    RealVector vector = loc .toRealVector();
+        buf .append( FORMAT.format(vector.x) );
         buf .append( ", " );
-        loc .getComponent( 1 ) .getNumberExpression( buf, AlgebraicField.EXPRESSION_FORMAT );
+        buf .append( FORMAT.format(vector.y) );
         buf .append( ", " );
-        loc .getComponent( 2 ) .getNumberExpression( buf, AlgebraicField.EXPRESSION_FORMAT );
+        buf .append( FORMAT.format(vector.z) );
 	}
 
     private void exportShape( String shapeName, Polyhedron poly )
     {
         output .print( "#declare " + shapeName + " = " );
         List<AlgebraicVector> vertices = poly .getVertexList();
-        output .println( "union {" );
-        for (Polyhedron.Face face : poly .getFaceSet()) {
-            int arity = face .size();
-            int num = face .size() + 1;
-            output .print( "polygon {" );
-            output .print( num + ", " );
-            
-            for ( int j = 0; j <= arity; j++ ){
-                // POV-Ray requires that you explicitly repeat the first vertex to close the polygon
-                int m = j % arity;
-                int index = face .get( m );
+        output .println( "mesh {" );
+        poly .getTriangleFaces();
+        for (Polyhedron.Face.Triangle face : poly .getTriangleFaces()) {
+            output .print( "triangle {" );
+            for ( int index : face.vertices ) {
                 AlgebraicVector loc = vertices .get( index );
                 StringBuffer buf = new StringBuffer();
-                buf .append( "(<" );
+                buf .append( "<" );
                 appendVector( loc, buf );
-                buf .append( ">)" );
+                buf .append( ">" );
                 output .print( buf.toString() );
             }
             output .println( "}" );

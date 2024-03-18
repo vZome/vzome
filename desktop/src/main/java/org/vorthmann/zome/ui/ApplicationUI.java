@@ -2,7 +2,14 @@
 package org.vorthmann.zome.ui;
 
 import java.awt.Desktop;
-import java.awt.EventQueue;
+import java.awt.Desktop.Action;
+import java.awt.desktop.AboutEvent;
+import java.awt.desktop.AboutHandler;
+import java.awt.desktop.OpenFilesEvent;
+import java.awt.desktop.OpenFilesHandler;
+import java.awt.desktop.QuitEvent;
+import java.awt.desktop.QuitHandler;
+import java.awt.desktop.QuitResponse;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -21,6 +28,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.FileHandler;
@@ -30,14 +38,16 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import org.vorthmann.j3d.Platform;
-import org.vorthmann.ui.Controller;
 import org.vorthmann.ui.SplashScreen;
-import org.vorthmann.zome.app.impl.ApplicationController;
 
 import com.vzome.dap.DapAdapter;
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.awt.ApplicationController;
+import com.vzome.desktop.awt.GraphicsController;
 
 /**
  * Top-level UI class for vZome.
@@ -72,10 +82,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
 
     private final Collection<DocumentFrame> windowsToClose = new ArrayList<>();
 
-    // loggerClassName = "org.vorthmann.zome.ui.ApplicationUI"
-    // Initializing it this way just ensures that any copied code uses the correct class name for a static Logger in any class.
-    private static final String loggerClassName = new Throwable().getStackTrace()[0].getClassName();
-    private static final Logger logger = Logger .getLogger( loggerClassName );
+    private static final Logger LOGGER = Logger .getLogger( "org.vorthmann.zome.ui.ApplicationUI" );
 
     // static class initializer configures global logging before any instance of the class is created.
     static {
@@ -94,6 +101,9 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                 break;
             }
         }
+        
+        Properties buildProps = loadBuildProperties();
+        String version = buildProps.getProperty( "version" ) + "." + buildProps.getProperty( "buildNumber" );
 
         // If no FileHandler was pre-configured, then initialize our own default
         if (fh == null) {
@@ -112,7 +122,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                 // 
                 // SV: I've reversed the %u and %g, so that sorting by name puts related logs together, in order.  The Finder / Explorer already
                 //   knows how to sort by date, so we don't need to support that.
-                fh = new FileHandler("%h/" + Platform.logsPath() + "/vZome7.0_%u_%g.log", 500000, 10);
+                fh = new FileHandler("%h/" + Platform.logsPath() + "/vZome-" + version + "_%u_%g.log", 500000, 10);
             } catch (Exception e1) {
                 rootLogger.log(Level.WARNING, "unable to set up vZome file log handler", e1);
                 try {
@@ -149,9 +159,52 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
     {
         try {
             initialize( args );
+            
+            if ( ! Desktop .isDesktopSupported() )
+                return;
+
+            Desktop desktop = Desktop .getDesktop();
+            
+            if ( desktop .isSupported( Action.APP_OPEN_FILE ) )
+                desktop .setOpenFileHandler( new OpenFilesHandler()
+                {
+                    @Override
+                    public void openFiles( OpenFilesEvent ofe )
+                    {
+                        for (Iterator<?> iterator = ofe .getFiles() .iterator(); iterator.hasNext(); ) {
+                            File file = (File) iterator.next();
+                            theUI .openFile( file );
+                        }
+                    }
+                } );
+            
+            if ( desktop .isSupported( Action.APP_ABOUT ) )
+                desktop .setAboutHandler( new AboutHandler()
+                {
+                    @Override
+                    public void handleAbout( AboutEvent about )
+                    {
+                        theUI .about();
+                    }
+                } );
+                
+            if ( desktop .isSupported( Action.APP_QUIT_HANDLER ) )
+                desktop .setQuitHandler( new QuitHandler()
+                {
+                    @Override
+                    public void handleQuitRequestWith( QuitEvent qe, QuitResponse qr )
+                    {
+                        if ( theUI .quit() )
+                            qr .performQuit();
+                        else
+                            qr .cancelQuit();
+                            
+                    }
+                } );    
+
         } catch ( Throwable e ) {
             e .printStackTrace();
-            System.out.println( "problem in main(): " + e.getMessage() );
+			LOGGER.severe("problem in main(): " + e.getMessage());
         }
     }
 
@@ -170,10 +223,14 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
          */
 
         if( System.getProperty("os.name").toLowerCase().contains("windows")) {
-            if( "console".compareToIgnoreCase(System.getenv("SESSIONNAME")) != 0) {
-                logger.info("Java OpenGL (JOGL) is not supported by Windows Terminal Services.");
+            String sessionName = System.getenv("SESSIONNAME");
+            // Apparently, the sessionName environment variable can be null in some obscure situations.
+            // This can happen in the rare case when Explorer.exe has been killed and restarted manually.
+            // We will allow for that condition to avoid the NPE.
+            if( sessionName != null && "console".compareToIgnoreCase(sessionName) != 0) {
+                LOGGER.info("Java OpenGL (JOGL) is not supported by Windows Terminal Services.");
                 final String msg = "vZome cannot be run under Windows Terminal Services.";
-                logger.severe(msg);
+                LOGGER.severe(msg);
                 JOptionPane.showMessageDialog( null, msg, "vZome Fatal Error", JOptionPane.ERROR_MESSAGE );
                 System .exit( 0 );
             }
@@ -184,10 +241,10 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
          */
 
         SplashScreen splash = null;
-        String splashImage = "org/vorthmann/zome/ui/vZome-7-splash.png";
+        String splashImage = "org/vorthmann/zome/ui/vZome-splash.png";
         splash = new SplashScreen( splashImage );
         splash .splash();
-        logger .info( "splash screen displayed" );
+        LOGGER .info( "splash screen displayed" );
 
         theUI = new ApplicationUI();
 
@@ -203,7 +260,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
          */
 
         // NOW we're ready to spend the cost of further initialization, but on the event thread
-        EventQueue .invokeLater( new InitializationWorker( theUI, args, splash ) );
+        SwingUtilities .invokeLater( new InitializationWorker( theUI, args, splash ) );
 
         return theUI;
     }
@@ -224,16 +281,22 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
         @Override
         public void run()
         {
+            // This is executed on the EDT.  Should it be?
+
             Properties configuration = new Properties();
             Path fileArgument = null;
             for ( int i = 0; i < args.length; i++ ) {
                 if ( args[i] .startsWith( "-" ) ) {
                     String propName = args[i++] .substring( 1 );
-                    String propValue = args[i];
-                    configuration .setProperty( propName, propValue );
+                    if(i < args.length) {
+                        String propValue = args[i];
+                        configuration .setProperty( propName, propValue );
+                    } else {
+                        LOGGER.warning( "Invalid command line argument: " + args[i-1] );
+                    }
                 } else {
                     String arg = args[i];
-                    logger.info( "OS file argument: " + arg );
+                    LOGGER.info( "OS file argument: " + arg );
                     Path normalizedPath = null;
                     try {
                         // standard Java 7 idiom for dealing with file URIs, which is what
@@ -244,11 +307,11 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                         normalizedPath = Paths .get( arg );
                     } catch ( FileSystemNotFoundException e ) {
                         // Someone passed an HTTP URL, and Paths.get() can't handle it.
-                        logger.warning( "URL command-line arguments are not supported." );
+                        LOGGER.warning( "URL command-line arguments are not supported." );
                         continue; // leave fileArgument as null
                     }
                     fileArgument = normalizedPath .toAbsolutePath() .normalize();
-                    logger.info( "Normalized file argument: " + fileArgument );
+                    LOGGER.info( "Normalized file argument: " + fileArgument );
                 }
             }
 
@@ -264,7 +327,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                 } 
                 catch (Exception e) {
                     // live without it
-                    logger.severe( "The look&feel was not set successfully: " + className );
+                    LOGGER.severe( "The look&feel was not set successfully: " + className );
                 }
             }
 
@@ -281,13 +344,22 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                     if ( Controller.USER_ERROR_CODE.equals( errorCode ) ) {
                         errorCode = ( (Exception) arguments[0] ).getMessage();
                         // don't want a stack trace for a user error
-                        logger.log( Level.WARNING, errorCode );
+                        LOGGER.log( Level.WARNING, errorCode );
                     } else if ( Controller.UNKNOWN_ERROR_CODE.equals( errorCode ) ) {
-                        errorCode = ( (Exception) arguments[0] ).getMessage();
-                        logger.log( Level.WARNING, "internal error: " + errorCode, ( (Exception) arguments[0] ) );
+                    	Exception e  = (Exception) arguments[0];
+                    	e.printStackTrace();
+                        LOGGER.log( Level.WARNING, "internal error: " + e.getMessage(), e );
                         errorCode = "internal error has been logged";
                     } else {
-                        logger.log( Level.WARNING, "reporting error: " + errorCode, arguments );
+                        LOGGER.log( Level.WARNING, "reporting error: " + errorCode, arguments );
+                        if(arguments != null) {
+                            StringBuilder buf = new StringBuilder(errorCode);
+                            for(Object arg : arguments) {
+                                buf.append("\n")
+                                .append(arg.toString());
+                            }
+                            errorCode = buf.toString();
+                        }
                         // TODO use resources
                     }
                     // TODO use resources
@@ -317,8 +389,8 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                     Integer debugPort = Integer .parseInt( debugPortStr );
                     ui .debugger .startServer( debugPort, ui .mController );
                 } catch ( NumberFormatException e ) {
-                    if ( logger .isLoggable( Level .WARNING ) )
-                        logger .warning( "debug.adapter.port not an integer; debugger not listening" );
+                    if ( LOGGER .isLoggable( Level .WARNING ) )
+                        LOGGER .warning( "debug.adapter.port not an integer; debugger not listening" );
                 }
             }
         }
@@ -330,7 +402,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
         switch ( evt .getPropertyName() ) {
 
         case "newDocument":
-            Controller controller = (Controller) evt. getNewValue();
+            GraphicsController controller = (GraphicsController) evt. getNewValue();
             DocumentFrame window = new DocumentFrame( controller, this .mController .getJ3dFactory() );
             window .setVisible( true );
             window .setAppUI( new PropertyChangeListener() {
@@ -426,10 +498,18 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
         try {
             ClassLoader cl = ApplicationUI.class.getClassLoader();
             InputStream in = cl.getResourceAsStream( defaultRsrc );
-            if ( in != null ) 
-                defaults .load( in );
+			if (in != null) {
+				defaults.load(in);
+			} else {
+				// Gradle builds normally regenerate this file in desktop/build/buildPropsResource, 
+				// but it's not generated in Eclipse builds.
+				// Be sure to manually add build/buildPropsResource to both the core and desktop projects in Eclipse
+				// then run gradlew core:recordBuildProperties desktop:recordBuildProperties from the command line
+				// to generate them. Otherwise "about" version info and log file names will show up as "null".
+				LOGGER.warning("RESOURCE NOT FOUND. Ensure that the build path for the desktop project includes " + defaultRsrc);
+			}
         } catch ( IOException ioe ) {
-            logger.warning( "problem reading build properties: " + defaultRsrc );
+            LOGGER.warning( "problem reading build properties: " + defaultRsrc );
         }
         return defaults;
     }
@@ -476,14 +556,18 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
     private static Properties loggingProperties()
     {
         File f = new File(".", "logging.properties");
-        // Use same logic to locate the file as LogManager.getLogManager().readConfiguration() uses...
+        // Use same logic to locate the file as is used 
+        // by LogManager.getLogManager().readConfiguration() in Java8 and
+        // by LogManager.getLogManager().getConfigurationFileName() in Java17
         String fname = System.getProperty("java.util.logging.config.file");
         if (fname == null) {
             fname = System.getProperty("java.home");
             if (fname == null) {
                 throw new Error("Can't find java.home ??");
             }
-            f = new File(fname, "lib");
+            // Java8 used the "lib" folder here
+            // Java17 now uses the "conf" folder.
+            f = new File(fname, "conf");
             f = new File(f, "logging.properties");
         }
         try {
@@ -495,12 +579,14 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
         props.put("default.charset", java.nio.charset.Charset.defaultCharset().name());
         props.put("logging.properties.filename", fname);        
         props.put("logging.properties.file.exists", Boolean.toString(f.exists()));        
+//        System.out.println("logging.properties.filename = " + fname
+//        		+ (f.exists() ? " exists." : " does not exist."));
         return props;
     }
 
     private static void logJVMArgs() {
         Level level = Level.CONFIG;
-        if(logger.isLoggable(level)) {
+        if(LOGGER.isLoggable(level)) {
             Properties props = new Properties();
             RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
             List<String> arguments = runtimeMxBean.getInputArguments();
@@ -512,13 +598,13 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
             }
             StringBuilder sb = new StringBuilder("JVM args:");
             appendPropertiesList(sb, props);
-            logger.log(level, sb.toString());
+            LOGGER.log(level, sb.toString());
         }
     }
 
     private static void logExtendedCharacters() {
         Level level = Level.FINE;
-        if(logger.isLoggable(level)) {
+        if(LOGGER.isLoggable(level)) {
             Properties props = new Properties();
             props.put("phi",   "\u03C6");
             props.put("rho",   "\u03C1");
@@ -527,7 +613,7 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
             props.put("xi",    "\u03BE");
             StringBuilder sb = new StringBuilder("Extended characters:");
             appendPropertiesList(sb, props);
-            logger.log(level, sb.toString());
+            LOGGER.log(level, sb.toString());
         }
     }
 
@@ -618,7 +704,9 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
 
                 + "Committers:\n\n" 
                 + "Scott Vorthmann\n" 
-                + "David Hall\n" + "\n"
+                + "David Hall\n"
+                + "Lucas Garron\n"
+                + "\n"
 
                 + "Contributors:\n\n"
                 + "Paul Hildebrandt\n"
@@ -626,15 +714,16 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                 + "Brian Hall\n"
                 + "George Hart\n"
                 + "Edmund Harriss\n"
+                + "Aaron Siegel\n"
+                + "John and Jane Kostick\n"
+                + "Jacob Rus\n"
+                + "Nan Ma\n"
+                + "Walt Venable\n"
+                + "Will Ackel\n"
                 + "Corrado Falcolini\n"
                 + "Ezra Bradford\n"
                 + "Sam Vandervelde\n"
-                + "Jacob Rus\n"
-                + "Nan Ma\n"
                 + "Dan Duddy\n"
-                + "Walt Venable\n"
-                + "Will Ackel\n"
-                + "John and Jane Kostick\n"
                 + "Samuel Verbiese\n"
                 + "Tom Darrow\n"
                 + "Henri Picciotto\n"

@@ -29,6 +29,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
+@SuppressWarnings("serial")
 public class ReorderableJList<E> extends JList<E> implements DragSourceListener,
         DropTargetListener, DragGestureListener
 {

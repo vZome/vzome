@@ -1,0 +1,2 @@
+cd vzome.com/quarantine/
+mput vZome-*.zip	

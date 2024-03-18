@@ -4,6 +4,8 @@ package org.vorthmann.ui;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.vzome.desktop.api.Controller;
+
 
 public class LoggingErrorChannel implements Controller .ErrorChannel
 {
@@ -25,8 +27,9 @@ public class LoggingErrorChannel implements Controller .ErrorChannel
         }
         else if ( Controller.UNKNOWN_ERROR_CODE .equals( errorCode ) )
         {
-            errorCode = ((Throwable) arguments[0]) .getMessage();
-            logger .log( Level.WARNING, "internal error: " + errorCode, ((Throwable) arguments[0]) );
+        	Throwable e  = (Throwable) arguments[0];
+        	e.printStackTrace();
+            logger.log( Level.WARNING, "internal error: " + e.getMessage(), e );
         }
         else
         {

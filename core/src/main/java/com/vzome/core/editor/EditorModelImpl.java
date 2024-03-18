@@ -15,7 +15,6 @@ import com.vzome.core.editor.api.ImplicitSymmetryParameters;
 import com.vzome.core.editor.api.LegacyEditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.Selection;
-import com.vzome.core.editor.api.SymmetryAware;
 import com.vzome.core.editor.api.UndoableEdit;
 import com.vzome.core.math.symmetry.Symmetries4D;
 import com.vzome.core.model.Connector;
@@ -24,7 +23,7 @@ import com.vzome.core.model.RealizedModel;
 import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.model.Strut;
 
-public class EditorModelImpl implements LegacyEditorModel, SymmetryAware
+public class EditorModelImpl implements LegacyEditorModel
 {
     public EditorModelImpl( RealizedModelImpl realized, Point originPoint, Symmetries4D kind, OrbitSource symmetrySystem, Map<String, OrbitSource> symmetrySystems )
     {
@@ -174,16 +173,16 @@ public class EditorModelImpl implements LegacyEditorModel, SymmetryAware
         return null;
     }
 
-    private final Set<Manifestation> failedConstructions = new HashSet<>();
+    private final Set<String> failedConstructions = new HashSet<>();
 
     public void addFailedConstruction( Construction cons )
     {
-        failedConstructions .add( mRealized .manifest( cons ) );
+        failedConstructions .add( cons .toString() );
     }
 
     public boolean hasFailedConstruction( Construction cons )
     {
-        return failedConstructions .contains( mRealized .manifest( cons ) );
+        return failedConstructions .contains( cons .toString() );
     }
 
     public Selection getSelection()
@@ -208,7 +207,10 @@ public class EditorModelImpl implements LegacyEditorModel, SymmetryAware
 
     public OrbitSource getSymmetrySystem( String name )
     {
-        return this .symmetrySystems .get( name );
+        if ( name == null )
+            return this .getSymmetrySystem();
+        else
+            return this .symmetrySystems .get( name );
     }
     
     public Iterator<OrbitSource> getSymmetrySystems()

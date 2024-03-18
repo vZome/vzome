@@ -19,16 +19,15 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.vorthmann.ui.Controller;
-
-import com.vzome.desktop.controller.CameraController;
-import com.vzome.desktop.controller.RenderingViewer;
+import com.vzome.desktop.awt.GraphicsController;
+import com.vzome.desktop.awt.RenderingViewer;
 
 /**
  * Description here.
  * 
  * @author Scott Vorthmann 2003
  */
+@SuppressWarnings("serial")
 public class CameraControlPanel extends JPanel {
 
     protected JSlider zslider;
@@ -64,7 +63,7 @@ public class CameraControlPanel extends JPanel {
 //    }
     
     
-    public CameraControlPanel( RenderingViewer viewer, final Controller controller )
+    public CameraControlPanel( RenderingViewer viewer, final GraphicsController controller )
 	{
         this .setBorder( BorderFactory .createTitledBorder( "viewing" ) );
         int nearTicks = magToTicks( MAX_MAG );
@@ -103,7 +102,7 @@ public class CameraControlPanel extends JPanel {
 
         trackpad = new JPanel( new BorderLayout() );
         Component trackballCanvas = viewer .getCanvas();
-        ((CameraController) controller) .attachViewer( viewer, trackballCanvas );
+        controller .attachViewer( viewer, trackballCanvas );
 
         trackpad .add( trackballCanvas, BorderLayout.CENTER );
         trackpad .setAlignmentX( JLabel .CENTER_ALIGNMENT );

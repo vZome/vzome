@@ -7,47 +7,19 @@ import java.util.List;
 import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
-import com.vzome.core.editor.AbstractToolFactory;
 import com.vzome.core.editor.Duplicator;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.editor.api.ChangeManifestations;
-import com.vzome.core.editor.api.Selection;
 import com.vzome.core.model.Manifestation;
 
 public class BookmarkTool extends Tool
 {    
-    private static final String ID = "bookmark";
-    private static final String LABEL = "Create a selection bookmark";
-    private static final String TOOLTIP = "<p>" +
+    public static final String ID = "bookmark";
+    static final String LABEL = "Create a selection bookmark";
+    static final String TOOLTIP = "<p>" +
             "A selection bookmark lets you re-create<br>any selection at a later time." +
             "</p>";
-
-    public static class Factory extends AbstractToolFactory
-    {
-        public Factory( ToolsModel tools )
-        {
-            super( tools, null, ID, LABEL, TOOLTIP );
-        }
-
-        @Override
-        protected boolean countsAreValid( int total, int balls, int struts, int panels )
-        {
-            return ( total > 0 );
-        }
-
-        @Override
-        public Tool createToolInternal( String id )
-        {
-            return new BookmarkTool( id, this .getToolsModel() );
-        }
-
-        @Override
-        protected boolean bindParameters( Selection selection )
-        {
-            return true;
-        }
-    }
 
     private final List<Construction> bookmarkedConstructions = new ArrayList<>();
 

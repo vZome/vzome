@@ -1,0 +1,138 @@
+
+
+.safe-grid-item {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.centered-scroller {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: auto;
+}
+
+.scroller-content {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+}
+
+#below-appbar {
+  display: grid;
+  grid-template-rows: 2fr 3fr;
+}
+
+#stellation {
+  position: relative;
+}
+
+#stellation-label {
+  user-select: none;
+  margin: auto;
+  position: absolute;
+  top: 1rem;
+  left: 1.5rem;
+  z-index: 50;
+}
+
+#alternatives {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+}
+
+#text-and-selectors {
+  display: grid;
+  grid-template-rows: min-content 1fr;
+  padding-inline: 1rem;
+  padding-bottom: 1rem;
+}
+
+#coxeter-table {
+  border-block-start: 1px solid gray;
+}
+
+#selectors {
+  height: 100%;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.selector {
+  border: 2px solid darkgrey;
+  border-radius: 5px;
+}
+
+#full-text {
+  display: none;
+}
+#minimal-text {
+  display: block;
+  margin: auto;
+  line-height: 0.5;
+}
+
+td {
+  user-select: none;
+}
+
+/* Customize kobalte.css */
+
+.tabs {
+  height: 100%;
+  position: relative;
+}
+
+.tabs__content {
+  height: 100%;
+  position: relative;
+}
+
+thead th:nth-child(1)   /* number column */
+{
+  text-align: center;
+  width: 4ch;
+}
+
+
+@media ( min-aspect-ratio: 1/1 ) {
+  
+  #root {
+    height: 100%;
+  }
+
+  #below-appbar {
+    grid-template-rows: 1fr;
+    grid-template-columns: 2fr 3fr;
+  }
+
+  #stellation {
+    grid-row-start: 1;
+    grid-column-start: 2;
+  }
+  
+  #alternatives {
+    grid-row-start: 1;
+    grid-column-start: 1;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  #text-and-selectors {
+    border-right: 2px solid darkgrey;
+  }
+}
+
+@media ( min-width: 900px ) {
+
+  #minimal-text {
+    display: none;
+  }
+  #full-text {
+    display: block;
+    margin: auto;
+  }
+  
+}

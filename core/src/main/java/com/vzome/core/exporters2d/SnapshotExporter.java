@@ -7,13 +7,13 @@ import java.awt.Color;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
+
+import com.vzome.xml.ResourceLoader;
 
 
 /**
@@ -65,19 +65,11 @@ public abstract class SnapshotExporter {
 	
 	public void includeFile( String rsrcName )
 	{
-		InputStream input = getClass() .getClassLoader()
-									.getResourceAsStream( rsrcName );
-		byte[] buf = new byte[1024];
-		int num;
-		try {
-			while ( ( num = input .read( buf, 0, 1024 )) > 0 )
-					output .write( new String( buf, 0, num ) );
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+        String boilerplate = ResourceLoader .loadStringResource( rsrcName );
+        output .write( boilerplate );
 	}
 	
-	public void export( Java2dSnapshot snapshot, Writer writer, boolean doOutlines, boolean monochrome )
+	public void export( Java2dSnapshot snapshot, Writer writer, boolean doOutlines, boolean monochrome, boolean showBackground )
 	{
         XY_FORMAT .setGroupingUsed( false );
         XY_FORMAT .setMaximumFractionDigits( 2 );
@@ -96,7 +88,7 @@ public abstract class SnapshotExporter {
 		outputPrologue( snapshot .getRect(), strokeWidth );
 		
 		Color bgColor = snapshot .getBackgroundColor();
-		if ( bgColor != null )
+		if ( bgColor != null && showBackground )
 			outputBackground( bgColor );
 		
         if ( ! lines .isEmpty() )

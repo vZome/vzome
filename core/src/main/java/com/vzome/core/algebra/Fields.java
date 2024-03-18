@@ -3,25 +3,22 @@ package com.vzome.core.algebra;
 
 import java.util.Arrays;
 
-public class Fields {
-    public interface BigRationalElement<R, T> extends RationalElement<R, T> {
-        boolean isBig();
-
-        boolean notBig();
-    }
-
-    public interface RationalElement<R, T> extends Element<T> {
+public class Fields
+{
+    public interface RationalElement<R, T> extends Element<T>
+    {
         R getNumerator();
 
         R getDenominator();
 
         T dividedBy(T that);
-
-        double evaluate();
     }
 
-    public interface Element<T> {
+    public interface Element<T>
+    {
         T times(T that);
+        
+        T timesInt( int that );
 
         T plus(T that);
 
@@ -34,6 +31,10 @@ public class Fields {
         boolean isZero();
 
         boolean isOne();
+
+        double evaluate();
+        
+        String getMathML();
     }
 
     public static final int rows(Object[][] matrix) {

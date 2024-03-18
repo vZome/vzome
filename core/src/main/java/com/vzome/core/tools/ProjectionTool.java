@@ -8,56 +8,33 @@ import com.vzome.core.construction.Line;
 import com.vzome.core.construction.LineExtensionOfSegment;
 import com.vzome.core.construction.Plane;
 import com.vzome.core.construction.PlaneExtensionOfPolygon;
+import com.vzome.core.construction.PlaneFromPointAndNormal;
 import com.vzome.core.construction.PlaneProjection;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.Segment;
 import com.vzome.core.construction.Transformation;
-import com.vzome.core.editor.AbstractToolFactory;
-import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
-import com.vzome.core.editor.api.Selection;
+import com.vzome.core.model.Connector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 
 public class ProjectionTool extends TransformationTool
 {
-	private static final String ID = "projection";
-	private static final String LABEL = "Create a plane projection tool";
-	private static final String TOOLTIP = "<p>" +
-	    		"Created tools project selected objects to a 2D plane.  To create a<br>" +
-	    		"tool, define the projection plane by selecting a single plane.<br>"
-	    		+ "Optionally, select a strut to define a line of projection;<br>"
-	    		+ "the default line is orthogonal to the projection plane.<br>" +
-			"</p>";
+	static final String ID = "projection";
+	static final String LABEL = "Create a plane projection tool";
+	static final String TOOLTIP = "<p>" +
+	    		"Created tools project selected objects to a 2D plane.<br>"
+                + "<br>"
+                + "To create a tool, define the projection plane<br>" 
+                + " by selecting either a single panel<br>"
+                + " or strut that is normal to the projection plane<br>"
+                + " and a ball on the plane.<br>"
+	    		+ "When the projection plane is defined by selecting a panel,<br>"
+                +"  an optional strut may be selected to define the line of projection.<br>"
+                + "The default line of projection is orthogonal to the projection plane.<br>"
+                + "</p>";
 	
-	public static class Factory extends AbstractToolFactory
-	{
-		public Factory( ToolsModel tools )
-		{
-			super( tools, null, ID, LABEL, TOOLTIP );
-		}
-
-		@Override
-		protected boolean countsAreValid( int total, int balls, int struts, int panels )
-		{
-			return ( total == 2 && panels == 1 && struts == 1 )
-				|| ( total == 1 && panels == 1 );
-		}
-
-		@Override
-		public Tool createToolInternal( String id )
-		{
-			return new ProjectionTool( id, getToolsModel() );
-		}
-
-		@Override
-		protected boolean bindParameters( Selection selection )
-		{
-			return true;
-		}
-	}
-
 	public ProjectionTool( String id, ToolsModel tools )
     {
         super( id, tools );
@@ -69,40 +46,44 @@ public class ProjectionTool extends TransformationTool
     {
         Plane plane = null;
         Line line = null;
+        AlgebraicVector point = null;
         for (Manifestation man : mSelection) {
-            unselect( man );
-            if ( man instanceof Panel )
-            {
-                if ( plane == null )
-                {
-                    Panel panel = (Panel) man; 
-                    Polygon polygon = (Polygon) panel .toConstruction();
-                    plane = new PlaneExtensionOfPolygon( polygon ) ;
-                    continue;
-                }
-                else
-                {
-                    throw new Command.Failure( "Projection tool requires a single selected panel" );
+            unselect(man);
+            if (man instanceof Panel) {
+                if (plane == null) {
+                    Panel panel = (Panel) man;
+                    Polygon polygon = (Polygon) panel.toConstruction();
+                    plane = new PlaneExtensionOfPolygon(polygon);
+                } else {
+                    throw new Command.Failure("Projection tool allows only a single selected panel");
                 }
             }
-            if ( man instanceof Strut )
-            {
-                if ( line == null )
-                {
+            if (man instanceof Strut) {
+                if (line == null) {
                     Strut strut = (Strut) man;
-                    Segment segment = (Segment) strut .toConstruction();
-                    line = new LineExtensionOfSegment( segment ) ;
-                    continue;
+                    Segment segment = (Segment) strut.toConstruction();
+                    line = new LineExtensionOfSegment(segment);
+                } else {
+                    throw new Command.Failure("Projection tool allows only a single selected strut");
                 }
-                else
-                {
-                    throw new Command.Failure( "Projection tool allows only a single selected strut" );
+            }
+            if (man instanceof Connector) {
+                if (point == null) {
+                    point = man.getLocation();
+                    continue;
+                } else {
+                    throw new Command.Failure("Projection tool allows only a single selected ball");
                 }
             }
         }
 
-        if ( plane == null )
-            throw new Command.Failure( "Projection tool requires a selected panel" );
+        if (point != null && line != null) {
+            plane = new PlaneFromPointAndNormal(point, line.getDirection());
+        }
+
+        if (plane == null) {
+            throw new Command.Failure("Projection tool requires a selected panel or else a selected ball and strut.");
+        }
 
         this .transforms = new Transformation[ 1 ];
         transforms[ 0 ] = new PlaneProjection( plane, line );

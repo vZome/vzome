@@ -3,12 +3,13 @@ package org.vorthmann.zome.app.impl;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.vorthmann.ui.Controller;
 
 import com.vzome.controller.ControllerTesting;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.PentagonField;
+import com.vzome.desktop.api.Controller;
+import com.vzome.desktop.controller.LengthController;
 
 public class LengthControllerTest
 {    

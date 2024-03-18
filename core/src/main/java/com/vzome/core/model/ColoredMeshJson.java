@@ -28,6 +28,7 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
 import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.SegmentJoiningPoints;
+import com.vzome.core.editor.api.Manifestations;
 import com.vzome.core.math.Projection;
 
 public class ColoredMeshJson
@@ -38,31 +39,7 @@ public class ColoredMeshJson
         ArrayList<JsonNode> balls = new ArrayList<>();
         ArrayList<JsonNode> struts = new ArrayList<>();
         ArrayList<JsonNode> panels = new ArrayList<>();
-        AlgebraicVector lastBall = null;
-        AlgebraicVector lastVertex = null;
-
-        // phase one: find and index all vertices
-        for ( Manifestation man : model ) {
-            if ( man instanceof Connector )
-            {
-                lastBall = man .getLocation();
-                vertices .add( lastBall );
-            }
-            else if ( man instanceof Strut )
-            {
-                lastVertex = man .getLocation();
-                vertices .add( lastVertex );
-                vertices .add( ((Strut) man) .getEnd() );
-            }
-            else if ( man instanceof Panel )
-            {
-                for ( AlgebraicVector vertex : (Panel) man ) {
-                    lastVertex = vertex;
-                    vertices .add( vertex );
-                }
-            }
-        }
-        final AlgebraicVector origin = ( lastBall != null )? lastBall : lastVertex;
+        final AlgebraicVector origin = Manifestations.sortVertices( model, vertices );
 
         // Up to this point, the vertices TreeSet has collected and sorted every unique vertex of every manifestation.
         // From now on we'll need their index, so we copy them into an ArrayList, preserving their sorted order.
@@ -136,7 +113,9 @@ public class ColoredMeshJson
         
         String fieldName = ( node .has( "field") )? node .get( "field" ) .asText() : "golden";
         AlgebraicField field = registry .getField( fieldName );
-        // TODO: fail if field is null
+        if ( field == null ) {
+            throw new IOException( "This document cannot import mesh data from field \"" + fieldName + "\"" );
+        }
         
         if ( ! node .has( "vertices" ) ) {
             throw new IOException( "There is no 'vertices' list in the JSON" );
@@ -155,7 +134,7 @@ public class ColoredMeshJson
                 for ( JsonNode numberNode : vectorNode ) {
                     nums[ i++ ] = mapper .treeToValue( numberNode, new int[]{}.getClass() ); // JSweet compiler confused by int[].class
                 }
-                AlgebraicVector vertex = field .createIntegerVectorFromTDs( nums );
+                AlgebraicVector vertex = field .createVectorFromTDs( nums );
                 if ( vertex .dimension() > 3 )
                     vertex = projection .projectImage( vertex, false );
                 if ( offset != null )

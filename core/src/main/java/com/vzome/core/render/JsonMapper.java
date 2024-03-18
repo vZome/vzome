@@ -43,16 +43,18 @@ public class JsonMapper
 
     private final Set<String> shapeIds = new HashSet<>();
     private Map<AlgebraicMatrix,ObjectNode> rotations = new HashMap<>();
+    private final boolean forUnity;
     
     public JsonMapper()
     {
-        this( RealTrianglesView.class );
+        this( RealTrianglesView.class, false );
     }
     
-    public JsonMapper( Class<?> view )
+    public JsonMapper( Class<?> view, boolean forUnity )
     {
         this .objectMapper = new ObjectMapper();
         this .objectWriter = objectMapper .writerWithView( view );
+        this .forUnity = forUnity;
     }
     
     public ObjectMapper getObjectMapper()
@@ -66,32 +68,39 @@ public class JsonMapper
         if ( ! this .shapeIds .contains( shapeId ) )
         {
             this .shapeIds .add( shapeId );
-            ObjectNode node = this .objectMapper .createObjectNode();
-            node .put( "id", shape .getGuid() .toString() );
+            if ( this .forUnity ) {
+                // This is to support use in Unity, via com.vzome.unity.Renderer
+                ObjectNode node = (ObjectNode) this .asTreeWithView( shape );
+                node .remove( "vertices" );
+                node .set( "normals", this .objectMapper .valueToTree( shape .getNormals() ) );
+                return node;                
+            } else {
+                ObjectNode node = this .objectMapper .createObjectNode();
+                node .put( "id", shape .getGuid() .toString() );
 
-            ArrayNode arrayNode = this .objectMapper .createArrayNode();
-            for ( AlgebraicVector vector : shape .getVertexList() ) {
-                arrayNode .add( this .getVectorNode( vector .toRealVector() ) );
-            }
-            node .set( "vertices", arrayNode );
+                ArrayNode arrayNode = this .objectMapper .createArrayNode();
+                for ( AlgebraicVector vector : shape .getVertexList() ) {
+                    arrayNode .add( this .getVectorNode( vector .toRealVector() ) );
+                }
+                node .set( "vertices", arrayNode );
 
-            arrayNode = this .objectMapper .createArrayNode();
-            for ( Polyhedron.Face.Triangle triangle : shape .getTriangleFaces() ) {
-                ObjectNode tNode = this .objectMapper .createObjectNode();
-                tNode .set( "vertices", this .objectMapper .valueToTree( triangle .vertices ) );
-                // Sending normals bloats the JSON to the point where it is untenable for CheerpJ cjStringJavaToJs
-                // tNode .set( "normal", this .getVectorNode( triangle .normal ) );
-                arrayNode .add( tNode );
+                arrayNode = this .objectMapper .createArrayNode();
+                for ( Polyhedron.Face.Triangle triangle : shape .getTriangleFaces() ) {
+                    ObjectNode tNode = this .objectMapper .createObjectNode();
+                    tNode .set( "vertices", this .objectMapper .valueToTree( triangle .vertices ) );
+                    // Sending normals bloats the JSON to the point where it is untenable for CheerpJ cjStringJavaToJs
+                    // tNode .set( "normal", this .getVectorNode( triangle .normal ) );
+                    arrayNode .add( tNode );
+                }
+                node .set( "faces", arrayNode );
+                return node;                
             }
-            node .set( "faces", arrayNode );
-            
-            return node;
         }
         else
             return null; // a known shape, returned earlier
     }
     
-    public ObjectNode getObjectNode( RenderedManifestation rm )
+    public ObjectNode getObjectNode( RenderedManifestation rm, boolean sharedOrientations )
     {
         try {
             Manifestation man = rm .getManifestation();
@@ -106,9 +115,21 @@ public class JsonMapper
                 node .put( "color", rm .getColor() .toWebString() );
 
                 node .set( "position", this .getLocation( rm ) );
+                
+                String label = rm .getLabel();
+                if ( label != null )
+                    node .put( "label", label );
+                
+                float glow = rm .getGlow();
+                if ( glow != 0f )
+                    node .put( "glow", glow );
 
-                ObjectNode quaternion = getQuaternionNode( rm .getOrientation() );
-                node .set( "rotation", quaternion );
+                if ( sharedOrientations )
+                    node .put( "orientation", rm .getStrutZone() );
+                else {
+                    ObjectNode quaternion = getQuaternionNode( rm .getOrientation() );
+                    node .set( "rotation", quaternion );
+                }
 
                 return node;
             }
@@ -116,6 +137,10 @@ public class JsonMapper
             {
                 ObjectNode node = this .objectMapper .createObjectNode();
                 node .put( "shape", shapeId );
+                
+                String label = rm .getLabel();
+                if ( label != null )
+                    node .put( "label", label );
 
                 Color color = rm .getColor();
                 if ( color == null )
@@ -123,6 +148,10 @@ public class JsonMapper
                 node .put( "color", color .toWebString() );
 
                 node .set( "position", this .getLocation( rm ) );
+                
+                float glow = rm .getGlow();
+                if ( glow != 0f )
+                    node .put( "glow", glow );
 
                 return node;
             }
@@ -130,6 +159,10 @@ public class JsonMapper
             {
                 ObjectNode node = this .objectMapper .createObjectNode();
                 node .put( "shape", shapeId );
+                
+                String label = rm .getLabel();
+                if ( label != null )
+                    node .put( "label", label );
 
                 Color color = rm .getColor();
                 if ( color == null )
@@ -137,11 +170,44 @@ public class JsonMapper
                 node .put( "color", color .toWebString() );
 
                 node .set( "position", this .getLocation( rm ) );
+                
+                float glow = rm .getGlow();
+                if ( glow != 0f )
+                    node .put( "glow", glow );
 
                 return node;
             }
             else
-                return null;
+            {
+                ObjectNode node = this .objectMapper .createObjectNode();
+                node .put( "shape", shapeId );
+                
+                String label = rm .getLabel();
+                if ( label != null )
+                    node .put( "label", label );
+
+                Color color = rm .getColor();
+                if ( color == null )
+                    color = Color.WHITE;
+                node .put( "color", color .toWebString() );
+
+                node .set( "position", this .getLocation( rm ) );
+                
+                float glow = rm .getGlow();
+                if ( glow != 0f )
+                    node .put( "glow", glow );
+
+                if ( sharedOrientations ) {
+                    int orientation = rm .getStrutZone();
+                    node .put( "orientation", (orientation<0)? 0 : orientation );
+                }
+                else {
+                    ObjectNode quaternion = getQuaternionNode( rm .getOrientation() );
+                    node .set( "rotation", quaternion );
+                }
+
+                return node;
+            }
         } catch (RuntimeException e) {
             System.err.println( e .getMessage() );
             e .printStackTrace();
@@ -160,12 +226,16 @@ public class JsonMapper
     
     private ObjectNode getLocation( RenderedManifestation rm )
     {
-        return getVectorNode( rm .getLocation() );
+        AlgebraicVector location = rm .getLocationAV();
+        if ( location == null )
+            location = rm .getShape() .getField() .origin( 3 );
+        return getVectorNode( location .toRealVector() ); // DON'T embed!
     }
 
     @Deprecated
     /**
-     * This doesn't work with CheerpJ for some reason.
+     * This doesn't work with CheerpJ (a Javascript-implemented JRE) for some reason.
+     * Still, we don't really care about Cheerpj any more!
      * @param object
      * @return
      */
@@ -178,6 +248,22 @@ public class JsonMapper
             e .printStackTrace();
             return objectMapper .createObjectNode();
         }
+    }
+
+    public ArrayNode getMatrix( AlgebraicMatrix orientation )
+    {
+        ArrayNode arrayNode = this .objectMapper .createArrayNode();
+        for ( int i = 0; i < 3; i++) {
+            for ( int j = 0; j < 3; j++) {
+                arrayNode .add( (float) orientation .getElement( i, j ) .evaluate() );
+            }
+            arrayNode .add( 0f );
+        }
+        arrayNode .add( 0f );
+        arrayNode .add( 0f );
+        arrayNode .add( 0f );
+        arrayNode .add( 1f );
+        return arrayNode;
     }
 
     public ObjectNode getQuaternionNode( AlgebraicMatrix orientation )

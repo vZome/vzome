@@ -24,6 +24,16 @@ public abstract class Segment extends Construction
     {
         super( field );
     }
+    
+    public String getSignature()
+    {
+    	String start = this .mStart .projectTo3d( true ) .toString();
+    	String end = this .getEnd() .projectTo3d( true ) .toString();
+    	if ( start .compareTo( end ) <= 0 )
+    		return start + "," + end;
+    	else
+    		return end + "," + start;
+    }
 
     @Override
     public boolean is3d()

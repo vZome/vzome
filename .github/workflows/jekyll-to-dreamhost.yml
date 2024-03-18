@@ -1,0 +1,21 @@
+
+name: Build Jekyll site
+
+on:
+  workflow_dispatch:
+
+jobs:
+  jekyll-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: helaili/jekyll-action@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          build_only: true
+          jekyll_src: 'docs'
+      - name: Archive the site
+        uses: actions/upload-artifact@v3
+        with:
+          name: site-build
+          path: build

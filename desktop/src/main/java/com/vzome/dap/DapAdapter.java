@@ -5,16 +5,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import javax.swing.SwingUtilities;
 
 import org.eclipse.lsp4j.debug.Breakpoint;
 import org.eclipse.lsp4j.debug.Capabilities;
@@ -42,7 +44,8 @@ import org.eclipse.lsp4j.debug.launch.DSPLauncher;
 import org.eclipse.lsp4j.debug.services.IDebugProtocolClient;
 import org.eclipse.lsp4j.debug.services.IDebugProtocolServer;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
-import org.vorthmann.ui.Controller;
+
+import com.vzome.desktop.api.Controller;
 
 public class DapAdapter implements IDebugProtocolServer
 {
@@ -88,7 +91,8 @@ public class DapAdapter implements IDebugProtocolServer
                             
                             client = launcher .getRemoteProxy();
 
-                            Future<Void> listening = launcher .startListening();
+                            //Future<Void> listening = 
+                            launcher .startListening();
                         } catch (EOFException ex) {
                             showMsg("\nServer connection closed");
                             try {
@@ -112,19 +116,22 @@ public class DapAdapter implements IDebugProtocolServer
         System.out.println( msg );
     }
 
-    private void logArgs(String method, Object args) {
+    private void logArgs( String method, Object args )
+    {
         if ( LOGGER .isLoggable( Level.INFO ) ) {
             LOGGER .info( method + " args: " + (args == null ? "" : args.toString() ) );
         }
     }
 
-    private void logResponse(String method, Object response) {
+    private void logResponse( String method, Object response )
+    {
         if ( LOGGER .isLoggable( Level.INFO ) ) {
             LOGGER .info( method + " response: " + (response == null ? "" : response.toString() ) );
         }
     }
 
-    private void stopped(String method, String reason) {
+    private void stopped( String method, String reason )
+    {
         // If we don't send a stopped event, the debugger will assume
         //  the "program" is running, and won't offer the step controls.
         StoppedEventArguments arguments = new StoppedEventArguments();
@@ -155,27 +162,43 @@ public class DapAdapter implements IDebugProtocolServer
         return CompletableFuture.runAsync( () -> {
             logArgs( "launch()", args );
             
-            String path = (String) args .get( "modelFile" );
-            File file = new File( path );
-            path = file.getAbsolutePath().toString(); // adjust path delimiters for OS as needed
+            String pathArg = (String) args .get( "modelFile" );
+            File file = new File( pathArg );
+            final String path = file .getAbsolutePath() .toString(); // adjust path delimiters for OS as needed
             this .source .setPath( path );
             this .source .setName( file .getName() );
             this .source .setAdapterData( "vzome-adapter-data" );
 
             boolean stopOnEntry = (Boolean) args .get( "stopOnEntry" );
             
-            this .appController .doFileAction( "openDeferringRedo", file );
-            
-            this .client .initialized();
+            // We are calling code that is normally executed on the EDT, so we must also,
+            //   BUT we have to wait for it so the DAP doesn't get ahead of us.
+            try {
+                SwingUtilities.invokeAndWait( new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        appController .doFileAction( "openDeferringRedo", file );
+                        
+                        docController = appController .getSubController( path ) .getSubController( "undoRedo" );
+                        if ( ! stopOnEntry ) {
+                            docController .actionPerformed( this, "redoToBreakpoint" );
+                        }
 
-            this .docController = this .appController .getSubController( path ) .getSubController( "undoRedo" );
-            if ( ! stopOnEntry ) {
-                this .docController .actionPerformed( this, "redoToBreakpoint" );
+                        client .initialized();  // tell the client we're ready for the configuration events
+
+                        // If we don't send a stopped event, the debugger will assume
+                        //  the "program" is running, and won't offer the step controls.
+                        stopped( "launch()", stopOnEntry? "entry" : "breakpoint" );
+                    }
+                });
+            } catch (InvocationTargetException | InterruptedException e) {
+                // TODO Auto-generated catch block
+                //  TODO probably should disconnect or trigger a disconnect from the client
+                e.printStackTrace();
             }
-
-            // If we don't send a stopped event, the debugger will assume
-            //  the "program" is running, and won't offer the step controls.
-            stopped( "launch()", stopOnEntry? "entry" : "breakpoint" );
+            System.out.println( "returning from launch" );
         } );
     }
 
@@ -235,7 +258,7 @@ public class DapAdapter implements IDebugProtocolServer
     {
 //        logArgs( "scopes()", args );
         
-        Scope scope = new Scope();
+//        Scope scope = new Scope();
 
         ScopesResponse response = new ScopesResponse();
         response .setScopes( new Scope[] {} );

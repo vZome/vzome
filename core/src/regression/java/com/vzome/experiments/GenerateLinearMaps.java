@@ -27,7 +27,7 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Strut;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.tools.IcosahedralToolFactory;
-import com.vzome.core.tools.LinearMapTool;
+import com.vzome.core.tools.LinearMapToolFactory;
 
 public class GenerateLinearMaps
 {
@@ -36,7 +36,7 @@ public class GenerateLinearMaps
 	private AlgebraicField field;
 	private IcosahedralSymmetry symmetry;
 	private Connector origin;
-	private Direction red, yellow, blue, green;
+	private Direction blue;
 	private final ArrayList<String> acceptableOrbitNames;
 
 	public GenerateLinearMaps()
@@ -54,10 +54,7 @@ public class GenerateLinearMaps
 		kind = app .getDocumentKind( "golden" );
 		field = kind .getField();
 	    symmetry = (IcosahedralSymmetry) kind .getSymmetryPerspective( "icosahedral" ) .getSymmetry();
-		red = symmetry .getDirection( "red" );
-		yellow = symmetry .getDirection( "yellow" );
 		blue = symmetry .getDirection( "blue" );
-		green = symmetry .getDirection( "green" );
 		this .acceptableOrbitNames = new ArrayList<String>();
 		acceptableOrbitNames .add( "red" );
 		acceptableOrbitNames .add( "yellow" );
@@ -68,14 +65,14 @@ public class GenerateLinearMaps
 	private transient DocumentModel doc;
 	private transient Strut lastStrut;
 	private transient Connector lastBall;
-	private transient boolean goodOrbits, knownOrbits;
+	private transient boolean knownOrbits; //, goodOrbits;
 	private transient int fileNum = 0;
 	private transient Set<Direction> orbits;
 
 	private boolean tryMapping( Axis a1, AlgebraicNumber l1, Axis a2, AlgebraicNumber l2, Axis a3, AlgebraicNumber l3 )
 	{
 		this .doc = this .app .createDocument( "golden" );
-		this .doc .setRenderedModel( new RenderedModel( kind .getField(), doc .getSymmetrySystem() )
+		this .doc .setRenderedModel( new RenderedModel( kind .getField(), doc .getEditorModel() .getSymmetrySystem() )
 		{
 			@Override
 			public void manifestationAdded( Manifestation m )
@@ -92,25 +89,25 @@ public class GenerateLinearMaps
 					if ( axis == null )
 					{
 						knownOrbits = false;
-						goodOrbits = false;
+//						goodOrbits = false;
 						return;
 					}
 					Direction orbit = axis .getDirection();
 					if ( orbit .isAutomatic() )
 					{
 						knownOrbits = false;
-						goodOrbits = false;
+//						goodOrbits = false;
 						return;
 					}
 					orbits .add( orbit );
-					if ( ! acceptableOrbitNames .contains( orbit .getName() ) )
-						goodOrbits = false;
+//					if ( ! acceptableOrbitNames .contains( orbit .getName() ) )
+//						goodOrbits = false;
 				}
 			}
 		} );
 		origin = lastBall();
 		try {
-			goodOrbits = true;
+//			goodOrbits = true;
 			knownOrbits = true;
 			orbits = new HashSet<Direction>();
 
@@ -118,7 +115,7 @@ public class GenerateLinearMaps
 			Strut strut2 = strut( origin, a2, l2 );
 			select( strut1 );
 			select( strut2 );
-			goodOrbits = true;
+//			goodOrbits = true;
 			knownOrbits = true;
 			doc .doEdit( "affinePentagon" );
 
@@ -140,7 +137,7 @@ public class GenerateLinearMaps
 			select( strut2 );
 			select( strut( origin, a3, l3 ) );
 			select( origin ); // center for the transform
-			Tool.Factory factory = new LinearMapTool.Factory( doc .getToolsModel(), symmetry, false );
+			Tool.Factory factory = new LinearMapToolFactory( doc .getToolsModel(), symmetry, false );
 			Tool mappingTool = factory .createTool();
 
 			deselect();
@@ -164,13 +161,13 @@ public class GenerateLinearMaps
 			join();
 			
 			select( p2 ); // input for the transform
-			symmetryTool .apply( true, false, false, false );
-			mappingTool .apply( false, true, false, false );
+			symmetryTool .apply( true, false, false, false, false );
+			mappingTool .apply( false, true, false, false, false );
 
 			deselect();
 			
 			if ( knownOrbits ) {
-				int size = orbits .size();
+//				int size = orbits .size();
 				String fname = axisName( a1 ) + l1 .toString() + "-"
 						+ axisName( a2 ) + l2 .toString() + "-"
 						+ axisName( a3 ) + l3 .toString() + "-";
@@ -247,11 +244,11 @@ public class GenerateLinearMaps
 		 */
 
 		GenerateLinearMaps generator = new GenerateLinearMaps();
-		for ( Direction orbit1 : symmetry ) {
+		for ( Direction orbit1 : symmetry .getDirections() ) {
 			if ( orbit1 .isStandard() )
 				for ( AlgebraicNumber scale1 : scales ) {
 					AlgebraicNumber l1 = orbit1 .getUnitLength() .times( scale1 );
-					for ( Direction orbit2 : symmetry ) {
+					for ( Direction orbit2 : symmetry .getDirections() ) {
 						if ( orbit2 .isStandard() )
 							for ( AlgebraicNumber scale2 : scales ) {
 								AlgebraicNumber l2 = orbit2 .getUnitLength() .times( scale2 );

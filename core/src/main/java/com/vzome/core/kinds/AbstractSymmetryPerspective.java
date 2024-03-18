@@ -23,7 +23,6 @@ public abstract class AbstractSymmetryPerspective implements SymmetryPerspective
 
     public AbstractSymmetryPerspective(Symmetry symmetry) {
         this.symmetry = symmetry;
-        this.symmetry.computeOrbitDots();
     }
 
     @Override
@@ -33,6 +32,11 @@ public abstract class AbstractSymmetryPerspective implements SymmetryPerspective
 
     @Override
     public String getName() {
+        return getSymmetry().getName();
+    }
+
+    @Override
+    public String getLabel() {
         return getSymmetry().getName();
     }
 

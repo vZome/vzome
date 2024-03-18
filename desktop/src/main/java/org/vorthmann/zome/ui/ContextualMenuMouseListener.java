@@ -3,15 +3,15 @@ package org.vorthmann.zome.ui;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import org.vorthmann.ui.Controller;
+import com.vzome.desktop.awt.GraphicsController;
 
 final class ContextualMenuMouseListener extends MouseAdapter
 {
-    private final Controller controller;
+    private final GraphicsController controller;
 
     private final ContextualMenu popupMenu;
 
-    ContextualMenuMouseListener( Controller controller, ContextualMenu popupMenu )
+    ContextualMenuMouseListener( GraphicsController controller, ContextualMenu popupMenu )
     {
         this.controller = controller;
         this.popupMenu = popupMenu;
