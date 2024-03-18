@@ -12,6 +12,7 @@ export const Labels = (props) =>
   onMount( () => {
     labelRenderer = new CSS2DRenderer();
     const labelsElem = labelRenderer.domElement;
+    labelsElem.style.isolation = 'isolate';
     labelsElem.style.position = 'absolute';
     labelsElem.style.pointerEvents = 'none';
     labelsElem.style.inset = '0px';
