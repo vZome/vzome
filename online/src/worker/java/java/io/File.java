@@ -8,4 +8,9 @@ public class File
     {
         return false;
     }
+    
+    public String getAbsolutePath()
+    {
+        return null;
+    }
 }

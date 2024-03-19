@@ -1,9 +1,24 @@
 
 package com.vzome.core.algebra;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vzome.core.commands.Command.Failure;
+import com.vzome.core.commands.ZomicVirtualMachine;
+import com.vzome.core.construction.ConstructionChanges;
+import com.vzome.core.construction.Point;
+import com.vzome.core.math.symmetry.IcosahedralSymmetry;
+import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.zomic.Interpreter;
+import com.vzome.core.zomic.ZomicASTCompiler;
+import com.vzome.core.zomic.ZomicException;
+import com.vzome.core.zomic.parser.ErrorHandler;
+import com.vzome.core.zomic.program.ZomicStatement;
+import com.vzome.core.zomod.parser.Parser;
+
+@SuppressWarnings( "deprecation" )
 public final class PentagonField extends AbstractAlgebraicField
 {
     public static final String FIELD_NAME = "golden";
@@ -164,5 +179,54 @@ public final class PentagonField extends AbstractAlgebraicField
             ones = Integer .parseInt( string );
         }
         return createAlgebraicNumber( ones, phis, div, 0 );
+    }
+
+    private ZomicStatement parseZomodScript( String script ) throws Failure
+    {
+        Parser parser = new Parser( new IcosahedralSymmetry( new PentagonField() ));
+        List<String> errors = new ArrayList<>();
+        ZomicStatement program = parser .parse(
+            new ByteArrayInputStream( script .getBytes() ), new ErrorHandler.Default( errors ), "" );
+        if ( errors.size() > 0 )
+            throw new Failure( errors .get(0) );
+        return program;
+    }
+
+    @Override
+    public void interpretScript( String script, String language, Point offset, Symmetry symmetry, ConstructionChanges effects ) throws Exception
+    {
+        ArrayList<String> errorList = new ArrayList<>();
+        ErrorHandler errors = new ErrorHandler.Default( errorList );
+
+        ZomicStatement program = null;
+        switch ( language ) {
+
+        case "zomic":
+            try {
+                ZomicASTCompiler compiler = new ZomicASTCompiler( (IcosahedralSymmetry) symmetry );
+                program = compiler .compile( script, errors );
+            } catch ( ClassCastException e ) {
+                errors .parseError( 0, 0, "Tried to compile Zomic with non-icosahedral symmetry" );
+                return;
+            }
+            break;
+            
+        case "zomod":
+            program = parseZomodScript( script );
+
+        default:
+            errors .parseError( 0, 0, language+" is not a supported script language." );
+            return;
+        }
+
+        if ( errorList.size() > 0 )
+            throw new Failure( errorList .get(0) );
+
+        ZomicVirtualMachine builder = new ZomicVirtualMachine( offset, effects, symmetry );
+        try {
+            program .accept( new Interpreter( builder, symmetry ) );
+        } catch ( ZomicException e ) {
+            throw new Failure( e );
+        }
     }
 }

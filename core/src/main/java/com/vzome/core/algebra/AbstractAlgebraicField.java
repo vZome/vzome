@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
+import com.vzome.core.construction.ConstructionChanges;
+import com.vzome.core.construction.Point;
 import com.vzome.core.math.RealVector;
+import com.vzome.core.math.symmetry.Symmetry;
 
 public abstract class AbstractAlgebraicField implements AlgebraicField
 {
@@ -936,5 +939,11 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
             return "<mrow>" + buf .toString() + "</mrow>";
         else
             return buf .toString();
+    }
+
+    @Override
+    public void interpretScript( String script, String language, Point offset, Symmetry symmetry, ConstructionChanges effects ) throws Exception
+    {
+        throw new Exception( "Scripts are only supported in the golden field." );
     }
 }

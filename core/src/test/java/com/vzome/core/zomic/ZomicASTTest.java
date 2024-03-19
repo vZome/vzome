@@ -467,7 +467,7 @@ public class ZomicASTTest
 			ZomicLexer lexer = new ZomicLexer(inputStream);
 			ATN atn = lexer.getATN();
 			int stateNumber = 0;
-			IntervalSet intervalSet = atn.getExpectedTokens(stateNumber, RuleContext.EMPTY);
+			IntervalSet intervalSet = atn.getExpectedTokens(stateNumber, null );
 			// TODO: just playing around to see what's available here...
 			assertTrue(intervalSet.size() > 0);
 		}

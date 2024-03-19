@@ -452,7 +452,7 @@ public class ZomicASTCompiler
 	@Override public void exitSymmetry_center_expr(ZomicParser.Symmetry_center_exprContext ctx) {
 	    ZomicCompilerState.IHaveAxisInfo elements = (ZomicCompilerState.IHaveAxisInfo) this.state .peekTemplate();
 		if ( ctx.blueAxisIndexNumber != null ) { 
-			elements.indexNumber(ctx.blueAxisIndexNumber.getText());
+			elements.setIndexNumber(ctx.blueAxisIndexNumber.getText());
 		}
 	}
 	
@@ -507,9 +507,9 @@ public class ZomicASTCompiler
 	
 	@Override public void exitAxis_index_expr(ZomicParser.Axis_index_exprContext ctx) {
 	    ZomicCompilerState.IHaveAxisInfo elements = (ZomicCompilerState.IHaveAxisInfo)this.state .peekTemplate();
-		elements.indexNumber(ctx.indexNumber.getText());
+		elements.setIndexNumber(ctx.indexNumber.getText());
 		if ( ctx.handedness != null ) { 
-			elements.handedness(ctx.handedness.getText());
+			elements.setHandedness(ctx.handedness.getText());
 		}
 	}
 	
@@ -530,7 +530,7 @@ public class ZomicASTCompiler
 			colorContext = ctx.getChild(0).getClass().getSimpleName().toLowerCase();
 			if(colorContext.endsWith(strCONTEXT)) {
 				colorContext = colorContext.replaceFirst(strCONTEXT, "");
-				((ZomicCompilerState.IHaveAxisInfo)this.state .peekTemplate()).axisColor(colorContext);
+				((ZomicCompilerState.IHaveAxisInfo)this.state .peekTemplate()).setAxisColor(colorContext);
 				log(colorContext);
 				return;
 			}

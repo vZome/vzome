@@ -1,7 +1,10 @@
 
 package com.vzome.core.algebra;
 
+import com.vzome.core.construction.ConstructionChanges;
+import com.vzome.core.construction.Point;
 import com.vzome.core.math.RealVector;
+import com.vzome.core.math.symmetry.Symmetry;
 
 public interface AlgebraicField
 {
@@ -271,4 +274,6 @@ public interface AlgebraicField
         }
         return result;
     }
+
+    public void interpretScript( String script, String language, Point offset, Symmetry symmetry, ConstructionChanges effects ) throws Exception;
 }

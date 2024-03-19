@@ -6,6 +6,8 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.construction.ConstructionChanges;
+import com.vzome.core.construction.Point;
 
 
 /**
@@ -368,4 +370,9 @@ public class IcosahedralSymmetry extends AbstractSymmetry
 		}
 		return 0;
 	}
+
+    public void interpretScript( String script, String language, Point offset, Symmetry symmetry, ConstructionChanges effects ) throws Exception
+    {
+        this .mField .interpretScript( script, language, offset, symmetry, effects );
+    }
 }

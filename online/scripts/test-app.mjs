@@ -18,7 +18,7 @@ if ( argv .includes( 'quick' ) ) {
   delete commonConfig.entryPoints[ 'vzome-legacy' ];
   commonConfig.external = [ './legacy/*.js' ];
 
-  writeFileSync( 'src/revision.js', 'export const REVISION="QUICKSTART"; export const resourceIndex = []; export const importLegacy = async () => import( "https://www.vzome.com/modules/vzome-legacy.js" );' );
+  writeFileSync( 'src/revision.js', 'export const REVISION="QUICKSTART"; export const resourceIndex = []; export const importLegacy = async () => import( "https://www.vzome.com/modules/vzome-legacy.js" ); export const importZomic = async () => import( "https://www.vzome.com/modules/vzome-zomic.js" );' );
 
   console.log( '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
   console.log( '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );

@@ -9,6 +9,7 @@ ext.antlr4 = [
     // Simplify multiple IDE integration by putting destinationDir under src/main/java
     // Some IDEs don't corectly read multiple source folders from build.gradle.
     destinationDir: "src/main/java/com/vzome/core/antlr/generated",
+    javascriptDest: "src/main/javascript/generated",
     grammarpackage:               "com.vzome.core.antlr.generated"
 ]
   
@@ -62,7 +63,7 @@ processResources {
 
 
 dependencies {
-    implementation     group: 'org.antlr',         name: 'antlr4',            version:'4.7.1'
+    implementation     group: 'org.antlr',         name: 'antlr4',            version:'4.13.1'
     implementation     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
 //    implementation     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
     implementation     group: 'org.jogamp.jogl', name: 'jogl-all', version:'2.4.0'
@@ -80,7 +81,7 @@ dependencies {
     testImplementation group: 'antlr',             name: 'antlr',             version:'2.7.7'
     testImplementation group: 'junit',             name: 'junit',             version:'4.12'
 
-    antlr4      group: 'org.antlr',         name: 'antlr4',            version: '4.7.1'
+    antlr4      group: 'org.antlr',         name: 'antlr4',            version: '4.13.1'
 
     regressionImplementation sourceSets.main.output
     regressionImplementation configurations.testImplementation
@@ -231,6 +232,7 @@ task compileAntlrGrammars(type: JavaExec , dependsOn: makeAntlrOutputDir) {
     def grammars = fileTree(antlr4.antlrSource).include('**/*.g4')
     //def pkg = antlr4.grammarpackage.replaceAll("\\.", "/")
     def target = file("${antlr4.destinationDir}") ///${pkg}")
+    // def target = file("${antlr4.javascriptDest}") ///${pkg}")
     inputs.files grammars
     outputs.dir target
 

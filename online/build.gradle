@@ -199,8 +199,16 @@ core.config {
     // SymmetryController and its dependencies
     'com/vzome/desktop/api/Controller.java',
     'com/vzome/desktop/controller/*.java',
+
+
+    'com/vzome/core/zomic/*.java',
+    'com/vzome/core/render/*ZomicEventHandler.java',
+    'com/vzome/core/zomic/program/*.java',
+
   ]
   excludes = [
+
+    'com/vzome/core/zomic/ZomicASTCompiler.java',
 
     'com/vzome/core/generic/SubClassIterator.java',
             
@@ -211,8 +219,6 @@ core.config {
     'com/vzome/core/algebra/*Impl.java',
     'com/vzome/core/algebra/AlgebraicFields.java',
 
-    'com/vzome/core/commands/ZomicVirtualMachine.java',
-    'com/vzome/core/commands/CommandExecuteZomicScript.java',
     'com/vzome/core/commands/CommandExecutePythonScript.java',
 
     'com/vzome/core/edits/ImportSimpleMeshJson.java',
@@ -220,7 +226,8 @@ core.config {
     'com/vzome/core/edits/DodecagonSymmetry.java',
     'com/vzome/core/edits/GhostSymmetry24Cell.java',
     'com/vzome/core/edits/Symmetry4d.java',
-    'com/vzome/core/edits/Run*Script.java',
+    'com/vzome/core/edits/RunZomodScript.java',
+    'com/vzome/core/edits/RunPythonScript.java',
     'com/vzome/core/edits/RealizeMetaParts.java',
     'com/vzome/core/edits/ReplaceWithShape.java',
 
