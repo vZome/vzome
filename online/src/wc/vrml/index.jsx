@@ -64,7 +64,7 @@ export class VrmlViewerElement extends HTMLElement
     setState( 'camera', fixedFrustum( 10 ) );
     setState( 'lighting', {
       backgroundColor: '#3380FF',
-      ambientColor: '#b0b0b0',
+      ambientColor: '#000000',
       directionalLights: [
         { direction: [ 0.5, 1, 0 ], color: '#bbbbbb' },
         { direction: [ -0.5, -1, 0 ], color: '#bbbbbb' },

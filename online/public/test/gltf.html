@@ -9,10 +9,10 @@
       import "/modules/gltf-viewer.js"; // registers the custom element
       import "/modules/vrml-viewer.js"; // registers the custom element
 
-      const vrmlViewer = document .getElementById( 'vrml' );
-      setTimeout( () => {
-        vrmlViewer.src='./models/icosahedron_(5_colors).vrml';
-      }, 10000 );
+      // const vrmlViewer = document .getElementById( 'vrml' );
+      // setTimeout( () => {
+      //   vrmlViewer.src='./models/icosahedron_(5_colors).vrml';
+      // }, 10000 );
     </script>
 
   </head>
@@ -24,7 +24,7 @@
         </gltf-viewer>
       </section>
       <section>
-        <vrml-viewer src="./models/canonical_heptahedron_plus_dual.vrml" id="vrml" >
+        <vrml-viewer src="./models/compound_of_10_icosahedra.vrml" id="vrml" >
           <img src="./models/george-hart-bookball-3.png" >
         </vrml-viewer>
       </section>
