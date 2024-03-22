@@ -10,14 +10,15 @@ import { urlViewerCSS } from '../../viewer/urlviewer.css.js';
 import { vZomeViewerCSS } from "../vzome-viewer.css";
 import { CameraProvider, DesignViewer } from '../../viewer/index.jsx';
 import { VrmlModel } from './vrml.jsx';
+import { createDefaultCameraStore, fixedFrustum } from '../../viewer/context/camera.jsx';
 
 
-const renderVrmlViewer = ( container, src, config ) =>
+const renderVrmlViewer = ( container, src, config, store ) =>
 {
   const bindComponent = () =>
   {
     return (
-      <CameraProvider>
+      <CameraProvider cameraStore={store}>
         <DesignViewer config={ { ...config, allowFullViewport: true } }
             componentRoot={container}
             children3d={ <VrmlModel url={src()} /> }
@@ -38,6 +39,7 @@ export class VrmlViewerElement extends HTMLElement
   #config;
   #src
   #setSrc;
+  #cameraStore;
 
   constructor()
   {
@@ -53,11 +55,26 @@ export class VrmlViewerElement extends HTMLElement
     this.#root.appendChild( this.#container );
 
     this.#config = { preview: true, showScenes: 'none', camera: true, lighting: true, design: true, };
-  }
+
+    this.#cameraStore = createDefaultCameraStore();
+
+    const [ state, setState ] = this.#cameraStore;
+
+    // These happen to be defaults that match all of George Hart's VRML
+    setState( 'camera', fixedFrustum( 10 ) );
+    setState( 'lighting', {
+      backgroundColor: '#3380FF',
+      ambientColor: '#b0b0b0',
+      directionalLights: [
+        { direction: [ 0.5, 1, 0 ], color: '#bbbbbb' },
+        { direction: [ -0.5, -1, 0 ], color: '#bbbbbb' },
+      ]
+    } );
+}
 
   connectedCallback()
   {
-    renderVrmlViewer( this.#container, this.#src, this.#config );
+    renderVrmlViewer( this.#container, this.#src, this.#config, this.#cameraStore );
   }
 
   static get observedAttributes()

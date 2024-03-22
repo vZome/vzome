@@ -23,7 +23,7 @@ const Lighting = () =>
   return (
     <>
       <object3D ref={centerObject} visible={false} />
-      <ambientLight color={state.lighting.ambientColor} intensity={1.5} visible={false} />
+      <ambientLight color={state.lighting.ambientColor} />
       <For each={state.lighting.directionalLights}>{ ( { color, direction } ) =>
         <directionalLight target={centerObject} intensity={1.7} color={color} position={direction.map( x => -x )} />
       }</For>

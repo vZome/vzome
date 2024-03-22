@@ -88,18 +88,28 @@ const injectCameraState = ( cameraState, camera ) =>
   camera.fov = cameraFieldOfViewY( cameraState )( 1.0 );
 }
 
+export const fixedFrustum = distance =>
+{
+  const near = distance * NEAR_FACTOR;
+  const far = distance * FAR_FACTOR;
+  const width = distance * WIDTH_FACTOR;
+  return { distance, far, near, width };
+}
+
+export const createDefaultCameraStore = () => createStore( { ...defaultScene() } );
+
 const CameraContext = createContext( {} );
 
 const CameraProvider = ( props ) =>
 {
-  const [ state, setState ] = createStore( { ...defaultScene() } );
+  const [ state, setState ] = props.cameraStore || createDefaultCameraStore();
+
+  // createEffect( () => {
+  //   console.log( 'distance', state.camera.distance );
+  // })
 
   if ( !! props.distance ) {
-    const distance = props.distance;
-    const near = distance * NEAR_FACTOR;
-    const far = distance * FAR_FACTOR;
-    const width = distance * WIDTH_FACTOR;
-    setState( 'camera', { distance, far, near, width } );
+    setState( 'camera', fixedFrustum( props.distance ) );
   }
 
   if ( !!props.context ) {
