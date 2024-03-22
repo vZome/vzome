@@ -1,7 +1,7 @@
 
 import { createEffect, createResource } from "solid-js";
 import { useThree } from "solid-three";
-import { VRMLLoader } from "three-stdlib";
+import { VRMLLoader } from "./VRMLLoader.js";
 
 const loader = new VRMLLoader();
 
