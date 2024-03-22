@@ -1,6 +1,31 @@
 
 import { createSignal } from "solid-js";
-import { vZomeViewerCSS } from "./vzome-viewer.css";
+import { render } from 'solid-js/web';
+
+import { vZomeViewerCSS } from "../vzome-viewer.css";
+import { urlViewerCSS } from "../../viewer/urlviewer.css.js";
+import { CameraProvider, DesignViewer } from "../../viewer/index.jsx";
+import { GltfModel } from './gltf.jsx';
+
+
+const renderGlTFViewer = ( container, config ) =>
+{
+  const bindComponent = () =>
+  {
+    return (
+      <CameraProvider>
+        <DesignViewer config={ { ...config, allowFullViewport: true } }
+            componentRoot={container}
+            children3d={ <GltfModel url={config.url} /> }
+            height="100%" width="100%" >
+        </DesignViewer>
+      </CameraProvider>
+    );
+  }
+
+  container .appendChild( document.createElement("style") ).textContent = urlViewerCSS;
+  render( bindComponent, container );
+}
 
 export class GltfViewerElement extends HTMLElement
 {
@@ -28,13 +53,7 @@ export class GltfViewerElement extends HTMLElement
 
   connectedCallback()
   {
-    import( '../viewer/index.jsx' )
-      .then( module => {
-        if ( this.#config.url .toLowerCase() .endsWith( 'gltf' ) )
-          module.renderGlTFViewer( this.#container, this.#config );
-        else if ( this.#config.url .toLowerCase() .endsWith( 'vrml' ) )
-          module.renderVrmlViewer( this.#container, this.#src, this.#config );
-      });
+    renderGlTFViewer( this.#container, this.#config );
   }
 
   static get observedAttributes()

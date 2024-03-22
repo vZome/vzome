@@ -48,7 +48,8 @@ export const esbuildConfig = {
     '59icosahedra'    : 'src/app/59icosahedra/index.jsx',
   // web components, not used by apps
     'vzome-viewer'        : 'src/wc/vzome-viewer.js',
-    'gltf-viewer'         : 'src/wc/gltf-viewer.js',
+    'gltf-viewer'         : 'src/wc/gltf/index.jsx',
+    'vrml-viewer'         : 'src/wc/vrml/index.jsx',
   // client rendering code, dynamically imported for fast time-to-first-render
     'vzome-viewer-dynamic': 'src/viewer/index.jsx',
   // Worker entry point, only used as a module worker
