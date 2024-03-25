@@ -1,6 +1,7 @@
 
 import { Link } from "@kobalte/core";
 import { Divider, Menu, MenuItem, SubMenu } from "../../framework/menus.jsx";
+import { useEditor } from "../../../viewer/context/editor.jsx";
 
 const LinkItem  = props => (
   <MenuItem>
@@ -12,19 +13,29 @@ const LinkItem  = props => (
 
 export const HelpMenu = () =>
 {
-  return (
+  const { setState, fetchDesignUrl, guard } = useEditor();
+
+  const fetchStarter = resource => () => guard(() =>
+  {
+    setState( 'ignoreDesignName', true );  // transient, means we'll still have an untitled design after the fetch
+    setState( 'fileHandle', undefined );
+    const url = new URL( resource, window.location.toString() ) .toString();
+    fetchDesignUrl( url, { preview: false, debug: false } );
+  })
+
+    return (
       <Menu label="Help">
         <MenuItem disabled={true}>Quick Start</MenuItem>
         <SubMenu label="Symmetry Starters">
-          <MenuItem disabled={true}>Icosahedral / Dodecahedral</MenuItem>
-          <MenuItem disabled={true}>Cubic / Octahedral</MenuItem>
-          <MenuItem disabled={true}>Cubic / Octahedral √2</MenuItem>
-          <MenuItem disabled={true}>Tetrahedral</MenuItem>
+          <MenuItem onClick={fetchStarter('./resources/com/vzome/starters/symmetry/icosahedral/starter.vZome')}>Icosahedral / Dodecahedral</MenuItem>
+          <MenuItem onClick={fetchStarter('./resources/com/vzome/starters/symmetry/octahedral/starter.vZome')}>Cubic / Octahedral</MenuItem>
+          <MenuItem onClick={fetchStarter('./resources/com/vzome/starters/symmetry/octahedral/sqrt2/starter.vZome')}>Cubic / Octahedral √2</MenuItem>
+          <MenuItem onClick={fetchStarter('./resources/com/vzome/starters/symmetry/tetrahedral/starter.vZome')}>Tetrahedral</MenuItem>
         </SubMenu>
         <SubMenu label="3D Printing Starters">
-          <MenuItem disabled={true}>Red-tip Struts</MenuItem>
-          <MenuItem disabled={true}>Yellow-tip Struts</MenuItem>
-          <MenuItem disabled={true}>Blue-tip Struts</MenuItem>
+          <MenuItem onClick={fetchStarter('./resources/org/vorthmann/zome/print3d/redStruts/struts-template-enlarged.vZome')}>Red-tip Struts</MenuItem>
+          <MenuItem onClick={fetchStarter('./resources/org/vorthmann/zome/print3d/yellowStruts/struts-template-enlarged.vZome')}>Yellow-tip Struts</MenuItem>
+          <MenuItem onClick={fetchStarter('./resources/org/vorthmann/zome/print3d/blueStruts/struts-template-enlarged.vZome')}>Blue-tip Struts</MenuItem>
         </SubMenu>
 
         <Divider/>
