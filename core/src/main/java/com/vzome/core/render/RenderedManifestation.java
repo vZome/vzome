@@ -2,6 +2,8 @@
 
 package com.vzome.core.render;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -360,30 +362,44 @@ public class RenderedManifestation implements RenderedObject
 
     private void resetPanelAttributes( boolean oneSidedPanels, boolean colorPanels )
     {
+        Shapes shapes = orbitSource .getShapes();
+
         Panel panel = (Panel) this .mManifestation;
-        Polyhedron shape = makePanelPolyhedron( panel, oneSidedPanels );
-        if ( shape == null )
-            return;
+        this .location = panel .getFirstVertex();
+        
+        List<AlgebraicVector> relativeVertices = new ArrayList<>();
+        for (AlgebraicVector vertex : panel ) {
+            relativeVertices .add( vertex .minus( this .location ) );
+        }
+
         AlgebraicVector normal = panel .getNormal();
         if ( normal .isOrigin() )
             return;
+        Axis zone = orbitSource .getAxis( normal );
+        Polyhedron shape = shapes .getPanelShape( panel .getVertexCount(), panel .getQuadrea(), zone, relativeVertices, oneSidedPanels );
+        if ( shape == null )
+            return;
         this .mShape = shape;  
+
+        if ( zone == null ) {
+            this .setColor( Color.WHITE );
+            return; // this should only happen when using the bare Symmetry-based OrbitSource
+        }
+
+        // Not sure this is going to be correct
+        int orn = zone .getOrientation();
+        AlgebraicMatrix orientation = shapes .getSymmetry() .getMatrix( orn );
+        this .setOrientation( orientation );
+        this .strutZone = zone .getOrientation();
+
         if ( ! colorPanels )
             return;
 
-        this .setOrientation( orbitSource .getSymmetry() .getField() .identityMatrix( 3 ) );
-
         try {
-            Axis axis = orbitSource .getAxis( normal );
-            if ( axis == null ) {
-                this .setColor( Color.WHITE );
-                return;
-            }
-
             // This lets the Panel represent Planes better.
-            panel .setZoneVector( axis .normal() );
+            panel .setZoneVector( zone .normal() );
             
-            Direction orbit = axis .getDirection();
+            Direction orbit = zone .getDirection();
 
             Color color = this .mManifestation .getColor();
             if ( color == null ) {
@@ -471,30 +487,6 @@ public class RenderedManifestation implements RenderedObject
             color = orbitSource .getColor( null );
         this .setColor( color );
         this .setOrientation( orbitSource .getSymmetry() .getField() .identityMatrix( 3 ) );
-    }
-
-    private static Polyhedron makePanelPolyhedron( Panel panel, boolean oneSided )
-    {
-        Polyhedron poly = new Polyhedron( panel .getZoneVector() .getField() );
-        poly .setPanel( true );
-        int arity = 0;
-        for( AlgebraicVector gv : panel) {
-            arity++;
-            poly .addVertex( gv );            
-        }
-        if ( poly .getVertexList() .size() < arity )
-            return null;
-        Polyhedron.Face front = poly .newFace();
-        Polyhedron.Face back = poly .newFace();
-        for ( int i = 0; i < arity; i++ ) {
-            Integer j = i;
-            front .add( j );
-            back .add( 0, j );
-        }
-        poly .addFace( front );
-        if ( ! oneSided )
-            poly .addFace( back );
-        return poly;
     }
 
     public void setOrbitSource( OrbitSource orbitSource )

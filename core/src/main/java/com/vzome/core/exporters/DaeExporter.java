@@ -37,8 +37,6 @@ import com.vzome.core.construction.Color;
 import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
-import com.vzome.core.model.Manifestation;
-import com.vzome.core.model.Strut;
 import com.vzome.core.render.RenderedManifestation;
 
 
@@ -58,17 +56,17 @@ public class DaeExporter extends GeometryExporter
         ColladaDocument doc = new ColladaDocument( DAE_TEMPLATE, this .mModel .getEmbedding(), this .mModel .getField() );
 
         for (RenderedManifestation rm : mModel) {
-            Manifestation man = rm .getManifestation();
-            if ( man instanceof Strut )
+//            Manifestation man = rm .getManifestation();
+//            if ( man instanceof Strut )
             {
                 String orientedShapeId = doc .addOrientedShape( rm );
                 doc .addShapeInstance( rm, orientedShapeId );
             }
-            else
-            {
-                String nodeId = doc .addColoredShape( rm );
-                doc .addShapeInstance( rm, nodeId );
-            }
+//            else
+//            {
+//                String nodeId = doc .addColoredShape( rm );
+//                doc .addShapeInstance( rm, nodeId );
+//            }
         }
         doc .write( writer );
     }

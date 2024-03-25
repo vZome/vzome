@@ -259,15 +259,21 @@ public class ShapeAndInstances implements InstancedGeometry
     public void pick( Intersector intersector, float[][] orientations, float[] embedding )
     {
         float scale = 1f / this .globalScale;
-        if ( this .shape .isPanel() && ! this .instances .isEmpty() ) {
-            // A panel shape has only a single instance, for now
-            RenderedManifestation rm = this .instances .iterator() .next();
-            
-            // We know that we'll have 3 vertices per triangle, and a full set of triangles for both polygons.
-            // We just intersect the triangles of one of the two polygons.
-            int triangles = this .vertexCount / 6;
-            for ( int i = 0; i < triangles; i++ ) {
-                intersector .intersectTriangle( this .verticesArray, i * 9, rm, scale, embedding );
+        if ( this .shape .isPanel() ) {
+            for ( RenderedManifestation rm : instances ) {
+                float[] orientation = orientations [ rm .getStrutZone() ];
+                AlgebraicVector vector = rm .getLocationAV();
+                // Embedding will be handled in the intersector
+                RealVector rv = ( vector == null )? new RealVector() : vector .toRealVector();
+                float[] location = new float[3];
+                rv .addTo( location, location );
+
+                // We know that we'll have 3 vertices per triangle, and a full set of triangles for both polygons.
+                // We just intersect the triangles of one of the two polygons.
+                int triangles = this .vertexCount / 6;
+                for ( int i = 0; i < triangles; i++ ) {
+                    intersector .intersectTriangle( this .verticesArray, i * 9, rm, scale, embedding, orientation, location );
+                }
             }
         }
         else if ( this .shape .getOrbit() != null ) {

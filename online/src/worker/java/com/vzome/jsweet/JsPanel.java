@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.construction.Construction;
@@ -92,6 +93,13 @@ public class JsPanel extends JsManifestation implements Panel
     {
         return this.vectors.length;
     }
+
+    @Override
+    public AlgebraicNumber getQuadrea()
+    {
+        return this .field .one();
+    }
+
 
     @Override
     public RealVector getNormal( Embedding embedding )

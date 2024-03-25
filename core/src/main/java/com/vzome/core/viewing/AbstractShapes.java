@@ -3,18 +3,24 @@
  */
 package com.vzome.core.viewing;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
+import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.construction.Color;
 import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.Polyhedron;
+import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
+import com.vzome.core.math.symmetry.Permutation;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.parts.FastDefaultStrutGeometry;
 import com.vzome.core.parts.StrutGeometry;
@@ -25,6 +31,8 @@ public abstract class AbstractShapes implements Shapes
     private final Map<Direction, Map<AlgebraicNumber, Polyhedron> > strutShapesByLengthAndOrbit = new HashMap<>();
 
     private final Map<Direction, StrutGeometry> strutGeometriesByOrbit = new HashMap<>();
+    
+    private final Map<Integer, Map<AlgebraicNumber, Map<Direction, HashMap<List<AlgebraicVector>, Polyhedron>>>> panelShapes = new HashMap<>();
 
     protected final String mPkgName;
 
@@ -180,5 +188,68 @@ public abstract class AbstractShapes implements Shapes
     public Symmetry getSymmetry()
     {
         return mSymmetry;
+    }
+
+    private Polyhedron makePanelPolyhedron( Iterable<AlgebraicVector> vertices, boolean oneSided )
+    {
+        Polyhedron poly = new Polyhedron( this .mSymmetry .getField() );
+        poly .setPanel( true );
+        int arity = 0;
+        for( AlgebraicVector gv : vertices) {
+            arity++;
+            poly .addVertex( gv );            
+        }
+        if ( poly .getVertexList() .size() < arity )
+            return null;
+        Polyhedron.Face front = poly .newFace();
+        Polyhedron.Face back = poly .newFace();
+        for ( int i = 0; i < arity; i++ ) {
+            Integer j = i;
+            front .add( j );
+            back .add( 0, j );
+        }
+        poly .addFace( front );
+        if ( ! oneSided )
+            poly .addFace( back );
+        return poly;
+    }
+
+    @Override
+    public Polyhedron getPanelShape( int vertexCount, AlgebraicNumber quadrea, Axis zone, Iterable<AlgebraicVector> vertices, boolean oneSidedPanels )
+    {
+        Map<AlgebraicNumber, Map<Direction, HashMap<List<AlgebraicVector>, Polyhedron>>> map1 = this .panelShapes .get( vertexCount );
+        if ( map1 == null ) {
+            map1 = new HashMap<>();
+            this .panelShapes .put( vertexCount, map1 );
+        }
+        Map<Direction, HashMap<List<AlgebraicVector>, Polyhedron>> map2 = map1 .get( quadrea );
+        if ( map2 == null ) {
+            map2 = new HashMap<>();
+            map1 .put( quadrea, map2 );
+        }
+        Direction orbit = zone .getDirection();
+        HashMap<List<AlgebraicVector>, Polyhedron> map3 = map2 .get( orbit );
+        if ( map3 == null ) {
+            map3 = new HashMap<>();
+            map2 .put( orbit, map3 );
+        }
+        
+        // now map normal to the canonical zone for orbit
+        int orientation = zone .getOrientation();
+        Permutation perm = this .mSymmetry .getPermutation( orientation ) .inverse();
+        int inverseOrientation = perm .mapIndex( 0 );
+        AlgebraicMatrix inverseTrans = this .mSymmetry .getMatrix( inverseOrientation );
+        
+        // now find or make a canonically-oriented shape
+        List<AlgebraicVector> canonicalVertices = new ArrayList<>();
+        for (AlgebraicVector vertex : vertices ) {
+            canonicalVertices .add( inverseTrans .timesColumn( vertex ) );
+        }
+        Polyhedron shape = map3 .get( canonicalVertices );
+        if ( shape == null ) {
+            shape = makePanelPolyhedron( canonicalVertices, oneSidedPanels );
+            map3 .put( canonicalVertices, shape );
+        }
+        return shape;
     }
 }

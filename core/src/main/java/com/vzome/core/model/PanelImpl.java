@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.vzome.core.algebra.AlgebraicField;
+import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.AlgebraicVectors;
 import com.vzome.core.construction.Construction;
@@ -206,5 +207,16 @@ public class PanelImpl extends ManifestationImpl implements Panel
     public String getLabel()
     {
         return this .label;
+    }
+
+    @Override
+    public AlgebraicNumber getQuadrea()
+    {
+        AlgebraicField field = mVertices.get( 0 ) .getField();
+//        AlgebraicNumber quadrea = field .zero();
+//        for (int i = 0; i < this.mVertices.size()-2; i++) {
+//            AlgebraicNumber Q1 =
+//        }
+        return field .one();
     }
 }

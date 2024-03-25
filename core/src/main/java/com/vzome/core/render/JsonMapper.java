@@ -175,6 +175,8 @@ public class JsonMapper
                 if ( glow != 0f )
                     node .put( "glow", glow );
 
+                node .put( "orientation", rm .getStrutZone() );
+
                 return node;
             }
             else
