@@ -575,6 +575,8 @@ public class ShareDialog extends EscapeDialog
                      // e.g. https://vorth.github.io/vzome-sharing/2021/11/29/sample-vZome-share-08-01-41.html
             String postSrcUrl = repoUrl + "/edit/" + this.branchName + "/" + postSrcPath;
                      // e.g. https://github.com/vorth/vzome-sharing/edit/main/_posts/2021-11-29-sample-vZome-share-08-01-41.md
+            String indexSrcUrl = repoUrl + "/edit/" + this.branchName + "/" + assetPath + "index.md";
+            // e.g. https://github.com/vorth/vzome-sharing/edit/main/_posts/2021-11-29-sample-vZome-share-08-01-41.md
                         
             // Generate a shareable page for the vZome user to use, not a blog post
             String indexMd = this.indexTemplate
@@ -592,6 +594,7 @@ public class ShareDialog extends EscapeDialog
                     .replace( "${assetPath}", assetPath )
                     .replace( "${imagePath}", imagePath )
                     .replace( "${designPath}", designPath )
+                    .replace( "${indexSrcUrl}", indexSrcUrl )
                     .replace( "${rawUrl}", rawUrl );
 
             if ( this .controller .propertyIsTrue( "sharing-generatePost" ) ) {
