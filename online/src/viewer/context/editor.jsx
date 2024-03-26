@@ -1,8 +1,9 @@
 
-import { createContext, createEffect, useContext } from "solid-js";
+import { createContext, createEffect, createSignal, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import * as actions from '../util/actions.js';
+import { Guardrail } from "../guardrail.jsx";
 import { defaultCamera, useCamera } from "./camera.jsx";
 import { useWorkerClient } from "./worker.jsx";
 
@@ -21,6 +22,25 @@ const EditorProvider = props =>
   // Beware, createStore does not make a copy, shallow or deep!
   const [ state, setState ] = createStore( { ...initialState() } );
 
+  const [ showGuardrail, setShowGuardrail ] = createSignal( false );
+  let continuation;
+  const guard = guardedAction =>
+  {
+    if ( edited() ) {
+      continuation = guardedAction;
+      setShowGuardrail( true );
+    }
+    else
+      guardedAction();
+  }
+  const closeGuardrail = continued =>
+  {
+    setShowGuardrail( false );
+    if ( continued )
+      continuation();
+    continuation = undefined;
+  }
+
   const exportPromises = {};
 
   const onWorkerMessage = ( data ) =>
@@ -35,15 +55,18 @@ const EditorProvider = props =>
         break;
       }
 
-      case 'TEXT_FETCHED': {
+      case 'TEXT_FETCHED': { // we receive this event twice per fetch
         let { name } = data.payload;
-        if ( name && name .endsWith( '.vZome' ) ){
-          name = name .substring( 0, name .length - 6 );
+        if ( name && name .endsWith( '.vZome' ) ) {
+          if ( !state.ignoreDesignName ) {
+            name = name .substring( 0, name.length - 6 );
+            setState( 'designName', name ); // cooperatively managed by both worker and client
+            setState( 'ignoreDesignName', false );  // always reset to use the next name; see app/classic/menus/help.jsx
+          }
         }
-        setState( 'designName', name ); // cooperatively managed by both worker and client
         break;
       }
-  
+
       case 'SCENE_RENDERED': {
         // TODO: I wish I had a better before/after contract with the worker
         const { edit } = data.payload;
@@ -78,16 +101,21 @@ const EditorProvider = props =>
       case 'DESIGN_XML_PARSED':
       case 'LAST_BALL_CREATED':
       case 'DESIGN_XML_SAVED':
-        // TODO these are not implemented yet!
+      case 'INSTANCE_ADDED':
+      case 'INSTANCE_REMOVED':
+      case 'FETCH_STARTED':
+      case 'TRACKBALL_SCENE_LOADED':
+      case 'SCENES_DISCOVERED':
+        // TODO: do these require any state changes?
         break;
     
       default:
-        console.log( 'UNRECOGNIZED message from worker:', data.type );
+        console.log( 'UNRECOGNIZED message from worker for EditorProvider:', data.type );
         break;
     }
   }
 
-  const onWorkerError = () =>
+  const onWorkerError = (error) =>
   {
     console.log( error );   // TODO: handle the errors in a way the user can see
   }
@@ -133,8 +161,11 @@ const EditorProvider = props =>
 
   const indexResources = () => workerClient .postMessage( { type: 'WINDOW_LOCATION', payload: window.location.toString() } );
 
+  const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
+
   const providerValue = {
     ...store,
+    guard, edited,
     rootController,
     indexResources,
     controllerAction,
@@ -149,6 +180,7 @@ const EditorProvider = props =>
 
   return (
     <EditorContext.Provider value={ providerValue } >
+      <Guardrail show={showGuardrail()} close={closeGuardrail} />
       {props.children}
     </EditorContext.Provider>
   );

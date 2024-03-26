@@ -8,7 +8,6 @@ import { saveFile, saveFileAs, openFile } from "../../../viewer/util/files.js";
 
 import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 import { UrlDialog } from '../dialogs/webloader.jsx'
-import { Guardrail } from "../dialogs/guardrail.jsx";
 import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
 import { useCamera } from "../../../viewer/context/camera.jsx";
 
@@ -27,12 +26,10 @@ export const FileMenu = () =>
 {
   const { rootController, controllerAction,
     state, setState,
-    createDesign, openDesignFile, fetchDesignUrl, importMeshFile } = useEditor();
+    createDesign, openDesignFile, fetchDesignUrl, importMeshFile, guard, edited } = useEditor();
   const { state: cameraState } = useCamera();
   const [ showDialog, setShowDialog ] = createSignal( false );
   const fields = () => controllerProperty( rootController(), 'fields', 'fields', true );
-  const [ showGuardrail, setShowGuardrail ] = createSignal( false );
-  const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
 
   // Since the initial render of the menu doesn't fetch these properties,
   //   we have to force this prefetch so the data is ready when we need it.
@@ -86,24 +83,6 @@ export const FileMenu = () =>
     }
   }
 
-  let continuation;
-  const guard = guardedAction =>
-  {
-    if ( edited() ) {
-      continuation = guardedAction;
-      setShowGuardrail( true );
-    }
-    else
-      guardedAction();
-  }
-  const closeGuardrail = continued =>
-  {
-    setShowGuardrail( false );
-    if ( continued )
-      continuation();
-    continuation = undefined;
-  }
-
   const [ svgPreview, setSvgPreview ] = createSignal( false );
 
   const exportAs = ( extension, mimeType, format=extension ) => evt =>
@@ -155,8 +134,6 @@ export const FileMenu = () =>
   return (
     <Menu label="File" dialogs={<>
       <UrlDialog show={showDialog()} setShow={setShowDialog} openDesign={openUrl} />
-
-      <Guardrail show={showGuardrail()} close={closeGuardrail} />
 
       <SvgPreviewDialog open={svgPreview()} close={()=>setSvgPreview(false)} exportAs={exportAs} />
     </>}>
