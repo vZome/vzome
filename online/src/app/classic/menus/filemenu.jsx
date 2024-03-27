@@ -1,5 +1,5 @@
 
-import { createEffect, createSignal, mergeProps } from "solid-js";
+import { createEffect, createSignal, mergeProps, onMount } from "solid-js";
 import { unwrap } from "solid-js/store";
 
 import { controllerExportAction, controllerProperty, useEditor } from "../../../viewer/context/editor.jsx";
@@ -10,6 +10,12 @@ import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/me
 import { UrlDialog } from '../dialogs/webloader.jsx'
 import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
 import { useCamera } from "../../../viewer/context/camera.jsx";
+
+const queryParams = new URLSearchParams( window.location.search );
+const relativeUrl = queryParams.get( 'design' );
+
+// Must make this absolute before the worker tries to, with the wrong base URL
+const url = ( relativeUrl && new URL( relativeUrl, window.location ) .toString() );
 
 const NewDesignItem = props =>
 {
@@ -82,6 +88,9 @@ export const FileMenu = () =>
       fetchDesignUrl( url, { preview: false, debug: false } );
     }
   }
+
+  // Open the design indicated in the query string, if any
+  onMount( () => url && openUrl( url ) );
 
   const [ svgPreview, setSvgPreview ] = createSignal( false );
 
