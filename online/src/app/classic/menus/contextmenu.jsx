@@ -110,7 +110,7 @@ export const ContextualMenu = props =>
                 <PickingItem action='CreateStrutPrototype' label='Create Strut Prototype' disabled />
             } */}
 
-            <PickingItem action='setBuildOrbitAndLength' label='Build With This' type='strut' disabled />
+            <PickingItem action='setBuildOrbitAndLength' label='Build With This' type='strut' />
             {/* // this .add( enabler .setMenuAction( "showProperties-"+key, this .controller, new JMenuItem( "Show Properties" ) ) ); */}
           </ContextMenu.Content>
 
