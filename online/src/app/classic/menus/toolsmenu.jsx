@@ -39,7 +39,7 @@ export const ToolsMenu = () =>
 
         <Divider />
 
-        <SymmetryAction label="Replace With Panels" action="ReplaceWithShape" disabled={true} />
+        <SymmetryAction label="Replace With Panels" action="ReplaceWithShape" />
 
         <Divider />
         

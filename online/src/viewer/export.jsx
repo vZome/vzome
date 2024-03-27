@@ -1,9 +1,11 @@
 
-import { DropdownMenu } from "@kobalte/core";
+import { DropdownMenu, Link } from "@kobalte/core";
 
 import { useViewer } from "./context/viewer.jsx";
 import { saveFileAs } from "../viewer/util/files.js";
 import { useGltfExporter } from "./geometry.jsx";
+
+const editUrlBase = 'https://vzome.com/app/classic/index.html?design=';
 
 export const ExportMenu = (props) =>
 {
@@ -42,6 +44,11 @@ export const ExportMenu = (props) =>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal mount={props.root}>
         <DropdownMenu.Content class="exports__content">
+          <DropdownMenu.Item closeOnSelect={true} class="exports__item">
+            <Link.Root class="link" href={ editUrlBase + source.url } target="_blank" rel="noopener">
+              Open in vZome Online
+            </Link.Root>
+          </DropdownMenu.Item>
           <DropdownMenu.Item onSelect={downloadVZome} closeOnSelect={true} class="exports__item">
             .vZome source
           </DropdownMenu.Item>

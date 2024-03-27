@@ -53,6 +53,16 @@
       }
     },
     {
+      "name":             "classic w/design",
+
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8532/classic/index.html?design=//raw.githubusercontent.com/vorth/vzome-sharing/main/2021/09/11/10-10-11-rose-olive-bombshell-solid/rose-olive-bombshell-solid.vZome",
+      "pathMapping": {
+        "/": "${workspaceFolder}/online/src"
+      }
+    },
+    {
       "name":             "classic PWA",
 
       "type": "chrome",

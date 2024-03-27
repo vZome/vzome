@@ -176,6 +176,18 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
         break;
       }
 
+      case "setBuildOrbitAndLength": {
+        const { picked } = params.getConfig();
+        const rm = picked .getRenderedObject();
+        const length = rm .getStrutLength();
+        const orbit = rm .getStrutOrbit();
+        this.symmController .availableController .doAction( "enableDirection." + orbit .getName() );
+        this.symmController .buildController .doAction( "setSingleDirection." + orbit .getName() );
+        const lmodel = this.symmController .buildController .getSubController( "currentLength" );
+        lmodel .setActualLength( length );
+        break;
+      }
+
       case "exportText":
         const { format, selection, camera, lighting, height=500, width=800,
                 useShapes=true, drawOutlines=true, monochrome=false, showBackground=true, useLighting=true } = params.getConfig();

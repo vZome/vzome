@@ -20,6 +20,8 @@ export const ContextualMenu = props =>
         return state.picked?.type && state.picked.type !== 'ball';
       case 'panel':
         return state.picked?.type === null;
+      case 'ballOrStrut':
+        return state.picked?.type !== null;
       default:
         return true;
     }
@@ -99,7 +101,7 @@ export const ContextualMenu = props =>
 
             <ContextMenuSeparator/>
 
-            <PickingItem action='ReplaceWithShape' label='Replace With Panels' disabled />
+            <PickingItem action='ReplaceWithShape' label='Replace With Panels' type='ballOrStrut' />
 
             <ContextMenuSeparator/>
 
@@ -110,7 +112,7 @@ export const ContextualMenu = props =>
                 <PickingItem action='CreateStrutPrototype' label='Create Strut Prototype' disabled />
             } */}
 
-            <PickingItem action='setBuildOrbitAndLength' label='Build With This' type='strut' disabled />
+            <PickingItem action='setBuildOrbitAndLength' label='Build With This' type='strut' />
             {/* // this .add( enabler .setMenuAction( "showProperties-"+key, this .controller, new JMenuItem( "Show Properties" ) ) ); */}
           </ContextMenu.Content>
 

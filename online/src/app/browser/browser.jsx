@@ -39,6 +39,8 @@ const DesignList = (props) =>
   );
 }
 
+const classicURL = new URL( '../classic/index.html', window.location ) .toString() + "?design=";
+
 const DesignActions = (props) =>
 {
   const copyHtml = path =>
@@ -75,6 +77,9 @@ const DesignActions = (props) =>
         </Button>
         <Button variant="contained" target="_blank" rel="noopener" href={ getAssetUrl( props.githubUser, props.path ) }>
           Show GitHub Assets
+        </Button>
+        <Button variant="contained" color="secondary" target="_blank" rel="noopener" href={ classicURL + props.url }>
+          Open in vZome Online
         </Button>
       </div>
     </Show>
