@@ -229,7 +229,7 @@ core.config {
     'com/vzome/core/edits/RunZomodScript.java',
     'com/vzome/core/edits/RunPythonScript.java',
     'com/vzome/core/edits/RealizeMetaParts.java',
-    'com/vzome/core/edits/ReplaceWithShape.java',
+    // 'com/vzome/core/edits/ReplaceWithShape.java',
 
     'com/vzome/core/exporters/ColoredMeshJsonExporter.java',
     'com/vzome/core/exporters/SimpleMeshJsonExporter.java',

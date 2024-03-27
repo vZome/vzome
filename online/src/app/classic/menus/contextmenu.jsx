@@ -20,6 +20,8 @@ export const ContextualMenu = props =>
         return state.picked?.type && state.picked.type !== 'ball';
       case 'panel':
         return state.picked?.type === null;
+      case 'ballOrStrut':
+        return state.picked?.type !== null;
       default:
         return true;
     }
@@ -99,7 +101,7 @@ export const ContextualMenu = props =>
 
             <ContextMenuSeparator/>
 
-            <PickingItem action='ReplaceWithShape' label='Replace With Panels' disabled />
+            <PickingItem action='ReplaceWithShape' label='Replace With Panels' type='ballOrStrut' />
 
             <ContextMenuSeparator/>
 
