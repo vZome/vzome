@@ -452,6 +452,13 @@ onmessage = ({ data }) =>
         connectTrackballScene( postMessage );
         return;
       }
+      if ( action === 'snapCamera' ) {
+        const symmController = designWrapper .getControllerByPath( controllerPath );
+        const { up, lookDir } = parameters;
+        const result = designWrapper .snapCamera( symmController.controller, up, lookDir );
+        postMessage( { type: 'CAMERA_SNAPPED', payload: { up: result.up, lookDir: result.lookDir } } );
+        return;
+      }
       try {
         // console.log( "action", uniqueId );
         designWrapper .doAction( controllerPath, action, parameters );

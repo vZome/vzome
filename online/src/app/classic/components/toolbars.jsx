@@ -2,7 +2,7 @@
 import { createSignal, createEffect } from "solid-js";
 
 import { controllerProperty, subController, useEditor } from '../../../viewer/context/editor.jsx';
-import { useSymmetry } from "../classic.jsx";
+import { useSymmetry } from "../context/symmetry.jsx";
 import { ToolConfig } from "../dialogs/toolconfig.jsx";
 
 const ToolbarSpacer = () => ( <div style={{ 'min-width': '10px', 'min-height': '10px' }}></div> )

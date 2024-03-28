@@ -8,10 +8,12 @@ import FormControlLabel from "@suid/material/FormControlLabel";
 
 import { useWorkerClient } from '../../../viewer/context/worker.jsx';
 import { useEditor } from '../../../viewer/context/editor.jsx';
+import { useSymmetry } from "../context/symmetry.jsx";
 import { CameraProvider, useCamera } from '../../../viewer/context/camera.jsx';
-import { CameraTool, InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
-
+import { InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
 import { SceneCanvas } from '../../../viewer/scenecanvas.jsx';
+
+import { SnapCameraTool } from '../tools/snapcamera.jsx';
 
 
 export const CameraControls = (props) =>
@@ -20,6 +22,7 @@ export const CameraControls = (props) =>
   const { isWorkerReady, subscribeFor } = useWorkerClient();
   const { rootController, controllerAction } = useEditor();
   const { state, setCamera, togglePerspective } = useCamera();
+  const { snapping, toggleSnapping } = useSymmetry();
   const [ scene, setScene ] = createStore( null );
 
   const isPerspective = () => state.camera.perspective;
@@ -78,14 +81,17 @@ export const CameraControls = (props) =>
     <CameraProvider name='trackball' context={context}>
     <InteractionToolProvider>
       {/* provider and CameraTool just to get the desired cursor */}
-      <CameraTool/>
+      <SnapCameraTool/>
       <div id='camera-controls' style={{ display: 'grid', 'grid-template-rows': 'min-content min-content' }}>
         <Stack spacing={2} direction="row" style={{ padding: '8px' }}>
           <FormControlLabel label="perspective"
             control={
               <Switch checked={isPerspective()} onChange={togglePerspective} size='small' inputProps={{ "aria-label": "controlled" }} />
           }/>
-          <div id='snap-switch' class='placeholder' >snap</div>
+          <FormControlLabel label="snap"
+            control={
+              <Switch checked={snapping()} onChange={toggleSnapping} size='small' inputProps={{ "aria-label": "controlled" }} />
+          }/>
           <div id='outlines-switch' class='placeholder' >outlines</div>
         </Stack>
 

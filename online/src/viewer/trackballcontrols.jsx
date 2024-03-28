@@ -55,6 +55,10 @@ export const TrackballControls = (props) =>
 
     const onChange = () => props.sync( controls .target, props.name );
     controls .addEventListener( "change", onChange );
+    const onEnd = () => {
+      props.trackballEnd && props.trackballEnd( controls .target, props.name );
+    }
+    controls .addEventListener( "end", onEnd );
 
     onCleanup(() => {
       controls .removeEventListener( "change", onChange );

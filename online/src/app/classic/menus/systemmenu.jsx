@@ -2,7 +2,7 @@
 import { Choices, Divider, Menu, MenuAction, createCheckboxItem } from "../../framework/menus.jsx";
 
 import { controllerProperty, useEditor } from "../../../viewer/context/editor.jsx";
-import { useSymmetry } from "../classic.jsx";
+import { useSymmetry } from "../context/symmetry.jsx";
 
 export const SystemMenu = () =>
 {

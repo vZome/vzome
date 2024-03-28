@@ -106,6 +106,7 @@ const EditorProvider = props =>
       case 'FETCH_STARTED':
       case 'TRACKBALL_SCENE_LOADED':
       case 'SCENES_DISCOVERED':
+      case 'CAMERA_SNAPPED':
         // TODO: do these require any state changes?
         break;
     

@@ -81,6 +81,20 @@ const getSceneIndex = ( title, list ) =>
   return index;
 }
 
+export const snapCamera = ( symmController, upArray, lookArray ) =>
+{
+  const snapper = symmController .getSnapper();
+  let up = new com.vzome.core.math.RealVector( ...upArray );
+  let look = new com.vzome.core.math.RealVector( ...lookArray );
+  look = snapper .snapZ( look ) .normalize();
+  up = snapper .snapY( look, up ) .normalize();
+  const toArray = rv => {
+    const { x, y, z } = rv;
+    return [ x, y, z ];
+  }
+  return { up: toArray( up ), lookDir: toArray( look ) };
+}
+
 export const loadDesign = ( xml, debug, clientEvents, sceneTitle ) =>
 {
   const design = parse( xml );
@@ -134,6 +148,7 @@ export const loadDesign = ( xml, debug, clientEvents, sceneTitle ) =>
     const embedding = design .getOrbitSource() .getEmbedding();
     return { ...renderHistory.getScene(editId, before), embedding };
   };
+  wrapper.snapCamera = snapCamera;
 
   // TODO: fix this terrible hack!
   wrapper.renderScene = () => renderHistory.recordSnapshot('--END--', '--END--', []);
@@ -159,11 +174,10 @@ export const newDesign = ( fieldName, clientEvents ) =>
     const embedding = design .getOrbitSource() .getEmbedding();
     return { ...renderHistory.getScene(editId, before), embedding };
   };
+  wrapper.snapCamera = snapCamera;
 
   // TODO: fix this terrible hack!
   wrapper.renderScene = () => renderHistory.recordSnapshot('--END--', '--END--', []);
 
   return wrapper;
 }
-
-

@@ -39,6 +39,8 @@ const LightedCameraControls = (props) =>
   props = mergeProps( { rotateSpeed: 4.5, zoomSpeed: 3, panSpeed: 1 }, props );
   const halfWidth = () => perspectiveProps.width / 2;
 
+  const onDragEnd = () => ( tool !== undefined ) && tool() .onTrackballEnd();
+
   return (
     <>
       <Show when={state.camera.perspective} fallback={
@@ -55,7 +57,7 @@ const LightedCameraControls = (props) =>
         </PerspectiveCamera>
       </Show>
       <TrackballControls enabled={enableTrackball()} rotationOnly={props.rotationOnly} name={name}
-        camera={trackballProps.camera} target={perspectiveProps.target} sync={trackballProps.sync}
+        camera={trackballProps.camera} target={perspectiveProps.target} sync={trackballProps.sync} trackballEnd={onDragEnd}
         rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} />
     </>
   );
