@@ -38,7 +38,7 @@ export const SymmetryProvider = (props) =>
 
   const api = {
     snapping, snapCamera,
-    toggleSnapping: () => setSnapping( v => !v ),
+    toggleSnapping: () => { setSnapping( v => !v ); snapCamera() },
     symmetryDefined: () => !!symmetry(),
     symmetryController: () => symmController(),
     showShapesDialog: () => setShowShapesDialog( true ),
@@ -48,6 +48,9 @@ export const SymmetryProvider = (props) =>
       setShowPolytopesDialog( true );
     },
   };
+
+  // TODO: this doesn't work, with or without the setTimeout()
+  subscribeFor( 'SYMMETRY_CHANGED', () => setTimeout( () => snapCamera() ) );
 
   subscribeFor( 'CAMERA_SNAPPED', ( data ) => {
     const { up, lookDir } = data;

@@ -8,13 +8,14 @@ export const SystemMenu = () =>
 {
   const { rootController, controllerAction } = useEditor();
 
-  const { showOrbitsDialog, showShapesDialog } = useSymmetry();
+  const { showOrbitsDialog, showShapesDialog, snapCamera } = useSymmetry();
 
   const symmetries = () => controllerProperty( rootController(), 'symmetryPerspectives', 'symmetryPerspectives', true );
   const currentSymm = () => controllerProperty( rootController(), 'symmetry' ); // TODO move to useSymmetry?
   const EditAction = createCheckboxItem( rootController() );
   const setSymmetry = system => {
     controllerAction( rootController(), `setSymmetry.${system}` );
+    snapCamera();
   }
 
   return (
