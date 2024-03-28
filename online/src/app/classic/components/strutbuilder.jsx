@@ -10,7 +10,7 @@ import { controllerProperty, subController, useEditor } from '../../../viewer/co
 
 import { StrutLengthPanel } from './length.jsx';
 import { OrbitPanel } from './orbitpanel.jsx';
-import { useSymmetry } from "../classic.jsx";
+import { useSymmetry } from "../context/symmetry.jsx";
 
 export const StrutBuildPanel = () =>
 {

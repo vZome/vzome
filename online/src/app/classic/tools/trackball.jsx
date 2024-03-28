@@ -2,8 +2,8 @@
 import { Show, createEffect, createSignal, onCleanup } from "solid-js";
 import { Matrix4, Quaternion, Vector3 } from 'three';
 import { useFrame, useThree } from "solid-three";
-import { DragHandler } from "./drag";
-import { VectorArrow } from "./arrow";
+import { DragHandler } from "./drag.ts";
+import { VectorArrow } from "./arrow.jsx";
 
 const defaultDrag = {
   direction: [ 1, 0 ],

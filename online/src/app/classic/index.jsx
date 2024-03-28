@@ -17,7 +17,8 @@ import { ViewerProvider } from '../../viewer/context/viewer.jsx';
 import { CameraProvider } from '../../viewer/context/camera.jsx';
 
 import { VZomeAppBar } from './components/appbar.jsx';
-import { ClassicEditor, SymmetryProvider } from './classic.jsx';
+import { ClassicEditor } from './classic.jsx';
+import { SymmetryProvider } from './context/symmetry.jsx';
 
 const Persistence = () =>
 {

@@ -9,10 +9,11 @@ import { LabelDialog } from '../dialogs/label.jsx';
 
 import { useCamera } from '../../../viewer/context/camera.jsx';
 import { useViewer } from '../../../viewer/context/viewer.jsx';
-import { CameraTool, InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
+import { InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
 import { useEditor } from '../../../viewer/context/editor.jsx';
-
 import { SceneCanvas } from '../../../viewer/index.jsx';
+
+import { SnapCameraTool } from '../tools/snapcamera.jsx';
 import { SelectionTool } from '../tools/selection.jsx';
 import { StrutDragTool } from '../tools/strutdrag.jsx';
 import { ContextualMenuArea, resumeMenuKeyEvents, suspendMenuKeyEvents } from '../../framework/menus.jsx';
@@ -109,7 +110,7 @@ export const SceneEditor = ( props ) =>
                   <SelectionTool/>
                 }>
                 <Match when={ viewing() }>
-                  <CameraTool/>
+                  <SnapCameraTool/>
                 </Match>
                 <Match when={ strutting() }>
                   <StrutDragTool/>

@@ -35,7 +35,8 @@ const CellSelectorTool = props =>
     onDragStart: ( id, position, type, starting, evt ) => {},
     onDrag: evt => {},
     onDragEnd: evt => {},
-    onContextMenu: ( id, position, type, selected ) => {}
+    onContextMenu: ( id, position, type, selected ) => {},
+    onTrackballEnd: () => {},
   };
 
   const [ _, setTool ] = useInteractionTool();
