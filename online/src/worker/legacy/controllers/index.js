@@ -138,7 +138,7 @@ export const loadDesign = ( xml, debug, clientEvents, sceneTitle ) =>
 
   const { shapes, edit } = renderHistory .getScene( sceneEditId, before );
   const embedding = design .getOrbitSource() .getEmbedding();
-  const scene = { lighting, camera: sceneCamera, embedding, shapes };
+  const scene = { lighting, camera: sceneCamera, embedding, shapes, polygons: true };
   clientEvents .sceneChanged( scene, edit );
 
   const wrapper = createControllers( design, renderingChanges, clientEvents );
@@ -146,7 +146,7 @@ export const loadDesign = ( xml, debug, clientEvents, sceneTitle ) =>
   // Not beautiful, but functional
   wrapper.getScene = (editId, before = false) => {
     const embedding = design .getOrbitSource() .getEmbedding();
-    return { ...renderHistory.getScene(editId, before), embedding };
+    return { ...renderHistory.getScene(editId, before), embedding, polygons: true };
   };
   wrapper.snapCamera = snapCamera;
 
@@ -165,14 +165,14 @@ export const newDesign = ( fieldName, clientEvents ) =>
 
   const { shapes, edit } = renderHistory .getScene( '--START--', false );
   const embedding = design .getOrbitSource() .getEmbedding();
-  clientEvents .sceneChanged( { embedding, shapes }, edit ); // let client determine default lighting and camera
+  clientEvents .sceneChanged( { embedding, shapes, polygons: true }, edit ); // let client determine default lighting and camera
 
   const wrapper = createControllers( design, renderingChanges, clientEvents );
 
   // Not beautiful, but functional
   wrapper.getScene = (editId, before = false) => {
     const embedding = design .getOrbitSource() .getEmbedding();
-    return { ...renderHistory.getScene(editId, before), embedding };
+    return { ...renderHistory.getScene(editId, before), embedding, polygons: true };
   };
   wrapper.snapCamera = snapCamera;
 

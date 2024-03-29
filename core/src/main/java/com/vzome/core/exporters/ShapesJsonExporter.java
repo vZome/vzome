@@ -58,6 +58,7 @@ public class ShapesJsonExporter extends DocumentExporter
         generator .setCodec( mapper .getObjectMapper() );
 
         generator .writeStartObject();
+        generator .writeStringField( "polygons", "true" );
         generator .writeStringField( "field", field.getName() );
         generator .writeStringField( "symmetry", orbitSource .getName() );
         generator .writeObjectField( "orientations", orbitSource .getOrientations( true ) );

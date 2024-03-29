@@ -21,7 +21,7 @@ export const CameraControls = (props) =>
   const context = useCamera();
   const { isWorkerReady, subscribeFor } = useWorkerClient();
   const { rootController, controllerAction } = useEditor();
-  const { state, setCamera, togglePerspective } = useCamera();
+  const { state, setCamera, togglePerspective, toggleOutlines } = useCamera();
   const { snapping, toggleSnapping } = useSymmetry();
   const [ scene, setScene ] = createStore( null );
 
@@ -78,7 +78,7 @@ export const CameraControls = (props) =>
   createEffect( () => isWorkerReady() && controllerAction( rootController(), 'connectTrackballScene' ) );
 
   return (
-    <CameraProvider name='trackball' context={context}>
+    <CameraProvider name='trackball' outlines={false} context={context}>
     <InteractionToolProvider>
       {/* provider and CameraTool just to get the desired cursor */}
       <SnapCameraTool/>
@@ -92,7 +92,10 @@ export const CameraControls = (props) =>
             control={
               <Switch checked={snapping()} onChange={toggleSnapping} size='small' inputProps={{ "aria-label": "controlled" }} />
           }/>
-          <div id='outlines-switch' class='placeholder' >outlines</div>
+          <FormControlLabel label="outlines"
+            control={
+              <Switch checked={state.outlines} onChange={toggleOutlines} size='small' inputProps={{ "aria-label": "controlled" }} />
+          }/>
         </Stack>
 
         <div id="ball-and-slider" style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>

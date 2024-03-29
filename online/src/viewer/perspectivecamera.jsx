@@ -14,6 +14,13 @@ export const PerspectiveCamera = (props) =>
   let cam;
 
   createEffect( () => {
+    if ( props.outlines )
+      cam.layers .enable( 4 );
+    else
+      cam.layers .disable( 4 );
+  });
+
+  createEffect( () => {
     const [ x, y, z ] = props.target;
     cam .lookAt( x, y, z );
   });
