@@ -142,7 +142,8 @@ public class Application implements AlgebraicField.Registry
         // need these all here just to find the extension in DocumentController.getProperty()
         this .exporters .put( "mesh", new SimpleMeshJsonExporter() );
         this .exporters .put( "cmesh", new ColoredMeshJsonExporter() );
-        this .exporters .put( "shapes", new ShapesJsonExporter() );
+        this .exporters .put( "shapes", new ShapesJsonExporter( false ) );
+        this .exporters .put( "trishapes", new ShapesJsonExporter( true ) );
  
         this .exporters .put( "ggb", new GeoGebraExporter() );
         this .exporters .put( "math", new MathTableExporter() );

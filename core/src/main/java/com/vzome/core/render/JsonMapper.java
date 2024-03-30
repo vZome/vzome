@@ -35,7 +35,7 @@ import com.vzome.core.model.Strut;
  */
 public class JsonMapper
 {
-    private static class RealTrianglesView implements AlgebraicNumber.Views.Real, Polyhedron.Views.Triangles {}
+    public static class RealTrianglesView implements AlgebraicNumber.Views.Real, Polyhedron.Views.Triangles {}
 
     // Keep things simple for the client code: all real numbers, all faces triangulated
     private final ObjectMapper objectMapper;
@@ -44,17 +44,19 @@ public class JsonMapper
     private final Set<String> shapeIds = new HashSet<>();
     private Map<AlgebraicMatrix,ObjectNode> rotations = new HashMap<>();
     private final boolean forUnity;
+    private final boolean justTriangles;
     
     public JsonMapper()
     {
-        this( RealTrianglesView.class, false );
+        this( RealTrianglesView.class, false, false );
     }
     
-    public JsonMapper( Class<?> view, boolean forUnity )
+    public JsonMapper( Class<?> view, boolean forUnity, boolean justTriangles )
     {
         this .objectMapper = new ObjectMapper();
         this .objectWriter = objectMapper .writerWithView( view );
         this .forUnity = forUnity;
+        this .justTriangles = justTriangles;
     }
     
     public ObjectMapper getObjectMapper()
@@ -85,12 +87,20 @@ public class JsonMapper
                 node .set( "vertices", arrayNode );
 
                 arrayNode = this .objectMapper .createArrayNode();
-                for ( Polyhedron.Face face : shape .getFaceSet() ) {
-                    ObjectNode tNode = this .objectMapper .createObjectNode();
-                    tNode .set( "vertices", this .objectMapper .valueToTree( face ) );
-                    // Sending normals bloats the JSON to the point where it is untenable for CheerpJ cjStringJavaToJs
-                    // tNode .set( "normal", this .getVectorNode( triangle .normal ) );
-                    arrayNode .add( tNode );
+                if ( this .justTriangles ) {
+                    for ( Polyhedron.Face.Triangle triangle : shape .getTriangleFaces() ) {
+                        ObjectNode tNode = this .objectMapper .createObjectNode();
+                        tNode .set( "vertices", this .objectMapper .valueToTree( triangle .vertices ) );
+                        arrayNode .add( tNode );
+                    }
+                } else {
+                    for ( Polyhedron.Face face : shape .getFaceSet() ) {
+                        ObjectNode tNode = this .objectMapper .createObjectNode();
+                        tNode .set( "vertices", this .objectMapper .valueToTree( face ) );
+                        // Sending normals bloats the JSON to the point where it is untenable for CheerpJ cjStringJavaToJs
+                        // tNode .set( "normal", this .getVectorNode( triangle .normal ) );
+                        arrayNode .add( tNode );
+                    }
                 }
                 node .set( "faces", arrayNode );
                 return node;                
