@@ -135,7 +135,8 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         submenu = new JMenu( "Export 3D Rendering..." );
         submenu .add( createMenuItem( "Collada DAE", "export.dae" ) );
         submenu .add( createMenuItem( "POV-Ray", "export.pov" ) );
-        submenu .add( createMenuItem( "vZome Shapes JSON", "export.shapes" ) );
+        submenu .add( createMenuItem( "vZome Shapes JSON (polygons)", "export.shapes" ) );
+        submenu .add( createMenuItem( "vZome Shapes JSON (triangles)", "export.trishapes" ) );
         submenu .add( createMenuItem( "VRML", "export.vrml" ) );
         menu .add( submenu );
         submenu .setEnabled( fullPower && canSave );

@@ -22,10 +22,16 @@ import com.vzome.core.render.RenderedModel;
 public class ShapesJsonExporter extends DocumentExporter
 {
     private transient JsonMapper mapper;
+    private final boolean justTriangles;
     
+    public ShapesJsonExporter( boolean justTriangles )
+    {
+        this.justTriangles = justTriangles;
+    }
+
     public void exportDocument( DocumentModel doc, File file, Writer writer, int height, int width ) throws Exception
     {
-        mapper = new JsonMapper();
+        mapper = new JsonMapper( JsonMapper.RealTrianglesView.class, false, this.justTriangles );
         mScene = doc .getCamera();
         mModel = doc .getRenderedModel();
         mLights = doc .getSceneLighting();
@@ -58,7 +64,8 @@ public class ShapesJsonExporter extends DocumentExporter
         generator .setCodec( mapper .getObjectMapper() );
 
         generator .writeStartObject();
-        generator .writeStringField( "polygons", "true" );
+        if ( ! justTriangles )
+            generator .writeStringField( "polygons", "true" );
         generator .writeStringField( "field", field.getName() );
         generator .writeStringField( "symmetry", orbitSource .getName() );
         generator .writeObjectField( "orientations", orbitSource .getOrientations( true ) );

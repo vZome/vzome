@@ -385,7 +385,7 @@ public class DocumentModel implements Snapshot .Recorder, Context
             break;
 
         case "shapes":
-            ShapesJsonExporter ojex = new ShapesJsonExporter();
+            ShapesJsonExporter ojex = new ShapesJsonExporter( false );
             try {
                 ojex .exportDocument( this, null, out, 0, 0 );
             } catch (Exception e) {
