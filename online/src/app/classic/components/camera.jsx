@@ -83,8 +83,8 @@ export const CameraControls = (props) =>
       {/* provider and CameraTool just to get the desired cursor */}
       <SnapCameraTool/>
       <div id='camera-controls' style={{ display: 'grid', 'grid-template-rows': 'min-content min-content' }}>
-        <Stack spacing={2} direction="row" style={{ padding: '8px' }}>
-          <FormControlLabel label="perspective"
+        <Stack spacing={1} direction="row" style={{ padding: '8px' }}>
+          <FormControlLabel label="perspective" style={{ 'margin-right': '0' }}
             control={
               <Switch checked={isPerspective()} onChange={togglePerspective} size='small' inputProps={{ "aria-label": "controlled" }} />
           }/>
