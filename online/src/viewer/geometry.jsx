@@ -4,17 +4,22 @@ import { Vector3, Matrix4, BufferGeometry, Float32BufferAttribute } from "three"
 import { useThree } from "solid-three";
 
 import { useInteractionTool } from "./context/interaction.jsx";
+import { useViewer } from "./context/viewer.jsx";
+import { useCamera } from "./context/camera.jsx";
+
 import { GLTFExporter } from "three-stdlib";
 import { Label } from "./labels.jsx";
 
 
 const Instance = ( props ) =>
 {
-  let meshRef;
+  let meshRef, linesRef;
   createEffect( () => {
     const m = new Matrix4();
     m.set( ...props.rotation );
     meshRef.matrix = m;
+    if ( !! linesRef )
+      linesRef.matrix = m.clone();
   } );
 
   const [ tool ] = useInteractionTool();
@@ -60,6 +65,9 @@ const Instance = ( props ) =>
       handler( props.id, props.position, props.type, props.selected, props.label )
     }
   }
+
+  onMount( () => linesRef && linesRef.layers.set( 4 ) );
+
   // TODO give users control over emissive color
   const emissive = () => props.selected? "#c8c8c8" : "black"
   // TODO: cache materials
@@ -70,6 +78,11 @@ const Instance = ( props ) =>
           onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onContextMenu={handleContextMenu}>
         <meshLambertMaterial attach="material" color={props.color} emissive={emissive()} />
       </mesh>
+      { !!props.outlineGeometry &&
+        <lineSegments matrixAutoUpdate={false} ref={linesRef} geometry={props.outlineGeometry} >
+          <lineBasicMaterial attach="material" linewidth={4.4} color='black' />
+        </lineSegments>
+      }
       {!!props.label && <Label parent={meshRef} position={props.geometry.shapeCentroid} text={props.label} />}
     </group>
   )
@@ -87,7 +100,12 @@ const centroid = vertices =>
 
 const InstancedShape = ( props ) =>
 {
-  const geometry = createMemo( () => {
+  const { scene } = useViewer();
+  const showOutlines = () => scene.polygons;
+
+  const geometry = createMemo( () =>
+  {
+    // TODO: use indexed vertices, if I can understand how to do normals
     const { vertices, faces } = props.shape;
     const computeNormal = ( [ v0, v1, v2 ] ) => {
       const e1 = new Vector3().subVectors( v1, v0 )
@@ -99,10 +117,20 @@ const InstancedShape = ( props ) =>
     faces.forEach( face => {
       const corners = face.vertices.map( i => vertices[ i ] )
       const { x:nx, y:ny, z:nz } = computeNormal( corners )
-      corners.forEach( ( { x, y, z } ) => {
-        positions.push( x, y, z )
+      const addVertex = ( { x, y, z } ) =>
+      {
+        positions.push( x, y, z );
         normals.push( nx, ny, nz )
-      } )
+      }
+      if ( scene.polygons ) {
+        for (let index = 0; index < corners.length-2; index++) {
+          addVertex( corners[ 0 ] );
+          addVertex( corners[ (index+1) % corners.length ] );
+          addVertex( corners[ (index+2) % corners.length ] );
+        }  
+      } else {
+        corners.forEach( addVertex );
+      }
     } );
     const geometry = new BufferGeometry();
     geometry.setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
@@ -112,10 +140,29 @@ const InstancedShape = ( props ) =>
     return geometry;
   } );
 
+  const outlineGeometry = createMemo( () =>
+  {
+    const { vertices, faces } = props.shape;
+    let positions = [];
+    vertices .map( ( { x, y, z } ) => positions.push( x, y, z ) );
+    let indices = [];
+    faces.forEach( face => {
+      for (let i = 0; i < face.vertices.length; i++) {
+        indices .push( face.vertices[ i ] );
+        indices .push( face.vertices[ (i+1) % face.vertices.length ] );
+      }
+    } );
+    const geometry = new BufferGeometry();
+    geometry .setIndex( indices );
+    geometry .setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
+    geometry .computeBoundingSphere();
+    return geometry;
+  } );
+
   return (
     <>
       <For each={props.shape.instances}>{ instance =>
-        <Instance {...instance} geometry={geometry()} />
+        <Instance {...instance} geometry={geometry()} outlineGeometry={ showOutlines() && outlineGeometry() } />
       }</For>
     </>
   )

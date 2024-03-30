@@ -44,13 +44,13 @@ const LightedCameraControls = (props) =>
   return (
     <>
       <Show when={state.camera.perspective} fallback={
-        <OrthographicCamera aspect={props.aspect} name={name}
+        <OrthographicCamera aspect={props.aspect} name={name} outlines={state.outlines}
             position={perspectiveProps.position} up={perspectiveProps.up} halfWidth={halfWidth()}
             near={perspectiveProps.near} far={perspectiveProps.far} target={perspectiveProps.target} >
           <Lighting />
         </OrthographicCamera>
       }>
-        <PerspectiveCamera aspect={props.aspect} name={name}
+        <PerspectiveCamera aspect={props.aspect} name={name} outlines={state.outlines}
             position={perspectiveProps.position} up={perspectiveProps.up} fov={perspectiveProps.fov( props.aspect )}
             near={perspectiveProps.near} far={perspectiveProps.far} target={perspectiveProps.target} >
           <Lighting />

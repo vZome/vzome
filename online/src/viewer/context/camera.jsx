@@ -38,6 +38,7 @@ const defaultLighting = () => ({
 const defaultScene = () => ({
   camera: defaultCamera(),
   lighting: defaultLighting(),
+  outlines: false,
 });
 
 const toVector = vector3 =>
@@ -112,6 +113,10 @@ const CameraProvider = ( props ) =>
     setState( 'camera', fixedFrustum( props.distance ) );
   }
 
+  if ( props.outlines !== undefined ) {
+    setState( 'outlines', props.outlines );
+  }
+
   if ( !!props.context ) {
     // Sync background from the context
     createEffect( () => {
@@ -163,6 +168,7 @@ const CameraProvider = ( props ) =>
 
   const setLighting = lighting => setState( 'lighting', lighting );
   const togglePerspective = () => setState( 'camera', 'perspective', val => !val );
+  const toggleOutlines = () => setState( 'outlines', val => !val );
 
   const resetCamera = () =>
   {
@@ -173,7 +179,7 @@ const CameraProvider = ( props ) =>
   const providerValue = {
     name: props.name,
     perspectiveProps, trackballProps, state,
-    resetCamera, setCamera, setLighting, togglePerspective,
+    resetCamera, setCamera, setLighting, togglePerspective, toggleOutlines,
   };
   
   // The perspectiveProps is used to initialize PerspectiveCamera in clients.

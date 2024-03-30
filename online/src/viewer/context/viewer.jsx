@@ -80,6 +80,7 @@ const ViewerProvider = ( props ) =>
       setLighting( { ...state.lighting, backgroundColor } );
     }
     setScene( 'embedding', reconcile( scene.embedding ) );
+    setScene( 'polygons', scene.polygons );
     updateShapes( scene.shapes );
     // logShapes();
   } );

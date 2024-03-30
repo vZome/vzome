@@ -197,6 +197,7 @@ export const BuildPlaneTool = props =>
     onDrag: () => {},
     onDragStart: () => {},
     onDragEnd: () => {},
+    onTrackballEnd: () => {},
 
     bkgdClick: () => dispatch( doToggleDisk() ),
 

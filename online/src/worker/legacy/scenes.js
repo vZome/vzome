@@ -6,7 +6,7 @@ export const realizeShape = ( shape ) =>
     const { x, y, z } = av.toRealVector();  // this is too early to do embedding, which is done later, globally
     return { x, y, z };
   })
-  const faces = shape.getTriangleFaces().toArray().map( ({ vertices }) => ({ vertices }) );  // not a no-op, converts to POJS
+  const faces = shape.getFaceSet().toArray().map( (value) => ({ vertices: [...value.array] }) ); // not a no-op, converts to POJS
   const id = 's' + shape.getGuid().toString();
   return { id, vertices, faces, instances: [] };
 }

@@ -27,8 +27,8 @@ const filterScene = ( report, load ) => event =>
 {
   const { type, payload } = event;
   if ( type === 'SCENE_RENDERED' ) {
-    const { camera, lighting, shapes, embedding } = payload.scene;
-    event.payload.scene = { shapes, embedding };
+    const { camera, lighting, shapes, embedding, polygons } = payload.scene;
+    event.payload.scene = { shapes, embedding, polygons };
     if ( load.camera )   event.payload.scene.camera   = camera;
     if ( load.lighting ) event.payload.scene.lighting = lighting;
   }
@@ -93,7 +93,7 @@ const preparePreviewScene = index =>
 
 const convertPreview = ( preview, sceneTitle ) =>
 {
-  const { lights, embedding, orientations, shapes, instances } = preview
+  const { polygons, lights, embedding, orientations, shapes, instances } = preview
   
   const dlights = lights.directionalLights.map( ({ direction, color }) => {
     const { x, y, z } = direction
@@ -132,7 +132,7 @@ const convertPreview = ( preview, sceneTitle ) =>
 
   const sceneIndex = getSceneIndex( sceneTitle, scenes );
 
-  return { lighting, embedding, ...preparePreviewScene( sceneIndex ) };
+  return { lighting, embedding, ...preparePreviewScene( sceneIndex ), polygons };
 }
 
 const fetchUrlText = async ( url ) =>
@@ -463,7 +463,7 @@ onmessage = ({ data }) =>
         // console.log( "action", uniqueId );
         designWrapper .doAction( controllerPath, action, parameters );
         const { shapes, embedding } = designWrapper .getScene( '--END--', true ); // never send camera or lighting!
-        postMessage( { type: 'SCENE_RENDERED', payload: { scene: { shapes, embedding } } } );
+        postMessage( { type: 'SCENE_RENDERED', payload: { scene: { shapes, embedding, polygons: true } } } );
       } catch (error) {
         console.log( `${action} actionPerformed error: ${error.message}` );
         postMessage( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
