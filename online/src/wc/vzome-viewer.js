@@ -3,6 +3,7 @@ import { vZomeViewerCSS } from "./vzome-viewer.css";
 
 import { createWorker } from '../viewer/context/worker.jsx';
 import { fetchDesign, selectScene, decodeEntities } from "../viewer/util/actions.js";
+import { VZomeViewerNextButton, VZomeViewerPrevButton } from "./index-buttons.js";
 
 const debug = false;
 export class VZomeViewer extends HTMLElement
@@ -18,6 +19,11 @@ export class VZomeViewer extends HTMLElement
   #updateCalled;
   #loadFlags;
 
+  #indexed;
+  #sceneIndices;
+  #sceneTitles;
+  #sceneIndex;
+
   constructor()
   {
     super();
@@ -30,14 +36,23 @@ export class VZomeViewer extends HTMLElement
     // I'd like to remove #workerclient, but I have to set up these subscriptions somehow...
     this.#workerclient = createWorker();
     this.#workerclient .subscribeFor( 'ALERT_RAISED', () => this .dispatchEvent( new Event( 'vzome-design-failed' ) ) );
-    this.#workerclient .subscribeFor( 'SCENE_RENDERED', () => this .dispatchEvent( new Event( 'vzome-design-rendered' ) ) );
+    this.#workerclient .subscribeFor( 'SCENE_RENDERED', () => {
+      let scene = {};
+      if ( this.#indexed && !! this.#sceneTitles )
+        scene = { title: this.#sceneTitles[ this.#sceneIndex ] };
+      this .dispatchEvent( new CustomEvent( 'vzome-design-rendered', { detail: scene } ) );
+    } );
     this.#workerclient .subscribeFor( 'SCENES_DISCOVERED', payload => {
-      const titles = payload .map( (scene,i) =>  scene.title ? decodeEntities( scene.title ) : `#${i}` );
-      this .dispatchEvent( new CustomEvent( 'vzome-scenes-discovered', { detail: titles } ) );
+      this.#sceneIndices = payload .map( (scene,i) => `#${i}` ) .slice( 1 ); // strip the default scene
+      this.#sceneTitles = payload .map( (scene,i) =>  scene.title ? decodeEntities( scene.title ) : `#${i}` );
+      if ( this.#indexed )
+        this.#sceneTitles = this.#sceneTitles .slice( 1 );
+      this .dispatchEvent( new CustomEvent( 'vzome-scenes-discovered', { detail: this.#sceneTitles } ) );
     } );
 
     this.#config = { preview: true, showScenes: 'none', camera: true, lighting: true, design: true, labels: false, showPerspective: true };
 
+    this.#indexed = false;
     this.#urlChanged = true;
     this.#sceneChanged = true;
     this.#reactive = true;
@@ -47,12 +62,48 @@ export class VZomeViewer extends HTMLElement
     debug && console.log( 'custom element constructed' );
   }
 
+  previousScene( loadFlags={} )
+  {
+    debug && console.log( 'User called previousScene()' );
+    this.#loadFlags = loadFlags;
+    if ( ! this.#indexed ) {
+      console.log( 'This previousScene call ignored; the viewer is not indexed.  Set indexed to true if you want to use previousScene.' );
+      return;
+    }
+    if ( ! this.#sceneIndices ) {
+      console.log( 'This previousScene call ignored; no scenes were discovered.' );
+      return;
+    }
+    this.#sceneIndex = Math.max( this.#sceneIndex - 1, 0 );
+    this.#config = { ...this.#config, sceneTitle: this.#sceneIndices[ this.#sceneIndex ] };
+    this.#sceneChanged = true;
+    this.#triggerWorker();
+  }
+
+  nextScene( loadFlags={} )
+  {
+    debug && console.log( 'User called nextScene()' );
+    this.#loadFlags = loadFlags;
+    if ( ! this.#indexed ) {
+      console.log( 'This nextScene call ignored; the viewer is not indexed.  Set indexed to true if you want to use nextScene.' );
+      return;
+    }
+    if ( ! this.#sceneIndices ) {
+      console.log( 'This nextScene call ignored; no scenes were discovered.' );
+      return;
+    }
+    this.#sceneIndex = Math.min( this.#sceneIndex + 1, this.#sceneIndices.length-1 );
+    this.#config = { ...this.#config, sceneTitle: this.#sceneIndices[ this.#sceneIndex ] };
+    this.#sceneChanged = true;
+    this.#triggerWorker();
+  }
+
   update( loadFlags={} )
   {
     debug && console.log( 'User called update()' );
     this.#loadFlags = loadFlags;
     if ( this.#reactive ) {
-      console.log( 'This update call ignored; the component is reactive to attribute changes.  Set reactive to false if you want programmatic control of the viewer.' );
+      console.log( 'This update call ignored; the viewer is reactive to attribute changes.  Set reactive to false if you want programmatic control of the viewer.' );
       return;
     }
     this.#updateCalled = true;
@@ -92,7 +143,7 @@ export class VZomeViewer extends HTMLElement
         // However, that causes a race condition on slow networks -- the model loads before the viewer
         //   is ready for the results, leaving a blank canvas.
         // User updates could also cause this, so now those are prevented before this moment.
-        if ( this.#reactive || this.#updateCalled )
+        if ( this.#reactive || this.#updateCalled || this.#indexed )
           // #reactive means that there is no active control, so we need an initial #triggerWorker.
           // #updateCalled means that the user has called update() on a controlled component.
           this.#triggerWorker();
@@ -101,7 +152,7 @@ export class VZomeViewer extends HTMLElement
 
   static get observedAttributes()
   {
-    return [ "src", "show-scenes", "scene", "load-camera", "reactive", "labels", "show-perspective" ];
+    return [ "src", "show-scenes", "scene", "load-camera", "reactive", "labels", "show-perspective", "indexed" ];
   }
 
   // This callback can happen *before* connectedCallback()!
@@ -148,6 +199,16 @@ export class VZomeViewer extends HTMLElement
     case "reactive":
       this.#reactive = _newValue === 'true';
       break;
+  
+    case "indexed":
+      if ( _newValue !== 'true' )
+        break;
+      this.#indexed = true;
+      this.#reactive = false;
+      this.#sceneIndex = 0;
+      this.#config = { ...this.#config, sceneTitle: '#1' };
+      this.#sceneChanged = true;
+        break;
     }
   }
 
@@ -245,3 +306,6 @@ export class VZomeViewer extends HTMLElement
 }
 
 customElements.define( "vzome-viewer", VZomeViewer );
+
+customElements .define( "vzome-viewer-next",     VZomeViewerNextButton, { extends: "button" } );
+customElements .define( "vzome-viewer-previous", VZomeViewerPrevButton, { extends: "button" } );
