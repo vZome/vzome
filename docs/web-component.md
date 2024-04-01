@@ -22,7 +22,10 @@ the [web component standard](https://developer.mozilla.org/en-US/docs/Web/API/We
 If you are using [vZome GitHub sharing](./sharing.html), you can ignore much of this page, since vZome generates
 web pages and supporting assets, all pre-configured to work together.  That said, if you want to
 adjust your generated pages to
-[display multi-scene designs](#multi-scene), read that section.
+[display multi-scene designs](#multi-scene), read that section below.
+
+  This document is a work-in-progress.  Please [email us](mailto:info@vzome.com) if you have questions,
+  or join the [Discord server](https://discord.gg/vhyFsNAFPS).
 
 ## Basic Usage
 
@@ -36,6 +39,7 @@ You can add several viewers to a page, but you must load the Javascript module i
 Typically, script tags appear inside the `head` element, but it is not strictly necessary.
 Loading the Javascript module like this is what defines the `vzome-viewer` custom element,
 making it available to use on the page.
+Only one such script tag is necessary, no matter how many `vzome-viewer` elements you have on the page.
 
 The simplest form of the `vzome-viewer` element has just a `src` attribute whose value is a URL that points to a vZome design:
 ```html
@@ -50,7 +54,7 @@ must correctly resolve to a vZome file.
 ```
 
 While there is no prescribed limit to how many viewers you can put on a single page, each one does consume
-resources including a 3D canvas, and browsers may limit the number of canvases allowed on a single page.
+resources including a 3D canvas and a WebGL context, and browsers may limit the number of contexts allowed on a single page.
 Even if they don't explicitly limit them, the performance will degrade if you have too many.
 I recommend placing no more than ten `vzome-viewer` elements on a single web page.
 
@@ -66,7 +70,7 @@ The URL of the preview file must be the same URL as the vZome file, but with the
 replaced with "`.shapes.json`".
 
 You can export such a file from the vZome desktop app.  Under the "File" menu, find the "Export 3D Rendering..."
-submenu, and select the "vZome Shapes JSON" item.
+submenu, and select the "vZome Shapes JSON (polygons)" item.
 
 If you are sharing vZome designs using [GitHub sharing](./sharing.html), the preview JSON will be generated and uploaded automatically, each time you share a design.
 
@@ -74,24 +78,57 @@ If you are sharing vZome designs using [GitHub sharing](./sharing.html), the pre
 
 ## Usage in Blogs or E-Commerce Systems
 
-## Hosting Designs
+## Hosting Your Designs
 
 ## <a id="multi-scene"></a> Displaying Multi-Scene Designs
 
-### Internal Scene Control
+If you have captured scenes in your vZome design, you can make those scenes available to the user.
+This can be done with an attribute selecting a particular scene,
+with an internal drop-down menu, with integrated "next" and "previous" buttons elsewhere
+on your web page, or programmatically through Javascript.
 
-You can select different scenes that were defined, illustrating the first steps of using vZome.
+The different methods have different strengths.
+Is random access appropriate in your use-case, or does the order of scenes matter?
+You should design your scenes
+and title them (or not) depending on which method you will use.
 
-Here is source HTML for the `vzome-viewer` element shown below.  Notice the `show-scenes` attribute:
+### Displaying a Specific Scene
+
+Sometimes you want to show the user only one, specific scene, and not give them any
+ability to select other scenes.
+For that case, use the `scene` attribute.
+Its value can be a scene title (which must be unique among your scenes), or scene index
+in the form "#0", "#1", and so on.
+Scenes are indexed starting at zero, and an untitled scene is addressed based on its position among all scenes,
+NOT among all untitled scenes.
+A titled scene can still be accessed using its index.
+```html
+<vzome-viewer scene="#7"
+       src="https://vorth.github.io/vzome-sharing/2022/06/19/06-37-55-welcomeDodec/welcomeDodec.vZome" >
+</vzome-viewer>
+```
+If you use the `scene` attribute, the `show-scenes` attribute (see below) will be ignored.
+
+### Internal Scenes Menu
+
+If you add the `show-scenes` attribute to your `vzome-viewer`, the viewer will display an internal
+drop-down menu that allows the user to switch scenes.
+There are two meaninful values for the attribute, "all" or "named".  The "all" value means that the
+drop-down menu will show all scenes, including the default scene (the main design) and untitled scenes,
+which will display in the menu as "#1", "#2", and so on.
+The "named" value means that only scenes explicitly given titles will appear in the menu; the default scene is not included.
+Any other value for the `show-scenes` attribute means the attribute will be ignored.
+
+Here is source HTML for the `vzome-viewer` element shown below, with the `show-scenes` attribute:
  ```html
-<vzome-viewer style="width: 87%; height: 60vh; margin: 5%" show-scenes="true"
+<vzome-viewer style="width: 87%; height: 60vh; margin: 5%" show-scenes="named"
        src="https://vorth.github.io/vzome-sharing/2022/06/19/06-37-55-welcomeDodec/welcomeDodec.vZome" >
   <img src="https://vorth.github.io/vzome-sharing/2022/06/19/06-37-55-welcomeDodec/watermarked.png" />
 </vzome-viewer>
  ```
 
 <figure style="width: 87%; margin: 5%">
-  <vzome-viewer style="width: 87%; height: 60vh; margin: 5%" show-scenes="true"
+  <vzome-viewer style="width: 87%; height: 60vh; margin: 5%" show-scenes="named"
         src="https://vorth.github.io/vzome-sharing/2022/06/19/06-37-55-welcomeDodec/welcomeDodec.vZome" >
     <img style="width: 100%"
         src="https://vorth.github.io/vzome-sharing/2022/06/19/06-37-55-welcomeDodec/watermarked.png" />
@@ -101,6 +138,49 @@ Here is source HTML for the `vzome-viewer` element shown below.  Notice the `sho
   </figcaption>
 </figure>
 
-### External Scene Control
+### Indexed Scenes
 
-## Hosting the Web Component
+A particularly simple way to display multiple scenes is to let the user visit them
+in order using "next" and "previous" buttons.
+This is convenient for displaying the steps to construct a physical Zometool model.
+You must put the `vzome-viewer` into indexed mode
+by adding `indexed="true"`.  In this mode, the `reactive`, `scene`, and `show-scenes` attributes are ignored.
+
+The scene can be controlled using Javascript, using the `nextScene()` and `previousScene()` methods
+available on the `vzome-viewer` element.
+However, you can also control the viewer without any Javascript code,
+by including buttons with special `is` attributes, as shown here:
+```html
+<button is="vzome-viewer-previous" viewer="myViewer">prev</button>
+<button is="vzome-viewer-next"     viewer="myViewer">next</button>
+<vzome-viewer id="myViewer"
+       src="https://vorth.github.io/vzome-sharing/2022/06/19/06-37-55-welcomeDodec/welcomeDodec.vZome" >
+</vzome-viewer>
+```
+The value of the `viewer` attribute should match the `id` on your `vzome-viewer` element.
+The `viewer` attribute is optional when you only have one `vzome-viewer` element on your page.
+
+The buttons can be placed in your HTML, labeled, and styled however you like.
+
+### Javascript Scene Control
+
+## Controlling the Web Component Version
+
+As described above, the `vzome-viewer.js` module is downloaded each time your web page loads,
+except for the usual browser caching mechanisms.  Whenever it is downloaded again, there may be a new revision with updated features
+and bug fixes.  This is generally a good thing, but it does introduce risk.
+If you are concerned about that risk, you can refer to a specific revision of the module,
+and therefore be certain that it won't change except when you want it to:
+
+```html
+<script type="module" src="https://www.vzome.com/modules/r224/vzome-viewer.js"></script>
+```
+
+When you are ready to capture the revision number ("224" here) to record in your script tag, you can find
+it displayed in the browser's debug console whenever the module is loaded:
+
+```
+vzome-viewer revision 224
+```
+
+Remember to use the "r" prefix before the revision number in your script tag!

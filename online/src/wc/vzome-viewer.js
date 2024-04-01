@@ -39,7 +39,7 @@ export class VZomeViewer extends HTMLElement
     this.#workerclient .subscribeFor( 'SCENE_RENDERED', () => {
       let scene = {};
       if ( this.#indexed && !! this.#sceneTitles )
-        scene = { title: this.#sceneTitles[ this.#sceneIndex ] };
+        scene = { index: this.#sceneIndex, title: this.#sceneTitles[ this.#sceneIndex ] };
       this .dispatchEvent( new CustomEvent( 'vzome-design-rendered', { detail: scene } ) );
     } );
     this.#workerclient .subscribeFor( 'SCENES_DISCOVERED', payload => {
@@ -172,6 +172,8 @@ export class VZomeViewer extends HTMLElement
       break;
   
     case "scene":
+      if ( this.#indexed )
+        break;
       if ( _newValue !== this.#config.sceneTitle ) {
         this.#config = { ...this.#config, sceneTitle: _newValue };
         this.#sceneChanged = true;
@@ -182,6 +184,8 @@ export class VZomeViewer extends HTMLElement
       break;
   
     case "show-scenes":
+      if ( this.#indexed )
+        break;
       const showScenes = _newValue;
       this.#config = { ...this.#config, showScenes };
       break;
@@ -197,6 +201,8 @@ export class VZomeViewer extends HTMLElement
       break;
   
     case "reactive":
+      if ( this.#indexed )
+        break;
       this.#reactive = _newValue === 'true';
       break;
   
@@ -206,7 +212,7 @@ export class VZomeViewer extends HTMLElement
       this.#indexed = true;
       this.#reactive = false;
       this.#sceneIndex = 0;
-      this.#config = { ...this.#config, sceneTitle: '#1' };
+      this.#config = { ...this.#config, showScenes: false, sceneTitle: '#1' };
       this.#sceneChanged = true;
         break;
     }

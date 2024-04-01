@@ -1,5 +1,5 @@
 
-const debug = true;
+const debug = false;
 
 class VZomeViewerIndexButton extends HTMLButtonElement
 {
@@ -17,14 +17,22 @@ class VZomeViewerIndexButton extends HTMLButtonElement
   {
     if ( !! this.#viewerId ) {
       this.#viewer = document .querySelector( `#${this.#viewerId}` );
+      if ( ! this.#viewer ) {
+        console.error( `No vzome-viewer with id "${this.#viewerId}" found.` );
+      } else if ( this.#viewer .nextScene === undefined ) {
+        console.error( `Element with id "${this.#viewerId}" is not a vzome-viewer.` );
+        return;
+      }
     }
     if ( ! this.#viewer ) {
       this.#viewer = document .querySelector( 'vzome-viewer' );
     }
-    if ( !! this.#viewer ) {
-      const loadParams = { camera: false };
-      self .addEventListener( "click", () => this.#next? this.#viewer .nextScene( loadParams ) : this.#viewer .previousScene( loadParams ) );
+    if ( ! this.#viewer ) {
+      console.error( `No vzome-viewer found.` );
+      return;
     }
+    const loadParams = { camera: false };
+    self .addEventListener( "click", () => this.#next? this.#viewer .nextScene( loadParams ) : this.#viewer .previousScene( loadParams ) );
   }
 
   static get observedAttributes()

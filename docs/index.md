@@ -27,7 +27,7 @@ Significant new features get a dedicated YouTube video:
 
 ## [vZome Online Web Applications](./online.html)
 
-vZome code has been ported to run in the browser, and there are several
+vZome code has been ported to run in the browser, and there are a number of
 web applications you can explore.
 
 ## [Sharing vZome Designs](./sharing.html)
@@ -45,8 +45,10 @@ vZome supports sharing designs via GitHub, including generation of simple web pa
   </figcaption>
 </figure>
 
-Furthermore, the `vzome-viewer` web component used above can be in any HTML page.
-See [these instructions](./web-component.html) to enhance your own web pages with interactive vZome viewers.
+## [Embedding vZome Designs in Web Pages](./web-component.html)
+
+The interactive 3D viewer shown above is a standard *web component*, and can be embedded in any HTML page,
+independent of whether you host the vZome design on GitHub or your own web server.
 
 ## [vZome Toolbars for Diehards](./toolbars-for-diehards.html)
 

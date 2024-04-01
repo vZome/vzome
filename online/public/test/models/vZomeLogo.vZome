@@ -179,7 +179,7 @@
     <Snapshot id="2"/>
   </EditHistory>
   <notes>
-    <page snapshot="2" title="">
+    <page snapshot="2" title="would be #1">
       <ViewModel distance="27.354455947875977" far="54.70891189575209" near="0.06838614088872282" parallel="false" stereoAngle="0.0" width="12.30950517654418">
         <LookAtPoint x="0.0" y="-3.4270509831248424" z="5.545084971874737"/>
         <UpDirection x="-0.8516402530460562" y="0.36473678048760744" z="0.37639867209009925"/>
