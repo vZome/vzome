@@ -13,6 +13,7 @@ let baseURL;
 let scenes;
 let snapshots;
 let previewShapes;
+let previewPolygons;
 
 const captureScenes = report => event =>
 {
@@ -88,12 +89,15 @@ const preparePreviewScene = index =>
   for (const instance of snapshots[ snapshot ]) {
     shapes[ instance.shapeId ].instances.push( instance );
   }
-  return { shapes, camera };
+  return { shapes, camera, polygons: previewPolygons };
 }
 
 const convertPreview = ( preview, sceneTitle ) =>
 {
   const { polygons, lights, embedding, orientations, shapes, instances } = preview
+
+  // set the global for later scenes
+  previewPolygons = polygons;
   
   const dlights = lights.directionalLights.map( ({ direction, color }) => {
     const { x, y, z } = direction
@@ -132,7 +136,7 @@ const convertPreview = ( preview, sceneTitle ) =>
 
   const sceneIndex = getSceneIndex( sceneTitle, scenes );
 
-  return { lighting, embedding, ...preparePreviewScene( sceneIndex ), polygons };
+  return { lighting, embedding, ...preparePreviewScene( sceneIndex ) };
 }
 
 const fetchUrlText = async ( url ) =>

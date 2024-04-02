@@ -113,7 +113,7 @@ If you use the `scene` attribute, the `show-scenes` attribute (see below) will b
 
 If you add the `show-scenes` attribute to your `vzome-viewer`, the viewer will display an internal
 drop-down menu that allows the user to switch scenes.
-There are two meaninful values for the attribute, "all" or "named".  The "all" value means that the
+There are two meaningful values for the attribute, "all" or "named".  The "all" value means that the
 drop-down menu will show all scenes, including the default scene (the main design) and untitled scenes,
 which will display in the menu as "#1", "#2", and so on.
 The "named" value means that only scenes explicitly given titles will appear in the menu; the default scene is not included.
