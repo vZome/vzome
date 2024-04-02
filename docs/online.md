@@ -68,7 +68,7 @@ For now, it hosts an application that allows you to open and view vZome designs 
 This app lets you browse the command history stored in a vZome file, viewing the state of the design for each recorded command.
 It is very helpful for understanding how someone constructed a particular design.
 
-## The vZome Online Web Component
+## [The vZome Online Web Component](./web-component.html)
 
 In many ways, this is the most important application, and it is not a single application in any sense.
 I have wrapped the core vZome Online technology as a [web component](https://developer.mozilla.org/en-US/docs/Web/Web_Components),
@@ -87,19 +87,7 @@ blog, e-commerce site, or whatever.
   </figcaption>
 </figure>
 
-Here is the essential HTML for the figure above:
-```
-<script type="module" src="https://www.vzome.com/modules/vzome-viewer.js"></script>
-
-<vzome-viewer style="width: 100%; height: 60vh"
-    src="https://vorth.github.io/vzome-sharing/2021/09/11/10-10-11-rose-olive-bombshell-solid/rose-olive-bombshell-solid.vZome" >
-  <img  style="width: 100%"
-    src="https://vorth.github.io/vzome-sharing/2021/09/11/10-10-11-rose-olive-bombshell-solid/rose-olive-bombshell-solid.png" >
-</vzome-viewer>
-```
-The `<script/>` tag loads the Javascript code that defines the `<vzome-viewer/>` custom tag, which does all the
-heavy lifting of loading the vZome model and rendering it in a 3D viewer.  Only one such script tag is needed per page,
-no matter how many viewer elements appear on the page.
+The details for using the web component can be [found here](./web-component.html)
 
 The web component plays a huge role in vZome desktop's mechanism for
 [sharing designs via GitHub](./sharing.html).
