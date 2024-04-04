@@ -13,8 +13,6 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -51,8 +49,8 @@ import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.DeviceAuthorization;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import com.vzome.core.exporters.GitHubShare;
 import com.vzome.desktop.api.Controller;
-import com.vzome.xml.ResourceLoader;
 
 @SuppressWarnings("serial")
 public class ShareDialog extends EscapeDialog
@@ -66,9 +64,7 @@ public class ShareDialog extends EscapeDialog
     private final JButton authzButton;
     private final JLabel errorLabel;
     private final HyperlinkPanel githubUrlPanel;
-    
-    private final String indexTemplate, readmeTemplate, githubReadmeBlogPrefixTemplate, postTemplate;
-   
+       
     // Services
     private final OAuth20Service oAuthService;
     private final GitHubClient client;
@@ -82,19 +78,19 @@ public class ShareDialog extends EscapeDialog
     private transient String authToken, orgName, repoName, branchName;
     private transient Repository repo;
     private transient boolean configuring, configured;
-    private transient String designName, title, description;
+    private transient String title, description;
     private transient String gitUrl, error; // marks success or failure state
     private transient Thread workerThread;
     
     // Inputs
-    private transient String png, xml, shapesJson;
-    private LocalDateTime createTime;
-    private JCheckBox generatePageCheckBox, publishCheckBox;
+    private JCheckBox generatePostCheckBox, publishCheckBox;
     private JTextField titleText;
     private JTextArea descriptionText;
     private JLabel publishLabel;
 
     static final Logger logger = Logger.getLogger( "org.vorthmann.zome.ui.githubsharing" );
+
+    private transient GitHubShare shareData;
 
     /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      * First, the code that runs on the Swing event dispatcher thread...
@@ -136,14 +132,6 @@ public class ShareDialog extends EscapeDialog
         this .userService = new UserService(client);
         this .commitService = new CommitService( client );
         this .dataService = new DataService( client );
-        
-        this .indexTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubIndexTemplate.md" );
-        
-        this .readmeTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubReadmeTemplate.md" );
-
-        this .githubReadmeBlogPrefixTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubReadmeBlogPrefixTemplate.md" );
-
-        this .postTemplate = ResourceLoader.loadStringResource( "org/vorthmann/zome/ui/githubPostTemplate.md" );
 
         JPanel loginPanel = new JPanel();
         {
@@ -190,8 +178,8 @@ public class ShareDialog extends EscapeDialog
             optionsPanel .setBorder( BorderFactory.createEmptyBorder( 15, 15, 15, 15 ) );
 
             JPanel topPanel = new JPanel( new BorderLayout() );
-            generatePageCheckBox = new JCheckBox();
-            generatePageCheckBox .addActionListener( new ActionListener()
+            generatePostCheckBox = new JCheckBox();
+            generatePostCheckBox .addActionListener( new ActionListener()
             {
                 @Override
                 public void actionPerformed( ActionEvent e )
@@ -201,7 +189,7 @@ public class ShareDialog extends EscapeDialog
                     enableConfigurations();
                 }
             });
-            topPanel .add( generatePageCheckBox, BorderLayout.WEST );
+            topPanel .add( generatePostCheckBox, BorderLayout.WEST );
             topPanel .add( new JLabel( "Generate blog post" ), BorderLayout.CENTER );
             optionsPanel .add( topPanel, BorderLayout.NORTH );
 
@@ -365,7 +353,7 @@ public class ShareDialog extends EscapeDialog
                 this .titleText .setText( this .title );
                 this .descriptionText .setText( this .description );
                 this .cardPanel .showCard( "options" );
-                this .generatePageCheckBox .setSelected( this .controller .propertyIsTrue( "sharing-generatePost" ) );
+                this .generatePostCheckBox .setSelected( this .controller .propertyIsTrue( "sharing-generatePost" ) );
                 this .publishCheckBox .setSelected( this .controller .propertyIsTrue( "sharing-publishImmediately" ) );
                 this .configuring = true;
             }
@@ -412,24 +400,14 @@ public class ShareDialog extends EscapeDialog
         }
     }
 
-    public void startUpload( String fileName, LocalDateTime createTime, String xml, String png, String shapesJson )
-    {
-        this.createTime = createTime;
-        this.xml = xml;
-        this.png = png;
-        this.shapesJson = shapesJson;
-        
+    public void startUpload( GitHubShare shareData )
+    {        
+        this.shareData = shareData;
+
         // Initialize the transient, file-specific state
-        this.designName = fileName .trim() .replaceAll( " ", "-" ); // we don't want spaces in our URLs
-        int index = designName .toLowerCase() .lastIndexOf( ".vZome" .toLowerCase() );
-        if ( index > 0 )
-            designName = designName .substring( 0, index );
-        while ( designName .startsWith( "-" ) ) // leading hyphens can break things for Jekyll posts
-            designName = designName .substring( 1 );
-        while ( designName .endsWith( "-" ) ) // so can trailing hyphens
-            designName = designName .substring( 0, designName .lastIndexOf( '-' ) );
-        this.title = designName .replaceAll( "-", " " ) .trim();    // but we do want spaces in the title
+        this.title = shareData .getDesignName() .replaceAll( "-", " " ) .trim();    // but we do want spaces in the title
         this.description = "A 3D design created in vZome.  Use your mouse or touch to interact.";
+
         this.error = null;
         this.gitUrl = null;
         this.configured = false;
@@ -541,6 +519,9 @@ public class ShareDialog extends EscapeDialog
             e1 .printStackTrace();
             this .error = "Unable to get user";
         }
+        if ( this.orgName == null )
+            this.orgName = username;
+        
         try {            
             // set up for a non-root commit
             String baseCommitSha = repositoryService .getBranches( this .repo ) .get(0) .getCommit() .getSha();
@@ -549,98 +530,16 @@ public class ShareDialog extends EscapeDialog
 
             Tree baseTree = dataService .getTree( this .repo, baseTreeSha );
 
-            // prepare the substitutions
-            String time = DateTimeFormatter.ofPattern( "HH-mm-ss" ) .format( this .createTime );
-            String date = DateTimeFormatter.ofPattern( "yyyy-MM-dd" ) .format( createTime );
-            String dateFolder = DateTimeFormatter.ofPattern( "yyyy/MM/dd" ) .format( createTime );
-            
-            String postSrcPath = "_posts/" + date + "-" + designName + "-" + time + ".md";// e.g. _posts/2021-11-29-sample-vZome-share-08-01-41.md
-            String postPath = dateFolder + "/" + designName + "-" + time + ".html";       // e.g. 2021/11/29/sample-vZome-share-08-01-41.html
-            String assetPath = dateFolder + "/" + time + "-" + designName + "/";          // e.g. 2021/11/29/08-01-41-sample-vZome-share
-
-            String designPath = assetPath + designName + ".vZome"; // e.g. 2021/11/29/08-01-41-sample-vZome-share/sample-vZome-share.vZome
-            String imagePath = assetPath + designName + ".png";    // e.g. 2021/11/29/08-01-41-sample-vZome-share/sample-vZome-share.png
-            
-            // Now generate the content
+            boolean blog = this .controller .propertyIsTrue( "sharing-generatePost" );
+            boolean publish = this .controller .propertyIsTrue( "sharing-publishImmediately" );
             
             Collection<TreeEntry> entries = new ArrayList<TreeEntry>();
+            this.shareData .setEntryHandler( (path, data, encoding) -> {
+                addFile( entries, path, data, encoding );
+            } );
 
-            this .addFile( entries, designPath, this.xml, Blob.ENCODING_UTF8 );
-            
-            this .addFile( entries, imagePath, png, Blob.ENCODING_BASE64 );
-
-            this .addFile( entries, assetPath + designName + ".shapes.json", shapesJson, Blob.ENCODING_UTF8 );
-            
-            String orgName = this .orgName;
-            if ( orgName == null )
-                orgName = username;
-            
-            String siteUrl = "https://" + orgName + ".github.io/" + repoName;
-                     // e.g. https://vorth.github.io/vzome-sharing
-            String repoUrl = "https://github.com/" + orgName + "/" + repoName;
-                     // e.g. https://github.com/vorth/vzome-sharing
-            this .gitUrl = repoUrl + "/tree/" + this.branchName + "/" + assetPath;
-                     // e.g. https://github.com/vorth/vzome-sharing/tree/main/2021/11/29/08-01-41-sample-vZome-share/
-            String rawUrl = "https://raw.githubusercontent.com/" + orgName + "/" + repoName + "/" + this.branchName + "/" + designPath;
-                     // e.g. https://raw.githubusercontent.com/vorth/vzome-sharing/main/2021/11/29/08-01-41-sample-vZome-share/sample-vZome-share.vZome
-            String postUrl = siteUrl + "/" + postPath;
-                     // e.g. https://vorth.github.io/vzome-sharing/2021/11/29/sample-vZome-share-08-01-41.html
-            String postSrcUrl = repoUrl + "/edit/" + this.branchName + "/" + postSrcPath;
-                     // e.g. https://github.com/vorth/vzome-sharing/edit/main/_posts/2021-11-29-sample-vZome-share-08-01-41.md
-            String indexSrcUrl = repoUrl + "/edit/" + this.branchName + "/" + assetPath + "index.md";
-            // e.g. https://github.com/vorth/vzome-sharing/edit/main/_posts/2021-11-29-sample-vZome-share-08-01-41.md
-                        
-            // Generate a shareable page for the vZome user to use, not a blog post
-            String indexMd = this.indexTemplate
-                    .replace( "${title}", this .title )
-                    .replace( "${siteUrl}", siteUrl )
-                    .replace( "${imagePath}", imagePath )
-                    .replace( "${designPath}", designPath )
-                    .replace( "${assetsUrl}", this .gitUrl );
-            this .addFile( entries, assetPath + "index.md", indexMd, Blob.ENCODING_UTF8 );
-
-            // Generate a README for the vZome user to use, with no blog post
-            String readmeMd = this.readmeTemplate
-                    .replace( "${imageFile}", designName + ".png" )
-                    .replace( "${siteUrl}", siteUrl )
-                    .replace( "${assetPath}", assetPath )
-                    .replace( "${imagePath}", imagePath )
-                    .replace( "${designPath}", designPath )
-                    .replace( "${indexSrcUrl}", indexSrcUrl )
-                    .replace( "${rawUrl}", rawUrl );
-
-            if ( this .controller .propertyIsTrue( "sharing-generatePost" ) ) {
-                // Generate a README for the vZome user to use 
-                String blogPostPrefix = this.githubReadmeBlogPrefixTemplate
-                        .replace( "${postUrl}", postUrl )
-                        .replace( "${postSrcUrl}", postSrcUrl );
-                readmeMd = blogPostPrefix + readmeMd; // Prepend the extra bits about the blog post to the README
-
-                /*
-                 * Generate a design-specific web page, assuming that GitHub Pages is
-                 * enabled for the repo.  The "front-matter" format is defined by
-                 * Jekyll, and these properties specifically are defined by the Jekyll SEO plugin.
-                 *    https://github.com/jekyll/jekyll-seo-tag/tree/master/docs
-                 * This guarantees good OpenGraph metadata for embedding in social media.
-                 * TODO: let the user define a description (and a title).
-                 * See also:
-                 *    https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll
-                 *    https://jekyllrb.com/
-                 */
-                String descriptionClean = this.description .replace( '\n', ' ' ) .replace( '\r', ' ' );
-                String postMd = this.postTemplate
-                        .replace( "${title}", this .title )
-                        .replace( "${description}", descriptionClean )
-                        .replace( "${published}", this .controller .getProperty( "sharing-publishImmediately" ) )
-                        .replace( "${siteUrl}", siteUrl )
-                        .replace( "${postPath}", postPath )
-                        .replace( "${imagePath}", imagePath )
-                        .replace( "${designPath}", designPath )
-                        .replace( "${assetsUrl}", this .gitUrl );
-                this .addFile( entries, postSrcPath, postMd, Blob.ENCODING_UTF8 );
-            }
-
-            this .addFile( entries, assetPath + "README.md", readmeMd, Blob.ENCODING_UTF8 );
+            // Now generate the content
+            this .gitUrl = this .shareData .generateContent( this.orgName, this.repoName, this.branchName, this.title, this.description, blog, publish );
 
             Tree newTree = dataService .createTree( this .repo, entries, (baseTree==null)? null : baseTree.getSha() );
 

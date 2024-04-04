@@ -25,6 +25,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -52,6 +53,7 @@ import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.Platform;
 import org.vorthmann.ui.ExclusiveAction;
 
+import com.vzome.core.exporters.GitHubShare;
 import com.vzome.core.render.Scene;
 import com.vzome.desktop.api.Controller;
 import com.vzome.desktop.awt.GraphicsController;
@@ -246,10 +248,13 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                             logger.log( Level.INFO, "Unable to get last mod time for " + filePathStr );
                         }
                     }
+                    String time = DateTimeFormatter.ofPattern( "HH-mm-ss" ) .format( lastMod );
+                    String date = DateTimeFormatter.ofPattern( "yyyy-MM-dd" ) .format( lastMod );
                     String xml = mController .getProperty( "vZome-xml" );
                     String pngEncoded = mController .getProperty( "png-base64" );
                     String shapesJson = mController .getProperty( "shapes-json" );
-                    shareDialog .startUpload( filePath .getFileName() .toString(), lastMod, xml, pngEncoded, shapesJson );
+                    GitHubShare shareData = new GitHubShare( filePath .getFileName() .toString(), date, time, xml, pngEncoded, shapesJson );
+                    shareDialog .startUpload( shareData );
                     break;
 
                 case "saveDefault":
