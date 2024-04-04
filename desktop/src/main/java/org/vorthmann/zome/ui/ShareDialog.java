@@ -79,7 +79,7 @@ public class ShareDialog extends EscapeDialog
 
     // State markers
     private transient DeviceAuthorization deviceAuthorization;
-    private transient String authToken, repoName, branchName;
+    private transient String authToken, orgName, repoName, branchName;
     private transient Repository repo;
     private transient boolean configuring, configured;
     private transient String designName, title, description;
@@ -108,6 +108,9 @@ public class ShareDialog extends EscapeDialog
         this.controller = controller;
 
         this .authToken = controller .getProperty( "githubAccessToken" );
+
+        this .orgName = controller .getProperty( "githubOrgName" );
+
         String repoNameOverride = controller .getProperty( "githubRepoName" );
         if ( repoNameOverride == null || "".equals( repoNameOverride ) )
             repoNameOverride = DEFAULT_REPO_NAME;
@@ -476,10 +479,15 @@ public class ShareDialog extends EscapeDialog
                 {
                     try {
                         List<Repository> repositories = repositoryService .getRepositories();
-                        repo = repositories .stream() .filter( r -> r.getName() .equals( repoName ) ) .findFirst() .orElse( null );
+                        if ( orgName == null )
+                            repo = repositories .stream() .filter( r -> r.getName() .equals( repoName ) ) .findFirst() .orElse( null );
+                        else
+                            repo = repositories .stream() .filter( r -> r.getGitUrl() .contains( orgName ) )
+                                .filter( r -> r.getName() .equals( repoName ) ) .findFirst() .orElse( null );
                         if ( repo == null ) {
                             error = "Unable to find repository '" + repoName + "'";
-                        }
+                        } else
+                            logger .info( "found repo " + repo .getGitUrl() );
                     } catch ( IOException e ) {
                         error = "Unable to fetch repositories.  Your authorization may have expired or been revoked.  Try again, to reauthorize.";
                         logger .warning( error );
@@ -563,13 +571,17 @@ public class ShareDialog extends EscapeDialog
 
             this .addFile( entries, assetPath + designName + ".shapes.json", shapesJson, Blob.ENCODING_UTF8 );
             
-            String siteUrl = "https://" + username + ".github.io/" + repoName;
+            String orgName = this .orgName;
+            if ( orgName == null )
+                orgName = username;
+            
+            String siteUrl = "https://" + orgName + ".github.io/" + repoName;
                      // e.g. https://vorth.github.io/vzome-sharing
-            String repoUrl = "https://github.com/" + username + "/" + repoName;
+            String repoUrl = "https://github.com/" + orgName + "/" + repoName;
                      // e.g. https://github.com/vorth/vzome-sharing
             this .gitUrl = repoUrl + "/tree/" + this.branchName + "/" + assetPath;
                      // e.g. https://github.com/vorth/vzome-sharing/tree/main/2021/11/29/08-01-41-sample-vZome-share/
-            String rawUrl = "https://raw.githubusercontent.com/" + username + "/" + repoName + "/" + this.branchName + "/" + designPath;
+            String rawUrl = "https://raw.githubusercontent.com/" + orgName + "/" + repoName + "/" + this.branchName + "/" + designPath;
                      // e.g. https://raw.githubusercontent.com/vorth/vzome-sharing/main/2021/11/29/08-01-41-sample-vZome-share/sample-vZome-share.vZome
             String postUrl = siteUrl + "/" + postPath;
                      // e.g. https://vorth.github.io/vzome-sharing/2021/11/29/sample-vZome-share-08-01-41.html
