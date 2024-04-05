@@ -100,6 +100,10 @@ public class LessonController extends DefaultGraphicsController
             model .deletePage();
             setProperty( "edited", "true" );
         }
+        else if ( "toggleReverse" .equals( action ) )
+        {
+            model .toggleReverse();
+        }
         else if ( action .startsWith( "elementSelected-" ) )
         {
             // action defined by ListPanel
@@ -140,6 +144,11 @@ public class LessonController extends DefaultGraphicsController
         else if ( "setView" .equals( action ) )
         {
             model .setView( vpm .getView() );
+            setProperty( "edited", "true" );
+        }
+        else if ( "setViewAll" .equals( action ) )
+        {
+            model .setViewAll( vpm .getView() );
             setProperty( "edited", "true" );
         }
         else if ( action .startsWith( "usePageView-" ) )
@@ -223,6 +232,9 @@ public class LessonController extends DefaultGraphicsController
         if ( "has.pages" .equals( propName ) )
             // This should not be called for UI creation, so we can do that concurrently with model loading
             return Boolean .toString( ! model .isEmpty() );
+
+        if ( "reverse" .equals( propName ) )
+            return Boolean .toString( model .isReverse() );
 
         if ( "onFirstPage" .equals( propName ) )
             return Boolean .toString( model .onFirstPage() );

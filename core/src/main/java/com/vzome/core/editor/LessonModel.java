@@ -29,6 +29,18 @@ public class LessonModel implements Iterable<PageModel>
 
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport( this );
 
+    private boolean reverse = false;
+    
+    public boolean isReverse()
+    {
+        return this.reverse;
+    }
+    
+    public void toggleReverse()
+    {
+        this.reverse = !this.reverse;
+    }
+
     public void addPropertyChangeListener( PropertyChangeListener listener )
     {
         propertyChangeSupport .addPropertyChangeListener( listener );
@@ -143,7 +155,7 @@ public class LessonModel implements Iterable<PageModel>
 
     public void duplicatePage( Camera view )
     {
-        int newPageNum = pageNum + 1;
+        int newPageNum = this.reverse ? pageNum : pageNum + 1;
         PageModel page = pages .get( pageNum );
         int snap = page .getSnapshot();
         page = new PageModel( "", "", view, snap );
@@ -155,7 +167,7 @@ public class LessonModel implements Iterable<PageModel>
 
     public void newSnapshotPage( int snapshotId, Camera view )
     {
-        int newPageNum = pages .size();
+        int newPageNum = this.reverse ? 0 : pages .size();
         PageModel pc = new PageModel( "", "", view, snapshotId );
         pages .add( newPageNum, pc );
 
@@ -267,6 +279,16 @@ public class LessonModel implements Iterable<PageModel>
         page .setThumbnailCurrent( false );
         goToPage( pageNum );
         firePropertyChange( "thumbnailChanged", -1, pageNum );
+    }
+
+    public void setViewAll( Camera view )
+    {
+        for (int i = 0; i < pages.size(); i++) {
+            PageModel page = pages .get( i );
+            page .setView( view );
+            page .setThumbnailCurrent( false );
+            firePropertyChange( "thumbnailChanged", -1, i );
+        }
     }
 
     public void refresh()
