@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -83,10 +84,11 @@ public class ShareDialog extends EscapeDialog
     private transient Thread workerThread;
     
     // Inputs
-    private JCheckBox generatePostCheckBox, publishCheckBox;
+    private JCheckBox showScenesCheckBox, generatePostCheckBox, publishCheckBox;
+    private JComboBox<String> stylesMenu;
     private JTextField titleText;
     private JTextArea descriptionText;
-    private JLabel publishLabel;
+    private JLabel publishLabel, stylesLabel;
 
     static final Logger logger = Logger.getLogger( "org.vorthmann.zome.ui.githubsharing" );
 
@@ -176,63 +178,107 @@ public class ShareDialog extends EscapeDialog
         {
             optionsPanel .setLayout( new BorderLayout() );
             optionsPanel .setBorder( BorderFactory.createEmptyBorder( 15, 15, 15, 15 ) );
-
-            JPanel topPanel = new JPanel( new BorderLayout() );
-            generatePostCheckBox = new JCheckBox();
-            generatePostCheckBox .addActionListener( new ActionListener()
+            
+            JPanel scenesPanel = new JPanel( new BorderLayout() );
+            showScenesCheckBox = new JCheckBox();
+            showScenesCheckBox .addActionListener( new ActionListener()
             {
                 @Override
                 public void actionPerformed( ActionEvent e )
                 {
-                    boolean generatePost = controller .propertyIsTrue( "sharing-generatePost" );
-                    controller .setProperty( "sharing-generatePost", !generatePost );
+                    boolean showScenes = controller .propertyIsTrue( "sharing-showScenes" );
+                    controller .setProperty( "sharing-showScenes", !showScenes );
                     enableConfigurations();
                 }
             });
-            topPanel .add( generatePostCheckBox, BorderLayout.WEST );
-            topPanel .add( new JLabel( "Generate blog post" ), BorderLayout.CENTER );
-            optionsPanel .add( topPanel, BorderLayout.NORTH );
-
-            publishCheckBox = new JCheckBox();
-            publishCheckBox .addActionListener( new ActionListener()
+            scenesPanel .add( showScenesCheckBox, BorderLayout.WEST );
+            scenesPanel .add( new JLabel( "Show scenes" ), BorderLayout.CENTER );
             {
-                @Override
-                public void actionPerformed( ActionEvent e )
+                JPanel sceneStylesPanel = new JPanel();
+                sceneStylesPanel .setToolTipText( "Select an interaction style for scenes." );
+                stylesLabel = new JLabel( "Style" );
+                sceneStylesPanel .add( stylesLabel );
                 {
-                    boolean publish = controller .propertyIsTrue( "sharing-publishImmediately" );
-                    controller .setProperty( "sharing-publishImmediately", !publish );
+                    String[] styleNames= new String[] { "indexed", "menu", "javascript" };
+                    String defaultStyle = controller .getProperty( "sharing-sceneStyle" );
+                    stylesMenu = new JComboBox<String>( styleNames );
+                    stylesMenu .setSelectedItem( defaultStyle );
+                    stylesMenu .setMaximumRowCount( 3 );
+                    stylesMenu .addActionListener( new ActionListener()
+                    {
+                        @Override
+                        public void actionPerformed( ActionEvent e )
+                        {
+                            JComboBox<?> combo = (JComboBox<?>) e.getSource();
+                            controller .setProperty ("sharing-sceneStyle", combo .getSelectedItem().toString() );
+                        }
+                    } );
+                    sceneStylesPanel .add( stylesMenu );
                 }
-            });
-            JPanel cboxPanel = new JPanel( new BorderLayout() );
-            cboxPanel .add( publishCheckBox, BorderLayout.WEST );
-            publishLabel = new JLabel( "Publish immediately" );
-            cboxPanel .add( publishLabel, BorderLayout.CENTER );
+                scenesPanel .add( sceneStylesPanel, BorderLayout.EAST );
+            }
+            optionsPanel .add( scenesPanel, BorderLayout.NORTH );
 
-            titleText = new JTextField( 0 );
-            titleText .setBorder(
-                    BorderFactory.createCompoundBorder(
-                            BorderFactory.createCompoundBorder(
-                                    BorderFactory.createTitledBorder( "Title" ),
-                                    BorderFactory.createEmptyBorder( 5,5,5,5 ) ),
-                            titleText .getBorder()));
+            JPanel postPanel = new JPanel( new BorderLayout() );
+            {
+                JPanel generatePostPanel = new JPanel( new BorderLayout() );
+                generatePostCheckBox = new JCheckBox();
+                generatePostCheckBox .addActionListener( new ActionListener()
+                {
+                    @Override
+                    public void actionPerformed( ActionEvent e )
+                    {
+                        boolean generatePost = controller .propertyIsTrue( "sharing-generatePost" );
+                        controller .setProperty( "sharing-generatePost", !generatePost );
+                        enableConfigurations();
+                    }
+                });
+                generatePostPanel .add( generatePostCheckBox, BorderLayout.WEST );
+                generatePostPanel .add( new JLabel( "Generate blog post" ), BorderLayout.CENTER );
+                postPanel .add( generatePostPanel, BorderLayout.NORTH );
 
-            descriptionText = new JTextArea();
-            descriptionText .setLineWrap( true );
-            descriptionText .setWrapStyleWord( true );
-            descriptionText .setBorder(
-                    BorderFactory.createCompoundBorder(
-                            BorderFactory.createCompoundBorder(
-                                    BorderFactory.createTitledBorder( "Description" ),
-                                    BorderFactory.createEmptyBorder( 5,5,5,5 ) ),
-                            descriptionText .getBorder()));
+                publishCheckBox = new JCheckBox();
+                publishCheckBox .addActionListener( new ActionListener()
+                {
+                    @Override
+                    public void actionPerformed( ActionEvent e )
+                    {
+                        boolean publish = controller .propertyIsTrue( "sharing-publishImmediately" );
+                        controller .setProperty( "sharing-publishImmediately", !publish );
+                    }
+                });
+                JPanel cboxPanel = new JPanel( new BorderLayout() );
+                cboxPanel .add( publishCheckBox, BorderLayout.WEST );
+                publishLabel = new JLabel( "Publish immediately" );
+                cboxPanel .add( publishLabel, BorderLayout.CENTER );
 
-            //Put everything together.
-            JPanel inputsPane = new JPanel( new BorderLayout() );
-            inputsPane .add( titleText, BorderLayout.NORTH );
-            inputsPane .add( descriptionText, BorderLayout.CENTER );
-            inputsPane .add( cboxPanel, BorderLayout.SOUTH );
-            inputsPane .setBorder( BorderFactory.createEmptyBorder( 5,5,5,5 ) );
-            optionsPanel .add( inputsPane, BorderLayout.CENTER );
+                titleText = new JTextField( 0 );
+                titleText .setBorder(
+                        BorderFactory.createCompoundBorder(
+                                BorderFactory.createCompoundBorder(
+                                        BorderFactory.createTitledBorder( "title" ),
+                                        BorderFactory.createEmptyBorder( 5,5,5,5 ) ),
+                                titleText .getBorder()));
+
+                descriptionText = new JTextArea();
+                descriptionText .setLineWrap( true );
+                descriptionText .setWrapStyleWord( true );
+                descriptionText .setBorder(
+                        BorderFactory.createCompoundBorder(
+                                BorderFactory.createCompoundBorder(
+                                        BorderFactory.createTitledBorder( "description" ),
+                                        BorderFactory.createEmptyBorder( 5,5,5,5 ) ),
+                                descriptionText .getBorder()));
+
+                //Put everything together.
+                JPanel inputsPane = new JPanel( new BorderLayout() );
+                inputsPane .add( titleText, BorderLayout.NORTH );
+                inputsPane .add( descriptionText, BorderLayout.CENTER );
+                inputsPane .add( cboxPanel, BorderLayout.SOUTH );
+                inputsPane .setBorder( BorderFactory.createEmptyBorder( 5,5,5,5 ) );
+                postPanel .add( inputsPane, BorderLayout.CENTER );
+            }
+            optionsPanel .add( postPanel, BorderLayout.CENTER );
 
             JButton uploadButton = new JButton( "Upload to GitHub" );
             uploadButton .addActionListener( new ActionListener()
@@ -320,6 +366,10 @@ public class ShareDialog extends EscapeDialog
     
     protected void enableConfigurations()
     {
+        boolean showScenes = this .controller .propertyIsTrue( "sharing-showScenes" );
+        stylesLabel .setEnabled( showScenes );
+        stylesMenu .setEnabled( showScenes );
+
         boolean generatePost = this .controller .propertyIsTrue( "sharing-generatePost" );
         publishCheckBox .setEnabled( generatePost );
         publishLabel .setEnabled( generatePost );
@@ -354,6 +404,7 @@ public class ShareDialog extends EscapeDialog
                 this .descriptionText .setText( this .description );
                 this .cardPanel .showCard( "options" );
                 this .generatePostCheckBox .setSelected( this .controller .propertyIsTrue( "sharing-generatePost" ) );
+                this .showScenesCheckBox .setSelected( this .controller .propertyIsTrue( "sharing-showScenes" ) );
                 this .publishCheckBox .setSelected( this .controller .propertyIsTrue( "sharing-publishImmediately" ) );
                 this .configuring = true;
             }
@@ -532,6 +583,8 @@ public class ShareDialog extends EscapeDialog
 
             boolean blog = this .controller .propertyIsTrue( "sharing-generatePost" );
             boolean publish = this .controller .propertyIsTrue( "sharing-publishImmediately" );
+            String style = this .controller .propertyIsTrue( "sharing-showScenes" )?
+                            this.controller .getProperty( "sharing-sceneStyle" ) : "none";
             
             Collection<TreeEntry> entries = new ArrayList<TreeEntry>();
             this.shareData .setEntryHandler( (path, data, encoding) -> {
@@ -539,7 +592,7 @@ public class ShareDialog extends EscapeDialog
             } );
 
             // Now generate the content
-            this .gitUrl = this .shareData .generateContent( this.orgName, this.repoName, this.branchName, this.title, this.description, blog, publish );
+            this .gitUrl = this .shareData .generateContent( this.orgName, this.repoName, this.branchName, this.title, this.description, blog, publish, style );
 
             Tree newTree = dataService .createTree( this .repo, entries, (baseTree==null)? null : baseTree.getSha() );
 

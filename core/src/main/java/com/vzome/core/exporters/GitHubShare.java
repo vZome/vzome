@@ -49,7 +49,7 @@ public class GitHubShare
         this.handler = handler;        
     }
 
-    public String generateContent( String orgName, String repoName, String branchName, String title, String description, boolean blog, boolean publish ) throws IOException
+    public String generateContent( String orgName, String repoName, String branchName, String title, String description, boolean blog, boolean publish, String style ) throws IOException
     {
         // prepare the substitutions
         String dateFolder = this.date .replace( '-', '/' );
@@ -66,6 +66,33 @@ public class GitHubShare
         this.handler .addEntry( imagePath, png, "base64"  );
 
         this.handler .addEntry( assetPath + designName + ".shapes.json", shapesJson, "utf-8"  );
+        
+        String viewerControls = "";
+        String viewerParameters = "";
+        String viewerScript = "";
+        switch (style)
+        {
+        case "indexed": {
+            viewerControls = "<div style='display:flex;'><div style='margin: auto;'><button is='vzome-viewer-previous'>prev scene</button><button is='vzome-viewer-next'>next scene</button></div></div>";
+            viewerParameters = "indexed='true'";
+            break;
+        }
+        case "menu": {
+            viewerParameters = "show-scenes='named'";
+            break;
+        }
+        case "javascript": {
+            viewerParameters = "id='vzome-viewer' reactive='false'";
+            viewerScript =
+                "<script type='module'>\n"
+              + "  const viewer = document.querySelector( '#vzome-viewer' );\n"
+              + "  // viewer.scene = 'your scene';\n"
+              + "  viewer.update();\n"
+              + "</script>\n";
+            break;
+        }
+        default:
+        }
 
         String siteUrl = "https://" + orgName + ".github.io/" + repoName;
                  // e.g. https://vorth.github.io/vzome-sharing
@@ -89,8 +116,12 @@ public class GitHubShare
                 .replace( "${siteUrl}", siteUrl )
                 .replace( "${imagePath}", imagePath )
                 .replace( "${designPath}", designPath )
+                .replace( "${viewerControls}", viewerControls )
+                .replace( "${viewerParameters}", viewerParameters )
                 .replace( "${assetsUrl}", gitUrl );
-        
+        if ( viewerScript != "" )
+            indexMd = indexMd + viewerScript;
+
         this.handler .addEntry( assetPath + "index.md", indexMd, "utf-8" );
 
         // Generate a README for the vZome user to use
@@ -101,6 +132,9 @@ public class GitHubShare
                 .replace( "${assetPath}", assetPath )
                 .replace( "${imagePath}", imagePath )
                 .replace( "${designPath}", designPath )
+                .replace( "${viewerControls}", viewerControls )
+                .replace( "${viewerParameters}", viewerParameters )
+                .replace( "${viewerScript}", viewerScript )
                 .replace( "${indexSrcUrl}", indexSrcUrl )
                 .replace( "${rawUrl}", rawUrl );
         
@@ -134,7 +168,11 @@ public class GitHubShare
                     .replace( "${postPath}", postPath )
                     .replace( "${imagePath}", imagePath )
                     .replace( "${designPath}", designPath )
+                    .replace( "${viewerControls}", viewerControls )
+                    .replace( "${viewerParameters}", viewerParameters )
                     .replace( "${assetsUrl}", gitUrl );
+            if ( viewerScript != "" )
+                postMd = postMd + viewerScript;
             this.handler .addEntry( postSrcPath, postMd, "utf-8"  );
         }
         this.handler .addEntry( assetPath + "README.md", readmeMd, "utf-8"  );

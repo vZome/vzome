@@ -8,7 +8,8 @@
  HTML for embedding in any web page:
  ```html
 <figure style="width: 87%; margin: 5%">
-  <vzome-viewer style="width: 100%; height: 60vh"
+  ${viewerControls}
+  <vzome-viewer style="width: 100%; height: 60vh" ${viewerParameters}
        src="${siteUrl}/${designPath}" >
     <img  style="width: 100%"
        src="${siteUrl}/${imagePath}" >
@@ -17,6 +18,7 @@
      REPLACE this caption!
   </figcaption>
 </figure>
+${viewerScript}
  ```
 
 [vZome Sharing documentation](https://vzome.github.io/vzome/sharing.html#how-it-works)
