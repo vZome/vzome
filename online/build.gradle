@@ -200,7 +200,6 @@ core.config {
     'com/vzome/desktop/api/Controller.java',
     'com/vzome/desktop/controller/*.java',
 
-
     'com/vzome/core/zomic/*.java',
     'com/vzome/core/render/*ZomicEventHandler.java',
     'com/vzome/core/zomic/program/*.java',

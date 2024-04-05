@@ -548,6 +548,8 @@ public class ApplicationController extends DefaultController
         case "githubAccessToken":
         case "sharing-generatePost":
         case "sharing-publishImmediately":
+        case "sharing-showScenes":
+        case "sharing-sceneStyle":
             
             this.storedConfig .setProperty( name, value .toString() );
             FileWriter writer;
