@@ -73,7 +73,11 @@ public class GitHubShare
         switch (style)
         {
         case "indexed": {
-            viewerControls = "<div style='display:flex;'><div style='margin: auto;'><button is='vzome-viewer-previous'>prev scene</button><button is='vzome-viewer-next'>next scene</button></div></div>";
+            viewerControls =
+              "<div style='display:flex;'><div style='margin: auto;'>"
+              +  "<vzome-viewer-previous label='prev step'></vzome-viewer-previous>"
+              +  "<vzome-viewer-next label='next step'></vzome-viewer-next>"
+              +"</div></div>";
             viewerParameters = "indexed='true'";
             break;
         }

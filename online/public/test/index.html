@@ -14,6 +14,14 @@
         --vzome-label-background: black;
         --vzome-label-color: red;
       }
+      .vzome-viewer-index-button {
+        min-width: 90px;
+        font-size: large;
+        border-radius: 6px;
+        border-style: solid;
+        border-color: black;
+        background-color: aliceblue;
+      }
     </style>
     <script type="module">
       import "/modules/vzome-viewer.js"; // registers the custom element
@@ -40,6 +48,9 @@
         console.log( 'welcome scenes:', JSON.stringify( e.detail, null, 2 ) );
       } );
 
+      const prevBtn = document.querySelector( "#prevBtn" );
+      prevBtn .addEventListener( 'click', () => console.log( 'prev button hit!' ) );
+
       console.log( '%%%%%%%%%%%%%%%%%% ending my script!');
 
     </script>
@@ -52,8 +63,8 @@
       </section>
       <section>
         <div>
-          <button is="vzome-viewer-previous" viewer="welcome">prev</button>
-          <button is="vzome-viewer-next" viewer="welcome">next</button>
+          <vzome-viewer-previous viewer="welcome" label="back" id="prevBtn"></vzome-viewer-previous>
+          <vzome-viewer-next viewer="welcome" label="forward"></vzome-viewer-next>
           <h3 id="title"></h3>
         </div>
         <vzome-viewer id="welcome" indexed="true" show-scenes="all" scene="#5"

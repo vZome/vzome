@@ -1,7 +1,7 @@
 
 const debug = false;
 
-class VZomeViewerIndexButton extends HTMLButtonElement
+class VZomeViewerIndexButton extends HTMLElement
 {
   #next;
   #viewerId;
@@ -9,7 +9,7 @@ class VZomeViewerIndexButton extends HTMLButtonElement
 
   constructor( next=true )
   {
-    self = super();
+    super();
     this.#next = next;
   }
 
@@ -31,8 +31,14 @@ class VZomeViewerIndexButton extends HTMLButtonElement
       console.error( `No vzome-viewer found.` );
       return;
     }
+
+    const button = document .createElement( 'button' );
+    button .textContent = this.getAttribute( 'label' );
+    this .appendChild( button );
+    button.classList .add( 'vzome-viewer-index-button' );
+
     const loadParams = { camera: false };
-    self .addEventListener( "click", () => this.#next? this.#viewer .nextScene( loadParams ) : this.#viewer .previousScene( loadParams ) );
+    button .addEventListener( "click", () => this.#next? this.#viewer .nextScene( loadParams ) : this.#viewer .previousScene( loadParams ) );
   }
 
   static get observedAttributes()

@@ -313,5 +313,5 @@ export class VZomeViewer extends HTMLElement
 
 customElements.define( "vzome-viewer", VZomeViewer );
 
-customElements .define( "vzome-viewer-next",     VZomeViewerNextButton, { extends: "button" } );
-customElements .define( "vzome-viewer-previous", VZomeViewerPrevButton, { extends: "button" } );
+customElements .define( "vzome-viewer-next",     VZomeViewerNextButton );
+customElements .define( "vzome-viewer-previous", VZomeViewerPrevButton );
