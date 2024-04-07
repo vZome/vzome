@@ -177,6 +177,12 @@ const renderViewer = ( workerClient, container, config ) =>
   }
 
   container .appendChild( document.createElement("style") ).textContent = urlViewerCSS;
+  // Apply external override styles to the shadow dom
+  const linkElem = document.createElement("link");
+  linkElem .setAttribute("rel", "stylesheet");
+  linkElem .setAttribute("href", "./vzome-viewer-styles.css");
+  container .appendChild( linkElem );
+
   render( bindComponent, container );
 }
 

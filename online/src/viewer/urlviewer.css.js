@@ -74,7 +74,8 @@ export const urlViewerCSS = `
 .select__listbox {
   overflow-y: auto;
   max-height: 360px;
-  padding: 8px;
+  margin-block: 0;
+  padding: 4px;
 }
 .select__item {
   font-size: 16px;
