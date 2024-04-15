@@ -822,7 +822,25 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                             migrated = false;
                         }
 
-                        if ( ! asTemplate && migrated ) { // a migration
+                        String imgFormat = mController .getProperty( "imageFormat" );
+                        if ( imgFormat != null ) {
+                            
+                            String fileName = mController .getProperty( "window.file" );
+                            File mainFile = new File( fileName );
+                            Path filePath = mainFile .toPath();
+                            fileName = filePath .getFileName() .toString();
+                            int index = fileName .lastIndexOf( "." );
+                            if ( index > 0 )
+                            {
+                                fileName = fileName .substring( 0, index );
+                            }
+                            fileName = fileName + "." + imgFormat;
+
+                            File imgFile = new File( mainFile .getParentFile(), fileName );
+                            mController .doFileAction( "capture."+imgFormat, imgFile );
+                            mController .actionPerformed( null, "quit" );
+                        }
+                        else if ( ! asTemplate && migrated ) { // a migration
                             final String NL = System .getProperty( "line.separator" );
                             if ( mController .propertyIsTrue( "autoFormatConversion" ) )
                             {
