@@ -716,7 +716,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 						DisplayMode dm = bestDevice.getDisplayMode();
 						AffineTransform t = bestDevice.getDefaultConfiguration().getDefaultTransform();
 						bestWidth = dm.getWidth() / t.getScaleX();
-						bestHeight = dm.getHeight() / t.getScaleY();;
+						bestHeight = dm.getHeight() / t.getScaleY();
 						logger.config("Using preferred.monitor = " + preferredMonitor 
 								+ " @ resolution: " + bestWidth + "x" + bestHeight);
 					} else {
@@ -753,6 +753,35 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 			Rectangle bounds = bestDevice.getDefaultConfiguration().getBounds();
 			this.setLocation(bounds.x, bounds.y);
 		}
+		
+		String aspectRatioString = mController .getProperty( "aspect.ratio" );
+		if ( aspectRatioString != null ) {
+		    // aspect.ratio should be width/height
+		    try {
+	            float aspectRatio = Float.parseFloat( aspectRatioString );
+	            // apply some reasonable limits as validation
+	            if(aspectRatio >= 0.6 && aspectRatio <= 3) {
+		            int arWidth = (int) (aspectRatio * bestHeight);
+		            if ( arWidth <= bestWidth ) {
+		            	// reduce the width
+		                bestWidth = arWidth;
+			    	} else {
+			    		int arHeight = (int) (bestWidth / aspectRatio);
+			            if ( arHeight <= bestHeight ) {
+			            	// reduce the height
+			                bestHeight = arHeight;
+			            }
+		            }
+	                logger.fine( "aspect.ratio: " + aspectRatioString 
+	                		+ " = width: " + bestWidth + " / height: " + bestHeight);
+	            } else {
+	                logger.warning( "ignoring aspect.ratio: " + aspectRatioString + " out of range.");
+	            	aspectRatioString = null;
+	            }
+            } catch (NumberFormatException e) {
+                logger.warning( "ignoring invalid aspect.ratio: " + aspectRatioString );
+            }
+		}
 
 		try {
 			// This is where the GraphicsConfiguration failed on David's Windows 10 using Java 17
@@ -761,13 +790,17 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 	        this.setVisible( true );
 	        // Java 17 seems to successfully set the frame size and extended state only after the frame is visible.
 	        if(bestWidth > 0 && bestHeight > 0) {
-				double n = 15, d = n + 1; // set NORMAL size to 15/16 of scaled full screen size then maximize it
-				double downSize = n/d;
+	        	double downSize = 1.0;
+	        	if(aspectRatioString == null) {
+	        		double n = 15, d = n + 1; // set NORMAL size to 15/16 of scaled full screen size before maximizing it
+	        		downSize = n/d;
+	        	}
 				int scaledWidth = (int)(bestWidth * downSize);
 				int scaledHeight = (int)(bestHeight * downSize);
 				this.setSize(scaledWidth, scaledHeight);
 	        }
-	        this.setExtendedState(MAXIMIZED_BOTH);
+	        if ( aspectRatioString == null ) // this maxes the frame size, so we don't want it when controlling aspect ratio
+	            this.setExtendedState(MAXIMIZED_BOTH);
 	        this.setFocusable( true );
 		} catch (Exception ex) {
 			ex.printStackTrace();
