@@ -753,6 +753,19 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 			Rectangle bounds = bestDevice.getDefaultConfiguration().getBounds();
 			this.setLocation(bounds.x, bounds.y);
 		}
+		
+		String aspectRatioString = mController .getProperty( "aspect.ratio" );
+		if ( aspectRatioString != null ) {
+		    // aspect.ratio should be width/height
+		    try {
+	            float aspectRatio = Float.parseFloat( aspectRatioString );
+	            int arWidth = (int) (aspectRatio * bestHeight);
+	            if ( arWidth <= bestWidth )
+	                bestWidth = arWidth;
+            } catch (NumberFormatException e) {
+                logger.warning( "ignoring invalid aspect.ratio: " + aspectRatioString );
+            }
+		}
 
 		try {
 			// This is where the GraphicsConfiguration failed on David's Windows 10 using Java 17
@@ -767,7 +780,8 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 				int scaledHeight = (int)(bestHeight * downSize);
 				this.setSize(scaledWidth, scaledHeight);
 	        }
-	        this.setExtendedState(MAXIMIZED_BOTH);
+	        if ( aspectRatioString == null ) // this maxes the frame size, so we don't want it when controlling aspect ratio
+	            this.setExtendedState(MAXIMIZED_BOTH);
 	        this.setFocusable( true );
 		} catch (Exception ex) {
 			ex.printStackTrace();
