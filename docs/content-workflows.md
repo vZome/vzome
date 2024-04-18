@@ -35,7 +35,7 @@ The simple example I gave above, capturing an image to go with any vZome file, i
 save.exports=capture.png
 ```
 
-<p>Now, whenever you save a vZome file like "myModel.vZome", vZome will automatically capture the current view as "myModel.vZome.png", in the same directory. You can use the following types of image capture:</p>
+<p>Now, whenever you save a vZome file like "myModel.vZome", vZome will automatically capture the current view as "myModel.png", in the same directory. You can use the following types of image capture:</p>
 
 <ul>
     <li>capture.jpg</li>
@@ -47,21 +47,32 @@ save.exports=capture.png
 <p>In addition to image captures, you can do various 3D export formats, some of which are not otherwise available:</p>
 
 <ul>
-    <li>export.dae</li>
+    <li>export.mesh</li>
+    <li>export.cmesh</li>
+    <li>export.shapes</li>
+    <li>export.trishapes</li>
+    <li>export.ggb</li>
+    <li>export.math</li>
     <li>export.pov</li>
-    <li>export.json</li>
-    <li>export.vrml</li>
-    <li>export.StL</li>
-    <li>export.ply</li>
-    <li>export.vef</li>
+    <li>export.dae</li>
     <li>export.step</li>
+    <li>export.vrml</li>
     <li>export.off</li>
+    <li>export.vef</li>
+    <li>export.partgeom</li>
+    <li>export.scad</li>
+    <li>export.openscad</li>
+    <li>export.build123d</li>
+    <li>export.partslist</li>
+    <li>export.stl</li>
     <li>export.dxf</li>
     <li>export.pdb</li>
-    <li>export.partslist</li>
+    <li>export.seg</li>
+    <li>export.ply</li>
+    <li>export.history</li>
 </ul>
 
-<p>Finally, as of vZome 6.0 build 41, you can also capture 2D vector drawings:</p>
+<p>Finally, you can also capture 2D vector drawings:</p>
 
 <ul>
     <li>export2d.pdf</li>
@@ -185,9 +196,78 @@ arguments received: 2 tetrahedral-notwist-yellow.vZome
 
 <p>Obviously, our silly little sample script does not do anything useful. Again, although we used the same script for all three purposes described in this post, you should create specific scripts for different cases. Importantly, bear in mind that you can use a different script for every "execCommandLine" entry in your custom menu.</p>
 
-<h3>Future Improvements</h3>
+## Command-Line Support
 
-<p>There are some shortcomings in the features I've described above. Ideally, vZome would display a console window with the text output of these scripts. At the very least, the output should not be lost, even if you don't capture it as I have in these samples. There should also be some indication that vZome is busy while executing these scrips, possibly even preventing user interaction while they run.</p>
+vZome supports command-line invocation and automation, though not in a true "headless" fashion
+where no windows would open.  Nonetheless, this feature allows you to batch-process hundreds of
+vZome designs, doing exports or image captures for all.
+
+#### Specifying a Design File
+
+First, you can simply specify a vZome design file on the command line, and vZome will launch
+*interactively* with that design opened.  On a Mac, it will be something like this:
+```bash
+/Applications/vZome-7.1.52.app/Contents/MacOS/vZome my-design.vZome
+```
+On Windows, it will be something like this:
+```bash
+"C:\Program Files\vZome\vZome" my-design.vZome
+```
+(Note the quotes necessary because of the space in "Program Files".)
+The full path to the executable may vary depending on how you organize applications on your computer.
+The file argument can be any relative or absolute path, interpreted relative to
+the current working directory where you execute the command.
+
+#### Automation
+
+When you want fully automated processing using vZome, you must always specify a design file
+as above.  In addition, you must use a *macro*, as follows.  (Mac command line shown.)
+```bash
+/Applications/vZome-7.1.52.app/Contents/MacOS/vZome my-design.vZome -macro capture.png,export.shapes
+```
+The value for the macro must be a comma-delimited list of commands;
+see the earlier section for the [possible export and capture commands](#adding-exports-on-save).
+In the example here, we are capturing a PNG image then exporting the `.shapes.json` format used
+for GitHub sharing.
+
+Any exported files will be stored next to the original vZome design file, with the same
+file name but a different file extension.
+
+After the commands are executed, vZome will quit itself automatically.
+
+#### Image Size and Shape Control
+
+When capturing images, you can control the size and aspect ratio of the images.
+(The application path is elided here.)
+```bash
+/.../vZome my-design.vZome -macro capture.png -max.image.size 1200 -aspect.ratio 1.19
+```
+Aspect ratio is expressed as *width/height*, and it governs the shape of the entire design window,
+NOT the 3D canvas rendering the vZome design itself.
+A value near 1.19 currently works well for producing approximately square images on a Mac.
+If you don't control the aspect ratio, your screen dimensions will govern the shape of exported images.
+
+The value of `max.image.size` will cause govern the width or the height of the image, whichever
+is larger based on your selected (or the default) aspect ratio.
+
+Both of these properties can be set in your preference file,
+to govern the behavior of normal, interactive vZome.  The aspect ratio property will
+change your vZome windows from the default, full-screen shape.
+The image size control will apply to any image captures you perform.
+
+If either property is set in your preferences, you don't need to provide the command-line
+argument for automated vZome.
+You can also set the properties in both places.
+The command-line values will always override the values from the preference file.
+
+## Future Improvements
+
+<p>There are some shortcomings in the features I've described above. Ideally, vZome would display a console window with the text output of these scripts. At the very least, the output should not be lost, even if you don't capture it as I have in these samples. There should also be some indication that vZome is busy while executing these scripts, possibly even preventing user interaction while they run.</p>
+
+<p>
+Obviously, we'd also like to see a truly headless scripting capability,
+opening and processing multiple designs in turn.
+</p>
 
 <p>If you have other enhancements you'd like to see, please leave a comment.</p>
 
