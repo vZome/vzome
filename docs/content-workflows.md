@@ -245,20 +245,21 @@ When capturing images, you can control the size and aspect ratio of the images.
 Aspect ratio is expressed as *width/height*, and it governs the shape of the entire design window,
 NOT the 3D canvas rendering the vZome design itself.
 A value near 1.19 currently works well for producing approximately square images on a Mac.
-If you don't control the aspect ratio, your screen dimensions will govern the shape of exported images.
+If you don't control the aspect ratio, your screen dimensions will govern the shape of exported images,
+since windows fill the screen by default.
 
-The value of `max.image.size` will cause govern the width or the height of the image, whichever
+The value of `max.image.size` will adjust the width or the height of the image, whichever
 is larger based on your selected (or the default) aspect ratio.
 
 Both of these properties can be set in your preference file,
-to govern the behavior of normal, interactive vZome.  The aspect ratio property will
+to control the behavior of normal, interactive vZome.  The aspect ratio property will
 change your vZome windows from the default, full-screen shape.
 The image size control will apply to any image captures you perform.
 
 If either property is set in your preferences, you don't need to provide the command-line
 argument for automated vZome.
-You can also set the properties in both places.
-The command-line values will always override the values from the preference file.
+You can also set the properties in both places;
+the command-line values will always override the values from the preference file.
 
 ## Future Improvements
 
