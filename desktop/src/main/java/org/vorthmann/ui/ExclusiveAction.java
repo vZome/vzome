@@ -10,6 +10,8 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,6 +29,8 @@ public abstract class ExclusiveAction implements ActionListener
 {
     public static class Excluder
     {
+        private final Executor serialExecutor = Executors.newSingleThreadExecutor();
+        
         private final List<Component> mListeners = new ArrayList<>(40);
         
         private final PropertyChangeListener statusListener;
@@ -45,8 +49,8 @@ public abstract class ExclusiveAction implements ActionListener
         
         public void grab( SwingWorker<?, ?> worker )
         {
-            grab();
-            worker .execute();
+//            grab();
+            serialExecutor .execute( worker );
         }
 
         public void grab()

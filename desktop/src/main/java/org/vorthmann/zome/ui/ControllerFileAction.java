@@ -25,8 +25,14 @@ public class ControllerFileAction implements ActionListener
     private final boolean mOpening;
     private final String mExtension;
     private final String mTitle;
+    private boolean headless;
     
     private static final Logger logger = Logger.getLogger( "org.vorthmann.zome.ui" );
+
+    public void setHeadless( boolean headless )
+    {
+        this.headless = headless;
+    }
 
     public ControllerFileAction( FileDialog chooser, boolean open, String command, String extension, Controller controller )
     {
@@ -36,6 +42,7 @@ public class ControllerFileAction implements ActionListener
         mController = controller;
         mCommand = command;
         mTitle = controller .getProperty( "file-dialog-title." + command );
+        this.headless = false;
     }
     
     public static String readTextFromFile( File file )
@@ -75,7 +82,7 @@ public class ControllerFileAction implements ActionListener
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
      */
     @Override
-    public void actionPerformed( ActionEvent arg0 )
+    public void actionPerformed( ActionEvent actionEvent )
     {
         String title = ( mTitle != null )? mTitle : ( mOpening? "Choose a file" : "Save a file" );
         mFileChooser .setTitle( title );
@@ -84,11 +91,12 @@ public class ControllerFileAction implements ActionListener
         String directory = this .mController .getProperty( this .getDirectoryProperty() );
         if ( directory == null )
             directory = this .mController .getProperty( this .mOpening? "last-open-directory.vZome" : "last-save-directory.vZome" );
-        mFileChooser .setDirectory( directory );
 
         String fileName = this .mController .getProperty( "window.file" );
         if ( fileName != null && ! this .mOpening ) {
             Path filePath = new File( fileName ) .toPath();
+            if ( this.headless )
+                directory = filePath .getParent() .toString();
             fileName = filePath .getFileName() .toString();
             int index = fileName .lastIndexOf( "." );
             if ( index > 0 )
@@ -99,8 +107,12 @@ public class ControllerFileAction implements ActionListener
             mFileChooser .setFile( fileName );
         }
 
-        mFileChooser .setVisible( true );
-        fileName = mFileChooser .getFile();
+        mFileChooser .setDirectory( directory );
+
+        if ( ! this.headless ) {
+            mFileChooser .setVisible( true );
+            fileName = mFileChooser .getFile();
+        }
         if ( fileName == null )
         {
             logger .info( "file action cancelled" );
@@ -124,7 +136,8 @@ public class ControllerFileAction implements ActionListener
 	        fileName = fileName + "." + mExtension;
         }
         directory = mFileChooser .getDirectory();  // cache this for convenience, for the next use
-        this .mController .setProperty( this .getDirectoryProperty(), directory ); // set it for other windows
+        if ( directory != null )
+            this .mController .setProperty( this .getDirectoryProperty(), directory ); // set it for other windows
         File file = new File( directory, fileName );
         try {
             mController .doFileAction( mCommand, file );

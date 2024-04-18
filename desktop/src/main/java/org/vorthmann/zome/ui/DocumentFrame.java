@@ -26,6 +26,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -855,23 +856,15 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                             migrated = false;
                         }
 
+                        String macro = mController .getProperty( "macro" );
                         String imgFormat = mController .getProperty( "imageFormat" );
-                        if ( imgFormat != null ) {
-                            
-                            String fileName = mController .getProperty( "window.file" );
-                            File mainFile = new File( fileName );
-                            Path filePath = mainFile .toPath();
-                            fileName = filePath .getFileName() .toString();
-                            int index = fileName .lastIndexOf( "." );
-                            if ( index > 0 )
-                            {
-                                fileName = fileName .substring( 0, index );
-                            }
-                            fileName = fileName + "." + imgFormat;
-
-                            File imgFile = new File( mainFile .getParentFile(), fileName );
-                            mController .doFileAction( "capture."+imgFormat, imgFile );
-                            mController .actionPerformed( null, "quit" );
+                        if ( macro != null ) {
+                            ActionListener performer = getMacroPerformer( macro + ",quit", mController );
+                            performer .actionPerformed( new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "doMacroStep" ) );
+                        }
+                        else if ( imgFormat != null ) {
+                            ActionListener performer = getMacroPerformer( "capture." + imgFormat + ",quit", mController );
+                            performer .actionPerformed( new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "doMacroStep" ) );
                         }
                         else if ( ! asTemplate && migrated ) { // a migration
                             final String NL = System .getProperty( "line.separator" );
@@ -944,6 +937,114 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         };
     }
     
+    private ActionListener getActionListener( String command, Controller controller )
+    {
+        final ActionListener actionListener;
+        switch ( command ) {
+
+        // these can fall through to the ApplicationController
+        case "quit":
+        case "new":
+        case "new-rootTwo":
+        case "new-rootThree":
+        case "new-heptagon":
+        case "new-snubDodec":
+        case "openURL":
+        case "showAbout":
+
+            // these will be handled by the DocumentController
+        case "toggleWireframe":
+        case "toggleOrbitViews":
+        case "toggleStrutScales":
+        case "toggleFrameLabels":
+        case "toggleNormals":
+        case "toggleOutlines":
+            actionListener = new ControllerActionListener(controller);
+            break;
+
+        case "open":
+        case "newFromTemplate":
+        case "openDeferringRedo":
+            actionListener = new ControllerFileAction( fileDialog, true, command, "vZome", controller );
+            break;
+
+        case "saveAs":
+            actionListener = saveAsAction;
+            break;
+
+        case "save":
+        case "saveDefault":
+        case "close":
+        case "snapshot.2d":
+        case "showToolsPanel":
+        case "setItemColor":
+        case "setBackgroundColor":
+        case "showPolytopesDialog":
+        case "showZomicWindow":
+        case "showZomodWindow":
+        case "showPythonWindow":
+        case "rZomeOrbits":
+        case "predefinedOrbits":
+        case "usedOrbits":
+        case "setAllDirections":
+        case "configureShapes":
+        case "configureDirections":
+        case "addBookmark":
+        case "export4dPolytope":
+            actionListener = this .localActions;
+            break;
+
+        case "capture-wiggle-gif":
+        case "capture-animation":
+            actionListener = new ControllerFileAction( fileDialog, false, command, "gif", controller );
+            break;
+
+        default:
+            if ( command .startsWith( "openResource-" ) ) {
+                actionListener = new ControllerActionListener(controller);
+            }
+            else if ( command .startsWith( "LoadVEF/" ) ) {
+                actionListener = this .localActions;
+            }
+            else if ( command .startsWith( "ImportSimpleMeshJson/" ) ) {
+                actionListener = this .localActions;
+            }
+            else if ( command .startsWith( "ImportColoredMeshJson/" ) ) {
+                actionListener = this .localActions;
+            }
+            else if ( command .startsWith( "setSymmetry." ) ) {
+                actionListener = this .localActions;
+            }
+            else if ( command .startsWith( "execCommandLine/" ) ) {
+                actionListener = this .localActions;
+            }
+            else if ( command .startsWith( "showProperties-" ) ) {
+                actionListener = this .localActions;
+            }
+            else if ( command .startsWith( "capture." ) ) {
+                String ext = command .substring( "capture." .length() );
+                actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
+            }
+            else if ( command .startsWith( "export2d." ) ) {
+                String ext = command .substring( "export2d." .length() );
+                actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
+            }
+            else if ( command .startsWith( "export." ) ) {
+                String ext = command .substring( "export." .length() );
+                ext = controller .getProperty( "exportExtension." + ext );
+                actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
+            }
+            else if ( command .startsWith( "MACRO/" ) ) {
+                String rest = command .substring( "MACRO/" .length() );
+                actionListener = getMacroPerformer( rest, controller );
+            }
+            else {
+                actionListener = getExclusiveAction( command, controller );
+            }
+        }
+        return actionListener;
+    }
+    
     @Override
     public AbstractButton setButtonAction( String command, Controller controller, AbstractButton control )
     {
@@ -981,108 +1082,47 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         control .setEnabled( enable );
         if ( control .isEnabled() )
         {
-            ActionListener actionListener = new ControllerActionListener(controller);
-            switch ( command ) {
-
-            // these can fall through to the ApplicationController
-            case "quit":
-            case "new":
-            case "new-rootTwo":
-            case "new-rootThree":
-            case "new-heptagon":
-            case "new-snubDodec":
-            case "openURL":
-            case "showAbout":
-
-                // these will be handled by the DocumentController
-            case "toggleWireframe":
-            case "toggleOrbitViews":
-            case "toggleStrutScales":
-            case "toggleFrameLabels":
-            case "toggleNormals":
-            case "toggleOutlines":
-                break;
-
-            case "open":
-            case "newFromTemplate":
-            case "openDeferringRedo":
-                actionListener = new ControllerFileAction( fileDialog, true, command, "vZome", controller );
-                break;
-
-            case "saveAs":
-                actionListener = saveAsAction;
-                break;
-
-            case "save":
-            case "saveDefault":
-            case "close":
-            case "snapshot.2d":
-            case "showToolsPanel":
-            case "setItemColor":
-            case "setBackgroundColor":
-            case "showPolytopesDialog":
-            case "showZomicWindow":
-            case "showZomodWindow":
-            case "showPythonWindow":
-            case "rZomeOrbits":
-            case "predefinedOrbits":
-            case "usedOrbits":
-            case "setAllDirections":
-            case "configureShapes":
-            case "configureDirections":
-            case "addBookmark":
-            case "export4dPolytope":
-                actionListener = this .localActions;
-                break;
-
-            case "capture-wiggle-gif":
-            case "capture-animation":
-                actionListener = new ControllerFileAction( fileDialog, false, command, "gif", controller );
-                break;
-
-            default:
-                if ( command .startsWith( "openResource-" ) ) {
-                }
-                else if ( command .startsWith( "LoadVEF/" ) ) {
-                    actionListener = this .localActions;
-                }
-                else if ( command .startsWith( "ImportSimpleMeshJson/" ) ) {
-                    actionListener = this .localActions;
-                }
-                else if ( command .startsWith( "ImportColoredMeshJson/" ) ) {
-                    actionListener = this .localActions;
-                }
-                else if ( command .startsWith( "setSymmetry." ) ) {
-                    actionListener = this .localActions;
-                }
-                else if ( command .startsWith( "execCommandLine/" ) ) {
-                    actionListener = this .localActions;
-                }
-                else if ( command .startsWith( "showProperties-" ) ) {
-                    actionListener = this .localActions;
-                }
-                else if ( command .startsWith( "capture." ) ) {
-                    String ext = command .substring( "capture." .length() );
-                    actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
-                }
-                else if ( command .startsWith( "export2d." ) ) {
-                    String ext = command .substring( "export2d." .length() );
-                    actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
-                }
-                else if ( command .startsWith( "export." ) ) {
-                    String ext = command .substring( "export." .length() );
-                    ext = controller .getProperty( "exportExtension." + ext );
-                    actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
-                }
-                else {
-                    actionListener = getExclusiveAction( command, controller );
-                    this .mExcluder .addExcludable( control );
-                }
-                break;
+            if ( command .startsWith( "MACRO/" ) ) {
+                // We don't want recursive macros, so this case is separated out
+                String rest = command .substring( "MACRO/" .length() );
+                ActionListener actionListener = getMacroPerformer( rest, controller );
+                control .addActionListener( actionListener );
             }
-            control .addActionListener( actionListener );
+            else {
+                ActionListener actionListener = getActionListener( command, controller );
+                if ( actionListener instanceof ExclusiveAction )
+                    this .mExcluder .addExcludable( control );
+                control .addActionListener( actionListener );
+            }
         }
         return control;
+    }
+    
+    private ActionListener getMacroPerformer( String macro, Controller controller )
+    {
+        String[] commands = macro .split( "," );
+        ActionListener[] actions = Arrays.stream( commands )
+                .map( ( cmd ) -> new ActionListener() {
+                    @Override
+                    public void actionPerformed( ActionEvent arg0 )
+                    {
+                        ActionListener listener = getActionListener( cmd, controller );
+                        if ( listener instanceof ControllerFileAction )
+                            ((ControllerFileAction) listener) .setHeadless( true );
+                        listener .actionPerformed( new ActionEvent( arg0.getSource(), arg0.getID(), cmd ));
+                    }
+                } )
+                .toArray( ActionListener[]::new );
+        return new ActionListener()
+        {
+            @Override
+            public void actionPerformed( ActionEvent e )
+            {
+                for ( ActionListener actionListener : actions ) {
+                    actionListener .actionPerformed( e );
+                }
+            }
+        };
     }
     
     @Override
