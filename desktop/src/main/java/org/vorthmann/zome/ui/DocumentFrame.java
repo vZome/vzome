@@ -19,13 +19,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +47,6 @@ import org.vorthmann.j3d.J3dComponentFactory;
 import org.vorthmann.j3d.Platform;
 import org.vorthmann.ui.ExclusiveAction;
 
-import com.vzome.core.exporters.GitHubShare;
 import com.vzome.core.render.Scene;
 import com.vzome.desktop.api.Controller;
 import com.vzome.desktop.awt.GraphicsController;
@@ -237,25 +229,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                                 "Command Failure", JOptionPane .ERROR_MESSAGE );
                         return;
                     }
+                    Controller githubController = mController .getSubController( "github" );
                     if ( shareDialog == null )
-                        shareDialog = new ShareDialog( DocumentFrame.this, mController );
-                    Path filePath = Paths.get( filePathStr );
-                    LocalDateTime lastMod = LocalDateTime.now();
-                    if ( mController .propertyIsTrue( "share.last.mod.time" ) ) {
-                        try {
-                            FileTime fileTime = Files.getLastModifiedTime( Paths.get( filePathStr ) );
-                            lastMod = LocalDateTime.ofInstant( fileTime.toInstant(), ZoneId.systemDefault() );
-                        } catch (IOException e2) {
-                            logger.log( Level.INFO, "Unable to get last mod time for " + filePathStr );
-                        }
-                    }
-                    String time = DateTimeFormatter.ofPattern( "HH-mm-ss" ) .format( lastMod );
-                    String date = DateTimeFormatter.ofPattern( "yyyy-MM-dd" ) .format( lastMod );
-                    String xml = mController .getProperty( "vZome-xml" );
-                    String pngEncoded = mController .getProperty( "png-base64" );
-                    String shapesJson = mController .getProperty( "shapes-json" );
-                    GitHubShare shareData = new GitHubShare( filePath .getFileName() .toString(), date, time, xml, pngEncoded, shapesJson );
-                    shareDialog .startUpload( shareData );
+                        shareDialog = new ShareDialog( DocumentFrame.this, githubController );                    
+                    githubController .actionPerformed( this, "startShare" );
                     break;
 
                 case "saveDefault":
