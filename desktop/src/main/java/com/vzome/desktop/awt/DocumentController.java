@@ -84,6 +84,7 @@ import com.vzome.desktop.controller.MeasureController;
 import com.vzome.desktop.controller.NumberController;
 import com.vzome.desktop.controller.PartsController;
 import com.vzome.desktop.controller.PolytopesController;
+import com.vzome.desktop.controller.ShareController;
 import com.vzome.desktop.controller.StrutBuilderController;
 import com.vzome.desktop.controller.SymmetryController;
 import com.vzome.desktop.controller.ToolFactoryController;
@@ -205,7 +206,9 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         this .addSubController( "polytopes", new PolytopesController( (ImplicitSymmetryParameters) this .documentModel .getEditorModel(), document ) );
         
         this .addSubController( "undoRedo", new UndoRedoController( this .documentModel .getHistoryModel() ) );
-                
+ 
+        this .addSubController( "github", new ShareController() );
+
         importScaleController = new NumberController( this .documentModel .getField() );
         this .addSubController( "importScale", importScaleController );
         

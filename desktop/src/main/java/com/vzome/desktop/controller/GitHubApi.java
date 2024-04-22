@@ -1,4 +1,4 @@
-package org.vorthmann.zome.ui;
+package com.vzome.desktop.controller;
 
 import java.io.IOException;
 import java.io.OutputStream;
