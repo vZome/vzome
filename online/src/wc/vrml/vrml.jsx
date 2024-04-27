@@ -7,8 +7,8 @@ const loader = new VRMLLoader();
 
 const fetchVrml = async ( url ) =>
 {
-  if ( ! url .endsWith( '.vrml' ) )
-    return null;
+  // if ( ! url .endsWith( '.vrml' ) )
+  //   return null;
 
   return loader .loadAsync( url );
 }
