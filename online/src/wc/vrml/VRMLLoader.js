@@ -1,5 +1,5 @@
 // Copied from https://github.com/pmndrs/three-stdlib/blob/017639d81eb65b3a69b334ec1792efcf6f4a2215/src/loaders/VRMLLoader.js,
-//  so I can attempt to fix some bugs.  If I succeed, I'll fork and PR.
+//  so I can fix some bugs.  I submitted a PR, and also to three.js itself.  Both have been merged.
 
 import {
   BackSide,
@@ -212,6 +212,18 @@ class VRMLLoader extends Loader {
       const TO = createToken({
         name: 'TO',
         pattern: /TO/,
+        longer_alt: Identifier,
+      })
+
+      const PROTO = createToken({
+        name: 'PROTO',
+        pattern: /PROTO/,
+        longer_alt: Identifier,
+      })
+
+      const IS = createToken({
+        name: 'IS',
+        pattern: /IS/,
         longer_alt: Identifier,
       })
 
@@ -673,7 +685,7 @@ class VRMLLoader extends Loader {
         case 'Fog':
         case 'NavigationInfo':
         case 'Viewpoint':
-          // node not supported yet
+          console.warn('THREE.VRMLLoader: Unsupported node:', nodeName)
           break
 
         default:
@@ -960,7 +972,7 @@ class VRMLLoader extends Loader {
     }
 
     function buildAppearanceNode(node) {
-      let material = new MeshPhongMaterial()
+      let material = new MeshPhongMaterial( { flatShading: true, shininess: 0 } )
       let transformData
 
       const fields = node.fields
@@ -1069,7 +1081,7 @@ class VRMLLoader extends Loader {
             break
 
           case 'diffuseColor':
-            materialData.diffuseColor = new Color(fieldValues[0], fieldValues[1], fieldValues[2])
+            materialData.diffuseColor = new Color(fieldValues[0], fieldValues[1], fieldValues[2]) .convertSRGBToLinear()
             break
 
           case 'emissiveColor':
@@ -1469,12 +1481,12 @@ class VRMLLoader extends Loader {
 
             const flattenFaceColors = flattenData(color, colorIndex)
             const triangulatedFaceColors = triangulateFaceData(flattenFaceColors, coordIndex)
-            colorAttribute = computeAttributeFromFaceData(triangulatedCoordIndex, triangulatedFaceColors)
+            colorAttribute = computeAttributeFromFaceData(triangulatedCoordIndex, triangulatedFaceColors, true)
           } else {
             // if the colorIndex field is empty, then the color are applied to each face of the IndexedFaceSet in order
 
             const triangulatedFaceColors = triangulateFaceData(color, coordIndex)
-            colorAttribute = computeAttributeFromFaceData(triangulatedCoordIndex, triangulatedFaceColors)
+            colorAttribute = computeAttributeFromFaceData(triangulatedCoordIndex, triangulatedFaceColors, true)
           }
         }
       }
@@ -2479,11 +2491,18 @@ class VRMLLoader extends Loader {
       return new Float32BufferAttribute(array, itemSize)
     }
 
-    function computeAttributeFromFaceData(index, faceData) {
+    function computeAttributeFromFaceData(index, faceData, isColor) {
       const array = []
 
       for (let i = 0, j = 0, l = index.length; i < l; i += 3, j++) {
         vA.fromArray(faceData, j * 3)
+
+        if ( isColor ) {
+          const color = new Color( vA.x, vA.y, vA.z ) .convertSRGBToLinear();
+          vA.x = color.r;
+          vA.y = color.g;
+          vA.z = color.b;
+        }
 
         array.push(vA.x, vA.y, vA.z)
         array.push(vA.x, vA.y, vA.z)
@@ -2730,7 +2749,7 @@ class VRMLLoader extends Loader {
 
 class VRMLLexer {
   constructor(tokens) {
-    this.lexer = new Lexer(tokens)
+    this.lexer = new Lexer(tokens, { safeMode: true })
   }
 
   lex(inputText) {
