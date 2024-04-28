@@ -1,0 +1,2993 @@
+#VRML V2.0 utf8
+WorldInfo {
+	title "Polyhedron Controller" 
+	info["Copyright 2006 (C) Dr. Richard Klitzing richard.klitzing(at)t-online.de LastUpDate=9.11.2006 CreationDate=27.10.2006"]
+}
+
+Background {
+	skyColor .2 .2 .2
+}
+
+Transform {
+	center 0 0 12 
+	rotation 0 1 0 -.035 
+	children [
+		Viewpoint { 
+			fieldOfView .2 
+			position 0 0 12 
+			description "" 
+		}
+	]
+}
+
+NavigationInfo {
+	type "NONE" 
+	headlight FALSE 
+}
+
+DEF D_LIGHT01 DirectionalLight { 
+	color 1 1 1 
+	direction 0 0 1
+	ambientIntensity 0 
+	intensity 1
+} 
+
+DEF D_LIGHT02 DirectionalLight { 
+	color 1 1 1 
+	direction 0 0 -1
+	ambientIntensity 0 
+	intensity 1
+}
+
+DEF D_LIGHT03 DirectionalLight { 
+	color 1 1 1 
+	direction 0 1 0
+	ambientIntensity 0 
+	intensity 1
+} 
+
+DEF D_LIGHT04 DirectionalLight { 
+	color 1 1 1 
+	direction 0 -1 0
+	ambientIntensity 0 
+	intensity 1
+}
+
+DEF D_LIGHT05 DirectionalLight { 
+	color 1 1 1 
+	direction 1 0 0
+	ambientIntensity 0 
+	intensity 1
+} 
+
+DEF D_LIGHT06 DirectionalLight { 
+	color 1 1 1 
+	direction -1 0 0
+	ambientIntensity 0 
+	intensity 1
+}
+
+PROTO AP01 [
+	field SFColor IRO 1 0 0
+	field SFFloat TR 0
+]
+{
+	Appearance {
+		material Material {
+			diffuseColor IS IRO 
+			transparency IS TR
+		}
+	}
+}
+
+PROTO BOX01 [
+	field SFVec3f SIZE .14 .14 1
+	field SFVec3f POS 0 0 0
+	exposedField SFColor IRO 0 0 0
+	exposedField SFFloat TR 0
+	exposedField MFString TEXT ""
+	exposedField SFVec3f TEXTPOS 0 0 .1
+]
+{
+	Transform {
+		translation IS POS 
+		scale IS SIZE 
+		children [
+			Shape {
+				appearance Appearance {
+					material Material {
+						emissiveColor IS IRO 
+						diffuseColor 0 0 0 
+						transparency IS TR
+					}
+				}
+				geometry IndexedFaceSet { 
+					coord Coordinate { 
+						point [
+							.5 .5 0 
+							-.5 .5 0 
+							-.5 -.5 0 
+							.5 -.5 0
+						] 
+					} 
+					coordIndex [
+						0 1 2 3
+					] 
+				} 
+			}
+			Transform {
+				translation IS TEXTPOS
+				scale .27 1.1 1
+				children [
+					Shape {
+						geometry Text {
+							fontStyle FontStyle {
+								size .55
+								family "SANS"
+								justify ["MIDDLE", "MIDDLE"]
+							}
+							string IS TEXT
+						}
+					}
+				]
+			}
+		]
+	}
+}
+
+PROTO TRIANG01 [
+	field SFVec3f SIZE .14 .14 1
+	exposedField SFColor TCO 0 0 0
+]
+{
+	Transform {
+		scale IS SIZE 
+		children [
+			Shape {
+				appearance Appearance {
+					material Material {
+						emissiveColor IS TCO 
+						diffuseColor 0 0 0 
+					}
+				}
+				geometry IndexedFaceSet { 
+					coord Coordinate { 
+						point [
+							0 .5 0
+							-.5 -.36602540378443864676372317075294 0
+							.5 -.36602540378443864676372317075294 0
+						] 
+					} 
+					coordIndex [0 1 2] 
+				} 
+			}
+		]
+	}
+}
+
+PROTO CIRCLE01 [
+	field SFFloat radius .5
+	field SFVec3f POS 0 0 0
+	exposedField SFColor IRO 0 0 0
+]
+{
+	Transform {
+		translation IS POS 
+		children [
+			Transform {
+				rotation 1 0 0 1.57 
+				children [
+					Shape { 
+						appearance Appearance {
+							material Material {
+								diffuseColor IS IRO
+							}
+						}
+						geometry Cylinder { 
+							radius IS radius 
+							height .2 
+							bottom FALSE 
+							side FALSE 
+							top TRUE 
+						} 
+					}
+				]
+			}
+		]
+	}
+}
+
+PROTO CIRCLE02 [
+	exposedField SFColor COL 0 0 0
+	field SFRotation ROT 0 0 0 0
+]
+{
+	Transform { 
+		rotation IS ROT
+		children [
+			Shape { 
+				appearance Appearance {
+					material Material {
+						diffuseColor IS COL
+					}
+				}
+				geometry Extrusion {
+				  creaseAngle 2.785
+				  solid FALSE
+				  beginCap FALSE
+				  endCap FALSE
+				  crossSection [
+				     # Line
+				      .00 -.005 .00 .005
+				  ]
+				  spine [
+						#50-gon
+						1 0 0,
+						.99211470131447783104979304278578 .12533323356430424537311875981651 0,
+						.96858316112863111949016837546474 .24868988716485478824228374600645 0,
+						.92977648588825140366094255622199 .36812455268467795915694714749296 0,
+						.87630668004386358730811590392206 .48175367410171527498719150287213 0,
+						.80901699437494742410229341718282 .58778525229247312916870595463907 0,
+						.72896862742141152314673031905526 .68454710592868867373228335762121 0,
+						.63742398974868971017671281167602 .77051324277578923080300963639618 0,
+						.53582679497899661827130876786764 .84432792550201507854855806396668 0,
+						.42577929156507264886250244574425 .90482705246601952771366864793270 0,
+						.30901699437494742410229341718282 .95105651629515357211643933337938 0,
+						.18738131458572463054255073444729 .98228725072868868108564174286527 0,
+						.06279051952931337607617822456563 .99802672842827156195233680686345 0,
+						-.06279051952931337607617822456563 .99802672842827156195233680686345 0,
+						-.18738131458572463054255073444729 .98228725072868868108564174286527 0,
+						-.30901699437494742410229341718282 .95105651629515357211643933337938 0,
+						-.42577929156507264886250244574425 .90482705246601952771366864793270 0,
+						-.53582679497899661827130876786764 .84432792550201507854855806396668 0,
+						-.63742398974868971017671281167602 .77051324277578923080300963639618 0,
+						-.72896862742141152314673031905526 .68454710592868867373228335762121 0,
+						-.80901699437494742410229341718282 .58778525229247312916870595463907 0,
+						-.87630668004386358730811590392206 .48175367410171527498719150287213 0,
+						-.92977648588825140366094255622199 .36812455268467795915694714749296 0,
+						-.96858316112863111949016837546474 .24868988716485478824228374600645 0,
+						-.99211470131447783104979304278578 .12533323356430424537311875981651 0,
+						-1 0 0,
+						-.99211470131447783104979304278578 -.12533323356430424537311875981651 0,
+						-.96858316112863111949016837546474 -.24868988716485478824228374600645 0,
+						-.92977648588825140366094255622199 -.36812455268467795915694714749296 0,
+						-.87630668004386358730811590392206 -.48175367410171527498719150287213 0,
+						-.80901699437494742410229341718282 -.58778525229247312916870595463907 0,
+						-.72896862742141152314673031905526 -.68454710592868867373228335762121 0,
+						-.63742398974868971017671281167602 -.77051324277578923080300963639618 0,
+						-.53582679497899661827130876786764 -.84432792550201507854855806396668 0,
+						-.42577929156507264886250244574425 -.90482705246601952771366864793270 0,
+						-.30901699437494742410229341718282 -.95105651629515357211643933337938 0,
+						-.18738131458572463054255073444729 -.98228725072868868108564174286527 0,
+						-.06279051952931337607617822456563 -.99802672842827156195233680686345 0,
+						.06279051952931337607617822456563 -.99802672842827156195233680686345 0,
+						.18738131458572463054255073444729 -.98228725072868868108564174286527 0,
+						.30901699437494742410229341718282 -.95105651629515357211643933337938 0,
+						.42577929156507264886250244574425 -.90482705246601952771366864793270 0,
+						.53582679497899661827130876786764 -.84432792550201507854855806396668 0,
+						.63742398974868971017671281167602 -.77051324277578923080300963639618 0,
+						.72896862742141152314673031905526 -.68454710592868867373228335762121 0,
+						.80901699437494742410229341718282 -.58778525229247312916870595463907 0,
+						.87630668004386358730811590392206 -.48175367410171527498719150287213 0,
+						.92977648588825140366094255622199 -.36812455268467795915694714749296 0,
+						.96858316112863111949016837546474 -.24868988716485478824228374600645 0,
+						.99211470131447783104979304278578 -.12533323356430424537311875981651 0,
+						1 0 0,
+					]
+				}
+			}
+		]
+	}
+}
+
+PROTO SPHERE01 [
+	field SFFloat RAD .01
+	exposedField SFColor SCO 1 .5 0
+]
+{
+	Transform {
+		children [
+			Shape{
+				appearance Appearance {
+					material Material {
+						diffuseColor IS SCO
+					}
+				}
+				geometry Sphere {
+					radius IS RAD
+				}
+			}
+		]
+	}
+}
+
+DEF SC001 Script{
+	eventIn SFTime vp_touch
+	eventIn SFVec3f button_move
+	eventIn SFTime clicked
+	eventIn SFVec3f lev6_move
+	eventIn SFVec3f stick2triang
+	eventIn SFTime acr_touch
+	eventIn SFTime snub_touch
+	eventIn SFTime grid_touch
+	field SFFloat PI 0
+	field SFFloat phi12 0
+	field SFFloat chi20 0
+	field SFInt32 current 0
+	field SFFloat current_vp 0
+	field MFRotation rotate_on [
+		0 0 1 0 
+		0 0 1 1.5707963267948966192313216916398 
+		0 0 1 3.1415926535897932384626433832795 
+		0 0 1 4.7123889803846898576939650749193 
+		0 0 1 6.283185307179586476925286766559
+	]
+	field MFRotation rotate_off [
+		0 0 1 0 
+		0 0 1 0 
+		0 0 1 0 
+		0 0 1 0 
+		0 0 1 0
+	]
+	field SFRotation ss_reset 0 0 1 0
+	field MFInt32 color_index [ 0 0 0 1 1 1 ]
+	field SFFloat e_rotate 0
+	field SFFloat e_distance .001
+	field SFInt32 grid_choice 0
+	field SFInt32 snub_var 0
+	eventOut SFVec3f kyori
+	eventOut SFVec3f scale
+	eventOut SFRotation kaiten
+	eventOut SFInt32 choice
+	eventOut MFRotation rot_on_off
+	eventOut SFRotation vp_rotation
+	eventOut SFRotation reset_ss
+	eventOut SFVec3f trackball_scale
+	eventOut SFRotation rotation_changed
+	eventOut SFVec3f distance
+	eventOut SFVec3f all_scale
+	eventOut SFVec3f tr_trans
+	eventOut SFVec3f bt_trans
+	eventOut SFVec3f tr_pa
+	eventOut SFVec3f tr_pb
+	eventOut MFVec3f trig01
+	eventOut MFVec3f trig02
+	eventOut MFVec3f trig03
+	eventOut MFVec3f trig04
+	eventOut MFVec3f trig05
+	eventOut MFVec3f trig06
+	eventOut MFString text
+	eventOut SFVec3f init
+	eventOut MFVec3f squ01
+	eventOut SFFloat acryl
+	eventOut MFString acr_txt
+	eventOut MFVec3f v_snub
+	eventOut SFInt32 snub_choice
+	eventOut MFString snub_txt
+	eventOut SFInt32 grd_on_off
+	eventOut MFString grd_txt
+	url "javascript:
+	function initialize (){
+		acr_val=0;
+		M5=Math.sqrt(5);
+		M3=Math.sqrt(3);
+		M2=Math.sqrt(2);
+		PI=Math.PI;
+		phi12=Math.asin(Math.sqrt(10+2*M5)/(2*M5));
+		phi20sup=PI/2-Math.acos((M5-1)/2/Math.sqrt(3)); //90-phi20
+		chi20=Math.asin(Math.sqrt((5+2*M5)/15));
+		ztoy=new SFRotation(1,1,1,PI*2/3);
+		transformer();
+	}
+	function vp_touch (value) {
+		if (current_vp==0) {
+			/* rotating -> n-fold */
+			/* all symmetries */
+			current_vp=1;
+			vp_rotation=new SFRotation(0,1,0,PI/2);
+			rot_on_off=rotate_off;
+		}
+		else if(current_vp==1){
+			/* n-fold -> 3-fold */
+			current_vp=2;
+			if(current==0){
+				/* [3,5] */
+				alpha=Math.atan(2);
+				beta=Math.acos(-Math.cos(alpha)/Math.sin(alpha/2))/2;
+				gamma=Math.asin(2/3)/4;
+				delta=Math.atan(Math.sin(gamma)*Math.tan(beta));
+				epsi=Math.acos(Math.cos(delta)*Math.cos(gamma));
+				zeta=Math.atan(Math.tan(epsi)*Math.sin(beta));
+				eta=Math.asin(Math.sin(beta)*Math.sin(gamma)/Math.sin(delta));
+				vp_rotation=new SFRotation(-Math.sin(zeta),-Math.cos(zeta)*Math.sin(gamma),Math.cos(zeta)*Math.cos(gamma),-2*eta);
+			}
+			else if(current==1){
+				/* [3,4] */
+				C225=Math.cos(PI/8);
+				S225=Math.sin(PI/8);
+				Cgamma=-C225*C225+S225*S225/M3;
+				Sgamma=Math.sqrt(1-Cgamma*Cgamma);
+				Ca=C225*(1+Cgamma)/(S225*Sgamma);
+				Sa=Math.sqrt(1-Ca*Ca);
+				Sh=Sa*C225;
+				Ch=Math.sqrt(1-Sh*Sh);
+				Cb=Ca/Ch;
+				Sb=Math.sqrt(1-Cb*Cb);
+				vp_rotation=new SFRotation(-Ch*Sb,Sh,Ch*Cb,Math.acos(Cgamma));
+			}
+			else if(current==2){
+				/* [3,3] */
+				vp_rotation=new SFRotation(0,1,0,-PI/2);
+			}
+		}
+		else if(current_vp==2){
+			/* 3-fold -> 2-fold */
+			current_vp=3;
+			if(current==0){
+				/* [3,5] */
+				vp_rotation=new SFRotation(0,0,1,phi12+PI/2);
+			}
+			else if(current==1){
+				/* [3,4] */
+				vp_rotation=new SFRotation(0,1,0,PI/4);
+			}
+			else if(current==2){
+				/* [3,3] */
+				alpha=Math.atan(1/M2)/2
+				beta=Math.acos(Math.cos(alpha)/M2)
+				gamma=Math.asin(Math.sin(alpha)/(M2*Math.sin(beta)))
+				vp_rotation=new SFRotation(Math.cos(gamma)*Math.cos(alpha),-Math.sin(gamma),Math.cos(gamma)*Math.sin(alpha),2*beta);
+			}
+		}
+		else {
+			/* ? -> rotating */
+			current_vp=0;
+			vp_rotation=new SFRotation(1,0,0,-0.8);
+			rot_on_off=rotate_on;
+		}
+		reset_ss=ss_reset;
+	}
+	function grid_touch (value, time) {
+		grid_choice=(grid_choice+1) % 2;
+		if(grid_choice==0){
+			grd_txt=new MFString('hide grid');
+		}
+		else if(grid_choice==1){
+			grd_txt=new MFString('show grid');
+		}
+		grd_on_off=grid_choice;
+	}
+	function snub_touch (value, time) {
+		snub_var=(snub_var+1) % 2;
+		if(snub_var==0){
+			snub_txt=new MFString('v semiation');
+		}
+		else if(snub_var==1){
+			snub_txt=new MFString('no semiation');
+		}
+		snub_choice=snub_var;
+	}
+	function stick2triang (v) {
+		x=v[0]-1;
+		y=1-v[1]/M3;
+		if (x < -y) {
+			x=-y;
+		}
+		else if (x > y) {
+			x=y;
+		}
+		tr_trans=new SFVec3f(x,v[1]+1-M3,v[2]);
+		yy=1-y;
+		xx=(1+x+yy)/2; //planar
+		if(current==0) {
+			/* [3,5] */
+			theta=Math.atan(2)/2; //5-2
+			phi=Math.asin(2/3)/2; //2-3
+			sth=Math.sin(theta);
+			cth=Math.cos(theta);
+			sph=Math.sin(phi);
+			cph=Math.cos(phi);
+			xxx=(cth-1)*xx+cth*(cph-1)*yy+1;
+			yyy=sth*(xx+(cph-1)*yy);
+			zzz=sph*yy;
+			nn=xxx*xxx+yyy*yyy+zzz*zzz;
+			n=Math.sqrt(nn);
+			tr_pa=new SFVec3f(xxx/n, yyy/n, zzz/n);
+			tr_pb=new SFVec3f(xxx/n, yyy/n, -zzz/n);
+			tr_pc=new SFVec3f(
+				tr_pb[0],
+				Math.cos(2*PI/5)*tr_pb[1]-Math.sin(2*PI/5)*tr_pb[2],
+				Math.sin(2*PI/5)*tr_pb[1]+Math.cos(2*PI/5)*tr_pb[2]
+			);
+		}
+		else if(current==1) {
+			/* [3,4] */
+			theta=PI/4; //4-2
+			phi=Math.acos(1/3)/2; //2-3
+			sth=Math.sin(theta);
+			cth=Math.cos(theta);
+			sph=Math.sin(phi);
+			cph=Math.cos(phi);
+			xxx=(cth-1)*xx+cth*(cph-1)*yy+1;
+			yyy=sth*(xx+(cph-1)*yy);
+			zzz=sph*yy;
+			nn=xxx*xxx+yyy*yyy+zzz*zzz;
+			n=Math.sqrt(nn);
+			tr_pa=new SFVec3f(xxx/n, yyy/n, zzz/n);
+			tr_pb=new SFVec3f(xxx/n, yyy/n, -zzz/n);
+			tr_pc=new SFVec3f(
+				tr_pb[0],
+				Math.cos(2*PI/4)*tr_pb[1]-Math.sin(2*PI/4)*tr_pb[2],
+				Math.sin(2*PI/4)*tr_pb[1]+Math.cos(2*PI/4)*tr_pb[2]
+			);
+		}
+		else if(current==2){
+			/* [3,3] */
+			theta=Math.atan(M2); //3-2
+			phi=Math.atan(M2); //2-3
+			sth=Math.sin(theta);
+			cth=Math.cos(theta);
+			sph=Math.sin(phi);
+			cph=Math.cos(phi);
+			xxx=(cth-1)*xx+cth*(cph-1)*yy+1;
+			yyy=sth*(xx+(cph-1)*yy);
+			zzz=sph*yy;
+			nn=xxx*xxx+yyy*yyy+zzz*zzz;
+			n=Math.sqrt(nn);
+			tr_pa=new SFVec3f(xxx/n, yyy/n, zzz/n);
+			tr_pb=new SFVec3f(xxx/n, yyy/n, -zzz/n);
+			tr_pc=new SFVec3f(
+				tr_pb[0],
+				Math.cos(2*PI/3)*tr_pb[1]-Math.sin(2*PI/3)*tr_pb[2],
+				Math.sin(2*PI/3)*tr_pb[1]+Math.cos(2*PI/3)*tr_pb[2]
+			);
+		}
+		cent01=new SFVec3f(xxx/n, 0, 0);
+		trig01=new MFVec3f(cent01, tr_pa, tr_pb);
+		trig02=new MFVec3f(cent01, tr_pa, tr_pc);
+		squc_x=(xxx*cth+yyy*sth)*cth/n;
+		squc_y=(xxx*cth+yyy*sth)*sth/n;
+		sq_pa=new SFVec3f(2*squc_x-xxx/n, 2*squc_y-yyy/n, -zzz/n);
+		sq_pb=new SFVec3f(2*squc_x-xxx/n, 2*squc_y-yyy/n, zzz/n);
+		squ01=new MFVec3f(tr_pa, tr_pb, sq_pa, sq_pb);
+		cP3=(xxx*cth*cph+yyy*sth*cph+zzz*sph)/n;
+		cent03=new SFVec3f(cP3*cth*cph, cP3*sth*cph, cP3*sph);
+		trig03=new MFVec3f(cent03, tr_pa, sq_pb);
+		trig04=new MFVec3f(cent03, tr_pa, tr_pc);
+		v_snub=new MFVec3f(tr_pb, tr_pc, sq_pb);
+		trig05=new MFVec3f(cent01, tr_pb, tr_pc);
+		trig06=new MFVec3f(cent03, sq_pb, tr_pc);
+	}
+	function button_move (v) {
+		bt_trans=new SFVec3f(v[0],v[1],v[2]);
+	}
+	function acr_touch (value, time) {
+		acr_val = (acr_val+1) % 2;
+		acryl = 0.7*acr_val;
+		if(acr_val==0){
+			acr_txt=new MFString('solid >> transp');
+		}
+		else if(acr_val==1){
+			acr_txt=new MFString('transp >> solid');
+		}
+	}
+	function clicked(value, time) {
+		current = (current+1) % 3;
+		choice = current;
+		init[0]=0;
+		init[1]=0;
+		current_vp=3;
+		vp_touch (3); 
+		if(current==0){
+			text=new MFString('[3,5] >> [3,4]')
+		}
+		else if(current==1){
+			text=new MFString('[3,4] >> [3,3]')
+		}
+		else if(current==2){
+			text=new MFString('[3,3] >> [3,5]')			
+		}
+	}
+	function lev6_move (value) {;
+		distance=new SFVec3f(0,0,-value[1]*20);
+	}
+	function transformer () {
+		trackball_rad=Math.sqrt(Math.pow(e_distance,2)+1)*1.1;
+		all_scale=new SFVec3f(1,1,1);
+		trackball_scale=new SFVec3f(trackball_rad,trackball_rad,trackball_rad);
+		kyori=new SFVec3f(0,0,e_distance);
+		kaiten=new SFRotation(0,0,1,e_rotate);
+	}
+	function eventsProcessed() {
+		transformer();
+	}"
+}
+
+DEF CT_PANEL Transform {
+	children [
+		DEF CT_PANEL_SIZE Transform {
+			scale 1 1 1 
+			translation .019 .003 -.2 
+			children [
+				Transform {
+					scale .007 .007 .007 
+					children [ #adjust CT_PANEL
+						DEF DRAG_PANEL Transform {
+							children [
+								Transform {
+									children[ #drag ctrl panel
+										Transform {
+											children[
+												DEF DRAG_BAR BOX01 {
+													SIZE 1.6 .3 1 
+													POS 0 1.51 -.05 
+													IRO .2 .1 .9
+													TEXT "Interaction"
+													TEXTPOS -.13 0 .1
+												}
+												DEF DRAGGING_SENSOR PlaneSensor { 
+													maxPosition 1.2 .5 
+													minPosition -1 -3.5 
+												} 
+											]
+										}
+										DEF BACK_PANEL01 BOX01 {
+											SIZE 1.6 3.9 1
+											POS 0 -.5 -.05
+											IRO .8 .8 .8
+										}
+										DEF BACK_PANEL02 BOX01 {
+											SIZE 1.64 4.16 1 
+											POS 0 -.4 -.1 
+											IRO .4 .4 .4
+										}
+									]
+								}
+								Transform {
+									children [ #padl
+										Transform {
+											translation 0 .55 0 
+											scale .65 .65 1 
+											children [
+												TRIANG01 {
+													SIZE 2 2 1 
+													TCO .8 .8 .5
+												}
+												DEF BUTTON Transform {
+													rotation 1 0 0 1.5707963267948966192313216916398 
+													scale .8 .8 .8
+													translation -1 -.7320508075688772935274463415059 0
+													children [
+														Shape {
+															appearance Appearance {
+																material Material {
+																	diffuseColor .4 .5 .1
+																}
+															}
+															geometry Extrusion {
+																crossSection [
+																	.2 0,
+																	0 .2,
+																	-.2 0,
+																	0 -.2,
+																	.2 0 
+																]
+																spine[
+																	0 0 0,
+																	0 .01 0,
+																	0 .012 0
+																]
+																solid FALSE
+																scale[
+																	1 1,
+																	.8 .8,
+																	.4 .4
+																]
+															}
+														}
+													]
+												}
+												DEF MOUSE PlaneSensor {
+													maxPosition 2 1.7320508075688772935274463415059
+													minPosition 0 0
+												}
+											]
+										}
+										DEF SYM BOX01 {
+											SIZE 1.2 .3 1 
+											POS 0 -.27 0 
+											IRO .7 .7 .7
+											TEXT "[3,5] >> [3,4]"
+										}#CHANGER01
+										DEF TS01 TouchSensor {}
+									]
+								}
+								Transform {
+									translation 0 -1.45 0 
+									rotation 0 0 1 1.5707963267948966192313216916398 
+									children [  #lever06 change_distance
+										BOX01 {
+											SIZE .05 1.2 1 
+											POS 0 0 .05
+										}
+										DEF DISTANCE_CGR Transform {
+											children [
+												BOX01 {
+													SIZE .22 .15 1 
+													POS 0 0 .1
+													IRO .66 .66 .66 
+												}
+												BOX01 {
+													TR 1 
+													SIZE .12 .2 1 
+													POS 0 0 .1
+												}
+												DEF DISTANCE_CHANGR PlaneSensor { 
+													maxPosition 0 .5 
+													minPosition 0 -.5 
+												} 
+											]
+										}
+									]
+								}
+								DEF EYE Transform {
+									translation 0 -.7 .05 
+									scale .2 .2 .2 
+									children [ #eye
+										DEF TS_VP_CHANGER TouchSensor { } 
+										Shape { 
+											geometry IndexedFaceSet { 
+												coord Coordinate { 
+													point [ 
+														1.582 0 0 
+														1.283 .251 0 
+														.945 .446 0 
+														.579 .579 0 
+														.195 .647 0 
+														-.195 .647 0 
+														-.579 .579 0 
+														-.945 .446 0 
+														-1.283 .251 0 
+														-1.582 0 0 
+														-1.283 -.251 0 
+														-.945 -.446 0 
+														-.579 -.579 0 
+														-.195 -.647 0 
+														.195 -.647 0 
+														.579 -.579 0 
+														.945 -.446 0 
+														1.283 -.251 0 
+													] 
+												} 
+												coordIndex [ 
+													0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 
+												] 
+											} 
+										} 
+										CIRCLE01 {}
+									]
+								}
+								DEF ACR_BTN Transform {
+									translation 0 -.83 .1
+									children [
+										DEF ACR BOX01 {
+											SIZE 1.2 .3 1 
+											POS 0 -.27 0 
+											IRO .7 .7 .7
+											TEXT "solid >> transp"
+										}#CHANGER02
+										DEF TS02 TouchSensor {}
+									]
+								}
+								DEF GRD_BTN Transform {
+									translation 0 -1.5 .1
+									children [
+										DEF GRD BOX01 {
+											SIZE 1.2 .3 1 
+											POS 0 -.27 0 
+											IRO .7 .7 .7
+											TEXT "hide grid"
+										}#CHANGER03
+										DEF TS03 TouchSensor {}
+									]
+								}	
+								DEF SN_BTN Transform {
+									translation 0 -1.9 .1
+									children [
+										DEF SNB BOX01 {
+											SIZE 1.2 .3 1 
+											POS 0 -.27 0 
+											IRO .7 .7 .7
+											TEXT "v semiation"
+										}#CHANGER04
+										DEF TS04 TouchSensor {}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}
+
+DEF ALL_DISTANCE Transform {
+	translation 0 0 0 
+	children[
+		Transform {
+			children [
+				DEF SS01 SphereSensor {} 
+				DEF TRACKBALL Transform {
+					children [
+						Shape {
+							appearance AP01 {
+								TR 1
+							}
+							geometry Sphere {
+								radius 1
+							} 
+						} 
+					]
+				}
+			]
+		}
+		DEF ALL_SCALE Transform {
+			children [
+				DEF HANDLER Transform {
+					children [
+						DEF ALL_ANGLE Transform {
+							rotation 1 0 0 -.8 
+							children [
+								DEF ALL Transform {
+									children [
+										DEF SW01 Switch { 
+											whichChoice 0 
+											choice [ 
+												Transform {
+													children [
+														DEF SW51 Switch {
+															whichChoice 0
+															choice [
+																Group {
+																	children [
+																		CIRCLE02 {
+																			COL .33 0 .66
+																		}
+																		CIRCLE02 {
+																			COL .33 0 .66
+																			ROT 1 0 0 .6283185307179586476925286766559   #pi/5
+																		}
+																		CIRCLE02 {
+																			COL .33 0 .66
+																			ROT 1 0 0 1.2566370614359172953850573533118   #2pi/5
+																		}
+																		CIRCLE02 {
+																			COL .33 0 .66
+																			ROT 1 0 0 1.8849555921538759430775860299677   #3pi/5
+																		}
+																		CIRCLE02 {
+																			COL .33 0 .66
+																			ROT 1 0 0 2.5132741228718345907701147066236   #4pi/5
+																		} #5-5: arctan(2)
+																		CIRCLE02 {
+																			COL .33 0 .66
+																			ROT .44721359549995793928183473374626 .89442719099991587856366946749251 0 .6283185307179586476925286766559   #pi/5
+																		}
+																		CIRCLE02 {
+																			COL .33 0 .66
+																			ROT .44721359549995793928183473374626 .89442719099991587856366946749251 0 1.2566370614359172953850573533118   #2pi/5
+																		}
+																		CIRCLE02 {
+																			COL .33 0 .66
+																			ROT .44721359549995793928183473374626 .89442719099991587856366946749251 0 1.8849555921538759430775860299677   #3pi/5
+																		}
+																		CIRCLE02 {
+																			COL .33 0 .66
+																			ROT .44721359549995793928183473374626 .89442719099991587856366946749251 0 2.5132741228718345907701147066236   #4pi/5
+																		} #5-2: arctan(2)/2
+																		CIRCLE02 {
+																			COL .33 0 .66
+																			ROT .85065080835203993218154049706301 .52573111211913360602566908484788 0 1.5707963267948966192313216916398   #pi/2
+																		} #5-2: arctan(2)/2+pi/2
+																		CIRCLE02 {
+																			COL .33 0 .66
+																			ROT -.52573111211913360602566908484788 .85065080835203993218154049706301 0 1.5707963267948966192313216916398   #pi/2
+																		} #5-3: arctan(2)/2+pi/2-arcsin(2/3)/2
+																		CIRCLE02 {
+																			COL .33 0 .66
+																			ROT -.18759247408507989986013934690761 .9822469463768460228156702752352 0 1.0471975511965977461542144610932   #pi/3
+																		}
+																		CIRCLE02 {
+																			COL .33 0 .66
+																			ROT -.18759247408507989986013934690761 .9822469463768460228156702752352 0 2.0943951023931954923084289221863   #2pi/3
+																		} #5-3: arctan(2)/2+pi/2+arcsin(2/3)/2
+																		CIRCLE02 {
+																			COL .33 0 .66
+																			ROT -.79465447229176612295553092832759 .60706199820668622309539158141999 0 1.0471975511965977461542144610932   #pi/3
+																		}
+																		CIRCLE02 {
+																			COL .33 0 .66
+																			ROT -.79465447229176612295553092832759 .60706199820668622309539158141999 0 2.0943951023931954923084289221863   #2pi/3
+																		}
+																	]
+																}
+																Group {
+																	children []
+																}
+															]
+														}
+														DEF SW52 Switch {
+															whichChoice 0
+															choice [
+																Group {
+																	children [ #no semiation
+																		DEF DECA01 Transform {
+																			children [
+																				DEF TRIA35_101 Transform {
+																					children [
+																						Shape {
+																							appearance Appearance {
+																								material DEF M501 Material {
+																									shininess 1
+																									specularColor .33 0 .66
+																									diffuseColor .4 0 1
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_501 Coordinate { 
+																									point [
+																										1 0 0
+																										1 0 0
+																										1 0 0
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																						Shape {
+																							appearance Appearance {
+																								material DEF M502 Material {
+																									shininess 1
+																									specularColor .33 0 .66
+																									diffuseColor .4 0 1
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_502 Coordinate { 
+																									point [
+																										1 0 0
+																										1 0 0
+																										1 0 0
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																					]
+																				}
+																				DEF TRIA35_102 Transform {
+																					rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																					children [USE TRIA35_101]
+																				}
+																				DEF TRIA35_103 Transform {
+																					rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																					children [USE TRIA35_102]
+																				}
+																				DEF TRIA35_104 Transform {
+																					rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																					children [USE TRIA35_103]
+																				}
+																				DEF TRIA35_105 Transform {
+																					rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																					children [USE TRIA35_104]
+																				}
+																			]
+																		}
+																		DEF DECA02 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE DECA01]
+																		}
+																		DEF DECA03 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE DECA02]
+																		}
+																		DEF DECA04 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE DECA03]
+																		}
+																		DEF DECA05 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE DECA04]
+																		}
+																		DEF DECA06 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE DECA05]
+																		}
+																		DEF DECA07 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE DECA04]
+																		}
+																		DEF DECA08 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE DECA07]
+																		}
+																		DEF DECA09 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE DECA08]
+																		}
+																		DEF DECA10 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE DECA09]
+																		}
+																		DEF DECA11 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE DECA10]
+																		}
+																		DEF DECA12 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE DECA10]
+																		}
+																		DEF SQU35_01 Transform {
+																			children [
+																				Shape {
+																					appearance Appearance {
+																						material DEF M503 Material {
+																							shininess 1
+																							specularColor .33 0 .66
+																							diffuseColor .8 0 .6
+																							transparency 0
+																						}
+																					}
+																					geometry IndexedFaceSet { 
+																						ccw TRUE 
+																						convex FALSE 
+																						solid FALSE
+																						coord DEF POINTS_503 Coordinate { 
+																							point [
+																								1 0 0
+																								1 0 0
+																								#atan(2)
+																								.44721359549995793928183473374626 .89442719099991587856366946749251 0
+																								.44721359549995793928183473374626 .89442719099991587856366946749251 0
+																							] 
+																						} 
+																						coordIndex [0 1 2 3] 
+																					} 
+																				}
+																			]
+																		}
+																		DEF SQU35_02 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_01]
+																		}
+																		DEF SQU35_03 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_02]
+																		}
+																		DEF SQU35_04 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_03]
+																		}
+																		DEF SQU35_05 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_04]
+																		}
+																		DEF SQU35_06 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SQU35_02]
+																		}
+																		DEF SQU35_07 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_06]
+																		}
+																		DEF SQU35_08 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_07]
+																		}
+																		DEF SQU35_09 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_08]
+																		}
+																		DEF SQU35_10 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_09]
+																		}
+																		DEF SQU35_11 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SQU35_03]
+																		}
+																		DEF SQU35_12 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_11]
+																		}
+																		DEF SQU35_13 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_12]
+																		}
+																		DEF SQU35_14 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_13]
+																		}
+																		DEF SQU35_15 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_14]
+																		}
+																		DEF SQU35_16 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SQU35_04]
+																		}
+																		DEF SQU35_17 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_16]
+																		}
+																		DEF SQU35_18 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_17]
+																		}
+																		DEF SQU35_19 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_18]
+																		}
+																		DEF SQU35_20 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_19]
+																		}
+																		DEF SQU35_21 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SQU35_09]
+																		}
+																		DEF SQU35_22 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_21]
+																		}
+																		DEF SQU35_23 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_22]
+																		}
+																		DEF SQU35_24 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_23]
+																		}
+																		DEF SQU35_25 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_24]
+																		}
+																		DEF SQU35_26 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SQU35_14]
+																		}
+																		DEF SQU35_27 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_26]
+																		}
+																		DEF SQU35_28 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_27]
+																		}
+																		DEF SQU35_29 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_28]
+																		}
+																		DEF SQU35_30 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SQU35_29]
+																		}
+																		DEF HEXA501 Transform {
+																			children [
+																				DEF TRIA35_301 Transform {
+																					children [
+																						Shape {
+																							appearance Appearance {
+																								material DEF M504 Material {
+																									shininess 1
+																									specularColor .33 0 .66
+																									diffuseColor .4 .4 .6
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_504 Coordinate { 
+																									point [
+																										1 0 0
+																										.44721359549995793928183473374626 .89442719099991587856366946749251 0 #c2th s2th 0
+																										.63147573033330529285455648916417 .3902734644166456363075840335397 .28355026945067997739384683235434 #c53*cth*cph c53*sth*cph c53*sph
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																						Shape {
+																							appearance Appearance {
+																								material DEF M505 Material {
+																									shininess 1
+																									specularColor .33 0 .66
+																									diffuseColor .4 .4 .6
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_505 Coordinate { 
+																									point [
+																										1 0 0
+																										1 0 0
+																										.63147573033330529285455648916417 .3902734644166456363075840335397 .28355026945067997739384683235434 #c53*cth*cph c53*sth*cph c53*sph
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																					]
+																				}
+																				DEF TRIA35_302 Transform {
+																					rotation .79465447229176612295553092832759 .4911234731884230114078351376176 .35682208977308993194196984304609 2.0943951023931954923084289221863 #cth*cph sth*cph sph 2pi/3
+																					children [USE TRIA35_301]
+																				}
+																				DEF TRIA35_303 Transform {
+																					rotation .79465447229176612295553092832759 .4911234731884230114078351376176 .35682208977308993194196984304609 -2.0943951023931954923084289221863 #cth*cph sth*cph sph -2pi/3
+																					children [USE TRIA35_301]
+																				}
+																			]
+																		}
+																		DEF HEXA502 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE HEXA501]
+																		}
+																		DEF HEXA503 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE HEXA502]
+																		}
+																		DEF HEXA504 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE HEXA503]
+																		}
+																		DEF HEXA505 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE HEXA504]
+																		}
+																		DEF HEXA506 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE HEXA502]
+																		}
+																		DEF HEXA507 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE HEXA506]
+																		}
+																		DEF HEXA508 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE HEXA507]
+																		}
+																		DEF HEXA509 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE HEXA508]
+																		}
+																		DEF HEXA510 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE HEXA509]
+																		}
+																		DEF HEXA511 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE HEXA503]
+																		}
+																		DEF HEXA512 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE HEXA511]
+																		}
+																		DEF HEXA513 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE HEXA512]
+																		}
+																		DEF HEXA514 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE HEXA513]
+																		}
+																		DEF HEXA515 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE HEXA514]
+																		}
+																		DEF HEXA516 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE HEXA509]
+																		}
+																		DEF HEXA517 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE HEXA516]
+																		}
+																		DEF HEXA518 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE HEXA517]
+																		}
+																		DEF HEXA519 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE HEXA518]
+																		}
+																		DEF HEXA520 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE HEXA519]
+																		}
+																	]
+																}
+																Group {
+																	children [ #v semiation
+																		DEF SN5001 Transform {
+																			children [
+																				Shape {
+																					appearance Appearance {
+																						material DEF MS501 Material {
+																							shininess 1
+																							specularColor .33 0 .66
+																							diffuseColor .6 .4 1
+																							#diffuseColor .8 .2 .8
+																							transparency 0
+																						}
+																					}
+																					geometry IndexedFaceSet { 
+																						ccw TRUE 
+																						convex FALSE 
+																						solid FALSE
+																						coord DEF SNP_501 Coordinate { 
+																							point [
+																								1 0 0
+																								1 0 0
+																								#atan(2)
+																								.44721359549995793928183473374626 .89442719099991587856366946749251 0
+																							] 
+																						} 
+																						coordIndex [0 1 2] 
+																					} 
+																				}
+																				DEF SW53 Switch {
+																					whichChoice 0
+																					choice [
+																						Group {
+																							children [
+																								DEF SPH5_01 Transform {
+																									translation 1 0 0
+																									children [
+																										SPHERE01 {
+																											SCO .33 0 .66
+																										}
+																									]
+																								}
+																							]
+																						}
+																						Group {
+																							children []
+																						}
+																					]
+																				}
+																			]
+																		}
+																		DEF SN5002 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5001]
+																		}
+																		DEF SN5003 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5002]
+																		}
+																		DEF SN5004 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5003]
+																		}
+																		DEF SN5005 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5004]
+																		}
+																		DEF SN5006 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN5001]
+																		}
+																		DEF SN5007 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5006]
+																		}
+																		DEF SN5008 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5007]
+																		}
+																		DEF SN5009 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5008]
+																		}
+																		DEF SN5010 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5009]
+																		}
+																		DEF SN5011 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN5002]
+																		}
+																		DEF SN5012 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5011]
+																		}
+																		DEF SN5013 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5012]
+																		}
+																		DEF SN5014 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5013]
+																		}
+																		DEF SN5015 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5014]
+																		}
+																		DEF SN5016 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN5003]
+																		}
+																		DEF SN5017 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5016]
+																		}
+																		DEF SN5018 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5017]
+																		}
+																		DEF SN5019 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5018]
+																		}
+																		DEF SN5020 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5019]
+																		}
+																		DEF SN5021 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN5004]
+																		}
+																		DEF SN5022 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5021]
+																		}
+																		DEF SN5023 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5022]
+																		}
+																		DEF SN5024 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5023]
+																		}
+																		DEF SN5025 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5024]
+																		}
+																		DEF SN5026 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN5005]
+																		}
+																		DEF SN5027 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5026]
+																		}
+																		DEF SN5028 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5027]
+																		}
+																		DEF SN5029 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5028]
+																		}
+																		DEF SN5030 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5029]
+																		}
+																		DEF SN5031 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN5008]
+																		}
+																		DEF SN5032 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5031]
+																		}
+																		DEF SN5033 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5032]
+																		}
+																		DEF SN5034 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5033]
+																		}
+																		DEF SN5035 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5034]
+																		}
+																		DEF SN5036 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN5009]
+																		}
+																		DEF SN5037 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5036]
+																		}
+																		DEF SN5038 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5037]
+																		}
+																		DEF SN5039 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5038]
+																		}
+																		DEF SN5040 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5039]
+																		}
+																		DEF SN5041 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN5014]
+																		}
+																		DEF SN5042 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5041]
+																		}
+																		DEF SN5043 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5042]
+																		}
+																		DEF SN5044 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5043]
+																		}
+																		DEF SN5045 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5044]
+																		}
+																		DEF SN5046 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN5019]
+																		}
+																		DEF SN5047 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5046]
+																		}
+																		DEF SN5048 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5047]
+																		}
+																		DEF SN5049 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5048]
+																		}
+																		DEF SN5050 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5049]
+																		}
+																		DEF SN5051 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN5024]
+																		}
+																		DEF SN5052 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5051]
+																		}
+																		DEF SN5053 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5052]
+																		}
+																		DEF SN5054 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5053]
+																		}
+																		DEF SN5055 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5054]
+																		}
+																		DEF SN5056 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN5038]
+																		}
+																		DEF SN5057 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5056]
+																		}
+																		DEF SN5058 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5057]
+																		}
+																		DEF SN5059 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5058]
+																		}
+																		DEF SN5060 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SN5059]
+																		}
+																		DEF SNPENTA01 Transform {
+																			children [
+																				DEF SNTRIA35_101 Transform {
+																					children [
+																						Shape {
+																							appearance Appearance {
+																								material DEF MS502 Material {
+																									shininess 1
+																									specularColor .33 0 .66
+																									diffuseColor .4 0 1
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_506 Coordinate { 
+																									point [
+																										1 0 0
+																										1 0 0
+																										1 0 0
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																					]
+																				}
+																				DEF SNTRIA35_102 Transform {
+																					rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																					children [USE SNTRIA35_101]
+																				}
+																				DEF SNTRIA35_103 Transform {
+																					rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																					children [USE SNTRIA35_102]
+																				}
+																				DEF SNTRIA35_104 Transform {
+																					rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																					children [USE SNTRIA35_103]
+																				}
+																				DEF SNTRIA35_105 Transform {
+																					rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																					children [USE SNTRIA35_104]
+																				}
+																			]
+																		}
+																		DEF SNPENTA02 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SNPENTA01]
+																		}
+																		DEF SNPENTA03 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNPENTA02]
+																		}
+																		DEF SNPENTA04 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNPENTA03]
+																		}
+																		DEF SNPENTA05 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNPENTA04]
+																		}
+																		DEF SNPENTA06 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNPENTA05]
+																		}
+																		DEF SNPENTA07 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SNPENTA04]
+																		}
+																		DEF SNPENTA08 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNPENTA07]
+																		}
+																		DEF SNPENTA09 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNPENTA08]
+																		}
+																		DEF SNPENTA10 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNPENTA09]
+																		}
+																		DEF SNPENTA11 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNPENTA10]
+																		}
+																		DEF SNPENTA12 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SNPENTA10]
+																		}
+																		DEF SNTRIA501 Transform {
+																			children [
+																				DEF SNTRIA35_301 Transform {
+																					children [
+																						Shape {
+																							appearance Appearance {
+																								material DEF MS503 Material {
+																									shininess 1
+																									specularColor .33 0 .66
+																									diffuseColor .4 .4 .6
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_507 Coordinate { 
+																									point [
+																										1 0 0
+																										.44721359549995793928183473374626 .89442719099991587856366946749251 0 #c2th s2th 0
+																										.63147573033330529285455648916417 .3902734644166456363075840335397 .28355026945067997739384683235434 #c53*cth*cph c53*sth*cph c53*sph
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																					]
+																				}
+																				DEF SNTRIA35_302 Transform {
+																					rotation .79465447229176612295553092832759 .4911234731884230114078351376176 .35682208977308993194196984304609 2.0943951023931954923084289221863 #cth*cph sth*cph sph 2pi/3
+																					children [USE SNTRIA35_301]
+																				}
+																				DEF SNTRIA35_303 Transform {
+																					rotation .79465447229176612295553092832759 .4911234731884230114078351376176 .35682208977308993194196984304609 -2.0943951023931954923084289221863 #cth*cph sth*cph sph -2pi/3
+																					children [USE SNTRIA35_301]
+																				}
+																			]
+																		}
+																		DEF SNTRIA502 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNTRIA501]
+																		}
+																		DEF SNTRIA503 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNTRIA502]
+																		}
+																		DEF SNTRIA504 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNTRIA503]
+																		}
+																		DEF SNTRIA505 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNTRIA504]
+																		}
+																		DEF SNTRIA506 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SNTRIA502]
+																		}
+																		DEF SNTRIA507 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNTRIA506]
+																		}
+																		DEF SNTRIA508 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNTRIA507]
+																		}
+																		DEF SNTRIA509 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNTRIA508]
+																		}
+																		DEF SNTRIA510 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNTRIA509]
+																		}
+																		DEF SNTRIA511 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SNTRIA503]
+																		}
+																		DEF SNTRIA512 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNTRIA511]
+																		}
+																		DEF SNTRIA513 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNTRIA512]
+																		}
+																		DEF SNTRIA514 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNTRIA513]
+																		}
+																		DEF SNTRIA515 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNTRIA514]
+																		}
+																		DEF SNTRIA516 Transform {
+																			rotation .85065080835203993218154049706301 .52573111211913360602566908484788 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SNTRIA509]
+																		}
+																		DEF SNTRIA517 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNTRIA516]
+																		}
+																		DEF SNTRIA518 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNTRIA517]
+																		}
+																		DEF SNTRIA519 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNTRIA518]
+																		}
+																		DEF SNTRIA520 Transform {
+																			rotation 1 0 0 1.2566370614359172953850573533118 # 2pi/5
+																			children [USE SNTRIA519]
+																		}
+																	]
+																}
+															]
+														}
+													]
+												}
+												Transform {
+													children [
+														DEF SW41 Switch {
+															whichChoice 0
+															choice[
+																Group {
+																	children [
+																		CIRCLE02 {
+																			COL 0 .66 .33
+																		}
+																		CIRCLE02 {
+																			COL 0 .66 .33
+																			ROT 1 0 0 .78539816339744830961566084581988   #pi/4
+																		}
+																		CIRCLE02 {
+																			COL 0 .66 .33
+																			ROT 1 0 0 1.5707963267948966192313216916398   #2pi/4
+																		}
+																		CIRCLE02 {
+																			COL 0 .66 .33
+																			ROT 1 0 0 2.3561944901923449288469825374596   #3pi/4
+																		} #4-4: pi/2
+																		CIRCLE02 {
+																			COL 0 .66 .33
+																			ROT 0 1 0 .78539816339744830961566084581988   #pi/4
+																		}
+																		CIRCLE02 {
+																			COL 0 .66 .33
+																			ROT 0 1 0 1.5707963267948966192313216916398   #2pi/4
+																		}
+																		CIRCLE02 {
+																			COL 0 .66 .33
+																			ROT 0 1 0 2.3561944901923449288469825374596   #3pi/4
+																		} #4-2: pi/4
+																		CIRCLE02 {
+																			COL 0 .66 .33
+																			ROT .70710678118654752440084436210485 .70710678118654752440084436210485 0 1.5707963267948966192313216916398   #pi/2
+																		} #4-2: 3pi/4
+																		CIRCLE02 {
+																			COL 0 .66 .33
+																			ROT -.70710678118654752440084436210485 .70710678118654752440084436210485 0 1.5707963267948966192313216916398   #pi/2
+																		}
+																	]
+																}
+																Group {
+																	children []
+																}
+															]
+														}
+														DEF SW42 Switch {
+															whichChoice 0
+															choice [
+																Group {
+																	children [ #no semiation
+																		DEF OCTA01 Transform {
+																			children [
+																				DEF TRIA34_101 Transform {
+																					children [
+																						Shape {
+																							appearance Appearance {
+																								material DEF M401 Material {
+																									shininess 1
+																									specularColor 0 .66 .33
+																									diffuseColor 0 .6 .8
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_401 Coordinate { 
+																									point [
+																										1 0 0
+																										1 0 0
+																										1 0 0
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																						Shape {
+																							appearance Appearance {
+																								material DEF M402 Material {
+																									shininess 1
+																									specularColor 0 .66 .33
+																									diffuseColor 0 .6 .8
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_402 Coordinate { 
+																									point [
+																										1 0 0
+																										1 0 0
+																										1 0 0
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																					]
+																				}
+																				DEF TRIA34_102 Transform {
+																					rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																					children [USE TRIA34_101]
+																				}
+																				DEF TRIA34_103 Transform {
+																					rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																					children [USE TRIA34_102]
+																				}
+																				DEF TRIA34_104 Transform {
+																					rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																					children [USE TRIA34_103]
+																				}
+																			]
+																		}
+																		DEF OCTA02 Transform {
+																			rotation .70710678118654752440084436210485 .70710678118654752440084436210485 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE OCTA01]
+																		}
+																		DEF OCTA03 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE OCTA02]
+																		}
+																		DEF OCTA04 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE OCTA03]
+																		}
+																		DEF OCTA05 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE OCTA04]
+																		}
+																		DEF OCTA06 Transform {
+																			rotation .70710678118654752440084436210485 .70710678118654752440084436210485 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE OCTA04]
+																		}
+																		DEF SQU34_01 Transform {
+																			children [
+																				Shape {
+																					appearance Appearance {
+																						material DEF M403 Material {
+																							shininess 1
+																							specularColor 0 .66 .33
+																							diffuseColor .4 .6 .4
+																							transparency 0
+																						}
+																					}
+																					geometry IndexedFaceSet { 
+																						ccw TRUE 
+																						convex FALSE 
+																						solid FALSE
+																						coord DEF POINTS_403 Coordinate { 
+																							point [
+																								1 0 0
+																								1 0 0
+																								#pi/2
+																								0 1 0
+																								0 1 0
+																							] 
+																						} 
+																						coordIndex [0 1 2 3] 
+																					} 
+																				}
+																			]
+																		}
+																		DEF SQU34_02 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SQU34_01]
+																		}
+																		DEF SQU34_03 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SQU34_02]
+																		}
+																		DEF SQU34_04 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SQU34_03]
+																		}
+																		DEF SQU34_05 Transform {
+																			rotation .70710678118654752440084436210485 .70710678118654752440084436210485 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SQU34_02]
+																		}
+																		DEF SQU34_06 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SQU34_05]
+																		}
+																		DEF SQU34_07 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SQU34_06]
+																		}
+																		DEF SQU34_08 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SQU34_07]
+																		}
+																		DEF SQU34_09 Transform {
+																			rotation .70710678118654752440084436210485 .70710678118654752440084436210485 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SQU34_03]
+																		}
+																		DEF SQU34_10 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SQU34_09]
+																		}
+																		DEF SQU34_11 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SQU34_10]
+																		}
+																		DEF SQU34_12 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SQU34_11]
+																		}
+																		DEF HEXA401 Transform {
+																			children [
+																				DEF TRIA34_301 Transform {
+																					children [
+																						Shape {
+																							appearance Appearance {
+																								material DEF M404 Material {
+																									shininess 1
+																									specularColor 0 .66 .33
+																									diffuseColor 0 1 .4
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_404 Coordinate { 
+																									point [
+																										1 0 0
+																										0 1 0 #c2th s2th 0
+																										.33333333333333333333333333333333 .33333333333333333333333333333333 .33333333333333333333333333333333 #c43*cth*cph c43*sth*cph c43*sph
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																						Shape {
+																							appearance Appearance {
+																								material DEF M405 Material {
+																									shininess 1
+																									specularColor 0 .66 .33
+																									diffuseColor 0 1 .4
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_405 Coordinate { 
+																									point [
+																										1 0 0
+																										1 0 0
+																										.33333333333333333333333333333333 .33333333333333333333333333333333 .33333333333333333333333333333333 #c43*cth*cph c43*sth*cph c43*sph
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																					]
+																				}
+																				DEF TRIA34_302 Transform {
+																					rotation .57735026918962576450914878050196 .57735026918962576450914878050196 .57735026918962576450914878050196 2.0943951023931954923084289221863 #cth*cph sth*cph sph 2pi/3
+																					children [USE TRIA34_301]
+																				}
+																				DEF TRIA34_303 Transform {
+																					rotation .57735026918962576450914878050196 .57735026918962576450914878050196 .57735026918962576450914878050196 -2.0943951023931954923084289221863 #cth*cph sth*cph sph -2pi/3
+																					children [USE TRIA34_301]
+																				}
+																			]
+																		}
+																		DEF HEXA402 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE HEXA401]
+																		}
+																		DEF HEXA403 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE HEXA402]
+																		}
+																		DEF HEXA404 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE HEXA403]
+																		}
+																		DEF HEXA405 Transform {
+																			rotation .70710678118654752440084436210485 .70710678118654752440084436210485 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE HEXA402]
+																		}
+																		DEF HEXA406 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE HEXA405]
+																		}
+																		DEF HEXA407 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE HEXA406]
+																		}
+																		DEF HEXA408 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE HEXA407]
+																		}
+																	]
+																}
+																Group {
+																	children [ #v semiation
+																		DEF SN4001 Transform {
+																			children [
+																				Shape {
+																					appearance Appearance {
+																						material DEF MS401 Material {
+																							shininess 1
+																							specularColor 0 .66 .33
+																							diffuseColor .4 1 .6
+																							#diffuseColor .5 .8 .5
+																							transparency 0
+																						}
+																					}
+																					geometry IndexedFaceSet { 
+																						ccw TRUE 
+																						convex FALSE 
+																						solid FALSE
+																						coord DEF SNP_401 Coordinate { 
+																							point [
+																								1 0 0
+																								1 0 0
+																								#pi/2
+																								0 1 0
+																							] 
+																						} 
+																						coordIndex [0 1 2] 
+																					} 
+																				}
+																				DEF SW43 Switch {
+																					whichChoice 0
+																					choice [
+																						Group {
+																							children [
+																								DEF SPH4_01 Transform {
+																									translation 1 0 0
+																									children [
+																										SPHERE01 {
+																											SCO 0 .66 .33
+																										}
+																									]
+																								}
+																							]
+																						}
+																						Group {
+																							children []
+																						}
+																					]
+																				}
+																			]
+																		}
+																		DEF SN4002 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4001]
+																		}
+																		DEF SN4003 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4002]
+																		}
+																		DEF SN4004 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4003]
+																		}
+																		DEF SN4005 Transform {
+																			rotation .70710678118654752440084436210485 .70710678118654752440084436210485 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN4001]
+																		}
+																		DEF SN4006 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4005]
+																		}
+																		DEF SN4007 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4006]
+																		}
+																		DEF SN4008 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4007]
+																		}
+																		DEF SN4009 Transform {
+																			rotation .70710678118654752440084436210485 .70710678118654752440084436210485 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN4002]
+																		}
+																		DEF SN4010 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4009]
+																		}
+																		DEF SN4011 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4010]
+																		}
+																		DEF SN4012 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4011]
+																		}
+																		DEF SN4013 Transform {
+																			rotation .70710678118654752440084436210485 .70710678118654752440084436210485 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN4003]
+																		}
+																		DEF SN4014 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4013]
+																		}
+																		DEF SN4015 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4014]
+																		}
+																		DEF SN4016 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4015]
+																		}
+																		DEF SN4017 Transform {
+																			rotation .70710678118654752440084436210485 .70710678118654752440084436210485 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN4004]
+																		}
+																		DEF SN4018 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4017]
+																		}
+																		DEF SN4019 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4018]
+																		}
+																		DEF SN4020 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4019]
+																		}
+																		DEF SN4021 Transform {
+																			rotation .70710678118654752440084436210485 .70710678118654752440084436210485 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN4007]
+																		}
+																		DEF SN4022 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4021]
+																		}
+																		DEF SN4023 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4022]
+																		}
+																		DEF SN4024 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SN4023]
+																		}
+																		DEF SNTETRA01 Transform {
+																			children [
+																				DEF SNTRIA34_101 Transform {
+																					children [
+																						Shape {
+																							appearance Appearance {
+																								material DEF MS402 Material {
+																									shininess 1
+																									specularColor 0 .66 .33
+																									diffuseColor 0 .6 .8
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_406 Coordinate { 
+																									point [
+																										1 0 0
+																										1 0 0
+																										1 0 0
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																					]
+																				}
+																				DEF SNTRIA34_102 Transform {
+																					rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																					children [USE SNTRIA34_101]
+																				}
+																				DEF SNTRIA34_103 Transform {
+																					rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																					children [USE SNTRIA34_102]
+																				}
+																				DEF SNTRIA34_104 Transform {
+																					rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																					children [USE SNTRIA34_103]
+																				}
+																			]
+																		}
+																		DEF SNTETRA02 Transform {
+																			rotation .70710678118654752440084436210485 .70710678118654752440084436210485 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SNTETRA01]
+																		}
+																		DEF SNTETRA03 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SNTETRA02]
+																		}
+																		DEF SNTETRA04 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SNTETRA03]
+																		}
+																		DEF SNTETRA05 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SNTETRA04]
+																		}
+																		DEF SNTETRA06 Transform {
+																			rotation .70710678118654752440084436210485 .70710678118654752440084436210485 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SNTETRA04]
+																		}
+																		DEF SNTRIA401 Transform {
+																			children [
+																				DEF SNTRIA34_301 Transform {
+																					children [
+																						Shape {
+																							appearance Appearance {
+																								material DEF MS403 Material {
+																									shininess 1
+																									specularColor 0 .66 .33
+																									diffuseColor 0 1 .4
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_407 Coordinate { 
+																									point [
+																										1 0 0
+																										0 1 0 #c2th s2th 0
+																										.33333333333333333333333333333333 .33333333333333333333333333333333 .33333333333333333333333333333333 #c43*cth*cph c43*sth*cph c43*sph
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																					]
+																				}
+																				DEF SNTRIA34_302 Transform {
+																					rotation .57735026918962576450914878050196 .57735026918962576450914878050196 .57735026918962576450914878050196 2.0943951023931954923084289221863 #cth*cph sth*cph sph 2pi/3
+																					children [USE SNTRIA34_301]
+																				}
+																				DEF SNTRIA34_303 Transform {
+																					rotation .57735026918962576450914878050196 .57735026918962576450914878050196 .57735026918962576450914878050196 -2.0943951023931954923084289221863 #cth*cph sth*cph sph -2pi/3
+																					children [USE SNTRIA34_301]
+																				}
+																			]
+																		}
+																		DEF SNTRIA402 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SNTRIA401]
+																		}
+																		DEF SNTRIA403 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SNTRIA402]
+																		}
+																		DEF SNTRIA404 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SNTRIA403]
+																		}
+																		DEF SNTRIA405 Transform {
+																			rotation .70710678118654752440084436210485 .70710678118654752440084436210485 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SNTRIA402]
+																		}
+																		DEF SNTRIA406 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SNTRIA405]
+																		}
+																		DEF SNTRIA407 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SNTRIA406]
+																		}
+																		DEF SNTRIA408 Transform {
+																			rotation 1 0 0 1.5707963267948966192313216916398 # 2pi/4
+																			children [USE SNTRIA407]
+																		}
+																	]
+																}
+															]
+														}
+													]
+												}
+												Transform {
+													children [
+														DEF SW31 Switch {
+															whichChoice 0
+															choice[
+																Group {
+																	children [
+																		CIRCLE02 {
+																			COL .66 .33 0
+																		}
+																		CIRCLE02 {
+																			COL .66 .33 0
+																			ROT 1 0 0 1.0471975511965977461542144610932   #pi/3
+																		}
+																		CIRCLE02 {
+																			COL .66 .33 0
+																			ROT 1 0 0 2.0943951023931954923084289221863   #2pi/3
+																		} #3-3: pi-arccos(1/3)
+																		CIRCLE02 {
+																			COL .66 .33 0
+																			ROT -.33333333333333333333333333333333 .94280904158206336586779248280647 0 1.0471975511965977461542144610932   #pi/3
+																		}
+																		CIRCLE02 {
+																			COL .66 .33 0
+																			ROT -.33333333333333333333333333333333 .94280904158206336586779248280647 0 2.0943951023931954923084289221863   #2pi/3
+																		} #3-2: pi/2-arccos(1/3)/2
+																		CIRCLE02 {
+																			COL .66 .33 0
+																			ROT .57735026918962576450914878050196 .81649658092772603273242802490196 0 1.5707963267948966192313216916398   #pi/2
+																		}
+																	]
+																}
+																Group {
+																	children []
+																}
+															]
+														}
+														DEF SW32 Switch {
+															whichChoice 0
+															choice [
+																Group {
+																	children [ #no semiation
+																		DEF HEXA01 Transform {
+																			children [
+																				DEF TRIA33_101 Transform {
+																					children [
+																						Shape {
+																							appearance Appearance {
+																								material DEF M301 Material {
+																									shininess 1
+																									specularColor .66 .33 0
+																									diffuseColor .6 .4 .4
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_301 Coordinate { 
+																									point [
+																										1 0 0
+																										1 0 0
+																										1 0 0
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																						Shape {
+																							appearance Appearance {
+																								material DEF M302 Material {
+																									shininess 1
+																									specularColor .66 .33 0
+																									diffuseColor .6 .4 .4
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_302 Coordinate { 
+																									point [
+																										1 0 0
+																										1 0 0
+																										1 0 0
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																					]
+																				}
+																				DEF TRIA33_102 Transform {
+																					rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																					children [USE TRIA33_101]
+																				}
+																				DEF TRIA33_103 Transform {
+																					rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																					children [USE TRIA33_102]
+																				}
+																			]
+																		}
+																		DEF HEXA02 Transform {
+																			rotation .57735026918962576450914878050196 .81649658092772603273242802490196 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE HEXA01]
+																		}
+																		DEF HEXA03 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE HEXA02]
+																		}
+																		DEF HEXA04 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE HEXA03]
+																		}
+																		DEF SQU33_01 Transform {
+																			children [
+																				Shape {
+																					appearance Appearance {
+																						material DEF M303 Material {
+																							shininess 1
+																							specularColor .66 .33 0
+																							diffuseColor 1 .4 0
+																							transparency 0
+																						}
+																					}
+																					geometry IndexedFaceSet { 
+																						ccw TRUE 
+																						convex FALSE 
+																						solid FALSE
+																						coord DEF POINTS_303 Coordinate { 
+																							point [
+																								1 0 0
+																								1 0 0
+																								#2*atan(sqrt(2))
+																								-.33333333333333333333333333333333 .94280904158206336586779248280647 0
+																								-.33333333333333333333333333333333 .94280904158206336586779248280647 0
+																							] 
+																						} 
+																						coordIndex [0 1 2 3] 
+																					} 
+																				}
+																			]
+																		}
+																		DEF SQU33_02 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE SQU33_01]
+																		}
+																		DEF SQU33_03 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE SQU33_02]
+																		}
+																		DEF SQU33_04 Transform {
+																			rotation .57735026918962576450914878050196 .81649658092772603273242802490196 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SQU33_02]
+																		}
+																		DEF SQU33_05 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE SQU33_04]
+																		}
+																		DEF SQU33_06 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE SQU33_05]
+																		}
+																		DEF HEXA301 Transform {
+																			children [
+																				DEF TRIA33_301 Transform {
+																					children [
+																						Shape {
+																							appearance Appearance {
+																								material DEF M304 Material {
+																									shininess 1
+																									specularColor .66 .33 0
+																									diffuseColor .6 .8 0
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_304 Coordinate { 
+																									point [
+																										1 0 0
+																										-.33333333333333333333333333333333 .94280904158206336586779248280647 0 #c2th s2th 0
+																										.11111111111111111111111111111111 .15713484026367722764463208046774 .27216552697590867757747600830065 #c33*cth*cph c33*sth*cph c33*sph
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																						Shape {
+																							appearance Appearance {
+																								material DEF M305 Material {
+																									shininess 1
+																									specularColor .66 .33 0
+																									diffuseColor .6 .8 0
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_305 Coordinate { 
+																									point [
+																										1 0 0
+																										1 0 0
+																										.11111111111111111111111111111111 .15713484026367722764463208046774 .27216552697590867757747600830065 #c33*cth*cph c33*sth*cph c33*sph
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																					]
+																				}
+																				DEF TRIA33_302 Transform {
+																					rotation .33333333333333333333333333333333 .47140452079103168293389624140323 .81649658092772603273242802490196 2.0943951023931954923084289221863 #cth*cph sth*cph sph 2pi/3
+																					children [USE TRIA33_301]
+																				}
+																				DEF TRIA33_303 Transform {
+																					rotation .33333333333333333333333333333333 .47140452079103168293389624140323 .81649658092772603273242802490196 -2.0943951023931954923084289221863 #cth*cph sth*cph sph -2pi/3
+																					children [USE TRIA33_301]
+																				}
+																			]
+																		}
+																		DEF HEXA302 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE HEXA301]
+																		}
+																		DEF HEXA303 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE HEXA302]
+																		}
+																		DEF HEXA304 Transform {
+																			rotation .57735026918962576450914878050196 .81649658092772603273242802490196 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE HEXA302]
+																		}
+																	]
+																}
+																Group {
+																	children [ #v semiation
+																		DEF SN3001 Transform {
+																			children [
+																				Shape {
+																					appearance Appearance {
+																						material DEF MS301 Material {
+																							shininess 1
+																							specularColor .66 .33 0
+																							diffuseColor 1 .6 .4
+																							#diffuseColor 1 .5 .2
+																							transparency 0
+																						}
+																					}
+																					geometry IndexedFaceSet { 
+																						ccw TRUE 
+																						convex FALSE 
+																						solid FALSE
+																						coord DEF SNP_301 Coordinate { 
+																							point [
+																								1 0 0
+																								1 0 0
+																								-.33333333333333333333333333333333 .94280904158206336586779248280647 0 #c2th s2th 0
+																							] 
+																						} 
+																						coordIndex [0 1 2] 
+																					} 
+																				}
+																				DEF SW33 Switch {
+																					whichChoice 0
+																					choice [
+																						Group {
+																							children [
+																								DEF SPH3_01 Transform {
+																									translation 1 0 0
+																									children [
+																										SPHERE01 {
+																											SCO .66 .33 0
+																										}
+																									]
+																								}
+																							]
+																						}
+																						Group {
+																							children []
+																						}
+																					]
+																				}
+																			]
+																		}
+																		DEF SN3002 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE SN3001]
+																		}
+																		DEF SN3003 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE SN3002]
+																		}
+																		DEF SN3004 Transform {
+																			rotation .57735026918962576450914878050196 .81649658092772603273242802490196 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN3001]
+																		}
+																		DEF SN3005 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE SN3004]
+																		}
+																		DEF SN3006 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE SN3005]
+																		}
+																		DEF SN3007 Transform {
+																			rotation .57735026918962576450914878050196 .81649658092772603273242802490196 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN3002]
+																		}
+																		DEF SN3008 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE SN3007]
+																		}
+																		DEF SN3009 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE SN3008]
+																		}
+																		DEF SN3010 Transform {
+																			rotation .57735026918962576450914878050196 .81649658092772603273242802490196 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SN3003]
+																		}
+																		DEF SN3011 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE SN3010]
+																		}
+																		DEF SN3012 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE SN3011]
+																		}
+																		DEF SNTRIA01 Transform {
+																			children [
+																				DEF SNTRIA33_101 Transform {
+																					children [
+																						Shape {
+																							appearance Appearance {
+																								material DEF MS302 Material {
+																									shininess 1
+																									specularColor .66 .33 0
+																									diffuseColor .6 .4 .4
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_306 Coordinate { 
+																									point [
+																										1 0 0
+																										1 0 0
+																										1 0 0
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																					]
+																				}
+																				DEF SNTRIA33_102 Transform {
+																					rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																					children [USE SNTRIA33_101]
+																				}
+																				DEF SNTRIA33_103 Transform {
+																					rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																					children [USE SNTRIA33_102]
+																				}
+																			]
+																		}
+																		DEF SNTRIA02 Transform {
+																			rotation .57735026918962576450914878050196 .81649658092772603273242802490196 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SNTRIA01]
+																		}
+																		DEF SNTRIA03 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE SNTRIA02]
+																		}
+																		DEF SNTRIA04 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE SNTRIA03]
+																		}
+																		DEF SNTRIA301 Transform {
+																			children [
+																				DEF SNTRIA33_301 Transform {
+																					children [
+																						Shape {
+																							appearance Appearance {
+																								material DEF MS303 Material {
+																									shininess 1
+																									specularColor .66 .33 0
+																									diffuseColor .6 .8 0
+																									transparency 0
+																								}
+																							}
+																							geometry IndexedFaceSet { 
+																								ccw TRUE 
+																								convex FALSE 
+																								solid FALSE
+																								coord DEF POINTS_307 Coordinate { 
+																									point [
+																										1 0 0
+																										-.33333333333333333333333333333333 .94280904158206336586779248280647 0 #c2th s2th 0
+																										.11111111111111111111111111111111 .15713484026367722764463208046774 .27216552697590867757747600830065 #c33*cth*cph c33*sth*cph c33*sph
+																									] 
+																								} 
+																								coordIndex [0 1 2] 
+																							} 
+																						}
+																					]
+																				}
+																				DEF SNTRIA33_302 Transform {
+																					rotation .33333333333333333333333333333333 .47140452079103168293389624140323 .81649658092772603273242802490196 2.0943951023931954923084289221863 #cth*cph sth*cph sph 2pi/3
+																					children [USE SNTRIA33_301]
+																				}
+																				DEF SNTRIA33_303 Transform {
+																					rotation .33333333333333333333333333333333 .47140452079103168293389624140323 .81649658092772603273242802490196 -2.0943951023931954923084289221863 #cth*cph sth*cph sph -2pi/3
+																					children [USE SNTRIA33_301]
+																				}
+																			]
+																		}
+																		DEF SNTRIA302 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE SNTRIA301]
+																		}
+																		DEF SNTRIA303 Transform {
+																			rotation 1 0 0 2.0943951023931954923084289221863 # 2pi/3
+																			children [USE SNTRIA302]
+																		}
+																		DEF SNTRIA304 Transform {
+																			rotation .57735026918962576450914878050196 .81649658092772603273242802490196 0 3.1415926535897932384626433832795 # cth sth 0 pi
+																			children [USE SNTRIA302]
+																		}
+																	]
+																}
+															]
+														}
+													]
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}
+
+DEF SLIDER ProximitySensor {
+	size 1000 1000 1000
+} #fix ctrl_panel
+
+DEF TIME_ALL_ROTATE TimeSensor {
+	cycleInterval 31 
+	loop TRUE
+}
+
+DEF ROTATE_ALL OrientationInterpolator {
+	key [ 
+		0 .25 .5 .75 1 
+	] 
+	keyValue [ 
+		0 0 1 0 
+		0 0 1 1.5707963267948966192313216916398 
+		0 0 1 3.1415926535897932384626433832795 
+		0 0 1 4.7123889803846898576939650749193 
+		0 0 1 6.283185307179586476925286766559 
+	] 
+}
+
+ROUTE TIME_ALL_ROTATE.fraction_changed TO ROTATE_ALL.set_fraction
+ROUTE ROTATE_ALL.value_changed TO ALL.set_rotation
+ROUTE TS_VP_CHANGER.touchTime TO SC001.vp_touch
+ROUTE SC001.rot_on_off TO ROTATE_ALL.keyValue
+ROUTE SC001.vp_rotation TO ALL_ANGLE.set_rotation
+ROUTE SC001.reset_ss TO SS01.set_offset
+ROUTE SC001.reset_ss TO HANDLER.set_rotation
+
+ROUTE DISTANCE_CHANGR.translation_changed TO DISTANCE_CGR.set_translation
+ROUTE DISTANCE_CHANGR.translation_changed TO SC001.lev6_move
+ROUTE SC001.distance TO ALL_DISTANCE.set_translation
+
+ROUTE TS01.touchTime TO SC001.clicked
+ROUTE SC001.choice TO SW01.set_whichChoice
+ROUTE SC001.text TO SYM.set_TEXT
+ROUTE SC001.init TO MOUSE.set_offset
+ROUTE SC001.init TO SC001.stick2triang
+
+ROUTE MOUSE.translation_changed TO SC001.stick2triang
+ROUTE SC001.tr_trans TO BUTTON.set_translation
+ROUTE BUTTON.translation_changed TO SC001.button_move
+ROUTE SC001.trig01 TO POINTS_501.set_point
+ROUTE SC001.trig02 TO POINTS_502.set_point
+ROUTE SC001.trig03 TO POINTS_504.set_point
+ROUTE SC001.trig04 TO POINTS_505.set_point
+ROUTE SC001.trig05 TO POINTS_506.set_point
+ROUTE SC001.trig06 TO POINTS_507.set_point
+ROUTE SC001.trig01 TO POINTS_401.set_point
+ROUTE SC001.trig02 TO POINTS_402.set_point
+ROUTE SC001.trig03 TO POINTS_404.set_point
+ROUTE SC001.trig04 TO POINTS_405.set_point
+ROUTE SC001.trig05 TO POINTS_406.set_point
+ROUTE SC001.trig06 TO POINTS_407.set_point
+ROUTE SC001.trig01 TO POINTS_301.set_point
+ROUTE SC001.trig02 TO POINTS_302.set_point
+ROUTE SC001.trig03 TO POINTS_304.set_point
+ROUTE SC001.trig04 TO POINTS_305.set_point
+ROUTE SC001.trig05 TO POINTS_306.set_point
+ROUTE SC001.trig06 TO POINTS_307.set_point
+ROUTE SC001.squ01 TO POINTS_503.set_point
+ROUTE SC001.squ01 TO POINTS_403.set_point
+ROUTE SC001.squ01 TO POINTS_303.set_point
+
+ROUTE SC001.v_snub TO SNP_501.set_point
+ROUTE SC001.v_snub TO SNP_401.set_point
+ROUTE SC001.v_snub TO SNP_301.set_point
+
+ROUTE SC001.tr_pa TO SPH5_01.set_translation
+ROUTE SC001.tr_pa TO SPH4_01.set_translation
+ROUTE SC001.tr_pa TO SPH3_01.set_translation
+#ROUTE SC001.kyori TO E01.set_translation
+#ROUTE SC001.scale TO ALL.set_scale
+#ROUTE SC001.kaiten TO E01.set_rotation
+
+ROUTE TS02.touchTime TO SC001.acr_touch
+ROUTE SC001.acryl TO M501.set_transparency
+ROUTE SC001.acryl TO M502.set_transparency
+ROUTE SC001.acryl TO M503.set_transparency
+ROUTE SC001.acryl TO M504.set_transparency
+ROUTE SC001.acryl TO M505.set_transparency
+ROUTE SC001.acryl TO M401.set_transparency
+ROUTE SC001.acryl TO M402.set_transparency
+ROUTE SC001.acryl TO M403.set_transparency
+ROUTE SC001.acryl TO M404.set_transparency
+ROUTE SC001.acryl TO M405.set_transparency
+ROUTE SC001.acryl TO M301.set_transparency
+ROUTE SC001.acryl TO M302.set_transparency
+ROUTE SC001.acryl TO M303.set_transparency
+ROUTE SC001.acryl TO M304.set_transparency
+ROUTE SC001.acryl TO M305.set_transparency
+ROUTE SC001.acryl TO MS501.set_transparency
+ROUTE SC001.acryl TO MS502.set_transparency
+ROUTE SC001.acryl TO MS503.set_transparency
+ROUTE SC001.acryl TO MS401.set_transparency
+ROUTE SC001.acryl TO MS402.set_transparency
+ROUTE SC001.acryl TO MS403.set_transparency
+ROUTE SC001.acryl TO MS301.set_transparency
+ROUTE SC001.acryl TO MS302.set_transparency
+ROUTE SC001.acryl TO MS303.set_transparency
+ROUTE SC001.acr_txt TO ACR.set_TEXT
+
+ROUTE TS03.touchTime TO SC001.grid_touch
+ROUTE SC001.grd_on_off TO SW51.set_whichChoice
+ROUTE SC001.grd_on_off TO SW53.set_whichChoice
+ROUTE SC001.grd_on_off TO SW41.set_whichChoice
+ROUTE SC001.grd_on_off TO SW43.set_whichChoice
+ROUTE SC001.grd_on_off TO SW31.set_whichChoice
+ROUTE SC001.grd_on_off TO SW33.set_whichChoice
+ROUTE SC001.grd_txt TO GRD.set_TEXT
+
+ROUTE TS04.touchTime TO SC001.snub_touch
+ROUTE SC001.snub_choice TO SW52.set_whichChoice
+ROUTE SC001.snub_choice TO SW42.set_whichChoice
+ROUTE SC001.snub_choice TO SW32.set_whichChoice
+ROUTE SC001.snub_txt TO SNB.set_TEXT
+
+ROUTE SS01.rotation_changed TO HANDLER.set_rotation 
+
+#ROUTE TS_FIT_BTN.touchTime TO SC001.fit_touch #fit_button
+ROUTE SC001.all_scale TO ALL_SCALE.set_scale
+#ROUTE SC001.fit_button_color TO FIT_BTN_COLOR.set_color
+#ROUTE SC001.fit_color_index TO FIT_COLOR_INDEX.set_colorIndex
+
+ROUTE DRAGGING_SENSOR.translation_changed TO DRAG_PANEL.set_translation
+
+ROUTE SLIDER.orientation_changed TO CT_PANEL.set_rotation
+ROUTE SLIDER.position_changed TO CT_PANEL.set_translation
+
+ROUTE SC001.trackball_scale TO TRACKBALL.set_scale
