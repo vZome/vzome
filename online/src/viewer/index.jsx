@@ -5,7 +5,7 @@ console.log( `vzome-viewer revision ${REVISION}` );
 
 import { urlViewerCSS } from "./urlviewer.css";
 
-import { createSignal, mergeProps, onMount, Show } from 'solid-js';
+import { createSignal, getOwner, mergeProps, onCleanup, onMount, Show } from 'solid-js';
 import { render } from 'solid-js/web';
 
 import { WorkerStateProvider } from './context/worker.jsx';
@@ -33,28 +33,32 @@ const normalStyle = {
   overflow: 'hidden',    // curiously, this forces Canvas to recompute its size when changing back
 };
 
-const fullScreenStyle = {
-  height: '100%',
-  width: '100%',
-  position: 'fixed',
-  top: '0px',
-  left: '0px',
-  'z-index': '1300',
-};
-
 const DesignViewer = ( props ) =>
 {
   const config = mergeProps( { showScenes: 'none', useSpinner: false, allowFullViewport: false, undoRedo: false }, props.config );
   const { scene, waiting } = useViewer();
+  let rootRef;
+  
   const [ fullScreen, setFullScreen ] = createSignal( false );
   const toggleFullScreen = () =>
   {
-    // const { perspective } = sceneCamera || {};
-    // This is a complete hack to work around the issue with resize in OrthographicCamera.
-    //  We simply use a thunk to switch to a perspective camera before we toggle fullScreen.
-    //  Note that this does NOT help with window resize.
-    setFullScreen( v => !v );
+    if ( document.fullscreenElement ) {
+      document .exitFullscreen();
+    }
+    else if ( document.fullscreenEnabled && rootRef.requestFullscreen) {
+      rootRef.requestFullscreen();
+    }
   }
+  const fullscreenListener = () => setFullScreen( !! document.fullscreenElement );
+  document .addEventListener( "fullscreenchange", fullscreenListener );
+  getOwner() &&
+    onCleanup(() => {
+      document .removeEventListener( "fullscreenchange", fullscreenListener );
+      if (isActive()) {
+        document .exitFullscreen();
+      }
+    });
+
   const whichScenes = () =>
   {
     switch (config.showScenes) {
@@ -86,12 +90,11 @@ const DesignViewer = ( props ) =>
     }
   });
 
-  let rootRef;
   return (
     <InteractionToolProvider>
       <GltfExportProvider>
 
-    <div id='design-viewer' ref={rootRef} style={ fullScreen()? fullScreenStyle : normalStyle }>
+    <div id='design-viewer' ref={rootRef} style={ normalStyle }>
       {/* This renders the light DOM if the scene couldn't load */}
       <Show when={scene} fallback={props.children}>
         <SceneCanvas id='scene-canvas' scene={scene} height={props.height} width={props.width} >
