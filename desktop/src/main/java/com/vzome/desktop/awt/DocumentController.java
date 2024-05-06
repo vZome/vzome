@@ -1177,6 +1177,9 @@ public class DocumentController extends DefaultGraphicsController implements Sce
     {
         switch ( propName ) {
 
+        case "hasScenes":
+            return this .getSubController( "lesson" ) .getProperty( "has.pages" );
+            
         case "isIcosahedralSymmetry":
             return Boolean .toString( symmetryController.getSymmetry().getName() .equals( "icosahedral" ) );
 
