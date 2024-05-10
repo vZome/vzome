@@ -118,11 +118,11 @@ public class ShareDialog extends EscapeDialog implements PropertyChangeListener
                 stylesLabel = new JLabel( "Style" );
                 sceneStylesPanel .add( stylesLabel );
                 {
-                    String[] styleNames= new String[] { "indexed", "menu", "javascript" };
+                    String[] styleNames= new String[] { "indexed", "indexed (load-camera)", "menu", "javascript" };
                     String defaultStyle = controller .getProperty( "sharing-sceneStyle" );
                     stylesMenu = new JComboBox<String>( styleNames );
                     stylesMenu .setSelectedItem( defaultStyle );
-                    stylesMenu .setMaximumRowCount( 3 );
+                    stylesMenu .setMaximumRowCount( 4 );
                     stylesMenu .addActionListener( new ActionListener()
                     {
                         @Override

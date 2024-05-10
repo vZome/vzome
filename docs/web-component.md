@@ -149,10 +149,10 @@ by adding `indexed="true"`.  In this mode, the `reactive`, `scene`, and `show-sc
 The scene can be controlled using Javascript, using the `nextScene()` and `previousScene()` methods
 available on the `vzome-viewer` element.
 However, you can also control the viewer without any Javascript code,
-by including buttons with special `is` attributes, as shown here:
+by including additional web components, as shown here:
 ```html
-<button is="vzome-viewer-previous" viewer="myViewer">prev</button>
-<button is="vzome-viewer-next"     viewer="myViewer">next</button>
+<vzome-viewer-previous label='prev step'></vzome-viewer-previous>
+<vzome-viewer-next label='next step'></vzome-viewer-next>
 <vzome-viewer id="myViewer"
        src="https://vorth.github.io/vzome-sharing/2022/06/19/06-37-55-welcomeDodec/welcomeDodec.vZome" >
 </vzome-viewer>
@@ -160,7 +160,17 @@ by including buttons with special `is` attributes, as shown here:
 The value of the `viewer` attribute should match the `id` on your `vzome-viewer` element.
 The `viewer` attribute is optional when you only have one `vzome-viewer` element on your page.
 
-The buttons can be placed in your HTML, labeled, and styled however you like.
+These two components render and function as buttons, and can be placed in your HTML, labeled, and styled however you like.
+
+By default, when the user clicks on either button as configured above,
+the viewer will load the new scene but ignore the camera data stored with the scene.
+This lets the user control the camera fully (after the first scene load),
+and prevents surprising camera jumps.
+If you prefer to have each scene load *with* its camera data, use the `load-camera` attribute as below:
+```html
+<vzome-viewer-previous load-camera='true' label='prev step'></vzome-viewer-previous>
+<vzome-viewer-next load-camera='true' label='next step'></vzome-viewer-next>
+```
 
 ### Javascript Scene Control
 

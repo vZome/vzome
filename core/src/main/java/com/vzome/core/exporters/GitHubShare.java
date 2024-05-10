@@ -81,6 +81,15 @@ public class GitHubShare
             viewerParameters = "indexed='true'";
             break;
         }
+        case "indexed (load-camera)": {
+            viewerControls =
+              "<div style='display:flex;'><div style='margin: auto;'>"
+              +  "<vzome-viewer-previous load-camera='true' label='prev step'></vzome-viewer-previous>"
+              +  "<vzome-viewer-next load-camera='true' label='next step'></vzome-viewer-next>"
+              +"</div></div>";
+            viewerParameters = "indexed='true'";
+            break;
+        }
         case "menu": {
             viewerParameters = "show-scenes='named'";
             break;
