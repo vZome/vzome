@@ -6,11 +6,13 @@ class VZomeViewerIndexButton extends HTMLElement
   #next;
   #viewerId;
   #viewer;
+  #loadCamera;
 
   constructor( next=true )
   {
     super();
     this.#next = next;
+    this.#loadCamera = false;
   }
 
   connectedCallback()
@@ -37,13 +39,13 @@ class VZomeViewerIndexButton extends HTMLElement
     this .appendChild( button );
     button.classList .add( 'vzome-viewer-index-button' );
 
-    const loadParams = { camera: false };
+    const loadParams = { camera: this.#loadCamera };
     button .addEventListener( "click", () => this.#next? this.#viewer .nextScene( loadParams ) : this.#viewer .previousScene( loadParams ) );
   }
 
   static get observedAttributes()
   {
-    return [ "viewer" ];
+    return [ "viewer", "load-camera" ];
   }
 
   attributeChangedCallback( attributeName, _oldValue, _newValue )
@@ -53,6 +55,10 @@ class VZomeViewerIndexButton extends HTMLElement
 
     case "viewer":
       this.#viewerId = _newValue;
+      break;
+
+    case "load-camera":
+      this.#loadCamera = _newValue === 'true';
       break;
     }
   }
