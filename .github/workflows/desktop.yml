@@ -17,7 +17,12 @@ env:
 
 jobs:
   build-macos:
-    runs-on: macos-latest
+
+    strategy:
+      matrix:
+        arch: [intel, arm64]
+
+    runs-on: ${{ matrix.arch == 'intel' && 'macos-14' || 'macos-latest' }} 
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -67,14 +72,14 @@ jobs:
         HOSTING_FQDN: ${{ secrets.HOSTING_FQDN }}
     - name: Publish MacOS build to DreamHost
       run: |
-        source desktop/build/buildPropsResource/build.properties  # to set the version variable
+        source desktop/build/buildPropsResource/build.properties  # to set the version and buildNumber variables
         sftp -b - dreamhost <<END
           cd vzome.com/download/${version}/
-          -mkdir ${{ github.run_number }}
-          cd ${{ github.run_number }}
+          -mkdir ${buildNumber}
+          cd ${buildNumber}
           -mkdir mac
           cd mac
-          mput desktop/build/jpackage/vZome-*.dmg	
+          put desktop/build/jpackage/vZome-${version}.${buildNumber}.dmg vZome-${version}.${buildNumber}-${{ matrix.arch }}.dmg
         END
 
   build-linux:
