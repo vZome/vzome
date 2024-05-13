@@ -17,7 +17,8 @@ env:
 
 jobs:
   build-macos:
-    runs-on: macos-12
+    # Switching to an Intel runner for Mac OS 14.  macos-latest is now macos-14-arm64
+    runs-on: macos-14
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
