@@ -94,11 +94,11 @@ export const FileMenu = () =>
 
   const [ svgPreview, setSvgPreview ] = createSignal( false );
 
-  const exportAs = ( extension, mimeType, format=extension ) => evt =>
+  const exportAs = ( extension, mimeType, format=extension, params={} ) => evt =>
   {
     const camera = unwrap( cameraState.camera );
     const lighting = unwrap( cameraState.lighting );
-    controllerExportAction( rootController(), format, { camera, lighting } )
+    controllerExportAction( rootController(), format, { camera, lighting, ...params } )
       .then( text => {
         const vName = state.designName || 'untitled';
         const name = vName .concat( "." + extension );
@@ -137,7 +137,8 @@ export const FileMenu = () =>
   const ExportItem = props =>
   {
     props = mergeProps( { format: props.ext }, props );
-    return <MenuItem onClick={ exportAs( props.ext, props.mime, props.format ) } disabled={props.disabled}>{props.label}</MenuItem>
+    const params = { drawOutlines: cameraState.outlines }; // for SVG
+    return <MenuItem onClick={ exportAs( props.ext, props.mime, props.format, params ) } disabled={props.disabled}>{props.label}</MenuItem>
   }
 
   return (
