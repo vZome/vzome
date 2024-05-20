@@ -1,5 +1,5 @@
 
-import { createEffect, createSignal } from "solid-js"
+import { createEffect, createSignal, untrack } from "solid-js"
 import { unwrap } from "solid-js/store"
 
 import DialogContent from "@suid/material/DialogContent"
@@ -19,32 +19,46 @@ const SvgPreviewDialog = props =>
   const { state } = useCamera();
   const [ useLighting, setUseLighting ] = createSignal( true );
   const [ useShapes, setUseShapes ] = createSignal( true );
-  const [ drawOutlines, setDrawOutlines ] = createSignal( true );
+  const [ drawOutlines, setDrawOutlines ] = createSignal( false );
   const [ monochrome, setMonochrome ] = createSignal( false );
   const [ showBackground, setShowBackground ] = createSignal( true );
 
+  createEffect( () => setDrawOutlines( state.outlines ) );
+
   let svgRef;
   createEffect( () => {
-    if ( ! props.open ) return;
-    const camera = unwrap( state.camera );
-    const lighting = unwrap( state.lighting );
-    const params = { camera, lighting,
+    if ( props.open ) { // always regenerate when opening the dialog
+      const camera = unwrap( untrack( () => state.camera ) );
+      const lighting = unwrap( untrack( () => state.lighting ) );
+      const params = { camera, lighting,
+        useShapes     : useShapes(),
+        drawOutlines  : drawOutlines(),
+        monochrome    : monochrome(),
+        showBackground: showBackground(),
+        useLighting   : useLighting(),
+      }
+      controllerExportAction( rootController(), 'svg', params )
+        .then( text => {
+          svgRef .innerHTML = text; // automatically parses the text
+        });
+      console.log( 'Regenerating SVG' );
+    }
+  });
+
+  createEffect( () => {
+  });
+
+  const exportAs = ( ext, mime ) => () =>
+  {
+    props.close();
+    const params = {
       useShapes     : useShapes(),
       drawOutlines  : drawOutlines(),
       monochrome    : monochrome(),
       showBackground: showBackground(),
       useLighting   : useLighting(),
     }
-    controllerExportAction( rootController(), 'svg', params )
-      .then( text => {
-        svgRef .innerHTML = text; // automatically parses the text
-      });
-  });
-
-  const exportAs = ( ext, mime ) => () =>
-  {
-    props.close();
-    props.exportAs( ext, mime )();
+    props.exportAs( ext, mime, ext, params )();
   }
 
   return (
