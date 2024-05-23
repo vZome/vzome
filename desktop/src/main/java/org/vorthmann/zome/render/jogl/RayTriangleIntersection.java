@@ -1,5 +1,7 @@
 package org.vorthmann.zome.render.jogl;
 
+import com.jogamp.opengl.math.Vec3f;
+
 /*
  * Copyright (c) 2007 Sun Microsystems, Inc. All Rights Reserved.
  * 
@@ -62,8 +64,8 @@ public class RayTriangleIntersection {
                                    Vec3f vert2,
                                    Vec3f tuv) {
     // Find vectors for two edges sharing vert0
-    edge1.sub(vert1, vert0);
-    edge2.sub(vert2, vert0);
+    edge1.minus(vert1, vert0);
+    edge2.minus(vert2, vert0);
 
     // Begin calculating determinant -- also used to calculate U parameter
     pvec.cross(rayDirection, edge2);
@@ -77,7 +79,7 @@ public class RayTriangleIntersection {
     float invDet = 1.0f / det;
 
     // Calculate distance from vert0 to ray origin
-    tvec.sub(rayPoint, vert0);
+    tvec.minus(rayPoint, vert0);
 
     // Calculate U parameter and test bounds
     float u = tvec.dot(pvec) * invDet;
@@ -105,8 +107,8 @@ public class RayTriangleIntersection {
                                                   Vec3f vert2,
                                                   Vec3f tuv) {
     // Find vectors for two edges sharing vert0
-    edge1.sub(vert1, vert0);
-    edge2.sub(vert2, vert0);
+    edge1.minus(vert1, vert0);
+    edge2.minus(vert2, vert0);
 
     // Begin calculating determinant -- also used to calculate U parameter
     pvec.cross(rayDirection, edge2);
@@ -118,7 +120,7 @@ public class RayTriangleIntersection {
       return false;
 
     // Calculate distance from vert0 to ray origin
-    tvec.sub(rayPoint, vert0);
+    tvec.set(rayPoint) .sub(vert0);
 
     // Calculate U parameter and test bounds
     float u = tvec.dot(pvec);
