@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.vecmath.Matrix4f;
 
@@ -19,7 +21,6 @@ import com.jogamp.opengl.GLOffscreenAutoDrawable;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.math.FloatUtil;
 import com.jogamp.opengl.math.Ray;
-import com.jogamp.opengl.math.VectorUtil;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.awt.AWTGLReadBufferUtil;
 import com.vzome.core.construction.Color;
@@ -72,8 +73,13 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     private boolean cameraChanged = true;
     private float fogFront;
 
+    private static final Logger LOGGER = Logger.getLogger( "org.vorthmann.zome.render.jogl" );
+
     public JoglRenderingViewer( Scene scene, GLAutoDrawable drawable )
     {
+        if ( LOGGER .isLoggable( Level .INFO ) )
+            LOGGER .info( "JoglRenderingViewer() starting" );
+
         this .scene = scene;
         this .canvas = (Component) drawable;
 
@@ -100,6 +106,9 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         // Start animator (which should be a field).
         this .animator = new FPSAnimator( drawable, 60 );
         this .animator .start();
+        
+        if ( LOGGER .isLoggable( Level .INFO ) )
+            LOGGER .info( "JoglRenderingViewer() finished" );
     }
 
     // Private methods
@@ -212,12 +221,18 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     @Override
     public void init( GLAutoDrawable drawable )
     {
+        if ( LOGGER .isLoggable( Level .INFO ) )
+            LOGGER .info( "GLEventListener init() starting" );
+
         this .glShim = new JoglOpenGlShim( drawable .getGL() .getGL2() );
         boolean useVBOs = true;  // this context will rendered many, many times
         int maxOrientations = this .scene .getMaxOrientations();
         this .solids = new SolidRenderer( this .glShim, useVBOs, maxOrientations );
         this .outlines = new OutlineRenderer( this .glShim, useVBOs, maxOrientations );
         // store the scene geometry
+
+        if ( LOGGER .isLoggable( Level .INFO ) )
+            LOGGER .info( "GLEventListener init() finished" );
     }
 
     @Override
@@ -257,7 +272,13 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     @Override
     public void reshape( GLAutoDrawable drawable, int x, int y, int width, int height )
     {
+        if ( LOGGER .isLoggable( Level .INFO ) )
+            LOGGER .info( "GLEventListener reshape() starting" );
+
         this .setSize( width, height );
+
+        if ( LOGGER .isLoggable( Level .INFO ) )
+            LOGGER .info( "GLEventListener reshape() starting" );
     }
 
     @Override

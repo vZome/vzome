@@ -567,7 +567,9 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 
                 // heavyweight (lightweight==false) renders with a much better frame rate,
                 //   and this canvas always redraws correctly during window resize.
-                RenderingViewer viewer = factory3d .createRenderingViewer( scene, false );
+                // HOWEVER, on Mac OS Sonoma, the heavyweight canvas causes Frame.pack() to spin
+                //  in certain circumstances, causing vZome to hang.
+                RenderingViewer viewer = factory3d .createRenderingViewer( scene, true );
 
                 modelPanel = new ModelPanel( mController, viewer, this, this .isEditor, fullPower );
                 leftCenterPanel .add( modelPanel, BorderLayout.CENTER );
@@ -764,8 +766,11 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 		try {
 			// This is where the GraphicsConfiguration failed on David's Windows 10 using Java 17
 			// before including the "--add-exports" JVM args to the build 
+            logger.log( Level.INFO, "about to pack the frame " + ((mFile == null)? "untitled" :mFile .getName()) );
 			this.pack();
+            logger.log( Level.INFO, "packed the frame" );
 	        this.setVisible( true );
+            logger.log( Level.INFO, "frame setVisible" );
 	        // Java 17 seems to successfully set the frame size and extended state only after the frame is visible.
 	        if(bestWidth > 0 && bestHeight > 0) {
 	        	double downSize = 1.0;
