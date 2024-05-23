@@ -3,6 +3,8 @@ package org.vorthmann.zome.render.jogl;
 
 import java.awt.GraphicsConfiguration;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.vorthmann.j3d.J3dComponentFactory;
 
@@ -20,14 +22,22 @@ import com.vzome.desktop.awt.RenderingViewer;
 
 public class JoglFactory implements J3dComponentFactory
 {    
+    private static final Logger LOGGER = Logger.getLogger( "org.vorthmann.zome.render.jogl" );
+
     // MSAA (anti-aliasing) implemented per
     //   https://jogamp.org/jogl-demos/src/demos/multisample/Multisample.java
     
     // Simple class to warn if results are not going to be as expected
-    static class MultisampleChooser extends DefaultGLCapabilitiesChooser {
+    static class MultisampleChooser extends DefaultGLCapabilitiesChooser
+    {
       public int chooseCapabilities(GLCapabilities desired,
                                     List<? extends CapabilitiesImmutable> available,
-                                    int windowSystemRecommendedChoice) {
+                                    int windowSystemRecommendedChoice)
+      {
+
+        if ( LOGGER .isLoggable( Level .INFO ) )
+          LOGGER .info( "MultisampleChooser .chooseCapabilities() starting" );
+
         boolean anyHaveSampleBuffers = false;
         for (int i = 0; i < available.size(); i++) {
           GLCapabilitiesImmutable caps = (GLCapabilitiesImmutable) available.get(i);
@@ -45,6 +55,10 @@ public class JoglFactory implements J3dComponentFactory
             System.err.println("WARNING: antialiasing will be disabled because the DefaultGLCapabilitiesChooser didn't supply it");
           }
         }
+
+        if ( LOGGER .isLoggable( Level .INFO ) )
+            LOGGER .info( "MultisampleChooser .chooseCapabilities() finished" );
+
         return selection;
       }
     }
@@ -52,6 +66,9 @@ public class JoglFactory implements J3dComponentFactory
     @Override
     public RenderingViewer createRenderingViewer( Scene scene, boolean lightweight )
     {
+        if ( LOGGER .isLoggable( Level .INFO ) )
+            LOGGER .info( "JoglFactory .createRenderingViewer() starting" );
+
         // This is apparently necessary to avoid "just black" GLJPanels
         // See https://forum.jogamp.org/reshape-not-called-in-2nd-GLCanvas-td4042121.html
         System .setProperty( "jogl.gljpanel.noglsl", "true" );
@@ -109,6 +126,9 @@ public class JoglFactory implements J3dComponentFactory
             		}
             	};
         
+    	if ( LOGGER .isLoggable( Level .INFO ) )
+    	    LOGGER .info( "JoglFactory .createRenderingViewer() finishing..." );
+    	
         return new JoglRenderingViewer( scene, glcanvas );
     }
 }

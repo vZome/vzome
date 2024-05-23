@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.vecmath.Matrix4f;
 
@@ -71,8 +73,13 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     private boolean cameraChanged = true;
     private float fogFront;
 
+    private static final Logger LOGGER = Logger.getLogger( "org.vorthmann.zome.render.jogl" );
+
     public JoglRenderingViewer( Scene scene, GLAutoDrawable drawable )
     {
+        if ( LOGGER .isLoggable( Level .INFO ) )
+            LOGGER .info( "JoglRenderingViewer() starting" );
+
         this .scene = scene;
         this .canvas = (Component) drawable;
 
@@ -99,6 +106,9 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         // Start animator (which should be a field).
         this .animator = new FPSAnimator( drawable, 60 );
         this .animator .start();
+        
+        if ( LOGGER .isLoggable( Level .INFO ) )
+            LOGGER .info( "JoglRenderingViewer() finished" );
     }
 
     // Private methods
@@ -117,11 +127,85 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         this .cameraChanged = false;
     }
     
+    /**
+     * COPIED FROM JOGL 2.4.0 FloatUtil
+     * 
+     * Make given matrix the orthogonal matrix based on given parameters.
+     * <pre>
+        Ortho matrix (Column Order):
+        2/dx  0     0    0
+        0     2/dy  0    0
+        0     0     2/dz 0
+        tx    ty    tz   1
+     * </pre>
+     * <p>
+     * All matrix fields are only set if <code>initM</code> is <code>true</code>.
+     * </p>
+     * @param m 4x4 matrix in column-major order (also result)
+     * @param m_offset offset in given array <i>m</i>, i.e. start of the 4x4 matrix
+     * @param initM if true, given matrix will be initialized w/ identity matrix,
+     *              otherwise only the orthogonal fields are set.
+     * @param left
+     * @param right
+     * @param bottom
+     * @param top
+     * @param zNear
+     * @param zFar
+     * @return given matrix for chaining
+     */
+    private static float[] makeOrtho(final float[] m, final int m_offset, final boolean initM,
+                                    final float left, final float right,
+                                    final float bottom, final float top,
+                                    final float zNear, final float zFar) {
+        if( initM ) {
+            // m[m_offset+0+4*0] = 1f;
+            m[m_offset+1+4*0] = 0f;
+            m[m_offset+2+4*0] = 0f;
+            m[m_offset+3+4*0] = 0f;
+
+            m[m_offset+0+4*1] = 0f;
+            // m[m_offset+1+4*1] = 1f;
+            m[m_offset+2+4*1] = 0f;
+            m[m_offset+3+4*1] = 0f;
+
+            m[m_offset+0+4*2] = 0f;
+            m[m_offset+1+4*2] = 0f;
+            // m[m_offset+2+4*2] = 1f;
+            m[m_offset+3+4*2] = 0f;
+
+            // m[m_offset+0+4*3] = 0f;
+            // m[m_offset+1+4*3] = 0f;
+            // m[m_offset+2+4*3] = 0f;
+            // m[m_offset+3+4*3] = 1f;
+        }
+        final float dx=right-left;
+        final float dy=top-bottom;
+        final float dz=zFar-zNear;
+        final float tx=-1.0f*(right+left)/dx;
+        final float ty=-1.0f*(top+bottom)/dy;
+        final float tz=-1.0f*(zFar+zNear)/dz;
+
+        m[m_offset+0+4*0] =  2.0f/dx;
+
+        m[m_offset+1+4*1] =  2.0f/dy;
+
+        m[m_offset+2+4*2] = -2.0f/dz;
+
+        m[m_offset+0+4*3] = tx;
+        m[m_offset+1+4*3] = ty;
+        m[m_offset+2+4*3] = tz;
+        m[m_offset+3+4*3] = 1f;
+
+        return m;
+    }
+
+
     private void setProjection()
     {
         if ( this .fovX == 0f ) {
             float halfEdgeY = this .halfEdgeX / this .aspectRatio;
-            FloatUtil .makeOrtho( projection, 0, true, -halfEdgeX, halfEdgeX, -halfEdgeY, halfEdgeY, this .near, this .far );
+            
+            makeOrtho( projection, 0, true, -halfEdgeX, halfEdgeX, -halfEdgeY, halfEdgeY, this .near, this .far );
         } else {
             // The Camera model is set up for fovX, but FloatUtil.makePerspective wants fovY
             float fovY = this .fovX / this .aspectRatio;
@@ -137,12 +221,18 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     @Override
     public void init( GLAutoDrawable drawable )
     {
+        if ( LOGGER .isLoggable( Level .INFO ) )
+            LOGGER .info( "GLEventListener init() starting" );
+
         this .glShim = new JoglOpenGlShim( drawable .getGL() .getGL2() );
         boolean useVBOs = true;  // this context will rendered many, many times
         int maxOrientations = this .scene .getMaxOrientations();
         this .solids = new SolidRenderer( this .glShim, useVBOs, maxOrientations );
         this .outlines = new OutlineRenderer( this .glShim, useVBOs, maxOrientations );
         // store the scene geometry
+
+        if ( LOGGER .isLoggable( Level .INFO ) )
+            LOGGER .info( "GLEventListener init() finished" );
     }
 
     @Override
@@ -182,7 +272,13 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     @Override
     public void reshape( GLAutoDrawable drawable, int x, int y, int width, int height )
     {
+        if ( LOGGER .isLoggable( Level .INFO ) )
+            LOGGER .info( "GLEventListener reshape() starting" );
+
         this .setSize( width, height );
+
+        if ( LOGGER .isLoggable( Level .INFO ) )
+            LOGGER .info( "GLEventListener reshape() starting" );
     }
 
     @Override
@@ -225,6 +321,146 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         return picker .getNearest();
     }
 
+    /**
+     * COPIED FROM JOGL 2.4.0 FloatUtil
+     * 
+     * Map two window coordinates to two object coordinates,
+     * distinguished by their z component.
+     *
+     * @param winx
+     * @param winy
+     * @param winz1
+     * @param winz2
+     * @param mat4PMvI inverse [projection] x [modelview] matrix, i.e. Inv(P x Mv)
+     * @param viewport 4 component viewport vector
+     * @param viewport_offset
+     * @param obj1_pos 3 component object coordinate, the result for winz1
+     * @param obj1_pos_offset
+     * @param obj2_pos 3 component object coordinate, the result for winz2
+     * @param obj2_pos_offset
+     * @param vec4Tmp1 4 component vector for temp storage
+     * @param vec4Tmp2 4 component vector for temp storage
+     * @return true if successful, otherwise false (failed to invert matrix, or becomes infinity due to zero z)
+     */
+    public static boolean mapWinToObjCoords(final float winx, final float winy, final float winz1, final float winz2,
+                                            final float[/*16*/] mat4PMvI,
+                                            final int[] viewport, final int viewport_offset,
+                                            final float[] obj1_pos, final int obj1_pos_offset,
+                                            final float[] obj2_pos, final int obj2_pos_offset,
+                                            final float[/*4*/] vec4Tmp1, final float[/*4*/] vec4Tmp2) {
+      vec4Tmp1[0] = winx;
+      vec4Tmp1[1] = winy;
+      vec4Tmp1[3] = 1.0f;
+
+      // Map x and y from window coordinates
+      vec4Tmp1[0] = (vec4Tmp1[0] - viewport[0+viewport_offset]) / viewport[2+viewport_offset];
+      vec4Tmp1[1] = (vec4Tmp1[1] - viewport[1+viewport_offset]) / viewport[3+viewport_offset];
+
+      // Map to range -1 to 1
+      vec4Tmp1[0] = vec4Tmp1[0] * 2 - 1;
+      vec4Tmp1[1] = vec4Tmp1[1] * 2 - 1;
+
+      //
+      // winz1
+      //
+      vec4Tmp1[2] = winz1;
+      vec4Tmp1[2] = vec4Tmp1[2] * 2 - 1;
+
+      // object raw coords = Inv(P x Mv) *  winPos  -> mat4Tmp2
+      FloatUtil .multMatrixVec(mat4PMvI, vec4Tmp1, vec4Tmp2);
+
+      if (vec4Tmp2[3] == 0.0) {
+        return false;
+      }
+
+      vec4Tmp2[3] = 1.0f / vec4Tmp2[3];
+
+      obj1_pos[0+obj1_pos_offset] = vec4Tmp2[0] * vec4Tmp2[3];
+      obj1_pos[1+obj1_pos_offset] = vec4Tmp2[1] * vec4Tmp2[3];
+      obj1_pos[2+obj1_pos_offset] = vec4Tmp2[2] * vec4Tmp2[3];
+
+      //
+      // winz2
+      //
+      vec4Tmp1[2] = winz2;
+      vec4Tmp1[2] = vec4Tmp1[2] * 2 - 1;
+
+      // object raw coords = Inv(P x Mv) *  winPos  -> mat4Tmp2
+      FloatUtil .multMatrixVec(mat4PMvI, vec4Tmp1, vec4Tmp2);
+
+      if (vec4Tmp2[3] == 0.0) {
+        return false;
+      }
+
+      vec4Tmp2[3] = 1.0f / vec4Tmp2[3];
+
+      obj2_pos[0+obj2_pos_offset] = vec4Tmp2[0] * vec4Tmp2[3];
+      obj2_pos[1+obj2_pos_offset] = vec4Tmp2[1] * vec4Tmp2[3];
+      obj2_pos[2+obj2_pos_offset] = vec4Tmp2[2] * vec4Tmp2[3];
+
+      return true;
+    }
+
+
+    /**
+     * COPIED FROM JOGL 2.4.0 FloatUtil
+     * 
+     * Map two window coordinates w/ shared X/Y and distinctive Z
+     * to a {@link Ray}. The resulting {@link Ray} maybe used for <i>picking</i>
+     * using a {@link AABBox#getRayIntersection(Ray, float[]) bounding box}.
+     * <p>
+     * Notes for picking <i>winz0</i> and <i>winz1</i>:
+     * <ul>
+     *   <li>see {@link #getZBufferEpsilon(int, float, float)}</li>
+     *   <li>see {@link #getZBufferValue(int, float, float, float)}</li>
+     *   <li>see {@link #getOrthoWinZ(float, float, float)}</li>
+     * </ul>
+     * </p>
+     * @param winx
+     * @param winy
+     * @param winz0
+     * @param winz1
+     * @param modelMatrix 4x4 modelview matrix
+     * @param modelMatrix_offset
+     * @param projMatrix 4x4 projection matrix
+     * @param projMatrix_offset
+     * @param viewport 4 component viewport vector
+     * @param viewport_offset
+     * @param ray storage for the resulting {@link Ray}
+     * @param mat4Tmp1 16 component matrix for temp storage
+     * @param mat4Tmp2 16 component matrix for temp storage
+     * @param vec4Tmp2 4 component vector for temp storage
+     * @return true if successful, otherwise false (failed to invert matrix, or becomes z is infinity)
+     */
+    public static boolean mapWinToRay(final float winx, final float winy, final float winz0, final float winz1,
+                                      final float[] modelMatrix, final int modelMatrix_offset,
+                                      final float[] projMatrix, final int projMatrix_offset,
+                                      final int[] viewport, final int viewport_offset,
+                                      final Ray ray,
+                                      final float[/*16*/] mat4Tmp1, final float[/*16*/] mat4Tmp2, final float[/*4*/] vec4Tmp2) {
+        // mat4Tmp1 = P x Mv
+        FloatUtil .multMatrix(projMatrix, projMatrix_offset, modelMatrix, modelMatrix_offset, mat4Tmp1, 0);
+
+        // mat4Tmp1 = Inv(P x Mv)
+        if ( null == FloatUtil .invertMatrix(mat4Tmp1, mat4Tmp1) ) {
+            return false;
+        }
+        float[] origin = new float[3];
+        ray.orig .get( origin );
+        float[] direction = new float[3];
+        ray.dir .get( direction );
+        if( mapWinToObjCoords(winx, winy, winz0, winz1, mat4Tmp1,
+                              viewport, viewport_offset,
+                              origin, 0, direction, 0,
+                              mat4Tmp2, vec4Tmp2) ) {
+            ray.dir .minus( ray.orig ) .normalize();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
     /* (non-Javadoc)
      * @see com.vzome.desktop.controller.RenderingViewer#pickRay(java.awt.event.MouseEvent, com.vzome.core.math.RealVector, com.vzome.core.math.RealVector)
      */
@@ -251,7 +487,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         //  find.  I'm very happy to be rid of Java3d.
         
         Ray ray = new Ray();
-        FloatUtil .mapWinToRay(
+        mapWinToRay(
                 mouseX, height - mouseY, 0f, 1f,  // Y is reversed from AWT to GL.  Z must be zero or very small.
                 this.modelView, 0,
                 this.projection, 0,
@@ -261,7 +497,7 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         
         // Ray is expressed in world coordinates.
         
-        return new Line( new RealVector( ray.orig[0], ray.orig[1], ray.orig[2] ), new RealVector( ray.dir[0], ray.dir[1], ray.dir[2] ) );
+        return new Line( new RealVector( ray.orig.x(), ray.orig.y(), ray.orig.z() ), new RealVector( ray.dir.x(), ray.dir.y(), ray.dir.z() ) );
     }
     
     @Override
