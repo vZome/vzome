@@ -1,7 +1,6 @@
 package org.vorthmann.zome.render.jogl;
 
 import com.jogamp.opengl.math.FloatUtil;
-import com.jogamp.opengl.math.Ray;
 import com.jogamp.opengl.math.Vec3f;
 import com.vzome.core.math.Line;
 import com.vzome.core.render.RenderedManifestation;
@@ -9,7 +8,6 @@ import com.vzome.core.render.ShapeAndInstances;
 
 class NearestPicker implements ShapeAndInstances.Intersector
 {        
-    private final Ray ray;
     private final Vec3f rayPoint, rayDirection;
 
     private RenderedManifestation nearest = null;
@@ -20,14 +18,11 @@ class NearestPicker implements ShapeAndInstances.Intersector
     {
         super();
         FloatUtil .multMatrix( projection, modelView, this .modelViewProjection );
-        this .ray = new Ray();
         float[] array = new float[3];
         rayLine .getOrigin() .toArray( array );
-        this .ray .orig .set( array );
+        this .rayPoint = new Vec3f( array );
         rayLine .getDirection() .toArray( array );
-        this .ray .dir .set( array );
-        this .rayPoint = new Vec3f( ray.orig );
-        this .rayDirection = new Vec3f( ray.dir );
+        this .rayDirection = new Vec3f( array );
         this .rayDirection .normalize();
     }
     

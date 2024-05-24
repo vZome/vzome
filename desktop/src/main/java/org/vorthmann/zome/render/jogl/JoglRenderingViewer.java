@@ -53,7 +53,8 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
     private final Scene scene;
     private final Component canvas;
     // cache the value of fixGLCanvasRescaling one time here to improve performance in pickRay() 
-    private final boolean fixGLCanvasRescaling = "true".equals(System.getProperty("vzome.glcanvas.rescaling"));
+    // .... BUT, now that we never use the heavyweight GLCanvas, we never want this... see the usage further below.
+    private final boolean fixGLCanvasRescaling = false; // "true".equals(System.getProperty("vzome.glcanvas.rescaling"));
     
     private JoglOpenGlShim glShim;
     private Renderer outlines = null;
@@ -446,14 +447,14 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
             return false;
         }
         float[] origin = new float[3];
-        ray.orig .get( origin );
         float[] direction = new float[3];
-        ray.dir .get( direction );
         if( mapWinToObjCoords(winx, winy, winz0, winz1, mat4Tmp1,
                               viewport, viewport_offset,
                               origin, 0, direction, 0,
                               mat4Tmp2, vec4Tmp2) ) {
-            ray.dir .minus( ray.orig ) .normalize();
+            ray.orig .set( origin );
+            ray.dir .set( direction );
+            ray.dir .sub( ray.orig ) .normalize();
             return true;
         } else {
             return false;
@@ -475,7 +476,8 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         
         // This work-around for scaling issues on Windows and Linux assumes that the canvas 
         // is a GLCanvas with getWidth() and getHeight() overridden 
-        // to incorporate the scale factor as I've done in JoglFactory.createRenderingViewer()  
+        // to incorporate the scale factor as I've done in JoglFactory.createRenderingViewer() .
+        //  HOWEVER, now we are never creating GLCanvas, so fixGLCanvasRescaling is always false.
         if(fixGLCanvasRescaling) {
         	AffineTransform t = canvas.getGraphicsConfiguration().getDefaultTransform(); 
             mouseX *= t.getScaleX();
