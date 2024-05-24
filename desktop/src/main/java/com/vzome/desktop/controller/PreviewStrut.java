@@ -123,7 +123,14 @@ public class PreviewStrut implements PropertyChangeListener
         return false;
     }
 
-    private void setZone( Axis zone )
+    @Override
+	public int hashCode() {
+		// Since overriding equals is required for JSweet as described above, this method simply avoids the warning: 
+    	// [overrides] Class PreviewStrut overrides equals, but neither it nor any superclass overrides hashCode method.
+		return super.hashCode();
+	}
+    
+	private void setZone( Axis zone )
     {
         this.zone = zone;
     }
