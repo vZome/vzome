@@ -74,11 +74,28 @@ submenu, and select the "vZome Shapes JSON (polygons)" item.
 
 If you are sharing vZome designs using [GitHub sharing](./sharing.html), the preview JSON will be generated and uploaded automatically, each time you share a design.
 
-## Fallback HTML
+## Disabling vZome Source Access
 
-## Usage in Blogs or E-Commerce Systems
+If the `.vZome` design source is available, the viewer displays a download button in the lower left.
+When the button is clicked, a popup menu appears with options to open the design in
+[vZome Online classic](https://www.vzome.com/app/classic) or download the vZome source file.
+If you wish to keep your vZome design source private,
+you can simply not host the `.vZome` design file at all, just the `.shapes.json` preview file.
+The missing `.vZome` source will cause the download button to be hidden.
+If you are sharing vZome designs using [GitHub sharing](./sharing.html),
+you can delete the `.vZome` file from the assets folder after it is uploaded when you share.
+However, *do not* change the `src` URL for the viewer; it should still refer to
+the `.vZome` file, even though that resource won't be fetched.
 
-## Hosting Your Designs
+If you're not concerned with the privacy of your vZome designs,
+but you simply don't want the extra button on the screen,
+you can set the viewer's `download` attribute to false.
+```html
+<vzome-viewer download="false"
+       src="https://vorth.github.io/vzome-sharing/2022/06/19/06-37-55-welcomeDodec/welcomeDodec.vZome" >
+</vzome-viewer>
+```
+In this case you don't need to delete the uploaded `.vZome` file.
 
 ## <a id="multi-scene"></a> Displaying Multi-Scene Designs
 
@@ -194,3 +211,10 @@ vzome-viewer revision 224
 ```
 
 Remember to use the "r" prefix before the revision number in your script tag!
+
+## Fallback HTML
+
+## Usage in Blogs or E-Commerce Systems
+
+## Hosting Your Designs
+

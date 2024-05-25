@@ -35,7 +35,7 @@ const normalStyle = {
 
 const DesignViewer = ( props ) =>
 {
-  const config = mergeProps( { showScenes: 'none', useSpinner: false, allowFullViewport: false, undoRedo: false }, props.config );
+  const config = mergeProps( { showScenes: 'none', useSpinner: false, allowFullViewport: false, undoRedo: false, download: true }, props.config );
   const { scene, waiting } = useViewer();
   let rootRef;
   
@@ -114,7 +114,9 @@ const DesignViewer = ( props ) =>
         <SceneMenu root={rootRef} show={whichScenes()} />
       </Show>
 
-      <ExportMenu root={rootRef} />
+      <Show when={config.download} >
+        <ExportMenu root={rootRef} />
+      </Show>
 
       <Show when={config.allowFullViewport}>
         <FullscreenButton fullScreen={fullScreen()} root={rootRef} toggle={toggleFullScreen} />
@@ -136,7 +138,7 @@ const UrlViewer = (props) =>
   return (
     <CameraProvider>
       <WorkerStateProvider workerClient={props.workerClient}>
-        <ViewerProvider config={{ url: props.url, preview: true, debug: false, showScenes: props.showScenes, labels: props.config?.labels }}>
+        <ViewerProvider config={{ url: props.url, preview: true, debug: false, showScenes: props.showScenes, labels: props.config?.labels, source: props.config?.download }}>
           <DesignViewer config={ { ...props.config, allowFullViewport: true } }
               componentRoot={props.componentRoot}
               height="100%" width="100%" >

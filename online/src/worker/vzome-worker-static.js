@@ -263,7 +263,7 @@ const openDesign = async ( xmlLoading, name, report, debug, sceneTitle ) =>
 
     .then( ([ module, xml ]) => {
       if ( !xml ) {
-        report( { type: 'ALERT_RAISED', payload: 'The file is empty' } );
+        report( { type: 'ALERT_RAISED', payload: 'Unable to load .vZome content' } );
         return;
       }
       const doLoad = () => {
@@ -339,7 +339,7 @@ const defaultLoad = { camera: true, lighting: true, design: true, };
 const urlLoader = async ( report, event ) =>
 {
   const { url, config } = event.payload;
-  const { preview=false, debug=false, showScenes='none', sceneTitle, load=defaultLoad } = config;
+  const { preview=false, debug=false, showScenes='none', sceneTitle, load=defaultLoad, source=true } = config;
   if ( !url ) {
     throw new Error( "No url field in URL_PROVIDED event payload" );
   }
@@ -347,9 +347,8 @@ const urlLoader = async ( report, event ) =>
   report( { type: 'FETCH_STARTED', payload: event.payload } );
 
   console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${preview? "previewing" : "interpreting " } ${url}` );
-  const xmlLoading = fetchUrlText( url );
-
-  xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { text, url } } ) ); // Don't send the name yet, parse/interpret may fail
+  const xmlLoading = source && fetchUrlText( url );
+  source && xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { text, url } } ) ); // Don't send the name yet, parse/interpret may fail
 
   report = filterScene( report, load );
   if ( preview ) {
