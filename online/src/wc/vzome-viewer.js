@@ -50,7 +50,16 @@ export class VZomeViewer extends HTMLElement
       this .dispatchEvent( new CustomEvent( 'vzome-scenes-discovered', { detail: this.#sceneTitles } ) );
     } );
 
-    this.#config = { preview: true, showScenes: 'none', camera: true, lighting: true, design: true, labels: false, showPerspective: true };
+    this.#config = {
+      preview:         true,
+      showScenes:      'none',
+      camera:          true,
+      lighting:        true,
+      design:          true,
+      labels:          false,
+      showPerspective: true,
+      download:        true,
+    };
 
     this.#indexed = false;
     this.#urlChanged = true;
@@ -152,7 +161,7 @@ export class VZomeViewer extends HTMLElement
 
   static get observedAttributes()
   {
-    return [ "src", "show-scenes", "scene", "load-camera", "reactive", "labels", "show-perspective", "indexed" ];
+    return [ "src", "show-scenes", "scene", "load-camera", "reactive", "labels", "show-perspective", "indexed", "download" ];
   }
 
   // This callback can happen *before* connectedCallback()!
@@ -193,6 +202,11 @@ export class VZomeViewer extends HTMLElement
     case "labels":
       const labels = _newValue === 'true';
       this.#config = { ...this.#config, labels };
+      break;
+
+    case "download":
+      const download = _newValue === 'true';
+      this.#config = { ...this.#config, download };
       break;
 
     case "show-perspective":
@@ -272,6 +286,20 @@ export class VZomeViewer extends HTMLElement
   get labels()
   {
     return this.getAttribute( "labels" );
+  }
+
+  set download( newValue )
+  {
+    if ( newValue === null ) {
+      this.removeAttribute( "download" );
+    } else {
+      this.setAttribute( "download", newValue );
+    }
+  }
+
+  get download()
+  {
+    return this.getAttribute( "download" );
   }
 
   set showPerspective( newValue )
