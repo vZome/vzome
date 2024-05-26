@@ -1,14 +1,14 @@
 
-import { createContext, createEffect, createMemo, createSignal, onMount, useContext } from "solid-js";
+import { createEffect, createMemo, onMount } from "solid-js";
 import { Vector3, Matrix4, BufferGeometry, Float32BufferAttribute } from "three";
 import { useThree } from "solid-three";
 
 import { useInteractionTool } from "./context/interaction.jsx";
 import { useViewer } from "./context/viewer.jsx";
-import { useCamera } from "./context/camera.jsx";
 
 import { GLTFExporter } from "three-stdlib";
 import { Label } from "./labels.jsx";
+import { useGltfExporter, useImageCapture } from "./context/export.jsx";
 
 
 const Instance = ( props ) =>
@@ -171,13 +171,28 @@ const InstancedShape = ( props ) =>
 export const ShapedGeometry = ( props ) =>
 {
   const scene = useThree(({ scene }) => scene);
+  const { setExporter } = useGltfExporter();
   const exportGltf = callback => {
     const exporter = new GLTFExporter();
     // Parse the input and generate the glTF output
     exporter.parse( scene(), callback, { onlyVisible: false } );
   };
-  const { setExporter } = useContext( GltfExportContext );
   setExporter( { exportGltf } );
+
+  const gl = useThree( ({ gl }) => gl );
+  const camera = useThree( ({ camera }) => camera );
+  const { setCapturer } = useImageCapture();
+  const capture = ( mimeType, saveBlob ) => {
+    // See:
+    //   https://github.com/pmndrs/react-three-fiber/discussions/2054
+    //   https://stackoverflow.com/questions/12168909/blob-from-dataurl
+    gl() .render( scene(), camera() ); // The HTML canvas state is only guaranteed immediately after render
+    const dataUrl = gl() .domElement .toDataURL( mimeType );
+    fetch( dataUrl )
+      .then( res => res.blob() )
+      .then( saveBlob );    
+  }
+  setCapturer( { capture } );
 
   let groupRef;
   createEffect( () => {
@@ -201,18 +216,3 @@ export const ShapedGeometry = ( props ) =>
     // </Show>
   )
 };
-
-const GltfExportContext = createContext( { setExporter: ()=>{}, exporter: ()=>{} } );
-
-export const GltfExportProvider = (props) =>
-{
-  const [ exporter, setExporter ] = createSignal( {} );
-
-  return (
-    <GltfExportContext.Provider value={ { exporter, setExporter } }>
-      {props.children}
-    </GltfExportContext.Provider>
-  );
-}
-
-export const useGltfExporter = () => { return useContext( GltfExportContext ); };

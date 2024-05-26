@@ -2,8 +2,8 @@
 import { DropdownMenu, Link } from "@kobalte/core";
 
 import { useViewer } from "./context/viewer.jsx";
-import { saveFileAs } from "../viewer/util/files.js";
-import { useGltfExporter } from "./geometry.jsx";
+import { useGltfExporter } from "./context/export.jsx";
+import { saveTextFileAs } from "../viewer/util/files.js";
 
 const editUrlBase = 'https://vzome.com/app/classic/index.html?design=';
 
@@ -18,7 +18,7 @@ export const ExportMenu = (props) =>
     const vName = name || 'untitled.vZome';
     const fileName = vName .substring( 0, vName.length-6 ) .concat( ".gltf" );
     const { exportGltf } = exporter();
-    exportGltf( gltf => saveFileAs( fileName, JSON.stringify( gltf, null, 2 ), 'model/gltf+json' ) );
+    exportGltf( gltf => saveTextFileAs( fileName, JSON.stringify( gltf, null, 2 ), 'model/gltf+json' ) );
   }
 
   const downloadVZome = () =>
@@ -28,10 +28,10 @@ export const ExportMenu = (props) =>
     // if ( changedText ) {
     //   const { camera, liveCamera, lighting } = scene;
     //   const fullText = serializeVZomeXml( changedText, lighting, liveCamera, camera );
-    //   saveFileAs( fileName, fullText, 'application/xml' );
+    //   saveTextFileAs( fileName, fullText, 'application/xml' );
     // }
     // else
-      saveFileAs( fileName, text, 'application/xml' );
+    saveTextFileAs( fileName, text, 'application/xml' );
   }
 
   return (

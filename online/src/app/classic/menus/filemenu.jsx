@@ -4,12 +4,13 @@ import { unwrap } from "solid-js/store";
 
 import { controllerExportAction, controllerProperty, useEditor } from "../../../viewer/context/editor.jsx";
 import { serializeVZomeXml } from '../../../viewer/util/serializer.js';
-import { saveFile, saveFileAs, openFile } from "../../../viewer/util/files.js";
+import { saveFileAs, openFile, saveTextFileAs, saveTextFile } from "../../../viewer/util/files.js";
 
 import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 import { UrlDialog } from '../dialogs/webloader.jsx'
 import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
 import { useCamera } from "../../../viewer/context/camera.jsx";
+import { useImageCapture } from "../../../viewer/context/export.jsx";
 
 const queryParams = new URLSearchParams( window.location.search );
 const relativeUrl = queryParams.get( 'design' );
@@ -100,10 +101,19 @@ export const FileMenu = () =>
     const lighting = unwrap( cameraState.lighting );
     controllerExportAction( rootController(), format, { camera, lighting, ...params } )
       .then( text => {
-        const vName = state.designName || 'untitled';
-        const name = vName .concat( "." + extension );
-        saveFileAs( name, text, mimeType );
+        const name = (state.designName || 'untitled') .concat( "." + extension );
+        saveTextFileAs( name, text, mimeType );
       });
+  }
+
+  const { capturer } = useImageCapture();
+  const captureImage = ( extension, mimeType ) => evt =>
+  {
+    const { capture } = capturer();
+    capture( mimeType, blob => {
+      const name = (state.designName || 'untitled') .concat( "." + extension );
+      saveFileAs( name, blob, mimeType );
+    });
   }
 
   const doSave = ( chooseFile = false ) =>
@@ -115,9 +125,9 @@ export const FileMenu = () =>
         const fullText = serializeVZomeXml( text, cameraState.lighting, {...cameraState.camera} );
         const mimeType = 'application/xml';
         if ( state.fileHandle && !chooseFile )
-          return saveFile( state.fileHandle, fullText, mimeType )
+          return saveTextFile( state.fileHandle, fullText, mimeType )
         else
-          return saveFileAs( name + '-ONLINE.vZome', fullText, mimeType );
+          return saveTextFileAs( name + '-ONLINE.vZome', fullText, mimeType );
       })
       .then( result => {
         const { handle, success } = result;
@@ -141,7 +151,12 @@ export const FileMenu = () =>
     return <MenuItem onClick={ exportAs( props.ext, props.mime, props.format, params ) } disabled={props.disabled}>{props.label}</MenuItem>
   }
 
-  return (
+  const ImageCaptureItem = props =>
+  {
+    return <MenuItem onClick={ captureImage( props.ext, props.mime ) } disabled={props.disabled}>{props.label}</MenuItem>
+  }
+  
+    return (
     <Menu label="File" dialogs={<>
       <UrlDialog show={showDialog()} setShow={setShowDialog} openDesign={openUrl} />
 
@@ -202,10 +217,10 @@ export const FileMenu = () =>
         <Divider/>
 
         <SubMenu label="Capture Image">
-          <MenuItem disabled={true} action="capture.jpg" >JPEG</MenuItem>
-          <MenuItem disabled={true} action="capture.png" >PNG</MenuItem>
-          <MenuItem disabled={true} action="capture.gif" >GIF</MenuItem>
-          <MenuItem disabled={true} action="capture.bmp" >BMP</MenuItem>
+          <ImageCaptureItem ext="png" label="PNG" mime="image/png" />
+          <ImageCaptureItem ext="jpg" label="JPEG" mime="image/jpeg" />
+          <ImageCaptureItem ext="webp" label="WebP" mime="image/webp" />
+          <ImageCaptureItem ext="bmp" label="BMP" mime="image/bmp" />
         </SubMenu>
 
         <MenuItem disabled={true} action="capture-wiggle-gif" >Capture Animation</MenuItem>
