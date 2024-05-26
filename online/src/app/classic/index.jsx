@@ -19,6 +19,7 @@ import { CameraProvider } from '../../viewer/context/camera.jsx';
 import { VZomeAppBar } from './components/appbar.jsx';
 import { ClassicEditor } from './classic.jsx';
 import { SymmetryProvider } from './context/symmetry.jsx';
+import { ImageCaptureProvider } from '../../viewer/context/export.jsx';
 
 const Persistence = () =>
 {
@@ -49,6 +50,7 @@ const Classic = () =>
       <WorkerStateProvider>
       <CameraProvider name='common'>
       <EditorProvider>
+      <ImageCaptureProvider>
       <ViewerProvider config={{ labels: true }}>
         <SymmetryProvider>
           <VZomeAppBar menuBar={true} title='BETA'
@@ -83,6 +85,7 @@ const Classic = () =>
           <ClassicEditor/>
         </SymmetryProvider>
       </ViewerProvider>
+      </ImageCaptureProvider>
       </EditorProvider>
       </CameraProvider>
       </WorkerStateProvider>

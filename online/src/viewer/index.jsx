@@ -12,6 +12,7 @@ import { WorkerStateProvider } from './context/worker.jsx';
 import { ViewerProvider, useViewer } from './context/viewer.jsx';
 import { InteractionToolProvider } from './context/interaction.jsx';
 import { CameraProvider } from './context/camera.jsx';
+import { GltfExportProvider } from './context/export.jsx';
 
 import { SceneCanvas } from "./scenecanvas.jsx";
 import { Spinner } from './spinner.jsx';
@@ -20,7 +21,6 @@ import { SceneMenu } from './scenes.jsx';
 import { FullscreenButton } from './fullscreen.jsx';
 import { ExportMenu } from './export.jsx';
 import { UndoRedoButtons } from './undoredo.jsx';
-import { GltfExportProvider } from './geometry.jsx';
 import { CameraMode } from './cameramode.jsx';
 
 let stylesAdded = false; // for the onMount in DesignViewer

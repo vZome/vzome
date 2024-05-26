@@ -57,10 +57,16 @@ export const openFile = async ( types ) => {
 };
 
 
-export const saveFile = async ( handle, text, type ) =>
+export const saveTextFile = async ( handle, text, type ) =>
+{
+  const blob = new Blob( [ text ], { type } );
+  return saveFile( handle, blob );
+};
+
+
+export const saveFile = async ( handle, blob ) =>
 {
   // can't get here unless a handle was returned earlier, so no need for feature detection
-  const blob = new Blob( [ text ], { type } );
   try {
     const writable = await handle.createWritable();
     await writable.write(blob);
@@ -75,9 +81,14 @@ export const saveFile = async ( handle, text, type ) =>
   return { success: true };
 }
 
-export const saveFileAs = async ( suggestedName, text, type ) =>
+export const saveTextFileAs = async ( suggestedName, text, type ) =>
 {
   const blob = new Blob( [ text ], { type } );
+  return saveFileAs( suggestedName, blob );
+}
+
+export const saveFileAs = async ( suggestedName, blob ) =>
+{
   // Feature detection. The API needs to be supported
   // and the app not run in an iframe.
   const supportsFileSystemAccess =

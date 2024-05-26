@@ -14,6 +14,7 @@ import { InteractionToolProvider } from '../../../viewer/context/interaction.jsx
 import { SceneCanvas } from '../../../viewer/scenecanvas.jsx';
 
 import { SnapCameraTool } from '../tools/snapcamera.jsx';
+import { ImageCaptureProvider } from '../../../viewer/context/export.jsx';
 
 
 export const CameraControls = (props) =>
@@ -79,6 +80,7 @@ export const CameraControls = (props) =>
 
   return (
     <CameraProvider name='trackball' outlines={false} context={context}>
+    <ImageCaptureProvider> {/* We need this just so we don't set the main capturer from this GL context */}
     <InteractionToolProvider>
       {/* provider and CameraTool just to get the desired cursor */}
       <SnapCameraTool/>
@@ -106,6 +108,7 @@ export const CameraControls = (props) =>
         </div>
       </div>
     </InteractionToolProvider>
+    </ImageCaptureProvider>
     </CameraProvider>
   )
 }
