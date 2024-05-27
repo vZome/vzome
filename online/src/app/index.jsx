@@ -66,7 +66,7 @@ const Online = () =>
 {
   return (
     <ErrorBoundary fallback={ err => <div>{err.toString()}</div> } >
-      <CameraProvider>
+      <CameraProvider name='main' >
         <WorkerProvider>
           <ImageCaptureProvider>
             <ViewerProvider config={config}>

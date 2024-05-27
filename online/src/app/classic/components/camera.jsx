@@ -15,6 +15,7 @@ import { SceneCanvas } from '../../../viewer/scenecanvas.jsx';
 
 import { SnapCameraTool } from '../tools/snapcamera.jsx';
 import { ImageCaptureProvider } from '../../../viewer/context/export.jsx';
+import { ZoomSlider } from './zoomslider.jsx';
 
 
 export const CameraControls = (props) =>
@@ -79,7 +80,6 @@ export const CameraControls = (props) =>
   createEffect( () => isWorkerReady() && controllerAction( rootController(), 'connectTrackballScene' ) );
 
   return (
-    <CameraProvider name='trackball' outlines={false} context={context}>
     <ImageCaptureProvider> {/* We need this just so we don't set the main capturer from this GL context */}
     <InteractionToolProvider>
       {/* provider and CameraTool just to get the desired cursor */}
@@ -102,13 +102,16 @@ export const CameraControls = (props) =>
 
         <div id="ball-and-slider" style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
           <div id="camera-trackball" style={{ border: '1px solid' }}>
-            <SceneCanvas scene={scene} height="200px" width="240px" rotationOnly={true} rotateSpeed={0.7}/>
+            <CameraProvider name='trackball' outlines={false} context={context}>
+              <SceneCanvas scene={scene} height="200px" width="240px" rotationOnly={true} rotateSpeed={0.7}/>
+            </CameraProvider>
           </div>
-          <div id='zoom-slider' class='placeholder' style={{ 'min-height': '100px', 'min-width': '60px' }} >zoom</div>
+          <div id='zoom-slider' >
+            <ZoomSlider/>
+          </div>
         </div>
       </div>
     </InteractionToolProvider>
     </ImageCaptureProvider>
-    </CameraProvider>
   )
 }

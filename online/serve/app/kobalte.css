@@ -56,3 +56,73 @@
 .tabs__content {
   padding: 16px;
 }
+
+
+/* From https://kobalte.dev/docs/core/components/slider */
+
+#zoom-slider {
+  position: relative;
+  min-height: 100px;
+  min-width: 60px;
+}
+
+.SliderRoot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  touch-action: none;
+  height: 100%;
+}
+.SliderTrack {
+  background-color: hsl(240 6% 90%);
+  position: relative;
+  border-radius: 9999px;
+  width: 8px;
+  height: 100%;
+  margin-block: 7px;
+  margin-inline-start: 15px;
+}
+.SliderRange {
+  position: absolute;
+  background-color: hsl(200 98% 39%);
+  border-radius: 9999px;
+  width: 100%;
+}
+.SliderThumb {
+  display: block;
+  width: 16px;
+  height: 12px;
+  background-color: hsl(200 98% 39%);
+  border-radius: 9999px;
+  left: -4px;
+}
+.SliderThumb:hover {
+  box-shadow: 0 0 0 5px #2a91fe98;
+}
+.SliderThumb:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px #2a91fe98;
+}
+.SliderLabel {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding-inline: 5px;
+  padding-block-end: 3px;
+}
+
+.near-label {
+  position: absolute;
+  top: 1.6rem;
+  left: 2rem;
+  font-size: 13px;
+}
+
+.far-label {
+  position: absolute;
+  bottom: 0.6rem;
+  left: 2rem;
+  font-size: 13px;
+}
