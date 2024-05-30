@@ -193,16 +193,26 @@ public class ShareController extends DefaultController
                 }
             }
 
+            String username = null;
+            try {
+                username = userService .getUser() .getLogin();
+            } catch ( IOException e1 ) {
+                e1 .printStackTrace();
+                fail( "Unable to get user" );
+                return;
+            }
+            if ( orgName == null )
+                orgName = username;
+
             if ( repo == null )
                 try {
                     List<Repository> repositories = repositoryService .getRepositories();
-                    if ( orgName == null )
-                        repo = repositories .stream() .filter( r -> r.getName() .equals( repoName ) ) .findFirst() .orElse( null );
-                    else
-                        repo = repositories .stream() .filter( r -> r.getGitUrl() .contains( orgName ) )
-                            .filter( r -> r.getName() .equals( repoName ) ) .findFirst() .orElse( null );
+                    repo = repositories .stream()
+                            .filter( r -> r.getName() .equals( repoName ) )
+                            .filter( r -> r.getGitUrl() .contains( orgName ) )
+                            .findFirst() .orElse( null );
                     if ( repo == null ) {
-                        fail( "Unable to find repository '" + repoName + "'" );
+                        fail( "Unable to find repository '" + orgName + "/" + repoName + "'" );
                         return;
                     } else {
                         logger .info( "found repo " + repo .getGitUrl() );
@@ -213,7 +223,7 @@ public class ShareController extends DefaultController
                     setProperty( "githubAccessToken", "" );
                     return;
                 }
-            
+
             firePropertyChange( "stage", null, "options" );
 
             // now wait for the user to trigger "doUpload"
@@ -231,17 +241,6 @@ public class ShareController extends DefaultController
                 }
             }
 
-            String username = null;
-            try {
-                username = userService .getUser() .getLogin();
-            } catch ( IOException e1 ) {
-                e1 .printStackTrace();
-                fail( "Unable to get user" );
-                return;
-            }
-            if ( orgName == null )
-                orgName = username;
-            
             try {            
                 // set up for a non-root commit
                 String baseCommitSha = repositoryService .getBranches( repo ) .get(0) .getCommit() .getSha();
