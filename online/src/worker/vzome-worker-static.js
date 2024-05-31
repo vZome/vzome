@@ -1,5 +1,6 @@
 
 import { resourceIndex, importLegacy, importZomic } from '../revision.js';
+import { commitToGitHub } from './legacy/gitcommit.js';
 import { DEFAULT_SNAPSHOT } from './legacy/parser.js';  // does not actually use any legacy module code
 import { normalizePreview } from './legacy/preview.js'; // does not actually use any legacy module code
 
@@ -221,6 +222,44 @@ const openDesign = async ( xmlLoading, name, report, debug, sceneTitle ) =>
      } );
 }
 
+const exportPreview = ( camera, lighting ) =>
+{
+  const { scenes, ...rest } = design.rendered;
+  scenes[ 0 ] .camera = camera;
+  const rendered = { ...rest, scenes, lighting, format: 'online' };
+  return JSON.stringify( rendered, null, 2 );
+}
+
+const shareToGitHub = async ( name, text, camera, lighting, image, token, report ) =>
+{
+  const preview = exportPreview( camera, lighting );
+  importLegacy()
+    .then( module => {
+      const title = name + '.vZome';
+      const now = new Date() .toISOString();
+      const date = now .substring( 0, 10 );
+      const time = now .substring( 11 ) .replaceAll( ':', '-' ) .replaceAll( '.', '-' );
+      const shareData = new module .vzomePkg.core.exporters.GitHubShare( title, date, time, text, image, preview );
+
+      const uploads = [];
+      shareData .setEntryHandler( { addEntry: (path, data, encoding) => {
+        data && uploads .push( { path, encoding, data } );
+      } } );
+      const orgName = 'vorth'; // TODO
+      const repoName = 'vzome-sharing';
+      const branchName = 'main';
+      const gitUrl = shareData .generateContent( orgName, repoName, branchName, title, 'no description yet' );
+
+      commitToGitHub( token, uploads, name )
+      .then( () => {
+        report( { type: 'SHARE_SUCCESS', payload: gitUrl } );
+      })
+      .catch((error) => {
+        report( { type: 'SHARE_FAILURE', payload: error } );
+      });
+    });
+}
+
 const fileLoader = ( report, payload ) =>
 {
   const { file, debug=false } = payload;
@@ -387,6 +426,11 @@ onmessage = ({ data }) =>
         connectTrackballScene( postMessage );
         return;
       }
+      if ( action === 'shareToGitHub' ) {
+        const { name, text, camera, lighting, image, token, config } = parameters;
+        shareToGitHub( name, text, camera, lighting, image, token, postMessage );
+        return;
+      }
       if ( action === 'snapCamera' ) {
         const symmController = design.wrapper .getControllerByPath( controllerPath );
         const { up, lookDir } = parameters;
@@ -396,10 +440,8 @@ onmessage = ({ data }) =>
       }
       if ( action === 'exportText' && parameters.format === 'shapes' ) {
         const { camera, lighting } = parameters;
-        // TODO: replace the camera in the default scene
-        const rendered = { ...design.rendered, lighting, format: 'online' };
-        const text = JSON.stringify( rendered, null, 2 );
-        clientEvents( postMessage ) .textExported( action, text );
+        const preview = exportPreview( camera, lighting );
+        clientEvents( postMessage ) .textExported( action, preview );
         return;
       }
       try {

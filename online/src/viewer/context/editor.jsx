@@ -1,11 +1,13 @@
 
 import { createContext, createEffect, createSignal, useContext } from "solid-js";
-import { createStore } from "solid-js/store";
+import { createStore, unwrap } from "solid-js/store";
 
 import * as actions from '../util/actions.js';
 import { Guardrail } from "../guardrail.jsx";
 import { defaultCamera, useCamera } from "./camera.jsx";
 import { useWorkerClient } from "./worker.jsx";
+import { serializeVZomeXml } from "../util/serializer.js";
+import { useImageCapture } from "./export.jsx";
 
 const initialState = () => ( {
   copiedCamera: defaultCamera(), // TODO: this is probably too static, not related to useCamera
@@ -18,7 +20,8 @@ const useEditor = () => { return useContext( EditorContext ); };
 const EditorProvider = props =>
 {
   const workerClient = useWorkerClient();
-  const { resetCamera } = useCamera();
+  const { resetCamera, state: cameraState } = useCamera();
+  const { capturer } = useImageCapture();
   // Beware, createStore does not make a copy, shallow or deep!
   const [ state, setState ] = createStore( { ...initialState() } );
 
@@ -48,6 +51,16 @@ const EditorProvider = props =>
     // console.log( `FROM worker: ${JSON.stringify( data.type, null, 2 )}` );
 
     switch ( data.type ) {
+
+      case 'SHARE_SUCCESS': {
+        exportPromises[ 'shareToGitHub' ] .resolve( data.payload );
+        break;
+      }
+
+      case 'SHARE_FAILURE': {
+        exportPromises[ 'shareToGitHub' ] .reject( data.payload );
+        break;
+      }
 
       case 'TEXT_EXPORTED': {
         const { action, text } = data.payload;
@@ -122,10 +135,9 @@ const EditorProvider = props =>
 
   workerClient .subscribe( { onWorkerMessage, onWorkerError } );
 
-  const expectResponse = ( controllerPath, parameters ) =>
+  const expectResponse = ( controllerPath, action, parameters ) =>
   {
     return new Promise( ( resolve, reject ) => {
-      const action = "exportText";
       exportPromises[ action ] = { resolve, reject };
       workerClient .postMessage( actions.doControllerAction( controllerPath, action, parameters ) );
     } );
@@ -162,6 +174,32 @@ const EditorProvider = props =>
   const indexResources = () => workerClient .postMessage( { type: 'WINDOW_LOCATION', payload: window.location.toString() } );
 
   const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
+  
+  const shareToGitHub = ( token ) =>
+  {
+    const { capture } = capturer();  
+    const name = state?.designName || 'untitled';
+    return new Promise( ( resolve, reject ) =>
+    {
+      Promise.all( [
+        controllerExportAction( rootController(), 'vZome' ),
+        new Promise((resolve, _) => {
+          const reader = new FileReader();
+          reader .onloadend = () => resolve( reader.result );
+          capture( 'image/png', blob => reader .readAsDataURL( blob ) );
+        })
+      ] )
+        .then( ([ coreXml, imageDataUrl ]) => {
+          const image = imageDataUrl .substring( 22 ); // remove "data:image/png;base64,"
+          const { camera, lighting } = unwrap( cameraState );
+          const text = serializeVZomeXml( coreXml, lighting, camera );
+          expectResponse( '', 'shareToGitHub', { token, name, text, image, camera, lighting } )
+            .then( url => resolve( url ) )
+            .catch( error => reject( error ) );
+        })
+        .catch( error => reject( error ) );
+    } );
+  }
 
   const providerValue = {
     ...store,
@@ -169,6 +207,7 @@ const EditorProvider = props =>
     rootController,
     indexResources,
     controllerAction,
+    shareToGitHub,
     createDesign,
     openDesignFile: ( file, debug )  => workerClient .postMessage( actions.openDesignFile( file, debug ) ),
     fetchDesignUrl: ( url, config )  => workerClient .postMessage( actions.fetchDesign( url, config ) ),
@@ -219,7 +258,7 @@ const controllerExportAction = ( controller, format, parameters={} ) =>
 {
   const controllerPath = controller.__path .join( ':' );
   parameters.format = format;
-  return controller.__store .expectResponse( controllerPath, parameters );
+  return controller.__store .expectResponse( controllerPath, "exportText", parameters );
 }
 
 export { EditorProvider, useEditor, subController, controllerProperty, controllerExportAction };
