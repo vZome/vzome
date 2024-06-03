@@ -9,7 +9,7 @@ export const CameraMode = () =>
   const { togglePerspective, state } = useCamera();
 
   return (
-    <div style={ { position: 'absolute', top: '1em', right: '1em' } }>
+    <div class='perspective_toggle' >
       <Switch.Root checked={state.camera.perspective} onChange={togglePerspective}>
         <Switch.Label class="switch__label">perspective</Switch.Label>
         <Switch.Input class="switch__input" />
