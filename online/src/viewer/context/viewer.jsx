@@ -1,6 +1,6 @@
 
 import { createContext, createSignal, useContext } from "solid-js";
-import { createStore, reconcile } from "solid-js/store";
+import { createStore, reconcile, unwrap } from "solid-js/store";
 
 import { useWorkerClient } from "./worker.jsx";
 import { useCamera } from "./camera.jsx";
@@ -63,6 +63,10 @@ const ViewerProvider = ( props ) =>
     })
   }
 
+  subscribeFor( 'SYMMETRY_CHANGED', ( { orientations } ) => {
+    setScene( 'orientations', reconcile( orientations ) );
+  });
+
   subscribeFor( 'SCENES_DISCOVERED', ( payload ) => {
     const newScenes = payload .map( scene => {
       return { ...scene, title: decodeEntities( scene.title ) }
@@ -86,13 +90,15 @@ const ViewerProvider = ( props ) =>
   } );
 
   subscribeFor( 'SHAPE_DEFINED', ( shape ) => {
-    addShape( shape );
+    addShape( { ...shape, instances: [] } );
     // logShapes();
   } );
 
   subscribeFor( 'INSTANCE_ADDED', ( instance ) => {
-    const shape = scene.shapes[ instance.shapeId ];
-    setScene( 'shapes', shape.id, 'instances', [ ...shape.instances, instance ] );
+    const { shapeId, orientation } = instance;
+    const shape = scene.shapes[ shapeId ];
+    const rotation = unwrap( scene.orientations[ (orientation < 0)? 0 : orientation ] );
+    setScene( 'shapes', shape.id, 'instances', [ ...shape.instances, { ...instance, rotation } ] );
     // logShapes();
   } );
   

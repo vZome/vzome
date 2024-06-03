@@ -192,7 +192,7 @@ export const FileMenu = () =>
         <SubMenu label="Export 3D Rendering">
           <ExportItem label="Collada DAE" ext="dae" mime="text/plain" disabled={true} />
           <ExportItem label="POV-Ray" ext="pov" mime="text/plain" disabled={true} />
-          <ExportItem label="vZome Shapes JSON" ext="shapes" mime="text/plain" disabled={true} />
+          <ExportItem label="vZome Shapes JSON" format="shapes" ext="shapes.json" mime="application/json" />
           <ExportItem label="VRML" ext="vrml" mime="text/plain" />
         </SubMenu>
         <SubMenu label="Export 3D Panels">
@@ -201,7 +201,7 @@ export const FileMenu = () =>
           <ExportItem label="PLY" ext="ply" mime="text/plain" />
         </SubMenu>
         <SubMenu label="Export 3D Points & Lines">
-          <ExportItem label="Simple Mesh JSON" format="mesh" ext="mesh.json" mime="text/plain" />
+          <ExportItem label="Simple Mesh JSON" format="mesh" ext="mesh.json" mime="application/json" />
           <ExportItem label="Color Mesh JSON" format="cmesh" ext="cmesh.json" mime="application/json" />
           <ExportItem label="AutoCAD DXF" ext="dxf" mime="text/plain" />
         </SubMenu>

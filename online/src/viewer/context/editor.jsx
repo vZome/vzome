@@ -100,7 +100,6 @@ const EditorProvider = props =>
       case 'SYMMETRY_CHANGED':
       case 'DESIGN_XML_PARSED':
       case 'LAST_BALL_CREATED':
-      case 'DESIGN_XML_SAVED':
       case 'INSTANCE_ADDED':
       case 'INSTANCE_REMOVED':
       case 'FETCH_STARTED':

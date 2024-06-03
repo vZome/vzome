@@ -139,7 +139,7 @@ export class RenderHistory
     this.design .batchRender( this ); // will make many callbacks to manifestationAdded()
   }
 
-  getScene( editId, before=false )
+  getSnapshot( editId, before=false )
   {
     this .setError( null );
     const shapes = {};
@@ -159,14 +159,14 @@ export class RenderHistory
       editId = before? '--END--' : this.lastEdit;
       snapshot = before? this.shapshotsBefore[ editId ] : this.snapshotsAfter[ editId ];
     }
-    for ( const instance of snapshot ) {
-      const shapeId = instance.shapeId;
-      if ( ! shapes[ shapeId ] ) {
-        shapes[ shapeId ] = { ...this.shapes[ shapeId ], instances: [] };
-      }
-      shapes[ shapeId ] .instances .push( instance );
-    }
-    return { shapes, edit: editId };
+    // for ( const instance of snapshot ) {
+    //   const shapeId = instance.shapeId;
+    //   if ( ! shapes[ shapeId ] ) {
+    //     shapes[ shapeId ] = { ...this.shapes[ shapeId ], instances: [] };
+    //   }
+    //   shapes[ shapeId ] .instances .push( instance );
+    // }
+    return snapshot;
   }
 
   getShapes()

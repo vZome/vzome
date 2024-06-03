@@ -73,11 +73,8 @@ const parseViewXml = ( viewingElement ) =>
   return camera;
 }
 
-const parseArticle = ( notesElement, xmlTree ) =>
+const findSnapshotNodes = ( xmlTree ) =>
 {
-  if ( !notesElement )
-    return [];
-
   const snapshotNodes = [];
   const findSnapshots = ( txmlElement ) =>
   {
@@ -93,17 +90,26 @@ const parseArticle = ( notesElement, xmlTree ) =>
     }
   }
   findSnapshots( xmlTree );
+  return snapshotNodes;
+}
+
+const parseArticle = ( notesElement ) =>
+{
+  if ( !notesElement )
+    return [];
+
   const parseArticlePage = ( pageElement ) =>
   {
     const { snapshot, title } = pageElement.attributes;
-    const nodeId = snapshotNodes[ snapshot ];
     const camera = parseViewXml( new JavaDomElement( pageElement ) );
-    return { title, nodeId, camera };
+    return { title, snapshot, camera };
   }
   return notesElement.nativeElement.children.map( pageElement => parseArticlePage( pageElement ) )
           // Early vZome files always had a default article with one explanatory page
           .filter( snapshot => snapshot.title !== "How to save notes" );
 }
+
+export const DEFAULT_SNAPSHOT = -1;
 
 export const createParser = ( documentFactory ) => ( xmlText ) =>
 {
@@ -128,8 +134,9 @@ export const createParser = ( documentFactory ) => ( xmlText ) =>
   const targetEditId = `:${edits.getAttribute( "editNumber" )}:`
   const firstEdit = edits.firstChild()
 
-  const realScenes = parseArticle( vZomeRoot.getChildElement( "notes" ), xmlTree );
-  const scenes = [ { title: 'default scene', nodeId: targetEditId, camera }, ...realScenes ];
+  const snapshotNodes = [ ...findSnapshotNodes( xmlTree ), targetEditId ]; // The extra snapshot is discarded later
+  const realScenes = parseArticle( vZomeRoot.getChildElement( "notes" ) );
+  const scenes = [ { title: 'default scene', camera, snapshot: DEFAULT_SNAPSHOT }, ...realScenes ];
 
-  return { ...design, firstEdit, camera, targetEditId, lighting, xmlTree, scenes }
+  return { ...design, firstEdit, lighting, xmlTree, scenes, snapshotNodes }
 }

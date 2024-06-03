@@ -57,7 +57,7 @@ export const CameraControls = (props) =>
     }
   }
 
-  subscribeFor( 'TRACKBALL_SCENE_LOADED', ( { scene } ) => {
+  subscribeFor( 'TRACKBALL_SCENE_LOADED', ( scene ) => {
     if ( scene.camera ) {
       const { lookAt, distance, near, far, width } = state.camera;  // This looks circular, but it is not reactive code.
       // Ignore the rotation from the loaded scene.
