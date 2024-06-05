@@ -6,7 +6,6 @@ import * as actions from '../util/actions.js';
 import { Guardrail } from "../guardrail.jsx";
 import { defaultCamera, useCamera } from "./camera.jsx";
 import { useWorkerClient } from "./worker.jsx";
-import { serializeVZomeXml } from "../util/serializer.js";
 import { useImageCapture } from "./export.jsx";
 
 const initialState = () => ( {
@@ -175,25 +174,22 @@ const EditorProvider = props =>
 
   const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
   
-  const shareToGitHub = ( token ) =>
+  const shareToGitHub = ( target, config ) =>
   {
     const { capture } = capturer();  
     const name = state?.designName || 'untitled';
     return new Promise( ( resolve, reject ) =>
     {
-      Promise.all( [
-        controllerExportAction( rootController(), 'vZome' ),
-        new Promise((resolve, _) => {
-          const reader = new FileReader();
-          reader .onloadend = () => resolve( reader.result );
-          capture( 'image/png', blob => reader .readAsDataURL( blob ) );
-        })
-      ] )
-        .then( ([ coreXml, imageDataUrl ]) => {
+      new Promise((resolve, _) => {
+        const reader = new FileReader();
+        reader .onloadend = () => resolve( reader.result );
+        capture( 'image/png', blob => reader .readAsDataURL( blob ) );
+      })
+        .then( ( imageDataUrl ) => {
           const image = imageDataUrl .substring( 22 ); // remove "data:image/png;base64,"
-          const { camera, lighting } = unwrap( cameraState );
-          const text = serializeVZomeXml( coreXml, lighting, camera );
-          expectResponse( '', 'shareToGitHub', { token, name, text, image, camera, lighting } )
+          const camera   = unwrap( cameraState.camera );
+          const lighting = unwrap( cameraState.lighting );
+          expectResponse( '', 'shareToGitHub', { target, config, data: { name, image, camera, lighting } } )
             .then( url => resolve( url ) )
             .catch( error => reject( error ) );
         })

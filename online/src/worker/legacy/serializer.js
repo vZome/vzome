@@ -1,5 +1,6 @@
 
 import { REVISION } from '../../revision.js';
+import { JavaDomDocument } from './dom.js';
 
 const asIndentedText = ( element, indentation ) =>
 {
@@ -21,13 +22,6 @@ const asIndentedText = ( element, indentation ) =>
   }
   result += indentation + "</" + element.localName + ">\n";
   return result;
-}
-
-const format = ( element ) =>
-{
-  const indented = asIndentedText( element, "" );
-  const parser = new DOMParser();
-  return parser .parseFromString( indented, "text/xml" ) .documentElement;
 }
 
 const serializeLighting = ( lighting, doc ) =>
@@ -88,22 +82,17 @@ const serializeCamera = ( camera, doc ) =>
   return viewing;
 }
 
-export const serializeVZomeXml = ( xmlStr, lighting, camera ) =>
+export const serializeVZomeXml = ( legacyDesign, lighting, camera ) =>
 {
-  const parser = new DOMParser();
-  const doc = parser .parseFromString( xmlStr, "application/xml" );
+  const doc = new JavaDomDocument();
 
-  const rootElement = doc .documentElement;
-  const field = rootElement .getAttribute( 'field' );
-
-  const children = rootElement .childNodes;
-
-  const newRoot = document .createElementNS( 'http://xml.vzome.com/vZome/4.0.0/', 'vzome:vZome' );
-  newRoot .setAttribute( 'field', field );
+  const newRoot = doc .createElement( 'vzome:vZome' );
+  newRoot .setAttribute( 'xmlns:vzome', 'http://xml.vzome.com/vZome/4.0.0/' );
   newRoot .setAttribute( 'edition', 'online' );
   newRoot .setAttribute( 'version', '1.0' );
   newRoot .setAttribute( 'buildNumber', REVISION );
-  newRoot .replaceChildren( ...children );
+
+  legacyDesign .serializeToDom( doc, newRoot );
 
   const sceneModel = serializeLighting( lighting, doc );
 
@@ -111,15 +100,8 @@ export const serializeVZomeXml = ( xmlStr, lighting, camera ) =>
   camera .far = camera .distance * frustumRatio;
   const viewing = serializeCamera( camera, doc );
 
-  const justToFormat = doc .createElement( "justToFormat" );
-  justToFormat .appendChild( sceneModel );
-  justToFormat .appendChild( viewing );
+  newRoot .appendChild( sceneModel );
+  newRoot .appendChild( viewing );
 
-  const newKids = format( justToFormat ) .childNodes;
-  newRoot .append( ...newKids );
-
-  rootElement .replaceWith( newRoot );
-
-  const serializer = new XMLSerializer();
-  return '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + serializer .serializeToString( doc );
+  return '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + newRoot .toIndentedString( '' );
 }

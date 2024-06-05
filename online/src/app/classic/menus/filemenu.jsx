@@ -3,7 +3,6 @@ import { createEffect, createSignal, mergeProps, onMount } from "solid-js";
 import { unwrap } from "solid-js/store";
 
 import { controllerExportAction, controllerProperty, useEditor } from "../../../viewer/context/editor.jsx";
-import { serializeVZomeXml } from '../../../viewer/util/serializer.js';
 import { saveFileAs, openFile, saveTextFileAs, saveTextFile } from "../../../viewer/util/files.js";
 
 import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
@@ -119,15 +118,15 @@ export const FileMenu = () =>
   const doSave = ( chooseFile = false ) =>
   {
     let name;
-    controllerExportAction( rootController(), 'vZome' )
+    const { camera, lighting } = unwrap( cameraState );
+    controllerExportAction( rootController(), 'vZome', { camera, lighting } )
       .then( text => {
         name = state?.designName || 'untitled';
-        const fullText = serializeVZomeXml( text, cameraState.lighting, {...cameraState.camera} );
         const mimeType = 'application/xml';
         if ( state.fileHandle && !chooseFile )
-          return saveTextFile( state.fileHandle, fullText, mimeType )
+          return saveTextFile( state.fileHandle, text, mimeType )
         else
-          return saveTextFileAs( name + '-ONLINE.vZome', fullText, mimeType );
+          return saveTextFileAs( name + '-ONLINE.vZome', text, mimeType );
       })
       .then( result => {
         const { handle, success } = result;

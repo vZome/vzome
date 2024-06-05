@@ -611,14 +611,8 @@ const makeFloatMatrices = ( matrices ) =>
       RM.renderChange( new RM( null, null ), renderedModel, renderingListener );
     }
 
-    const serializeToDom = () =>
+    const serializeToDom = ( doc, root ) =>
     {
-      const doc = new JavaDomDocument();
-
-      // This is not meant to be the traditional "vzome:vZome" root element,
-      //   since the camera and lighting state are not managed here in the worker.
-      //   Furthermore, the main app should control the root attributes.
-      const root = doc .createElement( "design" );
       root .setAttribute( "field", field.name );
 
       let childElement;
@@ -662,14 +656,15 @@ const makeFloatMatrices = ( matrices ) =>
 
       childElement = toolsModel .getXml( doc );
       root .appendChild( childElement );
-
-      return root;
     }
 
     const getOrbitSource = () => orbitSource;
 
     return { interpretEdit, configureAndPerformEdit, batchRender, serializeToDom, setSymmetrySystem, getSymmetrySystem, getChangeCount,
       getOrbitSource, getBall,
+      snapshotNodes: [ '--END--' ],
+      scenes: [],
+      camera: {},
       editor,
       field, legacyField, fieldApp,
       renderedModel, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };

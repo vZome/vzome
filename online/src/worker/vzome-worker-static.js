@@ -1,10 +1,9 @@
 
 import { resourceIndex, importLegacy, importZomic } from '../revision.js';
 import { commitToGitHub } from './legacy/gitcommit.js';
-import { DEFAULT_SNAPSHOT } from './legacy/parser.js';  // does not actually use any legacy module code
 import { normalizePreview } from './legacy/preview.js'; // does not actually use any legacy module code
 
-const uniqueId = Math.random();
+// const uniqueId = Math.random();
 
 // support trampolining to work around worker CORS issue
 //   see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
@@ -15,6 +14,15 @@ let baseURL;
 let design = {}
 
 const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
+
+export const DEFAULT_SNAPSHOT = -1;
+
+// Normalize legacy scenes to match preview scenes
+const prepareDefaultScene = design =>
+{
+  const camera = design.rendered.camera;
+  design.rendered.scenes .splice( 0, 0, { title: 'default scene', camera, snapshot: DEFAULT_SNAPSHOT } );
+}
 
 // Take a normalized scene and prepare it to send to the client, by
 //   resolving the shapes and snapshot
@@ -147,6 +155,7 @@ const fetchTrackballScene = ( url, report ) =>
   Promise.all( [ importLegacy(), fetchUrlText( new URL( `./resources/${url}`, baseURL ) ) ] )
     .then( ([ legacy, xml ]) => {
       const trackballDesign = legacy .loadDesign( xml, false, clientEvents( ()=>{} ) );
+      prepareDefaultScene( trackballDesign );
       const scene = prepareSceneResponse( trackballDesign, 0 ); // takes a normalized scene
       trackballScenes[ url ] = scene;
       reportTrackballScene( scene );
@@ -171,6 +180,7 @@ const createDesign = async ( report, fieldName ) =>
     const legacy = await importLegacy();
     report({ type: 'CONTROLLER_CREATED' }); // do we really need this for previewing?
     design = legacy .newDesign( fieldName, clientEvents( report ) );
+    prepareDefaultScene( design );
     reportDefaultScene( report );
   } catch (error) {
     console.log(`createDesign failure: ${error.message}`);
@@ -192,6 +202,7 @@ const openDesign = async ( xmlLoading, name, report, debug, sceneTitle ) =>
       const doLoad = () => {
         report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
         design = legacy .loadDesign( xml, debug, events );
+        prepareDefaultScene( design );
 
         // TODO: don't duplicate this in urlLoader()
         const sceneIndex = sceneTitle? getSceneIndex( sceneTitle, design.rendered.scenes ) : 0;
@@ -230,27 +241,28 @@ const exportPreview = ( camera, lighting ) =>
   return JSON.stringify( rendered, null, 2 );
 }
 
-const shareToGitHub = async ( name, text, camera, lighting, image, token, report ) =>
+const shareToGitHub = async ( target, config, data, report ) =>
 {
+  const { token, orgName, repoName, branchName } = target;
+  const { blog=false, publish=false, style='indexed' } = config;
+  const { name, camera, lighting, image } = data;
   const preview = exportPreview( camera, lighting );
   importLegacy()
     .then( module => {
+      const xml = design.wrapper .serializeVZomeXml( lighting, camera );
       const title = name + '.vZome';
       const now = new Date() .toISOString();
       const date = now .substring( 0, 10 );
       const time = now .substring( 11 ) .replaceAll( ':', '-' ) .replaceAll( '.', '-' );
-      const shareData = new module .vzomePkg.core.exporters.GitHubShare( title, date, time, text, image, preview );
+      const shareData = new module .vzomePkg.core.exporters.GitHubShare( title, date, time, xml, image, preview );
 
       const uploads = [];
       shareData .setEntryHandler( { addEntry: (path, data, encoding) => {
         data && uploads .push( { path, encoding, data } );
       } } );
-      const orgName = 'vorth'; // TODO
-      const repoName = 'vzome-sharing';
-      const branchName = 'main';
-      const gitUrl = shareData .generateContent( orgName, repoName, branchName, title, 'no description yet' );
+      const gitUrl = shareData .generateContent( orgName, repoName, branchName, title, 'no description yet', blog, publish, style );
 
-      commitToGitHub( token, uploads, name )
+      commitToGitHub( target, uploads, `Online share - ${name}` )
       .then( () => {
         report( { type: 'SHARE_SUCCESS', payload: gitUrl } );
       })
@@ -427,8 +439,8 @@ onmessage = ({ data }) =>
         return;
       }
       if ( action === 'shareToGitHub' ) {
-        const { name, text, camera, lighting, image, token, config } = parameters;
-        shareToGitHub( name, text, camera, lighting, image, token, postMessage );
+        const { target, config, data } = parameters;
+        shareToGitHub( target, config, data, postMessage );
         return;
       }
       if ( action === 'snapCamera' ) {
