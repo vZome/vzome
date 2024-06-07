@@ -355,6 +355,24 @@ public class ShareController extends DefaultController
     }
 
     @Override
+    public void setModelProperty( String name, Object value )
+    {
+        switch (name) {
+        
+        case "title":
+            this.title = (String) value;
+            break;
+
+        case "description":
+            this.description = (String) value;
+            break;
+
+        default:
+            super.setModelProperty( name, value );
+        }
+    }
+
+    @Override
     protected void doAction( String action ) throws Exception
     {
         if ( "startShare" .equals( action ) ) {

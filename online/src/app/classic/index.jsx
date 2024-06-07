@@ -50,8 +50,8 @@ const Classic = () =>
       <WorkerStateProvider>
       <CameraProvider name='common'>
       <ImageCaptureProvider>
-      <EditorProvider>
       <ViewerProvider config={{ labels: true }}>
+      <EditorProvider>
         <SymmetryProvider>
           <VZomeAppBar title='BETA'
             spacer={ <>
@@ -84,8 +84,8 @@ const Classic = () =>
           />
           <ClassicEditor/>
         </SymmetryProvider>
-      </ViewerProvider>
       </EditorProvider>
+      </ViewerProvider>
       </ImageCaptureProvider>
       </CameraProvider>
       </WorkerStateProvider>

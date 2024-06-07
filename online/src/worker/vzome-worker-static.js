@@ -29,7 +29,11 @@ const prepareDefaultScene = design =>
 // TODO: change the client contract to avoid sending shapes and rotation matrices all the time!
 const prepareSceneResponse = ( design, sceneIndex ) =>
 {
-  const scene = { ...design.rendered.scenes[ sceneIndex ] };
+  let scene = { ...design.rendered.scenes[ sceneIndex ] };
+  if ( ! scene.snapshot ) {
+    console.log( `warning: no scene with index ${sceneIndex}` );
+    scene = { ...design.rendered.scenes[ 0 ] };
+  }
   const { title, snapshot, camera } = scene;
   const { embedding, polygons, instances, snapshots, orientations } = design.rendered;
   const sceneInstances = ( snapshot === DEFAULT_SNAPSHOT )? instances : snapshots[ snapshot ];
@@ -243,14 +247,13 @@ const exportPreview = ( camera, lighting ) =>
 
 const shareToGitHub = async ( target, config, data, report ) =>
 {
-  const { token, orgName, repoName, branchName } = target;
-  const { blog=false, publish=false, style='indexed' } = config;
+  const { orgName, repoName, branchName } = target;
+  const { title, description, blog, publish, style } = config;
   const { name, camera, lighting, image } = data;
   const preview = exportPreview( camera, lighting );
   importLegacy()
     .then( module => {
       const xml = design.wrapper .serializeVZomeXml( lighting, camera );
-      const title = name + '.vZome';
       const now = new Date() .toISOString();
       const date = now .substring( 0, 10 );
       const time = now .substring( 11 ) .replaceAll( ':', '-' ) .replaceAll( '.', '-' );
@@ -260,14 +263,17 @@ const shareToGitHub = async ( target, config, data, report ) =>
       shareData .setEntryHandler( { addEntry: (path, data, encoding) => {
         data && uploads .push( { path, encoding, data } );
       } } );
-      const gitUrl = shareData .generateContent( orgName, repoName, branchName, title, 'no description yet', blog, publish, style );
+      const gitUrl = shareData .generateContent( orgName, repoName, branchName, title, description, blog, publish, style );
 
       commitToGitHub( target, uploads, `Online share - ${name}` )
       .then( () => {
         report( { type: 'SHARE_SUCCESS', payload: gitUrl } );
       })
       .catch((error) => {
-        report( { type: 'SHARE_FAILURE', payload: error } );
+        if ( error.message .includes( 'Update is not a fast forward' ) )
+          report( { type: 'SHARE_FAILURE', payload: 'You are sharing too frequently; wait a minute and try again.' } );
+        else
+          report( { type: 'SHARE_FAILURE', payload: error.message } );
       });
     });
 }

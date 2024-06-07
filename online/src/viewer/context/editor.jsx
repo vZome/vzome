@@ -9,6 +9,11 @@ import { useWorkerClient } from "./worker.jsx";
 import { useImageCapture } from "./export.jsx";
 
 const initialState = () => ( {
+  sharing: {
+    title: 'untitled',
+    description: 'A 3D design created in vZome.  Use your mouse or touch to interact.',
+    style: 'none',
+  },
   copiedCamera: defaultCamera(), // TODO: this is probably too static, not related to useCamera
 } );
 
@@ -67,12 +72,13 @@ const EditorProvider = props =>
         break;
       }
 
-      case 'TEXT_FETCHED': { // we receive this event twice per fetch
+      case 'TEXT_FETCHED': { // we receive this event twice per fetch?
         let { name } = data.payload;
         if ( name && name .endsWith( '.vZome' ) ) {
           if ( !state.ignoreDesignName ) {
             name = name .substring( 0, name.length - 6 );
             setState( 'designName', name ); // cooperatively managed by both worker and client
+            setState( 'sharing', { title: name .replaceAll( '-', ' ' ) } );
             setState( 'ignoreDesignName', false );  // always reset to use the next name; see app/classic/menus/help.jsx
           }
         }
@@ -174,10 +180,11 @@ const EditorProvider = props =>
 
   const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
   
-  const shareToGitHub = ( target, config ) =>
+  const shareToGitHub = ( target, blog, publish ) =>
   {
     const { capture } = capturer();  
     const name = state?.designName || 'untitled';
+    const config = { ...unwrap( state.sharing ), blog, publish };
     return new Promise( ( resolve, reject ) =>
     {
       new Promise((resolve, _) => {

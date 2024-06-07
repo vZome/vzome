@@ -49,8 +49,8 @@ const Online = () =>
     <ErrorBoundary fallback={err => err}>
       <CameraProvider>
       <WorkerStateProvider>
-      <EditorProvider>
       <ViewerProvider config={config}>
+      <EditorProvider>
         <VZomeAppBar title={ 'Viewer' } showOpen={true}
           about={
             <>
@@ -74,8 +74,8 @@ const Online = () =>
           <DesignViewer config={ { useSpinner: true } } />
         : <DesignHistoryInspector/> } */}
         <DesignViewer height="100%" width="100%" config={ { useSpinner: true, showScenes: 'named' } } />
-      </ViewerProvider>
       </EditorProvider>
+      </ViewerProvider>
       </WorkerStateProvider>
       </CameraProvider>
     </ErrorBoundary>

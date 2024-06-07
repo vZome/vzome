@@ -90,8 +90,13 @@ public class GitHubShare
             viewerParameters = "indexed='true'";
             break;
         }
-        case "menu": {
+        case "menu":
+        case "menu (named)": {
             viewerParameters = "show-scenes='named'";
+            break;
+        }
+        case "menu (all)": {
+            viewerParameters = "show-scenes='all'";
             break;
         }
         case "javascript": {
@@ -122,10 +127,13 @@ public class GitHubShare
         String indexSrcUrl = repoUrl + "/edit/" + branchName + "/" + assetPath + "index.md";
         // e.g. https://github.com/vorth/vzome-sharing/edit/main/_posts/2021-11-29-sample-vZome-share-08-01-41.md
                     
+        String descriptionClean = description .replace( '\n', ' ' ) .replace( '\r', ' ' );
+
         // Always generate a shareable page for the vZome user to use, not discoverable
         String indexTemplate = ResourceLoader.loadStringResource( "com/vzome/core/exporters/github/indexTemplate.md" );
         String indexMd = indexTemplate
                 .replace( "${title}", title )
+                .replace( "${description}", descriptionClean )
                 .replace( "${siteUrl}", siteUrl )
                 .replace( "${imagePath}", imagePath )
                 .replace( "${designPath}", designPath )
@@ -166,12 +174,10 @@ public class GitHubShare
              * Jekyll, and these properties specifically are defined by the Jekyll SEO plugin.
              *    https://github.com/jekyll/jekyll-seo-tag/tree/master/docs
              * This guarantees good OpenGraph metadata for embedding in social media.
-             * TODO: let the user define a description (and a title).
              * See also:
              *    https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll
              *    https://jekyllrb.com/
              */
-            String descriptionClean = description .replace( '\n', ' ' ) .replace( '\r', ' ' );
             String postTemplate = ResourceLoader.loadStringResource( "com/vzome/core/exporters/github/postTemplate.md" );
             String postMd = postTemplate
                     .replace( "${title}", title )

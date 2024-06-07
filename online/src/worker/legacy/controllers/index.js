@@ -75,7 +75,7 @@ export const snapCamera = ( symmController, upArray, lookArray ) =>
 
 const initializeDesign = ( loading, legacyDesign, clientEvents ) =>
 {
-  const { lighting, scenes, snapshotNodes } = legacyDesign;
+  const { lighting, camera, scenes, snapshotNodes } = legacyDesign;
   const renderHistory = new RenderHistory( legacyDesign );                                     // used for all normal rendering
   const renderingChanges = renderedModelTransducer( renderHistory.getShapes(), clientEvents ); // used only for preview struts
 
@@ -111,7 +111,7 @@ const initializeDesign = ( loading, legacyDesign, clientEvents ) =>
 
   wrapper.serializeVZomeXml = ( camera, lighting ) => serializeVZomeXml( legacyDesign, camera, lighting );
 
-  const rendered = { lighting, embedding, orientations, polygons: true, shapes, instances, snapshots, scenes };
+  const rendered = { lighting, camera, embedding, orientations, polygons: true, shapes, instances, snapshots, scenes };
   return { wrapper, rendered };
 }
 

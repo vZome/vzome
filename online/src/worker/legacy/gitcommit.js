@@ -19,10 +19,11 @@ export const commitToGitHub = async ( target, uploads, commitMessage ) =>
   // There are other ways to authenticate, check https://developer.github.com/v3/#authentication
   const octo = new Octokit( { auth: token } );
 
-  const pathsForBlobs = uploads .map( ( { path } ) => path );
-  const filesBlobs = await Promise.all( uploads .map( ( { encoding, data} ) => createBlobForFile( octo, orgName, repoName )( data, encoding ) ) );
   // gets commit's SHA and its tree's SHA
   const currentCommit = await getCurrentCommit( octo, orgName, repoName, branchName )
+
+  const pathsForBlobs = uploads .map( ( { path } ) => path );
+  const filesBlobs = await Promise.all( uploads .map( ( { encoding, data} ) => createBlobForFile( octo, orgName, repoName )( data, encoding ) ) );
   const newTree = await createNewTree(
     octo,
     orgName, repoName,
