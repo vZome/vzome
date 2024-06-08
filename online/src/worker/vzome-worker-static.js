@@ -1,9 +1,9 @@
 
 import { resourceIndex, importLegacy, importZomic } from '../revision.js';
-import { DEFAULT_SNAPSHOT } from './legacy/parser.js';  // does not actually use any legacy module code
+import { commitToGitHub } from './legacy/gitcommit.js';
 import { normalizePreview } from './legacy/preview.js'; // does not actually use any legacy module code
 
-const uniqueId = Math.random();
+// const uniqueId = Math.random();
 
 // support trampolining to work around worker CORS issue
 //   see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
@@ -15,12 +15,25 @@ let design = {}
 
 const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
 
+export const DEFAULT_SNAPSHOT = -1;
+
+// Normalize legacy scenes to match preview scenes
+const prepareDefaultScene = design =>
+{
+  const camera = design.rendered.camera;
+  design.rendered.scenes .splice( 0, 0, { title: 'default scene', camera, snapshot: DEFAULT_SNAPSHOT } );
+}
+
 // Take a normalized scene and prepare it to send to the client, by
 //   resolving the shapes and snapshot
 // TODO: change the client contract to avoid sending shapes and rotation matrices all the time!
 const prepareSceneResponse = ( design, sceneIndex ) =>
 {
-  const scene = { ...design.rendered.scenes[ sceneIndex ] };
+  let scene = { ...design.rendered.scenes[ sceneIndex ] };
+  if ( ! scene.snapshot ) {
+    console.log( `warning: no scene with index ${sceneIndex}` );
+    scene = { ...design.rendered.scenes[ 0 ] };
+  }
   const { title, snapshot, camera } = scene;
   const { embedding, polygons, instances, snapshots, orientations } = design.rendered;
   const sceneInstances = ( snapshot === DEFAULT_SNAPSHOT )? instances : snapshots[ snapshot ];
@@ -146,6 +159,7 @@ const fetchTrackballScene = ( url, report ) =>
   Promise.all( [ importLegacy(), fetchUrlText( new URL( `./resources/${url}`, baseURL ) ) ] )
     .then( ([ legacy, xml ]) => {
       const trackballDesign = legacy .loadDesign( xml, false, clientEvents( ()=>{} ) );
+      prepareDefaultScene( trackballDesign );
       const scene = prepareSceneResponse( trackballDesign, 0 ); // takes a normalized scene
       trackballScenes[ url ] = scene;
       reportTrackballScene( scene );
@@ -170,6 +184,7 @@ const createDesign = async ( report, fieldName ) =>
     const legacy = await importLegacy();
     report({ type: 'CONTROLLER_CREATED' }); // do we really need this for previewing?
     design = legacy .newDesign( fieldName, clientEvents( report ) );
+    prepareDefaultScene( design );
     reportDefaultScene( report );
   } catch (error) {
     console.log(`createDesign failure: ${error.message}`);
@@ -191,6 +206,7 @@ const openDesign = async ( xmlLoading, name, report, debug, sceneTitle ) =>
       const doLoad = () => {
         report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
         design = legacy .loadDesign( xml, debug, events );
+        prepareDefaultScene( design );
 
         // TODO: don't duplicate this in urlLoader()
         const sceneIndex = sceneTitle? getSceneIndex( sceneTitle, design.rendered.scenes ) : 0;
@@ -219,6 +235,47 @@ const openDesign = async ( xmlLoading, name, report, debug, sceneTitle ) =>
       console.log( `openDesign failure: ${error.message}` );
       report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model: ${error.message}` } );
      } );
+}
+
+const exportPreview = ( camera, lighting ) =>
+{
+  const { scenes, ...rest } = design.rendered;
+  scenes[ 0 ] .camera = camera;
+  const rendered = { ...rest, scenes, lighting, format: 'online' };
+  return JSON.stringify( rendered, null, 2 );
+}
+
+const shareToGitHub = async ( target, config, data, report ) =>
+{
+  const { orgName, repoName, branchName } = target;
+  const { title, description, blog, publish, style } = config;
+  const { name, camera, lighting, image } = data;
+  const preview = exportPreview( camera, lighting );
+  importLegacy()
+    .then( module => {
+      const xml = design.wrapper .serializeVZomeXml( lighting, camera );
+      const now = new Date() .toISOString();
+      const date = now .substring( 0, 10 );
+      const time = now .substring( 11 ) .replaceAll( ':', '-' ) .replaceAll( '.', '-' );
+      const shareData = new module .vzomePkg.core.exporters.GitHubShare( title, date, time, xml, image, preview );
+
+      const uploads = [];
+      shareData .setEntryHandler( { addEntry: (path, data, encoding) => {
+        data && uploads .push( { path, encoding, data } );
+      } } );
+      const gitUrl = shareData .generateContent( orgName, repoName, branchName, title, description, blog, publish, style );
+
+      commitToGitHub( target, uploads, `Online share - ${name}` )
+      .then( () => {
+        report( { type: 'SHARE_SUCCESS', payload: gitUrl } );
+      })
+      .catch((error) => {
+        if ( error.message .includes( 'Update is not a fast forward' ) )
+          report( { type: 'SHARE_FAILURE', payload: 'You are sharing too frequently; wait a minute and try again.' } );
+        else
+          report( { type: 'SHARE_FAILURE', payload: error.message } );
+      });
+    });
 }
 
 const fileLoader = ( report, payload ) =>
@@ -387,6 +444,11 @@ onmessage = ({ data }) =>
         connectTrackballScene( postMessage );
         return;
       }
+      if ( action === 'shareToGitHub' ) {
+        const { target, config, data } = parameters;
+        shareToGitHub( target, config, data, postMessage );
+        return;
+      }
       if ( action === 'snapCamera' ) {
         const symmController = design.wrapper .getControllerByPath( controllerPath );
         const { up, lookDir } = parameters;
@@ -396,10 +458,8 @@ onmessage = ({ data }) =>
       }
       if ( action === 'exportText' && parameters.format === 'shapes' ) {
         const { camera, lighting } = parameters;
-        // TODO: replace the camera in the default scene
-        const rendered = { ...design.rendered, lighting, format: 'online' };
-        const text = JSON.stringify( rendered, null, 2 );
-        clientEvents( postMessage ) .textExported( action, text );
+        const preview = exportPreview( camera, lighting );
+        clientEvents( postMessage ) .textExported( action, preview );
         return;
       }
       try {

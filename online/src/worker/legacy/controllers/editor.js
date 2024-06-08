@@ -6,13 +6,14 @@ import { PickingController } from './picking.js';
 import { BuildPlaneController } from './buildplane.js';
 import { modelToJS } from "../json.js";
 import { export2d, export3d } from "../exporters.js";
+import { serializeVZomeXml } from '../serializer.js';
 
 
 export class EditorController extends com.vzome.desktop.controller.DefaultController
 {
-  constructor(design, clientEvents) {
+  constructor( legacyDesign, clientEvents) {
     super();
-    this.design = design;
+    this.legacyDesign = legacyDesign;
     this.clientEvents = clientEvents;
     this.symmetries = {};
     this.symmController = null;
@@ -32,9 +33,9 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
   initialize( renderingChanges )
   {
     const { renderedModel, toolsModel, bookmarkFactory, history,
-      fieldApp, legacyField, editor, editContext } = this.design;
+      fieldApp, legacyField, editor, editContext } = this.legacyDesign;
 
-    this.changeCount = this.design.getChangeCount();
+    this.changeCount = this.legacyDesign.getChangeCount();
 
     this.setErrorChannel({
       reportError: ( message, args ) => this.reportError( message, args ),
@@ -45,7 +46,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
     this.addSubController('picking', pickingController);
 
     // This has no desktop equivalent
-    const buildPlaneController = new BuildPlaneController( this.design, this.clientEvents );
+    const buildPlaneController = new BuildPlaneController( this.legacyDesign, this.clientEvents );
     this.addSubController('buildPlane', buildPlaneController);
 
     const polytopesController = new com.vzome.desktop.controller.PolytopesController( editor, editContext );
@@ -76,7 +77,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
       const label = symper .getLabel(); // this can be different from name
       if ( !!label ) { // null label means this symmetry is not to expose in the UI
         let name = symper .getSymmetry() .getName();
-        const system = this.design .getSymmetrySystem( name );
+        const system = this.legacyDesign .getSymmetrySystem( name );
         if ( system.getName() === docSymmetrySystem.getName() ) {
           docLabel = label; // for setSymmetryController(), later
         }
@@ -107,7 +108,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
     switch (name) {
 
       case "edited": {
-        return new Boolean( this.changeCount !== this.design.getChangeCount() ) .toString();
+        return new Boolean( this.changeCount !== this.legacyDesign.getChangeCount() ) .toString();
       }
 
       case "symmetry":
@@ -128,7 +129,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
   }
 
   getCommandList(name) {
-    const { symmetrySystems, legacyField } = this.design;
+    const { symmetrySystems, legacyField } = this.legacyDesign;
     switch (name) {
 
       case "symmetryPerspectives":
@@ -154,7 +155,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
     this.symmController = this.symmetries[ label ];
 
     let symmetrySystem = this.symmController .getOrbitSource();
-    this.design .setSymmetrySystem( symmetrySystem.getName() );
+    this.legacyDesign .setSymmetrySystem( symmetrySystem.getName() );
 
     // TODO: test this change with buildPlane
     this.getSubController( 'buildPlane' ) .setOrbitSource( symmetrySystem );
@@ -171,7 +172,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
     switch (action) {
 
       case "clearChanges": {
-        this.changeCount = this.design.getChangeCount();
+        this.changeCount = this.legacyDesign.getChangeCount();
         this.firePropertyChange( 'edited', '', 'false' );
         break;
       }
@@ -197,28 +198,28 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
 
           case 'mesh':
           case 'cmesh': {
-            const source = selection? this.design .editor .selection : this.design .editor .getRealizedModel();
+            const source = selection? this.legacyDesign .editor .selection : this.legacyDesign .editor .getRealizedModel();
             const mesh = modelToJS( source, format==='cmesh' );
             exported = JSON.stringify( mesh, null, 2 );
             break;
           }
 
           case 'vZome': {
-            exported = this.design.serializeToDom().toIndentedString("");
+            exported = serializeVZomeXml( this.legacyDesign, lighting, camera );
             break;
           }
 
           case 'pdf':
           case 'ps':
           case 'svg': {
-            const { renderedModel } = this.design;
+            const { renderedModel } = this.legacyDesign;
             const config = { format, height, width, useShapes, drawOutlines, monochrome, showBackground, useLighting };
             exported = export2d( { renderedModel, camera, lighting }, config );
             break;
           }
 
           default: {
-            const { renderedModel } = this.design;
+            const { renderedModel } = this.legacyDesign;
             exported = export3d( { renderedModel, camera, lighting }, { format, height, width } );
             break;
           }
@@ -233,7 +234,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
         }
 
         else {
-          this.design.configureAndPerformEdit(action, params && params.getConfig());
+          this.legacyDesign.configureAndPerformEdit(action, params && params.getConfig());
           this.firePropertyChange( 'edited', '', 'true' ); // value really doesn't matter
         }
         break;

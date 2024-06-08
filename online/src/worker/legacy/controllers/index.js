@@ -5,7 +5,7 @@ import { EditCursor, interpret, RenderHistory, Step } from '../interpreter.js';
 import { ControllerWrapper } from './wrapper.js';
 import { renderedModelTransducer, resolveBuildPlanes } from '../scenes.js';
 import { EditorController } from './editor.js';
-import { DEFAULT_SNAPSHOT } from '../parser.js';
+import { serializeVZomeXml } from '../serializer.js';
 
 const createControllers = ( design, renderingChanges, clientEvents ) =>
 {
@@ -75,7 +75,7 @@ export const snapCamera = ( symmController, upArray, lookArray ) =>
 
 const initializeDesign = ( loading, legacyDesign, clientEvents ) =>
 {
-  const { lighting, scenes, snapshotNodes } = legacyDesign;
+  const { lighting, camera, scenes, snapshotNodes } = legacyDesign;
   const renderHistory = new RenderHistory( legacyDesign );                                     // used for all normal rendering
   const renderingChanges = renderedModelTransducer( renderHistory.getShapes(), clientEvents ); // used only for preview struts
 
@@ -109,15 +109,16 @@ const initializeDesign = ( loading, legacyDesign, clientEvents ) =>
     instances .splice( 0, Infinity, ...renderHistory.currentSnapshot );
   } // happens at end of every wrapper.doAction()
 
-  const rendered = { lighting, embedding, orientations, polygons: true, shapes, instances, snapshots, scenes };
+  wrapper.serializeVZomeXml = ( camera, lighting ) => serializeVZomeXml( legacyDesign, camera, lighting );
+
+  const rendered = { lighting, camera, embedding, orientations, polygons: true, shapes, instances, snapshots, scenes };
   return { wrapper, rendered };
 }
 
 export const newDesign = ( fieldName, clientEvents ) =>
   {
     const legacyDesign = documentFactory( fieldName );
-    legacyDesign .snapshotNodes = [ '--END--' ];
-    legacyDesign .scenes = [ { title: 'default scene', camera: {}, snapshot: DEFAULT_SNAPSHOT } ];
+
     return initializeDesign( false, legacyDesign, clientEvents );
   }
   

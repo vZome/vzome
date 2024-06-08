@@ -1,8 +1,6 @@
 ---
-title: ''
-subtitle: ${title}
-share-title: ${title}
-share-description: An interactive 3D view, shared from vZome
+title: ${title}
+share-description: ${description}
 image: ${siteUrl}/${imagePath}
 layout: design
 ---

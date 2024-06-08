@@ -109,8 +109,6 @@ const parseArticle = ( notesElement ) =>
           .filter( snapshot => snapshot.title !== "How to save notes" );
 }
 
-export const DEFAULT_SNAPSHOT = -1;
-
 export const createParser = ( documentFactory ) => ( xmlText ) =>
 {
   const domDoc = txml.parse( xmlText /*, options */ );
@@ -120,7 +118,7 @@ export const createParser = ( documentFactory ) => ( xmlText ) =>
   const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
   const fieldName = vZomeRoot.getAttribute( "field" )
 
-  const design = documentFactory( fieldName, namespace, vZomeRoot )
+  const legacyDesign = documentFactory( fieldName, namespace, vZomeRoot )
 
   const viewing = vZomeRoot.getChildElement( "Viewing" )
   const camera = viewing && parseViewXml( viewing )
@@ -130,13 +128,12 @@ export const createParser = ( documentFactory ) => ( xmlText ) =>
 
   const historyElement = vZomeRoot.getChildElement( "EditHistory" ) || vZomeRoot.getChildElement( "editHistory" ) || vZomeRoot.getChildElement( "EditHistoryDetails" );
   const xmlTree = assignIds( historyElement.nativeElement );
-  const edits = new ParsedEdit( xmlTree, null, design.interpretEdit );
+  const edits = new ParsedEdit( xmlTree, null, legacyDesign.interpretEdit );
   const targetEditId = `:${edits.getAttribute( "editNumber" )}:`
   const firstEdit = edits.firstChild()
 
   const snapshotNodes = [ ...findSnapshotNodes( xmlTree ), targetEditId ]; // The extra snapshot is discarded later
-  const realScenes = parseArticle( vZomeRoot.getChildElement( "notes" ) );
-  const scenes = [ { title: 'default scene', camera, snapshot: DEFAULT_SNAPSHOT }, ...realScenes ];
+  const scenes = parseArticle( vZomeRoot.getChildElement( "notes" ) );
 
-  return { ...design, firstEdit, lighting, xmlTree, scenes, snapshotNodes }
+  return { ...legacyDesign, firstEdit, camera, lighting, xmlTree, scenes, snapshotNodes }
 }

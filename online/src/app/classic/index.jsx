@@ -49,11 +49,11 @@ const Classic = () =>
     <ErrorBoundary fallback={ err => <div>{err.toString()}</div> } >
       <WorkerStateProvider>
       <CameraProvider name='common'>
-      <EditorProvider>
       <ImageCaptureProvider>
       <ViewerProvider config={{ labels: true }}>
+      <EditorProvider>
         <SymmetryProvider>
-          <VZomeAppBar menuBar={true} title='BETA'
+          <VZomeAppBar title='BETA'
             spacer={ <>
               <FileMenu/>
               <EditMenu/>
@@ -84,9 +84,9 @@ const Classic = () =>
           />
           <ClassicEditor/>
         </SymmetryProvider>
+      </EditorProvider>
       </ViewerProvider>
       </ImageCaptureProvider>
-      </EditorProvider>
       </CameraProvider>
       </WorkerStateProvider>
     </ErrorBoundary>

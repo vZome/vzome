@@ -204,6 +204,8 @@ core.config {
     'com/vzome/core/render/*ZomicEventHandler.java',
     'com/vzome/core/zomic/program/*.java',
 
+    'com/vzome/core/exporters/GitHubShare.java',
+
   ]
   excludes = [
 

@@ -8,6 +8,7 @@ import Box from '@suid/material/Box'
 import { OpenMenu } from './folder.jsx'
 import { VZomeLogo } from './logo.jsx'
 import { AboutDialog } from '../dialogs/about.jsx';
+import { SharingDialog } from '../dialogs/sharing.jsx';
 
 export const Spacer = () => <div style={{ flex: '1 1 auto' }}></div>
 
@@ -37,6 +38,9 @@ export const VZomeAppBar = ( props ) =>
           {merged.spacer}
           <Show when={merged.showOpen} >
             <OpenMenu pathToRoot={merged.pathToRoot} forDebugger={merged.forDebugger} />
+          </Show>
+          <Show when={!!merged.spacer} >
+            <SharingDialog/>
           </Show>
           <AboutDialog title={props.customTitle? props.title : 'vZome Online '+ props.title} about={props.about} />
         </Toolbar>

@@ -13,41 +13,11 @@
       }
     },
     {
-      "name":             "59icosahedra",
+      "name":             "TESTS",
 
       "type": "chrome",
       "request": "launch",
-      "url": "http://localhost:8532/59icosahedra",
-      "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
-      }
-    },
-    {
-      "name":             "browser",
-
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:8532/browser",
-      "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
-      }
-    },
-    {
-      "name":             "build plane",
-
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:8532/buildplane",
-      "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
-      }
-    },
-    {
-      "name":             "classic",
-
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:8532/classic?debug=true",
+      "url": "http://localhost:8532/test/",
       "pathMapping": {
         "/": "${workspaceFolder}/online/src"
       }
@@ -68,16 +38,6 @@
       "type": "chrome",
       "request": "launch",
       "url": "https://localhost:8532/classic?debug=true",
-      "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
-      }
-    },
-    {
-      "name":             "web component",
-
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:8532/test/",
       "pathMapping": {
         "/": "${workspaceFolder}/online/src"
       }
