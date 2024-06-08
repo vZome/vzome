@@ -4,6 +4,7 @@ import { createSignal, createEffect } from "solid-js";
 import { controllerProperty, subController, useEditor } from '../../../viewer/context/editor.jsx';
 import { useSymmetry } from "../context/symmetry.jsx";
 import { ToolConfig } from "../dialogs/toolconfig.jsx";
+import { resumeMenuKeyEvents, suspendMenuKeyEvents } from "../../framework/menus.jsx";
 
 const ToolbarSpacer = () => ( <div style={{ 'min-width': '10px', 'min-height': '10px' }}></div> )
 
@@ -97,10 +98,14 @@ const ToolButton = props =>
   const [anchorEl, setAnchorEl] = createSignal(null);
   const handleOpen = (e) =>
   {
+    suspendMenuKeyEvents();
     setAnchorEl( e.currentTarget );
     e.preventDefault(); e.stopPropagation();
   }
-  const handleClose = () => setAnchorEl( null );
+  const handleClose = () => {
+    resumeMenuKeyEvents();
+    setAnchorEl( null );
+  }
   return ( <>
     <ToolbarButton label={label()} image={`small/${kind()}`} onClick={handleClick} onContextMenu={handleOpen} />
     <ToolConfig predefined={props.predefined} image={`small/${kind()}`} controller={props.controller} label={label()}
@@ -160,10 +165,14 @@ const BookmarkButton = props =>
   const [anchorEl, setAnchorEl] = createSignal(null);
   const handleOpen = (e) =>
   {
+    suspendMenuKeyEvents();
     setAnchorEl( e.currentTarget );
     e.preventDefault(); e.stopPropagation();
   }
-  const handleClose = () => setAnchorEl( null );
+  const handleClose = () => {
+    resumeMenuKeyEvents();
+    setAnchorEl( null );
+  }
   return ( <>
     <ToolbarButton label={label()} image={`small/${iconName()}`} onClick={handleClick} onContextMenu={handleOpen} />
     <ToolConfig bookmark predefined={props.predefined} image={`small/${iconName()}`} controller={props.controller} label={label()}

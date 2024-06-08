@@ -5,7 +5,7 @@ import { unwrap } from "solid-js/store";
 import { controllerExportAction, controllerProperty, useEditor } from "../../../viewer/context/editor.jsx";
 import { saveFileAs, openFile, saveTextFileAs, saveTextFile } from "../../../viewer/util/files.js";
 
-import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
+import { Divider, Menu, MenuAction, MenuItem, SubMenu, suspendMenuKeyEvents } from "../../framework/menus.jsx";
 import { UrlDialog } from '../dialogs/webloader.jsx'
 import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
 import { useCamera } from "../../../viewer/context/camera.jsx";
@@ -80,6 +80,7 @@ export const FileMenu = () =>
   }
 
   const handleShowUrlDialog = () => {
+    suspendMenuKeyEvents();
     setShowDialog( true );
   }
   const openUrl = url => {

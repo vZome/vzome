@@ -24,6 +24,7 @@ import { Tooltip } from '../../framework/tooltip.jsx'
 import { useViewer } from "../../../viewer/context/viewer.jsx";
 import { useEditor } from "../../../viewer/context/editor.jsx";
 import { getUserRepos } from "../../../worker/legacy/gitcommit.js";
+import { resumeMenuKeyEvents, suspendMenuKeyEvents } from '../../framework/menus.jsx';
 
 const AUTHENTICATING = 0;
 const CHOOSING_REPO = 1;
@@ -125,6 +126,7 @@ export const SharingDialog = ( props ) =>
   const handleClickOpen = () => {
     setStage( CHOOSING_REPO );
     setError( '' );
+    suspendMenuKeyEvents();
     setOpen( true );  
     const target = localStorage .getItem( TARGET_KEY );
     if ( !!target ) {
@@ -151,6 +153,7 @@ export const SharingDialog = ( props ) =>
   };
   const handleCancel = () => {
     setOpen( false );
+    resumeMenuKeyEvents();
   };
   const handleShare = () =>{
     if ( stage()===AUTHENTICATING ) {
@@ -180,6 +183,7 @@ export const SharingDialog = ( props ) =>
         .then( url => {
           window.open( url, '_blank' );
           setOpen( false );
+          resumeMenuKeyEvents();
         })
         .catch( error => {
           setError( error );
