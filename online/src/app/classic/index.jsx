@@ -4,6 +4,7 @@ import { ErrorBoundary } from "solid-js";
 import Typography from '@suid/material/Typography'
 import Link from '@suid/material/Link'
 import { DiskIcon, WorldIcon } from '../framework/icons.jsx';
+import { MenuBar } from '../framework/menus.jsx';
 import { FileMenu } from './menus/filemenu.jsx';
 import { EditMenu } from './menus/editmenu.jsx';
 import { ConstructMenu } from './menus/constructmenu.jsx';
@@ -55,12 +56,14 @@ const Classic = () =>
         <SymmetryProvider>
           <VZomeAppBar title='BETA'
             spacer={ <>
-              <FileMenu/>
-              <EditMenu/>
-              <ConstructMenu/>
-              <ToolsMenu/>
-              <SystemMenu/>
-              <HelpMenu/>
+              <MenuBar>
+                <FileMenu/>
+                <EditMenu/>
+                <ConstructMenu/>
+                <ToolsMenu/>
+                <SystemMenu/>
+                <HelpMenu/>
+              </MenuBar>
               <Persistence/>
             </>}
             about={ <>

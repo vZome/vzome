@@ -22,9 +22,8 @@ import Link from '@suid/material/Link';
 import { Tooltip } from '../../framework/tooltip.jsx'
 
 import { useViewer } from "../../../viewer/context/viewer.jsx";
-import { useEditor } from "../../../viewer/context/editor.jsx";
+import { useEditor, resumeMenuKeyEvents, suspendMenuKeyEvents } from "../../../viewer/context/editor.jsx";
 import { getUserRepos } from "../../../worker/legacy/gitcommit.js";
-import { resumeMenuKeyEvents, suspendMenuKeyEvents } from '../../framework/menus.jsx';
 
 const AUTHENTICATING = 0;
 const CHOOSING_REPO = 1;

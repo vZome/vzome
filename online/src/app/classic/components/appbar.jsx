@@ -16,7 +16,6 @@ export const VZomeAppBar = ( props ) =>
 {
   const spacer = <Spacer/>;
   const merged = mergeProps( {
-    spacer,
     showOpen: false,
     pathToRoot: './models',
     forDebugger: false,
@@ -35,7 +34,7 @@ export const VZomeAppBar = ( props ) =>
               vZome Online <Box component="span" fontStyle="oblique">{props.title}</Box>
             </Typography>
           </Show>
-          {merged.spacer}
+          {props.spacer}
           <Show when={merged.showOpen} >
             <OpenMenu pathToRoot={merged.pathToRoot} forDebugger={merged.forDebugger} />
           </Show>

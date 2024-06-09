@@ -2,10 +2,10 @@
 import { createEffect, createSignal, mergeProps, onMount } from "solid-js";
 import { unwrap } from "solid-js/store";
 
-import { controllerExportAction, controllerProperty, useEditor } from "../../../viewer/context/editor.jsx";
+import { controllerExportAction, controllerProperty, useEditor, suspendMenuKeyEvents } from "../../../viewer/context/editor.jsx";
 import { saveFileAs, openFile, saveTextFileAs, saveTextFile } from "../../../viewer/util/files.js";
 
-import { Divider, Menu, MenuAction, MenuItem, SubMenu, suspendMenuKeyEvents } from "../../framework/menus.jsx";
+import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 import { UrlDialog } from '../dialogs/webloader.jsx'
 import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
 import { useCamera } from "../../../viewer/context/camera.jsx";
@@ -148,6 +148,7 @@ export const FileMenu = () =>
   {
     props = mergeProps( { format: props.ext }, props );
     const params = { drawOutlines: cameraState.outlines }; // for SVG
+    console.log( `ExportItem ${props.label}`);
     return <MenuItem onClick={ exportAs( props.ext, props.mime, props.format, params ) } disabled={props.disabled}>{props.label}</MenuItem>
   }
 
