@@ -1,5 +1,5 @@
 
-import { ContextMenu } from "@kobalte/core";
+import { ContextMenu } from "@kobalte/core/context-menu";
 
 import { subController, useEditor } from '../../../viewer/context/editor.jsx';
 import { useCamera } from "../../../viewer/context/camera.jsx";

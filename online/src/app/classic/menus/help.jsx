@@ -1,13 +1,13 @@
 
-import { Link } from "@kobalte/core";
+import { Link } from "@kobalte/core/link";
 import { Divider, Menu, MenuItem, SubMenu } from "../../framework/menus.jsx";
 import { useEditor } from "../../../viewer/context/editor.jsx";
 
 const LinkItem  = props => (
   <MenuItem>
-    <Link.Root class="link" href={props.href} target="_blank" rel="noopener">
+    <Link class="link" href={props.href} target="_blank" rel="noopener">
       {props.label}
-    </Link.Root>
+    </Link>
   </MenuItem>
 );
 

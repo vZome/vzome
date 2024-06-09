@@ -1,7 +1,7 @@
 
 import { createEffect, createMemo, createSignal } from 'solid-js';
 
-import { Select } from "@kobalte/core";
+import { Select } from "@kobalte/core/select";
 
 import { useViewer } from './context/viewer.jsx';
 
@@ -30,7 +30,7 @@ export const SceneMenu = (props) =>
   return (
     <Show when={ sceneTitles() .length > 1 }>
     <div style={ { position: 'absolute', background: 'lightgray', top: '1em', left: '1em' } }>
-      <Select.Root
+      <Select
         value={sceneTitle()}
         onChange={handleChange}
         options={sceneTitles()}
@@ -63,7 +63,7 @@ export const SceneMenu = (props) =>
             <Select.Listbox class="select__listbox" />
           </Select.Content>
         </Select.Portal>
-      </Select.Root>
+      </Select>
     </div>
     </Show>
   );
