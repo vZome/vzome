@@ -6,48 +6,24 @@ import { useEditor } from "../../viewer/context/editor";
 
 const isMac = navigator.userAgentData?.platform === 'macOS' || navigator.userAgent .includes( 'Macintosh' );
 
-let menuKeyEventsSuspended = false;
-
-export const suspendMenuKeyEvents = () => menuKeyEventsSuspended = true;
-export const resumeMenuKeyEvents = () => menuKeyEventsSuspended = false;
-
 export const MenuAction = ( props ) =>
 {
   let modifiers = props.mods;
   if ( !isMac && modifiers )
     modifiers = modifiers .replace( '⌘', '⌃' );
   if ( !props.disabled ) {
-    const targetCodes = props.code?.split( '|' ) || ( props.key && [ "Key" + props.key.toUpperCase() ] );
-    if ( targetCodes ) {
-      const hasMeta = !! modifiers ?.includes( '⌘' );
-      const hasControl = !! modifiers ?.includes( '⌃' );
-      const hasShift = !! modifiers ?.includes( '⇧' );
-      const hasOption = !! modifiers ?.includes( '⌥' );
-      document.body .addEventListener( "keydown", evt => {
-        if ( menuKeyEventsSuspended )
-          return;
-        if ( targetCodes .indexOf( evt.code ) < 0 )
-          return;
-        if ( hasMeta !== evt.metaKey )
-          return;
-        if ( hasControl !== evt.ctrlKey )
-          return;
-        if ( hasShift !== evt.shiftKey )
-          return;
-        if ( hasOption !== evt.altKey )
-          return;
-        evt .preventDefault(); // Why doesn't this work for ⌘N?
-        props.onClick();
-      } );
+    if ( props.deleteKey || props.key ) {
+      const { registerKeyListener } = useEditor();
+      registerKeyListener( modifiers, props.deleteKey, props.key, props.onClick );
     }
   }
 
   return (
     <DropdownMenu.Item class="dropdown-menu__item" disabled={props.disabled} onClick={props.onClick}>
       {props.label}
-      <Show when={props.code || props.key} >
+      <Show when={props.deleteKey || props.key} >
         <div class="dropdown-menu__item-right-slot">
-          { props.code? "⌫" : modifiers + props.key }
+          { props.deleteKey? "⌫" : modifiers + props.key }
         </div>
       </Show>
     </DropdownMenu.Item>
@@ -110,7 +86,7 @@ export const Menu = ( props ) =>
         {props.label}
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <DropdownMenu.Content class={contentClass()}>
+        <DropdownMenu.Content class='dropdown-menu__content'>
           {props.children}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
@@ -210,4 +186,9 @@ export const createCheckboxItem = ( controller ) => ( props ) =>
   // I was destructuring props here, and lost reactivity!
   //  It usually doesn't matter for menu items, except when there is checkbox state.
   return CheckboxItem( mergeProps( { onClick }, props ) );
+}
+
+export const MenuBar = props =>
+{
+  return <>{props.children}</>;
 }

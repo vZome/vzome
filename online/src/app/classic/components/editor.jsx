@@ -10,13 +10,13 @@ import { LabelDialog } from '../dialogs/label.jsx';
 import { useCamera } from '../../../viewer/context/camera.jsx';
 import { useViewer } from '../../../viewer/context/viewer.jsx';
 import { InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
-import { useEditor } from '../../../viewer/context/editor.jsx';
+import { useEditor, resumeMenuKeyEvents, suspendMenuKeyEvents } from '../../../viewer/context/editor.jsx';
 import { SceneCanvas } from '../../../viewer/index.jsx';
 
 import { SnapCameraTool } from '../tools/snapcamera.jsx';
 import { SelectionTool } from '../tools/selection.jsx';
 import { StrutDragTool } from '../tools/strutdrag.jsx';
-import { ContextualMenuArea, resumeMenuKeyEvents, suspendMenuKeyEvents } from '../../framework/menus.jsx';
+import { ContextualMenuArea } from '../../framework/menus.jsx';
 import { ContextualMenu } from '../menus/contextmenu.jsx';
 
 export const SceneEditor = ( props ) =>

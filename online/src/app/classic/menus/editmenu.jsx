@@ -73,7 +73,7 @@ export const EditMenu = () =>
         <EditAction label="Cut"    onClick={doCut}   mods="⌘" key="X" />
         <EditAction label="Copy"   onClick={doCopy}  mods="⌘" key="C" />
         <MenuAction label="Paste"  onClick={doPaste} mods="⌘" key="V" />
-        <EditAction label="Delete" action="Delete" code="Delete|Backspace" />
+        <EditAction label="Delete" action="Delete" deleteKey={true} />
 
         <Divider />
 
