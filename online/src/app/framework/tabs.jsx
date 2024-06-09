@@ -1,5 +1,5 @@
 
-import { Tabs as KTabs } from "@kobalte/core";
+import { Tabs as KTabs } from "@kobalte/core/tabs";
 
 const Tab = (props) =>
 {
@@ -13,7 +13,7 @@ const Tab = (props) =>
 const Tabs = (props) =>
 {
   return (
-    <KTabs.Root aria-label={props.label} class="tabs" value={props.value} onChange={props.onChange}>
+    <KTabs aria-label={props.label} class="tabs" value={props.value} onChange={props.onChange}>
       <KTabs.List class="tabs__list">
         <For each={ props.values }>{ name =>
           <KTabs.Trigger class="tabs__trigger" value={name}>{name}</KTabs.Trigger>
@@ -21,7 +21,7 @@ const Tabs = (props) =>
         <KTabs.Indicator class="tabs__indicator" />
       </KTabs.List>
       {props.children}
-    </KTabs.Root>
+    </KTabs>
 );
 }
 

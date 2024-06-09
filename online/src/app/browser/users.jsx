@@ -5,7 +5,7 @@ export const UsersMenu = (props) =>
 {
   return (
     <div style={ { background: 'lightgray' } }>
-      <Select.Root
+      <Select
         value={props.currentUser}
         onChange={props.setUser}
         options={props.users}
@@ -38,7 +38,7 @@ export const UsersMenu = (props) =>
             <Select.Listbox class="select__listbox" />
           </Select.Content>
         </Select.Portal>
-      </Select.Root>
+      </Select>
     </div>
   );
 }

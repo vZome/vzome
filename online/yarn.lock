@@ -334,6 +334,13 @@
   resolved "https://registry.yarnpkg.com/@chevrotain/utils/-/utils-11.0.3.tgz#e39999307b102cff3645ec4f5b3665f5297a2224"
   integrity sha512-YslZMgtJUyuMbZ+aKvfF3x1f5liK4mWNxghFRv7jqRR9C3R3fAOGTTKvxXDa2Y1s9zSbcpuO0cAxDYsc9SrXoQ==
 
+"@corvu/utils@~0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@corvu/utils/-/utils-0.2.0.tgz#567eed20f223201eb4ff4b57716660fdb0b404f1"
+  integrity sha512-cY0w+SotjOtBX+9oE90vis1Mu2spwGhtcAn4jmrl7JPqQrm68DH/0Rh3R52dN2MbgPVZL06N3mvys18myF5/0Q==
+  dependencies:
+    "@floating-ui/dom" "^1.6.5"
+
 "@esbuild/android-arm64@0.17.19":
   version "0.17.19"
   resolved "https://registry.yarnpkg.com/@esbuild/android-arm64/-/android-arm64-0.17.19.tgz#bafb75234a5d3d1b690e7c2956a599345e84a2fd"
@@ -476,56 +483,25 @@
   resolved "https://registry.npmjs.org/@eslint/js/-/js-8.41.0.tgz"
   integrity sha512-LxcyMGxwmTh2lY9FwHPGWOHmYFCZvbrFCBZL4FzSSsxsRPuhrYUg/49/0KDfW8tnIEaEHtfmn6+NPN+1DqaNmA==
 
-"@floating-ui/core@^1.3.1":
-  version "1.3.1"
-  resolved "https://registry.npmjs.org/@floating-ui/core/-/core-1.3.1.tgz"
-  integrity sha512-Bu+AMaXNjrpjh41znzHqaz3r2Nr8hHuHZT6V2LBKMhyMl0FgKA62PNYbqnfgmzOhoWZj70Zecisbo4H1rotP5g==
-
-"@floating-ui/dom@^1.2.6":
-  version "1.4.2"
-  resolved "https://registry.npmjs.org/@floating-ui/dom/-/dom-1.4.2.tgz"
-  integrity sha512-VKmvHVatWnewmGGy+7Mdy4cTJX71Pli6v/Wjb5RQBuq5wjUYx+Ef+kRThi8qggZqDgD8CogCpqhRoVp3+yQk+g==
+"@floating-ui/core@^1.0.0":
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/@floating-ui/core/-/core-1.6.2.tgz#d37f3e0ac1f1c756c7de45db13303a266226851a"
+  integrity sha512-+2XpQV9LLZeanU4ZevzRnGFg2neDeKHgFLjP6YLW+tly0IvrhqT4u8enLGjLH3qeh85g19xY5rsAusfwTdn5lg==
   dependencies:
-    "@floating-ui/core" "^1.3.1"
+    "@floating-ui/utils" "^0.2.0"
 
-"@formatjs/ecma402-abstract@1.17.0":
-  version "1.17.0"
-  resolved "https://registry.npmjs.org/@formatjs/ecma402-abstract/-/ecma402-abstract-1.17.0.tgz"
-  integrity sha512-6ueQTeJZtwKjmh23bdkq/DMqH4l4bmfvtQH98blOSbiXv/OUiyijSW6jU22IT8BNM1ujCaEvJfTtyCYVH38EMQ==
+"@floating-ui/dom@^1.5.1", "@floating-ui/dom@^1.6.5":
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/@floating-ui/dom/-/dom-1.6.5.tgz#323f065c003f1d3ecf0ff16d2c2c4d38979f4cb9"
+  integrity sha512-Nsdud2X65Dz+1RHjAIP0t8z5e2ff/IRbei6BqFrl1urT8sDVzM1HMQ+R0XcU5ceRfyO3I6ayeqIfh+6Wb8LGTw==
   dependencies:
-    "@formatjs/intl-localematcher" "0.4.0"
-    tslib "^2.4.0"
+    "@floating-ui/core" "^1.0.0"
+    "@floating-ui/utils" "^0.2.0"
 
-"@formatjs/fast-memoize@2.2.0":
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/@formatjs/fast-memoize/-/fast-memoize-2.2.0.tgz"
-  integrity sha512-hnk/nY8FyrL5YxwP9e4r9dqeM6cAbo8PeU9UjyXojZMNvVad2Z06FAVHyR3Ecw6fza+0GH7vdJgiKIVXTMbSBA==
-  dependencies:
-    tslib "^2.4.0"
-
-"@formatjs/icu-messageformat-parser@2.6.0":
-  version "2.6.0"
-  resolved "https://registry.npmjs.org/@formatjs/icu-messageformat-parser/-/icu-messageformat-parser-2.6.0.tgz"
-  integrity sha512-yT6at0qc0DANw9qM/TU8RZaCtfDXtj4pZM/IC2WnVU80yAcliS3KVDiuUt4jSQAeFL9JS5bc2hARnFmjPdA6qw==
-  dependencies:
-    "@formatjs/ecma402-abstract" "1.17.0"
-    "@formatjs/icu-skeleton-parser" "1.6.0"
-    tslib "^2.4.0"
-
-"@formatjs/icu-skeleton-parser@1.6.0":
-  version "1.6.0"
-  resolved "https://registry.npmjs.org/@formatjs/icu-skeleton-parser/-/icu-skeleton-parser-1.6.0.tgz"
-  integrity sha512-eMmxNpoX/J1IPUjPGSZwo0Wh+7CEvdEMddP2Jxg1gQJXfGfht/FdW2D5XDFj3VMbOTUQlDIdZJY7uC6O6gjPoA==
-  dependencies:
-    "@formatjs/ecma402-abstract" "1.17.0"
-    tslib "^2.4.0"
-
-"@formatjs/intl-localematcher@0.4.0":
-  version "0.4.0"
-  resolved "https://registry.npmjs.org/@formatjs/intl-localematcher/-/intl-localematcher-0.4.0.tgz"
-  integrity sha512-bRTd+rKomvfdS4QDlVJ6TA/Jx1F2h/TBVO5LjvhQ7QPPHp19oPNMIum7W2CMEReq/zPxpmCeB31F9+5gl/qtvw==
-  dependencies:
-    tslib "^2.4.0"
+"@floating-ui/utils@^0.2.0":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.2.tgz#d8bae93ac8b815b2bd7a98078cf91e2724ef11e5"
+  integrity sha512-J4yDIIthosAsRZ5CPYP/jQvUAQtlZTTD/4suA08/FEnlxqW3sKS9iAhgsa9VYLZ6vDHn/ixJgIqRQPotoBjxIw==
 
 "@humanwhocodes/config-array@^0.11.8":
   version "0.11.8"
@@ -546,25 +522,17 @@
   resolved "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@internationalized/date@^3.2.0":
-  version "3.3.0"
-  resolved "https://registry.npmjs.org/@internationalized/date/-/date-3.3.0.tgz"
-  integrity sha512-qfRd7jCIgUjabI8RxeAsxhLDRS1u8eUPX96GB5uBp1Tpm6YY6dVveE7YwsTEV6L4QOp5LKFirFHHGsL/XQwJIA==
+"@internationalized/date@^3.4.0":
+  version "3.5.4"
+  resolved "https://registry.yarnpkg.com/@internationalized/date/-/date-3.5.4.tgz#49ba11634fd4350b7a9308e297032267b4063c44"
+  integrity sha512-qoVJVro+O0rBaw+8HPjUB1iH8Ihf8oziEnqMnvhJUSuVIrHOuZ6eNLHNvzXJKUvAtaDiqMnRlg8Z2mgh09BlUw==
   dependencies:
     "@swc/helpers" "^0.5.0"
 
-"@internationalized/message@^3.1.0":
-  version "3.1.1"
-  resolved "https://registry.npmjs.org/@internationalized/message/-/message-3.1.1.tgz"
-  integrity sha512-ZgHxf5HAPIaR0th+w0RUD62yF6vxitjlprSxmLJ1tam7FOekqRSDELMg4Cr/DdszG5YLsp5BG3FgHgqquQZbqw==
-  dependencies:
-    "@swc/helpers" "^0.5.0"
-    intl-messageformat "^10.1.0"
-
-"@internationalized/number@^3.2.0":
-  version "3.2.1"
-  resolved "https://registry.npmjs.org/@internationalized/number/-/number-3.2.1.tgz"
-  integrity sha512-hK30sfBlmB1aIe3/OwAPg9Ey0DjjXvHEiGVhNaOiBJl31G0B6wMaX8BN3ibzdlpyRNE9p7X+3EBONmxtJO9Yfg==
+"@internationalized/number@^3.2.1":
+  version "3.5.3"
+  resolved "https://registry.yarnpkg.com/@internationalized/number/-/number-3.5.3.tgz#9fa060c1c4809f23fb3d38dd3f3d1ae4c87e95a8"
+  integrity sha512-rd1wA3ebzlp0Mehj5YTuTI50AQEx80gWFyHcQu+u91/5NgdwBecO8BH6ipPfE+lmQ9d63vpB3H9SHoIUiupllw==
   dependencies:
     "@swc/helpers" "^0.5.0"
 
@@ -605,29 +573,30 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@kobalte/core@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.npmjs.org/@kobalte/core/-/core-0.10.0.tgz"
-  integrity sha512-HcrWaUllA8sawFvFFfSmgH0ANXOo00bYDWA19/zUwkRcaOw8SivyO+UcMq66embscM9UAPOvmS0KaSqC9UXBIQ==
+"@kobalte/core@^0.13.3":
+  version "0.13.3"
+  resolved "https://registry.yarnpkg.com/@kobalte/core/-/core-0.13.3.tgz#44df194bd78077920a81e779fb4e83f8add7c9d6"
+  integrity sha512-7ansvAwiIz2EYuifI8jmGj+ZNG/3R4hdkXZkCEFVKsQzq3vZpuSiAXgrdZeQOR4Zby7gxLOzpakjfv7D/3PPGw==
   dependencies:
-    "@floating-ui/dom" "^1.2.6"
-    "@internationalized/date" "^3.2.0"
-    "@internationalized/message" "^3.1.0"
-    "@internationalized/number" "^3.2.0"
-    "@kobalte/utils" "^0.8.0"
+    "@floating-ui/dom" "^1.5.1"
+    "@internationalized/date" "^3.4.0"
+    "@internationalized/number" "^3.2.1"
+    "@kobalte/utils" "^0.9.0"
+    solid-presence "^0.1.6"
+    solid-prevent-scroll "^0.1.4"
 
-"@kobalte/utils@^0.8.0":
-  version "0.8.0"
-  resolved "https://registry.npmjs.org/@kobalte/utils/-/utils-0.8.0.tgz"
-  integrity sha512-Yu8ISB6UUi1QiHELMuedF6JoRVETZuAha4lQV8DY3UWy93HmBDl9JEDFPlWuAetWFaVylpoHc4MSgkpPw2y74Q==
+"@kobalte/utils@^0.9.0":
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/@kobalte/utils/-/utils-0.9.0.tgz#7e6f889fab648fe3511fc1b2e63e96d6c8b074dd"
+  integrity sha512-TYVCpQcpqo1+0HBn3NXoGEBzxd4tH6Um1oc07nrYw1V7Qq0qbMaYAOnfBc1qhlh7sGV4XZldmb0j13Of0FrZQg==
   dependencies:
-    "@solid-primitives/event-listener" "^2.2.10"
+    "@solid-primitives/event-listener" "^2.2.14"
     "@solid-primitives/keyed" "^1.2.0"
-    "@solid-primitives/map" "^0.4.6"
-    "@solid-primitives/media" "^2.1.6"
-    "@solid-primitives/props" "^3.1.4"
-    "@solid-primitives/refs" "^1.0.2"
-    "@solid-primitives/utils" "^6.1.0"
+    "@solid-primitives/map" "^0.4.7"
+    "@solid-primitives/media" "^2.2.4"
+    "@solid-primitives/props" "^3.1.8"
+    "@solid-primitives/refs" "^1.0.5"
+    "@solid-primitives/utils" "^6.2.1"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -807,48 +776,55 @@
   resolved "https://registry.npmjs.org/@popperjs/core/-/core-2.11.8.tgz"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
 
-"@solid-primitives/event-listener@^2.2.10", "@solid-primitives/event-listener@^2.2.13":
+"@solid-primitives/event-listener@^2.2.13":
   version "2.2.13"
   resolved "https://registry.npmjs.org/@solid-primitives/event-listener/-/event-listener-2.2.13.tgz"
   integrity sha512-8GtVEq0ECZoa5Klo1jjfGPfwg0zVJ8TNnNkWu8FqRkh0CkhbhCVJAKwjleem9K/qL6zUDfJihLjhqGBTBbb+8w==
   dependencies:
     "@solid-primitives/utils" "^6.2.0"
 
+"@solid-primitives/event-listener@^2.2.14", "@solid-primitives/event-listener@^2.3.3":
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/event-listener/-/event-listener-2.3.3.tgz#ab28c8627aa7d6234617867d8b02c80e1b8f0948"
+  integrity sha512-DAJbl+F0wrFW2xmcV8dKMBhk9QLVLuBSW+TR4JmIfTaObxd13PuL7nqaXnaYKDWOYa6otB00qcCUIGbuIhSUgQ==
+  dependencies:
+    "@solid-primitives/utils" "^6.2.3"
+
 "@solid-primitives/keyed@^1.2.0":
   version "1.2.0"
   resolved "https://registry.npmjs.org/@solid-primitives/keyed/-/keyed-1.2.0.tgz"
   integrity sha512-0DuTeJdxWjCTu73XnDZs24JzfXckBnpvCfQ6Mf/kTPKkMZJh7tjkBnZEk48ckrE9xmwat9stIdfrBmZctsepIw==
 
-"@solid-primitives/map@^0.4.6":
-  version "0.4.7"
-  resolved "https://registry.npmjs.org/@solid-primitives/map/-/map-0.4.7.tgz"
-  integrity sha512-vT4JVtgk2t+K9rMd+SsFYSs38vYjdfAyMnwBF4rUMj/G1t9dewHf0Y9GhvFpVZ2fYj9/KYQYiC++I8abJNvOsw==
+"@solid-primitives/map@^0.4.7":
+  version "0.4.11"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/map/-/map-0.4.11.tgz#da47b68964473ca39beadfe505e62a346527275e"
+  integrity sha512-OAD65RPxMDYv41oAvadPCqedZfDX92BbWLUC+Qwh9okVMDAF/5UM+t1916OAfGV01Cr30d/fxIT1x86P+gFgSQ==
   dependencies:
-    "@solid-primitives/trigger" "^1.0.8"
+    "@solid-primitives/trigger" "^1.0.11"
 
-"@solid-primitives/media@^2.1.6":
-  version "2.2.3"
-  resolved "https://registry.npmjs.org/@solid-primitives/media/-/media-2.2.3.tgz"
-  integrity sha512-xhKaTJjH6e65OL706/hA38WWitafbJCm/Zpv7qAn4cy/cgxZ39Cl0bPdYzZhUlkJvTt8YVT0IBcOBLKlJVaPRg==
+"@solid-primitives/media@^2.2.4":
+  version "2.2.9"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/media/-/media-2.2.9.tgz#bbe1e30b108cd3ece2e214d529e757702eb4dd34"
+  integrity sha512-QUmU62D4/d9YWx/4Dvr/UZasIkIpqNXz7wosA5GLmesRW9XlPa3G5M6uOmTw73SByHNTCw0D6x8bSdtvvLgzvQ==
   dependencies:
-    "@solid-primitives/event-listener" "^2.2.13"
-    "@solid-primitives/rootless" "^1.4.1"
-    "@solid-primitives/static-store" "^0.0.4"
-    "@solid-primitives/utils" "^6.2.0"
+    "@solid-primitives/event-listener" "^2.3.3"
+    "@solid-primitives/rootless" "^1.4.5"
+    "@solid-primitives/static-store" "^0.0.8"
+    "@solid-primitives/utils" "^6.2.3"
 
-"@solid-primitives/props@^3.1.4":
-  version "3.1.6"
-  resolved "https://registry.npmjs.org/@solid-primitives/props/-/props-3.1.6.tgz"
-  integrity sha512-ChtvXBDxASR+zZgH0ysoBstbVJdqJk6LITb78CScgHd+Uc8C6eaHKLmhNeuVCd36FGAuyj9vylDHe2GhmFlecA==
+"@solid-primitives/props@^3.1.8":
+  version "3.1.11"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/props/-/props-3.1.11.tgz#bd40c2808ab4e2d4adecbd3ccbad5c3756a72b1c"
+  integrity sha512-jZAKWwvDRHjiydIumDgMj68qviIbowQ1ci7nkEAgzgvanNkhKSQV8iPgR2jMk1uv7S2ZqXYHslVQTgJel/TEyg==
   dependencies:
-    "@solid-primitives/utils" "^6.2.0"
+    "@solid-primitives/utils" "^6.2.3"
 
-"@solid-primitives/refs@^1.0.2":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@solid-primitives/refs/-/refs-1.0.4.tgz"
-  integrity sha512-BxZKkct0OIyADWIoA9UITm+3G5Xb3IkOa0nZd40SgOK5DtMqpXFIEPUkJ/woPB90WqlM9UvvuiJHUyAjMeAmCw==
+"@solid-primitives/refs@^1.0.5":
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/refs/-/refs-1.0.8.tgz#2f8e1db2c08601c8a9cf4479b05f490470aaa3ad"
+  integrity sha512-+jIsWG8/nYvhaCoG2Vg6CJOLgTmPKFbaCrNQKWfChalgUf9WrVxWw0CdJb3yX15n5lUcQ0jBo6qYtuVVmBLpBw==
   dependencies:
-    "@solid-primitives/utils" "^6.2.0"
+    "@solid-primitives/utils" "^6.2.3"
 
 "@solid-primitives/resize-observer@^2.0.15":
   version "2.0.18"
@@ -867,6 +843,13 @@
   dependencies:
     "@solid-primitives/utils" "^6.2.0"
 
+"@solid-primitives/rootless@^1.4.5":
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/rootless/-/rootless-1.4.5.tgz#120244fd5e02d9ea111ed2236fedcef572010be4"
+  integrity sha512-GFJE9GC3ojx0aUKqAUZmQPyU8fOVMtnVNrkdk2yS4kd17WqVSpXpoTmo9CnOwA+PG7FTzdIkogvfLQSLs4lrww==
+  dependencies:
+    "@solid-primitives/utils" "^6.2.3"
+
 "@solid-primitives/static-store@^0.0.4":
   version "0.0.4"
   resolved "https://registry.npmjs.org/@solid-primitives/static-store/-/static-store-0.0.4.tgz"
@@ -874,14 +857,21 @@
   dependencies:
     "@solid-primitives/utils" "^6.2.0"
 
-"@solid-primitives/trigger@^1.0.8":
-  version "1.0.8"
-  resolved "https://registry.npmjs.org/@solid-primitives/trigger/-/trigger-1.0.8.tgz"
-  integrity sha512-p9e3FGhCk8sRPxDiCT8vnTE+DOEtrAnJZP4zV0NAV6YGnpV50JATVXNiLjKgyiI/mTIRkWB0+9c5SUbRlqFx6A==
+"@solid-primitives/static-store@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/static-store/-/static-store-0.0.8.tgz#a4d7a93a254bf89d3c5c5f27a031d1a46c34f5c5"
+  integrity sha512-ZecE4BqY0oBk0YG00nzaAWO5Mjcny8Fc06CdbXadH9T9lzq/9GefqcSe/5AtdXqjvY/DtJ5C6CkcjPZO0o/eqg==
   dependencies:
-    "@solid-primitives/utils" "^6.2.1"
+    "@solid-primitives/utils" "^6.2.3"
 
-"@solid-primitives/utils@^6.1.0", "@solid-primitives/utils@^6.2.0":
+"@solid-primitives/trigger@^1.0.11":
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/trigger/-/trigger-1.0.11.tgz#76512de06b3bcc78cd2dbdd2e1726b889f0fe604"
+  integrity sha512-4oc8grBzBit7ByXgE1aZ0QXfhdlhXaiFjDKYsOhRyUJa8fN4hdr2IgsYqjmHwxyjK+Dm2OUwkCI1bGkaLgtgXg==
+  dependencies:
+    "@solid-primitives/utils" "^6.2.3"
+
+"@solid-primitives/utils@^6.2.0":
   version "6.2.0"
   resolved "https://registry.npmjs.org/@solid-primitives/utils/-/utils-6.2.0.tgz"
   integrity sha512-T62WlLwKkbmicsw/xpwMQyv9MmZRSaVyutXfS5icc9v0cb8qGMUxRxr5LVvZHYQCZ9DEFboZB0r711xsbVBbeA==
@@ -890,6 +880,11 @@
   version "6.2.1"
   resolved "https://registry.npmjs.org/@solid-primitives/utils/-/utils-6.2.1.tgz"
   integrity sha512-TsecNzxiO5bLfzqb4OOuzfUmdOROcssuGqgh5rXMMaasoFZ3GoveUgdY1wcf17frMJM7kCNGNuK34EjErneZkg==
+
+"@solid-primitives/utils@^6.2.3":
+  version "6.2.3"
+  resolved "https://registry.yarnpkg.com/@solid-primitives/utils/-/utils-6.2.3.tgz#1abed4c74a2696e08bd2e49cf2b86fc8b87a32bd"
+  integrity sha512-CqAwKb2T5Vi72+rhebSsqNZ9o67buYRdEJrIFzRXz3U59QqezuuxPsyzTSVCacwS5Pf109VRsgCJQoxKRoECZQ==
 
 "@suid/base@0.7.1":
   version "0.7.1"
@@ -1566,16 +1561,6 @@ inherits@2, inherits@^2.0.3, inherits@^2.0.4:
   resolved "https://registry.npmjs.org/inherits/-/inherits-2.0.4.tgz"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
-intl-messageformat@^10.1.0:
-  version "10.5.0"
-  resolved "https://registry.npmjs.org/intl-messageformat/-/intl-messageformat-10.5.0.tgz"
-  integrity sha512-AvojYuOaRb6r2veOKfTVpxH9TrmjSdc5iR9R5RgBwrDZYSmAAFVT+QLbW3C4V7Qsg0OguMp67Q/EoUkxZzXRGw==
-  dependencies:
-    "@formatjs/ecma402-abstract" "1.17.0"
-    "@formatjs/fast-memoize" "2.2.0"
-    "@formatjs/icu-messageformat-parser" "2.6.0"
-    tslib "^2.4.0"
-
 is-extglob@^2.1.1:
   version "2.1.1"
   resolved "https://registry.npmjs.org/is-extglob/-/is-extglob-2.1.1.tgz"
@@ -1831,6 +1816,20 @@ solid-js@^1.7.0:
   dependencies:
     csstype "^3.1.0"
     seroval "^0.5.0"
+
+solid-presence@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/solid-presence/-/solid-presence-0.1.6.tgz#870ba2a16f6ed9f92da1507dbec578776ec80f86"
+  integrity sha512-J0SLoXIkqJ9q1reaCJfcaUFz3XmKxhcKp7iUi8QvrWHHeWbVVy/IIAEd/yaZHRzWs0x61SPUdP5YrparwqmWeA==
+  dependencies:
+    "@corvu/utils" "~0.2.0"
+
+solid-prevent-scroll@^0.1.4:
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/solid-prevent-scroll/-/solid-prevent-scroll-0.1.7.tgz#c85fe900c42fe5208950da3c0ca9aaae10d61255"
+  integrity sha512-DLafct98/nCX9l54MQ+mPbUgmmskSvVr/qxtFEt89SpSvYQkjyX4uviy91TFmzslhSyiVNNBlChpVzRO8eAwzA==
+  dependencies:
+    "@corvu/utils" "~0.2.0"
 
 solid-three@^0.2.0:
   version "0.2.0"

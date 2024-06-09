@@ -214,7 +214,7 @@ const EditorProvider = props =>
   {
     const listenerName = deleteKey? "⌫" : modifiers + key;
     if ( ! listeners .has( listenerName ) ) {
-      console.log( `addEventListener ${listenerName}` );
+      // console.log( `addEventListener ${listenerName}` );
       const targetCodes = deleteKey? [ 'Delete', 'Backspace' ] : [ "Key" + key.toUpperCase() ];
       const hasMeta = !! modifiers ?.includes( '⌘' );
       const hasControl = !! modifiers ?.includes( '⌃' );

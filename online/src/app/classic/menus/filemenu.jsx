@@ -148,7 +148,6 @@ export const FileMenu = () =>
   {
     props = mergeProps( { format: props.ext }, props );
     const params = { drawOutlines: cameraState.outlines }; // for SVG
-    console.log( `ExportItem ${props.label}`);
     return <MenuItem onClick={ exportAs( props.ext, props.mime, props.format, params ) } disabled={props.disabled}>{props.label}</MenuItem>
   }
 

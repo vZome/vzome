@@ -1,10 +1,10 @@
 
-import { Tooltip } from "@kobalte/core";
+import { Tooltip } from "@kobalte/core/tooltip";
 
 export const IconButton = (props) =>
 {
   return (
-    <Tooltip.Root>
+    <Tooltip>
       <Tooltip.Trigger class={`${props.class} corner__icon__button`} onclick={props.onClick}>
         {props.children}
       </Tooltip.Trigger>
@@ -14,6 +14,6 @@ export const IconButton = (props) =>
           <p>{props.tooltip}</p>
         </Tooltip.Content>
       </Tooltip.Portal>
-    </Tooltip.Root>
+    </Tooltip>
   );
 }
