@@ -49,16 +49,11 @@ export const getEmbeddingHtml = ( githubUser, path ) =>
   const designUrl = sharingUrl + tokens .map( encodeURIComponent ) .join( '/' );
   tokens[4] = tokens[4] .substring( 0, tokens[4] .indexOf( '.vZome' ) ) + '.png';
   const imageUrl = sharingUrl + tokens .map( encodeURIComponent ) .join( '/' );
-  return `<figure style="width: 87%; margin: 5%">
-  <vzome-viewer style="width: 100%; height: 60vh"
-      src="${designUrl}" >
-    <img  style="width: 100%"
-      src="${imageUrl}" >
-  </vzome-viewer>
-  <figcaption style="text-align: center; font-style: italic;">
-    REPLACE this caption!
-  </figcaption>
-</figure>
+  return `<vzome-viewer style="width: 100%; height: 60vh"
+    src="${designUrl}" >
+  <img style="width: 100%"
+    src="${imageUrl}" >
+</vzome-viewer>
 `;
 }
 

@@ -8,7 +8,7 @@ import Divider from '@suid/material/Divider';
 import { UrlDialog } from '../dialogs/webloader.jsx';
 import { Tooltip } from '../../framework/tooltip.jsx';
 import { For, createSignal } from 'solid-js';
-import { useEditor } from '../../../viewer/context/editor.jsx';
+import { useEditor } from '../../framework/context/editor.jsx';
 
 const queryParams = new URLSearchParams( window.location.search );
 const enableDropbox = !! queryParams .get( 'enableDropbox' );

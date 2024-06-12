@@ -2,7 +2,7 @@
 import { createEffect, createSignal, mergeProps, onMount } from "solid-js";
 import { unwrap } from "solid-js/store";
 
-import { controllerExportAction, controllerProperty, useEditor, suspendMenuKeyEvents } from "../../../viewer/context/editor.jsx";
+import { controllerExportAction, controllerProperty, useEditor, suspendMenuKeyEvents } from '../../framework/context/editor.jsx';
 import { saveFileAs, openFile, saveTextFileAs, saveTextFile } from "../../../viewer/util/files.js";
 
 import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";

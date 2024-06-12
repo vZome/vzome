@@ -2,7 +2,7 @@
 import { createEffect } from "solid-js";
 import { Divider, Menu, MenuAction, MenuItem, SubMenu, createMenuAction } from "../../framework/menus.jsx";
 
-import { controllerExportAction, subController, useEditor } from "../../../viewer/context/editor.jsx";
+import { controllerExportAction, subController, useEditor } from '../../framework/context/editor.jsx';
 
 const SetColorItem = props =>
 {

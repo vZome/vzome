@@ -1,8 +1,8 @@
 
 import { Menubar } from "@kobalte/core/menubar";
 import { ContextMenu } from "@kobalte/core/context-menu";
-import { createEffect, createSignal, mergeProps } from "solid-js";
-import { useEditor } from "../../viewer/context/editor";
+import { mergeProps } from "solid-js";
+import { useEditor } from "./context/editor.jsx";
 
 const isMac = navigator.userAgentData?.platform === 'macOS' || navigator.userAgent .includes( 'Macintosh' );
 

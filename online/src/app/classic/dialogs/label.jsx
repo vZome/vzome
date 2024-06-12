@@ -6,7 +6,7 @@ import DialogActions from "@suid/material/DialogActions"
 import Button from "@suid/material/Button"
 import TextField from "@suid/material/TextField"
 
-import { subController, useEditor } from '../../../viewer/context/editor.jsx';
+import { subController, useEditor } from '../../framework/context/editor.jsx';
 import { createEffect, createSignal } from "solid-js"
 
 export const LabelDialog = props =>

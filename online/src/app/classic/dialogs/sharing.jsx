@@ -22,7 +22,7 @@ import Link from '@suid/material/Link';
 import { Tooltip } from '../../framework/tooltip.jsx'
 
 import { useViewer } from "../../../viewer/context/viewer.jsx";
-import { useEditor, resumeMenuKeyEvents, suspendMenuKeyEvents } from "../../../viewer/context/editor.jsx";
+import { useEditor, resumeMenuKeyEvents, suspendMenuKeyEvents } from '../../framework/context/editor.jsx';
 import { getUserRepos } from "../../../worker/legacy/gitcommit.js";
 
 const AUTHENTICATING = 0;

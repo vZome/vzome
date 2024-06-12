@@ -1,7 +1,7 @@
 
 import { createContext, createSignal, useContext } from "solid-js";
 
-import { controllerProperty, subController, useEditor } from "../../../viewer/context/editor.jsx";
+import { controllerProperty, subController, useEditor } from '../../framework/context/editor.jsx';
 import { useCamera } from "../../../viewer/context/camera.jsx";
 import { useWorkerClient } from "../../../viewer/context/worker.jsx";
 

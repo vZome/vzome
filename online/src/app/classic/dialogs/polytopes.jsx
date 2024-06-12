@@ -10,7 +10,7 @@ import InputLabel from "@suid/material/InputLabel";
 import MenuItem from "@suid/material/MenuItem";
 import Select from "@suid/material/Select";
 
-import { controllerProperty, subController, useEditor } from '../../../viewer/context/editor.jsx';
+import { controllerProperty, subController, useEditor } from '../../framework/context/editor.jsx';
 
 const indices = [ 0, 1, 2, 3 ];
 const alt = Math.sqrt( 3 ) / 2;

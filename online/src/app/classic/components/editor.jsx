@@ -10,7 +10,7 @@ import { LabelDialog } from '../dialogs/label.jsx';
 import { useCamera } from '../../../viewer/context/camera.jsx';
 import { useViewer } from '../../../viewer/context/viewer.jsx';
 import { InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
-import { useEditor, resumeMenuKeyEvents, suspendMenuKeyEvents } from '../../../viewer/context/editor.jsx';
+import { useEditor, resumeMenuKeyEvents, suspendMenuKeyEvents } from '../../framework/context/editor.jsx';
 import { SceneCanvas } from '../../../viewer/index.jsx';
 
 import { SnapCameraTool } from '../tools/snapcamera.jsx';

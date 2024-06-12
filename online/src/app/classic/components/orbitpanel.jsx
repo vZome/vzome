@@ -6,7 +6,7 @@ import Switch from "@suid/material/Switch";
 import FormControlLabel from "@suid/material/FormControlLabel";
 import InputLabel from "@suid/material/InputLabel";
 
-import { controllerProperty, useEditor } from '../../../viewer/context/editor.jsx';
+import { controllerProperty, useEditor } from '../../framework/context/editor.jsx';
 import { hexToWebColor } from './length.jsx';
 
 export const OrbitDot = props =>

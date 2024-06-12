@@ -2,11 +2,11 @@
 import { createContext, createEffect, createSignal, useContext } from "solid-js";
 import { createStore, unwrap } from "solid-js/store";
 
-import * as actions from '../util/actions.js';
+import * as actions from '../../../viewer/util/actions.js';
 import { Guardrail } from "../guardrail.jsx";
-import { defaultCamera, useCamera } from "./camera.jsx";
-import { useWorkerClient } from "./worker.jsx";
-import { useImageCapture } from "./export.jsx";
+import { defaultCamera, useCamera } from "../../../viewer/context/camera.jsx";
+import { useWorkerClient } from "../../../viewer/context/worker.jsx";
+import { useImageCapture } from "../../../viewer/context/export.jsx";
 
 const initialState = () => ( {
   sharing: {

@@ -13,7 +13,7 @@ import { SystemMenu } from './menus/systemmenu.jsx';
 import { HelpMenu } from './menus/help.jsx';
 
 import { WorkerStateProvider } from '../../viewer/context/worker.jsx';
-import { EditorProvider, controllerProperty, useEditor } from '../../viewer/context/editor.jsx';
+import { EditorProvider, controllerProperty, useEditor } from '../framework/context/editor.jsx';
 import { ViewerProvider } from '../../viewer/context/viewer.jsx';
 import { CameraProvider } from '../../viewer/context/camera.jsx';
 

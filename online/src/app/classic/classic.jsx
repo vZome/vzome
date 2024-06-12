@@ -1,5 +1,5 @@
 
-import { subController, useEditor } from '../../viewer/context/editor.jsx';
+import { subController, useEditor } from '../framework/context/editor.jsx';
 
 import { CameraControls } from './components/camera.jsx';
 import { StrutBuildPanel } from './components/strutbuilder.jsx';

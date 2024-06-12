@@ -1,5 +1,5 @@
 
-import { Select } from "@kobalte/core";
+import { Select } from "@kobalte/core/select";
 
 export const UsersMenu = (props) =>
 {

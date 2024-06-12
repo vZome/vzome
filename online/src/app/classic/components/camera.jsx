@@ -6,9 +6,9 @@ import Stack from "@suid/material/Stack"
 import Switch from "@suid/material/Switch";
 import FormControlLabel from "@suid/material/FormControlLabel";
 
-import { useWorkerClient } from '../../../viewer/context/worker.jsx';
-import { useEditor } from '../../../viewer/context/editor.jsx';
+import { useEditor } from '../../framework/context/editor.jsx';
 import { useSymmetry } from "../context/symmetry.jsx";
+import { useWorkerClient } from '../../../viewer/context/worker.jsx';
 import { CameraProvider, useCamera } from '../../../viewer/context/camera.jsx';
 import { InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
 import { SceneCanvas } from '../../../viewer/scenecanvas.jsx';

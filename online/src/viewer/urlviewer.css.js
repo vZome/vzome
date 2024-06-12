@@ -361,14 +361,6 @@ export const urlViewerCSS = `
 }
 
 
-.undo {
-  top: 0.5em;
-  left: 0.5em;
-}
-.redo {
-  top: 0.5em;
-  left: 4.5em;
-}
 .fullscreen {
   bottom: 0.5em;
   right: 0.5em;

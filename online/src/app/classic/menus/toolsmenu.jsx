@@ -2,8 +2,8 @@
 import { mergeProps } from "solid-js";
 import { Divider, Menu, MenuAction, createMenuAction } from "../../framework/menus.jsx";
 
+import { useEditor } from "../../framework/context/editor.jsx";
 import { useSymmetry } from "../context/symmetry.jsx";
-import { useEditor } from "../../../viewer/context/editor.jsx";
 
 export const SymmetryAction = ( props ) =>
 {

@@ -9,7 +9,7 @@ import FormControlLabel from '@suid/material/FormControlLabel';
 import Checkbox from '@suid/material/Checkbox';
 import CloseIcon from '@suid/icons-material/Close';
 
-import { controllerProperty, useEditor } from '../../../viewer/context/editor.jsx';
+import { controllerProperty, useEditor } from '../../framework/context/editor.jsx';
 
 const ConfigDialogTitle = (props) =>
 {

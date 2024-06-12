@@ -12,7 +12,7 @@ import FormControl from '@suid/material/FormControl';
 import FormLabel from '@suid/material/FormLabel';
 // import Slider from '@suid/material/Slider';
 
-import { controllerProperty, subController, useEditor } from '../../../viewer/context/editor.jsx';
+import { controllerProperty, subController, useEditor } from '../../framework/context/editor.jsx';
 
 
 const sliderLimit = 6;

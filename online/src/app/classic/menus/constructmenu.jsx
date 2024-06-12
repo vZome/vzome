@@ -1,7 +1,7 @@
 
 import { Divider, Menu, SubMenu, createMenuAction } from "../../framework/menus.jsx";
 
-import { useEditor } from "../../../viewer/context/editor.jsx";
+import { useEditor } from '../../framework/context/editor.jsx';
 
 export const ConstructMenu = () =>
 {

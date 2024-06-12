@@ -1,7 +1,7 @@
 
 import { Link } from "@kobalte/core/link";
 import { Divider, Menu, MenuItem, SubMenu } from "../../framework/menus.jsx";
-import { useEditor } from "../../../viewer/context/editor.jsx";
+import { useEditor } from '../../framework/context/editor.jsx';
 
 const LinkItem  = props => (
   <MenuItem>
