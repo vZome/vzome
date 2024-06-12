@@ -529,6 +529,8 @@ public class ApplicationController extends DefaultController
                 case "rootThree":
                 case "heptagon":
                 case "sqrtPhi":
+                case "snubCube":
+                case "snubDodec":
                     return "true"; // these are enabled for everyone
 
                 default:

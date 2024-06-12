@@ -92,7 +92,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         if ( fullPower )
         {
-            JMenu submenu = new JMenu( "New Model..." );
+            JMenu submenu = new JMenu( "New Design..." );
             submenu.add( enableIf( isEditor || readerPreview, createMenuItem( "Zome (Golden) Field", "new-golden", KeyEvent.VK_N, COMMAND ) ) );
 
             String[] fieldNames = controller .getCommandList( "fields" );
@@ -106,11 +106,11 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         }
         else
         {
-            menu .add( createMenuItem( "New Model...", "new", KeyEvent.VK_N, COMMAND ) );
+            menu .add( createMenuItem( "New Design...", "new", KeyEvent.VK_N, COMMAND ) );
         }
         menu .add( createMenuItem( "Open...", "open", KeyEvent.VK_O, COMMAND ) );
         menu .add( createMenuItem( "Open URL...", "openURL" ) );
-        menu .add( createMenuItem( "Open As New Model...", "newFromTemplate" ) );
+        menu .add( createMenuItem( "Open As New Design...", "newFromTemplate" ) );
         if ( developerExtras )
             menu .add( createMenuItem( "Open Deferred...", "openDeferringRedo" ) );
 
