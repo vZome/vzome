@@ -1,7 +1,8 @@
 
 import { createSignal, createEffect } from "solid-js";
 
-import { controllerProperty, resumeMenuKeyEvents, suspendMenuKeyEvents, subController, useEditor } from '../../framework/context/editor.jsx';
+import { controllerProperty, subController, useEditor } from '../../framework/context/editor.jsx';
+import { resumeMenuKeyEvents, suspendMenuKeyEvents } from '../context/commands.jsx';
 import { useSymmetry } from "../context/symmetry.jsx";
 import { ToolConfig } from "../dialogs/toolconfig.jsx";
 

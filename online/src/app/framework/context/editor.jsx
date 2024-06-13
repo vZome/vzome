@@ -21,11 +21,6 @@ const EditorContext = createContext( {} );
 
 const useEditor = () => { return useContext( EditorContext ); };
 
-let menuKeyEventsSuspended = false;
-
-export const suspendMenuKeyEvents = () => menuKeyEventsSuspended = true;
-export const resumeMenuKeyEvents = () => menuKeyEventsSuspended = false;
-
 const EditorProvider = props =>
 {
   const workerClient = useWorkerClient();
@@ -209,41 +204,9 @@ const EditorProvider = props =>
     } );
   }
 
-  const listeners = new Set();
-  const registerKeyListener = ( modifiers, deleteKey, key, handler ) =>
-  {
-    const listenerName = deleteKey? "⌫" : modifiers + key;
-    if ( ! listeners .has( listenerName ) ) {
-      // console.log( `addEventListener ${listenerName}` );
-      const targetCodes = deleteKey? [ 'Delete', 'Backspace' ] : [ "Key" + key.toUpperCase() ];
-      const hasMeta = !! modifiers ?.includes( '⌘' );
-      const hasControl = !! modifiers ?.includes( '⌃' );
-      const hasShift = !! modifiers ?.includes( '⇧' );
-      const hasOption = !! modifiers ?.includes( '⌥' );
-      document.body .addEventListener( "keydown", evt => {
-        if ( menuKeyEventsSuspended )
-          return;
-        if ( targetCodes .indexOf( evt.code ) < 0 )
-          return;
-        if ( hasMeta !== evt.metaKey )
-          return;
-        if ( hasControl !== evt.ctrlKey )
-          return;
-        if ( hasShift !== evt.shiftKey )
-          return;
-        if ( hasOption !== evt.altKey )
-          return;
-        evt .preventDefault(); // Why doesn't this work for ⌘N?
-        handler();
-      } );
-      listeners .add( listenerName );
-    }
-  }
-
   const providerValue = {
     ...store,
     guard, edited,
-    registerKeyListener,
     rootController,
     indexResources,
     controllerAction,

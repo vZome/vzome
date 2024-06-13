@@ -8,7 +8,7 @@ import DialogTitle from '@suid/material/DialogTitle';
 import Button from '@suid/material/Button';
 
 import { createSignal } from "solid-js";
-import { resumeMenuKeyEvents } from '../../framework/context/editor.jsx';
+import { resumeMenuKeyEvents } from '../context/commands.jsx';
 
 export const UrlDialog = ( props ) =>
 {
