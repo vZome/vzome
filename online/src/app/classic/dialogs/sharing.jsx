@@ -1,5 +1,5 @@
 
-import { createEffect, createSignal, onMount } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 import { unwrap } from "solid-js/store";
 
 import TextField from '@suid/material/TextField';
@@ -22,7 +22,8 @@ import Link from '@suid/material/Link';
 import { Tooltip } from '../../framework/tooltip.jsx'
 
 import { useViewer } from "../../../viewer/context/viewer.jsx";
-import { useEditor, resumeMenuKeyEvents, suspendMenuKeyEvents } from "../../../viewer/context/editor.jsx";
+import { useEditor } from '../../framework/context/editor.jsx';
+import { resumeMenuKeyEvents, suspendMenuKeyEvents } from '../context/commands.jsx';
 import { getUserRepos } from "../../../worker/legacy/gitcommit.js";
 
 const AUTHENTICATING = 0;

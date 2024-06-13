@@ -10,7 +10,7 @@ import Button from "@suid/material/Button"
 import Switch from "@suid/material/Switch";
 import FormControlLabel from "@suid/material/FormControlLabel";
 
-import { controllerExportAction, useEditor } from "../../../viewer/context/editor.jsx"
+import { controllerExportAction, useEditor } from '../../framework/context/editor.jsx';
 import { useCamera } from "../../../viewer/context/camera"
 
 const SvgPreviewDialog = props =>

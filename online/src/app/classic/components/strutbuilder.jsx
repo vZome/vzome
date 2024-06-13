@@ -6,7 +6,7 @@ import SettingsIcon from '@suid/icons-material/Settings'
 import Menu from '@suid/material/Menu';
 import MenuItem from '@suid/material/MenuItem';
 
-import { controllerProperty, subController, useEditor } from '../../../viewer/context/editor.jsx';
+import { controllerProperty, subController, useEditor } from '../../framework/context/editor.jsx';
 
 import { StrutLengthPanel } from './length.jsx';
 import { OrbitPanel } from './orbitpanel.jsx';

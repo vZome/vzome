@@ -2,10 +2,11 @@
 import { createEffect, createSignal, mergeProps, onMount } from "solid-js";
 import { unwrap } from "solid-js/store";
 
-import { controllerExportAction, controllerProperty, useEditor, suspendMenuKeyEvents } from "../../../viewer/context/editor.jsx";
+import { controllerExportAction, controllerProperty, useEditor } from '../../framework/context/editor.jsx';
+import { suspendMenuKeyEvents } from '../context/commands.jsx';
 import { saveFileAs, openFile, saveTextFileAs, saveTextFile } from "../../../viewer/util/files.js";
 
-import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
+import { CommandAction, Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 import { UrlDialog } from '../dialogs/webloader.jsx'
 import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
 import { useCamera } from "../../../viewer/context/camera.jsx";
@@ -30,8 +31,7 @@ const NewDesignItem = props =>
 
 export const FileMenu = () =>
 {
-  const { rootController, controllerAction,
-    state, setState,
+  const { rootController, state, setState,
     createDesign, openDesignFile, fetchDesignUrl, importMeshFile, guard, edited } = useEditor();
   const { state: cameraState } = useCamera();
   const [ showDialog, setShowDialog ] = createSignal( false );
@@ -116,34 +116,6 @@ export const FileMenu = () =>
     });
   }
 
-  const doSave = ( chooseFile = false ) =>
-  {
-    let name;
-    const { camera, lighting } = unwrap( cameraState );
-    controllerExportAction( rootController(), 'vZome', { camera, lighting } )
-      .then( text => {
-        name = state?.designName || 'untitled';
-        const mimeType = 'application/xml';
-        if ( state.fileHandle && !chooseFile )
-          return saveTextFile( state.fileHandle, text, mimeType )
-        else
-          return saveTextFileAs( name + '-ONLINE.vZome', text, mimeType );
-      })
-      .then( result => {
-        const { handle, success } = result;
-        if ( success ) {
-          if ( !!handle ) { // file system API supported
-            setState( 'fileHandle', handle );
-            name = handle.name;
-            if ( name .toLowerCase() .endsWith( '.vZome' .toLowerCase() ) )
-              name = name .substring( 0, name.length - 6 );
-          }
-          setState( 'designName', name ); // cooperatively managed by both worker and client
-          controllerAction( rootController(), 'clearChanges' );
-        }
-      })
-  }
-
   const ExportItem = props =>
   {
     props = mergeProps( { format: props.ext }, props );
@@ -168,15 +140,15 @@ export const FileMenu = () =>
           }</For>
         </SubMenu>
 
-        <MenuAction label="Open..." onClick={() => guard(handleOpen)} />
+        <MenuAction label="Open..."     onClick={() => guard(handleOpen)} />
         <MenuAction label="Open URL..." onClick={() => guard(handleShowUrlDialog)} />
         <MenuItem disabled={true}>Open As New Model...</MenuItem>
 
         <Divider/>
 
         <MenuAction label="Close" disabled={true} />
-        <MenuAction label="Save..." onClick={ () => doSave() } mods="⌘" key="S" />
-        <MenuAction label="Save As..." onClick={ () => doSave( true ) }/>
+        <CommandAction label="Save..."    action="Save" />
+        <CommandAction label="Save As..." action="SaveAs" />
         <MenuAction label="Save Template..." disabled={true} />
 
         <Divider/>

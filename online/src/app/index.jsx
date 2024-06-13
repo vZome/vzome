@@ -13,7 +13,7 @@ import { WorkerStateProvider } from '../viewer/context/worker.jsx';
 import { ViewerProvider } from '../viewer/context/viewer.jsx';
 import { DesignViewer } from '../viewer/index.jsx';
 import { CameraProvider } from '../viewer/context/camera.jsx';
-import { EditorProvider } from '../viewer/context/editor.jsx';
+import { EditorProvider } from './framework/context/editor.jsx';
 
 const queryParams = new URLSearchParams( window.location.search );
 const relativeUrl = queryParams.get( 'url' ); // support for legacy viewer usage (old vZome shares)

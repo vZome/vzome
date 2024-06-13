@@ -5,7 +5,7 @@ import DialogTitle from "@suid/material/DialogTitle"
 import DialogActions from "@suid/material/DialogActions"
 import Button from "@suid/material/Button"
 
-import { controllerProperty, subController } from '../../../viewer/context/editor.jsx';
+import { controllerProperty, subController } from '../../framework/context/editor.jsx';
 import { OrbitPanel } from "../components/orbitpanel.jsx";
 
 const OrbitsDialog = props =>

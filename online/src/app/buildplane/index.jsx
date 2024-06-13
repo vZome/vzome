@@ -8,11 +8,12 @@ import Link from '@suid/material/Link'
 import { VZomeAppBar } from '../classic/components/appbar.jsx';
 import { WorkerStateProvider } from '../../viewer/context/worker.jsx';
 import { ViewerProvider } from '../../viewer/context/viewer.jsx';
+import { UndoRedoButtons } from './undoredo.jsx';
 
 import { BuildPlaneTool } from './buildplane.jsx'
 import { DesignViewer } from '../../viewer/index.jsx';
 import { CameraProvider } from '../../viewer/context/camera.jsx';
-import { EditorProvider } from '../../viewer/context/editor.jsx';
+import { EditorProvider } from '../framework/context/editor.jsx';
 
 const WorkerApp = () => (
   <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
@@ -44,8 +45,11 @@ const WorkerApp = () => (
             see <Link target="_blank" href="https://docs.vzome.com/online.html" rel="noopener" >this page</Link>.
           </Typography>
         </> } />
-      <DesignViewer height="100%" width="100%" config={ { useSpinner: true, undoRedo: true } }
-        children3d={ <BuildPlaneTool/> } />
+      <div id='viewer-and-undoredo'>
+        <DesignViewer height="100%" width="100%" config={ { useSpinner: true } }
+          children3d={ <BuildPlaneTool/> } />
+        <UndoRedoButtons/>
+      </div>
     </EditorProvider>
     </ViewerProvider>
     </WorkerStateProvider>

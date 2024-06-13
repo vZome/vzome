@@ -1,6 +1,6 @@
 
-import { useEditor } from "./context/editor";
-import { IconButton } from "./iconbutton";
+import { useEditor } from '../framework/context/editor.jsx';
+import { IconButton } from "../../viewer/iconbutton.jsx";
 
 export const UndoRedoButtons = (props) =>
 {

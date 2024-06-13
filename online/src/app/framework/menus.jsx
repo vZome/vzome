@@ -1,45 +1,45 @@
 
+import { mergeProps } from "solid-js";
+
 import { Menubar } from "@kobalte/core/menubar";
 import { ContextMenu } from "@kobalte/core/context-menu";
-import { createEffect, createSignal, mergeProps } from "solid-js";
-import { useEditor } from "../../viewer/context/editor";
+
+import { useEditor } from "./context/editor.jsx";
+import { useCommands } from "../classic/context/commands.jsx";
 
 const isMac = navigator.userAgentData?.platform === 'macOS' || navigator.userAgent .includes( 'Macintosh' );
 
 export const MenuAction = ( props ) =>
 {
-  let modifiers = props.mods;
-  if ( !isMac && modifiers )
-    modifiers = modifiers .replace( '⌘', '⌃' );
-  if ( !props.disabled ) {
-    if ( props.deleteKey || props.key ) {
-      const { registerKeyListener } = useEditor();
-      registerKeyListener( modifiers, props.deleteKey, props.key, props.onClick );
-    }
-  }
-
   return (
     <Menubar.Item class="dropdown-menu__item" closeOnSelect disabled={props.disabled} onClick={props.onClick}>
       {props.label}
-      <Show when={props.deleteKey || props.key} >
-        <div class="dropdown-menu__item-right-slot">
-          { props.deleteKey? "⌫" : modifiers + props.key }
-        </div>
-      </Show>
     </Menubar.Item>
   );
 }
 
+export const CommandAction = props =>
+  {
+    const { getCommand } = useCommands();
+    const cmd = () => getCommand( props.action || props.label );
+
+    return (
+      <Menubar.Item class="dropdown-menu__item" closeOnSelect disabled={props.disabled} onClick={cmd().handler}>
+        {props.label}
+        <Show when={cmd().keystroke} >
+          <div class="dropdown-menu__item-right-slot">
+            {cmd().keystroke}
+          </div>
+        </Show>
+      </Menubar.Item>
+    );
+  }
+  
 export const MenuItem = ( props ) =>
 {
   return (
     <Menubar.Item class="dropdown-menu__item" closeOnSelect disabled={props.disabled} onClick={props.onClick}>
       {props.children}
-      <Show when={props.code || props.key} >
-        <div class="dropdown-menu__item-right-slot">
-          { props.code? "⌫" : modifiers + props.key }
-        </div>
-      </Show>
     </Menubar.Item>
   );
 }

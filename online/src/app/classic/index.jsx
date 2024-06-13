@@ -13,7 +13,7 @@ import { SystemMenu } from './menus/systemmenu.jsx';
 import { HelpMenu } from './menus/help.jsx';
 
 import { WorkerStateProvider } from '../../viewer/context/worker.jsx';
-import { EditorProvider, controllerProperty, useEditor } from '../../viewer/context/editor.jsx';
+import { EditorProvider, controllerProperty, useEditor } from '../framework/context/editor.jsx';
 import { ViewerProvider } from '../../viewer/context/viewer.jsx';
 import { CameraProvider } from '../../viewer/context/camera.jsx';
 
@@ -21,6 +21,7 @@ import { VZomeAppBar } from './components/appbar.jsx';
 import { ClassicEditor } from './classic.jsx';
 import { SymmetryProvider } from './context/symmetry.jsx';
 import { ImageCaptureProvider } from '../../viewer/context/export.jsx';
+import { CommandsProvider } from './context/commands.jsx';
 
 const Persistence = () =>
 {
@@ -54,6 +55,7 @@ const Classic = () =>
       <ViewerProvider config={{ labels: true }}>
       <EditorProvider>
         <SymmetryProvider>
+        <CommandsProvider>
           <VZomeAppBar title='BETA'
             spacer={ <>
               <Menubar>
@@ -86,6 +88,7 @@ const Classic = () =>
             </> }
           />
           <ClassicEditor/>
+        </CommandsProvider>
         </SymmetryProvider>
       </EditorProvider>
       </ViewerProvider>
