@@ -46,12 +46,18 @@ const serializeLighting = ( lighting, doc ) =>
   return sceneModel;
 }
 
+const serializeViewing = ( camera, doc ) =>
+{
+  const viewing = doc .createElement( "Viewing" );
+  const viewmodel = serializeCamera( camera, doc );
+  viewing .appendChild( viewmodel );
+  return viewing;
+}
+
 const serializeCamera = ( camera, doc ) =>
 {
   const { near, far, width, distance, perspective, lookAt, lookDir, up } = camera;
-  const viewing = doc .createElement( "Viewing" );
   const viewmodel = doc .createElement( "ViewModel" );
-  viewing .appendChild( viewmodel );
   viewmodel .setAttribute( "distance", String( distance ) );
   viewmodel .setAttribute( "far", String( far ) );
   viewmodel .setAttribute( "near", String( near ) );
@@ -79,10 +85,30 @@ const serializeCamera = ( camera, doc ) =>
       child .setAttribute( "z", String( lookDir[ 2 ] ) );
       viewmodel .appendChild( child );
   }
-  return viewing;
+  return viewmodel;
 }
 
-export const serializeVZomeXml = ( legacyDesign, lighting, camera ) =>
+const serializeScenes = ( scenes, doc ) =>
+{
+  const notes = doc .createElement( "notes" );
+  for (const scene of scenes) {
+    const { title, snapshot, camera } = scene;
+    if ( snapshot < 0 )
+      continue; // default scene does not go here
+    const page = doc .createElement( "page" );
+    page .setAttribute( 'title', title );
+    page .setAttribute( 'snapshot', snapshot );
+    const viewModel = serializeCamera( camera, doc );
+    page .appendChild( viewModel );
+    const content = doc .createElement( 'content' ); // TODO: capture description text here
+    content .setAttribute( 'xml:space', 'preserve' );
+    page .appendChild( content );
+    notes .appendChild( page );
+  }
+  return notes;
+}
+
+export const serializeVZomeXml = ( legacyDesign, lighting, camera, scenes ) =>
 {
   const doc = new JavaDomDocument();
 
@@ -98,10 +124,12 @@ export const serializeVZomeXml = ( legacyDesign, lighting, camera ) =>
 
   const frustumRatio = camera.far / camera.distance;
   camera .far = camera .distance * frustumRatio;
-  const viewing = serializeCamera( camera, doc );
+  const viewing = serializeViewing( camera, doc );
+  const notes = serializeScenes( scenes, doc );
 
   newRoot .appendChild( sceneModel );
   newRoot .appendChild( viewing );
+  newRoot .appendChild( notes );
 
   return '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + newRoot .toIndentedString( '' );
 }

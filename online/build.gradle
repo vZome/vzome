@@ -174,6 +174,7 @@ core.config {
     'com/vzome/core/editor/SelectionSummary.java',
     'com/vzome/core/editor/EditHistory.java',
     'com/vzome/core/editor/Branch.java',
+    'com/vzome/core/editor/Snapshot.java',
     
     'com/vzome/core/render/Colors.java',
     'com/vzome/core/viewing/Lights.java',
