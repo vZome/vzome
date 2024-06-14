@@ -204,11 +204,6 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
             break;
           }
 
-          case 'vZome': {
-            exported = serializeVZomeXml( this.legacyDesign, lighting, camera );
-            break;
-          }
-
           case 'pdf':
           case 'ps':
           case 'svg': {

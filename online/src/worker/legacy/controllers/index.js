@@ -109,7 +109,7 @@ const initializeDesign = ( loading, legacyDesign, clientEvents ) =>
     instances .splice( 0, Infinity, ...renderHistory.currentSnapshot );
   } // happens at end of every wrapper.doAction()
 
-  wrapper.serializeVZomeXml = ( camera, lighting ) => serializeVZomeXml( legacyDesign, camera, lighting );
+  wrapper.serializeVZomeXml = ( camera, lighting ) => serializeVZomeXml( legacyDesign, camera, lighting, scenes );
 
   const rendered = { lighting, camera, embedding, orientations, polygons: true, shapes, instances, snapshots, scenes };
   return { wrapper, rendered };

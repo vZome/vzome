@@ -462,6 +462,12 @@ onmessage = ({ data }) =>
         clientEvents( postMessage ) .textExported( action, preview );
         return;
       }
+      if ( action === 'exportText' && parameters.format === 'vZome' ) {
+        const { camera, lighting } = parameters;
+        const xml = design.wrapper .serializeVZomeXml( lighting, camera );
+        clientEvents( postMessage ) .textExported( action, xml );
+        return;
+      }
       try {
         // console.log( "action", uniqueId );
         design.wrapper .doAction( controllerPath, action, parameters );

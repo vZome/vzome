@@ -191,8 +191,6 @@ const makeFloatMatrices = ( matrices ) =>
     editor.setAdapter( null ) // This should trigger NPEs in any edits that have side-effects in their constructor
 
     let editName = xmlElement.getLocalName()
-    if ( editName === "Snapshot" )
-      return null
 
     if ( editName === "ImportColoredMeshJson" )
       return new ImportColoredMeshJson( editor )
@@ -219,6 +217,10 @@ const makeFloatMatrices = ( matrices ) =>
     const editClass = xmlToEditClass( editName )
     if ( editClass ) {
       const edit = new editClass( editor );
+
+      if ( editName === 'Snapshot' ) {
+        edit .recorder = { recordSnapshot: () => {} }; // safe no-op
+      }
 
       // HACK! This works only when the .vZome file has been hand-edited to add label
       //   attributes to GroupSelection commands.
