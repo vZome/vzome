@@ -7,12 +7,22 @@ class VZomeViewerIndexButton extends HTMLElement
   #viewerId;
   #viewer;
   #loadCamera;
+  #button;
+  #maxSceneIndex;
 
   constructor( next=true )
   {
     super();
     this.#next = next;
     this.#loadCamera = false;
+  }
+
+  #disabled( index )
+  {
+    if ( this.#next )
+      return index === this.#maxSceneIndex;
+    else
+      return index === 0;
   }
 
   connectedCallback()
@@ -34,13 +44,25 @@ class VZomeViewerIndexButton extends HTMLElement
       return;
     }
 
-    const button = document .createElement( 'button' );
-    button .textContent = this.getAttribute( 'label' );
-    this .appendChild( button );
-    button.classList .add( 'vzome-viewer-index-button' );
+    this.#button = document .createElement( 'button' );
+    this.#button .textContent = this.getAttribute( 'label' );
+    this .appendChild( this.#button );
+    this.#button.classList .add( 'vzome-viewer-index-button' );
+
+    this.#viewer .addEventListener( "vzome-design-rendered", (e) => {
+      const { index } = e.detail;
+      if ( this.#disabled( index ) )
+        this.#button .setAttribute( 'disabled', 'true' );
+      else
+        this.#button .removeAttribute( 'disabled' );
+    } );
+    this.#viewer .addEventListener( "vzome-scenes-discovered", (e) => {
+      const titles = e.detail;
+      this.#maxSceneIndex = titles.length - 1;
+    } );
 
     const loadParams = { camera: this.#loadCamera };
-    button .addEventListener( "click", () => this.#next? this.#viewer .nextScene( loadParams ) : this.#viewer .previousScene( loadParams ) );
+    this.#button .addEventListener( "click", () => this.#next? this.#viewer .nextScene( loadParams ) : this.#viewer .previousScene( loadParams ) );
   }
 
   static get observedAttributes()

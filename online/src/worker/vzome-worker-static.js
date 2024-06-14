@@ -210,9 +210,9 @@ const openDesign = async ( xmlLoading, name, report, debug, sceneTitle ) =>
 
         // TODO: don't duplicate this in urlLoader()
         const sceneIndex = sceneTitle? getSceneIndex( sceneTitle, design.rendered.scenes ) : 0;
-        events .sceneChanged( prepareSceneResponse( design, sceneIndex ) );
         if ( design.rendered.scenes.length >= 2 )
           events .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+        events .sceneChanged( prepareSceneResponse( design, sceneIndex ) );
 
         report( { type: 'TEXT_FETCHED', payload: { text: xml, name } } ); // NOW it is safe to send the name
       }
@@ -354,9 +354,9 @@ const urlLoader = async ( report, payload ) =>
         // TODO: don't duplicate this in openDesign()
         const sceneIndex = getSceneIndex( sceneTitle, design.rendered.scenes );
         const events = clientEvents( report );
-        events .sceneChanged( prepareSceneResponse( design, sceneIndex ) );
         if ( design.rendered.scenes.length >= 2 )
           events .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+        events .sceneChanged( prepareSceneResponse( design, sceneIndex ) );
       } )
       .catch( error => {
         console.log( error.message );
