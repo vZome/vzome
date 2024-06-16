@@ -2,7 +2,7 @@
 import { ContextMenu } from "@kobalte/core/context-menu";
 
 import { subController, useEditor } from '../../framework/context/editor.jsx';
-import { useCamera } from "../../../viewer/context/camera.jsx";
+import { useCamera, copyOfCamera } from "../../../viewer/context/camera.jsx";
 
 import { ContextMenuItem, ContextMenuSeparator } from "../../framework/menus";
 
@@ -37,11 +37,6 @@ export const ContextualMenu = props =>
   const lookAtThis   = () => lookAt( state.picked.position );
   const lookAtOrigin = () => lookAt( [0,0,0] );
 
-  const copyOfCamera = camera =>
-  {
-    const { up, lookAt, lookDir, ...rest } = camera; // don't want copy-by-reference for the arrays
-    return { ...rest, up: [...up], lookAt: [...lookAt], lookDir: [...lookDir] };
-  }
   const copyCamera = () => setState( 'copiedCamera', copyOfCamera( cameraState.camera ) );
   
   const useCopiedCamera = () =>

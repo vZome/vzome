@@ -4,16 +4,18 @@ const debug = false;
 class VZomeViewerIndexButton extends HTMLElement
 {
   #next;
+  #end;
   #viewerId;
   #viewer;
   #loadCamera;
   #button;
   #maxSceneIndex;
 
-  constructor( next=true )
+  constructor( next=true, end=false )
   {
     super();
     this.#next = next;
+    this.#end = end;
     this.#loadCamera = false;
   }
 
@@ -62,7 +64,22 @@ class VZomeViewerIndexButton extends HTMLElement
     } );
 
     const loadParams = { camera: this.#loadCamera };
-    this.#button .addEventListener( "click", () => this.#next? this.#viewer .nextScene( loadParams ) : this.#viewer .previousScene( loadParams ) );
+    const handler = () =>
+    {
+      if ( this.#end ) {
+        if ( this.#next ) {
+          this.#viewer .selectScene( -1 )
+        } else {
+          this.#viewer .selectScene( 0 )
+        }  
+      } else
+        if ( this.#next ) {
+          this.#viewer .nextScene( loadParams )
+        } else {
+          this.#viewer .previousScene( loadParams )
+        }
+    }
+    this.#button .addEventListener( "click", handler );
   }
 
   static get observedAttributes()
@@ -99,5 +116,21 @@ export class VZomeViewerPrevButton extends VZomeViewerIndexButton
   constructor()
   {
     super( false );
+  }
+}
+
+export class VZomeViewerFirstButton extends VZomeViewerIndexButton
+{
+  constructor()
+  {
+    super( false, true );
+  }
+}
+
+export class VZomeViewerLastButton extends VZomeViewerIndexButton
+{
+  constructor()
+  {
+    super( true, true );
   }
 }

@@ -50,6 +50,7 @@ export const esbuildConfig = {
     'vzome-viewer'        : 'src/wc/vzome-viewer.js',
     'gltf-viewer'         : 'src/wc/gltf/index.jsx',
     'vrml-viewer'         : 'src/wc/vrml/index.jsx',
+    'zometool'            : 'src/wc/zometool.jsx',
   // client rendering code, dynamically imported for fast time-to-first-render
     'vzome-viewer-dynamic': 'src/viewer/index.jsx',
   // Worker entry point, only used as a module worker

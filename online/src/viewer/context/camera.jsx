@@ -194,4 +194,10 @@ const CameraProvider = ( props ) =>
 
 const useCamera = () => { return useContext( CameraContext ); };
 
-export { defaultCamera, useCamera, CameraProvider };
+const copyOfCamera = camera =>
+  {
+    const { up, lookAt, lookDir, ...rest } = camera; // don't want copy-by-reference for the arrays
+    return { ...rest, up: [...up], lookAt: [...lookAt], lookDir: [...lookDir] };
+  }
+
+export { defaultCamera, useCamera, CameraProvider, copyOfCamera };

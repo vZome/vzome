@@ -3,10 +3,10 @@ import { vZomeViewerCSS } from "./vzome-viewer.css";
 
 import { createWorker } from '../viewer/context/worker.jsx';
 import { fetchDesign, selectScene, decodeEntities } from "../viewer/util/actions.js";
-import { VZomeViewerNextButton, VZomeViewerPrevButton } from "./index-buttons.js";
+import { VZomeViewerFirstButton, VZomeViewerLastButton, VZomeViewerNextButton, VZomeViewerPrevButton } from "./index-buttons.js";
 
 const debug = false;
-export class VZomeViewer extends HTMLElement
+class VZomeViewer extends HTMLElement
 {
   #root;
   #container;
@@ -69,6 +69,24 @@ export class VZomeViewer extends HTMLElement
     this.#updateCalled = false;
     this.#loadFlags = {};
     debug && console.log( 'custom element constructed' );
+  }
+
+  selectScene( index, loadFlags={} )
+  {
+    debug && console.log( 'User called selectScene()' );
+    this.#loadFlags = loadFlags;
+    if ( ! this.#indexed ) {
+      console.log( 'This selectScene call ignored; the viewer is not indexed.  Set indexed to true if you want to use selectScene.' );
+      return;
+    }
+    if ( ! this.#sceneIndices ) {
+      console.log( 'This selectScene call ignored; no scenes were discovered.' );
+      return;
+    }
+    this.#sceneIndex = ( index < 0 )? this.#sceneIndices.length-1 : 0;
+    this.#config = { ...this.#config, sceneTitle: this.#sceneIndices[ this.#sceneIndex ] };
+    this.#sceneChanged = true;
+    this.#triggerWorker();
   }
 
   previousScene( loadFlags={} )
@@ -341,5 +359,7 @@ export class VZomeViewer extends HTMLElement
 
 customElements.define( "vzome-viewer", VZomeViewer );
 
+customElements .define( "vzome-viewer-end",      VZomeViewerLastButton );
 customElements .define( "vzome-viewer-next",     VZomeViewerNextButton );
 customElements .define( "vzome-viewer-previous", VZomeViewerPrevButton );
+customElements .define( "vzome-viewer-start",    VZomeViewerFirstButton );
