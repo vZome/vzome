@@ -306,23 +306,17 @@ export const urlViewerCSS = `
 
 .perspective_toggle {
   appearance: none;
-  display: inline-flex;
-  justify-content: center;
   outline: none;
   background-color: rgba(122, 122, 122, 0.3);
   color: rgba(90,90,90, 1);
   fill: currentColor;
-  font-size: 12px;
   transition: 250ms background-color;
   position: absolute;
   top: 0.5em;
   right: 0.5em;
   border-style: none;
-  align-items: center;
-  height: 3rem;
   width: 5rem;
   border-radius: 1.3rem;
-  line-height: 22px;
   padding-block: 0.4rem;
   padding-inline: 0.7rem;
 }
