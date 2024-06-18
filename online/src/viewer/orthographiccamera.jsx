@@ -12,6 +12,13 @@ export const OrthographicCamera = (props) =>
 
   let cam;
 
+  createEffect( () => {
+    if ( props.outlines )
+      cam.layers .enable( 4 );
+    else
+      cam.layers .disable( 4 );
+  });
+
   createEffect(() => {
     cam.near = props.near;
     cam.far = props.far;

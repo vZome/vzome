@@ -20,7 +20,7 @@ import { ErrorAlert } from './alert.jsx';
 import { SceneMenu } from './scenes.jsx';
 import { FullscreenButton } from './fullscreen.jsx';
 import { ExportMenu } from './export.jsx';
-import { CameraMode } from './cameramode.jsx';
+import { CameraModes } from './cameramode.jsx';
 
 let stylesAdded = false; // for the onMount in DesignViewer
 
@@ -102,7 +102,7 @@ const DesignViewer = ( props ) =>
       </Show>
 
       <Show when={config.showPerspective} >
-        <CameraMode/>
+        <CameraModes/>
       </Show>
 
       <Show when={showSceneMenu()}>
