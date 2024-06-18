@@ -315,7 +315,7 @@ export const urlViewerCSS = `
   top: 0.5em;
   right: 0.5em;
   border-style: none;
-  width: 5rem;
+  width: 5em;
   border-radius: 1.3rem;
   padding-block: 0.4rem;
   padding-inline: 0.7rem;
