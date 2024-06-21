@@ -34,7 +34,7 @@ const normalStyle = {
 
 const DesignViewer = ( props ) =>
 {
-  const config = mergeProps( { showScenes: 'none', useSpinner: false, allowFullViewport: false, download: true }, props.config );
+  const config = mergeProps( { showScenes: 'none', useSpinner: false, allowFullViewport: false, download: true, showPerspective: true }, props.config );
   const { scene, waiting } = useViewer();
   let rootRef;
   
