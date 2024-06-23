@@ -12,7 +12,7 @@ import { ToolsMenu } from './menus/toolsmenu.jsx';
 import { SystemMenu } from './menus/systemmenu.jsx';
 import { HelpMenu } from './menus/help.jsx';
 
-import { WorkerStateProvider } from '../../viewer/context/worker.jsx';
+import { WorkerProvider } from '../../viewer/context/worker.jsx';
 import { EditorProvider, controllerProperty, useEditor } from '../framework/context/editor.jsx';
 import { ViewerProvider } from '../../viewer/context/viewer.jsx';
 import { CameraProvider } from '../../viewer/context/camera.jsx';
@@ -49,7 +49,7 @@ const Classic = () =>
 {
   return (
     <ErrorBoundary fallback={ err => <div>{err.toString()}</div> } >
-      <WorkerStateProvider>
+      <WorkerProvider>
       <CameraProvider name='common'>
       <ImageCaptureProvider>
       <ViewerProvider config={{ labels: true }}>
@@ -94,7 +94,7 @@ const Classic = () =>
       </ViewerProvider>
       </ImageCaptureProvider>
       </CameraProvider>
-      </WorkerStateProvider>
+      </WorkerProvider>
     </ErrorBoundary>
   );
 }

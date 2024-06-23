@@ -8,7 +8,7 @@ import { urlViewerCSS } from "./urlviewer.css";
 import { createSignal, getOwner, mergeProps, onCleanup, onMount, Show } from 'solid-js';
 import { render } from 'solid-js/web';
 
-import { WorkerStateProvider } from './context/worker.jsx';
+import { WorkerProvider } from './context/worker.jsx';
 import { ViewerProvider, useViewer } from './context/viewer.jsx';
 import { InteractionToolProvider } from './context/interaction.jsx';
 import { CameraProvider } from './context/camera.jsx';
@@ -132,7 +132,7 @@ const UrlViewer = (props) =>
 {
   return (
     <CameraProvider>
-      <WorkerStateProvider workerClient={props.workerClient}>
+      <WorkerProvider workerClient={props.workerClient}>
         <ViewerProvider config={{ url: props.url, preview: true, debug: false, showScenes: props.showScenes, labels: props.config?.labels, source: props.config?.download }}>
           <DesignViewer config={ { ...props.config, allowFullViewport: true } }
               componentRoot={props.componentRoot}
@@ -140,7 +140,7 @@ const UrlViewer = (props) =>
             {props.children}
           </DesignViewer>
         </ViewerProvider>
-      </WorkerStateProvider>
+      </WorkerProvider>
     </CameraProvider>
   );
 }

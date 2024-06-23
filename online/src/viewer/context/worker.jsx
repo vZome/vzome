@@ -70,9 +70,9 @@ const stubContext = {
   subscribeFor: () => { throw new Error( 'NO WORKER PROVIDER!'); },
 }
 
-const WorkerStateContext = createContext( stubContext );
+const WorkerContext = createContext( stubContext );
 
-const WorkerStateProvider = ( props ) =>
+const WorkerProvider = ( props ) =>
 {
   const workerClient = props.workerClient || createWorker();
   const [ isWorkerReady, setReady ] = createSignal( false );
@@ -80,12 +80,12 @@ const WorkerStateProvider = ( props ) =>
   workerClient .subscribeFor( 'CONTROLLER_CREATED', () => setReady( true ) ); // TODO: change to a specific WORKER_READY message
   
   return (
-    <WorkerStateContext.Provider value={ { ...workerClient, isWorkerReady } }>
+    <WorkerContext.Provider value={ { ...workerClient, isWorkerReady } }>
       {props.children}
-    </WorkerStateContext.Provider>
+    </WorkerContext.Provider>
   );
 }
 
-const useWorkerClient = () => { return useContext( WorkerStateContext ); };
+const useWorkerClient = () => { return useContext( WorkerContext ); };
 
-export { createWorker, WorkerStateProvider, useWorkerClient };
+export { createWorker, WorkerProvider, useWorkerClient };

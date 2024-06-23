@@ -3,7 +3,7 @@ import { createContext, createEffect, createSignal, useContext } from "solid-js"
 import { createStore } from "solid-js/store";
 
 import { getModelURL } from "../classic/components/folder.jsx";
-import { WorkerStateProvider } from "../../viewer/context/worker.jsx";
+import { WorkerProvider } from "../../viewer/context/worker.jsx";
 import { ViewerProvider } from "../../viewer/context/viewer.jsx";
 
 const CHIRAL_PAIRS = { f1: [ 'f1L', 'f1R' ] };
@@ -84,10 +84,10 @@ export const ModelWorker = props =>
   const config = { url: getModelURL( props.model ), preview: true, debug: false, sceneTitle: props.sceneTitle, labels: props.labels };
 
   return (
-    <WorkerStateProvider>
+    <WorkerProvider>
       <ViewerProvider config={config} >
         {props.children}
       </ViewerProvider>
-    </WorkerStateProvider>
+    </WorkerProvider>
   )
 }

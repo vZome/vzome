@@ -7,14 +7,14 @@ import Link from '@suid/material/Link'
 
 import { VZomeAppBar } from '../classic/components/appbar.jsx';
 import { DesignBrowser } from './browser.jsx';
-import { WorkerStateProvider } from '../../viewer/context/worker.jsx';
+import { WorkerProvider } from '../../viewer/context/worker.jsx';
 import { ViewerProvider } from '../../viewer/context/viewer.jsx';
 import { CameraProvider } from '../../viewer/context/camera.jsx';
 
 const Browser = () => (
   <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
     <CameraProvider>
-    <WorkerStateProvider>
+    <WorkerProvider>
     <ViewerProvider>
       <VZomeAppBar title='Browser'
         about={ <>
@@ -44,7 +44,7 @@ const Browser = () => (
         </> } />
       <DesignBrowser />
     </ViewerProvider>
-    </WorkerStateProvider>
+    </WorkerProvider>
     </CameraProvider>
   </ErrorBoundary>
 )
