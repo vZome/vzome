@@ -132,7 +132,6 @@ const ViewerProvider = ( props ) =>
     scene, setScene, requestDesign, scenes, source, problem, waiting, labels,
     clearProblem: () => setProblem( '' ),
     requestScene: ( name, config ) => postMessage( selectScene( name, config ) ),
-    fetchPreview: ( url, config )  => postMessage( fetchDesign( url, config ) ),
   };
 
   return (
