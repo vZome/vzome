@@ -135,6 +135,45 @@ button:disabled > .toolbar-image {
   filter: brightness(0.5);
 }
 
+#model-article {
+  display: flex;
+}
+
+.scenes-dialog-content {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  height: 75dvh;
+}
+
+.scenes-list {
+  margin-inline-end: 20px;
+  overflow: auto;
+}
+
+.scenes-entry {
+  border: 1px solid gray;
+  border-radius: 4px;
+  padding: 0.5rem;
+  margin: 0.4rem;
+  display: grid;
+  grid-template-columns: 15% 85%;
+}
+.scenes-entry:hover {
+  background-color: aliceblue;
+}
+.scenes-selected {
+  border: 2px solid royalblue;
+}
+
+.scenes-canvas-outer {
+  position: relative;
+}
+
+.scenes-canvas-inner {
+  position: absolute;
+  inset: 0;
+}
+
 #change-size {
   border-top: 1px solid darkgray;
 }

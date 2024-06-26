@@ -45,9 +45,6 @@ const SvgPreviewDialog = props =>
     }
   });
 
-  createEffect( () => {
-  });
-
   const exportAs = ( ext, mime ) => () =>
   {
     props.close();

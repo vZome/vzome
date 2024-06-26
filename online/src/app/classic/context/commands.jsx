@@ -64,7 +64,7 @@ export const CommandsProvider = props =>
       controllerExportAction( rootController(), 'cmesh', { selection: true } )
         .then( text => {
           navigator.clipboard .writeText( text );
-          });
+        });
     }
     const doPaste = () =>
     {
