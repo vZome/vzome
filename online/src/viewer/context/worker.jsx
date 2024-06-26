@@ -9,11 +9,17 @@ const createWorker = () =>
     .then( module => {
       const blob = new Blob( [ `import "${module.WORKER_ENTRY_FILE_URL}";` ], { type: "text/javascript" } );
       const worker = new Worker( URL.createObjectURL( blob ), { type: "module" } );
-      worker.onmessage = onWorkerMessage;
-      return worker;
+      return new Promise( resolve => {
+        worker .onmessage = ( { data } ) => {
+          // This makes sure we don't post any messages to the worker until it is initialized.
+          //  Making sure the design controller is created is separate!
+          // console.log( 'got response from worker: ', data );
+          worker .onmessage = onWorkerMessage;
+          resolve( worker );
+        };
+        worker .postMessage( { type: 'WORKER_PROBE' } );
+      } );
     } );
-    // TODO: another promise here that resolves only when the worker has responded to an initial message,
-    //   then we can get rid of isWorkerReady
 
   const postMessage = event =>
   {
@@ -64,7 +70,6 @@ const createWorker = () =>
 }
 
 const stubContext = {
-  isWorkerReady: () => false,
   postMessage:  () => { throw new Error( 'NO WORKER PROVIDER!'); },
   subscribe:    () => { throw new Error( 'NO WORKER PROVIDER!'); },
   subscribeFor: () => { throw new Error( 'NO WORKER PROVIDER!'); },
@@ -77,7 +82,8 @@ const WorkerProvider = ( props ) =>
   const workerClient = props.workerClient || createWorker();
   const [ isWorkerReady, setReady ] = createSignal( false );
 
-  workerClient .subscribeFor( 'CONTROLLER_CREATED', () => setReady( true ) ); // TODO: change to a specific WORKER_READY message
+  // make sure we don't request any properties or actions too early
+  workerClient .subscribeFor( 'CONTROLLER_CREATED', () => setReady( true ) );
   
   return (
     <WorkerContext.Provider value={ { ...workerClient, isWorkerReady } }>
