@@ -3,16 +3,6 @@
   "configurations": [
 
     {
-      "name":             "online",
-
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:8532/",
-      "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
-      }
-    },
-    {
       "name":             "TESTS",
 
       "type": "chrome",
@@ -23,51 +13,11 @@
       }
     },
     {
-      "name":             "classic w/design",
-
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:8532/classic/index.html?design=//raw.githubusercontent.com/vorth/vzome-sharing/main/2021/09/11/10-10-11-rose-olive-bombshell-solid/rose-olive-bombshell-solid.vZome",
-      "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
-      }
-    },
-    {
       "name":             "classic PWA",
 
       "type": "chrome",
       "request": "launch",
       "url": "https://localhost:8532/classic?debug=true",
-      "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
-      }
-    },
-    {
-      "name":             "gltf component",
-
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:8532/test/gltf.html",
-      "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
-      }
-    },
-    {
-      "name":             "fivecell",
-
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:8532/fivecell?debug=true",
-      "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
-      }
-    },
-    {
-      "name":             "bhall",
-
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:8532/bhall/basic?debug=true",
       "pathMapping": {
         "/": "${workspaceFolder}/online/src"
       }

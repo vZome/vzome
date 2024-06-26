@@ -9,7 +9,7 @@ import Link from '@suid/material/Link'
 // import { DesignHistoryInspector } from './components/inspector.jsx'
 import { getModelURL } from './classic/components/folder.jsx';
 import { VZomeAppBar } from './classic/components/appbar.jsx';
-import { WorkerStateProvider } from '../viewer/context/worker.jsx';
+import { WorkerProvider } from '../viewer/context/worker.jsx';
 import { ViewerProvider } from '../viewer/context/viewer.jsx';
 import { DesignViewer } from '../viewer/index.jsx';
 import { CameraProvider } from '../viewer/context/camera.jsx';
@@ -48,7 +48,7 @@ const Online = () =>
   return (
     <ErrorBoundary fallback={err => err}>
       <CameraProvider>
-      <WorkerStateProvider>
+      <WorkerProvider>
       <ViewerProvider config={config}>
       <EditorProvider>
         <VZomeAppBar title={ 'Viewer' } showOpen={true}
@@ -76,7 +76,7 @@ const Online = () =>
         <DesignViewer height="100%" width="100%" config={ { useSpinner: true, showScenes: 'named' } } />
       </EditorProvider>
       </ViewerProvider>
-      </WorkerStateProvider>
+      </WorkerProvider>
       </CameraProvider>
     </ErrorBoundary>
   );

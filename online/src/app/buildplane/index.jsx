@@ -6,7 +6,7 @@ import Typography from '@suid/material/Typography'
 import Link from '@suid/material/Link'
 
 import { VZomeAppBar } from '../classic/components/appbar.jsx';
-import { WorkerStateProvider } from '../../viewer/context/worker.jsx';
+import { WorkerProvider } from '../../viewer/context/worker.jsx';
 import { ViewerProvider } from '../../viewer/context/viewer.jsx';
 import { UndoRedoButtons } from './undoredo.jsx';
 
@@ -18,7 +18,7 @@ import { EditorProvider } from '../framework/context/editor.jsx';
 const WorkerApp = () => (
   <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
     <CameraProvider>
-    <WorkerStateProvider>
+    <WorkerProvider>
     <ViewerProvider>
     <EditorProvider>
       <VZomeAppBar showOpen pathToRoot='../models' forDebugger={false} title='Buildplane'
@@ -52,7 +52,7 @@ const WorkerApp = () => (
       </div>
     </EditorProvider>
     </ViewerProvider>
-    </WorkerStateProvider>
+    </WorkerProvider>
     </CameraProvider>
   </ErrorBoundary>
 );

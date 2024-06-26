@@ -7,7 +7,7 @@ import { Switch } from "@kobalte/core/switch";
 
 import { CameraProvider, DesignViewer } from '../viewer/index.jsx';
 import { ViewerProvider, useViewer } from '../viewer/context/viewer.jsx';
-import { WorkerStateProvider } from '../viewer/context/worker.jsx';
+import { WorkerProvider } from '../viewer/context/worker.jsx';
 
 import { instructionsCSS } from "./zometool.css";
 import { urlViewerCSS } from "../viewer/urlviewer.css.js";
@@ -82,7 +82,7 @@ const ZometoolInstructions = props =>
 
   return (
     <CameraProvider>
-      <WorkerStateProvider>
+      <WorkerProvider>
         <ViewerProvider config={{ url: props.url, preview: true, debug: false, showScenes: false, labels: true, source: true }}>
           <div class='zometool-instructions'>
 
@@ -102,7 +102,7 @@ const ZometoolInstructions = props =>
             <StepControls show={steps()} />
           </div>
         </ViewerProvider>
-      </WorkerStateProvider>
+      </WorkerProvider>
     </CameraProvider>
   );
 }

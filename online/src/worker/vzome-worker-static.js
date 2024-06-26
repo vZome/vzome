@@ -385,6 +385,10 @@ onmessage = ({ data }) =>
     
   switch (type) {
 
+    case 'WORKER_PROBE':
+      postMessage( { type: 'WORKER_READY' } );
+      break;
+
     case 'WINDOW_LOCATION':
       baseURL = payload;
       importLegacy()

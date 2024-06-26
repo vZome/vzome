@@ -107,14 +107,14 @@ let knownUsers = filterUniqueUsers( [ defaultGithubUser, ...storedUsers ] );
 
 export const DesignBrowser = () =>
 {
-  const { fetchPreview } = useViewer();
+  const { requestDesign } = useViewer();
   const [ url, setUrl ] = createSignal( null );
   const [ path, setPath ] = createSignal( null );
   const selectUrl = ( newUrl, path ) =>
   {
     if ( newUrl === url() )
       return;
-    fetchPreview( newUrl, { preview: true } );
+    requestDesign( newUrl, { preview: true } );
     setPath( path );
     setUrl( newUrl );
   }
