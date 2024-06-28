@@ -204,6 +204,18 @@ const EditorProvider = props =>
     } );
   }
 
+  const openDesignFile = ( file, debug ) =>
+  {
+    setState( 'source', { type: 'file', data: file } );
+    workerClient .postMessage( actions.openDesignFile( file, debug ) );
+  }
+
+  const fetchDesignUrl = ( url, config ) =>
+    {
+      setState( 'source', { type: 'url', data: url } );
+      workerClient .postMessage( actions.fetchDesign( url, config ) );
+    }
+  
   const providerValue = {
     ...store,
     guard, edited,
@@ -212,8 +224,8 @@ const EditorProvider = props =>
     controllerAction,
     shareToGitHub,
     createDesign,
-    openDesignFile: ( file, debug )  => workerClient .postMessage( actions.openDesignFile( file, debug ) ),
-    fetchDesignUrl: ( url, config )  => workerClient .postMessage( actions.fetchDesign( url, config ) ),
+    openDesignFile,
+    fetchDesignUrl,
     importMeshFile: ( file, format ) => workerClient .postMessage( actions.importMeshFile( file, format ) ),
     startPreviewStrut: ( id, dir )   => workerClient .postMessage( actions.startPreviewStrut( id, dir ) ),
     movePreviewStrut:  ( direction ) => workerClient .postMessage( actions.movePreviewStrut( direction ) ),

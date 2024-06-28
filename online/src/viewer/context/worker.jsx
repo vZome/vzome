@@ -1,5 +1,6 @@
 
 import { createContext, createSignal, useContext } from "solid-js";
+import { generateUUID } from "../util/actions.js";
 
 const createWorker = () =>
 {
@@ -34,6 +35,18 @@ const createWorker = () =>
       } );
   }
 
+  const requestPromises = {};
+
+  const postRequest = ( request ) =>
+  {
+    const requestId = generateUUID();
+    return new Promise( ( resolve, reject ) => {
+      requestPromises[ requestId ] = { resolve, reject };
+      postMessage( { ...request, requestId } );
+    } );
+  }
+  
+
   const subscribers = [];
 
   const subscribe = subscriber => subscribers .push( subscriber );
@@ -62,11 +75,25 @@ const createWorker = () =>
   }
 
   const onWorkerMessage = message =>
+  {
+    const { requestId } = message.data;
+    if ( !! requestId ) {
+      requestPromises[ requestId ] .resolve( message.data );
+      return;
+    }
     subscribers .forEach( subscriber => subscriber .onWorkerMessage( message.data ) );
+  }
   const onWorkerError = message =>
+  {
+    const { requestId } = message;
+    if ( !! requestId ) {
+      requestPromises[ requestId ] .reject( message );
+      return;
+    }
     subscribers .forEach( subscriber => subscriber .onWorkerError( message ) );
+  }
 
-  return { postMessage, subscribe, subscribeFor, unsubscribe };
+  return { postMessage, subscribe, subscribeFor, unsubscribe, postRequest };
 }
 
 const stubContext = {

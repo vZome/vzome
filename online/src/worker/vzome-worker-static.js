@@ -305,7 +305,7 @@ const fileImporter = ( report, payload ) =>
     .then( text => {
       try {
         design.wrapper .doAction( '', action, { vef: text } );
-        reportDefaultScene( postMessage );
+        reportDefaultScene( report );
       } catch (error) {
         console.log( `${action} actionPerformed error: ${error.message}` );
         report( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
@@ -379,14 +379,22 @@ const reportDefaultScene = report =>
 onmessage = ({ data }) =>
 {
   // console.log( `TO worker: ${JSON.stringify( data.type, null, 2 )}` );
-  const { type, payload } = data;
+  const { type, payload, requestId } = data;
+
+  let sendToClient = postMessage;
+  if ( !! requestId ) {
+    sendToClient = message => {
+      message.requestId = requestId;
+      postMessage( message );
+    }
+  }
 
   try {
     
   switch (type) {
 
     case 'WORKER_PROBE':
-      postMessage( { type: 'WORKER_READY' } );
+      sendToClient( { type: 'WORKER_READY' } );
       break;
 
     case 'WINDOW_LOCATION':
@@ -396,15 +404,15 @@ onmessage = ({ data }) =>
       break;
 
     case 'URL_PROVIDED':
-      urlLoader( postMessage, payload );
+      urlLoader( sendToClient, payload );
       break;
   
     case 'FILE_PROVIDED':
-      fileLoader( postMessage, payload );
+      fileLoader( sendToClient, payload );
       break;
 
     case 'MESH_FILE_PROVIDED':
-      fileImporter( postMessage, payload );
+      fileImporter( sendToClient, payload );
       break;
 
     case 'SCENE_SELECTED': {
@@ -413,7 +421,7 @@ onmessage = ({ data }) =>
       const { title, load } = payload;
       const index = getSceneIndex( title, design.rendered.scenes );
       const scene = prepareSceneResponse( design, index ); // takes a normalized scene
-      filterScene( postMessage, load )( { type: 'SCENE_RENDERED', payload: { scene } } );
+      filterScene( sendToClient, load )( { type: 'SCENE_RENDERED', payload: { scene } } );
       break;
     }
 
@@ -422,7 +430,7 @@ onmessage = ({ data }) =>
       // TODO: this won't work any more, getScene is gone
       const scene = design.wrapper .getScene( before || after, !!before );
       const { edit } = scene;
-      postMessage( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
+      sendToClient( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
       break;
     }
 
@@ -433,10 +441,10 @@ onmessage = ({ data }) =>
           const { controllerPath, action, parameters } = actionData;
           design.wrapper .doAction( controllerPath, action, parameters );
         }
-        reportDefaultScene( postMessage );
+        reportDefaultScene( sendToClient );
       } catch (error) {
         console.log( `Macro error: ${error.message}` );
-        postMessage( { type: 'ALERT_RAISED', payload: `Failed to complete macro.` } );
+        sendToClient( { type: 'ALERT_RAISED', payload: `Failed to complete macro.` } );
       }
       break;
     }
@@ -445,40 +453,40 @@ onmessage = ({ data }) =>
     {
       const { controllerPath, action, parameters } = payload;
       if ( action === 'connectTrackballScene' ) {
-        connectTrackballScene( postMessage );
+        connectTrackballScene( sendToClient );
         return;
       }
       if ( action === 'shareToGitHub' ) {
         const { target, config, data } = parameters;
-        shareToGitHub( target, config, data, postMessage );
+        shareToGitHub( target, config, data, sendToClient );
         return;
       }
       if ( action === 'snapCamera' ) {
         const symmController = design.wrapper .getControllerByPath( controllerPath );
         const { up, lookDir } = parameters;
         const result = design.wrapper .snapCamera( symmController.controller, up, lookDir );
-        postMessage( { type: 'CAMERA_SNAPPED', payload: { up: result.up, lookDir: result.lookDir } } );
+        sendToClient( { type: 'CAMERA_SNAPPED', payload: { up: result.up, lookDir: result.lookDir } } );
         return;
       }
       if ( action === 'exportText' && parameters.format === 'shapes' ) {
         const { camera, lighting } = parameters;
         const preview = exportPreview( camera, lighting );
-        clientEvents( postMessage ) .textExported( action, preview );
+        clientEvents( sendToClient ) .textExported( action, preview );
         return;
       }
       if ( action === 'exportText' && parameters.format === 'vZome' ) {
         const { camera, lighting } = parameters;
         const xml = design.wrapper .serializeVZomeXml( lighting, camera );
-        clientEvents( postMessage ) .textExported( action, xml );
+        clientEvents( sendToClient ) .textExported( action, xml );
         return;
       }
       try {
         // console.log( "action", uniqueId );
         design.wrapper .doAction( controllerPath, action, parameters );
-        reportDefaultScene( postMessage );
+        reportDefaultScene( sendToClient );
       } catch (error) {
         console.log( `${action} actionPerformed error: ${error.message}` );
-        postMessage( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
+        sendToClient( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
       }
       break;
     }
@@ -490,7 +498,7 @@ onmessage = ({ data }) =>
         design.wrapper .setProperty( controllerPath, name, value );
       } catch (error) {
         console.log( `${action} setProperty error: ${error.message}` );
-        postMessage( { type: 'ALERT_RAISED', payload: `Failed to set property: ${name}` } );
+        sendToClient( { type: 'ALERT_RAISED', payload: `Failed to set property: ${name}` } );
       }
       break;
     }
@@ -504,14 +512,14 @@ onmessage = ({ data }) =>
 
     case 'NEW_DESIGN_STARTED':
       const { field } = payload;
-      createDesign( postMessage, field );
+      createDesign( sendToClient, field );
       break;
 
     case 'STRUT_CREATION_TRIGGERED':
     case 'JOIN_BALLS_TRIGGERED':
     {
       design.wrapper .doAction( 'buildPlane', type, payload );
-      reportDefaultScene( postMessage );
+      reportDefaultScene( sendToClient );
       break;
     }
 
@@ -538,7 +546,7 @@ onmessage = ({ data }) =>
     case 'PREVIEW_STRUT_END':
     {
       design.wrapper .endPreviewStrut();
-      reportDefaultScene( postMessage );
+      reportDefaultScene( sendToClient );
       break;
     }
   
@@ -547,6 +555,6 @@ onmessage = ({ data }) =>
   }
   } catch (error) {
     console.log( `${type} onmessage error: ${error.message}` );
-    postMessage( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${type}` } );
+    sendToClient( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${type}` } );
   }
 }
