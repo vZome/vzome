@@ -145,9 +145,26 @@ button:disabled > .toolbar-image {
   height: 75dvh;
 }
 
-.scenes-list {
+.scenes-list-outer {
   margin-inline-end: 20px;
+  display: grid;
+  grid-template-rows: 1fr min-content;
+  gap: 10px;
+}
+
+.scenes-scroller {
+  position: relative;
   overflow: auto;
+}
+
+.scenes-list {
+  position: absolute;
+  inset: 0;
+}
+
+.scenes-add {
+  border-block-start: 1px solid gray;
+  padding-block-start: 10px;
 }
 
 .scenes-entry {

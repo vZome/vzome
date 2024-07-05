@@ -461,6 +461,15 @@ onmessage = ({ data }) =>
         shareToGitHub( target, config, data, sendToClient );
         return;
       }
+      if ( action === 'duplicateScene' ) {
+        if ( !design?.rendered?.scenes )
+          return;
+        const { after, camera } = parameters;
+        const { snapshot } = design.rendered.scenes[ after ];
+        design.rendered.scenes .splice( after+1, 0, { title: '', snapshot, camera } );
+        clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+        return;
+      }
       if ( action === 'snapCamera' ) {
         const symmController = design.wrapper .getControllerByPath( controllerPath );
         const { up, lookDir } = parameters;
