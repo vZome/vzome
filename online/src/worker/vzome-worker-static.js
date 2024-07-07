@@ -30,7 +30,7 @@ const prepareDefaultScene = design =>
 const prepareSceneResponse = ( design, sceneIndex ) =>
 {
   let scene = { ...design.rendered.scenes[ sceneIndex ] };
-  if ( ! scene.snapshot ) {
+  if ( typeof scene.snapshot === "undefined" ) {
     console.log( `warning: no scene with index ${sceneIndex}` );
     scene = { ...design.rendered.scenes[ 0 ] };
   }
@@ -452,44 +452,56 @@ onmessage = ({ data }) =>
     case 'ACTION_TRIGGERED':
     {
       const { controllerPath, action, parameters } = payload;
-      if ( action === 'connectTrackballScene' ) {
-        connectTrackballScene( sendToClient );
-        return;
-      }
-      if ( action === 'shareToGitHub' ) {
-        const { target, config, data } = parameters;
-        shareToGitHub( target, config, data, sendToClient );
-        return;
-      }
-      if ( action === 'duplicateScene' ) {
-        if ( !design?.rendered?.scenes )
-          return;
-        const { after, camera } = parameters;
-        const { snapshot } = design.rendered.scenes[ after ];
-        design.rendered.scenes .splice( after+1, 0, { title: '', snapshot, camera } );
-        clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
-        return;
-      }
-      if ( action === 'snapCamera' ) {
-        const symmController = design.wrapper .getControllerByPath( controllerPath );
-        const { up, lookDir } = parameters;
-        const result = design.wrapper .snapCamera( symmController.controller, up, lookDir );
-        sendToClient( { type: 'CAMERA_SNAPPED', payload: { up: result.up, lookDir: result.lookDir } } );
-        return;
-      }
-      if ( action === 'exportText' && parameters.format === 'shapes' ) {
-        const { camera, lighting } = parameters;
-        const preview = exportPreview( camera, lighting );
-        clientEvents( sendToClient ) .textExported( action, preview );
-        return;
-      }
-      if ( action === 'exportText' && parameters.format === 'vZome' ) {
-        const { camera, lighting } = parameters;
-        const xml = design.wrapper .serializeVZomeXml( lighting, camera );
-        clientEvents( sendToClient ) .textExported( action, xml );
-        return;
-      }
       try {
+        if ( action === 'connectTrackballScene' ) {
+          connectTrackballScene( sendToClient );
+          return;
+        }
+        if ( action === 'shareToGitHub' ) {
+          const { target, config, data } = parameters;
+          shareToGitHub( target, config, data, sendToClient );
+          return;
+        }
+        if ( action === 'captureScene' ) {
+          if ( !design?.rendered?.scenes )
+            return;
+          const { after, camera } = parameters;
+          const { snapshots, scenes, instances } = design.rendered;
+          const snapshot = snapshots.length;
+          snapshots .push( [ ...instances ] );
+          scenes .splice( after+1, 0, { title: '', snapshot, camera } );
+          design.wrapper .doAction( controllerPath, 'Snapshot', { id: snapshot } ); // no-op, but the edit must be in the history
+          clientEvents( sendToClient ) .scenesDiscovered( scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          return;
+        }
+        if ( action === 'duplicateScene' ) {
+          if ( !design?.rendered?.scenes )
+            return;
+          const { after, camera } = parameters;
+          const { snapshot } = design.rendered.scenes[ after ];
+          design.rendered.scenes .splice( after+1, 0, { title: '', snapshot, camera } );
+          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          return;
+        }
+        if ( action === 'snapCamera' ) {
+          const symmController = design.wrapper .getControllerByPath( controllerPath );
+          const { up, lookDir } = parameters;
+          const result = design.wrapper .snapCamera( symmController.controller, up, lookDir );
+          sendToClient( { type: 'CAMERA_SNAPPED', payload: { up: result.up, lookDir: result.lookDir } } );
+          return;
+        }
+        if ( action === 'exportText' && parameters.format === 'shapes' ) {
+          const { camera, lighting } = parameters;
+          const preview = exportPreview( camera, lighting );
+          clientEvents( sendToClient ) .textExported( action, preview );
+          return;
+        }
+        if ( action === 'exportText' && parameters.format === 'vZome' ) {
+          const { camera, lighting } = parameters;
+          const xml = design.wrapper .serializeVZomeXml( lighting, camera );
+          clientEvents( sendToClient ) .textExported( action, xml );
+          return;
+        }
         // console.log( "action", uniqueId );
         design.wrapper .doAction( controllerPath, action, parameters );
         reportDefaultScene( sendToClient );

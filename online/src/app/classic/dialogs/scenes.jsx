@@ -17,13 +17,14 @@ import { useCamera } from "../../../viewer/context/camera.jsx"
 
 const AddSceneButton = props =>
 {
-  const { state: { source }, rootController, controllerAction } = useEditor();
+  const { rootController, controllerAction, sceneIndex, setSceneIndex } = useEditor();
   const { state: { camera } } = useCamera();
 
   const addScene = () =>
     {
-      const params = { after: props.sceneIndex, camera: unwrap( camera ) };
+      const params = { after: sceneIndex(), camera: unwrap( camera ) };
       controllerAction( rootController(), 'duplicateScene', params );
+      setSceneIndex( i => ++i );
     }
   
   return (
@@ -33,8 +34,8 @@ const AddSceneButton = props =>
 
 const ScenesDialog = props =>
 {
-  const [ sceneIndex, setSceneIndex ] = createSignal( 1 );
   const { scenes } = useViewer();
+  const { sceneIndex, setSceneIndex } = useEditor();
 
   return (
     <CameraProvider>
@@ -47,7 +48,7 @@ const ScenesDialog = props =>
                 <div class='scenes-list'>
                   <For each={ scenes } >{ (scene,i) =>
                     (i() > 0) &&
-                    <div class={ i()===sceneIndex()? 'scenes-entry scenes-selected' : 'scenes-entry'}
+                    <div class={ i()===sceneIndex()? 'scenes-entry scenes-selected' : 'scenes-entry' }
                         onClick={ () => setSceneIndex( i() ) }>
                       <span>{i()}</span>
                       <span>{scene.title}</span>
@@ -56,7 +57,7 @@ const ScenesDialog = props =>
                 </div>
               </div>
               <div class='scenes-add'>
-                <AddSceneButton sceneIndex={sceneIndex()}/>
+                <AddSceneButton/>
               </div>
             </div>
             <div class='scenes-canvas-outer'>

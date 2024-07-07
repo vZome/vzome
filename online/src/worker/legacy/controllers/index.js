@@ -96,7 +96,10 @@ const initializeDesign = ( loading, legacyDesign, clientEvents ) =>
   const orbitSource = legacyDesign .getOrbitSource();
   const { orientations } = orbitSource;
   const embedding = orbitSource .getEmbedding();
+  
+  // TODO: get rid of this; snapshots should be captured as needed, during interpret() above
   const snapshots = snapshotNodes .map( nodeId => renderHistory .getSnapshot( nodeId, true ) );
+
   const instances = snapshots .pop();
 
   const wrapper = createControllers( legacyDesign, renderingChanges, clientEvents );
