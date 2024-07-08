@@ -19,9 +19,10 @@ export const instructionsCSS = `
 
 .switch {
   height: 30px;
+  margin: 6px;
 }
 .step_switch__label {
-  margin-right: 6px;
+  margin-right: 8px;
   color: hsl(240 6% 10%);
   user-select: none;
   font-size: 17px;
@@ -102,7 +103,11 @@ export const instructionsCSS = `
   height: 100%;
   display: grid;
   grid-template-rows: min-content 1fr 90px;
-  gap: 0.5em;
+}
+
+.zometool-parts-container {
+  max-height: 28dvh;
+  overflow: auto;
 }
 
 `;

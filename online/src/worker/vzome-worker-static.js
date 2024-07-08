@@ -1,6 +1,7 @@
 
 import { resourceIndex, importLegacy, importZomic } from '../revision.js';
 import { commitToGitHub } from './legacy/gitcommit.js';
+import { assemblePartsList } from './legacy/partslist.js';
 import { normalizePreview } from './legacy/preview.js'; // does not actually use any legacy module code
 
 // const uniqueId = Math.random();
@@ -116,7 +117,12 @@ const fetchFileText = selected =>
 
 const clientEvents = report =>
 {
-  const sceneChanged = ( scene, edit='--START--' ) => report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
+  const sceneChanged = ( scene, edit='--START--' ) =>
+  {
+    report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
+    const bom = assemblePartsList( scene.shapes );
+    report( { type: 'BOM_CHANGED', payload: bom } );
+  }
 
   const shapeDefined = shape => report( { type: 'SHAPE_DEFINED', payload: shape } );
 
@@ -374,6 +380,9 @@ const reportDefaultScene = report =>
   const { shapes, embedding } = prepareSceneResponse( design, 0 ); // takes a normalized scene
   // never send camera or lighting!
   clientEvents( report ) .sceneChanged( { shapes, embedding, polygons: true } );
+
+  // Now compute an updated parts list
+  const bom = assemblePartsList( shapes );
 }
 
 onmessage = ({ data }) =>
