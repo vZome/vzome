@@ -22,7 +22,7 @@ const StepControls = props =>
   const atStart = () => index() === 1;  // NOTE: scene 0 is the default scene, which we ignore
   const atEnd = () => index() === maxIndex();
 
-  createEffect( () => setMaxIndex( scenes?.length ) );
+  createEffect( () => setMaxIndex( scenes?.length - 1 ) );
 
   createEffect( () => {
     if ( props.show ) {
@@ -59,6 +59,7 @@ const StepControls = props =>
             <path d="M14.91 6.71c-.39-.39-1.02-.39-1.41 0L8.91 11.3c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L11.03 12l3.88-3.88c.38-.39.38-1.03 0-1.41z"></path>
           </svg>
         </Button>
+        <h1 class='step-number'>{index()}</h1>
         <Button disabled={atEnd()}   class='step-button' tooltip='Next step'     onClick={ change( +1 ) } >
           <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false" class="step-button-svg">
             <path d="M9.31 6.71c-.39.39-.39 1.02 0 1.41L13.19 12l-3.88 3.88c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41L10.72 6.7c-.38-.38-1.02-.38-1.41.01z"></path>
@@ -87,7 +88,7 @@ const ZometoolInstructions = props =>
           <div class='zometool-instructions'>
 
             <Switch class="switch" checked={steps()} onChange={toggleSteps}>
-              <Switch.Label class="switch__label">Show Build Steps</Switch.Label>
+              <Switch.Label class="step_switch__label">Show Build Steps</Switch.Label>
               <Switch.Input class="switch__input" />
               <Switch.Control class="switch__control">
                 <Switch.Thumb class="switch__thumb" />

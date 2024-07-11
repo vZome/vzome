@@ -1,5 +1,9 @@
 export const urlViewerCSS = `
 
+svg {
+  height: 100%;
+}
+
 .vzome-label {
   color: var(--vzome-label-color);
   background-color: var(--vzome-label-background);
@@ -487,10 +491,10 @@ export const urlViewerCSS = `
   align-items: center;
   height: 19px;
   width: 33px;
-  border: 1px solid hsl(240 5% 84%);
+  border: 1px solid hsl(200 98% 39%);
   border-radius: 12px;
   padding: 0 2px;
-  background-color: hsl(240 6% 90%);
+  background-color: hsl(200deg 38.91% 75%);
   transition: 250ms background-color;
 }
 .switch__input:focus-visible + .switch__control {

@@ -20,6 +20,18 @@ export const instructionsCSS = `
 .switch {
   height: 30px;
 }
+.step_switch__label {
+  margin-right: 6px;
+  color: hsl(240 6% 10%);
+  user-select: none;
+  font-size: 17px;
+}
+
+.step-number {
+  min-width: 2em;
+  display: flex;
+  justify-content: center;
+}
 
 .step-buttons {
   margin: auto;
@@ -34,8 +46,8 @@ export const instructionsCSS = `
   height: 60px;
   outline: none;
   border: 1px solid black;
-  border-radius: 8px;
-  padding: 0 30px;
+  border-radius: 18px;
+  padding: 0 16px;
   background-color: hsl(200 98% 39%);
   color: white;
   font-size: 3.5rem;
@@ -44,8 +56,21 @@ export const instructionsCSS = `
 
 .limit-step {
   height: 48px;
-  padding: 0 18px;
+  padding: 0 12px;
   font-size: 2rem;
+}
+
+@media ( max-width: 650px ) {
+
+  .step-button {
+    padding: 0 0;
+  }
+  .limit-step {
+    padding: 0 6px;
+  }
+  .step-number {
+    min-width: 1.4em;
+  }
 }
 
 .step-button-svg {
@@ -63,7 +88,7 @@ export const instructionsCSS = `
   background-color: hsl(201 98% 48%);
 }
 .step-button:disabled {
-  background-color: hsl(200 98% 30%);
+  background-color: hsl(200deg 44.28% 69.6%);
   color: rgba(255, 255, 255, 0.2);
   border-color: light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
 }
@@ -76,7 +101,7 @@ export const instructionsCSS = `
 .zometool-instructions {
   height: 100%;
   display: grid;
-  grid-template-rows: min-content 1fr min-content;
+  grid-template-rows: min-content 1fr 90px;
   gap: 0.5em;
 }
 
