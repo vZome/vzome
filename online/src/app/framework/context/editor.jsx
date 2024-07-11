@@ -7,6 +7,7 @@ import { Guardrail } from "../guardrail.jsx";
 import { defaultCamera, useCamera } from "../../../viewer/context/camera.jsx";
 import { useWorkerClient } from "../../../viewer/context/worker.jsx";
 import { useImageCapture } from "../../../viewer/context/export.jsx";
+import { useViewer } from "../../../viewer/context/viewer.jsx";
 
 const initialState = () => ( {
   sharing: {
@@ -25,9 +26,12 @@ const EditorProvider = props =>
 {
   const workerClient = useWorkerClient();
   const { resetCamera, state: cameraState } = useCamera();
+  const { resetScenes } = useViewer();
   const { capturer } = useImageCapture();
   // Beware, createStore does not make a copy, shallow or deep!
   const [ state, setState ] = createStore( { ...initialState() } );
+
+  const [ sceneIndex, setSceneIndex ] = createSignal( 0 );
 
   const [ showGuardrail, setShowGuardrail ] = createSignal( false );
   let continuation;
@@ -114,7 +118,12 @@ const EditorProvider = props =>
         }
         setState.apply( null, [ 'controller', ...names, name, value ] );
         break;
-
+      
+      case 'SCENES_DISCOVERED':
+        if ( sceneIndex() === 0 )
+          setSceneIndex( 1 );
+        break;
+        
       case 'SYMMETRY_CHANGED':
       case 'DESIGN_XML_PARSED':
       case 'LAST_BALL_CREATED':
@@ -122,7 +131,6 @@ const EditorProvider = props =>
       case 'INSTANCE_REMOVED':
       case 'FETCH_STARTED':
       case 'TRACKBALL_SCENE_LOADED':
-      case 'SCENES_DISCOVERED':
       case 'CAMERA_SNAPPED':
         // TODO: do these require any state changes?
         break;
@@ -173,6 +181,8 @@ const EditorProvider = props =>
   const createDesign = ( field ) =>
   {
     resetCamera();
+    resetScenes();
+    setSceneIndex( 0 );
     workerClient .postMessage( actions.newDesign( field ) );
   }
 
@@ -206,15 +216,21 @@ const EditorProvider = props =>
 
   const openDesignFile = ( file, debug ) =>
   {
+    resetCamera();
+    resetScenes();
+    setSceneIndex( 0 );
     setState( 'source', { type: 'file', data: file } );
     workerClient .postMessage( actions.openDesignFile( file, debug ) );
   }
 
   const fetchDesignUrl = ( url, config ) =>
-    {
-      setState( 'source', { type: 'url', data: url } );
-      workerClient .postMessage( actions.fetchDesign( url, config ) );
-    }
+  {
+    resetCamera();
+    resetScenes();
+    setSceneIndex( 0 );
+    setState( 'source', { type: 'url', data: url } );
+    workerClient .postMessage( actions.fetchDesign( url, config ) );
+  }
   
   const providerValue = {
     ...store,
@@ -226,6 +242,7 @@ const EditorProvider = props =>
     createDesign,
     openDesignFile,
     fetchDesignUrl,
+    sceneIndex, setSceneIndex,
     importMeshFile: ( file, format ) => workerClient .postMessage( actions.importMeshFile( file, format ) ),
     startPreviewStrut: ( id, dir )   => workerClient .postMessage( actions.startPreviewStrut( id, dir ) ),
     movePreviewStrut:  ( direction ) => workerClient .postMessage( actions.movePreviewStrut( direction ) ),

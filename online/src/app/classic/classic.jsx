@@ -1,40 +1,12 @@
 
 import { subController, useEditor } from '../framework/context/editor.jsx';
 
-import Button from "@suid/material/Button"
-
 import { CameraControls } from './components/camera.jsx';
 import { StrutBuildPanel } from './components/strutbuilder.jsx';
 import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx';
 import { SceneEditor } from './components/editor.jsx';
 import { ErrorAlert } from "./components/alert.jsx";
-import { createSignal } from 'solid-js';
-import { ScenesDialog } from './dialogs/scenes.jsx';
-import { resumeMenuKeyEvents, suspendMenuKeyEvents } from './context/commands.jsx';
-
-const SceneControls = props =>
-{
-  const buttonStyle = { margin: '4px', 'min-width': '10rem' };
-  const [ showScenes, setShowScenes ] = createSignal( false );
-  const doOpen = () =>
-  {
-    setShowScenes( true );
-    suspendMenuKeyEvents();
-  }
-  const doClose = () =>
-  {
-    resumeMenuKeyEvents();
-    setShowScenes( false );
-  }
-  
-  return (
-    <div id='model-article' >
-      <Button variant="outlined" style={buttonStyle} onClick={ ()=>{} } disabled={true} >Capture Scene</Button>
-      <Button variant="outlined" style={buttonStyle} onClick={ doOpen } >Show Scenes</Button>
-      <ScenesDialog open={ showScenes() } close={ doClose } />
-    </div>
-  );
-}
+import { SceneControls } from './components/scenecontrols.jsx';
 
 export const ClassicEditor = () =>
 {
