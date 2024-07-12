@@ -87,7 +87,9 @@ public class JsonMapper
                     // a strut
                     Direction orbit = shape .getOrbit();
                     node .put( "orbit", orbit .getName() );
+                    node .put( "orbitC", orbit .getCanonicalName() );
                     AlgebraicNumber length = shape .getLength();
+                    node .put( "length", this .objectMapper .valueToTree( length.toTrailingDivisor() ) .toString() );
                     name = orbit .getLengthName( length );
                     if ( name == "" ) {
                         StringBuffer buf = new StringBuffer();

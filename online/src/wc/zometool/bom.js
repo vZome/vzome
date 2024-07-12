@@ -1,4 +1,29 @@
 
+const svgMapping = {
+  ball: 'ball',
+
+  b0:   '[[0,0,1],[0,0,1]]:[-1,1,1]',
+  b1:   '[[0,0,1],[0,0,1]]:[1,0,1]',
+  b2:   '[[0,0,1],[0,0,1]]:[0,1,1]',
+
+  y0:   '[[0,0,1],[2,-1,1]]:[-1,1,1]',
+  y1:   '[[0,0,1],[2,-1,1]]:[1,0,1]',
+  y2:   '[[0,0,1],[2,-1,1]]:[0,1,1]',
+
+  r00:  '[[-1,1,1],[0,0,1]]:[2,-1,1]',
+  r0:   '[[-1,1,1],[0,0,1]]:[-1,1,1]',
+  r1:   '[[-1,1,1],[0,0,1]]:[1,0,1]',
+  r2:   '[[-1,1,1],[0,0,1]]:[0,1,1]',
+
+  g0:   '[[2,-1,1],[5,-3,1]]:[-1,1,1]',
+  g1:   '[[2,-1,1],[5,-3,1]]:[1,0,1]',
+  g2:   '[[2,-1,1],[5,-3,1]]:[0,1,1]',
+
+  hg0:  '[[2,-1,1],[5,-3,1]]:[-1,1,2]',
+  hg1:  '[[2,-1,1],[5,-3,1]]:[1,0,2]',
+  hg2:  '[[2,-1,1],[5,-3,1]]:[0,1,2]',
+}
+
 const partcodeMapping = {
   ball: 'PZB-BAL-W',
   b0:   'PST-B0-BLU',
@@ -19,28 +44,16 @@ const partcodeMapping = {
   hg2:  'PST-HG2-GRN',
 }
 
-const lengthMapping = {
-  ' :2 -phi'        : 'r00',
-  " :1/2"           : 'hg1',
-  " :1/2*phi"       : 'hg2',
-  " :-1/2 +1/2*phi" : 'hg0',
-}
 
 export const normalizeBOM = rawBoM =>
 {
-  for (const key in lengthMapping) {
-    if ( Object.hasOwnProperty.call( rawBoM, key )) {
-      const count = rawBoM[ key ];
-      rawBoM[ lengthMapping[ key ] ] = count;
-    }
-  }
-
   const bom = [];
   // the order in partcodeMapping will be the order in bom
   for (const key in partcodeMapping) {
-    if ( Object.hasOwnProperty.call( rawBoM, key ) ) {
+    const rawKey = svgMapping[ key ];
+    if ( Object.hasOwnProperty.call( rawBoM, rawKey ) ) {
       const partNum = partcodeMapping[ key ];
-      const count = rawBoM[ key ];
+      const count = rawBoM[ rawKey ];
       bom .push( { key, partNum, count } )
     }
   }
