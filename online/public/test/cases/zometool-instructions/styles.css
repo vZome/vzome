@@ -22,43 +22,9 @@ h1 {
   margin: auto;
 }
 
-/* // =============================================================================
-// Styling for model instructions
-// ============================================================================= */
-
-.zometool-model {
-  max-width: 1000px;
-  min-height: 75dvh;
-  margin: auto;
-
-  font-size: large;
-  display: grid;
-  gap: 2rem;
-  grid-template-columns: 2fr 1fr;
-  grid-template-rows: 3fr 1fr 2fr 4fr;
-  grid-template-areas:
-    "viewer description"
-    "viewer difficulty"
-    "viewer products"
-    "viewer parts";
-}
-
-.zometool-model-description {
-  grid-area: description;
-}
-
-.zometool-model-difficulty {
-  grid-area: difficulty;
-}
-
 zometool-instructions {
-  grid-area: viewer;
-}
-
-zometool-parts-required {
-  grid-area: parts;
-}
-
-zometool-covering-products {
-  grid-area: products;
+  position: absolute;
+  inset: 1rem;
+  border: 1px solid black;
+  border-radius: 8px;
 }

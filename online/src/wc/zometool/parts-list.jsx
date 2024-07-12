@@ -1,0 +1,129 @@
+import { render } from "solid-js/web";
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@suid/material";
+
+import { instructionsCSS } from "./zometool.css.js";
+
+const debug = false;
+
+const ZometoolParts = props =>
+{
+  const partSx = { maxHeight: '12px', padding: '0', width: '210px', lineHeight: '0' };
+  return (
+    <div class='zometool-parts-table'>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 250 }} aria-label="parts table" size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 'bold' }}>Part</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Length</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }} align="left">Count</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+          <For each={props.bom}>{ ({ key, count }) =>
+            <TableRow
+              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+            >
+              <TableCell align="left" component="th" scope="row" sx={partSx}>
+                <img src={`/images/parts/${key}.svg`}></img>
+              </TableCell>
+              <TableCell component="th" scope="row">{ (key==='ball')? '' : key }</TableCell>
+              <TableCell align="right">{count}</TableCell>
+            </TableRow>
+          }</For>
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
+  );
+}
+
+const renderComponent = ( container, bom ) =>
+  {
+    const bindComponent = () =>
+    {
+      return (
+        <ZometoolParts bom={bom}>
+        </ZometoolParts>
+      );
+    }
+  
+    // Apply external override styles to the shadow dom
+    // const linkElem = document.createElement("link");
+    // linkElem .setAttribute("rel", "stylesheet");
+    // linkElem .setAttribute("href", "./zometool-styles.css");
+    // container .appendChild( linkElem );
+  
+    render( bindComponent, container );
+  }
+
+export class ZometoolPartsElement extends HTMLElement
+{
+  #instructionsId;
+  #instructions;
+
+  constructor()
+  {
+    super();
+
+    debug && console.log( 'ZometoolPartsElement constructed' );
+  }
+
+  connectedCallback()
+  {
+    if ( !! this.#instructionsId ) {
+      this.#instructions = document .querySelector( `#${this.#instructionsId}` );
+      if ( ! this.#instructions ) {
+        console.error( `No zometool-instructions with id "${this.#instructionsId}" found.` );
+      } else if ( this.#instructions .getParts === undefined ) {
+        console.error( `Element with id "${this.#instructionsId}" is not a zometool-instructions.` );
+        return;
+      }
+    }
+    if ( ! this.#instructions ) {
+      this.#instructions = document .querySelector( 'zometool-instructions' );
+    }
+    if ( ! this.#instructions ) {
+      console.error( `No zometool-instructions found.` );
+      return;
+    }
+
+    this.#instructions .addEventListener( "zometool-instructions-loaded", (e) => {
+      debug && console.log( JSON.stringify( e.detail ) );
+
+      this .appendChild( document.createElement("style") ).textContent = instructionsCSS;
+      const container = document.createElement("div");
+      container .classList .add( 'zometool-parts-container' );
+      this .appendChild( container );
+  
+      renderComponent( container, e.detail )
+    } );
+
+    debug && console.log( 'ZometoolPartsElement connected' );
+  }
+
+  static get observedAttributes()
+  {
+    return [ "instructions" ];
+  }
+
+  attributeChangedCallback( attributeName, _oldValue, _newValue )
+  {
+    debug && console.log( 'ZometoolPartsElement attribute changed' );
+    switch (attributeName) {
+
+    case "instructions":
+      this.#instructionsId = _newValue;
+      break;
+    }
+  }
+}
+

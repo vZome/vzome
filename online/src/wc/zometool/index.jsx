@@ -5,14 +5,17 @@ import { render } from 'solid-js/web';
 import { Button } from "@kobalte/core/button";
 import { Switch } from "@kobalte/core/switch";
 
-import { CameraProvider, DesignViewer } from '../viewer/index.jsx';
-import { ViewerProvider, useViewer } from '../viewer/context/viewer.jsx';
-import { WorkerProvider } from '../viewer/context/worker.jsx';
+import { CameraProvider, DesignViewer } from '../../viewer/index.jsx';
+import { ViewerProvider, useViewer } from '../../viewer/context/viewer.jsx';
+import { WorkerProvider, useWorkerClient } from '../../viewer/context/worker.jsx';
 
-import { instructionsCSS } from "./zometool.css";
-import { urlViewerCSS } from "../viewer/urlviewer.css.js";
+import { instructionsCSS } from "./zometool.css.js";
+import { urlViewerCSS } from "../../viewer/urlviewer.css.js";
 
-const debug = true;
+import { ZometoolPartsElement } from './parts-list.jsx';
+import { normalizeBOM } from './bom.js';
+
+const debug = false;
 
 const StepControls = props =>
 {
@@ -44,6 +47,11 @@ const StepControls = props =>
     }
     setIndex( newIndex );
   }
+
+  const { subscribeFor } = useWorkerClient();
+  subscribeFor( 'BOM_CHANGED', bom => {
+    props.dispatch( new CustomEvent( 'zometool-instructions-loaded', { detail: normalizeBOM( bom ) } ) );
+  } );
 
   return (
     <div class="step-buttons">
@@ -100,7 +108,7 @@ const ZometoolInstructions = props =>
                 height="100%" width="100%" >
             </DesignViewer>
 
-            <StepControls show={steps()} />
+            <StepControls show={steps()} dispatch={props.dispatch} />
           </div>
         </ViewerProvider>
       </WorkerProvider>
@@ -108,12 +116,12 @@ const ZometoolInstructions = props =>
   );
 }
 
-const renderComponent = ( url, container ) =>
+const renderComponent = ( url, container, dispatch ) =>
   {
     const bindComponent = () =>
     {
       return (
-        <ZometoolInstructions url={url} >
+        <ZometoolInstructions url={url} dispatch={dispatch} >
         </ZometoolInstructions>
       );
     }
@@ -142,14 +150,14 @@ class ZometoolInstructionsElement extends HTMLElement
     this.#container = document.createElement("div");
     root.appendChild( this.#container );
 
-    debug && console.log( 'custom element constructed' );
+    debug && console.log( 'ZometoolInstructionsElement constructed' );
   }
 
   connectedCallback()
   {
-    debug && console.log( 'custom element connected' );
+    debug && console.log( 'ZometoolInstructionsElement connected' );
 
-    renderComponent( this.#url, this.#container );
+    renderComponent( this.#url, this.#container, evt => this.dispatchEvent(evt) );
   }
 
   static get observedAttributes()
@@ -160,14 +168,42 @@ class ZometoolInstructionsElement extends HTMLElement
   // This callback can happen *before* connectedCallback()!
   attributeChangedCallback( attributeName, _oldValue, _newValue )
   {
-    debug && console.log( 'custom element attribute changed' );
+    debug && console.log( 'ZometoolInstructionsElement attribute changed' );
     switch (attributeName) {
 
     case "src":
       this.#url = new URL( _newValue, window.location ) .toString();
     }
   }
+
+  getParts()
+  {
+    debug && console.log( 'ZometoolInstructionsElement.getParts called' );
+    /*
+
+    I have a few problems to solve before this will be useful.
+
+    1. The "orbit" and "name" properties exported in .shapes.json (by desktop vZome)
+        are not carried over from the worker to the client.  (See 4 below.)
+
+    2. Whatever metadata comes to the client should come when there is no preview, also,
+        though this scenario is not likely.  I may just consider this a non-requirement.
+
+    3. The .shapes.json exported from vZome Online classic does NOT carry those properties!
+        Again, since Paul is the expected author, and he is unlikely to use Online for a
+        while, this can be deferred.
+
+    4. The value space of the "name" property is not exactly useful.  I should normalize
+        to Zometool standard part IDs on the worker.
+
+    5. vZome does not constrain colors, so unless Paul starts using the "orbits as palette"
+        idea, we'll have trouble recognizing colored parts.
+
+    */
+  }
 }
 
 customElements.define( "zometool-instructions", ZometoolInstructionsElement );
+customElements.define( "zometool-parts-required", ZometoolPartsElement );
+
 
