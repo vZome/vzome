@@ -55,14 +55,6 @@ const ViewerProvider = ( props ) =>
     }
   }
 
-  const logShapes = () =>
-  {
-    console.log( 'SHAPES:' );
-    Object.values( scene.shapes ) .forEach( shape => {
-      console.log( `  ${shape.id} ${shape.zone} [${shape.instances.length}]` );
-    })
-  }
-
   subscribeFor( 'SYMMETRY_CHANGED', ( { orientations } ) => {
     setScene( 'orientations', reconcile( orientations ) );
   });

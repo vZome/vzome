@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="64" field="golden" version="7.1">
-  <EditHistory editNumber="26" lastStickyEdit="26">
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="DEV" field="golden" version="7.1">
+  <EditHistory editNumber="28" lastStickyEdit="26">
     <StrutCreation anchor="0 0 0 0 0 0" index="0" len="2 2"/>
     <StrutCreation anchor="2 2 0 0 0 0" index="0" len="2 4"/>
     <StrutCreation anchor="4 6 0 0 0 0" index="16" len="4 6"/>
@@ -27,6 +27,8 @@
     <Snapshot id="5"/>
     <StrutCreation anchor="5 8 3 5 0 0" dir="green" index="2" len="2 3"/>
     <Snapshot id="6"/>
+    <StrutCreation anchor="0 1 1 2 0 0" dir="navy" index="10" len="1 1"/>
+    <StrutCreation anchor="0 1 1 2 0 0" dir="navy" index="48" len="0 1"/>
   </EditHistory>
   <notes>
     <page snapshot="3" title="">
@@ -76,7 +78,7 @@
     <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
   </sceneModel>
   <Viewing>
-    <ViewModel distance="108.0" far="216.0" near="0.10000000149011612" parallel="false" stereoAngle="0.0" width="54.0">
+    <ViewModel distance="108.73126983642578" far="217.4625244140625" near="0.10067709535360336" parallel="false" stereoAngle="0.0" width="54.365631103515625">
       <LookAtPoint x="0.0" y="0.0" z="0.0"/>
       <UpDirection x="-0.05732567980885506" y="0.8251294493675232" z="-0.5620279908180237"/>
       <LookDirection x="0.500179648399353" y="-0.4634685516357422" z="-0.7314486503601074"/>

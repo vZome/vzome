@@ -8,6 +8,15 @@ export const realizeShape = ( shape ) =>
   })
   const faces = shape.getFaceSet().toArray().map( (value) => ({ vertices: [...value.array] }) ); // not a no-op, converts to POJS
   const id = 's' + shape.getGuid().toString();
+  const name = shape .getName();
+  if ( name === 'ball' ) {
+    return { id, name, vertices, faces };
+  }
+  else if ( !!name ) {
+    const orbit = shape .getOrbit() .getCanonicalName();
+    const length = JSON.stringify( shape .getLength() .toTrailingDivisor() );
+    return { id, orbit, length, vertices, faces };
+  }
   return { id, vertices, faces };
 }
 
@@ -50,8 +59,6 @@ export const renderedModelTransducer = ( shapeCache, clientEvents ) =>
     let shape = shapeCache[ shapeId ];
     if ( ! shape ) {
       shape = realizeShape( rm .getShape() );
-      const orbit = rm .getStrutOrbit();
-      shape.zone = orbit? `${orbit.toString()} ${rm.getStrutZone()}` : 'Ball';
       shapeCache[ shapeId ] = shape;
       clientEvents .shapeDefined( shape );
     }
