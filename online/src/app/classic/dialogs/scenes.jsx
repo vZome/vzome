@@ -32,6 +32,29 @@ const AddSceneButton = props =>
   );
 }
 
+const MoveSceneButton = props =>
+{
+  const { scenes } = useViewer();
+  const { rootController, controllerAction, sceneIndex, setSceneIndex } = useEditor();
+
+  const atLimit = () =>
+  {
+    const target = sceneIndex() + props.change;
+    return ( target === 0 ) || ( target >= scenes.length );
+  }
+  
+  const moveScene = () =>
+  {
+    const params = { index: sceneIndex(), change: props.change };
+    controllerAction( rootController(), 'moveScene', params );
+    setSceneIndex( i => i + props.change );
+  }
+  
+  return (
+    <Button variant="outlined" size="medium" onClick={moveScene} disabled={atLimit()}>{props.label}</Button>
+  );
+}
+  
 const ScenesDialog = props =>
 {
   const { scenes } = useViewer();
@@ -58,6 +81,8 @@ const ScenesDialog = props =>
               </div>
               <div class='scenes-add'>
                 <AddSceneButton/>
+                <MoveSceneButton change={-1} label='Move Up' />
+                <MoveSceneButton change={1} label='Move Down' />
               </div>
             </div>
             <div class='scenes-canvas-outer'>

@@ -483,6 +483,16 @@ onmessage = ({ data }) =>
           clientEvents( sendToClient ) .scenesDiscovered( scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
           return;
         }
+        if ( action === 'moveScene' ) {
+          if ( !design?.rendered?.scenes )
+            return;
+          const { index, change } = parameters;
+          const target = index + change;
+          const { scenes } = design.rendered;
+          scenes[ target ] = scenes .splice( index, 1, scenes[ target ] )[ 0 ];
+          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          return;
+        }
         if ( action === 'duplicateScene' ) {
           if ( !design?.rendered?.scenes )
             return;
