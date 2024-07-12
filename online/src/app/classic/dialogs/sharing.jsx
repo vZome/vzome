@@ -42,7 +42,8 @@ const ConfigPage = ( props ) =>
     scenes .slice( 1 ) .map( scene => {
       if ( scene.title ) indexed = false;
     });
-    setState( 'sharing', { style: indexed? 'indexed' : 'menu (all)' } );
+    const style = noScenes()? 'none' : indexed? 'indexed' : 'menu (all)';
+    setState( 'sharing', { style } );
   });
 
   const handleTitleEntered = (event) => {
