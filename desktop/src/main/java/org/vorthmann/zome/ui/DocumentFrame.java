@@ -569,7 +569,11 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 //   and this canvas always redraws correctly during window resize.
                 // HOWEVER, on Mac OS Sonoma, the heavyweight canvas causes Frame.pack() to spin
                 //  in certain circumstances, causing vZome to hang.
-                RenderingViewer viewer = factory3d .createRenderingViewer( scene, true );
+                // BUT... the performance is atrocious, so I want to let folks (and me!) force
+                //  use of the heavyweight canvas, since crashes/spins seem to vary from system to system.
+                boolean lightweight = ! mController .propertyIsTrue( "vzome.jogl.heavyweight.canvas" );
+                logger.log( Level.INFO, "vzome.jogl.heavyweight.canvas: " + !lightweight );
+                RenderingViewer viewer = factory3d .createRenderingViewer( scene, lightweight );
 
                 modelPanel = new ModelPanel( mController, viewer, this, this .isEditor, fullPower );
                 leftCenterPanel .add( modelPanel, BorderLayout.CENTER );
