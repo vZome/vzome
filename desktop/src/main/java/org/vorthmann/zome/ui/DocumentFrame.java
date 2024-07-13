@@ -571,7 +571,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 //  in certain circumstances, causing vZome to hang.
                 // BUT... the performance is atrocious, so I want to let folks (and me!) force
                 //  use of the heavyweight canvas, since crashes/spins seem to vary from system to system.
-                boolean lightweight = ! mController .propertyIsTrue( "vzome.jogl.heavyweight.canvas" );
+                boolean lightweight = Platform.isMac && ! mController .propertyIsTrue( "vzome.jogl.heavyweight.canvas" );
                 logger.log( Level.INFO, "vzome.jogl.heavyweight.canvas: " + !lightweight );
                 RenderingViewer viewer = factory3d .createRenderingViewer( scene, lightweight );
 
