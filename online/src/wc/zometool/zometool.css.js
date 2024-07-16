@@ -105,9 +105,4 @@ export const instructionsCSS = `
   grid-template-rows: min-content 1fr 90px;
 }
 
-.zometool-parts-container {
-  max-height: 28dvh;
-  overflow: auto;
-}
-
 `;

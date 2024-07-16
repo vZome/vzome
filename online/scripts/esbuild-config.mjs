@@ -62,7 +62,10 @@ export const esbuildConfig = {
 },
   bundle: true,
   splitting: true,
-  loader: { '.vef': 'dataurl' },
+  loader: {
+    '.vef': 'dataurl',
+    '.svg': 'text',
+  },
   format: 'esm',
   target: 'es2022',
   platform: 'browser',
