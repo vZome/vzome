@@ -62,3 +62,26 @@ zometool-parts-required {
 zometool-covering-products {
   grid-area: products;
 }
+
+.zometool-parts-container {
+  max-height: 28dvh;
+  overflow: auto;
+}
+
+@media ( max-width: 800px ) {
+  .zometool-model {
+    padding-inline: 1rem;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+    grid-template-rows: 80dvh 40px 10px 40px 40px;
+    grid-template-areas:
+      "viewer"
+      "description"
+      "difficulty"
+      "products"
+      "parts";
+    }
+  .zometool-parts-container {
+    overflow: visible;
+  }
+}

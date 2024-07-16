@@ -11,11 +11,55 @@ import {
 
 import { instructionsCSS } from "./zometool.css.js";
 
+import ballSvg from './parts/ball.svg';
+import b0Svg from './parts/b0.svg';
+import b1Svg from './parts/b1.svg';
+import b2Svg from './parts/b2.svg';
+import y0Svg from './parts/y0.svg';
+import y1Svg from './parts/y1.svg';
+import y2Svg from './parts/y2.svg';
+import r00Svg from './parts/r00.svg';
+import r0Svg from './parts/r0.svg';
+import r1Svg from './parts/r1.svg';
+import r2Svg from './parts/r2.svg';
+import g0Svg from './parts/g0.svg';
+import g1Svg from './parts/g1.svg';
+import g2Svg from './parts/g2.svg';
+import hg0Svg from './parts/hg0.svg';
+import hg1Svg from './parts/hg1.svg';
+import hg2Svg from './parts/hg2.svg';
+
+const svgStrings = {
+  ball: ballSvg,
+  b0  : b0Svg,
+  b1  : b1Svg,
+  b2  : b2Svg,
+  y0  : y0Svg,
+  y1  : y1Svg,
+  y2  : y2Svg,
+  r00 : r00Svg,
+  r0  : r0Svg,
+  r1  : r1Svg,
+  r2  : r2Svg,
+  g0  : g0Svg,
+  g1  : g1Svg,
+  g2  : g2Svg,
+  hg0 : hg0Svg,
+  hg1 : hg1Svg,
+  hg2 : hg2Svg,
+}
+
+const getSvgNode = key =>
+{
+  let doc = new DOMParser().parseFromString( svgStrings[ key ], 'application/xml' );
+  return document .importNode( doc.documentElement, true );
+}
+
 const debug = false;
 
 const ZometoolParts = props =>
 {
-  const partSx = { maxHeight: '12px', padding: '0', width: '210px', lineHeight: '0' };
+  const partSx = { height: '24px', padding: '0', width: '210px', lineHeight: '0' };
   return (
     <div class='zometool-parts-table'>
       <TableContainer component={Paper}>
@@ -24,18 +68,16 @@ const ZometoolParts = props =>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>Part</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Length</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }} align="left">Count</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }} align="right">Count</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
           <For each={props.bom}>{ ({ key, count }) =>
-            <TableRow
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-            >
+            <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }} >
               <TableCell align="left" component="th" scope="row" sx={partSx}>
-                <img src={`/images/parts/${key}.svg`}></img>
+                {getSvgNode( key )}
               </TableCell>
-              <TableCell component="th" scope="row">{ (key==='ball')? '' : key }</TableCell>
+              <TableCell component="th" scope="row">{ ((key==='ball')? '' : key) .toUpperCase() }</TableCell>
               <TableCell align="right">{count}</TableCell>
             </TableRow>
           }</For>
