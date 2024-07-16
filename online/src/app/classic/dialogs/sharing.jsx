@@ -89,6 +89,7 @@ const ConfigPage = ( props ) =>
           <MenuItem value='indexed (load-camera)'>Next/Prev Buttons (load-camera)</MenuItem>
           <MenuItem value='menu (named)'>Menu (named)</MenuItem>
           <MenuItem value='menu (all)'>Menu (all)</MenuItem>
+          <MenuItem value='zometool'>Zometool Instructions</MenuItem>
           <MenuItem value='none'>None</MenuItem>
         </Select>
       </FormControl>

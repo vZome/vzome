@@ -67,9 +67,15 @@ public class GitHubShare
 
         this.handler .addEntry( assetPath + designName + ".shapes.json", shapesJson, "utf-8"  );
         
+        String viewerTemplate = ResourceLoader.loadStringResource( "com/vzome/core/exporters/github/viewerTemplate.md" );
+        String instructionsTemplate = ResourceLoader.loadStringResource( "com/vzome/core/exporters/github/instructionsTemplate.md" );
+
         String viewerControls = "";
         String viewerParameters = "";
         String viewerScript = "";
+        String componentTemplate = viewerTemplate;
+        String postLayout = "vzome";
+        String simpleLayout = "design";
         switch (style)
         {
         case "indexed": {
@@ -109,6 +115,11 @@ public class GitHubShare
               + "</script>\n";
             break;
         }
+        case "zometool": {
+            componentTemplate = instructionsTemplate;
+            postLayout = "zometool";
+            simpleLayout = "zometool";
+        }
         default:
         }
 
@@ -128,17 +139,23 @@ public class GitHubShare
         // e.g. https://github.com/vorth/vzome-sharing/edit/main/_posts/2021-11-29-sample-vZome-share-08-01-41.md
                     
         String descriptionClean = description .replace( '\n', ' ' ) .replace( '\r', ' ' );
-
-        // Always generate a shareable page for the vZome user to use, not discoverable
-        String indexTemplate = ResourceLoader.loadStringResource( "com/vzome/core/exporters/github/indexTemplate.md" );
-        String indexMd = indexTemplate
-                .replace( "${title}", title )
-                .replace( "${description}", descriptionClean )
+        
+        String viewerComponent = componentTemplate
                 .replace( "${siteUrl}", siteUrl )
                 .replace( "${imagePath}", imagePath )
                 .replace( "${designPath}", designPath )
                 .replace( "${viewerControls}", viewerControls )
-                .replace( "${viewerParameters}", viewerParameters )
+                .replace( "${viewerParameters}", viewerParameters );
+
+        // Always generate a shareable page for the vZome user to use, not discoverable
+        String indexTemplate = ResourceLoader.loadStringResource( "com/vzome/core/exporters/github/indexTemplate.md" );
+        String indexMd = indexTemplate
+                .replace( "${simpleLayout}", simpleLayout )
+                .replace( "${viewerComponent}", viewerComponent )
+                .replace( "${title}", title )
+                .replace( "${description}", descriptionClean )
+                .replace( "${siteUrl}", siteUrl )
+                .replace( "${imagePath}", imagePath )
                 .replace( "${assetsUrl}", gitUrl );
         if ( viewerScript != "" )
             indexMd = indexMd + viewerScript;
@@ -148,13 +165,11 @@ public class GitHubShare
         // Generate a README for the vZome user to use
         String readmeTemplate = ResourceLoader.loadStringResource( "com/vzome/core/exporters/github/readmeTemplate.md" );
         String readmeMd = readmeTemplate
+                .replace( "${viewerComponent}", viewerComponent )
                 .replace( "${imageFile}", designName + ".png" )
                 .replace( "${siteUrl}", siteUrl )
                 .replace( "${assetPath}", assetPath )
                 .replace( "${imagePath}", imagePath )
-                .replace( "${designPath}", designPath )
-                .replace( "${viewerControls}", viewerControls )
-                .replace( "${viewerParameters}", viewerParameters )
                 .replace( "${viewerScript}", viewerScript )
                 .replace( "${indexSrcUrl}", indexSrcUrl )
                 .replace( "${rawUrl}", rawUrl );
@@ -180,15 +195,14 @@ public class GitHubShare
              */
             String postTemplate = ResourceLoader.loadStringResource( "com/vzome/core/exporters/github/postTemplate.md" );
             String postMd = postTemplate
+                    .replace( "${viewerComponent}", viewerComponent )
+                    .replace( "${postLayout}", postLayout )
                     .replace( "${title}", title )
                     .replace( "${description}", descriptionClean )
                     .replace( "${published}", ((Boolean)publish) .toString() )
                     .replace( "${siteUrl}", siteUrl )
                     .replace( "${postPath}", postPath )
                     .replace( "${imagePath}", imagePath )
-                    .replace( "${designPath}", designPath )
-                    .replace( "${viewerControls}", viewerControls )
-                    .replace( "${viewerParameters}", viewerParameters )
                     .replace( "${assetsUrl}", gitUrl );
             if ( viewerScript != "" )
                 postMd = postMd + viewerScript;
