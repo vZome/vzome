@@ -48,10 +48,10 @@
               throw new Error( `Failed to fetch "${url}": ${response.statusText}` )
             }
             const xml = await response.text();
-            const { field, orbitSource } = parse( xml );
+            const { field, getOrbitSource } = parse( xml );
             if ( field.name === 'golden' )
             {
-              const orbits = orbitSource .orbits .getDirections();
+              const orbits = getOrbitSource() .orbits .getDirections();
               for ( let iter = orbits .iterator(); iter .hasNext();) {
                 let orbit = iter .next();
                 if ( orbit .isAutomatic() ) {
