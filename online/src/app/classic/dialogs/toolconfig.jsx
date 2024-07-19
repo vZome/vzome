@@ -58,6 +58,8 @@ export const ToolConfig = (props) =>
     e .stopImmediatePropagation();
   }
 
+  const resourceUrl = resourcePath => new URL( '/classic/resources/' + resourcePath, window.location ) .toString();
+
   return (
     <Popover id={id} anchorEl={props.anchor} placement='top-start'
       open={open()} onClose={props.onClose}
@@ -67,7 +69,7 @@ export const ToolConfig = (props) =>
       <div class='tool-config-icon-label' onKeydown={handleKeyDown} >
         <button aria-label={props.label} class='toolbar-button' onClick={handleToolClick} disabled={props.disabled}
             style={{ padding: '0.5em' }}>
-          <img src={ `./resources/icons/tools/${props.image}.png`} class='toolbar-image'/>
+          <img src={ resourceUrl( `icons/tools/${props.image}.png` ) } class='toolbar-image'/>
         </button>
         { !!props.predefined?
           <Typography sx={{ margin: 'auto' }}>{props.label}</Typography>

@@ -41,7 +41,7 @@ const WorkerApp = () => (
             join the <Link target="_blank" href="https://discord.gg/vhyFsNAFPS" rel="noopener" >Discord server</Link>.
           </Typography>
           <Typography gutterBottom>
-            For the full suite of vZome Online apps and technology,
+            For the full suite of vZome web applications and technology,
             see <Link target="_blank" href="https://docs.vzome.com/online.html" rel="noopener" >this page</Link>.
           </Typography>
         </> } />

@@ -79,7 +79,7 @@ const DesignActions = (props) =>
           Show GitHub Assets
         </Button>
         <Button variant="contained" color="secondary" target="_blank" rel="noopener" href={ classicURL + props.url }>
-          Open in vZome Online
+          Open in vZome online
         </Button>
       </div>
     </Show>

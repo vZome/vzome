@@ -1,6 +1,6 @@
 {
-  "name": "vZome Online Classic",
-  "short_name": "vZome Classic",
+  "name": "vZome",
+  "short_name": "vZome",
   "start_url": ".",
   "id": "vzome-online-classic",
   "display": "standalone",

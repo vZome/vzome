@@ -39,10 +39,9 @@ import { DOMElements, SVGElements } from "solid-js/web/dist/dev.cjs";
 export const esbuildConfig = {
   entryPoints: {
   // apps
-    'vzome-online'    : 'src/app/index.jsx',
+    'vzome'           : 'src/app/index.jsx',
     'vzome-buildplane': 'src/app/buildplane/index.jsx',
     'vzome-browser'   : 'src/app/browser/index.jsx',
-    'vzome-classic'   : 'src/app/classic/index.jsx',
     'fivecell'        : 'src/app/fivecell/index.jsx',
     'bhall-basic'     : 'src/app/bhall/basic/index.jsx',
     '59icosahedra'    : 'src/app/59icosahedra/index.jsx',
