@@ -156,6 +156,8 @@ export const StrutLengthPanel = props =>
         backgroundColor: 'whitesmoke',
       }} onClick={ predefinedScale( props.scale, props.action ) } >{props.label}</Button>;
 
+  const resourceUrl = resourcePath => new URL( '/classic/resources/' + resourcePath, window.location ) .toString();
+
   return (
     <Show when={orbit()}>
     <div id='strut-length' class='grid-rows-fr-min' >
@@ -165,10 +167,10 @@ export const StrutLengthPanel = props =>
           <div id='up-down-slider' class='grid-cols-min-1 orbit-scale'>
             <div id='up-down' class='grid-rows-1-1 pad-4px' >
               <button aria-label='scale-up' class='scale-button' onClick={scaleUp}>
-                <img src='./resources/org/vorthmann/zome/ui/scaleUp.gif'/>
+                <img src={ resourceUrl( 'org/vorthmann/zome/ui/scaleUp.gif' ) }/>
               </button>
               <button aria-label='scale-down' class='scale-button' onClick={scaleDown}>
-                <img src='./resources/org/vorthmann/zome/ui/scaleDown.gif'/>
+                <img src={ resourceUrl( 'org/vorthmann/zome/ui/scaleDown.gif' ) }/>
               </button>
             </div>
             <div id='scale-slider' class='scale-slider' >

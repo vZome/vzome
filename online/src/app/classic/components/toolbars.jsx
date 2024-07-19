@@ -8,10 +8,12 @@ import { ToolConfig } from "../dialogs/toolconfig.jsx";
 
 const ToolbarSpacer = () => ( <div style={{ 'min-width': '10px', 'min-height': '10px' }}></div> )
 
+const resourceUrl = resourcePath => new URL( '/classic/resources/' + resourcePath, window.location ) .toString();
+
 const ToolbarButton = props =>
 (
   <button aria-label={props.label} class='toolbar-button' onClick={props.onClick} onContextMenu={props.onContextMenu} disabled={props.disabled}>
-    <img src={ `./resources/icons/tools/${props.image}.png`} class='toolbar-image'/>
+    <img src={ resourceUrl( `icons/tools/${props.image}.png` ) } class='toolbar-image'/>
   </button>
 )
 

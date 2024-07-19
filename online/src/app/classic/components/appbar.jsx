@@ -20,6 +20,7 @@ export const VZomeAppBar = ( props ) =>
     pathToRoot: './models',
     forDebugger: false,
     customTitle: false,
+    spacer
   }, props );
 
   return (
@@ -31,17 +32,17 @@ export const VZomeAppBar = ( props ) =>
           }>
             <VZomeLogo/>
             <Typography variant="h5" sx={{ paddingLeft: '12px', paddingRight: '40px' }}>
-              vZome Online <Box component="span" fontStyle="oblique">{props.title}</Box>
+              vZome <Box component="span" fontStyle="oblique">{props.title}</Box>
             </Typography>
           </Show>
-          {props.spacer}
+          {merged.spacer}
           <Show when={merged.showOpen} >
             <OpenMenu pathToRoot={merged.pathToRoot} forDebugger={merged.forDebugger} />
           </Show>
-          <Show when={!!merged.spacer} >
+          <Show when={!merged.title} >
             <SharingDialog/>
           </Show>
-          <AboutDialog title={props.customTitle? props.title : 'vZome Online '+ props.title} about={props.about} />
+          <AboutDialog title={props.customTitle? props.title : 'vZome '+ props.title} about={props.about} />
         </Toolbar>
       </AppBar>
     </div>
