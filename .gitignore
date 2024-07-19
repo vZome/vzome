@@ -67,19 +67,11 @@ online/src/ui/legacy/candies
 
 desktop-errors.txt
 
-online/public/classic/icons/
-
 online/src/revision.js
 
 jsweet-branches/
 
 online/meta.json
-
-online/public/modules/
-
-online/public/resources/
-
-online/public/classic/resources/
 
 developer-docs/notes/vZome/.obsidian/
 
@@ -88,3 +80,7 @@ online/.yalc/
 online/yalc.lock
 
 .vscode/settings.json
+
+online/serve/app/classic/resources/
+
+online/serve/modules/

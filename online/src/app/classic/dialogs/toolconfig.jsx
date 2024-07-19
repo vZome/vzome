@@ -10,6 +10,7 @@ import Checkbox from '@suid/material/Checkbox';
 import CloseIcon from '@suid/icons-material/Close';
 
 import { controllerProperty, useEditor } from '../../framework/context/editor.jsx';
+import { resourceUrl } from '../components/length.jsx';
 
 const ConfigDialogTitle = (props) =>
 {
@@ -57,8 +58,6 @@ export const ToolConfig = (props) =>
     // Prevent the global handler from doing things like delete
     e .stopImmediatePropagation();
   }
-
-  const resourceUrl = resourcePath => new URL( '/classic/resources/' + resourcePath, window.location ) .toString();
 
   return (
     <Popover id={id} anchorEl={props.anchor} placement='top-start'

@@ -8,7 +8,7 @@ const commonConfig = {
   conditions: ["development", "browser"],
   minify: false,
   sourcemap: true,
-  outdir: 'public/modules',
+  outdir: 'serve/modules',
 };
 
 const port = 8532;
@@ -23,9 +23,9 @@ if ( argv .includes( 'quick' ) ) {
   console.log( '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
   console.log( '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
   console.log( '' );
-  console.log( `       Visit  http://localhost:${port}/59icosahedra` );
-  console.log( `       or     http://localhost:${port}/classic` );
-  console.log( `       or     http://localhost:${port}/browser` );
+  console.log( `       Visit  http://localhost:${port}/app/59icosahedra` );
+  console.log( `       or     http://localhost:${port}/app/classic` );
+  console.log( `       or     http://localhost:${port}/app/browser` );
   console.log( '       or any other vZome app on the same port.' );
   console.log( '' );
   console.log( '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%' );
@@ -34,4 +34,4 @@ if ( argv .includes( 'quick' ) ) {
 
 let ctx = await esbuild.context( commonConfig );
 
-ctx.serve( { servedir: 'public', port } );
+ctx.serve( { servedir: 'serve', port } );
