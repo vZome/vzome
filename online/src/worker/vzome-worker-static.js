@@ -162,7 +162,7 @@ const fetchTrackballScene = ( url, report ) =>
     reportTrackballScene( cachedScene );
     return;
   }
-  Promise.all( [ importLegacy(), fetchUrlText( new URL( `/classic/resources/${url}`, baseURL ) ) ] )
+  Promise.all( [ importLegacy(), fetchUrlText( new URL( `/app/classic/resources/${url}`, baseURL ) ) ] )
     .then( ([ legacy, xml ]) => {
       const trackballDesign = legacy .loadDesign( xml, false, clientEvents( ()=>{} ) );
       prepareDefaultScene( trackballDesign );
@@ -409,7 +409,7 @@ onmessage = ({ data }) =>
     case 'WINDOW_LOCATION':
       baseURL = payload;
       importLegacy()
-        .then( legacy => Promise.all( resourceIndex .map( path => legacy.loadAndInjectResource( path, new URL( `/classic/resources/${path}`, baseURL ) ) ) ) );
+        .then( legacy => Promise.all( resourceIndex .map( path => legacy.loadAndInjectResource( path, new URL( `/app/classic/resources/${path}`, baseURL ) ) ) ) );
       break;
 
     case 'URL_PROVIDED':

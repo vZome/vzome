@@ -92,6 +92,8 @@ const ScaleBy = props =>
   );
 }
 
+export const resourceUrl = resourcePath => '/app/classic/resources/' + resourcePath;
+  
 export const StrutLengthPanel = props =>
 {
   const { controllerAction } = useEditor();
@@ -155,8 +157,6 @@ export const StrutLengthPanel = props =>
         margin: '4px',
         backgroundColor: 'whitesmoke',
       }} onClick={ predefinedScale( props.scale, props.action ) } >{props.label}</Button>;
-
-  const resourceUrl = resourcePath => new URL( '/classic/resources/' + resourcePath, window.location ) .toString();
 
   return (
     <Show when={orbit()}>

@@ -5,10 +5,9 @@ import { controllerProperty, subController, useEditor } from '../../framework/co
 import { resumeMenuKeyEvents, suspendMenuKeyEvents } from '../context/commands.jsx';
 import { useSymmetry } from "../context/symmetry.jsx";
 import { ToolConfig } from "../dialogs/toolconfig.jsx";
+import { resourceUrl } from "./length.jsx";
 
 const ToolbarSpacer = () => ( <div style={{ 'min-width': '10px', 'min-height': '10px' }}></div> )
-
-const resourceUrl = resourcePath => new URL( '/classic/resources/' + resourcePath, window.location ) .toString();
 
 const ToolbarButton = props =>
 (
