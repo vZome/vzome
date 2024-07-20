@@ -4,7 +4,7 @@ import { PerspectiveCamera } from "three";
 
 import { createStore } from 'solid-js/store';
 
-const INITIAL_DISTANCE = 108;
+export const INITIAL_DISTANCE = 108;
 const NEAR_FACTOR = 0.1 / INITIAL_DISTANCE;
 const FAR_FACTOR = 2.0;
 const WIDTH_FACTOR = 0.5;
@@ -47,6 +47,14 @@ const toVector = vector3 =>
   return [ x, y, z ];
 }
 
+export const fixedFrustum = distance =>
+  {
+    const near = distance * NEAR_FACTOR;
+    const far = distance * FAR_FACTOR;
+    const width = distance * WIDTH_FACTOR;
+    return { distance, far, near, width };
+  }
+  
 const extractCameraState = ( camera, target ) =>
 {
   const up = toVector( camera.up );
@@ -57,11 +65,10 @@ const extractCameraState = ( camera, target ) =>
   const lookDir = [ x/distance, y/distance, z/distance ];
 
   // This was missing, and vZome reads width to set FOV
-  const fovX = camera.fov * (Math.PI/180) * camera.aspect; // Switch from Y-based FOV degrees to X-based radians
-  const width = 2 * distance * Math.tan( fovX / 2 );
+  // const fovX = camera.fov * (Math.PI/180) * camera.aspect; // Switch from Y-based FOV degrees to X-based radians
+  // const width = 2 * distance * Math.tan( fovX / 2 );
   // This is needed to keep the fog depth correct in desktop.
-  const near = distance * NEAR_FACTOR;
-  const far = distance * FAR_FACTOR;
+  const { near, far, width } = fixedFrustum( distance );
 
   return { lookAt, up, lookDir, distance, width, far, near };
 }
@@ -89,14 +96,6 @@ const injectCameraState = ( cameraState, camera ) =>
   camera.fov = cameraFieldOfViewY( cameraState )( 1.0 );
 }
 
-export const fixedFrustum = distance =>
-{
-  const near = distance * NEAR_FACTOR;
-  const far = distance * FAR_FACTOR;
-  const width = distance * WIDTH_FACTOR;
-  return { distance, far, near, width };
-}
-
 export const createDefaultCameraStore = () => createStore( { ...defaultScene() } );
 
 const CameraContext = createContext( {} );
@@ -104,10 +103,6 @@ const CameraContext = createContext( {} );
 const CameraProvider = ( props ) =>
 {
   const [ state, setState ] = props.cameraStore || createDefaultCameraStore();
-
-  // createEffect( () => {
-  //   console.log( 'distance', state.camera.distance );
-  // })
 
   if ( !! props.distance ) {
     setState( 'camera', fixedFrustum( props.distance ) );
@@ -166,6 +161,11 @@ const CameraProvider = ( props ) =>
     injectCameraState( state.camera, trackballCamera );
   }
 
+  const setDistance = distance =>
+  {
+    setCamera( fixedFrustum( distance ) );
+  }
+
   const setLighting = lighting => setState( 'lighting', lighting );
   const togglePerspective = () => setState( 'camera', 'perspective', val => !val );
   const toggleOutlines = () => setState( 'outlines', val => !val );
@@ -179,7 +179,7 @@ const CameraProvider = ( props ) =>
   const providerValue = {
     name: props.name,
     perspectiveProps, trackballProps, state,
-    resetCamera, setCamera, setLighting, togglePerspective, toggleOutlines,
+    resetCamera, setCamera, setLighting, togglePerspective, toggleOutlines, setDistance,
   };
   
   // The perspectiveProps is used to initialize PerspectiveCamera in clients.

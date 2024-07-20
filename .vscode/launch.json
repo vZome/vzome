@@ -9,8 +9,8 @@
       "request": "launch",
       "url": "http://localhost:8532/app/test/",
       "pathMapping": {
-        "/": "${workspaceFolder}/online/src",
-        "/app/": "${workspaceFolder}/online/src/serve/app"
+        "/app/": "${workspaceFolder}/online/src/serve/app",
+        "/": "${workspaceFolder}/online/src"
       }
     },
     {
