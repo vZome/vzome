@@ -32,7 +32,7 @@
         currentPath = paths.shift(); // pop the next path off the stack
         viewer.src = BASE_URL + currentPath; // does NOT the worker to start loading, since reactive===false
         viewer.update(); // this DOES trigger the worker
-          // which will result in another RENDER_COMPLETED event coming back
+          // which will result in another vzome-design-rendered or vzome-design-failed event coming back
       }
 
       // The GitHub git/trees API returns a flat list of all blobs and trees
@@ -52,8 +52,9 @@
           viewer .addEventListener( "vzome-design-rendered", fetchNextDesign( true ) );
           viewer .addEventListener( "vzome-design-failed", fetchNextDesign( false ) );
           currentPath = paths.shift(); // pop the first path off the stack
-          viewer.src = BASE_URL + currentPath;// triggers the worker to start loading,
-            // which will result in the RENDER_COMPLETED event coming back
+          viewer.src = BASE_URL + currentPath;
+          viewer.update(); // triggers the worker to start loading,
+          // which will result in the vzome-design-rendered or vzome-design-failed event coming back
         } );
 
     </script>
