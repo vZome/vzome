@@ -41,7 +41,7 @@ echo "export const importZomic = async () => import( './worker/legacy/zomic/inde
 ( cd serve/app/classic/resources
   echo 'export const resourceIndex = ['
   find com/vzome/core/exporters -type f -exec echo "  \"{}\"", \;
-  echo '  "DUMMY-LAST-RESOURCE" ];' ) >> src/revision.js  # just so I can not worry about the last comma
+  echo ' ];' ) >> src/revision.js
 
 banner 'Preparing the distribution folder with NPM'
 yarn install || exit $?
