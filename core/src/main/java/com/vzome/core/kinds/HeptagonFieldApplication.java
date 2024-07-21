@@ -12,6 +12,7 @@ import com.vzome.core.commands.CommandAxialSymmetry;
 import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
+import com.vzome.core.tools.LineReflectionToolFactory;
 import com.vzome.core.tools.LinearMapToolFactory;
 import com.vzome.core.tools.MirrorToolFactory;
 import com.vzome.core.tools.RotationToolFactory;
@@ -82,6 +83,7 @@ public class HeptagonFieldApplication extends DefaultFieldApplication
 
             case SYMMETRY:
                 result .add( new SymmetryToolFactory( tools, this .symmetry ) );
+                result .add( new LineReflectionToolFactory( tools ));
                 result .add( new MirrorToolFactory( tools ) );
                 result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) );
                 break;

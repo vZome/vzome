@@ -18,6 +18,7 @@ import com.vzome.core.tools.AxialStretchTool;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
 import com.vzome.core.tools.IcosahedralToolFactory;
 import com.vzome.core.tools.InversionToolFactory;
+import com.vzome.core.tools.LineReflectionToolFactory;
 import com.vzome.core.tools.LinearMapToolFactory;
 import com.vzome.core.tools.MirrorToolFactory;
 import com.vzome.core.tools.PerspectiveProjectionToolFactory;
@@ -105,6 +106,7 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
             result.add(new IcosahedralToolFactory(tools, icosaSymm));
             result.add(new TetrahedralToolFactory(tools, icosaSymm));
             result.add(new InversionToolFactory(tools));
+            result.add( new LineReflectionToolFactory(tools));
             result.add(new MirrorToolFactory(tools));
             result.add(new AxialSymmetryToolFactory(tools, icosaSymm));
             break;

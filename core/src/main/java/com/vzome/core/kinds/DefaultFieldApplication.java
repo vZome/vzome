@@ -28,6 +28,7 @@ import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction;
 import com.vzome.core.tools.BookmarkToolFactory;
 import com.vzome.core.tools.InversionToolFactory;
+import com.vzome.core.tools.LineReflectionToolFactory;
 import com.vzome.core.tools.LinearMapToolFactory;
 import com.vzome.core.tools.MirrorToolFactory;
 import com.vzome.core.tools.ModuleToolFactory;
@@ -122,7 +123,8 @@ public class DefaultFieldApplication implements FieldApplication
 	    toolFactories .put( "ScalingTool", new ScalingToolFactory( tools, null ) );
 	    
 	    toolFactories .put( "InversionTool", new InversionToolFactory( tools ) );
-	    toolFactories .put( "MirrorTool", new MirrorToolFactory( tools ) );
+        toolFactories .put( "LineReflectionTool", new LineReflectionToolFactory( tools ) );
+        toolFactories .put( "MirrorTool", new MirrorToolFactory( tools ) );
         toolFactories .put( "TranslationTool", new TranslationToolFactory( tools ) );
         toolFactories .put( "ProjectionTool", new ProjectionToolFactory( tools ) );
         toolFactories .put( "PerspectiveProjectionTool", new PerspectiveProjectionToolFactory( tools ) );
