@@ -24,7 +24,7 @@ import { Tooltip } from '../../framework/tooltip.jsx'
 import { useViewer } from "../../../viewer/context/viewer.jsx";
 import { useEditor } from '../../framework/context/editor.jsx';
 import { resumeMenuKeyEvents, suspendMenuKeyEvents } from '../context/commands.jsx';
-import { getUserRepos } from "../../../worker/legacy/gitcommit.js";
+import { getUserRepos } from "../../../both-contexts.js";
 
 const AUTHENTICATING = 0;
 const CHOOSING_REPO = 1;

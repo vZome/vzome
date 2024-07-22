@@ -93,8 +93,8 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: Build with Gradle and Yarn
       run: |
-        chmod +x gradlew cicd/build-online.bash
-        cicd/build-online.bash
+        chmod +x gradlew cicd/online.bash
+        cicd/online.bash prod
 
     - name: Configure SSH
       run: |

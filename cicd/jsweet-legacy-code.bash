@@ -1,34 +1,24 @@
 #!/bin/bash
 
-banner() {
-  echo ''
-  echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-  echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-  echo '%%%%    '$1
-  echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-  echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-  echo ''
-}
+if [ -z ${REVISION+x} ]; then
+  echo "This script is not meant to run as a top-level entry point.  Use online.bash."
+  exit 1
+fi
 
-# This is designed to run from the main repo as a working directory.
-# From the command line there, run "cicd/jsweet-legacy-code.bash".
+verifyJava
 
-
-rm -rf online/node_modules online/.jsweet
+# removing online/node_modules/@types because the JSweet TSC doesn't like Three.d.ts
+rm -rf online/.jsweet online/jsweetOut online/node_modules/@types
 
 banner 'Transpiling core Java sources with JSweet' ######################################
 
-./gradlew --continue -p online coreClean core &> core-errors.txt    # ignore the exit code, it always fails
+./gradlew --continue --info -p online coreClean core &> core-errors.txt    # ignore the exit code, it always fails
 cat core-errors.txt
 
 grep -q 'transpilation failed with 33 error(s) and 0 warning(s)' core-errors.txt \
   && banner 'JSweet core transpile found the expected errors' \
   || { banner 'UNEXPECTED CHANGE IN JSWEET CORE ERRORS'; exit 1; }
 
-
-LEGACY=online/src/worker/legacy
-CANDIES_IN=online/jsweetOut/core/candies
-CANDIES_OUT="$LEGACY/candies"
 
 banner 'Patching up the j4ts bundle as an ES6 module' ######################################
 

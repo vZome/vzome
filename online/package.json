@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "node scripts/prod-build.mjs",
-    "quick": "node scripts/test-app.mjs quick",
+    "nolegacy": "node scripts/test-app.mjs nolegacy",
     "dev": "node scripts/test-app.mjs",
     "https": "node scripts/test-https.mjs"
   },
