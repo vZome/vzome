@@ -1,17 +1,15 @@
 #!/bin/bash
 
-cd ..
+if [ -z ${REVISION+x} ]; then
+  echo "This script is not meant to run as a top-level entry point."
+  exit 1
+fi
+
+verifyJava
+
 rm -rf jsweet-branches
 mkdir jsweet-branches
 cd jsweet-branches
-
-banner() {
-  echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-  echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-  echo '%%%%    '$1
-  echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-  echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-}
 
 clone() {
   banner "git clone vorth/$1"
@@ -20,11 +18,8 @@ clone() {
 
 clone jsweet develop
 clone jsweet-maven-plugin master
-clone j4ts update-jsweet
+clone j4ts master
 clone jsweet-gradle-plugin update-jsweet
-
-banner 'setting java 11 home'
-export JAVA_HOME=`/usr/libexec/java_home -v 11` || exit $?
 
 banner 'building JSweet'
 cd jsweet/transpiler/ || exit $?

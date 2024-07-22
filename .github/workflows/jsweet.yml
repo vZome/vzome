@@ -85,8 +85,8 @@ jobs:
       - name: Build with Gradle and JSweet
         run: |
           pwd
-          chmod +x gradlew cicd/jsweet-legacy-code.bash
-          cicd/jsweet-legacy-code.bash
+          chmod +x gradlew cicd/online.bash
+          cicd/online.bash jsweet
 
       - name: Archive Generated JS
         uses: actions/upload-artifact@v3

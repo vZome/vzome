@@ -1,8 +1,6 @@
 
 import { resourceIndex, importLegacy, importZomic } from '../revision.js';
-import { commitToGitHub } from './legacy/gitcommit.js';
-import { assemblePartsList } from './legacy/partslist.js';
-import { normalizePreview } from './legacy/preview.js'; // does not actually use any legacy module code
+import { commitToGitHub, assemblePartsList, normalizePreview } from '../both-contexts.js';
 
 // const uniqueId = Math.random();
 

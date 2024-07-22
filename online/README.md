@@ -18,22 +18,17 @@ or loading an existing design for editing.
 
 ## Prerequisites
 
-You'll need [Node.js](https://nodejs.org/en).  That includes `npm`, but I prefer [Yarn](https://yarnpkg.com/getting-started/install).
+You'll need [Node.js](https://nodejs.org/en) and [Yarn](https://yarnpkg.com/getting-started/install);
+the `online.bash` script uses `yarn` explicitly.
 
 ## Quick Start
 
 This quick-start workflow bypasses building the legacy code, downloading it from `vzome.com` instead.
-Simply execute this command line in this directory (`online`):
+Simply execute this command line in root directory (the parent of the directory containing this file):
 ```bash
-yarn && ../cicd/build-online.bash quick && yarn quick
+cicd/online.bash quickstart
 ```
-or, if you prefer `npm`:
-```bash
-npm install && ../cicd/build-online.bash quick && npm run quick
-```
-...then visit one of the URLs indicated in the output banner to try an app.
-
-For subsequent builds, all you need is `yarn quick` or `npm run quick`.
+...then visit the URL indicated in the output banner to try the apps and test pages.
 
 ## Legacy Code Dev Workflow
 
@@ -55,16 +50,12 @@ upstream projects but not yet merged, or merged but no release has been
 published, since the JSweet maintainers have largely
 moved on to other projects.
 
-For the steps below, I find it convenient to keep two terminal windows open,
-since I often I need to iterate the steps.
-I'll call these the *main shell* and the *online shell*.
-In the main shell, the working directory should be the root folder for the
+For these steps, the working directory should be the root folder for the
 Git repository; this is the parent of the `online` folder.
-In the online shell, it should be the `online` subfolder.
 
-First, in the online shell, execute this script:
+First, execute this script:
 ```
-./prepare-jsweet.sh
+cicd/online.bash prepareJSweet
 ```
 This will create a `jsweet-branches` folder as a sibling of `online`,
 check out the four branches listed above, and build them in sequence.
@@ -74,23 +65,28 @@ local Maven cache.
 Since this steps is not touching any code in this repository,
 you should not need to repeat it unless you set up another machine to work on vZome Online.
 
-Next, from the main shell run:
+Next, run:
 ```
-cicd/build-online.bash
+cicd/online.bash java
 ```
 You'll need to do this whenever the Java source code has changed, since it does the JSweet transpile.  You'll see a number of errors during the transpilation, but that is expected.  The script checks for the expected number of errors, and fails if there are more errors or fewer.
 
-Now, in the online shell do
-```
-yarn && yarn dev
-```
-This is a dev server, which means it will detect file changes and update the live server.
+This command also starts a dev server, which means it will detect file changes and update the live server.
 You can leave this running for hours or days as you do your development.
 However, it is not set up for hot module reloading, so you'll need to refresh your browser
 pages manually.
 
 Finally, copy `vscode-launch-template.json` as `.vscode/launch.json` (relative to the main folder).
-This gives you several launch profiles.  Using the VS Code debugging view, launch the `online` profile.  This will start a dedicated Chrome window running vZome Online, with the ability to set breakpoints in the `online` source code in VS Code.  Note that this only starts the client-side Chrome.  You must have the dev server started also, per the prior paragraph.
+This gives you several launch profiles.  Using the VS Code debugging view, launch the `TEST` profile.  This will start a dedicated Chrome window running vZome Online, with the ability to set breakpoints in the `online` source code in VS Code.  Note that this only starts the client-side Chrome.  You must have the dev server started also, per the prior paragraph.
+
+If you cancel the running dev server, and want to test Javascript-only changes,
+you can simply run:
+```
+cicd/online.bash dev
+```
+This is only appropriate if you have not touched any Java code.
+This is my most common workflow step, as I'm usually working on Javascript code, not Java code.
+Like the `java` subcommand, it leaves a dev server running.
 
 ## Testing the Web Component
 
