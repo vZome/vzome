@@ -16,6 +16,7 @@ import { SceneCanvas } from "../../../viewer/scenecanvas.jsx";
 import { CameraProvider } from "../../../viewer/index.jsx"
 import { SceneProvider } from "../../../viewer/context/scene.jsx"
 import { useCamera } from "../../../viewer/context/camera.jsx"
+import { Stack } from "@suid/material"
 
 const AddSceneButton = () =>
 {
@@ -34,6 +35,24 @@ const AddSceneButton = () =>
   );
 }
 
+const RemoveSceneButton = props =>
+  {
+    const { rootController, controllerAction, sceneIndex, setSceneIndex } = useEditor();
+    const { scenes } = useViewer();
+
+    const removeScene = () =>
+      {
+        const index = sceneIndex();
+        if ( index === scenes.length - 1 )
+          setSceneIndex( scenes.length - 2 );
+        controllerAction( rootController(), 'removeScene', { index } );
+      }
+    
+    return (
+      <Button variant="outlined" size="medium" onClick={removeScene}>Remove Scene</Button>
+    );
+  }
+  
 const MoveSceneButton = props =>
 {
   const { scenes } = useViewer();
@@ -81,7 +100,7 @@ const UseCameraButton = props =>
 
 const SaveCameraButton = () =>
 {
-  const { rootController, controllerAction, sceneIndex } = useEditor();
+  const { rootController, controllerAction, sceneIndex, setReload } = useEditor();
   const { state: { camera } } = useCamera();
 
   const handleSaveCamera = (evt) =>
@@ -104,7 +123,7 @@ const SaveCameraButton = () =>
 const ScenesDialog = props =>
 {
   const { scenes } = useViewer();
-  const { sceneIndex, setSceneIndex } = useEditor();
+  const { sceneIndex, setSceneIndex, setReload } = useEditor();
 
   return (
     <CameraProvider>
@@ -118,7 +137,7 @@ const ScenesDialog = props =>
                   <For each={ scenes } >{ (scene,i) =>
                     (i() > 0) &&
                     <div class={ i()===sceneIndex()? 'scenes-entry scenes-selected' : 'scenes-entry' } style={{ position: 'relative' }}
-                        onClick={ () => setSceneIndex( i() ) }>
+                        onClick={ () => { setSceneIndex( i() ); setReload( true ); } }>
                       <span>{i()}</span>
                       <span>{scene.title}</span>
                       <UseCameraButton index={ i() } />
@@ -126,15 +145,21 @@ const ScenesDialog = props =>
                   }</For>
                 </div>
               </div>
-              <div class='scenes-add'>
-                <AddSceneButton/>
-                <MoveSceneButton change={-1} label='Move Up' />
-                <MoveSceneButton change={1} label='Move Down' />
-              </div>
+              <Stack class='scene-actions'>
+                <div>
+                  <AddSceneButton/>
+                  <RemoveSceneButton/>
+                </div>
+                <div>
+                  <MoveSceneButton change={-1} label='Move Up' />
+                  <MoveSceneButton change={1} label='Move Down' />
+                </div>
+              </Stack>
             </div>
             <div class='relative-h100'>
               <div class='absolute-0'>
-                <SceneProvider name={ `#${sceneIndex()}` } config={{ preview: true, debug: false, labels: props.config?.labels, source: false }}>
+                <SceneProvider name={ `#${sceneIndex()}` }
+                      config={{ preview: true, debug: false, labels: props.config?.labels, source: false }}>
                   <SceneCanvas height="100%" width="100%" />
                 </SceneProvider>
                 <SaveCameraButton/>

@@ -177,7 +177,7 @@ button:disabled > .toolbar-image {
   inset: 0;
 }
 
-.scenes-add {
+.scene-actions {
   border-block-start: 1px solid gray;
   padding-block-start: 10px;
 }
