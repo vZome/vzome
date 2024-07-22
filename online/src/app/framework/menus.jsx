@@ -7,8 +7,6 @@ import { ContextMenu } from "@kobalte/core/context-menu";
 import { useEditor } from "./context/editor.jsx";
 import { useCommands } from "../classic/context/commands.jsx";
 
-const isMac = navigator.userAgentData?.platform === 'macOS' || navigator.userAgent .includes( 'Macintosh' );
-
 export const MenuAction = ( props ) =>
 {
   return (
