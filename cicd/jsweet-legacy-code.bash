@@ -12,7 +12,7 @@ rm -rf online/.jsweet online/jsweetOut online/node_modules/@types
 
 banner 'Transpiling core Java sources with JSweet' ######################################
 
-./gradlew --continue --info -p online coreClean core &> core-errors.txt    # ignore the exit code, it always fails
+./gradlew --continue -p online coreClean core &> core-errors.txt    # ignore the exit code, it always fails
 cat core-errors.txt
 
 grep -q 'transpilation failed with 33 error(s) and 0 warning(s)' core-errors.txt \

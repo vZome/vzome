@@ -88,11 +88,23 @@ This is only appropriate if you have not touched any Java code.
 This is my most common workflow step, as I'm usually working on Javascript code, not Java code.
 Like the `java` subcommand, it leaves a dev server running.
 
-## Testing the Web Component
+## Testing
 
-Periodically, it is a good idea to test the web component on its own.
-With the dev server running, you can use the `web component` launch profile in VS Code
-to debug the client-side code.  This will launch a separate Chrome instance showing `online/public/test/index.html`.
+Unfortunately, there is no automated testing implemented.
+
+You can manually test the various apps, as well as different web component scenarios,
+using the test page.
+With the dev server running, you can use the `TEST` launch profile in VS Code
+to debug the client-side code.  This will launch a separate Chrome instance
+showing `online/serve/app/test/index.html`, which itself is just a set of links to
+launch other webapps or pages.
+
+## Cleaning Up
+
+Periodically, you may want to clear away all the build artifacts and start fresh:
+```
+cicd/online.bash clean
+```
 
 ## Official Builds
 
@@ -111,6 +123,10 @@ since Snowpack did not really do what I want with dependencies.
 Now, however, I have switched completely to `esbuild`, after some help from Lucas Garron.
 I'm building everything as ES6 modules, and `esbuild` does a great job with bundling and code splitting,
 as well as being just plain fast.
+
+I have also switched from React to SolidJS.  I found it to be very light and fast, and a better fit
+for the event-based state management I need to do, where everything flows between the main context
+and the web worker (see below), getting mapped to the Controller architecture in the legacy code.
 
 ## Architecture Notes
 
@@ -132,4 +148,5 @@ and "render events" would flow back from the Web Worker.
 A third approach would be to use offline canvas, essentially moving all the processing *and* rendering
 to the worker.  This sounds pretty attractive, but presents two obstacles at the moment.
 First, offline canvas is only supported in Chromium browsers today.  Second, and more critically,
-it appears that `react-three-fiber` does not support rendering to offscreen canvases.
+I'm not sure I'd be able to use `solid-three` in the worker, though I don't know why not.
+
