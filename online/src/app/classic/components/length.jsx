@@ -112,6 +112,8 @@ export const StrutLengthPanel = props =>
   const scaleFactorHtml = () => controllerProperty( lengthController(), 'scaleFactorHtml', 'length', false );
   const lengthText = () => controllerProperty( lengthController(), 'lengthMathML', 'length', false );
   const mathML = createMemo( () => {
+    if ( ! orbit() )
+      return;
     const el = <math></math>;
     el .innerHTML = lengthText();
     return el;

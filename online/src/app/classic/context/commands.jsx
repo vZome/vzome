@@ -112,12 +112,28 @@ export const CommandsProvider = props =>
     }
   }
 
+  const isMac = navigator.userAgentData?.platform === 'macOS' || navigator.userAgent .includes( 'Macintosh' );
+
   const createCommand = ( action, keyEquiv, handler=globalAction(action) ) =>
   {
-    let keystroke = '';
+    let keystroke = '';  
     if ( !! keyEquiv ) {
-      registerKeyListener( keyEquiv.mods, keyEquiv.deleteKey, keyEquiv.key, handler );
-      keystroke = (!keyEquiv)? '' : ( keyEquiv.code? "⌫" : keyEquiv.mods + keyEquiv.key );
+      let modifiers = keyEquiv.mods;
+      let prefix = modifiers;
+      if ( !isMac && modifiers ) {
+        modifiers = modifiers .replace( '⌘', '⌃' );
+        prefix = '';
+        if ( modifiers .includes( '⌃' ) )
+          prefix += 'Ctrl';
+        if ( modifiers .includes( '⇧' ) )
+          prefix += prefix? '+Shift' : 'Shift';
+        if ( modifiers .includes( '⌥' ) )
+          prefix += prefix? '+Alt' : 'Alt';
+        if ( prefix )
+          prefix += '-';
+      }
+      registerKeyListener( modifiers, keyEquiv.deleteKey, keyEquiv.key, handler );
+      keystroke = (!keyEquiv)? '' : ( keyEquiv.deleteKey? "⌫" : prefix + keyEquiv.key );
     }
     commands[ action ] = { keystroke, handler };
     return commands[ action ];

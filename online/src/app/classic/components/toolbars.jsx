@@ -107,11 +107,13 @@ const ToolButton = props =>
     resumeMenuKeyEvents();
     setAnchorEl( null );
   }
-  return !!kind() && ( <>
-    <ToolbarButton label={label()} image={`small/${kind()}`} onClick={handleClick} onContextMenu={handleOpen} />
-    <ToolConfig predefined={props.predefined} image={`small/${kind()}`} controller={props.controller} label={label()}
-      anchor={anchorEl()} onClose={handleClose} onClick={handleClick} />
-  </> )
+  return (
+    <Show when={!!kind()}>
+      <ToolbarButton label={label()} image={`small/${kind()}`} onClick={handleClick} onContextMenu={handleOpen} />
+      <ToolConfig predefined={props.predefined} image={`small/${kind()}`} controller={props.controller} label={label()}
+        anchor={anchorEl()} onClose={handleClose} onClick={handleClick} />
+    </Show>
+  )
 }
 
 export const ToolBar = props =>
