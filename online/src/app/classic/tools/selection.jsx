@@ -13,7 +13,7 @@ const SelectionTool = props =>
 
     allowTrackball: false,
 
-    onClick: ( id, position, type, selected ) => {
+    onClick: ( id, position, type, selected, label ) => {
       // console.log( 'selectionTool clicked' );
       controllerAction( pickingController(), 'SelectManifestation', { id } )
     },
@@ -21,14 +21,14 @@ const SelectionTool = props =>
     {
       controllerAction( rootController(), 'DeselectAll' );
     },
-    onDragStart: ( id, position, type, starting, evt ) => {
-      // console.log( 'selectionTool onDragStart?????!!!!!' );
+    onDragStart: () => {
+      // console.log( 'selectionTool DRAG START' );
     },
-    onDrag: evt => {
-      // console.log( 'selectionTool onDrag?????!!!!!' );
+    onDrag: () => {
+      // console.log( 'selectionTool    DRAG' );
     },
-    onDragEnd: evt => {
-      // console.log( 'selectionTool onDragEnd?????!!!!!' );
+    onDragEnd: () => {
+      // console.log( 'selectionTool DRAG END' );
     },
     onContextMenu: ( id, position, type, selected, label ) => {
       setState( 'picked', { id, position, type, selected, label } );

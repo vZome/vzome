@@ -35,12 +35,11 @@ const LightedCameraControls = (props) =>
 {
   const { perspectiveProps, trackballProps, name, state, cancelTweens } = useCamera();
   const [ tool ] = useInteractionTool();
-  const enableTrackball = () => ( tool === undefined ) || tool().allowTrackball;
+  const enableTrackball = () => ( tool === undefined ) || tool .allowTrackball();
   props = mergeProps( { rotateSpeed: 4.5, zoomSpeed: 3, panSpeed: 1 }, props );
   const halfWidth = () => perspectiveProps.width / 2;
 
-  const onDragStart = () => cancelTweens();
-  const onDragEnd = () => ( tool !== undefined ) && tool() .onTrackballEnd();
+  const onTrackballEnd = () => ( tool !== undefined ) && tool .onTrackballEnd();
 
   return (
     <>
@@ -59,7 +58,7 @@ const LightedCameraControls = (props) =>
       </Show>
       <TrackballControls enabled={enableTrackball()} rotationOnly={props.rotationOnly} name={name}
         camera={trackballProps.camera} target={perspectiveProps.target} sync={trackballProps.sync}
-        trackballStart={onDragStart} trackballEnd={onDragEnd}
+        trackballStart={cancelTweens} trackballEnd={onTrackballEnd}
         rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} />
     </>
   );
@@ -86,26 +85,26 @@ export const LightedTrackballCanvas = ( props ) =>
 
   const handlePointerMove = ( e ) =>
   {
-    const handler = tool && tool() ?.onDrag;
+    const handler = tool ?.onDrag;
     if ( isLeftMouseButton( e ) && handler ) {
       e.stopPropagation()
-      handler();
+      handler( e );
     }
   }
   const handlePointerUp = ( e ) =>
   {
-    const handler = tool && tool() ?.onDragEnd;
+    const handler = tool ?.onDragEnd;
     if ( isLeftMouseButton( e ) && handler ) {
       // e.stopPropagation()
-      handler();
+      handler( e );
     }
   }
   const handlePointerMissed = ( e ) =>
   {
-    const handler = tool && tool() ?.bkgdClick;
+    const handler = tool ?.bkgdClick;
     if ( isLeftMouseButton( e ) && handler ) {
       e.stopPropagation()
-      handler();
+      handler( e );
     }
   }
 
@@ -125,7 +124,7 @@ export const LightedTrackballCanvas = ( props ) =>
   size = createElementSize( canvas );
 
   createRenderEffect( () => {
-    canvas.style.cursor = (tool && tool().cursor) || 'auto';
+    canvas.style.cursor = (tool ?.cursor()) || 'auto';
   });
   
   onMount( () => {

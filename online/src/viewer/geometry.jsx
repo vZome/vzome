@@ -10,7 +10,6 @@ import { GLTFExporter } from "three-stdlib";
 import { Label } from "./labels.jsx";
 import { useGltfExporter, useImageCapture } from "./context/export.jsx";
 
-
 const Instance = ( props ) =>
 {
   let meshRef, linesRef;
@@ -26,7 +25,7 @@ const Instance = ( props ) =>
 
   const handleHover = value => e =>
   {
-    const handler = tool && tool() ?.onHover;
+    const handler = tool ?.onHover;
     if ( handler ) {
       e.stopPropagation();
       handler( props.id, props.position, props.type, value );
@@ -34,7 +33,7 @@ const Instance = ( props ) =>
   }
   const handleContextMenu = ( e ) =>
   {
-    const handler = tool && tool() ?.onContextMenu;
+    const handler = tool ?.onContextMenu;
     if ( handler ) {
       e.stopPropagation();
       handler( props.id, props.position, props.type, props.selected, props.label )
@@ -44,25 +43,28 @@ const Instance = ( props ) =>
   {
     if ( e.button !== 0 ) // left-clicks only, please
       return;
-    const handler = tool && tool() ?.onDragStart;
+    const handler = tool ?.onDragStart;
     if ( handler ) {
-      e.stopPropagation()
-      handler( props.id, props.position, props.type, props.selected, e )
+      e.stopPropagation();
+      handler( e.nativeEvent, props.id, props.position, props.type, props.selected );
+    }
+  }
+  const handlePointerMove = ( e ) =>
+  {
+    const handler = tool ?.onDrag;
+    if ( handler ) {
+      e.stopPropagation();
+      handler( e.nativeEvent, props.id, props.position, props.type, props.selected );
     }
   }
   const handlePointerUp = ( e ) =>
   {
     if ( e.button !== 0 ) // left-clicks only, please
       return;
-    let handler = tool && tool() ?.onDragEnd;
+    const handler = tool ?.onDragEnd;
     if ( handler ) {
-      e.stopPropagation()
-      handler( props.id, props.position, props.type, props.selected, e )
-    }
-    handler = tool && tool() ?.onClick;
-    if ( handler ) {
-      e.stopPropagation()
-      handler( props.id, props.position, props.type, props.selected, props.label )
+      e.stopPropagation();
+      handler( e.nativeEvent, props.id, props.position, props.type, props.selected, props.label );
     }
   }
 
@@ -74,7 +76,7 @@ const Instance = ( props ) =>
   return (
     <group position={ props.position } name={props.id} >
       <mesh matrixAutoUpdate={false} ref={meshRef} geometry={props.geometry}
-          onPointerOver={handleHover(true)} onPointerOut={handleHover(false)}
+          onPointerOver={handleHover(true)} onPointerOut={handleHover(false)} onPointerMove={handlePointerMove}
           onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onContextMenu={handleContextMenu}>
         <meshLambertMaterial attach="material" color={props.color} emissive={emissive()} />
       </mesh>
