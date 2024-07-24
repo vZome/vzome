@@ -25,6 +25,7 @@ import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
 import com.vzome.core.tools.InversionToolFactory;
+import com.vzome.core.tools.LineReflectionToolFactory;
 import com.vzome.core.tools.LinearMapToolFactory;
 import com.vzome.core.tools.MirrorToolFactory;
 import com.vzome.core.tools.ProjectionToolFactory;
@@ -138,6 +139,7 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 			case SYMMETRY:
 				result .add( new SymmetryToolFactory( tools, pentaSymm ) );
 	            result .add( new InversionToolFactory(tools));
+	            result .add( new LineReflectionToolFactory( tools ) );
 				result .add( new MirrorToolFactory( tools ) );
 				result .add( new AxialSymmetryToolFactory( tools, pentaSymm ) );
 				break;

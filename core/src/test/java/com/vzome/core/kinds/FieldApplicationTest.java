@@ -633,40 +633,40 @@ public class FieldApplicationTest
             String name = perspective.getName();
             switch(name) {
             case "octahedral":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 5, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 6, 5, 1);
                 break;
                 
             case "icosahedral":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 5, 7);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 6, 5, 7);
                 break;
                 
             case "dodecagonal":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 4, 4, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 4, 1);
                 break;
                 
             case "pentagonal":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 4, 4, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 4, 1);
                 break;
                 
             case "heptagonal antiprism":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 4, 3, 1);
                 break;
                 
             case "heptagonal antiprism corrected":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 3, 3, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 4, 3, 1);
                 break;
                 
             case "synestructics":
-                verifyToolFactoryCounts(name, kind, toolFactoryList, 5, 4, 1);
+                verifyToolFactoryCounts(name, kind, toolFactoryList, 6, 4, 1);
                 break;
                 
             default:
                 if(name.startsWith("antiprism") ) {
-                	int symmetryToolCount = 3, transformToolCount = 3, linearMapToolCount = 1;
+                	int symmetryToolCount = 4, transformToolCount = 3, linearMapToolCount = 1;
                 	if(perspective.getSymmetry().isTrivial()) {
                     	// adjust tool counts for even-gon antiprism symmetries 
-                    	symmetryToolCount = 4;
-                    	transformToolCount = 4;
+                    	symmetryToolCount += 1;
+                    	transformToolCount += 1;
                     }
                 	verifyToolFactoryCounts(name, kind, toolFactoryList, symmetryToolCount, transformToolCount, linearMapToolCount);
                     break;                    

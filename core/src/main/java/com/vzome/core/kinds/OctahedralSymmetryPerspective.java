@@ -9,6 +9,7 @@ import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.math.symmetry.OctahedralSymmetry;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
 import com.vzome.core.tools.InversionToolFactory;
+import com.vzome.core.tools.LineReflectionToolFactory;
 import com.vzome.core.tools.LinearMapToolFactory;
 import com.vzome.core.tools.MirrorToolFactory;
 import com.vzome.core.tools.OctahedralToolFactory;
@@ -42,7 +43,8 @@ public final class OctahedralSymmetryPerspective extends AbstractSymmetryPerspec
 			result .add( new OctahedralToolFactory( tools, this .symmetry ) );
 			result .add( new TetrahedralToolFactory( tools, this .symmetry ) );
 			result .add( new InversionToolFactory( tools ) );
-			result .add( new MirrorToolFactory( tools ) );
+            result .add( new LineReflectionToolFactory( tools ) );
+            result .add( new MirrorToolFactory( tools ) );
 			result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) );
 			break;
 
