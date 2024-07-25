@@ -174,5 +174,7 @@ format-2.1.0-models.vZome-files
 #SelectCoplanar can now be called from a panel's context menu
 2023/11-Nov/15-David-SelectCoplanar/SelectCoplanar-from-context-menu.vZome
 
-#LineReflection Tool Icon is also the regression file for the new tool
+#Original LineReflectionTool icon is still used as a regression file for the tool
 2024/07-Jul/22-David-LineReflection/LineReflectionToolIcon.vZome
+#Bug fix for some off-center situations
+2024/07-Jul/25-David-LineReflection-BugFix/BugFix-LiineReflectionTool.vZome

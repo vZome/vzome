@@ -42,7 +42,7 @@ public class LineReflection extends Transformation {
             // arg is collinear with mMirrorLine so return it unchanged
             return arg;
         }
-        AlgebraicVector norm2 = AlgebraicVectors.getNormal(mStart, mEnd, norm1);
+        AlgebraicVector norm2 = AlgebraicVectors.getNormal(mStart, mEnd, mEnd.plus(norm1));
         // norm2 is a vector that is orthogonal to mMirrorLine
         // and is on the plane formed by mMirrorLine and v,
         // so the intersection of mMirrorLine and line2 
