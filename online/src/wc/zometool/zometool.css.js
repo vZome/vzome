@@ -105,4 +105,9 @@ export const instructionsCSS = `
   grid-template-rows: min-content 1fr 90px;
 }
 
+.matched-product {
+  min-width: 250px;
+  display: flex;
+  justify-content: space-between;
+}
 `;
