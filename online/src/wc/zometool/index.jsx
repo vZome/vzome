@@ -13,6 +13,7 @@ import { instructionsCSS } from "./zometool.css.js";
 import { urlViewerCSS } from "../../viewer/urlviewer.css.js";
 
 import { ZometoolPartsElement } from './parts-list.jsx';
+import { ZometoolProductsElement } from './products-list.jsx';
 import { normalizeBOM } from './bom.js';
 
 const debug = false;
@@ -205,5 +206,6 @@ class ZometoolInstructionsElement extends HTMLElement
 
 customElements.define( "zometool-instructions", ZometoolInstructionsElement );
 customElements.define( "zometool-parts-required", ZometoolPartsElement );
+customElements.define( "zometool-covering-products", ZometoolProductsElement );
 
 
