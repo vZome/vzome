@@ -2,6 +2,16 @@
 import { createSignal } from "solid-js"
 import { unwrap } from "solid-js/store"
 
+import {
+  useDragDropContext,
+  DragDropProvider,
+  DragDropSensors,
+  DragOverlay,
+  SortableProvider,
+  createSortable,
+  closestCenter,
+} from "@thisbeyond/solid-dnd";
+
 import DialogContent from "@suid/material/DialogContent"
 import Dialog from "@suid/material/Dialog"
 import DialogTitle from "@suid/material/DialogTitle"
@@ -32,33 +42,51 @@ const AddSceneButton = props =>
   );
 }
 
-const MoveSceneButton = props =>
+const DraggableScene = (props) =>
 {
-  const { scenes } = useViewer();
-  const { rootController, controllerAction, sceneIndex, setSceneIndex } = useEditor();
-
-  const atLimit = () =>
-  {
-    const target = sceneIndex() + props.change;
-    return ( target === 0 ) || ( target >= scenes.length );
-  }
-  
-  const moveScene = () =>
-  {
-    const params = { index: sceneIndex(), change: props.change };
-    controllerAction( rootController(), 'moveScene', params );
-    setSceneIndex( i => i + props.change );
-  }
-  
+  const { sceneIndex, setSceneIndex } = useEditor();
+  const sortable = createSortable(props.item);
+  const [state] = useDragDropContext();
   return (
-    <Button variant="outlined" size="medium" onClick={moveScene} disabled={atLimit()}>{props.label}</Button>
+    <div use:sortable
+        class={ props.item===sceneIndex()? 'scenes-entry scenes-selected' : 'scenes-entry' }
+        classList={{
+          "opacity-25": sortable.isActiveDraggable,
+          "transition-transform": !!state.active.draggable,
+        }}
+        onClick={ () => setSceneIndex( props.item ) }>
+      <span>{props.item}</span>
+      <span>{props.scene.title}</span>
+    </div>
   );
-}
-  
+};
+
 const ScenesDialog = props =>
 {
   const { scenes } = useViewer();
-  const { sceneIndex, setSceneIndex } = useEditor();
+  const trueScenes = () => scenes .slice( 1 ); // ignore the default scene
+  const { sceneIndex, setSceneIndex, rootController, controllerAction } = useEditor();
+
+  const [draggedScene, setDraggedScene] = createSignal(null);
+  const ids = () => trueScenes() .map( ( scene, i ) => i + 1 );
+
+  const onDragStart = ({ draggable }) =>
+  {
+    setDraggedScene(draggable.id);
+  }
+
+  const onDragEnd = ({ draggable, droppable }) => {
+    if (draggable && droppable) {
+      const currentItems = ids();
+      const fromIndex = currentItems .indexOf( draggable.id );
+      const toIndex = currentItems .indexOf( droppable.id );
+      if (fromIndex !== toIndex) {
+        const params = { index: fromIndex+1, change: toIndex-fromIndex };
+        controllerAction( rootController(), 'moveScene', params );
+        // setSceneIndex( fromIndex + 1 );
+      }
+    }
+  };
 
   return (
     <CameraProvider>
@@ -68,21 +96,26 @@ const ScenesDialog = props =>
           <div class='scenes-dialog-content'>
             <div class='scenes-list-outer'>
               <div class='scenes-scroller'>
-                <div class='scenes-list'>
-                  <For each={ scenes } >{ (scene,i) =>
-                    (i() > 0) &&
-                    <div class={ i()===sceneIndex()? 'scenes-entry scenes-selected' : 'scenes-entry' }
-                        onClick={ () => setSceneIndex( i() ) }>
-                      <span>{i()}</span>
-                      <span>{scene.title}</span>
-                    </div>
-                  }</For>
-                </div>
+                <DragDropProvider
+                  onDragStart={onDragStart}
+                  onDragEnd={onDragEnd}
+                  collisionDetector={closestCenter}
+                >
+                  <DragDropSensors />
+                  <div class='scenes-list'>
+                    <SortableProvider ids={ids()}>
+                      <For each={ trueScenes() } >{ (scene,i) =>
+                        <DraggableScene scene={scene} item={i()+1} />
+                      }</For>
+                    </SortableProvider>
+                  </div>
+                  <DragOverlay>
+                    <div class="scenes-entry">{draggedScene()}</div>
+                  </DragOverlay>
+                </DragDropProvider>
               </div>
               <div class='scenes-add'>
                 <AddSceneButton/>
-                <MoveSceneButton change={-1} label='Move Up' />
-                <MoveSceneButton change={1} label='Move Down' />
               </div>
             </div>
             <div class='scenes-canvas-outer'>

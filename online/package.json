@@ -16,6 +16,7 @@
     "@solid-primitives/resize-observer": "^2.0.15",
     "@suid/icons-material": "^0.5.3",
     "@suid/material": "^0.12.2",
+    "@thisbeyond/solid-dnd": "^0.7.5",
     "@tweenjs/tween.js": "^25.0.0",
     "antlr4": "^4.13.1-patch-1",
     "chevrotain": "^11.0.3",
