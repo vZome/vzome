@@ -105,6 +105,10 @@ export const instructionsCSS = `
   grid-template-rows: min-content 1fr 90px;
 }
 
+zometool-covering-products::before {
+   content: "Supporting products:";
+}
+
 .matched-product {
   min-width: 250px;
   display: flex;
