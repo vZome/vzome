@@ -21,7 +21,7 @@ const findProducts = ( bom, parts, products ) =>
 
   const result = [];
   Object.entries( products ) .map( ([ code, product ]) => {
-    if ( productCoversBom( product, bom ) )
+    if ( product.url && productCoversBom( product, bom ) ) // ignore products without a URL
       result .push( { name: product.label, url: product.url } );
   } );
   return result;
