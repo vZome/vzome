@@ -410,6 +410,11 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     symmetryDialog .setVisible( true );
                     break;
                     
+                case "resetOrbitColors":
+                    delegate = mController .getSubController( "symmetry." + system );
+                    delegate .actionPerformed( e .getSource(), e .getActionCommand() );
+                    break;
+                    
                 case "addBookmark":
                     String numStr = toolsController .getProperty( "next.tool.number" );
                     int bookmarkNum = Integer .parseInt( numStr );
@@ -977,6 +982,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         case "configureDirections":
         case "addBookmark":
         case "export4dPolytope":
+        case "resetOrbitColors":
             actionListener = this .localActions;
             break;
 

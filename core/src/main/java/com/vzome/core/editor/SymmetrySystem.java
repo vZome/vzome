@@ -266,7 +266,7 @@ public class SymmetrySystem implements OrbitSource
     public Color getColor( Direction orbit )
     {
         if ( orbit == null )
-            return Color.WHITE;
+            return colors .getColor( Colors.CONNECTOR );
         Color shapeColor = this .shapes .getColor( orbit ); // usually null, but see ExportedVEFShapes
         if ( shapeColor == null ) // the usual case
             shapeColor = orbitColors .get( orbit .getName() );
@@ -428,5 +428,13 @@ public class SymmetrySystem implements OrbitSource
     public AlgebraicNumber getOrbitUnitLength( Direction orbit )
     {
         return this .symmetryPerspective .getOrbitUnitLength( orbit );
+    }
+
+    public void resetColors()
+    {
+        for ( Direction orbit : symmetry .getOrbitSet() .getDirections() ) {
+            Color color = colors .getColor( Colors.DIRECTION + orbit .getName() );
+            orbitColors .put( orbit.getName(), color );
+        }
     }
 }

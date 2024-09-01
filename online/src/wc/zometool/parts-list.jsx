@@ -51,8 +51,10 @@ const svgStrings = {
 
 const getSvgNode = key =>
 {
-  let doc = new DOMParser().parseFromString( svgStrings[ key ], 'application/xml' );
-  return document .importNode( doc.documentElement, true );
+  let doc = new DOMParser() .parseFromString( svgStrings[ key ], 'application/xml' );
+  const svg = document .importNode( doc.documentElement, true );
+  svg .setAttribute( 'fill', '#ff00aa' );
+  return svg;
 }
 
 const debug = false;

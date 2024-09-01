@@ -15,7 +15,6 @@ public class ConnectorImpl extends ManifestationImpl implements Connector
 	public ConnectorImpl( AlgebraicVector loc )
 	{
 		super();
-		this.setColor(Color.WHITE);
 		m_center = loc;
 	}
 
