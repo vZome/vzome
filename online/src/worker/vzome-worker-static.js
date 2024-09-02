@@ -386,7 +386,7 @@ const reportDefaultScene = report =>
   clientEvents( report ) .sceneChanged( { shapes, embedding, polygons: true } );
 
   // Now compute an updated parts list
-  const bom = assemblePartsList( shapes );
+  // const bom = assemblePartsList( shapes );
 }
 
 onmessage = ({ data }) =>
