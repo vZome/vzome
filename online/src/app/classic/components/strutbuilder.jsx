@@ -36,6 +36,10 @@ export const StrutBuildPanel = () =>
     setAnchorEl( null );
     showOrbitsDialog();
   }
+  const resetOrbitColors = () => {
+    setAnchorEl( null );
+    controllerAction( symmetryController(), 'resetOrbitColors' );
+  }
 
   return(
     <div id="build" style={{ display: 'grid', 'grid-template-rows': '1fr min-content', height: '100%' }}>
@@ -57,6 +61,7 @@ export const StrutBuildPanel = () =>
           <MenuItem onClick={ setAvailableOrbits( 'predefinedOrbits' ) }>predefined</MenuItem>
           <MenuItem onClick={ setAvailableOrbits( 'setAllDirections' ) }>all</MenuItem>
           <MenuItem onClick={ showConfiguration }>configure...</MenuItem>
+          <MenuItem onClick={ resetOrbitColors }>reset orbit colors</MenuItem>
         </Menu>
       </OrbitPanel>
       <StrutLengthPanel controller={buildOrbits()} />

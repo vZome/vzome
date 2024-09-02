@@ -25,36 +25,56 @@ const svgMapping = {
 }
 
 const partcodeMapping = {
-  ball: 'PZB-BAL-W',
-  b0:   'PST-B0-BLU',
-  b1:   'PST-B1-BLU',
-  b2:   'PST-B2-BLU',
-  y0:   'PST-Y0-YEL',
-  y1:   'PST-Y1-YEL',
-  y2:   'PST-Y2-YEL',
-  r00:  'PST-R00-RED',
-  r0:   'PST-R0-RED',
-  r1:   'PST-R1-RED',
-  r2:   'PST-R2-RED',
-  g0:   'PST-G0-GRN',
-  g1:   'PST-G1-GRN',
-  g2:   'PST-G2-GRN',
-  hg0:  'PST-HG0-GRN',
-  hg1:  'PST-HG1-GRN',
-  hg2:  'PST-HG2-GRN',
+  ball: 'PZB-BAL-',
+  b0:   'PST-B0-',
+  b1:   'PST-B1-',
+  b2:   'PST-B2-',
+  y0:   'PST-Y0-',
+  y1:   'PST-Y1-',
+  y2:   'PST-Y2-',
+  r00:  'PST-R00-',
+  r0:   'PST-R0-',
+  r1:   'PST-R1-',
+  r2:   'PST-R2-',
+  g0:   'PST-G0-',
+  g1:   'PST-G1-',
+  g2:   'PST-G2-',
+  hg0:  'PST-HG0-',
+  hg1:  'PST-HG1-',
+  hg2:  'PST-HG2-',
+}
+
+const colorMapping = {
+  "blue":      "BLU",
+  "yellow":    "YEL",
+  "red":       "RED",
+  "green":     "GRN",
+  "turquoise": "TEA",
+  "orange":    "ORG",
+  "purple":    "PUR",
+  "white":     "W",
+  "black":     "BLK",
+  "gray":      "GRY",
 }
 
 
-export const normalizeBOM = rawBoM =>
+export const normalizeBOM = ( rawBoM, { colors, parts } ) =>
 {
   const bom = [];
+  const zometoolCodes = Object.keys( parts ); // not using the values at the moment
   // the order in partcodeMapping will be the order in bom
   for (const key in partcodeMapping) {
     const rawKey = svgMapping[ key ];
     if ( Object.hasOwnProperty.call( rawBoM, rawKey ) ) {
-      const partNum = partcodeMapping[ key ];
-      const count = rawBoM[ rawKey ];
-      bom .push( { key, partNum, count } )
+      // There is a rawBoM entry for this rawKey (e.g. svgMapping["b0"]), itself a histogram by color
+      const partNumPrefix = partcodeMapping[ key ];
+      for (const [ colorName, count ] of Object.entries( rawBoM[ rawKey ]) ) {
+        const partNum = partNumPrefix + colorMapping[ colorName ];
+        if ( zometoolCodes .includes( partNum ) ) {
+          const color = colors[ colorName ];
+          bom .push( { key, partNum, count, color } )
+        }
+      }
     }
   }
   return bom;

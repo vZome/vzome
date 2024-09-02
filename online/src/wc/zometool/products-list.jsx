@@ -8,13 +8,11 @@ import { instructionsCSS } from "./zometool.css.js";
 const debug = false;
 
 const product_catalog_url = 'https://zometool.github.io/vzome-sharing/metadata/zometool-products.json';
-const parts_catalog_url   = 'https://zometool.github.io/vzome-sharing/metadata/zometool-parts.json';
 
 const fetchJSON = url => fetch( url ) .then( response => response.text() ) .then( text => JSON.parse( text ) );
 const productsPromise = fetchJSON( product_catalog_url );
-const partsPromise = fetchJSON( parts_catalog_url );
 
-const findProducts = ( bom, parts, products ) =>
+const findProducts = ( bom, products ) =>
 {
   const productCoversBom = ( product, bom ) =>
     bom .reduce( (covers, part) => covers && product.bom[ part.partNum ] >= part.count, true );
@@ -33,9 +31,9 @@ const ZometoolProducts = props =>
 {
   const [ matchingProducts, setMatchingProducts ] = createSignal( [] );
 
-  Promise.all( [ productsPromise, partsPromise ] )
-    .then( ([ products, parts ]) => {
-      setMatchingProducts( findProducts( props.bom, parts, products ) );
+  productsPromise
+    .then( ( products ) => {
+      setMatchingProducts( findProducts( props.bom, products ) );
     } );
 
   return (

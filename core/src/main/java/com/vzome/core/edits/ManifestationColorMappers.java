@@ -132,6 +132,8 @@ public class ManifestationColorMappers {
         
         protected Color applyTo( Manifestation manifestation )
         {
+            // SV 2024-09-02 - I think this can never be called, since all current subclasses override it
+            
             Color color = manifestation.getColor();
             if( color == null ) { // TODO fix this! Should use techniques like SystemColorMap.
                 color = Color.WHITE; // provide default ball color so it can be manipulated
@@ -697,7 +699,7 @@ public class ManifestationColorMappers {
 
         @Override
         protected Color applyToBall(Connector ball, int alpha) {
-            return Color.WHITE;
+            return symmetrySystem.getVectorColor( null );
         }
 
         @Override
@@ -797,7 +799,7 @@ public class ManifestationColorMappers {
         @Override
         protected Color applyToVector(AlgebraicVector vector) {
             if(vector.isOrigin()) {
-                return Color.WHITE;
+                return symmetrySystem.getVectorColor( null ); // default ball color
             }
             Axis nearestSpecialOrbit = symmetrySystem.getSymmetry().getAxis(vector.toRealVector(), specialOrbits);
             AlgebraicVector normal = nearestSpecialOrbit.normal();

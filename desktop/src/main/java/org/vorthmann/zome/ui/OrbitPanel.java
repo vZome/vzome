@@ -114,6 +114,7 @@ public class OrbitPanel extends JPanel implements PropertyChangeListener
             directionPopupMenu.add( enabler .setMenuAction( "usedOrbits",          drawnOrbits, new JMenuItem( "used in model" ) ) );
             directionPopupMenu.add( enabler .setMenuAction( "setAllDirections",    drawnOrbits, new JMenuItem( "all" ) ) );
             directionPopupMenu.add( enabler .setMenuAction( "configureDirections", drawnOrbits, new JMenuItem( "configure..." ) ) );
+            directionPopupMenu.add( enabler .setMenuAction( "resetOrbitColors",    drawnOrbits, new JMenuItem( "reset colors" ) ) );
         }
         else
         	directionPopupMenu = null;

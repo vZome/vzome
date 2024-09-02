@@ -269,6 +269,11 @@ public class SymmetryController extends DefaultController
             action += "/" + this .symmetrySystem .getName() + ":" + this .symmetrySystem .getStyle() .getName();
             super .doAction( action );
             break;
+            
+        case "resetOrbitColors":
+            this .symmetrySystem .resetColors();
+            availableController .firePropertyChange( "orbits", true, false );
+            break;
 
         default:
             if ( action .startsWith( "setStyle." ) )
