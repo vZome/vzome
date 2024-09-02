@@ -245,9 +245,10 @@ public class SymmetrySystem implements OrbitSource
         return orbit;
     }
 
-    public Color getVectorColor( AlgebraicVector vector ) {
-        if( vector.isOrigin() ) {
-            return Color.WHITE;
+    public Color getVectorColor( AlgebraicVector vector )
+    {
+        if( vector == null ||  vector.isOrigin() ) {
+            return colors .getColor( Colors.CONNECTOR );
         }
         // try to get from cache
         Axis line = this .vectorToAxis .get( vector.toString() );
