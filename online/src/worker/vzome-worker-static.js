@@ -113,13 +113,19 @@ const fetchFileText = selected =>
   })
 }
 
+// Fetch the official Zometool colors
+const parts_catalog_url = 'https://zometool.github.io/vzome-sharing/metadata/zometool-parts.json';
+const partsPromise = fetch( parts_catalog_url ) .then( response => response.text() ) .then( text => JSON.parse( text ) );
+
 const clientEvents = report =>
 {
   const sceneChanged = ( scene, edit='--START--' ) =>
   {
     report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
-    const bom = assemblePartsList( scene.shapes );
-    report( { type: 'BOM_CHANGED', payload: bom } );
+    partsPromise .then( ({ colors }) => {
+      const bom = assemblePartsList( scene.shapes, colors );
+      report( { type: 'BOM_CHANGED', payload: bom } );
+    });
   }
 
   const shapeDefined = shape => report( { type: 'SHAPE_DEFINED', payload: shape } );

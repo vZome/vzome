@@ -49,11 +49,11 @@ const svgStrings = {
   hg2 : hg2Svg,
 }
 
-const getSvgNode = key =>
+const getSvgNode = ( key, color ) =>
 {
   let doc = new DOMParser() .parseFromString( svgStrings[ key ], 'application/xml' );
   const svg = document .importNode( doc.documentElement, true );
-  svg .setAttribute( 'fill', '#ff00aa' );
+  svg .setAttribute( 'fill', color );
   return svg;
 }
 
@@ -74,10 +74,10 @@ const ZometoolParts = props =>
             </TableRow>
           </TableHead>
           <TableBody>
-          <For each={props.bom}>{ ({ key, count }) =>
+          <For each={props.bom}>{ ({ key, count, color }) =>
             <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }} >
               <TableCell align="left" component="th" scope="row" sx={partSx}>
-                {getSvgNode( key )}
+                {getSvgNode( key, color )}
               </TableCell>
               <TableCell component="th" scope="row">{ ((key==='ball')? '' : key) .toUpperCase() }</TableCell>
               <TableCell align="right">{count}</TableCell>

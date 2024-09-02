@@ -18,6 +18,9 @@ import { normalizeBOM } from './bom.js';
 
 const debug = false;
 
+const parts_catalog_url = 'https://zometool.github.io/vzome-sharing/metadata/zometool-parts.json';
+const partsPromise = fetch( parts_catalog_url ) .then( response => response.text() ) .then( text => JSON.parse( text ) );
+
 const StepControls = props =>
 {
   const { scenes, requestScene } = useViewer();
@@ -51,7 +54,10 @@ const StepControls = props =>
 
   const { subscribeFor } = useWorkerClient();
   subscribeFor( 'BOM_CHANGED', bom => {
-    props.dispatch( new CustomEvent( 'zometool-instructions-loaded', { detail: normalizeBOM( bom ) } ) );
+    partsPromise .then( parts => {
+      const detail = normalizeBOM( bom, parts );
+      props.dispatch( new CustomEvent( 'zometool-instructions-loaded', { detail } ) );
+    });
   } );
 
   return (

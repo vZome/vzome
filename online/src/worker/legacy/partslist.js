@@ -1,5 +1,5 @@
 
-export const assemblePartsList = shapes =>
+export const assemblePartsList = ( shapes, colors ) =>
 {
   const bom = {};
   for (const id in shapes) {
@@ -7,10 +7,14 @@ export const assemblePartsList = shapes =>
     if ( !name && !orbit ) continue;
     const row = name || `${orbit}:${length}`
     for (const { color } of instances) {
+      const match = Object.entries( colors ) .filter( ([ name, value ]) => value === color );
+      const colorBin = match[0]? match[0][ 0 ] : 'other';
       if ( ! bom[ row ] )
-        bom[ row ] = 1;
+        bom[ row ] = {};
+      if ( ! bom[ row ][ colorBin ] )
+        bom[ row ][ colorBin ] = 1;
       else
-        bom[ row ] = bom[ row ] + 1;
+      bom[ row ][ colorBin ] = bom[ row ][ colorBin ] + 1;
     }
   }
   return bom;
