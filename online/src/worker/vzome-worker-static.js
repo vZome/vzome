@@ -34,7 +34,7 @@ const prepareSceneResponse = ( design, sceneIndex ) =>
     scene = { ...design.rendered.scenes[ 0 ] };
   }
   const { title, snapshot, camera } = scene;
-  const { embedding, polygons, instances, snapshots, orientations } = design.rendered;
+  const { embedding, polygons, instances, snapshots, orientations, lighting } = design.rendered;
   const sceneInstances = ( snapshot === DEFAULT_SNAPSHOT )? instances : snapshots[ snapshot ];
   const shapes = {};
   for ( const instance of sceneInstances ) {
@@ -44,7 +44,7 @@ const prepareSceneResponse = ( design, sceneIndex ) =>
     }
     shapes[ instance.shapeId ].instances.push( { ...instance, rotation } );
   }
-  return { title, shapes, camera, embedding, polygons };
+  return { title, shapes, camera, lighting, embedding, polygons };
 }
 
 const filterScene = ( report, load ) => event =>
