@@ -100,7 +100,7 @@ const filterUniqueUsers = users =>
 }
 
 const queryParams = new URLSearchParams( window.location.search );
-const defaultGithubUser = queryParams.get( 'user' ) || localStorage.getItem( 'vzome-github-user' ) || "vorth";
+const defaultGithubUser = queryParams.get( 'user' ) ?.toLowerCase() || localStorage.getItem( 'vzome-github-user' ) || "vorth";
 console.log( "defaultGithubUser ", defaultGithubUser );
 const storedUsers = JSON.parse( localStorage.getItem( 'vzome-github-users' ) || '[ "david-hall", "john-kostick", "thynstyx", "vorth" ]' );
 let knownUsers = filterUniqueUsers( [ defaultGithubUser, ...storedUsers ] );
