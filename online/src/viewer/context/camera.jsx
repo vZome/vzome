@@ -7,7 +7,7 @@ import { createStore } from 'solid-js/store';
 export const INITIAL_DISTANCE = 108;
 const NEAR_FACTOR = 0.1 / INITIAL_DISTANCE;
 const FAR_FACTOR = 2.0;
-const WIDTH_FACTOR = 0.5;
+const WIDTH_FACTOR = 0.45;
 
 const defaultCamera = () => ({
   // zoom
