@@ -3,11 +3,16 @@ import { Select } from "@kobalte/core/select";
 
 export const UsersMenu = (props) =>
 {
+  const changeUser = user => {
+    // user should never be null, now that we lowercase the query parameter first, but still...
+    if ( !! user )
+      props.setUser( user );    
+  }
   return (
     <div style={ { background: 'lightgray' } }>
       <Select
         value={props.currentUser}
-        onChange={props.setUser}
+        onChange={changeUser}
         options={props.users}
         placeholder="Select a GitHub user…"
         itemComponent={props => (
