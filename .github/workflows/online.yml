@@ -31,6 +31,19 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
 
+    - name: Checkout sourcemap-builder
+      uses: actions/checkout@v4
+      with:
+        repository: lgrignon/sourcemap-builder
+        path: sourcemap-builder
+    - name: Build & deploy sourcemap-builder
+      run: |
+        pwd
+        cd sourcemap-builder
+        pwd
+        mvn clean install -Dmaven.test.skip=true -DskipJavadoc=true -DskipSigning=true
+        cd ..
+
     - name: Checkout modified jsweet
       uses: actions/checkout@v4
       with:
