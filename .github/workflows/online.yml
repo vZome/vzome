@@ -34,7 +34,7 @@ jobs:
     - name: Checkout modified jsweet
       uses: actions/checkout@v4
       with:
-        repository: vorth/jsweet
+        repository: cincheo/jsweet
         ref: develop
         path: jsweet
     - name: Build & deploy jsweet transpiler
