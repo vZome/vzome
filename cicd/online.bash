@@ -94,11 +94,13 @@ buildForProduction() {
 }
 
 prepareJSweet(){
-  source cicd/prepare-jsweet.bash || exit $?
+  banner 'We are no longer using JSweet. See online/build.gradle for more details.'
+  # source cicd/prepare-jsweet.bash || exit $?
 }
 
 jsweet(){
-  source cicd/jsweet-legacy-code.bash || exit $?
+  banner 'We are no longer using JSweet. See online/build.gradle for more details.'
+  # source cicd/jsweet-legacy-code.bash || exit $?
 }
 
 devJava(){

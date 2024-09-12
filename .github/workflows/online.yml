@@ -25,6 +25,8 @@ jobs:
       with:
         lfs: 'true'
 
+<<<<<<< HEAD
+=======
     - name: Set up JDK
       uses: actions/setup-java@v4
       with:
@@ -100,6 +102,7 @@ jobs:
         ./gradlew publishToMavenLocal -DskipSigning=true
         cd ..
 
+>>>>>>> main
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:

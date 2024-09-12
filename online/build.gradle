@@ -1,3 +1,18 @@
+
+// JSweet has effectively died.  Keeping it working was already far too complex,
+// and now their Artifactory server is gone.
+
+// I'm now committing the generated Typescript and Javascript, and we'll move
+// forward with manual porting for any changes we do to the Java source.
+
+// This build script now will only see use when we finally want to port some of
+// the excluded core edits or exporters, e.g. POVRayExporter.java.  Even then
+// we will probably need to bypass Gradle and use Maven or just a raw Java command-line.
+
+// For that eventuality, I have made a local copy of the relevant contents of my local
+// Maven repository.  See ~/vZome/jsweet-maven-repo
+
+
 buildscript {
 	repositories {
     mavenLocal()

@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# JSweet has effectively died.  Keeping it working was already far too complex,
+# and now their Artifactory server is gone.
+
+# I'm now committing the generated Typescript and Javascript, and we'll move
+# forward with manual porting for any changes we do to the Java source.
+
+# See online/build.gradle for more details.
+
+
 if [ -z ${REVISION+x} ]; then
   echo "This script is not meant to run as a top-level entry point."
   exit 1

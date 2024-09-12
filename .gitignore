@@ -51,7 +51,7 @@ react-vzome-*.tgz
 build.properties
 online/jsweetOut
 transpiled-java.js
-core-java.js
+# core-java.js
 desktop-java.js
 vzome-react-vzome-*.tgz
 online/dist
@@ -62,8 +62,8 @@ online-app.zip
 online.tgz
 deploy-to-dreamhost.sh
 *.pem
-online/src/worker/legacy/candies
-online/src/ui/legacy/candies
+# online/src/worker/legacy/candies
+# online/src/ui/legacy/candies
 
 desktop-errors.txt
 
