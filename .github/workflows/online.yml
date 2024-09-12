@@ -40,10 +40,10 @@ jobs:
     - name: Build & deploy jsweet transpiler
       run: |
         pwd
-        cd jsweet/transpiler
+        cd jsweet
         pwd
         mvn clean install -Dmaven.test.skip=true -DskipJavadoc=true -DskipSigning=true
-        cd ../..
+        cd ..
 
     - name: Checkout modified jsweet-maven-plugin
       uses: actions/checkout@v4
