@@ -4916,6 +4916,14 @@ export var java;
             function AbstractCollection() {
             }
             /* Default method injected from java.util.Collection */
+            AbstractCollection.prototype.stream = function () {
+                return (new javaemul.internal.stream.StreamHelper(this));
+            };
+            /* Default method injected from java.util.Collection */
+            AbstractCollection.prototype.parallelStream = function () {
+                return this.stream();
+            };
+            /* Default method injected from java.util.Collection */
             AbstractCollection.prototype.removeIf = function (filter) {
                 javaemul.internal.InternalPreconditions.checkNotNull(((function (funcInst) { if (funcInst == null || typeof funcInst == 'function') {
                     return funcInst;
@@ -4935,10 +4943,6 @@ export var java;
                 }
                 return removed;
             };
-            /* Default method injected from java.util.Collection */
-            AbstractCollection.prototype.parallelStream = function () {
-                return this.stream();
-            };
             /* Default method injected from java.lang.Iterable */
             AbstractCollection.prototype.forEach = function (action) {
                 javaemul.internal.InternalPreconditions.checkNotNull(((function (funcInst) { if (funcInst == null || typeof funcInst == 'function') {
@@ -4953,10 +4957,6 @@ export var java;
                 for (var index = this.iterator(); index.hasNext();) {
                     _loop_3(index);
                 }
-            };
-            /* Default method injected from java.util.Collection */
-            AbstractCollection.prototype.stream = function () {
-                return (new javaemul.internal.stream.StreamHelper(this));
             };
             /**
              *
@@ -11153,10 +11153,6 @@ export var java;
                     throw new Error('invalid overload');
             }
             /* Default method injected from java.util.Iterator */
-            Scanner.prototype.remove = function () {
-                throw new java.lang.UnsupportedOperationException();
-            };
-            /* Default method injected from java.util.Iterator */
             Scanner.prototype.forEachRemaining = function (consumer) {
                 var _this = this;
                 javaemul.internal.InternalPreconditions.checkNotNull(((function (funcInst) { if (funcInst == null || typeof funcInst == 'function') {
@@ -11168,6 +11164,10 @@ export var java;
                     }
                 }
                 ;
+            };
+            /* Default method injected from java.util.Iterator */
+            Scanner.prototype.remove = function () {
+                throw new java.lang.UnsupportedOperationException();
             };
             Scanner.numeral_$LI$ = function () { if (Scanner.numeral == null) {
                 Scanner.numeral = Scanner.digit + "+";
@@ -17251,14 +17251,9 @@ export var java;
                 }
             };
             /* Default method injected from java.util.Map */
-            AbstractMap.prototype.computeIfAbsent = function (key, mappingFunction) {
-                var result;
-                if ((result = this.get(key)) == null) {
-                    result = (function (target) { return (typeof target === 'function') ? target(key) : target.apply(key); })(mappingFunction);
-                    if (result != null)
-                        this.put(key, result);
-                }
-                return result;
+            AbstractMap.prototype.getOrDefault = function (key, defaultValue) {
+                var v;
+                return (((v = this.get(key)) != null) || this.containsKey(key)) ? v : defaultValue;
             };
             /* Default method injected from java.util.Map */
             AbstractMap.prototype.merge = function (key, value, map) {
@@ -17273,9 +17268,14 @@ export var java;
                 return next;
             };
             /* Default method injected from java.util.Map */
-            AbstractMap.prototype.getOrDefault = function (key, defaultValue) {
-                var v;
-                return (((v = this.get(key)) != null) || this.containsKey(key)) ? v : defaultValue;
+            AbstractMap.prototype.computeIfAbsent = function (key, mappingFunction) {
+                var result;
+                if ((result = this.get(key)) == null) {
+                    result = (function (target) { return (typeof target === 'function') ? target(key) : target.apply(key); })(mappingFunction);
+                    if (result != null)
+                        this.put(key, result);
+                }
+                return result;
             };
             /* Default method injected from java.util.Map */
             AbstractMap.prototype.putIfAbsent = function (key, value) {
@@ -24978,6 +24978,14 @@ export var java;
                     this.coll = coll;
                 }
                 /* Default method injected from java.util.Collection */
+                UnmodifiableCollection.prototype.stream = function () {
+                    return (new javaemul.internal.stream.StreamHelper(this));
+                };
+                /* Default method injected from java.util.Collection */
+                UnmodifiableCollection.prototype.parallelStream = function () {
+                    return this.stream();
+                };
+                /* Default method injected from java.util.Collection */
                 UnmodifiableCollection.prototype.removeIf = function (filter) {
                     javaemul.internal.InternalPreconditions.checkNotNull(((function (funcInst) { if (funcInst == null || typeof funcInst == 'function') {
                         return funcInst;
@@ -24997,10 +25005,6 @@ export var java;
                     }
                     return removed;
                 };
-                /* Default method injected from java.util.Collection */
-                UnmodifiableCollection.prototype.parallelStream = function () {
-                    return this.stream();
-                };
                 /* Default method injected from java.lang.Iterable */
                 UnmodifiableCollection.prototype.forEach = function (action) {
                     javaemul.internal.InternalPreconditions.checkNotNull(((function (funcInst) { if (funcInst == null || typeof funcInst == 'function') {
@@ -25015,10 +25019,6 @@ export var java;
                     for (var index = this.iterator(); index.hasNext();) {
                         _loop_7(index);
                     }
-                };
-                /* Default method injected from java.util.Collection */
-                UnmodifiableCollection.prototype.stream = function () {
-                    return (new javaemul.internal.stream.StreamHelper(this));
                 };
                 /**
                  *
@@ -25522,14 +25522,9 @@ export var java;
                     }
                 };
                 /* Default method injected from java.util.Map */
-                UnmodifiableMap.prototype.computeIfAbsent = function (key, mappingFunction) {
-                    var result;
-                    if ((result = this.get(key)) == null) {
-                        result = (function (target) { return (typeof target === 'function') ? target(key) : target.apply(key); })(mappingFunction);
-                        if (result != null)
-                            this.put(key, result);
-                    }
-                    return result;
+                UnmodifiableMap.prototype.getOrDefault = function (key, defaultValue) {
+                    var v;
+                    return (((v = this.get(key)) != null) || this.containsKey(key)) ? v : defaultValue;
                 };
                 /* Default method injected from java.util.Map */
                 UnmodifiableMap.prototype.merge = function (key, value, map) {
@@ -25544,9 +25539,14 @@ export var java;
                     return next;
                 };
                 /* Default method injected from java.util.Map */
-                UnmodifiableMap.prototype.getOrDefault = function (key, defaultValue) {
-                    var v;
-                    return (((v = this.get(key)) != null) || this.containsKey(key)) ? v : defaultValue;
+                UnmodifiableMap.prototype.computeIfAbsent = function (key, mappingFunction) {
+                    var result;
+                    if ((result = this.get(key)) == null) {
+                        result = (function (target) { return (typeof target === 'function') ? target(key) : target.apply(key); })(mappingFunction);
+                        if (result != null)
+                            this.put(key, result);
+                    }
+                    return result;
                 };
                 /* Default method injected from java.util.Map */
                 UnmodifiableMap.prototype.putIfAbsent = function (key, value) {
@@ -26262,6 +26262,14 @@ export var java;
                 return _this;
             }
             /* Default method injected from java.util.Collection */
+            LinkedList.prototype.stream = function () {
+                return (new javaemul.internal.stream.StreamHelper(this));
+            };
+            /* Default method injected from java.util.Collection */
+            LinkedList.prototype.parallelStream = function () {
+                return this.stream();
+            };
+            /* Default method injected from java.util.Collection */
             LinkedList.prototype.removeIf = function (filter) {
                 javaemul.internal.InternalPreconditions.checkNotNull(((function (funcInst) { if (funcInst == null || typeof funcInst == 'function') {
                     return funcInst;
@@ -26281,6 +26289,21 @@ export var java;
                 }
                 return removed;
             };
+            /* Default method injected from java.lang.Iterable */
+            LinkedList.prototype.forEach = function (action) {
+                javaemul.internal.InternalPreconditions.checkNotNull(((function (funcInst) { if (funcInst == null || typeof funcInst == 'function') {
+                    return funcInst;
+                } return function (arg0) { return (funcInst['accept'] ? funcInst['accept'] : funcInst).call(funcInst, arg0); }; })(action)));
+                var _loop_10 = function (index) {
+                    var t = index.next();
+                    {
+                        (function (target) { return (typeof target === 'function') ? target(t) : target.accept(t); })(action);
+                    }
+                };
+                for (var index = this.iterator(); index.hasNext();) {
+                    _loop_10(index);
+                }
+            };
             /* Default method injected from java.util.List */
             LinkedList.prototype.sort = function (c) {
                 var a = this.toArray();
@@ -26297,29 +26320,6 @@ export var java;
                         i.set(e);
                     }
                 }
-            };
-            /* Default method injected from java.util.Collection */
-            LinkedList.prototype.parallelStream = function () {
-                return this.stream();
-            };
-            /* Default method injected from java.lang.Iterable */
-            LinkedList.prototype.forEach = function (action) {
-                javaemul.internal.InternalPreconditions.checkNotNull(((function (funcInst) { if (funcInst == null || typeof funcInst == 'function') {
-                    return funcInst;
-                } return function (arg0) { return (funcInst['accept'] ? funcInst['accept'] : funcInst).call(funcInst, arg0); }; })(action)));
-                var _loop_10 = function (index) {
-                    var t = index.next();
-                    {
-                        (function (target) { return (typeof target === 'function') ? target(t) : target.accept(t); })(action);
-                    }
-                };
-                for (var index = this.iterator(); index.hasNext();) {
-                    _loop_10(index);
-                }
-            };
-            /* Default method injected from java.util.Collection */
-            LinkedList.prototype.stream = function () {
-                return (new javaemul.internal.stream.StreamHelper(this));
             };
             /**
              *
@@ -27196,14 +27196,9 @@ export var java;
                 }
             };
             /* Default method injected from java.util.Map */
-            IdentityHashMap.prototype.computeIfAbsent = function (key, mappingFunction) {
-                var result;
-                if ((result = this.get(key)) == null) {
-                    result = (function (target) { return (typeof target === 'function') ? target(key) : target.apply(key); })(mappingFunction);
-                    if (result != null)
-                        this.put(key, result);
-                }
-                return result;
+            IdentityHashMap.prototype.getOrDefault = function (key, defaultValue) {
+                var v;
+                return (((v = this.get(key)) != null) || this.containsKey(key)) ? v : defaultValue;
             };
             /* Default method injected from java.util.Map */
             IdentityHashMap.prototype.merge = function (key, value, map) {
@@ -27218,9 +27213,14 @@ export var java;
                 return next;
             };
             /* Default method injected from java.util.Map */
-            IdentityHashMap.prototype.getOrDefault = function (key, defaultValue) {
-                var v;
-                return (((v = this.get(key)) != null) || this.containsKey(key)) ? v : defaultValue;
+            IdentityHashMap.prototype.computeIfAbsent = function (key, mappingFunction) {
+                var result;
+                if ((result = this.get(key)) == null) {
+                    result = (function (target) { return (typeof target === 'function') ? target(key) : target.apply(key); })(mappingFunction);
+                    if (result != null)
+                        this.put(key, result);
+                }
+                return result;
             };
             /* Default method injected from java.util.Map */
             IdentityHashMap.prototype.putIfAbsent = function (key, value) {
@@ -29398,14 +29398,9 @@ export var java;
                 }
             };
             /* Default method injected from java.util.Map */
-            LinkedHashMap.prototype.computeIfAbsent = function (key, mappingFunction) {
-                var result;
-                if ((result = this.get(key)) == null) {
-                    result = (function (target) { return (typeof target === 'function') ? target(key) : target.apply(key); })(mappingFunction);
-                    if (result != null)
-                        this.put(key, result);
-                }
-                return result;
+            LinkedHashMap.prototype.getOrDefault = function (key, defaultValue) {
+                var v;
+                return (((v = this.get(key)) != null) || this.containsKey(key)) ? v : defaultValue;
             };
             /* Default method injected from java.util.Map */
             LinkedHashMap.prototype.merge = function (key, value, map) {
@@ -29420,9 +29415,14 @@ export var java;
                 return next;
             };
             /* Default method injected from java.util.Map */
-            LinkedHashMap.prototype.getOrDefault = function (key, defaultValue) {
-                var v;
-                return (((v = this.get(key)) != null) || this.containsKey(key)) ? v : defaultValue;
+            LinkedHashMap.prototype.computeIfAbsent = function (key, mappingFunction) {
+                var result;
+                if ((result = this.get(key)) == null) {
+                    result = (function (target) { return (typeof target === 'function') ? target(key) : target.apply(key); })(mappingFunction);
+                    if (result != null)
+                        this.put(key, result);
+                }
+                return result;
             };
             /* Default method injected from java.util.Map */
             LinkedHashMap.prototype.putIfAbsent = function (key, value) {

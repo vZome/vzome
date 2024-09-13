@@ -38,7 +38,7 @@ import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.Strut;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.CameraIntf;
 
 // Combines features from DaeExporter and OffExporter
 public class GeoGebraExporter extends DocumentExporter
@@ -205,7 +205,7 @@ public class GeoGebraExporter extends DocumentExporter
             return template;
         }
         
-        private void setScene(Camera scene, Color color) throws XPathExpressionException {
+        private void setScene(CameraIntf scene, Color color) throws XPathExpressionException {
             Element euclidianView3DNode = (Element) xpath.evaluate("//geogebra//euclidianView3D",
                     doc.getDocumentElement(), XPathConstants.NODE);
             { // coordSystem

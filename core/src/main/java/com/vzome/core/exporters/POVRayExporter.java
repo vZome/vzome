@@ -14,10 +14,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Vector3f;
-
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -26,7 +22,7 @@ import com.vzome.core.math.Polyhedron;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.render.RenderedManifestation;
-import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.CameraIntf;
 
 /**
  * Renders out to POV-Ray using #declare statements to reuse geometry.
@@ -38,12 +34,8 @@ public class POVRayExporter extends DocumentExporter
 	
 	private static final String PREAMBLE_FILE = "com/vzome/core/exporters/povray/preamble.pov";
 
-    public void mapViewToWorld( Camera view, Vector3f vector )
+    public void mapViewToWorld( CameraIntf view, RealVector vector )
     {
-        Matrix4f viewTrans = new Matrix4f();
-        view .getViewTransform( viewTrans );
-        viewTrans .invert();
-        viewTrans .transform( vector );
     }
 
     @Override
@@ -56,9 +48,8 @@ public class POVRayExporter extends DocumentExporter
 	{
 	    output = new PrintWriter( writer );
 	    
-		Vector3f lookDir = new Vector3f(), upDir = new Vector3f(), rightDir = new Vector3f();
-		mScene .getViewOrientation( lookDir, upDir );
-		rightDir .cross( lookDir, upDir );
+		RealVector lookDir = mScene .getLookDirectionRV();
+		RealVector upDir = mScene .getUpDirectionRV();
 		FORMAT .setMaximumFractionDigits( 8 );
 
         output .println();
@@ -67,23 +58,13 @@ public class POVRayExporter extends DocumentExporter
         output .println();
         output .println( "#declare             up_dir = " + printTuple3d( upDir ) + ";" );
         output .println();
-        output .println( "#declare          right_dir = " + printTuple3d( rightDir ) + ";" );
-        output .println();
         output .println( "#declare viewpoint_distance = " + mScene .getViewDistance() + ";" );
         output .println();
-        output .println( "#declare near_clip_distance = " + mScene .getNearClipDistance() + ";" );
-        output .println();
-        output .println( "#declare far_clip_distance = " + mScene .getFarClipDistance() + ";" );
-        output .println();
-		output .println( "#declare      look_at_point = " + printTuple3d( mScene .getLookAtPoint() ) + ";" );
+		output .println( "#declare      look_at_point = " + printTuple3d( mScene .getLookAtPointRV() ) + ";" );
         output .println();
 		output .println( "#declare      field_of_view = " + mScene .getFieldOfView() + ";" );
         output .println();
-		output .println( "#declare       canvas_width = " + width + ";" );
-        output .println();
-		output .println( "#declare      canvas_height = " + height + ";" );
-        output .println();
-        output .println( "#declare      parallel_proj = " + (mScene.isPerspective()?0:1) + ";" );
+        output .println( "#declare      parallel_proj = " + (mScene .isPerspective()?0:1) + ";" );
         output .println();
 
 		InputStream input = getClass() .getClassLoader()
@@ -103,9 +84,8 @@ public class POVRayExporter extends DocumentExporter
 		for ( int i = 0; i<3; i++ ) {
 			Color color = mLights .getDirectionalLightColor( i );
 	        RealVector rv = mLights .getDirectionalLightVector( i );
-	        Vector3f dir = new Vector3f( rv.x, rv.y, rv.z );
-			mapViewToWorld( mScene, dir );
-			output .print( "light_source { -light_distance * " + printTuple3d( new Vector3f( dir ) ) );
+	        rv = mScene .mapViewToWorld( rv );
+			output .print( "light_source { -light_distance * " + printTuple3d( rv ) );
 			output .print( " " );
 			printColor( color );
 			output .println( " * multiplier_light_" + (i+1) + " }" );
@@ -216,7 +196,7 @@ public class POVRayExporter extends DocumentExporter
         return "color_" + color .toString() .replace( ',', '_' );
     }
    
-    private String printTuple3d( Tuple3f t )
+    private String printTuple3d( RealVector t )
     {
     	StringBuilder buf = new StringBuilder( "<" );
     	buf .append( FORMAT.format(t.x) );

@@ -47,9 +47,6 @@ public abstract class GeometryExporter implements RealZomeScaling
         return ResourceLoader .loadStringResource( resourcePath );
     }
 
-    /**
-     * Subclasses can override this if they need to export history, the lesson model, or the selection.
-     */
     public void exportGeometry( RenderedModel model, File file, Writer writer, int height, int width ) throws Exception
     {
         mModel = model;

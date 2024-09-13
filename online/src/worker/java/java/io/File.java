@@ -13,4 +13,14 @@ public class File
     {
         return null;
     }
+
+    public String getName()
+    {
+      return null;
+    }
+
+    public File getParentFile()
+    {
+      return null;
+    }
 }

@@ -16,7 +16,7 @@ import com.vzome.core.math.RealMatrix4;
 import com.vzome.core.math.RealVector;
 import com.vzome.xml.DomUtils;
 
-public class Camera
+public class Camera implements CameraIntf
 {
     /**
      * The original frustum.
@@ -383,5 +383,37 @@ public class Camera
             float z = Float .parseFloat( str );
             mLookDirection = new Vector3f( x, y, z );
         }
+    }
+
+    @Override
+    public RealVector mapViewToWorld( RealVector rv )
+    {
+        Vector3f vector = new Vector3f( rv.x, rv.y, rv.z );
+        Matrix4f viewTrans = new Matrix4f();
+        this .getViewTransform( viewTrans );
+        viewTrans .invert();
+        viewTrans .transform( vector );
+        return new RealVector( vector.x, vector.y, vector.z );
+    }
+
+    @Override
+    public RealVector getLookAtPointRV()
+    {
+        Point3f vector = getLookAtPoint();
+        return new RealVector( vector.x, vector.y, vector.z );
+    }
+
+    @Override
+    public RealVector getLookDirectionRV()
+    {
+        Vector3f vector = getLookDirection();
+        return new RealVector( vector.x, vector.y, vector.z );
+    }
+
+    @Override
+    public RealVector getUpDirectionRV()
+    {
+        Vector3f vector = getUpDirection();
+        return new RealVector( vector.x, vector.y, vector.z );
     }
 }

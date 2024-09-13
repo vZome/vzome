@@ -17,7 +17,6 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
-import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.math.RealVector;
@@ -37,7 +36,7 @@ import com.vzome.core.render.RenderedManifestation;
 public class OpenScadExporter extends DocumentExporter
 {
     @Override
-    public void exportDocument( DocumentModel doc, File file, Writer writer, int height, int width ) throws Exception
+    public void exportDocument( DocumentIntf doc, File file, Writer writer, int height, int width ) throws Exception
     {
         ToolsModel toolsModel = doc .getToolsModel();
         super .mModel = doc .getRenderedModel();
