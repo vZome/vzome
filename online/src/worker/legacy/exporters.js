@@ -10,6 +10,11 @@ const exporterClasses = {
   'off'      : 'OffExporter',
   'ply'      : 'PlyExporter',
   'vrml'     : 'VRMLExporter',
+  'pov'      : 'PovRayExporter',
+  'partgeom' : 'PartGeometryExporter',
+  'openscad' : 'OpenScadExporter',
+  'math'     : 'MathTableExporter',
+
   'pdf'      : 'PDFExporter',
   'ps'       : 'PostScriptExporter',
   'svg'      : 'SVGExporter',
@@ -31,6 +36,34 @@ export const export3d = ( scene, configuration ) =>
   const exporter = new com.vzome.core.exporters[ exporterClasses[ format ] ]();
   const out = new java.io.StringWriter();
   exporter .exportGeometry( renderedModel, null, out, height, width );
+  return out.toString();
+}
+
+const createDocument = ( legacyDesign, camera, lighting ) =>
+{
+  // TODO
+  return {
+    // CameraIntf getCameraModel();
+
+    // Lights getSceneLighting();
+
+    // RenderedModel getRenderedModel();
+
+    // ToolsModel getToolsModel();
+
+    // Element getDetailsXml( Document dom, boolean b );
+
+    // EditorModel getEditorModel();
+  }
+}
+
+export const export3dDocument = ( legacyDesign, camera, lighting, configuration ) =>
+{
+  const { format, height, width } = configuration;
+  const exporter = new com.vzome.core.exporters[ exporterClasses[ format ] ]();
+  const out = new java.io.StringWriter();
+  const document = createDocument( legacyDesign, camera, lighting );
+  exporter .exportDocument( document, null, out, height, width );
   return out.toString();
 }
 

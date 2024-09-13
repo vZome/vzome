@@ -32,6 +32,9 @@ cicd/online.bash quickstart
 
 ## Legacy Code Dev Workflow
 
+  This workflow is no longer viable unless you *already* have all of the JSweet components built and installed locally.
+  The JSweet Artifactory server is offline for good, and so the build is not working.
+
 You'll need [Maven](https://maven.apache.org/) installed for these steps.
 You will also require an installation of [JDK 11](https://www.oracle.com/java/technologies/javase/jdk11-archive-downloads.html).
 

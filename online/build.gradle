@@ -17,10 +17,10 @@ buildscript {
 	repositories {
     mavenLocal()
 		mavenCentral()
-		maven { url "https://repository.jsweet.org/artifactory/libs-release-local" }
-		maven { url "https://repository.jsweet.org/artifactory/libs-snapshot-local" }
-		maven { url "https://repository.jsweet.org/artifactory/plugins-release-local" }
-		maven { url "https://repository.jsweet.org/artifactory/plugins-snapshot-local" }
+		// maven { url "https://repository.jsweet.org/artifactory/libs-release-local" }
+		// maven { url "https://repository.jsweet.org/artifactory/libs-snapshot-local" }
+		// maven { url "https://repository.jsweet.org/artifactory/plugins-release-local" }
+		// maven { url "https://repository.jsweet.org/artifactory/plugins-snapshot-local" }
 	}
 	dependencies {
 		classpath('org.jsweet:jsweet-gradle-plugin:3.1.0') {
@@ -36,10 +36,10 @@ plugins {
 repositories {
   mavenLocal()
   mavenCentral()
-  maven { url "https://repository.jsweet.org/artifactory/libs-release-local" }
-  maven { url "https://repository.jsweet.org/artifactory/libs-snapshot-local" }
-  maven { url "https://repository.jsweet.org/artifactory/plugins-release-local" }
-  maven { url "https://repository.jsweet.org/artifactory/plugins-snapshot-local" }
+  // maven { url "https://repository.jsweet.org/artifactory/libs-release-local" }
+  // maven { url "https://repository.jsweet.org/artifactory/libs-snapshot-local" }
+  // maven { url "https://repository.jsweet.org/artifactory/plugins-release-local" }
+  // maven { url "https://repository.jsweet.org/artifactory/plugins-snapshot-local" }
   ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR download for vecmath
     url "https://jogamp.org/deployment"
     metadataSources {
@@ -192,6 +192,7 @@ core.config {
     'com/vzome/core/editor/Snapshot.java',
     
     'com/vzome/core/render/Colors.java',
+    'com/vzome/core/viewing/CameraIntf.java',
     'com/vzome/core/viewing/Lights.java',
     'com/vzome/core/viewing/AbstractShapes.java',
     'com/vzome/core/viewing/AntiprismShapes.java',
@@ -229,10 +230,12 @@ core.config {
 
     'com/vzome/core/generic/SubClassIterator.java',
             
+    // These have already been reimplemented
     'com/vzome/core/algebra/RootThreeField.java',
     'com/vzome/core/algebra/RootTwoField.java',
     'com/vzome/core/algebra/PentagonField.java',
     'com/vzome/core/algebra/HeptagonField.java',
+
     'com/vzome/core/algebra/*Impl.java',
     'com/vzome/core/algebra/AlgebraicFields.java',
 
@@ -248,20 +251,20 @@ core.config {
     'com/vzome/core/edits/RealizeMetaParts.java',
     // 'com/vzome/core/edits/ReplaceWithShape.java',
 
+    // These have already been reimplemented
     'com/vzome/core/exporters/ColoredMeshJsonExporter.java',
     'com/vzome/core/exporters/SimpleMeshJsonExporter.java',
-    'com/vzome/core/exporters/HistoryExporter.java',
     'com/vzome/core/exporters/ShapesJsonExporter.java',
-    'com/vzome/core/exporters/GeoGebraExporter.java',
-    'com/vzome/core/exporters/DocumentExporter.java',
-    'com/vzome/core/exporters/OpenScadExporter.java',
-    'com/vzome/core/exporters/POVRayExporter.java',
-    'com/vzome/core/exporters/PartGeometryExporter.java',
+
+    // These probably don't make sense online, and aren't public anyway
+    'com/vzome/core/exporters/HistoryExporter.java',
     'com/vzome/core/exporters/SideEffectsExporter.java',
-    'com/vzome/core/exporters/DaeExporter.java',
-    'com/vzome/core/exporters/STEPExporter.java',
     'com/vzome/core/exporters/PartsListExporter.java',
-    'com/vzome/core/exporters/MathTableExporter.java',
+
+    // I think I want to include all of these, but...
+    'com/vzome/core/exporters/GeoGebraExporter.java',  // uses DOM and xpath
+    'com/vzome/core/exporters/DaeExporter.java',       // uses DOM and xpath
+    'com/vzome/core/exporters/STEPExporter.java',      // emits multiple files
 
     'com/vzome/desktop/controller/CameraController.java',
     'com/vzome/desktop/controller/JsonClientRendering.java',

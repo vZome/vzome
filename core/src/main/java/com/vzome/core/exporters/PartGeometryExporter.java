@@ -12,7 +12,6 @@ import java.util.TreeSet;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.api.Selection;
 import com.vzome.core.generic.ArrayComparator;
 import com.vzome.core.model.Connector;
@@ -25,7 +24,7 @@ public class PartGeometryExporter extends VefExporter
 {
     private transient Selection selection;
 
-    public void exportDocument( DocumentModel doc, File file, Writer writer, int height, int width ) throws Exception
+    public void exportDocument( DocumentIntf doc, File file, Writer writer, int height, int width ) throws Exception
     {
         mModel = doc .getRenderedModel();
         this .selection = doc .getEditorModel() .getSelection();

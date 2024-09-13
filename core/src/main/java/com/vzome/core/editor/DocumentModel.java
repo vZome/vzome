@@ -47,6 +47,7 @@ import com.vzome.core.editor.api.Context;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.UndoableEdit;
+import com.vzome.core.exporters.DocumentIntf;
 import com.vzome.core.exporters.ShapesJsonExporter;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
@@ -65,10 +66,11 @@ import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.tools.BookmarkToolFactory;
 import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.CameraIntf;
 import com.vzome.core.viewing.Lights;
 import com.vzome.xml.DomSerializer;
 
-public class DocumentModel implements Snapshot .Recorder, Context
+public class DocumentModel implements Snapshot .Recorder, Context, DocumentIntf
 {
     private final RealizedModelImpl mRealizedModel;
 
@@ -871,6 +873,12 @@ public class DocumentModel implements Snapshot .Recorder, Context
     }
 
     public Camera getCamera()
+    {
+        return this .defaultCamera;
+    }
+
+    @Override
+    public CameraIntf getCameraModel()
     {
         return this .defaultCamera;
     }

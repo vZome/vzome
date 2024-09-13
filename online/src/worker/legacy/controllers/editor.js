@@ -5,8 +5,7 @@ import { JsProperties } from '../jsweet2js.js';
 import { PickingController } from './picking.js';
 import { BuildPlaneController } from './buildplane.js';
 import { modelToJS } from "../json.js";
-import { export2d, export3d } from "../exporters.js";
-import { serializeVZomeXml } from '../serializer.js';
+import { export2d, export3d, export3dDocument } from "../exporters.js";
 
 
 export class EditorController extends com.vzome.desktop.controller.DefaultController
@@ -210,6 +209,11 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
             const { renderedModel } = this.legacyDesign;
             const config = { format, height, width, useShapes, drawOutlines, monochrome, showBackground, useLighting };
             exported = export2d( { renderedModel, camera, lighting }, config );
+            break;
+          }
+
+          case 'pov': {
+            exported = export3dDocument( this.legacyDesign, camera, lighting, { format, height, width } );
             break;
           }
 

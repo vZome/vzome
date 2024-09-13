@@ -94,27 +94,16 @@ buildForProduction() {
 }
 
 prepareJSweet(){
-  banner 'We are no longer using JSweet. See online/build.gradle for more details.'
+  banner 'JSweet no longer builds successfully. See online/build.gradle for more details.'
   # source cicd/prepare-jsweet.bash || exit $?
 }
 
 jsweet(){
-  banner 'We are no longer using JSweet. See online/build.gradle for more details.'
-  # source cicd/jsweet-legacy-code.bash || exit $?
+  source cicd/jsweet-legacy-code.bash || exit $?
 }
 
 devJava(){
-  jsweet || exit $?
-
-  cd online
-
-  marshallResources || exit $?
-
-  generateRevisionJs || exit $?
-
-  installJsDependencies || exit $?
-
-  yarn run dev
+  banner 'We are no longer using JSweet automatically. You can still use the "jsweet" command here manually.'
 }
 
 devJs(){

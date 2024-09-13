@@ -10,13 +10,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.vzome.core.editor.DocumentModel;
 import com.vzome.xml.DomSerializer;
 
 public class HistoryExporter extends DocumentExporter
 {
     @Override
-    public void exportDocument( DocumentModel document, File file, Writer writer, int height, int width ) throws Exception
+    public void exportDocument( com.vzome.core.exporters.DocumentIntf document, File file, Writer writer, int height, int width ) throws Exception
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory .newInstance();
         factory .setNamespaceAware( true );
