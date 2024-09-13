@@ -3952,6 +3952,14 @@ export var com;
                             this.orbits = new com.vzome.core.math.symmetry.OrbitSet(symmetry);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {
                             const symmetry = this.getSymmetry();
                             const field = symmetry.getField();
@@ -3973,14 +3981,6 @@ export var com;
                             embedding[14] = 0.0;
                             embedding[15] = 1.0;
                             return embedding;
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
@@ -16761,6 +16761,14 @@ export var com;
                         this.setStyle(styleName);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getOrientations$() {
+                        return this.getOrientations(false);
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getZone(orbit, orientation) {
+                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getEmbedding() {
                         const symmetry = this.getSymmetry();
                         const field = symmetry.getField();
@@ -16782,14 +16790,6 @@ export var com;
                         embedding[14] = 0.0;
                         embedding[15] = 1.0;
                         return embedding;
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getOrientations$() {
-                        return this.getOrientations(false);
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getZone(orbit, orientation) {
-                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getOrientations(rowMajor) {
@@ -45570,6 +45570,103 @@ export var com;
         (function (core) {
             var edits;
             (function (edits) {
+                class GhostSymmetry24Cell extends com.vzome.core.editor.api.ChangeManifestations {
+                    constructor(editor) {
+                        super(editor);
+                        if (this.field === undefined) {
+                            this.field = null;
+                        }
+                        if (this.proj === undefined) {
+                            this.proj = null;
+                        }
+                        if (this.symmAxis === undefined) {
+                            this.symmAxis = null;
+                        }
+                        if (this.symm === undefined) {
+                            this.symm = null;
+                        }
+                        this.symm = editor['getSymmetrySystem$']().getSymmetry();
+                        this.field = this.symm.getField();
+                        this.symmAxis = editor.getSymmetrySegment();
+                    }
+                    /**
+                     *
+                     * @return {string}
+                     */
+                    getXmlElementName() {
+                        return "GhostSymmetry24Cell";
+                    }
+                    /**
+                     *
+                     * @param {*} result
+                     */
+                    getXmlAttributes(result) {
+                        if (this.symmAxis != null)
+                            com.vzome.core.commands.XmlSaveFormat.serializeSegment(result, "start", "end", this.symmAxis);
+                    }
+                    /**
+                     *
+                     * @param {*} xml
+                     * @param {com.vzome.core.commands.XmlSaveFormat} format
+                     */
+                    setXmlAttributes(xml, format) {
+                        this.symmAxis = format.parseSegment$org_w3c_dom_Element$java_lang_String$java_lang_String(xml, "start", "end");
+                    }
+                    /**
+                     *
+                     */
+                    perform() {
+                        if (this.symmAxis == null)
+                            this.proj = new com.vzome.core.math.Projection.Default(this.field);
+                        else
+                            this.proj = new com.vzome.core.math.QuaternionProjection(this.field, null, this.symmAxis.getOffset().scale(this.field['createPower$int'](-5)));
+                        const blue = this.symm.getDirection("blue");
+                        const green = this.symm.getDirection("green");
+                        for (let k = 0; k < 12; k++) {
+                            {
+                                const A1 = blue.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, (k + 2) % 12).normal();
+                                const A2 = green.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, (5 * k + 2) % 12).normal();
+                                const B1 = green.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, (k + 2) % 12).normal();
+                                const B2 = blue.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, (5 * k + 5) % 12).normal();
+                                let projected = this.symm.getField().origin(4);
+                                projected.setComponent(0, A2.getComponent(0));
+                                projected.setComponent(1, A2.getComponent(1));
+                                projected.setComponent(2, A1.getComponent(0));
+                                projected.setComponent(3, A1.getComponent(1));
+                                if (this.proj != null)
+                                    projected = this.proj.projectImage(projected, true);
+                                let p = new com.vzome.core.construction.FreePoint(projected.scale(this.field['createPower$int'](5)));
+                                p.setIndex(k);
+                                this.manifestConstruction(p);
+                                projected = this.symm.getField().origin(4);
+                                projected.setComponent(0, B2.getComponent(0));
+                                projected.setComponent(1, B2.getComponent(1));
+                                projected.setComponent(2, B1.getComponent(0));
+                                projected.setComponent(3, B1.getComponent(1));
+                                if (this.proj != null)
+                                    projected = this.proj.projectImage(projected, true);
+                                p = new com.vzome.core.construction.FreePoint(projected.scale(this.field['createPower$int'](5)));
+                                p.setIndex(12 + k);
+                                this.manifestConstruction(p);
+                            }
+                            ;
+                        }
+                        this.redo();
+                    }
+                }
+                edits.GhostSymmetry24Cell = GhostSymmetry24Cell;
+                GhostSymmetry24Cell["__class"] = "com.vzome.core.edits.GhostSymmetry24Cell";
+            })(edits = core.edits || (core.edits = {}));
+        })(core = vzome.core || (vzome.core = {}));
+    })(vzome = com.vzome || (com.vzome = {}));
+})(com || (com = {}));
+(function (com) {
+    var vzome;
+    (function (vzome) {
+        var core;
+        (function (core) {
+            var edits;
+            (function (edits) {
                 class JoinPoints extends com.vzome.core.editor.api.ChangeManifestations {
                     constructor(editor) {
                         super(editor);
@@ -46652,6 +46749,178 @@ export var com;
             var edits;
             (function (edits) {
                 /**
+                 * This is a modern replacement for CommandQuaternionSymmetry, which is a legacy command.
+                 * It duplicates the math from that command, but one key change: only parameter objects that lie
+                 * in the W=0 plane are transformed.  This makes it safe and predictable to use
+                 * on objects produced by Polytope4d, which retain their 4D coordinates.
+                 *
+                 * As with CommandQuaternionSymmetry, all transformed vertices are projected to the W=0 plane
+                 * before being added to the model.
+                 *
+                 * @author vorth
+                 * @param {*} editor
+                 * @param {com.vzome.core.math.symmetry.QuaternionicSymmetry} left
+                 * @param {com.vzome.core.math.symmetry.QuaternionicSymmetry} right
+                 * @class
+                 * @extends com.vzome.core.editor.api.ChangeManifestations
+                 */
+                class Symmetry4d extends com.vzome.core.editor.api.ChangeManifestations {
+                    constructor(editor, left, right) {
+                        if (((editor != null && (editor.constructor != null && editor.constructor["__interfaces"] != null && editor.constructor["__interfaces"].indexOf("com.vzome.core.editor.api.EditorModel") >= 0)) || editor === null) && ((left != null && left instanceof com.vzome.core.math.symmetry.QuaternionicSymmetry) || left === null) && ((right != null && right instanceof com.vzome.core.math.symmetry.QuaternionicSymmetry) || right === null)) {
+                            let __args = arguments;
+                            super(editor);
+                            if (this.left === undefined) {
+                                this.left = null;
+                            }
+                            if (this.right === undefined) {
+                                this.right = null;
+                            }
+                            this.left = left;
+                            this.right = right;
+                        }
+                        else if (((editor != null && (editor.constructor != null && editor.constructor["__interfaces"] != null && editor.constructor["__interfaces"].indexOf("com.vzome.core.editor.api.EditorModel") >= 0)) || editor === null) && left === undefined && right === undefined) {
+                            let __args = arguments;
+                            super(editor);
+                            if (this.left === undefined) {
+                                this.left = null;
+                            }
+                            if (this.right === undefined) {
+                                this.right = null;
+                            }
+                            this.left = editor.get4dSymmetries().getQuaternionSymmetry("H_4");
+                            this.right = this.left;
+                        }
+                        else
+                            throw new Error('invalid overload');
+                    }
+                    /**
+                     *
+                     * @param {*} parameters
+                     */
+                    configure(parameters) {
+                        this.left = parameters.get("left");
+                        this.right = parameters.get("right");
+                    }
+                    /**
+                     *
+                     * @return {string}
+                     */
+                    getXmlElementName() {
+                        return "Symmetry4d";
+                    }
+                    /*private*/ static inW0hyperplane(v) {
+                        if (v.dimension() > 3)
+                            return v.getComponent(com.vzome.core.algebra.AlgebraicVector.W4).isZero();
+                        else
+                            return true;
+                    }
+                    /**
+                     *
+                     */
+                    perform() {
+                        const params = (new java.util.ArrayList());
+                        for (let index = this.mSelection.iterator(); index.hasNext();) {
+                            let man = index.next();
+                            {
+                                this.unselect$com_vzome_core_model_Manifestation(man);
+                                const cs = man.getConstructions();
+                                let useThis = null;
+                                if (!cs.hasNext())
+                                    throw new com.vzome.core.commands.Command.Failure("No construction for this manifestation");
+                                for (const iterator = man.getConstructions(); iterator.hasNext();) {
+                                    {
+                                        const construction = iterator.next();
+                                        if (construction != null && construction instanceof com.vzome.core.construction.Point) {
+                                            const p = construction;
+                                            if (!Symmetry4d.inW0hyperplane(p.getLocation()))
+                                                throw new com.vzome.core.commands.Command.Failure("Some ball is not in the W=0 hyperplane.");
+                                        }
+                                        else if (construction != null && construction instanceof com.vzome.core.construction.Segment) {
+                                            const s = construction;
+                                            if (!Symmetry4d.inW0hyperplane(s.getStart()))
+                                                throw new com.vzome.core.commands.Command.Failure("Some strut end is not in the W=0 hyperplane.");
+                                            if (!Symmetry4d.inW0hyperplane(s.getEnd()))
+                                                throw new com.vzome.core.commands.Command.Failure("Some strut end is not in the W=0 hyperplane.");
+                                        }
+                                        else if (construction != null && construction instanceof com.vzome.core.construction.Polygon) {
+                                            const p = construction;
+                                            for (let i = 0; i < p.getVertexCount(); i++) {
+                                                {
+                                                    if (!Symmetry4d.inW0hyperplane(p.getVertex(i))) {
+                                                        throw new com.vzome.core.commands.Command.Failure("Some panel vertex is not in the W=0 hyperplane.");
+                                                    }
+                                                }
+                                                ;
+                                            }
+                                        }
+                                        else {
+                                            throw new com.vzome.core.commands.Command.Failure("Unknown construction type.");
+                                        }
+                                        useThis = construction;
+                                    }
+                                    ;
+                                }
+                                if (useThis != null)
+                                    params.add(useThis);
+                            }
+                        }
+                        this.redo();
+                        const leftRoots = this.left.getRoots();
+                        const rightRoots = this.right.getRoots();
+                        for (let index = 0; index < leftRoots.length; index++) {
+                            let leftRoot = leftRoots[index];
+                            {
+                                for (let index1 = 0; index1 < rightRoots.length; index1++) {
+                                    let rightRoot = rightRoots[index1];
+                                    {
+                                        for (let index2 = params.iterator(); index2.hasNext();) {
+                                            let construction = index2.next();
+                                            {
+                                                let result = null;
+                                                if (construction != null && construction instanceof com.vzome.core.construction.Point) {
+                                                    result = new com.vzome.core.construction.PointRotated4D(leftRoot, rightRoot, construction);
+                                                }
+                                                else if (construction != null && construction instanceof com.vzome.core.construction.Segment) {
+                                                    result = new com.vzome.core.construction.SegmentRotated4D(leftRoot, rightRoot, construction);
+                                                }
+                                                else if (construction != null && construction instanceof com.vzome.core.construction.Polygon) {
+                                                    result = new com.vzome.core.construction.PolygonRotated4D(leftRoot, rightRoot, construction);
+                                                }
+                                                else {
+                                                }
+                                                if (result == null)
+                                                    continue;
+                                                this.manifestConstruction(result);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        this.redo();
+                    }
+                    rotateAndProject(loc3d, leftQuaternion, rightQuaternion) {
+                        let loc = loc3d.inflateTo4d$boolean(true);
+                        loc = rightQuaternion.leftMultiply(loc);
+                        loc = leftQuaternion.rightMultiply(loc);
+                        loc = loc.projectTo3d(true);
+                        return new com.vzome.core.construction.FreePoint(loc);
+                    }
+                }
+                edits.Symmetry4d = Symmetry4d;
+                Symmetry4d["__class"] = "com.vzome.core.edits.Symmetry4d";
+            })(edits = core.edits || (core.edits = {}));
+        })(core = vzome.core || (vzome.core = {}));
+    })(vzome = com.vzome || (com.vzome = {}));
+})(com || (com = {}));
+(function (com) {
+    var vzome;
+    (function (vzome) {
+        var core;
+        (function (core) {
+            var edits;
+            (function (edits) {
+                /**
                  * @author David Hall
                  * @param {*} editorModel
                  * @class
@@ -47374,6 +47643,86 @@ export var com;
         (function (core) {
             var edits;
             (function (edits) {
+                class RealizeMetaParts extends com.vzome.core.editor.api.ChangeManifestations {
+                    constructor(editor) {
+                        super(editor);
+                    }
+                    /**
+                     *
+                     */
+                    perform() {
+                        let scale = null;
+                        for (let index = this.mSelection.iterator(); index.hasNext();) {
+                            let man = index.next();
+                            {
+                                this.unselect$com_vzome_core_model_Manifestation(man);
+                                const rm = man.getRenderedObject();
+                                if (rm != null) {
+                                    const shape = rm.getShape();
+                                    if (scale == null) {
+                                        const field = shape.getField();
+                                        scale = field['createPower$int'](5);
+                                    }
+                                    const orientation = rm.getOrientation();
+                                    const vertexList = shape.getVertexList();
+                                    for (let index = shape.getVertexList().iterator(); index.hasNext();) {
+                                        let vertex = index.next();
+                                        {
+                                            const vertexPt = this.transformVertex(vertex, man.getLocation(), scale, orientation);
+                                            this.select$com_vzome_core_model_Manifestation(this.manifestConstruction(vertexPt));
+                                        }
+                                    }
+                                    for (let index = shape.getFaceSet().iterator(); index.hasNext();) {
+                                        let face = index.next();
+                                        {
+                                            const vertices = (s => { let a = []; while (s-- > 0)
+                                                a.push(null); return a; })(face.size());
+                                            for (let i = 0; i < vertices.length; i++) {
+                                                {
+                                                    const vertexIndex = face.getVertex(i);
+                                                    const vertex = vertexList.get(vertexIndex);
+                                                    vertices[i] = this.transformVertex(vertex, man.getLocation(), scale, orientation);
+                                                }
+                                                ;
+                                            }
+                                            const polygon = new com.vzome.core.construction.PolygonFromVertices(vertices);
+                                            this.select$com_vzome_core_model_Manifestation(this.manifestConstruction(polygon));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        this.redo();
+                    }
+                    /*private*/ transformVertex(vertex, offset, scale, orientation) {
+                        if (orientation != null)
+                            vertex = orientation.timesColumn(vertex);
+                        if (offset != null)
+                            vertex = vertex.plus(offset);
+                        return new com.vzome.core.construction.FreePoint(vertex.scale(scale));
+                    }
+                    /**
+                     *
+                     * @return {string}
+                     */
+                    getXmlElementName() {
+                        return RealizeMetaParts.NAME;
+                    }
+                }
+                RealizeMetaParts.NAME = "realizeMetaParts";
+                edits.RealizeMetaParts = RealizeMetaParts;
+                RealizeMetaParts["__class"] = "com.vzome.core.edits.RealizeMetaParts";
+            })(edits = core.edits || (core.edits = {}));
+        })(core = vzome.core || (vzome.core = {}));
+    })(vzome = com.vzome || (com.vzome = {}));
+})(com || (com = {}));
+(function (com) {
+    var vzome;
+    (function (vzome) {
+        var core;
+        (function (core) {
+            var edits;
+            (function (edits) {
                 /**
                  * called from the main menu and when opening a file
                  * @param symmetry
@@ -47702,6 +48051,14 @@ export var com;
                             this.__parent = __parent;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {
                             const symmetry = this.getSymmetry();
                             const field = symmetry.getField();
@@ -47723,14 +48080,6 @@ export var com;
                             embedding[14] = 0.0;
                             embedding[15] = 1.0;
                             return embedding;
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
@@ -48354,6 +48703,61 @@ export var com;
                 }
                 edits.ReversePanel = ReversePanel;
                 ReversePanel["__class"] = "com.vzome.core.edits.ReversePanel";
+            })(edits = core.edits || (core.edits = {}));
+        })(core = vzome.core || (vzome.core = {}));
+    })(vzome = com.vzome || (com.vzome = {}));
+})(com || (com = {}));
+(function (com) {
+    var vzome;
+    (function (vzome) {
+        var core;
+        (function (core) {
+            var edits;
+            (function (edits) {
+                class DodecagonSymmetry extends com.vzome.core.editor.api.ChangeManifestations {
+                    constructor(editor) {
+                        super(editor);
+                        if (this.center === undefined) {
+                            this.center = null;
+                        }
+                        if (this.symmetry === undefined) {
+                            this.symmetry = null;
+                        }
+                        this.center = editor.getCenterPoint();
+                        this.symmetry = editor['getSymmetrySystem$']().getSymmetry();
+                    }
+                    /**
+                     *
+                     */
+                    perform() {
+                        const transform = new com.vzome.core.construction.SymmetryTransformation(this.symmetry, 1, this.center);
+                        for (let index = this.mSelection.iterator(); index.hasNext();) {
+                            let man = index.next();
+                            {
+                                let c = man.getFirstConstruction();
+                                for (let i = 0; i < 11; i++) {
+                                    {
+                                        c = transform.transform$com_vzome_core_construction_Construction(c);
+                                        if (c == null)
+                                            continue;
+                                        this.select$com_vzome_core_model_Manifestation(this.manifestConstruction(c));
+                                    }
+                                    ;
+                                }
+                            }
+                        }
+                        this.redo();
+                    }
+                    /**
+                     *
+                     * @return {string}
+                     */
+                    getXmlElementName() {
+                        return "DodecagonSymmetry";
+                    }
+                }
+                edits.DodecagonSymmetry = DodecagonSymmetry;
+                DodecagonSymmetry["__class"] = "com.vzome.core.edits.DodecagonSymmetry";
             })(edits = core.edits || (core.edits = {}));
         })(core = vzome.core || (vzome.core = {}));
     })(vzome = com.vzome || (com.vzome = {}));

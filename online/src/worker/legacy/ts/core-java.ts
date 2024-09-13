@@ -1,11 +1,5 @@
+/* THIS FILE IS CURRENTLY IGNORED! We are using the generated core-java.js instead, for now. */
 /* Generated from Java with JSweet 3.2.0-SNAPSHOT - http://www.jsweet.org */
-
-/*
-  THIS FILE IS CURRENTLY IGNORED!  
-
-  We are using the generated core-java.js instead, for now.
-*/
-
 namespace org.w3c.dom {
     export interface Element extends org.w3c.dom.Node {
         getOwnerDocument(): org.w3c.dom.Document;
@@ -103,6 +97,14 @@ namespace java.io {
         }
 
         public getAbsolutePath(): string {
+            return null;
+        }
+
+        public getName(): string {
+            return null;
+        }
+
+        public getParentFile(): File {
             return null;
         }
     }
@@ -2839,6 +2841,21 @@ namespace com.vzome.core.kinds {
 
 }
 namespace com.vzome.core.exporters {
+    export interface DocumentIntf {
+        getCameraModel(): com.vzome.core.viewing.CameraIntf;
+
+        getSceneLighting(): com.vzome.core.viewing.Lights;
+
+        getRenderedModel(): com.vzome.core.render.RenderedModel;
+
+        getToolsModel(): com.vzome.core.editor.ToolsModel;
+
+        getDetailsXml(dom: org.w3c.dom.Document, b: boolean): org.w3c.dom.Element;
+
+        getEditorModel(): com.vzome.core.editor.api.EditorModel;
+    }
+}
+namespace com.vzome.core.exporters {
     export class GitHubShare {
         /*private*/ designName: string;
 
@@ -3019,14 +3036,6 @@ namespace com.vzome.core.exporters {
             return com.vzome.xml.ResourceLoader.loadStringResource(resourcePath);
         }
 
-        /**
-         * Subclasses can override this if they need to export history, the lesson model, or the selection.
-         * @param {com.vzome.core.render.RenderedModel} model
-         * @param {java.io.File} file
-         * @param {java.io.Writer} writer
-         * @param {number} height
-         * @param {number} width
-         */
         public exportGeometry(model: com.vzome.core.render.RenderedModel, file: java.io.File, writer: java.io.Writer, height: number, width: number) {
             this.mModel = model;
             this.doExport(file, writer, height, width);
@@ -4135,6 +4144,25 @@ namespace com.vzome.core.render {
                 return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getEmbedding(): number[] {
+                const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
+                const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
+                const embedding: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(16);
+                for(let i: number = 0; i < 3; i++) {{
+                    const columnSelect: com.vzome.core.algebra.AlgebraicVector = field.basisVector(3, i);
+                    const colRV: com.vzome.core.math.RealVector = symmetry.embedInR3(columnSelect);
+                    embedding[i * 4 + 0] = colRV.x;
+                    embedding[i * 4 + 1] = colRV.y;
+                    embedding[i * 4 + 2] = colRV.z;
+                    embedding[i * 4 + 3] = 0.0;
+                };}
+                embedding[12] = 0.0;
+                embedding[13] = 0.0;
+                embedding[14] = 0.0;
+                embedding[15] = 1.0;
+                return embedding;
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             public getOrientations(rowMajor?: any): number[][] {
                 if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                     let __args = arguments;
@@ -4172,25 +4200,6 @@ namespace com.vzome.core.render {
                 } else if (rowMajor === undefined) {
                     return <any>this.getOrientations$();
                 } else throw new Error('invalid overload');
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getEmbedding(): number[] {
-                const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
-                const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
-                const embedding: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(16);
-                for(let i: number = 0; i < 3; i++) {{
-                    const columnSelect: com.vzome.core.algebra.AlgebraicVector = field.basisVector(3, i);
-                    const colRV: com.vzome.core.math.RealVector = symmetry.embedInR3(columnSelect);
-                    embedding[i * 4 + 0] = colRV.x;
-                    embedding[i * 4 + 1] = colRV.y;
-                    embedding[i * 4 + 2] = colRV.z;
-                    embedding[i * 4 + 3] = 0.0;
-                };}
-                embedding[12] = 0.0;
-                embedding[13] = 0.0;
-                embedding[14] = 0.0;
-                embedding[15] = 1.0;
-                return embedding;
             }
             symmetry: com.vzome.core.math.symmetry.Symmetry;
 
@@ -5035,6 +5044,25 @@ namespace com.vzome.core.viewing {
 
     }
 
+}
+namespace com.vzome.core.viewing {
+    export interface CameraIntf {
+        isPerspective(): boolean;
+
+        getFieldOfView(): number;
+
+        getViewDistance(): number;
+
+        getMagnification(): number;
+
+        getLookAtPointRV(): com.vzome.core.math.RealVector;
+
+        getLookDirectionRV(): com.vzome.core.math.RealVector;
+
+        getUpDirectionRV(): com.vzome.core.math.RealVector;
+
+        mapViewToWorld(rv: com.vzome.core.math.RealVector): com.vzome.core.math.RealVector;
+    }
 }
 namespace com.vzome.core.zomic {
     /**
@@ -17018,6 +17046,25 @@ namespace com.vzome.core.editor {
             return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
         }
         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+        getEmbedding(): number[] {
+            const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
+            const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
+            const embedding: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(16);
+            for(let i: number = 0; i < 3; i++) {{
+                const columnSelect: com.vzome.core.algebra.AlgebraicVector = field.basisVector(3, i);
+                const colRV: com.vzome.core.math.RealVector = symmetry.embedInR3(columnSelect);
+                embedding[i * 4 + 0] = colRV.x;
+                embedding[i * 4 + 1] = colRV.y;
+                embedding[i * 4 + 2] = colRV.z;
+                embedding[i * 4 + 3] = 0.0;
+            };}
+            embedding[12] = 0.0;
+            embedding[13] = 0.0;
+            embedding[14] = 0.0;
+            embedding[15] = 1.0;
+            return embedding;
+        }
+        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
         public getOrientations(rowMajor?: any): number[][] {
             if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                 let __args = arguments;
@@ -17066,25 +17113,6 @@ namespace com.vzome.core.editor {
             } else if (rowMajor === undefined) {
                 return <any>this.getOrientations$();
             } else throw new Error('invalid overload');
-        }
-        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-        getEmbedding(): number[] {
-            const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
-            const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
-            const embedding: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(16);
-            for(let i: number = 0; i < 3; i++) {{
-                const columnSelect: com.vzome.core.algebra.AlgebraicVector = field.basisVector(3, i);
-                const colRV: com.vzome.core.math.RealVector = symmetry.embedInR3(columnSelect);
-                embedding[i * 4 + 0] = colRV.x;
-                embedding[i * 4 + 1] = colRV.y;
-                embedding[i * 4 + 2] = colRV.z;
-                embedding[i * 4 + 3] = 0.0;
-            };}
-            embedding[12] = 0.0;
-            embedding[13] = 0.0;
-            embedding[14] = 0.0;
-            embedding[15] = 1.0;
-            return embedding;
         }
         static logger: java.util.logging.Logger; public static logger_$LI$(): java.util.logging.Logger { if (SymmetrySystem.logger == null) { SymmetrySystem.logger = java.util.logging.Logger.getLogger("com.vzome.core.editor"); }  return SymmetrySystem.logger; }
 
@@ -23676,6 +23704,39 @@ namespace com.vzome.core.exporters {
     }
     PythonBuild123dExporter["__class"] = "com.vzome.core.exporters.PythonBuild123dExporter";
     PythonBuild123dExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
+
+
+}
+namespace com.vzome.core.exporters {
+    export abstract class DocumentExporter extends com.vzome.core.exporters.GeometryExporter {
+        mLights: com.vzome.core.viewing.Lights;
+
+        mScene: com.vzome.core.viewing.CameraIntf;
+
+        /**
+         * Subclasses can override this if they need to export history, the lesson model, or the selection.
+         * @param {*} doc
+         * @param {java.io.File} file
+         * @param {java.io.Writer} writer
+         * @param {number} height
+         * @param {number} width
+         */
+        public exportDocument(doc: com.vzome.core.exporters.DocumentIntf, file: java.io.File, writer: java.io.Writer, height: number, width: number) {
+            this.mScene = doc.getCameraModel();
+            this.mLights = doc.getSceneLighting();
+            this.exportGeometry(doc.getRenderedModel(), file, writer, height, width);
+            this.mScene = null;
+            this.mLights = null;
+        }
+
+        constructor() {
+            super();
+            if (this.mLights === undefined) { this.mLights = null; }
+            if (this.mScene === undefined) { this.mScene = null; }
+        }
+    }
+    DocumentExporter["__class"] = "com.vzome.core.exporters.DocumentExporter";
+    DocumentExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
 
 
 }
@@ -31681,6 +31742,307 @@ namespace com.vzome.core.tools {
 
 
 }
+namespace com.vzome.core.exporters {
+    export class MathTableExporter extends com.vzome.core.exporters.GeometryExporter {
+        static X: number; public static X_$LI$(): number { if (MathTableExporter.X == null) { MathTableExporter.X = com.vzome.core.algebra.AlgebraicVector.X; }  return MathTableExporter.X; }
+
+        static Y: number; public static Y_$LI$(): number { if (MathTableExporter.Y == null) { MathTableExporter.Y = com.vzome.core.algebra.AlgebraicVector.Y; }  return MathTableExporter.Y; }
+
+        /**
+         * 
+         * @param {java.io.File} file
+         * @param {java.io.Writer} writer
+         * @param {number} height
+         * @param {number} width
+         */
+        public doExport(file: java.io.File, writer: java.io.Writer, height: number, width: number) {
+            const field: com.vzome.core.algebra.AlgebraicField = this.mModel.getField();
+            const buf: java.lang.StringBuilder = new java.lang.StringBuilder();
+            buf.append("{\n");
+            MathTableExporter.writeFieldData(field, buf);
+            MathTableExporter.writeUnitTermsOrDiagonals(field, buf);
+            MathTableExporter.writeMultiplicationTable(field, buf);
+            MathTableExporter.writeDivisionTable(field, buf);
+            MathTableExporter.writeExponentsTable(field, buf);
+            if (field != null && field instanceof <any>com.vzome.core.algebra.PolygonField){
+                MathTableExporter.writeNamedNumbers(<com.vzome.core.algebra.PolygonField><any>field, buf);
+                MathTableExporter.writeEmbedding(<com.vzome.core.algebra.PolygonField><any>field, buf);
+                MathTableExporter.writeTrigTable(<com.vzome.core.algebra.PolygonField><any>field, buf);
+            }
+            buf.setLength(buf.length() - 2);
+            buf.append("\n}\n");
+            this.output = new java.io.PrintWriter(writer);
+            this.output.println$java_lang_Object(/* replace */buf.toString().split("\'").join("\""));
+            this.output.flush();
+        }
+
+        /*private*/ static getUnitTermOrDiagonal(field: com.vzome.core.algebra.AlgebraicField, i: number): com.vzome.core.algebra.AlgebraicNumber {
+            return (field != null && field instanceof <any>com.vzome.core.algebra.PolygonField) ? (<com.vzome.core.algebra.PolygonField><any>field).getUnitDiagonal(i) : field.getUnitTerm(i);
+        }
+
+        /*private*/ static getFieldOrderOrDiagonalCount(field: com.vzome.core.algebra.AlgebraicField): number {
+            return (field != null && field instanceof <any>com.vzome.core.algebra.PolygonField) ? (<com.vzome.core.algebra.PolygonField><any>field).diagonalCount() : field.getOrder();
+        }
+
+        /*private*/ static writeFieldData(field: com.vzome.core.algebra.AlgebraicField, buf: java.lang.StringBuilder) {
+            buf.append(" \'field\': { ").append("\'name\': \'").append(field.getName()).append("\', ").append("\'order\': ").append(field.getOrder());
+            if (field != null && field instanceof <any>com.vzome.core.algebra.PolygonField){
+                const pfield: com.vzome.core.algebra.PolygonField = <com.vzome.core.algebra.PolygonField><any>field;
+                buf.append(", \'parity\': \'").append(pfield.isOdd() ? "odd" : "even").append("\', ").append("\'diagonalCount\': ").append(pfield.diagonalCount()).append(", ").append("\'polygonSides\': ").append(pfield.polygonSides());
+            }
+            buf.append(" },\n");
+        }
+
+        /*private*/ static writeEmbedding(field: com.vzome.core.algebra.PolygonField, buf: java.lang.StringBuilder) {
+            const symm: com.vzome.core.math.symmetry.AntiprismSymmetry = new com.vzome.core.math.symmetry.AntiprismSymmetry(field);
+            const embeddingRows: number[] = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+            for(let i: number = 0; i < 3; i++) {{
+                const column: com.vzome.core.math.RealVector = symm.embedInR3(field.basisVector(3, i));
+                embeddingRows[0 + i] = column.x;
+                embeddingRows[4 + i] = column.y;
+                embeddingRows[8 + i] = column.z;
+            };}
+            buf.append(" \'embedding\': [ ");
+            let delim: string = "";
+            for(let index = 0; index < embeddingRows.length; index++) {
+                let f = embeddingRows[index];
+                {
+                    buf.append(delim).append(f);
+                    delim = ", ";
+                }
+            }
+            buf.append(" ],\n");
+        }
+
+        /*private*/ static writeUnitTermsOrDiagonals(field: com.vzome.core.algebra.AlgebraicField, buf: java.lang.StringBuilder) {
+            const limit: number = MathTableExporter.getFieldOrderOrDiagonalCount(field);
+            buf.append(" \'unitTerms\': [ ");
+            let delim: string = "\n";
+            for(let i: number = 0; i < limit; i++) {{
+                const number: com.vzome.core.algebra.AlgebraicNumber = MathTableExporter.getUnitTermOrDiagonal(field, i);
+                const name: string = (i === 0) ? "1" : field['getIrrational$int'](i);
+                buf.append(delim);
+                delim = ",\n";
+                buf.append("  { \'name\': \'").append(name).append("\'");
+                buf.append(", \'value\': ").append(MathTableExporter.formatAN(number));
+                buf.append(" }");
+            };}
+            buf.append("\n ],\n");
+        }
+
+        public static OPTIONAL_NAMED_VALUES: string[]; public static OPTIONAL_NAMED_VALUES_$LI$(): string[] { if (MathTableExporter.OPTIONAL_NAMED_VALUES == null) { MathTableExporter.OPTIONAL_NAMED_VALUES = ["phi", "rho", "sigma", "alpha", "beta", "gamma", "delta", "epsilon", "theta", "kappa", "lambda", "mu", "\u221a2", "\u221a3", "\u221a5", "\u221a6", "\u221a7", "\u221a8", "\u221a10"]; }  return MathTableExporter.OPTIONAL_NAMED_VALUES; }
+
+        /*private*/ static writeNamedNumbers(field: com.vzome.core.algebra.PolygonField, buf: java.lang.StringBuilder) {
+            buf.append(" \'namedNumbers\': [");
+            let delim: string = "\n";
+            for(let index = 0; index < MathTableExporter.OPTIONAL_NAMED_VALUES_$LI$().length; index++) {
+                let name = MathTableExporter.OPTIONAL_NAMED_VALUES_$LI$()[index];
+                {
+                    const number: com.vzome.core.algebra.AlgebraicNumber = field.getNumberByName(name);
+                    if (number != null){
+                        buf.append(delim);
+                        delim = ",\n";
+                        buf.append("  { \'name\': \'").append(name).append("\', ");
+                        buf.append("\'value\': ").append(MathTableExporter.formatAN(number)).append(", ");
+                        switch((name)) {
+                        case "phi":
+                            MathTableExporter.writeDiagonalRatio(field, 5, buf);
+                            break;
+                        case "rho":
+                            MathTableExporter.writeDiagonalRatio(field, 7, buf);
+                            break;
+                        case "sigma":
+                            MathTableExporter.writeDiagonalRatio(field, 7, buf, 3);
+                            break;
+                        case "\u221a2":
+                            MathTableExporter.writeDiagonalRatio(field, 4, buf);
+                            break;
+                        case "\u221a3":
+                            MathTableExporter.writeDiagonalRatio(field, 6, buf);
+                            break;
+                        default:
+                            break;
+                        }
+                        buf.append("\'reciprocal\': ").append(MathTableExporter.formatAN(number.reciprocal()));
+                        buf.append(" }");
+                    }
+                }
+            }
+            buf.append("\n ],\n");
+        }
+
+        /*private*/ static writeTrigTable(field: com.vzome.core.algebra.PolygonField, buf: java.lang.StringBuilder) {
+            const rotationMatrix: com.vzome.core.algebra.AlgebraicMatrix = (new com.vzome.core.math.symmetry.AntiprismSymmetry(field)).getRotationMatrix();
+            const vX: com.vzome.core.algebra.AlgebraicVector = field.basisVector(3, MathTableExporter.X_$LI$());
+            const v1: com.vzome.core.algebra.AlgebraicVector = rotationMatrix.timesColumn(vX);
+            let bisector: com.vzome.core.algebra.AlgebraicVector = vX.plus(v1).scale(field.getUnitTerm(1).reciprocal());
+            let v: com.vzome.core.algebra.AlgebraicVector = vX;
+            const nSides: number = field.polygonSides();
+            buf.append(" \'trig\': [\n");
+            for(let i: number = 0; i < nSides; i++) {{
+                MathTableExporter.writeTrigEntry(i, nSides, v, bisector, buf);
+                buf.append(i === nSides - 1 ? "\n" : ",\n");
+                v = rotationMatrix.timesColumn(v);
+                bisector = rotationMatrix.timesColumn(bisector);
+            };}
+            buf.append(" ],\n");
+        }
+
+        /*private*/ static writeMultiplicationTable(field: com.vzome.core.algebra.AlgebraicField, buf: java.lang.StringBuilder) {
+            MathTableExporter.writeTable(field, buf, "multiplication", (n1, n2) => n1['times$com_vzome_core_algebra_AlgebraicNumber'](n2));
+        }
+
+        /*private*/ static writeDivisionTable(field: com.vzome.core.algebra.AlgebraicField, buf: java.lang.StringBuilder) {
+            MathTableExporter.writeTable(field, buf, "division", (n1, n2) => n1.dividedBy(n2));
+        }
+
+        /*private*/ static writeTable(field: com.vzome.core.algebra.AlgebraicField, buf: java.lang.StringBuilder, tableName: string, op: (p1: com.vzome.core.algebra.AlgebraicNumber, p2: com.vzome.core.algebra.AlgebraicNumber) => com.vzome.core.algebra.AlgebraicNumber) {
+            const operandFactory: (p1: number) => com.vzome.core.algebra.AlgebraicNumber = (field != null && field instanceof <any>com.vzome.core.algebra.PolygonField) ? (instance$PolygonField,n) => { return instance$PolygonField.getUnitDiagonal(n) } : (n) => { return field.getUnitTerm(n) };
+            const limit: number = (field != null && field instanceof <any>com.vzome.core.algebra.PolygonField) ? (<com.vzome.core.algebra.PolygonField><any>field).diagonalCount() : field.getOrder();
+            buf.append(" \'").append(tableName).append("\': [\n");
+            let delim1: string = "";
+            for(let i: number = 0; i < limit; i++) {{
+                const n1: com.vzome.core.algebra.AlgebraicNumber = (target => (typeof target === 'function') ? target(i) : (<any>target).apply(i))(operandFactory);
+                buf.append(delim1).append("  [ ");
+                delim1 = ",\n";
+                let delim2: string = "";
+                for(let j: number = 0; j < limit; j++) {{
+                    const n2: com.vzome.core.algebra.AlgebraicNumber = (target => (typeof target === 'function') ? target(j) : (<any>target).apply(j))(operandFactory);
+                    const result: com.vzome.core.algebra.AlgebraicNumber = (target => (typeof target === 'function') ? target(n1, n2) : (<any>target).apply(n1, n2))(op);
+                    buf.append(delim2);
+                    delim2 = ", ";
+                    buf.append(MathTableExporter.formatAN(result));
+                };}
+                buf.append(" ]");
+            };}
+            buf.append("\n ],\n");
+        }
+
+        /*private*/ static writeExponentsTable(field: com.vzome.core.algebra.AlgebraicField, buf: java.lang.StringBuilder) {
+            const limit: number = MathTableExporter.getFieldOrderOrDiagonalCount(field);
+            const range: number = 6;
+            buf.append(" \'exponents\': [\n");
+            let delim1: string = "";
+            for(let i: number = 1; i < limit; i++) {{
+                buf.append(delim1).append("  {");
+                delim1 = ",\n";
+                const name: string = field['getIrrational$int'](i);
+                buf.append(" \'base\': \'").append(name).append("\'");
+                {
+                    buf.append(",\n    \'positivePowers\': [ ");
+                    let delim2: string = "";
+                    const base: com.vzome.core.algebra.AlgebraicNumber = MathTableExporter.getUnitTermOrDiagonal(field, i);
+                    let result: com.vzome.core.algebra.AlgebraicNumber = base;
+                    for(let power: number = 1; power <= range; power++) {{
+                        buf.append(delim2);
+                        delim2 = ", ";
+                        buf.append(MathTableExporter.formatAN(result));
+                        result = result['times$com_vzome_core_algebra_AlgebraicNumber'](base);
+                    };}
+                    buf.append(" ]");
+                };
+                {
+                    buf.append(",\n    \'negativePowers\': [ ");
+                    let delim2: string = "";
+                    const base: com.vzome.core.algebra.AlgebraicNumber = MathTableExporter.getUnitTermOrDiagonal(field, i).reciprocal();
+                    let result: com.vzome.core.algebra.AlgebraicNumber = base;
+                    for(let power: number = 1; power <= range; power++) {{
+                        buf.append(delim2);
+                        delim2 = ", ";
+                        buf.append(MathTableExporter.formatAN(result));
+                        result = result['times$com_vzome_core_algebra_AlgebraicNumber'](base);
+                    };}
+                    buf.append(" ]");
+                };
+                buf.append("\n  }");
+            };}
+            buf.append("\n ],\n");
+        }
+
+        public static writeDiagonalRatio(field: com.vzome.core.algebra.PolygonField, divisor: number, buf: java.lang.StringBuilder, step: number = 2) {
+            if (field.polygonSides() % divisor === 0){
+                const n: number = (field.polygonSides() / divisor|0);
+                const denominator: com.vzome.core.algebra.AlgebraicNumber = field.getUnitDiagonal(n - 1);
+                const numerator: com.vzome.core.algebra.AlgebraicNumber = field.getUnitDiagonal((step * n) - 1);
+                buf.append("\'numerator\': ").append(MathTableExporter.formatAN(numerator)).append(", ");
+                buf.append("\'denominator\': ").append(MathTableExporter.formatAN(denominator)).append(", ");
+            } else {
+                throw new java.lang.IllegalStateException("shouldn\'t ever get here");
+            }
+        }
+
+        /*private*/ static writeTrigEntry(i: number, nSides: number, vStep: com.vzome.core.algebra.AlgebraicVector, bisector: com.vzome.core.algebra.AlgebraicVector, buf: java.lang.StringBuilder) {
+            const delim1: string = "\', ";
+            const delim2: string = ", ";
+            const infinite: string = "{ \'alg\': \'\u221e\', \'dec\': \'\u221e\', \'tdf\': \'\u221e\' }";
+            let v: com.vzome.core.algebra.AlgebraicVector = vStep;
+            for(let n: number = 0; n < 2; n++) {{
+                const k: number = (i * 2) + n;
+                const degrees: number = k * 180.0 / nSides;
+                const sin: com.vzome.core.algebra.AlgebraicNumber = v.getComponent(MathTableExporter.Y_$LI$());
+                const cos: com.vzome.core.algebra.AlgebraicNumber = v.getComponent(MathTableExporter.X_$LI$());
+                buf.append("  { ");
+                buf.append("\'rot\': \'").append(k).append("/").append(nSides * 2).append(delim1);
+                buf.append("\'rad\': \'").append(k).append("\u03c0/").append(nSides).append(delim1);
+                buf.append("\'deg\': ").append(degrees).append(delim2);
+                buf.append("\'sin\': ").append(MathTableExporter.formatAN(sin)).append(delim2);
+                buf.append("\'cos\': ").append(MathTableExporter.formatAN(cos)).append(delim2);
+                buf.append("\'tan\': ").append(cos.isZero() ? infinite : MathTableExporter.formatAN(sin.dividedBy(cos))).append(delim2);
+                buf.append("\'csc\': ").append(sin.isZero() ? infinite : MathTableExporter.formatAN(sin.reciprocal())).append(delim2);
+                buf.append("\'sec\': ").append(cos.isZero() ? infinite : MathTableExporter.formatAN(cos.reciprocal())).append(delim2);
+                buf.append("\'cot\': ").append(sin.isZero() ? infinite : MathTableExporter.formatAN(cos.dividedBy(sin)));
+                buf.append(" }");
+                if (n === 0){
+                    buf.append(",\n");
+                }
+                v = bisector;
+            };}
+        }
+
+        /*private*/ static formatAN(n: com.vzome.core.algebra.AlgebraicNumber): string {
+            const buf: java.lang.StringBuilder = new java.lang.StringBuilder();
+            buf.append("{ \'alg\': \'").append(n).append("\', \'dec\': ").append(n.evaluate()).append(", \'tdf\': [");
+            let delim: string = "";
+            {
+                let array = n.toTrailingDivisor();
+                for(let index = 0; index < array.length; index++) {
+                    let term = array[index];
+                    {
+                        buf.append(delim);
+                        delim = ", ";
+                        buf.append(term);
+                    }
+                }
+            }
+            buf.append("] }");
+            return buf.toString();
+        }
+
+        /**
+         * 
+         * @return {string}
+         */
+        public getFileExtension(): string {
+            return "math.json";
+        }
+
+        /**
+         * 
+         * @return {string}
+         */
+        public getContentType(): string {
+            return "application/json";
+        }
+
+        constructor() {
+            super();
+        }
+    }
+    MathTableExporter["__class"] = "com.vzome.core.exporters.MathTableExporter";
+    MathTableExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
+
+
+}
 namespace com.vzome.core.algebra {
     export class SnubDodecField extends com.vzome.core.algebra.AbstractAlgebraicField {
         public static FIELD_NAME: string = "snubDodec";
@@ -35617,6 +35979,531 @@ namespace com.vzome.fields.sqrtphi {
 
 
     }
+
+}
+namespace com.vzome.core.exporters {
+    /**
+     * An exporter that produces a parametric OpenSCAD file,
+     * to support generation of STL files for struts of arbitrary length.
+     * This is based on Aaron Siegel's "zome-strut.scad" library.
+     * 
+     * @author vorth
+     * @class
+     * @extends com.vzome.core.exporters.DocumentExporter
+     */
+    export class OpenScadExporter extends com.vzome.core.exporters.DocumentExporter {
+        /**
+         * 
+         * @param {*} doc
+         * @param {java.io.File} file
+         * @param {java.io.Writer} writer
+         * @param {number} height
+         * @param {number} width
+         */
+        public exportDocument(doc: com.vzome.core.exporters.DocumentIntf, file: java.io.File, writer: java.io.Writer, height: number, width: number) {
+            const toolsModel: com.vzome.core.editor.ToolsModel = doc.getToolsModel();
+            this.mModel = doc.getRenderedModel();
+            const field: com.vzome.core.algebra.AbstractAlgebraicField = <com.vzome.core.algebra.AbstractAlgebraicField><any>this.mModel.getField();
+            const tipBookmark: java.util.Optional<com.vzome.core.editor.Tool> = toolsModel.values().stream().filter((tool) => "tip vertex" === tool.getLabel()).findAny();
+            if (!tipBookmark.isPresent())throw new com.vzome.core.commands.Command.Failure("You must have a bookmark named \"tip vertex\" for the strut endpoint.");
+            const tipItems: java.util.List<com.vzome.core.construction.Construction> = tipBookmark.get().getParameters();
+            const tipPoint: com.vzome.core.construction.Construction = tipItems.get(0);
+            if (tipItems.size() > 1 || !(tipPoint != null && tipPoint instanceof <any>com.vzome.core.construction.Point))throw new com.vzome.core.commands.Command.Failure("The \"tip vertex\" bookmark must select a single ball.");
+            const tipVertex: com.vzome.core.algebra.AlgebraicVector = (<com.vzome.core.construction.Point>tipPoint).getLocation();
+            const floatingBookmark: java.util.Optional<com.vzome.core.editor.Tool> = toolsModel.values().stream().filter((tool) => "floating panels" === tool.getLabel()).findAny();
+            let floatingVerticesSet: java.util.SortedSet<com.vzome.core.algebra.AlgebraicVector> = <any>(new java.util.TreeSet<any>());
+            if (!floatingBookmark.isPresent())throw new com.vzome.core.commands.Command.Failure("You must have a bookmark named \"floating panels\".");
+            for(let index=floatingBookmark.get().getParameters().iterator();index.hasNext();) {
+                let polygon = index.next();
+                {
+                    if (!(polygon != null && polygon instanceof <any>com.vzome.core.construction.Polygon))throw new com.vzome.core.commands.Command.Failure("The \"floating panels\" bookmark must select only panels.");
+                    {
+                        let array = (<com.vzome.core.construction.Polygon>polygon).getVertices();
+                        for(let index = 0; index < array.length; index++) {
+                            let vertex = array[index];
+                            {
+                                floatingVerticesSet.add(vertex);
+                            }
+                        }
+                    }
+                }
+            }
+            let bottomFaceNormal: com.vzome.core.algebra.AlgebraicVector = null;
+            const bottomFaceBookmark: java.util.Optional<com.vzome.core.editor.Tool> = toolsModel.values().stream().filter((tool) => "bottom face" === tool.getLabel()).findAny();
+            if (bottomFaceBookmark.isPresent()){
+                const bottomFaceItems: java.util.List<com.vzome.core.construction.Construction> = bottomFaceBookmark.get().getParameters();
+                const bottomFacePanel: com.vzome.core.construction.Construction = bottomFaceItems.get(0);
+                if (bottomFaceItems.size() > 1 || !(bottomFacePanel != null && bottomFacePanel instanceof <any>com.vzome.core.construction.Polygon))throw new com.vzome.core.commands.Command.Failure("The \"bottom face\" bookmark must select a single panel.");
+                bottomFaceNormal = (<com.vzome.core.construction.Polygon>bottomFacePanel).getNormal();
+            }
+            let fixedVerticesSet: java.util.SortedSet<com.vzome.core.algebra.AlgebraicVector> = <any>(new java.util.TreeSet<any>());
+            let orbitName: string = null;
+            for(let index=this.mModel.iterator();index.hasNext();) {
+                let rm = index.next();
+                {
+                    const man: com.vzome.core.model.Manifestation = rm.getManifestation();
+                    if (man != null && (man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0)){
+                        const panel: com.vzome.core.model.Panel = <com.vzome.core.model.Panel><any>man;
+                        for(let index=panel.iterator();index.hasNext();) {
+                            let vertex = index.next();
+                            {
+                                if (!floatingVerticesSet.contains(vertex))fixedVerticesSet.add(vertex);
+                            }
+                        }
+                    } else if (man != null && (man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0)){
+                        if (orbitName != null)throw new com.vzome.core.commands.Command.Failure("The model must contain a single prototype strut.");
+                        orbitName = rm.getStrutOrbit().getName();
+                    }
+                }
+            }
+            if (orbitName == null)throw new com.vzome.core.commands.Command.Failure("The model must contain a single prototype strut.");
+            const sortedFixedVertexList: java.util.ArrayList<com.vzome.core.algebra.AlgebraicVector> = <any>(new java.util.ArrayList<any>(fixedVerticesSet));
+            const sortedFloatingVertexList: java.util.ArrayList<com.vzome.core.algebra.AlgebraicVector> = <any>(new java.util.ArrayList<any>(floatingVerticesSet));
+            fixedVerticesSet = null;
+            floatingVerticesSet = null;
+            this.output = new java.io.PrintWriter(writer);
+            let prelude: string = super.getBoilerplate("com/vzome/core/exporters/zome-strut-prelude.scad");
+            prelude = /* replaceAll */prelude.replace(new RegExp("%%ORBIT%%", 'g'),orbitName);
+            this.output.println$java_lang_Object(prelude);
+            this.output.println$java_lang_Object("  irrational = " + field.getCoefficients()[1] + ";");
+            this.output.println$();
+            this.output.println$java_lang_Object("module " + orbitName + "_strut( size, scalar=1.0, offsets=0 ) {");
+            this.output.println$();
+            if (bottomFaceNormal == null){
+                this.output.println$java_lang_Object("  // WARNING: The vZome design contained no \"bottom face\" bookmark.");
+                this.output.println$java_lang_Object("  bottom_face_normal = [ 0, 0, -1 ];");
+            } else {
+                const bottomFaceDirection: com.vzome.core.math.RealVector = this.mModel.renderVector(bottomFaceNormal).normalize();
+                this.output.println$java_lang_Object("  bottom_face_normal = [ " + bottomFaceDirection.toString$() + " ];");
+            }
+            this.output.println$();
+            const tipVertexString: string = this.mModel.renderVector(tipVertex).scale(com.vzome.core.render.RealZomeScaling.RZOME_MM_SCALING).toString$();
+            this.output.println$java_lang_Object("  tip_vertex = [ " + tipVertexString + " ];");
+            this.output.println$();
+            this.output.println$java_lang_Object("  fixed_vertices = [ ");
+            for(let index=sortedFixedVertexList.iterator();index.hasNext();) {
+                let vertex = index.next();
+                {
+                    this.output.print("[ ");
+                    this.output.print(this.mModel.renderVector(vertex).scale(com.vzome.core.render.RealZomeScaling.RZOME_MM_SCALING).toString$());
+                    this.output.print(" ], ");
+                }
+            }
+            this.output.println$java_lang_Object(" ];");
+            this.output.println$java_lang_Object("  floating_vertices = [ ");
+            for(let index=sortedFloatingVertexList.iterator();index.hasNext();) {
+                let vertex = index.next();
+                {
+                    this.output.print("[ ");
+                    this.output.print(this.mModel.renderVector(vertex).scale(com.vzome.core.render.RealZomeScaling.RZOME_MM_SCALING).toString$());
+                    this.output.print(" ], ");
+                }
+            }
+            this.output.println$java_lang_Object(" ];");
+            this.output.println$java_lang_Object("  faces = [ ");
+            for(let index=this.mModel.iterator();index.hasNext();) {
+                let rm = index.next();
+                {
+                    const man: com.vzome.core.model.Manifestation = rm.getManifestation();
+                    if (man != null && (man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0)){
+                        this.output.print("[ ");
+                        const panel: com.vzome.core.model.Panel = <com.vzome.core.model.Panel><any>man;
+                        const stack: java.util.Stack<com.vzome.core.algebra.AlgebraicVector> = <any>(new java.util.Stack<com.vzome.core.algebra.AlgebraicVector>());
+                        for(let index=panel.iterator();index.hasNext();) {
+                            let vertex = index.next();
+                            {
+                                stack.push(vertex);
+                            }
+                        }
+                        while((!stack.isEmpty())) {{
+                            const vertex: com.vzome.core.algebra.AlgebraicVector = stack.pop();
+                            let index: number = sortedFixedVertexList.indexOf(vertex);
+                            if (index < 0){
+                                index = sortedFixedVertexList.size() + sortedFloatingVertexList.indexOf(vertex);
+                            }
+                            this.output.print(index + ", ");
+                        }};
+                        this.output.print("], ");
+                    }
+                }
+            }
+            this.output.println$java_lang_Object(" ];");
+            this.output.println$java_lang_Object("  zome_strut( tip_vertex, fixed_vertices, floating_vertices, faces, bottom_face_normal, size, scalar, offsets );");
+            this.output.println$java_lang_Object("}");
+            this.output.flush();
+        }
+
+        /**
+         * 
+         * @return {string}
+         */
+        public getFileExtension(): string {
+            return "scad";
+        }
+
+        /**
+         * 
+         * @param {java.io.File} file
+         * @param {java.io.Writer} writer
+         * @param {number} height
+         * @param {number} width
+         */
+        public doExport(file: java.io.File, writer: java.io.Writer, height: number, width: number) {
+        }
+
+        constructor() {
+            super();
+        }
+    }
+    OpenScadExporter["__class"] = "com.vzome.core.exporters.OpenScadExporter";
+    OpenScadExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
+
+
+}
+namespace com.vzome.core.exporters {
+    /**
+     * Renders out to POV-Ray using #declare statements to reuse geometry.
+     * @author vorth
+     * @class
+     * @extends com.vzome.core.exporters.DocumentExporter
+     */
+    export class POVRayExporter extends com.vzome.core.exporters.DocumentExporter {
+        static FORMAT: java.text.NumberFormat; public static FORMAT_$LI$(): java.text.NumberFormat { if (POVRayExporter.FORMAT == null) { POVRayExporter.FORMAT = java.text.NumberFormat.getNumberInstance(java.util.Locale.US); }  return POVRayExporter.FORMAT; }
+
+        static PREAMBLE_FILE: string = "com/vzome/core/exporters/povray/preamble.pov";
+
+        public mapViewToWorld(view: com.vzome.core.viewing.CameraIntf, vector: com.vzome.core.math.RealVector) {
+        }
+
+        /**
+         * 
+         * @return {boolean}
+         */
+        public needsManifestations(): boolean {
+            return false;
+        }
+
+        /**
+         * 
+         * @param {java.io.File} povFile
+         * @param {java.io.Writer} writer
+         * @param {number} height
+         * @param {number} width
+         */
+        public doExport(povFile: java.io.File, writer: java.io.Writer, height: number, width: number) {
+            this.output = new java.io.PrintWriter(writer);
+            const lookDir: com.vzome.core.math.RealVector = this.mScene.getLookDirectionRV();
+            const upDir: com.vzome.core.math.RealVector = this.mScene.getUpDirectionRV();
+            POVRayExporter.FORMAT_$LI$().setMaximumFractionDigits(8);
+            this.output.println$();
+            this.output.println$();
+            this.output.println$java_lang_Object("#declare           look_dir = " + this.printTuple3d(lookDir) + ";");
+            this.output.println$();
+            this.output.println$java_lang_Object("#declare             up_dir = " + this.printTuple3d(upDir) + ";");
+            this.output.println$();
+            this.output.println$java_lang_Object("#declare viewpoint_distance = " + this.mScene.getViewDistance() + ";");
+            this.output.println$();
+            this.output.println$java_lang_Object("#declare      look_at_point = " + this.printTuple3d(this.mScene.getLookAtPointRV()) + ";");
+            this.output.println$();
+            this.output.println$java_lang_Object("#declare      field_of_view = " + this.mScene.getFieldOfView() + ";");
+            this.output.println$();
+            this.output.println$java_lang_Object("#declare      parallel_proj = " + (this.mScene.isPerspective() ? 0 : 1) + ";");
+            this.output.println$();
+            const input: java.io.InputStream = (<any>this.constructor).getClassLoader().getResourceAsStream(POVRayExporter.PREAMBLE_FILE);
+            const out: java.io.ByteArrayOutputStream = new java.io.ByteArrayOutputStream();
+            const buf: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(1024);
+            let num: number;
+            try {
+                while(((num = input.read(buf, 0, 1024)) > 0)) {out.write(buf, 0, num)};
+            } catch(e) {
+                console.error(e.message, e);
+            }
+            this.output.println$java_lang_Object(<string>new String(out.toByteArray()));
+            this.output.println$();
+            for(let i: number = 0; i < 3; i++) {{
+                const color: com.vzome.core.construction.Color = this.mLights.getDirectionalLightColor(i);
+                let rv: com.vzome.core.math.RealVector = this.mLights.getDirectionalLightVector(i);
+                rv = this.mScene.mapViewToWorld(rv);
+                this.output.print("light_source { -light_distance * " + this.printTuple3d(rv));
+                this.output.print(" ");
+                this.printColor(color);
+                this.output.println$java_lang_Object(" * multiplier_light_" + (i + 1) + " }");
+                this.output.println$();
+            };}
+            this.output.print("#declare ambient_color = ");
+            this.printColor(this.mLights.getAmbientColor());
+            this.output.println$java_lang_Object(";");
+            this.output.println$();
+            this.output.println$java_lang_Object("#default { texture { finish { phong 0.3 ambient multiplier_ambient * ambient_color diffuse 0.6 } } }");
+            this.output.println$();
+            this.output.print("background { ");
+            this.printColor(this.mLights.getBackgroundColor());
+            this.output.println$java_lang_Object(" }");
+            this.output.println$();
+            const instances: java.lang.StringBuffer = new java.lang.StringBuffer();
+            const field: com.vzome.core.algebra.AlgebraicField = this.mModel.getField();
+            const embedding: com.vzome.core.math.symmetry.Embedding = this.mModel.getEmbedding();
+            let embeddingTransform: string = " ";
+            if (!embedding.isTrivial()){
+                embeddingTransform = " transform embedding ";
+                this.output.print("#declare embedding = transform { matrix < ");
+                for(let i: number = 0; i < 3; i++) {{
+                    const columnSelect: com.vzome.core.algebra.AlgebraicVector = field.basisVector(3, i);
+                    const columnI: com.vzome.core.math.RealVector = embedding.embedInR3(columnSelect);
+                    this.output.print(columnI.x);
+                    this.output.print(", ");
+                    this.output.print(columnI.y);
+                    this.output.print(", ");
+                    this.output.print(columnI.z);
+                    this.output.print(", ");
+                };}
+                this.output.println$java_lang_Object(" 0, 0, 0 > }");
+                this.output.flush();
+            }
+            let numTransforms: number = 0;
+            const shapes: java.util.HashSet<string> = <any>(new java.util.HashSet<any>());
+            const transforms: java.util.Map<com.vzome.core.algebra.AlgebraicMatrix, string> = <any>(new java.util.HashMap<any, any>());
+            const colors: java.util.Map<com.vzome.core.construction.Color, string> = <any>(new java.util.HashMap<any, any>());
+            for(let index=this.mModel.iterator();index.hasNext();) {
+                let rm = index.next();
+                {
+                    const shapeName: string = "S" + /* replaceAll */rm.getShapeId().toString().replace(new RegExp("-", 'g'),"");
+                    if (!shapes.contains(shapeName)){
+                        shapes.add(shapeName);
+                        this.exportShape(shapeName, rm.getShape());
+                    }
+                    const transform: com.vzome.core.algebra.AlgebraicMatrix = rm.getOrientation();
+                    let transformName: string = transforms.get(transform);
+                    if (transformName == null){
+                        transformName = "trans" + numTransforms++;
+                        transforms.put(transform, transformName);
+                        this.exportTransform(transformName, transform);
+                    }
+                    let color: com.vzome.core.construction.Color = rm.getColor();
+                    if (color == null)color = com.vzome.core.construction.Color.WHITE_$LI$();
+                    let colorName: string = colors.get(color);
+                    if (colorName == null){
+                        colorName = this.nameColor(color);
+                        colors.put(color, colorName);
+                        this.exportColor(colorName, color);
+                    }
+                    instances.append("object { " + shapeName + " transform " + transformName + " translate ");
+                    instances.append("(<");
+                    let loc: com.vzome.core.algebra.AlgebraicVector = rm.getLocationAV();
+                    if (loc == null)loc = rm.getShape().getField().origin(3);
+                    this.appendVector(loc, instances);
+                    instances.append(">)");
+                    instances.append(embeddingTransform + "transform anim texture { " + colorName + " } }");
+                    instances.append(java.lang.System.getProperty("line.separator"));
+                }
+            }
+            this.output.println$java_lang_Object(instances.toString());
+            this.output.flush();
+            if (povFile == null)return;
+            let filename: string = povFile.getName();
+            const index: number = filename.lastIndexOf(".pov");
+            if (index > 0){
+                filename = filename.substring(0, index);
+            }
+            const file: java.io.File = new java.io.File(povFile.getParentFile(), filename + ".ini");
+            this.output = new java.io.PrintWriter(new java.io.FileWriter(file));
+            this.output.println$java_lang_Object("+W" + 600);
+            this.output.println$java_lang_Object("+H" + 600);
+            this.output.println$java_lang_Object("+A");
+            this.output.println$java_lang_Object("Input_File_Name=" + filename + ".pov");
+            this.output.println$java_lang_Object("Output_File_Name=" + filename + ".png");
+            this.output.close();
+        }
+
+        nameColor(color: com.vzome.core.construction.Color): string {
+            return "color_" + /* replace */color.toString().split(',').join('_');
+        }
+
+        /*private*/ printTuple3d(t: com.vzome.core.math.RealVector): string {
+            const buf: java.lang.StringBuilder = new java.lang.StringBuilder("<");
+            buf.append(POVRayExporter.FORMAT_$LI$().format(t.x));
+            buf.append(",");
+            buf.append(POVRayExporter.FORMAT_$LI$().format(t.y));
+            buf.append(",");
+            buf.append(POVRayExporter.FORMAT_$LI$().format(t.z));
+            buf.append(">");
+            return buf.toString();
+        }
+
+        exportColor(name: string, color: com.vzome.core.construction.Color) {
+            this.output.print("#declare " + /* replace */name.split('.').join('_') + " = texture { pigment { ");
+            this.printColor(color);
+            this.output.println$java_lang_Object(" } };");
+        }
+
+        /*private*/ printColor(color: com.vzome.core.construction.Color) {
+            const doAlpha: boolean = color.getAlpha() < 255;
+            if (doAlpha)this.output.print("color rgbf <"); else this.output.print("color rgb <");
+            const rgb: number[] = color.getRGBColorComponents([0, 0, 0, 0]);
+            this.output.print(POVRayExporter.FORMAT_$LI$().format(rgb[0]) + ",");
+            this.output.print(POVRayExporter.FORMAT_$LI$().format(rgb[1]) + ",");
+            if (doAlpha){
+                this.output.print(POVRayExporter.FORMAT_$LI$().format(rgb[2]) + ",");
+                this.output.print(POVRayExporter.FORMAT_$LI$().format(rgb[3]));
+            } else {
+                this.output.print(POVRayExporter.FORMAT_$LI$().format(rgb[2]));
+            }
+            this.output.print(">");
+        }
+
+        appendVector(loc: com.vzome.core.algebra.AlgebraicVector, buf: java.lang.StringBuffer) {
+            const vector: com.vzome.core.math.RealVector = loc.toRealVector();
+            buf.append(POVRayExporter.FORMAT_$LI$().format(vector.x));
+            buf.append(", ");
+            buf.append(POVRayExporter.FORMAT_$LI$().format(vector.y));
+            buf.append(", ");
+            buf.append(POVRayExporter.FORMAT_$LI$().format(vector.z));
+        }
+
+        /*private*/ exportShape(shapeName: string, poly: com.vzome.core.math.Polyhedron) {
+            this.output.print("#declare " + shapeName + " = ");
+            const vertices: java.util.List<com.vzome.core.algebra.AlgebraicVector> = poly.getVertexList();
+            this.output.println$java_lang_Object("mesh {");
+            poly.getTriangleFaces();
+            for(let index=poly.getTriangleFaces().iterator();index.hasNext();) {
+                let face = index.next();
+                {
+                    this.output.print("triangle {");
+                    for(let loopIndex = 0; loopIndex < face.vertices.length; loopIndex++) {
+                        let index = face.vertices[loopIndex];
+                        {
+                            const loc: com.vzome.core.algebra.AlgebraicVector = vertices.get(index);
+                            const buf: java.lang.StringBuffer = new java.lang.StringBuffer();
+                            buf.append("<");
+                            this.appendVector(loc, buf);
+                            buf.append(">");
+                            this.output.print(buf.toString());
+                        }
+                    }
+                    this.output.println$java_lang_Object("}");
+                }
+            }
+            this.output.println$java_lang_Object("}");
+            this.output.flush();
+        }
+
+        /*private*/ exportTransform(name: string, transform: com.vzome.core.algebra.AlgebraicMatrix) {
+            const field: com.vzome.core.algebra.AlgebraicField = this.mModel.getField();
+            this.output.print("#declare " + name + " = transform { matrix < ");
+            const buf: java.lang.StringBuffer = new java.lang.StringBuffer();
+            for(let i: number = 0; i < 3; i++) {{
+                const columnSelect: com.vzome.core.algebra.AlgebraicVector = field.basisVector(3, i);
+                const columnI: com.vzome.core.algebra.AlgebraicVector = transform.timesColumn(columnSelect);
+                this.appendVector(columnI, buf);
+                buf.append(", ");
+            };}
+            this.output.print(buf);
+            this.output.println$java_lang_Object(" 0, 0, 0 > }");
+            this.output.flush();
+        }
+
+        /**
+         * 
+         * @return {string}
+         */
+        public getFileExtension(): string {
+            return "pov";
+        }
+
+        constructor() {
+            super();
+        }
+    }
+    POVRayExporter["__class"] = "com.vzome.core.exporters.POVRayExporter";
+    POVRayExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
+
+
+}
+namespace com.vzome.core.exporters {
+    export class PartGeometryExporter extends com.vzome.core.exporters.VefExporter {
+        /*private*/ selection: com.vzome.core.editor.api.Selection;
+
+        public exportDocument(doc: com.vzome.core.exporters.DocumentIntf, file: java.io.File, writer: java.io.Writer, height: number, width: number) {
+            this.mModel = doc.getRenderedModel();
+            this.selection = doc.getEditorModel().getSelection();
+            this.doExport(file, writer, height, width);
+            this.selection = null;
+            this.mModel = null;
+        }
+
+        /**
+         * 
+         * @param {java.io.File} directory
+         * @param {java.io.Writer} writer
+         * @param {number} height
+         * @param {number} width
+         */
+        public doExport(directory: java.io.File, writer: java.io.Writer, height: number, width: number) {
+            const field: com.vzome.core.algebra.AlgebraicField = this.mModel.getField();
+            const exporter: com.vzome.core.model.VefModelExporter = new com.vzome.core.model.VefModelExporter(writer, field);
+            for(let index=this.mModel.iterator();index.hasNext();) {
+                let rm = index.next();
+                {
+                    exporter.exportManifestation(rm.getManifestation());
+                }
+            }
+            exporter.finish();
+            this.exportSelection(exporter);
+        }
+
+        /*private*/ exportSelection(exporter: com.vzome.core.model.VefModelExporter) {
+            let tip: com.vzome.core.model.Connector = null;
+            const arrayComparator: com.vzome.core.generic.ArrayComparator<com.vzome.core.algebra.AlgebraicVector> = <any>(new com.vzome.core.generic.ArrayComparator<any>());
+            const panelVertices: java.util.SortedSet<com.vzome.core.algebra.AlgebraicVector[]> = <any>(new java.util.TreeSet<any>(<any>(((funcInst: any) => { if (funcInst == null || typeof funcInst == 'function') { return funcInst } return (arg0, arg1) =>  (funcInst['compare'] ? funcInst['compare'] : funcInst) .call(funcInst, arg0, arg1)})(arrayComparator.getLengthFirstArrayComparator()))));
+            const vertexArrayPanelMap: java.util.Map<com.vzome.core.algebra.AlgebraicVector[], com.vzome.core.model.Panel> = <any>(new java.util.HashMap<any, any>());
+            for(let index=this.selection.iterator();index.hasNext();) {
+                let man = index.next();
+                {
+                    if (man != null && (man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0)){
+                        if (tip == null){
+                            tip = <com.vzome.core.model.Connector><any>man;
+                        }
+                    } else if (man != null && (man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0)){
+                        const panel: com.vzome.core.model.Panel = <com.vzome.core.model.Panel><any>man;
+                        const corners: java.util.ArrayList<com.vzome.core.algebra.AlgebraicVector> = <any>(new java.util.ArrayList<any>(panel.getVertexCount()));
+                        for(let index=panel.iterator();index.hasNext();) {
+                            let vertex = index.next();
+                            {
+                                corners.add(vertex);
+                            }
+                        }
+                        const cornerArray: com.vzome.core.algebra.AlgebraicVector[] = (s => { let a=[]; while(s-->0) a.push(null); return a; })(corners.size());
+                        corners.toArray<any>(cornerArray);
+                        panelVertices.add(cornerArray);
+                        vertexArrayPanelMap.put(cornerArray, panel);
+                    }
+                }
+            }
+            if (tip != null){
+                exporter.exportSelectedManifestation(null);
+                exporter.exportSelectedManifestation(tip);
+                if (!panelVertices.isEmpty()){
+                    exporter.exportSelectedManifestation(null);
+                    for(let index=panelVertices.iterator();index.hasNext();) {
+                        let vertexArray = index.next();
+                        {
+                            const panel: com.vzome.core.model.Panel = vertexArrayPanelMap.get(vertexArray);
+                            exporter.exportSelectedManifestation(panel);
+                        }
+                    }
+                }
+                exporter.exportSelectedManifestation(null);
+            }
+        }
+
+        constructor() {
+            super();
+            if (this.selection === undefined) { this.selection = null; }
+        }
+    }
+    PartGeometryExporter["__class"] = "com.vzome.core.exporters.PartGeometryExporter";
+    PartGeometryExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
+
 
 }
 namespace com.vzome.core.zomic.program {
@@ -42992,6 +43879,89 @@ namespace com.vzome.core.edits {
 
 }
 namespace com.vzome.core.edits {
+    export class GhostSymmetry24Cell extends com.vzome.core.editor.api.ChangeManifestations {
+        /*private*/ field: com.vzome.core.algebra.AlgebraicField;
+
+        /*private*/ proj: com.vzome.core.math.Projection;
+
+        /*private*/ symmAxis: com.vzome.core.construction.Segment;
+
+        /*private*/ symm: com.vzome.core.math.symmetry.Symmetry;
+
+        public constructor(editor: com.vzome.core.editor.api.EditorModel) {
+            super(editor);
+            if (this.field === undefined) { this.field = null; }
+            if (this.proj === undefined) { this.proj = null; }
+            if (this.symmAxis === undefined) { this.symmAxis = null; }
+            if (this.symm === undefined) { this.symm = null; }
+            this.symm = (<com.vzome.core.editor.api.SymmetryAware><any>editor)['getSymmetrySystem$']().getSymmetry();
+            this.field = this.symm.getField();
+            this.symmAxis = (<com.vzome.core.editor.api.ImplicitSymmetryParameters><any>editor).getSymmetrySegment();
+        }
+
+        /**
+         * 
+         * @return {string}
+         */
+        getXmlElementName(): string {
+            return "GhostSymmetry24Cell";
+        }
+
+        /**
+         * 
+         * @param {*} result
+         */
+        public getXmlAttributes(result: org.w3c.dom.Element) {
+            if (this.symmAxis != null)com.vzome.core.commands.XmlSaveFormat.serializeSegment(result, "start", "end", this.symmAxis);
+        }
+
+        /**
+         * 
+         * @param {*} xml
+         * @param {com.vzome.core.commands.XmlSaveFormat} format
+         */
+        public setXmlAttributes(xml: org.w3c.dom.Element, format: com.vzome.core.commands.XmlSaveFormat) {
+            this.symmAxis = format.parseSegment$org_w3c_dom_Element$java_lang_String$java_lang_String(xml, "start", "end");
+        }
+
+        /**
+         * 
+         */
+        public perform() {
+            if (this.symmAxis == null)this.proj = new com.vzome.core.math.Projection.Default(this.field); else this.proj = new com.vzome.core.math.QuaternionProjection(this.field, null, this.symmAxis.getOffset().scale(this.field['createPower$int'](-5)));
+            const blue: com.vzome.core.math.symmetry.Direction = this.symm.getDirection("blue");
+            const green: com.vzome.core.math.symmetry.Direction = this.symm.getDirection("green");
+            for(let k: number = 0; k < 12; k++) {{
+                const A1: com.vzome.core.algebra.AlgebraicVector = blue.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, (k + 2) % 12).normal();
+                const A2: com.vzome.core.algebra.AlgebraicVector = green.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, (5 * k + 2) % 12).normal();
+                const B1: com.vzome.core.algebra.AlgebraicVector = green.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, (k + 2) % 12).normal();
+                const B2: com.vzome.core.algebra.AlgebraicVector = blue.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, (5 * k + 5) % 12).normal();
+                let projected: com.vzome.core.algebra.AlgebraicVector = this.symm.getField().origin(4);
+                projected.setComponent(0, A2.getComponent(0));
+                projected.setComponent(1, A2.getComponent(1));
+                projected.setComponent(2, A1.getComponent(0));
+                projected.setComponent(3, A1.getComponent(1));
+                if (this.proj != null)projected = this.proj.projectImage(projected, true);
+                let p: com.vzome.core.construction.Point = new com.vzome.core.construction.FreePoint(projected.scale(this.field['createPower$int'](5)));
+                p.setIndex(k);
+                this.manifestConstruction(p);
+                projected = this.symm.getField().origin(4);
+                projected.setComponent(0, B2.getComponent(0));
+                projected.setComponent(1, B2.getComponent(1));
+                projected.setComponent(2, B1.getComponent(0));
+                projected.setComponent(3, B1.getComponent(1));
+                if (this.proj != null)projected = this.proj.projectImage(projected, true);
+                p = new com.vzome.core.construction.FreePoint(projected.scale(this.field['createPower$int'](5)));
+                p.setIndex(12 + k);
+                this.manifestConstruction(p);
+            };}
+            this.redo();
+        }
+    }
+    GhostSymmetry24Cell["__class"] = "com.vzome.core.edits.GhostSymmetry24Cell";
+
+}
+namespace com.vzome.core.edits {
     export class JoinPoints extends com.vzome.core.editor.api.ChangeManifestations {
         joinMode: JoinPoints.JoinModeEnum;
 
@@ -43939,6 +44909,146 @@ namespace com.vzome.core.edits {
 }
 namespace com.vzome.core.edits {
     /**
+     * This is a modern replacement for CommandQuaternionSymmetry, which is a legacy command.
+     * It duplicates the math from that command, but one key change: only parameter objects that lie
+     * in the W=0 plane are transformed.  This makes it safe and predictable to use
+     * on objects produced by Polytope4d, which retain their 4D coordinates.
+     * 
+     * As with CommandQuaternionSymmetry, all transformed vertices are projected to the W=0 plane
+     * before being added to the model.
+     * 
+     * @author vorth
+     * @param {*} editor
+     * @param {com.vzome.core.math.symmetry.QuaternionicSymmetry} left
+     * @param {com.vzome.core.math.symmetry.QuaternionicSymmetry} right
+     * @class
+     * @extends com.vzome.core.editor.api.ChangeManifestations
+     */
+    export class Symmetry4d extends com.vzome.core.editor.api.ChangeManifestations {
+        /*private*/ left: com.vzome.core.math.symmetry.QuaternionicSymmetry;
+
+        /*private*/ right: com.vzome.core.math.symmetry.QuaternionicSymmetry;
+
+        public constructor(editor?: any, left?: any, right?: any) {
+            if (((editor != null && (editor.constructor != null && editor.constructor["__interfaces"] != null && editor.constructor["__interfaces"].indexOf("com.vzome.core.editor.api.EditorModel") >= 0)) || editor === null) && ((left != null && left instanceof <any>com.vzome.core.math.symmetry.QuaternionicSymmetry) || left === null) && ((right != null && right instanceof <any>com.vzome.core.math.symmetry.QuaternionicSymmetry) || right === null)) {
+                let __args = arguments;
+                super(editor);
+                if (this.left === undefined) { this.left = null; } 
+                if (this.right === undefined) { this.right = null; } 
+                this.left = left;
+                this.right = right;
+            } else if (((editor != null && (editor.constructor != null && editor.constructor["__interfaces"] != null && editor.constructor["__interfaces"].indexOf("com.vzome.core.editor.api.EditorModel") >= 0)) || editor === null) && left === undefined && right === undefined) {
+                let __args = arguments;
+                super(editor);
+                if (this.left === undefined) { this.left = null; } 
+                if (this.right === undefined) { this.right = null; } 
+                this.left = (<com.vzome.core.editor.api.SymmetryAware><any>editor).get4dSymmetries().getQuaternionSymmetry("H_4");
+                this.right = this.left;
+            } else throw new Error('invalid overload');
+        }
+
+        /**
+         * 
+         * @param {*} parameters
+         */
+        public configure(parameters: java.util.Map<string, any>) {
+            this.left = <com.vzome.core.math.symmetry.QuaternionicSymmetry>parameters.get("left");
+            this.right = <com.vzome.core.math.symmetry.QuaternionicSymmetry>parameters.get("right");
+        }
+
+        /**
+         * 
+         * @return {string}
+         */
+        getXmlElementName(): string {
+            return "Symmetry4d";
+        }
+
+        /*private*/ static inW0hyperplane(v: com.vzome.core.algebra.AlgebraicVector): boolean {
+            if (v.dimension() > 3)return v.getComponent(com.vzome.core.algebra.AlgebraicVector.W4).isZero(); else return true;
+        }
+
+        /**
+         * 
+         */
+        public perform() {
+            const params: java.util.List<com.vzome.core.construction.Construction> = <any>(new java.util.ArrayList<any>());
+            for(let index=this.mSelection.iterator();index.hasNext();) {
+                let man = index.next();
+                {
+                    this.unselect$com_vzome_core_model_Manifestation(man);
+                    const cs: java.util.Iterator<com.vzome.core.construction.Construction> = man.getConstructions();
+                    let useThis: com.vzome.core.construction.Construction = null;
+                    if (!cs.hasNext())throw new com.vzome.core.commands.Command.Failure("No construction for this manifestation");
+                    for(const iterator: java.util.Iterator<com.vzome.core.construction.Construction> = man.getConstructions(); iterator.hasNext(); ) {{
+                        const construction: com.vzome.core.construction.Construction = iterator.next();
+                        if (construction != null && construction instanceof <any>com.vzome.core.construction.Point){
+                            const p: com.vzome.core.construction.Point = <com.vzome.core.construction.Point>construction;
+                            if (!Symmetry4d.inW0hyperplane(p.getLocation()))throw new com.vzome.core.commands.Command.Failure("Some ball is not in the W=0 hyperplane.");
+                        } else if (construction != null && construction instanceof <any>com.vzome.core.construction.Segment){
+                            const s: com.vzome.core.construction.Segment = <com.vzome.core.construction.Segment>construction;
+                            if (!Symmetry4d.inW0hyperplane(s.getStart()))throw new com.vzome.core.commands.Command.Failure("Some strut end is not in the W=0 hyperplane.");
+                            if (!Symmetry4d.inW0hyperplane(s.getEnd()))throw new com.vzome.core.commands.Command.Failure("Some strut end is not in the W=0 hyperplane.");
+                        } else if (construction != null && construction instanceof <any>com.vzome.core.construction.Polygon){
+                            const p: com.vzome.core.construction.Polygon = <com.vzome.core.construction.Polygon>construction;
+                            for(let i: number = 0; i < p.getVertexCount(); i++) {{
+                                if (!Symmetry4d.inW0hyperplane(p.getVertex(i))){
+                                    throw new com.vzome.core.commands.Command.Failure("Some panel vertex is not in the W=0 hyperplane.");
+                                }
+                            };}
+                        } else {
+                            throw new com.vzome.core.commands.Command.Failure("Unknown construction type.");
+                        }
+                        useThis = construction;
+                    };}
+                    if (useThis != null)params.add(useThis);
+                }
+            }
+            this.redo();
+            const leftRoots: com.vzome.core.algebra.Quaternion[] = this.left.getRoots();
+            const rightRoots: com.vzome.core.algebra.Quaternion[] = this.right.getRoots();
+            for(let index = 0; index < leftRoots.length; index++) {
+                let leftRoot = leftRoots[index];
+                {
+                    for(let index1 = 0; index1 < rightRoots.length; index1++) {
+                        let rightRoot = rightRoots[index1];
+                        {
+                            for(let index2=params.iterator();index2.hasNext();) {
+                                let construction = index2.next();
+                                {
+                                    let result: com.vzome.core.construction.Construction = null;
+                                    if (construction != null && construction instanceof <any>com.vzome.core.construction.Point){
+                                        result = new com.vzome.core.construction.PointRotated4D(leftRoot, rightRoot, <com.vzome.core.construction.Point>construction);
+                                    } else if (construction != null && construction instanceof <any>com.vzome.core.construction.Segment){
+                                        result = new com.vzome.core.construction.SegmentRotated4D(leftRoot, rightRoot, <com.vzome.core.construction.Segment>construction);
+                                    } else if (construction != null && construction instanceof <any>com.vzome.core.construction.Polygon){
+                                        result = new com.vzome.core.construction.PolygonRotated4D(leftRoot, rightRoot, <com.vzome.core.construction.Polygon>construction);
+                                    } else {
+                                    }
+                                    if (result == null)continue;
+                                    this.manifestConstruction(result);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            this.redo();
+        }
+
+        rotateAndProject(loc3d: com.vzome.core.algebra.AlgebraicVector, leftQuaternion: com.vzome.core.algebra.Quaternion, rightQuaternion: com.vzome.core.algebra.Quaternion): com.vzome.core.construction.FreePoint {
+            let loc: com.vzome.core.algebra.AlgebraicVector = loc3d.inflateTo4d$boolean(true);
+            loc = rightQuaternion.leftMultiply(loc);
+            loc = leftQuaternion.rightMultiply(loc);
+            loc = loc.projectTo3d(true);
+            return new com.vzome.core.construction.FreePoint(loc);
+        }
+    }
+    Symmetry4d["__class"] = "com.vzome.core.edits.Symmetry4d";
+
+}
+namespace com.vzome.core.edits {
+    /**
      * @author David Hall
      * @param {*} editorModel
      * @class
@@ -44608,6 +45718,75 @@ namespace com.vzome.core.edits {
 
 }
 namespace com.vzome.core.edits {
+    export class RealizeMetaParts extends com.vzome.core.editor.api.ChangeManifestations {
+        public static NAME: string = "realizeMetaParts";
+
+        /**
+         * 
+         */
+        public perform() {
+            let scale: com.vzome.core.algebra.AlgebraicNumber = null;
+            for(let index=this.mSelection.iterator();index.hasNext();) {
+                let man = index.next();
+                {
+                    this.unselect$com_vzome_core_model_Manifestation(man);
+                    const rm: com.vzome.core.model.RenderedObject = (<com.vzome.core.model.HasRenderedObject><any>man).getRenderedObject();
+                    if (rm != null){
+                        const shape: com.vzome.core.math.Polyhedron = rm.getShape();
+                        if (scale == null){
+                            const field: com.vzome.core.algebra.AlgebraicField = shape.getField();
+                            scale = field['createPower$int'](5);
+                        }
+                        const orientation: com.vzome.core.algebra.AlgebraicMatrix = rm.getOrientation();
+                        const vertexList: java.util.List<com.vzome.core.algebra.AlgebraicVector> = shape.getVertexList();
+                        for(let index=shape.getVertexList().iterator();index.hasNext();) {
+                            let vertex = index.next();
+                            {
+                                const vertexPt: com.vzome.core.construction.Point = this.transformVertex(vertex, man.getLocation(), scale, orientation);
+                                this.select$com_vzome_core_model_Manifestation(this.manifestConstruction(vertexPt));
+                            }
+                        }
+                        for(let index=shape.getFaceSet().iterator();index.hasNext();) {
+                            let face = index.next();
+                            {
+                                const vertices: com.vzome.core.construction.Point[] = (s => { let a=[]; while(s-->0) a.push(null); return a; })(face.size());
+                                for(let i: number = 0; i < vertices.length; i++) {{
+                                    const vertexIndex: number = face.getVertex(i);
+                                    const vertex: com.vzome.core.algebra.AlgebraicVector = vertexList.get(vertexIndex);
+                                    vertices[i] = this.transformVertex(vertex, man.getLocation(), scale, orientation);
+                                };}
+                                const polygon: com.vzome.core.construction.Polygon = new com.vzome.core.construction.PolygonFromVertices(vertices);
+                                this.select$com_vzome_core_model_Manifestation(this.manifestConstruction(polygon));
+                            }
+                        }
+                    }
+                }
+            }
+            this.redo();
+        }
+
+        /*private*/ transformVertex(vertex: com.vzome.core.algebra.AlgebraicVector, offset: com.vzome.core.algebra.AlgebraicVector, scale: com.vzome.core.algebra.AlgebraicNumber, orientation: com.vzome.core.algebra.AlgebraicMatrix): com.vzome.core.construction.Point {
+            if (orientation != null)vertex = orientation.timesColumn(vertex);
+            if (offset != null)vertex = vertex.plus(offset);
+            return new com.vzome.core.construction.FreePoint(vertex.scale(scale));
+        }
+
+        public constructor(editor: com.vzome.core.editor.api.EditorModel) {
+            super(editor);
+        }
+
+        /**
+         * 
+         * @return {string}
+         */
+        getXmlElementName(): string {
+            return RealizeMetaParts.NAME;
+        }
+    }
+    RealizeMetaParts["__class"] = "com.vzome.core.edits.RealizeMetaParts";
+
+}
+namespace com.vzome.core.edits {
     /**
      * called from the main menu and when opening a file
      * @param symmetry
@@ -44914,6 +46093,25 @@ namespace com.vzome.core.edits {
                 return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getEmbedding(): number[] {
+                const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
+                const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
+                const embedding: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(16);
+                for(let i: number = 0; i < 3; i++) {{
+                    const columnSelect: com.vzome.core.algebra.AlgebraicVector = field.basisVector(3, i);
+                    const colRV: com.vzome.core.math.RealVector = symmetry.embedInR3(columnSelect);
+                    embedding[i * 4 + 0] = colRV.x;
+                    embedding[i * 4 + 1] = colRV.y;
+                    embedding[i * 4 + 2] = colRV.z;
+                    embedding[i * 4 + 3] = 0.0;
+                };}
+                embedding[12] = 0.0;
+                embedding[13] = 0.0;
+                embedding[14] = 0.0;
+                embedding[15] = 1.0;
+                return embedding;
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             public getOrientations(rowMajor?: any): number[][] {
                 if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                     let __args = arguments;
@@ -44949,25 +46147,6 @@ namespace com.vzome.core.edits {
                 } else if (rowMajor === undefined) {
                     return <any>this.getOrientations$();
                 } else throw new Error('invalid overload');
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getEmbedding(): number[] {
-                const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
-                const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
-                const embedding: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(16);
-                for(let i: number = 0; i < 3; i++) {{
-                    const columnSelect: com.vzome.core.algebra.AlgebraicVector = field.basisVector(3, i);
-                    const colRV: com.vzome.core.math.RealVector = symmetry.embedInR3(columnSelect);
-                    embedding[i * 4 + 0] = colRV.x;
-                    embedding[i * 4 + 1] = colRV.y;
-                    embedding[i * 4 + 2] = colRV.z;
-                    embedding[i * 4 + 3] = 0.0;
-                };}
-                embedding[12] = 0.0;
-                embedding[13] = 0.0;
-                embedding[14] = 0.0;
-                embedding[15] = 1.0;
-                return embedding;
             }
             /**
              * 
@@ -45488,6 +46667,50 @@ namespace com.vzome.core.edits {
         }
     }
     ReversePanel["__class"] = "com.vzome.core.edits.ReversePanel";
+
+}
+namespace com.vzome.core.edits {
+    export class DodecagonSymmetry extends com.vzome.core.editor.api.ChangeManifestations {
+        /*private*/ center: com.vzome.core.construction.Point;
+
+        /*private*/ symmetry: com.vzome.core.math.symmetry.Symmetry;
+
+        public constructor(editor: com.vzome.core.editor.api.EditorModel) {
+            super(editor);
+            if (this.center === undefined) { this.center = null; }
+            if (this.symmetry === undefined) { this.symmetry = null; }
+            this.center = (<com.vzome.core.editor.api.ImplicitSymmetryParameters><any>editor).getCenterPoint();
+            this.symmetry = (<com.vzome.core.editor.api.SymmetryAware><any>editor)['getSymmetrySystem$']().getSymmetry();
+        }
+
+        /**
+         * 
+         */
+        public perform() {
+            const transform: com.vzome.core.construction.Transformation = new com.vzome.core.construction.SymmetryTransformation(this.symmetry, 1, this.center);
+            for(let index=this.mSelection.iterator();index.hasNext();) {
+                let man = index.next();
+                {
+                    let c: com.vzome.core.construction.Construction = man.getFirstConstruction();
+                    for(let i: number = 0; i < 11; i++) {{
+                        c = transform.transform$com_vzome_core_construction_Construction(c);
+                        if (c == null)continue;
+                        this.select$com_vzome_core_model_Manifestation(this.manifestConstruction(c));
+                    };}
+                }
+            }
+            this.redo();
+        }
+
+        /**
+         * 
+         * @return {string}
+         */
+        getXmlElementName(): string {
+            return "DodecagonSymmetry";
+        }
+    }
+    DodecagonSymmetry["__class"] = "com.vzome.core.edits.DodecagonSymmetry";
 
 }
 namespace com.vzome.core.edits {
@@ -49998,6 +51221,8 @@ com.vzome.core.commands.CommandImportVEFData.ATTR_SIGNATURE_$LI$();
 
 com.vzome.core.commands.CommandImportVEFData.PARAM_SIGNATURE_$LI$();
 
+com.vzome.core.exporters.POVRayExporter.FORMAT_$LI$();
+
 com.vzome.core.exporters.PlyExporter.FORMAT_$LI$();
 
 com.vzome.core.exporters.PlyExporter.__static_initialize();
@@ -50013,6 +51238,12 @@ com.vzome.desktop.controller.NumberController.OPTIONAL_NAMED_VALUES_$LI$();
 com.vzome.core.algebra.SnubDodecField.IRRATIONAL_LABELS_$LI$();
 
 com.vzome.core.algebra.SnubDodecField.PHI_VALUE_$LI$();
+
+com.vzome.core.exporters.MathTableExporter.OPTIONAL_NAMED_VALUES_$LI$();
+
+com.vzome.core.exporters.MathTableExporter.Y_$LI$();
+
+com.vzome.core.exporters.MathTableExporter.X_$LI$();
 
 com.vzome.core.editor.api.SideEffects.BUG_ACCOMMODATION_LOGGER_$LI$();
 

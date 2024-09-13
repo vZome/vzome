@@ -91,7 +91,7 @@ core.config {
 	encoding = 'UTF-8'
 	sourceMap = false  // I can't set breakpoints if the browser cannot find the Java file, so disabling for now.
 
-  bundle = true
+  bundle = true  // I set this to false to generate the unbundled Typescript sources
 
   workingDir = project.file( '.jsweet/core' )
 	tsOut = project.file( 'jsweetOut/core/ts' )
@@ -241,15 +241,12 @@ core.config {
 
     'com/vzome/core/commands/CommandExecutePythonScript.java',
 
+    // These have already been reimplemented
     'com/vzome/core/edits/ImportSimpleMeshJson.java',
     'com/vzome/core/edits/ImportColoredMeshJson.java',
-    'com/vzome/core/edits/DodecagonSymmetry.java',
-    'com/vzome/core/edits/GhostSymmetry24Cell.java',
-    'com/vzome/core/edits/Symmetry4d.java',
+
     'com/vzome/core/edits/RunZomodScript.java',
     'com/vzome/core/edits/RunPythonScript.java',
-    'com/vzome/core/edits/RealizeMetaParts.java',
-    // 'com/vzome/core/edits/ReplaceWithShape.java',
 
     // These have already been reimplemented
     'com/vzome/core/exporters/ColoredMeshJsonExporter.java',
