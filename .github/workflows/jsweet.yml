@@ -4,13 +4,6 @@ name: JSweet legacy bundle
 
 # Controls when the workflow will run
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'core/src/main/java/**'
-      - 'desktop/src/main/java/**'
-      - 'online/src/worker/java/**'
-
   workflow_dispatch:
 
 jobs:
