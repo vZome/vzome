@@ -131,8 +131,6 @@ devQuick(){
 }
 
 productionBuild(){
-  jsweet || exit $?
-
   cd online
 
   marshallResources || exit $?
