@@ -13,7 +13,7 @@ public class UUID
 
     public static UUID randomUUID()
     {
-        return new UUID( Double.toString( Math.random() ) );
+        return new UUID( Double.toString( Math.random() ) .substring( 2 ) );
     }
 
     public String toString()

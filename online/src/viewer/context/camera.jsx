@@ -1,6 +1,6 @@
 
 import { createContext, createEffect, useContext } from 'solid-js';
-import { PerspectiveCamera } from "three";
+import { PerspectiveCamera, Vector3 } from "three";
 
 import { createStore } from 'solid-js/store';
 
@@ -154,6 +154,13 @@ const CameraProvider = ( props ) =>
   }
   const trackballProps = { camera: trackballCamera, sync }; // no need (or desire) for reactivity here
 
+  const mapViewToWorld = ( [ x, y, z ] ) =>
+  {
+    const vec = new Vector3( x, y, z );
+    vec .transformDirection( trackballCamera.matrixWorldInverse );
+    return [ vec.x, vec.y, vec.z ];
+  }
+
   const setCamera = loadedCamera =>
   {
     setState( 'camera', loadedCamera );
@@ -179,7 +186,7 @@ const CameraProvider = ( props ) =>
   const providerValue = {
     name: props.name,
     perspectiveProps, trackballProps, state,
-    resetCamera, setCamera, setLighting, togglePerspective, toggleOutlines, setDistance,
+    resetCamera, setCamera, setLighting, togglePerspective, toggleOutlines, setDistance, mapViewToWorld,
   };
   
   // The perspectiveProps is used to initialize PerspectiveCamera in clients.

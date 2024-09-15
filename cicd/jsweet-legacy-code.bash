@@ -46,7 +46,6 @@ banner 'Patching up the core bundle as an ES6 module' ##########################
 
 OUTJS=$LEGACY/core-java.js
 echo 'import { java, javaemul } from "./candies/j4ts-2.1.0-SNAPSHOT/bundle.js"' > $OUTJS
-# echo 'import { javax } from "./candies/j4ts-awt-swing-0.0.2-SNAPSHOT/bundle.js"' >> $OUTJS
 
 cat 'online/jsweetOut/core/js/bundle.js' | \
   sed \
@@ -54,4 +53,10 @@ cat 'online/jsweetOut/core/js/bundle.js' | \
     -e 's/var java;//' \
     -e 's/(java || (java = {}));/(java);/' \
   >> $OUTJS
+
+
+banner 'You should regenerate the un-bundled Typescript!'
+
+echo '/* THIS FILE IS CURRENTLY IGNORED! We are using the generated core-java.js instead, for now. */' > $LEGACY/ts/core-java.ts
+cat online/jsweetOut/core/ts/bundle.ts >> $LEGACY/ts/core-java.ts
 
