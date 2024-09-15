@@ -9,7 +9,7 @@ import { saveFileAs, openFile, saveTextFileAs, saveTextFile } from "../../../vie
 import { CommandAction, Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 import { UrlDialog } from '../dialogs/webloader.jsx'
 import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
-import { useCamera } from "../../../viewer/context/camera.jsx";
+import { INITIAL_DISTANCE, useCamera } from "../../../viewer/context/camera.jsx";
 import { useImageCapture } from "../../../viewer/context/export.jsx";
 
 const queryParams = new URLSearchParams( window.location.search );
@@ -33,7 +33,7 @@ export const FileMenu = () =>
 {
   const { rootController, state, setState,
     createDesign, openDesignFile, fetchDesignUrl, importMeshFile, guard, edited } = useEditor();
-  const { state: cameraState } = useCamera();
+  const { state: cameraState, mapViewToWorld } = useCamera();
   const [ showDialog, setShowDialog ] = createSignal( false );
   const fields = () => controllerProperty( rootController(), 'fields', 'fields', true );
 
@@ -98,7 +98,11 @@ export const FileMenu = () =>
   const exportAs = ( extension, mimeType, format=extension, params={} ) => evt =>
   {
     const camera = unwrap( cameraState.camera );
+    camera .magnification = Math.log( camera.distance / INITIAL_DISTANCE );
+
     const lighting = unwrap( cameraState.lighting );
+    lighting .directionalLights .forEach( light => light .worldDirection = mapViewToWorld( light.direction ) );
+
     controllerExportAction( rootController(), format, { camera, lighting, ...params } )
       .then( text => {
         const name = (state.designName || 'untitled') .concat( "." + extension );
@@ -163,7 +167,7 @@ export const FileMenu = () =>
 
         <SubMenu label="Export 3D Rendering">
           <ExportItem label="Collada DAE" ext="dae" mime="text/plain" disabled={true} />
-          <ExportItem label="POV-Ray" ext="pov" mime="text/plain" disabled={true} />
+          <ExportItem label="POV-Ray" ext="pov" mime="text/plain" />
           <ExportItem label="vZome Shapes JSON" format="shapes" ext="shapes.json" mime="application/json" />
           <ExportItem label="VRML" ext="vrml" mime="text/plain" />
         </SubMenu>

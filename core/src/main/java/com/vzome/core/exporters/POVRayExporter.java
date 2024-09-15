@@ -23,6 +23,7 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.viewing.CameraIntf;
+import com.vzome.xml.ResourceLoader;
 
 /**
  * Renders out to POV-Ray using #declare statements to reuse geometry.
@@ -67,18 +68,8 @@ public class POVRayExporter extends DocumentExporter
         output .println( "#declare      parallel_proj = " + (mScene .isPerspective()?0:1) + ";" );
         output .println();
 
-		InputStream input = getClass() .getClassLoader()
-									.getResourceAsStream( PREAMBLE_FILE );
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		byte[] buf = new byte[1024];
-		int num;
-		try {
-			while ( ( num = input .read( buf, 0, 1024 )) > 0 )
-					out .write( buf, 0, num );
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		output .println( new String( out .toByteArray() ) );
+		String preamble = ResourceLoader.loadStringResource( PREAMBLE_FILE );
+		output .println( preamble );
 		output .println();
 
 		for ( int i = 0; i<3; i++ ) {

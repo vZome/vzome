@@ -9,7 +9,7 @@ namespace java.util {
         }
 
         public static randomUUID(): UUID {
-            return new UUID(/* toString */(''+(Math.random())));
+          return new UUID(/* toString */(''+(Math.random())).substring(2));
         }
 
         public toString(): string {

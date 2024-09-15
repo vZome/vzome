@@ -11,7 +11,7 @@ import { java, javaemul } from "./candies/j4ts-2.1.0-SNAPSHOT/bundle.js"
                 this.value = s;
             }
             static randomUUID() {
-                return new UUID(/* toString */ ('' + (Math.random())));
+                return new UUID(/* toString */ ('' + (Math.random())).substring(2));
             }
             toString() {
                 return this.value;
@@ -3952,10 +3952,6 @@ export var com;
                             this.orbits = new com.vzome.core.math.symmetry.OrbitSet(symmetry);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getZone(orbit, orientation) {
                             return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
@@ -3981,6 +3977,10 @@ export var com;
                             embedding[14] = 0.0;
                             embedding[15] = 1.0;
                             return embedding;
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
@@ -16761,10 +16761,6 @@ export var com;
                         this.setStyle(styleName);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getOrientations$() {
-                        return this.getOrientations(false);
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getZone(orbit, orientation) {
                         return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                     }
@@ -16790,6 +16786,10 @@ export var com;
                         embedding[14] = 0.0;
                         embedding[15] = 1.0;
                         return embedding;
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getOrientations$() {
+                        return this.getOrientations(false);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getOrientations(rowMajor) {
@@ -36960,21 +36960,8 @@ export var com;
                         this.output.println$();
                         this.output.println$java_lang_Object("#declare      parallel_proj = " + (this.mScene.isPerspective() ? 0 : 1) + ";");
                         this.output.println$();
-                        const input = this.constructor.getClassLoader().getResourceAsStream(POVRayExporter.PREAMBLE_FILE);
-                        const out = new java.io.ByteArrayOutputStream();
-                        const buf = (s => { let a = []; while (s-- > 0)
-                            a.push(0); return a; })(1024);
-                        let num;
-                        try {
-                            while (((num = input.read(buf, 0, 1024)) > 0)) {
-                                out.write(buf, 0, num);
-                            }
-                            ;
-                        }
-                        catch (e) {
-                            console.error(e.message, e);
-                        }
-                        this.output.println$java_lang_Object(new String(out.toByteArray()));
+                        const preamble = com.vzome.xml.ResourceLoader.loadStringResource(POVRayExporter.PREAMBLE_FILE);
+                        this.output.println$java_lang_Object(preamble);
                         this.output.println$();
                         for (let i = 0; i < 3; i++) {
                             {
@@ -48051,10 +48038,6 @@ export var com;
                             this.__parent = __parent;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getZone(orbit, orientation) {
                             return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
@@ -48080,6 +48063,10 @@ export var com;
                             embedding[14] = 0.0;
                             embedding[15] = 1.0;
                             return embedding;
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {

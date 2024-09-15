@@ -48,16 +48,8 @@ namespace com.vzome.core.exporters {
             this.output.println$();
             this.output.println$java_lang_Object("#declare      parallel_proj = " + (this.mScene.isPerspective() ? 0 : 1) + ";");
             this.output.println$();
-            const input: java.io.InputStream = (<any>this.constructor).getClassLoader().getResourceAsStream(POVRayExporter.PREAMBLE_FILE);
-            const out: java.io.ByteArrayOutputStream = new java.io.ByteArrayOutputStream();
-            const buf: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(1024);
-            let num: number;
-            try {
-                while(((num = input.read(buf, 0, 1024)) > 0)) {out.write(buf, 0, num)};
-            } catch(e) {
-                console.error(e.message, e);
-            }
-            this.output.println$java_lang_Object(<string>new String(out.toByteArray()));
+            const preamble: string = com.vzome.xml.ResourceLoader.loadStringResource(POVRayExporter.PREAMBLE_FILE);
+            this.output.println$java_lang_Object(preamble);
             this.output.println$();
             for(let i: number = 0; i < 3; i++) {{
                 const color: com.vzome.core.construction.Color = this.mLights.getDirectionalLightColor(i);
