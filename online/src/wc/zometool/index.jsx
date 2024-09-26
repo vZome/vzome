@@ -29,13 +29,15 @@ const StepControls = props =>
   const atStart = () => index() === 1;  // NOTE: scene 0 is the default scene, which we ignore
   const atEnd = () => index() === maxIndex();
 
-  createEffect( () => setMaxIndex( scenes?.length - 1 ) );
+  createEffect( () => {
+    setMaxIndex( scenes?.length - 1 ) 
+  });
 
   createEffect( () => {
     if ( props.show ) {
       requestScene( '#' + index(), { camera: false } );
     } else {
-      requestScene( '#' + maxIndex(), { camera: true } );
+      requestScene( '#' + maxIndex(), { camera: true, bom: true } );
     }
   } );
 
@@ -93,33 +95,35 @@ const StepControls = props =>
 
 const ZometoolInstructions = props =>
 {
+  const { scenes } = useViewer();
+  const [ hasScenes, setHasScenes ] = createSignal( false );
   const [ steps, setSteps ] = createSignal( false );
   const toggleSteps = () => setSteps( v => !v );
 
+  createEffect( () => {
+    setHasScenes( scenes?.length > 1 ) 
+  });
+
   return (
-    <CameraProvider>
-      <WorkerProvider>
-        <ViewerProvider config={{ url: props.url, preview: true, debug: false, showScenes: false, labels: true, source: true }}>
-          <div class='zometool-instructions'>
+    <div class='zometool-instructions'>
 
-            <Switch class="switch" checked={steps()} onChange={toggleSteps}>
-              <Switch.Label class="step_switch__label">Show Build Steps</Switch.Label>
-              <Switch.Input class="switch__input" />
-              <Switch.Control class="switch__control">
-                <Switch.Thumb class="switch__thumb" />
-              </Switch.Control>
-            </Switch>
+      <Show when={hasScenes()} fallback={<div class="step-buttons"></div>}>
+        <Switch class="switch" checked={steps()} onChange={toggleSteps} >
+          <Switch.Label class="step_switch__label">Show Build Steps</Switch.Label>
+          <Switch.Input class="switch__input" />
+          <Switch.Control class="switch__control">
+            <Switch.Thumb class="switch__thumb" />
+          </Switch.Control>
+        </Switch>
+      </Show>
 
-            <DesignViewer config={ { ...props.config, download: !steps(), allowFullViewport: true } }
-                componentRoot={props.componentRoot}
-                height="100%" width="100%" >
-            </DesignViewer>
+      <DesignViewer config={ { ...props.config, download: !steps(), allowFullViewport: true } }
+          componentRoot={props.componentRoot}
+          height="100%" width="100%" >
+      </DesignViewer>
 
-            <StepControls show={steps()} dispatch={props.dispatch} />
-          </div>
-        </ViewerProvider>
-      </WorkerProvider>
-    </CameraProvider>
+      <StepControls show={steps()} dispatch={props.dispatch} />
+    </div>
   );
 }
 
@@ -128,8 +132,14 @@ const renderComponent = ( url, container, dispatch ) =>
     const bindComponent = () =>
     {
       return (
-        <ZometoolInstructions url={url} dispatch={dispatch} >
-        </ZometoolInstructions>
+        <CameraProvider>
+          <WorkerProvider>
+            <ViewerProvider config={{ url, preview: true, debug: false, showScenes: false, labels: true, source: true }}>
+              <ZometoolInstructions dispatch={dispatch} >
+              </ZometoolInstructions>
+            </ViewerProvider>
+          </WorkerProvider>
+        </CameraProvider>
       );
     }
   
