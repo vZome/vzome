@@ -55,6 +55,13 @@ const filterScene = ( report, load ) => event =>
     event.payload.scene = { shapes, embedding, polygons };
     if ( load.camera )   event.payload.scene.camera   = camera;
     if ( load.lighting ) event.payload.scene.lighting = lighting;
+
+    if ( load.bom ) {
+      partsPromise .then( ({ colors }) => {
+        const bom = assemblePartsList( shapes, colors );
+        report( { type: 'BOM_CHANGED', payload: bom } );
+      });
+    }
   }
   report( event );
 }
@@ -119,14 +126,7 @@ const partsPromise = fetch( parts_catalog_url ) .then( response => response.text
 
 const clientEvents = report =>
 {
-  const sceneChanged = ( scene, edit='--START--' ) =>
-  {
-    report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
-    partsPromise .then( ({ colors }) => {
-      const bom = assemblePartsList( scene.shapes, colors );
-      report( { type: 'BOM_CHANGED', payload: bom } );
-    });
-  }
+  const sceneChanged = ( scene, edit='--START--' ) => report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
 
   const shapeDefined = shape => report( { type: 'SHAPE_DEFINED', payload: shape } );
 
@@ -327,7 +327,7 @@ const fileImporter = ( report, payload ) =>
     } )
 }
 
-const defaultLoad = { camera: true, lighting: true, design: true, };
+const defaultLoad = { camera: true, lighting: true, design: true, bom: false, };
 
 const urlLoader = async ( report, payload ) =>
 {
