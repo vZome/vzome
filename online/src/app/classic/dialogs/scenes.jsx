@@ -1,5 +1,5 @@
 
-import { onCleanup, onMount } from "solid-js"
+import { batch, createEffect, onCleanup, onMount } from "solid-js"
 import { unwrap } from "solid-js/store"
 
 import DialogContent from "@suid/material/DialogContent"
@@ -16,20 +16,32 @@ import { Tooltip } from '../../framework/tooltip.jsx'
 import { useViewer } from "../../../viewer/context/viewer.jsx";
 import { useEditor } from '../../framework/context/editor.jsx';
 import { SceneCanvas } from "../../../viewer/scenecanvas.jsx";
-import { CameraProvider } from "../../../viewer/index.jsx"
+import { CameraProvider, copyOfCamera } from "../../../viewer/context/camera.jsx";
 import { SceneProvider } from "../../../viewer/context/scene.jsx"
 import { useCamera } from "../../../viewer/context/camera.jsx"
 
+export const copyScenes = (scenes) => scenes .map( scene => { const { ...all } = unwrap( scene ); return { ...all }; } );
+
+export const insertScene = ( scenes, newScene, index ) =>
+{
+  const newScenes = copyScenes( scenes );
+  newScenes .splice( index, 0, newScene );
+  return newScenes;
+}
+
 const AddSceneButton = () =>
 {
-  const { rootController, controllerAction, sceneIndex, setSceneIndex } = useEditor();
+  const { sceneIndex, setSceneIndex } = useEditor();
   const { state: { camera } } = useCamera();
+  const { scenes, setScenes } = useViewer();
 
   const addScene = () =>
     {
-      const params = { after: sceneIndex(), camera: unwrap( camera ) };
-      controllerAction( rootController(), 'duplicateScene', params );
-      setSceneIndex( i => ++i ); // should really wait until the scene is added... currently causing warning for the notes field
+      const newScene = { title: '', content: '', snapshot: scenes[ sceneIndex() ] .snapshot, camera: copyOfCamera( camera ) };
+      batch( () => {
+        setScenes( scenes => insertScene( scenes, newScene, sceneIndex() + 1 ) );
+        setSceneIndex( i => ++i );
+      });
     }
   
   return (
@@ -39,15 +51,22 @@ const AddSceneButton = () =>
 
 const RemoveSceneButton = props =>
   {
-    const { rootController, controllerAction, sceneIndex, setSceneIndex } = useEditor();
-    const { scenes } = useViewer();
+    const { sceneIndex, setSceneIndex, setReload } = useEditor();
+    const { scenes, setScenes } = useViewer();
 
     const removeScene = () =>
       {
         const index = sceneIndex();
-        if ( index === scenes.length - 1 )
-          setSceneIndex( scenes.length - 2 );
-        controllerAction( rootController(), 'removeScene', { index } );
+        batch( () => {
+          setScenes( scenes => {
+            const newScenes = copyScenes( scenes );
+            newScenes .splice( index, 1 );
+            return newScenes;
+          })
+          if ( index === scenes.length )
+            setSceneIndex( scenes.length - 1 );
+          setReload( true );
+        });
       }
     
     return (
@@ -142,16 +161,22 @@ const ScenesList = () =>
   }
   onMount(   () => document .body .addEventListener(    "keydown", arrowKeyListener ) );
   onCleanup( () => document .body .removeEventListener( "keydown", arrowKeyListener ) );
+  const clickHandler = index => (evt) =>
+  {
+    batch( () => {
+      setSceneIndex( index );
+      setReload( true );
+      } );
+  }
 
   return (
     <div class='scenes-list'>
-      <For each={ scenes } >{ (scene,i) =>
-        (i() > 0) &&
-        <div class={ i()===sceneIndex()? 'scenes-entry scenes-selected' : 'scenes-entry' } style={{ position: 'relative' }}
-            onClick={ () => { setSceneIndex( i() ); setReload( true ); } }>
-          <span>{i()}</span>
+      <For each={ scenes.slice(1) } >{ (scene,i) =>
+        <div class={ (i()+1)===sceneIndex()? 'scenes-entry scenes-selected' : 'scenes-entry' } style={{ position: 'relative' }}
+            onClick={ clickHandler( i()+1 ) }>
+          <span>{ i()+1 }</span>
           <span class="scene-title">{scene.title}</span>
-          <UseCameraButton index={ i() } />
+          <UseCameraButton index={ i()+1 } />
         </div>
       }</For>
     </div>
@@ -187,7 +212,7 @@ const ScenesDialog = props =>
             <div class="scene-details">
               <div class='relative-h100'>
                 <div class='absolute-0'>
-                  <SceneProvider name={ `#${sceneIndex()}` }
+                  <SceneProvider index={ sceneIndex() }
                         config={{ preview: true, debug: false, labels: props.config?.labels, source: false }}>
                     <SceneCanvas height="100%" width="100%" />
                   </SceneProvider>

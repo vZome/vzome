@@ -31,11 +31,7 @@ const defaultConfig = {
 
 const workerAction = ( type, payload ) => ( { type, payload } );
 
-export const selectScene = ( title, load=defaultLoad ) => 
-{
-  title = encodeEntities( title );
-  return workerAction( 'SCENE_SELECTED', { title, load } );
-}
+export const selectSnapshot = ( snapshot, load=defaultLoad ) => workerAction( 'SNAPSHOT_SELECTED', { snapshot, load } );
 
 export const selectEditBefore = nodeId => workerAction( 'EDIT_SELECTED', { before: nodeId } );
 

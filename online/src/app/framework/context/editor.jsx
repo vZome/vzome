@@ -93,6 +93,12 @@ const EditorProvider = props =>
         break;
       }
 
+      case 'SNAPSHOT_CAPTURED': {
+        const snapshot = data.payload;
+        exportPromises[ 'captureSnapshot' ] .resolve( snapshot );
+        break;
+      }
+
       case 'SCENE_RENDERED': {
         // TODO: I wish I had a better before/after contract with the worker
         const { edit } = data.payload;

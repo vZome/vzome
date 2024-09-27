@@ -31,7 +31,8 @@ const StepControls = props =>
   const atEnd = () => index() === maxIndex();
 
   createEffect( () => {
-    setMaxIndex( scenes?.length - 1 ) 
+    if ( scenes?.length > 0 )
+      setMaxIndex( scenes?.length - 1 ) 
   });
 
   createEffect( () => {
