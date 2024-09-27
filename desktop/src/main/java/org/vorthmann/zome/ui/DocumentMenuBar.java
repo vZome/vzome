@@ -78,13 +78,9 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         boolean isHeptagon = "heptagon" .equals( fieldName );
 
-        boolean isRootThree = "rootThree" .equals( fieldName );
-
         boolean oldTools = controller .propertyIsTrue( "original.tools" );
 
         List<String> symmetries = Arrays .asList( controller .getCommandList( "symmetryPerspectives" ) );
-
-        boolean hasIcosahedral = symmetries .contains( "icosahedral" );
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% File menu
 
@@ -398,17 +394,33 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             this .showToolsMenuItem = null;
 
         Controller symmetryController = controller .getSubController( "symmetry" );
+
         // TODO: replace legacy commands with default tools
-        if ( hasIcosahedral ) {
-            menu.add( enableIf( isEditor, createMenuItem( "Icosahedral Symmetry", "icosasymm", symmetryController, KeyEvent.VK_I, COMMAND ) ) );
+        boolean hasTetra = false;
+        for (String symmName : symmetries) { // perspectives
+            switch (symmName) {
+
+            case "icosahedral":
+                hasTetra = true;
+                Controller icosaController = controller .getSubController( "symmetry.icosahedral" );
+                menu.add( enableIf( isEditor, createMenuItem( "Icosahedral Symmetry", "icosasymm", icosaController, KeyEvent.VK_I, COMMAND ) ) );
+                break;
+
+            case "octahedral":
+                hasTetra = true;
+                Controller octaController = controller .getSubController( "symmetry.octahedral" );
+                menu.add( enableIf( isEditor, createMenuItem( "Cubic / Octahedral Symmetry", "octasymm", octaController, KeyEvent.VK_C, COMMAND_OPTION ) ) );
+                break;
+
+            default:
+                break;
+            }
         }
-        if ( developerExtras && isRootThree ) {
-            menu.add( enableIf( isEditor, createMenuItem( "Dodecagonal Symmetry", "DodecagonSymmetry", symmetryController, KeyEvent.VK_D, COMMAND ) ) );
+        if ( hasTetra ) {
+            Controller octaController = controller .getSubController( "symmetry.octahedral" );
+            menu.add( enableIf( isEditor, createMenuItem( "Tetrahedral Symmetry", "tetrasymm", octaController, KeyEvent.VK_T, COMMAND_OPTION ) ) );
         }
-        menu.add( enableIf( isEditor, createMenuItem( "Cubic / Octahedral Symmetry", "octasymm", symmetryController, KeyEvent.VK_C, COMMAND_OPTION ) ) );
-        if ( hasIcosahedral ) {
-            menu.add( enableIf( isEditor, createMenuItem( "Tetrahedral Symmetry", "tetrasymm", symmetryController, KeyEvent.VK_T, COMMAND_OPTION ) ) );
-        }
+
         if ( oldTools ) {
             menu.add( enableIf( isEditor, createMenuItem( "Axial Symmetry", "axialsymm", symmetryController, KeyEvent.VK_R, COMMAND ) ) );
             menu.add( enableIf( isEditor, createMenuItem( "Mirror Reflection", "mirrorsymm" , symmetryController, KeyEvent.VK_M, COMMAND ) ) );

@@ -6,6 +6,7 @@ import java.util.List;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.commands.Command;
 import com.vzome.core.commands.CommandSymmetry;
+import com.vzome.core.commands.CommandTetrahedralSymmetry;
 import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.api.Shapes;
 import com.vzome.core.math.symmetry.Axis;
@@ -81,6 +82,7 @@ public abstract class AbstractSymmetryPerspective implements SymmetryPerspective
     public Command getLegacyCommand( String action )
     {
         switch ( action ) {
+        
         case "octasymm":
         {
             Symmetry octaSymm = getSymmetry();
@@ -88,12 +90,21 @@ public abstract class AbstractSymmetryPerspective implements SymmetryPerspective
                 // only make a new OctahedralSymmetry if necessary
                 octaSymm = new OctahedralSymmetry(octaSymm.getField());
             }
-            // This command will be availble to all SymmetryPerspectives even if they are not Octahedral
+            // This command will be available to all SymmetryPerspectives even if they are not Octahedral
             // TODO: This legacy command should probably eventually be removed
             // after we ensure that doing so is backward compatible. 
             return new CommandSymmetry( octaSymm );
         }
-        
+
+        case "tetrasymm":
+        {
+            Symmetry symmetry = getSymmetry();
+            int[] closure = symmetry .subgroup( Symmetry.TETRAHEDRAL );
+
+            // This command will be available to all SymmetryPerspectives even if they are not Octahedral
+            return new CommandTetrahedralSymmetry( symmetry );
+        }
+
         default:
             return null;
         }
