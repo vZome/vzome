@@ -84,3 +84,5 @@ online/yalc.lock
 online/serve/app/classic/resources/
 
 online/serve/modules/
+
+.zsh_history
