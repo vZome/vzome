@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf8">
+    <link rel="stylesheet" href="../../vzome-viewer.css">
+
+              <title>Tweening</title>
+
+    <script type="module">
+      import "/modules/vzome-viewer.js"; // registers the custom element
+    </script>
+  </head>
+  <body>
+    <article>
+      <section>
+        <div>
+          <vzome-viewer-previous label="back"    load-camera="true" >
+          </vzome-viewer-previous>
+
+          <vzome-viewer-next     label="forward" load-camera="true" >
+          </vzome-viewer-next>
+        </div>
+        <vzome-viewer indexed="true" src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2024/02/15/21-08-22-120-cell-yellowStretch-g4g15-build/120-cell-yellowStretch-g4g15-build.vZome" >
+        </vzome-viewer>
+      </section>
+    </article>
+  </body>
+</html>

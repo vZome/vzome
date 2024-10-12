@@ -1,6 +1,7 @@
 
 import { createContext, createEffect, useContext } from 'solid-js';
-import { PerspectiveCamera, Vector3 } from "three";
+import { PerspectiveCamera, Vector3, Quaternion } from "three";
+import { Group, Tween, Easing } from '@tweenjs/tween.js';
 
 import { createStore } from 'solid-js/store';
 
@@ -46,15 +47,21 @@ const toVector = vector3 =>
   const { x, y, z } = vector3;
   return [ x, y, z ];
 }
-
-export const fixedFrustum = distance =>
-  {
-    const near = distance * NEAR_FACTOR;
-    const far = distance * FAR_FACTOR;
-    const width = distance * WIDTH_FACTOR;
-    return { distance, far, near, width };
-  }
   
+export const fixedFrustum = distance =>
+{
+  const near = distance * NEAR_FACTOR;
+  const far = distance * FAR_FACTOR;
+  const width = distance * WIDTH_FACTOR;
+  return { distance, far, near, width };
+}
+
+/**
+ * Extract Three.js camera data to our canonical state representation
+ * @param {*} camera, a Three.js Camera
+ * @param {*} target, a Three.js Object with a position
+ * @returns our canonical camera state
+ */
 const extractCameraState = ( camera, target ) =>
 {
   const up = toVector( camera.up );
@@ -87,6 +94,11 @@ const cameraFieldOfViewY = ( cameraState ) => ( aspectWtoH ) =>
   return 360 * Math.atan( halfY / distance ) / Math.PI;
 }
 
+/**
+ * Inject our canonical camera state representation into a Three.js Camera
+ * @param {*} cameraState 
+ * @param {*} camera, the destination Three.js Camera
+ */
 const injectCameraState = ( cameraState, camera ) =>
 {
   const { up, lookAt } = cameraState;
@@ -149,6 +161,12 @@ const CameraProvider = ( props ) =>
     if ( !! props.context ) {
       props.context.setCamera( { up, lookDir } );
     } else {
+      // console.log( `trackball sync, distance=${extractedCamera.distance}` );
+
+      // NOTE: We get this for any camera update, not just trackball moves, so we can't kill the tweens;
+      //         ... the tween itself triggers these sync() callbacks.
+      // tweens .getAll() .map( tween => tween.stop() );
+
       setState( 'camera', extractedCamera );
     }
   }
@@ -164,6 +182,7 @@ const CameraProvider = ( props ) =>
   const setCamera = loadedCamera =>
   {
     setState( 'camera', loadedCamera );
+    // console.log( `setCamera ${loadedCamera.distance}` );
     // important: update trackballCamera synchronously, NOT as an effect.
     injectCameraState( state.camera, trackballCamera );
   }
@@ -183,10 +202,66 @@ const CameraProvider = ( props ) =>
     setState( 'lighting', defaultLighting() );
   }
 
+  const tweens = new Group();
+  const animate = () =>
+  {
+    requestAnimationFrame( animate );
+    tweens .update();
+  }
+  animate();
+    
+  const tweenCamera = ( goalCamera, duration=500 ) =>
+  {
+    tweens .getAll() .map( tween => tween.stop() );
+    tweens .removeAll();
+    
+    const { distance, lookAt: [x,y,z], up, lookDir } = goalCamera; // target values
+
+    const tweenZoom = new Tween( { distance: state.camera.distance } ); // start with current value
+    tweens .add( tweenZoom );
+    tweenZoom
+      .easing( Easing.Quadratic.InOut )
+      .to( { distance }, duration )
+      .onUpdate( ({ distance }) => setDistance( distance ) )
+      .start();
+
+    const [ cx, cy, cz ] = state.camera.lookAt;
+    const tweenPan = new Tween( { x: cx, y: cy, z: cz } ); // start with current value
+    tweens .add( tweenPan );
+    tweenPan
+      .easing( Easing.Quadratic.InOut )
+      .to( { x, y, z }, duration )
+      .onUpdate( ({ x, y, z }) => setCamera( { lookAt: toVector( { x, y, z } ) } ) )
+      .start();
+
+    // HEAVILY adapted from https://stackoverflow.com/questions/28091876/tween-camera-position-while-rotation-with-slerp-three-js
+
+    const sourceObject3D = new PerspectiveCamera(); // could be any Object3D
+    injectCameraState( state.camera, sourceObject3D );
+
+    const goalObject3D = new PerspectiveCamera(); // could be any Object3D
+    injectCameraState( goalCamera, goalObject3D );
+    const goalQuaternion = new Quaternion() .copy( goalObject3D.quaternion ); // goal quaternion
+
+    const tweenRotate = new Tween( { t: 0 } );
+    tweens .add( tweenRotate );
+    tweenRotate
+      .easing( Easing.Quadratic.InOut )
+      .to( { t: 1.0 }, duration )
+      .onUpdate( ({ t }) => {
+        const sourceQuaternion = new Quaternion() .copy( sourceObject3D.quaternion ); // src quaternion
+        sourceQuaternion .slerp( goalQuaternion, t );
+        const up = toVector( new Vector3(0,1,0) .applyQuaternion( sourceQuaternion ) );
+        const lookDir = toVector( new Vector3(0,0,-1) .applyQuaternion( sourceQuaternion ) );
+        setCamera( { up, lookDir } );
+      })
+      .start();
+  }
+
   const providerValue = {
     name: props.name,
     perspectiveProps, trackballProps, state,
-    resetCamera, setCamera, setLighting, togglePerspective, toggleOutlines, setDistance, mapViewToWorld,
+    resetCamera, setCamera, tweenCamera, setLighting, togglePerspective, toggleOutlines, setDistance, mapViewToWorld,
   };
   
   // The perspectiveProps is used to initialize PerspectiveCamera in clients.
@@ -202,9 +277,9 @@ const CameraProvider = ( props ) =>
 const useCamera = () => { return useContext( CameraContext ); };
 
 const copyOfCamera = camera =>
-  {
-    const { up, lookAt, lookDir, ...rest } = camera; // don't want copy-by-reference for the arrays
-    return { ...rest, up: [...up], lookAt: [...lookAt], lookDir: [...lookDir] };
-  }
+{
+  const { up, lookAt, lookDir, ...rest } = camera; // don't want copy-by-reference for the arrays
+  return { ...rest, up: [...up], lookAt: [...lookAt], lookDir: [...lookDir] };
+}
 
 export { defaultCamera, useCamera, CameraProvider, copyOfCamera };
