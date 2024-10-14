@@ -131,7 +131,7 @@ const DesignViewer = ( props ) =>
 const UrlViewer = (props) =>
 {
   return (
-    <CameraProvider>
+    <CameraProvider cameraStore={props.cameraStore} >
       <WorkerProvider workerClient={props.workerClient}>
         <ViewerProvider config={{ url: props.url, preview: true, debug: false, showScenes: props.showScenes, labels: props.config?.labels, source: props.config?.download }}>
           <DesignViewer config={ { ...props.config, allowFullViewport: true } }
@@ -145,7 +145,7 @@ const UrlViewer = (props) =>
   );
 }
 
-const renderViewer = ( workerClient, container, config ) =>
+const renderViewer = ( workerClient, container, config, cameraStore ) =>
 {
   // if ( url === null || url === "" ) {
   //   ReactDOM.unmountComponentAtNode( container );
@@ -170,7 +170,7 @@ const renderViewer = ( workerClient, container, config ) =>
   const bindComponent = () =>
   {
     return (
-      <UrlViewer workerClient={workerClient} config={config} componentRoot={container} >
+      <UrlViewer workerClient={workerClient} config={config} componentRoot={container} cameraStore={cameraStore} >
         {/* Make a slot for the light DOM, somehow! */}
       </UrlViewer>
     );

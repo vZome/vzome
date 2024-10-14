@@ -14,7 +14,7 @@ const SceneProvider = ( props ) =>
   const [ scene, setScene ] = createStore( {} );
   const [ labels, setLabels ] = createSignal( showLabels );
   const { postRequest } = useWorkerClient();
-  const { state, setCamera, setLighting } = useCamera();
+  const { state, tweenCamera, setLighting } = useCamera();
 
   const addShape = ( shape ) =>
   {
@@ -47,7 +47,7 @@ const SceneProvider = ( props ) =>
     postRequest( selectScene( props.name ) )
       .then( ( { payload: { scene } } ) => {
         if ( scene.camera ) {
-          setCamera( scene.camera );
+          tweenCamera( scene.camera );
         }
         if ( scene.lighting ) {
           const { backgroundColor } = scene.lighting;

@@ -18,7 +18,7 @@ const ViewerProvider = ( props ) =>
   const [ waiting, setWaiting ] = createSignal( false );
   const [ labels, setLabels ] = createSignal( showLabels );
   const { postMessage, subscribeFor } = useWorkerClient();
-  const { state, setCamera, setLighting } = useCamera();
+  const { state, tweenCamera, setLighting } = useCamera();
 
   const requestDesign = ( url, config ) =>
   {
@@ -69,7 +69,7 @@ const ViewerProvider = ( props ) =>
   subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
     setWaiting( false );
     if ( scene.camera ) {
-      setCamera( scene.camera );
+      tweenCamera( scene.camera );
     }
     if ( scene.lighting ) {
       const { backgroundColor } = scene.lighting;
