@@ -15,6 +15,7 @@ import { urlViewerCSS } from "../../viewer/urlviewer.css.js";
 import { ZometoolPartsElement } from './parts-list.jsx';
 import { ZometoolProductsElement } from './products-list.jsx';
 import { normalizeBOM } from './bom.js';
+import { createDefaultCameraStore } from '../../viewer/context/camera.jsx';
 
 const debug = false;
 
@@ -131,8 +132,12 @@ const renderComponent = ( url, container, dispatch ) =>
   {
     const bindComponent = () =>
     {
+      const cameraStore = createDefaultCameraStore();
+      const [ state, setState ] = cameraStore;
+      setState( 'tweening', { duration: 500 } );
+  
       return (
-        <CameraProvider tweening={{ duration: 500 }}>
+        <CameraProvider cameraStore={cameraStore}>
           <WorkerProvider>
             <ViewerProvider config={{ url, preview: true, debug: false, showScenes: false, labels: true, source: true }}>
               <ZometoolInstructions dispatch={dispatch} >
