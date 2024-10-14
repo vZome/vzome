@@ -40,6 +40,9 @@ const defaultScene = () => ({
   camera: defaultCamera(),
   lighting: defaultLighting(),
   outlines: false,
+  tweening: {
+    duration: 0,
+  }
 });
 
 const toVector = vector3 =>
@@ -210,12 +213,19 @@ const CameraProvider = ( props ) =>
   }
   animate();
     
-  const tweenCamera = ( goalCamera, duration=500 ) =>
+  const tweenCamera = ( goalCamera ) =>
   {
+    const { duration=0 } = state.tweening;
+
+    if ( duration <= 0 ) {
+      setCamera( goalCamera );
+      return;
+    }
+
     tweens .getAll() .map( tween => tween.stop() );
     tweens .removeAll();
     
-    const { distance, lookAt: [x,y,z], up, lookDir } = goalCamera; // target values
+    const { distance, lookAt: [x,y,z] } = goalCamera; // target values
 
     const tweenZoom = new Tween( { distance: state.camera.distance } ); // start with current value
     tweens .add( tweenZoom );

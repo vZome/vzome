@@ -35,7 +35,7 @@ const StepControls = props =>
 
   createEffect( () => {
     if ( props.show ) {
-      requestScene( '#' + index(), { camera: false } );
+      requestScene( '#' + index(), { camera: true } );
     } else {
       requestScene( '#' + maxIndex(), { camera: true, bom: true } );
     }
@@ -132,7 +132,7 @@ const renderComponent = ( url, container, dispatch ) =>
     const bindComponent = () =>
     {
       return (
-        <CameraProvider>
+        <CameraProvider tweening={{ duration: 500 }}>
           <WorkerProvider>
             <ViewerProvider config={{ url, preview: true, debug: false, showScenes: false, labels: true, source: true }}>
               <ZometoolInstructions dispatch={dispatch} >

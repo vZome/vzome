@@ -8,11 +8,26 @@
 
     <script type="module">
       import "/modules/vzome-viewer.js"; // registers the custom element
+
+      const viewer = document .querySelector( 'vzome-viewer' );
+      const select = document .getElementById( 'tweening' );
+      select .addEventListener( "input", event => {
+        console.log( `tweening ${event.target.value}` );
+        viewer .setAttribute( 'tween-duration', event.target.value );
+        viewer .update();
+      } );
     </script>
   </head>
   <body>
     <article>
       <section>
+        <select name="Tweening" id="tweening">
+          <option value="0">None</option>
+          <option value="200">200</option>
+          <option value="500">500</option>
+          <option value="1000">1000</option>
+          <option value="2000">2000</option>
+        </select>
         <div>
           <vzome-viewer-previous label="back"    load-camera="true" >
           </vzome-viewer-previous>
@@ -20,7 +35,8 @@
           <vzome-viewer-next     label="forward" load-camera="true" >
           </vzome-viewer-next>
         </div>
-        <vzome-viewer indexed="true" src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2024/02/15/21-08-22-120-cell-yellowStretch-g4g15-build/120-cell-yellowStretch-g4g15-build.vZome" >
+        <vzome-viewer indexed="true" tween-duration="0"
+          src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2024/02/15/21-08-22-120-cell-yellowStretch-g4g15-build/120-cell-yellowStretch-g4g15-build.vZome" >
         </vzome-viewer>
       </section>
     </article>

@@ -47,9 +47,7 @@ const SceneProvider = ( props ) =>
     postRequest( selectScene( props.name ) )
       .then( ( { payload: { scene } } ) => {
         if ( scene.camera ) {
-          console.group( 'scene name changed... tweening!' );
           tweenCamera( scene.camera );
-          console.groupEnd();
         }
         if ( scene.lighting ) {
           const { backgroundColor } = scene.lighting;

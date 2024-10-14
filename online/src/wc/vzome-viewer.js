@@ -4,6 +4,7 @@ import { vZomeViewerCSS } from "./vzome-viewer.css";
 import { createWorker } from '../viewer/context/worker.jsx';
 import { fetchDesign, selectScene, decodeEntities } from "../viewer/util/actions.js";
 import { VZomeViewerFirstButton, VZomeViewerLastButton, VZomeViewerNextButton, VZomeViewerPrevButton } from "./index-buttons.js";
+import { createDefaultCameraStore } from "../viewer/context/camera.jsx";
 
 const debug = false;
 class VZomeViewer extends HTMLElement
@@ -23,6 +24,7 @@ class VZomeViewer extends HTMLElement
   #sceneIndices;
   #sceneTitles;
   #sceneIndex;
+  #cameraStore;
 
   constructor()
   {
@@ -49,6 +51,8 @@ class VZomeViewer extends HTMLElement
         this.#sceneTitles = this.#sceneTitles .slice( 1 );
       this .dispatchEvent( new CustomEvent( 'vzome-scenes-discovered', { detail: this.#sceneTitles } ) );
     } );
+
+    this.#cameraStore = createDefaultCameraStore();
 
     this.#config = {
       preview:         true,
@@ -163,7 +167,7 @@ class VZomeViewer extends HTMLElement
     import( '../viewer/index.jsx' )
       .then( module => {
         debug && console.log( 'dynamic module loaded' );
-        module.renderViewer( this.#workerclient, this.#container, this.#config );
+        module.renderViewer( this.#workerclient, this.#container, this.#config, this.#cameraStore );
         this.#moduleLoaded = true;
         
         // We used to do this in the constructor, after worker creation, for better responsiveness.
@@ -179,7 +183,7 @@ class VZomeViewer extends HTMLElement
 
   static get observedAttributes()
   {
-    return [ "src", "show-scenes", "scene", "load-camera", "reactive", "labels", "show-perspective", "indexed", "download" ];
+    return [ "src", "show-scenes", "scene", "load-camera", "reactive", "labels", "show-perspective", "tween-duration", "indexed", "download" ];
   }
 
   // This callback can happen *before* connectedCallback()!
@@ -232,6 +236,12 @@ class VZomeViewer extends HTMLElement
       this.#config = { ...this.#config, showPerspective };
       break;
   
+    case "tween-duration":
+      const duration = _newValue;
+      const [ state, setState ] = this.#cameraStore;
+      setState( 'tweening', 'duration', duration );
+    break;
+    
     case "reactive":
       if ( this.#indexed )
         break;
