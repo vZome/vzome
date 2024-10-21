@@ -41,7 +41,7 @@ const defaultScene = () => ({
   lighting: defaultLighting(),
   outlines: false,
   tweening: {
-    duration: 0,
+    duration: 500,
   }
 });
 
@@ -232,8 +232,7 @@ const CameraProvider = ( props ) =>
     tweenZoom
       .easing( Easing.Quadratic.InOut )
       .to( { distance }, duration )
-      .onUpdate( ({ distance }) => setDistance( distance ) )
-      .start();
+      .onUpdate( ({ distance }) => setDistance( distance ) );
 
     const [ cx, cy, cz ] = state.camera.lookAt;
     const tweenPan = new Tween( { x: cx, y: cy, z: cz } ); // start with current value
@@ -241,8 +240,7 @@ const CameraProvider = ( props ) =>
     tweenPan
       .easing( Easing.Quadratic.InOut )
       .to( { x, y, z }, duration )
-      .onUpdate( ({ x, y, z }) => setCamera( { lookAt: toVector( { x, y, z } ) } ) )
-      .start();
+      .onUpdate( ({ x, y, z }) => setCamera( { lookAt: toVector( { x, y, z } ) } ) );
 
     // HEAVILY adapted from https://stackoverflow.com/questions/28091876/tween-camera-position-while-rotation-with-slerp-three-js
 
@@ -264,8 +262,11 @@ const CameraProvider = ( props ) =>
         const up = toVector( new Vector3(0,1,0) .applyQuaternion( sourceQuaternion ) );
         const lookDir = toVector( new Vector3(0,0,-1) .applyQuaternion( sourceQuaternion ) );
         setCamera( { up, lookDir } );
-      })
-      .start();
+      });
+    
+    // We don't want to do this sync, since the tween duration may expire before subsequent
+    //  code in the caller finishes.
+    requestAnimationFrame( () => tweens .getAll() .map( tween => tween.start() ) );
   }
 
   const providerValue = {
