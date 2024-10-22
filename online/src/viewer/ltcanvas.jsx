@@ -33,12 +33,13 @@ const Lighting = () =>
 
 const LightedCameraControls = (props) =>
 {
-  const { perspectiveProps, trackballProps, name, state } = useCamera();
+  const { perspectiveProps, trackballProps, name, state, cancelTweens } = useCamera();
   const [ tool ] = useInteractionTool();
   const enableTrackball = () => ( tool === undefined ) || tool().allowTrackball;
   props = mergeProps( { rotateSpeed: 4.5, zoomSpeed: 3, panSpeed: 1 }, props );
   const halfWidth = () => perspectiveProps.width / 2;
 
+  const onDragStart = () => cancelTweens();
   const onDragEnd = () => ( tool !== undefined ) && tool() .onTrackballEnd();
 
   return (
@@ -57,7 +58,8 @@ const LightedCameraControls = (props) =>
         </PerspectiveCamera>
       </Show>
       <TrackballControls enabled={enableTrackball()} rotationOnly={props.rotationOnly} name={name}
-        camera={trackballProps.camera} target={perspectiveProps.target} sync={trackballProps.sync} trackballEnd={onDragEnd}
+        camera={trackballProps.camera} target={perspectiveProps.target} sync={trackballProps.sync}
+        trackballStart={onDragStart} trackballEnd={onDragEnd}
         rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} />
     </>
   );

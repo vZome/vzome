@@ -53,6 +53,10 @@ export const TrackballControls = (props) =>
 
     controls.connect( gl().domElement );
 
+    const onStart = () => {
+      props.trackballStart && props.trackballStart( controls .target, props.name );
+    }
+    controls .addEventListener( "start", onStart );
     const onChange = () => props.sync( controls .target, props.name );
     controls .addEventListener( "change", onChange );
     const onEnd = () => {

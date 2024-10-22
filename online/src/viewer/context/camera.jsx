@@ -127,6 +127,13 @@ const CameraProvider = ( props ) =>
     setState( 'outlines', props.outlines );
   }
 
+  const setCamera = loadedCamera =>
+  {
+    setState( 'camera', loadedCamera );
+    // important: update trackballCamera synchronously, NOT as an effect.
+    injectCameraState( state.camera, trackballCamera );
+  }
+  
   if ( !!props.context ) {
     // Sync background from the context
     createEffect( () => {
@@ -136,8 +143,7 @@ const CameraProvider = ( props ) =>
     // Sync rotation from the context
     createEffect( () => {
       const { up, lookDir } = props.context.state.camera;
-      setState( 'camera', { up, lookDir } );
-      injectCameraState( state.camera, trackballCamera );
+      setCamera( { up, lookDir } );
     });
   }
 
@@ -160,6 +166,7 @@ const CameraProvider = ( props ) =>
     // This gets hooked up to TrackballControls changes, and updates the main camera state
     //   from the captive trackballCamera in response.
     const extractedCamera = extractCameraState( trackballCamera, target );
+    // console.log( `trackball sync ${name}, distance=${extractedCamera.distance}` );
     const { up, lookDir } = extractedCamera;
     if ( !! props.context ) {
       props.context.setCamera( { up, lookDir } );
@@ -180,14 +187,6 @@ const CameraProvider = ( props ) =>
     const vec = new Vector3( x, y, z );
     vec .transformDirection( trackballCamera.matrixWorldInverse );
     return [ vec.x, vec.y, vec.z ];
-  }
-
-  const setCamera = loadedCamera =>
-  {
-    setState( 'camera', loadedCamera );
-    // console.log( `setCamera ${loadedCamera.distance}` );
-    // important: update trackballCamera synchronously, NOT as an effect.
-    injectCameraState( state.camera, trackballCamera );
   }
 
   const setDistance = distance =>
@@ -213,6 +212,12 @@ const CameraProvider = ( props ) =>
   }
   animate();
     
+  const cancelTweens = () =>
+  {
+    tweens .getAll() .map( tween => tween.stop() );
+    tweens .removeAll();
+  }
+  
   const tweenCamera = ( goalCamera ) =>
   {
     const { duration=0 } = state.tweening;
@@ -222,8 +227,7 @@ const CameraProvider = ( props ) =>
       return;
     }
 
-    tweens .getAll() .map( tween => tween.stop() );
-    tweens .removeAll();
+    cancelTweens();
     
     const { distance, lookAt: [x,y,z] } = goalCamera; // target values
 
@@ -268,11 +272,11 @@ const CameraProvider = ( props ) =>
     //  code in the caller finishes.
     requestAnimationFrame( () => tweens .getAll() .map( tween => tween.start() ) );
   }
-
+  
   const providerValue = {
     name: props.name,
     perspectiveProps, trackballProps, state,
-    resetCamera, setCamera, tweenCamera, setLighting, togglePerspective, toggleOutlines, setDistance, mapViewToWorld,
+    resetCamera, setCamera, tweenCamera, cancelTweens, setLighting, togglePerspective, toggleOutlines, setDistance, mapViewToWorld,
   };
   
   // The perspectiveProps is used to initialize PerspectiveCamera in clients.
