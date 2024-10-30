@@ -19,15 +19,15 @@ import { SelectionTool } from '../tools/selection.jsx';
 import { StrutDragTool } from '../tools/strutdrag.jsx';
 import { ContextualMenuArea } from '../../framework/menus.jsx';
 import { ContextualMenu } from '../menus/contextmenu.jsx';
+import { UnifiedTool } from '../tools/unified.jsx';
 
 export const SceneEditor = ( props ) =>
 {
   const { setState } = useEditor();
   const { setLighting } = useCamera();
   const { scene } = useViewer();
-  const [ strutting, setStrutting ] = createSignal( true );
   const [ viewing, setViewing ] = createSignal( false );
-  const toolValue = () => viewing()? 'camera' : strutting()? 'strutDrag' : 'select';
+  const toolValue = () => viewing()? 'camera' : 'select';
 
   document .addEventListener( "keydown", evt => {
     if ( evt.repeat )
@@ -51,7 +51,6 @@ export const SceneEditor = ( props ) =>
       setViewing( true );
     } else {
       setViewing( false );
-      setStrutting( newValue === 'strutDrag' );
     }
   }
 
@@ -103,18 +102,15 @@ export const SceneEditor = ( props ) =>
       <input ref={colorPicker} type="color" name="color-picker" class='hidden-color-input' />
       <LabelDialog open={!!labeling()} close={hideLabelDialog} id={labeling()} label={label()} />
       <InteractionToolProvider>
-        <ContextualMenuArea menu={<ContextualMenu showDialog={showDialog} />} disabled={viewing() || strutting()} onOpenChange={resetPicked}>
+        <ContextualMenuArea menu={<ContextualMenu showDialog={showDialog} />} disabled={viewing()} onOpenChange={resetPicked}>
           <SceneCanvas height="100%" width="100%" scene={scene} rotationOnly={false} >
             {/* The group is only necessary because of https://github.com/solidjs-community/solid-three/issues/11 */}
             <group>
               <Switch fallback={
-                  <SelectionTool/>
+                  <UnifiedTool/>
                 }>
                 <Match when={ viewing() }>
                   <SnapCameraTool/>
-                </Match>
-                <Match when={ strutting() }>
-                  <StrutDragTool/>
                 </Match>
               </Switch>
             </group>
@@ -134,11 +130,6 @@ export const SceneEditor = ( props ) =>
           <SvgIcon fontSize="large" width="2452" height="2452" viewBox="-370 -180 1782 1972">
             <path fill="currentColor" d="M1133 1043q31 30 14 69q-17 40-59 40H706l201 476q10 25 0 49t-34 35l-177 75q-25 10-49 0t-35-34l-191-452l-312 312q-19 19-45 19q-12 0-24-5q-40-17-40-59V64Q0 22 40 5q12-5 24-5q27 0 45 19z"/>
           </SvgIcon>        
-        </ToggleButton>
-        <ToggleButton value="strutDrag" aria-label="strut drag">
-          <SvgIcon fontSize="large" width="24" height="24" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M4 9h5V4h6v5h5v6h-5v5H9v-5H4V9m7 4v5h2v-5h5v-2h-5V6h-2v5H6v2h5Z"/>
-          </SvgIcon>
         </ToggleButton>
       </ToggleButtonGroup>
     </div>

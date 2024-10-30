@@ -26,6 +26,8 @@ export const TrackballControls = (props) =>
 
   useFrame(() => {
     let controls = trackballControls();
+    // If we want to coordinate with Interaction tools, we should avoid this update
+    //  when doing a drag.
     if ( controls.enabled ) {
       controls.update();
     }

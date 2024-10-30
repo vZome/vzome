@@ -32,9 +32,9 @@ const CellSelectorTool = props =>
       });
     },
 
-    onDragStart: ( id, position, type, starting, evt ) => {},
-    onDrag: evt => {},
-    onDragEnd: evt => {},
+    onDragStart: () => {},
+    onDrag: () => {},
+    onDragEnd: () => {},
     onContextMenu: ( id, position, type, selected ) => {},
     onTrackballEnd: () => {},
   };
