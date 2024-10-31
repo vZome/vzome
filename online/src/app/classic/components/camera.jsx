@@ -84,7 +84,7 @@ export const CameraControls = (props) =>
     <InteractionToolProvider>
       {/* provider and CameraTool just to get the desired cursor */}
       <SnapCameraTool/>
-      <div id='camera-controls' style={{ display: 'grid', 'grid-template-rows': 'min-content min-content' }}>
+      <div id='camera-controls'>
         <Stack spacing={1} direction="row" style={{ padding: '8px' }}>
           <FormControlLabel label="perspective" style={{ 'margin-right': '0' }}
             control={
@@ -100,8 +100,8 @@ export const CameraControls = (props) =>
           }/>
         </Stack>
 
-        <div id="ball-and-slider" style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
-          <div id="camera-trackball" style={{ border: '1px solid' }}>
+        <div id="ball-and-slider">
+          <div id="camera-trackball">
             <CameraProvider name='trackball' outlines={false} context={context}>
               <SceneCanvas scene={scene} height="200px" width="240px" rotationOnly={true} rotateSpeed={0.7}/>
             </CameraProvider>

@@ -1,5 +1,8 @@
 
+import { createSignal } from 'solid-js';
+
 import { subController, useEditor } from '../framework/context/editor.jsx';
+import { Tab, Tabs } from '../framework/tabs.jsx';
 
 import { CameraControls } from './components/camera.jsx';
 import { StrutBuildPanel } from './components/strutbuilder.jsx';
@@ -7,6 +10,7 @@ import { BookmarkBar, ToolBar, ToolFactoryBar } from './components/toolbars.jsx'
 import { SceneEditor } from './components/editor.jsx';
 import { ErrorAlert } from "./components/alert.jsx";
 import { SceneControls } from './components/scenecontrols.jsx';
+import { MeasurePanel } from './components/measure.jsx';
 
 export const ClassicEditor = () =>
 {
@@ -16,6 +20,9 @@ export const ClassicEditor = () =>
   const bookmarkController = () => subController( rootController(), 'bookmark' );
   const strutBuilder       = () => subController( rootController(), 'strutBuilder' );
   const toolsController    = () => subController( strutBuilder(), 'tools' );
+
+  const [ tab, setTab ] = createSignal( "Build" );
+  const changeTab = (event, newValue) => setTab( newValue );
 
   let alertRoot;
   return (
@@ -37,9 +44,19 @@ export const ClassicEditor = () =>
 
         <div id='editor-drawer' class='grid-rows-min-1 editor-drawer'>
           <CameraControls/>
-          <div id="build-parts-measure" style={{ height: '100%' }}>
-            <StrutBuildPanel/>
-          </div>
+          <Tabs values={ [ 'Build', 'Parts', 'Measure'] } value={tab()} onChange={changeTab}>
+            <Tab value='Build'>
+              <div id="build-parts-measure" style={{ height: '100%' }}>
+                <StrutBuildPanel/>
+              </div>
+            </Tab>
+            <Tab value='Parts'>
+
+            </Tab>
+            <Tab value='Measure'>
+              <MeasurePanel/>
+            </Tab>
+          </Tabs>
         </div>
 
       </div>
