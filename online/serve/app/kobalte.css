@@ -26,7 +26,7 @@
 }
 .tabs__indicator[data-orientation="horizontal"] {
   bottom: -1px;
-  height: 2px;
+  height: 3px;
 }
 .tabs__indicator[data-orientation="vertical"] {
   right: -1px;
@@ -37,9 +37,8 @@
   padding: 8px 16px;
   outline: none;
   border: none;
-  font-size: large;
+  font-size: medium;
   text-transform: capitalize;
-  color: mediumblue;
 }
 .tabs__trigger:hover {
   background-color: hsl(0 0% 98%);

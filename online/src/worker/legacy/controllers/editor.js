@@ -60,6 +60,9 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
     const quaternionController = new com.vzome.desktop.controller.VectorController( legacyField .basisVector( 4, com.vzome.core.algebra.AlgebraicVector.W4 ) );
     this .addSubController( "quaternion", quaternionController );
 
+    const measureController = new com.vzome.desktop.controller.MeasureController( editor, renderedModel );
+    this .addSubController( "measure", measureController );
+
     const strutBuilder = new com.vzome.desktop.controller.StrutBuilderController( editContext, legacyField )
       .withGraphicalViews( true )   // TODO use preset
       .withShowStrutScales( true ); // TODO use preset

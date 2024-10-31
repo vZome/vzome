@@ -36,7 +36,6 @@ const UnifiedTool = props =>
     },
 
     onClick: ( id, position, type, selected ) => {
-      console.log( 'UnifiedTool onClick' );
       controllerAction( pickingController(), 'SelectManifestation', { id } )
     },
     
@@ -48,7 +47,6 @@ const UnifiedTool = props =>
     onDragStart: ( evt, id, position, type, selected ) => {
       if ( type !== 'ball' )
         return;
-      console.log( 'UnifiedTool onDragStart' );
       setPosition( position );
       const { x, y, z } = new Vector3() .copy( eye() ) .sub( new Vector3( ...position ) ) .normalize();
       setLine( [ x, y, z ] );
@@ -57,7 +55,6 @@ const UnifiedTool = props =>
     },
     onDrag: () => {},
     onDragEnd: () => {
-      console.log( 'UnifiedTool onDragEnd' );
       if ( operating() ) {
         setOperating( null );
         endPreviewStrut();

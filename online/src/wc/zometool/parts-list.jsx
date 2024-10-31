@@ -1,13 +1,11 @@
 import { render } from "solid-js/web";
-import {
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from "@suid/material";
+import TableContainer from "@suid/material/TableContainer";
+import Table          from "@suid/material/Table";
+import TableHead      from "@suid/material/TableHead";
+import TableRow       from "@suid/material/TableRow";
+import TableCell      from "@suid/material/TableCell";
+import TableBody      from "@suid/material/TableBody";
+import Paper          from "@suid/material/Paper";
 
 import { instructionsCSS } from "./zometool.css.js";
 
