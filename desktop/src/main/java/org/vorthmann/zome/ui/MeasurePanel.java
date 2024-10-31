@@ -118,9 +118,9 @@ public class MeasurePanel extends JPanel
             	measures = controller .getCommandList( "measures" );
             	values = new String[ measures.length ];
             	for ( int i = 0; i < measures.length; i++ ) {
-					String measure = measures[i];
-					values[ i ] = controller .getProperty( measure );
-				}
+                String measure = measures[i];
+                values[ i ] = controller .getProperty( measure );
+              }
             	fireTableDataChanged();
             }
         }
