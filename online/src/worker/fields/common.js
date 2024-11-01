@@ -174,7 +174,7 @@ const origin3 = dimensions =>
   return result
 }
 
-const Format = { DEFAULT: 0, EXPRESSION: 1, ZOMIC: 2, VEF: 3, MATHML: 4 }
+const Format = { DEFAULT: 0, EXPRESSION: 1, ZOMIC: 2, VEF: 3, MATHML: 4, MATH: 5 }
 
 function bigRationalToString( num, denom )
 {
@@ -222,6 +222,24 @@ const toString2 = getIrrational => ( trailingDivisor, format ) =>
           return `<mrow>${bigRationalToMathML( a0, d )}<mo>+</mo>${bigRationalToMathML( a1, d )}<mi>${irrat}</mi></mrow>`;
       }
 
+    case Format.MATH:
+      if ( a0 === 0n ) {
+        if ( a1 === 0n )
+          return "0";
+        else if ( a1 === 1n && d === 1n )
+          return irrat;
+        else
+          return bigRationalToString( a1, d ) + irrat;
+      }
+      else {
+        if ( a1 === 0n )
+          return bigRationalToString( a0, d );
+        else if ( a1 === 1n && d === 1n )
+          return bigRationalToString( a0, d ) + "+" + irrat;
+        else
+          return bigRationalToString( a0, d ) + "+" + bigRationalToString( a1, d ) + irrat;
+      }
+  
     default:
       if ( a0 === 0n ) {
         if ( a1 === 0n )

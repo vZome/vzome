@@ -19,7 +19,7 @@ export const MeasurePanel = () =>
   const cellStyle = { padding: '6px 0px', border: '0px' };
   const headerStyle = { ...cellStyle, borderBlockEnd: '1px solid darkgray', fontWeight: 'bold' };
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} sx={{ 'padding-inline': '8px' }}>
       <Table aria-label="measurements table" size="small">
         <TableHead>
           <TableRow>

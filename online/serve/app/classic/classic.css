@@ -734,3 +734,13 @@ button:disabled > .toolbar-image {
     transform: scale(0.96);
   }
 }
+
+.parts-row {
+  margin: 16px 8px 8px 12px;
+  font-size: smaller;
+  font-weight: bold;
+}
+
+.parts-count {
+  font-weight: normal;
+}

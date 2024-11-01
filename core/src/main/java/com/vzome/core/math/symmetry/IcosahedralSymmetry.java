@@ -26,7 +26,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
     public IcosahedralSymmetry( AlgebraicField field )
     {
         super( 60, field, "blue", null );
-        
+
         for ( int i = 0; i < this.INCIDENCES.length; i++ ) {
             this .INCIDENCES[ i ][ 0 ] = getPermutation( i ) .mapIndex( 30 );
             this .INCIDENCES[ i ][ 1 ] = getPermutation( i ) .mapIndex( 45 );
@@ -48,10 +48,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
         tetrahedralSubgroup[ 4 ] = closure( new int[]{ 55, 14 } );
 
         Direction blueOrbit = getDirection( "blue" );
-        Direction yellowOrbit = createZoneOrbit( "yellow",   0, 27, field .createVector( new int[][]{ { 1,1, 1,1}, {0,1, 0,1}, {-1,1, 0,1} } ), true, false, mField .createPower( -1 ) );
-        yellowOrbit .setScaleNames( new String[]{ "y0", "y1", "y2", "y3" } );
-        yellowOrbit .iterator(); // this forces full initialization of the orbit
-        
+        Direction yellowOrbit = getDirection( "yellow" );
         for ( int i = 0; i < 60; i++ ) {
             Axis blueZone = blueOrbit .getAxis( Symmetry .PLUS, i );
             Axis yellowZone = yellowOrbit .getAxis( Symmetry .PLUS, i );
@@ -83,12 +80,7 @@ public class IcosahedralSymmetry extends AbstractSymmetry
             	greenTetrahedral[ mappedAxis ] = j;
             }
         }
-        
-        Direction redOrbit = createZoneOrbit( "red",      0, 3,           mField .createVector( new int[][]{ {0,1, 1,1}, {1,1, 0,1}, {0,1, 0,1} } ), true );
-        redOrbit .setScaleNames( new String[]{ "r0", "r1", "r2", "r3" } );
-        this .preferredAxis = redOrbit .getAxis( Symmetry.PLUS, 1 );
-
-    }
+}
     
     @Override
     public int[] getIncidentOrientations( int orientation )
@@ -216,6 +208,13 @@ public class IcosahedralSymmetry extends AbstractSymmetry
     @Override
     protected void createOtherOrbits()
     {
+        Direction yellowOrbit = createZoneOrbit( "yellow",   0, 27, mField .createVector( new int[][]{ { 1,1, 1,1}, {0,1, 0,1}, {-1,1, 0,1} } ), true, false, mField .createPower( -1 ) );
+        yellowOrbit .setScaleNames( new String[]{ "y0", "y1", "y2", "y3" } );
+        yellowOrbit .iterator(); // this forces full initialization of the orbit
+        Direction redOrbit = createZoneOrbit( "red", 0, 3, mField .createVector( new int[][]{ {0,1, 1,1}, {1,1, 0,1}, {0,1, 0,1} } ), true );
+        redOrbit .setScaleNames( new String[]{ "r0", "r1", "r2", "r3" } );
+        this .preferredAxis = redOrbit .getAxis( Symmetry.PLUS, 1 );
+
         // Here, {a,b,c,d} results in an AlgebraicNumber = a/b + 𝜑 * c/d .
         //  Since b=d=1 for everything here, that's a+c𝜑.
 

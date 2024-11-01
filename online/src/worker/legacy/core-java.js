@@ -4004,6 +4004,10 @@ export var com;
                             return embedding;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getZone(orbit, orientation) {
                             return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
@@ -4060,10 +4064,6 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
                         }
                         /**
                          *
@@ -16838,6 +16838,10 @@ export var com;
                         return embedding;
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getOrientations$() {
+                        return this.getOrientations(false);
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getZone(orbit, orientation) {
                         return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                     }
@@ -16915,10 +16919,6 @@ export var com;
                         }
                         else
                             throw new Error('invalid overload');
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getOrientations$() {
-                        return this.getOrientations(false);
                     }
                     static logger_$LI$() { if (SymmetrySystem.logger == null) {
                         SymmetrySystem.logger = java.util.logging.Logger.getLogger("com.vzome.core.editor");
@@ -25432,9 +25432,7 @@ export var com;
                             this.tetrahedralSubgroup[3] = this.closure([17, 4]);
                             this.tetrahedralSubgroup[4] = this.closure([55, 14]);
                             const blueOrbit = this.getDirection("blue");
-                            const yellowOrbit = this.createZoneOrbit$java_lang_String$int$int$com_vzome_core_algebra_AlgebraicVector$boolean$boolean$com_vzome_core_algebra_AlgebraicNumber("yellow", 0, 27, field.createVector([[1, 1, 1, 1], [0, 1, 0, 1], [-1, 1, 0, 1]]), true, false, this.mField['createPower$int'](-1));
-                            yellowOrbit.setScaleNames(["y0", "y1", "y2", "y3"]);
-                            yellowOrbit.iterator();
+                            const yellowOrbit = this.getDirection("yellow");
                             for (let i = 0; i < 60; i++) {
                                 {
                                     const blueZone = blueOrbit.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, i);
@@ -25470,9 +25468,6 @@ export var com;
                                 }
                                 ;
                             }
-                            const redOrbit = this.createZoneOrbit$java_lang_String$int$int$com_vzome_core_algebra_AlgebraicVector$boolean("red", 0, 3, this.mField.createVector([[0, 1, 1, 1], [1, 1, 0, 1], [0, 1, 0, 1]]), true);
-                            redOrbit.setScaleNames(["r0", "r1", "r2", "r3"]);
-                            this.preferredAxis = redOrbit.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, 1);
                         }
                         /**
                          *
@@ -25613,6 +25608,12 @@ export var com;
                          * @see com.vzome.core.math.symmetry.AbstractSymmetry#createZoneOrbit(String, int, int, AlgebraicVector, boolean, boolean, AlgebraicNumber)
                          */
                         createOtherOrbits() {
+                            const yellowOrbit = this.createZoneOrbit$java_lang_String$int$int$com_vzome_core_algebra_AlgebraicVector$boolean$boolean$com_vzome_core_algebra_AlgebraicNumber("yellow", 0, 27, this.mField.createVector([[1, 1, 1, 1], [0, 1, 0, 1], [-1, 1, 0, 1]]), true, false, this.mField['createPower$int'](-1));
+                            yellowOrbit.setScaleNames(["y0", "y1", "y2", "y3"]);
+                            yellowOrbit.iterator();
+                            const redOrbit = this.createZoneOrbit$java_lang_String$int$int$com_vzome_core_algebra_AlgebraicVector$boolean("red", 0, 3, this.mField.createVector([[0, 1, 1, 1], [1, 1, 0, 1], [0, 1, 0, 1]]), true);
+                            redOrbit.setScaleNames(["r0", "r1", "r2", "r3"]);
+                            this.preferredAxis = redOrbit.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, 1);
                             const dir = this.createZoneOrbit$java_lang_String$int$int$com_vzome_core_algebra_AlgebraicVector$boolean$boolean$com_vzome_core_algebra_AlgebraicNumber("green", 6, com.vzome.core.math.symmetry.Symmetry.NO_ROTATION, this.mField.createVector([[1, 1, 0, 1], [1, 1, 0, 1], [0, 1, 0, 1]]), true, true, this.mField['createRational$long'](2));
                             dir.setScaleNames(["g0", "g1", "g2", "g3"]);
                             this.createZoneOrbit$java_lang_String$int$int$com_vzome_core_algebra_AlgebraicVector("orange", 6, com.vzome.core.math.symmetry.Symmetry.NO_ROTATION, this.mField.createVector([[1, 1, 0, 1], [0, 1, 1, 1], [0, 1, 0, 1]]));
@@ -35142,7 +35143,7 @@ export var com;
                             default:
                                 if ( /* startsWith */((str, searchString, position = 0) => str.substr(position, searchString.length) === searchString)(string, "orbitColor.")) {
                                     const name = string.substring("orbitColor.".length);
-                                    const dir = this.buildOrbits.getDirection(name);
+                                    const dir = this.symmetrySystem.getOrbits().getDirection(name);
                                     const color = this.getColor(dir);
                                     return color.toString();
                                 }
@@ -35164,6 +35165,16 @@ export var com;
                         switch ((listName)) {
                             case "styles":
                                 return this.symmetrySystem.getStyleNames();
+                            case "orbitNames":
+                                const list = (new java.util.ArrayList());
+                                for (let index = this.symmetrySystem.getSymmetry().getDirections().iterator(); index.hasNext();) {
+                                    let dir = index.next();
+                                    {
+                                        if (!dir.isAutomatic())
+                                            list.add(dir.getCanonicalName());
+                                    }
+                                }
+                                return list.toArray([]);
                             case "orbits":
                                 const result = (s => { let a = []; while (s-- > 0)
                                     a.push(null); return a; })(this.symmetrySystem.getOrbits().size());
@@ -48562,6 +48573,10 @@ export var com;
                             return embedding;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getZone(orbit, orientation) {
                             return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
@@ -48612,10 +48627,6 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
                         }
                         /**
                          *

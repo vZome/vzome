@@ -47,7 +47,7 @@ public class SymmetryController extends DefaultController
             if ( string .startsWith( "orbitColor." ) )
             {
                 String name = string .substring( "orbitColor." .length() );
-                Direction dir = buildOrbits .getDirection( name );
+                Direction dir = this .symmetrySystem .getOrbits() .getDirection( name );
                 Color color = getColor( dir );
                 return color .toString();
             }
@@ -160,6 +160,14 @@ public class SymmetryController extends DefaultController
         case "styles":
 
             return this .symmetrySystem .getStyleNames();
+
+        case "orbitNames":
+            ArrayList<String> list = new ArrayList<>();
+            for (Direction dir : this .symmetrySystem .getSymmetry() .getDirections()) {
+                if ( ! dir .isAutomatic() )
+                    list .add( dir .getCanonicalName() );
+            }
+            return list .toArray( new String[]{} );
 
         case "orbits":
 
