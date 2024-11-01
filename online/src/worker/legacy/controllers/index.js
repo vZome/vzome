@@ -49,6 +49,10 @@ const createControllers = ( design, renderingChanges, clientEvents ) =>
     const [ x, y, z ] = direction;
     strutBuilder .previewStrut .zoneBall .setVector( new com.vzome.core.math.RealVector( x, y, z ) );
   }
+  wrapper.scalePreviewStrut = increment => {
+    const lengthController = strutBuilder .previewStrut .getLengthController();
+    lengthController .setScale( lengthController .getScale() + increment ); // will trigger side-effects
+  }
   wrapper.endPreviewStrut = () =>
   {
     strutBuilder .previewStrut .finishPreview();

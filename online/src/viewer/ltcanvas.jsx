@@ -99,11 +99,19 @@ export const LightedTrackballCanvas = ( props ) =>
       handler( e );
     }
   }
-  const handlePointerMissed = ( e ) =>
+  const handleWheel = ( e ) =>
+    {
+      const handler = tool ?.onWheel;
+      if ( handler ) {
+        e.preventDefault();
+        handler( e.deltaY );
+      }
+    }
+    const handlePointerMissed = ( e ) =>
   {
     const handler = tool ?.bkgdClick;
     if ( isLeftMouseButton( e ) && handler ) {
-      e.stopPropagation()
+      e.stopPropagation();
       handler( e );
     }
   }
@@ -130,6 +138,7 @@ export const LightedTrackballCanvas = ( props ) =>
   onMount( () => {
     // canvas .addEventListener( 'pointermove', handlePointerMove );
     canvas .addEventListener( 'pointerup', handlePointerUp );
+    canvas .addEventListener( 'wheel', handleWheel );
   });
 
   return canvas;
