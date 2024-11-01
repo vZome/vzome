@@ -26,11 +26,14 @@ of TrackballControls.js and implement the transformations myself.  See ObjectTra
 const StrutDragTool = props =>
 {
   const eye = useThree(({ camera }) => camera.position);
-  const { startPreviewStrut, endPreviewStrut, movePreviewStrut } = useEditor();
+  const { startPreviewStrut, endPreviewStrut, movePreviewStrut, scalePreviewStrut } = useEditor();
 
   const [ line, setLine ] = createSignal( [ 0, 0, 1 ] );
   const [ operating, setOperating ] = createSignal( null );
   const [ position, setPosition ] = createSignal( [0,0,0] );
+
+  let totalY = 0;
+  const MOUSE_WHEEL_TICKS_PER_SCALE = 25;
 
   const handlers = {
 
@@ -42,9 +45,28 @@ const StrutDragTool = props =>
     bkgdClick: () => {},
     onDrag: evt => {},
 
+    // untested, since UnifiedTool is in use
+    onWheel: deltaY => {
+      if ( operating() ) {
+        // Logic copied from the desktop implementation, so we are not so sensitive.
+        //    (See LengthCanvasTool.java)
+        totalY += deltaY;
+        let increment = 0;
+        if ( totalY > MOUSE_WHEEL_TICKS_PER_SCALE )
+          increment = +1;
+        else if ( totalY < -MOUSE_WHEEL_TICKS_PER_SCALE )
+          increment = -1;
+        if ( increment ) {
+          scalePreviewStrut( -increment ); // sense must be reversed
+          totalY = 0;
+        }
+      }
+    },
+
     onDragStart: ( evt, id, position, type, selected ) => {
       if ( type !== 'ball' )
         return;
+      totalY = 0;
       setPosition( position );
       const { x, y, z } = new Vector3() .copy( eye() ) .sub( new Vector3( ...position ) ) .normalize();
       setLine( [ x, y, z ] );

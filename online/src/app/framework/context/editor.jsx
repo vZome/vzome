@@ -247,6 +247,7 @@ const EditorProvider = props =>
     importMeshFile: ( file, format ) => workerClient .postMessage( actions.importMeshFile( file, format ) ),
     startPreviewStrut: ( id, dir )   => workerClient .postMessage( actions.startPreviewStrut( id, dir ) ),
     movePreviewStrut:  ( direction ) => workerClient .postMessage( actions.movePreviewStrut( direction ) ),
+    scalePreviewStrut: ( increment ) => workerClient .postMessage( actions.scalePreviewStrut( increment ) ),
     endPreviewStrut:   ()            => workerClient .postMessage( actions.endPreviewStrut() ),
   };
 

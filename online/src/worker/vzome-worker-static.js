@@ -586,6 +586,13 @@ onmessage = ({ data }) =>
       design.wrapper .movePreviewStrut( direction );
       break;
     }
+
+    case 'PREVIEW_STRUT_SCALE':
+    {
+      const { increment } = payload;
+      design.wrapper .scalePreviewStrut( increment );
+      break;
+    }
   
     case 'PREVIEW_STRUT_END':
     {

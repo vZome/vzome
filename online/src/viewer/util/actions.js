@@ -65,6 +65,8 @@ export const startPreviewStrut = ( ballId, direction ) => workerAction( 'PREVIEW
 
 export const movePreviewStrut = ( direction ) => workerAction( 'PREVIEW_STRUT_MOVE', { direction } );
 
+export const scalePreviewStrut = ( increment ) => workerAction( 'PREVIEW_STRUT_SCALE', { increment } );
+
 export const endPreviewStrut = () => workerAction( 'PREVIEW_STRUT_END', {} );
 
 // This is for buildplane

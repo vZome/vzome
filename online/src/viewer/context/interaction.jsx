@@ -37,6 +37,8 @@ const InteractionToolProvider = (props) =>
 
     bkgdClick: () => tool() ?.bkgdClick(),
     
+    onWheel: dY => tool() ?.onWheel && tool() .onWheel( dY ),
+    
     onDragStart: ( e, id, position, type, selected ) => {
       // Defer the onDragStart until we see sufficient movement
       lastPointerDown = e;
