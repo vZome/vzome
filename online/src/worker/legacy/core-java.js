@@ -3411,6 +3411,8 @@ export var com;
                         const orbit = axis.getDirection();
                         const len = axis.getLength(offset);
                         const prototypeLengthShape = shapes.getStrutShape(orbit, len);
+                        if (prototypeLengthShape == null)
+                            return;
                         this.mShape = prototypeLengthShape;
                         const orn = axis.getOrientation();
                         const orientation = shapes.getSymmetry().getMatrix(orn);
@@ -3952,8 +3954,8 @@ export var com;
                             this.orbits = new com.vzome.core.math.symmetry.OrbitSet(symmetry);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                        getOrientations$() {
+                            return this.getOrientations(false);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {
@@ -3977,10 +3979,6 @@ export var com;
                             embedding[14] = 0.0;
                             embedding[15] = 1.0;
                             return embedding;
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
@@ -4035,6 +4033,10 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
                         /**
                          *
@@ -4585,6 +4587,7 @@ export var com;
                             if (this.halfScaleVertices === undefined) {
                                 this.halfScaleVertices = null;
                             }
+                            this.shortGeometry = null;
                             this.prototypeVertices = vertices;
                             this.prototypeFaces = faces;
                             this.prototypeVector = prototype;
@@ -4616,6 +4619,7 @@ export var com;
                                 if (this.halfScaleVertices === undefined) {
                                     this.halfScaleVertices = null;
                                 }
+                                this.shortGeometry = null;
                                 this.prototypeVertices = vertices;
                                 this.prototypeFaces = faces;
                                 this.prototypeVector = prototype;
@@ -4640,6 +4644,8 @@ export var com;
                      */
                     getStrutPolyhedron(length) {
                         const tipVertex = this.prototypeVector.scale(length);
+                        let maxNonTipDistance = 0;
+                        let minTipDistance = tipVertex.toRealVector().length();
                         const midpoint = tipVertex.scale(this.field['createRational$long$long'](1, 2));
                         if ((this.field.getName() === ("snubDodec")) && ExportedVEFStrutGeometry.LOGGER_$LI$().isLoggable(java.util.logging.Level.FINE)) {
                             ExportedVEFStrutGeometry.LOGGER_$LI$().fine("proto length = " + this.prototypeVector.toRealVector().length());
@@ -4652,13 +4658,24 @@ export var com;
                                 let vertex = this.prototypeVertices.get(i);
                                 if (this.fullScaleVertices.contains(i)) {
                                     vertex = vertex.plus(tipVertex);
+                                    minTipDistance = Math.min(minTipDistance, vertex.toRealVector().length());
                                 }
-                                else if (this.halfScaleVertices != null && this.halfScaleVertices.contains(i)) {
-                                    vertex = vertex.plus(midpoint);
+                                else {
+                                    if (this.halfScaleVertices != null && this.halfScaleVertices.contains(i)) {
+                                        vertex = vertex.plus(midpoint);
+                                    }
+                                    maxNonTipDistance = Math.max(maxNonTipDistance, vertex.toRealVector().length());
                                 }
                                 result.addVertex(vertex);
                             }
                             ;
+                        }
+                        if (maxNonTipDistance > minTipDistance) {
+                            if (this.shortGeometry != null) {
+                                return this.shortGeometry.getStrutPolyhedron(length);
+                            }
+                            else
+                                return null;
                         }
                         for (let index = this.prototypeFaces.iterator(); index.hasNext();) {
                             let prototypeFace = index.next();
@@ -4669,6 +4686,9 @@ export var com;
                             }
                         }
                         return result;
+                    }
+                    setShortGeometry(shortGeometry) {
+                        this.shortGeometry = shortGeometry;
                     }
                 }
                 viewing.ExportedVEFStrutGeometry = ExportedVEFStrutGeometry;
@@ -16761,8 +16781,8 @@ export var com;
                         this.setStyle(styleName);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getZone(orbit, orientation) {
-                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                    getOrientations$() {
+                        return this.getOrientations(false);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getEmbedding() {
@@ -16786,10 +16806,6 @@ export var com;
                         embedding[14] = 0.0;
                         embedding[15] = 1.0;
                         return embedding;
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getOrientations$() {
-                        return this.getOrientations(false);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getOrientations(rowMajor) {
@@ -16865,6 +16881,10 @@ export var com;
                         }
                         else
                             throw new Error('invalid overload');
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getZone(orbit, orientation) {
+                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                     }
                     static logger_$LI$() { if (SymmetrySystem.logger == null) {
                         SymmetrySystem.logger = java.util.logging.Logger.getLogger("com.vzome.core.editor");
@@ -26984,11 +27004,20 @@ export var com;
                      */
                     createStrutGeometry(dir) {
                         if (!dir.isAutomatic()) {
-                            const vefData = this.loadVefData(dir.getName());
+                            let shortGeometry = new com.vzome.core.parts.FastDefaultStrutGeometry(dir);
+                            let vefData = this.loadVefData(dir.getName() + "-short");
                             if (vefData != null) {
                                 const parser = new ExportedVEFShapes.VefToShape(this);
                                 parser.parseVEF(vefData, this.mSymmetry.getField());
-                                return parser.getStrutGeometry(dir.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, 0).normal());
+                                shortGeometry = parser.getStrutGeometry(dir.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, 0).normal());
+                            }
+                            vefData = this.loadVefData(dir.getName());
+                            if (vefData != null) {
+                                const parser = new ExportedVEFShapes.VefToShape(this);
+                                parser.parseVEF(vefData, this.mSymmetry.getField());
+                                const geometry = parser.getStrutGeometry(dir.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, 0).normal());
+                                geometry.setShortGeometry(shortGeometry);
+                                return geometry;
                             }
                             const logLevel = java.util.logging.Level.FINER;
                             if (ExportedVEFShapes.LOGGER_$LI$().isLoggable(logLevel)) {
@@ -48038,8 +48067,8 @@ export var com;
                             this.__parent = __parent;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                        getOrientations$() {
+                            return this.getOrientations(false);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {
@@ -48063,10 +48092,6 @@ export var com;
                             embedding[14] = 0.0;
                             embedding[15] = 1.0;
                             return embedding;
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
@@ -48115,6 +48140,10 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
                         /**
                          *

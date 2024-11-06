@@ -3589,6 +3589,7 @@ namespace com.vzome.core.render {
             const orbit: com.vzome.core.math.symmetry.Direction = axis.getDirection();
             const len: com.vzome.core.algebra.AlgebraicNumber = axis.getLength(offset);
             const prototypeLengthShape: com.vzome.core.math.Polyhedron = shapes.getStrutShape(orbit, len);
+            if (prototypeLengthShape == null)return;
             this.mShape = prototypeLengthShape;
             const orn: number = axis.getOrientation();
             const orientation: com.vzome.core.algebra.AlgebraicMatrix = shapes.getSymmetry().getMatrix(orn);
@@ -4136,8 +4137,8 @@ namespace com.vzome.core.render {
 
         export class SymmetryOrbitSource implements com.vzome.core.editor.api.OrbitSource {
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
-                return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+            getOrientations$(): number[][] {
+                return this.getOrientations(false);
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             getEmbedding(): number[] {
@@ -4157,10 +4158,6 @@ namespace com.vzome.core.render {
                 embedding[14] = 0.0;
                 embedding[15] = 1.0;
                 return embedding;
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getOrientations$(): number[][] {
-                return this.getOrientations(false);
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             public getOrientations(rowMajor?: any): number[][] {
@@ -4200,6 +4197,10 @@ namespace com.vzome.core.render {
                 } else if (rowMajor === undefined) {
                     return <any>this.getOrientations$();
                 } else throw new Error('invalid overload');
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
+                return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
             }
             symmetry: com.vzome.core.math.symmetry.Symmetry;
 
@@ -4768,6 +4769,8 @@ namespace com.vzome.core.viewing {
 
         public halfScaleVertices: java.util.Set<number>;
 
+        /*private*/ shortGeometry: com.vzome.core.parts.StrutGeometry;
+
         public constructor(vertices?: any, faces?: any, prototype?: any, fullScaleVertices?: any, halfScaleVertices?: any, field?: any) {
             if (((vertices != null && (vertices.constructor != null && vertices.constructor["__interfaces"] != null && vertices.constructor["__interfaces"].indexOf("java.util.List") >= 0)) || vertices === null) && ((faces != null && (faces.constructor != null && faces.constructor["__interfaces"] != null && faces.constructor["__interfaces"].indexOf("java.util.List") >= 0)) || faces === null) && ((prototype != null && prototype instanceof <any>com.vzome.core.algebra.AlgebraicVector) || prototype === null) && ((fullScaleVertices != null && (fullScaleVertices.constructor != null && fullScaleVertices.constructor["__interfaces"] != null && fullScaleVertices.constructor["__interfaces"].indexOf("java.util.Set") >= 0)) || fullScaleVertices === null) && ((halfScaleVertices != null && (halfScaleVertices.constructor != null && halfScaleVertices.constructor["__interfaces"] != null && halfScaleVertices.constructor["__interfaces"].indexOf("java.util.Set") >= 0)) || halfScaleVertices === null) && ((field != null && (field.constructor != null && field.constructor["__interfaces"] != null && field.constructor["__interfaces"].indexOf("com.vzome.core.algebra.AlgebraicField") >= 0)) || field === null)) {
                 let __args = arguments;
@@ -4777,6 +4780,7 @@ namespace com.vzome.core.viewing {
                 if (this.prototypeVector === undefined) { this.prototypeVector = null; } 
                 if (this.fullScaleVertices === undefined) { this.fullScaleVertices = null; } 
                 if (this.halfScaleVertices === undefined) { this.halfScaleVertices = null; } 
+                this.shortGeometry = null;
                 this.prototypeVertices = vertices;
                 this.prototypeFaces = faces;
                 this.prototypeVector = prototype;
@@ -4795,6 +4799,7 @@ namespace com.vzome.core.viewing {
                     if (this.prototypeVector === undefined) { this.prototypeVector = null; } 
                     if (this.fullScaleVertices === undefined) { this.fullScaleVertices = null; } 
                     if (this.halfScaleVertices === undefined) { this.halfScaleVertices = null; } 
+                    this.shortGeometry = null;
                     this.prototypeVertices = vertices;
                     this.prototypeFaces = faces;
                     this.prototypeVector = prototype;
@@ -4816,6 +4821,8 @@ namespace com.vzome.core.viewing {
          */
         public getStrutPolyhedron(length: com.vzome.core.algebra.AlgebraicNumber): com.vzome.core.math.Polyhedron {
             const tipVertex: com.vzome.core.algebra.AlgebraicVector = this.prototypeVector.scale(length);
+            let maxNonTipDistance: number = 0;
+            let minTipDistance: number = tipVertex.toRealVector().length();
             const midpoint: com.vzome.core.algebra.AlgebraicVector = tipVertex.scale(this.field['createRational$long$long'](1, 2));
             if ((this.field.getName() === ("snubDodec")) && ExportedVEFStrutGeometry.LOGGER_$LI$().isLoggable(java.util.logging.Level.FINE)){
                 ExportedVEFStrutGeometry.LOGGER_$LI$().fine("proto length = " + this.prototypeVector.toRealVector().length());
@@ -4827,11 +4834,20 @@ namespace com.vzome.core.viewing {
                 let vertex: com.vzome.core.algebra.AlgebraicVector = this.prototypeVertices.get(i);
                 if (this.fullScaleVertices.contains(i)){
                     vertex = vertex.plus(tipVertex);
-                } else if (this.halfScaleVertices != null && this.halfScaleVertices.contains(i)){
-                    vertex = vertex.plus(midpoint);
+                    minTipDistance = Math.min(minTipDistance, vertex.toRealVector().length());
+                } else {
+                    if (this.halfScaleVertices != null && this.halfScaleVertices.contains(i)){
+                        vertex = vertex.plus(midpoint);
+                    }
+                    maxNonTipDistance = Math.max(maxNonTipDistance, vertex.toRealVector().length());
                 }
                 result.addVertex(vertex);
             };}
+            if (maxNonTipDistance > minTipDistance){
+                if (this.shortGeometry != null){
+                    return this.shortGeometry.getStrutPolyhedron(length);
+                } else return null;
+            }
             for(let index=this.prototypeFaces.iterator();index.hasNext();) {
                 let prototypeFace = index.next();
                 {
@@ -4841,6 +4857,10 @@ namespace com.vzome.core.viewing {
                 }
             }
             return result;
+        }
+
+        public setShortGeometry(shortGeometry: com.vzome.core.parts.StrutGeometry) {
+            this.shortGeometry = shortGeometry;
         }
     }
     ExportedVEFStrutGeometry["__class"] = "com.vzome.core.viewing.ExportedVEFStrutGeometry";
@@ -17038,8 +17058,8 @@ namespace com.vzome.core.editor {
 namespace com.vzome.core.editor {
     export class SymmetrySystem implements com.vzome.core.editor.api.OrbitSource {
         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-        getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
-            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+        getOrientations$(): number[][] {
+            return this.getOrientations(false);
         }
         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
         getEmbedding(): number[] {
@@ -17059,10 +17079,6 @@ namespace com.vzome.core.editor {
             embedding[14] = 0.0;
             embedding[15] = 1.0;
             return embedding;
-        }
-        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-        getOrientations$(): number[][] {
-            return this.getOrientations(false);
         }
         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
         public getOrientations(rowMajor?: any): number[][] {
@@ -17113,6 +17129,10 @@ namespace com.vzome.core.editor {
             } else if (rowMajor === undefined) {
                 return <any>this.getOrientations$();
             } else throw new Error('invalid overload');
+        }
+        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+        getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
+            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
         }
         static logger: java.util.logging.Logger; public static logger_$LI$(): java.util.logging.Logger { if (SymmetrySystem.logger == null) { SymmetrySystem.logger = java.util.logging.Logger.getLogger("com.vzome.core.editor"); }  return SymmetrySystem.logger; }
 
@@ -26848,11 +26868,20 @@ namespace com.vzome.core.viewing {
          */
         createStrutGeometry(dir: com.vzome.core.math.symmetry.Direction): com.vzome.core.parts.StrutGeometry {
             if (!dir.isAutomatic()){
-                const vefData: string = this.loadVefData(dir.getName());
+                let shortGeometry: com.vzome.core.parts.StrutGeometry = new com.vzome.core.parts.FastDefaultStrutGeometry(dir);
+                let vefData: string = this.loadVefData(dir.getName() + "-short");
                 if (vefData != null){
                     const parser: ExportedVEFShapes.VefToShape = new ExportedVEFShapes.VefToShape(this);
                     parser.parseVEF(vefData, this.mSymmetry.getField());
-                    return parser.getStrutGeometry(dir.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, 0).normal());
+                    shortGeometry = parser.getStrutGeometry(dir.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, 0).normal());
+                }
+                vefData = this.loadVefData(dir.getName());
+                if (vefData != null){
+                    const parser: ExportedVEFShapes.VefToShape = new ExportedVEFShapes.VefToShape(this);
+                    parser.parseVEF(vefData, this.mSymmetry.getField());
+                    const geometry: com.vzome.core.viewing.ExportedVEFStrutGeometry = parser.getStrutGeometry(dir.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, 0).normal());
+                    geometry.setShortGeometry(shortGeometry);
+                    return geometry;
                 }
                 const logLevel: java.util.logging.Level = java.util.logging.Level.FINER;
                 if (ExportedVEFShapes.LOGGER_$LI$().isLoggable(logLevel)){
@@ -26915,7 +26944,7 @@ namespace com.vzome.core.viewing {
 
             invertSnubBall: boolean;
 
-            public getStrutGeometry(prototype: com.vzome.core.algebra.AlgebraicVector): com.vzome.core.parts.StrutGeometry {
+            public getStrutGeometry(prototype: com.vzome.core.algebra.AlgebraicVector): com.vzome.core.viewing.ExportedVEFStrutGeometry {
                 const tipAxis: com.vzome.core.math.symmetry.Axis = this.__parent.mSymmetry['getAxis$com_vzome_core_algebra_AlgebraicVector'](this.tipVertex);
                 const midpoint: com.vzome.core.algebra.AlgebraicVector = this.tipVertex.scale(this.__parent.mSymmetry.getField()['createRational$long$long'](1, 2));
                 const orientation: number = this.__parent.mSymmetry.inverse(tipAxis.getOrientation());
@@ -46077,8 +46106,8 @@ namespace com.vzome.core.edits {
         export class ReplaceWithShape$0 implements com.vzome.core.editor.api.OrbitSource {
             public __parent: any;
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
-                return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+            getOrientations$(): number[][] {
+                return this.getOrientations(false);
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             getEmbedding(): number[] {
@@ -46098,10 +46127,6 @@ namespace com.vzome.core.edits {
                 embedding[14] = 0.0;
                 embedding[15] = 1.0;
                 return embedding;
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getOrientations$(): number[][] {
-                return this.getOrientations(false);
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             public getOrientations(rowMajor?: any): number[][] {
@@ -46139,6 +46164,10 @@ namespace com.vzome.core.edits {
                 } else if (rowMajor === undefined) {
                     return <any>this.getOrientations$();
                 } else throw new Error('invalid overload');
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
+                return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
             }
             /**
              * 

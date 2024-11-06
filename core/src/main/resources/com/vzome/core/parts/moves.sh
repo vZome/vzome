@@ -15,6 +15,8 @@ move ./lifelike/connector.vef
 move ./lifelike/blue.vef
 move ./lifelike/yellow.vef
 move ./lifelike/red.vef
+move ./lifelike/yellow-short.vef
+move ./lifelike/red-short.vef
 move ./lifelike/green.vef
 move ./heptagon/antiprism/connector.vef
 move ./heptagon/antiprism/blue.vef
@@ -72,6 +74,8 @@ move ./default/olive.vef
 move ./default/apple.vef
 move ./default/lavender.vef
 move ./default/orange.vef
+move ./default/yellow-short.vef
+move ./default/red-short.vef
 move ./vienne2/connector.vef
 move ./vienne2/purple.vef
 move ./vienne2/orange.vef

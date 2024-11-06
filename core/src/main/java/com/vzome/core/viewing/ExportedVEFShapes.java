@@ -26,6 +26,7 @@ import com.vzome.core.math.VefParser;
 import com.vzome.core.math.symmetry.Axis;
 import com.vzome.core.math.symmetry.Direction;
 import com.vzome.core.math.symmetry.Symmetry;
+import com.vzome.core.parts.FastDefaultStrutGeometry;
 import com.vzome.core.parts.StrutGeometry;
 import com.vzome.core.render.Colors;
 import com.vzome.xml.ResourceLoader;
@@ -121,14 +122,26 @@ public class ExportedVEFShapes extends AbstractShapes
     }
 
     @Override
-    protected StrutGeometry createStrutGeometry(Direction dir) {
+    protected StrutGeometry createStrutGeometry(Direction dir)
+    {
         // automatic struts don't use VEF so don't waste time trying
-        if (!dir.isAutomatic()) {
-            String vefData = loadVefData(dir.getName());
+        if ( ! dir.isAutomatic() ) {
+            
+            StrutGeometry shortGeometry = new FastDefaultStrutGeometry( dir );
+            String vefData = loadVefData( dir.getName() + "-short" );
             if (vefData != null) {
                 VefToShape parser = new VefToShape();
-                parser.parseVEF(vefData, mSymmetry.getField());
-                return parser.getStrutGeometry(dir.getAxis(Symmetry.PLUS, 0).normal());
+                parser .parseVEF( vefData, mSymmetry.getField() );
+                shortGeometry = parser .getStrutGeometry( dir.getAxis( Symmetry.PLUS, 0 ) .normal());
+            }
+            
+            vefData = loadVefData( dir.getName( ));
+            if (vefData != null) {
+                VefToShape parser = new VefToShape();
+                parser .parseVEF( vefData, mSymmetry.getField() );
+                ExportedVEFStrutGeometry geometry = parser .getStrutGeometry( dir.getAxis( Symmetry.PLUS, 0 ) .normal());
+                geometry .setShortGeometry( shortGeometry );
+                return geometry;
             }
             // strut uses finer logging level than connector since strut fallback is more common.
             final Level logLevel = Level.FINER;
@@ -204,7 +217,7 @@ public class ExportedVEFShapes extends AbstractShapes
 
         private boolean invertSnubBall = false;
 
-        public StrutGeometry getStrutGeometry( AlgebraicVector prototype )
+        public ExportedVEFStrutGeometry getStrutGeometry( AlgebraicVector prototype )
         {
             // next, get the arbitrary axis that the strut model lies along
             Axis tipAxis = mSymmetry .getAxis( tipVertex );
