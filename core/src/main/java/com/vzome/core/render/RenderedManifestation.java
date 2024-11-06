@@ -434,6 +434,8 @@ public class RenderedManifestation implements RenderedObject
         AlgebraicNumber len = axis .getLength( offset );
         
         Polyhedron prototypeLengthShape = shapes .getStrutShape( orbit, len );
+        if ( prototypeLengthShape == null )
+            return; // This happens for very short struts, when the shape would be inside-out
         this .mShape = prototypeLengthShape;
 
         int orn = axis .getOrientation();
