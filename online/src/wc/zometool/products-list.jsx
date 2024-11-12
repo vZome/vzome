@@ -76,6 +76,7 @@ export class ZometoolProductsElement extends HTMLElement
 {
   #instructionsId;
   #instructions;
+  #bomLoaded;
 
   constructor()
   {
@@ -104,6 +105,10 @@ export class ZometoolProductsElement extends HTMLElement
     }
 
     this.#instructions .addEventListener( "zometool-instructions-loaded", (e) => {
+      if ( this.#bomLoaded )
+        return;
+
+      this.#bomLoaded = true;
       debug && console.log( JSON.stringify( e.detail ) );
 
       this .appendChild( document.createElement("style") ).textContent = instructionsCSS;
