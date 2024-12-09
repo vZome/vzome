@@ -90,6 +90,18 @@ export const FileMenu = () =>
     }
   }
 
+  const dropboxEnabled = window.Dropbox && window.localStorage.getItem( 'vzome.enable.dropbox' ) === 'true';
+
+  const showDropboxChooser = () => {
+    window.Dropbox.choose( {
+      linkType: 'direct',
+      extensions: ['.vzome'],
+      success: (files) => {
+        fetchDesignUrl( files[0].link, { preview: false, debug: false } );
+      },
+    } );
+  }
+
   // Open the design indicated in the query string, if any
   onMount( () => url && openUrl( url ) );
 
@@ -146,6 +158,8 @@ export const FileMenu = () =>
 
         <MenuAction label="Open..."     onClick={() => guard(handleOpen)} />
         <MenuAction label="Open URL..." onClick={() => guard(handleShowUrlDialog)} />
+        { dropboxEnabled &&
+           <MenuAction label="Choose from Dropbox..." onClick={() => guard(showDropboxChooser)} /> }
         <MenuItem disabled={true}>Open As New Model...</MenuItem>
 
         <Divider/>
