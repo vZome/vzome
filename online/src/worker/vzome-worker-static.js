@@ -258,15 +258,15 @@ const exportPreview = ( camera, lighting ) =>
 const shareToGitHub = async ( target, config, data, report ) =>
 {
   const { orgName, repoName, branchName } = target;
-  const { title, description, blog, publish, style } = config;
+  const { title, description, blog, publish, style, originalDate } = config;
   const { name, camera, lighting, image } = data;
   const preview = exportPreview( camera, lighting );
   importLegacy()
     .then( module => {
       const xml = design.wrapper .serializeVZomeXml( lighting, camera );
-      const now = new Date() .toISOString();
-      const date = now .substring( 0, 10 );
-      const time = now .substring( 11 ) .replaceAll( ':', '-' ) .replaceAll( '.', '-' );
+      const creation = ( originalDate || new Date() ) .toISOString();
+      const date = creation .substring( 0, 10 );
+      const time = creation .substring( 11 ) .replaceAll( ':', '-' ) .replaceAll( '.', '-' );
       const shareData = new module .vzomePkg.core.exporters.GitHubShare( title, date, time, xml, image, preview );
 
       const uploads = [];
