@@ -12,7 +12,6 @@ export const fetchGitHubShares = async githubUser =>
       .then( response => response.json() )
       .then( json => {
         const designs = json.tree.filter( entry => entry.type==="blob" && entry.path.endsWith( '.vZome' ) )
-          .filter( entry => entry.path > "2021/07/31" )
           .map( ({ path }) => {
             const tokens = path .split( '/' );
             const url = BASE_URL + tokens .map( encodeURIComponent ) .join( '/' );
