@@ -78,7 +78,7 @@ const EditorProvider = props =>
 
       case 'TEXT_FETCHED': { // we receive this event twice per fetch?
         let { name } = data.payload;
-        if ( name && name .endsWith( '.vZome' ) ) {
+        if ( name && name .toLowerCase() .endsWith( '.vzome' ) ) {
           if ( !state.ignoreDesignName ) {
             name = name .substring( 0, name.length - 6 );
             setState( 'designName', name ); // cooperatively managed by both worker and client
@@ -98,7 +98,6 @@ const EditorProvider = props =>
 
       case 'CONTROLLER_CREATED':
         setState( {
-          ...initialState(),
           workerReady: true,
           controller: { __store: store, __path: [] }
         } );
@@ -195,7 +194,7 @@ const EditorProvider = props =>
   {
     const { capture } = capturer();  
     const name = state?.designName || 'untitled';
-    const config = { ...unwrap( state.sharing ), blog, publish };
+    const config = { ...unwrap( state.sharing ), blog, publish, originalDate: state.originalDate };
     return new Promise( ( resolve, reject ) =>
     {
       new Promise((resolve, _) => {
@@ -221,6 +220,7 @@ const EditorProvider = props =>
     resetScenes();
     setSceneIndex( 0 );
     setState( 'source', { type: 'file', data: file } );
+    setState( 'originalDate', null ); // NOT loaded from my Dropbox
     workerClient .postMessage( actions.openDesignFile( file, debug ) );
   }
 
@@ -230,6 +230,7 @@ const EditorProvider = props =>
     resetScenes();
     setSceneIndex( 0 );
     setState( 'source', { type: 'url', data: url } );
+    setState( 'originalDate', null ); // NOT loaded from my Dropbox
     workerClient .postMessage( actions.fetchDesign( url, config ) );
   }
   

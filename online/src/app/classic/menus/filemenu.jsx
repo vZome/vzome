@@ -97,7 +97,34 @@ export const FileMenu = () =>
       linkType: 'direct',
       extensions: ['.vzome'],
       success: (files) => {
-        fetchDesignUrl( files[0].link, { preview: false, debug: false } );
+        const url = files[ 0 ] .link .toLowerCase();
+        setState( 'ignoreDesignName', true );  // transient, means we'll still have an untitled design after the fetch
+        fetchDesignUrl( url, { preview: false, debug: false } );
+
+        const name = files[ 0 ] .name;
+        if ( name && name .toLowerCase() .endsWith( '.vzome' ) ) {
+          setState( 'designName', name .substring( 0, name.length - 6 ) );
+          setState( 'sharing', 'title', name .replaceAll( '-', ' ' ) );
+        }
+
+        /*
+          My personal Dropbox holds 100s of vZome files back to 2003.  When I share them,
+          I want to capture the original date, which is encoded in the file path (usually):
+          .../vzome/attachments/2016/04-apr/10-Scott-deleteTest/testDeleteAndCut.vZome
+        */
+        const ATTACHMENTS = 'vzome/attachments/';
+        if ( url .includes( ATTACHMENTS ) ) {
+          const start = url .lastIndexOf( ATTACHMENTS ) + 18;
+          const relPath = url .substring( start );
+          try {
+            const [ _, year, month, day ] = relPath .match( /([0-9]+)\/([0-9]+).*\/([0-9]+).*\// );
+            const date = new Date( Number(year), Number(month)-1, Number(day) );
+            setState( 'originalDate', date );
+            console.log( 'Dropbox date:', date, 'for', year, month, day, relPath );
+          } catch (error) {
+            console.log( 'Could not parse Dropbox path as date:', relPath );
+          }
+        }
       },
     } );
   }
