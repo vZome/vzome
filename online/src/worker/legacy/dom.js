@@ -82,6 +82,11 @@ export class JavaDomElement
       this.nativeElement.children.push( child.nativeElement );
   }
 
+  setTextContent( value )
+  {
+    this.nativeElement.children.push( value );
+  }
+
   setAttribute( name, value )
   {
     this.nativeElement.attributes[ name ] = value;

@@ -101,9 +101,10 @@ export const FileMenu = () =>
         setState( 'ignoreDesignName', true );  // transient, means we'll still have an untitled design after the fetch
         fetchDesignUrl( url, { preview: false, debug: false } );
 
-        const name = files[ 0 ] .name;
+        let name = files[ 0 ] .name;
         if ( name && name .toLowerCase() .endsWith( '.vzome' ) ) {
-          setState( 'designName', name .substring( 0, name.length - 6 ) );
+          name = name .substring( 0, name.length - 6 );
+          setState( 'designName', name );
           setState( 'sharing', 'title', name .replaceAll( '-', ' ' ) );
         }
 
