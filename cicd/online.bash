@@ -31,9 +31,6 @@ clean() {
   rm -rf jsweet-branches || exit $?
   cd online
 
-  rm -rf src/worker/legacy/candies || exit $?
-  rm -rf src/worker/legacy/core-java.js || exit $?
-
   rm -rf .jsweet || exit $?
   rm -rf jsweetOut || exit $?
   rm -rf dist || exit $?
@@ -55,15 +52,9 @@ marshallResources() {
 
 generateRevisionJs() {
   banner 'Generating src/revision.js'
-  if [ -z ${1+x} ]; then
-    echo "export const REVISION=\"${REVISION}\";" > src/revision.js
-    echo "export const importLegacy = async () => import( './worker/legacy/dynamic.js' );" >> src/revision.js
-    echo "export const importZomic = async () => import( './worker/legacy/zomic/index.js' );" >> src/revision.js
-  else
-    echo "export const REVISION=\"${1}\";" > src/revision.js
-    echo "export const importLegacy = async () => import( 'https://www.vzome.com/modules/vzome-legacy.js' );" >> src/revision.js
-    echo "export const importZomic = async () => import( 'https://www.vzome.com/modules/vzome-zomic.js' );" >> src/revision.js
-  fi
+  echo "export const REVISION=\"${REVISION}\";" > src/revision.js
+  echo "export const importLegacy = async () => import( './worker/legacy/dynamic.js' );" >> src/revision.js
+  echo "export const importZomic = async () => import( './worker/legacy/zomic/index.js' );" >> src/revision.js
 
   # index exporter resources
   ( cd serve/app/classic/resources
@@ -106,7 +97,7 @@ devJava(){
   banner 'We are no longer using JSweet automatically. You can still use the "jsweet" command here manually.'
 }
 
-devJs(){
+initJs(){
   cd online
 
   marshallResources || exit $?
@@ -114,20 +105,12 @@ devJs(){
   generateRevisionJs || exit $?
 
   installJsDependencies || exit $?
-
-  yarn run dev
 }
 
-devQuick(){
-  cd online
+devJs(){
+  initJs || exit $?
 
-  marshallResources || exit $?
-
-  generateRevisionJs 'QUICKSTART' || exit $?
-
-  installJsDependencies || exit $?
-
-  yarn run nolegacy
+  yarn run dev
 }
 
 productionBuild(){
@@ -139,14 +122,18 @@ productionBuild(){
 
   buildForProduction || exit $?
 
-  banner 'finished building the vZome Online apps and web component'
+  banner 'Production build available in online/dist and online/dist/online.tgz'
 }
 
 
 case $1 in
 
+  init)
+    initJs
+    ;;
+
   quickstart)
-    devQuick
+    devJs
     ;;
 
   dev)
@@ -174,7 +161,7 @@ case $1 in
     ;;
 
   *)
-    banner 'no command (quickstart|dev|java|prod) provided'
+    banner 'no command (dev|java|prod|clean) provided'
     ;;
 esac
 
