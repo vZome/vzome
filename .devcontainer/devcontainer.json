@@ -13,7 +13,9 @@
 	"customizations": {
 		// Configure properties specific to VS Code.
 		"vscode": {
-			"settings": {},
+			"settings": {
+				"extensions.ignoreRecommendations": true
+      			},
 			"extensions": []
 		}
 	},
