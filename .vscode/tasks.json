@@ -4,19 +4,21 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "vZome online: Start Dev Server",
+      "label": "Build vZome for Development",
       "type": "shell",
+      "group": "build",
       "command": "cicd/online.bash dev",
       "problemMatcher": []
     },
     {
-      "label": "vZome online: Build for Production",
+      "label": "Build vZome for Production",
       "type": "shell",
+      "group": "build",
       "command": "cicd/online.bash prod",
       "problemMatcher": []
     },
     {
-      "label": "vZome online: Clean",
+      "label": "Clean vZome",
       "type": "shell",
       "command": "cicd/online.bash clean",
       "problemMatcher": []

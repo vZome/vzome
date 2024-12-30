@@ -2,87 +2,97 @@
 
 Online vZome is a web application, but also a set of related web applications (and web components) using shared code.
 
-## Quick Start
+There are three ways you can work with this code.
+Option 1 requires nothing but your existing web browser.
+Options 2 and 3 both require [Visual Studio Code](https://code.visualstudio.com/)
+installed on your local computer;
+they differ in what other prerequisites must be installed.
+
+## Option 1: GitHub Codespaces (Quick Start)
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/vZome/vzome)
 
 The easiest way to experiment with this code is to click the badge above.
-This will give you a Visual Studio Code development environment running in your web browser,
-backed by a Docker container running on a remote virtual machine.
+This will give you a [codespace](https://docs.github.com/en/codespaces),
+which is a Visual Studio Code development environment running in your web browser,
+backed by a Docker container running on a remote virtual machine somewhere in GitHub's cloud.
+The downside here is the time to set up the codespace, and the lag you will see when testing.
 
-> Note: the badge above opens a codespace on the official vZome repo.  If you intend to contribute
-> changes back, you should fork that repo and open your codespace on your own fork, using the green
-> "Code" button in GitHub. 
+> Note: the badge above opens a codespace on the official vZome repo.
+> This is fine for experimentation, but *if you intend to contribute
+> changes back*, you should fork that repo and open your codespace on your own fork, using the green
+> "Code" button in GitHub, under the "Codespaces" tab there. 
 
-Once your codespace is up and running, proceed to the [workflow section below](#vs-code-workflow).
+If you're familiar with VS Code, you'll notices some minor differences in the web version.
+Most importantly, the usual menubar seems to be missing, but you can find it by clicking on
+the triple-bar icon in the upper left of the page.
 
-### Local Docker
+Starting the codespace can take a couple of minutes, and there are several phases.
+Once your codespace is completely ready, you can proceed to the next step.
 
-If you have [Docker](https://www.docker.com/) and [Visual Studio Code](https://code.visualstudio.com/)
-installed on your local computer,
-when you open VS Code on this project, it will offer to "Reopen in Container".
-This lets you avoid setting up [prerequisites](#prerequisites) for local development.
-This is using the same "dev container" that GitHub Codespaces would use, but
-the container runs on your own machine.
+### Start the Development Server
 
-Once the workspace is ready, proceed to the [workflow section below](#vs-code-workflow).
-
-### VS Code Workflow
-
-This repository has a [`tasks.json`](/.vscode/tasks.json) file
-that registers tasks for VS code.
-You can run these in several ways; the most obvious is the "Run Task..." item in the "Terminal" menu.
-See [the documentation](https://code.visualstudio.com/Docs/editor/tasks) for more ways to run tasks.
-
-#### vZome online: Start Dev Server
-
+Find the "Terminal" menu in VS Code, and click on "Run Build Task..." (shift-command-B on a Mac),
+then select `Build vZome for Development`.
 This task builds all the online apps and components, then starts a dev server.
-VS Code will prompt you to open the [test page](#testing) in your browser.
-
-#### vZome online: Build for Production
-
-This task builds all the online apps and components, then prepares the files for
-the production server, and creates an archive.
-
-#### vZome online: Clean
-
-This task removes all temporary files and build artifacts.
+Finally, it will automatically open the test page (see below) in your browser.
 
 ### Testing
 
-Unfortunately, there is no automated testing implemented.
-
-You can manually test the various apps, as well as different web component scenarios,
-using the [test page](./serve/app/test/index.html).
-This is just a set of links to launch other webapps or pages for testing different components and their configurations.
+The test page contains links to the various web apps, as well as different web components and their configuration options,
+for manual testing.
+(Unfortunately, there is no automated testing implemented at the moment.)
+You can see the [test page source here](./serve/app/test/index.html).
 
 ### Debugging
 
 With the dev server running, you can use the `TEST` launch profile in VS Code
-to debug the client-side code.  This will launch a separate Chrome instance
+to debug the client-side code.  This will launch a special Chrome instance, connected to the VS Code debugging framework and
 showing the test page.  Breakpoints you set in VS Code will be triggered by that browser.
 
+## Option 2: Local Docker
 
-## Local Machine Development
+If you do lots of development, you may have [Docker](https://www.docker.com/) installed already.
+If you do, you can skip installing other vZome prerequisite tools by using the same "dev container" that GitHub Codespaces would use, but
+running on your own machine, in your Docker host.
 
-### Prerequisites
+In this case, when you open VS Code on this project it will offer to "Reopen in Container".
+Accept that, and wait for the workspace to be ready.
 
-You'll need [Node.js](https://nodejs.org/en) and [Yarn](https://yarnpkg.com/getting-started/install);
-the `online.bash` script uses `yarn` explicitly.
+Once the workspace is ready, you can [start the dev server](#start-the-development-server)
+and continue with the workflow as documented in Option 1 above.
 
-### Workflow
+With the dev server running, you can [visit the test page here](http://localhost:8532/app/test/).
 
-For local machine development, you can use the same [VS Code tasks defined above](#vs-code-workflow).
+## Option 3: Local Node.js
 
+If you don't want to install and manage Docker,
+you'll need to install [Node.js](https://nodejs.org/en) and [Yarn](https://yarnpkg.com/getting-started/install);
+the `online.bash` script uses `yarn` explicitly, not `npm`.
+
+Node.js is only used as a tooling framework.  None of the vZome web apps require a server side running in Node.
+
+With this project open in VS Code, you can [start the dev server](#start-the-development-server)
+and continue with the workflow as documented in Option 1 above.
+
+With the dev server running, you can [visit the test page here](http://localhost:8532/app/test/).
 
 ## Official Builds
 
+The `Build vZome for Production` task in VS Code builds all the online apps and components, then prepares the files for
+the production server, and creates an archive under the `online/dist` folder.
+
 All official builds for online vZome are performed using GitHub Actions.  See `.github/workflows/online.yml`.
 
-## Legacy Code Dev Workflow
+## Clean Up
+
+The `vZome online: Clean` task removes all temporary files and build artifacts.
+
+## Legacy Code Workflow
 
 > This workflow is no longer viable unless you *already* have all of the JSweet components built and installed locally.
 > The JSweet Artifactory server is offline for good, and so the build is not working.
+> Nonetheless, I'm keeping these instructions here for my own use.
 
 You'll need [Maven](https://maven.apache.org/) installed for these steps.
 You will also require an installation of [JDK 11](https://www.oracle.com/java/technologies/javase/jdk11-archive-downloads.html).
