@@ -13,7 +13,10 @@
 	"customizations": {
 		// Configure properties specific to VS Code.
 		"vscode": {
-			"settings": {},
+      // disable the prompt to install the Java extension
+			"settings": {
+        "extensions.ignoreRecommendations": true
+      },
 			"extensions": []
 		}
 	},
@@ -26,7 +29,7 @@
 	"portsAttributes": {
 		"8532": {
 			"label": "vZome test page",
-			"onAutoForward": "notify"
+			"onAutoForward": "openBrowser"
 		}
 	},
 
