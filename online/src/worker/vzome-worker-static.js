@@ -1,4 +1,5 @@
 
+import { importLegacy } from '../revision.js';
 
 // support trampolining to work around worker CORS issue
 //   see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
@@ -150,7 +151,7 @@ const clientEvents = report =>
 const createDesign = ( report, fieldName ) =>
 {
   report( { type: 'FETCH_STARTED', payload: { name: 'untitled.vZome', preview: false } } );
-  return import( './legacy/dynamic.js' )
+  return importLegacy()
 
     .then( module => {
       designController = module .newDesign( fieldName, clientEvents( report ) );
@@ -166,7 +167,7 @@ const createDesign = ( report, fieldName ) =>
 
 const getField = name =>
 {
-  return import( './legacy/dynamic.js' )
+  return importLegacy()
     .then( module => {
       return module .getField( name );
     } );
@@ -174,7 +175,7 @@ const getField = name =>
 
 const loadDesign = ( xmlLoading, report, debug ) =>
 {
-  return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
+  return Promise.all( [ importLegacy(), xmlLoading ] )
 
     .then( ([ module, xml ]) => {
       designController = module .loadDesign( xml, debug, clientEvents( report ) );
