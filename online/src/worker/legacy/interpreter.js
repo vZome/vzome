@@ -5,104 +5,10 @@ import { realizeShape, normalizeRenderedManifestation } from './scenes.js';
 //  Right now this is duplicated!
 export const Step = { IN: 0, OVER: 1, OUT: 2, DONE: 3 }
 
-// TODO: move this to 4 methods of EditCursor
-export const interpret = ( action, cursor, effects, stack=[] ) =>
-{
-  const step = () =>
-  {
-    let edit = cursor .getNextEdit();
-    if ( ! edit )
-      return Step.DONE;
-    if ( edit .isBranch() ) {
-      stack .push( { branch: edit, cursor } );
-      cursor = cursor .startBranch( edit );
-      effects .recordSnapshot( edit.id(), edit .firstChild().id() );
-      if ( edit .nextSibling() ) {
-        effects .recordSnapshot( edit.id(), edit .nextSibling().id() );
-      }
-      return Step.IN;
-    } else {
-      edit.perform( cursor.editContext ); // here we may create a legacy edit object
-      const breakpointHit = cursor .atBreakpoint( edit );
-      if ( edit .nextSibling() ) {
-        effects .recordSnapshot( edit.id(), edit .nextSibling() .id() );
-        cursor .setNextEdit( edit .nextSibling() );
-        return breakpointHit? Step.DONE : Step.OVER;
-      } else {
-        effects .recordSnapshot( edit.id(), '--END--' ); // last one will be the real before-end
-        let top;
-        do {
-          top = stack .pop();
-        } while ( top && ! top.branch .nextSibling() )
-        if ( top ) {
-          cursor = top.cursor;  // overwrite and discard the prior value
-          cursor .endBranch( top.branch );
-          cursor .setNextEdit( top.branch .nextSibling() );
-          return breakpointHit? Step.DONE : Step.OUT;
-        } else {
-          // at the end of the editHistory
-          return Step.DONE;
-        }
-      }
-    }
-  }
-
-  const conTinue = () =>
-  {
-    let stepped;
-    do {
-      stepped = stepOut();
-    } while ( stepped !== Step.DONE );
-  }
-
-  const stepOver = () =>
-  {
-    const stepped = step();
-    switch ( stepped ) {
-
-      case Step.IN:
-        stepOut();
-        return Step.OVER;
-    
-      default:
-        return stepped;
-    }
-  }
-
-  const stepOut = () =>
-  {
-    let stepped;
-    do {
-      stepped = stepOver();
-    } while ( stepped !== Step.OUT && stepped !== Step.DONE );
-    return stepped;
-  }
-
-  switch ( action ) {
-
-    case Step.IN:
-      step();
-      break;
-  
-    case Step.OVER:
-      stepOver();
-      break;
-  
-    case Step.OUT:
-      stepOut();
-      break;
-  
-    case Step.DONE:
-    default:
-      conTinue();
-      break;
-  }
-}
-
 // TODO: record snapshots only for Snapshots, unless debugging
 export class RenderHistory
 {
-  constructor( design )
+  constructor( design, polygons )
   {
     const { firstEdit } = design;
     this.shapes = {};
@@ -110,6 +16,7 @@ export class RenderHistory
     this.shapshotsBefore = {};
     this.design = design;
     this.currentSnapshot = [];
+    this.polygons = polygons;
     this.recordSnapshot( '--START--', firstEdit? firstEdit.id() : '--END--' );
   }
 
@@ -120,7 +27,7 @@ export class RenderHistory
     const shapeId = 's' + rm.getShapeId().toString();
     let shape = this.shapes[ shapeId ];
     if ( ! shape ) {
-      shape = realizeShape( rm .getShape() );
+      shape = realizeShape( rm .getShape(), this.polygons );
       this.shapes[ shapeId ] = shape;
     }
     let instance = normalizeRenderedManifestation( rm );
@@ -130,7 +37,6 @@ export class RenderHistory
 
   recordSnapshot( afterId, beforeId )
   {
-    this.lastEdit = afterId;
     this.currentSnapshot = []; // prior value overwritten, but it was already captured in snapshotsAfter and snapshotsBefore
     this.snapshotsAfter[ afterId ] = this.currentSnapshot;
     this.shapshotsBefore[ beforeId ] = this.currentSnapshot;
@@ -139,31 +45,11 @@ export class RenderHistory
 
   getSnapshot( editId, before=false )
   {
-    this .setError( null );
-    const shapes = {};
     let snapshot = before? this.shapshotsBefore[ editId ] : this.snapshotsAfter[ editId ];
     if ( !snapshot ) {
-
-      // TODO: disabled until we have a debugger again.
-      //  NOTE: we will need to pass in or link to the editCursor somehow
-      // this.breakpoint = editId;
-      // try {
-      //   interpret( Step.DONE, editCursor, this, [] );
-      // } catch (error) {
-      //   this .setError( error );
-      // }
-      // this.breakpoint = null;
-
       editId = before? '--END--' : this.lastEdit;
       snapshot = before? this.shapshotsBefore[ editId ] : this.snapshotsAfter[ editId ];
     }
-    // for ( const instance of snapshot ) {
-    //   const shapeId = instance.shapeId;
-    //   if ( ! shapes[ shapeId ] ) {
-    //     shapes[ shapeId ] = { ...this.shapes[ shapeId ], instances: [] };
-    //   }
-    //   shapes[ shapeId ] .instances .push( instance );
-    // }
     return snapshot;
   }
 
@@ -171,34 +57,140 @@ export class RenderHistory
   {
     return this.shapes;
   }
-
-  setError( error )
-  {
-    this.error = error;
-  }
-
-  getError()
-  {
-    return this.error;
-  }
 }
 
-// TODO: rename Interpreter, and incorporate 4 methods from interpret
-export class EditCursor
+export class Interpreter
 {
-  constructor( design, history=design.history, firstEdit=design.firstEdit )
+  constructor( design, effects )
   {
     this.design = design;
-    this.history = history;
+    this.effects = effects;
+
+    this.cursor = new EditCursor( design.history, design.firstEdit );
+    this.stack = [];
     this.editContext = {
       performAndRecord: edit => {
         edit .perform();
-        history .addEdit( edit );
+        this.cursor.history .addEdit( edit ); // must use the current cursor!
       },
       createLegacyCommand: name => this.design.editContext .createLegacyCommand( name ),
     };
+
+    this.lastEdit = '--START--';
+    this.breakpoint = null;
+    this.error = null; // TODO: catch errors from edit.perform()
+  }
+
+  getLastEdit()
+  {
+    return this.lastEdit;
+  }
+    
+  step()
+  {    
+    let edit = this.cursor .getNextEdit();
+    if ( ! edit )
+      return Step.DONE;
+    if ( edit .isBranch() ) {
+      this.stack .push( { branch: edit, cursor: this.cursor } );
+      this.cursor = this.cursor .startBranch( edit, this.editContext );
+      this.effects .recordSnapshot( edit.id(), edit .firstChild().id() );
+      this.lastEdit = edit.id();
+      if ( edit .nextSibling() ) {
+        this.effects .recordSnapshot( edit.id(), edit .nextSibling().id() );
+        this.lastEdit = edit.id();
+      }
+      return Step.IN;
+    } else {
+      edit.perform( this.editContext ); // here we may create a legacy edit object
+      const breakpointHit = edit.id() === this.breakpoint;
+      if ( edit .nextSibling() ) {
+        this.effects .recordSnapshot( edit.id(), edit .nextSibling() .id() );
+        this.lastEdit = edit.id();
+        this.cursor .setNextEdit( edit .nextSibling() );
+        return breakpointHit? Step.DONE : Step.OVER;
+      } else {
+        this.effects .recordSnapshot( edit.id(), '--END--' ); // last one will be the real before-end
+        this.lastEdit = edit.id();
+        let top;
+        do {
+          top = this.stack .pop();
+        } while ( top && ! top.branch .nextSibling() )
+        if ( top ) {
+          this.cursor = top.cursor;  // overwrite and discard the prior value
+          this.cursor .endBranch( top.branch );
+          this.cursor .setNextEdit( top.branch .nextSibling() );
+          return breakpointHit? Step.DONE : Step.OUT;
+        } else {
+          // at the end of the editHistory
+          return Step.DONE;
+        }
+      }
+    }
+  }
+  
+  conTinue()
+  {
+    let stepped;
+    do {
+      stepped = this.stepOut();
+    } while ( stepped !== Step.DONE );
+  }
+  
+  stepOver()
+  {
+    let stepped = this.step();
+    switch ( stepped ) {
+
+      case Step.IN:
+        stepped = this.stepOut();
+        return stepped;
+    
+      default:
+        return stepped;
+    }
+  }
+  
+  stepOut()
+  {
+    let stepped;
+    do {
+      stepped = this.stepOver();
+    } while ( stepped !== Step.OUT && stepped !== Step.DONE );
+    return stepped;
+  }
+  
+  interpret( action, breakpoint=null )
+  {
+    this.breakpoint = breakpoint;
+    switch ( action ) {
+  
+      case Step.IN:
+        this.step();
+        break;
+    
+      case Step.OVER:
+        this.stepOver();
+        break;
+    
+      case Step.OUT:
+        this.stepOut();
+        break;
+    
+      case Step.DONE:
+      default:
+        this.conTinue();
+        break;
+    }
+  }
+}
+
+export class EditCursor
+{
+  constructor( history, firstEdit )
+  {
+    this.history = history;
     this.nextEdit = firstEdit;
-    this.context
   }
 
   toString()
@@ -216,18 +208,12 @@ export class EditCursor
     this.nextEdit = edit;
   }
 
-  atBreakpoint( edit )
+  startBranch( parsedEdit, editContext )
   {
-    // Unused until we have a debugger again
-    return ( edit.id() === this.breakpoint );
-  }
-
-  startBranch( parsedEdit )
-  {
-    const branch = new com.vzome.core.editor.Branch( this.design.editContext );
-    this.history .addEdit( branch, this.design.editContext );
+    const branch = new com.vzome.core.editor.Branch( editContext );
+    this.history .addEdit( branch, editContext );
     parsedEdit .legacyEdit = branch; // oops, violating encapsulation
-    return new EditCursor( this.design, branch, parsedEdit.firstChild() );
+    return new EditCursor( branch, parsedEdit.firstChild() );
   }
 
   endBranch( parsedEdit )

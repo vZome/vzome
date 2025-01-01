@@ -1,12 +1,16 @@
 
 
-export const realizeShape = ( shape ) =>
+export const realizeShape = ( shape, polygons ) =>
 {
   const vertices = shape.getVertexList().toArray().map( av => {
     const { x, y, z } = av.toRealVector();  // this is too early to do embedding, which is done later, globally
     return { x, y, z };
   })
-  const faces = shape.getFaceSet().toArray().map( (value) => ({ vertices: [...value.array] }) ); // not a no-op, converts to POJS
+
+  const faces = polygons?
+    shape.getFaceSet().toArray().map( (value) => ({ vertices: [...value.array] }) ) // not a no-op, converts to POJS
+  : shape.getTriangleFaces().toArray().map( ({ vertices }) => ({ vertices }) );  // not a no-op, converts to POJS
+
   const id = 's' + shape.getGuid().toString();
   const name = shape .getName();
   if ( name === 'ball' ) {
