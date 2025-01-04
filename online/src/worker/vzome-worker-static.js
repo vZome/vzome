@@ -313,7 +313,7 @@ const shareToGitHub = async ( target, config, data, report ) =>
 
 const fileLoader = ( report, payload ) =>
 {
-  const { file, debug=false } = payload;
+  const { file, debug=false, polygons=true } = payload;
   const { name } = file;
   report( { type: 'FETCH_STARTED', payload: { name, preview: false } } );
   console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% editing ${name}` );
@@ -321,7 +321,7 @@ const fileLoader = ( report, payload ) =>
 
   xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { text } } ) ); // Don't send the name yet, parse/interpret may fail
 
-  openDesign( xmlLoading, name, report, debug );
+  openDesign( xmlLoading, name, report, debug, polygons );
 }
 
 const fileImporter = ( report, payload ) =>
@@ -394,7 +394,7 @@ const urlLoader = async ( report, payload ) =>
       .catch( error => {
         console.log( error.message );
         console.log( 'Preview failed, falling back to vZome XML' );
-        openDesign( xmlLoading, name, report, debug, sceneTitle );
+        openDesign( xmlLoading, name, report, debug, polygons, sceneTitle );
       } )
   }
   else {
