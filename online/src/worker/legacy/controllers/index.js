@@ -1,7 +1,7 @@
 
 import { com } from '../core-java.js';
 import { documentFactory, parse } from '../core.js'
-import { EditCursor, interpret, RenderHistory, Step } from '../interpreter.js';
+import { Interpreter, RenderHistory, Step } from '../interpreter.js';
 import { ControllerWrapper } from './wrapper.js';
 import { renderedModelTransducer, resolveBuildPlanes } from '../scenes.js';
 import { EditorController } from './editor.js';
@@ -77,16 +77,16 @@ export const snapCamera = ( symmController, upArray, lookArray ) =>
   return { up: toArray( up ), lookDir: toArray( look ) };
 }
 
-const initializeDesign = ( loading, legacyDesign, clientEvents ) =>
+const initializeDesign = ( loading, polygons, legacyDesign, clientEvents ) =>
 {
   const { lighting, camera, scenes, snapshotNodes } = legacyDesign;
-  const renderHistory = new RenderHistory( legacyDesign );                                     // used for all normal rendering
+  const renderHistory = new RenderHistory( legacyDesign, polygons );                          // used for all normal rendering
+  const interpreter = new Interpreter( legacyDesign, renderHistory );
   const renderingChanges = renderedModelTransducer( renderHistory.getShapes(), clientEvents ); // used only for preview struts
-
+  
   if ( loading ) {
     // interpretation may take several seconds, which is why we already reported PARSE_COMPLETED
-    // TODO: why is EditCursor created here, not internally to interpret?
-    interpret( Step.DONE, new EditCursor( legacyDesign ), renderHistory, [] );
+    interpreter .interpret( Step.DONE );
   } // else in debug mode, we'll interpret incrementally
 
   // TODO: define a better contract for before/after.
@@ -101,10 +101,16 @@ const initializeDesign = ( loading, legacyDesign, clientEvents ) =>
   const { orientations } = orbitSource;
   const embedding = orbitSource .getEmbedding();
   
-  // TODO: get rid of this; snapshots should be captured as needed, during interpret() above
-  const snapshots = snapshotNodes .map( nodeId => renderHistory .getSnapshot( nodeId, true ) );
+  let instances;
+  let snapshots;
+  if ( loading ) {
+    // TODO: get rid of this; snapshots should be captured as needed, during interpret() above
+    snapshots = snapshotNodes .map( nodeId => renderHistory .getSnapshot( nodeId, true ) );
 
-  const instances = snapshots .pop();
+    instances = snapshots .pop();
+  } else {
+    instances = renderHistory .getSnapshot( '--START--' );
+  }
 
   const wrapper = createControllers( legacyDesign, renderingChanges, clientEvents );
 
@@ -116,9 +122,16 @@ const initializeDesign = ( loading, legacyDesign, clientEvents ) =>
     instances .splice( 0, Infinity, ...renderHistory.currentSnapshot );
   } // happens at end of every wrapper.doAction()
 
+  wrapper.getScene = ( editId, before ) => renderHistory .getSnapshot( editId, before );
+
+  wrapper.interpretToBreakpoint = ( editId, before ) => {
+    interpreter .interpret( Step.DONE, editId );
+    return before? '--END--' : interpreter .getLastEdit();
+  }
+
   wrapper.serializeVZomeXml = ( camera, lighting ) => serializeVZomeXml( legacyDesign, camera, lighting, scenes );
 
-  const rendered = { lighting, camera, embedding, orientations, polygons: true, shapes, instances, snapshots, scenes };
+  const rendered = { lighting, camera, embedding, orientations, polygons, shapes, instances, snapshots, scenes };
   return { wrapper, rendered };
 }
 
@@ -126,10 +139,10 @@ export const newDesign = ( fieldName, clientEvents ) =>
   {
     const legacyDesign = documentFactory( fieldName );
 
-    return initializeDesign( false, legacyDesign, clientEvents );
+    return initializeDesign( false, true, legacyDesign, clientEvents );
   }
   
-export const loadDesign = ( xml, debug, clientEvents ) =>
+export const loadDesign = ( xml, debug, polygons, clientEvents ) =>
 {
   const legacyDesign = parse( xml );
   const { xmlTree, field } = legacyDesign;
@@ -138,5 +151,5 @@ export const loadDesign = ( xml, debug, clientEvents ) =>
   }
   clientEvents .xmlParsed( xmlTree );
 
-  return initializeDesign( !debug, legacyDesign, clientEvents );
+  return initializeDesign( !debug, polygons, legacyDesign, clientEvents );
 }

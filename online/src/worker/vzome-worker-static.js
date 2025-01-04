@@ -47,6 +47,29 @@ const prepareSceneResponse = ( design, sceneIndex ) =>
   return { title, shapes, camera, lighting, embedding, polygons };
 }
 
+const prepareEditSceneResponse = ( design, edit, before ) =>
+  {
+    let sceneInstances = design.wrapper .getScene( edit, before );
+
+    if ( ! sceneInstances ) {
+      // debugging, so we have to interpret more
+      edit = design.wrapper .interpretToBreakpoint( edit, before );
+      sceneInstances = design.wrapper .getScene( edit, before );
+    }
+
+    sceneInstances = { ...sceneInstances }; 
+    const { polygons, orientations } = design.rendered;
+    const shapes = {};
+    for ( const instance of Object.values( sceneInstances ) ) {
+      const rotation = [ ...( orientations[ instance.orientation ] || IDENTITY_MATRIX ) ];
+      if ( ! shapes[ instance.shapeId ] ) {
+        shapes[ instance.shapeId ] = { ...design.rendered.shapes[ instance.shapeId ], instances: [] };
+      }
+      shapes[ instance.shapeId ].instances.push( { ...instance, rotation } );
+    }
+    return { scene: { shapes, polygons }, edit };
+  }
+  
 const filterScene = ( report, load ) => event =>
 {
   const { type, payload } = event;
@@ -158,7 +181,7 @@ const clientEvents = report =>
 
 const trackballScenes = {};
 
-const fetchTrackballScene = ( url, report ) =>
+const fetchTrackballScene = ( url, report, polygons ) =>
 {
   const reportTrackballScene = scene => report( { type: 'TRACKBALL_SCENE_LOADED', payload: scene } );
   const cachedScene = trackballScenes[ url ];
@@ -168,7 +191,7 @@ const fetchTrackballScene = ( url, report ) =>
   }
   Promise.all( [ importLegacy(), fetchUrlText( new URL( `/app/classic/resources/${url}`, baseURL ) ) ] )
     .then( ([ legacy, xml ]) => {
-      const trackballDesign = legacy .loadDesign( xml, false, clientEvents( ()=>{} ) );
+      const trackballDesign = legacy .loadDesign( xml, false, polygons, clientEvents( ()=>{} ) );
       prepareDefaultScene( trackballDesign );
       const scene = prepareSceneResponse( trackballDesign, 0 ); // takes a normalized scene
       trackballScenes[ url ] = scene;
@@ -176,10 +199,10 @@ const fetchTrackballScene = ( url, report ) =>
     } );
 }
 
-const connectTrackballScene = ( report ) =>
+const connectTrackballScene = ( report, polygons ) =>
 {
   // console.log( "call", uniqueId );
-  const trackballUpdater = () => fetchTrackballScene( design.wrapper .getTrackballUrl(), report );
+  const trackballUpdater = () => fetchTrackballScene( design.wrapper .getTrackballUrl(), report, polygons );
   trackballUpdater();
   design.wrapper.controller .addPropertyListener( { propertyChange: pce =>
   {
@@ -203,7 +226,7 @@ const createDesign = async ( report, fieldName ) =>
   }
 }
 
-const openDesign = async ( xmlLoading, name, report, debug, sceneTitle ) =>
+const openDesign = async ( xmlLoading, name, report, debug, polygons, sceneTitle ) =>
 {
   const events = clientEvents( report );
   return Promise.all( [ importLegacy(), xmlLoading ] )
@@ -215,7 +238,7 @@ const openDesign = async ( xmlLoading, name, report, debug, sceneTitle ) =>
       }
       const doLoad = () => {
         report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
-        design = legacy .loadDesign( xml, debug, events );
+        design = legacy .loadDesign( xml, debug, polygons, events );
         prepareDefaultScene( design );
 
         // TODO: don't duplicate this in urlLoader()
@@ -332,7 +355,7 @@ const defaultLoad = { camera: true, lighting: true, design: true, bom: false, };
 const urlLoader = async ( report, payload ) =>
 {
   const { url, config } = payload;
-  const { preview=false, debug=false, showScenes='none', sceneTitle, load=defaultLoad, source=true } = config;
+  const { preview=false, debug=false, polygons=true, showScenes='none', sceneTitle, load=defaultLoad, source=true } = config;
   if ( !url ) {
     throw new Error( "No url field in URL_PROVIDED event payload" );
   }
@@ -357,7 +380,7 @@ const urlLoader = async ( report, payload ) =>
           //  so fall back on XML.
           console.log( `No scenes in preview ${previewUrl}` );
           console.log( 'Preview failed, falling back to vZome XML' );
-          openDesign( xmlLoading, name, report, debug, sceneTitle );
+          openDesign( xmlLoading, name, report, debug, polygons, sceneTitle );
           return;
         }
 
@@ -375,7 +398,7 @@ const urlLoader = async ( report, payload ) =>
       } )
   }
   else {
-    openDesign( xmlLoading, name, report, debug, sceneTitle );
+    openDesign( xmlLoading, name, report, debug, polygons, sceneTitle );
   }
 }
 
@@ -392,7 +415,13 @@ const reportDefaultScene = report =>
 onmessage = ({ data }) =>
 {
   // console.log( `TO worker: ${JSON.stringify( data.type, null, 2 )}` );
-  const { type, payload, requestId } = data;
+  const { type, payload, requestId, isInspector } = data;
+  if ( typeof payload === 'object' ) {
+    payload.polygons = !isInspector;
+    if ( typeof payload.config === 'object' ) {
+      payload.config.polygons = !isInspector;
+    }
+  }
 
   let sendToClient = postMessage;
   if ( !! requestId ) {
@@ -440,10 +469,9 @@ onmessage = ({ data }) =>
 
     case 'EDIT_SELECTED': {
       const { before, after } = payload; // only one of these will have an edit ID
-      // TODO: this won't work any more, getScene is gone
-      const scene = design.wrapper .getScene( before || after, !!before );
-      const { edit } = scene;
-      sendToClient( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
+      const edit = before || after;
+      const response = prepareEditSceneResponse( design, edit, !!before );
+      sendToClient( { type: 'SCENE_RENDERED', payload: response } );
       break;
     }
 
@@ -464,10 +492,10 @@ onmessage = ({ data }) =>
 
     case 'ACTION_TRIGGERED':
     {
-      const { controllerPath, action, parameters } = payload;
+      const { controllerPath, action, parameters, polygons } = payload;
       try {
         if ( action === 'connectTrackballScene' ) {
-          connectTrackballScene( sendToClient );
+          connectTrackballScene( sendToClient, polygons );
           return;
         }
         if ( action === 'shareToGitHub' ) {
