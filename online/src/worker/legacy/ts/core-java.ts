@@ -2841,6 +2841,19 @@ namespace com.vzome.core.kinds {
 
 }
 namespace com.vzome.core.exporters {
+    export interface DocumentExporterIntf {
+        /**
+         * Subclasses can override this if they need to export history, the lesson model, or the selection.
+         * @param {*} doc
+         * @param {java.io.File} file
+         * @param {java.io.Writer} writer
+         * @param {number} height
+         * @param {number} width
+         */
+        exportDocument(doc: com.vzome.core.exporters.DocumentIntf, file: java.io.File, writer: java.io.Writer, height: number, width: number);
+    }
+}
+namespace com.vzome.core.exporters {
     export interface DocumentIntf {
         getCameraModel(): com.vzome.core.viewing.CameraIntf;
 
@@ -4137,10 +4150,6 @@ namespace com.vzome.core.render {
 
         export class SymmetryOrbitSource implements com.vzome.core.editor.api.OrbitSource {
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getOrientations$(): number[][] {
-                return this.getOrientations(false);
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             getEmbedding(): number[] {
                 const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
                 const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
@@ -4158,6 +4167,10 @@ namespace com.vzome.core.render {
                 embedding[14] = 0.0;
                 embedding[15] = 1.0;
                 return embedding;
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getOrientations$(): number[][] {
+                return this.getOrientations(false);
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             public getOrientations(rowMajor?: any): number[][] {
@@ -17058,10 +17071,6 @@ namespace com.vzome.core.editor {
 namespace com.vzome.core.editor {
     export class SymmetrySystem implements com.vzome.core.editor.api.OrbitSource {
         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-        getOrientations$(): number[][] {
-            return this.getOrientations(false);
-        }
-        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
         getEmbedding(): number[] {
             const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
             const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
@@ -17079,6 +17088,10 @@ namespace com.vzome.core.editor {
             embedding[14] = 0.0;
             embedding[15] = 1.0;
             return embedding;
+        }
+        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+        getOrientations$(): number[][] {
+            return this.getOrientations(false);
         }
         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
         public getOrientations(rowMajor?: any): number[][] {
@@ -23728,7 +23741,7 @@ namespace com.vzome.core.exporters {
 
 }
 namespace com.vzome.core.exporters {
-    export abstract class DocumentExporter extends com.vzome.core.exporters.GeometryExporter {
+    export abstract class DocumentExporter extends com.vzome.core.exporters.GeometryExporter implements com.vzome.core.exporters.DocumentExporterIntf {
         mLights: com.vzome.core.viewing.Lights;
 
         mScene: com.vzome.core.viewing.CameraIntf;
@@ -23756,7 +23769,7 @@ namespace com.vzome.core.exporters {
         }
     }
     DocumentExporter["__class"] = "com.vzome.core.exporters.DocumentExporter";
-    DocumentExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
+    DocumentExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling","com.vzome.core.exporters.DocumentExporterIntf"];
 
 
 }
@@ -36185,7 +36198,7 @@ namespace com.vzome.core.exporters {
         }
     }
     OpenScadExporter["__class"] = "com.vzome.core.exporters.OpenScadExporter";
-    OpenScadExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
+    OpenScadExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling","com.vzome.core.exporters.DocumentExporterIntf"];
 
 
 }
@@ -36436,12 +36449,12 @@ namespace com.vzome.core.exporters {
         }
     }
     POVRayExporter["__class"] = "com.vzome.core.exporters.POVRayExporter";
-    POVRayExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
+    POVRayExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling","com.vzome.core.exporters.DocumentExporterIntf"];
 
 
 }
 namespace com.vzome.core.exporters {
-    export class PartGeometryExporter extends com.vzome.core.exporters.VefExporter {
+    export class PartGeometryExporter extends com.vzome.core.exporters.VefExporter implements com.vzome.core.exporters.DocumentExporterIntf {
         /*private*/ selection: com.vzome.core.editor.api.Selection;
 
         public exportDocument(doc: com.vzome.core.exporters.DocumentIntf, file: java.io.File, writer: java.io.Writer, height: number, width: number) {
@@ -36523,7 +36536,7 @@ namespace com.vzome.core.exporters {
         }
     }
     PartGeometryExporter["__class"] = "com.vzome.core.exporters.PartGeometryExporter";
-    PartGeometryExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
+    PartGeometryExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling","com.vzome.core.exporters.DocumentExporterIntf"];
 
 
 }
@@ -46106,10 +46119,6 @@ namespace com.vzome.core.edits {
         export class ReplaceWithShape$0 implements com.vzome.core.editor.api.OrbitSource {
             public __parent: any;
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getOrientations$(): number[][] {
-                return this.getOrientations(false);
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             getEmbedding(): number[] {
                 const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
                 const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
@@ -46127,6 +46136,10 @@ namespace com.vzome.core.edits {
                 embedding[14] = 0.0;
                 embedding[15] = 1.0;
                 return embedding;
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getOrientations$(): number[][] {
+                return this.getOrientations(false);
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             public getOrientations(rowMajor?: any): number[][] {

@@ -1,6 +1,6 @@
 /* Generated from Java with JSweet 3.2.0-SNAPSHOT - http://www.jsweet.org */
 namespace com.vzome.core.exporters {
-    export class PartGeometryExporter extends com.vzome.core.exporters.VefExporter {
+    export class PartGeometryExporter extends com.vzome.core.exporters.VefExporter implements com.vzome.core.exporters.DocumentExporterIntf {
         /*private*/ selection: com.vzome.core.editor.api.Selection;
 
         public exportDocument(doc: com.vzome.core.exporters.DocumentIntf, file: java.io.File, writer: java.io.Writer, height: number, width: number) {
@@ -82,7 +82,7 @@ namespace com.vzome.core.exporters {
         }
     }
     PartGeometryExporter["__class"] = "com.vzome.core.exporters.PartGeometryExporter";
-    PartGeometryExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
+    PartGeometryExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling","com.vzome.core.exporters.DocumentExporterIntf"];
 
 
 }

@@ -15,6 +15,8 @@ namespace com.vzome.core.viewing {
 
         public halfScaleVertices: java.util.Set<number>;
 
+        /*private*/ shortGeometry: com.vzome.core.parts.StrutGeometry;
+
         public constructor(vertices?: any, faces?: any, prototype?: any, fullScaleVertices?: any, halfScaleVertices?: any, field?: any) {
             if (((vertices != null && (vertices.constructor != null && vertices.constructor["__interfaces"] != null && vertices.constructor["__interfaces"].indexOf("java.util.List") >= 0)) || vertices === null) && ((faces != null && (faces.constructor != null && faces.constructor["__interfaces"] != null && faces.constructor["__interfaces"].indexOf("java.util.List") >= 0)) || faces === null) && ((prototype != null && prototype instanceof <any>com.vzome.core.algebra.AlgebraicVector) || prototype === null) && ((fullScaleVertices != null && (fullScaleVertices.constructor != null && fullScaleVertices.constructor["__interfaces"] != null && fullScaleVertices.constructor["__interfaces"].indexOf("java.util.Set") >= 0)) || fullScaleVertices === null) && ((halfScaleVertices != null && (halfScaleVertices.constructor != null && halfScaleVertices.constructor["__interfaces"] != null && halfScaleVertices.constructor["__interfaces"].indexOf("java.util.Set") >= 0)) || halfScaleVertices === null) && ((field != null && (field.constructor != null && field.constructor["__interfaces"] != null && field.constructor["__interfaces"].indexOf("com.vzome.core.algebra.AlgebraicField") >= 0)) || field === null)) {
                 let __args = arguments;
@@ -24,6 +26,7 @@ namespace com.vzome.core.viewing {
                 if (this.prototypeVector === undefined) { this.prototypeVector = null; } 
                 if (this.fullScaleVertices === undefined) { this.fullScaleVertices = null; } 
                 if (this.halfScaleVertices === undefined) { this.halfScaleVertices = null; } 
+                this.shortGeometry = null;
                 this.prototypeVertices = vertices;
                 this.prototypeFaces = faces;
                 this.prototypeVector = prototype;
@@ -42,6 +45,7 @@ namespace com.vzome.core.viewing {
                     if (this.prototypeVector === undefined) { this.prototypeVector = null; } 
                     if (this.fullScaleVertices === undefined) { this.fullScaleVertices = null; } 
                     if (this.halfScaleVertices === undefined) { this.halfScaleVertices = null; } 
+                    this.shortGeometry = null;
                     this.prototypeVertices = vertices;
                     this.prototypeFaces = faces;
                     this.prototypeVector = prototype;
@@ -63,6 +67,8 @@ namespace com.vzome.core.viewing {
          */
         public getStrutPolyhedron(length: com.vzome.core.algebra.AlgebraicNumber): com.vzome.core.math.Polyhedron {
             const tipVertex: com.vzome.core.algebra.AlgebraicVector = this.prototypeVector.scale(length);
+            let maxNonTipDistance: number = 0;
+            let minTipDistance: number = tipVertex.toRealVector().length();
             const midpoint: com.vzome.core.algebra.AlgebraicVector = tipVertex.scale(this.field['createRational$long$long'](1, 2));
             if ((this.field.getName() === ("snubDodec")) && ExportedVEFStrutGeometry.LOGGER_$LI$().isLoggable(java.util.logging.Level.FINE)){
                 ExportedVEFStrutGeometry.LOGGER_$LI$().fine("proto length = " + this.prototypeVector.toRealVector().length());
@@ -74,11 +80,20 @@ namespace com.vzome.core.viewing {
                 let vertex: com.vzome.core.algebra.AlgebraicVector = this.prototypeVertices.get(i);
                 if (this.fullScaleVertices.contains(i)){
                     vertex = vertex.plus(tipVertex);
-                } else if (this.halfScaleVertices != null && this.halfScaleVertices.contains(i)){
-                    vertex = vertex.plus(midpoint);
+                    minTipDistance = Math.min(minTipDistance, vertex.toRealVector().length());
+                } else {
+                    if (this.halfScaleVertices != null && this.halfScaleVertices.contains(i)){
+                        vertex = vertex.plus(midpoint);
+                    }
+                    maxNonTipDistance = Math.max(maxNonTipDistance, vertex.toRealVector().length());
                 }
                 result.addVertex(vertex);
             };}
+            if (maxNonTipDistance > minTipDistance){
+                if (this.shortGeometry != null){
+                    return this.shortGeometry.getStrutPolyhedron(length);
+                } else return null;
+            }
             for(let index=this.prototypeFaces.iterator();index.hasNext();) {
                 let prototypeFace = index.next();
                 {
@@ -88,6 +103,10 @@ namespace com.vzome.core.viewing {
                 }
             }
             return result;
+        }
+
+        public setShortGeometry(shortGeometry: com.vzome.core.parts.StrutGeometry) {
+            this.shortGeometry = shortGeometry;
         }
     }
     ExportedVEFStrutGeometry["__class"] = "com.vzome.core.viewing.ExportedVEFStrutGeometry";

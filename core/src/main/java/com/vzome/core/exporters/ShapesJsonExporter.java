@@ -29,10 +29,10 @@ public class ShapesJsonExporter extends DocumentExporter
         this.justTriangles = justTriangles;
     }
 
-    public void exportDocument( DocumentModel doc, File file, Writer writer, int height, int width ) throws Exception
+    public void exportDocument( DocumentIntf doc, File file, Writer writer, int height, int width ) throws Exception
     {
         mapper = new JsonMapper( JsonMapper.RealTrianglesView.class, false, this.justTriangles );
-        mScene = doc .getCamera();
+        mScene = ((DocumentModel) doc) .getCamera();
         mModel = doc .getRenderedModel();
         mLights = doc .getSceneLighting();
 
@@ -53,7 +53,7 @@ public class ShapesJsonExporter extends DocumentExporter
         }
         
         ArrayList<ArrayList<JsonNode>> snapshots = new ArrayList<>();
-        for ( RenderedModel snapshot : doc .getSnapshots() ) {
+        for ( RenderedModel snapshot : ((DocumentModel) doc) .getSnapshots() ) {
             if ( snapshot != null )
                 snapshots .add( exportRenderedModel( snapshot, shapes ) );
         }
@@ -74,7 +74,7 @@ public class ShapesJsonExporter extends DocumentExporter
         generator .writeObjectField( "embedding", embeddingRows );
         generator .writeObjectField( "shapes", shapes );
         generator .writeObjectField( "instances", instances );
-        generator .writeObjectField( "scenes", doc .getLesson() .iterator() );
+        generator .writeObjectField( "scenes", ((DocumentModel) doc) .getLesson() .iterator() );
         generator .writeObjectField( "snapshots", snapshots );
         generator .writeEndObject();
         generator.close();

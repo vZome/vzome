@@ -337,6 +337,7 @@ namespace com.vzome.core.render {
             const orbit: com.vzome.core.math.symmetry.Direction = axis.getDirection();
             const len: com.vzome.core.algebra.AlgebraicNumber = axis.getLength(offset);
             const prototypeLengthShape: com.vzome.core.math.Polyhedron = shapes.getStrutShape(orbit, len);
+            if (prototypeLengthShape == null)return;
             this.mShape = prototypeLengthShape;
             const orn: number = axis.getOrientation();
             const orientation: com.vzome.core.algebra.AlgebraicMatrix = shapes.getSymmetry().getMatrix(orn);

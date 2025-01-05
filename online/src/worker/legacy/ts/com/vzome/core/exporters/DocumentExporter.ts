@@ -1,6 +1,6 @@
 /* Generated from Java with JSweet 3.2.0-SNAPSHOT - http://www.jsweet.org */
 namespace com.vzome.core.exporters {
-    export abstract class DocumentExporter extends com.vzome.core.exporters.GeometryExporter {
+    export abstract class DocumentExporter extends com.vzome.core.exporters.GeometryExporter implements com.vzome.core.exporters.DocumentExporterIntf {
         mLights: com.vzome.core.viewing.Lights;
 
         mScene: com.vzome.core.viewing.CameraIntf;
@@ -28,7 +28,7 @@ namespace com.vzome.core.exporters {
         }
     }
     DocumentExporter["__class"] = "com.vzome.core.exporters.DocumentExporter";
-    DocumentExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
+    DocumentExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling","com.vzome.core.exporters.DocumentExporterIntf"];
 
 
 }

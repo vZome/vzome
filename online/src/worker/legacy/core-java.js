@@ -3954,10 +3954,6 @@ export var com;
                             this.orbits = new com.vzome.core.math.symmetry.OrbitSet(symmetry);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {
                             const symmetry = this.getSymmetry();
                             const field = symmetry.getField();
@@ -3979,6 +3975,10 @@ export var com;
                             embedding[14] = 0.0;
                             embedding[15] = 1.0;
                             return embedding;
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
@@ -16781,10 +16781,6 @@ export var com;
                         this.setStyle(styleName);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getOrientations$() {
-                        return this.getOrientations(false);
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getEmbedding() {
                         const symmetry = this.getSymmetry();
                         const field = symmetry.getField();
@@ -16806,6 +16802,10 @@ export var com;
                         embedding[14] = 0.0;
                         embedding[15] = 1.0;
                         return embedding;
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getOrientations$() {
+                        return this.getOrientations(false);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getOrientations(rowMajor) {
@@ -23509,7 +23509,7 @@ export var com;
                 }
                 exporters.DocumentExporter = DocumentExporter;
                 DocumentExporter["__class"] = "com.vzome.core.exporters.DocumentExporter";
-                DocumentExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
+                DocumentExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling", "com.vzome.core.exporters.DocumentExporterIntf"];
             })(exporters = core.exporters || (core.exporters = {}));
         })(core = vzome.core || (vzome.core = {}));
     })(vzome = com.vzome || (com.vzome = {}));
@@ -36929,7 +36929,7 @@ export var com;
                 }
                 exporters.OpenScadExporter = OpenScadExporter;
                 OpenScadExporter["__class"] = "com.vzome.core.exporters.OpenScadExporter";
-                OpenScadExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
+                OpenScadExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling", "com.vzome.core.exporters.DocumentExporterIntf"];
             })(exporters = core.exporters || (core.exporters = {}));
         })(core = vzome.core || (vzome.core = {}));
     })(vzome = com.vzome || (com.vzome = {}));
@@ -37193,7 +37193,7 @@ export var com;
                 POVRayExporter.PREAMBLE_FILE = "com/vzome/core/exporters/povray/preamble.pov";
                 exporters.POVRayExporter = POVRayExporter;
                 POVRayExporter["__class"] = "com.vzome.core.exporters.POVRayExporter";
-                POVRayExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
+                POVRayExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling", "com.vzome.core.exporters.DocumentExporterIntf"];
             })(exporters = core.exporters || (core.exporters = {}));
         })(core = vzome.core || (vzome.core = {}));
     })(vzome = com.vzome || (com.vzome = {}));
@@ -37289,7 +37289,7 @@ export var com;
                 }
                 exporters.PartGeometryExporter = PartGeometryExporter;
                 PartGeometryExporter["__class"] = "com.vzome.core.exporters.PartGeometryExporter";
-                PartGeometryExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
+                PartGeometryExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling", "com.vzome.core.exporters.DocumentExporterIntf"];
             })(exporters = core.exporters || (core.exporters = {}));
         })(core = vzome.core || (vzome.core = {}));
     })(vzome = com.vzome || (com.vzome = {}));
@@ -48067,10 +48067,6 @@ export var com;
                             this.__parent = __parent;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {
                             const symmetry = this.getSymmetry();
                             const field = symmetry.getField();
@@ -48092,6 +48088,10 @@ export var com;
                             embedding[14] = 0.0;
                             embedding[15] = 1.0;
                             return embedding;
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
