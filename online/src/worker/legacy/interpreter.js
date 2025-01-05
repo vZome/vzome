@@ -115,15 +115,16 @@ export class Interpreter
         let top;
         do {
           top = this.stack .pop();
+          if ( !! top ) {
+            this.cursor .endBranch( top.branch );
+            this.cursor = top.cursor;  // overwrite and discard the prior value
+            this.cursor .setNextEdit( top.branch .nextSibling() );
+          }
         } while ( top && ! top.branch .nextSibling() )
         if ( top ) {
-          this.cursor = top.cursor;  // overwrite and discard the prior value
-          this.cursor .endBranch( top.branch );
-          this.cursor .setNextEdit( top.branch .nextSibling() );
-          return breakpointHit? Step.DONE : Step.OUT;
+          return breakpointHit? Step.DONE : Step.OUT;  // at the end of a branch
         } else {
-          // at the end of the editHistory
-          return Step.DONE;
+          return Step.DONE;                            // at the end of the editHistory
         }
       }
     }
@@ -222,6 +223,7 @@ export class EditCursor
     for (const edit of reversed) {
       const trueEdit = edit .legacyEdit;
       if ( trueEdit ) {
+        // console.log( 'undo', edit.nativeElement.id, edit.nativeElement.tagName );
         trueEdit .undo();
       } else
         console.log( 'No true edit?' );
