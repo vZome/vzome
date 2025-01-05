@@ -207,11 +207,20 @@ namespace com.vzome.core.viewing {
          */
         createStrutGeometry(dir: com.vzome.core.math.symmetry.Direction): com.vzome.core.parts.StrutGeometry {
             if (!dir.isAutomatic()){
-                const vefData: string = this.loadVefData(dir.getName());
+                let shortGeometry: com.vzome.core.parts.StrutGeometry = new com.vzome.core.parts.FastDefaultStrutGeometry(dir);
+                let vefData: string = this.loadVefData(dir.getName() + "-short");
                 if (vefData != null){
                     const parser: ExportedVEFShapes.VefToShape = new ExportedVEFShapes.VefToShape(this);
                     parser.parseVEF(vefData, this.mSymmetry.getField());
-                    return parser.getStrutGeometry(dir.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, 0).normal());
+                    shortGeometry = parser.getStrutGeometry(dir.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, 0).normal());
+                }
+                vefData = this.loadVefData(dir.getName());
+                if (vefData != null){
+                    const parser: ExportedVEFShapes.VefToShape = new ExportedVEFShapes.VefToShape(this);
+                    parser.parseVEF(vefData, this.mSymmetry.getField());
+                    const geometry: com.vzome.core.viewing.ExportedVEFStrutGeometry = parser.getStrutGeometry(dir.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, 0).normal());
+                    geometry.setShortGeometry(shortGeometry);
+                    return geometry;
                 }
                 const logLevel: java.util.logging.Level = java.util.logging.Level.FINER;
                 if (ExportedVEFShapes.LOGGER_$LI$().isLoggable(logLevel)){
@@ -274,7 +283,7 @@ namespace com.vzome.core.viewing {
 
             invertSnubBall: boolean;
 
-            public getStrutGeometry(prototype: com.vzome.core.algebra.AlgebraicVector): com.vzome.core.parts.StrutGeometry {
+            public getStrutGeometry(prototype: com.vzome.core.algebra.AlgebraicVector): com.vzome.core.viewing.ExportedVEFStrutGeometry {
                 const tipAxis: com.vzome.core.math.symmetry.Axis = this.__parent.mSymmetry['getAxis$com_vzome_core_algebra_AlgebraicVector'](this.tipVertex);
                 const midpoint: com.vzome.core.algebra.AlgebraicVector = this.tipVertex.scale(this.__parent.mSymmetry.getField()['createRational$long$long'](1, 2));
                 const orientation: number = this.__parent.mSymmetry.inverse(tipAxis.getOrientation());

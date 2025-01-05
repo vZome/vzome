@@ -20,7 +20,7 @@ import com.vzome.core.model.Panel;
 import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.RenderedManifestation;
 
-public class PartGeometryExporter extends VefExporter
+public class PartGeometryExporter extends VefExporter implements DocumentExporterIntf
 {
     private transient Selection selection;
 

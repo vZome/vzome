@@ -174,7 +174,7 @@ namespace com.vzome.core.exporters {
         }
     }
     OpenScadExporter["__class"] = "com.vzome.core.exporters.OpenScadExporter";
-    OpenScadExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
+    OpenScadExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling","com.vzome.core.exporters.DocumentExporterIntf"];
 
 
 }

@@ -57,7 +57,7 @@ import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.editor.api.ImplicitSymmetryParameters;
 import com.vzome.core.editor.api.OrbitSource;
-import com.vzome.core.exporters.DocumentExporter;
+import com.vzome.core.exporters.DocumentExporterIntf;
 import com.vzome.core.exporters.GeometryExporter;
 import com.vzome.core.exporters2d.Java2dSnapshot;
 import com.vzome.core.math.Polyhedron;
@@ -956,8 +956,8 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                     String format = command .substring( "export." .length() ) .toLowerCase();
                     GeometryExporter exporter = this .mApp .getExporter( format ); //, cameraController .getView(), colors, sceneLighting, currentSnapshot );
                     if ( exporter != null ) {
-                        if ( exporter instanceof DocumentExporter )
-                            ((DocumentExporter) exporter) .exportDocument( documentModel, file, out, size.height, size.width );
+                        if ( exporter instanceof DocumentExporterIntf )
+                            ((DocumentExporterIntf) exporter) .exportDocument( documentModel, file, out, size.height, size.width );
                         else
                             exporter .exportGeometry( documentModel .getRenderedModel(), file, out, size.height, size.width );
                     }
