@@ -38,9 +38,6 @@ subprojects {
   repositories {
     mavenCentral()
     
-    // this one is for javax.media.jai
-    maven { url 'https://repository.springsource.com/maven/bundles/external' }
-
     // For EGit
     maven { url 'https://repo.eclipse.org/content/groups/releases' }
 
