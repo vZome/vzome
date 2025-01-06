@@ -22,8 +22,7 @@ jobs:
       matrix:
         arch: [intel, arm64]
 
-    # macos-12 is an Intel image, apparently, whereas macos-latest is Arm64
-    runs-on: ${{ matrix.arch == 'intel' && 'macos-12' || 'macos-latest' }} 
+    runs-on: 'macos-latest'
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
