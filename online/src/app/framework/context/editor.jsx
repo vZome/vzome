@@ -169,6 +169,10 @@ const EditorProvider = props =>
 
   const controllerAction = ( controller, action, parameters ) =>
   {
+    if ( ! workerClient.isWorkerReady() ) {
+      console.log( 'Worker not ready:', action );
+      return;
+    }
     const controllerPath = controller.__path .join( ':' );
     if ( action === 'setProperty' ) {
       const { name, value } = parameters;
