@@ -36,7 +36,7 @@
 	},
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "cicd/online.bash init"
+	"postCreateCommand": "git lfs install; git lfs pull; cicd/online.bash init"
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
