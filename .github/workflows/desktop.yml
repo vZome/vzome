@@ -49,6 +49,7 @@ jobs:
         MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
         SIGNING_KEYCHAIN: build.keychain
       run: |
+        arch
         echo $MACOS_CERTIFICATE | base64 -D > certificate.p12
         security create-keychain -p KeychainPwd $SIGNING_KEYCHAIN
         security default-keychain -s $SIGNING_KEYCHAIN
