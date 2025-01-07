@@ -7,7 +7,9 @@
 	"image": "mcr.microsoft.com/devcontainers/javascript-node",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+	"features": {
+		"git-lfs": "latest"
+	}
 
 	// Configure tool-specific properties.
 	"customizations": {
