@@ -283,11 +283,12 @@ const makeFloatMatrices = ( matrices ) =>
 
   const fieldApps = {}
   const wrapLegacyField = ( legacyField ) => ({
-    origin: () => legacyField.origin( 3 ).getComponents().map( an => an.toTrailingDivisor() )
+    origin: () => legacyField.origin( 3 ).getComponents().map( an => an.toTrailingDivisor() ),
+    name: legacyField.getName(),
   })
   const addLegacyField = ( fieldClass, appClass ) =>
   {
-    const legacyField = new fieldClass( algebraicNumberFactory )
+    const legacyField = new fieldClass( algebraicNumberFactory );
     legacyField.delegate = wrapLegacyField( legacyField )
     fieldApps[ legacyField.getName() ] = new appClass( legacyField )
   }
