@@ -64,8 +64,14 @@ const LegacyViewer = () =>
 
 const Online = () =>
 {
+  const reportError = err =>
+  {
+    console.log( 'ErrorBoundary:', err.toString() );
+    return <div>{err.toString()}</div>
+  }
+
   return (
-    <ErrorBoundary fallback={ err => <div>{err.toString()}</div> } >
+    <ErrorBoundary fallback={ reportError } >
       <CameraProvider name='main' >
         <WorkerProvider>
           <ImageCaptureProvider>

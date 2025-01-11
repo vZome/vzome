@@ -110,6 +110,7 @@ const initializeDesign = ( loading, polygons, legacyDesign, clientEvents ) =>
     instances = snapshots .pop();
   } else {
     instances = renderHistory .getSnapshot( '--START--' );
+    snapshots = [];
   }
 
   const wrapper = createControllers( legacyDesign, renderingChanges, clientEvents );

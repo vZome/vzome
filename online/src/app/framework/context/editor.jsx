@@ -162,7 +162,6 @@ const EditorProvider = props =>
   {
     if ( ! state.controller ) {
       setState( 'controller', { __store: store, __path: [] } ); // empower every subcontroller to access this store
-      workerClient .postMessage( actions.newDesign() );
     }
     return state.controller;
   };
