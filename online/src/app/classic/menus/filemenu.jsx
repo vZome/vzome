@@ -131,7 +131,7 @@ export const FileMenu = () =>
   }
 
   // Open the design indicated in the query string, if any
-  onMount( () => url && openUrl( url ) );
+  onMount( () => ( url && url.endsWith( ".vZome" ) ) ? openUrl( url ) : doCreate( 'golden' ) );
 
   const [ svgPreview, setSvgPreview ] = createSignal( false );
 
