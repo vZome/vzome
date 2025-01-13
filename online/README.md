@@ -46,8 +46,12 @@ You can see the [test page source here](./serve/app/test/index.html).
 
 ### Debugging
 
-With the dev server running, you can use the `TEST` launch profile in VS Code
-to debug the client-side code.  This will launch a special Chrome instance, connected to the VS Code debugging framework and
+With the dev server running, you can go to "Run and Debug" in the activity bar of VS Code,
+and you'll see a drop-down menu at the top, showing launch configurations.
+Select the `TEST` configuration, and hit the green "play" button to debug the Javascript code for any
+online vZome web application or web component.
+If you have Chrome installed, VS Code will ask for permission (once)
+then will launch a special Chrome instance, connected to the VS Code debugging framework and
 showing the test page.  Breakpoints you set in VS Code will be triggered by that browser.
 
 ## Option 2: Local Docker
