@@ -515,6 +515,15 @@ onmessage = ({ data }) =>
           clientEvents( sendToClient ) .scenesDiscovered( scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
           return;
         }
+        if ( action === 'updateScene' ) {
+          if ( !design?.rendered?.scenes )
+            return;
+          const { index, camera } = parameters;
+          const { scenes } = design.rendered;
+          scenes[ index ] .camera = camera;
+          clientEvents( sendToClient ) .scenesDiscovered( scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          return;
+        }
         if ( action === 'moveScene' ) {
           if ( !design?.rendered?.scenes )
             return;
