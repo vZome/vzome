@@ -7,7 +7,7 @@ export const assemblePartsList = ( shapes, colors ) =>
     if ( !name && !orbit ) continue;
     const row = name || `${orbit}:${length}`
     for (const { color } of instances) {
-      const match = Object.entries( colors ) .filter( ([ name, value ]) => value === color );
+      const match = Object.entries( colors ) .filter( ([ name, value ]) => value === color.toLowerCase() );
       const colorBin = match[0]? match[0][ 0 ] : 'other';
       if ( ! bom[ row ] )
         bom[ row ] = {};
