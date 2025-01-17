@@ -157,6 +157,21 @@ button:disabled > .toolbar-image {
   overflow: auto;
 }
 
+.centered-scroller {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: auto;
+}
+
+.orbit-panel {
+  padding: 8px;
+  position: relative;
+  height: 100%;
+  display: grid;
+  grid-template-rows: min-content min-content 1fr;
+}
+
 .scenes-list {
   position: absolute;
   inset: 0;
@@ -182,11 +197,17 @@ button:disabled > .toolbar-image {
   border: 2px solid royalblue;
 }
 
-.scenes-canvas-outer {
+.toolbar-wrapper {
   position: relative;
+  height: 35px;
 }
 
-.scenes-canvas-inner {
+.relative-h100 {
+  position: relative;
+  height: 100%;
+}
+
+.absolute-0 {
   position: absolute;
   inset: 0;
 }
@@ -255,6 +276,8 @@ button:disabled > .toolbar-image {
 
 .tabs__content {
   padding: 6px;
+  position: relative;
+  height: 100%;
 }
 
 #camera-controls {

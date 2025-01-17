@@ -41,7 +41,9 @@ export const ToolFactoryBar = props =>
   const mapFactoryNames = () => controllerProperty( symmetryController(), 'linearMapToolFactories', 'linearMapToolFactories', true );
 
   return (
-    <div id='factory-bar' class='toolbar'>
+    <div class="toolbar-wrapper">
+    <div class="absolute-0">
+    <div id='factory-bar' class='toolbar centered-scroller'>
       <Show when={symmetryDefined()}>
       <For each={symmFactoryNames()}>{ factoryName =>
         <ToolFactoryButton factoryName={factoryName}/>
@@ -55,6 +57,8 @@ export const ToolFactoryBar = props =>
         <ToolFactoryButton factoryName={factoryName}/>
       }</For>
       </Show>
+    </div>
+    </div>
     </div>
   )
 }
@@ -124,7 +128,9 @@ export const ToolBar = props =>
   const customToolNames = () => controllerProperty( props.toolsController, 'customTools', 'customTools', true );
 
   return (
-    <div id='tools-bar' class='toolbar'>
+    <div class="toolbar-wrapper">
+    <div class="absolute-0">
+    <div id='tools-bar' class='toolbar centered-scroller'>
       <CommandButton ctrlr={props.editorController} cmdName='Delete'/>
       <CommandButton ctrlr={props.editorController} cmdName='hideball'/>
       <SetColorButton ctrlr={props.editorController} />
@@ -149,6 +155,8 @@ export const ToolBar = props =>
           <ToolButton controller={subController( props.toolsController, toolName )}/>
         }</For>
       </Show>
+    </div>
+    </div>
     </div>
   )
 }

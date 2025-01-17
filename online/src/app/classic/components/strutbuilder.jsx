@@ -42,7 +42,7 @@ export const StrutBuildPanel = () =>
   }
 
   return(
-    <div id="build" style={{ display: 'grid', 'grid-template-rows': '1fr min-content', height: '100%' }}>
+    <div class="build grid-rows-fr-min" >
       <Show when={symmetryDefined()}>
       <OrbitPanel orbits={orbits()} controller={buildOrbits()} lastSelected={lastSelected()}
           label="build directions" style={{ height: '100%' }} >
