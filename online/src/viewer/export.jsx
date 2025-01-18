@@ -47,14 +47,14 @@ export const ExportMenu = (props) =>
         <DropdownMenu.Content class="exports__content">
           <DropdownMenu.Item closeOnSelect={true} class="exports__item">
             <Link class="link" href={ editUrlBase + source.url } target="_blank" rel="noopener">
-              Open in vZome Online
+              Open in Online vZome
             </Link>
           </DropdownMenu.Item>
           <DropdownMenu.Item onSelect={downloadVZome} closeOnSelect={true} class="exports__item">
-            .vZome source
+            Download .vZome design
           </DropdownMenu.Item>
           <DropdownMenu.Item closeOnSelect={true} class="exports__item" onSelect={downloadGltf} >
-            glTF scene
+            Download glTF scene
           </DropdownMenu.Item>
           {/* <Show when={canDownloadScene}>
             <DropdownMenu.Item class="exports__item">

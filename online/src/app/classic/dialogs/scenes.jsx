@@ -132,8 +132,8 @@ const ScenesDialog = props =>
                 <MoveSceneButton change={1} label='Move Down' />
               </div>
             </div>
-            <div class='scenes-canvas-outer'>
-              <div class='scenes-canvas-inner'>
+            <div class='relative-h100'>
+              <div class='absolute-0'>
                 <SceneProvider name={ `#${sceneIndex()}` } config={{ preview: true, debug: false, labels: props.config?.labels, source: false }}>
                   <SceneCanvas height="100%" width="100%" />
                 </SceneProvider>

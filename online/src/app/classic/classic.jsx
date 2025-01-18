@@ -27,12 +27,12 @@ export const ClassicEditor = () =>
   let alertRoot;
   return (
     <div id='classic' ref={alertRoot} style={{ display: 'grid', 'grid-template-rows': '1fr' }} class='whitesmoke-bkgd'>
-      <div id='editor-main' class='grid-cols-1-min whitesmoke-bkgd' >
+      <div class='editor-main grid-cols-1-min whitesmoke-bkgd' >
 
         <div id='editor-canvas' style={{ display: 'grid', 'grid-template-rows': 'min-content min-content 1fr min-content' }}>
           <ToolFactoryBar/>
           <ToolBar toolsController={toolsController()} editorController={rootController()} />
-          <div id='canvas-and-bookmarks' style={{ display: 'grid', 'grid-template-columns': 'min-content 1fr' }}>
+          <div class="relative-h100 grid-cols-min-1">
             <BookmarkBar bookmarkController={bookmarkController()} toolsController={toolsController()} />
             <SceneEditor/>
           </div>
@@ -42,13 +42,11 @@ export const ClassicEditor = () =>
           </div>
         </div>
 
-        <div id='editor-drawer' class='grid-rows-min-1 editor-drawer'>
+        <div class='editor-drawer grid-rows-min-1 relative-h100'>
           <CameraControls/>
           <Tabs values={ [ 'Build', 'Parts', 'Measure'] } value={tab()} onChange={changeTab}>
             <Tab value='Build'>
-              <div id="build-parts-measure" style={{ height: '100%' }}>
-                <StrutBuildPanel/>
-              </div>
+              <StrutBuildPanel/>
             </Tab>
             <Tab value='Parts'>
 

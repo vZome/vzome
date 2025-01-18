@@ -98,11 +98,11 @@ export const SceneEditor = ( props ) =>
 
   // not using DesignViewer because it has its own UI, not corresponding to classic desktop vZome
   return (
-    <div style={{ position: 'relative', display: 'flex', overflow: 'hidden', height: '100%' }}>
+    <div class="relative-h100">
       <input ref={colorPicker} type="color" name="color-picker" class='hidden-color-input' />
       <LabelDialog open={!!labeling()} close={hideLabelDialog} id={labeling()} label={label()} />
       <InteractionToolProvider>
-        <ContextualMenuArea menu={<ContextualMenu showDialog={showDialog} />} disabled={viewing()} onOpenChange={resetPicked}>
+        <ContextualMenuArea menu={<ContextualMenu showDialog={showDialog} />} class="absolute-0" disabled={viewing()} onOpenChange={resetPicked}>
           <SceneCanvas height="100%" width="100%" scene={scene} rotationOnly={false} >
             {/* The group is only necessary because of https://github.com/solidjs-community/solid-three/issues/11 */}
             <group>

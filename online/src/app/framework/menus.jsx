@@ -131,7 +131,7 @@ export const ContextualMenuArea = props =>
 {
   return (
     <ContextMenu onOpenChange={props.onOpenChange}>
-      <ContextMenu.Trigger class="context-menu__trigger" disabled={props.disabled}>
+      <ContextMenu.Trigger class={`context-menu__trigger ${props.class}`} disabled={props.disabled}>
         {props.children}
       </ContextMenu.Trigger>
       <ContextMenu.Portal>

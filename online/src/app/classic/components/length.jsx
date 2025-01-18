@@ -64,7 +64,7 @@ const ScaleBy = props =>
 
   return (
     <div id='scale-factors' style={{ 'background-color': 'whitesmoke', padding: '0.4em', margin: '0.4em' }}>
-      <FormControl sx={{ m: 1, minWidth: 90 }} size="small" >
+      <FormControl sx={{ m: 1, minWidth: 90, margin: '3px' }} size="small" >
         <FormLabel id="scale-by-label">Scale by</FormLabel>
 
         <Case

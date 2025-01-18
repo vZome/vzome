@@ -50,17 +50,17 @@ export const OrbitPanel = props =>
   const selectAll = () => controllerAction( props.controller, 'setAllDirections' );
   const singleAction = (evt,value) => controllerAction( props.controller, `setSingleOrbit.${value}` );
 
-  const marginedStyle = { margin: '8px' }
+  const marginedStyle = { padding: '0px', margin: '5px' }
   const relativeHeight = 0.6;
   const triangleCorners = `0,${relativeHeight} 1,${relativeHeight} 0,0`
-  const viewBox = `-0.1 -0.1 1.2 ${relativeHeight * 1.4}`;
+  const viewBox = `-0.1 -0.1 1.2 ${relativeHeight * 1.32}`;
 
   return (
-    <div style={marginedStyle}>
+    <div class="orbit-panel">
       <InputLabel id="orbits-label">{props.label}</InputLabel>
       <Stack spacing={2} direction="row">
-        <Button variant="outlined" style={marginedStyle} onClick={ selectNone } >None</Button>
-        <Button variant="outlined" style={marginedStyle} onClick={ selectAll } >All</Button>
+        <Button variant="outlined" size="small" style={marginedStyle} onClick={ selectNone } >None</Button>
+        <Button variant="outlined" size="small" style={marginedStyle} onClick={ selectAll } >All</Button>
         <Show when={props.lastSelected}>
           <FormControlLabel style={marginedStyle} label="single"
             control={
@@ -68,7 +68,7 @@ export const OrbitPanel = props =>
           }/>
         </Show>
       </Stack>
-      <div style={{ position: 'relative', 'background-color': 'white' }}>
+      <div style={{ 'background-color': 'white' }}>
         <svg viewBox={viewBox} stroke="black" stroke-width={0.005} >
           <g>
             {/* TODO: reversed triangle per the controller */}
