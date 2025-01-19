@@ -224,7 +224,7 @@ const CameraProvider = ( props ) =>
 
     if ( duration <= 0 ) {
       setCamera( goalCamera );
-      return;
+      return Promise.resolve();
     }
 
     cancelTweens();
@@ -257,7 +257,8 @@ const CameraProvider = ( props ) =>
 
     const tweenRotate = new Tween( { t: 0 } );
     tweens .add( tweenRotate );
-    tweenRotate
+    return new Promise( resolve => {
+      tweenRotate
       .easing( Easing.Quadratic.InOut )
       .to( { t: 1.0 }, duration )
       .onUpdate( ({ t }) => {
@@ -266,11 +267,15 @@ const CameraProvider = ( props ) =>
         const up = toVector( new Vector3(0,1,0) .applyQuaternion( sourceQuaternion ) );
         const lookDir = toVector( new Vector3(0,0,-1) .applyQuaternion( sourceQuaternion ) );
         setCamera( { up, lookDir } );
+      })
+      .onComplete( () => {
+        resolve();
       });
     
-    // We don't want to do this sync, since the tween duration may expire before subsequent
-    //  code in the caller finishes.
-    requestAnimationFrame( () => tweens .getAll() .map( tween => tween.start() ) );
+      // We don't want to do this sync, since the tween duration may expire before subsequent
+      //  code in the caller finishes.
+      requestAnimationFrame( () => tweens .getAll() .map( tween => tween.start() ) );
+    });
   }
   
   const providerValue = {

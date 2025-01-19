@@ -46,16 +46,17 @@ const SceneProvider = ( props ) =>
   createEffect( () => {
     postRequest( selectScene( props.name ) )
       .then( ( { payload: { scene } } ) => {
-        if ( scene.camera ) {
-          tweenCamera( scene.camera );
-        }
         if ( scene.lighting ) {
           const { backgroundColor } = scene.lighting;
           setLighting( { ...state.lighting, backgroundColor } );
         }
         setScene( 'embedding', reconcile( scene.embedding ) );
         setScene( 'polygons', scene.polygons );
-        updateShapes( scene.shapes );    
+        if ( scene.camera ) {
+          tweenCamera( scene.camera )
+            .then( () => updateShapes( scene.shapes ) );
+        } else
+          updateShapes( scene.shapes );    
       });
   });
 
