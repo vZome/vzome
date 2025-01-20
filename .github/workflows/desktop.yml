@@ -169,10 +169,10 @@ jobs:
     - name: Configure SSH
       run: |
         mkdir -p $env:USERPROFILE/.ssh/
-        echo "$SSH_KEY" > $env:USERPROFILE/.ssh/dreamhost.key
+        echo "$env:SSH_KEY" > $env:USERPROFILE/.ssh/dreamhost.key
         echo "" >> $env:USERPROFILE/.ssh/dreamhost.key
         echo 'Host dreamhost' > $env:USERPROFILE/.ssh/config
-        echo "  HostName $HOSTING_FQDN" >> $env:USERPROFILE/.ssh/config
+        echo "  HostName $env:HOSTING_FQDN" >> $env:USERPROFILE/.ssh/config
         echo '  User scottvorthmann' >> $env:USERPROFILE/.ssh/config
         echo "  IdentityFile $env:USERPROFILE\.ssh\dreamhost.key" >> $env:USERPROFILE/.ssh/config
         echo '  StrictHostKeyChecking no' >> $env:USERPROFILE/.ssh/config
@@ -181,18 +181,16 @@ jobs:
         HOSTING_FQDN: ${{ secrets.HOSTING_FQDN }}
     - name: Publish Windows build to DreamHost
       run: |
+        source desktop/build/buildPropsResource/build.properties  # to set the version and buildNumber variables
+        echo "{ \"url\": \"/download/${version}/${buildNumber}/win/vZome-Windows-${version}.${buildNumber}.zip\" }" > windows.json
         echo "cd vzome.com/download/${version}/" >> batchfile.txt
-        echo "-mkdir ${{ github.run_number }}"   >> batchfile.txt
-        echo "cd ${{ github.run_number }}"       >> batchfile.txt
+        echo "-mkdir ${buildNumber}"             >> batchfile.txt
+        echo "cd ${buildNumber}"                 >> batchfile.txt
         echo "-mkdir win"                        >> batchfile.txt
         echo "cd win"                            >> batchfile.txt
         echo "mput desktop/build/jpackage/vZome-*.exe" >> batchfile.txt
+        echo "cd ../../latest"                   >> batchfile.txt
+        echo "put windows.json"                  >> batchfile.txt
         sftp -b batchfile.txt dreamhost
-    - name: Capture build number
-      run: |
-        source desktop/build/buildPropsResource/build.properties  # to set the version and buildNumber variables
-        echo "{ \"url\": \"/download/${version}/${buildNumber}/win/vZome-Windows-${version}.${buildNumber}.zip\" }" > windows.json
-        echo 'NO SFTP YET for windows.json, copy and paste:'
-        cat windows.json
 
 
