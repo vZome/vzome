@@ -83,6 +83,10 @@ jobs:
           cd mac
           put desktop/build/jpackage/vZome-${version}.${buildNumber}.dmg vZome-${version}.${buildNumber}-${{ matrix.arch }}.dmg
         END
+    - name: Capture build number
+      run: |
+        source desktop/build/buildPropsResource/build.properties  # to set the version and buildNumber variables
+        echo "{ \"url\": \"/download/${version}/${buildNumber}/mac/vZome-${version}.${buildNumber}-${{ matrix.arch }}.dmg\" }" > mac-${{ matrix.arch }}.json
 
   build-linux:
     runs-on: ubuntu-latest
@@ -128,6 +132,10 @@ jobs:
           cd linux
           mput desktop/build/jpackage/vzome_*.deb
         END
+    - name: Capture build number
+      run: |
+        source desktop/build/buildPropsResource/build.properties  # to set the version and buildNumber variables
+        echo "{ \"url\": \"/download/${version}/${buildNumber}/linux/vzome_${version}.${buildNumber}-1_amd64.deb\" }" > linux.json
 
   build-windows:
     runs-on: windows-latest
@@ -172,4 +180,8 @@ jobs:
         echo "cd win"                            >> batchfile.txt
         echo "mput desktop/build/jpackage/vZome-*.exe" >> batchfile.txt
         sftp -b batchfile.txt dreamhost
+    - name: Capture build number
+      run: |
+        source desktop/build/buildPropsResource/build.properties  # to set the version and buildNumber variables
+        echo "{ \"url\": \"/download/${version}/${buildNumber}/win/vZome-Windows-${version}.${buildNumber}.zip\" }" > windows.json
 
