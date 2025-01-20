@@ -87,6 +87,10 @@ jobs:
       run: |
         source desktop/build/buildPropsResource/build.properties  # to set the version and buildNumber variables
         echo "{ \"url\": \"/download/${version}/${buildNumber}/mac/vZome-${version}.${buildNumber}-${{ matrix.arch }}.dmg\" }" > mac-${{ matrix.arch }}.json
+        sftp -b - dreamhost <<END
+          cd vzome.com/download/latest/
+          put mac-${{ matrix.arch }}.json
+        END
 
   build-linux:
     runs-on: ubuntu-latest
@@ -136,6 +140,10 @@ jobs:
       run: |
         source desktop/build/buildPropsResource/build.properties  # to set the version and buildNumber variables
         echo "{ \"url\": \"/download/${version}/${buildNumber}/linux/vzome_${version}.${buildNumber}-1_amd64.deb\" }" > linux.json
+        sftp -b - dreamhost <<END
+          cd vzome.com/download/latest/
+          put linux.json
+        END
 
   build-windows:
     runs-on: windows-latest
@@ -184,4 +192,7 @@ jobs:
       run: |
         source desktop/build/buildPropsResource/build.properties  # to set the version and buildNumber variables
         echo "{ \"url\": \"/download/${version}/${buildNumber}/win/vZome-Windows-${version}.${buildNumber}.zip\" }" > windows.json
+        echo 'NO SFTP YET for windows.json, copy and paste:'
+        cat windows.json
+
 
