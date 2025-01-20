@@ -181,7 +181,7 @@ jobs:
         HOSTING_FQDN: ${{ secrets.HOSTING_FQDN }}
     - name: Publish Windows build to DreamHost
       run: |
-        echo "{ \"url\": \"/download/7.1/${{ github.run_number }}/win/vZome-7.1.${{ github.run_number }}.exe\" }" > windows.json
+        echo '{ "url": "/download/7.1/${{ github.run_number }}/win/vZome-7.1.${{ github.run_number }}.exe" }' > windows.json
         echo "cd vzome.com/download/7.1/"        >> batchfile.txt
         echo "-mkdir ${{ github.run_number }}"   >> batchfile.txt
         echo "cd ${{ github.run_number }}"       >> batchfile.txt
