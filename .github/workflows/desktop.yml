@@ -181,11 +181,10 @@ jobs:
         HOSTING_FQDN: ${{ secrets.HOSTING_FQDN }}
     - name: Publish Windows build to DreamHost
       run: |
-        source desktop/build/buildPropsResource/build.properties  # to set the version and buildNumber variables
-        echo "{ \"url\": \"/download/${version}/${buildNumber}/win/vZome-Windows-${version}.${buildNumber}.zip\" }" > windows.json
-        echo "cd vzome.com/download/${version}/" >> batchfile.txt
-        echo "-mkdir ${buildNumber}"             >> batchfile.txt
-        echo "cd ${buildNumber}"                 >> batchfile.txt
+        echo "{ \"url\": \"/download/7.1/${{ github.run_number }}/win/vZome-Windows-7.1.${{ github.run_number }}.zip\" }" > windows.json
+        echo "cd vzome.com/download/7.1/"        >> batchfile.txt
+        echo "-mkdir ${{ github.run_number }}"   >> batchfile.txt
+        echo "cd ${{ github.run_number }}"       >> batchfile.txt
         echo "-mkdir win"                        >> batchfile.txt
         echo "cd win"                            >> batchfile.txt
         echo "mput desktop/build/jpackage/vZome-*.exe" >> batchfile.txt
