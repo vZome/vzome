@@ -82,6 +82,7 @@ online/yalc.lock
 .vscode/settings.json
 
 online/serve/app/classic/resources/
+online/serve/app/inspector/models/
 
 online/serve/modules/
 
