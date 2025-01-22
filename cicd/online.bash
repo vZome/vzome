@@ -48,6 +48,9 @@ marshallResources() {
   mkdir -p serve/app/classic/resources/com/vzome/core/exporters || exit $?
   cp -R ../desktop/src/main/resources/* serve/app/classic/resources || exit $?
   cp -R ../core/src/main/resources/com/vzome/core/exporters/* serve/app/classic/resources/com/vzome/core/exporters || exit $?
+  # marshall models for the inspector app
+  mkdir -p serve/app/inspector/models
+  cp serve/app/models/* serve/app/inspector/models
 }
 
 generateRevisionJs() {

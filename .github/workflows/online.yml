@@ -54,9 +54,11 @@ jobs:
     - name: Publish Online build to DreamHost
       run: |
         sftp -b - dreamhost <<END
+          put cicd/install-vzome-online.bash
           cd vzome.com/
           put online/dist/online.tgz	
         END
+        ssh dreamhost chmod a+x ./install-vzome-online.bash
         ssh dreamhost ./install-vzome-online.bash
 
 
