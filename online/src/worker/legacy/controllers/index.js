@@ -3,20 +3,13 @@ import { com } from '../core-java.js';
 import { documentFactory, parse } from '../core.js'
 import { Interpreter, RenderHistory, Step } from '../interpreter.js';
 import { ControllerWrapper } from './wrapper.js';
-import { renderedModelTransducer, resolveBuildPlanes } from '../scenes.js';
+import { renderedModelTransducer } from '../scenes.js';
 import { EditorController } from './editor.js';
 import { serializeVZomeXml } from '../serializer.js';
 
 const createControllers = ( design, renderingChanges, clientEvents ) =>
 {
-  const { getOrbitSource, renderedModel } = design;
-
-  const orbitSource = getOrbitSource();
-  const planes = resolveBuildPlanes( orbitSource .buildPlanes );
-  const { orientations, symmetry, permutations } = orbitSource;
-  const scalars = [ symmetry .getField() .getAffineScalar() .evaluate() ]; //TODO get them all!
-  const resourcePath = orbitSource .getModelResourcePath();
-  clientEvents .symmetryChanged( { orientations, permutations, scalars, planes, resourcePath } );
+  const { renderedModel } = design;
 
   const controller = new EditorController( design, clientEvents ); // this is the equivalent of DocumentController
   const symmLabel = controller .initialize();
@@ -113,7 +106,16 @@ const initializeDesign = ( loading, polygons, legacyDesign, clientEvents ) =>
     snapshots = [];
   }
 
-  const wrapper = createControllers( legacyDesign, renderingChanges, clientEvents );
+  const rendered = { lighting, camera, embedding, orientations, polygons, shapes, instances, snapshots, scenes };
+  const renderedClientEvents = {
+    ...clientEvents,
+    symmetryChanged: details => {
+      rendered.orientations = details.orientations; // this enables future rendering to be with the right orientations
+      clientEvents .symmetryChanged( details );
+    }
+  }
+
+  const wrapper = createControllers( legacyDesign, renderingChanges, renderedClientEvents );
 
   wrapper.snapCamera = snapCamera;
 
@@ -132,7 +134,6 @@ const initializeDesign = ( loading, polygons, legacyDesign, clientEvents ) =>
 
   wrapper.serializeVZomeXml = ( camera, lighting ) => serializeVZomeXml( legacyDesign, camera, lighting, scenes );
 
-  const rendered = { lighting, camera, embedding, orientations, polygons, shapes, instances, snapshots, scenes };
   return { wrapper, rendered };
 }
 
