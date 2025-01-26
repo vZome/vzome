@@ -56,7 +56,7 @@ const ViewerProvider = ( props ) =>
   }
 
   subscribeFor( 'SYMMETRY_CHANGED', ( { orientations } ) => {
-    setScene( 'orientations', reconcile( orientations ) );
+    setScene( 'orientations', orientations );
   });
 
   subscribeFor( 'SCENES_DISCOVERED', ( payload ) => {
