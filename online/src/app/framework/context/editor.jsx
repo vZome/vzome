@@ -32,6 +32,7 @@ const EditorProvider = props =>
   const [ state, setState ] = createStore( { ...initialState() } );
 
   const [ sceneIndex, setSceneIndex ] = createSignal( 0 );
+  const [ reload, setReload ] = createSignal( false );
 
   const [ showGuardrail, setShowGuardrail ] = createSignal( false );
   let continuation;
@@ -119,8 +120,9 @@ const EditorProvider = props =>
         break;
       
       case 'SCENES_DISCOVERED':
-        if ( sceneIndex() === 0 )
+        if ( sceneIndex() === 0 && data.payload.length > 1 )
           setSceneIndex( 1 );
+        setReload( true );
         break;
         
       case 'BOM_CHANGED':
@@ -132,6 +134,7 @@ const EditorProvider = props =>
       case 'FETCH_STARTED':
       case 'TRACKBALL_SCENE_LOADED':
       case 'CAMERA_SNAPPED':
+      case 'SHAPE_DEFINED':
         // TODO: do these require any state changes?
         break;
     
@@ -248,6 +251,7 @@ const EditorProvider = props =>
     openDesignFile,
     fetchDesignUrl,
     sceneIndex, setSceneIndex,
+    reload, setReload,
     importMeshFile: ( file, format ) => workerClient .postMessage( actions.importMeshFile( file, format ) ),
     startPreviewStrut: ( id, dir )   => workerClient .postMessage( actions.startPreviewStrut( id, dir ) ),
     movePreviewStrut:  ( direction ) => workerClient .postMessage( actions.movePreviewStrut( direction ) ),
