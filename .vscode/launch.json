@@ -1,6 +1,12 @@
 {
   "version": "0.2.0",
   "configurations": [
+    {
+      "type": "java",
+      "name": "desktop vZome",
+      "request": "launch",
+      "mainClass": "org.vorthmann.zome.ui.ApplicationUI"
+    },
 
     {
       "name":             "TESTS",
