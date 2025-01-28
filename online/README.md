@@ -60,7 +60,7 @@ If you do lots of development, you may have [Docker](https://www.docker.com/) in
 If you do, you can skip installing other vZome prerequisite tools by using the same "dev container" that GitHub Codespaces would use, but
 running on your own machine, in your Docker host.
 
-In this case, when you open VS Code on this project it will offer to "Reopen in Container".
+In this case, when you open the top level vzome folder in VS Code, it will offer to "Reopen in Container".
 Accept that, and wait for the workspace to be ready.
 
 Once the workspace is ready, you can [start the dev server](#start-the-development-server)
