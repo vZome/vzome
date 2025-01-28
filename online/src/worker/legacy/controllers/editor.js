@@ -6,6 +6,7 @@ import { PickingController } from './picking.js';
 import { BuildPlaneController } from './buildplane.js';
 import { modelToJS } from "../json.js";
 import { export2d, export3d, export3dDocument } from "../exporters.js";
+import { resolveBuildPlanes } from '../scenes.js';
 
 
 export class EditorController extends com.vzome.desktop.controller.DefaultController
@@ -29,7 +30,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
       this.clientEvents .errorReported(message);
   }
 
-  initialize( renderingChanges )
+  initialize()
   {
     const { renderedModel, toolsModel, bookmarkFactory, history,
       fieldApp, legacyField, editor, editContext } = this.legacyDesign;
@@ -159,6 +160,12 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
     let symmetrySystem = this.symmController .getOrbitSource();
     this.legacyDesign .setSymmetrySystem( symmetrySystem.getName() );
 
+    const planes = resolveBuildPlanes( symmetrySystem .buildPlanes );
+    const { orientations, symmetry, permutations } = symmetrySystem;
+    const scalars = [ symmetry .getField() .getAffineScalar() .evaluate() ]; //TODO get them all!
+    const resourcePath = symmetrySystem .getModelResourcePath();
+    this.clientEvents .symmetryChanged( { orientations, permutations, scalars, planes, resourcePath } );
+    
     // TODO: test this change with buildPlane
     this.getSubController( 'buildPlane' ) .setOrbitSource( symmetrySystem );
 

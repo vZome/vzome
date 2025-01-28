@@ -21,6 +21,9 @@ export const SceneControls = () =>
 
     const doOpen = () =>
     {
+      if ( sceneIndex() === 0 ) {
+        setSceneIndex( 1 );
+      }
       setShowScenes( true );
       suspendMenuKeyEvents();
     }
@@ -43,7 +46,7 @@ export const SceneControls = () =>
       <div id='model-article' >
         <Button variant="outlined" style={buttonStyle} onClick={ doCapture } >Capture Scene</Button>
         <Button variant="outlined" style={buttonStyle} onClick={ doOpen } disabled={noScenes()} >Show Scenes</Button>
-        <ScenesDialog open={ showScenes() } close={ doClose }/>
+        <ScenesDialog open={ showScenes() && !noScenes() } close={ doClose }/>
       </div>
     );
   }

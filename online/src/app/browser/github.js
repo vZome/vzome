@@ -1,4 +1,6 @@
 
+import { fetchGists } from "./gists";
+
 export const fetchGitHubShares = async githubUser =>
 {
   const BASE_URL = `https://raw.githubusercontent.com/${githubUser}/vzome-sharing/main/`;
@@ -7,7 +9,28 @@ export const fetchGitHubShares = async githubUser =>
     return [];
   }
 
-  return (
+  const gistsPromise =
+    fetchGists( githubUser )
+      .then( ({ gists }) => {
+        const designs = [];
+        for (const { files, created_at, id } of gists) {
+          const details = created_at .replace( 'T', ' ' ) .replace( 'Z', '' ) + ' GIST';
+          const path = `https://gist.github.com/${githubUser}/${id}`;
+          for ( const [key, value] of Object.entries(files) ) {
+            const { filename, raw_url } = value;
+            if ( filename .endsWith( '.vZome' ) ) {
+              const title = filename .substring( 0, filename .indexOf( '.vZome' ) );
+              designs.push( { title, details, path, url: raw_url } );
+            }
+          }
+        };
+        return designs .reverse();
+      } )
+      .catch( () => {
+        return [];
+      });
+
+  const repoPromise =
     fetch( `https://api.github.com/repos/${githubUser}/vzome-sharing/git/trees/main?recursive=1` )
       .then( response => response.json() )
       .then( json => {
@@ -30,8 +53,12 @@ export const fetchGitHubShares = async githubUser =>
       } )
       .catch( () => {
         return [];
-      })
-  )
+      });
+
+  return Promise.all( [ repoPromise, gistsPromise ] )
+      .then( ([ repoDesigns, gistDesigns ]) => {
+        return [ ...gistDesigns, ...repoDesigns ];
+      });
 }
 
 export const getAssetUrl = ( githubUser, path ) =>
@@ -41,8 +68,15 @@ export const getAssetUrl = ( githubUser, path ) =>
   return repoUrl + tokens .map( encodeURIComponent ) .join( '/' );
 }
 
-export const getEmbeddingHtml = ( githubUser, path ) =>
+export const getEmbeddingHtml = ( githubUser, path, url ) =>
 {
+  if ( path .startsWith( 'https://gist.github.com' ) ) {
+    return `<vzome-viewer style="width: 100%; height: 60vh"
+  src="${url}">
+</vzome-viewer>
+`;
+  }
+
   const sharingUrl = `https://${githubUser}.github.io/vzome-sharing/`;
   const tokens = path .split( '/' );
   const designUrl = sharingUrl + tokens .map( encodeURIComponent ) .join( '/' );

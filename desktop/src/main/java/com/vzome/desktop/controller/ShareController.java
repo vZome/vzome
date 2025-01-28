@@ -161,7 +161,7 @@ public class ShareController extends DefaultController
                         firePropertyChange( "stage", null, "authz" );
                     } catch (InterruptedException | ExecutionException | IOException | OAuthException e) {
                         e .printStackTrace();
-                        fail( "Failed to get GitHub device authorization code" );
+                        fail( "Failed to get GitHub device authorization code.  You may be offline.  Check your connection and try again." );
                         return;
                     }
 
@@ -218,7 +218,7 @@ public class ShareController extends DefaultController
                         logger .info( "found repo " + repo .getGitUrl() );
                     }
                 } catch ( IOException e ) {
-                    fail( "Unable to fetch repositories.  Your authorization may have expired or been revoked.  Try again, to reauthorize." );
+                    fail( "Unable to fetch repositories.  You may be offline, or your authorization may have expired or been revoked.  Check your internet connection and try again, to reauthorize." );
                     authToken = null;
                     setProperty( "githubAccessToken", "" );
                     return;
@@ -251,7 +251,7 @@ public class ShareController extends DefaultController
 
                 boolean blog = propertyIsTrue( "sharing-generatePost" );
                 boolean publish = propertyIsTrue( "sharing-publishImmediately" );
-                String style = propertyIsTrue( "sharing-showScenes" )?
+                String style = (propertyIsTrue( "hasScenes" ) && propertyIsTrue( "sharing-showScenes" ))?
                                 getProperty( "sharing-sceneStyle" ) : "none";
                 
                 Collection<TreeEntry> entries = new ArrayList<TreeEntry>();

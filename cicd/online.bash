@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
 REVISION=${BUILD_NUMBER:-'DEV'}
 

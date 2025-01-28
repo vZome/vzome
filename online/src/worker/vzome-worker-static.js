@@ -543,6 +543,14 @@ onmessage = ({ data }) =>
           clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
           return;
         }
+        if ( action === 'removeScene' ) {
+          if ( !design?.rendered?.scenes )
+            return;
+          const { index } = parameters;
+          design.rendered.scenes .splice( index, 1 );
+          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          return;
+        }
         if ( action === 'snapCamera' ) {
           const symmController = design.wrapper .getControllerByPath( controllerPath );
           const { up, lookDir } = parameters;

@@ -43,9 +43,9 @@ const classicURL = new URL( '../classic/index.html', window.location ) .toString
 
 const DesignActions = (props) =>
 {
-  const copyHtml = path =>
+  const copyHtml = ( path, url ) =>
   {
-    const html = getEmbeddingHtml( props.githubUser, path );
+    const html = getEmbeddingHtml( props.githubUser, path, url );
     navigator.clipboard.writeText( html ) .then( () => {
       console.log( `HTML copied to the clipboard: ${props.url}` );
     }, () => {
@@ -69,15 +69,21 @@ const DesignActions = (props) =>
       </Typography>
     }>
       <div style={{ display: 'flex', gap: '1rem', margin: '12px', 'justify-content': 'space-evenly' }}>
-        <Button variant="contained" color="primary" onClick={() => copyHtml( props.path )}>
+        <Button variant="contained" color="primary" onClick={() => copyHtml( props.path, props.url )}>
           Copy Embeddable HTML
         </Button>
         <Button variant="contained" color="secondary" onClick={() => copyUrl( props.url )}>
           Copy Raw vZome URL
         </Button>
-        <Button variant="contained" target="_blank" rel="noopener" href={ getAssetUrl( props.githubUser, props.path ) }>
-          Show GitHub Assets
-        </Button>
+        <Show when={ props.path .startsWith( 'https://gist.github.com/' )} fallback={
+          <Button variant="contained" target="_blank" rel="noopener" href={ getAssetUrl( props.githubUser, props.path ) }>
+            Show GitHub Assets
+          </Button>
+        }>
+          <Button variant="contained" target="_blank" rel="noopener" href={ props.path }>
+            Show Gist
+          </Button>
+        </Show>
         <Button variant="contained" color="secondary" target="_blank" rel="noopener" href={ classicURL + props.url }>
           Open in vZome online
         </Button>

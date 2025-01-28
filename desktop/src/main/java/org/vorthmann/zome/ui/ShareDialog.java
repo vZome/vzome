@@ -45,7 +45,7 @@ public class ShareDialog extends EscapeDialog implements PropertyChangeListener
     private JComboBox<String> stylesMenu;
     private JTextField titleText;
     private JTextArea descriptionText;
-    private JLabel publishLabel, stylesLabel;
+    private JLabel publishLabel, stylesLabel, scenesLabel;
     private JButton uploadButton;
     
     public ShareDialog( Frame frame, final Controller controller )
@@ -111,7 +111,8 @@ public class ShareDialog extends EscapeDialog implements PropertyChangeListener
                 }
             });
             scenesPanel .add( showScenesCheckBox, BorderLayout.WEST );
-            scenesPanel .add( new JLabel( "Show scenes" ), BorderLayout.CENTER );
+            scenesLabel = new JLabel( "Show scenes" );
+            scenesPanel .add( scenesLabel, BorderLayout.CENTER );
             {
                 JPanel sceneStylesPanel = new JPanel();
                 sceneStylesPanel .setToolTipText( "Select an interaction style for scenes." );
@@ -136,11 +137,11 @@ public class ShareDialog extends EscapeDialog implements PropertyChangeListener
                 }
                 scenesPanel .add( sceneStylesPanel, BorderLayout.EAST );
             }
-            optionsPanel .add( scenesPanel, BorderLayout.NORTH );
 
-            JPanel postPanel = new JPanel( new BorderLayout() );
+            JPanel optionsCenterPanel = new JPanel( new BorderLayout() );
             {
-                JPanel generatePostPanel = new JPanel( new BorderLayout() );
+              JPanel postPanel = new JPanel( new BorderLayout() );
+              JPanel generatePostPanel = new JPanel( new BorderLayout() );
                 generatePostCheckBox = new JCheckBox();
                 generatePostCheckBox .addActionListener( new ActionListener()
                 {
@@ -170,6 +171,7 @@ public class ShareDialog extends EscapeDialog implements PropertyChangeListener
                 cboxPanel .add( publishCheckBox, BorderLayout.WEST );
                 publishLabel = new JLabel( "Publish immediately" );
                 cboxPanel .add( publishLabel, BorderLayout.CENTER );
+                postPanel .add( cboxPanel, BorderLayout.SOUTH );
 
                 titleText = new JTextField( 0 );
                 titleText .setBorder(
@@ -180,6 +182,7 @@ public class ShareDialog extends EscapeDialog implements PropertyChangeListener
                                 titleText .getBorder()));
 
                 descriptionText = new JTextArea();
+                // descriptionText .setPreferredSize( new Dimension( 20, 100 ) );
                 descriptionText .setLineWrap( true );
                 descriptionText .setWrapStyleWord( true );
                 descriptionText .setBorder(
@@ -193,11 +196,12 @@ public class ShareDialog extends EscapeDialog implements PropertyChangeListener
                 JPanel inputsPane = new JPanel( new BorderLayout() );
                 inputsPane .add( titleText, BorderLayout.NORTH );
                 inputsPane .add( descriptionText, BorderLayout.CENTER );
-                inputsPane .add( cboxPanel, BorderLayout.SOUTH );
+                inputsPane .add( scenesPanel, BorderLayout.SOUTH );
                 inputsPane .setBorder( BorderFactory.createEmptyBorder( 5,5,5,5 ) );
-                postPanel .add( inputsPane, BorderLayout.CENTER );
+                optionsCenterPanel .add( inputsPane, BorderLayout.CENTER );
+                optionsCenterPanel .add( postPanel, BorderLayout.SOUTH );
             }
-            optionsPanel .add( postPanel, BorderLayout.CENTER );
+            optionsPanel .add( optionsCenterPanel, BorderLayout.CENTER );
 
             uploadButton = new JButton( "Upload to GitHub" );
             uploadButton .addActionListener( new ActionListener()
@@ -285,15 +289,16 @@ public class ShareDialog extends EscapeDialog implements PropertyChangeListener
     
     protected void enableConfigurations()
     {
+        boolean hasScenes = this .controller .propertyIsTrue( "hasScenes" );
         boolean showScenes = this .controller .propertyIsTrue( "sharing-showScenes" );
-        stylesLabel .setEnabled( showScenes );
-        stylesMenu .setEnabled( showScenes );
+        showScenesCheckBox .setEnabled( hasScenes );
+        scenesLabel .setEnabled( hasScenes );
+        stylesLabel .setEnabled( hasScenes && showScenes );
+        stylesMenu .setEnabled( hasScenes && showScenes );
 
         boolean generatePost = this .controller .propertyIsTrue( "sharing-generatePost" );
         publishCheckBox .setEnabled( generatePost );
         publishLabel .setEnabled( generatePost );
-        descriptionText .setEnabled( generatePost );
-        titleText .setEnabled( generatePost );
     }
 
     @Override
@@ -359,7 +364,7 @@ public class ShareDialog extends EscapeDialog implements PropertyChangeListener
             this .titleText .setText( this .controller .getProperty( "title" ) );
             this .descriptionText .setText( this .controller .getProperty( "description" ) );
             this .generatePostCheckBox .setSelected( this .controller .propertyIsTrue( "sharing-generatePost" ) );
-            this .showScenesCheckBox .setSelected( this .controller .propertyIsTrue( "sharing-showScenes" ) );
+            this .showScenesCheckBox .setSelected( this .controller .propertyIsTrue( "hasScenes" ) && this .controller .propertyIsTrue( "sharing-showScenes" ) );
             this .publishCheckBox .setSelected( this .controller .propertyIsTrue( "sharing-publishImmediately" ) );
             break;
         }
