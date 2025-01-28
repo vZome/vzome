@@ -161,7 +161,7 @@ jobs:
       run: |
         ./gradlew -i clean jpackage
         cd desktop/build/jpackage
-        zip vZome-7.1.${{ github.run_number }}.zip vZome-7.1.${{ github.run_number }}.exe
+        7z a -tzip vZome-7.1.${{ github.run_number }}.zip vZome-7.1.${{ github.run_number }}.exe
         ls
     - name: Configure SSH
       run: |
