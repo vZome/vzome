@@ -119,6 +119,7 @@ const ViewerProvider = ( props ) =>
   
   subscribeFor( 'ALERT_RAISED', ( problem ) => {
     setProblem( problem );
+    setWaiting( false );
   } );
   
   const providerValue = {
