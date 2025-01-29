@@ -28,3 +28,13 @@ body {
 .canvas3d {
   
 }
+
+.relative-h100 {
+  position: relative;
+  height: 100%;
+}
+
+.absolute-0 {
+  position: absolute;
+  inset: 0;
+}

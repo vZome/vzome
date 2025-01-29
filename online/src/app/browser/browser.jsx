@@ -171,7 +171,11 @@ export const DesignBrowser = () =>
         <div id='details' style={{ 'min-height': '60px', 'border-bottom': '1px solid gray', 'background-color': 'whitesmoke' }}>
           <DesignActions githubUser={githubUser()} url={url()} path={path()} />
         </div>
-        <DesignViewer config={ { useSpinner: true, showScenes: 'all' } } style={{ position: 'relative', height: '100%' }} height='100%' width='100%' />
+        <div class='relative-h100'>
+          <div class='absolute-0'>
+            <DesignViewer config={ { useSpinner: true, showScenes: 'all' } } style={{ position: 'relative', height: '100%' }} height='100%' width='100%' />
+          </div>
+        </div>
       </div>
     </div>
   )
