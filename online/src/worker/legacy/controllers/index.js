@@ -1,17 +1,17 @@
 
 import { com } from '../core-java.js';
-import { documentFactory, parse } from '../core.js'
+import { initialize } from '../core.js';
 import { Interpreter, RenderHistory, Step } from '../interpreter.js';
 import { ControllerWrapper } from './wrapper.js';
 import { renderedModelTransducer } from '../scenes.js';
 import { EditorController } from './editor.js';
 import { serializeVZomeXml } from '../serializer.js';
 
-const createControllers = ( design, renderingChanges, clientEvents ) =>
+const createControllers = ( design, core, renderingChanges, clientEvents ) =>
 {
   const { renderedModel } = design;
 
-  const controller = new EditorController( design, clientEvents ); // this is the equivalent of DocumentController
+  const controller = new EditorController( design, core, clientEvents ); // this is the equivalent of DocumentController
   const symmLabel = controller .initialize();
   const strutBuilder = controller .getSubController( 'strutBuilder' );
   
@@ -70,7 +70,7 @@ export const snapCamera = ( symmController, upArray, lookArray ) =>
   return { up: toArray( up ), lookDir: toArray( look ) };
 }
 
-const initializeDesign = ( loading, polygons, legacyDesign, clientEvents ) =>
+const initializeDesign = ( loading, polygons, legacyDesign, core, clientEvents ) =>
 {
   const { lighting, camera, scenes, snapshotNodes } = legacyDesign;
   const renderHistory = new RenderHistory( legacyDesign, polygons );                          // used for all normal rendering
@@ -115,7 +115,7 @@ const initializeDesign = ( loading, polygons, legacyDesign, clientEvents ) =>
     }
   }
 
-  const wrapper = createControllers( legacyDesign, renderingChanges, renderedClientEvents );
+  const wrapper = createControllers( legacyDesign, core, renderingChanges, renderedClientEvents );
 
   wrapper.snapCamera = snapCamera;
 
@@ -137,21 +137,23 @@ const initializeDesign = ( loading, polygons, legacyDesign, clientEvents ) =>
   return { wrapper, rendered };
 }
 
-export const newDesign = ( fieldName, clientEvents ) =>
+export const newDesign = async ( fieldName, clientEvents ) =>
   {
-    const legacyDesign = documentFactory( fieldName );
+    const core = await initialize();
+    const legacyDesign = core .documentFactory( fieldName );
 
-    return initializeDesign( false, true, legacyDesign, clientEvents );
+    return initializeDesign( false, true, legacyDesign, core, clientEvents );
   }
   
-export const loadDesign = ( xml, debug, polygons, clientEvents ) =>
+export const loadDesign = async ( xml, debug, polygons, clientEvents ) =>
 {
-  const legacyDesign = parse( xml );
+  const core = await initialize();
+  const legacyDesign = core .parse( xml );
   const { xmlTree, field } = legacyDesign;
   if ( field.unknown ) {
     throw new Error( `Field "${field.name}" is not supported.` );
   }
   clientEvents .xmlParsed( xmlTree );
 
-  return initializeDesign( !debug, polygons, legacyDesign, clientEvents );
+  return initializeDesign( !debug, polygons, legacyDesign, core, clientEvents );
 }

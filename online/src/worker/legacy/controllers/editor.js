@@ -1,6 +1,5 @@
 
 import { com } from '../core-java.js';
-import { getFieldNames, getFieldLabel } from "../core.js";
 import { JsProperties } from '../jsweet2js.js';
 import { PickingController } from './picking.js';
 import { BuildPlaneController } from './buildplane.js';
@@ -11,9 +10,10 @@ import { resolveBuildPlanes } from '../scenes.js';
 
 export class EditorController extends com.vzome.desktop.controller.DefaultController
 {
-  constructor( legacyDesign, clientEvents) {
+  constructor( legacyDesign, core, clientEvents ) {
     super();
     this.legacyDesign = legacyDesign;
+    this.core = core;
     this.clientEvents = clientEvents;
     this.symmetries = {};
     this.symmController = null;
@@ -123,7 +123,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
 
       default:
         if ( name.startsWith( "field.label." ) ) {
-          return getFieldLabel( name .substring( "field.label.".length ) );
+          return this.core.getFieldLabel( name .substring( "field.label.".length ) );
         }
         if ( ! name.startsWith( "defaultShapes." ) )
           console.log("EditorController getProperty fall through: ", name);
@@ -145,7 +145,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
         return com.vzome.core.algebra.AlgebraicField .getMultipliers( legacyField );
 
       case "fields":
-        return getFieldNames();
+        return this.core.getFieldNames();
 
       default:
         console.log("EditorController getCommandList fall through: ", name);
