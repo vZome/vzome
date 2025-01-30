@@ -277,9 +277,15 @@ const makeFloatMatrices = ( matrices ) =>
   } )
 
   // Initialize the field application
-  await Promise.all( Object.entries( groupResources ).map( ([ key, value ]) => loadAndInjectResource( `com/vzome/core/math/symmetry/${key}.vef`, value ) ) )
+  const groupResourcesReady = Promise.all( Object.entries( groupResources ).map( ([ key, value ]) => loadAndInjectResource( `com/vzome/core/math/symmetry/${key}.vef`, value ) ) )
   const properties = new JsProperties( defaults )
   const colors = new vzomePkg.core.render.Colors( properties )
+
+  const shapesReady = Promise.all( Object.entries( allShapes ).map(
+    async ([ family, shapes ]) => {
+      await Promise.all( Object.entries( shapes ).map( ([ key, value ]) => loadAndInjectResource( `com/vzome/core/parts/${family}/${key}.vef`, value ) ) )
+    }
+  ) )
 
   const fieldApps = {}
   const wrapLegacyField = ( legacyField ) => ({
@@ -297,17 +303,19 @@ const makeFloatMatrices = ( matrices ) =>
     const legacyField = new vzomePkg.jsweet.JsAlgebraicField( field )
     fieldApps[ field.name ] = new appClass( legacyField )
   }
-  addNewField( goldenField, vzomePkg.core.kinds.GoldenFieldApplication )
-  addNewField( root2Field, vzomePkg.core.kinds.RootTwoFieldApplication )
-  addNewField( root3Field, vzomePkg.core.kinds.RootThreeFieldApplication )
-  addNewField( heptagonField, vzomePkg.core.kinds.HeptagonFieldApplication )
-  addLegacyField( vzomePkg.fields.sqrtphi.SqrtPhiField, vzomePkg.fields.sqrtphi.SqrtPhiFieldApplication )
-  addLegacyField( vzomePkg.core.algebra.SnubCubeField, vzomePkg.core.kinds.SnubCubeFieldApplication )
-  addLegacyField( vzomePkg.core.algebra.SnubDodecField, vzomePkg.core.kinds.SnubDodecFieldApplication )
-  addLegacyField( vzomePkg.core.algebra.SuperGoldenField, vzomePkg.core.kinds.DefaultFieldApplication )
-  addLegacyField( vzomePkg.core.algebra.PlasticNumberField, vzomePkg.core.kinds.DefaultFieldApplication )
-  addLegacyField( vzomePkg.core.algebra.PlasticPhiField, vzomePkg.core.kinds.DefaultFieldApplication )
-  addLegacyField( vzomePkg.core.algebra.EdPeggField, vzomePkg.core.kinds.DefaultFieldApplication )
+  const fieldsReady = groupResourcesReady .then( () => {
+    addNewField( goldenField, vzomePkg.core.kinds.GoldenFieldApplication )
+    addNewField( root2Field, vzomePkg.core.kinds.RootTwoFieldApplication )
+    addNewField( root3Field, vzomePkg.core.kinds.RootThreeFieldApplication )
+    addNewField( heptagonField, vzomePkg.core.kinds.HeptagonFieldApplication )
+    addLegacyField( vzomePkg.fields.sqrtphi.SqrtPhiField, vzomePkg.fields.sqrtphi.SqrtPhiFieldApplication )
+    addLegacyField( vzomePkg.core.algebra.SnubCubeField, vzomePkg.core.kinds.SnubCubeFieldApplication )
+    addLegacyField( vzomePkg.core.algebra.SnubDodecField, vzomePkg.core.kinds.SnubDodecFieldApplication )
+    addLegacyField( vzomePkg.core.algebra.SuperGoldenField, vzomePkg.core.kinds.DefaultFieldApplication )
+    addLegacyField( vzomePkg.core.algebra.PlasticNumberField, vzomePkg.core.kinds.DefaultFieldApplication )
+    addLegacyField( vzomePkg.core.algebra.PlasticPhiField, vzomePkg.core.kinds.DefaultFieldApplication )
+    addLegacyField( vzomePkg.core.algebra.EdPeggField, vzomePkg.core.kinds.DefaultFieldApplication )  
+  });
   const getFieldApp = ( name='golden' ) =>
   {
     let fieldApp = fieldApps[ name ]
@@ -323,9 +331,11 @@ const makeFloatMatrices = ( matrices ) =>
     return fieldApp
   }
 
-  export const getFieldNames = () => Object .keys( fieldApps );
+  const getFieldNames = () => {
+    return Object .keys( fieldApps );
+  }
   
-  export const getField = fieldName =>
+  const getField = fieldName =>
   {
     const fieldApp = getFieldApp( fieldName )
     if ( !fieldApp )
@@ -333,7 +343,7 @@ const makeFloatMatrices = ( matrices ) =>
     return fieldApp.getField();
   }
 
-  export const getFieldLabel = ( fieldName ) =>
+  const getFieldLabel = ( fieldName ) =>
   {
     const fieldApp = getFieldApp( fieldName )
     if ( !fieldApp )
@@ -341,7 +351,7 @@ const makeFloatMatrices = ( matrices ) =>
     return fieldApp .getLabel();
   }
 
-  export const getSymmetry = ( fieldName, symmName ) =>
+  const getSymmetry = ( fieldName, symmName ) =>
   {
     const fieldApp = getFieldApp( fieldName )
     if ( !fieldApp )
@@ -352,7 +362,7 @@ const makeFloatMatrices = ( matrices ) =>
     return symmPersp .getSymmetry();
   }
 
-  export const documentFactory = ( fieldName, namespace, xml ) =>
+  const documentFactory = ( fieldName, namespace, xml ) =>
   {
     // This reproduces the DocumentModel constructor pretty faithfully
 
@@ -479,6 +489,7 @@ const makeFloatMatrices = ( matrices ) =>
     const originBall = realizedModel .manifest( originPoint );
     originBall .addConstruction( originPoint );
     realizedModel .add( originBall );
+
     realizedModel .show( originBall );
 
     const getBall = location => realizedModel .getManifestation( new vzomePkg.core.construction.FreePoint( location ) );
@@ -688,6 +699,13 @@ const makeFloatMatrices = ( matrices ) =>
       renderedModel, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };
   }
 
+  export const initialize = async () =>
+  {
+    await Promise.all( [ fieldsReady, shapesReady ] );
+    const parse = createParser( documentFactory );
+    return { getFieldNames, getField, getFieldLabel, getSymmetry, documentFactory, parse };
+  }
+
   export const convertColor = color =>
   {
     if ( !color )
@@ -748,10 +766,3 @@ const makeFloatMatrices = ( matrices ) =>
   // for ( const name of Object.keys( vzomePkg.core.edits ) )
   //   commands[ name ] = legacyCommandFactory( documentFactory, name )
 
-  export const parse = createParser( documentFactory )
-
-  await Promise.all( Object.entries( allShapes ).map(
-    async ([ family, shapes ]) => {
-      await Promise.all( Object.entries( shapes ).map( ([ key, value ]) => loadAndInjectResource( `com/vzome/core/parts/${family}/${key}.vef`, value ) ) )
-    }
-  ) )

@@ -190,8 +190,8 @@ const fetchTrackballScene = ( url, report, polygons ) =>
     return;
   }
   Promise.all( [ importLegacy(), fetchUrlText( new URL( `/app/classic/resources/${url}`, baseURL ) ) ] )
-    .then( ([ legacy, xml ]) => {
-      const trackballDesign = legacy .loadDesign( xml, false, polygons, clientEvents( ()=>{} ) );
+    .then( async ([ legacy, xml ]) => {
+      const trackballDesign = await legacy .loadDesign( xml, false, polygons, clientEvents( ()=>{} ) );
       prepareDefaultScene( trackballDesign );
       const scene = prepareSceneResponse( trackballDesign, 0 ); // takes a normalized scene
       trackballScenes[ url ] = scene;
@@ -215,8 +215,8 @@ const createDesign = async ( report, fieldName ) =>
   report( { type: 'FETCH_STARTED', payload: { name: 'untitled.vZome', preview: false } } );
   try {
     const legacy = await importLegacy();
+    design = await legacy .newDesign( fieldName, clientEvents( report ) );
     report({ type: 'CONTROLLER_CREATED' }); // do we really need this for previewing?
-    design = legacy .newDesign( fieldName, clientEvents( report ) );
     prepareDefaultScene( design );
     reportDefaultScene( report );
   } catch (error) {
@@ -231,14 +231,14 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, sceneTitle
   const events = clientEvents( report );
   return Promise.all( [ importLegacy(), xmlLoading ] )
 
-    .then( ([ legacy, xml ]) => {
+    .then( async ([ legacy, xml ]) => {
       if ( !xml ) {
         report( { type: 'ALERT_RAISED', payload: 'Unable to load .vZome content' } );
         return;
       }
-      const doLoad = () => {
+      const doLoad = async () => {
+        design = await legacy .loadDesign( xml, debug, polygons, events );
         report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
-        design = legacy .loadDesign( xml, debug, polygons, events );
         prepareDefaultScene( design );
 
         // TODO: don't duplicate this in urlLoader()
