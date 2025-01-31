@@ -137,7 +137,8 @@ const ScenesDialog = props =>
                   <For each={ scenes } >{ (scene,i) =>
                     (i() > 0) &&
                     <div class={ i()===sceneIndex()? 'scenes-entry scenes-selected' : 'scenes-entry' } style={{ position: 'relative' }}
-                        onClick={ () => { setSceneIndex( i() ); setReload( true ); } }>
+                        onClick={ () => { setSceneIndex( i() ); setReload( true ); console.log( scene.content );
+                         } }>
                       <span>{i()}</span>
                       <span>{scene.title}</span>
                       <UseCameraButton index={ i() } />

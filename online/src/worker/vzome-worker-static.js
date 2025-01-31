@@ -244,7 +244,7 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, sceneTitle
         // TODO: don't duplicate this in urlLoader()
         const sceneIndex = sceneTitle? getSceneIndex( sceneTitle, design.rendered.scenes ) : 0;
         if ( design.rendered.scenes.length >= 2 )
-          events .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          events .scenesDiscovered( design.rendered.scenes );
         events .sceneChanged( prepareSceneResponse( design, sceneIndex ) );
 
         report( { type: 'TEXT_FETCHED', payload: { text: xml, name } } ); // NOW it is safe to send the name
@@ -388,7 +388,7 @@ const urlLoader = async ( report, payload ) =>
         const sceneIndex = getSceneIndex( sceneTitle, design.rendered.scenes );
         const events = clientEvents( report );
         if ( design.rendered.scenes.length >= 2 )
-          events .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          events .scenesDiscovered( design.rendered.scenes );
         events .sceneChanged( prepareSceneResponse( design, sceneIndex ) );
       } )
       .catch( error => {
@@ -512,7 +512,7 @@ onmessage = ({ data }) =>
           snapshots .push( [ ...instances ] );
           scenes .splice( after+1, 0, { title: '', snapshot, camera } );
           design.wrapper .doAction( controllerPath, 'Snapshot', { id: snapshot } ); // no-op, but the edit must be in the history
-          clientEvents( sendToClient ) .scenesDiscovered( scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          clientEvents( sendToClient ) .scenesDiscovered( scenes );
           return;
         }
         if ( action === 'updateScene' ) {
@@ -521,7 +521,7 @@ onmessage = ({ data }) =>
           const { index, camera } = parameters;
           const { scenes } = design.rendered;
           scenes[ index ] .camera = camera;
-          clientEvents( sendToClient ) .scenesDiscovered( scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          clientEvents( sendToClient ) .scenesDiscovered( scenes );
           return;
         }
         if ( action === 'moveScene' ) {
@@ -531,7 +531,7 @@ onmessage = ({ data }) =>
           const target = index + change;
           const { scenes } = design.rendered;
           scenes[ target ] = scenes .splice( index, 1, scenes[ target ] )[ 0 ];
-          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes );
           return;
         }
         if ( action === 'duplicateScene' ) {
@@ -540,7 +540,7 @@ onmessage = ({ data }) =>
           const { after, camera } = parameters;
           const { snapshot } = design.rendered.scenes[ after ];
           design.rendered.scenes .splice( after+1, 0, { title: '', snapshot, camera } );
-          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes );
           return;
         }
         if ( action === 'removeScene' ) {
@@ -548,7 +548,7 @@ onmessage = ({ data }) =>
             return;
           const { index } = parameters;
           design.rendered.scenes .splice( index, 1 );
-          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes );
           return;
         }
         if ( action === 'snapCamera' ) {
