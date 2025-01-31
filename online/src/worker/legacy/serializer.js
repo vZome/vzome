@@ -92,7 +92,7 @@ const serializeScenes = ( scenes, doc ) =>
 {
   const notes = doc .createElement( "notes" );
   for (const scene of scenes) {
-    const { title, snapshot, camera } = scene;
+    const { title, snapshot, camera, content } = scene;
     if ( snapshot < 0 )
       continue; // default scene does not go here
     const page = doc .createElement( "page" );
@@ -100,9 +100,10 @@ const serializeScenes = ( scenes, doc ) =>
     page .setAttribute( 'snapshot', snapshot );
     const viewModel = serializeCamera( camera, doc );
     page .appendChild( viewModel );
-    const content = doc .createElement( 'content' ); // TODO: capture description text here
-    content .setAttribute( 'xml:space', 'preserve' );
-    page .appendChild( content );
+    const contentElem = doc .createElement( 'content' );
+    contentElem .setAttribute( 'xml:space', 'preserve' );
+    contentElem .setTextContent( content || '' );
+    page .appendChild( contentElem );
     notes .appendChild( page );
   }
   return notes;

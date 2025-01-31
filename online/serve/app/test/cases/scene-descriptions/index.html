@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test preview JSON in online format</title>
+
+  <link rel="stylesheet" href="../../vzome-viewer.css">
+
+  <style>
+    section {
+      height: 90vh;
+    }
+
+    .flex {
+      display: flex;
+      align-items: center;
+    }
+
+    .vzome-viewer-index-button {
+      min-width: 90px;
+      font-size: large;
+      border-radius: 6px;
+      border-style: solid;
+      border-color: black;
+      background-color: aliceblue;
+    }
+
+    #title {
+      padding-inline-start: 2rem;
+      margin-block: 0.5rem;
+    }
+
+    #description {
+      height: 200px;
+    }
+  </style>
+
+  <script type="module" >
+    import "/modules/vzome-viewer.js"; // registers the custom element
+
+    let scenes;
+
+    const welcomeViewer   = document.getElementById( "welcome" );
+    const titleText       = document.getElementById( "title" );
+    const descriptionText = document.getElementById( "description" );
+
+    welcomeViewer .addEventListener( "vzome-scenes", ( { detail } ) => {
+      scenes = [ ...detail ];
+    } );
+    welcomeViewer .addEventListener( "vzome-design-rendered", ( { detail: scene } ) => {
+      const { index } = scene;
+      titleText .innerHTML = scenes[ index ] .title;
+      descriptionText .innerHTML = scenes[ index ] .content;
+    } );
+
+  </script>
+
+</head>
+<body>
+  <article>
+    <section>
+      <div class="flex">
+        <vzome-viewer-previous label="back"    load-camera="true" viewer="welcome" class="hidden">
+        </vzome-viewer-previous>
+
+        <vzome-viewer-next     label="forward" load-camera="true" viewer="welcome" class="hidden">
+        </vzome-viewer-next>
+
+        <h1 id="title"></h1>
+      </div>
+      <textarea id="description"></textarea>
+      <vzome-viewer id="welcome" indexed="true"
+        src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2024/06/16/11-53-24-welcomeDodec-indexed-scenes/welcomeDodec-indexed-scenes.vZome" >
+      </vzome-viewer>
+    </section>
+  </article>
+</body>
+</html>

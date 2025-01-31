@@ -180,6 +180,14 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
   doParamAction(action, params) {
     switch (action) {
 
+      case "undoToManifestation": {
+        const {  history, editor } = this.legacyDesign;
+        const { picked } = params.getConfig();
+        history .undoToManifestation( picked );
+        editor .notifyListeners();
+        break;
+      }
+
       case "clearChanges": {
         this.changeCount = this.legacyDesign.getChangeCount();
         this.firePropertyChange( 'edited', '', 'false' );

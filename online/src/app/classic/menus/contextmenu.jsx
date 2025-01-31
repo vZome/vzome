@@ -92,7 +92,7 @@ export const ContextualMenu = props =>
             <PickingItem action='SelectParallelStruts' label='Select Parallel Struts' type='strut' />
             <PickingItem action='AdjustSelectionByOrbitLength/selectSimilarStruts' label='Select Similar Struts' type='strut' />
 
-            <PickingItem action='undoToManifestation' label='Undo Including This' disabled />
+            <PickingItem action='undoToManifestation' label='Undo Including This' />
 
             <ContextMenuSeparator/>
 
