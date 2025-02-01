@@ -521,7 +521,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Help menu
         menu = new JMenu( "Help" );
-        menu .add( createMenuItem( "Quick Start...", "openResource-org/vorthmann/zome/content/welcomeDodec.vZome" ) );
+        menu .add( createMenuItem( "Quick Start...", "browse-https://docs.vzome.com/quick-start.html" ) );
         {
             JMenu submenu3d = new JMenu( "Symmetry Starters..." );
             submenu3d .add( createMenuItem( "Icosahedral / Dodecahedral", "newFromResource-com/vzome/starters/symmetry/icosahedral/starter.vZome" ) );
@@ -542,7 +542,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         
         menu .add( createMenuItem( "vZome Online (web app)...", "browse-https://vzome.com/app" ) );
         menu .add( createMenuItem( "vZome Home...", "browse-https://vzome.com" ) );
-        menu .add( createMenuItem( "Sharing vZome Files Online...", "browse-https://vzome.github.io/vzome/sharing.html" ) );
+        menu .add( createMenuItem( "Sharing vZome Files Online...", "browse-https://docs.vzome.com/sharing.html" ) );
         menu .add( createMenuItem( "vZome Tips on YouTube...", "browse-https://www.youtube.com/c/Vzome" ) );
         {
             JMenu submenu3d = new JMenu( "Social Media" );
@@ -555,16 +555,16 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         {
             JMenu submenu3d = new JMenu( "Misc. Online Documentation" );
             submenu3d .add( createMenuItem( "The Direction (Orbit) Triangle...", "browse-https://vorth.github.io/vzome-sharing/2019/07/19/vzome-icosahedral-orbits.html" ) );
-            submenu3d .add( createMenuItem( "Capturing Vector Graphics...", "browse-https://vzome.github.io/vzome//capture-vector-graphics.html" ) );
-            submenu3d .add( createMenuItem( "Toolbars for Diehards...", "browse-https://vzome.github.io/vzome//toolbars-for-diehards.html" ) );
-            submenu3d .add( createMenuItem( "Content Workflows...", "browse-https://vzome.github.io/vzome//content-workflows.html" ) );
+            submenu3d .add( createMenuItem( "Capturing Vector Graphics...", "browse-https://docs.vzome.com/capture-vector-graphics.html" ) );
+            submenu3d .add( createMenuItem( "Toolbars for Diehards...", "browse-https://docs.vzome.com/toolbars-for-diehards.html" ) );
+            submenu3d .add( createMenuItem( "Content Workflows...", "browse-https://docs.vzome.com/content-workflows.html" ) );
             menu.add( submenu3d );
         }
         {
             JMenu submenu3d = new JMenu( "Other Links" );
             submenu3d .add( createMenuItem( "GitHub Source...", "browse-https://github.com/vZome/vzome" ) );
             submenu3d .add( createMenuItem( "Logo T-Shirt...", "browse-https://www.neatoshop.com/product/vZome-tetrahedron" ) );
-            submenu3d .add( createMenuItem( "3D-Printed Parts at Shapeways...", "browse-https://www.shapeways.com/shops/vzome" ) );
+            // submenu3d .add( createMenuItem( "3D-Printed Parts at Shapeways...", "browse-https://www.shapeways.com/shops/vzome" ) );
             submenu3d .add( createMenuItem( "Models on SketchFab...", "browse-https://sketchfab.com/scottvorthmann" ) );
             submenu3d .add( createMenuItem( "Observable Notebooks...", "browse-https://observablehq.com/collection/@vorth/vzome" ) );
             menu.add( submenu3d );
