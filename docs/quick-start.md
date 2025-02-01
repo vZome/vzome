@@ -61,6 +61,15 @@ with interactive 3D views.
   <style>
     section {
       height: 90vh;
+      width: 100%;
+      margin: auto;
+      overflow: hidden;
+      resize: both;
+      gap: 1em;
+      display: grid;
+      grid-template-rows: min-content min-content 1fr;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 1em;
     }
 
     .flex {
@@ -75,6 +84,11 @@ with interactive 3D views.
       border-style: solid;
       border-color: black;
       background-color: aliceblue;
+    }
+
+    vzome-viewer {
+      width: 100%;
+      height: 100%;
     }
 
     #title {
