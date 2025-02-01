@@ -1,5 +1,6 @@
 
 import { com } from '../core-java.js';
+import { java } from '../candies/j4ts-2.1.0-SNAPSHOT/bundle.js';
 import { JsProperties } from '../jsweet2js.js';
 import { PickingController } from './picking.js';
 import { BuildPlaneController } from './buildplane.js';
@@ -191,6 +192,26 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
       case "clearChanges": {
         this.changeCount = this.legacyDesign.getChangeCount();
         this.firePropertyChange( 'edited', '', 'false' );
+        break;
+      }
+
+      case "usedOrbits": {
+        const { renderedModel } = this.legacyDesign;
+        const usedOrbits = new java.util.HashSet();
+        const rMans = renderedModel .iterator();
+        while ( rMans .hasNext() ) {
+          const rm = rMans .next();
+          const shape = rm .getShape();
+          const orbit = shape .getOrbit();
+          if ( orbit != null )
+            usedOrbits .add( orbit );
+        }
+        this.symmController .availableController .doAction( "setNoDirections" );
+        const orbits = usedOrbits .iterator();
+        while ( orbits .hasNext() ) {
+          const orbit = orbits .next();
+          this.symmController .availableController .doAction( "enableDirection." + orbit .getName() );
+        }
         break;
       }
 

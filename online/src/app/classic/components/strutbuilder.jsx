@@ -14,7 +14,7 @@ import { useSymmetry } from "../context/symmetry.jsx";
 
 export const StrutBuildPanel = () =>
 {
-  const { controllerAction } = useEditor();
+  const { controllerAction, rootController } = useEditor();
   const { showOrbitsDialog, symmetryController, symmetryDefined } = useSymmetry();
   const availableOrbits = () => subController( symmetryController(), 'availableOrbits' );
   const buildOrbits = () => subController( symmetryController(), 'buildOrbits' );
@@ -31,6 +31,10 @@ export const StrutBuildPanel = () =>
   const setAvailableOrbits = action => () => {
     setAnchorEl( null );
     setOrbitNames( action );
+  }
+  const setUsedOrbits = () => {
+    setAnchorEl( null );
+    controllerAction( rootController(), 'usedOrbits' );
   }
   const showConfiguration = evt => {
     setAnchorEl( null );
@@ -59,6 +63,7 @@ export const StrutBuildPanel = () =>
         >
           <MenuItem onClick={ setAvailableOrbits( 'rZomeOrbits' ) }>real Zome</MenuItem>
           <MenuItem onClick={ setAvailableOrbits( 'predefinedOrbits' ) }>predefined</MenuItem>
+          <MenuItem onClick={ setUsedOrbits }>used in model</MenuItem>
           <MenuItem onClick={ setAvailableOrbits( 'setAllDirections' ) }>all</MenuItem>
           <MenuItem onClick={ showConfiguration }>configure...</MenuItem>
           <MenuItem onClick={ resetOrbitColors }>reset orbit colors</MenuItem>
