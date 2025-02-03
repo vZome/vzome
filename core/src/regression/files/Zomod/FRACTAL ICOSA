@@ -1,0 +1,38 @@
+; This was originally modeled with 60 balls and 110 struts!
+; Rewritten by Will Ackel - 4/1/98
+; This version has 33 balls and 90 struts. (30 each of Triangular, Rectangular, and Pentagonal.)
+; Aspect ratio: 1 x 1
+; modelRoot->translate (0.0, 1.8, 0.0);
+; modelRoot->rotateY   (-15.0);
+; modelRoot->rotateX   (-20.0);
+; camera->scale		(1.0, 1.0, 2.0);
+; camera->translate	(0, 0, -16.2);
+
+; Large Squashed Icosa with parts removed where the Medium and Small Icosas go.
+MP0+2,
+B																									; Start at apex.
+SP1-3,      B,ST2-3,      MT2+3,SR10+3,       ST0-3,      B,SR11+2,MR11+1,MP5-1,SP5-2,MP0+2,MP0+3	; Back to apex.
+SP2-3,      B,ST3-2,MT3-1,MT3+3,SR12+3,       ST1-2,MT1-1, MR13+1,SR13+2,SP1-3,      MP0+2,MP0+3	; Back to apex.
+SP3-3,      B,ST4-3,      MT4+3,SR14+3,       ST2-3,      B,SR10-3,       SP2-3,      MP0+2,MP0+3	; Back to apex.
+SP4-3,      B,ST0-3,      MT0+3,SR11-1,MR11-2,MT3-2,ST3-1,B,SR12-3,       SP3-3,      MP0+2,MP0+3	; Back to apex.
+SP5-1,MP5-2, MT1-2,ST1-1,MT1+3,MR13-2,SR13-1,ST4-3,      B,SR14-3,       SP4-3,      B,MP0+2,MP0+3	; Back to apex.
+
+MP5-1	; Move to apex of Medium Squashed Icosa.
+
+; Medium Squashed Icosa with one ball removed where it touches the Small Icosa.
+B
+SP1-2,B,ST2-2,MT2+2,SR10+2,ST0-2,B,SR11+2,SP5-2,MP0+3	; Back to apex.
+SP2-2,B,ST3-2,MT3+2,SR12+2,ST1-2, SR13+2,SP1-2,MP0+3	; Back to apex.
+SP3-2,B,ST4-2,MT4+2,SR14+2,ST2-2,B,SR10-2,SP2-2,MP0+3	; Back to apex.
+SP4-2,B,ST0-2,MT0+2,SR11-2,ST3-2,B,SR12-2,SP3-2,MP0+3	; Back to apex.
+SP5-2,B,ST1-2,MT1+2,SR13-2,ST4-2,B,SR14-2,SP4-2,B 		; Stay at bottom.
+
+MP5+3	; Move to apex of Small Squashed Icosa.
+
+; Small Squashed Icosa.
+B														; Start at apex.
+SP1-1,B,ST2-1,MT2+1,SR10+1,ST0-1,B,SR11+1,SP5-1,MP0+2	; Back to apex.
+SP2-1,B,ST3-1,MT3+1,SR12+1,ST1-1,B,SR13+1,SP1-1,MP0+2	; Back to apex.
+SP3-1,B,ST4-1,MT4+1,SR14+1,ST2-1,B,SR10-1,SP2-1,MP0+2	; Back to apex.
+SP4-1,B,ST0-1,MT0+1,SR11-1,ST3-1,B,SR12-1,SP3-1,MP0+2	; Back to apex.
+SP5-1,B,ST1-1,MT1+1,SR13-1,ST4-1,B,SR14-1,SP4-1,B,MP0+2	; Back to apex.

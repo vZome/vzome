@@ -212,9 +212,11 @@ public final class PentagonField extends AbstractAlgebraicField
             break;
             
         case "zomod":
-            program = parseZomodScript( script );
-			// TODO: reenable support for zomod ???
-            errors .parseError( 0, 0, "zomod is not currently a supported script language." );
+            try {
+              program = parseZomodScript( script );
+            } catch (Exception e) {
+              errors .parseError( 0, 0, e.getMessage() );
+            }
 			break;
 
         default:

@@ -574,8 +574,14 @@ const makeFloatMatrices = ( matrices ) =>
         }
       }
       
-      edit.loadAndPerform( wrappedElement, format, context )
-
+      try {
+        edit.loadAndPerform( wrappedElement, format, context )
+      } catch (error) {
+        if ( error .message .endsWith( 'command is not available yet' ) )
+          throw new Error( `${xmlElement.tagName} command is not available`);
+        else
+          throw error;
+      }
       checkSideEffects( edit, wrappedElement );
 
       return edit;

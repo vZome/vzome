@@ -16,7 +16,6 @@ import com.vzome.core.render.ZomicEventHandler;
 import com.vzome.core.zomic.ZomicASTCompiler;
 import com.vzome.core.zomic.ZomicException;
 import com.vzome.core.zomic.ZomicNamingConvention;
-import com.vzome.core.zomic.parser.Parser;
 
 public class PrintVisitor extends Visitor .Default{
 
@@ -212,24 +211,32 @@ public class PrintVisitor extends Visitor .Default{
 		if(args.length == 0) {
 			System.out.println("Usage: PrintVisitor FileSpec [-new]");
 			System.out.println("\tFileSpec = path to zomic file");
-			System.out.println("\t-new = optional: use the new Antlr4 Parser");
+			System.out.println("\t-zomod = optional: use the Zomod parser");
+			System.out.println("\t-new = optional: use the new Antlr4 parser");
 			System.out.println("\tNote: logging level must be configured to display verbose parsing info.");
 		}
 		try {
 			String fileSpec = args[0];
 			File file = new File( fileSpec );
 			boolean useNewParser = false;
+      boolean useZomod = false;
 			if(args.length > 1) {
 				useNewParser = ( "-new".compareToIgnoreCase(args[1]) == 0 );
+				useNewParser = ( "-zomod".compareToIgnoreCase(args[1]) == 0 );
 			}
 
 			PentagonField field = new PentagonField();
 			IcosahedralSymmetry symmetry = new IcosahedralSymmetry( field );
 			ZomicStatement program;
 			if(useNewParser) {
+        System.out.println("\t%%%%%%%%%%%%% Using the new Antlr4 parser");
 				program = ZomicASTCompiler.compile( file, symmetry);
+			} else if ( useZomod ) {
+        System.out.println("\t%%%%%%%%%%%%% Using the old Zomod parser");
+				program = com.vzome.core.zomod.parser.Parser.parse(new FileInputStream( file ), symmetry);
 			} else {
-				program = Parser.parse(new FileInputStream( file ), symmetry);
+        System.out.println("\t%%%%%%%%%%%%% Using the old Zomic parser");
+				program = com.vzome.core.zomic.parser.Parser.parse(new FileInputStream( file ), symmetry);
 			}
 			try (PrintWriter out = new PrintWriter(System.out)) {
 				program.accept(new PrintVisitor(out, symmetry));
