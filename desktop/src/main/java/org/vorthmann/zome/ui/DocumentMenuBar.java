@@ -43,7 +43,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
     private static final long serialVersionUID = 1L;
 
-    private final JMenuItem setColorMenuItem, showToolsMenuItem, zomicMenuItem, importVEFItem; //, pythonMenuItem
+    private final JMenuItem setColorMenuItem, showToolsMenuItem, zomicMenuItem, zomodMenuItem, importVEFItem; //, pythonMenuItem
 
     private final ControlActions actions;
 
@@ -508,6 +508,9 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         zomicMenuItem = createMenuItem( "Zomic...", "showZomicWindow" );
         zomicMenuItem .setEnabled( fullPower );
         menu .add( zomicMenuItem );
+        zomodMenuItem = createMenuItem( "Zomod...", "showZomodWindow" );
+        zomodMenuItem .setEnabled( fullPower );
+        menu .add( zomodMenuItem );
         super .add( menu );
 
 
