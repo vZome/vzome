@@ -261,7 +261,11 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, sceneTitle
          } );
       }
       else
-        doLoad();
+        doLoad()
+          .catch( error => {
+            console.log( `openDesign failure: ${error.message}` );
+            report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model: ${error.message}` } );
+          })
     } )
 
     .catch( error => {
