@@ -11,7 +11,7 @@ how did they prepare their product packaging and marketing materials, with ray-t
 They used Zomod, a program developed by Will Ackel, running on the classic Mac.
 
 <figure style="margin: 5%">
-  <img  style="width: 100%" src="/assets/Zomod-screenshot.png" >
+  <img  style="width: 100%" src="https://www.vzome.com/zomod/Zomod-screenshot.png" >
   <figcaption style="text-align: center; font-style: italic;">
     A screenshot from Zomod, running on Mac OS 9.2.2 on a Performa G3
   </figcaption>
@@ -98,7 +98,7 @@ which are reused for orange and purple struts in vZome.
 
 <figure style="margin: 5%">
   <a href="/assets/vZomeKey.pdf">
-    <img  style="width: 100%" src="/assets/vZomeKey.png" >
+    <img  style="width: 100%" src="https://www.vzome.com/zomod/vZomeKey.png" >
   </a>
   <figcaption style="text-align: center; font-style: italic;">
     A Zomod/Zomic key dodecahedron, to cut out and assemble; click the image to download a PDF
