@@ -106,29 +106,6 @@ which are reused for orange and purple struts in vZome.
 </figure>
 
 
-## A Zomod Revival
-
-Zomod won't run on modern Macs, so you can't experience the app unless you have an old Mac that still runs.
-However, desktop vZome (but not online vZome) now supports Zomod in the "Scripting" menu,
-reviving the Zomod application functionality.
-To give you a better view of the design shown in the screenshot above,
-here is a vZome design in an interactive viewer, created by executing the same script.
-
-<script type="module" src="https://www.vzome.com/modules/vzome-viewer.js"></script>
-
-<figure style="width: 87%; margin: 5%">
- 
- <vzome-viewer style="width: 100%; height: 60dvh" 
-       src="https://vorth.github.io/vzome-sharing/2025/02/02/23-01-26-FRACTAL-ICOSA/FRACTAL-ICOSA.vZome" >
-   <img  style="width: 100%"
-       src="https://vorth.github.io/vzome-sharing/2025/02/02/23-01-26-FRACTAL-ICOSA/FRACTAL-ICOSA.png" >
- </vzome-viewer>
-
- <figcaption style="text-align: center; font-style: italic;">
-    A vZome design created from the Zomod script above
- </figcaption>
-</figure>
-
 ## Zomod's Impact
 
 Zomod was essential to the early success of Zometool,
@@ -157,3 +134,27 @@ interest in 3D graphics.
 Walt and Will were friends and neighbors in San Diego,
 and Walt introduced Will to Zometool, and to Paul Hildebrandt.
 Walt was the designer of the Zomod key dodecahedron found in the manual.
+
+
+## A Zomod Revival
+
+Zomod won't run on modern Macs, so you can't experience the app unless you have an old Mac that still runs.
+However, [desktop vZome](https://www.vzome.com/home/index/vzome-7/) (but not online vZome) now supports Zomod in the "Scripting" menu,
+reviving the Zomod application functionality.
+To give you a better view of the design shown in the screenshot above,
+here is a vZome design in an interactive viewer, created by executing the same script.
+
+<script type="module" src="https://www.vzome.com/modules/vzome-viewer.js"></script>
+
+<figure style="width: 87%; margin: 5%">
+ 
+ <vzome-viewer style="width: 100%; height: 60dvh" 
+       src="https://vorth.github.io/vzome-sharing/2025/02/02/23-01-26-FRACTAL-ICOSA/FRACTAL-ICOSA.vZome" >
+   <img  style="width: 100%"
+       src="https://vorth.github.io/vzome-sharing/2025/02/02/23-01-26-FRACTAL-ICOSA/FRACTAL-ICOSA.png" >
+ </vzome-viewer>
+
+ <figcaption style="text-align: center; font-style: italic;">
+    A vZome design created from the Zomod script above
+ </figcaption>
+</figure>
