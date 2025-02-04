@@ -11,7 +11,7 @@ how did they prepare their product packaging and marketing materials, with ray-t
 They used Zomod, a program developed by Will Ackel, running on the classic Mac.
 
 <figure style="margin: 5%">
-  <img  style="width: 100%" src="./Zomod-screenshot.png" >
+  <img  style="width: 100%" src="/assets/Zomod-screenshot.png" >
   <figcaption style="text-align: center; font-style: italic;">
     A screenshot from Zomod, running on Mac OS 9.2.2 on a Performa G3
   </figcaption>
@@ -80,7 +80,7 @@ with the `S` command.  The different strut shapes (not colors) are indicated
 with `P` for pentagon, `T` for triangle, `R` for rectangle, and `D` for diamond
 (the green strut cross-section).
 If you want the details on the syntax, you can
-[download the Zomod manual](./Zomod 1.5.1 Manual.pdf).
+[download the Zomod manual](/assets/Zomod 1.5.1 Manual.pdf).
 It was all Will Ackel's invention, and the strut direction indexing he designed is still used
 in the Zomic scripting supported by vZome.
 
@@ -97,8 +97,8 @@ which are reused for orange and purple struts in vZome.
 
 
 <figure style="margin: 5%">
-  <a href="./vZomeKey.pdf">
-    <img  style="width: 100%" src="./vZomeKey.png" >
+  <a href="/assets/vZomeKey.pdf">
+    <img  style="width: 100%" src="/assets/vZomeKey.png" >
   </a>
   <figcaption style="text-align: center; font-style: italic;">
     A Zomod/Zomic key dodecahedron, to cut out and assemble; click the image to download a PDF
@@ -113,6 +113,9 @@ However, desktop vZome (but not online vZome) now supports Zomod in the "Scripti
 reviving the Zomod application functionality.
 To give you a better view of the design shown in the screenshot above,
 here is a vZome design in an interactive viewer, created by executing the same script.
+
+<script type="module" src="https://www.vzome.com/modules/vzome-viewer.js"></script>
+
 <figure style="width: 87%; margin: 5%">
  
  <vzome-viewer style="width: 100%; height: 60dvh" 
