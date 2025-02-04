@@ -8,7 +8,7 @@ published: true
 [vZome](https://www.vzome.com) did not exist in any form until 2003.
 [Zometool](https://zometool.com) has existed since the early 1990s;
 how did they prepare their product packaging and marketing materials, with ray-traced renderings, etc.?
-They used Zomod, a program developed by Will Ackel, running on the classic Mac.
+They used ***Zomod***, a program developed by Will Ackel, running on the classic Mac.
 
 <figure style="margin: 5%">
   <img  style="width: 100%" src="https://www.vzome.com/zomod/Zomod-screenshot.png" >
