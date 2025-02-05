@@ -5,7 +5,7 @@ This is a very brief description of the Zomic language.
 Zomic is designed to allow the concise description of vZome model constructions.  A Zomic program effectively "draws" a model in 3D, by accumulating Zome struts or equivalent moves, rather than using absolute coordinates as you would see in 2D vector graphics. 
 
 This reference is organized around a formal grammar for Zomic, with brief but complete descriptions of each language feature.
-First, however, it is best to understand the execution model for Zomic, describe in the next section.
+First, however, it is best to understand the execution model for Zomic, described in the next section.
 
 # Virtual Machine
 
