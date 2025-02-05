@@ -1,5 +1,5 @@
 
-#Introduction
+# Introduction
 
 This is a very brief description of the Zomic language.
 Zomic is designed to allow the concise description of vZome model constructions.  A Zomic program effectively "draws" a model in 3D, by accumulating Zome struts or equivalent moves, rather than using absolute coordinates as you would see in 2D vector graphics. 
@@ -7,7 +7,7 @@ Zomic is designed to allow the concise description of vZome model constructions.
 This reference is organized around a formal grammar for Zomic, with brief but complete descriptions of each language feature.
 First, however, it is best to understand the execution model for Zomic, describe in the next section.
 
-#Virtual Machine
+# Virtual Machine
 
 The Zomic virtual machine (or "VM" for short) operates on a virtual Zome model (a collection of struts and connector balls), and effects changes to the model through strut-building statements.
 The action of these strut statements is adjusted according to four state variables in the VM:
@@ -21,7 +21,7 @@ build mode | A "switch" that can be on or off.  When on, strut statements cause
 
 Each of these variables can be modified independently of the others, and they can even be saved and restored independently.
 
-#Zomic Grammar
+# Zomic Grammar
 
 The grammar is formatted as block quotes.
 Grammar nonterminal symbols are shown in *italics*.
@@ -58,7 +58,7 @@ A Zomic program is just a series of statements.
 > > 
 > > | *compound_statement*
 
-##Direct statements
+## Direct statements
 
 Direct statements are non-nested statements that directly affect one of
 the four VM variables: location, orientation, scale, or build/move mode.
@@ -75,7 +75,7 @@ the four VM variables: location, orientation, scale, or build/move mode.
 > >
 > >| *move_statement*
 
-###Strut statement
+### Strut statement
 
 > *strut_statement* : *size\_expr length\_expr?* **half***?* *axis\_expr*
 
@@ -94,7 +94,7 @@ The scaled strut size is multiplied by the indicated number before the build or 
 
 The optional "half" modifier builds or moves by a half-strut length, and is allowed only for green and blue axes.
 
-####Size expression
+#### Size expression
 
 > *size_expr*
 > 
@@ -118,7 +118,7 @@ In other words, a ```size 0 blue``` strut appears as two balls "kissing".
 This implies that ```size 4``` is exactly equivalent to ```medium```.
 Size values can be negative, to produce smaller strut lengths.
 
-####Length expression
+#### Length expression
 
 >*length_expr*
 > >
@@ -129,7 +129,7 @@ The two integers together form a "golden number", of the form A\*phi+B, where A 
 If the second integer is missing, therefore, the length multiplier is just an integer, 0\*phi + B.
 If the length expression is omitted entirely, the length multiplier is one.
 
-####Axis expression
+#### Axis expression
 
 An Axis expression indicates the name of one of the fixed "directions" in the Zome system.
 
@@ -172,7 +172,7 @@ repeat 5 // or as many times as you can stand!
 }
 ~~~
 
-###Scale statement
+### Scale statement
 
 > *scale_statement* : **scale** *SIGNED_INT (* **(** *length_expr*
 **)** *)?*
@@ -184,14 +184,14 @@ The optional *length_expr* between parentheses indicate a further
 multiplicative scaling factor, with the same interpretation as used for
 strut statements.
 
-###Build statement
+### Build statement
 
 > *build_statement* : **build**
 
 The build keyword sets the build-mode VM variable to "on" (building).
 Subsequent *strut_statements* will add struts the model.
 
-###Move statement
+### Move statement
 
 > *move_statement* : **move**
 
@@ -199,7 +199,7 @@ The move keyword sets the build-mode VM variable to "off" (just moving).
 Subsequent *strut_statements* will NOT add struts the model, but
 will still adjust the location VM variable.
 
-###Rotate statement
+### Rotate statement
 
 > *rotate_statement* : **rotate** *SIGNED_INT?*  **around** *axis_expr*
 
@@ -211,7 +211,7 @@ to ```rotate 1 around red +0``` and ```rotate around red +0```.
 The sense of the rotation is best stated by example:
 ```rotate around red +0``` maps ```blue +0``` to ```blue +4```.  Consult the Zomic key PDF to visualize this action.  Note that the sense of the rotation can be reversed by using the opposite axis: ```rotate around red -0``` maps ```blue +4``` to ```blue +0```.
 
-##Nested Statements
+## Nested Statements
 
 Nested statements are of the form *&lt;modifier&gt;* *statement*, where the modifier has some temporary effect while the statement executes.
 The statement is often compound ("{"..."}"), but need not be.
@@ -229,7 +229,7 @@ Note that a compound statement without a modifier has no implied semantics; it i
 > >
 > >| *save_statement*
 
-###Save statement
+### Save statement
 
 > *save_statement* :
 >
@@ -248,7 +248,7 @@ save scale
   }
 ~~~
 
-###From statement
+### From statement
 
 > *from_statement* : **from** *strut_statement*
 
@@ -257,7 +257,7 @@ The inner statement MUST be a strut statement.
 
 This is shorthand for: ```save build { move``` *strut_statement* ```}```
 
-###Branch statement
+### Branch statement
 
 The branch statement executes the inner statement and then restores the current location VM variable.
 The statement may be compound: "{" ... "}".
@@ -266,7 +266,7 @@ The statement may be compound: "{" ... "}".
 
 This is shorthand for: **save location** *statement*.
 
-###Symmetry statement
+### Symmetry statement
 
 This statement applies a symmetry operator to the inner statement.
 
@@ -350,7 +350,7 @@ symmetry through center
 For icosahedral symmetry, a **save all** modifier is implicit.
 This means that the original location, orientation, scale, and build mode will be restored before reorienting for each of the 60 executions of the nested statement.  The main effect is that the model will be roughly "spherical" around a central point, the location before the start of the symmetry statement.
 
-###Repeat statement
+### Repeat statement
 
 The repeat statement allows simple iterative execution of the inner statement.
 This can be useful for building spirals, helixes, and space-filling structures.
