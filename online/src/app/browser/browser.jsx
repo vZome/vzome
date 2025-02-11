@@ -7,7 +7,7 @@ import { useViewer } from '../../viewer/context/viewer.jsx';
 import { DesignViewer } from '../../viewer/index.jsx'
 
 import List from '@suid/material/List';
-import ListItem from '@suid/material/ListItem';
+import ListItemButton from '@suid/material/ListItemButton';
 import ListItemText from '@suid/material/ListItemText';
 import Typography from '@suid/material/Typography'
 import Button from '@suid/material/Button';
@@ -27,12 +27,12 @@ const DesignList = (props) =>
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <List dense component="nav" aria-label="vzome designs" style={{ overflow: 'auto', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }} >
         <For each={props.designs} >{ ( { title, details, url, path }, i ) =>
-          <ListItem button
-            selected={selectedIndex() === i}
-            onClick={() => handleListItemClick( url, path, i )}
+          <ListItemButton
+            selected={selectedIndex() === i()}
+            onClick={() => handleListItemClick( url, path, i() )}
           >
             <ListItemText primary={title} secondary={details} />
-          </ListItem>
+          </ListItemButton>
         }</For>
       </List>
     </div>
