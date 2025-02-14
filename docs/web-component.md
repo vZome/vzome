@@ -1,8 +1,6 @@
 ---
 title: vZome Viewer Web Component
-description:
-  The `vzome-viewer` web component can display your vZome designs on any web page.
-  This page explains how to use it.
+description: The vzome-viewer web component can display your vZome designs on any web page.  This page explains how to use it.
 image: https://docs.vzome.com/assets/vzome-viewer-in-use.png
 published: true
 ---
