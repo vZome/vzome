@@ -5,14 +5,6 @@ image: https://docs.vzome.com/assets/vzome-viewer-in-use.png
 published: true
 ---
 
-<script type="module" src="https://www.vzome.com/modules/vzome-viewer.js"></script>
-
-{% comment %}
- - [welcome dodec assets](<https://github.com/vorth/vzome-sharing/tree/main/2022/06/19/06-37-55-welcomeDodec/>)
- 
-{% endcomment %}
-
-
 The `vzome-viewer` custom HTML element is an interactive 3D viewer for [vZome](https://vzome.com) designs.
 The viewer can be placed on any web page, because it implements
 the [web component standard](https://developer.mozilla.org/en-US/docs/Web/API/Web_Components).
@@ -158,6 +150,7 @@ Here is source HTML for the `vzome-viewer` element shown below, with the `show-s
 </vzome-viewer>
  ```
 
+<script type="module" src="https://www.vzome.com/modules/vzome-viewer.js"></script>
 <figure style="width: 87%; margin: 5%">
   <vzome-viewer style="width: 87%; height: 60vh; margin: 5%" show-scenes="named"
         src="https://vorth.github.io/vzome-sharing/2022/06/19/06-37-55-welcomeDodec/welcomeDodec.vZome" >
