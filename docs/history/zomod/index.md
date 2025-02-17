@@ -5,10 +5,9 @@ description:
 published: true
 ---
 
-[vZome](https://www.vzome.com) did not exist in any form until 2003.
-[Zometool](https://zometool.com) has existed since the early 1990s;
-how did they prepare their product packaging and marketing materials, with ray-traced renderings, etc.?
-They used ***Zomod***, a program developed by Will Ackel, running on the classic Mac.
+Years before the development of [vZome](https://www.vzome.com), there was another
+application for modeling [Zometool](https://zometool.com).
+That application was ***Zomod***, a program developed by Will Ackel, running on the classic Mac.
 
 <figure style="margin: 5%">
   <img  style="width: 100%" src="https://www.vzome.com/zomod/Zomod-screenshot.png" >
@@ -24,12 +23,16 @@ directing the placement of Zome struts and balls.
 When the interpretation is complete, the result is rendered to a separate window.
 The user can manipulate the camera with the mouse.
 There are no interactive commands or tools as in vZome; everything is done with the script.
+Most importantly, as Will himself acknowleges, Zomod has no way to apply symmetry
+to reduce the work of authoring a model.
 
-The rendering was accomplished using 2D graphics, since 3D graphics were not generally
-available on home computers at the time.  The various polygons were sorted by distance
-from the viewpoint (camera), and rendered back to front.  Will called this the "painter's algorithm"
-when I asked about it many years ago, since I needed to do the same thing to generate
-PDF exports in vZome.
+Since 3D graphics were not generally available on home computers at the time,
+Zomod rendered the 3D scene using [Apple's QuickDraw](https://en.wikipedia.org/wiki/QuickDraw),
+a vector graphics library.
+To convert the internal 3D shapes to a 2D drawing, Will used the [painter's algorithm](https://en.wikipedia.org/wiki/Painter%27s_algorithm).
+The various polygons were sorted by distance
+from the viewpoint (camera), and rendered back to front.
+Even now, vZome uses this approach to generate vector graphics like SVG and PDF.
 
 Here is the Zomod script used in the screenshot above:
 ```
@@ -106,14 +109,21 @@ which are reused for orange and purple struts in vZome.
 </figure>
 
 
+## Zomod Ray-Tracing
+
+If you look closely at the screenshot at the beginning of this article,
+you may notice now nicely the Zome ball is rendered in the splash screen for Zomod.
+Will had earlier written a ray-tracer to produce lifelike renderings, and he
+added the ability to parse a Zomod script.
+In addition to the splash image,
+Will used this Zomod variant to produce the lovely color
+images that appeared as an insert to the ["Zome Geometry" book by George Hart and Henri Picciotto](https://www.zometool.com/zome-geometry/).
+
 ## Zomod's Impact
 
 Zomod was essential to the early success of Zometool,
 being used extensively to produce marketing and packaging materials,
 and to produce the Zometool Manual 2.0.
-Will also used Zomod to produce the lovely color ray-traced
-images that appeared as an insert to the ["Zome Geometry"
-book by George Hart and Henri Picciotto](https://www.zometool.com/zome-geometry/).
 
 Zomod was also an inspiration for me, and directly led to my work on vZome.
 My first attempt had the same character, having just a script interpreter and
