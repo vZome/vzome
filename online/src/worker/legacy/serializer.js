@@ -100,10 +100,12 @@ const serializeScenes = ( scenes, doc ) =>
     page .setAttribute( 'snapshot', snapshot );
     const viewModel = serializeCamera( camera, doc );
     page .appendChild( viewModel );
-    const contentElem = doc .createElement( 'content' );
-    contentElem .setAttribute( 'xml:space', 'preserve' );
-    contentElem .setTextContent( content || '' );
-    page .appendChild( contentElem );
+    if ( !! content ) {
+      const contentElem = doc .createElement( 'content' );
+      contentElem .setAttribute( 'xml:space', 'preserve' );
+      contentElem .setTextContent( content );
+      page .appendChild( contentElem );
+    }
     notes .appendChild( page );
   }
   return notes;

@@ -154,7 +154,7 @@ export class JavaDomElement
     else
       result += ">\n";
     const text = this .getTextContent();
-    if ( text ) {
+    if ( typeof text === 'string' ) {
       if ( preserveSpace )
         result += text;
       else
