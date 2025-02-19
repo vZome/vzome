@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+
+<script type="module" src="https://www.vzome.com/modules/vzome-viewer.js"></script>
+
+<meta charset="utf-8">
+<title>Algebra and Serendipity: The Beautiful Mathematics of vZome</title>
+
+<header>
+  G4G CoM 2024/02/21
+</header>
+
+<section>
+  <h1>Algebra and Serendipity: The Beautiful Mathematics of vZome</h1>
+  <h3 style="margin: 35px 35px 30px 89px;">Scott Vorthmann</h3>
+  <div style="display: flex;">
+    <img style="height: 20dvh; margin: auto;" src="https://github.com/user-attachments/assets/c6d59853-5253-4590-8250-733652726179" alt="heptagon-iris-ornament">
+  </div>
+</section>
+
+<section style="align-content: center; justify-items: center;">
+  <div>These slides: 
+    <a href="https://docs.vzome.com/CoM">docs.vzome.com/CoM</a>
+  </div>
+  <div style="font-size: 68%;">(Safari won't work)</div>
+  <img style="height: 75%;" src="https://github.com/user-attachments/assets/59a6d1e9-bff9-4edc-b56d-f1b120459c6f">
+</section>
+
+<section>
+  <h3>What is vZome?</h3>
+  <div style="margin: 1em;">
+    <a href="http://vzome.com/app" target="_blank" rel="noopener noreferrer">vZome</a>
+    is a software application for modeling in exact, discrete geometry,
+    with <a href="http://zometool.com" target="_blank" rel="noopener noreferrer">Zometool</a>
+    as the best example.
+  </div>
+</section>
+
+<section>
+  <h3>Zometool, vZome, and G4G</h3>
+  <div style="margin: 1em;">
+    <ul>
+      <li>Zometool and vZome embody recreational mathematics</li>
+      <li>Zometool is always present at the Gathering, and is a favorite activity</li>
+      <li>vZome earned my invitation to G4G9</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <figure>
+    <div style='z-index: 1; margin-inline: 1em;'>
+      <vzome-viewer-previous viewer='Dodecahedron-coordinates' load-camera='true' label='previous'></vzome-viewer-previous>
+      <vzome-viewer-next     viewer='Dodecahedron-coordinates' load-camera='true' label='next'></vzome-viewer-next>
+    </div>
+    <vzome-viewer style="width: 100%; height: 100%" labels="true" show-perspective="false"
+        indexed='true' id="Dodecahedron-coordinates"
+        src="https://vorth.github.io/vzome-sharing/2025/02/19/16-17-17-758Z-Dodecahedron-coordinates/Dodecahedron-coordinates.vZome" >
+    </vzome-viewer>
+  </figure>
+</section>
+
+<section>
+  <h3>The Golden Ratio</h3>
+  <div style="margin-left: 2em;">
+    <math>
+      <mrow>
+        <mi>&#966;</mi>
+        <mo>=</mo>
+        <mfrac>
+          <mrow>
+            <mn>1</mn>
+            <mo>+</mo>
+            <msqrt>
+              <mn>5</mn>
+            </msqrt>
+          </mrow>
+          <mn>2</mn>
+        </mfrac>
+      </mrow>
+    </math>
+  </div>
+  <br>
+  <div class="next" style="margin-left: 2em;">Solution to
+    <math>
+      <mrow>
+        <msup><mi>x</mi><mn>2</mn></msup>
+        <mo>=</mo>
+        <mi>x</mi>
+        <mo>+</mo>
+        <mn>1</mn>
+      </mrow>
+    </math>
+    , so
+    <mark>
+      <math>
+        <mrow>
+          <msup><mi>&#966;</mi><mn>2</mn></msup> <mo>=</mo> <mi>&#966;</mi> <mo>+</mo> <mn>1</mn>
+        </mrow>
+      </math>  
+    </mark>
+  </div>
+  <br>
+  <br>
+  <div class="next" style="margin-left: 2em;">
+    <math>
+      <mrow>
+        <mo>[</mo><mn>1</mn><mo>,</mo> <msup><mi>&#966;</mi><mn>2</mn></msup> <mo>,</mo><mn>0</mn><mo>]</mo>
+        <mo>=</mo>
+        <mo>[</mo>
+          <mo>(</mo><mn>1</mn><mo>+</mo><mn>0</mn><mi>&#966;</mi><mo>)</mo>
+        <mo>,</mo>
+          <mo>(</mo><mn>1</mn><mo>+</mo><mn>1</mn><mi>&#966;</mi><mo>)</mo>
+        <mo>,</mo>
+          <mo>(</mo><mn>0</mn><mo>+</mo><mn>0</mn><mi>&#966;</mi><mo>)</mo>
+        <mo>]</mo>
+      </mrow>
+    </math>
+  </div>
+  <br>
+  <div class="next" style="margin-left: 2em;">
+    All our coordinate values live in:
+    <math>
+      <mrow>
+        <mo>{</mo>
+          <mi>a</mi><mo>+</mo><mi>b</mi><mi>&#966;</mi>
+        <mo>;</mo>
+          <mi>a</mi><mo>,</mo><mi>b</mi> <mo>&isin;</mo><mo>&Zopf;</mo>
+        <mo>}</mo>
+      </mrow>
+    </math>
+  </div>
+</section>
+
+<section>
+  <h3>Golden Numbers</h3>
+  <div style="margin-left: 2em;">
+    <math>
+      <mrow>
+        <mo>{</mo>
+          <mi>a</mi><mo>+</mo><mi>b</mi><mi>&#966;</mi>
+        <mo>;</mo>
+          <mi>a</mi><mo>,</mo><mi>b</mi> <mo>&isin;</mo><mo>&Zopf;</mo>
+        <mo>}</mo>
+        <mo>=</mo><mo>&Zopf;</mo><mo>[</mo><mi>&#966;</mi><mo>]</mo>
+      </mrow>
+    </math>, the Golden Ring
+  </div>
+  <br>
+  <div class="next" style="margin-left: 2em;">
+    <math>
+      <mrow>
+        <mo>{</mo>
+          <mi>q</mi><mo>+</mo><mi>r</mi><mi>&#966;</mi>
+        <mo>;</mo>
+          <mi>q</mi><mo>,</mo><mi>r</mi> <mo>&isin;</mo><mo>&Qopf;</mo>
+        <mo>}</mo>
+        <mo>=</mo><mo>&Qopf;</mo><mo>[</mo><mi>&#966;</mi><mo>]</mo>
+      </mrow>
+    </math>, the Golden Field
+  </div>
+  <br>
+  <br>
+  <div class="next" style="margin-left: 2em;">
+    <div>
+      <math>
+        <mrow>
+          <mo>(</mo><mi>a</mi><mo>+</mo><mi>b</mi><mi>&#966;</mi><mo>)</mo><mo>(</mo><mi>c</mi><mo>+</mo><mi>d</mi><mi>&#966;</mi><mo>)</mo>
+        </mrow>
+      </math>
+    </div>
+    <div style="margin-left: 2em;">
+      <math>
+        <mrow>
+          <mo>= </mo><mi>a</mi><mi>c</mi> <mo>+</mo> <mi>b</mi><mi>c</mi><mi>&#966;</mi>
+              <mo>+</mo> <mi>a</mi><mi>d</mi><mi>&#966;</mi>
+              <mo>+</mo> <mi>b</mi><mi>d</mi><msup><mi>&#966;</mi><mn>2</mn></msup>
+        </mrow>
+      </math>
+    </div>
+    <div style="margin-left: 2em;">
+      <math>
+        <mrow>
+          <mo>= </mo><mi>a</mi><mi>c</mi> <mo>+</mo> <mi>b</mi><mi>c</mi><mi>&#966;</mi>
+          <mo>+</mo> <mi>a</mi><mi>d</mi><mi>&#966;</mi>
+          <mo>+</mo> <mi>b</mi><mi>d</mi><mo>+</mo> <mi>b</mi><mi>d</mi><mi>&#966;</mi>
+        </mrow>
+      </math>
+    </div>
+    <div style="margin-left: 2em;">
+      <math>
+        <mrow>
+          <mo>=</mo> <mo>(</mo><mi>a</mi><mi>c</mi> <mo>+</mo> <mi>b</mi><mi>d</mi> <mo>)</mo>
+          <mo>+</mo> <mo>(</mo><mi>b</mi><mi>c</mi>
+          <mo>+</mo> <mi>a</mi><mi>d</mi>
+          <mo>+</mo> <mi>b</mi><mi>d</mi> <mo>)</mo><mi>&#966;</mi>
+        </mrow>
+      </math>
+    </div>
+    <div>
+      <math>
+        <mrow>
+          <mo>&isin;</mo><mo>&Zopf;</mo><mo>[</mo><mi>&#966;</mi><mo>]</mo>
+        </mrow>
+      </math>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h3>The Power of <math><mo>&Zopf;</mo><mo>[</mo><mi>&#966;</mi><mo>]</mo> </math></h3>
+  <ul>
+    <li class="next">Scale up or down as far as we like, exactly</li>
+    <li class="next">Nice proportions (triangles & rectangles) in
+      <math><msup><mrow><mo>&Zopf;</mo><mo>[</mo><mi>&#966;</mi><mo>]</mo></mrow><mn>2</mn></msup></math></li>
+    <li class="next">Penrose tiles in
+      <math><msup><mrow><mo>&Zopf;</mo><mo>[</mo><mi>&#966;</mi><mo>]</mo></mrow><mn>2*</mn></msup></math></li>
+      <li class="next">Icosahedral (H3) symmetry in
+      <math><msup><mrow><mo>&Zopf;</mo><mo>[</mo><mi>&#966;</mi><mo>]</mo></mrow><mn>3</mn></msup></math></li>
+    <li class="next">H4 symmetry and Icosians in
+      <math><msup><mrow><mo>&Zopf;</mo><mo>[</mo><mi>&#966;</mi><mo>]</mo></mrow><mn>4</mn></msup></math></li>
+    <li class="next"><a href="https://en.wikipedia.org/wiki/Dan_Shechtman#/media/File:Dan_Shechtman_in_1985.jpg" target="_blank" rel="noopener noreferrer">Quasicrystals</a></li>
+  </ul>
+</section>
+
+<section>
+  <figure>
+    <vzome-viewer style="width: 100%; height: 100%" labels="true" show-perspective="false" scene='#1'
+        src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2025/02/20/12-42-11-Schechtman-quasicrystal/Schechtman-quasicrystal.vZome" >
+    </vzome-viewer>
+  </figure>
+</section>
+
+<section>
+  <h3>OK, What Else?</h3>
+  <p class="next">Are there other geometric rings or fields?</p>
+  <p class="next">Can we represent other symmetry groups?</p>
+</section>
+
+<section>
+  <h3><math><mo>&Zopf;</mo><mo>[</mo><msqrt><mn>2</mn></msqrt><mo>]</mo> </math></h3>
+  <div class="next" style="margin-left: 2em;">Solution to
+    <math>
+      <mrow>
+        <msup><mi>x</mi><mn>2</mn></msup>
+        <mo>=</mo>
+        <mn>2</mn>
+      </mrow>
+    </math>
+  </div>
+  <br>
+  <div class="next" style="margin-left: 2em;">
+    <div>
+      <math>
+        <mrow>
+          <mo>(</mo><mi>a</mi><mo>+</mo><mi>b</mi><msqrt><mn>2</mn></msqrt><mo>)</mo><mo>(</mo><mi>c</mi><mo>+</mo><mi>d</mi><msqrt><mn>2</mn></msqrt><mo>)</mo>
+        </mrow>
+      </math>
+    </div>
+    <div style="margin-left: 2em;">
+      <math>
+        <mrow>
+          <mo>=</mo> <mo>(</mo><mi>a</mi><mi>c</mi> <mo>+</mo> <mn>2</mn><mi>b</mi><mi>d</mi> <mo>)</mo>
+          <mo>+</mo> <mo>(</mo><mi>b</mi><mi>c</mi>
+          <mo>+</mo> <mi>a</mi><mi>d</mi> <mo>)</mo><msqrt><mn>2</mn></msqrt>
+        </mrow>
+      </math>
+    </div>
+  </div>
+  <br>
+  <div class="next" style="margin-left: 2em;">
+    <math>
+      <mrow>
+        <mo>|</mo><mrow><mo>(</mo><msqrt><mn>2</mn></msqrt> <mo>,</mo><msqrt><mn>2</mn></msqrt><mo>)</mo></mrow><mo>|</mo>
+      </mrow>
+      <mrow>
+        <mo>=</mo> <mo>|</mo><mrow><mo>(</mo><mn>1</mn><mo>,</mo> <mn>0</mn><mo>)</mo></mrow><mo>|</mo>
+      </mrow>
+    </math>
+  </div>
+</section>
+
+<section>
+  <figure>
+    <div style='z-index: 1; margin-inline: 1em;'>
+      <vzome-viewer-previous viewer='root2-intro' load-camera='true' label='previous'></vzome-viewer-previous>
+      <vzome-viewer-next     viewer='root2-intro' load-camera='true' label='next'></vzome-viewer-next>
+    </div>
+    <vzome-viewer style="width: 100%; height: 100%" labels="true" show-perspective="false"
+          indexed='true' id="root2-intro" tween-duration="0"
+        src="https://vorth.github.io/vzome-sharing/2025/02/20/08-59-53-root2-intro/root2-intro.vZome" >
+    </vzome-viewer>
+  </figure>
+</section>
+
+<section>
+  <figure>
+    <div style='z-index: 1; margin-inline: 1em;'>
+      <vzome-viewer-previous viewer='root2-output' load-camera='true' label='previous'></vzome-viewer-previous>
+      <vzome-viewer-next     viewer='root2-output' load-camera='true' label='next'></vzome-viewer-next>
+    </div>
+    <vzome-viewer style="width: 100%; height: 100%" labels="true" show-perspective="false"
+          indexed='true' id="root2-output" tween-duration="0"
+        src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2025/02/20/09-36-20-root2-output/root2-output.vZome" >
+    </vzome-viewer>
+  </figure>
+</section>
+
+<section>
+  <h3><math><mo>&Zopf;</mo><mo>[</mo><msqrt><mn>2</mn></msqrt><mo>]</mo> </math> Tilings</h3>
+  <ul>
+    <li><a href="https://tilings.math.uni-bielefeld.de/substitution/ammann-beenker/" target="_blank" rel="noopener noreferrer">Ammann-Beenker</a></li>
+    <li><a href="https://tilings.math.uni-bielefeld.de/substitution/octagonal-1225/" target="_blank" rel="noopener noreferrer">Octagonal 1225</a></li>
+    <li><a href="https://tilings.math.uni-bielefeld.de/substitution/rhomb-square-octagon/" target="_blank" rel="noopener noreferrer">Rhomb-Square-Octagon</a></li>
+    <li><a href="https://tilings.math.uni-bielefeld.de/substitution/watanabe-ito-soma-8-fold/" target="_blank" rel="noopener noreferrer">Watanabe Ito Soma 8-fold/</a></li>
+  </ul>
+</section>
+
+<section>
+  <h3><math><mo>&Zopf;</mo><mo>[</mo><msqrt><mn>3</mn></msqrt><mo>]</mo> </math></h3>
+  <div class="next" style="margin-left: 2em;">
+    <div>
+      <math>
+        <mrow>
+          <mo>(</mo><mi>a</mi><mo>+</mo><mi>b</mi><msqrt><mn>3</mn></msqrt><mo>)</mo><mo>(</mo><mi>c</mi><mo>+</mo><mi>d</mi><msqrt><mn>3</mn></msqrt><mo>)</mo>
+        </mrow>
+      </math>
+    </div>
+    <div style="margin-left: 2em;">
+      <math>
+        <mrow>
+          <mo>=</mo> <mo>(</mo><mi>a</mi><mi>c</mi> <mo>+</mo> <mn>3</mn><mi>b</mi><mi>d</mi> <mo>)</mo>
+          <mo>+</mo> <mo>(</mo><mi>b</mi><mi>c</mi>
+          <mo>+</mo> <mi>a</mi><mi>d</mi> <mo>)</mo><msqrt><mn>3</mn></msqrt>
+        </mrow>
+      </math>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h3>Heptagon Numbers</h3>
+  <div class="next" style="margin-left: 2em;">
+    <math>
+      <mi>&#x03C1;</mi><mi>&#x03C3;</mi><mo>=</mo><mi>&#x03C1;</mi><mo>+</mo><mi>&#x03C3;</mi>
+      <mpadded width="+50pt" height="+10pt" depth="+10pt" lspace="10pt" />
+      <msup><mi>&#x03C1;</mi><mn>2</mn></msup><mo>=</mo><mn>1</mn><mo>+</mo><mi>&#x03C3;</mi>
+      <mpadded width="+50pt" height="+10pt" depth="+10pt" lspace="10pt" />
+      <msup><mi>&#x03C3;</mi><mn>2</mn></msup><mo>=</mo><mn>1</mn><mo>+</mo><mi>&#x03C1;</mi><mo>+</mo><mi>&#x03C3;</mi>
+    </math>
+  </div>
+  <br>
+  <div class="next" style="margin-left: 2em;">
+    <math>
+      <mfrac><mn>1</mn><mi>&#x03C3;</mi></mfrac><mo>=</mo><mi>&#x03C3;</mi><mo>&#x2212;</mo><mi>&#x03C1;</mi>
+      <mpadded width="+50pt" height="+10pt" depth="+10pt" lspace="10pt" />
+      <mfrac><mn>1</mn><mi>&#x03C1;</mi></mfrac><mo>=</mo><mn>1</mn><mo>+</mo><mi>&#x03C1;</mi><mo>&#x2212;</mo><mi>&#x03C3;</mi>
+    </math>
+  </div>
+  <div style="display: flex; margin-top: 1em;">
+    <img style="height: 25dvh; margin: auto;" src="https://github.com/user-attachments/assets/add6e717-a952-42b1-aa9d-dced585f75dd">
+  </div>
+</section>
+
+<section>
+  <figure>
+    <div style='z-index: 1; margin-inline: 1em;'>
+      <vzome-viewer-previous viewer='hepta-nautilus' load-camera='true' label='previous'></vzome-viewer-previous>
+      <vzome-viewer-next     viewer='hepta-nautilus' load-camera='true' label='next'></vzome-viewer-next>
+    </div>
+    <vzome-viewer style="width: 100%; height: 100%" labels="true" show-perspective="false"
+          indexed='true' id="hepta-nautilus" tween-duration="0"
+        src="https://vorth.github.io/vzome-sharing/2025/02/20/06-02-38-672Z-hepta-nautilus/hepta-nautilus.vZome" >
+    </vzome-viewer>
+  </figure>
+</section>
+
+<section>
+  <figure>
+    <div style='z-index: 1; margin-inline: 1em;'>
+      <vzome-viewer-previous viewer='fractal-heptagrams' load-camera='true' label='previous'></vzome-viewer-previous>
+      <vzome-viewer-next     viewer='fractal-heptagrams' load-camera='true' label='next'></vzome-viewer-next>
+    </div>
+    <vzome-viewer style="width: 100%; height: 100%" labels="true" show-perspective="false"
+          indexed='true' id="fractal-heptagrams" tween-duration="0"
+          src="https://vorth.github.io/vzome-sharing/2025/02/18/19-28-47-fractal-heptagrams/fractal-heptagrams.vZome" >
+    </vzome-viewer>
+  </figure>
+</section>
+
+<section>
+  <figure>
+    <vzome-viewer style="width: 100%; height: 100%" labels="true" show-perspective="false"
+        src="https://vorth.github.io/vzome-sharing/2025/02/18/10-34-18-heptagon-iris-ornament/heptagon-iris-ornament.vZome" >
+    </vzome-viewer>
+  </figure>
+</section>
+
+<!-- <section>
+  <figure>
+    <img src="https://user-images.githubusercontent.com/1584024/162556063-c27428e5-aa7b-498b-8ad7-e26e8081f759.jpg">
+  </figure>
+</section> -->
+
+<!-- <section>
+  <p>Some random text: But I've never been to the moon! You can see how I lived before I met you. Also Zoidberg.
+  I could if you hadn't turned on the light and shut off my stereo.</p>
+</section>
+
+<section>
+  <h3>An incremental list</h3>
+  <ul>
+    <li class="next">Item 1
+    <li class="next">Item 2
+    <li class="next">Item 3
+      <ul>
+        <li class="next"> Item 3.1
+        <li class="next"> Item 3.2
+      </ul>
+  </ul>
+  <div role="note">Some notes. They are only visible using onstage shell.</div>
+</section>
+
+<section>
+  <h3>More incrementals</h3>
+  <p class="next">Not only list elements can appear incrementally</p>
+  <p><mark class="next">Styles</mark> can be incremental
+     <mark class="next">too</mark></p>
+</section>
+
+<section>
+  <h3>Even more incrementals</h3>
+  <p>
+    <span class="next" next-order="3">They</span>
+    <span class="next" next-order="5">can</span>
+    <span class="next" next-order="2">even</span>
+    <span class="next" next-order="1">appear</span>
+    <span class="next" next-order="7">in</span>
+    <span class="next" next-order="4">any</span>
+    <span class="next" next-order="6">order</span>
+    <span class="next" next-order="8">!</span>
+  </p>
+</section>
+
+<section>
+<blockquote>
+  Who's brave enough to fly into something we all keep calling a death sphere?
+</blockquote>
+<details>
+  <p>In the onstage shell, notes scroll rather than overflow:</p>
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac dui eu est feugiat lacinia sit amet nec leo. Mauris eu ipsum leo. Nulla mi odio, cursus sed sollicitudin non, fringilla id magna. Suspendisse sit amet posuere elit. Maecenas iaculis, turpis a placerat imperdiet, libero lorem feugiat nisi, nec tincidunt diam nibh sit amet massa. Vestibulum quis adipiscing tellus. Maecenas sollicitudin sodales pulvinar. Donec dui ipsum, bibendum facilisis consequat interdum, tempus ut mauris. Aliquam ut dolor nec odio scelerisque bibendum quis in neque. Aliquam dui dui, pulvinar quis fermentum quis, gravida eu augue. Nunc tristique dolor a urna pulvinar bibendum. Curabitur mollis cursus neque, in scelerisque metus porta non. Donec tempor enim in nibh vestibulum et convallis nisi malesuada. Duis ut lectus sed metus venenatis porttitor id pharetra quam. Suspendisse sapien turpis, ornare in molestie et, gravida eget turpis.
+  </p>
+</details>
+</section>
+
+<section>
+  <h1>Part two</h1>
+</section> -->
+
+<section style="align-content: center; justify-items: center;">
+  <div>These slides: 
+    <a href="https://docs.vzome.com/CoM">docs.vzome.com/CoM</a>
+  </div>
+  <div style="font-size: 68%;">(Safari won't work)</div>
+  <img style="height: 75%;" src="https://github.com/user-attachments/assets/59a6d1e9-bff9-4edc-b56d-f1b120459c6f">
+</section>
+
+
+<!-- Your Style -->
+<!-- Define the style of your presentation -->
+
+
+<div id="progress-bar"></div>
+
+<!-- Default Style -->
+<link rel="stylesheet" href="../assets/css/dzslides.css">
+
+<script src="../assets/js/dzslides.js"></script>
+<!-- vim: set fdm=marker: }}} -->
