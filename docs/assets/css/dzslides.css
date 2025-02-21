@@ -158,7 +158,7 @@ section[aria-selected] ~ section { left: +150%; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 [role="note"] { display: none; }
 html {
-  font-size: 16px;
+  font-size: 12px;
 }
 body {
   width: 800px; height: 600px;
