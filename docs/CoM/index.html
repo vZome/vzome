@@ -9,7 +9,7 @@
   G4G CoM 2024/02/21
 </header>
 
-<section>
+<section id="title">
   <h1>Algebra and Serendipity: The Beautiful Mathematics of vZome</h1>
   <h3 style="margin: 35px 35px 30px 89px;">Scott Vorthmann</h3>
   <div style="display: flex;">
@@ -17,7 +17,7 @@
   </div>
 </section>
 
-<section style="align-content: center; justify-items: center;">
+<section id="qr-front" style="align-content: center; justify-items: center;">
   <div>These slides: 
     <a href="https://docs.vzome.com/CoM">docs.vzome.com/CoM</a>
   </div>
@@ -25,7 +25,7 @@
   <img style="height: 75%;" src="https://github.com/user-attachments/assets/59a6d1e9-bff9-4edc-b56d-f1b120459c6f">
 </section>
 
-<section>
+<section id="vzome">
   <h3>What is vZome?</h3>
   <div style="margin: 1em;">
     <a href="http://vzome.com/app" target="_blank" rel="noopener noreferrer">vZome</a>
@@ -35,18 +35,20 @@
   </div>
 </section>
 
-<section>
+<section id="g4g">
   <h3>Zometool, vZome, and G4G</h3>
   <div style="margin: 1em;">
     <ul>
       <li>Zometool and vZome embody recreational mathematics</li>
+      <br>
       <li>Zometool is always present at the Gathering, and is a favorite activity</li>
+      <br>
       <li>vZome earned my invitation to G4G9</li>
     </ul>
   </div>
 </section>
 
-<section>
+<section id="dodec-coords">
   <figure>
     <div style='z-index: 1; margin-inline: 1em;'>
       <vzome-viewer-previous viewer='Dodecahedron-coordinates' load-camera='true' label='previous'></vzome-viewer-previous>
@@ -59,7 +61,7 @@
   </figure>
 </section>
 
-<section>
+<section id="golden-ratio">
   <h3>The Golden Ratio</h3>
   <div style="margin-left: 2em;">
     <math>
@@ -131,7 +133,7 @@
   </div>
 </section>
 
-<section>
+<section id="golden-numbers">
   <h3>Golden Numbers</h3>
   <div style="margin-left: 2em;">
     <math>
@@ -206,23 +208,61 @@
   </div>
 </section>
 
-<section>
+<section id="rings-rich">
+  <h3>Rings can be Rich!</h3>
+  <div class="next" style="margin-left: 2em;">
+    <math>
+      <mfrac><mn>1</mn><mi>&#966;</mi></mfrac><mo>=</mo><mi>&#966;</mi><mo>-</mo><mn>1</mn>
+      <mpadded width="+50pt" height="+10pt" depth="+10pt" lspace="10pt" />
+      <mrow>
+        <mo>&isin;</mo><mo>&Zopf;</mo><mo>[</mo><mi>&#966;</mi><mo>]</mo>
+      </mrow>
+    </math>
+  </div>
+  <ul class="next">
+    <li>No general division (inverses), but still an infinite ring of inverses.</li>
+    <br>
+    <li>Exact scaling, up and down!</li>
+    <br>
+    <li>Still missing: general centroids, intersections, projections, and some inverse transformations.</li>
+  </ul>
+</section>
+
+<section id="exactness">
+  <h3>The Joy of Exactness</h3>
+  <ul>
+    <li>Using <math><mo>&Zopf;</mo></math> (or <math><mo>&Qopf;</mo></math>) means all arithmetic is exact; there is no roundoff error.</li>
+    <br>
+    <li>Equality testing is exact, with no need for "close enough" tests.</li>
+    <br>
+    <li>The scale of a model is limited only by the integer representation.</li>
+    <br>
+    <li>A <a href="https://vorth.github.io/vzome-sharing/2025/02/20/05-26-05-911Z-Blue-Serendipity/" target="_blank" rel="noopener noreferrer">connected path of line segments</a> closes, or not, with no ambiguity.</li>
+  </ul>
+</section>
+
+<section id="golden-power">
   <h3>The Power of <math><mo>&Zopf;</mo><mo>[</mo><mi>&#966;</mi><mo>]</mo> </math></h3>
   <ul>
     <li class="next">Scale up or down as far as we like, exactly</li>
+    <br>
     <li class="next">Nice proportions (triangles & rectangles) in
       <math><msup><mrow><mo>&Zopf;</mo><mo>[</mo><mi>&#966;</mi><mo>]</mo></mrow><mn>2</mn></msup></math></li>
+    <br>
     <li class="next">Penrose tiles in
       <math><msup><mrow><mo>&Zopf;</mo><mo>[</mo><mi>&#966;</mi><mo>]</mo></mrow><mn>2*</mn></msup></math></li>
-      <li class="next">Icosahedral (H3) symmetry in
+    <br>
+    <li class="next">Icosahedral (H3) symmetry in
       <math><msup><mrow><mo>&Zopf;</mo><mo>[</mo><mi>&#966;</mi><mo>]</mo></mrow><mn>3</mn></msup></math></li>
+    <br>
     <li class="next">H4 symmetry and Icosians in
       <math><msup><mrow><mo>&Zopf;</mo><mo>[</mo><mi>&#966;</mi><mo>]</mo></mrow><mn>4</mn></msup></math></li>
+    <br>
     <li class="next"><a href="https://en.wikipedia.org/wiki/Dan_Shechtman#/media/File:Dan_Shechtman_in_1985.jpg" target="_blank" rel="noopener noreferrer">Quasicrystals</a></li>
   </ul>
 </section>
 
-<section>
+<section id="schechtman-model">
   <figure>
     <vzome-viewer style="width: 100%; height: 100%" labels="true" show-perspective="false" scene='#1'
         src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2025/02/20/12-42-11-Schechtman-quasicrystal/Schechtman-quasicrystal.vZome" >
@@ -230,13 +270,46 @@
   </figure>
 </section>
 
-<section>
-  <h3>OK, What Else?</h3>
-  <p class="next">Are there other geometric rings or fields?</p>
-  <p class="next">Can we represent other symmetry groups?</p>
+<section id="vzome-fields">
+  <h3>Symmetry in vZome</h3>
+  <div style="margin-left: 2em;">
+    Let's look at how these concepts manifest in <a href="http://vzome.com/app" target="_blank" rel="noopener noreferrer">vZome</a>.
+  </div>
 </section>
 
-<section>
+<section id="octahedral">
+  <h3>Octahedral Symmetry</h3>
+  <ul>
+    <li>Possible even in <math><msup><mo>&Zopf;</mo><mn>3</mn></msup></math>, by permuting coordinates and flipping signs</li>
+    <br>
+    <li>Analogues of the octahedron and cube in any dimension</li>
+    <br>
+    <li>Want scaling? Use dyadic rationals (another ring!)</li>
+    <br>
+    <li>Peter Pearce, <a href="https://pjpearcedesign.com/index.php/play/educational-toys-games/geometry-kits/" target="_blank" rel="noopener noreferrer">Synestructics SuperStructures</a></li>
+  </ul>
+</section>
+
+<section id="50-gon">
+  <figure>
+    <vzome-viewer style="width: 100%; height: 100%" labels="true" show-perspective="false" id="50-gon"
+        src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2025/01/23/21-49-43-50-faced-polyhedron/50-faced-polyhedron.vZome" >
+    </vzome-viewer>
+  </figure>
+</section>
+
+<section id="what-else">
+  <h3>OK, What Else?</h3>
+  <ul>
+    <li>Are there other geometric rings or fields?</li>
+    <br>
+    <li>Can we represent other symmetry groups?</li>
+    <br>
+    <li>Coxeter: no more polyhedral groups</li>
+  </ul>
+</section>
+
+<section id="root2">
   <h3><math><mo>&Zopf;</mo><mo>[</mo><msqrt><mn>2</mn></msqrt><mo>]</mo> </math></h3>
   <div class="next" style="margin-left: 2em;">Solution to
     <math>
@@ -279,7 +352,7 @@
   </div>
 </section>
 
-<section>
+<section id="root2-model">
   <figure>
     <div style='z-index: 1; margin-inline: 1em;'>
       <vzome-viewer-previous viewer='root2-intro' load-camera='true' label='previous'></vzome-viewer-previous>
@@ -292,31 +365,38 @@
   </figure>
 </section>
 
-<section>
-  <figure>
-    <div style='z-index: 1; margin-inline: 1em;'>
-      <vzome-viewer-previous viewer='root2-output' load-camera='true' label='previous'></vzome-viewer-previous>
-      <vzome-viewer-next     viewer='root2-output' load-camera='true' label='next'></vzome-viewer-next>
-    </div>
-    <vzome-viewer style="width: 100%; height: 100%" labels="true" show-perspective="false"
-          indexed='true' id="root2-output" tween-duration="0"
-        src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2025/02/20/09-36-20-root2-output/root2-output.vZome" >
-    </vzome-viewer>
-  </figure>
+<section id="root2-output">
+  <h3>Capabilities of <math><mo>&Zopf;</mo><mo>[</mo><msqrt><mn>2</mn></msqrt><mo>]</mo> </math></h3>
+  <ul>
+    <li><a href="https://vorth.github.io/vzome-sharing/2025/02/20/09-36-20-root2-output/" target="_blank" rel="noopener noreferrer">vZome designs</a></li>
+  </ul>
 </section>
 
-<section>
+<section id="root2-tilings">
   <h3><math><mo>&Zopf;</mo><mo>[</mo><msqrt><mn>2</mn></msqrt><mo>]</mo> </math> Tilings</h3>
   <ul>
     <li><a href="https://tilings.math.uni-bielefeld.de/substitution/ammann-beenker/" target="_blank" rel="noopener noreferrer">Ammann-Beenker</a></li>
+    <br>
     <li><a href="https://tilings.math.uni-bielefeld.de/substitution/octagonal-1225/" target="_blank" rel="noopener noreferrer">Octagonal 1225</a></li>
+    <br>
     <li><a href="https://tilings.math.uni-bielefeld.de/substitution/rhomb-square-octagon/" target="_blank" rel="noopener noreferrer">Rhomb-Square-Octagon</a></li>
+    <br>
     <li><a href="https://tilings.math.uni-bielefeld.de/substitution/watanabe-ito-soma-8-fold/" target="_blank" rel="noopener noreferrer">Watanabe Ito Soma 8-fold/</a></li>
   </ul>
 </section>
 
-<section>
+<section id="root3">
   <h3><math><mo>&Zopf;</mo><mo>[</mo><msqrt><mn>3</mn></msqrt><mo>]</mo> </math></h3>
+  <div style="margin-left: 2em;">Solution to
+    <math>
+      <mrow>
+        <msup><mi>x</mi><mn>2</mn></msup>
+        <mo>=</mo>
+        <mn>3</mn>
+      </mrow>
+    </math>
+  </div>
+  <br>
   <div class="next" style="margin-left: 2em;">
     <div>
       <math>
@@ -335,9 +415,38 @@
       </math>
     </div>
   </div>
+  <ul class="next">
+    <li>
+      <a href="https://vorth.github.io/vzome-sharing/2025/02/20/20-38-36-root3-tilings/" target="_blank" rel="noopener noreferrer">the dodecagon</a> in <math><mo>&Zopf;</mo><mo>[</mo><msqrt><mn>3</mn></msqrt><mo>]</mo> </math>
+    </li>
+  </ul>
 </section>
 
-<section>
+<section id="root3-tilings">
+  <h3><math><mo>&Zopf;</mo><mo>[</mo><msqrt><mn>3</mn></msqrt><mo>]</mo> </math> Tilings</h3>
+  <ul>
+    <li><a href="https://tilings.math.uni-bielefeld.de/substitution/stampflis-12-fold-wo-squares/" target="_blank" rel="noopener noreferrer">Stampfli's 12-fold without squares</a></li>
+    <br>
+    <li><a href="https://tilings.math.uni-bielefeld.de/substitution/square-triangle/" target="_blank" rel="noopener noreferrer">Square-triangle</a></li>
+    <br>
+    <li>Search <a href="https://tilings.math.uni-bielefeld.de/substitution/" target="_blank" rel="noopener noreferrer">here</a> for "12-fold"</li>
+    <br>
+    <li>The Hat and Spectre both fit in this ring!</li>
+  </ul>
+</section>
+
+<section id="polygons">
+  <h3>Polygon Rings</h3>
+  <ul>
+    <li>Peter Steinbach described an infinite class of rings derived from regular polygons.</li>
+    <br>
+    <li>Generally, these rings work nicely for substitution tilings.</li>
+    <br>
+    <li>We've seen the rings associated with the pentagon, the octagon, and the dodecagon.</li>
+  </ul>
+</section>
+
+<section id="heptagon">
   <h3>Heptagon Numbers</h3>
   <div class="next" style="margin-left: 2em;">
     <math>
@@ -361,7 +470,63 @@
   </div>
 </section>
 
-<section>
+<section id="heptagon-ring">
+  <h3>The Heptagon Ring</h3>
+  <div style="margin-left: 2em;">
+    <math>
+      <mrow>
+        <mo>&Zopf;</mo><mo>[</mo><mi>&#x03C1;</mi><mo>,</mo><mi>&#x03C3;</mi><mo>]</mo><mo>=</mo>
+        <mo>{</mo>
+          <mi>a</mi><mo>+</mo><mi>b</mi><mi>&#x03C1;</mi><mo>+</mo><mi>c</mi><mi>&#x03C3;</mi>
+        <mo>;</mo>
+          <mi>a</mi><mo>,</mo><mi>b</mi><mo>,</mo><mi>c</mi> <mo>&isin;</mo><mo>&Zopf;</mo>
+        <mo>}</mo>
+      </mrow>
+    </math>
+  </div>
+  <br>
+  <div class="next" style="margin-left: 2em;">
+    <div>
+      compare with:
+    </div>
+    <div>
+      <math>
+        <mrow>
+          <mo>&Zopf;</mo><mo>[</mo><msqrt><mn>2</mn></msqrt><mo>,</mo><msqrt><mn>3</mn></msqrt><mo>]</mo><mo>=</mo>
+\        </mrow>
+      </math>
+    </div>
+    <div style="margin-left: 2em;">
+      <math>
+        <mrow>
+          <mo>{</mo>
+            <mi>a</mi><mo>+</mo><mi>b</mi><msqrt><mn>2</mn></msqrt><mo>+</mo><mi>c</mi><msqrt><mn>3</mn></msqrt><mo>+</mo><mi>d</mi><msqrt><mn>6</mn></msqrt>
+          <mo>;</mo>
+            <mi>a</mi><mo>,</mo><mi>b</mi><mo>,</mo><mi>c</mi><mo>,</mo><mi>d</mi> <mo>&isin;</mo><mo>&Zopf;</mo>
+          <mo>}</mo>
+        </mrow>
+      </math>
+    </div>
+  </div>
+</section>
+
+<section id="heptagon-links">
+  <h3>Heptagon Explorations</h3>
+  <ul>
+    <li>Essential papers:
+      <ul>
+        <li><a href="https://archive.bridgesmathart.org/2000/bridges2000-35.html#gsc.tab=0" target="_blank" rel="noopener noreferrer">P. Steinbach, Sections Beyond Golden, in Bridges 2000</a></li>
+        <li><a href="https://www.jstor.org/stable/2691048" target="_blank" rel="noopener noreferrer">P. Steinbach, Golden fields: A case for the heptagon, Math. Mag. 70(1)(1997)</a></li>
+        <li><a href="http://m.archive.bridgesmathart.org/2003/bridges2003-161.pdf" target="_blank" rel="noopener noreferrer">J. Kappraff, A Unified Theory of Proportion, in Bridges 2003</a></li>
+      </ul>
+    </li>
+    <li>My <a href="https://vorth.github.io/ipython/" target="_blank" rel="noopener noreferrer">iPython notebooks</a></li>
+    <li>My HP-like <a href="https://codepen.io/scottvorthmann/pen/bWXVoV" target="_blank" rel="noopener noreferrer">Heptagon number calculator</a></li>
+    <li>Wendy Krieger's <a href="https://www.os2fan2.com/p7flat.html" target="_blank" rel="noopener noreferrer">Sevenly Flat</a></li>
+  </ul>
+</section>
+
+<section id="heptagon-nautilus">
   <figure>
     <div style='z-index: 1; margin-inline: 1em;'>
       <vzome-viewer-previous viewer='hepta-nautilus' load-camera='true' label='previous'></vzome-viewer-previous>
@@ -374,7 +539,7 @@
   </figure>
 </section>
 
-<section>
+<section id="heptagrams">
   <figure>
     <div style='z-index: 1; margin-inline: 1em;'>
       <vzome-viewer-previous viewer='fractal-heptagrams' load-camera='true' label='previous'></vzome-viewer-previous>
@@ -387,7 +552,7 @@
   </figure>
 </section>
 
-<section>
+<section id="heptagon-iris">
   <figure>
     <vzome-viewer style="width: 100%; height: 100%" labels="true" show-perspective="false"
         src="https://vorth.github.io/vzome-sharing/2025/02/18/10-34-18-heptagon-iris-ornament/heptagon-iris-ornament.vZome" >
@@ -395,68 +560,58 @@
   </figure>
 </section>
 
-<!-- <section>
-  <figure>
-    <img src="https://user-images.githubusercontent.com/1584024/162556063-c27428e5-aa7b-498b-8ad7-e26e8081f759.jpg">
-  </figure>
-</section> -->
-
-<!-- <section>
-  <p>Some random text: But I've never been to the moon! You can see how I lived before I met you. Also Zoidberg.
-  I could if you hadn't turned on the light and shut off my stereo.</p>
-</section>
-
-<section>
-  <h3>An incremental list</h3>
-  <ul>
-    <li class="next">Item 1
-    <li class="next">Item 2
-    <li class="next">Item 3
-      <ul>
-        <li class="next"> Item 3.1
-        <li class="next"> Item 3.2
-      </ul>
+<section id="plastic">
+  <h3>The Plastic Number</h3>
+  <div style="margin-left: 2em;">
+    <math>
+      <mrow>
+        <mi>&#x03C1;</mi><mo>=</mo><mn>1.32471...</mn>
+      </mrow>
+    </math>
+  </div>
+  <br>
+  <div class="next" style="margin-left: 2em;">Solution to
+    <math>
+      <mrow>
+        <msup><mi>x</mi><mn>3</mn></msup>
+        <mo>=</mo>
+        <mi>x</mi>
+        <mo>+</mo>
+        <mn>1</mn>
+      </mrow>
+    </math>
+  </div>
+  <br>
+  <div class="next" style="margin-left: 2em;">
+    <math>
+      <mrow>
+        <mo>{</mo>
+          <mi>a</mi><mo>+</mo><mi>b</mi><mi>&#x03C1;</mi> <mo>+</mo><mi>c</mi><msup><mi>&#x03C1;</mi><mn>2</mn></msup>
+        <mo>;</mo>
+          <mi>a</mi><mo>,</mo><mi>b</mi><mo>,</mo><mi>c</mi> <mo>&isin;</mo><mo>&Zopf;</mo>
+        <mo>}</mo>
+      </mrow>
+    </math>
+  </div>
+  <br>
+  <ul class="next">
+    <li>
+      <a href="https://en.wikipedia.org/wiki/Plastic_ratio" target="_blank" rel="noopener noreferrer">Wikipedia article</a>
+    </li>
+    <br>
+    <li>
+      My <a href="https://nbviewer.org/github/vorth/ipython/blob/master/PlasticNumbers.ipynb" target="_blank" rel="noopener noreferrer">iPython notebook</a>
+    </li>
   </ul>
-  <div role="note">Some notes. They are only visible using onstage shell.</div>
 </section>
 
-<section>
-  <h3>More incrementals</h3>
-  <p class="next">Not only list elements can appear incrementally</p>
-  <p><mark class="next">Styles</mark> can be incremental
-     <mark class="next">too</mark></p>
+<section id="plastic-figure">
+  <figure>
+    <img src="https://nbviewer.org/github/vorth/ipython/blob/master/plasticFractal-01.png" alt="plastic-fractal">
+  </figure>
 </section>
 
-<section>
-  <h3>Even more incrementals</h3>
-  <p>
-    <span class="next" next-order="3">They</span>
-    <span class="next" next-order="5">can</span>
-    <span class="next" next-order="2">even</span>
-    <span class="next" next-order="1">appear</span>
-    <span class="next" next-order="7">in</span>
-    <span class="next" next-order="4">any</span>
-    <span class="next" next-order="6">order</span>
-    <span class="next" next-order="8">!</span>
-  </p>
-</section>
-
-<section>
-<blockquote>
-  Who's brave enough to fly into something we all keep calling a death sphere?
-</blockquote>
-<details>
-  <p>In the onstage shell, notes scroll rather than overflow:</p>
-  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ac dui eu est feugiat lacinia sit amet nec leo. Mauris eu ipsum leo. Nulla mi odio, cursus sed sollicitudin non, fringilla id magna. Suspendisse sit amet posuere elit. Maecenas iaculis, turpis a placerat imperdiet, libero lorem feugiat nisi, nec tincidunt diam nibh sit amet massa. Vestibulum quis adipiscing tellus. Maecenas sollicitudin sodales pulvinar. Donec dui ipsum, bibendum facilisis consequat interdum, tempus ut mauris. Aliquam ut dolor nec odio scelerisque bibendum quis in neque. Aliquam dui dui, pulvinar quis fermentum quis, gravida eu augue. Nunc tristique dolor a urna pulvinar bibendum. Curabitur mollis cursus neque, in scelerisque metus porta non. Donec tempor enim in nibh vestibulum et convallis nisi malesuada. Duis ut lectus sed metus venenatis porttitor id pharetra quam. Suspendisse sapien turpis, ornare in molestie et, gravida eget turpis.
-  </p>
-</details>
-</section>
-
-<section>
-  <h1>Part two</h1>
-</section> -->
-
-<section style="align-content: center; justify-items: center;">
+<section id="qr-back" style="align-content: center; justify-items: center;">
   <div>These slides: 
     <a href="https://docs.vzome.com/CoM">docs.vzome.com/CoM</a>
   </div>
