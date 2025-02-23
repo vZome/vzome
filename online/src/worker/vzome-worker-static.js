@@ -276,9 +276,11 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, sceneTitle
 
 const exportPreview = ( camera, lighting ) =>
 {
-  const { scenes, ...rest } = design.rendered;
+  const { scenes, snapshots: allShapshots, ...rest } = design.rendered;
+  const usedInScene = snapshot => scenes .some( scene => Number(scene.snapshot) === snapshot );
+  const snapshots = allShapshots .map( ( snapshot, i ) => usedInScene( i )? snapshot : [] );
   scenes[ 0 ] .camera = camera;
-  const rendered = { ...rest, scenes, lighting, format: 'online' };
+  const rendered = { format: 'online', ...rest, snapshots, scenes, lighting };
   return JSON.stringify( rendered, null, 2 );
 }
 

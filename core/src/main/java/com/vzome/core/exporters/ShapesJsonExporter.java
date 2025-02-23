@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.editor.DocumentModel;
+import com.vzome.core.editor.PageModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Embedding;
@@ -52,10 +53,18 @@ public class ShapesJsonExporter extends DocumentExporter
             embeddingRows[ 8 + i ] = column.z;
         }
         
-        ArrayList<ArrayList<JsonNode>> snapshots = new ArrayList<>();
-        for ( RenderedModel snapshot : ((DocumentModel) doc) .getSnapshots() ) {
-            if ( snapshot != null )
-                snapshots .add( exportRenderedModel( snapshot, shapes ) );
+        // Include only the snapshots that are used in live scenes, but DON'T change indices
+        RenderedModel[] snapshots = ((DocumentModel) doc) .getSnapshots();
+        ArrayList<ArrayList<JsonNode>> usedSnapshots = new ArrayList<>();
+        for (int i = 0; i < ((DocumentModel) doc) .getSnapshots() .length; i++) {
+          usedSnapshots .add( new ArrayList<>() ); // any or all of these may turn out to be index placeholders
+        }
+        for ( PageModel scene : ((DocumentModel) doc) .getLesson() ) {
+          int snapshot = scene .getSnapshot();
+          if ( usedSnapshots .get( snapshot) .size() == 0 ) {
+            // replace the placeholder with the actual snapshot
+            usedSnapshots .set( snapshot, exportRenderedModel( snapshots[ snapshot ], shapes ) );
+          }
         }
 
         JsonFactory factory = new JsonFactory() .disable( JsonGenerator.Feature.AUTO_CLOSE_TARGET );
@@ -75,7 +84,7 @@ public class ShapesJsonExporter extends DocumentExporter
         generator .writeObjectField( "shapes", shapes );
         generator .writeObjectField( "instances", instances );
         generator .writeObjectField( "scenes", ((DocumentModel) doc) .getLesson() .iterator() );
-        generator .writeObjectField( "snapshots", snapshots );
+        generator .writeObjectField( "snapshots", usedSnapshots );
         generator .writeEndObject();
         generator.close();
         mScene = null;
