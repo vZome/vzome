@@ -46,10 +46,12 @@ class VZomeViewer extends HTMLElement
     } );
     this.#workerclient .subscribeFor( 'SCENES_DISCOVERED', payload => {
       this.#sceneIndices = payload .map( (scene,i) => `#${i}` ) .slice( 1 ); // strip the default scene
-      this.#sceneTitles = payload .map( (scene,i) =>  scene.title ? decodeEntities( scene.title ) : `#${i}` );
+      this.#sceneTitles = payload .map( (scene,i) => scene.title ? decodeEntities( scene.title ) : `#${i}` );
       if ( this.#indexed )
         this.#sceneTitles = this.#sceneTitles .slice( 1 );
       this .dispatchEvent( new CustomEvent( 'vzome-scenes-discovered', { detail: this.#sceneTitles } ) );
+
+      this .dispatchEvent( new CustomEvent( 'vzome-scenes', { detail: payload .slice( 1 ) } ) );
     } );
 
     this.#cameraStore = createDefaultCameraStore();

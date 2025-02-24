@@ -101,8 +101,10 @@ const parseArticle = ( notesElement ) =>
   const parseArticlePage = ( pageElement ) =>
   {
     const { snapshot, title } = pageElement.attributes;
-    const camera = parseViewXml( new JavaDomElement( pageElement ) );
-    return { title, snapshot, camera };
+    const pageDom = new JavaDomElement( pageElement );
+    const camera = parseViewXml( pageDom );
+    const content = pageDom .getChildElement( 'content' ) .getTextContent();
+    return { title, snapshot, camera, content };
   }
   return notesElement.nativeElement.children.map( pageElement => parseArticlePage( pageElement ) )
           // Early vZome files always had a default article with one explanatory page

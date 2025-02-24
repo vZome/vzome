@@ -190,8 +190,8 @@ const fetchTrackballScene = ( url, report, polygons ) =>
     return;
   }
   Promise.all( [ importLegacy(), fetchUrlText( new URL( `/app/classic/resources/${url}`, baseURL ) ) ] )
-    .then( ([ legacy, xml ]) => {
-      const trackballDesign = legacy .loadDesign( xml, false, polygons, clientEvents( ()=>{} ) );
+    .then( async ([ legacy, xml ]) => {
+      const trackballDesign = await legacy .loadDesign( xml, false, polygons, clientEvents( ()=>{} ) );
       prepareDefaultScene( trackballDesign );
       const scene = prepareSceneResponse( trackballDesign, 0 ); // takes a normalized scene
       trackballScenes[ url ] = scene;
@@ -215,8 +215,8 @@ const createDesign = async ( report, fieldName ) =>
   report( { type: 'FETCH_STARTED', payload: { name: 'untitled.vZome', preview: false } } );
   try {
     const legacy = await importLegacy();
+    design = await legacy .newDesign( fieldName, clientEvents( report ) );
     report({ type: 'CONTROLLER_CREATED' }); // do we really need this for previewing?
-    design = legacy .newDesign( fieldName, clientEvents( report ) );
     prepareDefaultScene( design );
     reportDefaultScene( report );
   } catch (error) {
@@ -231,20 +231,20 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, sceneTitle
   const events = clientEvents( report );
   return Promise.all( [ importLegacy(), xmlLoading ] )
 
-    .then( ([ legacy, xml ]) => {
+    .then( async ([ legacy, xml ]) => {
       if ( !xml ) {
         report( { type: 'ALERT_RAISED', payload: 'Unable to load .vZome content' } );
         return;
       }
-      const doLoad = () => {
+      const doLoad = async () => {
+        design = await legacy .loadDesign( xml, debug, polygons, events );
         report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
-        design = legacy .loadDesign( xml, debug, polygons, events );
         prepareDefaultScene( design );
 
         // TODO: don't duplicate this in urlLoader()
         const sceneIndex = sceneTitle? getSceneIndex( sceneTitle, design.rendered.scenes ) : 0;
         if ( design.rendered.scenes.length >= 2 )
-          events .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          events .scenesDiscovered( design.rendered.scenes );
         events .sceneChanged( prepareSceneResponse( design, sceneIndex ) );
 
         report( { type: 'TEXT_FETCHED', payload: { text: xml, name } } ); // NOW it is safe to send the name
@@ -261,7 +261,11 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, sceneTitle
          } );
       }
       else
-        doLoad();
+        doLoad()
+          .catch( error => {
+            console.log( `openDesign failure: ${error.message}` );
+            report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model: ${error.message}` } );
+          })
     } )
 
     .catch( error => {
@@ -272,9 +276,11 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, sceneTitle
 
 const exportPreview = ( camera, lighting ) =>
 {
-  const { scenes, ...rest } = design.rendered;
+  const { scenes, snapshots: allShapshots, ...rest } = design.rendered;
+  const usedInScene = snapshot => scenes .some( scene => Number(scene.snapshot) === snapshot );
+  const snapshots = allShapshots .map( ( snapshot, i ) => usedInScene( i )? snapshot : [] );
   scenes[ 0 ] .camera = camera;
-  const rendered = { ...rest, scenes, lighting, format: 'online' };
+  const rendered = { format: 'online', ...rest, snapshots, scenes, lighting };
   return JSON.stringify( rendered, null, 2 );
 }
 
@@ -388,7 +394,7 @@ const urlLoader = async ( report, payload ) =>
         const sceneIndex = getSceneIndex( sceneTitle, design.rendered.scenes );
         const events = clientEvents( report );
         if ( design.rendered.scenes.length >= 2 )
-          events .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          events .scenesDiscovered( design.rendered.scenes );
         events .sceneChanged( prepareSceneResponse( design, sceneIndex ) );
       } )
       .catch( error => {
@@ -512,7 +518,7 @@ onmessage = ({ data }) =>
           snapshots .push( [ ...instances ] );
           scenes .splice( after+1, 0, { title: '', snapshot, camera } );
           design.wrapper .doAction( controllerPath, 'Snapshot', { id: snapshot } ); // no-op, but the edit must be in the history
-          clientEvents( sendToClient ) .scenesDiscovered( scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          clientEvents( sendToClient ) .scenesDiscovered( scenes );
           return;
         }
         if ( action === 'updateScene' ) {
@@ -521,7 +527,7 @@ onmessage = ({ data }) =>
           const { index, camera } = parameters;
           const { scenes } = design.rendered;
           scenes[ index ] .camera = camera;
-          clientEvents( sendToClient ) .scenesDiscovered( scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          clientEvents( sendToClient ) .scenesDiscovered( scenes );
           return;
         }
         if ( action === 'moveScene' ) {
@@ -531,7 +537,7 @@ onmessage = ({ data }) =>
           const target = index + change;
           const { scenes } = design.rendered;
           scenes[ target ] = scenes .splice( index, 1, scenes[ target ] )[ 0 ];
-          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes );
           return;
         }
         if ( action === 'duplicateScene' ) {
@@ -540,7 +546,7 @@ onmessage = ({ data }) =>
           const { after, camera } = parameters;
           const { snapshot } = design.rendered.scenes[ after ];
           design.rendered.scenes .splice( after+1, 0, { title: '', snapshot, camera } );
-          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes );
           return;
         }
         if ( action === 'removeScene' ) {
@@ -548,7 +554,7 @@ onmessage = ({ data }) =>
             return;
           const { index } = parameters;
           design.rendered.scenes .splice( index, 1 );
-          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes .map( ({ title, camera }) => ({ title, camera }) ) ); // strip off snapshot
+          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes );
           return;
         }
         if ( action === 'snapCamera' ) {

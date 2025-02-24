@@ -286,7 +286,7 @@ const controllerProperty = ( controller, propName, changeName=propName, isList=f
     const workerClient = useWorkerClient();
     createEffect( () => {
       // This is reactive code, so it should get recomputed
-      if ( workerClient.isWorkerReady() ) {
+      if ( workerClient.isWorkerReady && workerClient.isWorkerReady() ) {
         workerClient.postMessage( actions.requestControllerProperty( controllerPath, propName, changeName, isList ) );
       }
     });

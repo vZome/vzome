@@ -141,9 +141,12 @@ export class JavaDomElement
   // This is not DOM, just my quick-and-dirty serializer
   toIndentedString( indentation )
   {
+    let preserveSpace = false;
     let result = indentation + "<" + this.getLocalName();
     for ( const [ name, value ] of Object.entries( this.nativeElement.attributes ) ) {
       result += " " + name + "=\"" + value + "\"";
+      if ( name === 'xml:space' )
+        preserveSpace = value === 'preserve';
     }
     // add attributes
     if ( this.nativeElement.children.length === 0 )
@@ -151,8 +154,11 @@ export class JavaDomElement
     else
       result += ">\n";
     const text = this .getTextContent();
-    if ( text ) {
-      result += indentation + "  " + text + "\n";
+    if ( typeof text === 'string' ) {
+      if ( preserveSpace )
+        result += text;
+      else
+        result += indentation + "  " + text + "\n";
     } else {
       const kids = this .getChildNodes();
       for (let index = 0; index < kids.getLength(); index++) {

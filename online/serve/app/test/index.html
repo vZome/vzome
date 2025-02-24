@@ -4,91 +4,116 @@
     <meta charset="utf8">
     <title>vZome Online tests</title>
     <link rel="stylesheet" href="./vzome-viewer.css">
+    <style>
+      body {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        padding-block-start: 4em;
+      }
+      body div {
+        display: grid;
+        gap: 1em;
+      }
+    </style>
   </head>
   <body>
     <div>
-      <a target="_blank" href="/app/">Online</a>
-    </div>
-    <div>
-      <a target="_blank" href="/app/?url=https://gist.githubusercontent.com/John-Kostick/b003947bdb9552b5afff821ca6f6ad54/raw/425914eeb0e8efb4462b6a727a587c23ffd6671e/Tetrahedral%20Hyperboloid.vZome">Legacy Viewer</a>
-    </div>
-    <div>
-      <a target="_blank" href="/app/classic">Classic new</a>
-    </div>
-    <div>
-      <a target="_blank" href="/app/classic/index.html?design=//raw.githubusercontent.com/vorth/vzome-sharing/main/2021/09/11/10-10-11-rose-olive-bombshell-solid/rose-olive-bombshell-solid.vZome">Classic w/design</a>
-    </div>
+      <div>
+        <a target="_blank" href="/app/">Online</a>
+      </div>
+      <div>
+        <a target="_blank" href="/app/?url=https://gist.githubusercontent.com/John-Kostick/b003947bdb9552b5afff821ca6f6ad54/raw/425914eeb0e8efb4462b6a727a587c23ffd6671e/Tetrahedral%20Hyperboloid.vZome">Legacy Viewer</a>
+      </div>
+      <div>
+        <a target="_blank" href="/app/classic">Classic new</a>
+      </div>
+      <div>
+        <a target="_blank" href="/app/classic/index.html?design=//raw.githubusercontent.com/vorth/vzome-sharing/main/2021/09/11/10-10-11-rose-olive-bombshell-solid/rose-olive-bombshell-solid.vZome">Classic w/design</a>
+      </div>
+  
+      <hr/>
+      <div>
+        <a target="_blank" href="./cases/field-api/">Field API access</a>
+      </div>
+  
+      <hr/>
+      <div>
+        <a target="_blank" href="/app/inspector">vZome Inspector</a>
+      </div>
+      <div>
+        <a target="_blank" href="/app/inspector/?debug=true">vZome Debugger</a>
+      </div>
+  
+      <hr/>
+      <div>
+        <a target="_blank" href="/app/browser">GitHub browser</a>
+      </div>
+      <div>
+        <a target="_blank" href="/app/buildplane">Build Plane</a>
+      </div>
+      <div>
+        <a target="_blank" href="/app/59icosahedra">59 Icosahedra</a>
+      </div>
+      <div>
+        <a target="_blank" href="/app/fivecell?debug=true">5-Cell</a>
+      </div>
+      <div>
+        <a target="_blank" href="/app/bhall/basic?debug=true">BHall Basic</a>
+      </div>
 
-    <hr/>
+      <hr/>
+      <div>
+        <a target="_blank" href="./cases/convert-4off/">Convert a 4OFF file to 4D mesh JSON</a>
+      </div>
+      </div>
     <div>
-      <a target="_blank" href="/app/inspector">vZome Inspector</a>
-    </div>
-    <div>
-      <a target="_blank" href="/app/inspector/?debug=true">vZome Debugger</a>
-    </div>
+      <div>
+        <a target="_blank" href="./cases/zometool-instructions/">Zometool instructions</a>
+      </div>
+      <div>
+        <a target="_blank" href="./cases/zometool-model/">Zometool model page</a>
+      </div>
+      <hr/>
+      <div>
+        <a target="_blank" href="./gltf.html">GLTF and VRML</a>
+      </div>
+      <hr/>
+      <div>
+        <a target="_blank" href="./cases/tweening/">Tweening viewer</a>
+      </div>
+      <div>
+        <a target="_blank" href="./cases/online-preview/">Preview in online format</a>
+      </div>
+      <div>
+        <a target="_blank" href="./cases/labels/">Labels, and missing download source</a>
+      </div>
+      <div>
+        <a target="_blank" href="./cases/github-share-online/">GitHub share</a>
+      </div>
+      <div>
+        <a target="_blank" href="./cases/github-share/">GitHub share (legacy preview)</a>
+      </div>
+      <div>
+        <a target="_blank" href="./cases/legacy-polygon/">Legacy preview with polygons</a>
+      </div>
+      <div>
+        <a target="_blank" href="./cases/indexed-viewer/">Indexed viewer</a>
+      </div>
+      <div>
+        <a target="_blank" href="./cases/indexed-but-no-scenes/">Indexed viewer without scenes</a>
+      </div>
+      <div>
+        <a target="_blank" href="./cases/no-preview/">No preview, with scenes</a>
+      </div>
+      <div>
+        <a target="_blank" href="./cases/with-embedding/">With embedding, online preview</a>
+      </div>  
 
-    <hr/>
-    <div>
-      <a target="_blank" href="/app/browser">GitHub browser</a>
-    </div>
-    <div>
-      <a target="_blank" href="/app/buildplane">Build Plane</a>
-    </div>
-    <div>
-      <a target="_blank" href="/app/59icosahedra">59 Icosahedra</a>
-    </div>
-    <div>
-      <a target="_blank" href="/app/fivecell?debug=true">5-Cell</a>
-    </div>
-    <div>
-      <a target="_blank" href="/app/bhall/basic?debug=true">BHall Basic</a>
-    </div>
+      <hr/>
+      <div>
+        <a target="_blank" href="./cases/scene-descriptions/">Scenes with descriptions</a>
+      </div>
 
-    <hr/>
-    <div>
-      <a target="_blank" href="./cases/zometool-instructions/">Zometool instructions</a>
-    </div>
-    <div>
-      <a target="_blank" href="./cases/zometool-model/">Zometool model page</a>
-    </div>
-    <hr/>
-    <div>
-      <a target="_blank" href="./gltf.html">GLTF and VRML</a>
-    </div>
-    <hr/>
-    <div>
-      <a target="_blank" href="./cases/tweening/">Tweening viewer</a>
-    </div>
-    <div>
-      <a target="_blank" href="./cases/online-preview/">Preview in online format</a>
-    </div>
-    <div>
-      <a target="_blank" href="./cases/labels/">Labels, and missing download source</a>
-    </div>
-    <div>
-      <a target="_blank" href="./cases/github-share-online/">GitHub share</a>
-    </div>
-    <div>
-      <a target="_blank" href="./cases/github-share/">GitHub share (legacy preview)</a>
-    </div>
-    <div>
-      <a target="_blank" href="./cases/legacy-polygon/">Legacy preview with polygons</a>
-    </div>
-    <div>
-      <a target="_blank" href="./cases/indexed-viewer/">Indexed viewer</a>
-    </div>
-    <div>
-      <a target="_blank" href="./cases/indexed-but-no-scenes/">Indexed viewer without scenes</a>
-    </div>
-    <div>
-      <a target="_blank" href="./cases/no-preview/">No preview, with scenes</a>
-    </div>
-    <div>
-      <a target="_blank" href="./cases/with-embedding/">With embedding, online preview</a>
-    </div>
-    <hr/>
-    <div>
-      <a target="_blank" href="./cases/convert-4off/">Convert a 4OFF file to 4D mesh JSON</a>
     </div>
   </body>
 </html>

@@ -1,19 +1,9 @@
 ---
 title: vZome Viewer Web Component
-description:
-  The `vzome-viewer` web component can display your vZome designs on any web page.
-  This page explains how to use it.
+description: The vzome-viewer web component can display your vZome designs on any web page.  This page explains how to use it.
 image: https://docs.vzome.com/assets/vzome-viewer-in-use.png
 published: true
 ---
-
-<script type="module" src="https://www.vzome.com/modules/vzome-viewer.js"></script>
-
-{% comment %}
- - [welcome dodec assets](<https://github.com/vorth/vzome-sharing/tree/main/2022/06/19/06-37-55-welcomeDodec/>)
- 
-{% endcomment %}
-
 
 The `vzome-viewer` custom HTML element is an interactive 3D viewer for [vZome](https://vzome.com) designs.
 The viewer can be placed on any web page, because it implements
@@ -73,6 +63,22 @@ You can export such a file from the vZome desktop app.  Under the "File" menu, f
 submenu, and select the "vZome Shapes JSON (polygons)" item.
 
 If you are sharing vZome designs using [GitHub sharing](./sharing.html), the preview JSON will be generated and uploaded automatically, each time you share a design.
+
+## Camera Animation
+
+When the view loads the initial camera from a vZome design or preview, it animates the
+change from the default camera state.  This "tweening" takes 500ms (1/2 second).
+The animation has the nice side-effect of hinting to the user that the viewer is neither
+a static image nor a looping animation.
+
+You can control the duration of the animation with the `tween-duration` attribute, with a value in milliseconds:
+```html
+<vzome-viewer tween-duration="0"
+       src="https://vorth.github.io/vzome-sharing/2022/06/19/06-37-55-welcomeDodec/welcomeDodec.vZome" >
+</vzome-viewer>
+```
+A duration of zero (as shown) disables the animation completely.  Durations longer than 2000ms might not be a good experience,
+but ultimately you can judge for yourself.
 
 ## Disabling vZome Source Access
 
@@ -144,6 +150,7 @@ Here is source HTML for the `vzome-viewer` element shown below, with the `show-s
 </vzome-viewer>
  ```
 
+<script type="module" src="https://www.vzome.com/modules/vzome-viewer.js"></script>
 <figure style="width: 87%; margin: 5%">
   <vzome-viewer style="width: 87%; height: 60vh; margin: 5%" show-scenes="named"
         src="https://vorth.github.io/vzome-sharing/2022/06/19/06-37-55-welcomeDodec/welcomeDodec.vZome" >
@@ -154,6 +161,13 @@ Here is source HTML for the `vzome-viewer` element shown below, with the `show-s
     example of the vZome Viewer web component
   </figcaption>
 </figure>
+
+#### Camera Animations
+
+When the user changes the scene using the menu, a new camera configuration
+will *always* be loaded with the scene.
+This camera change will be animated (or not)
+based on the value of the `tween-duration` attribute [described earlier](#camera-animation).
 
 ### Indexed Scenes
 
@@ -168,8 +182,8 @@ available on the `vzome-viewer` element.
 However, you can also control the viewer without any Javascript code,
 by including additional web components, as shown here:
 ```html
-<vzome-viewer-previous label='prev step'></vzome-viewer-previous>
-<vzome-viewer-next label='next step'></vzome-viewer-next>
+<vzome-viewer-previous viewer="myViewer" label='prev step'></vzome-viewer-previous>
+<vzome-viewer-next     viewer="myViewer" label='next step'></vzome-viewer-next>
 <vzome-viewer id="myViewer"
        src="https://vorth.github.io/vzome-sharing/2022/06/19/06-37-55-welcomeDodec/welcomeDodec.vZome" >
 </vzome-viewer>
@@ -177,17 +191,25 @@ by including additional web components, as shown here:
 The value of the `viewer` attribute should match the `id` on your `vzome-viewer` element.
 The `viewer` attribute is optional when you only have one `vzome-viewer` element on your page.
 
-These two components render and function as buttons, and can be placed in your HTML, labeled, and styled however you like.
+There are also two more components available in the same pattern, `vzome-viewer-start` for the first scene,
+and `vzome-viewer-end` for the last scene.
+All four of these components render and function as buttons, and can be placed in your HTML, labeled, and styled however you like.
 
-By default, when the user clicks on either button as configured above,
+#### Loading the Scene Camera
+
+By default, when the user clicks on any button as configured above,
 the viewer will load the new scene but ignore the camera data stored with the scene.
 This lets the user control the camera fully (after the first scene load),
 and prevents surprising camera jumps.
-If you prefer to have each scene load *with* its camera data, use the `load-camera` attribute as below:
+If you prefer to have each scene load *with* its camera data (possibly animated), use the `load-camera` attribute as below:
 ```html
 <vzome-viewer-previous load-camera='true' label='prev step'></vzome-viewer-previous>
 <vzome-viewer-next load-camera='true' label='next step'></vzome-viewer-next>
 ```
+
+If the camera is loaded, it will be animated (or not)
+based on the value of the `tween-duration` attribute [described earlier](#camera-animation).
+
 
 ### Javascript Scene Control
 

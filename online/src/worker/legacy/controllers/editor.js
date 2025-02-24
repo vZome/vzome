@@ -1,6 +1,6 @@
 
 import { com } from '../core-java.js';
-import { getFieldNames, getFieldLabel } from "../core.js";
+import { java } from '../candies/j4ts-2.1.0-SNAPSHOT/bundle.js';
 import { JsProperties } from '../jsweet2js.js';
 import { PickingController } from './picking.js';
 import { BuildPlaneController } from './buildplane.js';
@@ -11,9 +11,10 @@ import { resolveBuildPlanes } from '../scenes.js';
 
 export class EditorController extends com.vzome.desktop.controller.DefaultController
 {
-  constructor( legacyDesign, clientEvents) {
+  constructor( legacyDesign, core, clientEvents ) {
     super();
     this.legacyDesign = legacyDesign;
+    this.core = core;
     this.clientEvents = clientEvents;
     this.symmetries = {};
     this.symmController = null;
@@ -123,7 +124,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
 
       default:
         if ( name.startsWith( "field.label." ) ) {
-          return getFieldLabel( name .substring( "field.label.".length ) );
+          return this.core.getFieldLabel( name .substring( "field.label.".length ) );
         }
         if ( ! name.startsWith( "defaultShapes." ) )
           console.log("EditorController getProperty fall through: ", name);
@@ -145,7 +146,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
         return com.vzome.core.algebra.AlgebraicField .getMultipliers( legacyField );
 
       case "fields":
-        return getFieldNames();
+        return this.core.getFieldNames();
 
       default:
         console.log("EditorController getCommandList fall through: ", name);
@@ -180,9 +181,37 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
   doParamAction(action, params) {
     switch (action) {
 
+      case "undoToManifestation": {
+        const {  history, editor } = this.legacyDesign;
+        const { picked } = params.getConfig();
+        history .undoToManifestation( picked );
+        editor .notifyListeners();
+        break;
+      }
+
       case "clearChanges": {
         this.changeCount = this.legacyDesign.getChangeCount();
         this.firePropertyChange( 'edited', '', 'false' );
+        break;
+      }
+
+      case "usedOrbits": {
+        const { renderedModel } = this.legacyDesign;
+        const usedOrbits = new java.util.HashSet();
+        const rMans = renderedModel .iterator();
+        while ( rMans .hasNext() ) {
+          const rm = rMans .next();
+          const shape = rm .getShape();
+          const orbit = shape .getOrbit();
+          if ( orbit != null )
+            usedOrbits .add( orbit );
+        }
+        this.symmController .availableController .doAction( "setNoDirections" );
+        const orbits = usedOrbits .iterator();
+        while ( orbits .hasNext() ) {
+          const orbit = orbits .next();
+          this.symmController .availableController .doAction( "enableDirection." + orbit .getName() );
+        }
         break;
       }
 

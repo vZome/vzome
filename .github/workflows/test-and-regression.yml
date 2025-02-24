@@ -33,7 +33,7 @@ jobs:
     - name: Run unit and regression tests
       run: ./gradlew test regression -PregressionOutput=failures.xml
     - name: Archive regression failures
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: regression-failures
         path: failures.xml

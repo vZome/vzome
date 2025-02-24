@@ -124,10 +124,10 @@ export const normalizePreview = ( preview ) =>
     shapes[ shape.id ] = normalizeShape( shape );
   } );
 
-  const normalizePreviewScene = ( { title, snapshot, view } ) =>
+  const normalizePreviewScene = ( { title, snapshot, view, content } ) =>
   {
     const camera = normalizePreviewCamera( view );
-    return { title, snapshot, camera };
+    return { title, snapshot, camera, content };
   }
     
   const camera = normalizePreviewCamera( preview.camera );

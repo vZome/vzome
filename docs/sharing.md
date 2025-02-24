@@ -14,7 +14,9 @@ Before you can share any designs from vZome, you need to do a one-time setup in 
 Obviously, you have to first sign up for a [GitHub][github] account if you don't have one.
 
 1. Sign in to your GitHub account
-2. If you don't already have a `vzome-sharing` GitHub repo, fork this [template repository](https://github.com/vZome/vzome-sharing) in your account.  (The "Fork" button is in the upper right of that repo page.)  The repo is pre-configured for vZome sharing, and your fork should keep the name `vzome-sharing`.  If you already had a `vzome-sharing` repo, don't fork the template; instead, copy the `_layouts/vzome.html`, `_config.yml`, and `index.md` files to your own repo.
+2. If you don't already have a `vzome-sharing` GitHub repo, fork this [template repository](https://github.com/vZome/vzome-sharing) in your account.  (The "Fork" button is in the upper right of that repo page.)  The repo is pre-configured for vZome sharing, and your fork should keep the name `vzome-sharing`. 
+3. In your fork, edit `about.md`, and replace `your-username-here` with your actual GitHub username.
+4. Edit `_config.yml`, and replace `America/New_York` with [your timezone name](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).  This is critical if you are not in North America!
 3. [Follow instructions][enable] to enable GitHub Pages for your repo.  Within a few minutes you should see a green banner that provides a link to the website built from the repository.
 
 Next, there is a little preparation you need to do in vZome itself, so it is authorized to upload
