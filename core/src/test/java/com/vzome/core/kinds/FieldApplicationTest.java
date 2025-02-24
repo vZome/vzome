@@ -532,7 +532,7 @@ public class FieldApplicationTest
         String name = shapes.getName();
         assertNotNull(name + ".getConnectorShape()", shapes.getConnectorShape());
         AlgebraicField field = symmetry.getField();
-        AlgebraicNumber length = field.createPower(1);
+        AlgebraicNumber length = field.createPower(3);
         for(Direction dir : symmetry .getDirections() ) {
             assertNotNull(name + ".getStrutShape()", shapes.getStrutShape(dir, length));
         }
