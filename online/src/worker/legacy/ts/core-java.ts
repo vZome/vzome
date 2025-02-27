@@ -4150,6 +4150,10 @@ namespace com.vzome.core.render {
 
         export class SymmetryOrbitSource implements com.vzome.core.editor.api.OrbitSource {
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
+                return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             getEmbedding(): number[] {
                 const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
                 const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
@@ -4167,10 +4171,6 @@ namespace com.vzome.core.render {
                 embedding[14] = 0.0;
                 embedding[15] = 1.0;
                 return embedding;
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getOrientations$(): number[][] {
-                return this.getOrientations(false);
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             public getOrientations(rowMajor?: any): number[][] {
@@ -4212,8 +4212,8 @@ namespace com.vzome.core.render {
                 } else throw new Error('invalid overload');
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
-                return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+            getOrientations$(): number[][] {
+                return this.getOrientations(false);
             }
             symmetry: com.vzome.core.math.symmetry.Symmetry;
 
@@ -17071,6 +17071,10 @@ namespace com.vzome.core.editor {
 namespace com.vzome.core.editor {
     export class SymmetrySystem implements com.vzome.core.editor.api.OrbitSource {
         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+        getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
+            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+        }
+        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
         getEmbedding(): number[] {
             const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
             const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
@@ -17088,10 +17092,6 @@ namespace com.vzome.core.editor {
             embedding[14] = 0.0;
             embedding[15] = 1.0;
             return embedding;
-        }
-        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-        getOrientations$(): number[][] {
-            return this.getOrientations(false);
         }
         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
         public getOrientations(rowMajor?: any): number[][] {
@@ -17144,8 +17144,8 @@ namespace com.vzome.core.editor {
             } else throw new Error('invalid overload');
         }
         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-        getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
-            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+        getOrientations$(): number[][] {
+            return this.getOrientations(false);
         }
         static logger: java.util.logging.Logger; public static logger_$LI$(): java.util.logging.Logger { if (SymmetrySystem.logger == null) { SymmetrySystem.logger = java.util.logging.Logger.getLogger("com.vzome.core.editor"); }  return SymmetrySystem.logger; }
 
@@ -36961,8 +36961,10 @@ namespace com.vzome.core.kinds {
             symmetry.createZoneOrbit$java_lang_String$int$int$int_A_A$boolean("brown", 0, com.vzome.core.math.symmetry.Symmetry.NO_ROTATION, [[1, 1, 0, 1], [1, 1, 0, 1], [2, 1, 0, 1]], true);
             const defaultShapes: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "rootTwoSmall", "small octahedra", "small connectors", symmetry);
             octahedralPerspective.setDefaultGeometry(defaultShapes);
-            octahedralPerspective.addShapes(new com.vzome.core.viewing.ExportedVEFShapes(null, "rootTwo", "Tesseractix", symmetry, defaultShapes));
             octahedralPerspective.addShapes(new com.vzome.core.viewing.ExportedVEFShapes(null, "rootTwoBig", "ornate", symmetry, defaultShapes));
+            const rootTwoShapes: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "rootTwo", "Schoch solid", "Tesseractix", symmetry, defaultShapes);
+            octahedralPerspective.addShapes(rootTwoShapes);
+            octahedralPerspective.addShapes(new com.vzome.core.viewing.ExportedVEFShapes(null, "root2Lifelike", "Schoch lifelike", symmetry, rootTwoShapes));
         }
 
         /**
@@ -46119,6 +46121,10 @@ namespace com.vzome.core.edits {
         export class ReplaceWithShape$0 implements com.vzome.core.editor.api.OrbitSource {
             public __parent: any;
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
+                return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             getEmbedding(): number[] {
                 const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
                 const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
@@ -46136,10 +46142,6 @@ namespace com.vzome.core.edits {
                 embedding[14] = 0.0;
                 embedding[15] = 1.0;
                 return embedding;
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getOrientations$(): number[][] {
-                return this.getOrientations(false);
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             public getOrientations(rowMajor?: any): number[][] {
@@ -46179,8 +46181,8 @@ namespace com.vzome.core.edits {
                 } else throw new Error('invalid overload');
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
-                return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+            getOrientations$(): number[][] {
+                return this.getOrientations(false);
             }
             /**
              * 

@@ -11,6 +11,7 @@ import tiny from './tiny/index.js'
 import rootTwo from './rootTwo/index.js'
 import rootTwoBig from './rootTwoBig/index.js'
 import rootTwoSmall from './rootTwoSmall/index.js'
+import root2Lifelike from './root2Lifelike/index.js'
 import rootThreeOctaSmall from './rootThreeOctaSmall/index.js'
 import heptagonAntiprism from './heptagonAntiprism/index.js'
 
@@ -36,6 +37,7 @@ const shapes = {
   rootTwo,
   rootTwoBig,
   rootTwoSmall,
+  root2Lifelike,
   rootThreeOctaSmall,
   'heptagon/antiprism': heptagonAntiprism,  // these must all use the legacy paths
   'sqrtPhi/fivefold': sqrtPhiFivefold,
