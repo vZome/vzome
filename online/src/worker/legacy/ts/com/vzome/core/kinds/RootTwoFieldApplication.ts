@@ -23,8 +23,10 @@ namespace com.vzome.core.kinds {
             symmetry.createZoneOrbit$java_lang_String$int$int$int_A_A$boolean("brown", 0, com.vzome.core.math.symmetry.Symmetry.NO_ROTATION, [[1, 1, 0, 1], [1, 1, 0, 1], [2, 1, 0, 1]], true);
             const defaultShapes: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "rootTwoSmall", "small octahedra", "small connectors", symmetry);
             octahedralPerspective.setDefaultGeometry(defaultShapes);
-            octahedralPerspective.addShapes(new com.vzome.core.viewing.ExportedVEFShapes(null, "rootTwo", "Tesseractix", symmetry, defaultShapes));
             octahedralPerspective.addShapes(new com.vzome.core.viewing.ExportedVEFShapes(null, "rootTwoBig", "ornate", symmetry, defaultShapes));
+            const rootTwoShapes: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "rootTwo", "Schoch solid", "Tesseractix", symmetry, defaultShapes);
+            octahedralPerspective.addShapes(rootTwoShapes);
+            octahedralPerspective.addShapes(new com.vzome.core.viewing.ExportedVEFShapes(null, "root2Lifelike", "Schoch lifelike", symmetry, rootTwoShapes));
         }
 
         /**
