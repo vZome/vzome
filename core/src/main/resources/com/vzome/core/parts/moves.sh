@@ -133,3 +133,4 @@ move ./rootThreeOctaSmall/blue.vef
 move ./rootThreeOctaSmall/yellow.vef
 move ./rootThreeOctaSmall/red.vef
 move ./rootThreeOctaSmall/green.vef
+move ./root2Lifelike/connector.vef
