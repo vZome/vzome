@@ -27,6 +27,7 @@ public class DxfExporter extends GeometryExporter
 		
         NumberFormat format = NumberFormat .getNumberInstance( Locale .US );
         format .setMaximumFractionDigits( 6 );
+        double inchScaling = mModel .getCmScaling() / 2.54d;
 
         for (RenderedManifestation rm : mModel) {
             Manifestation man = rm .getManifestation();
@@ -38,7 +39,7 @@ public class DxfExporter extends GeometryExporter
                 AlgebraicVector start = ((Strut) man) .getLocation();
                 AlgebraicVector end = ((Strut) man) .getEnd();
                 RealVector rv = mModel .renderVector( start );
-                rv = rv .scale( RZOME_INCH_SCALING );
+                rv = rv .scale( inchScaling );
                 output .println( "10" );
                 output .println( format.format( rv .x ) );
                 output .println( "20" );
@@ -46,7 +47,7 @@ public class DxfExporter extends GeometryExporter
                 output .println( "30" );
                 output .println( format.format( rv .z ) );
                 rv = mModel .renderVector( end );
-                rv = rv .scale( RZOME_INCH_SCALING );
+                rv = rv .scale( inchScaling );
                 output .println( "11" );
                 output .println( format.format( rv .x ) );
                 output .println( "21" );

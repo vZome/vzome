@@ -28,14 +28,8 @@ namespace com.vzome.core.exporters {
         public getFileExtension(): string {
             return "vef";
         }
-
-        constructor() {
-            super();
-        }
     }
     VefExporter["__class"] = "com.vzome.core.exporters.VefExporter";
-    VefExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
-
 
 }
 

@@ -29,6 +29,7 @@ import com.vzome.core.tools.TetrahedralToolFactory;
 import com.vzome.core.tools.TranslationToolFactory;
 import com.vzome.core.viewing.AbstractShapes;
 import com.vzome.core.viewing.ExportedVEFShapes;
+import com.vzome.core.viewing.SchochShapes;
 
 /**
  * Everything here is stateless, or at worst, a cache (like Shapes).
@@ -56,9 +57,9 @@ public class RootTwoFieldApplication extends DefaultFieldApplication
         AbstractShapes defaultShapes = new ExportedVEFShapes( null, "rootTwoSmall", "small octahedra", "small connectors", symmetry );
         octahedralPerspective .setDefaultGeometry( defaultShapes );
         octahedralPerspective .addShapes( new ExportedVEFShapes( null, "rootTwoBig", "ornate", symmetry, defaultShapes ) );
-        AbstractShapes rootTwoShapes = new ExportedVEFShapes( null, "rootTwo", "Schoch solid", "Tesseractix", symmetry, defaultShapes );
+        AbstractShapes rootTwoShapes = new SchochShapes( null, "rootTwo", "Schoch solid", symmetry, defaultShapes );
         octahedralPerspective .addShapes( rootTwoShapes );
-        octahedralPerspective .addShapes( new ExportedVEFShapes( null, "root2Lifelike", "Schoch lifelike", symmetry, rootTwoShapes ) );
+        octahedralPerspective .addShapes( new SchochShapes( null, "root2Lifelike", "Schoch lifelike", symmetry, rootTwoShapes ) );
     }
 
     @Override

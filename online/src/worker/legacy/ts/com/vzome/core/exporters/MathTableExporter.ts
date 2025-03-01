@@ -290,14 +290,8 @@ namespace com.vzome.core.exporters {
         public getContentType(): string {
             return "application/json";
         }
-
-        constructor() {
-            super();
-        }
     }
     MathTableExporter["__class"] = "com.vzome.core.exporters.MathTableExporter";
-    MathTableExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
-
 
 }
 

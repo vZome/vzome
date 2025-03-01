@@ -79,8 +79,6 @@ namespace com.vzome.core.exporters {
         }
     }
     SegExporter["__class"] = "com.vzome.core.exporters.SegExporter";
-    SegExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
-
 
 }
 

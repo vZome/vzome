@@ -195,6 +195,7 @@ core.config {
     'com/vzome/core/viewing/CameraIntf.java',
     'com/vzome/core/viewing/Lights.java',
     'com/vzome/core/viewing/AbstractShapes.java',
+    'com/vzome/core/viewing/SchochShapes.java',
     'com/vzome/core/viewing/AntiprismShapes.java',
     'com/vzome/core/viewing/OctahedralShapes.java',
     'com/vzome/core/viewing/DodecagonalShapes.java',

@@ -27,6 +27,8 @@ public interface Shapes
     Color getColor( Direction dir );
 
 	boolean hasColors();
+
+    double getCmScaling();
 }
 
 
