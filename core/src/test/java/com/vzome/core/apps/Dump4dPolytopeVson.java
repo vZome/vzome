@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +20,7 @@ import com.vzome.core.math.symmetry.WythoffConstruction.Listener;
 
 public class Dump4dPolytopeVson
 {
+    // Not using this any more; we now output simple mesh JSON
     public static class IndexPair
     {
         public Integer start;
@@ -37,12 +37,14 @@ public class Dump4dPolytopeVson
             this.p2 = p2;
         }
         
-        public IndexPair asIndexPair( List<AlgebraicVector> vertices )
+        public int[] asIndexPair( List<AlgebraicVector> vertices )
         {
-            IndexPair result = new IndexPair();
-            result .start = vertices .indexOf( p1 );
-            result.end = vertices .indexOf( p2 );
-            return result;
+            // IndexPair result = new IndexPair();
+            // result .start = vertices .indexOf( p1 );
+            // result.end = vertices .indexOf( p2 );
+
+            // we now output simple mesh JSON
+            return new int[] { vertices .indexOf( p1 ), vertices .indexOf( p2 ) };
         }
 
         @Override
@@ -77,7 +79,7 @@ public class Dump4dPolytopeVson
     public static class VsonBuilder implements Listener
 	{
         private SortedSet<AlgebraicVector> vertexPoints = new TreeSet<>();
-        private Set<Edge> edges = new HashSet<>();
+        private Set<Edge> edgeSet = new HashSet<>();
         
         public VsonBuilder( String field )
         {
@@ -101,7 +103,7 @@ public class Dump4dPolytopeVson
         public Object addEdge( Object p1, Object p2 )
         {
             Edge result = new Edge( (AlgebraicVector) p1, (AlgebraicVector) p2 );
-            edges .add( result );
+            edgeSet .add( result );
             return result;
         }
         
@@ -112,20 +114,20 @@ public class Dump4dPolytopeVson
         public void index()
         {
             vertices = new ArrayList<>(vertexPoints);
-            struts = edges .stream()
+            edges = edgeSet .stream()
                         .map( edge -> edge .asIndexPair( vertices ) )
                         .collect( Collectors.toList() );
         }
         
-        public List<Integer> getBalls()
-        {
-            return IntStream .range( 0, vertices .size() ) .boxed() .collect( Collectors.toList() ); 
-        }
+        // public List<Integer> getBalls()
+        // {
+        //     return IntStream .range( 0, vertices .size() ) .boxed() .collect( Collectors.toList() ); 
+        // }
         
         // These are public to show up in JSON
         public String field;
         public List<AlgebraicVector> vertices;
-        public List<IndexPair> struts;
+        public List<int[]> edges;
     };
 
     public static void main(String[] args)
@@ -163,5 +165,5 @@ public class Dump4dPolytopeVson
     //  Fortunately, the mechanism uses "isAssignableFrom", so you can have
     //  a view class that extends others or implements interfaces.
     
-	private static class View implements AlgebraicNumber.Views.Rational, Polyhedron.Views.Polygons {}
+	private static class View implements AlgebraicNumber.Views.TrailingDivisor, Polyhedron.Views.Polygons {}
 }
