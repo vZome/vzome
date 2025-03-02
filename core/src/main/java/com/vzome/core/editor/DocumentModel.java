@@ -61,6 +61,7 @@ import com.vzome.core.model.ManifestationChanges;
 import com.vzome.core.model.ManifestationImpl;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModelImpl;
+import com.vzome.core.model.SimpleMeshJson;
 import com.vzome.core.model.Strut;
 import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.RenderedModel;
@@ -376,6 +377,15 @@ public class DocumentModel implements Snapshot .Recorder, Context, DocumentIntf
     {
         StringWriter out = new StringWriter();
         switch ( format ) {
+
+        case "mesh":
+            try {
+                SimpleMeshJson .generate( this .editorModel .getSelection(), this .field, out );
+            } catch (IOException e) {
+                // TODO fail better here
+                e.printStackTrace();
+            }
+            break;
 
         case "cmesh":
             try {
