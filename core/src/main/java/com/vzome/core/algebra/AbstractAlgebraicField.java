@@ -635,10 +635,12 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     @Override
     public AlgebraicVector createVectorFromTDs( int[][] nums )
     {
-        AlgebraicNumber x = this .createAlgebraicNumberFromTD( nums[0] );
-        AlgebraicNumber y = this .createAlgebraicNumberFromTD( nums[1] );
-        AlgebraicNumber z = this .createAlgebraicNumberFromTD( nums[2] );
-        return new AlgebraicVector( x, y, z );
+        int dims = nums.length;
+        AlgebraicNumber[] coords = new AlgebraicNumber[ dims ];
+        for(int c = 0; c < coords.length; c++) {
+          coords[c] = this.createAlgebraicNumberFromTD( nums[c] );
+        }
+        return new AlgebraicVector( coords );
     }
 
     /**

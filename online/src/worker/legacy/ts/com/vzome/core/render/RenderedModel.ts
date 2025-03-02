@@ -412,6 +412,10 @@ namespace com.vzome.core.render {
                 return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getOrientations$(): number[][] {
+                return this.getOrientations(false);
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             public getOrientations(rowMajor?: any): number[][] {
                 if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                     let __args = arguments;
@@ -468,10 +472,6 @@ namespace com.vzome.core.render {
                 embedding[14] = 0.0;
                 embedding[15] = 1.0;
                 return embedding;
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getOrientations$(): number[][] {
-                return this.getOrientations(false);
             }
             symmetry: com.vzome.core.math.symmetry.Symmetry;
 

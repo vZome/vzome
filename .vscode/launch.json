@@ -2,8 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name":             "online TESTS",
-
+      "name":                             "online TESTS",
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:8532/app/test/",
@@ -13,16 +12,14 @@
       }
     },
     {
-      "name":             "debug desktop vZome",
-
+      "name":                             "debug desktop vZome",
       "type": "java",
       "request": "launch",
       "mainClass": "org.vorthmann.zome.ui.ApplicationUI",
       "args": "${command:SpecifyProgramArgs}"
     },
     {
-      "name":             "classic PWA",
-
+      "name":                             "classic PWA",
       "type": "chrome",
       "request": "launch",
       "url": "https://localhost:8532/app/classic?debug=true",
@@ -32,19 +29,26 @@
       }
     },
     {
-      "name":             "JK regression",
-
+      "name":                             "Generate H4 0100 Polytope JSON",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "com.vzome.core.apps.Dump4dPolytopeVson",
+      "projectName": "core",
+      "args": [ "0100" ],
+      "console":"externalTerminal"
+    },
+    {
+      "name":                             "JK regression",
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:8532/app/test/regression.html",
       "pathMapping": {
         "/app/": "${workspaceFolder}/online/src/serve/app",
-        "/": "${workspaceFolder}/online/src",
+        "/": "${workspaceFolder}/online/src"
       }
     },
     {
-      "name":             "GitHub orbit scan",
-
+      "name":                             "GitHub orbit scan",
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:8532/app/test/orbitscan.html",

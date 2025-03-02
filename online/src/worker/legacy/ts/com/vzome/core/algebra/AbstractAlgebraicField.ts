@@ -605,10 +605,12 @@ namespace com.vzome.core.algebra {
          * @return {com.vzome.core.algebra.AlgebraicVector}
          */
         public createVectorFromTDs(nums: number[][]): com.vzome.core.algebra.AlgebraicVector {
-            const x: com.vzome.core.algebra.AlgebraicNumber = this.createAlgebraicNumberFromTD(nums[0]);
-            const y: com.vzome.core.algebra.AlgebraicNumber = this.createAlgebraicNumberFromTD(nums[1]);
-            const z: com.vzome.core.algebra.AlgebraicNumber = this.createAlgebraicNumberFromTD(nums[2]);
-            return new com.vzome.core.algebra.AlgebraicVector(x, y, z);
+            const dims: number = nums.length;
+            const coords: com.vzome.core.algebra.AlgebraicNumber[] = (s => { let a=[]; while(s-->0) a.push(null); return a; })(dims);
+            for(let c: number = 0; c < coords.length; c++) {{
+                coords[c] = this.createAlgebraicNumberFromTD(nums[c]);
+            };}
+            return new com.vzome.core.algebra.AlgebraicVector(coords);
         }
 
         /**

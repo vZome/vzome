@@ -1211,10 +1211,16 @@ export var com;
                  * @return {com.vzome.core.algebra.AlgebraicVector}
                  */
                 createVectorFromTDs(nums) {
-                    const x = this.createAlgebraicNumberFromTD(nums[0]);
-                    const y = this.createAlgebraicNumberFromTD(nums[1]);
-                    const z = this.createAlgebraicNumberFromTD(nums[2]);
-                    return new com.vzome.core.algebra.AlgebraicVector(x, y, z);
+                    const dims = nums.length;
+                    const coords = (s => { let a = []; while (s-- > 0)
+                        a.push(null); return a; })(dims);
+                    for (let c = 0; c < coords.length; c++) {
+                        {
+                            coords[c] = this.createAlgebraicNumberFromTD(nums[c]);
+                        }
+                        ;
+                    }
+                    return new com.vzome.core.algebra.AlgebraicVector(coords);
                 }
                 /**
                  *
@@ -3954,10 +3960,6 @@ export var com;
                             this.orbits = new com.vzome.core.math.symmetry.OrbitSet(symmetry);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {
                             const symmetry = this.getSymmetry();
                             const field = symmetry.getField();
@@ -3979,6 +3981,10 @@ export var com;
                             embedding[14] = 0.0;
                             embedding[15] = 1.0;
                             return embedding;
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
@@ -16781,10 +16787,6 @@ export var com;
                         this.setStyle(styleName);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getZone(orbit, orientation) {
-                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getEmbedding() {
                         const symmetry = this.getSymmetry();
                         const field = symmetry.getField();
@@ -16806,6 +16808,10 @@ export var com;
                         embedding[14] = 0.0;
                         embedding[15] = 1.0;
                         return embedding;
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getZone(orbit, orientation) {
+                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getOrientations(rowMajor) {
@@ -19258,10 +19264,16 @@ export var com;
                      * @return {com.vzome.core.algebra.AlgebraicVector}
                      */
                     createVectorFromTDs(nums) {
-                        const x = this.createAlgebraicNumberFromTD(nums[0]);
-                        const y = this.createAlgebraicNumberFromTD(nums[1]);
-                        const z = this.createAlgebraicNumberFromTD(nums[2]);
-                        return new com.vzome.core.algebra.AlgebraicVector(x, y, z);
+                        const dims = nums.length;
+                        const coords = (s => { let a = []; while (s-- > 0)
+                            a.push(null); return a; })(dims);
+                        for (let c = 0; c < coords.length; c++) {
+                            {
+                                coords[c] = this.createAlgebraicNumberFromTD(nums[c]);
+                            }
+                            ;
+                        }
+                        return new com.vzome.core.algebra.AlgebraicVector(coords);
                     }
                     /**
                      * Generates an AlgebraicVector with all AlgebraicNumber terms being integers (having unit denominators).
@@ -48069,10 +48081,6 @@ export var com;
                             this.__parent = __parent;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {
                             const symmetry = this.getSymmetry();
                             const field = symmetry.getField();
@@ -48094,6 +48102,10 @@ export var com;
                             embedding[14] = 0.0;
                             embedding[15] = 1.0;
                             return embedding;
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
