@@ -710,6 +710,10 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                 documentModel .doEdit( "Delete" );
                 break;
     
+            case "copy.mesh":
+                setProperty( "clipboard", documentModel .copyRenderedModel( "mesh" ) );
+                break;
+        
             case "copy":
             case "copy.cmesh":
                 setProperty( "clipboard", documentModel .copyRenderedModel( "cmesh" ) );
