@@ -75,14 +75,8 @@ namespace com.vzome.core.exporters {
         public getFileExtension(): string {
             return "scad";
         }
-
-        constructor() {
-            super();
-        }
     }
     OpenScadMeshExporter["__class"] = "com.vzome.core.exporters.OpenScadMeshExporter";
-    OpenScadMeshExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
-
 
 }
 

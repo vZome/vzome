@@ -435,9 +435,14 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         return measureLengthCm( renderVector( c1 .getLocation() .minus( c2 .getLocation() ) ) );
     }
 
-    public static double measureLengthCm( RealVector rv )
+    public double getCmScaling()
     {
-        return rv.length() * RealZomeScaling.RZOME_CM_SCALING;
+        return this.mPolyhedra .getCmScaling();
+    }
+    
+    public double measureLengthCm( RealVector rv )
+    {
+        return rv.length() * this.mPolyhedra .getCmScaling();
     }
 
     public double measureLengthCm( Strut strut )

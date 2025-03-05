@@ -1,5 +1,11 @@
 /* Generated from Java with JSweet 3.2.0-SNAPSHOT - http://www.jsweet.org */
 namespace com.vzome.core.render {
+    /**
+     * This is no longer used statically everywhere.  Now, any Shapes subclass can override
+     * getCmScaling(), and RenderedModel exposes that in its own methods.  See the default
+     * implementation in AbstractShapes.
+     * @class
+     */
     export interface RealZomeScaling {    }
 
     export namespace RealZomeScaling {

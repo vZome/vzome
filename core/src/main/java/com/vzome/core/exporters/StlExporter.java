@@ -28,6 +28,7 @@ public class StlExporter extends GeometryExporter
             ((DecimalFormat) FORMAT) .applyPattern( "0.000000E00" );
         }
 
+        double mmScaling = mModel .getCmScaling() * 10d;
         output = new PrintWriter( writer );
         output .println( "solid vcg" );
         
@@ -40,7 +41,7 @@ public class StlExporter extends GeometryExporter
                 RealVector v0 = null, v1 = null;
                 for (AlgebraicVector vert : panel) {
                     RealVector vertex = mModel .renderVector( vert );
-                    vertex = vertex .scale( RZOME_MM_SCALING );
+                    vertex = vertex .scale( mmScaling );
                     if ( v0 == null )
                         v0 = vertex;
                     else if ( v1 == null )

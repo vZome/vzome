@@ -16,6 +16,7 @@ namespace com.vzome.core.exporters {
             this.output.println$java_lang_Object("ENTITIES");
             const format: java.text.NumberFormat = java.text.NumberFormat.getNumberInstance(java.util.Locale.US);
             format.setMaximumFractionDigits(6);
+            const inchScaling: number = this.mModel.getCmScaling() / 2.54;
             for(let index=this.mModel.iterator();index.hasNext();) {
                 let rm = index.next();
                 {
@@ -28,7 +29,7 @@ namespace com.vzome.core.exporters {
                         const start: com.vzome.core.algebra.AlgebraicVector = (<com.vzome.core.model.Strut><any>man).getLocation();
                         const end: com.vzome.core.algebra.AlgebraicVector = (<com.vzome.core.model.Strut><any>man).getEnd();
                         let rv: com.vzome.core.math.RealVector = this.mModel.renderVector(start);
-                        rv = rv.scale(com.vzome.core.render.RealZomeScaling.RZOME_INCH_SCALING);
+                        rv = rv.scale(inchScaling);
                         this.output.println$java_lang_Object("10");
                         this.output.println$java_lang_Object(format.format(rv.x));
                         this.output.println$java_lang_Object("20");
@@ -36,7 +37,7 @@ namespace com.vzome.core.exporters {
                         this.output.println$java_lang_Object("30");
                         this.output.println$java_lang_Object(format.format(rv.z));
                         rv = this.mModel.renderVector(end);
-                        rv = rv.scale(com.vzome.core.render.RealZomeScaling.RZOME_INCH_SCALING);
+                        rv = rv.scale(inchScaling);
                         this.output.println$java_lang_Object("11");
                         this.output.println$java_lang_Object(format.format(rv.x));
                         this.output.println$java_lang_Object("21");
@@ -60,14 +61,8 @@ namespace com.vzome.core.exporters {
         public getFileExtension(): string {
             return "dxf";
         }
-
-        constructor() {
-            super();
-        }
     }
     DxfExporter["__class"] = "com.vzome.core.exporters.DxfExporter";
-    DxfExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
-
 
 }
 

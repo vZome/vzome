@@ -246,7 +246,7 @@ namespace com.vzome.core.exporters {
         }
     }
     POVRayExporter["__class"] = "com.vzome.core.exporters.POVRayExporter";
-    POVRayExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling","com.vzome.core.exporters.DocumentExporterIntf"];
+    POVRayExporter["__interfaces"] = ["com.vzome.core.exporters.DocumentExporterIntf"];
 
 
 }

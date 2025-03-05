@@ -14,6 +14,7 @@ namespace com.vzome.core.exporters {
             if (StlExporter.FORMAT_$LI$() != null && StlExporter.FORMAT_$LI$() instanceof <any>java.text.DecimalFormat){
                 (<java.text.DecimalFormat>StlExporter.FORMAT_$LI$()).applyPattern("0.000000E00");
             }
+            const mmScaling: number = this.mModel.getCmScaling() * 10.0;
             this.output = new java.io.PrintWriter(writer);
             this.output.println$java_lang_Object("solid vcg");
             for(let index=this.mModel.iterator();index.hasNext();) {
@@ -29,7 +30,7 @@ namespace com.vzome.core.exporters {
                             let vert = index.next();
                             {
                                 let vertex: com.vzome.core.math.RealVector = this.mModel.renderVector(vert);
-                                vertex = vertex.scale(com.vzome.core.render.RealZomeScaling.RZOME_MM_SCALING);
+                                vertex = vertex.scale(mmScaling);
                                 if (v0 == null)v0 = vertex; else if (v1 == null)v1 = vertex; else {
                                     this.output.print("  facet normal ");
                                     this.output.println$java_lang_Object(StlExporter.FORMAT_$LI$().format(norm.x) + " " + StlExporter.FORMAT_$LI$().format(norm.y) + " " + StlExporter.FORMAT_$LI$().format(norm.z));
@@ -57,14 +58,8 @@ namespace com.vzome.core.exporters {
         public getFileExtension(): string {
             return "stl";
         }
-
-        constructor() {
-            super();
-        }
     }
     StlExporter["__class"] = "com.vzome.core.exporters.StlExporter";
-    StlExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
-
 
 }
 

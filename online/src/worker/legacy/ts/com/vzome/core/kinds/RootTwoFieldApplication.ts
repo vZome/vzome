@@ -24,9 +24,9 @@ namespace com.vzome.core.kinds {
             const defaultShapes: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "rootTwoSmall", "small octahedra", "small connectors", symmetry);
             octahedralPerspective.setDefaultGeometry(defaultShapes);
             octahedralPerspective.addShapes(new com.vzome.core.viewing.ExportedVEFShapes(null, "rootTwoBig", "ornate", symmetry, defaultShapes));
-            const rootTwoShapes: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "rootTwo", "Schoch solid", "Tesseractix", symmetry, defaultShapes);
+            const rootTwoShapes: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.SchochShapes(null, "rootTwo", "Schoch solid", symmetry, defaultShapes);
             octahedralPerspective.addShapes(rootTwoShapes);
-            octahedralPerspective.addShapes(new com.vzome.core.viewing.ExportedVEFShapes(null, "root2Lifelike", "Schoch lifelike", symmetry, rootTwoShapes));
+            octahedralPerspective.addShapes(new com.vzome.core.viewing.SchochShapes(null, "root2Lifelike", "Schoch lifelike", symmetry, rootTwoShapes));
         }
 
         /**

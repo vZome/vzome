@@ -24,6 +24,7 @@ import com.vzome.core.math.symmetry.Permutation;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.parts.FastDefaultStrutGeometry;
 import com.vzome.core.parts.StrutGeometry;
+import com.vzome.core.render.RealZomeScaling;
 
 
 public abstract class AbstractShapes implements Shapes
@@ -251,5 +252,10 @@ public abstract class AbstractShapes implements Shapes
             map3 .put( canonicalVertices, shape );
         }
         return shape;
+    }
+
+    @Override
+    public double getCmScaling(){
+      return RealZomeScaling.RZOME_CM_SCALING;
     }
 }

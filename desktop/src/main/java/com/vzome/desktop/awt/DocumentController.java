@@ -240,7 +240,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         };
         this .documentModel .addSelectionListener( selectionRendering );
         
-        this .addSubController( "measure", new MeasureController( this .documentModel .getEditorModel(), this .documentModel .getRenderedModel() ) );
+        this .addSubController( "measure", new MeasureController( this .documentModel .getEditorModel(), this .mRenderedModel ) );
 
         this .articleChanges = new PropertyChangeListener()
         {   

@@ -215,6 +215,14 @@ namespace com.vzome.core.viewing {
             }
             return shape;
         }
+
+        /**
+         * 
+         * @return {number}
+         */
+        public getCmScaling(): number {
+            return com.vzome.core.render.RealZomeScaling.RZOME_CM_SCALING;
+        }
     }
     AbstractShapes["__class"] = "com.vzome.core.viewing.AbstractShapes";
     AbstractShapes["__interfaces"] = ["com.vzome.core.editor.api.Shapes"];

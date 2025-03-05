@@ -97,8 +97,6 @@ namespace com.vzome.core.exporters {
         }
     }
     PlyExporter["__class"] = "com.vzome.core.exporters.PlyExporter";
-    PlyExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
-
 
 }
 

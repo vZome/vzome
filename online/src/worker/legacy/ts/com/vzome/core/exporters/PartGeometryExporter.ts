@@ -82,7 +82,7 @@ namespace com.vzome.core.exporters {
         }
     }
     PartGeometryExporter["__class"] = "com.vzome.core.exporters.PartGeometryExporter";
-    PartGeometryExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling","com.vzome.core.exporters.DocumentExporterIntf"];
+    PartGeometryExporter["__interfaces"] = ["com.vzome.core.exporters.DocumentExporterIntf"];
 
 
 }
