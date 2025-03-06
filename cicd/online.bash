@@ -93,6 +93,14 @@ prepareJSweet(){
 }
 
 jsweet(){
+  export JAVA_HOME=`/usr/libexec/java_home -v 11`
+  rm -rf online/src/worker/legacy/ts
+  export JSWEET_BUNDLE=false
+  banner "running JSWEET with bundle $JSWEET_BUNDLE"
+  source cicd/jsweet-legacy-code.bash
+  mv online/jsweetOut/core/ts online/src/worker/legacy
+  export JSWEET_BUNDLE=true
+  banner "running JSWEET with bundle $JSWEET_BUNDLE"
   source cicd/jsweet-legacy-code.bash || exit $?
 }
 
