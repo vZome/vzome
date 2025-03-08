@@ -207,12 +207,14 @@ namespace com.vzome.core.viewing {
          */
         createStrutGeometry(dir: com.vzome.core.math.symmetry.Direction): com.vzome.core.parts.StrutGeometry {
             if (!dir.isAutomatic()){
-                let shortGeometry: com.vzome.core.parts.StrutGeometry = new com.vzome.core.parts.FastDefaultStrutGeometry(dir);
+                const defaultGeometry: com.vzome.core.parts.StrutGeometry = new com.vzome.core.parts.FastDefaultStrutGeometry(dir);
+                let shortGeometry: com.vzome.core.parts.StrutGeometry = defaultGeometry;
                 let vefData: string = this.loadVefData(dir.getName() + "-short");
                 if (vefData != null){
                     const parser: ExportedVEFShapes.VefToShape = new ExportedVEFShapes.VefToShape(this);
                     parser.parseVEF(vefData, this.mSymmetry.getField());
                     shortGeometry = parser.getStrutGeometry(dir.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, 0).normal());
+                    (<com.vzome.core.viewing.ExportedVEFStrutGeometry><any>shortGeometry).setShortGeometry(defaultGeometry);
                 }
                 vefData = this.loadVefData(dir.getName());
                 if (vefData != null){
