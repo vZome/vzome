@@ -2,6 +2,10 @@ apply plugin: 'application'
 apply plugin: 'eclipse'
 
 dependencies {
+
+    implementation project(':desktop')
+    implementation project(':core')
+
     implementation     group: 'javax.servlet',     name: 'javax.servlet-api',       version:'3.0.1'
     implementation     group: 'org.eclipse.jetty', name: 'jetty-servlet',     version:'9.4.7.v20170914'
     implementation     group: 'org.eclipse.jetty.websocket', name: 'websocket-api',     version:'9.4.7.v20170914'
