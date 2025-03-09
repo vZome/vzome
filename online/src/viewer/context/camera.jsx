@@ -270,6 +270,9 @@ const CameraProvider = ( props ) =>
       })
       .onComplete( () => {
         resolve();
+      })
+      .onStop( () => {
+        resolve();
       });
     
       // We don't want to do this sync, since the tween duration may expire before subsequent
