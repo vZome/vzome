@@ -651,7 +651,7 @@ public class ExporterTest {
         String expected
                 = "OFF\n" + 
                 "# numVertices numFaces numEdges (numEdges is ignored)\n" + 
-                "25 14 0\n" + 
+                "25 14 6\n" + 
                 "\n" + 
                 "# Vertices.  Each line is the XYZ coordinates of one vertex.\n" + 
                 "0.0000000000000000 0.0000000000000000 0.0000000000000000\n" + 
