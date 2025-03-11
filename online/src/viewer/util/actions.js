@@ -45,6 +45,8 @@ export const fetchDesign = ( url, config=defaultConfig ) => workerAction( 'URL_P
 
 export const openDesignFile = ( file, debug=false ) => workerAction( 'FILE_PROVIDED', { file, debug } );
 
+export const openTextContent = ( name, contents ) => workerAction( 'TEXT_PROVIDED', { name, contents } );
+
 export const importMeshFile = ( file, format ) => workerAction( 'MESH_FILE_PROVIDED', { file, format } );
 
 export const newDesign = ( field='golden' ) => workerAction( 'NEW_DESIGN_STARTED', { field } );
