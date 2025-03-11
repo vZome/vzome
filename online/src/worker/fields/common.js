@@ -217,9 +217,9 @@ const toString2 = getIrrational => ( trailingDivisor, format ) =>
         if ( a1 === 0n )
           return bigRationalToMathML( a0, d );
         else if ( a1 < 0n )
-          return `<mrow>${bigRationalToMathML( a0, d )}<mo>-</mo>${bigRationalToMathML( 0n-a1, d )}<mi>${irrat}</mi></mrow>"`;
+          return `<mrow>${bigRationalToMathML( a0, d )}<mo>-</mo>${bigRationalToMathML( 0n-a1, d )}<mi>${irrat}</mi></mrow>`;
         else
-          return `<mrow>${bigRationalToMathML( a0, d )}<mo>+</mo>${bigRationalToMathML( a1, d )}<mi>${irrat}</mi></mrow>"`;
+          return `<mrow>${bigRationalToMathML( a0, d )}<mo>+</mo>${bigRationalToMathML( a1, d )}<mi>${irrat}</mi></mrow>`;
       }
 
     default:
