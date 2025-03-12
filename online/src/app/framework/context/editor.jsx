@@ -84,8 +84,8 @@ const EditorProvider = props =>
             name = name .substring( 0, name.length - 6 );
             setState( 'designName', name ); // cooperatively managed by both worker and client
             setState( 'sharing', { title: name .replaceAll( '-', ' ' ) } );
-            setState( 'ignoreDesignName', false );  // always reset to use the next name; see app/classic/menus/help.jsx
           }
+          setState( 'ignoreDesignName', false );  // always reset to use the next name; see app/classic/menus/help.jsx
         }
         break;
       }

@@ -34,7 +34,7 @@ export const CommandsProvider = props =>
           if ( state.fileHandle && !chooseFile )
             return saveTextFile( state.fileHandle, text, mimeType )
           else
-            return saveTextFileAs( name + '-ONLINE.vZome', text, mimeType );
+            return saveTextFileAs( name + '.vZome', text, mimeType );
         })
         .then( result => {
           const { handle, success } = result;
