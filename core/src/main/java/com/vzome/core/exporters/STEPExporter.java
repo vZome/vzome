@@ -2,20 +2,25 @@ package com.vzome.core.exporters;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.math.Polyhedron;
+import com.vzome.core.editor.api.Manifestations;
 import com.vzome.core.math.RealVector;
-import com.vzome.core.render.RenderedManifestation;
+import com.vzome.core.model.Manifestation;
+import com.vzome.core.model.Panel;
 
 /**
  * This only exports shapes, no instances yet.
@@ -33,63 +38,43 @@ public class STEPExporter extends GeometryExporter
     @Override
     public void doExport( File file, Writer writer, int height, int width ) throws Exception
     {
-        int numShapes = 0;
-        File directory = file .getParentFile();
-        HashMap<Polyhedron, String> shapes = new HashMap<>();
-        for (RenderedManifestation rm : mModel) {
-            Polyhedron shape = rm .getShape();
-            String shapeName = shapes .get( shape );
-            if ( shapeName == null )
-            {
-                shapeName = shape .getName();
-                if ( shapeName == null )
-                    shapeName = "shape" + numShapes++;
-                shapes .put( shape, shapeName );
-                
+        output = new PrintWriter( writer );
 
-                writer = new FileWriter( new File( directory, shapeName + ".step" ) );
-                output = new PrintWriter( writer );
-                
-                
-                exportShape( shapeName, shape );
-
-                output .close();
-                writer .close();
-            }
-            // not doing instances yet, for STEP
-        }
-
-    }
-
-
-    private void exportShape( String shapeName, Polyhedron poly )
-    {
         InputStream input = getClass() .getClassLoader()
-                                    .getResourceAsStream( PREAMBLE_FILE );
+        .getResourceAsStream( PREAMBLE_FILE );
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] buf = new byte[1024];
         int num;
         try {
-            while ( ( num = input .read( buf, 0, 1024 )) > 0 )
-                    out .write( buf, 0, num );
+        while ( ( num = input .read( buf, 0, 1024 )) > 0 )
+        out .write( buf, 0, num );
         } catch (IOException e) {
-            e.printStackTrace();
+        e.printStackTrace();
         }
         String preamble = new String( out .toByteArray() );
-        preamble = preamble .replaceAll( "_____FILENAME_____", shapeName );
+        preamble = preamble .replaceAll( "_____FILENAME_____", file .getName() );
         output .println( preamble );
         output .println();
-        
+
         NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
         FORMAT .setMaximumFractionDigits( 19 );
-        
-        int index = START_INDEX-1;
-
-        double inchScaling = mModel .getCmScaling() / 2.54d;
 
         // first, produce all the vertices
+        SortedSet<AlgebraicVector> vertices = new TreeSet<>();
+        Manifestations.sortVertices( mModel .getManifestations(), vertices );
+        // Up to this point, the vertices TreeSet has collected and sorted every unique vertex of every manifestation.
+        // From now on we'll need their index, so we copy them into an ArrayList, preserving their sorted order.
+        // so we can get their index into that array.
+        ArrayList<AlgebraicVector> sortedVertexList = new ArrayList<>(vertices);
+        // we no longer need the vertices collection, 
+        // so set it to null to free the memory and to ensure we don't use it later by mistake.
+        vertices = null;
+
+        double inchScaling = mModel .getCmScaling() / 2.54d;
+        int index = START_INDEX-1;
+
         ArrayList<RealVector> realVectors = new ArrayList<>();
-        for (AlgebraicVector gv : poly .getVertexList()) {
+        for (AlgebraicVector gv : sortedVertexList) {
             RealVector v = mModel .renderVector( gv ) .scale( inchScaling );
             realVectors .add( v );
             
@@ -101,71 +86,81 @@ public class STEPExporter extends GeometryExporter
         output .println();
 
         ArrayList<Integer> faceIndices = new ArrayList<>();
-        for (Polyhedron.Face face : poly .getFaceSet()) {
-            int arity = face .size();
-            ArrayList<Integer> edgeIndices = new ArrayList<>();
-            int point1 = 0;
-            RealVector dir1 = null, dir2 = null;
-            for ( int j = 0; j < arity; j++ )
-            {
-                Integer vindex = face .get( /*reverseFaces? arity-j-1 :*/ j );
-                int rv1index = vindex;
-                RealVector rv1 = realVectors .get( rv1index );
-                point1 = rv1index * 2 + START_INDEX;
-                int vertex1 = point1 + 1;
-                vindex = face .get( /*reverseFaces? arity-j-1 :*/ (j+1)%arity );
-                int rv2index = vindex;
-                RealVector rv2 = realVectors .get( rv2index );
-                int vertex2 = rv2index * 2 + START_INDEX + 1;
+        for ( Manifestation man : mModel .getManifestations() ) {
+            if ( man instanceof Panel ) {
+                Panel panel = (Panel) man;
+                int arity = panel .getVertexCount();
 
-                int direction1 = ++index;   // TODO compute direction1
-                rv1 = rv2 .minus( rv1 );
-                rv2 = rv1 .normalize();
-                if ( dir2 == null )
+                // This is probably pretty heavy-handed, but I don't want to disturb the for loop below.
+                Stream<AlgebraicVector> vertexStream = StreamSupport.stream( ( (Iterable<AlgebraicVector>) panel ).spliterator(), false);
+                List<Integer> vIndicesList = vertexStream.map( v -> sortedVertexList .indexOf( v ) ). collect( Collectors.toList() );
+                int[] vIndices = vIndicesList .stream() .mapToInt( i -> i ) .toArray();
+
+                ArrayList<Integer> edgeIndices = new ArrayList<>();
+                int point1 = 0;
+                RealVector dir1 = null, dir2 = null;
+                
+                for ( int j=0; j < arity; j++ )
                 {
-                    if ( dir1 == null )
-                        dir1 = rv2;
-                    else
+                    Integer vindex = vIndices[ j ];
+                    int rv1index = vindex;
+                    RealVector rv1 = realVectors .get( rv1index );
+                    point1 = rv1index * 2 + START_INDEX;
+                    int vertex1 = point1 + 1;
+                    vindex = vIndices[ (j+1)%arity ];
+                    int rv2index = vindex;
+                    RealVector rv2 = realVectors .get( rv2index );
+                    int vertex2 = rv2index * 2 + START_INDEX + 1;
+    
+                    int direction1 = ++index;   // TODO compute direction1
+                    rv1 = rv2 .minus( rv1 );
+                    rv2 = rv1 .normalize();
+                    if ( dir2 == null )
                     {
-                        dir2 = dir1 .cross( rv2 ) .normalize();
-                        dir1 = dir2 .cross( dir1 );
+                        if ( dir1 == null )
+                            dir1 = rv2;
+                        else
+                        {
+                            dir2 = dir1 .cross( rv2 ) .normalize();
+                            dir1 = dir2 .cross( dir1 );
+                        }
                     }
+                    output .println( "#" + direction1 + " = DIRECTION ( 'NONE',  ( " + rv2 .toString( FORMAT ) + " ) ) ;" );
+                    int vector = ++index;
+                    output .println( "#" + vector + " = VECTOR ( 'NONE', #"+ direction1 + ", 39.37 ) ;" );
+                    int line = ++index;
+                    output .println( "#" + line + " = LINE ( 'NONE', #"+ point1 + ", #"+ vector + " ) ;" );
+                    int edgeCurve = ++index;
+                    output .println( "#" + edgeCurve + " = EDGE_CURVE ( 'NONE', #"+ vertex1 + ", #"+ vertex2 + ", #"+ line + ", .T. ) ;" );
+                    int orientedEdge = ++index;
+                    edgeIndices .add(orientedEdge);
+                    output .println( "#" + orientedEdge + " = ORIENTED_EDGE ( 'NONE', *, *, #"+ edgeCurve + ", ." + ((j==0)?"T":"T") + ". ) ;" );
                 }
-                output .println( "#" + direction1 + " = DIRECTION ( 'NONE',  ( " + rv2 .toString( FORMAT ) + " ) ) ;" );
-                int vector = ++index;
-                output .println( "#" + vector + " = VECTOR ( 'NONE', #"+ direction1 + ", 39.37 ) ;" );
-                int line = ++index;
-                output .println( "#" + line + " = LINE ( 'NONE', #"+ point1 + ", #"+ vector + " ) ;" );
-                int edgeCurve = ++index;
-                output .println( "#" + edgeCurve + " = EDGE_CURVE ( 'NONE', #"+ vertex1 + ", #"+ vertex2 + ", #"+ line + ", .T. ) ;" );
-                int orientedEdge = ++index;
-                edgeIndices .add(orientedEdge);
-                output .println( "#" + orientedEdge + " = ORIENTED_EDGE ( 'NONE', *, *, #"+ edgeCurve + ", ." + ((j==0)?"T":"T") + ". ) ;" );
+                int edgeLoop = ++index;
+                output .print( "#" + edgeLoop + " = EDGE_LOOP ( 'NONE', ( " );
+                String delim = "";
+                for ( Integer i : edgeIndices) {
+                    output .print( delim + "#" + i );
+                    delim = ", ";
+                }
+                output .println( " ) ) ;" );
+                int direction1 = ++index;   // TODO compute direction1
+                output .println( "#" + direction1 + " = DIRECTION ( 'NONE',  ( " + dir2 .toString( FORMAT ) + " ) ) ;" );
+                int direction2 = ++index;   // TODO compute direction2
+                output .println( "#" + direction2 + " = DIRECTION ( 'NONE',  ( " + dir1 .toString( FORMAT ) + " ) ) ;" );
+                int axisPlacement3d = ++index;
+                output .println( "#" + axisPlacement3d + " = AXIS2_PLACEMENT_3D ( 'NONE', #"+ point1 + ", #"+ direction1 + ", #"+ direction2 + " ) ;" );
+                int plane = ++index;
+                output .println( "#" + plane + " = PLANE ( 'NONE', #"+ axisPlacement3d + " ) ;" );
+                int faceOuterBound = ++index;
+                output .println( "#" + faceOuterBound + " = FACE_OUTER_BOUND ( 'NONE', #"+ edgeLoop + ", .T. ) ;" );
+                int advancedFace = ++index;
+                output .println( "#" + advancedFace + " = ADVANCED_FACE ( 'NONE', ( #"+ faceOuterBound + " ), #"+ plane + ", .T. ) ;" );
+                output .println();
+                faceIndices .add(advancedFace);
             }
-            int edgeLoop = ++index;
-            output .print( "#" + edgeLoop + " = EDGE_LOOP ( 'NONE', ( " );
-            String delim = "";
-            for ( Integer i : edgeIndices) {
-                output .print( delim + "#" + i );
-                delim = ", ";
-            }
-            output .println( " ) ) ;" );
-            int direction1 = ++index;   // TODO compute direction1
-            output .println( "#" + direction1 + " = DIRECTION ( 'NONE',  ( " + dir2 .toString( FORMAT ) + " ) ) ;" );
-            int direction2 = ++index;   // TODO compute direction2
-            output .println( "#" + direction2 + " = DIRECTION ( 'NONE',  ( " + dir1 .toString( FORMAT ) + " ) ) ;" );
-            int axisPlacement3d = ++index;
-            output .println( "#" + axisPlacement3d + " = AXIS2_PLACEMENT_3D ( 'NONE', #"+ point1 + ", #"+ direction1 + ", #"+ direction2 + " ) ;" );
-            int plane = ++index;
-            output .println( "#" + plane + " = PLANE ( 'NONE', #"+ axisPlacement3d + " ) ;" );
-            int faceOuterBound = ++index;
-            output .println( "#" + faceOuterBound + " = FACE_OUTER_BOUND ( 'NONE', #"+ edgeLoop + ", .T. ) ;" );
-            int advancedFace = ++index;
-            output .println( "#" + advancedFace + " = ADVANCED_FACE ( 'NONE', ( #"+ faceOuterBound + " ), #"+ plane + ", .T. ) ;" );
-            output .println();
-            faceIndices .add(advancedFace);
+    
         }
-
         output .print( "#299 = CLOSED_SHELL ( 'NONE', ( " );
         String delim = "";
         for ( Integer i : faceIndices ) {
@@ -176,6 +171,7 @@ public class STEPExporter extends GeometryExporter
         
         output .println( POSTLUDE );
         output .flush();
+        output .close();
     }
 
     @Override
