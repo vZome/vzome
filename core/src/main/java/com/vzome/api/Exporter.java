@@ -3,7 +3,6 @@ package com.vzome.api;
 
 import java.io.Writer;
 
-import com.vzome.core.exporters.DocumentExporter;
 import com.vzome.core.exporters.DocumentExporterIntf;
 import com.vzome.core.exporters.GeometryExporter;
 
