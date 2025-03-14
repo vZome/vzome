@@ -126,14 +126,8 @@ namespace com.vzome.core.exporters {
         public getFileExtension(): string {
             return "wrl";
         }
-
-        constructor() {
-            super();
-        }
     }
     VRMLExporter["__class"] = "com.vzome.core.exporters.VRMLExporter";
-    VRMLExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
-
 
 }
 

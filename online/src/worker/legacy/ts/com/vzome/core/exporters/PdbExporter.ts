@@ -73,14 +73,8 @@ namespace com.vzome.core.exporters {
         public getFileExtension(): string {
             return "pdb";
         }
-
-        constructor() {
-            super();
-        }
     }
     PdbExporter["__class"] = "com.vzome.core.exporters.PdbExporter";
-    PdbExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
-
 
 
     export namespace PdbExporter {

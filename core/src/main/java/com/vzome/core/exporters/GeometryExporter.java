@@ -5,11 +5,10 @@ import java.io.PrintWriter;
 import java.io.Writer;
 
 import com.vzome.core.render.Colors;
-import com.vzome.core.render.RealZomeScaling;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.xml.ResourceLoader;
 
-public abstract class GeometryExporter implements RealZomeScaling
+public abstract class GeometryExporter
 {
 	protected transient PrintWriter output;
 	

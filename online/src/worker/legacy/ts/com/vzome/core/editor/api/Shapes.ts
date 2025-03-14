@@ -18,6 +18,8 @@ namespace com.vzome.core.editor.api {
         getColor(dir: com.vzome.core.math.symmetry.Direction): com.vzome.core.construction.Color;
 
         hasColors(): boolean;
+
+        getCmScaling(): number;
     }
 }
 

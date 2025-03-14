@@ -75,7 +75,7 @@ namespace com.vzome.desktop.controller {
                         this.measurements.put("vertices", /* toString */(''+(panel.getVertexCount())));
                     } else if (struts === 1){
                         const strut: com.vzome.core.model.Strut = com.vzome.core.editor.api.Manifestations.getStruts$java_lang_Iterable(this.selection).next();
-                        const cm: number = this.renderedModel.measureLengthCm(strut);
+                        const cm: number = this.renderedModel.measureLengthCm$com_vzome_core_model_Strut(strut);
                         this.measurements.put("length (cm)", this.twoPlaces.format(cm) + " cm");
                         const inches: number = cm / 2.54;
                         this.measurements.put("length (in)", this.twoPlaces.format(inches) + " in");

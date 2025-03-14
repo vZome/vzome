@@ -88,7 +88,8 @@ public class SimpleMeshJson
         generator.close();
     }
     
-    public static void parse( String json, AlgebraicVector offset, Projection projection, ConstructionChanges events, AlgebraicField.Registry registry ) throws IOException
+    public static void parse( String json, AlgebraicVector offset, Projection projection, AlgebraicNumber scale, boolean wFirst,
+        ConstructionChanges events, AlgebraicField.Registry registry ) throws IOException
     {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper .readTree( json );
@@ -120,8 +121,9 @@ public class SimpleMeshJson
                     nums[ i++ ] = mapper .treeToValue( numberNode, new int[]{}.getClass() ); // JSweet compiler confused by int[].class
                 }
                 AlgebraicVector vertex = field .createVectorFromTDs( nums );
+                vertex = vertex .scale( scale );
                 if ( vertex .dimension() > 3 )
-                    vertex = projection .projectImage( vertex, false );
+                    vertex = projection .projectImage( vertex, wFirst );
                 if ( offset != null )
                     vertex = offset .plus( vertex );
                 vertices .add( vertex );
@@ -131,6 +133,12 @@ public class SimpleMeshJson
         JsonNode collection = node .get( "edges" );
         for ( JsonNode strutNode : collection ) {
             int[] ends = mapper .treeToValue( strutNode, new int[]{}.getClass() ); // JSweet compiler confused by int[].class
+
+            // Support manual removal of vertices (with no faces!!)
+            if ( ends[ 0 ] >= vertices.size() || ends[ 1 ] >= vertices.size() ) {
+              continue;
+            }
+
             Point p1 = new FreePoint( vertices .get( ends[ 0 ] ) );
             Point p2 = new FreePoint( vertices .get( ends[ 1 ] ) );
             events .constructionAdded( p1 );
@@ -144,6 +152,7 @@ public class SimpleMeshJson
             List<Point> points = Arrays .stream( indices )
                     .mapToObj( i -> new FreePoint( vertices .get( i ) ) )
                     .collect( Collectors .toList() );
+            // NOTE: no support here for missing vertices!
             Polygon panel = new PolygonFromVertices( points );
             events .constructionAdded( panel );
         }

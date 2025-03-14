@@ -95,7 +95,8 @@ namespace com.vzome.core.exporters {
                 this.output.println$java_lang_Object("  bottom_face_normal = [ " + bottomFaceDirection.toString$() + " ];");
             }
             this.output.println$();
-            const tipVertexString: string = this.mModel.renderVector(tipVertex).scale(com.vzome.core.render.RealZomeScaling.RZOME_MM_SCALING).toString$();
+            const mmScaling: number = this.mModel.getCmScaling() * 10.0;
+            const tipVertexString: string = this.mModel.renderVector(tipVertex).scale(mmScaling).toString$();
             this.output.println$java_lang_Object("  tip_vertex = [ " + tipVertexString + " ];");
             this.output.println$();
             this.output.println$java_lang_Object("  fixed_vertices = [ ");
@@ -103,7 +104,7 @@ namespace com.vzome.core.exporters {
                 let vertex = index.next();
                 {
                     this.output.print("[ ");
-                    this.output.print(this.mModel.renderVector(vertex).scale(com.vzome.core.render.RealZomeScaling.RZOME_MM_SCALING).toString$());
+                    this.output.print(this.mModel.renderVector(vertex).scale(mmScaling).toString$());
                     this.output.print(" ], ");
                 }
             }
@@ -113,7 +114,7 @@ namespace com.vzome.core.exporters {
                 let vertex = index.next();
                 {
                     this.output.print("[ ");
-                    this.output.print(this.mModel.renderVector(vertex).scale(com.vzome.core.render.RealZomeScaling.RZOME_MM_SCALING).toString$());
+                    this.output.print(this.mModel.renderVector(vertex).scale(mmScaling).toString$());
                     this.output.print(" ], ");
                 }
             }
@@ -174,7 +175,7 @@ namespace com.vzome.core.exporters {
         }
     }
     OpenScadExporter["__class"] = "com.vzome.core.exporters.OpenScadExporter";
-    OpenScadExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling","com.vzome.core.exporters.DocumentExporterIntf"];
+    OpenScadExporter["__interfaces"] = ["com.vzome.core.exporters.DocumentExporterIntf"];
 
 
 }

@@ -240,7 +240,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         };
         this .documentModel .addSelectionListener( selectionRendering );
         
-        this .addSubController( "measure", new MeasureController( this .documentModel .getEditorModel(), this .documentModel .getRenderedModel() ) );
+        this .addSubController( "measure", new MeasureController( this .documentModel .getEditorModel(), this .mRenderedModel ) );
 
         this .articleChanges = new PropertyChangeListener()
         {   
@@ -710,6 +710,10 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                 documentModel .doEdit( "Delete" );
                 break;
     
+            case "copy.mesh":
+                setProperty( "clipboard", documentModel .copyRenderedModel( "mesh" ) );
+                break;
+        
             case "copy":
             case "copy.cmesh":
                 setProperty( "clipboard", documentModel .copyRenderedModel( "cmesh" ) );

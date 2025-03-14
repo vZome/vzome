@@ -88,14 +88,8 @@ namespace com.vzome.core.exporters {
         public getFileExtension(): string {
             return "off";
         }
-
-        constructor() {
-            super();
-        }
     }
     OffExporter["__class"] = "com.vzome.core.exporters.OffExporter";
-    OffExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
-
 
 }
 

@@ -29,13 +29,6 @@ public class STEPExporter extends GeometryExporter
     private static final String POSTLUDE = "ENDSEC;\nEND-ISO-10303-21;";
     
     private static final int START_INDEX = 300;
-
-    /**
-     * This scale factor is appropriate for making true-to-scale STEP renderings of strut models built
-     *   in vZome with a model ball radius (blue) of one long blue strut.  In other terms, the edges of the
-     *   ball model are short and medium blue struts.
-     */
-    private static final double SCALE = 0.350d;
     
     @Override
     public void doExport( File file, Writer writer, int height, int width ) throws Exception
@@ -92,10 +85,12 @@ public class STEPExporter extends GeometryExporter
         
         int index = START_INDEX-1;
 
+        double inchScaling = mModel .getCmScaling() / 2.54d;
+
         // first, produce all the vertices
         ArrayList<RealVector> realVectors = new ArrayList<>();
         for (AlgebraicVector gv : poly .getVertexList()) {
-            RealVector v = mModel .renderVector( gv ) .scale( SCALE );
+            RealVector v = mModel .renderVector( gv ) .scale( inchScaling );
             realVectors .add( v );
             
             int cpIndex = ++index;

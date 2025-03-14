@@ -131,14 +131,16 @@ public class OpenScadExporter extends DocumentExporter
         }
         output .println();
 
-        String tipVertexString = super .mModel .renderVector( tipVertex ) .scale( RZOME_MM_SCALING ) .toString();
+        double mmScaling = mModel .getCmScaling() * 10d;
+
+        String tipVertexString = super .mModel .renderVector( tipVertex ) .scale( mmScaling ) .toString();
         output .println( "  tip_vertex = [ " + tipVertexString + " ];" );
         output .println();
         
         output .println( "  fixed_vertices = [ " );
         for ( AlgebraicVector vertex : sortedFixedVertexList ) {
             output .print( "[ " );
-            output .print( super .mModel .renderVector( vertex ) .scale( RZOME_MM_SCALING ) .toString() );
+            output .print( super .mModel .renderVector( vertex ) .scale( mmScaling ) .toString() );
             output .print( " ], " );
         }
         output .println( " ];" );
@@ -146,7 +148,7 @@ public class OpenScadExporter extends DocumentExporter
         output .println( "  floating_vertices = [ " );
         for ( AlgebraicVector vertex : sortedFloatingVertexList ) {
             output .print( "[ " );
-            output .print( super .mModel .renderVector( vertex ) .scale( RZOME_MM_SCALING ) .toString() );
+            output .print( super .mModel .renderVector( vertex ) .scale( mmScaling ) .toString() );
             output .print( " ], " );
         }
         output .println( " ];" );

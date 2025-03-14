@@ -54,16 +54,6 @@ cat 'online/jsweetOut/core/js/bundle.js' | \
     -e 's/(java || (java = {}));/(java);/' \
   >> $OUTJS
 
-
-# I really need to just script this.  Here is what needs to be automated:
-#   1. remove online/src/worker/legacy/ts
-#   2. set bundle=false in online/build.gradle, near line 94
-#   3. run: cicd/online.bash jsweet
-#   4. move online/jsweetOut/core/ts to online/src/worker/legacy
-#   5. set bundle=true again in online/build.gradle
-#   6. run: cicd/online.bash jsweet
-banner 'You should regenerate the un-bundled Typescript!  See the comment in cicd/jsweet-legacy-code.bash.'
-
 echo '/* THIS FILE IS CURRENTLY IGNORED! We are using the generated core-java.js instead, for now. */' > $LEGACY/ts/core-java.ts
 cat online/jsweetOut/core/ts/bundle.ts >> $LEGACY/ts/core-java.ts
 

@@ -1,5 +1,10 @@
 package com.vzome.core.render;
 
+/**
+ * This is no longer used statically everywhere.  Now, any Shapes subclass can override
+ * getCmScaling(), and RenderedModel exposes that in its own methods.  See the default
+ * implementation in AbstractShapes.
+ */
 public interface RealZomeScaling
 {
     double VZOME_BLUE_DIAMETER = 2.0d;

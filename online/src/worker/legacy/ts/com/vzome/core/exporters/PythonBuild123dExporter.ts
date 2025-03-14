@@ -75,14 +75,8 @@ namespace com.vzome.core.exporters {
         public getFileExtension(): string {
             return "py";
         }
-
-        constructor() {
-            super();
-        }
     }
     PythonBuild123dExporter["__class"] = "com.vzome.core.exporters.PythonBuild123dExporter";
-    PythonBuild123dExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
-
 
 }
 

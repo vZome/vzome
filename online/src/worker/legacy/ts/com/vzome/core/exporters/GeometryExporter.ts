@@ -1,6 +1,6 @@
 /* Generated from Java with JSweet 3.2.0-SNAPSHOT - http://www.jsweet.org */
 namespace com.vzome.core.exporters {
-    export abstract class GeometryExporter implements com.vzome.core.render.RealZomeScaling {
+    export abstract class GeometryExporter {
         output: java.io.PrintWriter;
 
         mColors: com.vzome.core.render.Colors;
@@ -48,8 +48,6 @@ namespace com.vzome.core.exporters {
         }
     }
     GeometryExporter["__class"] = "com.vzome.core.exporters.GeometryExporter";
-    GeometryExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling"];
-
 
 }
 

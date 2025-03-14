@@ -9,6 +9,7 @@ import redUrl from './red.vef'
 import yellowShortUrl from './yellow-short.vef'
 import redShortUrl from './red-short.vef'
 import greenUrl from './green.vef'
+import greenShortUrl from './green-short.vef'
 
 const shapes = {
   connector: connectorUrl,
@@ -18,6 +19,7 @@ const shapes = {
   green: greenUrl,
   'red-short': redShortUrl,
   'yellow-short': yellowShortUrl,
+  'green-short': greenShortUrl,
 }
 
 export default shapes

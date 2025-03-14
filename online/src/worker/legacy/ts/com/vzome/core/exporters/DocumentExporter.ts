@@ -28,7 +28,7 @@ namespace com.vzome.core.exporters {
         }
     }
     DocumentExporter["__class"] = "com.vzome.core.exporters.DocumentExporter";
-    DocumentExporter["__interfaces"] = ["com.vzome.core.render.RealZomeScaling","com.vzome.core.exporters.DocumentExporterIntf"];
+    DocumentExporter["__interfaces"] = ["com.vzome.core.exporters.DocumentExporterIntf"];
 
 
 }

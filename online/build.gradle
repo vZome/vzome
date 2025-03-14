@@ -33,6 +33,10 @@ plugins {
     id 'java-library'
 }
 
+// This environment variable is only used by cicd/online.bash jsweet
+ext.jsweetBundle = System.getenv( "JSWEET_BUNDLE" ) ?: 'true'
+
+
 repositories {
   mavenLocal()
   mavenCentral()
@@ -91,7 +95,7 @@ core.config {
 	encoding = 'UTF-8'
 	sourceMap = false  // I can't set breakpoints if the browser cannot find the Java file, so disabling for now.
 
-  bundle = true  // I set this to false to generate the unbundled Typescript sources
+  bundle = (project.jsweetBundle == 'true')  // I set this to false to generate the unbundled Typescript sources
 
   workingDir = project.file( '.jsweet/core' )
 	tsOut = project.file( 'jsweetOut/core/ts' )
@@ -195,6 +199,7 @@ core.config {
     'com/vzome/core/viewing/CameraIntf.java',
     'com/vzome/core/viewing/Lights.java',
     'com/vzome/core/viewing/AbstractShapes.java',
+    'com/vzome/core/viewing/SchochShapes.java',
     'com/vzome/core/viewing/AntiprismShapes.java',
     'com/vzome/core/viewing/OctahedralShapes.java',
     'com/vzome/core/viewing/DodecagonalShapes.java',

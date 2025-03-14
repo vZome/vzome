@@ -127,12 +127,14 @@ public class ExportedVEFShapes extends AbstractShapes
         // automatic struts don't use VEF so don't waste time trying
         if ( ! dir.isAutomatic() ) {
             
-            StrutGeometry shortGeometry = new FastDefaultStrutGeometry( dir );
+            StrutGeometry defaultGeometry = new FastDefaultStrutGeometry( dir );
+            StrutGeometry shortGeometry = defaultGeometry;
             String vefData = loadVefData( dir.getName() + "-short" );
             if (vefData != null) {
                 VefToShape parser = new VefToShape();
                 parser .parseVEF( vefData, mSymmetry.getField() );
                 shortGeometry = parser .getStrutGeometry( dir.getAxis( Symmetry.PLUS, 0 ) .normal());
+                ((ExportedVEFStrutGeometry) shortGeometry) .setShortGeometry( defaultGeometry );
             }
             
             vefData = loadVefData( dir.getName( ));

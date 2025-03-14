@@ -149,19 +149,50 @@ const makeFloatMatrices = ( matrices ) =>
 
   class ImportSimpleMeshJson extends vzomePkg.core.edits.ImportMesh
   {
+    scaleAndProject = true;
+
     getXmlElementName() { return "ImportSimpleMeshJson"; }
+
+    getXmlAttributes( element )
+    {
+      if ( this.scaleAndProject )
+        element .setAttribute( "scaleAndProject", "true" );
+
+      super.getXmlAttributes( element );
+    }
     
+    setXmlAttributes( xml, format )
+    {
+      const boolStr = xml .getAttribute( "scaleAndProject" );
+      // Default is true, but legacy files must behave as if false
+      if ( ! boolStr )
+          this.scaleAndProject = false;
+
+      super.setXmlAttributes( xml, format );
+    }
+
     parseMeshData( offset, events, registry )
     {
-      // TODO: handle projection and scale
+      // Legacy code dropped the 4th coordinate from the projection, implicitly because it never used
+      //   the 4th coordinate, always making a 3D vector.  New code drops the 1st coordinate.
+      let wFirst = false;
+
+      if ( ! this.scaleAndProject ) {
+          wFirst = true;
+          const field = this.mManifestations .getField();
+          this.scale = field .one();
+          this.projection = new vzomePkg.core.math.Projection.Default( field );
+      }
+
       const simpleMesh = JSON.parse( this.meshData )
       const field = registry.getField( simpleMesh.field || 'golden' )
       const vertices = simpleMesh.vertices.map( nums => {
-        let vertex = field.createVectorFromTDs( nums )
+        let vertex = field.createVectorFromTDs( nums );
+        vertex = vertex .scale( this.scale );
         if ( vertex.dimension() > 3 )
-            vertex = this.projection.projectImage( vertex, false )
+            vertex = this.projection .projectImage( vertex, wFirst );
         if ( offset != null )
-            vertex = offset.plus( vertex )
+            vertex = offset .plus( vertex );
         return vertex
       } )
       simpleMesh.edges.forEach( strut => {

@@ -58,15 +58,18 @@ export const FileMenu = () =>
     createDesign( field );
   }
 
-  const handleOpen = evt =>
+  const handleOpen = asNew => () =>
   {
     const fileType = { description: 'vZome design file', accept: { '*/*' : [ '.vZome' ] } }
     openFile( [fileType] )
       .then( file => {
         if ( !!file ) {
+          if ( asNew ) {
+            setState( 'ignoreDesignName', true );  // transient, means we'll still have an untitled design after the fetch
+            setState( 'designName', undefined ); // cooperatively managed by both worker and client
+          }
+          setState( 'fileHandle', asNew? undefined : file.handle );
           openDesignFile( file, false );
-          // TODO: re-enable this once we have more confidence in serialization
-          // setState( 'fileHandle', file.handle );
         }
       });
   }
@@ -184,11 +187,11 @@ export const FileMenu = () =>
           }</For>
         </SubMenu>
 
-        <MenuAction label="Open..."     onClick={() => guard(handleOpen)} />
+        <MenuAction label="Open..."     onClick={() => guard(handleOpen(false))} />
         <MenuAction label="Open URL..." onClick={() => guard(handleShowUrlDialog)} />
+        <MenuAction label="Open As New Design..."     onClick={() => guard(handleOpen(true))} />
         { dropboxEnabled &&
            <MenuAction label="Choose from Dropbox..." onClick={() => guard(showDropboxChooser)} /> }
-        <MenuItem disabled={true}>Open As New Model...</MenuItem>
 
         <Divider/>
 
