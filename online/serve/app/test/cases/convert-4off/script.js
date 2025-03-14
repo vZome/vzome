@@ -34,7 +34,8 @@ const interpret4OFF = lines =>
     const arity = data[ 0 ];
     cells .push( data .slice( 1, arity+1 ) );
   }
-  console.dir( { vertices, faces, cells } );
+  // Output simple mesh JSON (4D); vZome can import it and project to 3D.
+  console.log( JSON .stringify( { field: "golden", edges: [], vertices, faces, cells } ) );
 }
 
 document .getElementById( 'file' ) .onchange = function()
