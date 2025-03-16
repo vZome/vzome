@@ -33,7 +33,6 @@ public class ImportSimpleMeshJson extends ImportMesh
         boolean wFirst = false;
 
         if ( ! this.scaleAndProject ) {
-            wFirst = true;
             AlgebraicField field = this.mManifestations .getField();
             this.scale = field.one();
             this .projection = new Projection.Default( field );
