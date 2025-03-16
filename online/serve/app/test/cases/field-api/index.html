@@ -18,23 +18,7 @@
       }
     </style>
 
-    <script type="module">
-      import { initialize } from "/modules/vzome-legacy.js";
-
-      initialize() .then( api => {
-        const field = api .getField( "polygon13" );
-        const num = field .createPower( 2 );
-        console.log( num .toString(0) );
-        const num2 = field .createPower( 3 );
-        console.log( num2 .toString(0) );
-        const num3 = num .plus( num2 );
-        console.log( num3 .toString(0) );
-        const str = num3 .evaluate();
-        const root = document .getElementById( "root" );
-        root .innerHTML = str;
-      });
-
-    </script>
+    <script type="module" src="./script.js"></script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
@@ -46,11 +30,8 @@
       of the rational numbers.  I really should publish an article
       on the <a href="https://vzome.github.io/vzome/">documentation site.</a>
     </section>
-    
-    <section>
-      The next line should show "11.093584452204935".
-    </section>
-    <div id="root"></div>
+    <br>
+    <pre id="root"></pre>
     </article>
   </body>
 </html>
