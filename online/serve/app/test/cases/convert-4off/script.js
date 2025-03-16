@@ -61,7 +61,8 @@ const interpret4OFF = lines =>
     }
   }
   // Output simple mesh JSON (4D); vZome can import it and project to 3D.
-  console.log( JSON .stringify( { field, vertices, edges, faces, cells } ) );
+  const outputEl = document .getElementById( "output" );
+  outputEl .innerHTML = JSON .stringify( { field, vertices, edges, faces, cells } ); // not formatting, too much whitespace
 }
 
 document .getElementById( 'file' ) .onchange = function()
