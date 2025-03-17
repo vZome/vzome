@@ -1,4 +1,6 @@
 
-include 'core', 'desktop', 'server'
-
 rootProject.name = 'vzome'
+
+include 'core'
+include 'desktop'
+// include 'server'

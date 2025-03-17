@@ -1,0 +1,58 @@
+
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'java-library'
+}
+
+compileJava {
+// set these to 11 for Java 11
+// set them to 1.8 for Java 8
+  sourceCompatibility = 21
+  targetCompatibility = 21
+  options.encoding = 'UTF-8'
+}
+
+
+group = 'com.vzome'
+version = '7.1'
+description = rootProject.name + '-' + project.name
+
+
+// These environment variables are automatically available during a Jenkins build
+ext.buildNumber = System.getenv( "BUILD_NUMBER" ) ?: '999'
+ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
+ext.githubRepoName = System.getenv( "GITHUB_REPO_NAME" ) ?: ''
+
+// These environment variables must be configured in the Jenkins job explicitly.
+ext.githubClientId = System.getenv( "GITHUB_CLIENT_ID" )
+ext.githubClientSecret = System.getenv( "GITHUB_CLIENT_SECRET" )
+
+ext.keychain = System.getenv( "SIGNING_KEYCHAIN" ) ?: 'login.keychain'
+
+ext.appName = 'vZome'
+// ext.edition = appName
+
+
+repositories {
+  mavenCentral()
+  
+  // For EGit
+  maven { url 'https://repo.eclipse.org/content/groups/releases' }
+
+  maven { url 'https://jogamp.org/deployment/maven' }
+
+  ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR download for vecmath
+    url "https://jogamp.org/deployment"
+    metadataSources {
+      artifact();
+    }
+    patternLayout {
+      artifact "[organization]/[revision]/[artifact].[ext]"
+    }
+  }
+}
+
+dependencies {
+    testImplementation group: 'junit',             name: 'junit',             version:'4.12'
+}

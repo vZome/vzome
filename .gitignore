@@ -87,3 +87,5 @@ online/serve/app/inspector/models/
 online/serve/modules/
 
 .zsh_history
+
+core/failures.xml

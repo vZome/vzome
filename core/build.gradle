@@ -1,8 +1,7 @@
 
-
-ext.gitCommit = System.getenv( "GIT_COMMIT" ) ?: 'HEAD'
-
-description = "vzome-core"
+plugins {
+    id 'vzome.java-conventions'
+}
 
 ext.antlr4 = [
     antlrSource:    "src/main/antlr",
@@ -70,23 +69,30 @@ dependencies {
 
     implementation group: 'antlr',             name: 'antlr',             version:'2.7.7'
 
-	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.3'
-	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.3'
-	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.5'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.18.1'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.18.1'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.18.1'
 
     // runtimeOnly     group: 'org.python',        name: 'jython',            version:'2.7.1b3'
     runtimeOnly     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
-    runtimeOnly     group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.2'
+    runtimeOnly     group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.18.1'
+    runtimeOnly     group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.18.1'
+    runtimeOnly     group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.18.1'
 
     testImplementation group: 'antlr',             name: 'antlr',             version:'2.7.7'
-    testImplementation group: 'junit',             name: 'junit',             version:'4.12'
+	testImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.18.1'
+	testImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.18.1'
+	testImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.18.1'
 
     antlr4      group: 'org.antlr',         name: 'antlr4',            version: '4.13.1'
 
     regressionImplementation sourceSets.main.output
-    regressionImplementation configurations.testImplementation
     regressionImplementation sourceSets.test.output
-    regressionRuntimeOnly configurations.testRuntimeOnly
+    regressionImplementation     group: 'java3d',            name: 'vecmath',           version:'1.6.0-final'
+    regressionImplementation     group: 'org.antlr',         name: 'antlr4',            version:'4.13.1'
+	regressionImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.18.1'
+	regressionImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.18.1'
+	regressionImplementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.18.1'
 }
 
 // These options apply to all java projects
