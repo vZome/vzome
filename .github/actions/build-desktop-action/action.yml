@@ -23,7 +23,7 @@ runs:
       run: |
         date
         chmod +x gradlew
-        ./gradlew clean jpackage
+        ./gradlew --info clean jpackage
         ls desktop/build/jpackage
 
 
