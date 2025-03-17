@@ -29,6 +29,10 @@ jobs:
     - uses: actions/checkout@v3
       with:
         lfs: 'true'
+    - name: Control Timezone
+      uses: szenius/set-timezone@v1.1
+      with:
+        timezoneMacos: "America/Los_Angeles"
     - name: Prep code signing
       env: 
         MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
