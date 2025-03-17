@@ -322,7 +322,7 @@ Your generated web pages will pick up these enhancements automatically, giving y
 new capabilities for interacting with your designs.
 In some cases, we will add *optional* features that won't be used unless you specifically
 *opt in* by setting some attribute on the `vzome-viewer` element.
-This document will be updated soon with a link to full documentation for the `vzome-viewer` web component.
+Full documentation for the `vzome-viewer` web component can be found [here](https://docs.vzome.com/web-component.html).
 
 ## Template `vzome-sharing` Repository Details
 

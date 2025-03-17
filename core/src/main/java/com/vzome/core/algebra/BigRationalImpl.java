@@ -623,6 +623,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
                    :that.bigNum + "/" + that.bigDen;
     }
 
+    @Override
     public String getMathML()
     {
         return ( this.bigNum == null )?
