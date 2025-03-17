@@ -8,7 +8,6 @@ on:
 env:
   BUILD_NUMBER: ${{ github.run_number }}
   GIT_COMMIT: ${{ github.sha }}
-  # TODO connect these to secrets
   # NOTE: They have nothing to do with running this GitHub Action;
   #   they are for vZome to make runtime API calls to GitHub.
   GITHUB_CLIENT_SECRET: ${{ secrets.VZOME_GITHUB_CLIENT_SECRET }}
@@ -27,23 +26,7 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - uses: actions/checkout@v3
-      with:
-        lfs: 'true'
-    - name: Set up JDK
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-    - name: Control Timezone
-      uses: szenius/set-timezone@v1.1
-      with:
-        timezoneMacos: "America/Los_Angeles"
-    - name: Get current date
-      run: date
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build with Gradle
+    - name: Prep code signing
       env: 
         MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
         MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
@@ -56,7 +39,8 @@ jobs:
         security unlock-keychain -p KeychainPwd $SIGNING_KEYCHAIN
         security import certificate.p12 -k $SIGNING_KEYCHAIN -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
         security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k KeychainPwd $SIGNING_KEYCHAIN
-        ./gradlew --info clean jpackage 
+    - id: build-desktop
+      uses: ./.github/actions/build-desktop-action
     - name: Configure SSH
       run: |
         mkdir -p ~/.ssh/
@@ -96,20 +80,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        lfs: 'true'
-    - name: Set up JDK
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build with Gradle
-      run: |
-        ./gradlew clean jpackage
-        ls desktop/build/jpackage
+    # - id: foo
+    #   uses: OWNER/hello-world-composite-action@SHA
+    #   with:
+    #     who-to-greet: 'Mona the Octocat'
+    # - run: echo random-number "$RANDOM_NUMBER"
+    #   shell: bash
+    #   env:
+    #     RANDOM_NUMBER: ${{ steps.foo.outputs.random-number }}
+    - id: build-desktop
+      uses: ./.github/actions/build-desktop-action
     - name: Configure SSH
       run: |
         mkdir -p ~/.ssh/
@@ -149,17 +129,10 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
-      with:
-        lfs: 'true'
-    - name: Set up JDK
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-    - name: Build with Gradle
+    - id: build-desktop
+      uses: ./.github/actions/build-desktop-action
+    - name: Zip it
       run: |
-        ./gradlew -i clean jpackage
         cd desktop/build/jpackage
         7z a -tzip vZome-7.1.${{ github.run_number }}.zip vZome-7.1.${{ github.run_number }}.exe
         ls
