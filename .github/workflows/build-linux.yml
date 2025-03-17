@@ -18,6 +18,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v3
+      with:
+        lfs: 'true'
     - id: build-desktop
       uses: ./.github/actions/build-desktop-action
     - name: Archive Linux build
