@@ -21,7 +21,7 @@ jobs:
     - id: build-desktop
       uses: ./.github/actions/build-desktop-action
     - name: Archive Linux build
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: vZome-Linux-7.1.${{ github.run_number }}
         path: desktop/build/jpackage/vzome_*.deb
