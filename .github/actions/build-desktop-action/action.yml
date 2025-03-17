@@ -20,6 +20,8 @@ runs:
         distribution: 'temurin'
     - name: Build with Gradle
       shell: bash
+      env:
+        SIGNING_KEYCHAIN: build.keychain
       run: |
         date
         chmod +x gradlew
