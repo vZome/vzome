@@ -178,7 +178,6 @@ const makeFloatMatrices = ( matrices ) =>
       let wFirst = false;
 
       if ( ! this.scaleAndProject ) {
-          wFirst = true;
           const field = this.mManifestations .getField();
           this.scale = field .one();
           this.projection = new vzomePkg.core.math.Projection.Default( field );
