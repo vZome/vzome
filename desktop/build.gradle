@@ -204,7 +204,7 @@ jpackage {
         macSign = true
         macSigningKeyUserName = "Scott Vorthmann"
         additionalParameters << "--mac-signing-keychain"
-        additionalParameters << "$keychain"
+        additionalParameters << "${->project.keychain}"
     }
     windows {
         icon = "platform/windows/resources/icons/vZomeLogo.ico"
