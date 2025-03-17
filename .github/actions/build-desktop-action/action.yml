@@ -23,6 +23,7 @@ runs:
       with:
         timezoneMacos: "America/Los_Angeles"
     - name: Build with Gradle
+      shell: bash
       run: |
         date
         chmod +x gradlew
