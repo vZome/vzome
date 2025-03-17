@@ -1,11 +1,11 @@
 name: 'Build desktop vZome'
 description: 'Use Gradle to build the desktop version of vZome'
-inputs:
+# inputs:
   # who-to-greet:  # id of input
   #   description: 'Who to greet'
   #   required: true
   #   default: 'World'
-outputs:
+# outputs:
   # random-number:
   #   description: "Random number"
   #   value: ${{ steps.random-number-generator.outputs.random-number }}
