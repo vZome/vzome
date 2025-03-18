@@ -99,6 +99,12 @@ namespace com.vzome.core.kinds {
                     }
                     return new com.vzome.core.commands.CommandSymmetry(octaSymm);
                 };
+            case "tetrasymm":
+                {
+                    const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
+                    const closure: number[] = symmetry.subgroup(com.vzome.core.math.symmetry.Symmetry.TETRAHEDRAL);
+                    return new com.vzome.core.commands.CommandTetrahedralSymmetry(symmetry);
+                };
             default:
                 return null;
             }
