@@ -78,13 +78,6 @@ const filterScene = ( report, load ) => event =>
     event.payload.scene = { shapes, embedding, polygons };
     if ( load.camera )   event.payload.scene.camera   = camera;
     if ( load.lighting ) event.payload.scene.lighting = lighting;
-
-    if ( load.bom ) {
-      partsPromise .then( ({ colors }) => {
-        const bom = assemblePartsList( shapes, colors );
-        report( { type: 'BOM_CHANGED', payload: bom } );
-      });
-    }
   }
   report( event );
 }
@@ -470,6 +463,16 @@ onmessage = ({ data }) =>
       const index = getSceneIndex( title, design.rendered.scenes );
       const scene = prepareSceneResponse( design, index ); // takes a normalized scene
       filterScene( sendToClient, load )( { type: 'SCENE_RENDERED', payload: { scene } } );
+      break;
+    }
+
+    case 'BOM_REQUESTED': {
+      if ( !design?.rendered?.scenes )
+        break;
+      partsPromise .then( ({ colors }) => {
+        const bom = assemblePartsList( design.rendered, colors );
+        sendToClient( { type: 'BOM_CHANGED', payload: bom } );
+      });
       break;
     }
 

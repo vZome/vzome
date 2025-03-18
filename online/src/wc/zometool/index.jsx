@@ -24,7 +24,7 @@ const partsPromise = fetch( parts_catalog_url ) .then( response => response.text
 
 const StepControls = props =>
 {
-  const { scenes, requestScene } = useViewer();
+  const { scenes, requestScene, requestBOM } = useViewer();
   const [ index, setIndex ] = createSignal( 1 );
   const [ maxIndex, setMaxIndex ] = createSignal( 0 );
   const atStart = () => index() === 1;  // NOTE: scene 0 is the default scene, which we ignore
@@ -38,7 +38,8 @@ const StepControls = props =>
     if ( props.show ) {
       requestScene( '#' + index(), { camera: true } );
     } else {
-      requestScene( '#' + maxIndex(), { camera: true, bom: true } );
+      requestScene( '#' + maxIndex(), { camera: true } );
+      requestBOM();
     }
   } );
 
