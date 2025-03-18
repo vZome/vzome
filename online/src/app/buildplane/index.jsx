@@ -6,14 +6,21 @@ import Typography from '@suid/material/Typography'
 import Link from '@suid/material/Link'
 
 import { VZomeAppBar } from '../classic/components/appbar.jsx';
-import { WorkerStateProvider } from '../../workerClient/context.jsx';
+import { WorkerProvider } from '../../viewer/context/worker.jsx';
+import { ViewerProvider } from '../../viewer/context/viewer.jsx';
+import { UndoRedoButtons } from './undoredo.jsx';
 
 import { BuildPlaneTool } from './buildplane.jsx'
-import { DesignViewer } from '../../viewer/solid/index.jsx';
+import { DesignViewer } from '../../viewer/index.jsx';
+import { CameraProvider } from '../../viewer/context/camera.jsx';
+import { EditorProvider } from '../framework/context/editor.jsx';
 
 const WorkerApp = () => (
   <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
-    <WorkerStateProvider>
+    <CameraProvider>
+    <WorkerProvider>
+    <ViewerProvider>
+    <EditorProvider>
       <VZomeAppBar showOpen pathToRoot='../models' forDebugger={false} title='Buildplane'
         about={ <>
           <Typography gutterBottom>
@@ -34,13 +41,19 @@ const WorkerApp = () => (
             join the <Link target="_blank" href="https://discord.gg/vhyFsNAFPS" rel="noopener" >Discord server</Link>.
           </Typography>
           <Typography gutterBottom>
-            For the full suite of vZome Online apps and technology,
+            For the full suite of vZome web applications and technology,
             see <Link target="_blank" href="https://docs.vzome.com/online.html" rel="noopener" >this page</Link>.
           </Typography>
         </> } />
-      <DesignViewer height="100%" width="100%" config={ { useSpinner: true, undoRedo: true } }
-        children3d={ <BuildPlaneTool/> } />
-    </WorkerStateProvider>
+      <div id='viewer-and-undoredo'>
+        <DesignViewer height="100%" width="100%" config={ { useSpinner: true } }
+          children3d={ <BuildPlaneTool/> } />
+        <UndoRedoButtons/>
+      </div>
+    </EditorProvider>
+    </ViewerProvider>
+    </WorkerProvider>
+    </CameraProvider>
   </ErrorBoundary>
 );
 

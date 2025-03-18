@@ -1,115 +1,60 @@
 {
   "version": "0.2.0",
   "configurations": [
-
     {
-      "name":             "online",
-
+      "name":                             "online TESTS",
       "type": "chrome",
       "request": "launch",
-      "url": "http://localhost:8532/",
+      "url": "http://localhost:8532/app/test/",
       "pathMapping": {
+        "/app/": "${workspaceFolder}/online/src/serve/app",
         "/": "${workspaceFolder}/online/src"
       }
     },
     {
-      "name":             "59icosahedra",
-
+      "name":                             "debug desktop vZome",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "org.vorthmann.zome.ui.ApplicationUI",
+      "args": "${command:SpecifyProgramArgs}"
+    },
+    {
+      "name":                             "classic PWA",
       "type": "chrome",
       "request": "launch",
-      "url": "http://localhost:8532/59icosahedra",
+      "url": "https://localhost:8532/app/classic?debug=true",
       "pathMapping": {
+        "/": "${workspaceFolder}/online/src",
+        "/app/": "${workspaceFolder}/online/src/serve/app"
+      }
+    },
+    {
+      "name":                             "Generate H4 0100 Polytope JSON",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "com.vzome.core.apps.Dump4dPolytopeVson",
+      "projectName": "core",
+      "args": [ "0100" ],
+      "console":"externalTerminal"
+    },
+    {
+      "name":                             "JK regression",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8532/app/test/regression.html",
+      "pathMapping": {
+        "/app/": "${workspaceFolder}/online/src/serve/app",
         "/": "${workspaceFolder}/online/src"
       }
     },
     {
-      "name":             "browser",
-
+      "name":                             "GitHub orbit scan",
       "type": "chrome",
       "request": "launch",
-      "url": "http://localhost:8532/browser",
+      "url": "http://localhost:8532/app/test/orbitscan.html",
       "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
-      }
-    },
-    {
-      "name":             "build plane",
-
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:8532/buildplane",
-      "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
-      }
-    },
-    {
-      "name":             "classic",
-
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:8532/classic?debug=true",
-      "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
-      }
-    },
-    {
-      "name":             "classic PWA",
-
-      "type": "chrome",
-      "request": "launch",
-      "url": "https://localhost:8532/classic?debug=true",
-      "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
-      }
-    },
-    {
-      "name":             "web component",
-
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:8532/test/",
-      "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
-      }
-    },
-    {
-      "name":             "fivecell",
-
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:8532/fivecell?debug=true",
-      "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
-      }
-    },
-    {
-      "name":             "bhall",
-
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:8532/bhall/basic?debug=true",
-      "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
-      }
-    },
-    {
-      "name":             "JK regression",
-
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:8532/test/regression.html",
-      "pathMapping": {
-        "/": "${workspaceFolder}/online/src"
-      }
-    },
-    {
-      "name":             "GitHub orbit scan",
-
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:8532/test/orbitscan.html",
-      "pathMapping": {
-        "/": "${workspaceFolder}/online/public"
+        "/": "${workspaceFolder}/online/src",
+        "/app/": "${workspaceFolder}/online/src/serve/app"
       }
     }
   ]

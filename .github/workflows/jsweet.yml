@@ -4,13 +4,6 @@ name: JSweet legacy bundle
 
 # Controls when the workflow will run
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'core/src/main/java/**'
-      - 'desktop/src/main/java/**'
-      - 'online/src/worker/java/**'
-
   workflow_dispatch:
 
 jobs:
@@ -55,7 +48,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: vorth/j4ts
-          ref: update-jsweet
           path: j4ts
       - name: Build & deploy j4ts
         run: |
@@ -86,11 +78,11 @@ jobs:
       - name: Build with Gradle and JSweet
         run: |
           pwd
-          chmod +x gradlew cicd/jsweet-legacy-code.bash
-          cicd/jsweet-legacy-code.bash
+          chmod +x gradlew cicd/online.bash
+          cicd/online.bash jsweet
 
       - name: Archive Generated JS
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: worker-legacy
           path: online/src/worker/legacy

@@ -17,7 +17,6 @@ import com.vzome.core.commands.Command;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.Point;
 import com.vzome.core.construction.Polygon;
-import com.vzome.core.editor.DocumentModel;
 import com.vzome.core.editor.Tool;
 import com.vzome.core.editor.ToolsModel;
 import com.vzome.core.math.RealVector;
@@ -37,7 +36,7 @@ import com.vzome.core.render.RenderedManifestation;
 public class OpenScadExporter extends DocumentExporter
 {
     @Override
-    public void exportDocument( DocumentModel doc, File file, Writer writer, int height, int width ) throws Exception
+    public void exportDocument( DocumentIntf doc, File file, Writer writer, int height, int width ) throws Exception
     {
         ToolsModel toolsModel = doc .getToolsModel();
         super .mModel = doc .getRenderedModel();
@@ -132,14 +131,16 @@ public class OpenScadExporter extends DocumentExporter
         }
         output .println();
 
-        String tipVertexString = super .mModel .renderVector( tipVertex ) .scale( RZOME_MM_SCALING ) .toString();
+        double mmScaling = mModel .getCmScaling() * 10d;
+
+        String tipVertexString = super .mModel .renderVector( tipVertex ) .scale( mmScaling ) .toString();
         output .println( "  tip_vertex = [ " + tipVertexString + " ];" );
         output .println();
         
         output .println( "  fixed_vertices = [ " );
         for ( AlgebraicVector vertex : sortedFixedVertexList ) {
             output .print( "[ " );
-            output .print( super .mModel .renderVector( vertex ) .scale( RZOME_MM_SCALING ) .toString() );
+            output .print( super .mModel .renderVector( vertex ) .scale( mmScaling ) .toString() );
             output .print( " ], " );
         }
         output .println( " ];" );
@@ -147,7 +148,7 @@ public class OpenScadExporter extends DocumentExporter
         output .println( "  floating_vertices = [ " );
         for ( AlgebraicVector vertex : sortedFloatingVertexList ) {
             output .print( "[ " );
-            output .print( super .mModel .renderVector( vertex ) .scale( RZOME_MM_SCALING ) .toString() );
+            output .print( super .mModel .renderVector( vertex ) .scale( mmScaling ) .toString() );
             output .print( " ], " );
         }
         output .println( " ];" );

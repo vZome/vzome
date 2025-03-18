@@ -1,0 +1,135 @@
+
+
+html,
+body {
+  margin: 0; /* This is essential to avoid a small white border around the whole main div. */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+.title {
+  display: flex;
+}
+
+h1 {
+  margin: auto;
+}
+
+/* // =============================================================================
+// Styling for model instructions
+// ============================================================================= */
+
+.zometool-model {
+  font-size: large;
+  display: grid;
+  column-gap: 2rem;
+  row-gap: 1rem;
+  grid-template-columns: 2fr 1.2fr;
+  grid-template-rows: 2fr min-content 2fr 4fr;
+  grid-template-areas:
+    "viewer description"
+    "viewer difficulty"
+    "viewer products"
+    "viewer parts";
+  height: 80dvh;
+  border: 1px solid gray;
+  border-radius: 3px;
+}
+
+.zometool-model-description {
+  grid-area: description;
+  padding-inline-end: 1rem;
+  padding-block-start: 1rem;
+}
+
+.zometool-model-difficulty {
+  grid-area: difficulty;
+}
+.zometool-model-difficulty::before {
+  content: "Experience level:";
+  font-weight: bold;
+}
+.zometool-model-difficulty[data-difficulty="medium"]::after {
+  content: 'Anyone';
+}
+.zometool-model-difficulty[data-difficulty="hard"]::after {
+  content: 'Expert';
+}
+
+zometool-instructions {
+  grid-area: viewer;
+}
+
+zometool-parts-required {
+  grid-area: parts;
+  position: relative;
+}
+
+zometool-covering-products {
+  grid-area: products;
+  padding-inline-end: 1rem;
+}
+
+zometool-covering-products::before {
+  content: "Supporting products:";
+  font-weight: bold;
+}
+
+.vzome-viewer-index-button {
+  border: 2px solid stencilColor("color-primaryDarker");
+  border-radius: 6px;
+  font-size: x-large;
+}
+
+
+.zometool-parts-container {
+  overflow: auto;
+  position: absolute;
+  inset: 0;
+}
+
+@media ( max-width: 800px ) {
+
+  zometool-instructions {
+    border: 1px solid black;
+  }
+
+  .zometool-model {
+    height: min-content;
+    border: none;
+    margin-block-start: -2rem;
+    max-height: none;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+    grid-template-rows: 80dvh min-content min-content min-content min-content;
+    grid-template-areas:
+      "viewer"
+      "description"
+      "difficulty"
+      "products"
+      "parts";
+    }
+    
+  .zometool-parts-container {
+    overflow: visible;
+    max-height: none;
+    position: static;
+  }
+  .zometool-parts-table {
+    position: relative;
+  }
+
+  .MuiTableCell-sizeSmall {
+    padding: 6px 11px;
+  }
+  .MuiTableCell-alignLeft {
+    padding: 0;
+  }
+}

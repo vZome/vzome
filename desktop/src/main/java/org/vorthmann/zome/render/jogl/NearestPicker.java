@@ -1,14 +1,13 @@
 package org.vorthmann.zome.render.jogl;
 
 import com.jogamp.opengl.math.FloatUtil;
-import com.jogamp.opengl.math.Ray;
+import com.jogamp.opengl.math.Vec3f;
 import com.vzome.core.math.Line;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.ShapeAndInstances;
 
 class NearestPicker implements ShapeAndInstances.Intersector
 {        
-    private final Ray ray;
     private final Vec3f rayPoint, rayDirection;
 
     private RenderedManifestation nearest = null;
@@ -19,11 +18,11 @@ class NearestPicker implements ShapeAndInstances.Intersector
     {
         super();
         FloatUtil .multMatrix( projection, modelView, this .modelViewProjection );
-        this .ray = new Ray();
-        rayLine .getOrigin() .toArray( this .ray .orig );
-        rayLine .getDirection() .toArray( this .ray .dir );
-        this .rayPoint = new Vec3f( ray.orig );
-        this .rayDirection = new Vec3f( ray.dir );
+        float[] array = new float[3];
+        rayLine .getOrigin() .toArray( array );
+        this .rayPoint = new Vec3f( array );
+        rayLine .getDirection() .toArray( array );
+        this .rayDirection = new Vec3f( array );
         this .rayDirection .normalize();
     }
     
@@ -100,8 +99,8 @@ class NearestPicker implements ShapeAndInstances.Intersector
             float u = tuv.y();
             float v = tuv.z();
             v1 .scale( u );
-            v1 .addScaled( v1, v, v2 );
-            v1 .addScaled( v1, 1f - u - v, v0 );
+            v1 .plus( v1, v2.scale( v ) );
+            v1 .plus( v1, v0.scale( 1f - u - v) );
             setNearest( v1.x(), v1.y(), v1.z(), rm );
         }
     }

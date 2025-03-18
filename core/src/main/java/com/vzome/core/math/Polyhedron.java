@@ -262,6 +262,7 @@ public class Polyhedron implements Cloneable
             }
         }
         
+        @JsonIgnore
         public List<Triangle> getTriangles()
         {
             int arity = this .size();
@@ -288,6 +289,7 @@ public class Polyhedron implements Cloneable
         }
         
         // Still used by exporters
+        @JsonIgnore
         public AlgebraicVector getNormal( List<AlgebraicVector> vertices )
         {
             // TODO: Don't depend on the first three vertices to be non-collinear

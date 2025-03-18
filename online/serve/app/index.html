@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="./favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta property="og:type" content="website"/>
+
+
+    <title>vZome</title>
+    <meta property="og:site_name"  content="vZome"/>
+    <meta property="og:title"      content="vZome"/>
+    <meta property="twitter:title" content="vZome"/>
+
+    <meta name="author" content="Scott Vorthmann"/>
+  
+    <meta name="description"             content="A design application for Zometool and similar geometric systems"/>
+    <meta property="og:description"      content="A design application for Zometool and similar geometric systems"/>
+    <meta property="twitter:description" content="A design application for Zometool and similar geometric systems"/>
+
+    <meta name="keywords" content="geometry,zome,vzome,github,pages,sharing,zometool,math"/>
+    
+    <meta property="og:image"  content="https://www.vzome.com/app/classic/classic-app.png"/>
+    <meta name="twitter:image" content="https://www.vzome.com/app/classic/classic-app.png"/>
+    
+    <meta property="og:url" content="https://www.vzome.com/app/"/>
+    <link rel="canonical"      href="https://www.vzome.com/app/">
+
+
+    <link rel="stylesheet" href="./kobalte.css">
+    <link rel="stylesheet" href="./App.css">
+    <link rel="stylesheet" href="./classic/classic.css">
+    <link rel="manifest" href="./classic/manifest.json">
+
+    <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="vqxbnxclzvnu5oo"></script>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+
+    <div id="root"></div>
+
+    <script type="module" src="/modules/vzome.js"></script>
+
+    <script>
+      // Check that service workers are supported
+      if ('serviceWorker' in navigator) {
+        // Use the window load event to keep the page load performant
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register( '/app/service-worker.js' );
+        });
+      }
+    </script>
+
+  </body>
+</html>

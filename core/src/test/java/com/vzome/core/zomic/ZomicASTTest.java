@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.atn.ATN;
 import org.antlr.v4.runtime.misc.IntervalSet;
 import org.junit.Test;
@@ -467,7 +466,7 @@ public class ZomicASTTest
 			ZomicLexer lexer = new ZomicLexer(inputStream);
 			ATN atn = lexer.getATN();
 			int stateNumber = 0;
-			IntervalSet intervalSet = atn.getExpectedTokens(stateNumber, RuleContext.EMPTY);
+			IntervalSet intervalSet = atn.getExpectedTokens(stateNumber, null );
 			// TODO: just playing around to see what's available here...
 			assertTrue(intervalSet.size() > 0);
 		}

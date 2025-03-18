@@ -67,7 +67,7 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
                     //            titleArea .setMaximumSize( new Dimension( 500, 20 ) );
                     //            titleArea .setMinimumSize( new Dimension( 500, 20 ) );
                     if ( this.isEditor )
-                        titlePanel .setBorder( BorderFactory .createTitledBorder( "page title" ) );
+                        titlePanel .setBorder( BorderFactory .createTitledBorder( "Scene Title" ) );
                     else
                     {
 //                        titlePanel .setBorder( BorderFactory .createEmptyBorder( 4, 4, 4, 4 ) );
@@ -92,7 +92,7 @@ public class LessonPanel extends JPanel implements PropertyChangeListener
                         contentArea .setMaximumSize( new Dimension( 170, 800 ) );
                         if ( this.isEditor )
                         {
-                            panel .setBorder( BorderFactory .createTitledBorder( "page content" ) );
+                            panel .setBorder( BorderFactory .createTitledBorder( "Scene Description" ) );
                             contentArea .getDocument() .addUndoableEditListener( new UndoableEditListener() {
 
                                 @Override

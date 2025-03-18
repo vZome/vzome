@@ -182,8 +182,16 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
                     button.setRolloverEnabled( true );
 
                     String fieldName = controller.getProperty( "field.name" );
+                    // Technically, we could enable icosasymm and tetrasymm commands
+                    // for any field that support icosahedral symmetry
+                    // but since this code only applies to the old legacy toolbar, 
+                    // we'll continue to base it on just these two field names.
                     if ( "golden" .equals( fieldName ) || "snubDodec" .equals( fieldName ) ) {
                         button = makeLegacyEditButton( enabler, "icosasymm", "Repeat selection with chiral icosahedral symmetry" );
+                        oldToolBar.add( button );
+                        button.setRolloverEnabled( true );
+
+                        button = makeLegacyEditButton( enabler, "tetrasymm", "Repeat selection with chiral tetrahedral symmetry" );
                         oldToolBar.add( button );
                         button.setRolloverEnabled( true );
                     } else {
@@ -191,10 +199,6 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
                         oldToolBar.add( button );
                         button.setRolloverEnabled( true );
                     }
-
-                    button = makeLegacyEditButton( enabler, "tetrasymm", "Repeat selection with chiral tetrahedral symmetry" );
-                    oldToolBar.add( button );
-                    button.setRolloverEnabled( true );
 
                     button = makeLegacyEditButton( enabler, "axialsymm", "Repeat selection with symmetry around an axis" );
                     oldToolBar.add( button );
@@ -454,6 +458,7 @@ public class ModelPanel extends JPanel implements PropertyChangeListener, Symmet
 
             this .addSeparator();
 
+            this .add( setMenuAction( "SelectCoplanar", new JMenuItem( "Select Coplanar" ) ) );
             this .add( setMenuAction( "SelectCollinear", new JMenuItem( "Select Collinear" ) ) );
             this .add( setMenuAction( "SelectParallelStruts", new JMenuItem( "Select Parallel Struts" ) ) );
             this .add( setMenuAction( "AdjustSelectionByOrbitLength/selectSimilarStruts", new JMenuItem( "Select Similar Struts" ) ) );

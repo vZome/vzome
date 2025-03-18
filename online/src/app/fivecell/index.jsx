@@ -7,7 +7,7 @@ import Link from '@suid/material/Link'
 import Container from '@suid/material/Container'
 import Paper from '@suid/material/Paper'
 
-import { UrlViewer } from '../../viewer/solid/index.jsx'
+import { UrlViewer } from '../../viewer/index.jsx'
 import { VZomeAppBar } from '../classic/components/appbar.jsx';
 
 const viewerStyle = {
@@ -41,7 +41,7 @@ const Article = () =>
       <VZomeAppBar title='Apps'
         about={ <>
           <Typography gutterBottom>
-            vZome Online Apps are demonstrations
+            vZome Apps are demonstrations
             of <Link target="_blank" rel="noopener" href="https://vzome.com/home/">vZome</Link> technology ported to the web,
             showing how to build web applications that incorporate interactive 3D views.
           </Typography>

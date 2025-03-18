@@ -1,28 +1,88 @@
 
-import { resourceIndex } from '../revision.js';
+import { resourceIndex, importLegacy, importZomic } from '../revision.js';
+import { commitToGitHub, assemblePartsList, normalizePreview } from '../both-contexts.js';
+
+// const uniqueId = Math.random();
 
 // support trampolining to work around worker CORS issue
 //   see https://github.com/evanw/esbuild/issues/312#issuecomment-1025066671
 export const WORKER_ENTRY_FILE_URL = import.meta.url;
 
+let baseURL;
+
+let design = {}
+
 const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
 
-let baseURL;
-let scenes;
-let snapshots;
-let previewShapes;
+export const DEFAULT_SNAPSHOT = -1;
 
-const captureScenes = report => event =>
+// Normalize legacy scenes to match preview scenes
+const prepareDefaultScene = design =>
+{
+  const camera = design.rendered.camera;
+  design.rendered.scenes .splice( 0, 0, { title: 'default scene', camera, snapshot: DEFAULT_SNAPSHOT } );
+}
+
+// Take a normalized scene and prepare it to send to the client, by
+//   resolving the shapes and snapshot
+// TODO: change the client contract to avoid sending shapes and rotation matrices all the time!
+const prepareSceneResponse = ( design, sceneIndex ) =>
+{
+  let scene = { ...design.rendered.scenes[ sceneIndex ] };
+  if ( typeof scene.snapshot === "undefined" ) {
+    console.log( `warning: no scene with index ${sceneIndex}` );
+    scene = { ...design.rendered.scenes[ 0 ] };
+  }
+  const { title, snapshot, camera } = scene;
+  const { embedding, polygons, instances, snapshots, orientations, lighting } = design.rendered;
+  const sceneInstances = ( snapshot === DEFAULT_SNAPSHOT )? instances : snapshots[ snapshot ];
+  const shapes = {};
+  for ( const instance of sceneInstances ) {
+    const rotation = [ ...( orientations[ instance.orientation ] || IDENTITY_MATRIX ) ];
+    if ( ! shapes[ instance.shapeId ] ) {
+      shapes[ instance.shapeId ] = { ...design.rendered.shapes[ instance.shapeId ], instances: [] };
+    }
+    shapes[ instance.shapeId ].instances.push( { ...instance, rotation } );
+  }
+  return { title, shapes, camera, lighting, embedding, polygons };
+}
+
+const prepareEditSceneResponse = ( design, edit, before ) =>
+  {
+    let sceneInstances = design.wrapper .getScene( edit, before );
+
+    if ( ! sceneInstances ) {
+      // debugging, so we have to interpret more
+      edit = design.wrapper .interpretToBreakpoint( edit, before );
+      sceneInstances = design.wrapper .getScene( edit, before );
+    }
+
+    sceneInstances = { ...sceneInstances }; 
+    const { polygons, orientations } = design.rendered;
+    const shapes = {};
+    for ( const instance of Object.values( sceneInstances ) ) {
+      const rotation = [ ...( orientations[ instance.orientation ] || IDENTITY_MATRIX ) ];
+      if ( ! shapes[ instance.shapeId ] ) {
+        shapes[ instance.shapeId ] = { ...design.rendered.shapes[ instance.shapeId ], instances: [] };
+      }
+      shapes[ instance.shapeId ].instances.push( { ...instance, rotation } );
+    }
+    return { scene: { shapes, polygons }, edit };
+  }
+  
+const filterScene = ( report, load ) => event =>
 {
   const { type, payload } = event;
-  if ( type === 'SCENES_DISCOVERED' ) {
-    scenes = payload;
+  if ( type === 'SCENE_RENDERED' ) {
+    const { camera, lighting, shapes, embedding, polygons } = payload.scene;
+    event.payload.scene = { shapes, embedding, polygons };
+    if ( load.camera )   event.payload.scene.camera   = camera;
+    if ( load.lighting ) event.payload.scene.lighting = lighting;
   }
   report( event );
 }
 
-
-export const getSceneIndex = ( title, list ) =>
+const getSceneIndex = ( title, list ) =>
 {
   if ( !title )
     return 0;
@@ -43,87 +103,9 @@ export const getSceneIndex = ( title, list ) =>
   }
   return index;
 }
-
-const convertPreviewCamera = camera =>
-{
-  const { lookAtPoint, upDirection, lookDirection, viewDistance, width, nearClipDistance, farClipDistance, perspective } = camera
-  const lookAt = [ ...Object.values( lookAtPoint ) ]
-  const up = [ ...Object.values( upDirection ) ]
-  const lookDir = [ ...Object.values( lookDirection ) ];
-  const near = nearClipDistance;
-  const far = farClipDistance;
-  const distance = viewDistance;
-  return {
-    near, far, width, distance,
-    up, lookAt, lookDir,
-    perspective
-  }
-}
-
-const preparePreviewScene = index =>
-{
-  if ( index >= scenes.length ) {
-    console.log( `WARNING: no preview scene index "${index}"` );
-    return {};
-  }
-  const { snapshot, view } = scenes[ index ];
-  const camera = convertPreviewCamera( view );
-  const shapes = {};
-  for (const [ id, shape ] of Object.entries( previewShapes )) {
-    shapes[ id ] = { ...shape, instances: [] };
-  }
-  for (const instance of snapshots[ snapshot ]) {
-    shapes[ instance.shapeId ].instances.push( instance );
-  }
-  return { shapes, camera };
-}
-
-const convertPreview = ( preview, sceneTitle ) =>
-{
-  const { lights, embedding, orientations, shapes, instances } = preview
-  
-  const dlights = lights.directionalLights.map( ({ direction, color }) => {
-    const { x, y, z } = direction
-    return { direction: [ x, y, z ], color }
-  })
-  const lighting = { ...lights, directionalLights: dlights };
-
-  const convertInstances = ( instances, idPrefix ) =>
-  {
-    let i = 0;
-    return instances.map( ({ position, orientation, color, shape }) => {
-      const id = idPrefix + i++;
-      const { x, y, z } = position;
-      const rotation = [ ...( orientations[ orientation ] || IDENTITY_MATRIX ) ];
-      const instance = { id, position: [ x, y, z ], rotation, color, shapeId: shape, type: 'irrelevant' };
-      return instance;
-    });
-  }
-  // Save the module global snapshots
-  snapshots = preview.snapshots? [ ...preview.snapshots ] .map( (snapshot,i) => {
-    return convertInstances( snapshot, `snap${i}_` );
-  }) : [];
-  snapshots .push( convertInstances( instances, "main_" ) );
-  const defaultSnapshot = snapshots.length-1;
-
-  // Convert the shapes array to the previewShapes object, module global for reuse with other scenes/snapshots
-  previewShapes = {}
-  shapes.map( shape => {
-    previewShapes[ shape.id ] = shape;
-  } );
-
-  // Save the module global scenes
-  const defaultScene = { title: 'default scene', view: preview.camera, snapshot: defaultSnapshot };
-  scenes = preview.scenes? [ defaultScene, ...preview.scenes ] : [ defaultScene ];
-
-  const sceneIndex = getSceneIndex( sceneTitle, scenes );
-
-  return { lighting, embedding, ...preparePreviewScene( sceneIndex ) };
-}
-
 const fetchUrlText = async ( url ) =>
 {
-  let response
+  let response;
   try {
     response = await fetch( url )
   } catch ( error ) {
@@ -154,7 +136,9 @@ const fetchFileText = selected =>
   })
 }
 
-let designWrapper;
+// Fetch the official Zometool colors
+const parts_catalog_url = 'https://zometool.github.io/vzome-sharing/metadata/zometool-parts.json';
+const partsPromise = fetch( parts_catalog_url ) .then( response => response.text() ) .then( text => JSON.parse( text ) );
 
 const clientEvents = report =>
 {
@@ -180,19 +164,17 @@ const clientEvents = report =>
 
   const scenesDiscovered = s => report( { type: 'SCENES_DISCOVERED', payload: s } );
 
-  const designSerialized = xml => report( { type: 'DESIGN_XML_SAVED', payload: xml } );
-
   const textExported = ( action, text ) => report( { type: 'TEXT_EXPORTED', payload: { action, text } } ) ;
 
   const buildPlaneSelected = ( center, diskZone, hingeZone ) => report( { type: 'PLANE_CHANGED', payload: { center, diskZone, hingeZone } } );
 
   return { sceneChanged, shapeDefined, instanceAdded, instanceRemoved, selectionToggled, symmetryChanged, latestBallAdded,
-    xmlParsed, scenesDiscovered, designSerialized, propertyChanged, errorReported, textExported, buildPlaneSelected, };
+    xmlParsed, scenesDiscovered, propertyChanged, errorReported, textExported, buildPlaneSelected, };
 }
 
 const trackballScenes = {};
 
-const fetchTrackballScene = ( url, report ) =>
+const fetchTrackballScene = ( url, report, polygons ) =>
 {
   const reportTrackballScene = scene => report( { type: 'TRACKBALL_SCENE_LOADED', payload: scene } );
   const cachedScene = trackballScenes[ url ];
@@ -200,25 +182,22 @@ const fetchTrackballScene = ( url, report ) =>
     reportTrackballScene( cachedScene );
     return;
   }
-  const justTheScene = event =>
-  {
-    const { type, payload } = event;
-    if ( type === 'SCENE_RENDERED' ) {
-      trackballScenes[ url ] = payload;
-      reportTrackballScene( payload );
-    }
-  }
-  Promise.all( [ import( './legacy/dynamic.js' ), fetchUrlText( new URL( `./resources/${url}`, baseURL ) ) ] )
-    .then( ([ module, xml ]) => {
-      module .loadDesign( xml, false, clientEvents( justTheScene ) );
-    } )
+  Promise.all( [ importLegacy(), fetchUrlText( new URL( `/app/classic/resources/${url}`, baseURL ) ) ] )
+    .then( async ([ legacy, xml ]) => {
+      const trackballDesign = await legacy .loadDesign( xml, false, polygons, clientEvents( ()=>{} ) );
+      prepareDefaultScene( trackballDesign );
+      const scene = prepareSceneResponse( trackballDesign, 0 ); // takes a normalized scene
+      trackballScenes[ url ] = scene;
+      reportTrackballScene( scene );
+    } );
 }
 
-const connectTrackballScene = ( report ) =>
+const connectTrackballScene = ( report, polygons ) =>
 {
-  const trackballUpdater = () => fetchTrackballScene( designWrapper .getTrackballUrl(), report );
+  // console.log( "call", uniqueId );
+  const trackballUpdater = () => fetchTrackballScene( design.wrapper .getTrackballUrl(), report, polygons );
   trackballUpdater();
-  designWrapper.controller .addPropertyListener( { propertyChange: pce =>
+  design.wrapper.controller .addPropertyListener( { propertyChange: pce =>
   {
     if ( 'symmetry' === pce.getPropertyName() ) { trackballUpdater(); }
   } });
@@ -228,9 +207,11 @@ const createDesign = async ( report, fieldName ) =>
 {
   report( { type: 'FETCH_STARTED', payload: { name: 'untitled.vZome', preview: false } } );
   try {
-    const module = await import('./legacy/dynamic.js');
+    const legacy = await importLegacy();
+    design = await legacy .newDesign( fieldName, clientEvents( report ) );
     report({ type: 'CONTROLLER_CREATED' }); // do we really need this for previewing?
-    designWrapper = module.newDesign(fieldName, clientEvents(report));
+    prepareDefaultScene( design );
+    reportDefaultScene( report );
   } catch (error) {
     console.log(`createDesign failure: ${error.message}`);
     report({ type: 'ALERT_RAISED', payload: 'Failed to create vZome model.' });
@@ -238,30 +219,100 @@ const createDesign = async ( report, fieldName ) =>
   }
 }
 
-const openDesign = async ( xmlLoading, name, report, debug, sceneTitle ) =>
+const openDesign = async ( xmlLoading, name, report, debug, polygons, sceneTitle ) =>
 {
-  return Promise.all( [ import( './legacy/dynamic.js' ), xmlLoading ] )
+  const events = clientEvents( report );
+  return Promise.all( [ importLegacy(), xmlLoading ] )
 
-    .then( ([ module, xml ]) => {
+    .then( async ([ legacy, xml ]) => {
       if ( !xml ) {
-        report( { type: 'ALERT_RAISED', payload: 'The file is empty' } );
+        report( { type: 'ALERT_RAISED', payload: 'Unable to load .vZome content' } );
         return;
       }
-      report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
-      designWrapper = module .loadDesign( xml, debug, clientEvents( captureScenes( report ) ), sceneTitle );
-      report( { type: 'TEXT_FETCHED', payload: { text: xml, name } } ); // NOW it is safe to send the name
+      const doLoad = async () => {
+        design = await legacy .loadDesign( xml, debug, polygons, events );
+        report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
+        prepareDefaultScene( design );
+
+        // TODO: don't duplicate this in urlLoader()
+        const sceneIndex = sceneTitle? getSceneIndex( sceneTitle, design.rendered.scenes ) : 0;
+        if ( design.rendered.scenes.length >= 2 )
+          events .scenesDiscovered( design.rendered.scenes );
+        events .sceneChanged( prepareSceneResponse( design, sceneIndex ) );
+
+        report( { type: 'TEXT_FETCHED', payload: { text: xml, name } } ); // NOW it is safe to send the name
+      }
+      if ( xml .includes( 'Zomic' ) ) {
+        importZomic() .then( (zomic) => {
+          const field = legacy .getField( 'golden' );
+          field .setInterpreterModule( zomic, legacy .vzomePkg );
+          doLoad();
+        })
+        .catch( error => {
+          console.log( `openDesign failure: ${error.message}` );
+          report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model: ${error.message}` } );
+         } );
+      }
+      else
+        doLoad()
+          .catch( error => {
+            console.log( `openDesign failure: ${error.message}` );
+            report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model: ${error.message}` } );
+          })
     } )
 
     .catch( error => {
       console.log( `openDesign failure: ${error.message}` );
       report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model: ${error.message}` } );
-      return false; // probably nobody should care about the return value
      } );
 }
 
-const fileLoader = ( report, event ) =>
+const exportPreview = ( camera, lighting ) =>
 {
-  const { file, debug=false } = event.payload;
+  const { scenes, snapshots: allShapshots, ...rest } = design.rendered;
+  const usedInScene = snapshot => scenes .some( scene => Number(scene.snapshot) === snapshot );
+  const snapshots = allShapshots .map( ( snapshot, i ) => usedInScene( i )? snapshot : [] );
+  scenes[ 0 ] .camera = camera;
+  const rendered = { format: 'online', ...rest, snapshots, scenes, lighting };
+  return JSON.stringify( rendered, null, 2 );
+}
+
+const shareToGitHub = async ( target, config, data, report ) =>
+{
+  const { orgName, repoName, branchName } = target;
+  const { title, description, blog, publish, style, originalDate } = config;
+  const { name, camera, lighting, image } = data;
+  const preview = exportPreview( camera, lighting );
+  importLegacy()
+    .then( module => {
+      const xml = design.wrapper .serializeVZomeXml( lighting, camera );
+      const creation = ( originalDate || new Date() ) .toISOString();
+      const date = creation .substring( 0, 10 );
+      const time = creation .substring( 11 ) .replaceAll( ':', '-' ) .replaceAll( '.', '-' );
+      const shareData = new module .vzomePkg.core.exporters.GitHubShare( title, date, time, xml, image, preview );
+
+      const uploads = [];
+      shareData .setEntryHandler( { addEntry: (path, data, encoding) => {
+        data && uploads .push( { path, encoding, data } );
+      } } );
+      const gitUrl = shareData .generateContent( orgName, repoName, branchName, title, description, blog, publish, style );
+
+      commitToGitHub( target, uploads, `Online share - ${name}` )
+      .then( () => {
+        report( { type: 'SHARE_SUCCESS', payload: gitUrl } );
+      })
+      .catch((error) => {
+        if ( error.message .includes( 'Update is not a fast forward' ) )
+          report( { type: 'SHARE_FAILURE', payload: 'You are sharing too frequently; wait a minute and try again.' } );
+        else
+          report( { type: 'SHARE_FAILURE', payload: error.message } );
+      });
+    });
+}
+
+const fileLoader = ( report, payload ) =>
+{
+  const { file, debug=false, polygons=true } = payload;
   const { name } = file;
   report( { type: 'FETCH_STARTED', payload: { name, preview: false } } );
   console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% editing ${name}` );
@@ -269,25 +320,24 @@ const fileLoader = ( report, event ) =>
 
   xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { text } } ) ); // Don't send the name yet, parse/interpret may fail
 
-  return openDesign( xmlLoading, name, report, debug );
+  openDesign( xmlLoading, name, report, debug, polygons );
 }
 
-const fileImporter = ( report, event ) =>
+const fileImporter = ( report, payload ) =>
 {
   const IMPORT_ACTIONS = {
     'mesh' : 'ImportSimpleMeshJson',
     'cmesh': 'ImportColoredMeshJson',
     'vef'  : 'LoadVEF',
   }
-  const { file, format } = event.payload;
-  const { name } = file;
+  const { file, format } = payload;
+  const action = IMPORT_ACTIONS[ format ];
   fetchFileText( file )
 
     .then( text => {
       try {
-        designWrapper .doAction( '', IMPORT_ACTIONS[ format ], { vef: text } );
-        const { shapes, embedding } = designWrapper .getScene( '--END--', true ); // never send camera or lighting!
-        report( { type: 'SCENE_RENDERED', payload: { scene: { shapes, embedding } } } );
+        design.wrapper .doAction( '', action, { vef: text } );
+        reportDefaultScene( report );
       } catch (error) {
         console.log( `${action} actionPerformed error: ${error.message}` );
         report( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
@@ -299,94 +349,138 @@ const fileImporter = ( report, event ) =>
     } )
 }
 
-const urlLoader = async ( report, event ) =>
+const defaultLoad = { camera: true, lighting: true, design: true, bom: false, };
+
+const urlLoader = async ( report, payload ) =>
 {
-  const { url, config } = event.payload;
-  const { preview=false, debug=false, showScenes=false, sceneTitle } = config;
+  const { url, config } = payload;
+  const { preview=false, debug=false, polygons=true, showScenes='none', sceneTitle, load=defaultLoad, source=true } = config;
   if ( !url ) {
     throw new Error( "No url field in URL_PROVIDED event payload" );
   }
   const name = url.split( '\\' ).pop().split( '/' ).pop()
-  report( { type: 'FETCH_STARTED', payload: event.payload } );
+  report( { type: 'FETCH_STARTED', payload } );
 
   console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${preview? "previewing" : "interpreting " } ${url}` );
-  const xmlLoading = fetchUrlText( url );
+  const xmlLoading = source && fetchUrlText( url );
+  source && xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { text, url } } ) ); // Don't send the name yet, parse/interpret may fail
 
-  xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { text, url } } ) ); // Don't send the name yet, parse/interpret may fail
-
+  report = filterScene( report, load );
   if ( preview ) {
     // The client prefers to show a preview if possible.
     const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
     return fetchUrlText( previewUrl )
       .then( text => JSON.parse( text ) )
       .then( preview => {
-        const scene = convertPreview( preview, sceneTitle ); // sets module global scenes as a side-effect
-        if ( ( showScenes || sceneTitle ) && scenes.length < 2 )
+        design.rendered = ( preview.format === 'online' )? preview : normalizePreview( preview ); // .shapes.json can hold two formats: legacy (the default) or online
+
+        if ( ( showScenes !== 'none' || sceneTitle ) && design.rendered.scenes.length < 2 ) {
           // The client expects scenes, but this preview JSON predates the scenes export,
           //  so fall back on XML.
-          throw new Error( `No scenes in preview ${previewUrl}` );
-        report( { type: 'SCENE_RENDERED', payload: { scene } } );
-        if ( scenes )
-          report( { type: 'SCENES_DISCOVERED', payload: scenes } );
-        return true; // probably nobody should care about the return value
+          console.log( `No scenes in preview ${previewUrl}` );
+          console.log( 'Preview failed, falling back to vZome XML' );
+          openDesign( xmlLoading, name, report, debug, polygons, sceneTitle );
+          return;
+        }
+
+        // TODO: don't duplicate this in openDesign()
+        const sceneIndex = getSceneIndex( sceneTitle, design.rendered.scenes );
+        const events = clientEvents( report );
+        if ( design.rendered.scenes.length >= 2 )
+          events .scenesDiscovered( design.rendered.scenes );
+        events .sceneChanged( prepareSceneResponse( design, sceneIndex ) );
       } )
       .catch( error => {
         console.log( error.message );
         console.log( 'Preview failed, falling back to vZome XML' );
-        return openDesign( xmlLoading, name, report, debug, sceneTitle );
+        openDesign( xmlLoading, name, report, debug, polygons, sceneTitle );
       } )
   }
   else {
-    return openDesign( xmlLoading, name, report, debug, sceneTitle );
+    openDesign( xmlLoading, name, report, debug, polygons, sceneTitle );
   }
+}
+
+const reportDefaultScene = report =>
+{
+  const { shapes, embedding } = prepareSceneResponse( design, 0 ); // takes a normalized scene
+  // never send camera or lighting!
+  clientEvents( report ) .sceneChanged( { shapes, embedding, polygons: true } );
+
+  // Now compute an updated parts list
+  // const bom = assemblePartsList( shapes );
 }
 
 onmessage = ({ data }) =>
 {
   // console.log( `TO worker: ${JSON.stringify( data.type, null, 2 )}` );
-  const { type, payload } = data;
+  const { type, payload, requestId, isInspector } = data;
+  if ( typeof payload === 'object' ) {
+    payload.polygons = !isInspector;
+    if ( typeof payload.config === 'object' ) {
+      payload.config.polygons = !isInspector;
+    }
+  }
+
+  let sendToClient = postMessage;
+  if ( !! requestId ) {
+    sendToClient = message => {
+      message.requestId = requestId;
+      postMessage( message );
+    }
+  }
 
   try {
     
   switch (type) {
 
+    case 'WORKER_PROBE':
+      sendToClient( { type: 'WORKER_READY' } );
+      break;
+
     case 'WINDOW_LOCATION':
       baseURL = payload;
-      import( './legacy/dynamic.js' )
-        .then( module => Promise.all( resourceIndex .map( path => module.loadAndInjectResource( path, new URL( `./resources/${path}`, baseURL ) ) ) ) );
+      importLegacy()
+        .then( legacy => Promise.all( resourceIndex .map( path => legacy.loadAndInjectResource( path, new URL( `/app/classic/resources/${path}`, baseURL ) ) ) ) );
       break;
 
     case 'URL_PROVIDED':
-      urlLoader( postMessage, data );
+      urlLoader( sendToClient, payload );
       break;
   
     case 'FILE_PROVIDED':
-      fileLoader( postMessage, data );
+      fileLoader( sendToClient, payload );
       break;
 
     case 'MESH_FILE_PROVIDED':
-      fileImporter( postMessage, data );
+      fileImporter( sendToClient, payload );
       break;
 
     case 'SCENE_SELECTED': {
-      if ( !scenes )
+      if ( !design?.rendered?.scenes )
         break;
-      const index = getSceneIndex( payload, scenes );
-      const { nodeId, camera } = scenes[ index ];
-      let scene;
-      if ( nodeId ) { // XML was parsed by the legacy module
-        scene = { camera, ...designWrapper .getScene( nodeId, true ) };
-      } else // a preview JSON
-        scene = preparePreviewScene( index );
-      postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
+      const { title, load } = payload;
+      const index = getSceneIndex( title, design.rendered.scenes );
+      const scene = prepareSceneResponse( design, index ); // takes a normalized scene
+      filterScene( sendToClient, load )( { type: 'SCENE_RENDERED', payload: { scene } } );
+      break;
+    }
+
+    case 'BOM_REQUESTED': {
+      if ( !design?.rendered?.scenes )
+        break;
+      partsPromise .then( ({ colors }) => {
+        const bom = assemblePartsList( design.rendered, colors );
+        sendToClient( { type: 'BOM_CHANGED', payload: bom } );
+      });
       break;
     }
 
     case 'EDIT_SELECTED': {
       const { before, after } = payload; // only one of these will have an edit ID
-      const scene = designWrapper .getScene( before || after, !!before );
-      const { edit } = scene;
-      postMessage( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
+      const edit = before || after;
+      const response = prepareEditSceneResponse( design, edit, !!before );
+      sendToClient( { type: 'SCENE_RENDERED', payload: response } );
       break;
     }
 
@@ -395,31 +489,102 @@ onmessage = ({ data }) =>
       try {
         for (const actionData of payload) {
           const { controllerPath, action, parameters } = actionData;
-          designWrapper .doAction( controllerPath, action, parameters );
+          design.wrapper .doAction( controllerPath, action, parameters );
         }
-        const { shapes, embedding } = designWrapper .getScene( '--END--', true ); // never send camera or lighting!
-        postMessage( { type: 'SCENE_RENDERED', payload: { scene: { shapes, embedding } } } );
+        reportDefaultScene( sendToClient );
       } catch (error) {
         console.log( `Macro error: ${error.message}` );
-        postMessage( { type: 'ALERT_RAISED', payload: `Failed to complete macro.` } );
+        sendToClient( { type: 'ALERT_RAISED', payload: `Failed to complete macro.` } );
       }
       break;
     }
 
     case 'ACTION_TRIGGERED':
     {
-      const { controllerPath, action, parameters } = payload;
-      if ( action === 'connectTrackballScene' ) {
-        connectTrackballScene( postMessage );
-        return;
-      }
+      const { controllerPath, action, parameters, polygons } = payload;
       try {
-        designWrapper .doAction( controllerPath, action, parameters );
-        const { shapes, embedding } = designWrapper .getScene( '--END--', true ); // never send camera or lighting!
-        postMessage( { type: 'SCENE_RENDERED', payload: { scene: { shapes, embedding } } } );
+        if ( action === 'connectTrackballScene' ) {
+          connectTrackballScene( sendToClient, polygons );
+          return;
+        }
+        if ( action === 'shareToGitHub' ) {
+          const { target, config, data } = parameters;
+          shareToGitHub( target, config, data, sendToClient );
+          return;
+        }
+        if ( action === 'captureScene' ) {
+          if ( !design?.rendered?.scenes )
+            return;
+          const { after, camera } = parameters;
+          const { snapshots, scenes, instances } = design.rendered;
+          const snapshot = snapshots.length;
+          snapshots .push( [ ...instances ] );
+          scenes .splice( after+1, 0, { title: '', snapshot, camera } );
+          design.wrapper .doAction( controllerPath, 'Snapshot', { id: snapshot } ); // no-op, but the edit must be in the history
+          clientEvents( sendToClient ) .scenesDiscovered( scenes );
+          return;
+        }
+        if ( action === 'updateScene' ) {
+          if ( !design?.rendered?.scenes )
+            return;
+          const { index, camera } = parameters;
+          const { scenes } = design.rendered;
+          scenes[ index ] .camera = camera;
+          clientEvents( sendToClient ) .scenesDiscovered( scenes );
+          return;
+        }
+        if ( action === 'moveScene' ) {
+          if ( !design?.rendered?.scenes )
+            return;
+          const { index, change } = parameters;
+          const target = index + change;
+          const { scenes } = design.rendered;
+          scenes[ target ] = scenes .splice( index, 1, scenes[ target ] )[ 0 ];
+          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes );
+          return;
+        }
+        if ( action === 'duplicateScene' ) {
+          if ( !design?.rendered?.scenes )
+            return;
+          const { after, camera } = parameters;
+          const { snapshot } = design.rendered.scenes[ after ];
+          design.rendered.scenes .splice( after+1, 0, { title: '', snapshot, camera } );
+          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes );
+          return;
+        }
+        if ( action === 'removeScene' ) {
+          if ( !design?.rendered?.scenes )
+            return;
+          const { index } = parameters;
+          design.rendered.scenes .splice( index, 1 );
+          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes );
+          return;
+        }
+        if ( action === 'snapCamera' ) {
+          const symmController = design.wrapper .getControllerByPath( controllerPath );
+          const { up, lookDir } = parameters;
+          const result = design.wrapper .snapCamera( symmController.controller, up, lookDir );
+          sendToClient( { type: 'CAMERA_SNAPPED', payload: { up: result.up, lookDir: result.lookDir } } );
+          return;
+        }
+        if ( action === 'exportText' && parameters.format === 'shapes' ) {
+          const { camera, lighting } = parameters;
+          const preview = exportPreview( camera, lighting );
+          clientEvents( sendToClient ) .textExported( action, preview );
+          return;
+        }
+        if ( action === 'exportText' && parameters.format === 'vZome' ) {
+          const { camera, lighting } = parameters;
+          const xml = design.wrapper .serializeVZomeXml( lighting, camera );
+          clientEvents( sendToClient ) .textExported( action, xml );
+          return;
+        }
+        // console.log( "action", uniqueId );
+        design.wrapper .doAction( controllerPath, action, parameters );
+        reportDefaultScene( sendToClient );
       } catch (error) {
         console.log( `${action} actionPerformed error: ${error.message}` );
-        postMessage( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
+        sendToClient( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
       }
       break;
     }
@@ -428,10 +593,10 @@ onmessage = ({ data }) =>
     {
       const { controllerPath, name, value } = payload;
       try {
-        designWrapper .setProperty( controllerPath, name, value );
+        design.wrapper .setProperty( controllerPath, name, value );
       } catch (error) {
         console.log( `${action} setProperty error: ${error.message}` );
-        postMessage( { type: 'ALERT_RAISED', payload: `Failed to set property: ${name}` } );
+        sendToClient( { type: 'ALERT_RAISED', payload: `Failed to set property: ${name}` } );
       }
       break;
     }
@@ -439,50 +604,54 @@ onmessage = ({ data }) =>
     case 'PROPERTY_REQUESTED':
     {
       const { controllerPath, propName, changeName, isList } = payload;
-      designWrapper .registerPropertyInterest( controllerPath, propName, changeName, isList );
+      design.wrapper .registerPropertyInterest( controllerPath, propName, changeName, isList );
       break;
     }
 
     case 'NEW_DESIGN_STARTED':
       const { field } = payload;
-      createDesign( postMessage, field );
+      createDesign( sendToClient, field );
       break;
 
     case 'STRUT_CREATION_TRIGGERED':
     case 'JOIN_BALLS_TRIGGERED':
     {
-      designWrapper .doAction( 'buildPlane', type, payload );
-
-      const scene = designWrapper .getScene( '--END--', true );
-      postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
+      design.wrapper .doAction( 'buildPlane', type, payload );
+      reportDefaultScene( sendToClient );
       break;
     }
 
     case 'HINGE_STRUT_SELECTED':
     {
-      designWrapper .doAction( 'buildPlane', type, payload );
+      design.wrapper .doAction( 'buildPlane', type, payload );
       break;
     }
 
     case 'PREVIEW_STRUT_START':
     {
       const { ballId, direction } = payload;
-      designWrapper .startPreviewStrut( ballId, direction );
+      design.wrapper .startPreviewStrut( ballId, direction );
       break;
     }
 
     case 'PREVIEW_STRUT_MOVE':
     {
       const { direction } = payload;
-      designWrapper .movePreviewStrut( direction );
+      design.wrapper .movePreviewStrut( direction );
+      break;
+    }
+
+    case 'PREVIEW_STRUT_SCALE':
+    {
+      const { increment } = payload;
+      design.wrapper .scalePreviewStrut( increment );
       break;
     }
   
     case 'PREVIEW_STRUT_END':
     {
-      designWrapper .endPreviewStrut();
-      const scene = designWrapper .getScene( '--END--', true );
-      postMessage( { type: 'SCENE_RENDERED', payload: { scene } } );
+      design.wrapper .endPreviewStrut();
+      reportDefaultScene( sendToClient );
       break;
     }
   
@@ -491,6 +660,6 @@ onmessage = ({ data }) =>
   }
   } catch (error) {
     console.log( `${type} onmessage error: ${error.message}` );
-    postMessage( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${type}` } );
+    sendToClient( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${type}` } );
   }
 }

@@ -154,17 +154,17 @@ public class View3dActivity implements GLEventListener
 //        System.out.println( "rayWorld = " + rayWorld[0] + " " + rayWorld[1] + " " + rayWorld[2]  );
 
         Ray ray = new Ray();
-        FloatUtil .mapWinToRay(
+        JoglRenderingViewer .mapWinToRay(
                 mouseX, canvas .getHeight() - mouseY - 1, 0.1f, 0.3f,
                 mCamera, 0,
                 projection, 0,
                 new int[] { 0, 0, canvas .getWidth(), canvas .getHeight() }, 0,
                 ray,
                 new float[16], new float[16], new float[4] );
-        System.out.println( "ray.orig = " + ray.orig[0] + " " + ray.orig[1] + " " + ray.orig[2]  );
-        System.out.println( "ray.dir = " + ray.dir[0] + " " + ray.dir[1] + " " + ray.dir[2]  );
+        System.out.println( "ray.orig = " + ray.orig.x() + " " + ray.orig.y() + " " + ray.orig.z()  );
+        System.out.println( "ray.dir = " + ray.dir.x() + " " + ray.dir.y() + " " + ray.dir.z()  );
 
-        Line line = new Line( new RealVector( ray.orig[0], ray.orig[1], ray.orig[2] ), new RealVector( ray.dir[0], ray.dir[1], ray.dir[2] ) );
+        Line line = new Line( new RealVector( ray.orig.x(), ray.orig.y(), ray.orig.z() ), new RealVector( ray.dir.x(), ray.dir.y(), ray.dir.z() ) );
         NearestPicker picker = new NearestPicker( line, this .mCamera, this .projection );
         this .scene .pick( picker );
         RenderedManifestation picked = picker .getNearest();

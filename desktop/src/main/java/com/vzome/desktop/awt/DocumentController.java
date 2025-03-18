@@ -57,7 +57,7 @@ import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.editor.api.ImplicitSymmetryParameters;
 import com.vzome.core.editor.api.OrbitSource;
-import com.vzome.core.exporters.DocumentExporter;
+import com.vzome.core.exporters.DocumentExporterIntf;
 import com.vzome.core.exporters.GeometryExporter;
 import com.vzome.core.exporters2d.Java2dSnapshot;
 import com.vzome.core.math.Polyhedron;
@@ -84,6 +84,7 @@ import com.vzome.desktop.controller.MeasureController;
 import com.vzome.desktop.controller.NumberController;
 import com.vzome.desktop.controller.PartsController;
 import com.vzome.desktop.controller.PolytopesController;
+import com.vzome.desktop.controller.ShareController;
 import com.vzome.desktop.controller.StrutBuilderController;
 import com.vzome.desktop.controller.SymmetryController;
 import com.vzome.desktop.controller.ToolFactoryController;
@@ -205,7 +206,9 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         this .addSubController( "polytopes", new PolytopesController( (ImplicitSymmetryParameters) this .documentModel .getEditorModel(), document ) );
         
         this .addSubController( "undoRedo", new UndoRedoController( this .documentModel .getHistoryModel() ) );
-                
+ 
+        this .addSubController( "github", new ShareController() );
+
         importScaleController = new NumberController( this .documentModel .getField() );
         this .addSubController( "importScale", importScaleController );
         
@@ -231,10 +234,13 @@ public class DocumentController extends DefaultGraphicsController implements Sce
 
             @Override
             public void manifestationColored( Manifestation m, Color c ) {}
+
+            @Override
+            public void manifestationLabeled( Manifestation m, String label ) {}
         };
         this .documentModel .addSelectionListener( selectionRendering );
         
-        this .addSubController( "measure", new MeasureController( this .documentModel .getEditorModel(), this .documentModel .getRenderedModel() ) );
+        this .addSubController( "measure", new MeasureController( this .documentModel .getEditorModel(), this .mRenderedModel ) );
 
         this .articleChanges = new PropertyChangeListener()
         {   
@@ -704,6 +710,10 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                 documentModel .doEdit( "Delete" );
                 break;
     
+            case "copy.mesh":
+                setProperty( "clipboard", documentModel .copyRenderedModel( "mesh" ) );
+                break;
+        
             case "copy":
             case "copy.cmesh":
                 setProperty( "clipboard", documentModel .copyRenderedModel( "cmesh" ) );
@@ -950,8 +960,8 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                     String format = command .substring( "export." .length() ) .toLowerCase();
                     GeometryExporter exporter = this .mApp .getExporter( format ); //, cameraController .getView(), colors, sceneLighting, currentSnapshot );
                     if ( exporter != null ) {
-                        if ( exporter instanceof DocumentExporter )
-                            ((DocumentExporter) exporter) .exportDocument( documentModel, file, out, size.height, size.width );
+                        if ( exporter instanceof DocumentExporterIntf )
+                            ((DocumentExporterIntf) exporter) .exportDocument( documentModel, file, out, size.height, size.width );
                         else
                             exporter .exportGeometry( documentModel .getRenderedModel(), file, out, size.height, size.width );
                     }
@@ -1171,6 +1181,9 @@ public class DocumentController extends DefaultGraphicsController implements Sce
     {
         switch ( propName ) {
 
+        case "hasScenes":
+            return this .getSubController( "lesson" ) .getProperty( "has.pages" );
+            
         case "isIcosahedralSymmetry":
             return Boolean .toString( symmetryController.getSymmetry().getName() .equals( "icosahedral" ) );
 
@@ -1650,6 +1663,12 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                 }
                 buf.append("\n\ncolor (RGB): ");
                 buf.append(man.getColor().toString());
+                
+                String label = man.getLabel();
+                if(label != null) {
+                    buf.append("\n\nlabel: ");
+                    buf.append(label);
+                }
                 
                 if( devExtras) {
                     if( zone != null) {

@@ -8,15 +8,18 @@ import DialogTitle from '@suid/material/DialogTitle';
 import Button from '@suid/material/Button';
 
 import { createSignal } from "solid-js";
+import { resumeMenuKeyEvents } from '../context/commands.jsx';
 
 export const UrlDialog = ( props ) =>
 {
   const [ url, setUrl ] = createSignal( '' );
 
   const handleCancel = () =>{
+    resumeMenuKeyEvents();
     props.setShow( false );
   }
   const handleOpen = () =>{
+    resumeMenuKeyEvents();
     props.setShow( false );
     props.openDesign( url() );
   }

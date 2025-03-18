@@ -1,11 +1,26 @@
+
+// JSweet has effectively died.  Keeping it working was already far too complex,
+// and now their Artifactory server is gone.
+
+// I'm now committing the generated Typescript and Javascript, and we'll move
+// forward with manual porting for any changes we do to the Java source.
+
+// This build script now will only see use when we finally want to port some of
+// the excluded core edits or exporters, e.g. POVRayExporter.java.  Even then
+// we will probably need to bypass Gradle and use Maven or just a raw Java command-line.
+
+// For that eventuality, I have made a local copy of the relevant contents of my local
+// Maven repository.  See ~/vZome/jsweet-maven-repo
+
+
 buildscript {
 	repositories {
     mavenLocal()
 		mavenCentral()
-		maven { url "https://repository.jsweet.org/artifactory/libs-release-local" }
-		maven { url "https://repository.jsweet.org/artifactory/libs-snapshot-local" }
-		maven { url "https://repository.jsweet.org/artifactory/plugins-release-local" }
-		maven { url "https://repository.jsweet.org/artifactory/plugins-snapshot-local" }
+		// maven { url "https://repository.jsweet.org/artifactory/libs-release-local" }
+		// maven { url "https://repository.jsweet.org/artifactory/libs-snapshot-local" }
+		// maven { url "https://repository.jsweet.org/artifactory/plugins-release-local" }
+		// maven { url "https://repository.jsweet.org/artifactory/plugins-snapshot-local" }
 	}
 	dependencies {
 		classpath('org.jsweet:jsweet-gradle-plugin:3.1.0') {
@@ -18,13 +33,17 @@ plugins {
     id 'java-library'
 }
 
+// This environment variable is only used by cicd/online.bash jsweet
+ext.jsweetBundle = System.getenv( "JSWEET_BUNDLE" ) ?: 'true'
+
+
 repositories {
   mavenLocal()
   mavenCentral()
-  maven { url "https://repository.jsweet.org/artifactory/libs-release-local" }
-  maven { url "https://repository.jsweet.org/artifactory/libs-snapshot-local" }
-  maven { url "https://repository.jsweet.org/artifactory/plugins-release-local" }
-  maven { url "https://repository.jsweet.org/artifactory/plugins-snapshot-local" }
+  // maven { url "https://repository.jsweet.org/artifactory/libs-release-local" }
+  // maven { url "https://repository.jsweet.org/artifactory/libs-snapshot-local" }
+  // maven { url "https://repository.jsweet.org/artifactory/plugins-release-local" }
+  // maven { url "https://repository.jsweet.org/artifactory/plugins-snapshot-local" }
   ivy { // not really an Ivy repo, but this pattern lets us automate the bare JAR download for vecmath
     url "https://jogamp.org/deployment"
     metadataSources {
@@ -76,7 +95,7 @@ core.config {
 	encoding = 'UTF-8'
 	sourceMap = false  // I can't set breakpoints if the browser cannot find the Java file, so disabling for now.
 
-  bundle = true
+  bundle = (project.jsweetBundle == 'true')  // I set this to false to generate the unbundled Typescript sources
 
   workingDir = project.file( '.jsweet/core' )
 	tsOut = project.file( 'jsweetOut/core/ts' )
@@ -174,10 +193,13 @@ core.config {
     'com/vzome/core/editor/SelectionSummary.java',
     'com/vzome/core/editor/EditHistory.java',
     'com/vzome/core/editor/Branch.java',
+    'com/vzome/core/editor/Snapshot.java',
     
     'com/vzome/core/render/Colors.java',
+    'com/vzome/core/viewing/CameraIntf.java',
     'com/vzome/core/viewing/Lights.java',
     'com/vzome/core/viewing/AbstractShapes.java',
+    'com/vzome/core/viewing/SchochShapes.java',
     'com/vzome/core/viewing/AntiprismShapes.java',
     'com/vzome/core/viewing/OctahedralShapes.java',
     'com/vzome/core/viewing/DodecagonalShapes.java',
@@ -199,48 +221,57 @@ core.config {
     // SymmetryController and its dependencies
     'com/vzome/desktop/api/Controller.java',
     'com/vzome/desktop/controller/*.java',
+
+    'com/vzome/core/zomic/*.java',
+    'com/vzome/core/render/*ZomicEventHandler.java',
+    'com/vzome/core/zomic/program/*.java',
+
+    'com/vzome/core/exporters/GitHubShare.java',
+
   ]
   excludes = [
 
+    'com/vzome/core/zomic/ZomicASTCompiler.java',
+
     'com/vzome/core/generic/SubClassIterator.java',
             
+    // These have already been reimplemented
     'com/vzome/core/algebra/RootThreeField.java',
     'com/vzome/core/algebra/RootTwoField.java',
     'com/vzome/core/algebra/PentagonField.java',
     'com/vzome/core/algebra/HeptagonField.java',
+
     'com/vzome/core/algebra/*Impl.java',
     'com/vzome/core/algebra/AlgebraicFields.java',
 
-    'com/vzome/core/commands/ZomicVirtualMachine.java',
-    'com/vzome/core/commands/CommandExecuteZomicScript.java',
     'com/vzome/core/commands/CommandExecutePythonScript.java',
 
+    // These have already been reimplemented
     'com/vzome/core/edits/ImportSimpleMeshJson.java',
     'com/vzome/core/edits/ImportColoredMeshJson.java',
-    'com/vzome/core/edits/DodecagonSymmetry.java',
-    'com/vzome/core/edits/GhostSymmetry24Cell.java',
-    'com/vzome/core/edits/Symmetry4d.java',
-    'com/vzome/core/edits/Run*Script.java',
-    'com/vzome/core/edits/RealizeMetaParts.java',
-    'com/vzome/core/edits/ReplaceWithShape.java',
 
+    'com/vzome/core/edits/RunZomodScript.java',
+    'com/vzome/core/edits/RunPythonScript.java',
+
+    // These have already been reimplemented
     'com/vzome/core/exporters/ColoredMeshJsonExporter.java',
     'com/vzome/core/exporters/SimpleMeshJsonExporter.java',
-    'com/vzome/core/exporters/HistoryExporter.java',
     'com/vzome/core/exporters/ShapesJsonExporter.java',
-    'com/vzome/core/exporters/GeoGebraExporter.java',
-    'com/vzome/core/exporters/DocumentExporter.java',
-    'com/vzome/core/exporters/OpenScadExporter.java',
-    'com/vzome/core/exporters/POVRayExporter.java',
-    'com/vzome/core/exporters/PartGeometryExporter.java',
+
+    // These probably don't make sense online, and aren't public anyway
+    'com/vzome/core/exporters/HistoryExporter.java',
     'com/vzome/core/exporters/SideEffectsExporter.java',
-    'com/vzome/core/exporters/DaeExporter.java',
-    'com/vzome/core/exporters/STEPExporter.java',
     'com/vzome/core/exporters/PartsListExporter.java',
-    'com/vzome/core/exporters/MathTableExporter.java',
+
+    // I think I want to include all of these, but...
+    'com/vzome/core/exporters/GeoGebraExporter.java',  // uses DOM and xpath
+    'com/vzome/core/exporters/DaeExporter.java',       // uses DOM and xpath
+    'com/vzome/core/exporters/STEPExporter.java',      // emits multiple files
 
     'com/vzome/desktop/controller/CameraController.java',
     'com/vzome/desktop/controller/JsonClientRendering.java',
+    'com/vzome/desktop/controller/GitHubApi.java',
+    'com/vzome/desktop/controller/ShareController.java',
 
   ]
 }

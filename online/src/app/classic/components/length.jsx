@@ -12,8 +12,8 @@ import FormControl from '@suid/material/FormControl';
 import FormLabel from '@suid/material/FormLabel';
 // import Slider from '@suid/material/Slider';
 
-import { controllerAction, controllerProperty, subController } from '../../../workerClient/controllers-solid.js';
-import { useWorkerClient } from '../../../workerClient/context.jsx';
+import { controllerProperty, subController, useEditor } from '../../framework/context/editor.jsx';
+
 
 const sliderLimit = 6;
 const sliderMarks = Array.from( { length: 2*sliderLimit+1 }, (_, i) => i-sliderLimit ) .map( i => ({ value: i }));
@@ -54,6 +54,7 @@ export const hexToWebColor = colorHex =>
 
 const ScaleBy = props =>
 {
+  const { controllerAction } = useEditor();
   const multipliers = () => controllerProperty( props.controller, 'field.multipliers', 'field.multipliers', true ) || [ ' ' ];
   const number = () => multipliers() .length;
   const setMultiplier = evt => {
@@ -63,7 +64,7 @@ const ScaleBy = props =>
 
   return (
     <div id='scale-factors' style={{ 'background-color': 'whitesmoke', padding: '0.4em', margin: '0.4em' }}>
-      <FormControl sx={{ m: 1, minWidth: 90 }} size="small" >
+      <FormControl sx={{ m: 1, minWidth: 90, margin: '3px' }} size="small" >
         <FormLabel id="scale-by-label">Scale by</FormLabel>
 
         <Case
@@ -72,7 +73,7 @@ const ScaleBy = props =>
           }>
           <Match when={ [2,3] .includes( number() )}>
             <RadioGroup row name="scale-radio-group" aria-labelledby="scale-by-label" defaultValue={0} onChange={setMultiplier} >
-              <For each={multipliers()}>{ (m,i) => { console.log( 'mult', m, i() );
+              <For each={multipliers()}>{ (m,i) => {
                 return <FormControlLabel value={i()} control={<Radio />} label={m} /> }
               }</For>
             </RadioGroup>
@@ -91,8 +92,11 @@ const ScaleBy = props =>
   );
 }
 
+export const resourceUrl = resourcePath => '/app/classic/resources/' + resourcePath;
+  
 export const StrutLengthPanel = props =>
 {
+  const { controllerAction } = useEditor();
   const orbit = () => controllerProperty( props.controller, 'selectedOrbit' );
   const halfSizes = () => controllerProperty( props.controller, 'halfSizes', 'selectedOrbit', false ) === 'true';
   const color = () => controllerProperty( props.controller, 'color', 'selectedOrbit', false );
@@ -108,6 +112,8 @@ export const StrutLengthPanel = props =>
   const scaleFactorHtml = () => controllerProperty( lengthController(), 'scaleFactorHtml', 'length', false );
   const lengthText = () => controllerProperty( lengthController(), 'lengthMathML', 'length', false );
   const mathML = createMemo( () => {
+    if ( ! orbit() )
+      return;
     const el = <math></math>;
     el .innerHTML = lengthText();
     return el;
@@ -163,10 +169,10 @@ export const StrutLengthPanel = props =>
           <div id='up-down-slider' class='grid-cols-min-1 orbit-scale'>
             <div id='up-down' class='grid-rows-1-1 pad-4px' >
               <button aria-label='scale-up' class='scale-button' onClick={scaleUp}>
-                <img src='./resources/org/vorthmann/zome/ui/scaleUp.gif'/>
+                <img src={ resourceUrl( 'org/vorthmann/zome/ui/scaleUp.gif' ) }/>
               </button>
               <button aria-label='scale-down' class='scale-button' onClick={scaleDown}>
-                <img src='./resources/org/vorthmann/zome/ui/scaleDown.gif'/>
+                <img src={ resourceUrl( 'org/vorthmann/zome/ui/scaleDown.gif' ) }/>
               </button>
             </div>
             <div id='scale-slider' class='scale-slider' >

@@ -49,6 +49,11 @@ export class ControllerWrapper{
     }
   }
 
+  getControllerByPath( controllerPath ) {
+    const controllerNames = controllerPath ? controllerPath.split(':') : [];
+    return this.getSubControllerByNames(controllerNames);
+  }
+
   fetchAndFirePropertyChange(propName, isList) {
     const value = isList ?
       this.controller.getCommandList(propName)
@@ -58,8 +63,7 @@ export class ControllerWrapper{
 
   // This is only ever called on the root controller
   registerPropertyInterest(controllerPath, propName, changeName, isList) {
-    const controllerNames = controllerPath ? controllerPath.split(':') : [];
-    const wrapper = this.getSubControllerByNames(controllerNames);
+    const wrapper = this.getControllerByPath(controllerPath);
 
     if (!wrapper)
       return; // Happens regularly on startup, when some properties are still undefined
@@ -90,8 +94,7 @@ export class ControllerWrapper{
 
   setProperty( controllerPath, name, value )
   {
-    const controllerNames = controllerPath ? controllerPath.split(':') : [];
-    const wrapper = this.getSubControllerByNames(controllerNames);
+    const wrapper = this.getControllerByPath(controllerPath);
     wrapper.controller.setProperty( name, value );
   }
 
@@ -106,8 +109,7 @@ export class ControllerWrapper{
     //   this.macro .push( { controllerPath, action, parameters } );
     // }
 
-    const controllerNames = controllerPath ? controllerPath.split(':') : [];
-    const wrapper = this.getSubControllerByNames(controllerNames);
+    const wrapper = this.getControllerByPath(controllerPath);
     if (parameters && Object.keys(parameters).length !== 0)
       wrapper.controller.paramActionPerformed(null, action, new JsProperties(parameters));
 

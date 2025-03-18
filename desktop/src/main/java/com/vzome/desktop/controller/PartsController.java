@@ -188,6 +188,10 @@ public class PartsController extends DefaultController implements RenderingChang
     {}
 
     @Override
+    public void labelChanged( RenderedManifestation manifestation )
+    {}
+
+    @Override
     public void locationChanged( RenderedManifestation manifestation )
     {}
 

@@ -19,12 +19,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -84,7 +79,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
     private JButton snapshotButton;
 
-    private JRadioButton articleButton, modelButton;
+    private JRadioButton scenesButton, designButton;
 
     private JPanel viewControl, modelArticleEditPanel;
 
@@ -234,22 +229,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                                 "Command Failure", JOptionPane .ERROR_MESSAGE );
                         return;
                     }
+                    Controller githubController = mController .getSubController( "github" );
                     if ( shareDialog == null )
-                        shareDialog = new ShareDialog( DocumentFrame.this, mController );
-                    Path filePath = Paths.get( filePathStr );
-                    LocalDateTime lastMod = LocalDateTime.now();
-                    if ( mController .propertyIsTrue( "share.last.mod.time" ) ) {
-                        try {
-                            FileTime fileTime = Files.getLastModifiedTime( Paths.get( filePathStr ) );
-                            lastMod = LocalDateTime.ofInstant( fileTime.toInstant(), ZoneId.systemDefault() );
-                        } catch (IOException e2) {
-                            logger.log( Level.INFO, "Unable to get last mod time for " + filePathStr );
-                        }
-                    }
-                    String xml = mController .getProperty( "vZome-xml" );
-                    String pngEncoded = mController .getProperty( "png-base64" );
-                    String shapesJson = mController .getProperty( "shapes-json" );
-                    shareDialog .startUpload( filePath .getFileName() .toString(), lastMod, xml, pngEncoded, shapesJson );
+                        shareDialog = new ShareDialog( DocumentFrame.this, githubController );                    
+                    githubController .actionPerformed( this, "startShare" );
                     break;
 
                 case "saveDefault":
@@ -427,6 +410,11 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     symmetryDialog .setVisible( true );
                     break;
                     
+                case "resetOrbitColors":
+                    delegate = mController .getSubController( "symmetry." + system );
+                    delegate .actionPerformed( e .getSource(), e .getActionCommand() );
+                    break;
+                    
                 case "addBookmark":
                     String numStr = toolsController .getProperty( "next.tool.number" );
                     int bookmarkNum = Integer .parseInt( numStr );
@@ -518,17 +506,33 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 if ( this .isEditor )
                 {
                     JPanel modeAndStatusPanel = new JPanel( new BorderLayout() );
-                    JPanel articleButtonsPanel = new JPanel();
-                    modeAndStatusPanel .add( articleButtonsPanel, BorderLayout.LINE_START );
+                    JPanel designScenesToggle = new JPanel();
+                    modeAndStatusPanel .add( designScenesToggle, BorderLayout.LINE_START );
+                    
+                    designScenesToggle .add( new JLabel( "Show:" ) );
 
                     ButtonGroup group = new ButtonGroup();
-                    modelButton  = new JRadioButton( "Model" );
-                    modelButton .setSelected( true );
-                    articleButtonsPanel .add( modelButton );
-                    group .add( modelButton );
-                    modelButton .setActionCommand( "switchToModel" );
-                    modelButton .addActionListener( actionListener );
-                    snapshotButton = new JButton( "-> capture ->" );
+                    
+                    designButton  = new JRadioButton( "Design" );
+                    designButton .setSelected( true );
+                    designScenesToggle .add( designButton );
+                    group .add( designButton );
+                    designButton .setActionCommand( "switchToModel" );
+                    designButton .addActionListener( actionListener );
+                    
+                    scenesButton  = new JRadioButton( "Scenes" );
+                    scenesButton .setEnabled( false ); // don't check the model, which may be loading concurrently.  PCE will come in due course
+                    scenesButton .setSelected( false );
+                    designScenesToggle .add( scenesButton );
+                    group .add( scenesButton );
+                    scenesButton .setActionCommand( "switchToArticle" );
+                    scenesButton .addActionListener( actionListener );
+
+                    JPanel spacer = new JPanel();
+                    spacer .setMinimumSize( new Dimension( 13, 0 ) );
+                    designScenesToggle .add( spacer );
+
+                    snapshotButton = new JButton( "Capture Scene" );
                     //                String imgLocation = "/icons/snapshot.png";
                     //                URL imageURL = getClass().getResource( imgLocation );
                     //                if ( imageURL != null ) {
@@ -539,26 +543,19 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                     //                    snapshotButton .setMaximumSize( dim );
                     //                }
                     if ( controller .propertyIsTrue( "enable.article.creation" ) )
-                        articleButtonsPanel .add( snapshotButton );
+                        designScenesToggle .add( snapshotButton );
                     snapshotButton .setActionCommand( "takeSnapshot" );
                     snapshotButton .addActionListener( new ActionListener()
                     {
-						@Override
+                        @Override
                         public void actionPerformed( ActionEvent e )
                         {
                             mController .actionPerformed( e .getSource(), e .getActionCommand() ); // sends thumbnailChanged propertyChange, but no listener...
-                            articleButton .doClick();  // switch to article mode, so now there's a listener
+                            scenesButton .doClick();  // switch to article mode, so now there's a listener
                             // now trigger the propertyChange again
                             lessonController .actionPerformed( DocumentFrame.this, "setView" );
                         }
                     } );
-                    articleButton  = new JRadioButton( "Article" );
-                    articleButton .setEnabled( false ); // don't check the model, which may be loading concurrently.  PCE will come in due course
-                    articleButton .setSelected( false );
-                    articleButtonsPanel .add( articleButton );
-                    group .add( articleButton );
-                    articleButton .setActionCommand( "switchToArticle" );
-                    articleButton .addActionListener( actionListener );
 
                     JPanel statusPanel = new JPanel( new BorderLayout() );
                     statusPanel .setBorder( BorderFactory .createEmptyBorder( 4, 4, 4, 4 ) );
@@ -575,7 +572,18 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                 
                 // heavyweight (lightweight==false) renders with a much better frame rate,
                 //   and this canvas always redraws correctly during window resize.
-                RenderingViewer viewer = factory3d .createRenderingViewer( scene, false );
+                // HOWEVER, on Mac OS Sonoma, the heavyweight canvas causes Frame.pack() to spin
+                //  in certain circumstances, causing vZome to hang.
+                // BUT... the performance is atrocious, so I want to let folks (and me!) force
+                //  use of the heavyweight canvas, since crashes/spins seem to vary from system to system.
+                // Also, on Windows with display scaling other than 100%, using "heavyweight" fixes the issue 
+                // where the origin ball is offset and mouse click positions are not scaled correctly 
+                // making it impossible to select anything. By allowing this setting for any OS,
+                // we can better evaluate which systems exhibit the problems and more importantly 
+                // we can adjust this setting on a case-by case basis until we get a better fix.
+                boolean lightweight = ! mController .propertyIsTrue( "vzome.jogl.heavyweight.canvas" );
+                logger.log( Level.INFO, "vzome.jogl.heavyweight.canvas: " + !lightweight );
+                RenderingViewer viewer = factory3d .createRenderingViewer( scene, lightweight );
 
                 modelPanel = new ModelPanel( mController, viewer, this, this .isEditor, fullPower );
                 leftCenterPanel .add( modelPanel, BorderLayout.CENTER );
@@ -702,7 +710,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 						DisplayMode dm = bestDevice.getDisplayMode();
 						AffineTransform t = bestDevice.getDefaultConfiguration().getDefaultTransform();
 						bestWidth = dm.getWidth() / t.getScaleX();
-						bestHeight = dm.getHeight() / t.getScaleY();;
+						bestHeight = dm.getHeight() / t.getScaleY();
 						logger.config("Using preferred.monitor = " + preferredMonitor 
 								+ " @ resolution: " + bestWidth + "x" + bestHeight);
 					} else {
@@ -739,21 +747,57 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 			Rectangle bounds = bestDevice.getDefaultConfiguration().getBounds();
 			this.setLocation(bounds.x, bounds.y);
 		}
+		
+		String aspectRatioString = mController .getProperty( "aspect.ratio" );
+		if ( aspectRatioString != null ) {
+		    // aspect.ratio should be width/height
+		    try {
+	            float aspectRatio = Float.parseFloat( aspectRatioString );
+	            // apply some reasonable limits as validation
+	            if(aspectRatio >= 0.6 && aspectRatio <= 3) {
+		            int arWidth = (int) (aspectRatio * bestHeight);
+		            if ( arWidth <= bestWidth ) {
+		            	// reduce the width
+		                bestWidth = arWidth;
+			    	} else {
+			    		int arHeight = (int) (bestWidth / aspectRatio);
+			            if ( arHeight <= bestHeight ) {
+			            	// reduce the height
+			                bestHeight = arHeight;
+			            }
+		            }
+	                logger.fine( "aspect.ratio: " + aspectRatioString 
+	                		+ " = width: " + bestWidth + " / height: " + bestHeight);
+	            } else {
+	                logger.warning( "ignoring aspect.ratio: " + aspectRatioString + " out of range.");
+	            	aspectRatioString = null;
+	            }
+            } catch (NumberFormatException e) {
+                logger.warning( "ignoring invalid aspect.ratio: " + aspectRatioString );
+            }
+		}
 
 		try {
 			// This is where the GraphicsConfiguration failed on David's Windows 10 using Java 17
 			// before including the "--add-exports" JVM args to the build 
+            logger.log( Level.INFO, "about to pack the frame " + ((mFile == null)? "untitled" :mFile .getName()) );
 			this.pack();
+            logger.log( Level.INFO, "packed the frame" );
 	        this.setVisible( true );
+            logger.log( Level.INFO, "frame setVisible" );
 	        // Java 17 seems to successfully set the frame size and extended state only after the frame is visible.
 	        if(bestWidth > 0 && bestHeight > 0) {
-				double n = 15, d = n + 1; // set NORMAL size to 15/16 of scaled full screen size then maximize it
-				double downSize = n/d;
+	        	double downSize = 1.0;
+	        	if(aspectRatioString == null) {
+	        		double n = 15, d = n + 1; // set NORMAL size to 15/16 of scaled full screen size before maximizing it
+	        		downSize = n/d;
+	        	}
 				int scaledWidth = (int)(bestWidth * downSize);
 				int scaledHeight = (int)(bestHeight * downSize);
 				this.setSize(scaledWidth, scaledHeight);
 	        }
-	        this.setExtendedState(MAXIMIZED_BOTH);
+	        if ( aspectRatioString == null ) // this maxes the frame size, so we don't want it when controlling aspect ratio
+	            this.setExtendedState(MAXIMIZED_BOTH);
 	        this.setFocusable( true );
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -808,7 +852,17 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                             migrated = false;
                         }
 
-                        if ( ! asTemplate && migrated ) { // a migration
+                        String macro = mController .getProperty( "macro" );
+                        String imgFormat = mController .getProperty( "imageFormat" );
+                        if ( macro != null ) {
+                            ActionListener performer = getMacroPerformer( macro + ",quit", mController );
+                            performer .actionPerformed( new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "doMacroStep" ) );
+                        }
+                        else if ( imgFormat != null ) {
+                            ActionListener performer = getMacroPerformer( "capture." + imgFormat + ",quit", mController );
+                            performer .actionPerformed( new ActionEvent( DocumentFrame.this, ActionEvent.ACTION_PERFORMED, "doMacroStep" ) );
+                        }
+                        else if ( ! asTemplate && migrated ) { // a migration
                             final String NL = System .getProperty( "line.separator" );
                             if ( mController .propertyIsTrue( "autoFormatConversion" ) )
                             {
@@ -879,6 +933,115 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         };
     }
     
+    private ActionListener getActionListener( String command, Controller controller )
+    {
+        final ActionListener actionListener;
+        switch ( command ) {
+
+        // these can fall through to the ApplicationController
+        case "quit":
+        case "new":
+        case "new-rootTwo":
+        case "new-rootThree":
+        case "new-heptagon":
+        case "new-snubDodec":
+        case "openURL":
+        case "showAbout":
+
+            // these will be handled by the DocumentController
+        case "toggleWireframe":
+        case "toggleOrbitViews":
+        case "toggleStrutScales":
+        case "toggleFrameLabels":
+        case "toggleNormals":
+        case "toggleOutlines":
+            actionListener = new ControllerActionListener(controller);
+            break;
+
+        case "open":
+        case "newFromTemplate":
+        case "openDeferringRedo":
+            actionListener = new ControllerFileAction( fileDialog, true, command, "vZome", controller );
+            break;
+
+        case "saveAs":
+            actionListener = saveAsAction;
+            break;
+
+        case "save":
+        case "saveDefault":
+        case "close":
+        case "snapshot.2d":
+        case "showToolsPanel":
+        case "setItemColor":
+        case "setBackgroundColor":
+        case "showPolytopesDialog":
+        case "showZomicWindow":
+        case "showZomodWindow":
+        case "showPythonWindow":
+        case "rZomeOrbits":
+        case "predefinedOrbits":
+        case "usedOrbits":
+        case "setAllDirections":
+        case "configureShapes":
+        case "configureDirections":
+        case "addBookmark":
+        case "export4dPolytope":
+        case "resetOrbitColors":
+            actionListener = this .localActions;
+            break;
+
+        case "capture-wiggle-gif":
+        case "capture-animation":
+            actionListener = new ControllerFileAction( fileDialog, false, command, "gif", controller );
+            break;
+
+        default:
+            if ( command .startsWith( "openResource-" ) ) {
+                actionListener = new ControllerActionListener(controller);
+            }
+            else if ( command .startsWith( "LoadVEF/" ) ) {
+                actionListener = this .localActions;
+            }
+            else if ( command .startsWith( "ImportSimpleMeshJson/" ) ) {
+                actionListener = this .localActions;
+            }
+            else if ( command .startsWith( "ImportColoredMeshJson/" ) ) {
+                actionListener = this .localActions;
+            }
+            else if ( command .startsWith( "setSymmetry." ) ) {
+                actionListener = this .localActions;
+            }
+            else if ( command .startsWith( "execCommandLine/" ) ) {
+                actionListener = this .localActions;
+            }
+            else if ( command .startsWith( "showProperties-" ) ) {
+                actionListener = this .localActions;
+            }
+            else if ( command .startsWith( "capture." ) ) {
+                String ext = command .substring( "capture." .length() );
+                actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
+            }
+            else if ( command .startsWith( "export2d." ) ) {
+                String ext = command .substring( "export2d." .length() );
+                actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
+            }
+            else if ( command .startsWith( "export." ) ) {
+                String ext = command .substring( "export." .length() );
+                ext = controller .getProperty( "exportExtension." + ext );
+                actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
+            }
+            else if ( command .startsWith( "MACRO/" ) ) {
+                String rest = command .substring( "MACRO/" .length() );
+                actionListener = getMacroPerformer( rest, controller );
+            }
+            else {
+                actionListener = getExclusiveAction( command, controller );
+            }
+        }
+        return actionListener;
+    }
+    
     @Override
     public AbstractButton setButtonAction( String command, Controller controller, AbstractButton control )
     {
@@ -916,108 +1079,47 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
         control .setEnabled( enable );
         if ( control .isEnabled() )
         {
-            ActionListener actionListener = new ControllerActionListener(controller);
-            switch ( command ) {
-
-            // these can fall through to the ApplicationController
-            case "quit":
-            case "new":
-            case "new-rootTwo":
-            case "new-rootThree":
-            case "new-heptagon":
-            case "new-snubDodec":
-            case "openURL":
-            case "showAbout":
-
-                // these will be handled by the DocumentController
-            case "toggleWireframe":
-            case "toggleOrbitViews":
-            case "toggleStrutScales":
-            case "toggleFrameLabels":
-            case "toggleNormals":
-            case "toggleOutlines":
-                break;
-
-            case "open":
-            case "newFromTemplate":
-            case "openDeferringRedo":
-                actionListener = new ControllerFileAction( fileDialog, true, command, "vZome", controller );
-                break;
-
-            case "saveAs":
-                actionListener = saveAsAction;
-                break;
-
-            case "save":
-            case "saveDefault":
-            case "close":
-            case "snapshot.2d":
-            case "showToolsPanel":
-            case "setItemColor":
-            case "setBackgroundColor":
-            case "showPolytopesDialog":
-            case "showZomicWindow":
-            case "showZomodWindow":
-            case "showPythonWindow":
-            case "rZomeOrbits":
-            case "predefinedOrbits":
-            case "usedOrbits":
-            case "setAllDirections":
-            case "configureShapes":
-            case "configureDirections":
-            case "addBookmark":
-            case "export4dPolytope":
-                actionListener = this .localActions;
-                break;
-
-            case "capture-wiggle-gif":
-            case "capture-animation":
-                actionListener = new ControllerFileAction( fileDialog, false, command, "gif", controller );
-                break;
-
-            default:
-                if ( command .startsWith( "openResource-" ) ) {
-                }
-                else if ( command .startsWith( "LoadVEF/" ) ) {
-                    actionListener = this .localActions;
-                }
-                else if ( command .startsWith( "ImportSimpleMeshJson/" ) ) {
-                    actionListener = this .localActions;
-                }
-                else if ( command .startsWith( "ImportColoredMeshJson/" ) ) {
-                    actionListener = this .localActions;
-                }
-                else if ( command .startsWith( "setSymmetry." ) ) {
-                    actionListener = this .localActions;
-                }
-                else if ( command .startsWith( "execCommandLine/" ) ) {
-                    actionListener = this .localActions;
-                }
-                else if ( command .startsWith( "showProperties-" ) ) {
-                    actionListener = this .localActions;
-                }
-                else if ( command .startsWith( "capture." ) ) {
-                    String ext = command .substring( "capture." .length() );
-                    actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
-                }
-                else if ( command .startsWith( "export2d." ) ) {
-                    String ext = command .substring( "export2d." .length() );
-                    actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
-                }
-                else if ( command .startsWith( "export." ) ) {
-                    String ext = command .substring( "export." .length() );
-                    ext = controller .getProperty( "exportExtension." + ext );
-                    actionListener = new ControllerFileAction( fileDialog, false, command, ext, controller );
-                }
-                else {
-                    actionListener = getExclusiveAction( command, controller );
-                    this .mExcluder .addExcludable( control );
-                }
-                break;
+            if ( command .startsWith( "MACRO/" ) ) {
+                // We don't want recursive macros, so this case is separated out
+                String rest = command .substring( "MACRO/" .length() );
+                ActionListener actionListener = getMacroPerformer( rest, controller );
+                control .addActionListener( actionListener );
             }
-            control .addActionListener( actionListener );
+            else {
+                ActionListener actionListener = getActionListener( command, controller );
+                if ( actionListener instanceof ExclusiveAction )
+                    this .mExcluder .addExcludable( control );
+                control .addActionListener( actionListener );
+            }
         }
         return control;
+    }
+    
+    private ActionListener getMacroPerformer( String macro, Controller controller )
+    {
+        String[] commands = macro .split( "," );
+        ActionListener[] actions = Arrays.stream( commands )
+                .map( ( cmd ) -> new ActionListener() {
+                    @Override
+                    public void actionPerformed( ActionEvent arg0 )
+                    {
+                        ActionListener listener = getActionListener( cmd, controller );
+                        if ( listener instanceof ControllerFileAction )
+                            ((ControllerFileAction) listener) .setHeadless( true );
+                        listener .actionPerformed( new ActionEvent( arg0.getSource(), arg0.getID(), cmd ));
+                    }
+                } )
+                .toArray( ActionListener[]::new );
+        return new ActionListener()
+        {
+            @Override
+            public void actionPerformed( ActionEvent e )
+            {
+                for ( ActionListener actionListener : actions ) {
+                    actionListener .actionPerformed( e );
+                }
+            }
+        };
     }
     
     @Override
@@ -1065,12 +1167,12 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 			break;
 
 		case "has.pages":
-            if ( articleButton != null )
+            if ( scenesButton != null )
             {
                 boolean enable = e .getNewValue() .toString() .equals( "true" );
-                articleButton .setEnabled( enable );
+                scenesButton .setEnabled( enable );
                 if ( ! enable )
-                    modelButton .doClick();
+                    designButton .doClick();
             }
 			break;
 			

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Zometool components</title>
+
+  <link rel="stylesheet" href="./styles.css">
+
+  <script type="module" src="/modules/zometool.js" >
+  </script>
+
+</head>
+<body>
+
+    <div class="title">
+      <h1>Zometool Model Demo</h1>
+    </div>
+
+    <!-- vvvvvvv ----- This is the portion you will enter as content HTML for the page -->
+    <div class="zometool-model">
+
+      <div class="zometool-model-description">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur expedita accusantium sunt modi. A nemo rem delectus accusantium quos deleniti! 
+      </div>
+
+      <div class="zometool-model-difficulty" data-difficulty="medium">
+      </div>
+
+      <!-- <zometool-instructions src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2024/09/25/23-37-59-596Z-standard-colors-and-lengths-instructions/standard-colors-and-lengths-instructions.vZome"> -->
+      <zometool-instructions src="https://raw.githubusercontent.com/lucosmic/vzome-sharing/main/2025/01/12/01-29-12-PRJ-DNA-kit/PRJ-DNA-kit.vZome">
+      <!-- <zometool-instructions src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2024/09/01/21-01-21-623Z-standard-colors-and-lengths/standard-colors-and-lengths.vZome"> -->
+      <!-- <zometool-instructions src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2024/09/24/02-42-34-519Z-hyperdo-steps-correct-scale/hyperdo-steps-correct-scale.vZome"> -->
+      </zometool-instructions>      
+
+      <zometool-parts-required></zometool-parts-required>
+      <zometool-covering-products></zometool-covering-products>
+
+    </div>
+    <!-- ^^^^^^^ ----- This is the portion you will enter as content HTML for the page -->
+
+</body>
+</html>

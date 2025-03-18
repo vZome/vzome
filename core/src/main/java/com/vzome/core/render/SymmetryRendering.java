@@ -136,6 +136,12 @@ public class SymmetryRendering implements RenderingChanges
     }
 
     @Override
+    public void labelChanged( RenderedManifestation rm )
+    {
+        System.out.println( "label changed: " + rm .getLabel() );
+    }
+
+    @Override
     public void colorChanged( RenderedManifestation rm )
     {
         // TODO Auto-generated method stub

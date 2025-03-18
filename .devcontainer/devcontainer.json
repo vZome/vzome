@@ -1,0 +1,43 @@
+
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node
+{
+	"name": "Node.js",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/javascript-node",
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	"features": {
+		"ghcr.io/devcontainers/features/git-lfs:1": { "autoPull": true }
+	},
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+      // disable the prompt to install the Java extension
+			"settings": {
+        "extensions.ignoreRecommendations": true
+      },
+			"extensions": []
+		}
+	},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [8532],
+
+	// Use 'portsAttributes' to set default properties for specific forwarded ports. 
+	// More info: https://containers.dev/implementors/json_reference/#port-attributes
+	"portsAttributes": {
+		"8532": {
+			"label": "vZome test page",
+			"onAutoForward": "openBrowser"
+		}
+	},
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "git lfs install; git lfs pull; cicd/online.bash init"
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+}

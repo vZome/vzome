@@ -1,0 +1,126 @@
+#VRML V2.0 utf8
+
+WorldInfo {
+    title	"canonical heptahedron plus dual"
+    info	"Freely distributable for noncommercial purposes."
+}
+Background {
+    skyColor	0.2 0.5 1
+}
+NavigationInfo {
+    type	[ "EXAMINE", "ANY" ]
+}
+Collision {
+    collide FALSE
+    children [
+	Group {
+	    children [
+		DirectionalLight {
+		    intensity	0.75
+		    direction	-0.5 -1 0
+		},
+		DirectionalLight {
+		    intensity	0.75
+		    direction	0.5 1 0
+		},
+		DEF original Group {
+		    children [
+			Shape {
+			    appearance
+				Appearance {
+				    material
+					Material {
+					    diffuseColor	0.9 0.8 0.5
+					}
+				}
+			    geometry
+				IndexedFaceSet {
+				    coord
+					DEF _v2%1 Coordinate {
+					    point	[ -1.11818 0.204988 -0.204988,
+							      -0.745356 -0.745356 0.745356,
+							      -0.0691842 1.48001 0.0691842,
+							      -0.0691842 -0.0691842 -1.48001,
+							      0.204988 0.204988 1.11818,
+							      0.204988 -1.11818 -0.204988,
+							      1.48001 -0.0691842 0.0691842 ]
+					}
+				    solid	FALSE
+				    coordIndex	[ 4, 6, 2, -1, 4, 2, 0, 1,
+						      -1, 4, 1, 5, 6, -1, 6, 5,
+						      3, -1, 6, 3, 2, -1, 2, 3,
+						      0, -1, 0, 3, 5, 1, -1 ]
+				}
+			},
+			Shape {
+			    appearance
+				Appearance {
+				    material
+					DEF _v2%2 Material {
+					    diffuseColor	0 0 0
+					}
+				}
+			    geometry
+				IndexedLineSet {
+				    coord USE _v2%1
+				    coordIndex	[ 0, 1, -1, 0, 2, -1, 0, 3,
+						      -1, 1, 4, -1, 1, 5, -1, 2,
+						      3, -1, 2, 4, -1, 2, 6, -1,
+						      3, 5, -1, 3, 6, -1, 4, 6,
+						      -1, 5, 6, -1 ]
+				}
+			}
+		    ]
+		},
+		Transform {
+		    rotation	-0.745356 -0.745356 0.745356  3.14159
+		    children [
+			Transform {
+			    scale	-1 -1 -1
+			    children [
+				Group {
+				    children [
+					Shape {
+					    appearance
+						Appearance {
+						    material
+							Material {
+							    diffuseColor	0.9 0.3 0.2
+							}
+						}
+					    geometry
+						IndexedFaceSet {
+						    coord USE _v2%1
+						    solid	FALSE
+						    coordIndex	[ 4, 6, 2, -1, 4, 2, 0, 1,
+								      -1, 4, 1, 5, 6, -1, 6, 5,
+								      3, -1, 6, 3, 2, -1, 2, 3,
+								      0, -1, 0, 3, 5, 1, -1 ]
+						}
+					},
+					Shape {
+					    appearance
+						Appearance {
+						    material USE _v2%2
+						}
+					    geometry
+						IndexedLineSet {
+						    coord USE _v2%1
+						    coordIndex	[ 0, 1, -1, 0, 2, -1, 0, 3,
+								      -1, 1, 4, -1, 1, 5, -1, 2,
+								      3, -1, 2, 4, -1, 2, 6, -1,
+								      3, 5, -1, 3, 6, -1, 4, 6,
+								      -1, 5, 6, -1 ]
+						}
+					}
+				    ]
+				}
+			    ]
+			}
+		    ]
+		}
+	    ]
+	}
+    ]
+}
+

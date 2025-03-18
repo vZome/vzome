@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+
+    .old .blue      { background-color: rgb(0,142,194);}
+    .old .yellow    { background-color: rgb(255,179,26);}
+    .old .red       { background-color: rgb(217,18,24);}
+    .old .green     { background-color: rgb(0,153,63);}
+    .old .turquoise { background-color: rgb(0,179,161);}
+    .old .white     { background-color: rgb(242,242,242);}
+    .old .black     { background-color: rgb(50,50,50);}
+    .old .orange    { background-color: rgb(235,82,0);}
+    .old .purple    { background-color: rgb(125,54,211);}
+    .old .gray      { background-color: rgb(133,133,133);}
+
+    .new .blue      { background-color: rgb(0,142,194);}
+    .new .yellow    { background-color: rgb(255,179,26);}
+    .new .red       { background-color: rgb(217,18,24);}
+    .new .green     { background-color: rgb(0,153,63);}
+    .new .turquoise { background-color: rgb(0,179,161);}
+    .new .white     { background-color: rgb(242,242,242);}
+    .new .black     { background-color: rgb(50,50,50);}
+    .new .orange    { background-color: rgb(235,82,0);}
+    .new .purple    { background-color: rgb(125,54,211);}
+    .new .gray      { background-color: rgb(133,133,133);}
+
+    .old,
+    .new {
+      display: flex;
+      gap: 2rem;
+      grid-template-columns: 7rem 7rem 7rem 7rem 7rem 7rem 7rem 7rem 7rem 7rem 7rem;
+    }
+
+    .old div{
+      height: 10rem;
+      width: 7rem;
+    }
+
+    .new div {
+      height: 12rem;
+      width: 7rem;
+    }
+
+    body {
+      background-color: gray;
+      position: absolute;
+      inset: 0;
+      display: grid;
+      gap: 2rem;
+      grid-template-rows: 10rem 12rem 10rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="old">
+    <div class="blue"></div>
+    <div class="turquoise"></div>
+    <div class="green"></div>
+    <div class="yellow"></div>
+    <div class="orange"></div>
+    <div class="red"></div>
+    <div class="purple"></div>
+    <div class="white"></div>
+    <div class="gray"></div>
+    <div class="black"></div>
+  </div>
+  <div class="new">
+    <div class="blue"></div>
+    <div class="turquoise"></div>
+    <div class="green"></div>
+    <div class="yellow"></div>
+    <div class="orange"></div>
+    <div class="red"></div>
+    <div class="purple"></div>
+    <div class="white"></div>
+    <div class="gray"></div>
+    <div class="black"></div>
+  </div>
+  
+</body>
+</html>

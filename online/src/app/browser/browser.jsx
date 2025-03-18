@@ -1,16 +1,16 @@
 
-import { Show, createEffect, createMemo, createResource, createSignal } from 'solid-js';
+import { Show, createEffect, createResource, createSignal } from 'solid-js';
 
-import { DesignViewer } from '../../viewer/solid/index.jsx'
-import { useWorkerClient } from '../../workerClient/context.jsx';
 import { fetchGitHubShares, getEmbeddingHtml, getAssetUrl } from './github.js';
+import { useViewer } from '../../viewer/context/viewer.jsx';
+
+import { DesignViewer } from '../../viewer/index.jsx'
 
 import List from '@suid/material/List';
-import ListItem from '@suid/material/ListItem';
+import ListItemButton from '@suid/material/ListItemButton';
 import ListItemText from '@suid/material/ListItemText';
 import Typography from '@suid/material/Typography'
 import Button from '@suid/material/Button';
-import { fetchDesign } from '../../workerClient/actions.js';
 import { UsersMenu } from './users.jsx';
 
 const DesignList = (props) =>
@@ -27,23 +27,25 @@ const DesignList = (props) =>
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <List dense component="nav" aria-label="vzome designs" style={{ overflow: 'auto', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }} >
         <For each={props.designs} >{ ( { title, details, url, path }, i ) =>
-          <ListItem button
-            selected={selectedIndex() === i}
-            onClick={() => handleListItemClick( url, path, i )}
+          <ListItemButton
+            selected={selectedIndex() === i()}
+            onClick={() => handleListItemClick( url, path, i() )}
           >
             <ListItemText primary={title} secondary={details} />
-          </ListItem>
+          </ListItemButton>
         }</For>
       </List>
     </div>
   );
 }
 
+const classicURL = new URL( '../classic/index.html', window.location ) .toString() + "?design=";
+
 const DesignActions = (props) =>
 {
-  const copyHtml = path =>
+  const copyHtml = ( path, url ) =>
   {
-    const html = getEmbeddingHtml( props.githubUser, path );
+    const html = getEmbeddingHtml( props.githubUser, path, url );
     navigator.clipboard.writeText( html ) .then( () => {
       console.log( `HTML copied to the clipboard: ${props.url}` );
     }, () => {
@@ -67,14 +69,23 @@ const DesignActions = (props) =>
       </Typography>
     }>
       <div style={{ display: 'flex', gap: '1rem', margin: '12px', 'justify-content': 'space-evenly' }}>
-        <Button variant="contained" color="primary" onClick={() => copyHtml( props.path )}>
+        <Button variant="contained" color="primary" onClick={() => copyHtml( props.path, props.url )}>
           Copy Embeddable HTML
         </Button>
         <Button variant="contained" color="secondary" onClick={() => copyUrl( props.url )}>
           Copy Raw vZome URL
         </Button>
-        <Button variant="contained" target="_blank" rel="noopener" href={ getAssetUrl( props.githubUser, props.path ) }>
-          Show GitHub Assets
+        <Show when={ props.path .startsWith( 'https://gist.github.com/' )} fallback={
+          <Button variant="contained" target="_blank" rel="noopener" href={ getAssetUrl( props.githubUser, props.path ) }>
+            Show GitHub Assets
+          </Button>
+        }>
+          <Button variant="contained" target="_blank" rel="noopener" href={ props.path }>
+            Show Gist
+          </Button>
+        </Show>
+        <Button variant="contained" color="secondary" target="_blank" rel="noopener" href={ classicURL + props.url }>
+          Open in vZome online
         </Button>
       </div>
     </Show>
@@ -95,21 +106,22 @@ const filterUniqueUsers = users =>
 }
 
 const queryParams = new URLSearchParams( window.location.search );
-const defaultGithubUser = queryParams.get( 'user' ) || localStorage.getItem( 'vzome-github-user' ) || "vorth";
+const defaultGithubUser = queryParams.get( 'user' ) ?.toLowerCase() || localStorage.getItem( 'vzome-github-user' ) || "vorth";
 console.log( "defaultGithubUser ", defaultGithubUser );
 const storedUsers = JSON.parse( localStorage.getItem( 'vzome-github-users' ) || '[ "david-hall", "john-kostick", "thynstyx", "vorth" ]' );
 let knownUsers = filterUniqueUsers( [ defaultGithubUser, ...storedUsers ] );
 
 export const DesignBrowser = () =>
 {
-  const { postMessage } = useWorkerClient();
+  const { requestDesign, resetScenes } = useViewer();
   const [ url, setUrl ] = createSignal( null );
   const [ path, setPath ] = createSignal( null );
   const selectUrl = ( newUrl, path ) =>
   {
     if ( newUrl === url() )
       return;
-    postMessage( fetchDesign( newUrl, { preview: true } ) );
+    resetScenes();
+    requestDesign( newUrl, { preview: true } );
     setPath( path );
     setUrl( newUrl );
   }
@@ -159,7 +171,11 @@ export const DesignBrowser = () =>
         <div id='details' style={{ 'min-height': '60px', 'border-bottom': '1px solid gray', 'background-color': 'whitesmoke' }}>
           <DesignActions githubUser={githubUser()} url={url()} path={path()} />
         </div>
-        <DesignViewer config={ { useSpinner: true } } style={{ position: 'relative', height: '100%' }} height='100%' width='100%' />
+        <div class='relative-h100'>
+          <div class='absolute-0'>
+            <DesignViewer config={ { useSpinner: true, showScenes: 'all' } } style={{ position: 'relative', height: '100%' }} height='100%' width='100%' />
+          </div>
+        </div>
       </div>
     </div>
   )

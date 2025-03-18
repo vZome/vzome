@@ -1,9 +1,8 @@
-import { render } from 'solid-js/web';
-import { ErrorBoundary } from "solid-js";
 
 import Typography from '@suid/material/Typography'
 import Link from '@suid/material/Link'
 import { DiskIcon, WorldIcon } from '../framework/icons.jsx';
+import { Menubar } from "@kobalte/core/menubar";
 import { FileMenu } from './menus/filemenu.jsx';
 import { EditMenu } from './menus/editmenu.jsx';
 import { ConstructMenu } from './menus/constructmenu.jsx';
@@ -11,16 +10,16 @@ import { ToolsMenu } from './menus/toolsmenu.jsx';
 import { SystemMenu } from './menus/systemmenu.jsx';
 import { HelpMenu } from './menus/help.jsx';
 
-import { useWorkerClient } from '../../workerClient/context.jsx'
-import { controllerProperty } from '../../workerClient/controllers-solid.js'
+import { controllerProperty, useEditor } from '../framework/context/editor.jsx';
+
 import { VZomeAppBar } from './components/appbar.jsx';
-import { ClassicEditor, SymmetryProvider } from './classic.jsx';
-import { WorkerStateProvider } from '../../workerClient/index.js';
-import { CameraStateProvider } from '../../viewer/solid/camera.jsx';
+import { ClassicEditor } from './classic.jsx';
+import { SymmetryProvider } from './context/symmetry.jsx';
+import { CommandsProvider } from './context/commands.jsx';
 
 const Persistence = () =>
 {
-  const { state, rootController } = useWorkerClient();
+  const { state, rootController } = useEditor();
   const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
   return (
     <div class='persistence' >
@@ -40,48 +39,41 @@ const Persistence = () =>
   )
 }
 
-const Classic = () =>
+export const ClassicApp = () =>
 {
   return (
-    <ErrorBoundary fallback={ err => <div>{err.toString()}</div> } >
-      <CameraStateProvider>
-      <WorkerStateProvider>
-        <SymmetryProvider>
-          <VZomeAppBar menuBar={true} title='BETA'
-            spacer={ <>
+    <SymmetryProvider>
+      <CommandsProvider>
+        <VZomeAppBar title=''
+          spacer={ <>
+            <Menubar>
               <FileMenu/>
               <EditMenu/>
               <ConstructMenu/>
               <ToolsMenu/>
               <SystemMenu/>
               <HelpMenu/>
-              <Persistence/>
-            </>}
-            about={ <>
-              <Typography gutterBottom>
-                vZome Online is a work in progress, still at the "beta" stage.
-                The intention is for it to be a complete replacement for
-                the <Link target="_blank" rel="noopener" href="https://vzome.com/home/index/vzome-7/">vZome desktop app</Link>,
-                which is a modeling tool
-                for <Link target="_blank" href="https://zometool.com" rel="noopener" >Zometool</Link> and other geometries.
-              </Typography>
-              <Typography gutterBottom>
-                You can open most existing vZome design files, but not all of them.
-                You can save files, too, but you should not trust the software too far;
-                if you open an existing file, never save back to the same file, to avoid data loss.
-              </Typography>
-              <Typography gutterBottom>
-                If you want to stay informed about progress on this app, or better yet offer feedback,
-                join the <Link target="_blank" rel="noopener" href="https://discord.gg/vhyFsNAFPS">Discord server</Link>.
-              </Typography>
-            </> }
-          />
-          <ClassicEditor/>
-        </SymmetryProvider>
-      </WorkerStateProvider>
-      </CameraStateProvider>
-    </ErrorBoundary>
+            </Menubar>
+            <Persistence/>
+          </>}
+          about={ <>
+            <Typography gutterBottom>
+              vZome is a design application
+              for <Link target="_blank" href="https://zometool.com" rel="noopener" >Zometool</Link> and other geometric systems.
+            </Typography>
+            <Typography gutterBottom>
+              This web application is a work in progress, still at the "beta" stage,
+              since it is not quite a complete replacement for
+              the <Link target="_blank" rel="noopener" href="https://vzome.com/home/index/vzome-7/">vZome desktop app</Link>
+            </Typography>
+            <Typography gutterBottom>
+              If you want to stay informed about progress on this app, or better yet offer feedback,
+              join the <Link target="_blank" rel="noopener" href="https://discord.gg/vhyFsNAFPS">Discord server</Link>.
+            </Typography>
+          </> }
+        />
+        <ClassicEditor/>
+      </CommandsProvider>
+    </SymmetryProvider>
   );
 }
-
-render( Classic, document.getElementById( 'root' ) );

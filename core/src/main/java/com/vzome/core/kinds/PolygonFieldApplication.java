@@ -22,6 +22,7 @@ import com.vzome.core.tools.AxialStretchTool;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
 import com.vzome.core.tools.IcosahedralToolFactory;
 import com.vzome.core.tools.InversionToolFactory;
+import com.vzome.core.tools.LineReflectionToolFactory;
 import com.vzome.core.tools.LinearMapToolFactory;
 import com.vzome.core.tools.MirrorToolFactory;
 import com.vzome.core.tools.ProjectionToolFactory;
@@ -109,6 +110,7 @@ public class PolygonFieldApplication extends DefaultFieldApplication
                 	// which is always the case when PolygonField.getField().isEven().
                 	result .add( new InversionToolFactory( tools ) );
                 }
+                result.add(new LineReflectionToolFactory(tools));
                 result.add(new MirrorToolFactory(tools));
                 result.add(new AxialSymmetryToolFactory(tools, this.symmetry));
                 break;

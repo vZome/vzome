@@ -1,16 +1,30 @@
 
 import { vZomeViewerCSS } from "./vzome-viewer.css";
 
-import { fetchDesign, createWorker, createWorkerStore, selectScene } from '../workerClient/index.js';
-import { decodeEntities } from "../workerClient/actions";
+import { createWorker } from '../viewer/context/worker.jsx';
+import { fetchDesign, selectScene, decodeEntities } from "../viewer/util/actions.js";
+import { VZomeViewerFirstButton, VZomeViewerLastButton, VZomeViewerNextButton, VZomeViewerPrevButton } from "./index-buttons.js";
+import { createDefaultCameraStore } from "../viewer/context/camera.jsx";
 
-export class VZomeViewer extends HTMLElement
+const debug = false;
+class VZomeViewer extends HTMLElement
 {
   #root;
   #container;
-  #store;
-  #url;
+  #workerclient;
   #config;
+  #reactive;
+  #urlChanged;
+  #sceneChanged;
+  #moduleLoaded;
+  #updateCalled;
+  #loadFlags;
+
+  #indexed;
+  #sceneIndices;
+  #sceneTitles;
+  #sceneIndex;
+  #cameraStore;
 
   constructor()
   {
@@ -21,99 +35,230 @@ export class VZomeViewer extends HTMLElement
     this.#container = document.createElement("div");
     this.#root.appendChild( this.#container );
 
-    const worker = createWorker();
-    worker .subscribe( {
-      onWorkerError: () => {},
-      onWorkerMessage: data => {
-        switch ( data.type ) {
-
-          case 'SCENES_DISCOVERED':
-            const titles = data.payload .map( (scene,i) =>  scene.title ? decodeEntities( scene.title ) : `#${i}` );
-            this .dispatchEvent( new CustomEvent( 'vzome-scenes-discovered', { detail: titles } ) );
-            break;
-
-          case 'SCENE_RENDERED':
-            this .dispatchEvent( new Event( 'vzome-design-rendered' ) );
-            break;
-        
-          case 'ALERT_RAISED':
-            this .dispatchEvent( new Event( 'vzome-design-failed' ) );
-            break;
-        
-          default:
-            break;
-        }
-      }
+    // I'd like to remove #workerclient, but I have to set up these subscriptions somehow...
+    this.#workerclient = createWorker();
+    this.#workerclient .subscribeFor( 'ALERT_RAISED', () => this .dispatchEvent( new Event( 'vzome-design-failed' ) ) );
+    this.#workerclient .subscribeFor( 'SCENE_RENDERED', () => {
+      let scene = {};
+      if ( this.#indexed && !! this.#sceneTitles )
+        scene = { index: this.#sceneIndex, title: this.#sceneTitles[ this.#sceneIndex ] };
+      this .dispatchEvent( new CustomEvent( 'vzome-design-rendered', { detail: scene } ) );
     } );
-    this.#store = createWorkerStore( worker );
+    this.#workerclient .subscribeFor( 'SCENES_DISCOVERED', payload => {
+      this.#sceneIndices = payload .map( (scene,i) => `#${i}` ) .slice( 1 ); // strip the default scene
+      this.#sceneTitles = payload .map( (scene,i) => scene.title ? decodeEntities( scene.title ) : `#${i}` );
+      if ( this.#indexed )
+        this.#sceneTitles = this.#sceneTitles .slice( 1 );
+      this .dispatchEvent( new CustomEvent( 'vzome-scenes-discovered', { detail: this.#sceneTitles } ) );
 
-    this.#config = { preview: true, showScenes: false };
+      this .dispatchEvent( new CustomEvent( 'vzome-scenes', { detail: payload .slice( 1 ) } ) );
+    } );
 
-    if ( this.hasAttribute( 'show-scenes' ) ) {
-      const showScenes = this.getAttribute( 'show-scenes' ) === 'true';
-      this.#config = { ...this.#config, showScenes };
+    this.#cameraStore = createDefaultCameraStore();
+
+    this.#config = {
+      preview:         true,
+      showScenes:      'none',
+      camera:          true,
+      lighting:        true,
+      design:          true,
+      labels:          false,
+      showPerspective: true,
+      download:        true,
+    };
+
+    this.#indexed = false;
+    this.#urlChanged = true;
+    this.#sceneChanged = true;
+    this.#reactive = true;
+    this.#moduleLoaded = false;
+    this.#updateCalled = false;
+    this.#loadFlags = {};
+    debug && console.log( 'custom element constructed' );
+  }
+
+  selectScene( index, loadFlags={} )
+  {
+    debug && console.log( 'User called selectScene()' );
+    this.#loadFlags = loadFlags;
+    if ( ! this.#indexed ) {
+      console.log( 'This selectScene call ignored; the viewer is not indexed.  Set indexed to true if you want to use selectScene.' );
+      return;
     }
-
-    if ( this.hasAttribute( 'scene' ) ) {
-      const sceneTitle = this.getAttribute( 'scene' );
-      this.#config = { ...this.#config, sceneTitle };
+    if ( ! this.#sceneIndices ) {
+      console.log( 'This selectScene call ignored; no scenes were discovered.' );
+      return;
     }
+    this.#sceneIndex = ( index < 0 )? this.#sceneIndices.length-1 : 0;
+    this.#config = { ...this.#config, sceneTitle: this.#sceneIndices[ this.#sceneIndex ] };
+    this.#sceneChanged = true;
+    this.#triggerWorker();
+  }
 
-    if ( this.hasAttribute( 'src' ) ) {
-      const url = this.getAttribute( 'src' );
-      if ( ! url.endsWith( ".vZome" ) ) {
-        // This is the only case in which we don't resolve the promise with text,
-        //  since there is no point in allowing download of non-vZome text.
-        alert( `Unrecognized file name: ${url}` );
-      }
-      else
-        this.#url = new URL( url, window.location ) .toString();
-        // Get the fetch started by the worker before we load the dynamic module below,
-        //  which is pretty big.
-        this.#store.postMessage( fetchDesign( this.#url, this.#config ) );
+  previousScene( loadFlags={} )
+  {
+    debug && console.log( 'User called previousScene()' );
+    this.#loadFlags = loadFlags;
+    if ( ! this.#indexed ) {
+      console.log( 'This previousScene call ignored; the viewer is not indexed.  Set indexed to true if you want to use previousScene.' );
+      return;
+    }
+    if ( ! this.#sceneIndices ) {
+      console.log( 'This previousScene call ignored; no scenes were discovered.' );
+      return;
+    }
+    this.#sceneIndex = Math.max( this.#sceneIndex - 1, 0 );
+    this.#config = { ...this.#config, sceneTitle: this.#sceneIndices[ this.#sceneIndex ] };
+    this.#sceneChanged = true;
+    this.#triggerWorker();
+  }
+
+  nextScene( loadFlags={} )
+  {
+    debug && console.log( 'User called nextScene()' );
+    this.#loadFlags = loadFlags;
+    if ( ! this.#indexed ) {
+      console.log( 'This nextScene call ignored; the viewer is not indexed.  Set indexed to true if you want to use nextScene.' );
+      return;
+    }
+    if ( ! this.#sceneIndices ) {
+      console.log( 'This nextScene call ignored; no scenes were discovered.' );
+      return;
+    }
+    this.#sceneIndex = Math.min( this.#sceneIndex + 1, this.#sceneIndices.length-1 );
+    this.#config = { ...this.#config, sceneTitle: this.#sceneIndices[ this.#sceneIndex ] };
+    this.#sceneChanged = true;
+    this.#triggerWorker();
+  }
+
+  update( loadFlags={} )
+  {
+    debug && console.log( 'User called update()' );
+    this.#loadFlags = loadFlags;
+    if ( this.#reactive ) {
+      console.log( 'This update call ignored; the viewer is reactive to attribute changes.  Set reactive to false if you want programmatic control of the viewer.' );
+      return;
+    }
+    this.#updateCalled = true;
+    this.#triggerWorker();
+  }
+
+  #triggerWorker()
+  {
+    if ( ! this.#moduleLoaded ) {
+      // User code called update() in initialization or an event handler, before the dynamic import has completed
+      debug && console.log( 'update ignored; module not loaded' );
+      return;
+    }
+    const { camera=true, lighting=true, design=true } = this.#loadFlags;
+    const load = { camera, lighting, design };
+    const config = { ...this.#config, load };
+    if ( this.#urlChanged ) {
+      debug && console.log( 'sending fetchDesign to worker' );
+      this.#workerclient.postMessage( fetchDesign( this.#config.url, config ) );
+      this.#urlChanged = false;
+    } else if ( this.#sceneChanged ) {
+      debug && console.log( 'sending selectScene to worker' );
+      this.#workerclient.postMessage( selectScene( this.#config.sceneTitle, load ) );
     }
   }
 
   connectedCallback()
   {
-    import( '../viewer/solid/index.jsx' )
+    debug && console.log( 'custom element connected' );
+    import( '../viewer/index.jsx' )
       .then( module => {
-        module.renderViewer( this.#store, this.#container, this.#url, this.#config );
-      })
+        debug && console.log( 'dynamic module loaded' );
+        module.renderViewer( this.#workerclient, this.#container, this.#config, this.#cameraStore );
+        this.#moduleLoaded = true;
+        
+        // We used to do this in the constructor, after worker creation, for better responsiveness.
+        // However, that causes a race condition on slow networks -- the model loads before the viewer
+        //   is ready for the results, leaving a blank canvas.
+        // User updates could also cause this, so now those are prevented before this moment.
+        if ( this.#reactive || this.#updateCalled || this.#indexed )
+          // #reactive means that there is no active control, so we need an initial #triggerWorker.
+          // #updateCalled means that the user has called update() on a controlled component.
+          this.#triggerWorker();
+      });
   }
 
   static get observedAttributes()
   {
-    return [ "src", "show-scenes", "scene" ];
+    return [ "src", "show-scenes", "scene", "load-camera", "reactive", "labels", "show-perspective", "tween-duration", "indexed", "download" ];
   }
 
+  // This callback can happen *before* connectedCallback()!
   attributeChangedCallback( attributeName, _oldValue, _newValue )
   {
+    debug && console.log( 'custom element attribute changed' );
     switch (attributeName) {
 
     case "src":
       const newUrl = new URL( _newValue, window.location ) .toString();
-      if ( newUrl !== this.#url ) {
-        this.#url = newUrl;
-        this.#store.postMessage( fetchDesign( this.#url, this.#config ) );
+      if ( newUrl !== this.#config.url ) {
+        this.#config.url = newUrl;
+        this.#urlChanged = true;
+        if ( this.#reactive )
+          this.#triggerWorker();
       }
       break;
-
+  
     case "scene":
+      if ( this.#indexed )
+        break;
       if ( _newValue !== this.#config.sceneTitle ) {
         this.#config = { ...this.#config, sceneTitle: _newValue };
+        this.#sceneChanged = true;
         // TODO: control the config prop on the viewer component, so the scenes menu behaves right
-        this.#store.postMessage( selectScene( _newValue ) );
+        if ( this.#reactive )
+          this.#triggerWorker();
       }
       break;
   
     case "show-scenes":
-      const showScenes = _newValue === 'true';
-      if ( showScenes !== this.#config.showScenes ) {
-        this.#config = { ...this.#config, showScenes };
-        this.#store.postMessage( fetchDesign( this.#url, this.#config ) );
-      }
+      if ( this.#indexed )
+        break;
+      const showScenes = _newValue;
+      this.#config = { ...this.#config, showScenes };
       break;
+  
+    case "labels":
+      const labels = _newValue === 'true';
+      this.#config = { ...this.#config, labels };
+      break;
+
+    case "download":
+      const download = _newValue === 'true';
+      this.#config = { ...this.#config, download };
+      break;
+
+    case "show-perspective":
+      const showPerspective = _newValue === 'true';
+      this.#config = { ...this.#config, showPerspective };
+      break;
+  
+    case "tween-duration":
+      const duration = _newValue;
+      const [ state, setState ] = this.#cameraStore;
+      setState( 'tweening', 'duration', duration );
+    break;
+    
+    case "reactive":
+      if ( this.#indexed )
+        break;
+      this.#reactive = _newValue === 'true';
+      break;
+  
+    case "indexed":
+      if ( _newValue !== 'true' )
+        break;
+      this.#indexed = true;
+      this.#reactive = false;
+      this.#sceneIndex = 0;
+      this.#config = { ...this.#config, showScenes: false, sceneTitle: '#1' };
+      this.#sceneChanged = true;
+        break;
     }
   }
 
@@ -158,6 +303,75 @@ export class VZomeViewer extends HTMLElement
   {
     return this.getAttribute( "show-scenes" );
   }
+
+  set labels( newValue )
+  {
+    if ( newValue === null ) {
+      this.removeAttribute( "labels" );
+    } else {
+      this.setAttribute( "labels", newValue );
+    }
+  }
+
+  get labels()
+  {
+    return this.getAttribute( "labels" );
+  }
+
+  set download( newValue )
+  {
+    if ( newValue === null ) {
+      this.removeAttribute( "download" );
+    } else {
+      this.setAttribute( "download", newValue );
+    }
+  }
+
+  get download()
+  {
+    return this.getAttribute( "download" );
+  }
+
+  set showPerspective( newValue )
+  {
+    if ( newValue === null ) {
+      this.removeAttribute( "show-perspective" );
+    } else {
+      this.setAttribute( "show-perspective", newValue );
+    }
+  }
+
+  get showPerspective()
+  {
+    return this.getAttribute( "show-perspective" );
+  }
+
+  set reactive( value )
+  {
+    this .setAttribute( "reactive", value );
+  }
+
+  get reactive()
+  {
+    return this .getAttribute( "reactive" );
+  }
+
+  // These were briefly supported, so I don't want to break anyone's client code.
+  //   We don't support the behavior any more.
+  set loadCamera( newValue )
+  {
+    console.log( 'loadCamera is no longer supported.' );
+  }
+  get loadCamera()
+  {
+    console.log( 'loadCamera is no longer supported.' );
+    return undefined;
+  }
 }
 
 customElements.define( "vzome-viewer", VZomeViewer );
+
+customElements .define( "vzome-viewer-end",      VZomeViewerLastButton );
+customElements .define( "vzome-viewer-next",     VZomeViewerNextButton );
+customElements .define( "vzome-viewer-previous", VZomeViewerPrevButton );
+customElements .define( "vzome-viewer-start",    VZomeViewerFirstButton );

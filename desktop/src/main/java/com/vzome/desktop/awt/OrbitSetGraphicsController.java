@@ -200,6 +200,7 @@ public class OrbitSetGraphicsController extends DefaultGraphicsController
             case "setAllDirections":
             case "usedOrbits":
             case "configureDirections":
+            case "resetOrbitColors":
                 result[i] = true;
                 break;
 

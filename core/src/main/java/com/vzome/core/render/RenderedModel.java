@@ -232,6 +232,19 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         }
     }
 
+    public void setManifestationLabel( Manifestation m, String label )
+    {
+        RenderedManifestation rendered = (RenderedManifestation) ((HasRenderedObject) m) .getRenderedObject();
+        if ( rendered == null )
+            return; // could not find a shape for m, probably
+        rendered .setLabel( label );
+        if ( mainListener != null )
+            mainListener .labelChanged( rendered );
+        for (RenderingChanges listener : mListeners) {
+            listener .labelChanged( rendered );
+        }
+    }
+
     
     public void setManifestationTransparency( Manifestation m, boolean on )
     {
@@ -331,6 +344,13 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
 			this .setManifestationColor( m, color );
     }
 
+    @Override
+    public void manifestationLabeled (Manifestation m, String label )
+    {
+        if ( this .enabled )
+            this .setManifestationLabel( m, label );
+    }
+
     public RenderedModel snapshot()
     {
         RenderedModel snapshot = new RenderedModel( this .orbitSource .getSymmetry() );
@@ -415,9 +435,14 @@ public class RenderedModel implements ManifestationChanges, Iterable<RenderedMan
         return measureLengthCm( renderVector( c1 .getLocation() .minus( c2 .getLocation() ) ) );
     }
 
-    public static double measureLengthCm( RealVector rv )
+    public double getCmScaling()
     {
-        return rv.length() * RealZomeScaling.RZOME_CM_SCALING;
+        return this.mPolyhedra .getCmScaling();
+    }
+    
+    public double measureLengthCm( RealVector rv )
+    {
+        return rv.length() * this.mPolyhedra .getCmScaling();
     }
 
     public double measureLengthCm( Strut strut )

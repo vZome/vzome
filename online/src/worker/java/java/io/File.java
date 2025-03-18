@@ -8,4 +8,19 @@ public class File
     {
         return false;
     }
+    
+    public String getAbsolutePath()
+    {
+        return null;
+    }
+
+    public String getName()
+    {
+      return null;
+    }
+
+    public File getParentFile()
+    {
+      return null;
+    }
 }

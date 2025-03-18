@@ -198,6 +198,17 @@ public class RealizedModelImpl implements RealizedModel
         }
     }
     
+    @Override
+    public void setLabel( Manifestation m, String label )
+    {
+        m .setLabel( label );
+        if ( m .isRendered() ) {
+            for (ManifestationChanges next : mListeners) {
+                next .manifestationLabeled( m, label );
+            }
+        }
+    }
+    
     
     @Override
     public Manifestation findConstruction( Construction c )

@@ -10,10 +10,11 @@ import RadioGroup from "@suid/material/RadioGroup";
 import Radio from "@suid/material/Radio";
 import { For } from 'solid-js';
 
-import { controllerAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
+import { controllerProperty, useEditor } from '../../framework/context/editor.jsx';
 
 export const ShapesDialog = props =>
 {
+  const { controllerAction } = useEditor();
   const styles = () => controllerProperty( props.controller, 'styles', 'styles', true );
   const currStyle = () => controllerProperty( props.controller, 'renderingStyle', 'renderingStyle', false ) || '';
 

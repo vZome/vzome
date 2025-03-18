@@ -1,20 +1,19 @@
 
 import { createEffect } from "solid-js";
 
-import { useWorkerClient } from "../../../workerClient/index.js";
-import { useInteractionTool } from "../../../viewer/solid/interaction.jsx";
-import { controllerAction, subController } from "../../../workerClient/controllers-solid.js";
+import { useInteractionTool } from "../../../viewer/context/interaction.jsx";
+import { subController, useEditor } from '../../framework/context/editor.jsx';
 
 const SelectionTool = props =>
 {
-  const { rootController, setState } = useWorkerClient();
+  const { rootController, setState, controllerAction } = useEditor();
   const pickingController  = () => subController( rootController(), 'picking' );
 
   const handlers = {
 
     allowTrackball: false,
 
-    onClick: ( id, position, type, selected ) => {
+    onClick: ( id, position, type, selected, label ) => {
       // console.log( 'selectionTool clicked' );
       controllerAction( pickingController(), 'SelectManifestation', { id } )
     },
@@ -22,17 +21,17 @@ const SelectionTool = props =>
     {
       controllerAction( rootController(), 'DeselectAll' );
     },
-    onDragStart: ( id, position, type, starting, evt ) => {
-      // console.log( 'selectionTool onDragStart?????!!!!!' );
+    onDragStart: () => {
+      // console.log( 'selectionTool DRAG START' );
     },
-    onDrag: evt => {
-      // console.log( 'selectionTool onDrag?????!!!!!' );
+    onDrag: () => {
+      // console.log( 'selectionTool    DRAG' );
     },
-    onDragEnd: evt => {
-      // console.log( 'selectionTool onDragEnd?????!!!!!' );
+    onDragEnd: () => {
+      // console.log( 'selectionTool DRAG END' );
     },
-    onContextMenu: ( id, position, type, selected ) => {
-      setState( 'picked', { id, position, type, selected } );
+    onContextMenu: ( id, position, type, selected, label ) => {
+      setState( 'picked', { id, position, type, selected, label } );
     }
   };
 

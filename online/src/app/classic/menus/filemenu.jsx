@@ -1,20 +1,26 @@
 
-import { createEffect, createSignal, mergeProps } from "solid-js";
+import { createEffect, createSignal, mergeProps, onMount } from "solid-js";
 import { unwrap } from "solid-js/store";
 
-import { controllerAction, controllerExportAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
-import { serializeVZomeXml, saveFile, saveFileAs, openFile } from '../../../workerClient/index.js';
-import { fetchDesign, openDesignFile, newDesign, importMeshFile } from "../../../workerClient/index.js";
-import { useWorkerClient } from "../../../workerClient/index.js";
+import { controllerExportAction, controllerProperty, useEditor } from '../../framework/context/editor.jsx';
+import { suspendMenuKeyEvents } from '../context/commands.jsx';
+import { saveFileAs, openFile, saveTextFileAs, saveTextFile } from "../../../viewer/util/files.js";
 
-import { Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
+import { CommandAction, Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 import { UrlDialog } from '../dialogs/webloader.jsx'
-import { Guardrail } from "../dialogs/guardrail.jsx";
 import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
+import { INITIAL_DISTANCE, useCamera } from "../../../viewer/context/camera.jsx";
+import { useImageCapture } from "../../../viewer/context/export.jsx";
+
+const queryParams = new URLSearchParams( window.location.search );
+const relativeUrl = queryParams.get( 'design' );
+
+// Must make this absolute before the worker tries to, with the wrong base URL
+const url = ( relativeUrl && new URL( relativeUrl, window.location ) .toString() );
 
 const NewDesignItem = props =>
 {
-  const { rootController } = useWorkerClient();
+  const { rootController } = useEditor();
   const fieldLabel = () => controllerProperty( rootController(), `field.label.${props.field}` );
   // TODO: enable ⌘N
   const modifiers = () => props.field === 'golden' && '⌘';
@@ -25,11 +31,11 @@ const NewDesignItem = props =>
 
 export const FileMenu = () =>
 {
-  const { postMessage, rootController, state, setState } = useWorkerClient();
+  const { rootController, state, setState,
+    createDesign, openDesignFile, fetchDesignUrl, importMeshFile, guard, edited } = useEditor();
+  const { state: cameraState, mapViewToWorld } = useCamera();
   const [ showDialog, setShowDialog ] = createSignal( false );
   const fields = () => controllerProperty( rootController(), 'fields', 'fields', true );
-  const [ showGuardrail, setShowGuardrail ] = createSignal( false );
-  const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
 
   // Since the initial render of the menu doesn't fetch these properties,
   //   we have to force this prefetch so the data is ready when we need it.
@@ -48,18 +54,22 @@ export const FileMenu = () =>
   {
     setState( 'designName', undefined ); // cooperatively managed by both worker and client
     setState( 'fileHandle', undefined );
-    postMessage( newDesign( field ) );
+    // TODO: reset the camera
+    createDesign( field );
   }
 
-  const handleOpen = evt =>
+  const handleOpen = asNew => () =>
   {
     const fileType = { description: 'vZome design file', accept: { '*/*' : [ '.vZome' ] } }
     openFile( [fileType] )
       .then( file => {
         if ( !!file ) {
-          postMessage( openDesignFile( file, false ) );
-          // TODO: re-enable this once we have more confidence in serialization
-          // setState( 'fileHandle', file.handle );
+          if ( asNew ) {
+            setState( 'ignoreDesignName', true );  // transient, means we'll still have an untitled design after the fetch
+            setState( 'designName', undefined ); // cooperatively managed by both worker and client
+          }
+          setState( 'fileHandle', asNew? undefined : file.handle );
+          openDesignFile( file, false );
         }
       });
   }
@@ -68,92 +78,106 @@ export const FileMenu = () =>
     const fileType = { description: `${format} file`, accept: { '*/*' : [ extension ] } }
     openFile( [fileType] )
       .then( file => {
-        !!file && postMessage( importMeshFile( file, format ) );
+        !!file && importMeshFile( file, format );
       });
   }
 
   const handleShowUrlDialog = () => {
+    suspendMenuKeyEvents();
     setShowDialog( true );
   }
   const openUrl = url => {
     if ( url && url.endsWith( ".vZome" ) ) {
       setState( 'fileHandle', undefined );
-      postMessage( fetchDesign( url, { preview: false, debug: false } ) );
+      fetchDesignUrl( url, { preview: false, debug: false } );
     }
   }
 
-  let continuation;
-  const guard = guardedAction =>
-  {
-    if ( edited() ) {
-      continuation = guardedAction;
-      setShowGuardrail( true );
-    }
-    else
-      guardedAction();
+  const dropboxEnabled = window.Dropbox && window.localStorage.getItem( 'vzome.enable.dropbox' ) === 'true';
+
+  const showDropboxChooser = () => {
+    window.Dropbox.choose( {
+      linkType: 'direct',
+      extensions: ['.vzome'],
+      success: (files) => {
+        const url = files[ 0 ] .link .toLowerCase();
+        setState( 'ignoreDesignName', true );  // transient, means we'll still have an untitled design after the fetch
+        fetchDesignUrl( url, { preview: false, debug: false } );
+
+        let name = files[ 0 ] .name;
+        if ( name && name .toLowerCase() .endsWith( '.vzome' ) ) {
+          name = name .substring( 0, name.length - 6 );
+          setState( 'designName', name );
+          setState( 'sharing', 'title', name .replaceAll( '-', ' ' ) );
+        }
+
+        /*
+          My personal Dropbox holds 100s of vZome files back to 2003.  When I share them,
+          I want to capture the original date, which is encoded in the file path (usually):
+          .../vzome/attachments/2016/04-apr/10-Scott-deleteTest/testDeleteAndCut.vZome
+        */
+        const ATTACHMENTS = 'vzome/attachments/';
+        if ( url .includes( ATTACHMENTS ) ) {
+          const start = url .lastIndexOf( ATTACHMENTS ) + 18;
+          const relPath = url .substring( start );
+          try {
+            const [ _, year, month, day ] = relPath .match( /([0-9]+)\/([0-9]+).*\/([0-9]+).*\// );
+            const date = new Date( Number(year), Number(month)-1, Number(day) );
+            setState( 'originalDate', date );
+            console.log( 'Dropbox date:', date, 'for', year, month, day, relPath );
+          } catch (error) {
+            console.log( 'Could not parse Dropbox path as date:', relPath );
+          }
+        }
+      },
+    } );
   }
-  const closeGuardrail = continued =>
-  {
-    setShowGuardrail( false );
-    if ( continued )
-      continuation();
-    continuation = undefined;
-  }
+
+  // Open the design indicated in the query string, if any
+  onMount( () => ( url && url.endsWith( ".vZome" ) ) ? openUrl( url ) : doCreate( 'golden' ) );
 
   const [ svgPreview, setSvgPreview ] = createSignal( false );
 
-  const exportAs = ( extension, mimeType, format=extension ) => evt =>
+  const exportAs = ( extension, mimeType, format=extension, params={} ) => evt =>
   {
-    const camera = unwrap( state.liveCamera );
-    const { lighting } = unwrap( state.scene );
-    controllerExportAction( rootController(), format, { camera, lighting } )
+    const camera = unwrap( cameraState.camera );
+    camera .magnification = Math.log( camera.distance / INITIAL_DISTANCE );
+
+    const lighting = unwrap( cameraState.lighting );
+    lighting .directionalLights .forEach( light => light .worldDirection = mapViewToWorld( light.direction ) );
+
+    controllerExportAction( rootController(), format, { camera, lighting, ...params } )
       .then( text => {
-        const vName = state.designName || 'untitled';
-        const name = vName .concat( "." + extension );
-        saveFileAs( name, text, mimeType );
+        const name = (state.designName || 'untitled') .concat( "." + extension );
+        saveTextFileAs( name, text, mimeType );
       });
   }
 
-  const doSave = ( chooseFile = false ) =>
+  const { capturer } = useImageCapture();
+  const captureImage = ( extension, mimeType ) => evt =>
   {
-    let name;
-    controllerExportAction( rootController(), 'vZome' )
-      .then( text => {
-        const { camera, lighting } = state.scene;
-        name = state?.designName || 'untitled';
-        const fullText = serializeVZomeXml( text, lighting, {...state.liveCamera}, camera );
-        const mimeType = 'application/xml';
-        if ( state.fileHandle && !chooseFile )
-          return saveFile( state.fileHandle, fullText, mimeType )
-        else
-          return saveFileAs( name + '-ONLINE.vZome', fullText, mimeType );
-      })
-      .then( result => {
-        const { handle, success } = result;
-        if ( success ) {
-          if ( !!handle ) { // file system API supported
-            setState( 'fileHandle', handle );
-            name = handle.name;
-            if ( name .toLowerCase() .endsWith( '.vZome' .toLowerCase() ) )
-              name = name .substring( 0, name.length - 6 );
-          }
-          setState( 'designName', name ); // cooperatively managed by both worker and client
-          controllerAction( rootController(), 'clearChanges' );
-        }
-      })
+    const { capture } = capturer();
+    capture( mimeType, blob => {
+      const name = (state.designName || 'untitled') .concat( "." + extension );
+      saveFileAs( name, blob, mimeType );
+    });
   }
 
   const ExportItem = props =>
   {
     props = mergeProps( { format: props.ext }, props );
-    return <MenuItem onClick={ exportAs( props.ext, props.mime, props.format ) } disabled={props.disabled}>{props.label}</MenuItem>
+    const params = { drawOutlines: cameraState.outlines }; // for SVG
+    return <MenuItem onClick={ exportAs( props.ext, props.mime, props.format, params ) } disabled={props.disabled}>{props.label}</MenuItem>
   }
 
-  return (
+  const ImageCaptureItem = props =>
+  {
+    return <MenuItem onClick={ captureImage( props.ext, props.mime ) } disabled={props.disabled}>{props.label}</MenuItem>
+  }
+  
+    return (
     <Menu label="File" dialogs={<>
       <UrlDialog show={showDialog()} setShow={setShowDialog} openDesign={openUrl} />
-
-      <Guardrail show={showGuardrail()} close={closeGuardrail} />
 
       <SvgPreviewDialog open={svgPreview()} close={()=>setSvgPreview(false)} exportAs={exportAs} />
     </>}>
@@ -163,15 +187,17 @@ export const FileMenu = () =>
           }</For>
         </SubMenu>
 
-        <MenuAction label="Open..." onClick={() => guard(handleOpen)} />
+        <MenuAction label="Open..."     onClick={() => guard(handleOpen(false))} />
         <MenuAction label="Open URL..." onClick={() => guard(handleShowUrlDialog)} />
-        <MenuItem disabled={true}>Open As New Model...</MenuItem>
+        <MenuAction label="Open As New Design..."     onClick={() => guard(handleOpen(true))} />
+        { dropboxEnabled &&
+           <MenuAction label="Choose from Dropbox..." onClick={() => guard(showDropboxChooser)} /> }
 
         <Divider/>
 
         <MenuAction label="Close" disabled={true} />
-        <MenuAction label="Save..." onClick={ () => doSave() } mods="⌘" key="S" />
-        <MenuAction label="Save As..." onClick={ () => doSave( true ) }/>
+        <CommandAction label="Save..."    action="Save" />
+        <CommandAction label="Save As..." action="SaveAs" />
         <MenuAction label="Save Template..." disabled={true} />
 
         <Divider/>
@@ -186,8 +212,8 @@ export const FileMenu = () =>
 
         <SubMenu label="Export 3D Rendering">
           <ExportItem label="Collada DAE" ext="dae" mime="text/plain" disabled={true} />
-          <ExportItem label="POV-Ray" ext="pov" mime="text/plain" disabled={true} />
-          <ExportItem label="vZome Shapes JSON" ext="shapes" mime="text/plain" disabled={true} />
+          <ExportItem label="POV-Ray" ext="pov" mime="text/plain" />
+          <ExportItem label="vZome Shapes JSON" format="shapes" ext="shapes.json" mime="application/json" />
           <ExportItem label="VRML" ext="vrml" mime="text/plain" />
         </SubMenu>
         <SubMenu label="Export 3D Panels">
@@ -196,7 +222,7 @@ export const FileMenu = () =>
           <ExportItem label="PLY" ext="ply" mime="text/plain" />
         </SubMenu>
         <SubMenu label="Export 3D Points & Lines">
-          <ExportItem label="Simple Mesh JSON" format="mesh" ext="mesh.json" mime="text/plain" />
+          <ExportItem label="Simple Mesh JSON" format="mesh" ext="mesh.json" mime="application/json" />
           <ExportItem label="Color Mesh JSON" format="cmesh" ext="cmesh.json" mime="application/json" />
           <ExportItem label="AutoCAD DXF" ext="dxf" mime="text/plain" />
         </SubMenu>
@@ -212,10 +238,10 @@ export const FileMenu = () =>
         <Divider/>
 
         <SubMenu label="Capture Image">
-          <MenuItem disabled={true} action="capture.jpg" >JPEG</MenuItem>
-          <MenuItem disabled={true} action="capture.png" >PNG</MenuItem>
-          <MenuItem disabled={true} action="capture.gif" >GIF</MenuItem>
-          <MenuItem disabled={true} action="capture.bmp" >BMP</MenuItem>
+          <ImageCaptureItem ext="png" label="PNG" mime="image/png" />
+          <ImageCaptureItem ext="jpg" label="JPEG" mime="image/jpeg" />
+          <ImageCaptureItem ext="webp" label="WebP" mime="image/webp" />
+          <ImageCaptureItem ext="bmp" label="BMP" mime="image/bmp" />
         </SubMenu>
 
         <MenuItem disabled={true} action="capture-wiggle-gif" >Capture Animation</MenuItem>

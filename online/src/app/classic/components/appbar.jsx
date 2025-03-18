@@ -8,6 +8,7 @@ import Box from '@suid/material/Box'
 import { OpenMenu } from './folder.jsx'
 import { VZomeLogo } from './logo.jsx'
 import { AboutDialog } from '../dialogs/about.jsx';
+import { SharingDialog } from '../dialogs/sharing.jsx';
 
 export const Spacer = () => <div style={{ flex: '1 1 auto' }}></div>
 
@@ -15,11 +16,11 @@ export const VZomeAppBar = ( props ) =>
 {
   const spacer = <Spacer/>;
   const merged = mergeProps( {
-    spacer,
     showOpen: false,
     pathToRoot: './models',
     forDebugger: false,
     customTitle: false,
+    spacer
   }, props );
 
   return (
@@ -31,14 +32,17 @@ export const VZomeAppBar = ( props ) =>
           }>
             <VZomeLogo/>
             <Typography variant="h5" sx={{ paddingLeft: '12px', paddingRight: '40px' }}>
-              vZome Online <Box component="span" fontStyle="oblique">{props.title}</Box>
+              vZome <Box component="span" fontStyle="oblique">{props.title}</Box>
             </Typography>
           </Show>
           {merged.spacer}
           <Show when={merged.showOpen} >
             <OpenMenu pathToRoot={merged.pathToRoot} forDebugger={merged.forDebugger} />
           </Show>
-          <AboutDialog title={props.customTitle? props.title : 'vZome Online '+ props.title} about={props.about} />
+          <Show when={!merged.title} >
+            <SharingDialog/>
+          </Show>
+          <AboutDialog title={props.customTitle? props.title : 'vZome '+ props.title} about={props.about} />
         </Toolbar>
       </AppBar>
     </div>

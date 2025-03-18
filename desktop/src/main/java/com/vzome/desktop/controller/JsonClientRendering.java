@@ -92,4 +92,10 @@ public class JsonClientRendering implements RenderingChanges
     {
         return false;
     }
+
+    @Override
+    public void labelChanged( RenderedManifestation manifestation )
+    {
+        System.out.println( "label changed: " + manifestation .getLabel() );
+    }
 }

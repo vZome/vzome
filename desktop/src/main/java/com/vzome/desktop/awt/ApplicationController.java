@@ -318,7 +318,6 @@ public class ApplicationController extends DefaultController
             else if ( action .startsWith( "openURL-" ) )
             {
                 Properties docProps = new Properties();
-                docProps .setProperty( "as.template", "true" );
                 String path = action .substring( "openURL-" .length() );
                 docProps .setProperty( "window.title", path );
                 try {
@@ -530,6 +529,8 @@ public class ApplicationController extends DefaultController
                 case "rootThree":
                 case "heptagon":
                 case "sqrtPhi":
+                case "snubCube":
+                case "snubDodec":
                     return "true"; // these are enabled for everyone
 
                 default:
@@ -549,6 +550,8 @@ public class ApplicationController extends DefaultController
         case "githubAccessToken":
         case "sharing-generatePost":
         case "sharing-publishImmediately":
+        case "sharing-showScenes":
+        case "sharing-sceneStyle":
             
             this.storedConfig .setProperty( name, value .toString() );
             FileWriter writer;

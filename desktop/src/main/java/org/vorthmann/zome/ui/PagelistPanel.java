@@ -18,6 +18,7 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
@@ -47,9 +48,9 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
     
     private final Controller controller;
 
-    private static final String dupeString = "Add";
+    private static final String dupeString = "Add Scene";
 
-    private static final String remString = "Remove";
+    private static final String remString = "Remove Scene";
 
     private JButton removeButton;
 
@@ -195,12 +196,15 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
         pageviewPopupMenu .setLightWeightPopupEnabled( false );
         if ( this .isEditor )
         {
-            JMenuItem menuItem = createMenuItem( "Save Current View to Page", "setView" );
+            JMenuItem menuItem = createMenuItem( "Save current view to page", "setView" );
+            menuItem .addActionListener( actionListener );
+            pageviewPopupMenu .add( menuItem );
+            menuItem = createMenuItem( "Save current view to ALL", "setViewAll" );
             menuItem .addActionListener( actionListener );
             pageviewPopupMenu .add( menuItem );
         }
 
-        JMenuItem menuItem = createMenuItem( "Show This Page's View", "usePageView" );
+        JMenuItem menuItem = createMenuItem( "Show this page's view", "usePageView" );
         menuItem .addActionListener( new ActionListener()
         {
             @Override
@@ -211,7 +215,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
         } );
         pageviewPopupMenu .add( menuItem );
 
-        menuItem = createMenuItem( "Copy This Page's View", "copyPageView" );
+        menuItem = createMenuItem( "Copy this page's view", "copyPageView" );
         menuItem .addActionListener( new ActionListener()
         {
             @Override
@@ -264,6 +268,12 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
 
         if ( this.isEditor )
         {
+            JCheckBox reverseCheckBox = new JCheckBox( "add before" );
+            reverseCheckBox.setActionCommand( "toggleReverse" );
+            reverseCheckBox.addActionListener( actionListener );
+            reverseCheckBox.setEnabled( true );
+            reverseCheckBox .setSelected( controller .propertyIsTrue( "reverse" ) );
+
             addButton = new JButton( dupeString );
             addButton.setActionCommand( "duplicatePage" );
             addButton.addActionListener( actionListener );
@@ -277,6 +287,7 @@ public class PagelistPanel extends JPanel implements PropertyChangeListener
             // Create a panel that uses BoxLayout.
             JPanel buttonPane = new JPanel();
             buttonPane .setLayout( new BoxLayout( buttonPane, BoxLayout.PAGE_AXIS ) );
+            buttonPane .add( reverseCheckBox );
             buttonPane .add( addButton );
             buttonPane .add( removeButton );
             buttonPane .setBorder( BorderFactory.createEmptyBorder( 5, 5, 5, 5 ) );

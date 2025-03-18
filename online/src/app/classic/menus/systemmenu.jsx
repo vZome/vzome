@@ -1,21 +1,21 @@
 
 import { Choices, Divider, Menu, MenuAction, createCheckboxItem } from "../../framework/menus.jsx";
 
-import { controllerAction, controllerProperty } from "../../../workerClient/controllers-solid.js";
-import { useWorkerClient } from "../../../workerClient/index.js";
-import { useSymmetry } from "../classic.jsx";
+import { controllerProperty, useEditor } from '../../framework/context/editor.jsx';
+import { useSymmetry } from "../context/symmetry.jsx";
 
 export const SystemMenu = () =>
 {
-  const { rootController } = useWorkerClient();
+  const { rootController, controllerAction } = useEditor();
 
-  const { showOrbitsDialog, showShapesDialog } = useSymmetry();
+  const { showOrbitsDialog, showShapesDialog, snapCamera } = useSymmetry();
 
   const symmetries = () => controllerProperty( rootController(), 'symmetryPerspectives', 'symmetryPerspectives', true );
   const currentSymm = () => controllerProperty( rootController(), 'symmetry' ); // TODO move to useSymmetry?
   const EditAction = createCheckboxItem( rootController() );
   const setSymmetry = system => {
     controllerAction( rootController(), `setSymmetry.${system}` );
+    snapCamera();
   }
 
   return (

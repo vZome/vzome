@@ -10,7 +10,9 @@ public interface Element extends Node
 
   public void setAttributeNS( String namespaceURI, String qualifiedName, String value );
 
-  public String getAttribute(String name);
+  public String getAttribute( String name );
+  
+  public void setTextContent( String text );
 
   public Object getUserData( String key );
 }

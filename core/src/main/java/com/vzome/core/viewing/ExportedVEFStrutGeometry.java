@@ -30,6 +30,8 @@ public class ExportedVEFStrutGeometry implements StrutGeometry
 
     public final Set<Integer> fullScaleVertices, halfScaleVertices;  // the polyhedron vertices that must adjust for different strut lengths
 
+    private StrutGeometry shortGeometry = null;
+
     public ExportedVEFStrutGeometry( List<AlgebraicVector> vertices, List< List<Integer> > faces, AlgebraicVector prototype, Set<Integer> fullScaleVertices, Set<Integer> halfScaleVertices, AlgebraicField field )
     {
         prototypeVertices = vertices;
@@ -54,6 +56,10 @@ public class ExportedVEFStrutGeometry implements StrutGeometry
     public Polyhedron getStrutPolyhedron( AlgebraicNumber length )
     {
         AlgebraicVector tipVertex = prototypeVector .scale( length );
+
+        double maxNonTipDistance = 0;
+        double minTipDistance = tipVertex .toRealVector() .length();
+        
         AlgebraicVector midpoint = tipVertex .scale( this .field .createRational( 1, 2 ) );
         if ( field .getName() .equals( "snubDodec" ) && LOGGER.isLoggable(Level.FINE) )
         {
@@ -67,16 +73,35 @@ public class ExportedVEFStrutGeometry implements StrutGeometry
             AlgebraicVector vertex = prototypeVertices .get( i );
             if ( fullScaleVertices .contains(i) ) {
                 vertex = vertex .plus( tipVertex );
-            } else if ( halfScaleVertices != null && halfScaleVertices .contains(i) ) {
-                vertex = vertex .plus( midpoint );
+                minTipDistance = Math.min( minTipDistance, vertex .toRealVector() .length() );
+            } else {
+                if ( halfScaleVertices != null && halfScaleVertices .contains(i) ) {
+                    vertex = vertex .plus( midpoint );
+                }
+                maxNonTipDistance = Math.max( maxNonTipDistance, vertex .toRealVector() .length() );
             }
             result .addVertex( vertex );
         }
+        
+        if ( maxNonTipDistance > minTipDistance ) {
+            // The strut shape will be partially inverted, so we don't want to use it.
+            if ( shortGeometry != null ) {
+                return shortGeometry .getStrutPolyhedron( length );
+            }
+            else
+                return null;
+        }
+        
         for (List<Integer> prototypeFace : prototypeFaces) {
             Polyhedron.Face face = result .newFace();
             face .addAll( prototypeFace );
             result .addFace( face );
         }
         return result;
+    }
+
+    public void setShortGeometry( StrutGeometry shortGeometry )
+    {
+        this.shortGeometry = shortGeometry;        
     }
 }

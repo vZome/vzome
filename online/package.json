@@ -4,15 +4,21 @@
   "private": true,
   "scripts": {
     "build": "node scripts/prod-build.mjs",
-    "quick": "node scripts/test-app.mjs quick",
+    "nolegacy": "node scripts/test-app.mjs nolegacy",
     "dev": "node scripts/test-app.mjs",
     "https": "node scripts/test-https.mjs"
   },
   "dependencies": {
-    "@kobalte/core": "^0.10.0",
+    "@kobalte/core": "^0.13.3",
+    "@octokit/auth-token": "^5.1.1",
+    "@octokit/core": "^6.1.2",
+    "@octokit/rest": "^20.1.1",
     "@solid-primitives/resize-observer": "^2.0.15",
     "@suid/icons-material": "^0.5.3",
     "@suid/material": "^0.12.2",
+    "@tweenjs/tween.js": "^25.0.0",
+    "antlr4": "^4.13.1-patch-1",
+    "chevrotain": "^11.0.3",
     "solid-js": "^1.7.0",
     "solid-three": "^0.2.0",
     "three": "0.149.0",
@@ -24,9 +30,6 @@
     "workbox-strategies": "^6.4.1"
   },
   "homepage": "https://vzome.com/app",
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -48,5 +51,6 @@
     "babel-preset-solid": "^1.7.3",
     "esbuild": "^0.17",
     "eslint": "^8.5.0"
-  }
+  },
+  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
 }

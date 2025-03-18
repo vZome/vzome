@@ -8,7 +8,6 @@ on:
 env:
   BUILD_NUMBER: ${{ github.run_number }}
   GIT_COMMIT: ${{ github.sha }}
-  # TODO connect these to secrets
   # NOTE: They have nothing to do with running this GitHub Action;
   #   they are for vZome to make runtime API calls to GitHub.
   GITHUB_CLIENT_SECRET: ${{ secrets.VZOME_GITHUB_CLIENT_SECRET }}
@@ -17,39 +16,38 @@ env:
 
 jobs:
   build-macos:
-    runs-on: macos-latest
+
+    strategy:
+      matrix:
+        arch: [intel, arm64]
+
+    # macos-13 is an Intel image, apparently, whereas macos-latest is the latest Arm64
+    runs-on: ${{ matrix.arch == 'intel' && 'macos-13' || 'macos-latest' }} 
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - uses: actions/checkout@v3
       with:
         lfs: 'true'
-    - name: Set up JDK
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
     - name: Control Timezone
       uses: szenius/set-timezone@v1.1
       with:
         timezoneMacos: "America/Los_Angeles"
-    - name: Get current date
-      run: date
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build with Gradle
+    - name: Prep code signing
       env: 
         MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
         MACOS_CERTIFICATE_PWD: ${{ secrets.MACOS_CERTIFICATE_PWD }}
         SIGNING_KEYCHAIN: build.keychain
       run: |
+        arch
         echo $MACOS_CERTIFICATE | base64 -D > certificate.p12
         security create-keychain -p KeychainPwd $SIGNING_KEYCHAIN
         security default-keychain -s $SIGNING_KEYCHAIN
         security unlock-keychain -p KeychainPwd $SIGNING_KEYCHAIN
         security import certificate.p12 -k $SIGNING_KEYCHAIN -P $MACOS_CERTIFICATE_PWD -T /usr/bin/codesign
         security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k KeychainPwd $SIGNING_KEYCHAIN
-        ./gradlew --info clean jpackage 
+    - id: build-desktop
+      uses: ./.github/actions/build-desktop-action
     - name: Configure SSH
       run: |
         mkdir -p ~/.ssh/
@@ -67,34 +65,41 @@ jobs:
         HOSTING_FQDN: ${{ secrets.HOSTING_FQDN }}
     - name: Publish MacOS build to DreamHost
       run: |
-        source desktop/build/buildPropsResource/build.properties  # to set the version variable
+        source desktop/build/buildPropsResource/build.properties  # to set the version and buildNumber variables
         sftp -b - dreamhost <<END
           cd vzome.com/download/${version}/
-          -mkdir ${{ github.run_number }}
-          cd ${{ github.run_number }}
+          -mkdir ${buildNumber}
+          cd ${buildNumber}
           -mkdir mac
           cd mac
-          mput desktop/build/jpackage/vZome-*.dmg	
+          put desktop/build/jpackage/vZome-${version}.${buildNumber}.dmg vZome-${version}.${buildNumber}-${{ matrix.arch }}.dmg
+        END
+    - name: Capture build number
+      run: |
+        source desktop/build/buildPropsResource/build.properties  # to set the version and buildNumber variables
+        echo "{ \"url\": \"/download/${version}/${buildNumber}/mac/vZome-${version}.${buildNumber}-${{ matrix.arch }}.dmg\" }" > mac-${{ matrix.arch }}.json
+        sftp -b - dreamhost <<END
+          cd vzome.com/download/latest/
+          put mac-${{ matrix.arch }}.json
         END
 
   build-linux:
     runs-on: ubuntu-latest
 
     steps:
+    # - id: foo
+    #   uses: OWNER/hello-world-composite-action@SHA
+    #   with:
+    #     who-to-greet: 'Mona the Octocat'
+    # - run: echo random-number "$RANDOM_NUMBER"
+    #   shell: bash
+    #   env:
+    #     RANDOM_NUMBER: ${{ steps.foo.outputs.random-number }}
     - uses: actions/checkout@v3
       with:
         lfs: 'true'
-    - name: Set up JDK
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build with Gradle
-      run: |
-        ./gradlew clean jpackage
-        ls desktop/build/jpackage
+    - id: build-desktop
+      uses: ./.github/actions/build-desktop-action
     - name: Configure SSH
       run: |
         mkdir -p ~/.ssh/
@@ -121,6 +126,14 @@ jobs:
           cd linux
           mput desktop/build/jpackage/vzome_*.deb
         END
+    - name: Capture build number
+      run: |
+        source desktop/build/buildPropsResource/build.properties  # to set the version and buildNumber variables
+        echo "{ \"url\": \"/download/${version}/${buildNumber}/linux/vzome_${version}.${buildNumber}-1_amd64.deb\" }" > linux.json
+        sftp -b - dreamhost <<END
+          cd vzome.com/download/latest/
+          put linux.json
+        END
 
   build-windows:
     runs-on: windows-latest
@@ -129,27 +142,20 @@ jobs:
     - uses: actions/checkout@v3
       with:
         lfs: 'true'
-    - name: Set up JDK
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-    - name: Build with Gradle
+    - id: build-desktop
+      uses: ./.github/actions/build-desktop-action
+    - name: Zip it
       run: |
-        ./gradlew -i clean jpackage
-        ls desktop/build/jpackage
-    - name: Archive Windows build
-      uses: actions/upload-artifact@v3
-      with:
-        name: vZome-Windows-7.1.${{ github.run_number }}
-        path: desktop/build/jpackage/vZome-*.exe
+        cd desktop/build/jpackage
+        7z a -tzip vZome-7.1.${{ github.run_number }}.zip vZome-7.1.${{ github.run_number }}.exe
+        ls
     - name: Configure SSH
       run: |
         mkdir -p $env:USERPROFILE/.ssh/
-        echo "$SSH_KEY" > $env:USERPROFILE/.ssh/dreamhost.key
+        echo "$env:SSH_KEY" > $env:USERPROFILE/.ssh/dreamhost.key
         echo "" >> $env:USERPROFILE/.ssh/dreamhost.key
         echo 'Host dreamhost' > $env:USERPROFILE/.ssh/config
-        echo "  HostName $HOSTING_FQDN" >> $env:USERPROFILE/.ssh/config
+        echo "  HostName $env:HOSTING_FQDN" >> $env:USERPROFILE/.ssh/config
         echo '  User scottvorthmann' >> $env:USERPROFILE/.ssh/config
         echo "  IdentityFile $env:USERPROFILE\.ssh\dreamhost.key" >> $env:USERPROFILE/.ssh/config
         echo '  StrictHostKeyChecking no' >> $env:USERPROFILE/.ssh/config
@@ -158,11 +164,15 @@ jobs:
         HOSTING_FQDN: ${{ secrets.HOSTING_FQDN }}
     - name: Publish Windows build to DreamHost
       run: |
-        echo "cd vzome.com/download/${version}/" >> batchfile.txt
+        echo '{ "url": "/download/7.1/${{ github.run_number }}/win/vZome-7.1.${{ github.run_number }}.zip" }' > windows.json
+        echo "cd vzome.com/download/7.1/"        >> batchfile.txt
         echo "-mkdir ${{ github.run_number }}"   >> batchfile.txt
         echo "cd ${{ github.run_number }}"       >> batchfile.txt
         echo "-mkdir win"                        >> batchfile.txt
         echo "cd win"                            >> batchfile.txt
-        echo "mput desktop/build/jpackage/vZome-*.exe" >> batchfile.txt
+        echo "mput desktop/build/jpackage/vZome-*.zip" >> batchfile.txt
+        echo "cd ../../../latest"                >> batchfile.txt
+        echo "put windows.json"                  >> batchfile.txt
         sftp -b batchfile.txt dreamhost
+
 

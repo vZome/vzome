@@ -8,8 +8,7 @@ import Divider from '@suid/material/Divider';
 import { UrlDialog } from '../dialogs/webloader.jsx';
 import { Tooltip } from '../../framework/tooltip.jsx';
 import { For, createSignal } from 'solid-js';
-import { useWorkerClient } from '../../../workerClient';
-import { fetchDesign, openDesignFile } from '../../../workerClient/actions.js';
+import { useEditor } from '../../framework/context/editor.jsx';
 
 const queryParams = new URLSearchParams( window.location.search );
 const enableDropbox = !! queryParams .get( 'enableDropbox' );
@@ -61,7 +60,7 @@ export const getModelURL = ( key, pathToRoot='./models' ) => new URL( `${pathToR
 
 export const OpenMenu = props =>
 {
-  const { postMessage } = useWorkerClient();
+  const { fetchDesignUrl, openDesignFile } = useEditor();
   const [anchor, setAnchor] = createSignal(null);
   const [showDialog, setShowDialog] = createSignal(false);
   const acceptFiles = ".vZome";
@@ -79,20 +78,20 @@ export const OpenMenu = props =>
       linkType: 'direct',
       extensions: ['.vzome'],
       success: (files) => {
-        postMessage( fetchDesign( files[0].link, { preview: false, debug: props.forDebugger } ) );
+        fetchDesignUrl( files[0].link, { preview: false, debug: props.forDebugger } );
       },
     } );
   }
   const onFileSelected = e => {
     const selected = e.target.files && e.target.files[0]
     if ( selected )
-    postMessage( openDesignFile( selected, props.forDebugger ) );
+    openDesignFile( selected, props.forDebugger );
     inputRef.value = null;
   }
 
   const openUrl = url => {
     if ( url && url.endsWith( ".vZome" ) ) {
-      postMessage( fetchDesign( url, { preview: false, debug: props.forDebugger } ) );
+      fetchDesignUrl( url, { preview: false, debug: props.forDebugger } );
     }
   }
 

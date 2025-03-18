@@ -1,5 +1,5 @@
 
-import { createEffect, createSignal } from "solid-js"
+import { createEffect, createSignal, untrack } from "solid-js"
 import { unwrap } from "solid-js/store"
 
 import DialogContent from "@suid/material/DialogContent"
@@ -10,40 +10,52 @@ import Button from "@suid/material/Button"
 import Switch from "@suid/material/Switch";
 import FormControlLabel from "@suid/material/FormControlLabel";
 
-import { useWorkerClient } from "../../../workerClient"
-import { controllerExportAction } from "../../../workerClient/controllers-solid"
+import { controllerExportAction, useEditor } from '../../framework/context/editor.jsx';
+import { useCamera } from "../../../viewer/context/camera"
 
 const SvgPreviewDialog = props =>
 {
-  const { rootController, state } = useWorkerClient();
+  const { rootController } = useEditor();
+  const { state } = useCamera();
   const [ useLighting, setUseLighting ] = createSignal( true );
   const [ useShapes, setUseShapes ] = createSignal( true );
-  const [ drawOutlines, setDrawOutlines ] = createSignal( true );
+  const [ drawOutlines, setDrawOutlines ] = createSignal( false );
   const [ monochrome, setMonochrome ] = createSignal( false );
   const [ showBackground, setShowBackground ] = createSignal( true );
 
+  createEffect( () => setDrawOutlines( state.outlines ) );
+
   let svgRef;
   createEffect( () => {
-    if ( ! props.open ) return;
-    const camera = unwrap( state.liveCamera );
-    const { lighting } = unwrap( state.scene );
-    const params = { camera, lighting,
+    if ( props.open ) { // always regenerate when opening the dialog
+      const camera = unwrap( untrack( () => state.camera ) );
+      const lighting = unwrap( untrack( () => state.lighting ) );
+      const params = { camera, lighting,
+        useShapes     : useShapes(),
+        drawOutlines  : drawOutlines(),
+        monochrome    : monochrome(),
+        showBackground: showBackground(),
+        useLighting   : useLighting(),
+      }
+      controllerExportAction( rootController(), 'svg', params )
+        .then( text => {
+          svgRef .innerHTML = text; // automatically parses the text
+        });
+      console.log( 'Regenerating SVG' );
+    }
+  });
+
+  const exportAs = ( ext, mime ) => () =>
+  {
+    props.close();
+    const params = {
       useShapes     : useShapes(),
       drawOutlines  : drawOutlines(),
       monochrome    : monochrome(),
       showBackground: showBackground(),
       useLighting   : useLighting(),
     }
-    controllerExportAction( rootController(), 'svg', params )
-      .then( text => {
-        svgRef .innerHTML = text; // automatically parses the text
-      });
-  });
-
-  const exportAs = ( ext, mime ) => () =>
-  {
-    props.close();
-    props.exportAs( ext, mime )();
+    props.exportAs( ext, mime, ext, params )();
   }
 
   return (

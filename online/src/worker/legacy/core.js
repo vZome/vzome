@@ -17,14 +17,30 @@ import { createParser } from './parser.js'
 // Copied from core/src/main/resources/com/vzome/core/editor/defaultPrefs.properties
 const defaults = {
 
-  "color.red": "175,0,0",
-  "color.yellow": "240,160,0",
-  "color.blue": "0,118,149",
-  "color.green": "0,141,54",
-  "color.orange": "220,76,0",
-  "color.purple": "108,0,198",
-  "color.black": "30,30,30",
-  "color.white": "225,225,225",
+  // Standard Zometool colors
+// color.blue      = 0,142,194    #008ec2
+// color.yellow    = 255,179,26   #ffb31a
+// color.red       = 217,18,24    #d91218
+// color.green     = 0,153,63     #00993f
+// color.turquoise = 0,179,161    #00b3a1
+// color.white     = 242,242,242  #f2f2f2
+// color.black     = 50,50,50     #323232
+// color.orange    = 235,82,0     #eb5200
+// color.purple    = 125,54,211   #7d36d3
+// color.gray      = 133,133,133  #858585
+
+  "color.blue"     : "0,142,194",
+  "color.yellow"   : "255,179,26",
+  "color.red"      : "217,18,24",
+  "color.green"    : "0,153,63",
+  "color.turquoise": "0,179,161",
+  "color.white"    : "242,242,242",
+  "color.black"    : "50,50,50",
+  "color.orange"   : "235,82,0",
+  "color.purple"   : "125,54,211",
+  "color.gray"     : "133,133,133",
+
+
   "color.olive": "100,113,0",
   "color.lavender": "175,135,255",
   "color.maroon": "117,0,50",
@@ -33,7 +49,6 @@ const defaults = {
   "color.brown": "107,53,26",
   "color.apple": "116,195,0",
   "color.sand": "154,117,74",
-  "color.turquoise": "18,205,148",
   "color.coral": "255,126,106",
   "color.sulfur": "230,245,62",
   "color.cinnamon": "136,37,0",
@@ -84,7 +99,7 @@ const makeFloatMatrices = ( matrices ) =>
   });
 }
 
-  const vzomePkg = com.vzome;
+  export const vzomePkg = com.vzome;
   const util = java.util;
 
   // This is a bit of a hack, but how else would you configure system props for JSweet?
@@ -134,19 +149,49 @@ const makeFloatMatrices = ( matrices ) =>
 
   class ImportSimpleMeshJson extends vzomePkg.core.edits.ImportMesh
   {
+    scaleAndProject = true;
+
     getXmlElementName() { return "ImportSimpleMeshJson"; }
+
+    getXmlAttributes( element )
+    {
+      if ( this.scaleAndProject )
+        element .setAttribute( "scaleAndProject", "true" );
+
+      super.getXmlAttributes( element );
+    }
     
+    setXmlAttributes( xml, format )
+    {
+      const boolStr = xml .getAttribute( "scaleAndProject" );
+      // Default is true, but legacy files must behave as if false
+      if ( ! boolStr )
+          this.scaleAndProject = false;
+
+      super.setXmlAttributes( xml, format );
+    }
+
     parseMeshData( offset, events, registry )
     {
-      // TODO: handle projection and scale
+      // Legacy code dropped the 4th coordinate from the projection, implicitly because it never used
+      //   the 4th coordinate, always making a 3D vector.  New code drops the 1st coordinate.
+      let wFirst = false;
+
+      if ( ! this.scaleAndProject ) {
+          const field = this.mManifestations .getField();
+          this.scale = field .one();
+          this.projection = new vzomePkg.core.math.Projection.Default( field );
+      }
+
       const simpleMesh = JSON.parse( this.meshData )
       const field = registry.getField( simpleMesh.field || 'golden' )
       const vertices = simpleMesh.vertices.map( nums => {
-        let vertex = field.createVectorFromTDs( nums )
+        let vertex = field.createVectorFromTDs( nums );
+        vertex = vertex .scale( this.scale );
         if ( vertex.dimension() > 3 )
-            vertex = this.projection.projectImage( vertex, false )
+            vertex = this.projection .projectImage( vertex, wFirst );
         if ( offset != null )
-            vertex = offset.plus( vertex )
+            vertex = offset .plus( vertex );
         return vertex
       } )
       simpleMesh.edges.forEach( strut => {
@@ -191,8 +236,6 @@ const makeFloatMatrices = ( matrices ) =>
     editor.setAdapter( null ) // This should trigger NPEs in any edits that have side-effects in their constructor
 
     let editName = xmlElement.getLocalName()
-    if ( editName === "Snapshot" )
-      return null
 
     if ( editName === "ImportColoredMeshJson" )
       return new ImportColoredMeshJson( editor )
@@ -219,6 +262,10 @@ const makeFloatMatrices = ( matrices ) =>
     const editClass = xmlToEditClass( editName )
     if ( editClass ) {
       const edit = new editClass( editor );
+
+      if ( editName === 'Snapshot' ) {
+        edit .recorder = { recordSnapshot: () => {} }; // safe no-op
+      }
 
       // HACK! This works only when the .vZome file has been hand-edited to add label
       //   attributes to GroupSelection commands.
@@ -260,17 +307,24 @@ const makeFloatMatrices = ( matrices ) =>
   } )
 
   // Initialize the field application
-  await Promise.all( Object.entries( groupResources ).map( ([ key, value ]) => loadAndInjectResource( `com/vzome/core/math/symmetry/${key}.vef`, value ) ) )
+  const groupResourcesReady = Promise.all( Object.entries( groupResources ).map( ([ key, value ]) => loadAndInjectResource( `com/vzome/core/math/symmetry/${key}.vef`, value ) ) )
   const properties = new JsProperties( defaults )
   const colors = new vzomePkg.core.render.Colors( properties )
 
+  const shapesReady = Promise.all( Object.entries( allShapes ).map(
+    async ([ family, shapes ]) => {
+      await Promise.all( Object.entries( shapes ).map( ([ key, value ]) => loadAndInjectResource( `com/vzome/core/parts/${family}/${key}.vef`, value ) ) )
+    }
+  ) )
+
   const fieldApps = {}
   const wrapLegacyField = ( legacyField ) => ({
-    origin: () => legacyField.origin( 3 ).getComponents().map( an => an.toTrailingDivisor() )
+    origin: () => legacyField.origin( 3 ).getComponents().map( an => an.toTrailingDivisor() ),
+    name: legacyField.getName(),
   })
   const addLegacyField = ( fieldClass, appClass ) =>
   {
-    const legacyField = new fieldClass( algebraicNumberFactory )
+    const legacyField = new fieldClass( algebraicNumberFactory );
     legacyField.delegate = wrapLegacyField( legacyField )
     fieldApps[ legacyField.getName() ] = new appClass( legacyField )
   }
@@ -279,17 +333,19 @@ const makeFloatMatrices = ( matrices ) =>
     const legacyField = new vzomePkg.jsweet.JsAlgebraicField( field )
     fieldApps[ field.name ] = new appClass( legacyField )
   }
-  addNewField( goldenField, vzomePkg.core.kinds.GoldenFieldApplication )
-  addNewField( root2Field, vzomePkg.core.kinds.RootTwoFieldApplication )
-  addNewField( root3Field, vzomePkg.core.kinds.RootThreeFieldApplication )
-  addNewField( heptagonField, vzomePkg.core.kinds.HeptagonFieldApplication )
-  addLegacyField( vzomePkg.fields.sqrtphi.SqrtPhiField, vzomePkg.fields.sqrtphi.SqrtPhiFieldApplication )
-  addLegacyField( vzomePkg.core.algebra.SnubCubeField, vzomePkg.core.kinds.SnubCubeFieldApplication )
-  addLegacyField( vzomePkg.core.algebra.SnubDodecField, vzomePkg.core.kinds.SnubDodecFieldApplication )
-  addLegacyField( vzomePkg.core.algebra.SuperGoldenField, vzomePkg.core.kinds.DefaultFieldApplication )
-  addLegacyField( vzomePkg.core.algebra.PlasticNumberField, vzomePkg.core.kinds.DefaultFieldApplication )
-  addLegacyField( vzomePkg.core.algebra.PlasticPhiField, vzomePkg.core.kinds.DefaultFieldApplication )
-  addLegacyField( vzomePkg.core.algebra.EdPeggField, vzomePkg.core.kinds.DefaultFieldApplication )
+  const fieldsReady = groupResourcesReady .then( () => {
+    addNewField( goldenField, vzomePkg.core.kinds.GoldenFieldApplication )
+    addNewField( root2Field, vzomePkg.core.kinds.RootTwoFieldApplication )
+    addNewField( root3Field, vzomePkg.core.kinds.RootThreeFieldApplication )
+    addNewField( heptagonField, vzomePkg.core.kinds.HeptagonFieldApplication )
+    addLegacyField( vzomePkg.fields.sqrtphi.SqrtPhiField, vzomePkg.fields.sqrtphi.SqrtPhiFieldApplication )
+    addLegacyField( vzomePkg.core.algebra.SnubCubeField, vzomePkg.core.kinds.SnubCubeFieldApplication )
+    addLegacyField( vzomePkg.core.algebra.SnubDodecField, vzomePkg.core.kinds.SnubDodecFieldApplication )
+    addLegacyField( vzomePkg.core.algebra.SuperGoldenField, vzomePkg.core.kinds.DefaultFieldApplication )
+    addLegacyField( vzomePkg.core.algebra.PlasticNumberField, vzomePkg.core.kinds.DefaultFieldApplication )
+    addLegacyField( vzomePkg.core.algebra.PlasticPhiField, vzomePkg.core.kinds.DefaultFieldApplication )
+    addLegacyField( vzomePkg.core.algebra.EdPeggField, vzomePkg.core.kinds.DefaultFieldApplication )  
+  });
   const getFieldApp = ( name='golden' ) =>
   {
     let fieldApp = fieldApps[ name ]
@@ -305,9 +361,11 @@ const makeFloatMatrices = ( matrices ) =>
     return fieldApp
   }
 
-  export const getFieldNames = () => Object .keys( fieldApps );
+  const getFieldNames = () => {
+    return Object .keys( fieldApps );
+  }
   
-  export const getField = fieldName =>
+  const getField = fieldName =>
   {
     const fieldApp = getFieldApp( fieldName )
     if ( !fieldApp )
@@ -315,7 +373,7 @@ const makeFloatMatrices = ( matrices ) =>
     return fieldApp.getField();
   }
 
-  export const getFieldLabel = ( fieldName ) =>
+  const getFieldLabel = ( fieldName ) =>
   {
     const fieldApp = getFieldApp( fieldName )
     if ( !fieldApp )
@@ -323,7 +381,7 @@ const makeFloatMatrices = ( matrices ) =>
     return fieldApp .getLabel();
   }
 
-  export const getSymmetry = ( fieldName, symmName ) =>
+  const getSymmetry = ( fieldName, symmName ) =>
   {
     const fieldApp = getFieldApp( fieldName )
     if ( !fieldApp )
@@ -334,7 +392,7 @@ const makeFloatMatrices = ( matrices ) =>
     return symmPersp .getSymmetry();
   }
 
-  export const documentFactory = ( fieldName, namespace, xml ) =>
+  const documentFactory = ( fieldName, namespace, xml ) =>
   {
     // This reproduces the DocumentModel constructor pretty faithfully
 
@@ -461,6 +519,7 @@ const makeFloatMatrices = ( matrices ) =>
     const originBall = realizedModel .manifest( originPoint );
     originBall .addConstruction( originPoint );
     realizedModel .add( originBall );
+
     realizedModel .show( originBall );
 
     const getBall = location => realizedModel .getManifestation( new vzomePkg.core.construction.FreePoint( location ) );
@@ -529,8 +588,6 @@ const makeFloatMatrices = ( matrices ) =>
 
     const interpretEdit = ( xmlElement, context ) =>
     {
-      if ( xmlElement .tagName === 'RunZomicScript' )
-        throw new Error( 'Zomic script commands are not yet supported in Online.' );
       const wrappedElement = new JavaDomElement( xmlElement )
       const edit = editFactory( editor, toolFactories, toolsModel )( wrappedElement )
       if ( ! edit )   // Null edit only happens for expected cases (e.g. "Shapshot"); others become CommandEdit.
@@ -547,8 +604,14 @@ const makeFloatMatrices = ( matrices ) =>
         }
       }
       
-      edit.loadAndPerform( wrappedElement, format, context )
-
+      try {
+        edit.loadAndPerform( wrappedElement, format, context )
+      } catch (error) {
+        if ( error .message .endsWith( 'command is not available yet' ) )
+          throw new Error( `${xmlElement.tagName} command is not available`);
+        else
+          throw error;
+      }
       checkSideEffects( edit, wrappedElement );
 
       return edit;
@@ -613,14 +676,8 @@ const makeFloatMatrices = ( matrices ) =>
       RM.renderChange( new RM( null, null ), renderedModel, renderingListener );
     }
 
-    const serializeToDom = () =>
+    const serializeToDom = ( doc, root ) =>
     {
-      const doc = new JavaDomDocument();
-
-      // This is not meant to be the traditional "vzome:vZome" root element,
-      //   since the camera and lighting state are not managed here in the worker.
-      //   Furthermore, the main app should control the root attributes.
-      const root = doc .createElement( "design" );
       root .setAttribute( "field", field.name );
 
       let childElement;
@@ -664,17 +721,25 @@ const makeFloatMatrices = ( matrices ) =>
 
       childElement = toolsModel .getXml( doc );
       root .appendChild( childElement );
-
-      return root;
     }
 
     const getOrbitSource = () => orbitSource;
 
     return { interpretEdit, configureAndPerformEdit, batchRender, serializeToDom, setSymmetrySystem, getSymmetrySystem, getChangeCount,
       getOrbitSource, getBall,
+      snapshotNodes: [ '--END--' ],
+      scenes: [],
+      camera: {},
       editor,
       field, legacyField, fieldApp,
       renderedModel, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };
+  }
+
+  export const initialize = async () =>
+  {
+    await Promise.all( [ fieldsReady, shapesReady ] );
+    const parse = createParser( documentFactory );
+    return { getFieldNames, getField, getFieldLabel, getSymmetry, documentFactory, parse };
   }
 
   export const convertColor = color =>
@@ -737,10 +802,3 @@ const makeFloatMatrices = ( matrices ) =>
   // for ( const name of Object.keys( vzomePkg.core.edits ) )
   //   commands[ name ] = legacyCommandFactory( documentFactory, name )
 
-  export const parse = createParser( documentFactory )
-
-  await Promise.all( Object.entries( allShapes ).map(
-    async ([ family, shapes ]) => {
-      await Promise.all( Object.entries( shapes ).map( ([ key, value ]) => loadAndInjectResource( `com/vzome/core/parts/${family}/${key}.vef`, value ) ) )
-    }
-  ) )

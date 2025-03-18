@@ -2,7 +2,6 @@ package com.vzome.core.model;
 
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicVector;
-import com.vzome.core.construction.Color;
 import com.vzome.core.construction.Construction;
 import com.vzome.core.construction.FreePoint;
 
@@ -15,11 +14,11 @@ public class ConnectorImpl extends ManifestationImpl implements Connector
 	public ConnectorImpl( AlgebraicVector loc )
 	{
 		super();
-		this.setColor(Color.WHITE);
 		m_center = loc;
 	}
 
 	private final AlgebraicVector m_center;
+    private String label;
 
 	@Override
 	public AlgebraicVector getLocation()
@@ -78,5 +77,17 @@ public class ConnectorImpl extends ManifestationImpl implements Connector
     public String toString()
     {
         return "connector at " + m_center .toString();
+    }
+
+    @Override
+    public void setLabel( String label )
+    {
+        this.label = label;
+    }
+
+    @Override
+    public String getLabel()
+    {
+        return this .label;
     }
 }

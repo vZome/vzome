@@ -16,7 +16,7 @@ class Renderer implements RenderingChanges
     static class UnityMeshView implements AlgebraicNumber.Views.Real, Polyhedron.Views.UnityMesh {}
 
     private final Adapter adapter;
-    private final JsonMapper mapper = new JsonMapper( UnityMeshView.class, true );
+    private final JsonMapper mapper = new JsonMapper( UnityMeshView.class, true, true );
     private final ObjectWriter objectWriter = mapper .getObjectMapper() .writer();
 
     Renderer( Adapter adapter )
@@ -68,6 +68,9 @@ class Renderer implements RenderingChanges
 
     @Override
     public void glowChanged( RenderedManifestation rm ) {}
+
+    @Override
+    public void labelChanged( RenderedManifestation rm ) {}
 
     @Override
     public void colorChanged( RenderedManifestation rm )

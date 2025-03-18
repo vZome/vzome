@@ -21,6 +21,7 @@ export class BuildPlaneController extends com.vzome.desktop.controller.DefaultCo
           this.latestBall = normalizeRenderedManifestation( rm );
       },
       manifestationRemoved: () => {},
+      labelChanged: () => {},
       colorChanged: () => {},
       glowChanged: () => {},
     } );

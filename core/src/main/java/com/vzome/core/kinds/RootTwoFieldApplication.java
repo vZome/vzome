@@ -18,6 +18,7 @@ import com.vzome.core.math.symmetry.SpecialOrbit;
 import com.vzome.core.math.symmetry.Symmetry;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
 import com.vzome.core.tools.InversionToolFactory;
+import com.vzome.core.tools.LineReflectionToolFactory;
 import com.vzome.core.tools.LinearMapToolFactory;
 import com.vzome.core.tools.MirrorToolFactory;
 import com.vzome.core.tools.OctahedralToolFactory;
@@ -28,6 +29,7 @@ import com.vzome.core.tools.TetrahedralToolFactory;
 import com.vzome.core.tools.TranslationToolFactory;
 import com.vzome.core.viewing.AbstractShapes;
 import com.vzome.core.viewing.ExportedVEFShapes;
+import com.vzome.core.viewing.SchochShapes;
 
 /**
  * Everything here is stateless, or at worst, a cache (like Shapes).
@@ -54,8 +56,10 @@ public class RootTwoFieldApplication extends DefaultFieldApplication
 
         AbstractShapes defaultShapes = new ExportedVEFShapes( null, "rootTwoSmall", "small octahedra", "small connectors", symmetry );
         octahedralPerspective .setDefaultGeometry( defaultShapes );
-        octahedralPerspective .addShapes( new ExportedVEFShapes( null, "rootTwo", "Tesseractix", symmetry, defaultShapes ) );
         octahedralPerspective .addShapes( new ExportedVEFShapes( null, "rootTwoBig", "ornate", symmetry, defaultShapes ) );
+        AbstractShapes rootTwoShapes = new SchochShapes( null, "rootTwo", "Schoch solid", symmetry, defaultShapes );
+        octahedralPerspective .addShapes( rootTwoShapes );
+        octahedralPerspective .addShapes( new SchochShapes( null, "root2Lifelike", "Schoch lifelike", symmetry, rootTwoShapes ) );
     }
 
     @Override
@@ -148,6 +152,7 @@ public class RootTwoFieldApplication extends DefaultFieldApplication
                 result .add( new OctahedralToolFactory( tools, this .symmetry ) );
                 result .add( new TetrahedralToolFactory( tools, this .symmetry ) );
                 result .add( new InversionToolFactory( tools ) );
+                result .add( new LineReflectionToolFactory( tools ));
                 result .add( new MirrorToolFactory( tools ) );
                 result .add( new AxialSymmetryToolFactory( tools, this .symmetry ) );
                 break;

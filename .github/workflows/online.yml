@@ -17,85 +17,22 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.3.x]
+        node-version: [18.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         lfs: 'true'
 
-    - name: Set up JDK
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-
-    - name: Checkout modified jsweet
-      uses: actions/checkout@v3
-      with:
-        repository: vorth/jsweet
-        ref: develop
-        path: jsweet
-    - name: Build & deploy jsweet transpiler
-      run: |
-        pwd
-        cd jsweet/transpiler
-        pwd
-        mvn clean install -Dmaven.test.skip=true -DskipJavadoc=true -DskipSigning=true
-        cd ../..
-
-    - name: Checkout modified jsweet-maven-plugin
-      uses: actions/checkout@v3
-      with:
-        repository: vorth/jsweet-maven-plugin
-        path: jsweet-maven
-    - name: Build & deploy jsweet-maven-plugin
-      run: |
-        pwd
-        cd jsweet-maven
-        pwd
-        mvn clean install -Dmaven.test.skip=true -DskipJavadoc=true -DskipSigning=true
-        cd ..
-
-    - name: Checkout modified j4ts
-      uses: actions/checkout@v3
-      with:
-        repository: vorth/j4ts
-        ref: update-jsweet
-        path: j4ts
-    - name: Build & deploy j4ts
-      run: |
-        pwd
-        cd j4ts
-        pwd
-        chmod +x mvnw
-        ./mvnw clean compile install
-        cd ..
-
-    - name: Checkout modified jsweet-gradle-plugin
-      uses: actions/checkout@v3
-      with:
-        repository: vorth/jsweet-gradle-plugin
-        ref: update-jsweet
-        path: plugin
-    - name: Build & deploy jsweet-gradle-plugin
-      run: |
-        pwd
-        cd plugin
-        pwd
-        chmod +x gradlew
-        ./gradlew publishToMavenLocal -DskipSigning=true
-        cd ..
-
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
     - name: Build with Gradle and Yarn
       run: |
-        chmod +x gradlew cicd/build-online.bash
-        cicd/build-online.bash
+        chmod +x gradlew cicd/online.bash
+        cicd/online.bash prod
 
     - name: Configure SSH
       run: |
@@ -117,9 +54,11 @@ jobs:
     - name: Publish Online build to DreamHost
       run: |
         sftp -b - dreamhost <<END
+          put cicd/install-vzome-online.bash
           cd vzome.com/
           put online/dist/online.tgz	
         END
+        ssh dreamhost chmod a+x ./install-vzome-online.bash
         ssh dreamhost ./install-vzome-online.bash
 
 

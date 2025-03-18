@@ -42,4 +42,8 @@ public interface Manifestation extends GroupElement {
     void setColor( Color color );
 
     void setRenderedObject( RenderedObject renderedObject );
+    
+    public void setLabel( String label );
+    
+    String getLabel();
 }

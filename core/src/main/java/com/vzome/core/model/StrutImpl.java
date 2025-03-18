@@ -15,6 +15,7 @@ public class StrutImpl extends ManifestationImpl implements Strut
 {
 	private final AlgebraicVector m_end1, m_end2;
 	private AlgebraicVector zoneVector;
+    private String label;
 
     public StrutImpl( AlgebraicVector end1, AlgebraicVector end2 )
     {
@@ -132,5 +133,17 @@ public class StrutImpl extends ManifestationImpl implements Strut
     public String toString()
     {
         return "strut from " + m_end1 .toString() + " to " + m_end2 .toString();
+    }
+
+    @Override
+    public void setLabel( String label )
+    {
+        this.label = label;
+    }
+
+    @Override
+    public String getLabel()
+    {
+        return this .label;
     }
 }

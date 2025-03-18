@@ -1,0 +1,115 @@
+---
+title: Scene Subsets from One vZome Design
+description:
+  Testing three vZome viewers, each with a subset of scenes from one design
+published: true
+---
+
+<script type="module">
+  import "https://www.vzome.com/modules/vzome-viewer.js";
+
+  const subsetViewers = {
+    'fat-red': {
+      index: 2,                       // current index into scenes
+      scenes: [ "#2", "#3", "#4" ],   // the scenes we want
+      camera: false,                  // whether to load the camera from each scene
+    },
+    'thin-red': {
+      index: 2,
+      scenes: [ "#11", "#12", "#13" ],
+      camera: true,
+    },
+  };
+
+  const setupViewer = ( name, data ) =>
+  {
+    const figure = document .getElementById( name );
+    const viewer = figure .querySelector( 'vzome-viewer' );
+    const nextBtn = figure .querySelector( '.next' );
+    const prevBtn = figure .querySelector( '.previous' );
+
+    const changeScene = incr => {
+      const N = data.scenes.length;
+      data.index = ( data.index + N + incr ) % N; // never goes negative, which would break %
+      console.log( 'showing scene', name, data.index, data.scenes[ data.index ] );
+      viewer .scene = data.scenes[ data.index ];
+      viewer .update( { camera: data.camera } );
+    }
+
+    nextBtn .addEventListener( "click", () => changeScene( +1 ) );
+    prevBtn .addEventListener( "click", () => changeScene( -1 ) );
+
+    changeScene( 0 );
+  }
+
+  for (const [ name, data ] of Object.entries( subsetViewers ) ) {
+    setupViewer( name, data );
+  }
+
+</script>
+
+<noscript>You need to enable JavaScript to run this app.</noscript>
+<h1>Scene Subsets from One vZome Design</h1>
+
+<p>
+  All of the viewers below are showing the same vZome design, which has many scenes.
+  No viewer shows all of the scenes.  Showing a single scene is trivial, and does not
+  need any Javascript.
+</p>
+
+<figure style="width: 87%; margin: 5%">
+  <vzome-viewer style="width: 100%; height: 40vh" scene='#5' id="single"
+      src="https://lucosmic.github.io/vzome-sharing/2025/01/18/23-59-30-PRJ-HYP-mod1-hyperdo/PRJ-HYP-mod1-hyperdo.vZome" >
+    <img style="width: 100%"
+      src="https://lucosmic.github.io/vzome-sharing/2025/01/18/23-59-30-PRJ-HYP-mod1-hyperdo/PRJ-HYP-mod1-hyperdo.png" >
+  </vzome-viewer>
+  <figcaption style="text-align: center; font-style: italic;">
+      This viewer shows one scene out of many in the vZome design
+  </figcaption>
+  </figure>
+  
+<p>
+  Showing a subset of scenes in a viewer requires Javascript, and a fully controlled
+  viewer component, with <code>reactive='false'</code>.
+</p>
+
+<figure style="width: 87%; margin: 5%" id="fat-red">
+  <div style='display:flex;'>
+    <div style='margin: auto;'>
+      <button class='previous'>prev scene</button>
+      <button class='next'>next scene</button>
+    </div>
+  </div>
+  <vzome-viewer style="width: 100%; height: 40vh" reactive='false'
+      src="https://lucosmic.github.io/vzome-sharing/2025/01/18/23-59-30-PRJ-HYP-mod1-hyperdo/PRJ-HYP-mod1-hyperdo.vZome" >
+    <img style="width: 100%"
+      src="https://lucosmic.github.io/vzome-sharing/2025/01/18/23-59-30-PRJ-HYP-mod1-hyperdo/PRJ-HYP-mod1-hyperdo.png" >
+  </vzome-viewer>
+  <figcaption style="text-align: center; font-style: italic;">
+    This viewer is controlled to show three scenes out of many in the vZome design
+  </figcaption>
+</figure>
+
+<p>
+  In the HTML, the only difference between the figure above and the one below is the <code>id</code>.
+  This drives the different treatment by the Javascript.
+  Take a look at the 
+  <a href="https://github.com/vZome/vzome/blob/main/docs/webdev/samples/scene-subsets.html" target="_blank" rel="noopener noreferrer">source code for this page.</a>
+</p>
+
+<figure style="width: 87%; margin: 5%" id="thin-red">
+  <div style='display:flex;'>
+    <div style='margin: auto;'>
+      <button class='previous'>prev scene</button>
+      <button class='next'>next scene</button>
+    </div>
+  </div>
+  <vzome-viewer style="width: 100%; height: 40vh" reactive='false'
+      src="https://lucosmic.github.io/vzome-sharing/2025/01/18/23-59-30-PRJ-HYP-mod1-hyperdo/PRJ-HYP-mod1-hyperdo.vZome" >
+    <img style="width: 100%"
+      src="https://lucosmic.github.io/vzome-sharing/2025/01/18/23-59-30-PRJ-HYP-mod1-hyperdo/PRJ-HYP-mod1-hyperdo.png" >
+  </vzome-viewer>
+  <figcaption style="text-align: center; font-style: italic;">
+    This viewer is controlled to show three scenes out of many in the vZome design
+  </figcaption>
+</figure>

@@ -10,7 +10,7 @@ import Divider from '@suid/material/Divider'
 
 import { Tab, Tabs } from '../../framework/tabs.jsx';
 
-import { UrlViewer } from '../../../viewer/solid/index.jsx'
+import { UrlViewer } from '../../../viewer/index.jsx'
 import { VZomeAppBar } from '../../classic/components/appbar.jsx';
 
 const metadata = {
@@ -82,7 +82,7 @@ const metadata = {
     "doubleSpiral": {
       "parts": "10 short reds, 10 medium reds, 20 long reds, 10 short yellows, and 47 balls.",
       "description": "",
-      config: { showScenes: false }
+      config: { showScenes: 'none' }
     },
   },
 }
@@ -129,7 +129,7 @@ const BHallBasic = () =>
       <VZomeAppBar title='Apps'
         about={ <>
           <Typography gutterBottom>
-            vZome Online Apps are demonstrations
+            vZome Apps are demonstrations
             of <Link target="_blank" rel="noopener" href="https://vzome.com/home/">vZome</Link> technology ported to the web,
             showing how to build web applications that incorporate interactive 3D views.
           </Typography>

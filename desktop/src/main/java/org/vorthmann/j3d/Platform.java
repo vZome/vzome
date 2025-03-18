@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  */
 public class Platform
 {	
-	static boolean isMac = false;
+	public static boolean isMac = false;
 	
 	static boolean isWindows = false;
     

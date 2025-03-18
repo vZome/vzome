@@ -47,6 +47,7 @@ import com.vzome.core.editor.api.Context;
 import com.vzome.core.editor.api.EditorModel;
 import com.vzome.core.editor.api.OrbitSource;
 import com.vzome.core.editor.api.UndoableEdit;
+import com.vzome.core.exporters.DocumentIntf;
 import com.vzome.core.exporters.ShapesJsonExporter;
 import com.vzome.core.math.Projection;
 import com.vzome.core.math.RealVector;
@@ -60,15 +61,17 @@ import com.vzome.core.model.ManifestationChanges;
 import com.vzome.core.model.ManifestationImpl;
 import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModelImpl;
+import com.vzome.core.model.SimpleMeshJson;
 import com.vzome.core.model.Strut;
 import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.tools.BookmarkToolFactory;
 import com.vzome.core.viewing.Camera;
+import com.vzome.core.viewing.CameraIntf;
 import com.vzome.core.viewing.Lights;
 import com.vzome.xml.DomSerializer;
 
-public class DocumentModel implements Snapshot .Recorder, Context
+public class DocumentModel implements Snapshot .Recorder, Context, DocumentIntf
 {
     private final RealizedModelImpl mRealizedModel;
 
@@ -375,6 +378,15 @@ public class DocumentModel implements Snapshot .Recorder, Context
         StringWriter out = new StringWriter();
         switch ( format ) {
 
+        case "mesh":
+            try {
+                SimpleMeshJson .generate( this .editorModel .getSelection(), this .field, out );
+            } catch (IOException e) {
+                // TODO fail better here
+                e.printStackTrace();
+            }
+            break;
+
         case "cmesh":
             try {
                 ColoredMeshJson .generate( this .editorModel .getSelection(), this .field, out );
@@ -385,7 +397,7 @@ public class DocumentModel implements Snapshot .Recorder, Context
             break;
 
         case "shapes":
-            ShapesJsonExporter ojex = new ShapesJsonExporter();
+            ShapesJsonExporter ojex = new ShapesJsonExporter( false );
             try {
                 ojex .exportDocument( this, null, out, 0, 0 );
             } catch (Exception e) {
@@ -871,6 +883,12 @@ public class DocumentModel implements Snapshot .Recorder, Context
     }
 
     public Camera getCamera()
+    {
+        return this .defaultCamera;
+    }
+
+    @Override
+    public CameraIntf getCameraModel()
     {
         return this .defaultCamera;
     }

@@ -1,0 +1,127 @@
+/* Grabbed from Kobalte docs, and perhaps tweaked later */
+
+.tabs {
+  width: 100%;
+}
+.tabs[data-orientation="vertical"] {
+  display: flex;
+}
+.tabs__list {
+  position: relative;
+  display: flex;
+}
+.tabs__list[data-orientation="horizontal"] {
+  align-items: center;
+  border-bottom: 1px solid hsl(240 5% 84%);
+}
+.tabs__list[data-orientation="vertical"] {
+  flex-direction: column;
+  align-items: stretch;
+  border-right: 1px solid hsl(240 5% 84%);
+}
+.tabs__indicator {
+  position: absolute;
+  background-color: hsl(200 98% 39%);
+  transition: all 250ms;
+}
+.tabs__indicator[data-orientation="horizontal"] {
+  bottom: -1px;
+  height: 3px;
+}
+.tabs__indicator[data-orientation="vertical"] {
+  right: -1px;
+  width: 2px;
+}
+.tabs__trigger {
+  display: inline-block;
+  padding: 8px 16px;
+  outline: none;
+  border: none;
+  font-size: medium;
+  text-transform: capitalize;
+}
+.tabs__trigger:hover {
+  background-color: hsl(0 0% 98%);
+  color: hsl(240 5% 34%);
+}
+.tabs__trigger:focus-visible {
+  background-color: hsl(240 5% 96%);
+}
+.tabs__trigger[data-disabled],
+.tabs__trigger[data-disabled]:hover {
+  opacity: 0.5;
+  background-color: transparent;
+}
+.tabs__content {
+  padding: 16px;
+}
+
+
+/* From https://kobalte.dev/docs/core/components/slider */
+
+#zoom-slider {
+  position: relative;
+  min-height: 100px;
+  min-width: 60px;
+}
+
+.SliderRoot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  touch-action: none;
+  height: 100%;
+}
+.SliderTrack {
+  background-color: hsl(240 6% 90%);
+  position: relative;
+  border-radius: 9999px;
+  width: 8px;
+  height: 100%;
+  margin-block: 7px;
+  margin-inline-start: 15px;
+}
+.SliderRange {
+  position: absolute;
+  background-color: hsl(200 98% 39%);
+  border-radius: 9999px;
+  width: 100%;
+}
+.SliderThumb {
+  display: block;
+  width: 16px;
+  height: 12px;
+  background-color: hsl(200 98% 39%);
+  border-radius: 9999px;
+  left: -4px;
+}
+.SliderThumb:hover {
+  box-shadow: 0 0 0 5px #2a91fe98;
+}
+.SliderThumb:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px #2a91fe98;
+}
+.SliderLabel {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  padding-inline: 5px;
+  padding-block-end: 3px;
+}
+
+.near-label {
+  position: absolute;
+  top: 1.6rem;
+  left: 2rem;
+  font-size: 13px;
+}
+
+.far-label {
+  position: absolute;
+  bottom: 0.6rem;
+  left: 2rem;
+  font-size: 13px;
+}

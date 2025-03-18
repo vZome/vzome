@@ -10,7 +10,7 @@ import InputLabel from "@suid/material/InputLabel";
 import MenuItem from "@suid/material/MenuItem";
 import Select from "@suid/material/Select";
 
-import { controllerAction, controllerProperty, subController } from "../../../workerClient/controllers-solid.js";
+import { controllerProperty, subController, useEditor } from '../../framework/context/editor.jsx';
 
 const indices = [ 0, 1, 2, 3 ];
 const alt = Math.sqrt( 3 ) / 2;
@@ -21,6 +21,7 @@ const y_others = [ 1, 1, 1, 1 ];
 
 const CoxeterDiagram = props =>
 {
+  const { controllerAction } = useEditor();
   const useMirror = (i) => () => controllerProperty( props.controller, `edge.${i}` ) === 'true';
   const toggleMirror = (i) => (evt) =>
   {
@@ -64,6 +65,7 @@ const CoxeterDiagram = props =>
 
 export const PolytopesDialog = props =>
 {
+  const { controllerAction } = useEditor();
   const controller = () => subController( props.controller, 'polytopes' );
   const groups = () => controllerProperty( controller(), 'groups', 'groups', true );
   const group = () => controllerProperty( controller(), 'group', 'group', false ) || 'H4'; // must not be undefined, so select is controlled

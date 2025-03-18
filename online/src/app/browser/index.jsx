@@ -7,15 +7,19 @@ import Link from '@suid/material/Link'
 
 import { VZomeAppBar } from '../classic/components/appbar.jsx';
 import { DesignBrowser } from './browser.jsx';
-import { WorkerStateProvider } from '../../workerClient/context.jsx';
+import { WorkerProvider } from '../../viewer/context/worker.jsx';
+import { ViewerProvider } from '../../viewer/context/viewer.jsx';
+import { CameraProvider } from '../../viewer/context/camera.jsx';
 
 const Browser = () => (
   <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
-    <WorkerStateProvider>
+    <CameraProvider>
+    <WorkerProvider>
+    <ViewerProvider>
       <VZomeAppBar title='Browser'
         about={ <>
           <Typography gutterBottom>
-            vZome Online Browser shows all of
+            vZome Browser shows all of
             the <Link target="_blank" rel="noopener" href="https://vzome.com/home/">vZome</Link> designs
             uploaded and available in
             a <Link target="_blank" rel="noopener" href="https://vzome.github.io/vzome//sharing.html">vZome sharing</Link> GitHub repository.
@@ -39,7 +43,9 @@ const Browser = () => (
           </Typography>
         </> } />
       <DesignBrowser />
-    </WorkerStateProvider>
+    </ViewerProvider>
+    </WorkerProvider>
+    </CameraProvider>
   </ErrorBoundary>
 )
 

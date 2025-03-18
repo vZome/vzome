@@ -41,6 +41,7 @@ export class ParsedEdit
 
   perform( context )
   {
+    // console.log( 'perform', this.nativeElement.id, this.nativeElement.tagName );
     this.legacyEdit = this.interpret.call( this, this.nativeElement, context );
   }
 

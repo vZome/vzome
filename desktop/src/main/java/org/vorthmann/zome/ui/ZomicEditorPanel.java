@@ -112,7 +112,10 @@ public class ZomicEditorPanel extends JPanel implements Tool
             int num;
             while ( ( num = input .read( buf, 0, 1024 )) > 0 )
                 out .write( buf, 0, num );
-            return new String( out .toByteArray() );
+            String result = new String( out .toByteArray() );
+            result = result .replace( "\r\n", "\n" );
+            result = result .replace( "\r", "\n" );
+            return result;
         }
         catch (IOException exc) {
             exc.printStackTrace();

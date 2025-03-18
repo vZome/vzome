@@ -5,8 +5,11 @@
 import connectorUrl from './connector.vef'
 import blueUrl from './blue.vef'
 import yellowUrl from './yellow.vef'
+import yellowShortUrl from './yellow-short.vef'
 import redUrl from './red.vef'
+import redShortUrl from './red-short.vef'
 import greenUrl from './green.vef'
+import greenShortUrl from './green-short.vef'
 import snubDiagonalUrl from './snubDiagonal.vef'
 import blackUrl from './black.vef'
 import maroonUrl from './maroon.vef'
@@ -52,6 +55,9 @@ const shapes = {
   apple: appleUrl,
   lavender: lavenderUrl,
   orange: orangeUrl,
+  'red-short': redShortUrl,
+  'yellow-short': yellowShortUrl,
+  'green-short': greenShortUrl,
 }
 
 export default shapes

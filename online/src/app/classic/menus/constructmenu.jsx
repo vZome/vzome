@@ -1,52 +1,52 @@
 
-import { Divider, Menu, SubMenu, createMenuAction } from "../../framework/menus.jsx";
-
-import { useWorkerClient } from "../../../workerClient/index.js";
+import { Divider, Menu, SubMenu, CommandAction } from "../../framework/menus.jsx";
 
 export const ConstructMenu = () =>
 {
-  const { rootController } = useWorkerClient();
-  const EditAction = createMenuAction( rootController() );
-
   return (
     <Menu label="Construct">
-        <EditAction label="Loop Balls"         action="JoinPoints/CLOSED_LOOP" mods="⌘" key="J" />
-        <EditAction label="Chain Balls"        action="JoinPoints/CHAIN_BALLS" mods="⌥⌘" key="J" />
-        <EditAction label="Join Balls to Last" action="JoinPoints/ALL_TO_LAST" />
-        <EditAction label="Make All Possible Struts" action="JoinPoints/ALL_POSSIBLE" />
+        <CommandAction label="Loop Balls"         action="JoinPoints/CLOSED_LOOP" />
+        <CommandAction label="Chain Balls"        action="JoinPoints/CHAIN_BALLS" />
+        <CommandAction label="Join Balls to Last" action="JoinPoints/ALL_TO_LAST" />
+        <CommandAction label="Make All Possible Struts" action="JoinPoints/ALL_POSSIBLE" />
 
         <Divider />
 
-        <EditAction label="Panel" action="panel" mods="⌘" key="P" />
-        <EditAction label="Panel/Strut Vertices" action="ShowVertices" />
-        <EditAction label="Panel Normals" action="ShowNormals" />
-
-        <Divider />
-        
-        <EditAction label="Centroid" action="NewCentroid" />
-        <EditAction label="Strut Midpoint" action="midpoint" />
-        <EditAction label="Line-Line Intersection"  action="StrutIntersection" />
-        <EditAction label="Line-Plane Intersection" action="LinePlaneIntersect" />
-        <EditAction label="Panel-Panel Projection"  action="PanelPanelIntersection" />
-        <EditAction label="Cross Product" action="CrossProduct" />
-        <EditAction label="Normal to Skew Lines" action="JoinSkewLines" />
+        <CommandAction label="Panel" action="panel" />
+        <CommandAction label="Panel/Strut Vertices" action="ShowVertices" />
+        <CommandAction label="Panel Normals" action="ShowNormals" />
 
         <Divider />
         
-        <EditAction label="Ball At Origin" action="ShowPoint/origin" />
+        <CommandAction label="Centroid" action="NewCentroid" />
+        <CommandAction label="Strut Midpoints" action="midpoint" />
+        <CommandAction label="Panel Centroids" action="PanelCentroids" />
+        <CommandAction label="Panel Perimeters" action="PanelPerimeters" />
+
+        <Divider />
+
+        <CommandAction label="Line-Line Intersection"  action="StrutIntersection" />
+        <CommandAction label="Line-Plane Intersection" action="LinePlaneIntersect" />
+        <CommandAction label="Panel-Panel Projection"  action="PanelPanelIntersection" />
+        <CommandAction label="Cross Product" action="CrossProduct" />
+        <CommandAction label="Normal to Skew Lines" action="JoinSkewLines" />
 
         <Divider />
         
-        <EditAction label="2D Convex Hull" action="ConvexHull2d" />
+        <CommandAction label="Ball At Origin" action="ShowPoint/origin" />
+
+        <Divider />
+        
+        <CommandAction label="2D Convex Hull" action="ConvexHull2d" />
         <SubMenu label="3D Convex Hull">
-          <EditAction label="Complete" action="ConvexHull3d" />
-          <EditAction label="Panels Only" action="ConvexHull3d/onlyPanels" />
-          <EditAction label="Struts Only" action="ConvexHull3d/noPanels" />
+          <CommandAction label="Complete" action="ConvexHull3d" />
+          <CommandAction label="Panels Only" action="ConvexHull3d/onlyPanels" />
+          <CommandAction label="Struts Only" action="ConvexHull3d/noPanels" />
         </SubMenu>
 
         <Divider />
         
-        <EditAction label="Parallelepiped" action="Parallelepiped" mods="⇧⌘" key="P" />
+        <CommandAction label="Parallelepiped" action="Parallelepiped" />
     </Menu>
   );
 }

@@ -1,35 +1,33 @@
 #!/bin/bash
 
-banner() {
-  echo ''
-  echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-  echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-  echo '%%%%    '$1
-  echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-  echo '%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%'
-  echo ''
-}
+# JSweet has effectively died.  Keeping it working was already far too complex,
+# and now their Artifactory server is gone.
 
-# This is designed to run from the main repo as a working directory.
-# From the command line there, run "cicd/jsweet-legacy-code.bash".
+# I'm now committing the generated Typescript and Javascript, and we'll move
+# forward with manual porting for any changes we do to the Java source.
+
+# See online/build.gradle for more details.
 
 
-rm -rf online/node_modules online/.jsweet
+if [ -z ${REVISION+x} ]; then
+  echo "This script is not meant to run as a top-level entry point.  Use online.bash."
+  exit 1
+fi
+
+verifyJava
+
+# removing online/node_modules/@types because the JSweet TSC doesn't like Three.d.ts
+rm -rf online/.jsweet online/jsweetOut online/node_modules/@types
 
 banner 'Transpiling core Java sources with JSweet' ######################################
 
 ./gradlew --continue -p online coreClean core &> core-errors.txt    # ignore the exit code, it always fails
 cat core-errors.txt
 
-grep -q 'transpilation failed with 32 error(s) and 0 warning(s)' core-errors.txt \
+grep -q 'transpilation failed with 35 error(s) and 0 warning(s)' core-errors.txt \
   && banner 'JSweet core transpile found the expected errors' \
   || { banner 'UNEXPECTED CHANGE IN JSWEET CORE ERRORS'; exit 1; }
 
-
-
-LEGACY=online/src/worker/legacy
-CANDIES_IN=online/jsweetOut/core/candies
-CANDIES_OUT="$LEGACY/candies"
 
 banner 'Patching up the j4ts bundle as an ES6 module' ######################################
 
@@ -48,7 +46,6 @@ banner 'Patching up the core bundle as an ES6 module' ##########################
 
 OUTJS=$LEGACY/core-java.js
 echo 'import { java, javaemul } from "./candies/j4ts-2.1.0-SNAPSHOT/bundle.js"' > $OUTJS
-# echo 'import { javax } from "./candies/j4ts-awt-swing-0.0.2-SNAPSHOT/bundle.js"' >> $OUTJS
 
 cat 'online/jsweetOut/core/js/bundle.js' | \
   sed \
@@ -56,4 +53,7 @@ cat 'online/jsweetOut/core/js/bundle.js' | \
     -e 's/var java;//' \
     -e 's/(java || (java = {}));/(java);/' \
   >> $OUTJS
+
+echo '/* THIS FILE IS CURRENTLY IGNORED! We are using the generated core-java.js instead, for now. */' > $LEGACY/ts/core-java.ts
+cat online/jsweetOut/core/ts/bundle.ts >> $LEGACY/ts/core-java.ts
 

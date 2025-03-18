@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
+import com.vzome.core.construction.ConstructionChanges;
+import com.vzome.core.construction.Point;
 import com.vzome.core.math.RealVector;
+import com.vzome.core.math.symmetry.Symmetry;
 
 public abstract class AbstractAlgebraicField implements AlgebraicField
 {
@@ -632,10 +635,12 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     @Override
     public AlgebraicVector createVectorFromTDs( int[][] nums )
     {
-        AlgebraicNumber x = this .createAlgebraicNumberFromTD( nums[0] );
-        AlgebraicNumber y = this .createAlgebraicNumberFromTD( nums[1] );
-        AlgebraicNumber z = this .createAlgebraicNumberFromTD( nums[2] );
-        return new AlgebraicVector( x, y, z );
+        int dims = nums.length;
+        AlgebraicNumber[] coords = new AlgebraicNumber[ dims ];
+        for(int c = 0; c < coords.length; c++) {
+          coords[c] = this.createAlgebraicNumberFromTD( nums[c] );
+        }
+        return new AlgebraicVector( coords );
     }
 
     /**
@@ -936,5 +941,11 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
             return "<mrow>" + buf .toString() + "</mrow>";
         else
             return buf .toString();
+    }
+
+    @Override
+    public void interpretScript( String script, String language, Point offset, Symmetry symmetry, ConstructionChanges effects ) throws Exception
+    {
+        throw new Exception( "Scripts are only supported in the golden field." );
     }
 }

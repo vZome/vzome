@@ -73,11 +73,8 @@ const parseViewXml = ( viewingElement ) =>
   return camera;
 }
 
-const parseArticle = ( notesElement, xmlTree ) =>
+const findSnapshotNodes = ( xmlTree ) =>
 {
-  if ( !notesElement )
-    return [];
-
   const snapshotNodes = [];
   const findSnapshots = ( txmlElement ) =>
   {
@@ -93,12 +90,21 @@ const parseArticle = ( notesElement, xmlTree ) =>
     }
   }
   findSnapshots( xmlTree );
+  return snapshotNodes;
+}
+
+const parseArticle = ( notesElement ) =>
+{
+  if ( !notesElement )
+    return [];
+
   const parseArticlePage = ( pageElement ) =>
   {
     const { snapshot, title } = pageElement.attributes;
-    const nodeId = snapshotNodes[ snapshot ];
-    const camera = parseViewXml( new JavaDomElement( pageElement ) );
-    return { title, nodeId, camera };
+    const pageDom = new JavaDomElement( pageElement );
+    const camera = parseViewXml( pageDom );
+    const content = pageDom .getChildElement( 'content' ) .getTextContent();
+    return { title, snapshot, camera, content };
   }
   return notesElement.nativeElement.children.map( pageElement => parseArticlePage( pageElement ) )
           // Early vZome files always had a default article with one explanatory page
@@ -114,7 +120,7 @@ export const createParser = ( documentFactory ) => ( xmlText ) =>
   const namespace = vZomeRoot.getAttribute( "xmlns:vzome" )
   const fieldName = vZomeRoot.getAttribute( "field" )
 
-  const design = documentFactory( fieldName, namespace, vZomeRoot )
+  const legacyDesign = documentFactory( fieldName, namespace, vZomeRoot )
 
   const viewing = vZomeRoot.getChildElement( "Viewing" )
   const camera = viewing && parseViewXml( viewing )
@@ -124,12 +130,12 @@ export const createParser = ( documentFactory ) => ( xmlText ) =>
 
   const historyElement = vZomeRoot.getChildElement( "EditHistory" ) || vZomeRoot.getChildElement( "editHistory" ) || vZomeRoot.getChildElement( "EditHistoryDetails" );
   const xmlTree = assignIds( historyElement.nativeElement );
-  const edits = new ParsedEdit( xmlTree, null, design.interpretEdit );
+  const edits = new ParsedEdit( xmlTree, null, legacyDesign.interpretEdit );
   const targetEditId = `:${edits.getAttribute( "editNumber" )}:`
   const firstEdit = edits.firstChild()
 
-  const realScenes = parseArticle( vZomeRoot.getChildElement( "notes" ), xmlTree );
-  const scenes = [ { title: 'default scene', nodeId: targetEditId, camera }, ...realScenes ];
+  const snapshotNodes = [ ...findSnapshotNodes( xmlTree ), targetEditId ]; // The extra snapshot is discarded later
+  const scenes = parseArticle( vZomeRoot.getChildElement( "notes" ) );
 
-  return { ...design, firstEdit, camera, targetEditId, lighting, xmlTree, scenes }
+  return { ...legacyDesign, firstEdit, camera, lighting, xmlTree, scenes, snapshotNodes }
 }

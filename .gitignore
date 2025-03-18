@@ -51,7 +51,7 @@ react-vzome-*.tgz
 build.properties
 online/jsweetOut
 transpiled-java.js
-core-java.js
+# core-java.js
 desktop-java.js
 vzome-react-vzome-*.tgz
 online/dist
@@ -62,12 +62,10 @@ online-app.zip
 online.tgz
 deploy-to-dreamhost.sh
 *.pem
-online/src/worker/legacy/candies
-online/src/ui/legacy/candies
+# online/src/worker/legacy/candies
+# online/src/ui/legacy/candies
 
 desktop-errors.txt
-
-online/public/classic/icons/
 
 online/src/revision.js
 
@@ -75,10 +73,19 @@ jsweet-branches/
 
 online/meta.json
 
-online/public/modules/
-
-online/public/resources/
-
-online/public/classic/resources/
-
 developer-docs/notes/vZome/.obsidian/
+
+online/.yalc/
+
+online/yalc.lock
+
+.vscode/settings.json
+
+online/serve/app/classic/resources/
+online/serve/app/inspector/models/
+
+online/serve/modules/
+
+.zsh_history
+
+core/failures.xml

@@ -1,14 +1,27 @@
 
 
-export const realizeShape = ( shape ) =>
+export const realizeShape = ( shape, polygons ) =>
 {
   const vertices = shape.getVertexList().toArray().map( av => {
     const { x, y, z } = av.toRealVector();  // this is too early to do embedding, which is done later, globally
     return { x, y, z };
   })
-  const faces = shape.getTriangleFaces().toArray().map( ({ vertices }) => ({ vertices }) );  // not a no-op, converts to POJS
+
+  const faces = polygons?
+    shape.getFaceSet().toArray().map( (value) => ({ vertices: [...value.array] }) ) // not a no-op, converts to POJS
+  : shape.getTriangleFaces().toArray().map( ({ vertices }) => ({ vertices }) );  // not a no-op, converts to POJS
+
   const id = 's' + shape.getGuid().toString();
-  return { id, vertices, faces, instances: [] };
+  const name = shape .getName();
+  if ( name === 'ball' ) {
+    return { id, name, vertices, faces };
+  }
+  else if ( !!name ) {
+    const orbit = shape .getOrbit() .getCanonicalName();
+    const length = JSON.stringify( shape .getLength() .toTrailingDivisor() );
+    return { id, orbit, length, vertices, faces };
+  }
+  return { id, vertices, faces };
 }
 
 export const toWebColor = color =>
@@ -31,7 +44,7 @@ export const normalizeRenderedManifestation = rm =>
   const shapeId = 's' + rm.getShapeId().toString();
   const positionAV = rm.getLocationAV();
   const { x, y, z } = ( positionAV && positionAV.toRealVector() ) || { x:0, y:0, z:0 };
-  const rotation = rm .getOrientation() .getRowMajorRealElements();
+  const orientation = rm .getStrutZone();
   const selected = rm .getGlow() > 0.001;
   const componentToHex = c => {
     let hex = c.toString(16);
@@ -39,7 +52,7 @@ export const normalizeRenderedManifestation = rm =>
   }
   let color = toWebColor( rm.getColor() );
 
-  return { id, position: [ x, y, z ], rotation, color, selected, shapeId, type, label };
+  return { id, position: [ x, y, z ], orientation, color, selected, shapeId, type, label };
 }
 
 export const renderedModelTransducer = ( shapeCache, clientEvents ) =>
@@ -50,8 +63,6 @@ export const renderedModelTransducer = ( shapeCache, clientEvents ) =>
     let shape = shapeCache[ shapeId ];
     if ( ! shape ) {
       shape = realizeShape( rm .getShape() );
-      const orbit = rm .getStrutOrbit();
-      shape.zone = orbit? `${orbit.toString()} ${rm.getStrutZone()}` : 'Ball';
       shapeCache[ shapeId ] = shape;
       clientEvents .shapeDefined( shape );
     }

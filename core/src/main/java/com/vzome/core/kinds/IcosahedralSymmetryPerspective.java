@@ -18,8 +18,10 @@ import com.vzome.core.tools.AxialStretchTool;
 import com.vzome.core.tools.AxialSymmetryToolFactory;
 import com.vzome.core.tools.IcosahedralToolFactory;
 import com.vzome.core.tools.InversionToolFactory;
+import com.vzome.core.tools.LineReflectionToolFactory;
 import com.vzome.core.tools.LinearMapToolFactory;
 import com.vzome.core.tools.MirrorToolFactory;
+import com.vzome.core.tools.PerspectiveProjectionToolFactory;
 import com.vzome.core.tools.ProjectionToolFactory;
 import com.vzome.core.tools.RotationToolFactory;
 import com.vzome.core.tools.ScalingToolFactory;
@@ -60,7 +62,8 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
         final AbstractShapes vienne2 = new ExportedVEFShapes(null, "vienne2", "Vienne", this.symmetry, icosadefaultShapes);
         final AbstractShapes vienne3 = new ExportedVEFShapes(null, "vienne3", "Vienne lifelike", this.symmetry, vienne2);
         final AbstractShapes vienne = new ExportedVEFShapes( null, "vienne", "Vienne 121 zone", this.symmetry, true );
-        
+        final AbstractShapes dimtoolShapes = new ExportedVEFShapes(null, "dimtool", "dimtool", this.symmetry, icosadefaultShapes);
+
         // this is the order they will be shown on the dialog
         setDefaultGeometry( printableShapes );
         addShapes(icosadefaultShapes); 
@@ -72,6 +75,7 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
         addShapes(vienne2); 
         addShapes(vienne3); 
         addShapes(vienne);
+        addShapes(dimtoolShapes);
 
         AlgebraicField field = this.symmetry.getField();
         qSymmH4 = new QuaternionicSymmetry("H_4", "com/vzome/core/math/symmetry/H4roots.vef", field);
@@ -102,6 +106,7 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
             result.add(new IcosahedralToolFactory(tools, icosaSymm));
             result.add(new TetrahedralToolFactory(tools, icosaSymm));
             result.add(new InversionToolFactory(tools));
+            result.add( new LineReflectionToolFactory(tools));
             result.add(new MirrorToolFactory(tools));
             result.add(new AxialSymmetryToolFactory(tools, icosaSymm));
             break;
@@ -110,7 +115,8 @@ public class IcosahedralSymmetryPerspective extends AbstractSymmetryPerspective 
             result.add(new RotationToolFactory(tools, icosaSymm));
 //            result.add(new PlaneSelectionTool.Factory(tools));
             result.add(new TranslationToolFactory(tools));
-            result.add(new ProjectionToolFactory(tools));
+            result.add(new ProjectionToolFactory( tools ) );
+            result.add( new PerspectiveProjectionToolFactory( tools ) );
             break;
         case LINEAR_MAP:
             result.add(new AxialStretchTool.Factory(tools, icosaSymm, true, true, true));

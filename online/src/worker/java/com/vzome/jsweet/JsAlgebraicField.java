@@ -10,7 +10,10 @@ import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.construction.ConstructionChanges;
+import com.vzome.core.construction.Point;
 import com.vzome.core.math.RealVector;
+import com.vzome.core.math.symmetry.Symmetry;
 
 import def.js.Function;
 import def.js.Object;
@@ -140,10 +143,12 @@ public class JsAlgebraicField implements AlgebraicField
     @Override
     public AlgebraicVector createVectorFromTDs( int[][] nums )
     {
-        AlgebraicNumber x = this .createAlgebraicNumberFromTD( nums[0] );
-        AlgebraicNumber y = this .createAlgebraicNumberFromTD( nums[1] );
-        AlgebraicNumber z = this .createAlgebraicNumberFromTD( nums[2] );
-        return new AlgebraicVector( x, y, z );
+        int dims = nums.length;
+        AlgebraicNumber[] coords = new AlgebraicNumber[ dims ];
+        for(int c = 0; c < coords.length; c++) {
+          coords[c] = this.createAlgebraicNumberFromTD( nums[c] );
+        }
+        return new AlgebraicVector( coords );
     }
 
     @Override
@@ -506,6 +511,23 @@ public class JsAlgebraicField implements AlgebraicField
         return this.getIrrational( which, 0 );
     }
 
+    private Object zomicModule;
+    private Object vzomePkg;
+
+    public void setInterpreterModule( Object module, Object vzomePkg )
+    {
+      this.zomicModule = module;
+      this.vzomePkg = vzomePkg;
+    }
+
+    public void interpretScript( String script, String language, Point offset, Symmetry symmetry, ConstructionChanges effects ) throws Exception
+    {
+        if ( this.zomicModule == null )
+          throw new Exception( "The Zomic module was not loaded." );
+
+        Function f = (Function) this.zomicModule .$get( "interpretScript" );
+        f.$apply( any( script ), any( language ), any( offset ), any( symmetry ), any( effects ), any( vzomePkg ) );
+    }
     
     
     

@@ -55,7 +55,13 @@ public class Snapshot extends UndoableEdit
     public void redo() {}
 
     @Override
-    public void configure( Map<String,Object> props ) {}
+    public void configure( Map<String,Object> props )
+    {
+        // This only executes in vZome Online, where it is essential
+        Integer idProp = (Integer) props .get( "id" );
+        if ( idProp != null )
+            this.id = idProp.intValue();
+    }
 
     @Override
     public boolean isVisible()

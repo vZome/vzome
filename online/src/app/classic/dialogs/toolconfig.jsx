@@ -8,7 +8,9 @@ import FormGroup from '@suid/material/FormGroup';
 import FormControlLabel from '@suid/material/FormControlLabel';
 import Checkbox from '@suid/material/Checkbox';
 import CloseIcon from '@suid/icons-material/Close';
-import { controllerAction, controllerProperty } from '../../../workerClient/controllers-solid';
+
+import { controllerProperty, useEditor } from '../../framework/context/editor.jsx';
+import { resourceUrl } from '../components/length.jsx';
 
 const ConfigDialogTitle = (props) =>
 {
@@ -26,6 +28,7 @@ const ConfigDialogTitle = (props) =>
 
 export const ToolConfig = (props) =>
 {
+  const { controllerAction } = useEditor();
   const open = () => !!props.anchor;
   const id = () => (open() ? "tool-config-popper" : undefined);
 
@@ -65,7 +68,7 @@ export const ToolConfig = (props) =>
       <div class='tool-config-icon-label' onKeydown={handleKeyDown} >
         <button aria-label={props.label} class='toolbar-button' onClick={handleToolClick} disabled={props.disabled}
             style={{ padding: '0.5em' }}>
-          <img src={ `./resources/icons/tools/${props.image}.png`} class='toolbar-image'/>
+          <img src={ resourceUrl( `icons/tools/${props.image}.png` ) } class='toolbar-image'/>
         </button>
         { !!props.predefined?
           <Typography sx={{ margin: 'auto' }}>{props.label}</Typography>

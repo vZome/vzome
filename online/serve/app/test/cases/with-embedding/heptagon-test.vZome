@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" buildNumber="63" field="heptagon" version="7.1">
+  <EditHistory editNumber="16" lastStickyEdit="16">
+    <StrutCreation anchor="0 0 0 0 0 0 0 0 0" index="4" len="0 2 1" outbound="false" symm="heptagonal antiprism corrected"/>
+    <SelectManifestation point="2 -1 2 -1 2 0 0 0 0"/>
+    <ApplyTool copyColors="true" name="symmetry.builtin/heptagonal antiprism around origin" selectInputs="true"/>
+    <JoinPoints closedLoop="false" joinMode="ALL_POSSIBLE"/>
+    <DeselectAll/>
+    <Snapshot id="0"/>
+    <SelectManifestation endSegment="0 2 1 1 -2 0 0 0 0" startSegment="-2 1 -2 2 -1 2 0 0 0"/>
+    <ApplyTool copyColors="true" name="axial symmetry.builtin/symmetry around red through origin" selectInputs="true"/>
+    <setItemColor blue="51" green="0" red="255"/>
+    <Snapshot id="1"/>
+    <SelectManifestation endSegment="2 -1 2 -1 2 0 0 0 0" startSegment="0 0 0 0 0 0 0 0 0"/>
+    <Delete/>
+    <SelectManifestation endSegment="0 -2 -1 0 0 0 0 0 0" startSegment="0 0 0 0 2 1 0 0 0"/>
+    <ApplyTool copyColors="true" name="axial symmetry.builtin/symmetry around red through origin" selectInputs="true"/>
+    <setItemColor blue="204" green="51" red="0"/>
+    <Snapshot id="2"/>
+  </EditHistory>
+  <notes>
+    <page snapshot="0" title="first">
+      <ViewModel distance="40.12644577026367" far="80.25289154052734" near="0.03715411573648453" parallel="false" stereoAngle="0.0" width="20.063222885131836">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.05153043195605278" y="0.9489433765411377" z="0.3112090826034546"/>
+        <LookDirection x="-0.00784536637365818" y="0.3119981288909912" z="-0.9500502943992615"/>
+      </ViewModel>
+      <content xml:space="preserve"/>
+    </page>
+    <page snapshot="0" title="edge-on">
+      <ViewModel distance="115.454833984375" far="230.9095916748047" near="0.10690261423587799" parallel="false" stereoAngle="0.0" width="57.72739791870117">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="-7.983548566699028E-4" y="0.9808422327041626" z="-0.19480228424072266"/>
+        <LookDirection x="-0.9997736811637878" y="0.0033574714325368404" z="0.02100202441215515"/>
+      </ViewModel>
+      <content xml:space="preserve"/>
+    </page>
+    <page snapshot="1" title="red">
+      <ViewModel distance="46.94043731689453" far="93.88088989257812" near="0.04346338286995888" parallel="true" stereoAngle="0.0" width="23.47022247314453">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.22252093255519867" y="0.9749279022216797" z="0.0"/>
+        <LookDirection x="0.0" y="0.0" z="-1.0"/>
+      </ViewModel>
+      <content xml:space="preserve"/>
+    </page>
+    <page snapshot="2" title="oblique blue">
+      <ViewModel distance="46.94043731689453" far="93.88088989257812" near="0.04346338286995888" parallel="true" stereoAngle="0.0" width="23.47022247314453">
+        <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+        <UpDirection x="0.08698967099189758" y="0.6800501346588135" z="0.7279866933822632"/>
+        <LookDirection x="-0.25259408354759216" y="0.7219328284263611" z="-0.6442118883132935"/>
+      </ViewModel>
+      <content xml:space="preserve"/>
+    </page>
+  </notes>
+  <sceneModel ambientLight="41,41,41" background="140,194,231">
+    <directionalLight color="235,235,228" x="1.0" y="-1.0" z="-1.0"/>
+    <directionalLight color="228,228,235" x="-1.0" y="0.0" z="0.0"/>
+    <directionalLight color="30,30,30" x="0.0" y="0.0" z="-1.0"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="115.454833984375" far="230.9095916748047" near="0.10690261423587799" parallel="false" stereoAngle="0.0" width="57.72739791870117">
+      <LookAtPoint x="0.0" y="0.0" z="0.0"/>
+      <UpDirection x="-7.983548566699028E-4" y="0.9808422327041626" z="-0.19480228424072266"/>
+      <LookDirection x="-0.9997736811637878" y="0.0033574714325368404" z="0.02100202441215515"/>
+    </ViewModel>
+  </Viewing>
+  <SymmetrySystem name="heptagonal antiprism corrected" renderingStyle="heptagonal antiprism">
+    <Direction color="175,0,0" name="red" orbit="red"/>
+    <Direction color="0,141,54" name="green" orbit="[[-2,0,1,1],[0,0,0,1]]"/>
+    <Direction color="0,118,149" name="blue" orbit="[[0,0,0,1],[0,0,0,1]]"/>
+  </SymmetrySystem>
+  <OtherSymmetries>
+    <SymmetrySystem name="octahedral" renderingStyle="octahedra">
+      <Direction color="0,118,149" name="blue" orbit="[[0,0,0,1],[0,0,0,1]]"/>
+      <Direction color="0,141,54" name="green" orbit="[[0,0,0,1],[-1,0,0,1]]"/>
+      <Direction color="240,160,0" name="yellow" orbit="[[1,0,0,1],[-1,0,0,1]]"/>
+    </SymmetrySystem>
+    <SymmetrySystem name="heptagonal antiprism" renderingStyle="heptagonal antiprism">
+      <Direction color="0,141,54" name="green" orbit="[[-2,0,1,1],[0,0,0,1]]"/>
+      <Direction color="0,118,149" name="blue" orbit="[[0,0,0,1],[0,0,0,1]]"/>
+      <Direction color="175,0,0" name="red" orbit="red"/>
+    </SymmetrySystem>
+  </OtherSymmetries>
+  <Tools/>
+</vzome:vZome>

@@ -6,13 +6,15 @@ import SettingsIcon from '@suid/icons-material/Settings'
 import Menu from '@suid/material/Menu';
 import MenuItem from '@suid/material/MenuItem';
 
+import { controllerProperty, subController, useEditor } from '../../framework/context/editor.jsx';
+
 import { StrutLengthPanel } from './length.jsx';
 import { OrbitPanel } from './orbitpanel.jsx';
-import { controllerAction, controllerProperty, subController } from '../../../workerClient/controllers-solid.js';
-import { useSymmetry } from "../classic.jsx";
+import { useSymmetry } from "../context/symmetry.jsx";
 
 export const StrutBuildPanel = () =>
 {
+  const { controllerAction, rootController } = useEditor();
   const { showOrbitsDialog, symmetryController, symmetryDefined } = useSymmetry();
   const availableOrbits = () => subController( symmetryController(), 'availableOrbits' );
   const buildOrbits = () => subController( symmetryController(), 'buildOrbits' );
@@ -30,13 +32,21 @@ export const StrutBuildPanel = () =>
     setAnchorEl( null );
     setOrbitNames( action );
   }
+  const setUsedOrbits = () => {
+    setAnchorEl( null );
+    controllerAction( rootController(), 'usedOrbits' );
+  }
   const showConfiguration = evt => {
     setAnchorEl( null );
     showOrbitsDialog();
   }
+  const resetOrbitColors = () => {
+    setAnchorEl( null );
+    controllerAction( symmetryController(), 'resetOrbitColors' );
+  }
 
   return(
-    <div id="build" style={{ display: 'grid', 'grid-template-rows': '1fr min-content', height: '100%' }}>
+    <div class="build grid-rows-fr-min" >
       <Show when={symmetryDefined()}>
       <OrbitPanel orbits={orbits()} controller={buildOrbits()} lastSelected={lastSelected()}
           label="build directions" style={{ height: '100%' }} >
@@ -53,8 +63,10 @@ export const StrutBuildPanel = () =>
         >
           <MenuItem onClick={ setAvailableOrbits( 'rZomeOrbits' ) }>real Zome</MenuItem>
           <MenuItem onClick={ setAvailableOrbits( 'predefinedOrbits' ) }>predefined</MenuItem>
+          <MenuItem onClick={ setUsedOrbits }>used in model</MenuItem>
           <MenuItem onClick={ setAvailableOrbits( 'setAllDirections' ) }>all</MenuItem>
           <MenuItem onClick={ showConfiguration }>configure...</MenuItem>
+          <MenuItem onClick={ resetOrbitColors }>reset orbit colors</MenuItem>
         </Menu>
       </OrbitPanel>
       <StrutLengthPanel controller={buildOrbits()} />

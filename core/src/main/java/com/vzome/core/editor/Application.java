@@ -142,7 +142,8 @@ public class Application implements AlgebraicField.Registry
         // need these all here just to find the extension in DocumentController.getProperty()
         this .exporters .put( "mesh", new SimpleMeshJsonExporter() );
         this .exporters .put( "cmesh", new ColoredMeshJsonExporter() );
-        this .exporters .put( "shapes", new ShapesJsonExporter() );
+        this .exporters .put( "shapes", new ShapesJsonExporter( false ) );
+        this .exporters .put( "trishapes", new ShapesJsonExporter( true ) );
  
         this .exporters .put( "ggb", new GeoGebraExporter() );
         this .exporters .put( "math", new MathTableExporter() );
@@ -178,12 +179,17 @@ public class Application implements AlgebraicField.Registry
         this.fieldAppSuppliers.put( "snubCube", () -> new SnubCubeFieldApplication( new SnubCubeField( AlgebraicNumberImpl.FACTORY ) ) );
         this.fieldAppSuppliers.put( "snubDodec", () -> new SnubDodecFieldApplication( new SnubDodecField( AlgebraicNumberImpl.FACTORY ) ) );
         this.fieldAppSuppliers.put( "sqrtPhi", () -> new SqrtPhiFieldApplication( new SqrtPhiField( AlgebraicNumberImpl.FACTORY ) ) );
-        // The fields commented out below are only available by the custom menu
-        // See the note in getDocumentKind() before adding them here so they show up in the main memu
-//        this.fieldAppSuppliers.put( "superGolden", () -> { return new DefaultFieldApplication ( new SuperGoldenField()); } );
-//        this.fieldAppSuppliers.put( "plasticNumber", () -> { return new DefaultFieldApplication ( new PlasticNumberField()); } );
-//        this.fieldAppSuppliers.put( "plasticPhi", () -> { return new PlasticPhiFieldApplication ( new PlasticPhiField()); } );
-//        this.fieldAppSuppliers.put( "edPegg", () -> { return new DefaultFieldApplication ( new EdPeggField()); } );
+        // The fields commented out below are only available by adding them to the custom menu.
+        // e.g. new-superGolden=New Super Golden Field
+        // See the note in getDocumentKind() before adding them here so they can show up in the main memu.
+        // If they are uncommented here, but not added to the "enabled" list in ApplicationController.getProperty()
+        // then they can also be enabled in this menu by adding an appropriate entry in the prefs file
+        // e.g. enable.superGolden.field=true or enable.plasticNumber.field=true
+        // or by enabling developer mode.
+//        this.fieldAppSuppliers.put( "superGolden", () -> { return new DefaultFieldApplication ( new SuperGoldenField( AlgebraicNumberImpl.FACTORY )); } );
+//        this.fieldAppSuppliers.put( "plasticNumber", () -> { return new DefaultFieldApplication ( new PlasticNumberField( AlgebraicNumberImpl.FACTORY )); } );
+//        this.fieldAppSuppliers.put( "plasticPhi", () -> { return new PlasticPhiFieldApplication ( new PlasticPhiField( AlgebraicNumberImpl.FACTORY )); } );
+//        this.fieldAppSuppliers.put( "edPegg", () -> { return new DefaultFieldApplication ( new EdPeggField( AlgebraicNumberImpl.FACTORY )); } );
     }
 
     public DocumentModel loadDocument( InputStream bytes ) throws Exception
