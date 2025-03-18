@@ -34187,6 +34187,8 @@ export var com;
                                     this.measurements.put("length (cm)", this.twoPlaces.format(cm) + " cm");
                                     const inches = cm / 2.54;
                                     this.measurements.put("length (in)", this.twoPlaces.format(inches) + " in");
+                                    const offset = strut.getOffset();
+                                    this.measurements.put("quadrance", offset.dot(offset).toString(com.vzome.core.algebra.AlgebraicField.DEFAULT_FORMAT));
                                 }
                                 else if (balls === 1) {
                                     const conn = com.vzome.core.editor.api.Manifestations.getConnectors$java_lang_Iterable(this.selection).next();
@@ -34231,6 +34233,7 @@ export var com;
                                     }
                                     const radians = this.renderedModel.measureAngle(s1, s2);
                                     this.reportAngles(radians);
+                                    this.reportSpread(s1, s2);
                                     this.reportRatio(s1, s2);
                                 }
                                 else if (balls === 2) {
@@ -34266,6 +34269,27 @@ export var com;
                         else {
                             this.measurements.put("angle", /* toString */ ('' + (radians)));
                         }
+                    }
+                    /**
+                     * Use Rational Trigonometry (the cross law) to compute the spread between struts
+                     * @param {*} s1
+                     * @param {*} s2
+                     * @private
+                     */
+                    /*private*/ reportSpread(s1, s2) {
+                        const v1 = s1.getOffset();
+                        const v2 = s2.getOffset();
+                        const v3 = v2.minus(v1);
+                        const Q1 = v2.dot(v2);
+                        const Q2 = v1.dot(v1);
+                        const Q3 = v3.dot(v3);
+                        const one = Q1.getField().one();
+                        const four = Q1.getField()['createRational$long'](4);
+                        const a = Q1['plus$com_vzome_core_algebra_AlgebraicNumber'](Q2)['minus$com_vzome_core_algebra_AlgebraicNumber'](Q3);
+                        const denom = four['times$com_vzome_core_algebra_AlgebraicNumber'](Q1)['times$com_vzome_core_algebra_AlgebraicNumber'](Q2);
+                        const ratio = a['times$com_vzome_core_algebra_AlgebraicNumber'](a).dividedBy(denom);
+                        const spread3 = one['minus$com_vzome_core_algebra_AlgebraicNumber'](ratio);
+                        this.measurements.put("spread", spread3.toString(com.vzome.core.algebra.AlgebraicField.DEFAULT_FORMAT));
                     }
                     /*private*/ reportRatio(s1, s2) {
                         const v1 = s1.getOffset();
