@@ -87,7 +87,7 @@ public class MeasureController extends DefaultController implements SelectionSum
                     this .measurements .put( "length (in)", twoPlaces .format( inches ) + " in" );
                     
                     AlgebraicVector offset = strut .getOffset();
-                    this .measurements .put( "quadrance", offset .dot( offset ) .toString() );
+                    this .measurements .put( "quadrance", offset .dot( offset ) .toString( AlgebraicField.DEFAULT_FORMAT ) );
                 } else if ( balls == 1 ) {
                     Connector conn = Manifestations.getConnectors( this .selection ).next();
                     this .measurements .put( "location", conn.getLocation().toString());
@@ -175,7 +175,7 @@ public class MeasureController extends DefaultController implements SelectionSum
 	    AlgebraicNumber denom = four .times( Q1 ) .times( Q2 );
 	    AlgebraicNumber ratio = a .times( a ) .dividedBy( denom );
 	    AlgebraicNumber spread3 = one .minus( ratio );
-        this .measurements .put( "spread", spread3 .toString() );
+        this .measurements .put( "spread", spread3 .toString( AlgebraicField.DEFAULT_FORMAT ) );
 	}
 	
 	private void reportRatio(Strut s1, Strut s2)
