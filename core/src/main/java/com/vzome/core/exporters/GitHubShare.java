@@ -119,8 +119,10 @@ public class GitHubShare
             componentTemplate = instructionsTemplate;
             postLayout = "zometool";
             simpleLayout = "zometool";
+            break;
         }
         default:
+        	break;
         }
 
         String siteUrl = "https://" + orgName + ".github.io/" + repoName;
