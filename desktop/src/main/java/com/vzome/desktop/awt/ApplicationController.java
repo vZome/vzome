@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -321,7 +322,8 @@ public class ApplicationController extends DefaultController
                 String path = action .substring( "openURL-" .length() );
                 docProps .setProperty( "window.title", path );
                 try {
-                    URL url = new URL( path );
+                	// Don't use URI.create( path ) with a user input path since the path has not been validated
+                	URL url = (new URI( path )).toURL();
                     InputStream bytes= null;
                     HttpURLConnection conn = (HttpURLConnection) url .openConnection();
                     // See https://stackoverflow.com/questions/1884230/urlconnection-doesnt-follow-redirect

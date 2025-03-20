@@ -23,6 +23,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 
 import com.jogamp.opengl.GLAutoDrawable;
@@ -187,7 +188,8 @@ public class View3dActivity implements GLEventListener
     	}
 
         try {
-            URL url = new URL( urls[ 0 ] );
+            // Don't use URI.create( path ) with a user input path unless the path has been validated
+            URL url = (new URI( urls[ 0 ] )).toURL(); 
             System.out.println( "%%%%%%%%%%%%%%%% opening: " + url);
             InputStream instream = url.openStream();
             Document doc = vZome.loadDocument(instream);
