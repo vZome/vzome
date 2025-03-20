@@ -167,6 +167,7 @@ gradle.projectsEvaluated {
 		<< "-Xlint:overrides" \
 		<< "-Xlint:path" \
 		<< "-Xlint:rawtypes" \
+		<< "-Xlint:-this-escape" /* A minus sign following the colon removes that check. */ \
 		<< "-Xlint:unchecked" \
 		<< "-Xlint:serial" 
 	}
