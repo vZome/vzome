@@ -480,8 +480,8 @@ public class JoglRenderingViewer implements RenderingViewer, GLEventListener
         //  HOWEVER, now we are never creating GLCanvas, so fixGLCanvasRescaling is always false.
         if(fixGLCanvasRescaling) {
         	AffineTransform t = canvas.getGraphicsConfiguration().getDefaultTransform(); 
-            mouseX *= t.getScaleX();
-            mouseY *= t.getScaleY();
+            mouseX *= Double.valueOf(t.getScaleX()).intValue();
+            mouseY *= Double.valueOf(t.getScaleY()).intValue();
         }
         // I wasted a lot of time here looking at the Java3d implementation, which had a bug.
         //  Furthermore, it was based on the Java3d notion of "image plate" coordinates, which

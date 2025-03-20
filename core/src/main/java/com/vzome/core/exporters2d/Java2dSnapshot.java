@@ -188,7 +188,7 @@ public class Java2dSnapshot
             float greenIntensity = ambient .getGreen() / 255f;
             float blueIntensity = ambient .getBlue() / 255f;
             for ( int i = 0; i < lightColors.length; i++ ) {
-                double intensity = Math .max( normal .dot( lightDirs[ i ] ), 0f );
+                float intensity = (float) Math .max( normal .dot( lightDirs[ i ] ), 0f );
                 redIntensity += intensity * ( lightColors[ i ].getRed() / 255f );
                 greenIntensity += intensity * ( lightColors[ i ].getGreen() / 255f );
                 blueIntensity += intensity * ( lightColors[ i ].getBlue() / 255f );
