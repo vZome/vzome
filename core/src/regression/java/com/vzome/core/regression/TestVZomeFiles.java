@@ -183,11 +183,11 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
             String pkgName = "noFolder";
             String className = "noFolder";
             File classFolder = file .getParentFile();
-            if ( ! classFolder .equals( baseFolder ) )
+            if ( ! classFolder.toPath() .equals( baseFolder ) )
             {
                 className = classFolder .getName();
                 File packageFolder = classFolder .getParentFile();
-                if ( ! packageFolder .equals( baseFolder ) )
+                if ( ! packageFolder.toPath() .equals( baseFolder ) )
                 {
                     String basePath = baseFolder .toAbsolutePath() .toString();
                     pkgName = packageFolder .getAbsolutePath() .substring( basePath .length() );
