@@ -221,7 +221,8 @@ public class TestVZomeFiles extends FileSystemVisitor2 .Actor
                     } finally {
                         histOut .close();
                     }
-                    Process process = Runtime .getRuntime() .exec( "diff " + goldenHistory .getAbsolutePath() + " " + testHistory .getAbsolutePath() );
+                    String[] cmdArray = { "diff", goldenHistory .getAbsolutePath(), testHistory .getAbsolutePath() };
+                    Process process = Runtime .getRuntime() .exec( cmdArray );
                     // any error message?
                     StreamGobbler errorGobbler = new 
                             StreamGobbler( process.getErrorStream(), "ERROR" );            

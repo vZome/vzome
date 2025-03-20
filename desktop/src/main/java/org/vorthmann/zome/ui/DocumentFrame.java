@@ -465,10 +465,23 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                             return;
                         }
                         String cmdLine = cmd .substring( "execCommandLine/" .length() );
+                        // convert the space delimited cmdLine to an array of Strings
+                        // in order to avoid using the deprecated overload of exec()
+                        String[] cmdArray = cmdLine.split(" "); // No special quote handling, just a simple split.
+                        for(int i = 0; i<cmdArray.length; i++) {
+                        	if(cmdArray[i] == "{}") {
+                        		cmdArray[i] = mFile.getName();
+                        	}
+                        }
                         cmdLine = cmdLine .replace( "{}", mFile .getName() );
                         logger.log( Level.INFO, "executing command line: " + cmdLine );
+                        if(cmdLine.contains("\"") || cmdLine.contains("'")) {
+                        	logger.log( Level.WARNING, "execCommandLine does no special handling of quotes characters.\n" 
+                        			+ " If the quotes characters in this command do not perform as expected,"
+                        			+ " consider invoking a simple shell script that accepts just the vZome file name as an argument." );
+                        }
                         try {
-                            Runtime .getRuntime() .exec( cmdLine, null, mFile .getParentFile() );
+                            Runtime .getRuntime() .exec( cmdArray, null, mFile .getParentFile() );
                         } catch ( IOException ioe ) {
                             System .err .println( "Runtime.exec() failed on " + cmdLine );
                             ioe .printStackTrace();

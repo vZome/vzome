@@ -62,7 +62,8 @@ public class Platform
 		if ( isMac )
 			try {
 				String path = file .getAbsolutePath();
-				Runtime .getRuntime() .exec( "open " + path );
+				String[] cmdArray = { "open", path };
+				Runtime .getRuntime() .exec( cmdArray );
 			} catch ( IOException e ) {
 				System .err .println( "Runtime.exec() failed on " + file .getAbsolutePath() );
 				e .printStackTrace();

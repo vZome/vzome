@@ -641,10 +641,10 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
     public void runScript( String script, File file )
     {
         try {
-            Runtime .getRuntime() .exec( script + " " + file .getAbsolutePath(),
-                    null, file .getParentFile() );
+        	String[] cmdArray = { script, file .getAbsolutePath() };
+			Runtime .getRuntime() .exec( cmdArray, null, file .getParentFile() );
         } catch ( IOException e ) {
-            System .err .println( "Runtime.exec() failed on " + file .getAbsolutePath() );
+            System .err .println( "Runtime.exec() failed on " + script + " " + file .getAbsolutePath() );
             e .printStackTrace();
         }
     }

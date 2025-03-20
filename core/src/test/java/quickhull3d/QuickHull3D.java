@@ -346,12 +346,13 @@ public class QuickHull3D {
     }
 
     protected void setFromQhull(double[] coords, int nump, boolean triangulate) {
-        String commandStr = "./qhull i";
+    	String[] cmdArray = { "./qhull", "i" };
         if (triangulate) {
-            commandStr += " -Qt";
+        	String[] cmdArray2 = { cmdArray[0], cmdArray[1], "-Qt" };
+        	cmdArray = cmdArray2;
         }
         try {
-            Process proc = Runtime.getRuntime().exec(commandStr);
+            Process proc = Runtime.getRuntime().exec(cmdArray);
             PrintStream ps = new PrintStream(proc.getOutputStream());
             StreamTokenizer stok = new StreamTokenizer(new InputStreamReader(proc.getInputStream()));
 
