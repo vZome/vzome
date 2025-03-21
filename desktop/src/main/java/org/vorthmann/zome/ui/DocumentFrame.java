@@ -469,9 +469,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
                         // in order to avoid using the deprecated overload of exec()
                         String[] cmdArray = cmdLine.split(" "); // No special quote handling, just a simple split.
                         for(int i = 0; i<cmdArray.length; i++) {
-                        	if(cmdArray[i] == "{}") {
-                        		cmdArray[i] = mFile.getName();
-                        	}
+                        	cmdArray[i] = cmdArray[i].replace( "{}", mFile .getName() );
                         }
                         cmdLine = cmdLine .replace( "{}", mFile .getName() );
                         logger.log( Level.INFO, "executing command line: " + cmdLine );
