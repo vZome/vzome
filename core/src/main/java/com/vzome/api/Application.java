@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.Properties;
 
@@ -55,7 +56,7 @@ public class Application
     
     public Document loadUrl( String path ) throws Exception
     {
-        URL url = new URL( path );
+        URL url = (new URI( path )).toURL(); // Don't use URI.create( path ) with a user input path since the path has not been validated
         InputStream bytes= null;
         HttpURLConnection conn = (HttpURLConnection) url .openConnection();
         // See https://stackoverflow.com/questions/1884230/urlconnection-doesnt-follow-redirect

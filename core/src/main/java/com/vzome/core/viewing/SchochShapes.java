@@ -6,8 +6,6 @@ import com.vzome.core.math.symmetry.AbstractSymmetry;
 
 public class SchochShapes extends ExportedVEFShapes
 {
-    private static final long serialVersionUID = 1L;
-
     public SchochShapes( File prefsFolder, String name, String alias, AbstractSymmetry symmetry, AbstractShapes defaultShapes)
     {
       super( prefsFolder, name, alias, symmetry, defaultShapes );

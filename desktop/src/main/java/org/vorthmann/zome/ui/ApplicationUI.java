@@ -20,7 +20,6 @@ import java.lang.management.RuntimeMXBean;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -301,8 +300,8 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
                     try {
                         // standard Java 7 idiom for dealing with file URIs, which is what
                         //   Windows will pass when opening with double-click or drag-n-drop
-                        normalizedPath = Paths .get( new URL( arg ) .toURI() );
-                    } catch ( MalformedURLException | URISyntaxException e ) {
+                        normalizedPath = Paths .get( new URI( arg ) );
+                    } catch ( URISyntaxException e ) {
                         // probably just on Mac or Linux
                         normalizedPath = Paths .get( arg );
                     } catch ( FileSystemNotFoundException e ) {
@@ -642,10 +641,10 @@ public final class ApplicationUI implements ApplicationController.UI, PropertyCh
     public void runScript( String script, File file )
     {
         try {
-            Runtime .getRuntime() .exec( script + " " + file .getAbsolutePath(),
-                    null, file .getParentFile() );
+        	String[] cmdArray = { script, file .getAbsolutePath() };
+			Runtime .getRuntime() .exec( cmdArray, null, file .getParentFile() );
         } catch ( IOException e ) {
-            System .err .println( "Runtime.exec() failed on " + file .getAbsolutePath() );
+            System .err .println( "Runtime.exec() failed on " + script + " " + file .getAbsolutePath() );
             e .printStackTrace();
         }
     }

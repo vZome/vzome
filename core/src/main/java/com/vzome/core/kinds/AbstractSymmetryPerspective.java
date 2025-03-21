@@ -99,7 +99,7 @@ public abstract class AbstractSymmetryPerspective implements SymmetryPerspective
         case "tetrasymm":
         {
             Symmetry symmetry = getSymmetry();
-            int[] closure = symmetry .subgroup( Symmetry.TETRAHEDRAL );
+            //int[] closure = symmetry .subgroup( Symmetry.TETRAHEDRAL );
 
             // This command will be available to all SymmetryPerspectives even if they are not Octahedral
             return new CommandTetrahedralSymmetry( symmetry );

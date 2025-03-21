@@ -18,7 +18,7 @@ import com.vzome.desktop.api.Controller;
 public class MeasurePanel extends JPanel
 {
     private static final long serialVersionUID = 1L;
-    private final Controller controller;
+    private final transient Controller controller;
     private final JTable measureTable;
     private final MeasureTableModel measureTableModel;
 

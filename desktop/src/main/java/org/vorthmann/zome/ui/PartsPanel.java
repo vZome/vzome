@@ -36,7 +36,7 @@ import com.vzome.desktop.controller.PartsController.PartInfo;
 public class PartsPanel extends JPanel
 {
     private static final long serialVersionUID = 1L;
-    private final Controller controller;
+    private final transient Controller controller;
     private final JTable bomTable;
     private final PartsTableModel partsTableModel;
     private Point popupTriggerLocation = null;
@@ -284,9 +284,9 @@ public class PartsPanel extends JPanel
         private static final long serialVersionUID = 1L;
         private final String[] columnNames = { "count", "orbit", "size", "length (orbit units)" };
         private final TreeSet<PartsTableRow> tableRows = new TreeSet<>(); // self-sorting since PartsTableRow implements Comparable
-        private final PartsTableRow ballsTotalRow = new PartsTableRow("balls", Connector.class, 1 );
-        private final PartsTableRow strutsTotalRow = new PartsTableRow("struts", Strut.class, 0 );
-        private final PartsTableRow panelsTotalRow = new PartsTableRow("panels", Panel.class, 0 );
+        private final transient PartsTableRow ballsTotalRow = new PartsTableRow("balls", Connector.class, 1 );
+        private final transient PartsTableRow strutsTotalRow = new PartsTableRow("struts", Strut.class, 0 );
+        private final transient PartsTableRow panelsTotalRow = new PartsTableRow("panels", Panel.class, 0 );
 
         PartsTableModel() {
             tableRows.add(ballsTotalRow);
@@ -474,8 +474,8 @@ public class PartsPanel extends JPanel
     private final class ColorRenderer extends JLabel implements TableCellRenderer
     {
         private static final long serialVersionUID = 1L;
-        Border unselectedBorder = null;
-        Border selectedBorder = null;
+        transient Border unselectedBorder = null;
+        transient Border selectedBorder = null;
         boolean isBordered = true;
      
         public ColorRenderer( boolean isBordered ) {

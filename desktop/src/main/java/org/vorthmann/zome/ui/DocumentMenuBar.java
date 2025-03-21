@@ -45,11 +45,11 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
 
     private final JMenuItem setColorMenuItem, showToolsMenuItem, zomicMenuItem, zomodMenuItem, importVEFItem; //, pythonMenuItem
 
-    private final ControlActions actions;
+    private final transient ControlActions actions;
 
     private final boolean fullPower;
 
-    private final Controller controller;
+    private final transient Controller controller;
 
     public DocumentMenuBar( final Controller controller, ControlActions actions )
     {
