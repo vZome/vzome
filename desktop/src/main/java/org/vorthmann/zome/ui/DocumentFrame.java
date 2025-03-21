@@ -57,15 +57,15 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 {
     private static final long serialVersionUID = 1L;
 
-    protected final GraphicsController mController;
+    protected final transient GraphicsController mController;
     
-    protected final Controller toolsController;
+    protected final transient Controller toolsController;
 
     private final ModelPanel modelPanel;
             
     private final JTabbedPane tabbedPane = new JTabbedPane();
     
-    private final ExclusiveAction.Excluder mExcluder = new ExclusiveAction.Excluder( this );
+    private final transient ExclusiveAction.Excluder mExcluder = new ExclusiveAction.Excluder( this );
 
     private boolean isEditor, fullPower, readerPreview, canSave;
 
@@ -85,7 +85,7 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
     private JLabel statusText;
 
-    private GraphicsController lessonController, cameraController;
+    private transient GraphicsController lessonController, cameraController;
     
     private JDialog polytopesDialog, importScaleDialog;
     
@@ -93,19 +93,19 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
 
 	private final boolean developerExtras;
 	
-	private final ActionListener localActions;
+	private final transient ActionListener localActions;
 	    
     private final FileDialog fileDialog = new FileDialog( this );
     
 	private File mFile = null;
 	
-	private final Controller.ErrorChannel errors;
+	private final transient Controller.ErrorChannel errors;
 
     private Snapshot2dFrame snapshot2dFrame;
 
-	private ControllerFileAction saveAsAction;
+	private transient ControllerFileAction saveAsAction;
 
-	private PropertyChangeListener appUI;
+	private transient PropertyChangeListener appUI;
     
     public ExclusiveAction.Excluder getExcluder()
     {

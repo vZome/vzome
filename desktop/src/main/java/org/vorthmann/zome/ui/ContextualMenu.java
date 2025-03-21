@@ -14,7 +14,7 @@ public class ContextualMenu extends JPopupMenu
 {
     private static final long serialVersionUID = 1L;
     
-    private final Map<String, JMenuItem> mActions = new HashMap<>();
+    private final transient Map<String, JMenuItem> mActions = new HashMap<>();
     
     private String[] mActionNames = null;
 
