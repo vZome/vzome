@@ -96,8 +96,10 @@ namespace com.vzome.core.exporters {
                     componentTemplate = instructionsTemplate;
                     postLayout = "zometool";
                     simpleLayout = "zometool";
+                    break;
                 };
             default:
+                break;
             }
             const siteUrl: string = "https://" + orgName + ".github.io/" + repoName;
             const repoUrl: string = "https://github.com/" + orgName + "/" + repoName;

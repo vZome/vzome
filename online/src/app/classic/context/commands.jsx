@@ -21,7 +21,7 @@ export const CommandsProvider = props =>
   const { state: cameraState } = useCamera();
   const globalAction   = action => () => controllerAction( rootController(), action );
   const undoRedoAction = action => () => controllerAction( subController( rootController(), 'undoRedo' ), action );
-  const symmetryAction = action => () => controllerAction( symmetryController(), action );
+  const symmetryAction = ( symm, action ) => () => controllerAction( subController( rootController(), `symmetry.${symm}` ), action );
   
   const doSave = ( chooseFile = false ) =>
     {
@@ -175,9 +175,9 @@ export const CommandsProvider = props =>
   createCommand( 'panel',                  { mods:"⌘",  key:"P" } );
   createCommand( 'Parallelepiped',         { mods:"⇧⌘", key:"P" } );
 
-  createCommand( 'icosasymm',          { mods:"⌘",  key:"I" }, symmetryAction( 'icosasymm' ) );
-  createCommand( 'octasymm',           { mods:"⌥⌘", key:"C" }, symmetryAction( 'octasymm' ) );
-  createCommand( 'tetrasymm',          { mods:"⌥⌘", key:"T" }, symmetryAction( 'tetrasymm' ) );
+  createCommand( 'icosasymm',          { mods:"⌘",  key:"I" }, symmetryAction( 'icosahedral', 'icosasymm' ) );
+  createCommand( 'octasymm',           { mods:"⌥⌘", key:"C" }, symmetryAction( 'octahedral', 'octasymm' ) );
+  createCommand( 'tetrasymm',          { mods:"⌥⌘", key:"T" }, symmetryAction( 'octahedral', 'tetrasymm' ) );
   createCommand( 'showPolytopeDialog', { mods:"⌥⌘", key:"P" }, showPolytopesDialog );
 
   return (

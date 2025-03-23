@@ -187,10 +187,10 @@ namespace com.vzome.core.exporters2d {
                 let greenIntensity: number = (<any>Math).fround(ambient.getGreen() / 255.0);
                 let blueIntensity: number = (<any>Math).fround(ambient.getBlue() / 255.0);
                 for(let i: number = 0; i < lightColors.length; i++) {{
-                    const intensity: number = Math.max(normal.dot(lightDirs[i]), 0.0);
-                    redIntensity += intensity * ((<any>Math).fround(lightColors[i].getRed() / 255.0));
-                    greenIntensity += intensity * ((<any>Math).fround(lightColors[i].getGreen() / 255.0));
-                    blueIntensity += intensity * ((<any>Math).fround(lightColors[i].getBlue() / 255.0));
+                    const intensity: number = (<any>Math).fround(Math.max(normal.dot(lightDirs[i]), 0.0));
+                    redIntensity += (<any>Math).fround(intensity * ((<any>Math).fround(lightColors[i].getRed() / 255.0)));
+                    greenIntensity += (<any>Math).fround(intensity * ((<any>Math).fround(lightColors[i].getGreen() / 255.0)));
+                    blueIntensity += (<any>Math).fround(intensity * ((<any>Math).fround(lightColors[i].getBlue() / 255.0)));
                 };}
                 const red: number = (<number>((<any>Math).fround(this.mPolyColor.getRed() * Math.min(redIntensity, 1.0)))|0);
                 const green: number = (<number>((<any>Math).fround(this.mPolyColor.getGreen() * Math.min(greenIntensity, 1.0)))|0);
