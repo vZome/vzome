@@ -252,6 +252,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
           }
 
           case 'pov': {
+            lighting .useWorldDirection = true;
             exported = export3dDocument( this.legacyDesign, camera, lighting, { format, height, width } );
             break;
           }

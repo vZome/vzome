@@ -44,13 +44,15 @@ const parseColor = input =>
 
 const createLights = lighting =>
 {
-  const { backgroundColor, ambientColor, directionalLights } = lighting;
+  const { backgroundColor, ambientColor, directionalLights, useWorldDirection } = lighting;
   const lights = new com.vzome.core.viewing.Lights();
   lights .setBackgroundColor( parseColor( backgroundColor ) );
   lights .setAmbientColor( parseColor( ambientColor ) );
-  for ( const { worldDirection: [x,y,z], color } of directionalLights ) {
-    // Because we are using worldDirection rather than direction, these vectors are in world coordinates already.
-    //  Apparently, POVRayExporter is the only exporter that uses directional lights.
+  for ( const light of directionalLights ) {
+    const { worldDirection, direction, color } = light;
+    //  Apparently, POVRayExporter is the only 3D exporter that uses directional lights, and it wants them in world coordinates.
+    //  For 2D export, we need the directions in view coordinates.
+    const [ x, y, z ] = useWorldDirection ? worldDirection : direction;
     lights .addDirectionLight( parseColor( color ), new com.vzome.core.math.RealVector( x, y, z ) );
   }
   return lights;
