@@ -16,7 +16,7 @@ import { useCamera } from "../../../viewer/context/camera"
 const SvgPreviewDialog = props =>
 {
   const { rootController } = useEditor();
-  const { state } = useCamera();
+  const { state, mapViewToWorld } = useCamera();
   const [ useLighting, setUseLighting ] = createSignal( true );
   const [ useShapes, setUseShapes ] = createSignal( true );
   const [ drawOutlines, setDrawOutlines ] = createSignal( false );
@@ -30,6 +30,7 @@ const SvgPreviewDialog = props =>
     if ( props.open ) { // always regenerate when opening the dialog
       const camera = unwrap( untrack( () => state.camera ) );
       const lighting = unwrap( untrack( () => state.lighting ) );
+      lighting .directionalLights .forEach( light => light .worldDirection = mapViewToWorld( light.direction ) );
       const params = { camera, lighting,
         useShapes     : useShapes(),
         drawOutlines  : drawOutlines(),
