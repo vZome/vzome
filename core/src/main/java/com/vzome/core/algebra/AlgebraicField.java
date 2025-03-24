@@ -97,14 +97,6 @@ public interface AlgebraicField
     AlgebraicNumber createRational( long numerator, long denominator );
         
     /**
-     * @return The AlgebraicNumber to be use for the Chord Ratio construction in the given field.
-     * This method can be used to generalize an AffinePolygon tool and a PolygonalAntiprismSymmetry.
-     * This base class returns one, which is the scalar for an affine square and works in any field. 
-     * Derived classes should override this method if they can be used to generate any other affine polygon.
-     */
-    AlgebraicNumber getAffineScalar();
-
-    /**
      * @param n specifies the ordinal of the term in the AlgebraicNumber which will be set to one.
      * When {@code n == 0}, the result is the same as {@code createRational(1)}.
      * When {@code n == 1}, the result is the same as {@code createPower(1)}.

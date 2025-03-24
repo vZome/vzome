@@ -34,7 +34,7 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
 									field .basisVector( 3, AlgebraicVector.Z ) .negate() )
 						: null // reflection through origin yields negative zones
 				); // calls createInitialPermutations, createFrameOrbit, createOtherOrbits
-        sigmaX2 = field.getAffineScalar().times( field.createRational (2) ).evaluate();
+        sigmaX2 = field.getUnitTerm(2).timesInt( 2 ).evaluate();
         skewFactor = Math .sin( (3.0d/7.0d) * Math.PI ); // TODO: generalize this so that the 3 and 7 are calculated from PolygonField
 		this.correctedOrbits = correctedOrbits;
 	}
@@ -65,7 +65,7 @@ public class HeptagonalAntiprismSymmetry extends AbstractSymmetry
         AlgebraicField hf = this .mField;
 
         AlgebraicNumber one = hf .one();
-        AlgebraicNumber s = hf .getAffineScalar().reciprocal(); // reciprocal of sigma
+        AlgebraicNumber s = hf .getUnitTerm(2).reciprocal(); // reciprocal of sigma
         AlgebraicNumber R = hf .createPower( 1 ) .times( s ); // rho / sigma
 
         //                                   (-s,1)         Y

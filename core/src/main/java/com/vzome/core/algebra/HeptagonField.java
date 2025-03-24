@@ -46,16 +46,6 @@ public class HeptagonField extends AbstractAlgebraicField
         return new BigRational[]{ ones, rhos, sigmas };
     }
 
-    /**
-     * scalar for an affine heptagon
-     * @return 
-     */
-    @Override
-    public AlgebraicNumber getAffineScalar()
-    {
-        return getUnitTerm( C );
-    }
-
     private static final String[][] IRRATIONAL_LABELS = new String[][] {
         {" ", " "},
         {"\u03C1", "rho"},
