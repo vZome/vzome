@@ -102,7 +102,6 @@ namespace com.vzome.core.kinds {
             case "tetrasymm":
                 {
                     const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
-                    const closure: number[] = symmetry.subgroup(com.vzome.core.math.symmetry.Symmetry.TETRAHEDRAL);
                     return new com.vzome.core.commands.CommandTetrahedralSymmetry(symmetry);
                 };
             default:

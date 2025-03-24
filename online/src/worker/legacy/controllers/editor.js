@@ -87,6 +87,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
         }
         const symmController = new com.vzome.desktop.controller.SymmetryController( label, strutBuilder, system, renderedModel );
         strutBuilder .addSubController( `symmetry.${label}`, symmController );
+        this .addSubController( `symmetry.${label}`, symmController );
         this.symmetries[ label ] = symmController;
       }
     }
