@@ -492,12 +492,6 @@ public class PolygonField extends ParameterizedField
         return getFieldCoefficients(polygonSides());
     }
 
-    @Override
-    public AlgebraicNumber getAffineScalar()
-    {
-        return getUnitDiagonal( 2 ); // be sure to use getUnitDiagonal() instead of getUnitTerm()
-    }
-
     protected void validate() {
         if (polygonSides() < MIN_SIDES) {
             String msg = "polygon sides = " + polygonSides() + ". It must be at least " + MIN_SIDES + ".";

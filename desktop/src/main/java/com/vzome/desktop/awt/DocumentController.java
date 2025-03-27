@@ -57,6 +57,7 @@ import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.editor.api.ImplicitSymmetryParameters;
 import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.edits.AffinePolygon;
 import com.vzome.core.exporters.DocumentExporterIntf;
 import com.vzome.core.exporters.GeometryExporter;
 import com.vzome.core.exporters2d.Java2dSnapshot;
@@ -1415,6 +1416,18 @@ public class DocumentController extends DefaultGraphicsController implements Sce
 
         case "field.multipliers":
             return AlgebraicField .getMultipliers( this.documentModel .getField() );
+
+		case "affinePolygon.labels":
+			return AffinePolygon.getPolygonModes(this.documentModel.getField()).sequencedValues()
+					.toArray(new String[0]);
+
+		case "affinePolygon.modes": {
+			ArrayList<String> modes = new ArrayList<>();
+			for (Integer mode : AffinePolygon.getPolygonModes(this.documentModel.getField()).sequencedKeySet()) {
+				modes.add(mode.toString());
+			}
+			return modes.toArray(new String[modes.size()]);
+		}
 
         default:
             return super.getCommandList( listName );

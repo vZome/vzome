@@ -25,13 +25,13 @@ public class HeptagonSubdivision extends ChangeManifestations
         for (Manifestation man : mSelection) {
             unselect( man );
             if ( man instanceof Connector ) {
-                Point nextPoint = (Point) ( (Connector) man ).getFirstConstruction();
+                Point nextPoint = (Point) man.getFirstConstruction();
                 if ( p1 == null )
                     p1 = nextPoint;
                 else {
                     Segment segment = new SegmentJoiningPoints( p1, nextPoint );
                     AlgebraicField field = segment .getField();
-                    AlgebraicNumber scaleFactor = field .getAffineScalar() .reciprocal();
+                    AlgebraicNumber scaleFactor = field .getUnitTerm(2) .reciprocal();
                     AlgebraicVector offset = segment .getOffset();
                     AlgebraicVector off2 = offset .scale( scaleFactor );
                     AlgebraicVector off1 = off2 .scale( scaleFactor );

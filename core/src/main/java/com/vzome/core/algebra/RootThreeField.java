@@ -38,15 +38,6 @@ public class RootThreeField extends AbstractAlgebraicField
         return new BigRational[]{ ones, sqrt3s };
     }
 
-    /**
-     * scalar for an affine hexagon
-     * @return 
-     */
-    @Override
-    public AlgebraicNumber getAffineScalar() {
-        return createRational( 2 );
-    }
-
     private static final int ONES_PLACE = 0, SQRT3_PLACE = 1;
 
     @Override

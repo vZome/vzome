@@ -87,15 +87,6 @@ public final class PentagonField extends AbstractAlgebraicField
         return new BigRational[]{ ones, phis };
     }
 
-    /**
-     * scalar for an affine pentagon
-     * @return 
-     */
-    @Override
-    public AlgebraicNumber getAffineScalar() {
-        return getUnitTerm( 1 );
-    }
-
     @Override
     public AlgebraicNumber getGoldenRatio()
     {

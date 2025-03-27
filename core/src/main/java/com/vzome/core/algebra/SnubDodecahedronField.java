@@ -117,16 +117,6 @@ public class SnubDodecahedronField extends ParameterizedField {
         return 2; // only two primitive elements, phi and xi
     }
 
-    /**
-     * scalar for an affine pentagon
-     * @return 
-     */
-    @Override
-    public AlgebraicNumber getAffineScalar()
-    {
-        return getGoldenRatio();
-    }
-
     @Override
     public AlgebraicNumber getGoldenRatio()
     {
