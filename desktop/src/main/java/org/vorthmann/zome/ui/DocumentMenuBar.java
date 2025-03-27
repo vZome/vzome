@@ -367,6 +367,23 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         if ( developerExtras ) {
             menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+			String[] apLabels = controller.getCommandList("affinePolygon.labels");
+			if (apLabels.length > 0) {
+				submenu = new JMenu("Affine Polygons...");
+				String[] apModes = controller.getCommandList("affinePolygon.modes");
+				// listed in descending order
+				for (int i = apLabels.length - 1; i >= 0; i--) {
+					if (apLabels[i].equals("Triangle")) {
+						// even though Triangle is valid, we'll skip it
+						// because it's generally useless and may be confusing.
+						// It can still be invoked via the custom menu
+						continue;
+					}
+					submenu.add(enableIf(isEditor, createMenuItem(apLabels[i], ("AffinePolygon/" + apModes[i]))));
+				}
+				menu.add(submenu);
+			}
+            
             menu.add( enableIf( isEditor, createMenuItem( "Assert Selection", ( "ValidateSelection" ) ) ) );
 
             //            menu.add( enableIf( isEditor, createMenuItem( "6-Lattice", getExclusiveAction( "sixLattice" ) ) );
