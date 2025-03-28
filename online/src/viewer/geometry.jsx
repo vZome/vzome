@@ -192,7 +192,10 @@ export const ShapedGeometry = ( props ) =>
     const dataUrl = gl() .domElement .toDataURL( mimeType );
     fetch( dataUrl )
       .then( res => res.blob() )
-      .then( saveBlob );    
+      .then( blob => {
+        console.log( `Captured ${mimeType} image of size ${blob.size} bytes` );
+        saveBlob( blob );
+      } );    
   }
   setCapturer( { capture } );
 

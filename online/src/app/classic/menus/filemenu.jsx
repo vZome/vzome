@@ -11,6 +11,7 @@ import { UrlDialog } from '../dialogs/webloader.jsx'
 import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
 import { INITIAL_DISTANCE, useCamera } from "../../../viewer/context/camera.jsx";
 import { useImageCapture } from "../../../viewer/context/export.jsx";
+import { useViewer } from "../../../viewer/context/viewer.jsx";
 
 const queryParams = new URLSearchParams( window.location.search );
 const relativeUrl = queryParams.get( 'design' );
@@ -33,6 +34,7 @@ export const FileMenu = () =>
 {
   const { rootController, state, setState,
     createDesign, openDesignFile, fetchDesignUrl, importMeshFile, guard, edited } = useEditor();
+  const { setProblem } = useViewer();
   const { state: cameraState, mapViewToWorld } = useCamera();
   const [ showDialog, setShowDialog ] = createSignal( false );
   const fields = () => controllerProperty( rootController(), 'fields', 'fields', true );
@@ -158,6 +160,10 @@ export const FileMenu = () =>
   {
     const { capture } = capturer();
     capture( mimeType, blob => {
+      if ( blob.size === 0 ) {
+        setProblem( 'Captured image is empty; please report this as a defect' );
+        return;
+      }
       const name = (state.designName || 'untitled') .concat( "." + extension );
       saveFileAs( name, blob, mimeType );
     });

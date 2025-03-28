@@ -103,7 +103,7 @@ const parseArticle = ( notesElement ) =>
     const { snapshot, title } = pageElement.attributes;
     const pageDom = new JavaDomElement( pageElement );
     const camera = parseViewXml( pageDom );
-    const content = pageDom .getChildElement( 'content' ) .getTextContent();
+    const content = pageDom .getChildElement( 'content' ) ?.getTextContent() || "";
     return { title, snapshot, camera, content };
   }
   return notesElement.nativeElement.children.map( pageElement => parseArticlePage( pageElement ) )
