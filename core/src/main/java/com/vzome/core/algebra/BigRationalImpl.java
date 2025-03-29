@@ -72,7 +72,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
 //  @SuppressWarnings("LeakingThisInConstructor") // This annotation is ignored (not supported) by Eclipse, but is used by NetBeans
     public BigRationalImpl( long numerator )
     {
-        // no need to reduce since demoninator == 1
+        // no need to reduce since denominator == 1
         if(numerator != Long.MIN_VALUE) {
             num = numerator;
             den = 1;
@@ -120,7 +120,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
 //  @SuppressWarnings("LeakingThisInConstructor") // This annotation is ignored (not supported) by Eclipse, but is used by NetBeans
     public BigRationalImpl( BigInteger numerator )
     {
-        // no need to reduce since demoninator == 1
+        // no need to reduce since denominator == 1
         if(fitsInLong(numerator)) {
             num = numerator.longValue();
             den = 1;
@@ -483,7 +483,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
         // 256 requires 64K of memory and is probably overkill for most models. 
         // 128 requires 16K of memory.
         //  64 requires  4K of memory but is probably adequate for most models.
-        // Even the bigest H4 polytope with all of its reflections enabled 
+        // Even the biggest H4 polytope with all of its reflections enabled 
         // doesn't have any terms greater than 75, 
         // so a cache size of 128 would probably cover nearly all models. 
         static final int LOOKUP_SIZE = 128; 
@@ -502,7 +502,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
             for(int j = 0; j < size; j++) {
                 for(int k = j; k < size; k++) {
                     result[j][k] = (byte) calculateGcd(j,k);
-                    // table is symetrical diagonally, so just calculate once and copy it.
+                    // table is symmetrical diagonally, so just calculate once and copy it.
                     result[k][j] = result[j][k]; 
                 }
             }
@@ -517,7 +517,7 @@ public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
             // The invocations gcd(Long.MIN_VALUE, Long.MIN_VALUE), gcd(Long.MIN_VALUE, 0L) 
             // and gcd(0L, Long.MIN_VALUE) should throw an ArithmeticException, 
             // because the result would be 2^63, which is too large for a long value.
-            // But since this methos is only intended to be used internally by the BigRational class
+            // But since this method is only intended to be used internally by the BigRational class
             // and since it has adequate checks elsewhere to ensure that these conditions don't happen
             // I am going to comment out the exception tests since I am convinced that the BigRational class
             // can use it safely without the overhead of these exception tests
