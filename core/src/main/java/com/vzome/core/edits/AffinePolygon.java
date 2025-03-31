@@ -252,12 +252,15 @@ public class AffinePolygon extends ChangeManifestations {
         
         // ensure that there are balls selected at the end points of the two original struts.
         // select the balls and struts in sequence around the polygon.
-        select(manifestConstruction(pStart));
-        // Except in the case of an affine parabola (when reps = 3), don't reselect the first strut in the series.
-        // That way, the two struts that are selected will be prepared to repeat the command ad infinitum.
+        // Except in the case of an affine parabola (when nSides == 2). 
+        // In that case, don't reselect the first ball or strut in the series.
+        // That way, the two struts that are selected 
+        // will be prepared to repeat the command ad infinitum.
+        Manifestation man0 = manifestConstruction(pStart);
         Manifestation man1 = manifestConstruction(seg1);
         if(nSides != 2) {
         	// not a parabola
+        	select(man0);
         	select(man1);
         }
         // Now select the remaining balls and struts
@@ -265,8 +268,8 @@ public class AffinePolygon extends ChangeManifestations {
         select(manifestConstruction(seg2));
         select(manifestConstruction(pEnd));
 
-        // start with 2 to account for the 2 input struts
-        // except for the parabola case when reps == 2
+        // Start with 2 to account for the 2 input struts
+        // except for the parabola case (when nSides == 2)
         // in which case we start with 1
         for(int i = (nSides == 2) ? 1 : 2; i < this.nSides; i++) {
         	AlgebraicVector translateByChordRatio = offset2.scale(this.chordRatio);
