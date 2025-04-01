@@ -4,6 +4,7 @@ import { com } from './core-java.js';
 
 const exporterClasses = {
   'stl'      : 'StlExporter',
+  'step'     : 'STEPExporter',
   'scad'     : 'OpenScadMeshExporter',
   'build123d': 'PythonBuild123dExporter',
   'dxf'      : 'DxfExporter',

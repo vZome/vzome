@@ -266,7 +266,6 @@ core.config {
     // I think I want to include all of these, but...
     'com/vzome/core/exporters/GeoGebraExporter.java',  // uses DOM and xpath
     'com/vzome/core/exporters/DaeExporter.java',       // uses DOM and xpath
-    'com/vzome/core/exporters/STEPExporter.java',      // emits multiple files
 
     'com/vzome/desktop/controller/CameraController.java',
     'com/vzome/desktop/controller/JsonClientRendering.java',

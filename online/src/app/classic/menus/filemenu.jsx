@@ -226,6 +226,7 @@ export const FileMenu = () =>
           <ExportItem label="StL (mm)" ext="stl" mime="application/sla" />
           <ExportItem label="OFF" ext="off" mime="text/plain" />
           <ExportItem label="PLY" ext="ply" mime="text/plain" />
+          <ExportItem label="STEP" ext="step" mime="text/plain" />
         </SubMenu>
         <SubMenu label="Export 3D Points & Lines">
           <ExportItem label="Simple Mesh JSON" format="mesh" ext="mesh.json" mime="application/json" />

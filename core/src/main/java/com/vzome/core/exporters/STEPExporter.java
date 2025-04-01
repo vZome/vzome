@@ -1,9 +1,6 @@
 package com.vzome.core.exporters;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.NumberFormat;
@@ -21,6 +18,7 @@ import com.vzome.core.editor.api.Manifestations;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.Panel;
+import com.vzome.xml.ResourceLoader;
 
 /**
  * This only exports shapes, no instances yet.
@@ -40,19 +38,9 @@ public class STEPExporter extends GeometryExporter
     {
         output = new PrintWriter( writer );
 
-        InputStream input = getClass() .getClassLoader()
-        .getResourceAsStream( PREAMBLE_FILE );
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buf = new byte[1024];
-        int num;
-        try {
-        while ( ( num = input .read( buf, 0, 1024 )) > 0 )
-        out .write( buf, 0, num );
-        } catch (IOException e) {
-        e.printStackTrace();
-        }
-        String preamble = new String( out .toByteArray() );
-        preamble = preamble .replaceAll( "_____FILENAME_____", file .getName() );
+        String preamble = ResourceLoader.loadStringResource( PREAMBLE_FILE );
+
+        // preamble = preamble .replaceAll( "_____FILENAME_____", file .getName() );
         output .println( preamble );
         output .println();
 
@@ -91,10 +79,12 @@ public class STEPExporter extends GeometryExporter
                 Panel panel = (Panel) man;
                 int arity = panel .getVertexCount();
 
-                // This is probably pretty heavy-handed, but I don't want to disturb the for loop below.
-                Stream<AlgebraicVector> vertexStream = StreamSupport.stream( ( (Iterable<AlgebraicVector>) panel ).spliterator(), false);
-                List<Integer> vIndicesList = vertexStream.map( v -> sortedVertexList .indexOf( v ) ). collect( Collectors.toList() );
-                int[] vIndices = vIndicesList .stream() .mapToInt( i -> i ) .toArray();
+                int[] vIndices = new int[ arity ];
+                int k = 0;
+                for ( AlgebraicVector av : panel ) {
+                  int vIndex = sortedVertexList .indexOf( av );
+                  vIndices[ k++ ] = vIndex;
+                }
 
                 ArrayList<Integer> edgeIndices = new ArrayList<>();
                 int point1 = 0;
