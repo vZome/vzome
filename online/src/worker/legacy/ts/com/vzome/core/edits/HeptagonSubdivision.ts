@@ -12,11 +12,11 @@ namespace com.vzome.core.edits {
                 {
                     this.unselect$com_vzome_core_model_Manifestation(man);
                     if (man != null && (man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Connector") >= 0)){
-                        const nextPoint: com.vzome.core.construction.Point = <com.vzome.core.construction.Point>(<com.vzome.core.model.Connector><any>man).getFirstConstruction();
+                        const nextPoint: com.vzome.core.construction.Point = <com.vzome.core.construction.Point>man.getFirstConstruction();
                         if (p1 == null)p1 = nextPoint; else {
                             const segment: com.vzome.core.construction.Segment = new com.vzome.core.construction.SegmentJoiningPoints(p1, nextPoint);
                             const field: com.vzome.core.algebra.AlgebraicField = segment.getField();
-                            const scaleFactor: com.vzome.core.algebra.AlgebraicNumber = field.getAffineScalar().reciprocal();
+                            const scaleFactor: com.vzome.core.algebra.AlgebraicNumber = field.getUnitTerm(2).reciprocal();
                             const offset: com.vzome.core.algebra.AlgebraicVector = segment.getOffset();
                             const off2: com.vzome.core.algebra.AlgebraicVector = offset.scale(scaleFactor);
                             const off1: com.vzome.core.algebra.AlgebraicVector = off2.scale(scaleFactor);

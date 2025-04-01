@@ -355,18 +355,35 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         menu.add(submenu);
 
         menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        String[] apLabels = controller.getCommandList("affinePolygon.labels");
+        if (apLabels.length > 0) {
+            String[] apModes = controller.getCommandList("affinePolygon.modes");
+            for (int i = 0; i < apModes.length; i++) {
+                if ( apModes[i].equals( "2" ) || apModes[i].equals( "3" )) {
+                    // Even though Triangle is valid, we'll skip it
+                    // because it's generally useless and may be confusing.
+                    // Similarly, Parabola may be confusing, and is not useful in many contexts.
+                    // They can still be invoked via the custom menu.
+                    continue;
+                }
+                String name = apLabels[i];
+                if ( name == "Square" )
+                    name = "Parallelogram";
+                else
+                    name = "Affine " + name;
+                menu.add( enableIf( isEditor, createMenuItem( name, ("AffinePolygon/" + apModes[i]) )));
+            }
+        }
         menu.add( enableIf( isEditor, createMenuItem( "Parallelepiped", "Parallelepiped", KeyEvent.VK_P, COMMAND_SHIFT ) ) );
         if ( isGolden ) {
             menu.add( enableIf( isEditor, createMenuItem( "\u03C6 Divide", ( "tauDivide" ) ) ) );
-            menu.add( enableIf( isEditor, createMenuItem( "Affine Pentagon", ( "AffinePentagon" ) ) ) );
         } else if ( isHeptagon ) {
             menu.add( enableIf( isEditor, createMenuItem( "1/\u03C3/\u03C1 Subdivisions", ( "HeptagonSubdivision" ) ) ) );
-            menu.add( enableIf( isEditor, createMenuItem( "Affine Heptagon", ( "AffineHeptagon" ) ) ) );
         }
 
         if ( developerExtras ) {
             menu .addSeparator(); // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+            
             menu.add( enableIf( isEditor, createMenuItem( "Assert Selection", ( "ValidateSelection" ) ) ) );
 
             //            menu.add( enableIf( isEditor, createMenuItem( "6-Lattice", getExclusiveAction( "sixLattice" ) ) );

@@ -57,6 +57,7 @@ import com.vzome.core.editor.SymmetryPerspective;
 import com.vzome.core.editor.SymmetrySystem;
 import com.vzome.core.editor.api.ImplicitSymmetryParameters;
 import com.vzome.core.editor.api.OrbitSource;
+import com.vzome.core.edits.AffinePolygon;
 import com.vzome.core.exporters.DocumentExporterIntf;
 import com.vzome.core.exporters.GeometryExporter;
 import com.vzome.core.exporters2d.Java2dSnapshot;
@@ -199,7 +200,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         this .addSubController( "tools", toolsController );
         this .addPropertyListener( toolsController );
         
-		toolsController .addTool( document .getToolsModel() .get( "bookmark.builtin/ball at origin" ) );
+        toolsController .addTool( document .getToolsModel() .get( "bookmark.builtin/ball at origin" ) );
 
         this .addSubController( "bookmark", new ToolFactoryController( this .documentModel .getBookmarkFactory() ) );
         
@@ -442,7 +443,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
     @Override
     public void attachViewer( GraphicsViewer viewer, Component canvas )
     {
-    		// This is called on a UI thread!
+            // This is called on a UI thread!
         this .modelCanvas = canvas;
         this .imageCaptureViewer = (RenderingViewer) viewer;
         
@@ -743,14 +744,14 @@ public class DocumentController extends DefaultGraphicsController implements Sce
             case "openTrackballModel": // invoked from custom menu
                 String modelResourcePath = this .symmetryController .getProperty( "modelResourcePath" );
                 if ( modelResourcePath != null ) {
-					String newAction = "newFromResource-" + modelResourcePath;
-					String symmName = symmetryController.getProperty( "name" ); // the name, not the label
-					if(symmName.startsWith("antiprism")) {
-						// use a delimiter character that shouldn't ever be in a path
-						// and doesn't need to be escaped in a regular expression
-						newAction = newAction + ":" + symmName;
-					}
-					super.doAction(newAction);
+                    String newAction = "newFromResource-" + modelResourcePath;
+                    String symmName = symmetryController.getProperty( "name" ); // the name, not the label
+                    if(symmName.startsWith("antiprism")) {
+                        // use a delimiter character that shouldn't ever be in a path
+                        // and doesn't need to be escaped in a regular expression
+                        newAction = newAction + ":" + symmName;
+                    }
+                    super.doAction(newAction);
                 }
                 break;
 
@@ -1341,7 +1342,7 @@ public class DocumentController extends DefaultGraphicsController implements Sce
         case "snapshot.2d": {
             if ( java2dController == null ) {
                 java2dController = new Java2dSnapshotController( cameraController.getView(), this.sceneLighting,
-                						this.currentSnapshot, this.drawOutlines, this .mApp :: get2dExporter );
+                                        this.currentSnapshot, this.drawOutlines, this .mApp :: get2dExporter );
                 this .addSubController( name, java2dController );
             }
             return java2dController;
@@ -1415,6 +1416,18 @@ public class DocumentController extends DefaultGraphicsController implements Sce
 
         case "field.multipliers":
             return AlgebraicField .getMultipliers( this.documentModel .getField() );
+
+        case "affinePolygon.labels":
+            return AffinePolygon.getPolygonModes(this.documentModel.getField()).sequencedValues()
+                    .toArray(new String[0]);
+
+        case "affinePolygon.modes": {
+            ArrayList<String> modes = new ArrayList<>();
+            for (Integer mode : AffinePolygon.getPolygonModes(this.documentModel.getField()).sequencedKeySet()) {
+                modes.add(mode.toString());
+            }
+            return modes.toArray(new String[modes.size()]);
+        }
 
         default:
             return super.getCommandList( listName );

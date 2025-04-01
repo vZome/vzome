@@ -17,7 +17,7 @@ namespace com.vzome.fields.heptagon {
                 if (this.skewFactor === undefined) { this.skewFactor = 0; } 
                 if (this.correctedOrbits === undefined) { this.correctedOrbits = false; } 
                 if (this.preferredAxis === undefined) { this.preferredAxis = null; } 
-                this.sigmaX2 = field.getAffineScalar()['times$com_vzome_core_algebra_AlgebraicNumber'](field['createRational$long'](2)).evaluate();
+                this.sigmaX2 = field.getUnitTerm(2).timesInt(2).evaluate();
                 this.skewFactor = Math.sin((3.0 / 7.0) * Math.PI);
                 this.correctedOrbits = correctedOrbits;
             } else if (((field != null && (field.constructor != null && field.constructor["__interfaces"] != null && field.constructor["__interfaces"].indexOf("com.vzome.core.algebra.AlgebraicField") >= 0)) || field === null) && ((typeof frameColor === 'string') || frameColor === null) && correctedOrbits === undefined) {
@@ -30,7 +30,7 @@ namespace com.vzome.fields.heptagon {
                     if (this.skewFactor === undefined) { this.skewFactor = 0; } 
                     if (this.correctedOrbits === undefined) { this.correctedOrbits = false; } 
                     if (this.preferredAxis === undefined) { this.preferredAxis = null; } 
-                    this.sigmaX2 = field.getAffineScalar()['times$com_vzome_core_algebra_AlgebraicNumber'](field['createRational$long'](2)).evaluate();
+                    this.sigmaX2 = field.getUnitTerm(2).timesInt(2).evaluate();
                     this.skewFactor = Math.sin((3.0 / 7.0) * Math.PI);
                     this.correctedOrbits = correctedOrbits;
                 }
@@ -55,7 +55,7 @@ namespace com.vzome.fields.heptagon {
         createFrameOrbit(frameColor: string) {
             const hf: com.vzome.core.algebra.AlgebraicField = this.mField;
             const one: com.vzome.core.algebra.AlgebraicNumber = hf.one();
-            const s: com.vzome.core.algebra.AlgebraicNumber = hf.getAffineScalar().reciprocal();
+            const s: com.vzome.core.algebra.AlgebraicNumber = hf.getUnitTerm(2).reciprocal();
             const R: com.vzome.core.algebra.AlgebraicNumber = hf['createPower$int'](1)['times$com_vzome_core_algebra_AlgebraicNumber'](s);
             const zAxis: com.vzome.core.algebra.AlgebraicVector = hf.basisVector(3, com.vzome.core.algebra.AlgebraicVector.Z);
             const zAxisNeg: com.vzome.core.algebra.AlgebraicVector = zAxis.negate();

@@ -1128,14 +1128,6 @@ export var com;
                 }
                 /**
                  *
-                 * @return {*}
-                 */
-                getAffineScalar() {
-                    const scalar = (this.delegate["scalarTerm"]);
-                    return this.getUnitTerm(scalar);
-                }
-                /**
-                 *
                  * @return {number}
                  */
                 getNumIrrationals() {
@@ -19087,15 +19079,6 @@ export var com;
                             throw new Error('invalid overload');
                     }
                     /**
-                     * @return {*} The AlgebraicNumber to be use for the Chord Ratio construction in the given field.
-                     * This method can be used to generalize an AffinePolygon tool and a PolygonalAntiprismSymmetry.
-                     * This base class returns one, which is the scalar for an affine square and works in any field.
-                     * Derived classes should override this method if they can be used to generate any other affine polygon.
-                     */
-                    getAffineScalar() {
-                        return this.__one;
-                    }
-                    /**
                      * @param {number} n specifies the ordinal of the term in the AlgebraicNumber which will be set to one.
                      * When {@code n == 0}, the result is the same as {@code createRational(1)}.
                      * When {@code n == 1}, the result is the same as {@code createPower(1)}.
@@ -26403,7 +26386,7 @@ export var com;
                             if (this.preferredAxis === undefined) {
                                 this.preferredAxis = null;
                             }
-                            this.sigmaX2 = field.getAffineScalar()['times$com_vzome_core_algebra_AlgebraicNumber'](field['createRational$long'](2)).evaluate();
+                            this.sigmaX2 = field.getUnitTerm(2).timesInt(2).evaluate();
                             this.skewFactor = Math.sin((3.0 / 7.0) * Math.PI);
                             this.correctedOrbits = correctedOrbits;
                         }
@@ -26425,7 +26408,7 @@ export var com;
                                 if (this.preferredAxis === undefined) {
                                     this.preferredAxis = null;
                                 }
-                                this.sigmaX2 = field.getAffineScalar()['times$com_vzome_core_algebra_AlgebraicNumber'](field['createRational$long'](2)).evaluate();
+                                this.sigmaX2 = field.getUnitTerm(2).timesInt(2).evaluate();
                                 this.skewFactor = Math.sin((3.0 / 7.0) * Math.PI);
                                 this.correctedOrbits = correctedOrbits;
                             }
@@ -26450,7 +26433,7 @@ export var com;
                     createFrameOrbit(frameColor) {
                         const hf = this.mField;
                         const one = hf.one();
-                        const s = hf.getAffineScalar().reciprocal();
+                        const s = hf.getUnitTerm(2).reciprocal();
                         const R = hf['createPower$int'](1)['times$com_vzome_core_algebra_AlgebraicNumber'](s);
                         const zAxis = hf.basisVector(3, com.vzome.core.algebra.AlgebraicVector.Z);
                         const zAxisNeg = zAxis.negate();
@@ -32876,13 +32859,6 @@ export var com;
                      */
                     getNumMultipliers() {
                         return 2;
-                    }
-                    /**
-                     * scalar for an affine pentagon
-                     * @return {*}
-                     */
-                    getAffineScalar() {
-                        return this.getUnitTerm(1);
                     }
                     /**
                      *
@@ -42421,13 +42397,6 @@ export var com;
                     getCoefficients() {
                         return PolygonField.getFieldCoefficients(this.polygonSides());
                     }
-                    /**
-                     *
-                     * @return {*}
-                     */
-                    getAffineScalar() {
-                        return this.getUnitDiagonal(2);
-                    }
                     validate() {
                         if (this.polygonSides() < PolygonField.MIN_SIDES) {
                             const msg = "polygon sides = " + this.polygonSides() + ". It must be at least " + PolygonField.MIN_SIDES + ".";
@@ -42780,13 +42749,6 @@ export var com;
                      */
                     getNumMultipliers() {
                         return 2;
-                    }
-                    /**
-                     * scalar for an affine pentagon
-                     * @return {*}
-                     */
-                    getAffineScalar() {
-                        return this.getGoldenRatio();
                     }
                     /**
                      *
@@ -46636,7 +46598,7 @@ export var com;
                                     else {
                                         const segment = new com.vzome.core.construction.SegmentJoiningPoints(p1, nextPoint);
                                         const field = segment.getField();
-                                        const scaleFactor = field.getAffineScalar().reciprocal();
+                                        const scaleFactor = field.getUnitTerm(2).reciprocal();
                                         const offset = segment.getOffset();
                                         const off2 = offset.scale(scaleFactor);
                                         const off1 = off2.scale(scaleFactor);
@@ -48106,6 +48068,286 @@ export var com;
                 }
                 edits.ConvexHull = ConvexHull;
                 ConvexHull["__class"] = "com.vzome.core.edits.ConvexHull";
+            })(edits = core.edits || (core.edits = {}));
+        })(core = vzome.core || (vzome.core = {}));
+    })(vzome = com.vzome || (com.vzome = {}));
+})(com || (com = {}));
+(function (com) {
+    var vzome;
+    (function (vzome) {
+        var core;
+        (function (core) {
+            var edits;
+            (function (edits) {
+                class AffinePolygon extends com.vzome.core.editor.api.ChangeManifestations {
+                    constructor(editorModel) {
+                        super(editorModel);
+                        this.errorMsg = new java.lang.StringBuilder();
+                        if (this.field === undefined) {
+                            this.field = null;
+                        }
+                        if (this.chordRatio === undefined) {
+                            this.chordRatio = null;
+                        }
+                        this.mode = null;
+                        this.nSides = 0;
+                        this.setOrderedSelection(true);
+                        this.field = editorModel['getSymmetrySystem$']().getSymmetry().getField();
+                    }
+                    /**
+                     * Intended to be used for listing the valid modes for making an "Affine Polygon" submenu
+                     * @param {*} field
+                     * @return
+                     * @return {*}
+                     */
+                    static getPolygonModes(field) {
+                        const modes = (new java.util.TreeMap());
+                        modes.put(2, "Parabola");
+                        modes.put(3, "Triangle");
+                        modes.put(4, "Square");
+                        if (field.getGoldenRatio() != null) {
+                            modes.put(5, "Pentagon");
+                        }
+                        modes.put(6, "Hexagon");
+                        if (field.getName() === ("heptagon")) {
+                            modes.put(7, "Heptagon");
+                        }
+                        else if ( /* startsWith */((str, searchString, position = 0) => str.substr(position, searchString.length) === searchString)(field.getName(), "polygon")) {
+                            const polygonSides = field.polygonSides();
+                            for (let nSides = 7; nSides <= polygonSides; nSides++) {
+                                {
+                                    if ((polygonSides / nSides | 0) * nSides === polygonSides) {
+                                        let label;
+                                        switch ((nSides)) {
+                                            case 7:
+                                                label = "Heptagon";
+                                                break;
+                                            case 8:
+                                                label = "Octagon";
+                                                break;
+                                            case 9:
+                                                label = "Nonagon";
+                                                break;
+                                            case 10:
+                                                label = "Decagon";
+                                                break;
+                                            case 12:
+                                                label = "Dodecagon";
+                                                break;
+                                            default:
+                                                label = nSides + "-gon";
+                                                break;
+                                        }
+                                        modes.put(nSides, label);
+                                    }
+                                }
+                                ;
+                            }
+                        }
+                        return modes;
+                    }
+                    /**
+                     *
+                     * @param {*} props
+                     */
+                    configure(props) {
+                        this.setMode(props.get("mode"));
+                        if (this.mode == null || /* isEmpty */ (this.mode.length === 0)) {
+                            this.errorMsg.append("\nMode is not specified.");
+                        }
+                        if (this.nSides < 2) {
+                            this.errorMsg.append("\nThe number of sides must be greater than 1.");
+                        }
+                        if (this.chordRatio == null) {
+                            this.errorMsg.append("\nUnsupported chord ratio.");
+                        }
+                        if (this.errorMsg.length() !== 0) {
+                            this.errorMsg.insert(0, " configuration error(s)");
+                            this.errorMsg.insert(0, this.getXmlElementName());
+                        }
+                    }
+                    /*private*/ setMode(newMode) {
+                        this.mode = newMode;
+                        if (this.mode != null && !(this.mode.length === 0)) {
+                            try {
+                                this.nSides = javaemul.internal.IntegerHelper.parseInt(this.mode);
+                            }
+                            catch (e) {
+                                if (com.vzome.core.editor.api.ChangeSelection.logger_$LI$().isLoggable(java.util.logging.Level.WARNING)) {
+                                    com.vzome.core.editor.api.ChangeSelection.logger_$LI$().warning(this.getXmlElementName() + ": Invalid mode \"" + this.mode + "\".\nMode should be an integer greater than one.");
+                                }
+                            }
+                        }
+                        switch ((this.nSides)) {
+                            case 2:
+                                this.chordRatio = this.field['createRational$long'](3);
+                                break;
+                            case 3:
+                                this.chordRatio = this.field.zero();
+                                break;
+                            case 4:
+                                this.chordRatio = this.field.one();
+                                break;
+                            case 5:
+                                this.chordRatio = this.field.getGoldenRatio();
+                                break;
+                            case 6:
+                                this.chordRatio = this.field['createRational$long'](2);
+                                break;
+                            default:
+                                if (this.nSides === 7 && (this.field.getName() === ("heptagon"))) {
+                                    this.chordRatio = this.field.getUnitTerm(2);
+                                }
+                                else if (this.nSides >= 7 && /* startsWith */ ((str, searchString, position = 0) => str.substr(position, searchString.length) === searchString)(this.field.getName(), "polygon")) {
+                                    const pField = this.field;
+                                    const polygonSides = pField.polygonSides();
+                                    const step = (polygonSides / this.nSides | 0);
+                                    if (step * this.nSides === polygonSides) {
+                                        const diag0 = pField.getUnitDiagonal(step - 1);
+                                        const diag2 = pField.getUnitDiagonal((step * 3) - 1);
+                                        this.chordRatio = diag2.dividedBy(diag0);
+                                    }
+                                }
+                                break;
+                        }
+                    }
+                    /**
+                     *
+                     */
+                    perform() {
+                        if (this.errorMsg.length() !== 0) {
+                            this.fail(this.errorMsg.toString());
+                        }
+                        this.errorMsg.append(this.getXmlElementName()).append(" requires two non-parallel struts with a common end point.\n");
+                        let strut1 = null;
+                        let strut2 = null;
+                        for (let index = this.mSelection.iterator(); index.hasNext();) {
+                            let man = index.next();
+                            {
+                                if (man != null && (man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Strut") >= 0)) {
+                                    if (strut1 == null) {
+                                        strut1 = man;
+                                    }
+                                    else if (strut2 == null) {
+                                        strut2 = man;
+                                    }
+                                    else {
+                                        this.fail(this.errorMsg.append("\nToo many struts are selected.").toString());
+                                    }
+                                }
+                                this.unselect$com_vzome_core_model_Manifestation(man);
+                            }
+                        }
+                        if (strut2 == null) {
+                            this.fail(this.errorMsg.append(strut1 == null ? "\nNo struts are selected." : "\nOnly one strut is selected.").toString());
+                        }
+                        let offset1 = strut1.getOffset();
+                        let offset2 = strut2.getOffset();
+                        if (com.vzome.core.algebra.AlgebraicVectors.areParallel(offset1, offset2)) {
+                            this.fail(this.errorMsg.append("\nStruts are parallel or collinear.").toString());
+                        }
+                        let pCommon = null;
+                        let pStart = null;
+                        let pEnd = null;
+                        const seg1 = strut1.getFirstConstruction();
+                        const seg2 = strut2.getFirstConstruction();
+                        {
+                            const s1 = strut1.getLocation();
+                            const e1 = strut1.getEnd();
+                            const s2 = strut2.getLocation();
+                            const e2 = strut2.getEnd();
+                            if (s1.equals(s2)) {
+                                pStart = new com.vzome.core.construction.SegmentEndPoint(seg1, false);
+                                pCommon = new com.vzome.core.construction.SegmentEndPoint(seg2, true);
+                                pEnd = new com.vzome.core.construction.SegmentEndPoint(seg2, false);
+                            }
+                            else if (s1.equals(e2)) {
+                                offset2 = offset2.negate();
+                                pStart = new com.vzome.core.construction.SegmentEndPoint(seg1, false);
+                                pCommon = new com.vzome.core.construction.SegmentEndPoint(seg2, false);
+                                pEnd = new com.vzome.core.construction.SegmentEndPoint(seg2, true);
+                            }
+                            else if (e1.equals(s2)) {
+                                offset1 = offset1.negate();
+                                pStart = new com.vzome.core.construction.SegmentEndPoint(seg1, true);
+                                pCommon = new com.vzome.core.construction.SegmentEndPoint(seg2, true);
+                                pEnd = new com.vzome.core.construction.SegmentEndPoint(seg2, false);
+                            }
+                            else if (e1.equals(e2)) {
+                                offset1 = offset1.negate();
+                                offset2 = offset2.negate();
+                                pStart = new com.vzome.core.construction.SegmentEndPoint(seg1, true);
+                                pCommon = new com.vzome.core.construction.SegmentEndPoint(seg2, false);
+                                pEnd = new com.vzome.core.construction.SegmentEndPoint(seg2, true);
+                            }
+                            else {
+                                this.errorMsg.append("\nStruts do not have a common end point.");
+                                this.fail(this.errorMsg.toString());
+                            }
+                        }
+                        ;
+                        const vBegin = pStart.getLocation();
+                        this.redo();
+                        const man0 = this.manifestConstruction(pStart);
+                        const man1 = this.manifestConstruction(seg1);
+                        if (this.nSides !== 2) {
+                            this.select$com_vzome_core_model_Manifestation(man0);
+                            this.select$com_vzome_core_model_Manifestation(man1);
+                        }
+                        this.select$com_vzome_core_model_Manifestation(this.manifestConstruction(pCommon));
+                        this.select$com_vzome_core_model_Manifestation(this.manifestConstruction(seg2));
+                        this.select$com_vzome_core_model_Manifestation(this.manifestConstruction(pEnd));
+                        for (let i = (this.nSides === 2) ? 1 : 2; i < this.nSides; i++) {
+                            {
+                                const translateByChordRatio = offset2.scale(this.chordRatio);
+                                const pNew = new com.vzome.core.construction.TransformedPoint(new com.vzome.core.construction.Translation(translateByChordRatio), pStart);
+                                const segNew = new com.vzome.core.construction.SegmentJoiningPoints(pEnd, pNew);
+                                this.select$com_vzome_core_model_Manifestation(this.manifestConstruction(segNew));
+                                this.select$com_vzome_core_model_Manifestation(this.manifestConstruction(pNew));
+                                if (pNew.getLocation().equals(vBegin)) {
+                                    if (i + 1 < this.nSides) {
+                                        if (com.vzome.core.editor.api.ChangeSelection.logger_$LI$().isLoggable(java.util.logging.Level.INFO)) {
+                                            com.vzome.core.editor.api.ChangeSelection.logger_$LI$().info(this.getXmlElementName() + ": actual reps = " + (i + 1) + ", not " + this.nSides + " as specified.");
+                                        }
+                                    }
+                                }
+                                pStart = pCommon;
+                                offset1 = offset2.negate();
+                                pCommon = pEnd;
+                                offset2 = segNew.getOffset();
+                                pEnd = pNew;
+                            }
+                            ;
+                        }
+                        this.redo();
+                    }
+                    /**
+                     *
+                     * @return {string}
+                     */
+                    getXmlElementName() {
+                        return "AffinePolygon";
+                    }
+                    /**
+                     *
+                     * @param {*} element
+                     */
+                    getXmlAttributes(element) {
+                        if (this.mode != null) {
+                            element.setAttribute("mode", this.mode);
+                        }
+                    }
+                    /**
+                     *
+                     * @param {*} xml
+                     * @param {com.vzome.core.commands.XmlSaveFormat} format
+                     */
+                    setXmlAttributes(xml, format) {
+                        this.setMode(xml.getAttribute("mode"));
+                    }
+                }
+                edits.AffinePolygon = AffinePolygon;
+                AffinePolygon["__class"] = "com.vzome.core.edits.AffinePolygon";
             })(edits = core.edits || (core.edits = {}));
         })(core = vzome.core || (vzome.core = {}));
     })(vzome = com.vzome || (com.vzome = {}));

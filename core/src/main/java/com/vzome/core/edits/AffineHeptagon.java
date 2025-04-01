@@ -159,7 +159,7 @@ public class AffineHeptagon extends ChangeManifestations
         select( manifestConstruction( new SegmentJoiningPoints(p4, p2) ) );
 
         // now select all 7 of the connectors, new and old in a sequential order
-        // which will allow the user to easiliy make a panel or a centroid as a next step.
+        // which will allow the user to easily make a panel or a centroid as a next step.
         // Note that this is different from the final selection of AffinePentagon
         select(c0);
         select(c1);

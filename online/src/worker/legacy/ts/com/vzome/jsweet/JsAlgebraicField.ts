@@ -48,15 +48,6 @@ namespace com.vzome.jsweet {
 
         /**
          * 
-         * @return {*}
-         */
-        public getAffineScalar(): com.vzome.core.algebra.AlgebraicNumber {
-            const scalar: number = <any>(this.delegate["scalarTerm"]);
-            return this.getUnitTerm(scalar);
-        }
-
-        /**
-         * 
          * @return {number}
          */
         public getNumIrrationals(): number {
