@@ -203,10 +203,15 @@ const EditorProvider = props =>
     const config = { ...unwrap( state.sharing ), blog, publish, originalDate: state.originalDate };
     return new Promise( ( resolve, reject ) =>
     {
-      new Promise((resolve, _) => {
+      new Promise(( resolve, reject ) => {
         const reader = new FileReader();
         reader .onloadend = () => resolve( reader.result );
-        capture( 'image/png', blob => reader .readAsDataURL( blob ) );
+        capture( 'image/png', blob => {
+          if ( blob.size === 0 ) {
+            reject( 'Captured image is empty; please report this as a defect' );
+          }
+          reader .readAsDataURL( blob );
+        } );
       })
         .then( ( imageDataUrl ) => {
           const image = imageDataUrl .substring( 22 ); // remove "data:image/png;base64,"

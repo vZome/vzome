@@ -141,6 +141,7 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
         submenu .add( createMenuItem( "StL (mm)", "export.StL" ) );
         submenu .add( createMenuItem( "OFF", "export.off" ) );
         submenu .add( createMenuItem( "PLY", "export.ply" ) );
+        submenu .add( createMenuItem( "STEP", "export.step" ) );
         menu .add( submenu );
 
         submenu = new JMenu( "Export 3D Points & Lines..." );
@@ -170,7 +171,6 @@ public class DocumentMenuBar extends JMenuBar implements PropertyChangeListener
             submenu .add( createMenuItem( "vZome part geometry", "export.partgeom" ) );
             submenu .add( createMenuItem( "vZome history detail", "export.history" ) );
             submenu .add( createMenuItem( "bill of materials", "export.partslist" ) );
-            submenu .add( createMenuItem( "STEP", "export.step" ) );
             menu .add( submenu );
             submenu .setEnabled( fullPower && canSave );
         }

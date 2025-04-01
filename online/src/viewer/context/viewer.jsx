@@ -125,6 +125,7 @@ const ViewerProvider = ( props ) =>
   const providerValue = {
     scene, setScene, requestDesign, scenes, source, problem, waiting, labels,
     resetScenes: () => setScenes( [] ),
+    setProblem,
     clearProblem: () => setProblem( '' ),
     requestScene: ( name, config ) => postMessage( selectScene( name, config ) ),
     requestBOM: () => postMessage( { type: 'BOM_REQUESTED' } ),

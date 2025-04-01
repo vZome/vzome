@@ -3972,33 +3972,6 @@ export var com;
                             this.orbits = new com.vzome.core.math.symmetry.OrbitSet(symmetry);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getEmbedding() {
-                            const symmetry = this.getSymmetry();
-                            const field = symmetry.getField();
-                            const embedding = (s => { let a = []; while (s-- > 0)
-                                a.push(0); return a; })(16);
-                            for (let i = 0; i < 3; i++) {
-                                {
-                                    const columnSelect = field.basisVector(3, i);
-                                    const colRV = symmetry.embedInR3(columnSelect);
-                                    embedding[i * 4 + 0] = colRV.x;
-                                    embedding[i * 4 + 1] = colRV.y;
-                                    embedding[i * 4 + 2] = colRV.z;
-                                    embedding[i * 4 + 3] = 0.0;
-                                }
-                                ;
-                            }
-                            embedding[12] = 0.0;
-                            embedding[13] = 0.0;
-                            embedding[14] = 0.0;
-                            embedding[15] = 1.0;
-                            return embedding;
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
                             if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                                 let __args = arguments;
@@ -4051,6 +4024,33 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getEmbedding() {
+                            const symmetry = this.getSymmetry();
+                            const field = symmetry.getField();
+                            const embedding = (s => { let a = []; while (s-- > 0)
+                                a.push(0); return a; })(16);
+                            for (let i = 0; i < 3; i++) {
+                                {
+                                    const columnSelect = field.basisVector(3, i);
+                                    const colRV = symmetry.embedInR3(columnSelect);
+                                    embedding[i * 4 + 0] = colRV.x;
+                                    embedding[i * 4 + 1] = colRV.y;
+                                    embedding[i * 4 + 2] = colRV.z;
+                                    embedding[i * 4 + 3] = 0.0;
+                                }
+                                ;
+                            }
+                            embedding[12] = 0.0;
+                            embedding[13] = 0.0;
+                            embedding[14] = 0.0;
+                            embedding[15] = 1.0;
+                            return embedding;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations$() {
@@ -16806,33 +16806,6 @@ export var com;
                         this.setStyle(styleName);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getEmbedding() {
-                        const symmetry = this.getSymmetry();
-                        const field = symmetry.getField();
-                        const embedding = (s => { let a = []; while (s-- > 0)
-                            a.push(0); return a; })(16);
-                        for (let i = 0; i < 3; i++) {
-                            {
-                                const columnSelect = field.basisVector(3, i);
-                                const colRV = symmetry.embedInR3(columnSelect);
-                                embedding[i * 4 + 0] = colRV.x;
-                                embedding[i * 4 + 1] = colRV.y;
-                                embedding[i * 4 + 2] = colRV.z;
-                                embedding[i * 4 + 3] = 0.0;
-                            }
-                            ;
-                        }
-                        embedding[12] = 0.0;
-                        embedding[13] = 0.0;
-                        embedding[14] = 0.0;
-                        embedding[15] = 1.0;
-                        return embedding;
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getZone(orbit, orientation) {
-                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getOrientations(rowMajor) {
                         if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                             let __args = arguments;
@@ -16906,6 +16879,33 @@ export var com;
                         }
                         else
                             throw new Error('invalid overload');
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getZone(orbit, orientation) {
+                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getEmbedding() {
+                        const symmetry = this.getSymmetry();
+                        const field = symmetry.getField();
+                        const embedding = (s => { let a = []; while (s-- > 0)
+                            a.push(0); return a; })(16);
+                        for (let i = 0; i < 3; i++) {
+                            {
+                                const columnSelect = field.basisVector(3, i);
+                                const colRV = symmetry.embedInR3(columnSelect);
+                                embedding[i * 4 + 0] = colRV.x;
+                                embedding[i * 4 + 1] = colRV.y;
+                                embedding[i * 4 + 2] = colRV.z;
+                                embedding[i * 4 + 3] = 0.0;
+                            }
+                            ;
+                        }
+                        embedding[12] = 0.0;
+                        embedding[13] = 0.0;
+                        embedding[14] = 0.0;
+                        embedding[15] = 1.0;
+                        return embedding;
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getOrientations$() {
@@ -23300,6 +23300,169 @@ export var com;
                 OffExporter.__static_initialized = false;
                 exporters.OffExporter = OffExporter;
                 OffExporter["__class"] = "com.vzome.core.exporters.OffExporter";
+            })(exporters = core.exporters || (core.exporters = {}));
+        })(core = vzome.core || (vzome.core = {}));
+    })(vzome = com.vzome || (com.vzome = {}));
+})(com || (com = {}));
+(function (com) {
+    var vzome;
+    (function (vzome) {
+        var core;
+        (function (core) {
+            var exporters;
+            (function (exporters) {
+                /**
+                 * This only exports shapes, no instances yet.
+                 *
+                 * @author vorth
+                 * @class
+                 * @extends com.vzome.core.exporters.GeometryExporter
+                 */
+                class STEPExporter extends com.vzome.core.exporters.GeometryExporter {
+                    /**
+                     *
+                     * @param {java.io.File} file
+                     * @param {java.io.Writer} writer
+                     * @param {number} height
+                     * @param {number} width
+                     */
+                    doExport(file, writer, height, width) {
+                        this.output = new java.io.PrintWriter(writer);
+                        const preamble = com.vzome.xml.ResourceLoader.loadStringResource(STEPExporter.PREAMBLE_FILE);
+                        this.output.println$java_lang_Object(preamble);
+                        this.output.println$();
+                        const FORMAT = java.text.NumberFormat.getNumberInstance(java.util.Locale.US);
+                        FORMAT.setMaximumFractionDigits(19);
+                        let vertices = (new java.util.TreeSet());
+                        com.vzome.core.editor.api.Manifestations.sortVertices(this.mModel.getManifestations(), vertices);
+                        const sortedVertexList = (new java.util.ArrayList(vertices));
+                        vertices = null;
+                        const inchScaling = this.mModel.getCmScaling() / 2.54;
+                        let index = STEPExporter.START_INDEX - 1;
+                        const realVectors = (new java.util.ArrayList());
+                        for (let index1 = sortedVertexList.iterator(); index1.hasNext();) {
+                            let gv = index1.next();
+                            {
+                                const v = this.mModel.renderVector(gv).scale(inchScaling);
+                                realVectors.add(v);
+                                const cpIndex = ++index;
+                                this.output.println$java_lang_Object("#" + cpIndex + " = CARTESIAN_POINT ( \'NONE\',  ( " + v.toString$java_text_NumberFormat(FORMAT) + " ) ) ;");
+                                this.output.println$java_lang_Object("#" + (++index) + " = VERTEX_POINT ( \'NONE\', #" + cpIndex + " ) ;");
+                                this.output.println$();
+                            }
+                        }
+                        this.output.println$();
+                        const faceIndices = (new java.util.ArrayList());
+                        for (let index1 = this.mModel.getManifestations().iterator(); index1.hasNext();) {
+                            let man = index1.next();
+                            {
+                                if (man != null && (man.constructor != null && man.constructor["__interfaces"] != null && man.constructor["__interfaces"].indexOf("com.vzome.core.model.Panel") >= 0)) {
+                                    const panel = man;
+                                    const arity = panel.getVertexCount();
+                                    const vIndices = (s => { let a = []; while (s-- > 0)
+                                        a.push(0); return a; })(arity);
+                                    let k = 0;
+                                    for (let index1 = panel.iterator(); index1.hasNext();) {
+                                        let av = index1.next();
+                                        {
+                                            const vIndex = sortedVertexList.indexOf(av);
+                                            vIndices[k++] = vIndex;
+                                        }
+                                    }
+                                    const edgeIndices = (new java.util.ArrayList());
+                                    let point1 = 0;
+                                    let dir1 = null;
+                                    let dir2 = null;
+                                    for (let j = 0; j < arity; j++) {
+                                        {
+                                            let vindex = vIndices[j];
+                                            const rv1index = vindex;
+                                            let rv1 = realVectors.get(rv1index);
+                                            point1 = rv1index * 2 + STEPExporter.START_INDEX;
+                                            const vertex1 = point1 + 1;
+                                            vindex = vIndices[(j + 1) % arity];
+                                            const rv2index = vindex;
+                                            let rv2 = realVectors.get(rv2index);
+                                            const vertex2 = rv2index * 2 + STEPExporter.START_INDEX + 1;
+                                            const direction1 = ++index;
+                                            rv1 = rv2.minus(rv1);
+                                            rv2 = rv1.normalize();
+                                            if (dir2 == null) {
+                                                if (dir1 == null)
+                                                    dir1 = rv2;
+                                                else {
+                                                    dir2 = dir1.cross(rv2).normalize();
+                                                    dir1 = dir2.cross(dir1);
+                                                }
+                                            }
+                                            this.output.println$java_lang_Object("#" + direction1 + " = DIRECTION ( \'NONE\',  ( " + rv2.toString$java_text_NumberFormat(FORMAT) + " ) ) ;");
+                                            const vector = ++index;
+                                            this.output.println$java_lang_Object("#" + vector + " = VECTOR ( \'NONE\', #" + direction1 + ", 39.37 ) ;");
+                                            const line = ++index;
+                                            this.output.println$java_lang_Object("#" + line + " = LINE ( \'NONE\', #" + point1 + ", #" + vector + " ) ;");
+                                            const edgeCurve = ++index;
+                                            this.output.println$java_lang_Object("#" + edgeCurve + " = EDGE_CURVE ( \'NONE\', #" + vertex1 + ", #" + vertex2 + ", #" + line + ", .T. ) ;");
+                                            const orientedEdge = ++index;
+                                            edgeIndices.add(orientedEdge);
+                                            this.output.println$java_lang_Object("#" + orientedEdge + " = ORIENTED_EDGE ( \'NONE\', *, *, #" + edgeCurve + ", ." + ((j === 0) ? "T" : "T") + ". ) ;");
+                                        }
+                                        ;
+                                    }
+                                    const edgeLoop = ++index;
+                                    this.output.print("#" + edgeLoop + " = EDGE_LOOP ( \'NONE\', ( ");
+                                    let delim = "";
+                                    for (let index1 = edgeIndices.iterator(); index1.hasNext();) {
+                                        let i = index1.next();
+                                        {
+                                            this.output.print(delim + "#" + i);
+                                            delim = ", ";
+                                        }
+                                    }
+                                    this.output.println$java_lang_Object(" ) ) ;");
+                                    const direction1 = ++index;
+                                    this.output.println$java_lang_Object("#" + direction1 + " = DIRECTION ( \'NONE\',  ( " + dir2.toString$java_text_NumberFormat(FORMAT) + " ) ) ;");
+                                    const direction2 = ++index;
+                                    this.output.println$java_lang_Object("#" + direction2 + " = DIRECTION ( \'NONE\',  ( " + dir1.toString$java_text_NumberFormat(FORMAT) + " ) ) ;");
+                                    const axisPlacement3d = ++index;
+                                    this.output.println$java_lang_Object("#" + axisPlacement3d + " = AXIS2_PLACEMENT_3D ( \'NONE\', #" + point1 + ", #" + direction1 + ", #" + direction2 + " ) ;");
+                                    const plane = ++index;
+                                    this.output.println$java_lang_Object("#" + plane + " = PLANE ( \'NONE\', #" + axisPlacement3d + " ) ;");
+                                    const faceOuterBound = ++index;
+                                    this.output.println$java_lang_Object("#" + faceOuterBound + " = FACE_OUTER_BOUND ( \'NONE\', #" + edgeLoop + ", .T. ) ;");
+                                    const advancedFace = ++index;
+                                    this.output.println$java_lang_Object("#" + advancedFace + " = ADVANCED_FACE ( \'NONE\', ( #" + faceOuterBound + " ), #" + plane + ", .T. ) ;");
+                                    this.output.println$();
+                                    faceIndices.add(advancedFace);
+                                }
+                            }
+                        }
+                        this.output.print("#299 = CLOSED_SHELL ( \'NONE\', ( ");
+                        let delim = "";
+                        for (let index1 = faceIndices.iterator(); index1.hasNext();) {
+                            let i = index1.next();
+                            {
+                                this.output.print(delim + "#" + i);
+                                delim = ", ";
+                            }
+                        }
+                        this.output.println$java_lang_Object(" ) ) ;");
+                        this.output.println$java_lang_Object(STEPExporter.POSTLUDE);
+                        this.output.flush();
+                        this.output.close();
+                    }
+                    /**
+                     *
+                     * @return {string}
+                     */
+                    getFileExtension() {
+                        return "step";
+                    }
+                }
+                STEPExporter.PREAMBLE_FILE = "com/vzome/core/exporters/step/preamble.step";
+                STEPExporter.POSTLUDE = "ENDSEC;\nEND-ISO-10303-21;";
+                STEPExporter.START_INDEX = 300;
+                exporters.STEPExporter = STEPExporter;
+                STEPExporter["__class"] = "com.vzome.core.exporters.STEPExporter";
             })(exporters = core.exporters || (core.exporters = {}));
         })(core = vzome.core || (vzome.core = {}));
     })(vzome = com.vzome || (com.vzome = {}));
@@ -48367,33 +48530,6 @@ export var com;
                             this.__parent = __parent;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getEmbedding() {
-                            const symmetry = this.getSymmetry();
-                            const field = symmetry.getField();
-                            const embedding = (s => { let a = []; while (s-- > 0)
-                                a.push(0); return a; })(16);
-                            for (let i = 0; i < 3; i++) {
-                                {
-                                    const columnSelect = field.basisVector(3, i);
-                                    const colRV = symmetry.embedInR3(columnSelect);
-                                    embedding[i * 4 + 0] = colRV.x;
-                                    embedding[i * 4 + 1] = colRV.y;
-                                    embedding[i * 4 + 2] = colRV.z;
-                                    embedding[i * 4 + 3] = 0.0;
-                                }
-                                ;
-                            }
-                            embedding[12] = 0.0;
-                            embedding[13] = 0.0;
-                            embedding[14] = 0.0;
-                            embedding[15] = 1.0;
-                            return embedding;
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
                             if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                                 let __args = arguments;
@@ -48440,6 +48576,33 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getEmbedding() {
+                            const symmetry = this.getSymmetry();
+                            const field = symmetry.getField();
+                            const embedding = (s => { let a = []; while (s-- > 0)
+                                a.push(0); return a; })(16);
+                            for (let i = 0; i < 3; i++) {
+                                {
+                                    const columnSelect = field.basisVector(3, i);
+                                    const colRV = symmetry.embedInR3(columnSelect);
+                                    embedding[i * 4 + 0] = colRV.x;
+                                    embedding[i * 4 + 1] = colRV.y;
+                                    embedding[i * 4 + 2] = colRV.z;
+                                    embedding[i * 4 + 3] = 0.0;
+                                }
+                                ;
+                            }
+                            embedding[12] = 0.0;
+                            embedding[13] = 0.0;
+                            embedding[14] = 0.0;
+                            embedding[15] = 1.0;
+                            return embedding;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations$() {
