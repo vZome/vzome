@@ -379,14 +379,6 @@ namespace com.vzome.core.algebra {
             return PolygonField.getFieldCoefficients(this.polygonSides());
         }
 
-        /**
-         * 
-         * @return {*}
-         */
-        public getAffineScalar(): com.vzome.core.algebra.AlgebraicNumber {
-            return this.getUnitDiagonal(2);
-        }
-
         validate() {
             if (this.polygonSides() < PolygonField.MIN_SIDES){
                 const msg: string = "polygon sides = " + this.polygonSides() + ". It must be at least " + PolygonField.MIN_SIDES + ".";

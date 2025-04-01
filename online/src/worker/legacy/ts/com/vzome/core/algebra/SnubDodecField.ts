@@ -151,14 +151,6 @@ namespace com.vzome.core.algebra {
         }
 
         /**
-         * scalar for an affine pentagon
-         * @return {*}
-         */
-        public getAffineScalar(): com.vzome.core.algebra.AlgebraicNumber {
-            return this.getUnitTerm(1);
-        }
-
-        /**
          * 
          * @return {*}
          */

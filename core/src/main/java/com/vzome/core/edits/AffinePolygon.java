@@ -91,7 +91,7 @@ public class AffinePolygon extends ChangeManifestations {
     public void configure( Map<String,Object> props ) 
     {
         setMode( (String) props .get( "mode" ) );
-        if(mode == null || mode.isBlank()) {
+        if(mode == null || mode.isEmpty()) {
             errorMsg.append("\nMode is not specified.");
         }
         if(nSides < 2) {
@@ -100,7 +100,7 @@ public class AffinePolygon extends ChangeManifestations {
         if(chordRatio == null) {
             errorMsg.append("\nUnsupported chord ratio.");
         }
-        if(!errorMsg.isEmpty() ) {
+        if( errorMsg.length()!=0 ) {
             errorMsg.insert(0, " configuration error(s)");
             errorMsg.insert(0, getXmlElementName());
         }
@@ -154,7 +154,7 @@ public class AffinePolygon extends ChangeManifestations {
     @Override
     public void perform() throws Command.Failure
     {
-        if(!errorMsg.isEmpty()) {
+        if(errorMsg.length() != 0) {
             // Any configuration errors are reported here (e.g. from invalid custom menu modes)
             // throw an exception and we're done.
             fail( errorMsg.toString() );
