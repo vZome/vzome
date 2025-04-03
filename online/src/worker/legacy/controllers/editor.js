@@ -149,6 +149,16 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
       case "fields":
         return this.core.getFieldNames();
 
+      case "affinePolygon.modes": {
+        const modes = com.vzome.core.edits.AffinePolygon.getPolygonModes( legacyField ) .keySet() .toArray();
+        return modes .slice( 3 );
+      }
+
+      case "affinePolygon.labels": {
+        const modes = com.vzome.core.edits.AffinePolygon.getPolygonModes( legacyField ) .values() .toArray();
+        return modes .slice( 3 );
+      }
+  
       default:
         console.log("EditorController getCommandList fall through: ", name);
         return super.getCommandList(name);
@@ -164,7 +174,9 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
 
     const planes = resolveBuildPlanes( symmetrySystem .buildPlanes );
     const { orientations, symmetry, permutations } = symmetrySystem;
-    const scalars = [ symmetry .getField() .getAffineScalar() .evaluate() ]; //TODO get them all!
+    const scalars = ( field => {
+      return [ ...Array( field .getOrder() - 1 ) .keys() ] .map( i => field .getUnitTerm( i+1 ) .evaluate() );
+    })( symmetry .getField() );
     const resourcePath = symmetrySystem .getModelResourcePath();
     this.clientEvents .symmetryChanged( { orientations, permutations, scalars, planes, resourcePath } );
     

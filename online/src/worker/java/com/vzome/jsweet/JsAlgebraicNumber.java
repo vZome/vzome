@@ -47,6 +47,22 @@ public class JsAlgebraicNumber implements AlgebraicNumber
         return n == 0 ? this : this.plus( field.createRational(n) );
     }
 
+    @Override
+    public AlgebraicNumber timesInt( int n )
+    {
+        switch(n) {
+        case 0:
+            return field.zero();
+        case 1:
+            return this;
+        case -1:
+            return this.negate();
+        default:
+            return this.times(field.createRational(n));
+        }
+    }
+
+
     /**
      * 
      * @param num is the numerator of the rational value to be added
@@ -238,12 +254,6 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     
     
     
-
-    @Override
-    public AlgebraicNumber timesInt(int n)
-    {
-        throw new RuntimeException( "unimplemented JsAlgebraicNumber.timesInt" );
-    }
 
     @Override
     public AlgebraicNumber timesRational(int num, int den)

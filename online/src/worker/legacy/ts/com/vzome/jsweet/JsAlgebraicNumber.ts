@@ -47,6 +47,24 @@ namespace com.vzome.jsweet {
 
         /**
          * 
+         * @param {number} n
+         * @return {*}
+         */
+        public timesInt(n: number): com.vzome.core.algebra.AlgebraicNumber {
+            switch((n)) {
+            case 0:
+                return this.field.zero();
+            case 1:
+                return this;
+            case -1:
+                return this.negate();
+            default:
+                return this.times$com_vzome_core_algebra_AlgebraicNumber(this.field.createRational$long(n));
+            }
+        }
+
+        /**
+         * 
          * @param {number} num is the numerator of the rational value to be added
          * @param {number} den is the denominator of the rational value to be added
          * @return {*} this + (num / den)
@@ -284,15 +302,6 @@ namespace com.vzome.jsweet {
          */
         public signum(): number {
             return /* intValue */(javaemul.internal.DoubleHelper.valueOf(/* signum */(f => { if (f > 0) { return 1; } else if (f < 0) { return -1; } else { return 0; } })(this.evaluate()))|0);
-        }
-
-        /**
-         * 
-         * @param {number} n
-         * @return {*}
-         */
-        public timesInt(n: number): com.vzome.core.algebra.AlgebraicNumber {
-            throw new java.lang.RuntimeException("unimplemented JsAlgebraicNumber.timesInt");
         }
 
         /**
