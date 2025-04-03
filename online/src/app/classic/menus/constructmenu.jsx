@@ -1,8 +1,13 @@
 
 import { Divider, Menu, SubMenu, CommandAction } from "../../framework/menus.jsx";
+import { controllerProperty, useEditor } from '../../framework/context/editor.jsx';
 
 export const ConstructMenu = () =>
 {
+  const { rootController } = useEditor();
+  const affineModes = () => controllerProperty( rootController(), 'affinePolygon.modes', 'affinePolygon.modes', true );
+  const affineLabels = () => controllerProperty( rootController(), 'affinePolygon.labels', 'affinePolygon.labels', true );
+
   return (
     <Menu label="Construct">
         <CommandAction label="Loop Balls"         action="JoinPoints/CLOSED_LOOP" />
@@ -46,6 +51,10 @@ export const ConstructMenu = () =>
 
         <Divider />
         
+        <CommandAction label="Parallelogram" action="AffinePolygon/4" />
+        <For each={affineModes()}>{ (value,i) =>
+          <CommandAction label={`Affine ${affineLabels()[i()]}`} action={`AffinePolygon/${value}`} />
+        }</For>
         <CommandAction label="Parallelepiped" action="Parallelepiped" />
     </Menu>
   );
