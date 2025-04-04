@@ -34,7 +34,7 @@ const normalStyle = {
 
 const DesignViewer = ( props ) =>
 {
-  const config = mergeProps( { showScenes: 'none', useSpinner: false, allowFullViewport: false, download: true, showPerspective: true }, props.config );
+  const config = mergeProps( { showScenes: 'none', useSpinner: false, allowFullViewport: false, download: true, showPerspective: true, showOutlines: true }, props.config );
   const { scene, waiting } = useViewer();
   let rootRef;
   
@@ -102,7 +102,7 @@ const DesignViewer = ( props ) =>
       </Show>
 
       <Show when={config.showPerspective} >
-        <CameraModes/>
+        <CameraModes showOutlines={ scene?.polygons && config.showOutlines }/>
       </Show>
 
       <Show when={showSceneMenu()}>

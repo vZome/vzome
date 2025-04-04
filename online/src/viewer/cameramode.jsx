@@ -4,7 +4,7 @@ import { Switch } from "@kobalte/core/switch";
 
 import { useCamera } from "./context/camera.jsx";
 
-export const CameraModes = () =>
+export const CameraModes = props =>
 {
   const { togglePerspective, toggleOutlines, state } = useCamera();
 
@@ -17,13 +17,15 @@ export const CameraModes = () =>
           <Switch.Thumb class="switch__thumb" />
         </Switch.Control>
       </Switch>
-      <Switch checked={state.camera.outlines} onChange={toggleOutlines}>
-        <Switch.Label class="switch__label">Outlines</Switch.Label>
-        <Switch.Input class="switch__input" />
-        <Switch.Control class="switch__control">
-          <Switch.Thumb class="switch__thumb" />
-        </Switch.Control>
-      </Switch>
+      <Show when={props.showOutlines}>
+        <Switch checked={state.camera.outlines} onChange={toggleOutlines}>
+          <Switch.Label class="switch__label">Outlines</Switch.Label>
+          <Switch.Input class="switch__input" />
+          <Switch.Control class="switch__control">
+            <Switch.Thumb class="switch__thumb" />
+          </Switch.Control>
+        </Switch>
+      </Show>
     </div>
   );
 }

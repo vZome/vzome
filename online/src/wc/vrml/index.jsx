@@ -19,7 +19,7 @@ const renderVrmlViewer = ( container, src, config, store ) =>
   {
     return (
       <CameraProvider cameraStore={store}>
-        <DesignViewer config={ { ...config, allowFullViewport: true } }
+        <DesignViewer config={ { ...config, allowFullViewport: true, showOutlines: false } }
             componentRoot={container}
             children3d={ <VrmlModel url={src()} /> }
             height="100%" width="100%" >
