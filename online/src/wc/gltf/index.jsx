@@ -14,7 +14,7 @@ const renderGlTFViewer = ( container, config ) =>
   {
     return (
       <CameraProvider>
-        <DesignViewer config={ { ...config, allowFullViewport: true } }
+        <DesignViewer config={ { ...config, allowFullViewport: true, showOutlines: false } }
             componentRoot={container}
             children3d={ <GltfModel url={config.url} /> }
             height="100%" width="100%" >
