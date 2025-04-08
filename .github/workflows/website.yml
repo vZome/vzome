@@ -52,9 +52,33 @@ jobs:
         run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}" --source docs
         env:
           JEKYLL_ENV: production
-      - name: Upload artifact
+      - name: Upload artifact to Pages
         # Automatically uploads an artifact from the './_site' directory by default
         uses: actions/upload-pages-artifact@v3
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/dreamhost.key
+          chmod 600 ~/.ssh/dreamhost.key
+          cat >>~/.ssh/config <<END
+          Host dreamhost
+            HostName $HOSTING_FQDN
+            User scottvorthmann
+            IdentityFile ~/.ssh/dreamhost.key
+            StrictHostKeyChecking no
+          END
+          cat ~/.ssh/config
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          HOSTING_FQDN: ${{ secrets.HOSTING_FQDN }}
+      - name: Publish website to DreamHost
+        run: |
+          sftp -b - dreamhost <<END
+            cd vzome.com/docs
+            put -r docs/_site/* .
+            find .
+          END
 
   # Deployment job
   deploy:
