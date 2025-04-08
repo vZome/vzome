@@ -285,6 +285,7 @@ exclude:
 #  - docs/
 
 plugins:
+  - jekyll-remote-theme
   - jekyll-paginate
   - jekyll-sitemap
 
