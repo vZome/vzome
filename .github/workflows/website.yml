@@ -11,7 +11,7 @@ on:
   push:
     branches: ["main"]
     paths:
-      - 'docs'
+      - 'docs/**'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -76,7 +76,7 @@ jobs:
         run: |
           sftp -b - dreamhost <<END
             cd vzome.com/docs
-            put -r docs/_site/* .
+            put -r ./_site/* .
             find .
           END
 
