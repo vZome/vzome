@@ -5,6 +5,12 @@ published: true
 ---
 <p>Are you still capturing JPEG images to share your vZome creations on social media? Or worse, doing screen capture? There's a better way, for most cases: vector graphics.</p>
 
+<p>
+Actually, the best way to share is to use vZome's <a href="./sharing.html">web-based sharing</a>, since your
+readers get an interactive 3D view, not just a flat image.
+That said, if you're not ready to try that, or you're creating artwork to print, read on!
+</p>
+
 <p>Formats like PDF, SVG, and Postscript are vector graphics formats. This means they record drawing commands like "move here", "draw a line here", and so on. Such drawings are inherently scalable -- you can zoom in as much as you like, and you will never see pixellation as you would with an image format like JPEG or PNG. The files also tend to be more compact than images.</p>
 
 <p><a href="https://www.vzome.com/blog/2018/12/capturing-vector-graphics/sample/"><img src="https://www.vzome.com/blog/wp-content/uploads/2018/12/sample.svg" alt="" class="alignnone size-full wp-image-155" /></a></p>
