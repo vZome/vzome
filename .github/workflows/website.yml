@@ -77,7 +77,6 @@ jobs:
           sftp -b - dreamhost <<END
             cd vzome.com/docs
             put -r ./_site/* .
-            find .
           END
 
   # Deployment job

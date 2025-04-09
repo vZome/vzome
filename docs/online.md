@@ -15,54 +15,31 @@ For years I have wanted to port [vZome](https://vzome.com/) to the web, for seve
 The most important reason is the ubiquity of the web as a platform, of course, which means that
 web applications are available to everyone on the Internet, with no installation step required.
 
-Now, the goal is in sight.  I have a "classic" variant of vZome Online that is starting to approach
+Now, the goal is in sight.  I have an online variant of vZome that is starting to approach
 feature parity with desktop vZome.  Along the way, I've implemented a number of web applications
 using the same core software.  This page is an introduction to the whole menagerie;
 most of the headings below are links to the applications being described.
 
-## [The Zometool Tetrahedra Challenge](https://vzome.github.io/zome-tetras/)
-
-This app is a solution to the tetrahedra challenge posed in the [Zometool manual](https://www.zometool.com/content/Manual2.3web.pdf),
-with the complete table duplicated from there, and an interactive viewer for the solutions.
-Don't peek until you're stumped!  (This one was a collaborative effort by several
-community members, coordinated on the [Discord server](https://discord.gg/vhyFsNAFPS).
-
-## [Brian Hall's Zometool Designs](https://www.vzome.com/app/bhall/basic/)
-
-My friend Brian Hall, a mathematical physicist at Notre Dame, has designed a number of intriguing
-models you can build with [Zometool](https://zometool.com), at three levels of difficulty.
-Embrace the challenge!
-
-## [The 59 Icosahedra](https://www.vzome.com/app/59icosahedra)
-
-This application lets you explore the [59 stellations of the icosahedron](https://en.wikipedia.org/wiki/The_Fifty-Nine_Icosahedra) identified by H. S. M. Coxeter.
-It was inspired by [Bob Hearn's physical magnetic model](https://www.instructables.com/The-Magnetic-59-Icosahedra/).
-
-## [Classic vZome Online](https://vzome.com/app/classic)
+## [Online vZome](https://vzome.com/app/)
 
 This application is intended to be a faithful port of desktop vZome to the web,
 preserving almost all aspects of the desktop user interface for the sake of
 familiarity.
 It can already open and save vZome files, and so is fully interoperable with desktop vZome,
 and supports nearly all of the editing operations familiar from desktop vZome.
-However, it still has a little way to go; the most glaring omission currently is GitHub sharing.
+However, it still has a little way to go.
 Check back often, or join the [Discord server](https://discord.gg/vhyFsNAFPS) to see updates,
 as vZome Online Classic is continually improving.
 
-## [vZome Online Build Plane](https://vzome.com/app/buildplane)
+## [vZome Build Plane](https://vzome.com/app/buildplane)
 
 This is a proof-of-concept -- an experiment in providing a more intuitive experience
 for building struts in 3D space.  It accomplishes this by restricting you to a 2D
 plane, with gestures to change the plane.
-I intend for this to be the centerpiece of a new vZome Online, one that has
+I hope for this to be the centerpiece of a new version of online vZome, one that has
 a modern UI more in the style of [Desmos](https://www.desmos.com/geometry) or [Geogebra](https://www.geogebra.org/geometry).
 For now, it is fun to play with.
 Even so, it already supports saving designs that you can open with desktop vZome 7.1.14 or later.
-
-## [vZome Online Viewer](https://vzome.com/app)
-
-This URL will be the eventual home of the main vZome Online application.
-For now, it hosts an application that allows you to open and view vZome designs on your computer or from the internet.
 
 ## [vZome History Inspector](https://www.vzome.com/app/inspector)
 
@@ -97,7 +74,7 @@ and even more when you browse [John Kostick's](https://John-Kostick.github.io/vz
 A number of other vZome users have set up their own sharing website;
 follow the [simple instructions](./sharing.html), if you'd like to do the same.
 
-## [vZome Online GitHub Browser](https://vzome.com/app/browser)
+## [vZome GitHub Browser](https://vzome.com/app/browser)
 
 This is a utility that comes in handy when [sharing vZome designs via GitHub](./sharing.html) as described above,
 or more specifically, when composing web pages that show multiple designs.
@@ -124,3 +101,21 @@ enter the "console" tab, and view and modify the saved values as follows:
 > localStorage.setItem( 'vzome-github-users', '["vorth","david-hall","John-Kostick","ThynStyx","pdmclean","thynstyx","tomgeometer"]' )
 ```
 The values are always strings, so be careful with those quotes!
+
+## [The Zometool Tetrahedra Challenge](https://vzome.github.io/zome-tetras/)
+
+This app is a solution to the tetrahedra challenge posed in the [Zometool manual](https://www.zometool.com/content/Manual2.3web.pdf),
+with the complete table duplicated from there, and an interactive viewer for the solutions.
+Don't peek until you're stumped!  (This one was a collaborative effort by several
+community members, coordinated on the [Discord server](https://discord.gg/vhyFsNAFPS).
+
+## [Brian Hall's Zometool Designs](https://www.vzome.com/app/bhall/basic/)
+
+My friend Brian Hall, a mathematical physicist at Notre Dame, has designed a number of intriguing
+models you can build with [Zometool](https://zometool.com), at three levels of difficulty.
+Embrace the challenge!
+
+## [The 59 Icosahedra](https://www.vzome.com/app/59icosahedra)
+
+This application lets you explore the [59 stellations of the icosahedron](https://en.wikipedia.org/wiki/The_Fifty-Nine_Icosahedra) identified by H. S. M. Coxeter.
+It was inspired by [Bob Hearn's physical magnetic model](https://www.instructables.com/The-Magnetic-59-Icosahedra/).
