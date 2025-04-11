@@ -11,7 +11,7 @@ on:
   push:
     branches: ["main"]
     paths:
-      - 'docs/**'
+      - 'website/**'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -47,7 +47,11 @@ jobs:
           cache-version: 0 # Increment this number if you need to re-download cached gems
       - name: Build with Jekyll
         # Outputs to the './_site' directory by default
-        run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}" --source docs
+        run: |
+          cd website
+          pwd
+          bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+          find _site
         env:
           JEKYLL_ENV: production
 
@@ -70,7 +74,7 @@ jobs:
       - name: Publish website to DreamHost
         run: |
           sftp -b - dreamhost <<END
-            cd vzome.com/docs
-            put -r ./_site/* .
+            cd vzome.com/
+            put -r ./website/_site/* .
           END
 
