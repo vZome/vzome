@@ -23,9 +23,18 @@ author: Scott Vorthmann
 ###############################################
 
 navbar-links:
-#  About Me: "aboutme"
-  vZome home: "https://www.vzome.com"
-  Geometry blog: "https://vorth.github.io/vzome-sharing/"
+  About:
+    - vZome: "/about/"
+    - Zometool: "/about/zometool.html"
+    - History: "/docs/history/"
+  Docs:
+    - Quick Start: "/docs/quick-start.html"
+    - Sharing: "/docs/sharing.html"
+    - Web Embedding: "/docs/web-component.html"
+    - Misc: "/docs/"
+  Showcase:
+    - Geometry Blog: "https://vorth.github.io/vzome-sharing/"
+    - Gallery: "/home/showcase/"
 
 ################
 # --- Logo --- #
