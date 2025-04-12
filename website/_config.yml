@@ -23,7 +23,7 @@ author: Scott Vorthmann
 ###############################################
 
 navbar-links:
-  Home: "/home/"
+  Home: "/new-index.html"
   About:
     - vZome: "/about/"
     - Zometool: "/about/zometool.html"
