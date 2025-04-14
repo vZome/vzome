@@ -109,6 +109,12 @@ zometool-covering-products::before {
    content: "Supporting products:";
 }
 
+.zometool-products-container {
+  max-height: 8.7rem;
+  overflow: auto;
+  margin-block-start: 8px;
+}
+
 .matched-product {
   min-width: 250px;
   display: flex;

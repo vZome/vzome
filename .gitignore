@@ -89,3 +89,5 @@ online/serve/modules/
 .zsh_history
 
 core/failures.xml
+
+website/Gemfile.lock
