@@ -109,22 +109,24 @@ const ZometoolInstructions = props =>
   return (
     <div class='zometool-instructions'>
 
-      <Show when={hasScenes()} fallback={<div class="step-buttons"></div>}>
-        <Switch class="switch" checked={steps()} onChange={toggleSteps} >
-          <Switch.Label class="step_switch__label">Show Build Steps</Switch.Label>
-          <Switch.Input class="switch__input" />
-          <Switch.Control class="switch__control">
-            <Switch.Thumb class="switch__thumb" />
-          </Switch.Control>
-        </Switch>
-      </Show>
+      <div class="step-controls">
+        <Show when={hasScenes()} fallback={<div class="step-buttons"></div>}>
+          <Switch class="switch" checked={steps()} onChange={toggleSteps} >
+            <Switch.Label class="step_switch__label">Show Build Steps</Switch.Label>
+            <Switch.Input class="switch__input" />
+            <Switch.Control class="switch__control">
+              <Switch.Thumb class="switch__thumb" />
+            </Switch.Control>
+          </Switch>
+        </Show>
+        <StepControls show={steps()} dispatch={props.dispatch} />
+      </div>
 
       <DesignViewer config={ { ...props.config, download: !steps(), allowFullViewport: true } }
           componentRoot={props.componentRoot}
           height="100%" width="100%" >
       </DesignViewer>
 
-      <StepControls show={steps()} dispatch={props.dispatch} />
     </div>
   );
 }

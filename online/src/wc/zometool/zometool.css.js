@@ -28,6 +28,11 @@ export const instructionsCSS = `
   font-size: 17px;
 }
 
+.step-controls {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+}
+
 .step-number {
   min-width: 2em;
   display: flex;
@@ -36,7 +41,7 @@ export const instructionsCSS = `
 
 .step-buttons {
   margin: auto;
-  min-height: 4rem;
+  min-height: 6rem;
   gap: 13px;
   display: flex;
   align-items: center;
@@ -102,7 +107,7 @@ export const instructionsCSS = `
 .zometool-instructions {
   height: 100%;
   display: grid;
-  grid-template-rows: min-content 1fr 90px;
+  grid-template-rows: min-content 1fr;
 }
 
 zometool-covering-products::before {
