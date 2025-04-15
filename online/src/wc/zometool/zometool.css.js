@@ -5,6 +5,7 @@ export const instructionsCSS = `
   position: relative;
   font-family: sans-serif;
   --vzome-label-background: white;
+  container-type: inline-size;
 }
 
 :host > div:empty {
@@ -17,15 +18,29 @@ export const instructionsCSS = `
   inset: 0;
 }
 
-.switch {
+.step-switch {
+  display: inherit;
   height: 30px;
-  margin: 6px;
+  margin: 9px;
+  .switch__control {
+    display: block;
+    margin: 23px;
+    height: 25px;
+    border-radius: 13px;
+    width: 45px;
+    .switch__thumb {
+      height: 25px;
+      width: 25px;
+      border-radius: 13px;
+    }
+  }
 }
 .step_switch__label {
   margin-right: 8px;
   color: hsl(240 6% 10%);
   user-select: none;
   font-size: 17px;
+  min-width: max-content;
 }
 
 .step-controls {
@@ -45,6 +60,7 @@ export const instructionsCSS = `
   gap: 13px;
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .step-button {
@@ -64,19 +80,6 @@ export const instructionsCSS = `
   height: 48px;
   padding: 0 12px;
   font-size: 2rem;
-}
-
-@media ( max-width: 650px ) {
-
-  .step-button {
-    padding: 0 0;
-  }
-  .limit-step {
-    padding: 0 6px;
-  }
-  .step-number {
-    min-width: 1.4em;
-  }
 }
 
 .step-button-svg {
@@ -125,4 +128,39 @@ zometool-covering-products::before {
   display: flex;
   justify-content: space-between;
 }
+
+@container ( max-width: 650px ) {
+
+  :host > div {
+    inset-inline: 10px;
+  }
+
+  .step-controls {
+    display: block;
+  }
+
+  .step-switch {
+    display: inherit;
+    .switch__control {
+      display: inline-flex;
+      margin: 5px;
+    }
+  }
+
+  .step-buttons {
+    transform: scale(0.8);
+    min-height: 4rem;
+  }
+
+  .step-button {
+    padding: 0 0;
+  }
+  .limit-step {
+    padding: 0 6px;
+  }
+  .step-number {
+    min-width: 1.4em;
+  }
+}
+
 `;

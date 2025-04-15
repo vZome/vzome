@@ -111,7 +111,7 @@ const ZometoolInstructions = props =>
 
       <div class="step-controls">
         <Show when={hasScenes()} fallback={<div class="step-buttons"></div>}>
-          <Switch class="switch" checked={steps()} onChange={toggleSteps} >
+          <Switch class="step-switch" checked={steps()} onChange={toggleSteps} >
             <Switch.Label class="step_switch__label">Show Build Steps</Switch.Label>
             <Switch.Input class="switch__input" />
             <Switch.Control class="switch__control">
