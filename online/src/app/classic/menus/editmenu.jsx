@@ -79,6 +79,10 @@ export const EditMenu = () =>
 
         <Divider />
 
+        <EditAction label="Reverse Orientations" action="ReverseOrientations"/>
+
+        <Divider />
+
         <SetColorItem ctrlr={rootController()} />
 
         <SubMenu label="Set Opacity">
