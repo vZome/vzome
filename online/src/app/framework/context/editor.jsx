@@ -31,6 +31,9 @@ const EditorProvider = props =>
   // Beware, createStore does not make a copy, shallow or deep!
   const [ state, setState ] = createStore( { ...initialState() } );
 
+  const [ partsList, setPartsList ] = createSignal( { balls: 0, panels: 0, struts: 0, orbitColors: [] } );
+  workerClient .subscribeFor( 'SCENE_RENDERED', ({ scene: { parts } }) => setPartsList( parts ) );
+
   const [ sceneIndex, setSceneIndex ] = createSignal( 0 );
   const [ reload, setReload ] = createSignal( false );
 
@@ -255,6 +258,7 @@ const EditorProvider = props =>
     createDesign,
     openDesignFile,
     fetchDesignUrl,
+    partsList,
     sceneIndex, setSceneIndex,
     reload, setReload,
     importMeshFile: ( file, format ) => workerClient .postMessage( actions.importMeshFile( file, format ) ),

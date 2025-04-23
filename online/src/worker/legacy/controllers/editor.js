@@ -71,7 +71,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
       this.addSubController('strutBuilder', strutBuilder);
 
     const docSymmetrySystem = editor .getSymmetrySystem();
-      
+
     // In case we fall through without matching (due to a legacy system in the doc, no longer UI-exposed)
     let docLabel = fieldApp .getDefaultSymmetryPerspective() .getLabel();
 

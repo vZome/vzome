@@ -11,6 +11,7 @@ import { SceneEditor } from './components/editor.jsx';
 import { ErrorAlert } from "./components/alert.jsx";
 import { SceneControls } from './components/scenecontrols.jsx';
 import { MeasurePanel } from './components/measure.jsx';
+import { PartsPanel } from './components/partstable.jsx';
 
 export const ClassicEditor = () =>
 {
@@ -49,7 +50,7 @@ export const ClassicEditor = () =>
               <StrutBuildPanel/>
             </Tab>
             <Tab value='Parts'>
-
+              <PartsPanel/>
             </Tab>
             <Tab value='Measure'>
               <MeasurePanel/>

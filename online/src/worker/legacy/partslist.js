@@ -18,6 +18,7 @@ const countPartsForSnapshot = ( instances, shapes, colors ) =>
   return bom;
 }
 
+// For the Zometool component
 export const assemblePartsList = ( rendered, colors ) =>
 {
   const bom = {};
@@ -41,4 +42,44 @@ export const assemblePartsList = ( rendered, colors ) =>
   }
 
   return bom;
+}
+
+
+// For online vZome, not the Zometool component
+export const createPartsList = ( shapes, controller ) =>
+{
+  if ( !controller )
+    return { balls: 0, struts: 0, panels: 0, orbitColors: [] };
+
+  const field = controller .getSymmetry() .getField();
+  const orbitNames = controller .getCommandList( 'orbitNames' );
+  const orbitOrder = orbit => {
+    const index = orbitNames .indexOf( orbit );
+    return index === -1 ? 1000 : index;
+  }
+  let balls = 0;
+  let struts = 0;
+  let panels = 0;
+  const unsortedOrbits = Object.values( shapes ).reduce( ( acc, shape ) =>
+  {
+    const { name, orbit, length, instances } = shape;
+    const count = instances.length;
+    if ( count === 0 )
+      return acc;
+    if ( name === 'ball' )
+      balls = count;
+    else if ( ! orbit )
+      panels += count;
+    else {
+      const len = field .createAlgebraicNumberFromTD( JSON.parse( length ) );
+      acc.push( { orbit, length: len .toString( 5 ), count }); // 5 is "MATH" format
+      struts += count;
+    }
+    return acc;
+  }, [] );
+
+  const orbits = unsortedOrbits .toSorted( ( a, b ) => orbitOrder( a.orbit ) - orbitOrder( b.orbit ) );
+  const orbitColors = orbits.map( ( { orbit, length, count } ) =>
+    ({ length, count, color: controller .getProperty( `orbitColor.${orbit}` ) || '128,128,128' }) );
+  return { balls, struts, panels, orbitColors };
 }

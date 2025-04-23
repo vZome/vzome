@@ -19,7 +19,7 @@ namespace com.vzome.desktop.controller {
             default:
                 if (/* startsWith */((str, searchString, position = 0) => str.substr(position, searchString.length) === searchString)(string, "orbitColor.")){
                     const name: string = string.substring("orbitColor.".length);
-                    const dir: com.vzome.core.math.symmetry.Direction = this.buildOrbits.getDirection(name);
+                    const dir: com.vzome.core.math.symmetry.Direction = this.symmetrySystem.getOrbits().getDirection(name);
                     const color: com.vzome.core.construction.Color = this.getColor(dir);
                     return color.toString();
                 }
@@ -147,6 +147,15 @@ namespace com.vzome.desktop.controller {
             switch((listName)) {
             case "styles":
                 return this.symmetrySystem.getStyleNames();
+            case "orbitNames":
+                const list: java.util.ArrayList<string> = <any>(new java.util.ArrayList<any>());
+                for(let index=this.symmetrySystem.getSymmetry().getDirections().iterator();index.hasNext();) {
+                    let dir = index.next();
+                    {
+                        if (!dir.isAutomatic())list.add(dir.getCanonicalName());
+                    }
+                }
+                return list.toArray<any>([]);
             case "orbits":
                 const result: string[] = (s => { let a=[]; while(s-->0) a.push(null); return a; })(this.symmetrySystem.getOrbits().size());
                 let i: number = 0;

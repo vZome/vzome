@@ -1,6 +1,7 @@
 
 import { resourceIndex, importLegacy, importZomic } from '../revision.js';
 import { commitToGitHub, assemblePartsList, normalizePreview } from '../both-contexts.js';
+import { createPartsList } from './legacy/partslist.js';
 
 // const uniqueId = Math.random();
 
@@ -44,7 +45,8 @@ const prepareSceneResponse = ( design, sceneIndex ) =>
     }
     shapes[ instance.shapeId ].instances.push( { ...instance, rotation } );
   }
-  return { title, shapes, camera, lighting, embedding, polygons };
+  const parts = createPartsList( shapes, design.wrapper?.controller?.symmController );
+  return { title, shapes, camera, lighting, embedding, polygons, parts };
 }
 
 const prepareEditSceneResponse = ( design, edit, before ) =>
@@ -403,9 +405,9 @@ const urlLoader = async ( report, payload ) =>
 
 const reportDefaultScene = report =>
 {
-  const { shapes, embedding } = prepareSceneResponse( design, 0 ); // takes a normalized scene
+  const { shapes, embedding, parts } = prepareSceneResponse( design, 0 ); // takes a normalized scene
   // never send camera or lighting!
-  clientEvents( report ) .sceneChanged( { shapes, embedding, polygons: true } );
+  clientEvents( report ) .sceneChanged( { shapes, embedding, polygons: true, parts } );
 
   // Now compute an updated parts list
   // const bom = assemblePartsList( shapes );

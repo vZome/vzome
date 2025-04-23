@@ -33,9 +33,7 @@ namespace com.vzome.core.math.symmetry {
             this.tetrahedralSubgroup[3] = this.closure([17, 4]);
             this.tetrahedralSubgroup[4] = this.closure([55, 14]);
             const blueOrbit: com.vzome.core.math.symmetry.Direction = this.getDirection("blue");
-            const yellowOrbit: com.vzome.core.math.symmetry.Direction = this.createZoneOrbit$java_lang_String$int$int$com_vzome_core_algebra_AlgebraicVector$boolean$boolean$com_vzome_core_algebra_AlgebraicNumber("yellow", 0, 27, field.createVector([[1, 1, 1, 1], [0, 1, 0, 1], [-1, 1, 0, 1]]), true, false, this.mField['createPower$int'](-1));
-            yellowOrbit.setScaleNames(["y0", "y1", "y2", "y3"]);
-            yellowOrbit.iterator();
+            const yellowOrbit: com.vzome.core.math.symmetry.Direction = this.getDirection("yellow");
             for(let i: number = 0; i < 60; i++) {{
                 const blueZone: com.vzome.core.math.symmetry.Axis = blueOrbit.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, i);
                 const yellowZone: com.vzome.core.math.symmetry.Axis = yellowOrbit.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, i);
@@ -54,9 +52,6 @@ namespace com.vzome.core.math.symmetry {
                     this.greenTetrahedral[mappedAxis] = j;
                 };}
             };}
-            const redOrbit: com.vzome.core.math.symmetry.Direction = this.createZoneOrbit$java_lang_String$int$int$com_vzome_core_algebra_AlgebraicVector$boolean("red", 0, 3, this.mField.createVector([[0, 1, 1, 1], [1, 1, 0, 1], [0, 1, 0, 1]]), true);
-            redOrbit.setScaleNames(["r0", "r1", "r2", "r3"]);
-            this.preferredAxis = redOrbit.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, 1);
         }
 
         /**
@@ -188,6 +183,12 @@ namespace com.vzome.core.math.symmetry {
          * @see com.vzome.core.math.symmetry.AbstractSymmetry#createZoneOrbit(String, int, int, AlgebraicVector, boolean, boolean, AlgebraicNumber)
          */
         createOtherOrbits() {
+            const yellowOrbit: com.vzome.core.math.symmetry.Direction = this.createZoneOrbit$java_lang_String$int$int$com_vzome_core_algebra_AlgebraicVector$boolean$boolean$com_vzome_core_algebra_AlgebraicNumber("yellow", 0, 27, this.mField.createVector([[1, 1, 1, 1], [0, 1, 0, 1], [-1, 1, 0, 1]]), true, false, this.mField['createPower$int'](-1));
+            yellowOrbit.setScaleNames(["y0", "y1", "y2", "y3"]);
+            yellowOrbit.iterator();
+            const redOrbit: com.vzome.core.math.symmetry.Direction = this.createZoneOrbit$java_lang_String$int$int$com_vzome_core_algebra_AlgebraicVector$boolean("red", 0, 3, this.mField.createVector([[0, 1, 1, 1], [1, 1, 0, 1], [0, 1, 0, 1]]), true);
+            redOrbit.setScaleNames(["r0", "r1", "r2", "r3"]);
+            this.preferredAxis = redOrbit.getAxis$int$int(com.vzome.core.math.symmetry.Symmetry.PLUS, 1);
             const dir: com.vzome.core.math.symmetry.Direction = this.createZoneOrbit$java_lang_String$int$int$com_vzome_core_algebra_AlgebraicVector$boolean$boolean$com_vzome_core_algebra_AlgebraicNumber("green", 6, com.vzome.core.math.symmetry.Symmetry.NO_ROTATION, this.mField.createVector([[1, 1, 0, 1], [1, 1, 0, 1], [0, 1, 0, 1]]), true, true, this.mField['createRational$long'](2));
             dir.setScaleNames(["g0", "g1", "g2", "g3"]);
             this.createZoneOrbit$java_lang_String$int$int$com_vzome_core_algebra_AlgebraicVector("orange", 6, com.vzome.core.math.symmetry.Symmetry.NO_ROTATION, this.mField.createVector([[1, 1, 0, 1], [0, 1, 1, 1], [0, 1, 0, 1]]));
