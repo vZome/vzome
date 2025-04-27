@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="../favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta property="og:type" content="website"/>
+
+
+    <title>vZome File Browser</title>
+    <meta property="og:site_name"  content="vZome File Browser"/>
+    <meta property="og:title"      content="vZome File Browser"/>
+    <meta property="twitter:title" content="vZome File Browser"/>
+
+    <meta name="author" content="Scott Vorthmann"/>
+  
+    <meta name="description"             content="Online browser for vZome (https://vzome.com) files on your local disk"/>
+    <meta property="og:description"      content="Online browser for vZome (https://vzome.com) files on your local disk"/>
+    <meta property="twitter:description" content="Online browser for vZome (https://vzome.com) files on your local disk"/>
+
+    <meta name="keywords" content="geometry,zome,vzome,github,pages,sharing"/>
+    
+    <!-- <meta property="og:image"  content="https://www.vzome.com/app/browser/icons/maskable_icon_x512.png"/>
+    <meta name="twitter:image" content="https://www.vzome.com/app/browser/icons/maskable_icon_x512.png"/> -->
+    
+    <meta property="og:url" content="https://www.vzome.com/app/localfiles/"/>
+    <link rel="canonical"      href="https://www.vzome.com/app/localfiles/">
+
+
+    <link rel="stylesheet" href="../App.css">
+    <link rel="manifest" href="./manifest.json">
+
+    <style>
+      section {
+        display: grid;
+        grid-template-columns: 1fr 3fr;
+        position: absolute;
+        inset: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <script src="https://cdn.jsdelivr.net/npm/@dannymoerkerke/file-tree@0.0.5/dist/file-tree.min.js" type="module"></script>
+    <script type="module" src="/modules/vzome-viewer.js"></script>
+    <script type="module">
+      const fileTree = document .querySelector( 'file-tree' );
+      const viewer = document .querySelector( '#viewer' );
+      fileTree.addEventListener('file-selected', ({ detail }) =>
+        {
+          if ( detail.path .endsWith( '.vZome' ) )
+          {
+            const { file } = detail;
+            const { name, path, contents } = file;
+            console.log( 'loading', path );
+            viewer .loadFromText( name, contents );
+          }
+        }
+      );
+
+    </script>
+
+    <section>
+      <file-tree>
+        <button type="button" slot="browse-button">Open directory</button>
+      </file-tree>
+      <vzome-viewer id="viewer" class="vzome-viewer" download="false" style="width: 100%; height: 100%;"></vzome-viewer>        
+    </section>
+
+    <script>
+      // Check that service workers are supported
+      if ('serviceWorker' in navigator) {
+        // Use the window load event to keep the page load performant
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register( '/app/service-worker.js' );
+        });
+      }
+    </script>
+  </body>
+</html>

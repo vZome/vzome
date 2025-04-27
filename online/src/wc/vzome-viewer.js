@@ -2,7 +2,7 @@
 import { vZomeViewerCSS } from "./vzome-viewer.css";
 
 import { createWorker } from '../viewer/context/worker.jsx';
-import { fetchDesign, selectScene, decodeEntities } from "../viewer/util/actions.js";
+import { fetchDesign, openTextContent, selectScene, decodeEntities } from "../viewer/util/actions.js";
 import { VZomeViewerFirstButton, VZomeViewerLastButton, VZomeViewerNextButton, VZomeViewerPrevButton } from "./index-buttons.js";
 import { createDefaultCameraStore } from "../viewer/context/camera.jsx";
 
@@ -153,7 +153,7 @@ class VZomeViewer extends HTMLElement
     const { camera=true, lighting=true, design=true } = this.#loadFlags;
     const load = { camera, lighting, design };
     const config = { ...this.#config, load };
-    if ( this.#urlChanged ) {
+    if ( this.#config.url && this.#urlChanged ) {
       debug && console.log( 'sending fetchDesign to worker' );
       this.#workerclient.postMessage( fetchDesign( this.#config.url, config ) );
       this.#urlChanged = false;
@@ -161,6 +161,16 @@ class VZomeViewer extends HTMLElement
       debug && console.log( 'sending selectScene to worker' );
       this.#workerclient.postMessage( selectScene( this.#config.sceneTitle, load ) );
     }
+  }
+
+  loadFromText( name, contents )
+  {
+    if ( ! this.#moduleLoaded ) {
+      // User code called update() in initialization or an event handler, before the dynamic import has completed
+      debug && console.log( 'loadFromText ignored; module not loaded' );
+      return;
+    }
+    this.#workerclient.postMessage( openTextContent( name, contents ) );
   }
 
   connectedCallback()

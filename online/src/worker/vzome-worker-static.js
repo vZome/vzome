@@ -245,8 +245,9 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, sceneTitle
         report( { type: 'TEXT_FETCHED', payload: { text: xml, name } } ); // NOW it is safe to send the name
       }
       if ( xml .includes( 'Zomic' ) ) {
-        importZomic() .then( (zomic) => {
-          const field = legacy .getField( 'golden' );
+        importZomic() .then( async (zomic) => {
+          const api = await legacy .initialize();
+          const field = api .getField( 'golden' );
           field .setInterpreterModule( zomic, legacy .vzomePkg );
           doLoad();
         })
@@ -310,6 +311,13 @@ const shareToGitHub = async ( target, config, data, report ) =>
           report( { type: 'SHARE_FAILURE', payload: error.message } );
       });
     });
+}
+
+const textLoader = ( report, payload ) =>
+{
+  const { name, contents } = payload;
+  const xmlLoading = new Promise( (resolve) => resolve( contents ) );
+  openDesign( xmlLoading, name, report, false, true );
 }
 
 const fileLoader = ( report, payload ) =>
@@ -450,6 +458,10 @@ onmessage = ({ data }) =>
       urlLoader( sendToClient, payload );
       break;
   
+    case 'TEXT_PROVIDED':
+      textLoader( sendToClient, payload );
+      break;
+    
     case 'FILE_PROVIDED':
       fileLoader( sendToClient, payload );
       break;
