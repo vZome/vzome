@@ -195,7 +195,7 @@ export const ShapedGeometry = ( props ) =>
       .then( blob => {
         console.log( `Captured ${mimeType} image of size ${blob.size} bytes` );
         saveBlob( blob );
-      } );    
+      } );
   }
   setCapturer( { capture } );
 
