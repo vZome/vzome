@@ -1,8 +1,7 @@
 
 import { vZomeViewerCSS } from "./vzome-viewer.css";
 
-import { createWorker } from '../viewer/context/worker.jsx';
-import { fetchDesign, openTextContent, selectScene, decodeEntities } from "../viewer/util/actions.js";
+import { decodeEntities } from "../viewer/util/actions.js";
 import { VZomeViewerFirstButton, VZomeViewerLastButton, VZomeViewerNextButton, VZomeViewerPrevButton } from "./index-buttons.js";
 import { createDefaultCameraStore } from "../viewer/context/camera.jsx";
 
@@ -11,7 +10,6 @@ class VZomeViewer extends HTMLElement
 {
   #root;
   #container;
-  #workerclient;
   #config;
   #reactive;
   #urlChanged;
@@ -26,6 +24,8 @@ class VZomeViewer extends HTMLElement
   #sceneIndex;
   #cameraStore;
 
+  #viewerClient;
+
   constructor()
   {
     super();
@@ -34,25 +34,6 @@ class VZomeViewer extends HTMLElement
     this.#root.appendChild( document.createElement("style") ).textContent = vZomeViewerCSS;
     this.#container = document.createElement("div");
     this.#root.appendChild( this.#container );
-
-    // I'd like to remove #workerclient, but I have to set up these subscriptions somehow...
-    this.#workerclient = createWorker();
-    this.#workerclient .subscribeFor( 'ALERT_RAISED', () => this .dispatchEvent( new Event( 'vzome-design-failed' ) ) );
-    this.#workerclient .subscribeFor( 'SCENE_RENDERED', () => {
-      let scene = {};
-      if ( this.#indexed && !! this.#sceneTitles )
-        scene = { index: this.#sceneIndex, title: this.#sceneTitles[ this.#sceneIndex ] };
-      this .dispatchEvent( new CustomEvent( 'vzome-design-rendered', { detail: scene } ) );
-    } );
-    this.#workerclient .subscribeFor( 'SCENES_DISCOVERED', payload => {
-      this.#sceneIndices = payload .map( (scene,i) => `#${i}` ) .slice( 1 ); // strip the default scene
-      this.#sceneTitles = payload .map( (scene,i) => scene.title ? decodeEntities( scene.title ) : `#${i}` );
-      if ( this.#indexed )
-        this.#sceneTitles = this.#sceneTitles .slice( 1 );
-      this .dispatchEvent( new CustomEvent( 'vzome-scenes-discovered', { detail: this.#sceneTitles } ) );
-
-      this .dispatchEvent( new CustomEvent( 'vzome-scenes', { detail: payload .slice( 1 ) } ) );
-    } );
 
     this.#cameraStore = createDefaultCameraStore();
 
@@ -65,6 +46,7 @@ class VZomeViewer extends HTMLElement
       labels:          false,
       showPerspective: true,
       download:        true,
+      useSpinner:      false,
     };
 
     this.#indexed = false;
@@ -155,11 +137,11 @@ class VZomeViewer extends HTMLElement
     const config = { ...this.#config, load };
     if ( this.#config.url && this.#urlChanged ) {
       debug && console.log( 'sending fetchDesign to worker' );
-      this.#workerclient.postMessage( fetchDesign( this.#config.url, config ) );
+      this.#viewerClient .requestDesign( this.#config.url, config );
       this.#urlChanged = false;
     } else if ( this.#sceneChanged ) {
       debug && console.log( 'sending selectScene to worker' );
-      this.#workerclient.postMessage( selectScene( this.#config.sceneTitle, load ) );
+      this.#viewerClient .requestScene( this.#config.sceneTitle, load );
     }
   }
 
@@ -170,7 +152,8 @@ class VZomeViewer extends HTMLElement
       debug && console.log( 'loadFromText ignored; module not loaded' );
       return;
     }
-    this.#workerclient.postMessage( openTextContent( name, contents ) );
+    this.#viewerClient .resetScenes();
+    this.#viewerClient .openText( name, contents );
   }
 
   connectedCallback()
@@ -179,9 +162,29 @@ class VZomeViewer extends HTMLElement
     import( '../viewer/index.jsx' )
       .then( module => {
         debug && console.log( 'dynamic module loaded' );
-        module.renderViewer( this.#workerclient, this.#container, this.#config, this.#cameraStore );
+        module.renderViewer( this.#container, this.#config, this.#cameraStore, viewer => this.#viewerClient = viewer );
         this.#moduleLoaded = true;
         
+        this.#viewerClient.subscribeFor( 'ALERT_RAISED', () => {
+          this .dispatchEvent( new CustomEvent( 'vzome-design-failed' ) );
+        } ); 
+        this.#viewerClient.subscribeFor( 'SCENE_RENDERED', () => {
+          let scene = {};
+          if ( this.#indexed && !! this.#sceneTitles )
+            scene = { index: this.#sceneIndex, title: this.#sceneTitles[ this.#sceneIndex ] };
+          this .dispatchEvent( new CustomEvent( 'vzome-design-rendered', { detail: scene } ) );
+        } );
+        this.#viewerClient.subscribeFor( 'SCENES_DISCOVERED', ( payload ) => {
+          this.#sceneIndices = payload .map( (scene,i) => `#${i}` ) .slice( 1 ); // strip the default scene
+          this.#sceneTitles = payload .map( (scene,i) => scene.title ? decodeEntities( scene.title ) : `#${i}` );
+          if ( this.#indexed )
+            this.#sceneTitles = this.#sceneTitles .slice( 1 );
+          this .dispatchEvent( new CustomEvent( 'vzome-scenes-discovered', { detail: this.#sceneTitles } ) );
+
+          this .dispatchEvent( new CustomEvent( 'vzome-scenes', { detail: payload .slice( 1 ) } ) );
+        } );
+  
+
         // We used to do this in the constructor, after worker creation, for better responsiveness.
         // However, that causes a race condition on slow networks -- the model loads before the viewer
         //   is ready for the results, leaving a blank canvas.
@@ -195,7 +198,7 @@ class VZomeViewer extends HTMLElement
 
   static get observedAttributes()
   {
-    return [ "src", "show-scenes", "scene", "load-camera", "reactive", "labels", "show-perspective", "tween-duration", "indexed", "download" ];
+    return [ "src", "show-scenes", "scene", "load-camera", "reactive", "labels", "show-perspective", "tween-duration", "indexed", "download", "progress" ];
   }
 
   // This callback can happen *before* connectedCallback()!
@@ -243,6 +246,11 @@ class VZomeViewer extends HTMLElement
       this.#config = { ...this.#config, download };
       break;
 
+    case "progress":
+      const useSpinner = _newValue === 'true';
+      this.#config = { ...this.#config, useSpinner };
+      break;
+  
     case "show-perspective":
       const showPerspective = _newValue === 'true';
       this.#config = { ...this.#config, showPerspective };
@@ -340,6 +348,20 @@ class VZomeViewer extends HTMLElement
   get download()
   {
     return this.getAttribute( "download" );
+  }
+
+  set progress( newValue )
+  {
+    if ( newValue === null ) {
+      this.removeAttribute( "progress" );
+    } else {
+      this.setAttribute( "progress", newValue );
+    }
+  }
+
+  get progress()
+  {
+    return this.getAttribute( "progress" );
   }
 
   set showPerspective( newValue )

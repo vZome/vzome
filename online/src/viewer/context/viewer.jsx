@@ -4,7 +4,7 @@ import { createStore, reconcile, unwrap } from "solid-js/store";
 
 import { useWorkerClient } from "./worker.jsx";
 import { useCamera } from "./camera.jsx";
-import { decodeEntities, fetchDesign, selectScene } from "../util/actions.js";
+import { decodeEntities, fetchDesign, selectScene, openTextContent } from "../util/actions.js";
 
 const ViewerContext = createContext( { scene: ()=> { console.log( 'NO ViewerProvider' ); }, problem: ()=>null } );
 
@@ -24,6 +24,12 @@ const ViewerProvider = ( props ) =>
   {
     setWaiting( true );
     postMessage( fetchDesign( url, config ) );
+  }
+
+  const openText = ( name, contents ) =>
+  {
+    setWaiting( true );
+    postMessage( openTextContent( name, contents ) );
   }
 
   url && postMessage( fetchDesign( url, props.config ) );
@@ -123,13 +129,16 @@ const ViewerProvider = ( props ) =>
   } );
   
   const providerValue = {
-    scene, setScene, requestDesign, scenes, source, problem, waiting, labels,
+    scene, setScene, requestDesign, openText, scenes, source, problem, waiting, labels,
+    subscribeFor,
     resetScenes: () => setScenes( [] ),
     setProblem,
     clearProblem: () => setProblem( '' ),
     requestScene: ( name, config ) => postMessage( selectScene( name, config ) ),
     requestBOM: () => postMessage( { type: 'BOM_REQUESTED' } ),
   };
+  // For the web component, this gives it access to the viewer context
+  props.setClient && props.setClient( providerValue );
 
   return (
     <ViewerContext.Provider value={ providerValue }>

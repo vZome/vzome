@@ -106,7 +106,7 @@ const WorkerContext = createContext( stubContext );
 
 const WorkerProvider = ( props ) =>
 {
-  const workerClient = props.workerClient || createWorker();
+  const workerClient = createWorker();
   const [ isWorkerReady, setReady ] = createSignal( false );
 
   // make sure we don't request any properties or actions too early
