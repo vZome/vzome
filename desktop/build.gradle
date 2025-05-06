@@ -10,6 +10,12 @@ plugins {
     id 'dev.equo.p2deps' version "1.7.8"
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
 p2deps {
   into 'implementation', {
     p2repo 'https://download.eclipse.org/mylyn/updates/release/'
