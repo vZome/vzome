@@ -3,7 +3,20 @@ plugins {
     id "application"
     id "org.panteleyev.jpackageplugin" version "1.6.1"
     id 'vzome.java-conventions'
+
+    // See https://github.com/equodev/equo-ide/tree/main/plugin-gradle#user-plugins
+    // This plugin replaces Goomph, apparently... by the same author.
+    //
+    id 'dev.equo.p2deps' version "1.7.8"
 }
+
+p2deps {
+  into 'implementation', {
+    p2repo 'https://download.eclipse.org/mylyn/updates/release/'
+    install 'org.eclipse.egit.github.core'
+  }
+}
+
 
 def injectionKeys = [
     'version', 'edition', 'buildNumber', 'gitCommit',
@@ -84,7 +97,6 @@ dependencies {
 
     implementation group: 'com.github.scribejava', name: 'scribejava-apis', version: '8.1.0'
     implementation group: 'com.github.scribejava', name: 'scribejava-httpclient-okhttp', version: '8.1.0'
-    implementation group: 'org.eclipse.mylyn.github', name: 'org.eclipse.egit.github.core', version: '5.12.0.202106021050-rc1'
 
     implementation group: 'java3d', name: 'vecmath', version:'1.6.0-final'
 
