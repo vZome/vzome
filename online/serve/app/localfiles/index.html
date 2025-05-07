@@ -52,8 +52,8 @@
         {
           if ( detail.path .endsWith( '.vZome' ) )
           {
-            const { file } = detail;
-            const { name, path, contents } = file;
+            const { file, path } = detail;
+            const { name, contents } = file;
             console.log( 'loading', path );
             viewer .loadFromText( name, contents );
           }
