@@ -19367,6 +19367,9 @@ export var com;
                                 }
                                 buf.append(")");
                                 break;
+                            case 4 /* MATHML_FORMAT */:
+                                buf.append( this.getMathML( factors ) );
+                                break;
                             default:
                                 let first = 0;
                                 for (let i = 0; i < factors.length; i++) {
@@ -19394,7 +19397,17 @@ export var com;
                                                 if (format === AbstractAlgebraicField.EXPRESSION_FORMAT)
                                                     buf.append("*");
                                             }
-                                            const multiplier = this['getIrrational$int$int'](i, format);
+                                            // The Java version of getIrrational() throws an exception 
+                                            // if format is out of range, but the JavaScript version
+                                            // just returns undefined which causes buf.append() 
+                                            // to throw an invalid overload exception. This occurs
+                                            // when new formats like MATH_FORMAT
+                                            // are added online and fall through to this default
+                                            // for non-legacy fields.
+                                            const fmt = format == AbstractAlgebraicField.EXPRESSION_FORMAT
+                                                ? AbstractAlgebraicField.EXPRESSION_FORMAT
+                                                : AbstractAlgebraicField.DEFAULT_FORMAT;
+                                            const multiplier = this['getIrrational$int$int'](i, fmt);
                                             buf.append(multiplier);
                                         }
                                     }
