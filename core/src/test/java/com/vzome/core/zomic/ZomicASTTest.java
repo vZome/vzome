@@ -47,6 +47,7 @@ import com.vzome.core.zomic.program.PrintVisitor;
 import com.vzome.core.zomic.program.Walk;
 import com.vzome.core.zomic.program.ZomicStatement;
 
+@SuppressWarnings("deprecation")
 public class ZomicASTTest
 {
     // Initializing it this way just ensures that any copied code uses the correct class name for a static Logger in any class.
