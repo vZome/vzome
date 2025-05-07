@@ -125,14 +125,18 @@ public interface AlgebraicField
     // number operations
     // ======================================================================================
 
-    static int DEFAULT_FORMAT = 0; // 4 + 3φ
+    public final static int DEFAULT_FORMAT = 0; // 4 + 3φ
 
-    static int EXPRESSION_FORMAT = 1; // 4 +3*phi
+    public final static int EXPRESSION_FORMAT = 1; // 4 +3*phi
 
-    static int ZOMIC_FORMAT = 2; // 4 3
+    public final static int ZOMIC_FORMAT = 2; // 4 3
 
-    static int VEF_FORMAT = 3; // (3,4)
+    public final static int VEF_FORMAT = 3; // (3,4)
+    
+    public final static int MATHML_FORMAT = 4; // Use getMathML()
 
+    public final static int MATH_FORMAT = 5; // Originally used in JavaScript parts panel, not in Java
+    
     AlgebraicNumber zero();
 
     AlgebraicNumber one();
