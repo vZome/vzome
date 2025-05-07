@@ -22,24 +22,24 @@
       "type": "shell",
       "command": "cicd/online.bash clean",
       "problemMatcher": []
-    //},
-    // {
-    //   "label": "Run desktop vZome",
-    //   "type": "gradle",
-    //   "id": "/Users/vorth/vZome/vzome-alldesktop:rundesktop",
-    //   "script": "desktop:run",
-    //   "description": "Runs this project as a JVM application",
-    //   "group": "application",
-    //   "project": "desktop",
-    //   "buildFile": "/Users/vorth/vZome/vzome-all/desktop/build.gradle",
-    //   "rootProject": "vzome",
-    //   "projectFolder": "/Users/vorth/vZome/vzome-all",
-    //   "workspaceFolder": "/Users/vorth/vZome/vzome-all",
-    //   "args": "",
-    //   "javaDebug": false,
-    //   "problemMatcher": [
-    //     "$gradle"
-    //   ]
+    },
+    {
+      "label": "Run desktop vZome",
+      "type": "gradle",
+      "id": "/Users/vorth/vZome/vzome-alldesktop:rundesktop",
+      "script": "desktop:run",
+      "description": "Runs this project as a JVM application",
+      "group": "application",
+      "project": "desktop",
+      "buildFile": "/Users/vorth/vZome/vzome-all/desktop/build.gradle",
+      "rootProject": "vzome",
+      "projectFolder": "/Users/vorth/vZome/vzome-all",
+      "workspaceFolder": "/Users/vorth/vZome/vzome-all",
+      "args": "",
+      "javaDebug": false,
+      "problemMatcher": [
+        "$gradle"
+      ]
     }
   ]
 }
