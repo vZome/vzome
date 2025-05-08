@@ -205,7 +205,7 @@ public class PrintVisitor extends Visitor .Default{
 	{
 		println( "label " + id );
 	}
-	
+	@SuppressWarnings("deprecation")
 	public static void main( String[] args )
 	{
 		if(args.length == 0) {

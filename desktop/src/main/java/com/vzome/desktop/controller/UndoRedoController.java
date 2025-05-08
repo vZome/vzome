@@ -3,9 +3,8 @@ package com.vzome.desktop.controller;
 import java.util.stream.Collectors;
 
 import com.vzome.core.editor.EditHistory;
-import com.vzome.desktop.api.Controller;
 
-public class UndoRedoController extends DefaultController implements Controller
+public class UndoRedoController extends DefaultController
 {
     private final EditHistory model;
 
