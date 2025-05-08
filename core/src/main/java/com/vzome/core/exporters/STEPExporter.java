@@ -5,13 +5,9 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.editor.api.Manifestations;

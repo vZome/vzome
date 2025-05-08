@@ -92,7 +92,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
                 }
             }
             // DJH: I changed my mind. This method probably shouldn't be parsing anything
-            // and for the initial use case, this is all unnecesary overhead that never returns any result.
+            // and for the initial use case, this is all unnecessary overhead that never returns any result.
             // I'll just comment it all out for now until we get a use-case where it makes sense.
 //            try {
 //                // try to parse as a rational number

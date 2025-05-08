@@ -64,7 +64,6 @@ public class Polyhedron implements Cloneable
             try {
                 this .evilTwin = (Polyhedron) this .clone();
             } catch (CloneNotSupportedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             this .evilTwin .isEvil = true;
@@ -213,7 +212,7 @@ public class Polyhedron implements Cloneable
     }
 
     @SuppressWarnings("serial")
-    public class Face extends ArrayList<Integer> implements Cloneable
+    public class Face extends ArrayList<Integer>
     {
         // Note: computing normals in the AlgebraicField can be expensive and failure-prone,
         //  particularly if you don't have arbitrary precision rational numbers.
