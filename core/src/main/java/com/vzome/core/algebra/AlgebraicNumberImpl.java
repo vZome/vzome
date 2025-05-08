@@ -27,7 +27,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
 
     private Double doubleValue;	// initialized on first use
     private Integer signum;     // initialized on first use
-    private final String[] toString = new String[AlgebraicField .VEF_FORMAT + 1]; // cache various String representations
+    private final String[] toString = new String[AlgebraicField .MATH_FORMAT + 1]; // cache various String representations
 
     private Integer hashCode;	// initialized on first use
 
@@ -494,6 +494,8 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
      * {@code ZOMIC_FORMAT      // 4 3}<br>
      * {@code VEF_FORMAT        // (3,4)}<br>
+     * {@code MATHML_FORMAT     // Use getMathML()}
+     * {@code MATH_FORMAT       // Originally used in JavaScript parts panel, not in Java}
      */
     @Override
     public void getNumberExpression( StringBuffer buf, int format )
@@ -516,6 +518,8 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
      * {@code ZOMIC_FORMAT      // 4 3}<br>
      * {@code VEF_FORMAT        // (3,4)}
+     * {@code MATHML_FORMAT     // Use getMathML()}
+     * {@code MATH_FORMAT       // Originally used in JavaScript parts panel, not in Java}
      * @return 
      */
     @Override
