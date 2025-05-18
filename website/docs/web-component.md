@@ -64,9 +64,16 @@ submenu, and select the "vZome Shapes JSON (polygons)" item.
 
 If you are sharing vZome designs using [GitHub sharing](./sharing.html), the preview JSON will be generated and uploaded automatically, each time you share a design.
 
+## Settings Dialog
+
+By default, the web component displays a settings icon in the upper right corner,
+providing access to a dialog where various settings can be controlled by the user,
+such as toggling the camera perspective or outline rendering (when available).
+If you want to remove this capability for your viewer, you can set the `show-settings` attribute to `false`.
+
 ## Camera Animation
 
-When the view loads the initial camera from a vZome design or preview, it animates the
+When the viewer loads the initial camera from a vZome design or preview, it animates the
 change from the default camera state.  This "tweening" takes 500ms (1/2 second).
 The animation has the nice side-effect of hinting to the user that the viewer is neither
 a static image nor a looping animation.
