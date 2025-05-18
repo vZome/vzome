@@ -44,7 +44,7 @@ class VZomeViewer extends HTMLElement
       lighting:        true,
       design:          true,
       labels:          false,
-      showPerspective: true,
+      showSettings:    true,
       download:        true,
       useSpinner:      false,
     };
@@ -198,7 +198,7 @@ class VZomeViewer extends HTMLElement
 
   static get observedAttributes()
   {
-    return [ "src", "show-scenes", "scene", "load-camera", "reactive", "labels", "show-perspective", "tween-duration", "indexed", "download", "progress" ];
+    return [ "src", "show-scenes", "scene", "load-camera", "reactive", "labels", "show-perspective", "show-settings", "tween-duration", "indexed", "download", "progress" ];
   }
 
   // This callback can happen *before* connectedCallback()!
@@ -252,8 +252,9 @@ class VZomeViewer extends HTMLElement
       break;
   
     case "show-perspective":
-      const showPerspective = _newValue === 'true';
-      this.#config = { ...this.#config, showPerspective };
+    case "show-settings":
+      const showSettings = _newValue === 'true';
+      this.#config = { ...this.#config, showSettings };
       break;
   
     case "tween-duration":
@@ -367,15 +368,29 @@ class VZomeViewer extends HTMLElement
   set showPerspective( newValue )
   {
     if ( newValue === null ) {
-      this.removeAttribute( "show-perspective" );
+      this.removeAttribute( "show-settings" );
     } else {
-      this.setAttribute( "show-perspective", newValue );
+      this.setAttribute( "show-settings", newValue );
     }
   }
 
   get showPerspective()
   {
-    return this.getAttribute( "show-perspective" );
+    return this.getAttribute( "show-settings" );
+  }
+
+  set showSettings( newValue )
+  {
+    if ( newValue === null ) {
+      this.removeAttribute( "show-settings" );
+    } else {
+      this.setAttribute( "show-settings", newValue );
+    }
+  }
+
+  get showSettings()
+  {
+    return this.getAttribute( "show-settings" );
   }
 
   set reactive( value )

@@ -139,7 +139,7 @@ svg {
   }
 }
 
-
+.settings__overlay,
 .progress__overlay {
   position: fixed;
   inset: 0;
@@ -147,9 +147,11 @@ svg {
   background-color: rgb(0 0 0 / 0.2);
   // animation: overlayHide 250ms ease 100ms forwards;
 }
+.settings__overlay[data-expanded],
 .progress__overlay[data-expanded] {
   // animation: overlayShow 250ms ease;
 }
+.settings__positioner,
 .progress__positioner {
   position: fixed;
   inset: 0;
@@ -158,6 +160,7 @@ svg {
   align-items: center;
   justify-content: center;
 }
+.settings__content,
 .progress__content {
   z-index: 50;
   max-width: min(calc(100vw - 16px), 500px);
@@ -168,8 +171,9 @@ svg {
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   // animation: progress__contentHide 300ms ease-in forwards;
 }
+.settings__content[data-expanded],
 .progress__content[data-expanded] {
-  // animation: progress__contentShow 300ms ease-out;
+  // animation: contentShow_scale 300ms ease-out;
 }
 
 
@@ -200,26 +204,6 @@ svg {
 }
 .progress__fill[data-progress="complete"] {
   background-color: #16a34a;
-}
-@keyframes progress__contentShow {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-@keyframes progress__contentHide {
-  from {
-    opacity: 1;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.96);
-  }
 }
 
 
@@ -278,7 +262,7 @@ svg {
   animation: contentHide 300ms ease-in forwards;
 }
 .alert-dialog__content[data-expanded] {
-  animation: contentShow 300ms ease-out;
+  animation: alert__contentShow 300ms ease-out;
 }
 .alert-dialog__header {
   display: flex;
@@ -308,7 +292,7 @@ svg {
 }
 
 
-.perspective_toggle {
+.settings-button {
   appearance: none;
   outline: none;
   background-color: rgba(122, 122, 122, 0.3);
@@ -324,8 +308,109 @@ svg {
   padding-block: 0.4rem;
   padding-inline: 0.7rem;
 }
-.perspective_toggle:hover {
+.settings-button:hover {
   background-color: rgba(122, 122, 122, 0.7);
+}
+
+.settingsdialog__trigger {
+  appearance: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  width: auto;
+  outline: none;
+  border-radius: 6px;
+  padding: 0 16px;
+  background-color: hsl(200 98% 39%);
+  color: white;
+  font-size: 16px;
+  line-height: 0;
+  transition: 250ms background-color;
+}
+.settingsdialog__trigger:hover {
+  background-color: hsl(201 96% 32%);
+}
+.settingsdialog__trigger:focus-visible {
+  outline: 2px solid hsl(200 98% 39%);
+  outline-offset: 2px;
+}
+.settingsdialog__trigger:active {
+  background-color: hsl(201 90% 27%);
+}
+.settingsdialog__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-color: rgb(0 0 0 / 0.2);
+  animation: settings__overlayHide 250ms ease 100ms forwards;
+}
+.settingsdialog__overlay[data-expanded] {
+  animation: settings__overlayShow 250ms ease;
+}
+.settingsdialog__positioner {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.settingsdialog__content {
+  z-index: 50;
+  max-width: min(calc(100vw - 16px), 500px);
+  border: 1px solid hsl(240 5% 84%);
+  border-radius: 6px;
+  padding: 16px;
+  background-color: white;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  animation: contentHide_scale 300ms ease-in forwards;
+}
+.settingsdialog__content[data-expanded] {
+  animation: contentShow_scale 300ms ease-out;
+}
+
+.settingsdialog__body {
+  display: flex;
+  padding: 1rem;
+  gap: 2rem;
+}
+
+.settingsdialog__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.settingsdialog__close-button {
+  height: 16px;
+  width: 16px;
+  color: hsl(240 5% 34%);
+}
+.settingsdialog__title {
+  font-size: 20px;
+  font-weight: 500;
+  color: hsl(240 6% 10%);
+}
+.settingsdialog__description {
+  font-size: 16px;
+  color: hsl(240 5% 26%);
+}
+@keyframes settings__overlayShow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes settings__overlayHide {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 .corner__icon__button {
@@ -375,30 +460,10 @@ svg {
   font-size: 14px;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   transform-origin: var(--kb-tooltip-content-transform-origin);
-  animation: iconbutton__contentHide 250ms ease-in forwards;
+  animation: contentHide_scale 250ms ease-in forwards;
 }
 .iconbutton__content[data-expanded] {
-  animation: iconbutton__contentShow 250ms ease-out;
-}
-@keyframes iconbutton__contentShow {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-@keyframes iconbutton__contentHide {
-  from {
-    opacity: 1;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.96);
-  }
+  animation: contentShow_scale 250ms ease-out;
 }
 
 
@@ -415,10 +480,10 @@ svg {
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   outline: none;
   transform-origin: var(--kb-menu-content-transform-origin);
-  animation: exports__contentHide 250ms ease-in forwards;
+  animation: contentHide_scale 250ms ease-in forwards;
 }
 .exports__content[data-expanded] {
-  animation: exports__contentShow 250ms ease-out;
+  animation: contentShow_scale 250ms ease-out;
 }
 .exports__item {
   font-size: 16px;
@@ -443,7 +508,8 @@ svg {
   background-color: hsl(200 98% 39%);
   color: white;
 }
-@keyframes exports__contentShow {
+
+@keyframes contentShow_scale {
   from {
     opacity: 0;
     transform: scale(0.96);
@@ -453,7 +519,7 @@ svg {
     transform: scale(1);
   }
 }
-@keyframes exports__contentHide {
+@keyframes contentHide_scale {
   from {
     opacity: 1;
     transform: scale(1);
