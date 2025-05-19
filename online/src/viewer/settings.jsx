@@ -29,7 +29,7 @@ export const Settings = (props) =>
                 </Switch.Control>
               </Switch>
               <Show when={props.showOutlines}>
-                <Switch class="switch" checked={state.camera.outlines} onChange={toggleOutlines}>
+                <Switch class="switch" checked={state.outlines} onChange={toggleOutlines}>
                   <Switch.Label class="switch__label">Outlines</Switch.Label>
                   <Switch.Input class="switch__input" />
                   <Switch.Control class="switch__control">
