@@ -8,6 +8,8 @@ import DialogActions from "@suid/material/DialogActions"
 import Button from "@suid/material/Button";
 import IconButton from '@suid/material/IconButton';
 import CameraswitchIcon from '@suid/icons-material/Cameraswitch';
+import TextField from "@suid/material/TextField";
+import Stack from "@suid/material/Stack";
 import { Tooltip } from '../../framework/tooltip.jsx'
 
 import { useViewer } from "../../../viewer/context/viewer.jsx";
@@ -16,7 +18,6 @@ import { SceneCanvas } from "../../../viewer/scenecanvas.jsx";
 import { CameraProvider } from "../../../viewer/index.jsx"
 import { SceneProvider } from "../../../viewer/context/scene.jsx"
 import { useCamera } from "../../../viewer/context/camera.jsx"
-import { Stack } from "@suid/material"
 
 const AddSceneButton = () =>
 {
@@ -140,7 +141,7 @@ const ScenesDialog = props =>
                         onClick={ () => { setSceneIndex( i() ); setReload( true ); console.log( scene.content );
                          } }>
                       <span>{i()}</span>
-                      <span>{scene.title}</span>
+                      <span class="scene-title">{scene.title}</span>
                       <UseCameraButton index={ i() } />
                     </div>
                   }</For>
@@ -157,13 +158,23 @@ const ScenesDialog = props =>
                 </div>
               </Stack>
             </div>
-            <div class='relative-h100'>
-              <div class='absolute-0'>
-                <SceneProvider name={ `#${sceneIndex()}` }
-                      config={{ preview: true, debug: false, labels: props.config?.labels, source: false }}>
-                  <SceneCanvas height="100%" width="100%" />
-                </SceneProvider>
-                <SaveCameraButton/>
+            <div class="scene-details">
+              <div class='relative-h100'>
+                <div class='absolute-0'>
+                  <SceneProvider name={ `#${sceneIndex()}` }
+                        config={{ preview: true, debug: false, labels: props.config?.labels, source: false }}>
+                    <SceneCanvas height="100%" width="100%" />
+                  </SceneProvider>
+                  <SaveCameraButton/>
+                </div>
+              </div>
+              <div class="scene-text">
+                {/* <TextField id="scene-title" label="Title" multiline rows={3}
+                  value={ scenes[ sceneIndex() ]?.title } onChange={ (event, value) => {} }
+                /> */}
+                <TextField id="scene-description" label="Notes" multiline rows={2}
+                  value={ scenes[ sceneIndex() ]?.content } onChange={ (event, value) => {} }
+                />
               </div>
             </div>
           </div>

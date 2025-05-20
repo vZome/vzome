@@ -177,6 +177,12 @@ button:disabled > .toolbar-image {
   inset: 0;
 }
 
+.scene-title {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 .scene-actions {
   border-block-start: 1px solid gray;
   padding-block-start: 10px;
@@ -188,7 +194,8 @@ button:disabled > .toolbar-image {
   padding: 0.5rem;
   margin: 0.4rem;
   display: grid;
-  grid-template-columns: 15% 85%;
+  gap: 4px;
+  grid-template-columns: 1.5rem 5fr 1fr;
 }
 .scenes-entry:hover {
   background-color: aliceblue;
@@ -744,3 +751,14 @@ button:disabled > .toolbar-image {
 .parts-count {
   font-weight: normal;
 }
+
+.scene-details {
+  display: grid;
+  grid-template-rows: 1fr min-content;
+}
+
+.scene-text {
+  display: grid;
+  padding-block-start: 13px;
+}
+
