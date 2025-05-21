@@ -1,4 +1,5 @@
 
+import { onCleanup, onMount } from "solid-js"
 import { unwrap } from "solid-js/store"
 
 import DialogContent from "@suid/material/DialogContent"
@@ -8,6 +9,8 @@ import DialogActions from "@suid/material/DialogActions"
 import Button from "@suid/material/Button";
 import IconButton from '@suid/material/IconButton';
 import CameraswitchIcon from '@suid/icons-material/Cameraswitch';
+import TextField from "@suid/material/TextField";
+import Stack from "@suid/material/Stack";
 import { Tooltip } from '../../framework/tooltip.jsx'
 
 import { useViewer } from "../../../viewer/context/viewer.jsx";
@@ -16,7 +19,6 @@ import { SceneCanvas } from "../../../viewer/scenecanvas.jsx";
 import { CameraProvider } from "../../../viewer/index.jsx"
 import { SceneProvider } from "../../../viewer/context/scene.jsx"
 import { useCamera } from "../../../viewer/context/camera.jsx"
-import { Stack } from "@suid/material"
 
 const AddSceneButton = () =>
 {
@@ -27,7 +29,7 @@ const AddSceneButton = () =>
     {
       const params = { after: sceneIndex(), camera: unwrap( camera ) };
       controllerAction( rootController(), 'duplicateScene', params );
-      setSceneIndex( i => ++i );
+      setSceneIndex( i => ++i ); // should really wait until the scene is added... currently causing warning for the notes field
     }
   
   return (
@@ -119,11 +121,47 @@ const SaveCameraButton = () =>
     </Tooltip>
   );
 }
+
+const ScenesList = () =>
+{
+  const { scenes } = useViewer();
+  const { sceneIndex, setSceneIndex, setReload } = useEditor();
+  const arrowKeyListener = (evt) =>
+  {
+    if ( ( sceneIndex() > 1 ) && (( evt.code === "ArrowUp" ) || ( evt.code === "ArrowLeft" ) )) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      setSceneIndex( i => --i );
+      setReload( true );
+    } else if ( ( sceneIndex() < scenes.length - 1 ) && (( evt.code === "ArrowDown" ) || ( evt.code === "ArrowRight" ) )) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      setSceneIndex( i => ++i );
+      setReload( true );
+    }
+  }
+  onMount(   () => document .body .addEventListener(    "keydown", arrowKeyListener ) );
+  onCleanup( () => document .body .removeEventListener( "keydown", arrowKeyListener ) );
+
+  return (
+    <div class='scenes-list'>
+      <For each={ scenes } >{ (scene,i) =>
+        (i() > 0) &&
+        <div class={ i()===sceneIndex()? 'scenes-entry scenes-selected' : 'scenes-entry' } style={{ position: 'relative' }}
+            onClick={ () => { setSceneIndex( i() ); setReload( true ); } }>
+          <span>{i()}</span>
+          <span class="scene-title">{scene.title}</span>
+          <UseCameraButton index={ i() } />
+        </div>
+      }</For>
+    </div>
+  );
+}
     
 const ScenesDialog = props =>
 {
   const { scenes } = useViewer();
-  const { sceneIndex, setSceneIndex, setReload } = useEditor();
+  const { sceneIndex } = useEditor();
 
   return (
     <CameraProvider>
@@ -133,18 +171,7 @@ const ScenesDialog = props =>
           <div class='scenes-dialog-content'>
             <div class='scenes-list-outer'>
               <div class='scenes-scroller'>
-                <div class='scenes-list'>
-                  <For each={ scenes } >{ (scene,i) =>
-                    (i() > 0) &&
-                    <div class={ i()===sceneIndex()? 'scenes-entry scenes-selected' : 'scenes-entry' } style={{ position: 'relative' }}
-                        onClick={ () => { setSceneIndex( i() ); setReload( true ); console.log( scene.content );
-                         } }>
-                      <span>{i()}</span>
-                      <span>{scene.title}</span>
-                      <UseCameraButton index={ i() } />
-                    </div>
-                  }</For>
-                </div>
+                <ScenesList/>
               </div>
               <Stack class='scene-actions'>
                 <div>
@@ -157,13 +184,23 @@ const ScenesDialog = props =>
                 </div>
               </Stack>
             </div>
-            <div class='relative-h100'>
-              <div class='absolute-0'>
-                <SceneProvider name={ `#${sceneIndex()}` }
-                      config={{ preview: true, debug: false, labels: props.config?.labels, source: false }}>
-                  <SceneCanvas height="100%" width="100%" />
-                </SceneProvider>
-                <SaveCameraButton/>
+            <div class="scene-details">
+              <div class='relative-h100'>
+                <div class='absolute-0'>
+                  <SceneProvider name={ `#${sceneIndex()}` }
+                        config={{ preview: true, debug: false, labels: props.config?.labels, source: false }}>
+                    <SceneCanvas height="100%" width="100%" />
+                  </SceneProvider>
+                  <SaveCameraButton/>
+                </div>
+              </div>
+              <div class="scene-text">
+                {/* <TextField id="scene-title" label="Title" multiline rows={3}
+                  value={ scenes[ sceneIndex() ]?.title } onChange={ (event, value) => {} }
+                /> */}
+                <TextField id="scene-description" label="Notes" multiline rows={2}
+                  value={ scenes[ sceneIndex() ]?.content || ' ' } onChange={ (event, value) => {} }
+                />
               </div>
             </div>
           </div>
