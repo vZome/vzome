@@ -67,7 +67,7 @@ const ViewerProvider = ( props ) =>
 
   subscribeFor( 'SCENES_DISCOVERED', ( payload ) => {
     const newScenes = payload .map( scene => {
-      return { ...scene, title: decodeEntities( scene.title ), content: decodeEntities( scene.content ) }
+      return { ...scene, title: decodeEntities( scene.title ), content: decodeEntities( scene.content || ' ' ) }
     });
     setScenes( newScenes );
   });
