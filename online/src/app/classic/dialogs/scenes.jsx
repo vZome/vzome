@@ -1,6 +1,16 @@
 
-import { batch, createEffect, onCleanup, onMount } from "solid-js"
+import { batch, createSignal, onCleanup, onMount } from "solid-js"
 import { unwrap } from "solid-js/store"
+
+import {
+  useDragDropContext,
+  DragDropProvider,
+  DragDropSensors,
+  DragOverlay,
+  SortableProvider,
+  createSortable,
+  closestCenter,
+} from "@thisbeyond/solid-dnd";
 
 import DialogContent from "@suid/material/DialogContent"
 import Dialog from "@suid/material/Dialog"
@@ -26,6 +36,14 @@ export const insertScene = ( scenes, newScene, index ) =>
 {
   const newScenes = copyScenes( scenes );
   newScenes .splice( index, 0, newScene );
+  return newScenes;
+}
+
+const moveScene = ( scenes, fromIndex, toIndex ) =>
+{
+  const newScenes = copyScenes( scenes );
+  const movedScene = newScenes .splice( fromIndex+1, 1 )[ 0 ];
+  newScenes .splice( toIndex+1, 0, movedScene );
   return newScenes;
 }
 
@@ -74,26 +92,24 @@ const RemoveSceneButton = props =>
     );
   }
   
-const MoveSceneButton = props =>
+const DraggableScene = (props) =>
 {
-  const { scenes } = useViewer();
-  const { rootController, controllerAction, sceneIndex, setSceneIndex } = useEditor();
-
-  const atLimit = () =>
-  {
-    const target = sceneIndex() + props.change;
-    return ( target === 0 ) || ( target >= scenes.length );
-  }
-  
-  const moveScene = () =>
-  {
-    const params = { index: sceneIndex(), change: props.change };
-    controllerAction( rootController(), 'moveScene', params );
-    setSceneIndex( i => i + props.change );
-  }
-  
+  const { sceneIndex, setSceneIndex, setReload } = useEditor();
+  const sortable = createSortable(props.item);
+  const [state] = useDragDropContext();
   return (
-    <Button variant="outlined" size="medium" onClick={moveScene} disabled={atLimit()}>{props.label}</Button>
+    <div use:sortable
+        class={ props.item===sceneIndex()? 'scenes-entry scenes-selected' : 'scenes-entry' }
+        style={{ position: 'relative' }}
+        classList={{
+          "opacity-25": sortable.isActiveDraggable,
+          "transition-transform": !!state.active.draggable,
+        }}
+        onClick={ () => { setSceneIndex( props.item ); setReload( true ); } } >
+      <span>{props.item}</span>
+      <span class="scene-title">{props.scene.title}</span>
+          <UseCameraButton index={ props.item } />
+    </div>
   );
 }
 
@@ -121,14 +137,14 @@ const UseCameraButton = props =>
 
 const SaveCameraButton = () =>
 {
-  const { rootController, controllerAction, sceneIndex, setReload } = useEditor();
+  const { sceneIndex } = useEditor();
   const { state: { camera } } = useCamera();
+  const { setScenes } = useViewer();
 
   const handleSaveCamera = (evt) =>
   {
     evt.stopPropagation();
-    const params = { index: sceneIndex(), camera: unwrap( camera ) };
-    controllerAction( rootController(), 'updateScene', params );
+    setScenes( sceneIndex(), 'camera', unwrap( camera ) );
   }
     
   return (
@@ -143,7 +159,8 @@ const SaveCameraButton = () =>
 
 const ScenesList = () =>
 {
-  const { scenes } = useViewer();
+  const { scenes, setScenes } = useViewer();
+  const trueScenes = () => scenes .slice( 1 ); // ignore the default scene
   const { sceneIndex, setSceneIndex, setReload } = useEditor();
   const arrowKeyListener = (evt) =>
   {
@@ -169,24 +186,56 @@ const ScenesList = () =>
       } );
   }
 
+  const [draggedScene, setDraggedScene] = createSignal(null);
+  const ids = () => trueScenes() .map( ( scene, i ) => i + 1 );
+
+  const onDragStart = ({ draggable }) =>
+  {
+    setDraggedScene(draggable.id);
+  }
+
+  const onDragEnd = ({ draggable, droppable }) => {
+    if (draggable && droppable) {
+      const currentItems = ids();
+      const fromIndex = currentItems .indexOf( draggable.id );
+      const toIndex = currentItems .indexOf( droppable.id );
+      if (fromIndex !== toIndex) {
+        batch( () => {
+          setScenes( scenes => moveScene( scenes, fromIndex, toIndex ) );
+          setSceneIndex( toIndex + 1 );
+          setReload( true );
+        } );
+      }
+    }
+  };
+
   return (
     <div class='scenes-list'>
-      <For each={ scenes.slice(1) } >{ (scene,i) =>
-        <div class={ (i()+1)===sceneIndex()? 'scenes-entry scenes-selected' : 'scenes-entry' } style={{ position: 'relative' }}
-            onClick={ clickHandler( i()+1 ) }>
-          <span>{ i()+1 }</span>
-          <span class="scene-title">{scene.title}</span>
-          <UseCameraButton index={ i()+1 } />
+      <DragDropProvider
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        collisionDetector={closestCenter}
+      >
+        <DragDropSensors />
+        <div class='scenes-list'>
+          <SortableProvider ids={ids()}>
+            <For each={ trueScenes() } >{ (scene,i) =>
+              <DraggableScene scene={scene} item={i()+1} />
+            }</For>
+          </SortableProvider>
         </div>
-      }</For>
+        <DragOverlay>
+          <div class="scenes-entry">{draggedScene()}</div>
+        </DragOverlay>
+      </DragDropProvider>
     </div>
   );
 }
     
 const ScenesDialog = props =>
 {
-  const { scenes } = useViewer();
   const { sceneIndex } = useEditor();
+  const { scenes } = useViewer();
 
   return (
     <CameraProvider>
@@ -202,10 +251,6 @@ const ScenesDialog = props =>
                 <div>
                   <AddSceneButton/>
                   <RemoveSceneButton/>
-                </div>
-                <div>
-                  <MoveSceneButton change={-1} label='Move Up' />
-                  <MoveSceneButton change={1} label='Move Down' />
                 </div>
               </Stack>
             </div>
