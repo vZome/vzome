@@ -49,7 +49,7 @@ const moveScene = ( scenes, fromIndex, toIndex ) =>
 
 const AddSceneButton = () =>
 {
-  const { sceneIndex, setSceneIndex } = useEditor();
+  const { sceneIndex, setSceneIndex, setEdited } = useEditor();
   const { state: { camera } } = useCamera();
   const { scenes, setScenes } = useViewer();
 
@@ -59,6 +59,7 @@ const AddSceneButton = () =>
       batch( () => {
         setScenes( scenes => insertScene( scenes, newScene, sceneIndex() + 1 ) );
         setSceneIndex( i => ++i );
+        setEdited( true );
       });
     }
   
@@ -84,6 +85,7 @@ const RemoveSceneButton = props =>
           if ( index === scenes.length )
             setSceneIndex( scenes.length - 1 );
           setReload( true );
+          setEdited( true );
         });
       }
     
@@ -137,7 +139,7 @@ const UseCameraButton = props =>
 
 const SaveCameraButton = () =>
 {
-  const { sceneIndex } = useEditor();
+  const { sceneIndex, setEdited } = useEditor();
   const { state: { camera } } = useCamera();
   const { setScenes } = useViewer();
 
@@ -145,6 +147,7 @@ const SaveCameraButton = () =>
   {
     evt.stopPropagation();
     setScenes( sceneIndex(), 'camera', unwrap( camera ) );
+    setEdited( true );
   }
     
   return (
@@ -161,7 +164,7 @@ const ScenesList = () =>
 {
   const { scenes, setScenes } = useViewer();
   const trueScenes = () => scenes .slice( 1 ); // ignore the default scene
-  const { sceneIndex, setSceneIndex, setReload } = useEditor();
+  const { sceneIndex, setSceneIndex, setReload, setEdited } = useEditor();
   const arrowKeyListener = (evt) =>
   {
     if ( ( sceneIndex() > 1 ) && (( evt.code === "ArrowUp" ) || ( evt.code === "ArrowLeft" ) )) {
@@ -204,6 +207,7 @@ const ScenesList = () =>
           setScenes( scenes => moveScene( scenes, fromIndex, toIndex ) );
           setSceneIndex( toIndex + 1 );
           setReload( true );
+          setEdited( true );
         } );
       }
     }

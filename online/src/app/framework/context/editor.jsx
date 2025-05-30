@@ -37,6 +37,12 @@ const EditorProvider = props =>
   const [ sceneIndex, setSceneIndex ] = createSignal( 0 );
   const [ reload, setReload ] = createSignal( false );
 
+  const [ clientStateEdited, setEdited ] = createSignal( false );
+
+  const workerStateEdited = () => controllerProperty( rootController(), 'edited' ) === 'true';
+
+  const edited = () => workerStateEdited() || clientStateEdited();
+
   const [ showGuardrail, setShowGuardrail ] = createSignal( false );
   let continuation;
   const guard = guardedAction =>
@@ -202,8 +208,6 @@ const EditorProvider = props =>
   }
 
   const indexResources = () => workerClient .postMessage( { type: 'WINDOW_LOCATION', payload: window.location.toString() } );
-
-  const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
   
   const shareToGitHub = ( target, blog, publish ) =>
   {
@@ -256,7 +260,7 @@ const EditorProvider = props =>
   
   const providerValue = {
     ...store,
-    guard, edited,
+    guard, edited, setEdited,
     rootController,
     indexResources,
     controllerAction,
