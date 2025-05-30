@@ -184,8 +184,10 @@ button:disabled > .toolbar-image {
 }
 
 .scene-actions {
-  border-block-start: 1px solid gray;
-  padding-block-start: 10px;
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  gap: 8px;
 }
 
 .scenes-entry {

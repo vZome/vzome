@@ -64,13 +64,17 @@ const AddSceneButton = () =>
     }
   
   return (
-    <Button variant="outlined" size="medium" onClick={addScene}>Add Scene</Button>
+    <Tooltip title='Capture a new scene with this camera' aria-label="add-scene-tip">
+      <Button variant="outlined" size="medium" onClick={addScene} >
+        Capture Scene
+      </Button>
+    </Tooltip>
   );
 }
 
 const RemoveSceneButton = props =>
   {
-    const { sceneIndex, setSceneIndex, setReload } = useEditor();
+    const { sceneIndex, setSceneIndex, setReload, setEdited } = useEditor();
     const { scenes, setScenes } = useViewer();
 
     const removeScene = () =>
@@ -90,7 +94,11 @@ const RemoveSceneButton = props =>
       }
     
     return (
-      <Button variant="outlined" size="medium" onClick={removeScene}>Remove Scene</Button>
+      <Tooltip title='Delete this scene' aria-label="delete-scene-tip">
+        <Button variant="outlined" size="medium" onClick={removeScene} >
+          Delete Scene
+        </Button>
+      </Tooltip>
     );
   }
   
@@ -128,7 +136,7 @@ const UseCameraButton = props =>
   }
   
   return (
-    <Tooltip title='Use this camera' aria-label="camera-tip">
+    <Tooltip title='Use this camera' aria-label="use-camera-tip">
       <IconButton color="primary" aria-label="camera" sx={{ position: 'absolute', bottom: '0px', right: '0px' }}
           onClick={ (e) => handleUseCamera( e, props.index ) }>
         <CameraswitchIcon fontSize="small"/>
@@ -151,11 +159,10 @@ const SaveCameraButton = () =>
   }
     
   return (
-    <Tooltip title='Save this camera to the scene' aria-label="camera-tip">
-      <IconButton color="primary" aria-label="camera" sx={{ position: 'absolute', top: '0px', left: '0px' }}
-          onClick={ (e) => handleSaveCamera( e ) }>
-        <CameraswitchIcon fontSize="large"/>
-      </IconButton>
+    <Tooltip title='Save this camera to the current scene' aria-label="save-camera-tip">
+      <Button variant="outlined" size="medium" onClick={ (e) => handleSaveCamera( e ) } >
+        Save Camera
+      </Button>
     </Tooltip>
   );
 }
@@ -251,12 +258,6 @@ const ScenesDialog = props =>
               <div class='scenes-scroller'>
                 <ScenesList/>
               </div>
-              <Stack class='scene-actions'>
-                <div>
-                  <AddSceneButton/>
-                  <RemoveSceneButton/>
-                </div>
-              </Stack>
             </div>
             <div class="scene-details">
               <div class='relative-h100'>
@@ -265,7 +266,11 @@ const ScenesDialog = props =>
                         config={{ preview: true, debug: false, labels: props.config?.labels, source: false }}>
                     <SceneCanvas height="100%" width="100%" />
                   </SceneProvider>
-                  <SaveCameraButton/>
+                  <Stack class='scene-actions'>
+                    <SaveCameraButton/>
+                    <AddSceneButton/>
+                    <RemoveSceneButton/>
+                  </Stack>
                 </div>
               </div>
               <div class="scene-text">
