@@ -6,6 +6,7 @@ import { controllerExportAction, subController, useEditor } from "../../framewor
 import { useCamera } from "../../../viewer/context/camera.jsx";
 import { useSymmetry } from './symmetry.jsx';
 import { saveTextFileAs, saveTextFile } from "../../../viewer/util/files.js";
+import { useViewer } from "../../../viewer/context/viewer.jsx";
 
 let menuKeyEventsSuspended = false;
 
@@ -19,6 +20,7 @@ export const CommandsProvider = props =>
   const { rootController, controllerAction, state, setState } = useEditor();
   const { showPolytopesDialog, symmetryController } = useSymmetry();
   const { state: cameraState } = useCamera();
+  const { scenes } = useViewer();
   const globalAction   = action => () => controllerAction( rootController(), action );
   const undoRedoAction = action => () => controllerAction( subController( rootController(), 'undoRedo' ), action );
   const symmetryAction = ( symm, action ) => () => controllerAction( subController( rootController(), `symmetry.${symm}` ), action );
@@ -27,7 +29,7 @@ export const CommandsProvider = props =>
   {
     let name;
     const { camera, lighting } = unwrap( cameraState );
-    controllerExportAction( rootController(), 'vZome', { camera, lighting } )
+    controllerExportAction( rootController(), 'vZome', { camera, lighting, scenes: unwrap( scenes ) } )
       .then( text => {
         name = state?.designName || 'untitled';
         const mimeType = 'application/xml';

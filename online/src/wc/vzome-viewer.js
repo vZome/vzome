@@ -174,14 +174,14 @@ class VZomeViewer extends HTMLElement
             scene = { index: this.#sceneIndex, title: this.#sceneTitles[ this.#sceneIndex ] };
           this .dispatchEvent( new CustomEvent( 'vzome-design-rendered', { detail: scene } ) );
         } );
-        this.#viewerClient.subscribeFor( 'SCENES_DISCOVERED', ( payload ) => {
-          this.#sceneIndices = payload .map( (scene,i) => `#${i}` ) .slice( 1 ); // strip the default scene
-          this.#sceneTitles = payload .map( (scene,i) => scene.title ? decodeEntities( scene.title ) : `#${i}` );
+        this.#viewerClient.subscribeFor( 'SCENES_DISCOVERED', ( { scenes } ) => {
+          this.#sceneIndices = scenes .map( (scene,i) => `#${i}` ) .slice( 1 ); // strip the default scene
+          this.#sceneTitles = scenes .map( (scene,i) => scene.title ? decodeEntities( scene.title ) : `#${i}` );
           if ( this.#indexed )
             this.#sceneTitles = this.#sceneTitles .slice( 1 );
           this .dispatchEvent( new CustomEvent( 'vzome-scenes-discovered', { detail: this.#sceneTitles } ) );
 
-          this .dispatchEvent( new CustomEvent( 'vzome-scenes', { detail: payload .slice( 1 ) } ) );
+          this .dispatchEvent( new CustomEvent( 'vzome-scenes', { detail: scenes .slice( 1 ) } ) );
         } );
   
 

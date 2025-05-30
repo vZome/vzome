@@ -19,8 +19,7 @@ import { CommandsProvider } from './context/commands.jsx';
 
 const Persistence = () =>
 {
-  const { state, rootController } = useEditor();
-  const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
+  const { state, edited } = useEditor();
   return (
     <div class='persistence' >
       <Show when={state?.designName} >

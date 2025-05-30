@@ -17,28 +17,15 @@ const IDENTITY_MATRIX = [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1];
 
 export const DEFAULT_SNAPSHOT = -1;
 
-// Normalize legacy scenes to match preview scenes
-const prepareDefaultScene = design =>
-{
-  const camera = design.rendered.camera;
-  design.rendered.scenes .splice( 0, 0, { title: 'default scene', camera, snapshot: DEFAULT_SNAPSHOT } );
-}
-
 // Take a normalized scene and prepare it to send to the client, by
 //   resolving the shapes and snapshot
 // TODO: change the client contract to avoid sending shapes and rotation matrices all the time!
-const prepareSceneResponse = ( design, sceneIndex ) =>
+const prepareSceneResponse = ( design, snapshot ) =>
 {
-  let scene = { ...design.rendered.scenes[ sceneIndex ] };
-  if ( typeof scene.snapshot === "undefined" ) {
-    console.log( `warning: no scene with index ${sceneIndex}` );
-    scene = { ...design.rendered.scenes[ 0 ] };
-  }
-  const { title, snapshot, camera } = scene;
-  const { embedding, polygons, instances, snapshots, orientations, lighting } = design.rendered;
-  const sceneInstances = ( snapshot === DEFAULT_SNAPSHOT )? instances : snapshots[ snapshot ];
+  const { embedding, polygons, snapshots, orientations, instances } = design.rendered;
+  const snapshotInstances = ( snapshot === DEFAULT_SNAPSHOT )? instances : snapshots[ snapshot ];
   const shapes = {};
-  for ( const instance of sceneInstances ) {
+  for ( const instance of snapshotInstances ) {
     const rotation = [ ...( orientations[ instance.orientation ] || IDENTITY_MATRIX ) ];
     if ( ! shapes[ instance.shapeId ] ) {
       shapes[ instance.shapeId ] = { ...design.rendered.shapes[ instance.shapeId ], instances: [] };
@@ -46,65 +33,32 @@ const prepareSceneResponse = ( design, sceneIndex ) =>
     shapes[ instance.shapeId ].instances.push( { ...instance, rotation } );
   }
   const parts = createPartsList( shapes, design.wrapper?.controller?.symmController );
-  return { title, shapes, camera, lighting, embedding, polygons, parts };
+  return { shapes, embedding, polygons, parts };
 }
 
 const prepareEditSceneResponse = ( design, edit, before ) =>
-  {
-    let sceneInstances = design.wrapper .getScene( edit, before );
-
-    if ( ! sceneInstances ) {
-      // debugging, so we have to interpret more
-      edit = design.wrapper .interpretToBreakpoint( edit, before );
-      sceneInstances = design.wrapper .getScene( edit, before );
-    }
-
-    sceneInstances = { ...sceneInstances }; 
-    const { polygons, orientations } = design.rendered;
-    const shapes = {};
-    for ( const instance of Object.values( sceneInstances ) ) {
-      const rotation = [ ...( orientations[ instance.orientation ] || IDENTITY_MATRIX ) ];
-      if ( ! shapes[ instance.shapeId ] ) {
-        shapes[ instance.shapeId ] = { ...design.rendered.shapes[ instance.shapeId ], instances: [] };
-      }
-      shapes[ instance.shapeId ].instances.push( { ...instance, rotation } );
-    }
-    return { scene: { shapes, polygons }, edit };
-  }
-  
-const filterScene = ( report, load ) => event =>
 {
-  const { type, payload } = event;
-  if ( type === 'SCENE_RENDERED' ) {
-    const { camera, lighting, shapes, embedding, polygons } = payload.scene;
-    event.payload.scene = { shapes, embedding, polygons };
-    if ( load.camera )   event.payload.scene.camera   = camera;
-    if ( load.lighting ) event.payload.scene.lighting = lighting;
+  let sceneInstances = design.wrapper .getScene( edit, before );
+
+  if ( ! sceneInstances ) {
+    // debugging, so we have to interpret more
+    edit = design.wrapper .interpretToBreakpoint( edit, before );
+    sceneInstances = design.wrapper .getScene( edit, before );
   }
-  report( event );
+
+  sceneInstances = { ...sceneInstances }; 
+  const { polygons, orientations } = design.rendered;
+  const shapes = {};
+  for ( const instance of Object.values( sceneInstances ) ) {
+    const rotation = [ ...( orientations[ instance.orientation ] || IDENTITY_MATRIX ) ];
+    if ( ! shapes[ instance.shapeId ] ) {
+      shapes[ instance.shapeId ] = { ...design.rendered.shapes[ instance.shapeId ], instances: [] };
+    }
+    shapes[ instance.shapeId ].instances.push( { ...instance, rotation } );
+  }
+  return { scene: { shapes, polygons }, edit };
 }
 
-const getSceneIndex = ( title, list ) =>
-{
-  if ( !title )
-    return 0;
-  let index;
-  if ( title.startsWith( '#' ) ) {
-    const indexStr = title.substring( 1 );
-    index = parseInt( indexStr );
-    if ( isNaN( index ) || index < 0 || index > list.length ) {
-      console.log( `WARNING: ${index} is not a scene index` );
-      index = 0;
-    }
-  } else {
-    index = list .map( s => s.title ) .indexOf( title );
-    if ( index < 0 ) {
-      console.log( `WARNING: no scene titled "${title}"` );
-      index = 0;
-    }
-  }
-  return index;
-}
 const fetchUrlText = async ( url ) =>
 {
   let response;
@@ -166,20 +120,22 @@ const clientEvents = report =>
 
   const scenesDiscovered = s => report( { type: 'SCENES_DISCOVERED', payload: s } );
 
+  const snapshotCaptured = s => report( { type: 'SNAPSHOT_CAPTURED', payload: s } );
+
   const textExported = ( action, text ) => report( { type: 'TEXT_EXPORTED', payload: { action, text } } ) ;
 
   const buildPlaneSelected = ( center, diskZone, hingeZone ) => report( { type: 'PLANE_CHANGED', payload: { center, diskZone, hingeZone } } );
 
   return { sceneChanged, shapeDefined, instanceAdded, instanceRemoved, selectionToggled, symmetryChanged, latestBallAdded,
-    xmlParsed, scenesDiscovered, propertyChanged, errorReported, textExported, buildPlaneSelected, };
+    xmlParsed, scenesDiscovered, snapshotCaptured, propertyChanged, errorReported, textExported, buildPlaneSelected, };
 }
 
-const trackballScenes = {};
+const trackballs = {};
 
 const fetchTrackballScene = ( url, report, polygons ) =>
 {
   const reportTrackballScene = scene => report( { type: 'TRACKBALL_SCENE_LOADED', payload: scene } );
-  const cachedScene = trackballScenes[ url ];
+  const cachedScene = trackballs[ url ];
   if ( !!cachedScene ) {
     reportTrackballScene( cachedScene );
     return;
@@ -187,9 +143,8 @@ const fetchTrackballScene = ( url, report, polygons ) =>
   Promise.all( [ importLegacy(), fetchUrlText( new URL( `/app/classic/resources/${url}`, baseURL ) ) ] )
     .then( async ([ legacy, xml ]) => {
       const trackballDesign = await legacy .loadDesign( xml, false, polygons, clientEvents( ()=>{} ) );
-      prepareDefaultScene( trackballDesign );
-      const scene = prepareSceneResponse( trackballDesign, 0 ); // takes a normalized scene
-      trackballScenes[ url ] = scene;
+      const scene = prepareSceneResponse( trackballDesign, DEFAULT_SNAPSHOT );
+      trackballs[ url ] = scene;
       reportTrackballScene( scene );
     } );
 }
@@ -212,7 +167,6 @@ const createDesign = async ( report, fieldName ) =>
     const legacy = await importLegacy();
     design = await legacy .newDesign( fieldName, clientEvents( report ) );
     report({ type: 'CONTROLLER_CREATED' }); // do we really need this for previewing?
-    prepareDefaultScene( design );
     reportDefaultScene( report );
   } catch (error) {
     console.log(`createDesign failure: ${error.message}`);
@@ -221,7 +175,7 @@ const createDesign = async ( report, fieldName ) =>
   }
 }
 
-const openDesign = async ( xmlLoading, name, report, debug, polygons, sceneTitle ) =>
+const openDesign = async ( xmlLoading, name, report, debug, polygons, shapshot=DEFAULT_SNAPSHOT ) =>
 {
   const events = clientEvents( report );
   return Promise.all( [ importLegacy(), xmlLoading ] )
@@ -234,13 +188,8 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, sceneTitle
       const doLoad = async () => {
         design = await legacy .loadDesign( xml, debug, polygons, events );
         report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
-        prepareDefaultScene( design );
 
-        // TODO: don't duplicate this in urlLoader()
-        const sceneIndex = sceneTitle? getSceneIndex( sceneTitle, design.rendered.scenes ) : 0;
-        if ( design.rendered.scenes.length >= 2 )
-          events .scenesDiscovered( design.rendered.scenes );
-        events .sceneChanged( prepareSceneResponse( design, sceneIndex ) );
+        events .sceneChanged( prepareSceneResponse( design, shapshot ) );
 
         report( { type: 'TEXT_FETCHED', payload: { text: xml, name } } ); // NOW it is safe to send the name
       }
@@ -270,9 +219,9 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, sceneTitle
      } );
 }
 
-const exportPreview = ( camera, lighting ) =>
+const exportPreview = ( camera, lighting, scenes ) =>
 {
-  const { scenes, snapshots: allShapshots, ...rest } = design.rendered;
+  const { snapshots: allShapshots, ...rest } = design.rendered;
   const usedInScene = snapshot => scenes .some( scene => Number(scene.snapshot) === snapshot );
   const snapshots = allShapshots .map( ( snapshot, i ) => usedInScene( i )? snapshot : [] );
   scenes[ 0 ] .camera = camera;
@@ -284,11 +233,11 @@ const shareToGitHub = async ( target, config, data, report ) =>
 {
   const { orgName, repoName, branchName } = target;
   const { title, description, blog, publish, style, originalDate } = config;
-  const { name, camera, lighting, image } = data;
-  const preview = exportPreview( camera, lighting );
+  const { name, camera, lighting, image, scenes } = data;
+  const preview = exportPreview( camera, lighting, scenes );
   importLegacy()
     .then( module => {
-      const xml = design.wrapper .serializeVZomeXml( lighting, camera );
+      const xml = design.wrapper .serializeVZomeXml( lighting, camera, scenes );
       const creation = ( originalDate || new Date() ) .toISOString();
       const date = creation .substring( 0, 10 );
       const time = creation .substring( 11 ) .replaceAll( ':', '-' ) .replaceAll( '.', '-' );
@@ -359,12 +308,12 @@ const fileImporter = ( report, payload ) =>
     } )
 }
 
-const defaultLoad = { camera: true, lighting: true, design: true, bom: false, };
+const defaultLoad = { design: true, bom: false, };
 
 const urlLoader = async ( report, payload ) =>
 {
   const { url, config } = payload;
-  const { preview=false, debug=false, polygons=true, showScenes='none', sceneTitle, load=defaultLoad, source=true } = config;
+  const { preview=false, debug=false, polygons=true, showScenes='none', snapshot=DEFAULT_SNAPSHOT, load=defaultLoad, source=true } = config;
   if ( !url ) {
     throw new Error( "No url field in URL_PROVIDED event payload" );
   }
@@ -375,46 +324,43 @@ const urlLoader = async ( report, payload ) =>
   const xmlLoading = source && fetchUrlText( url );
   source && xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { text, url } } ) ); // Don't send the name yet, parse/interpret may fail
 
-  report = filterScene( report, load );
+  const events = clientEvents( report );
   if ( preview ) {
     // The client prefers to show a preview if possible.
     const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
     return fetchUrlText( previewUrl )
       .then( text => JSON.parse( text ) )
       .then( preview => {
-        design.rendered = ( preview.format === 'online' )? preview : normalizePreview( preview ); // .shapes.json can hold two formats: legacy (the default) or online
+        // .shapes.json can hold two formats: legacy (the default) or online
+        const { lighting, scenes, ...rendered } = ( preview.format === 'online' )? preview : normalizePreview( preview );
+        events .scenesDiscovered( { lighting, scenes } ); // send to client, where the state will be managed
+        design.rendered = { ...rendered };
 
-        if ( ( showScenes !== 'none' || sceneTitle ) && design.rendered.scenes.length < 2 ) {
+        if ( ( showScenes !== 'none' || snapshot >= 0 ) && design.rendered.snapshots.length === 0 ) {
           // The client expects scenes, but this preview JSON predates the scenes export,
           //  so fall back on XML.
-          console.log( `No scenes in preview ${previewUrl}` );
+          console.log( `No snapshots in preview ${previewUrl}` );
           console.log( 'Preview failed, falling back to vZome XML' );
-          openDesign( xmlLoading, name, report, debug, polygons, sceneTitle );
+          openDesign( xmlLoading, name, report, debug, polygons, snapshot );
           return;
         }
 
-        // TODO: don't duplicate this in openDesign()
-        const sceneIndex = getSceneIndex( sceneTitle, design.rendered.scenes );
-        const events = clientEvents( report );
-        if ( design.rendered.scenes.length >= 2 )
-          events .scenesDiscovered( design.rendered.scenes );
-        events .sceneChanged( prepareSceneResponse( design, sceneIndex ) );
+        events .sceneChanged( prepareSceneResponse( design, snapshot ) );
       } )
       .catch( error => {
         console.log( error.message );
         console.log( 'Preview failed, falling back to vZome XML' );
-        openDesign( xmlLoading, name, report, debug, polygons, sceneTitle );
+        openDesign( xmlLoading, name, report, debug, polygons, snapshot );
       } )
   }
   else {
-    openDesign( xmlLoading, name, report, debug, polygons, sceneTitle );
+    openDesign( xmlLoading, name, report, debug, polygons, snapshot );
   }
 }
 
 const reportDefaultScene = report =>
 {
-  const { shapes, embedding, parts } = prepareSceneResponse( design, 0 ); // takes a normalized scene
-  // never send camera or lighting!
+  const { shapes, embedding, parts } = prepareSceneResponse( design, DEFAULT_SNAPSHOT );
   clientEvents( report ) .sceneChanged( { shapes, embedding, polygons: true, parts } );
 
   // Now compute an updated parts list
@@ -432,11 +378,15 @@ onmessage = ({ data }) =>
     }
   }
 
-  let sendToClient = postMessage;
+  const responseLogger = message => {
+    console.dir( message );
+    postMessage( message );
+  }
+  let sendToClient = postMessage; // change to responseLogger for debugging
   if ( !! requestId ) {
     sendToClient = message => {
       message.requestId = requestId;
-      postMessage( message );
+      postMessage( message ); // change to responseLogger for debugging
     }
   }
 
@@ -470,13 +420,12 @@ onmessage = ({ data }) =>
       fileImporter( sendToClient, payload );
       break;
 
-    case 'SCENE_SELECTED': {
-      if ( !design?.rendered?.scenes )
+    case 'SNAPSHOT_SELECTED': {
+      if ( !design?.rendered?.snapshots )
         break;
-      const { title, load } = payload;
-      const index = getSceneIndex( title, design.rendered.scenes );
-      const scene = prepareSceneResponse( design, index ); // takes a normalized scene
-      filterScene( sendToClient, load )( { type: 'SCENE_RENDERED', payload: { scene } } );
+      const { snapshot } = payload;
+      const scene = prepareSceneResponse( design, snapshot );
+      sendToClient( { type: 'SCENE_RENDERED', payload: { scene } } );
       break;
     }
 
@@ -526,52 +475,12 @@ onmessage = ({ data }) =>
           shareToGitHub( target, config, data, sendToClient );
           return;
         }
-        if ( action === 'captureScene' ) {
-          if ( !design?.rendered?.scenes )
-            return;
-          const { after, camera } = parameters;
-          const { snapshots, scenes, instances } = design.rendered;
+        if ( action === 'captureSnapshot' ) {
+          const { snapshots, instances } = design.rendered;
           const snapshot = snapshots.length;
           snapshots .push( [ ...instances ] );
-          scenes .splice( after+1, 0, { title: '', snapshot, camera } );
           design.wrapper .doAction( controllerPath, 'Snapshot', { id: snapshot } ); // no-op, but the edit must be in the history
-          clientEvents( sendToClient ) .scenesDiscovered( scenes );
-          return;
-        }
-        if ( action === 'updateScene' ) {
-          if ( !design?.rendered?.scenes )
-            return;
-          const { index, camera } = parameters;
-          const { scenes } = design.rendered;
-          scenes[ index ] .camera = camera;
-          clientEvents( sendToClient ) .scenesDiscovered( scenes );
-          return;
-        }
-        if ( action === 'moveScene' ) {
-          if ( !design?.rendered?.scenes )
-            return;
-          const { index, change } = parameters;
-          const target = index + change;
-          const { scenes } = design.rendered;
-          scenes[ target ] = scenes .splice( index, 1, scenes[ target ] )[ 0 ];
-          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes );
-          return;
-        }
-        if ( action === 'duplicateScene' ) {
-          if ( !design?.rendered?.scenes )
-            return;
-          const { after, camera } = parameters;
-          const { snapshot } = design.rendered.scenes[ after ];
-          design.rendered.scenes .splice( after+1, 0, { title: '', snapshot, camera } );
-          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes );
-          return;
-        }
-        if ( action === 'removeScene' ) {
-          if ( !design?.rendered?.scenes )
-            return;
-          const { index } = parameters;
-          design.rendered.scenes .splice( index, 1 );
-          clientEvents( sendToClient ) .scenesDiscovered( design.rendered.scenes );
+          clientEvents( sendToClient ) .snapshotCaptured( snapshot );
           return;
         }
         if ( action === 'snapCamera' ) {
@@ -582,14 +491,14 @@ onmessage = ({ data }) =>
           return;
         }
         if ( action === 'exportText' && parameters.format === 'shapes' ) {
-          const { camera, lighting } = parameters;
-          const preview = exportPreview( camera, lighting );
+          const { camera, lighting, scenes } = parameters;
+          const preview = exportPreview( camera, lighting, scenes );
           clientEvents( sendToClient ) .textExported( action, preview );
           return;
         }
         if ( action === 'exportText' && parameters.format === 'vZome' ) {
-          const { camera, lighting } = parameters;
-          const xml = design.wrapper .serializeVZomeXml( lighting, camera );
+          const { camera, lighting, scenes } = parameters;
+          const xml = design.wrapper .serializeVZomeXml( lighting, camera, scenes );
           clientEvents( sendToClient ) .textExported( action, xml );
           return;
         }

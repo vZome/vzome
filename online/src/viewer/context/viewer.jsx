@@ -4,7 +4,7 @@ import { createStore, reconcile, unwrap } from "solid-js/store";
 
 import { useWorkerClient } from "./worker.jsx";
 import { useCamera } from "./camera.jsx";
-import { decodeEntities, fetchDesign, selectScene, openTextContent } from "../util/actions.js";
+import { decodeEntities, fetchDesign, selectSnapshot, openTextContent, encodeEntities } from "../util/actions.js";
 
 const ViewerContext = createContext( { scene: ()=> { console.log( 'NO ViewerProvider' ); }, problem: ()=>null } );
 
@@ -65,26 +65,23 @@ const ViewerProvider = ( props ) =>
     setScene( 'orientations', orientations );
   });
 
-  subscribeFor( 'SCENES_DISCOVERED', ( payload ) => {
-    const newScenes = payload .map( scene => {
-      return { ...scene, title: decodeEntities( scene.title ), content: decodeEntities( scene.content || ' ' ) }
-    });
+  subscribeFor( 'SCENES_DISCOVERED', ( { lighting, scenes } ) => {
+    const newScenes = scenes .map( scene => ({ ...scene, title: decodeEntities( scene.title ), content: decodeEntities( scene.content || ' ' ) }));
     setScenes( newScenes );
+    if ( !! lighting ) { // lighting only present in loaded designs
+      const { backgroundColor } = lighting;
+      setLighting( { ...state.lighting, backgroundColor } ); // no per-scene lighting yet
+    }
+    const camera = scenes[ 0 ].camera;
+    if ( !! camera ) // camera only present in loaded designs
+      tweenCamera( scenes[ 0 ].camera );
   });
 
   subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
     setWaiting( false );
-    if ( scene.lighting ) {
-      const { backgroundColor } = scene.lighting;
-      setLighting( { ...state.lighting, backgroundColor } );
-    }
     setScene( 'embedding', reconcile( scene.embedding ) );
     setScene( 'polygons', scene.polygons );
-    if ( scene.camera ) {
-      tweenCamera( scene.camera )
-        .then( () => updateShapes( scene.shapes ) );
-    } else
-      updateShapes( scene.shapes );
+    updateShapes( scene.shapes );
     // logShapes();
   } );
 
@@ -127,14 +124,47 @@ const ViewerProvider = ( props ) =>
     setProblem( problem );
     setWaiting( false );
   } );
+
+  const getSceneIndex = ( title ) =>
+    {
+      if ( !title )
+        return 0;
+      title = encodeEntities( title ); // was happening in actions.js... still necessary?
+      let index;
+      if ( title.startsWith( '#' ) ) {
+        const indexStr = title.substring( 1 );
+        index = parseInt( indexStr );
+        if ( isNaN( index ) || index < 0 || index > scenes.length ) {
+          console.log( `WARNING: ${index} is not a scene index` );
+          index = 0;
+        }
+      } else {
+        index = scenes .map( s => s.title ) .indexOf( title );
+        if ( index < 0 ) {
+          console.log( `WARNING: no scene titled "${title}"` );
+          index = 0;
+        }
+      }
+      return index;
+    }
+    
+  const requestScene = ( name, config ) =>
+  {
+    const index = getSceneIndex( name );
+    if ( index < scenes.length ) {
+      setTimeout( () => tweenCamera( scenes[ index ] .camera ) ); // This causes an effect loop if not deferred
+      postMessage( selectSnapshot( scenes[ index ] .snapshot, config ) );
+    }
+  }
   
   const providerValue = {
     scene, setScene, requestDesign, openText, scenes, source, problem, waiting, labels,
     subscribeFor,
+    setScenes,
     resetScenes: () => setScenes( [] ),
     setProblem,
     clearProblem: () => setProblem( '' ),
-    requestScene: ( name, config ) => postMessage( selectScene( name, config ) ),
+    requestScene,
     requestBOM: () => postMessage( { type: 'BOM_REQUESTED' } ),
   };
   // For the web component, this gives it access to the viewer context

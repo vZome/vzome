@@ -72,6 +72,9 @@ export const snapCamera = ( symmController, upArray, lookArray ) =>
 
 const initializeDesign = ( loading, polygons, legacyDesign, core, clientEvents ) =>
 {
+  // polygons is a configuration from the client, to distinguish between a modern client
+  //   and the legacy React-based interpreter/debugger UI.  They require different shape encodings.
+
   const { lighting, camera, scenes, snapshotNodes } = legacyDesign;
   const renderHistory = new RenderHistory( legacyDesign, polygons );                          // used for all normal rendering
   const interpreter = new Interpreter( legacyDesign, renderHistory );
@@ -106,7 +109,14 @@ const initializeDesign = ( loading, polygons, legacyDesign, core, clientEvents )
     snapshots = [];
   }
 
-  const rendered = { lighting, camera, embedding, orientations, polygons, shapes, instances, snapshots, scenes };
+  // Normalize the scenes, always including the default scene
+  scenes .splice( 0, 0, { title: 'default scene', camera, snapshot: -1 } );
+  if ( polygons ) // modern client
+    clientEvents .scenesDiscovered( { lighting, scenes } );
+  else // legacy client, the inspector UI
+    clientEvents .sceneChanged( { shapes: [], camera, lighting } ); // Just to send the camera and lighting, since they won't go otherwise
+
+  const rendered = { embedding, orientations, polygons, shapes, instances, snapshots };
   const renderedClientEvents = {
     ...clientEvents,
     symmetryChanged: details => {
@@ -132,7 +142,7 @@ const initializeDesign = ( loading, polygons, legacyDesign, core, clientEvents )
     return before? '--END--' : interpreter .getLastEdit();
   }
 
-  wrapper.serializeVZomeXml = ( camera, lighting ) => serializeVZomeXml( legacyDesign, camera, lighting, scenes );
+  wrapper.serializeVZomeXml = ( camera, lighting, scenes ) => serializeVZomeXml( legacyDesign, camera, lighting, scenes );
 
   return { wrapper, rendered };
 }

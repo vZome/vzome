@@ -39,12 +39,11 @@ export const normalizePreview = ( preview ) =>
       return instance;
     });
   }
+  const normalizedInstances = normalizeInstances( instances, "main_" );
 
   const snapshots = preview.snapshots? [ ...preview.snapshots ] .map( (snapshot,i) => {
     return normalizeInstances( snapshot, `snap${i}_` );
   }) : [];
-  snapshots .push( normalizeInstances( instances, "main_" ) );
-  const defaultSnapshot = snapshots.length-1;
 
   const normalizeShape = shape =>
   {
@@ -131,13 +130,16 @@ export const normalizePreview = ( preview ) =>
   }
     
   const camera = normalizePreviewCamera( preview.camera );
-  const defaultScene = { title: 'default scene', camera, snapshot: defaultSnapshot };
+  const defaultScene = { title: 'default scene', camera, snapshot: -1 };
   let normalizedScenes = [ defaultScene ];
   if ( preview.scenes ) {
     const scenes = preview.scenes .map( normalizePreviewScene );
     normalizedScenes = [ defaultScene, ...scenes ];
   }
 
-  return { lighting, embedding, orientations, polygons, shapes, snapshots, scenes: normalizedScenes };
+  return {
+    embedding, orientations, polygons, shapes, instances: normalizedInstances, snapshots, // worker state
+    scenes: normalizedScenes, lighting // client state
+  };
 }
 
