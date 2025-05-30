@@ -174,12 +174,12 @@ const ScenesList = () =>
   const { sceneIndex, setSceneIndex, setReload, setEdited } = useEditor();
   const arrowKeyListener = (evt) =>
   {
-    if ( ( sceneIndex() > 1 ) && (( evt.code === "ArrowUp" ) || ( evt.code === "ArrowLeft" ) )) {
+    if ( ( sceneIndex() > 1 ) && (( evt.code === "ArrowUp" ) )) {
       evt.preventDefault();
       evt.stopPropagation();
       setSceneIndex( i => --i );
       setReload( true );
-    } else if ( ( sceneIndex() < scenes.length - 1 ) && (( evt.code === "ArrowDown" ) || ( evt.code === "ArrowRight" ) )) {
+    } else if ( ( sceneIndex() < scenes.length - 1 ) && (( evt.code === "ArrowDown" ) )) {
       evt.preventDefault();
       evt.stopPropagation();
       setSceneIndex( i => ++i );
@@ -188,13 +188,6 @@ const ScenesList = () =>
   }
   onMount(   () => document .body .addEventListener(    "keydown", arrowKeyListener ) );
   onCleanup( () => document .body .removeEventListener( "keydown", arrowKeyListener ) );
-  const clickHandler = index => (evt) =>
-  {
-    batch( () => {
-      setSceneIndex( index );
-      setReload( true );
-      } );
-  }
 
   const [draggedScene, setDraggedScene] = createSignal(null);
   const ids = () => trueScenes() .map( ( scene, i ) => i + 1 );
@@ -245,8 +238,15 @@ const ScenesList = () =>
     
 const ScenesDialog = props =>
 {
-  const { sceneIndex } = useEditor();
-  const { scenes } = useViewer();
+  const { sceneIndex, setEdited } = useEditor();
+  const { scenes, setScenes } = useViewer();
+
+  const saveNotes = ( evt, value ) =>
+  {
+    evt.stopPropagation();
+    setScenes( sceneIndex(), 'content', value );
+    setEdited( true );
+  }
 
   return (
     <CameraProvider>
@@ -278,7 +278,7 @@ const ScenesDialog = props =>
                   value={ scenes[ sceneIndex() ]?.title } onChange={ (event, value) => {} }
                 /> */}
                 <TextField id="scene-description" label="Notes" multiline rows={2}
-                  value={ scenes[ sceneIndex() ]?.content || ' ' } onChange={ (event, value) => {} }
+                  value={ scenes[ sceneIndex() ]?.content || ' ' } onChange={ saveNotes }
                 />
               </div>
             </div>
