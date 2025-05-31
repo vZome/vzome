@@ -17,7 +17,7 @@ const CommandsContext = createContext();
 
 export const CommandsProvider = props =>
 {
-  const { rootController, controllerAction, state, setState } = useEditor();
+  const { rootController, controllerAction, state, setState, setEdited } = useEditor();
   const { showPolytopesDialog, symmetryController } = useSymmetry();
   const { state: cameraState } = useCamera();
   const { scenes } = useViewer();
@@ -49,6 +49,7 @@ export const CommandsProvider = props =>
           }
           setState( 'designName', name ); // cooperatively managed by both worker and client
           controllerAction( rootController(), 'clearChanges' );
+          setEdited( false );
         }
       })
   }
