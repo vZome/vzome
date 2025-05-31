@@ -21,6 +21,7 @@ import IconButton from '@suid/material/IconButton';
 import CameraswitchIcon from '@suid/icons-material/Cameraswitch';
 import TextField from "@suid/material/TextField";
 import Stack from "@suid/material/Stack";
+import Input from "@suid/material/Input";
 import { Tooltip } from '../../framework/tooltip.jsx'
 
 import { useViewer } from "../../../viewer/context/viewer.jsx";
@@ -104,9 +105,18 @@ const RemoveSceneButton = props =>
   
 const DraggableScene = (props) =>
 {
-  const { sceneIndex, setSceneIndex, setReload } = useEditor();
+  const { sceneIndex, setSceneIndex, setReload, setEdited } = useEditor();
+  const { setScenes } = useViewer();
   const sortable = createSortable(props.item);
   const [state] = useDragDropContext();
+
+  const saveTitle = item => ( evt, value ) =>
+  {    
+    evt.stopPropagation();
+    setScenes( item, 'title', value );
+    setEdited( true );
+  }
+  
   return (
     <div use:sortable
         class={ props.item===sceneIndex()? 'scenes-entry scenes-selected' : 'scenes-entry' }
@@ -117,8 +127,8 @@ const DraggableScene = (props) =>
         }}
         onClick={ () => { setSceneIndex( props.item ); setReload( true ); } } >
       <span>{props.item}</span>
-      <span class="scene-title">{props.scene.title}</span>
-          <UseCameraButton index={ props.item } />
+      <Input sx={{ borderBottom: 0 }} value={ props.scene.title || ' ' } onChange={ saveTitle(props.item) } />
+      <UseCameraButton index={ props.item } />
     </div>
   );
 }
