@@ -18,7 +18,7 @@ const ViewerProvider = ( props ) =>
   const [ waiting, setWaiting ] = createSignal( false );
   const [ labels, setLabels ] = createSignal( showLabels );
   const { postMessage, subscribeFor } = useWorkerClient();
-  const { state, tweenCamera, setLighting } = useCamera();
+  const { state, setTweenDuration, tweenCamera, setLighting } = useCamera();
 
   const requestDesign = ( url, config ) =>
   {
@@ -166,6 +166,7 @@ const ViewerProvider = ( props ) =>
     clearProblem: () => setProblem( '' ),
     requestScene,
     requestBOM: () => postMessage( { type: 'BOM_REQUESTED' } ),
+    setTweenDuration,
   };
   // For the web component, this gives it access to the viewer context
   props.setClient && props.setClient( providerValue );

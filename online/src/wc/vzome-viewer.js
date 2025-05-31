@@ -3,7 +3,6 @@ import { vZomeViewerCSS } from "./vzome-viewer.css";
 
 import { decodeEntities } from "../viewer/util/actions.js";
 import { VZomeViewerFirstButton, VZomeViewerLastButton, VZomeViewerNextButton, VZomeViewerPrevButton } from "./index-buttons.js";
-import { createDefaultCameraStore } from "../viewer/context/camera.jsx";
 
 const debug = false;
 class VZomeViewer extends HTMLElement
@@ -22,7 +21,6 @@ class VZomeViewer extends HTMLElement
   #sceneIndices;
   #sceneTitles;
   #sceneIndex;
-  #cameraStore;
 
   #viewerClient;
 
@@ -34,8 +32,6 @@ class VZomeViewer extends HTMLElement
     this.#root.appendChild( document.createElement("style") ).textContent = vZomeViewerCSS;
     this.#container = document.createElement("div");
     this.#root.appendChild( this.#container );
-
-    this.#cameraStore = createDefaultCameraStore();
 
     this.#config = {
       preview:         true,
@@ -162,7 +158,7 @@ class VZomeViewer extends HTMLElement
     import( '../viewer/index.jsx' )
       .then( module => {
         debug && console.log( 'dynamic module loaded' );
-        module.renderViewer( this.#container, this.#config, this.#cameraStore, viewer => this.#viewerClient = viewer );
+        module.renderViewer( this.#container, this.#config, viewer => this.#viewerClient = viewer );
         this.#moduleLoaded = true;
         
         this.#viewerClient.subscribeFor( 'ALERT_RAISED', () => {
@@ -259,8 +255,10 @@ class VZomeViewer extends HTMLElement
   
     case "tween-duration":
       const duration = _newValue;
-      const [ state, setState ] = this.#cameraStore;
-      setState( 'tweening', 'duration', duration );
+      // for the static case, before connectedCallback, we don't have a viewerClient yet
+      this.#config = { ...this.#config, tweening: { duration } };
+      // for the dynamic case, after connectedCallback, we do
+      this.#viewerClient && this.#viewerClient .setTweenDuration( duration );
     break;
     
     case "reactive":

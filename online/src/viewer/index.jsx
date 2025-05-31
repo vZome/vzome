@@ -145,9 +145,17 @@ const DesignViewer = ( props ) =>
 const UrlViewer = (props) =>
 {
   return (
-    <CameraProvider cameraStore={props.cameraStore} >
+    <CameraProvider tweening={props.config?.tweening}>
       <WorkerProvider>
-        <ViewerProvider setClient={props.setClient} config={{ url: props.url, preview: true, debug: false, showScenes: props.showScenes, labels: props.config?.labels, source: props.config?.download }}>
+        <ViewerProvider setClient={props.setClient}
+            config={{
+              url: props.url,
+              preview: true,
+              debug: false,
+              showScenes: props.showScenes,
+              labels: props.config?.labels,
+              source: props.config?.download
+            }}>
           <DesignViewer config={ { ...props.config, allowFullViewport: true } }
               componentRoot={props.componentRoot}
               height="100%" width="100%" >
@@ -159,32 +167,19 @@ const UrlViewer = (props) =>
   );
 }
 
-const renderViewer = ( container, config, cameraStore, setClient ) =>
+const renderViewer = ( container, config, setClient ) =>
   {
-  // if ( url === null || url === "" ) {
-  //   ReactDOM.unmountComponentAtNode( container );
-  //   return null;
-  // }
-
-  // The URL was prefetched, so we don't pass it here.
   // Note the addition of a slot child element; this lets us potentially render the light dom,
   //   for example if the worker cannot load.
   // LG: Can we handle canvas resizing using `ResizeObserver` without modifying `vZome` or recreating the element constantly?
   // const viewerElement = React.createElement( UrlViewer, { store, config }, (<slot></slot>) );
 
   // We need JSS to inject styles on our shadow root, not on the document head.
-  // I found this solution here:
-  //   https://stackoverflow.com/questions/51832583/react-components-material-ui-theme-not-scoped-locally-to-shadow-dom
-  // const jss = create({
-  //     ...jssPreset(),
-  //     insertionPoint: container
-  // });
-  // const reactElement = React.createElement( StylesProvider, { jss: jss }, [ viewerElement ] );
 
   const bindComponent = () =>
   {
     return (
-      <UrlViewer setClient={setClient} config={config} componentRoot={container} cameraStore={cameraStore} >
+      <UrlViewer setClient={setClient} config={config} componentRoot={container} >
         {/* Make a slot for the light DOM, somehow! */}
       </UrlViewer>
     );
