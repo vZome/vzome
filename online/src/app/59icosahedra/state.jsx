@@ -1,10 +1,12 @@
 
-import { createContext, createEffect, createSignal, useContext } from "solid-js";
+import { createContext, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 
 import { getModelURL } from "../classic/components/folder.jsx";
 import { WorkerProvider } from "../../viewer/context/worker.jsx";
 import { ViewerProvider } from "../../viewer/context/viewer.jsx";
+import { SceneIndexingProvider, SceneProvider, SceneTitlesProvider } from "../../viewer/context/scene.jsx";
+import { InitializeScene } from "../../viewer/index.jsx";
 
 const CHIRAL_PAIRS = { f1: [ 'f1L', 'f1R' ] };
 
@@ -86,7 +88,14 @@ export const ModelWorker = props =>
   return (
     <WorkerProvider>
       <ViewerProvider config={config} >
-        {props.children}
+        <SceneProvider>
+          <SceneIndexingProvider>
+            <SceneTitlesProvider show='given' title={props.sceneTitle} >
+              {props.children}
+              <InitializeScene/>
+            </SceneTitlesProvider>
+          </SceneIndexingProvider>
+        </SceneProvider>
       </ViewerProvider>
     </WorkerProvider>
   )

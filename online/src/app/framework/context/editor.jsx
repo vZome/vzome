@@ -4,19 +4,32 @@ import { createStore, unwrap } from "solid-js/store";
 
 import * as actions from '../../../viewer/util/actions.js';
 import { Guardrail } from "../guardrail.jsx";
-import { defaultCamera, useCamera } from "../../../viewer/context/camera.jsx";
+import { copyOfCamera, useCamera } from "../../../viewer/context/camera.jsx";
 import { useWorkerClient } from "../../../viewer/context/worker.jsx";
 import { useImageCapture } from "../../../viewer/context/export.jsx";
 import { useViewer } from "../../../viewer/context/viewer.jsx";
 
-const initialState = () => ( {
-  sharing: {
-    title: 'untitled',
-    description: 'A 3D design created in vZome.  Use your mouse or touch to interact.',
-    style: 'none',
-  },
-  copiedCamera: defaultCamera(), // TODO: this is probably too static, not related to useCamera
-} );
+const defaultSharingStyle = scenes => {
+  let indexed = true;
+  scenes .slice( 1 ) .map( scene => {
+    if ( scene.title ) indexed = false;
+  });
+  const style = (scenes.length < 2)? 'none' : indexed? 'indexed' : 'titled';
+  return style;
+}
+
+const initialState = () => {
+  const { scenes } = useViewer();
+  const { state: { camera } } = useCamera();
+  return {
+    sharing: {
+      title: 'untitled',
+      description: 'A 3D design created in vZome.  Use your mouse or touch to interact.',
+      style: defaultSharingStyle( scenes ),
+    },
+    copiedCamera: copyOfCamera( camera ),
+  };
+}
 
 const EditorContext = createContext( {} );
 
@@ -26,7 +39,7 @@ const EditorProvider = props =>
 {
   const workerClient = useWorkerClient();
   const { resetCamera, state: cameraState } = useCamera();
-  const { resetScenes } = useViewer();
+  const { resetScenes, setReload, setSource } = useViewer();
   const { capturer } = useImageCapture();
   // Beware, createStore does not make a copy, shallow or deep!
   const [ state, setState ] = createStore( { ...initialState() } );
@@ -35,7 +48,6 @@ const EditorProvider = props =>
   workerClient .subscribeFor( 'SCENE_RENDERED', ({ scene: { parts } }) => setPartsList( parts ) );
 
   const [ sceneIndex, setSceneIndex ] = createSignal( 0 );
-  const [ reload, setReload ] = createSignal( false );
 
   const [ clientStateEdited, setEdited ] = createSignal( false );
 
@@ -87,6 +99,7 @@ const EditorProvider = props =>
       }
 
       case 'TEXT_FETCHED': { // we receive this event twice per fetch?
+        setSource( 'url', undefined ); // we are editing, so disable the original URL for viewer preview
         let { name } = data.payload;
         if ( name && name .toLowerCase() .endsWith( '.vzome' ) ) {
           if ( !state.ignoreDesignName ) {
@@ -135,6 +148,7 @@ const EditorProvider = props =>
         break;
       
       case 'SCENES_DISCOVERED':
+        setState( 'sharing', 'style', defaultSharingStyle( data.payload.scenes ) );
         if ( sceneIndex() === 0 && data.payload.length > 1 )
           setSceneIndex( 1 );
         setReload( true );
@@ -204,6 +218,7 @@ const EditorProvider = props =>
     resetCamera();
     resetScenes();
     setSceneIndex( 0 );
+    setSource( 'url', undefined );
     workerClient .postMessage( actions.newDesign( field ) );
   }
 
@@ -270,7 +285,6 @@ const EditorProvider = props =>
     fetchDesignUrl,
     partsList,
     sceneIndex, setSceneIndex,
-    reload, setReload,
     importMeshFile: ( file, format ) => workerClient .postMessage( actions.importMeshFile( file, format ) ),
     startPreviewStrut: ( id, dir )   => workerClient .postMessage( actions.startPreviewStrut( id, dir ) ),
     movePreviewStrut:  ( direction ) => workerClient .postMessage( actions.movePreviewStrut( direction ) ),

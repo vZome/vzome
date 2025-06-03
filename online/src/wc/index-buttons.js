@@ -68,9 +68,9 @@ class VZomeViewerIndexButton extends HTMLElement
     {
       if ( this.#end ) {
         if ( this.#next ) {
-          this.#viewer .selectScene( -1 )
+          this.#viewer .selectScene( -1, loadParams ) // negative means "from the end"
         } else {
-          this.#viewer .selectScene( 0 )
+          this.#viewer .selectScene( 1, loadParams )
         }  
       } else
         if ( this.#next ) {

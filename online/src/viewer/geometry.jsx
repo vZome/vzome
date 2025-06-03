@@ -4,11 +4,11 @@ import { Vector3, Matrix4, BufferGeometry, Float32BufferAttribute } from "three"
 import { useThree } from "solid-three";
 
 import { useInteractionTool } from "./context/interaction.jsx";
-import { useViewer } from "./context/viewer.jsx";
 
 import { GLTFExporter } from "three-stdlib";
 import { Label } from "./labels.jsx";
 import { useGltfExporter, useImageCapture } from "./context/export.jsx";
+import { useScene } from "./context/scene.jsx";
 
 const Instance = ( props ) =>
 {
@@ -102,7 +102,7 @@ const centroid = vertices =>
 
 const InstancedShape = ( props ) =>
 {
-  const { scene } = useViewer();
+  const { scene } = useScene();
   const showOutlines = () => scene.polygons;
 
   const geometry = createMemo( () =>

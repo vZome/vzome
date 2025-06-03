@@ -8,7 +8,7 @@ import { render } from 'solid-js/web';
 
 import { urlViewerCSS } from '../../viewer/urlviewer.css.js';
 import { vZomeViewerCSS } from "../vzome-viewer.css";
-import { CameraProvider, DesignViewer } from '../../viewer/index.jsx';
+import { CameraProvider, SceneViewer } from '../../viewer/index.jsx';
 import { VrmlModel } from './vrml.jsx';
 import { defaultCamera, fixedFrustum } from '../../viewer/context/camera.jsx';
 
@@ -31,11 +31,11 @@ const renderVrmlViewer = ( container, src, config ) =>
   {
     return (
       <CameraProvider distance={preTweenDistance} lighting={lighting} >
-        <DesignViewer config={ { ...config, allowFullViewport: true, showOutlines: false } }
+        <SceneViewer config={ { ...config, allowFullViewport: true, showOutlines: false } }
             componentRoot={container}
             children3d={ <VrmlModel url={src()} tweening={ { duration: 800 } } camera={ postTweenCamera } /> }
             height="100%" width="100%" >
-        </DesignViewer>
+        </SceneViewer>
       </CameraProvider>
     );
   }

@@ -333,10 +333,8 @@ const urlLoader = async ( report, payload ) =>
       .then( preview => {
         // .shapes.json can hold two formats: legacy (the default) or online
         const { lighting, scenes, ...rendered } = ( preview.format === 'online' )? preview : normalizePreview( preview );
-        events .scenesDiscovered( { lighting, scenes } ); // send to client, where the state will be managed
-        design.rendered = { ...rendered };
 
-        if ( ( showScenes !== 'none' || snapshot >= 0 ) && design.rendered.snapshots.length === 0 ) {
+        if ( ( showScenes !== 'none' || snapshot >= 0 ) && rendered.snapshots.length === 0 ) {
           // The client expects scenes, but this preview JSON predates the scenes export,
           //  so fall back on XML.
           console.log( `No snapshots in preview ${previewUrl}` );
@@ -345,6 +343,8 @@ const urlLoader = async ( report, payload ) =>
           return;
         }
 
+        events .scenesDiscovered( { lighting, scenes } ); // send to client, where the state will be managed
+        design.rendered = { ...rendered };
         events .sceneChanged( prepareSceneResponse( design, snapshot ) );
       } )
       .catch( error => {

@@ -18,11 +18,12 @@ class VZomeViewer extends HTMLElement
   #loadFlags;
 
   #indexed;
-  #sceneIndices;
-  #sceneTitles;
-  #sceneIndex;
+  #numScenes;
+  #sceneIndex; // ranges from 1 to #numScenes
 
-  #viewerClient;
+  #sceneTitles;
+
+  #api;
 
   constructor()
   {
@@ -47,7 +48,7 @@ class VZomeViewer extends HTMLElement
 
     this.#indexed = false;
     this.#urlChanged = true;
-    this.#sceneChanged = true;
+    this.#sceneChanged = false;
     this.#reactive = true;
     this.#moduleLoaded = false;
     this.#updateCalled = false;
@@ -55,43 +56,47 @@ class VZomeViewer extends HTMLElement
     debug && console.log( 'custom element constructed' );
   }
 
-  selectScene( index, loadFlags={} )
+  #showIndexedScene( index, loadFlags={ camera: true } )
+  {
+    if ( ! this.#moduleLoaded ) {
+      // User code called #showIndexedScene() in initialization or an event handler, before the dynamic import has completed
+      debug && console.log( '#showIndexedScene ignored; module not loaded' );
+      return;
+    }
+    this.#api .showIndexedScene( index, loadFlags );
+  }
+
+  selectScene( index, loadFlags={ camera: true } )
   {
     debug && console.log( 'User called selectScene()' );
-    this.#loadFlags = loadFlags;
     if ( ! this.#indexed ) {
       console.log( 'This selectScene call ignored; the viewer is not indexed.  Set indexed to true if you want to use selectScene.' );
       return;
     }
-    if ( ! this.#sceneIndices ) {
+    if ( this.#numScenes === undefined ) {
       console.log( 'This selectScene call ignored; no scenes were discovered.' );
       return;
     }
-    this.#sceneIndex = ( index < 0 )? this.#sceneIndices.length-1 : 0;
-    this.#config = { ...this.#config, sceneTitle: this.#sceneIndices[ this.#sceneIndex ] };
-    this.#sceneChanged = true;
-    this.#triggerWorker();
+    this.#sceneIndex = ( index < 0 )? this.#numScenes : 1;
+    this.#showIndexedScene( this.#sceneIndex, loadFlags );
   }
 
-  previousScene( loadFlags={} )
+  previousScene( loadFlags={ camera: true } )
   {
     debug && console.log( 'User called previousScene()' );
-    this.#loadFlags = loadFlags;
     if ( ! this.#indexed ) {
       console.log( 'This previousScene call ignored; the viewer is not indexed.  Set indexed to true if you want to use previousScene.' );
       return;
     }
-    if ( ! this.#sceneIndices ) {
+    if ( this.#numScenes === undefined ) {
       console.log( 'This previousScene call ignored; no scenes were discovered.' );
       return;
     }
-    this.#sceneIndex = Math.max( this.#sceneIndex - 1, 0 );
-    this.#config = { ...this.#config, sceneTitle: this.#sceneIndices[ this.#sceneIndex ] };
-    this.#sceneChanged = true;
-    this.#triggerWorker();
+    this.#sceneIndex = Math.max( this.#sceneIndex - 1, 1 );
+    this.#showIndexedScene( this.#sceneIndex, loadFlags );
   }
 
-  nextScene( loadFlags={} )
+  nextScene( loadFlags={ camera: true } )
   {
     debug && console.log( 'User called nextScene()' );
     this.#loadFlags = loadFlags;
@@ -99,17 +104,15 @@ class VZomeViewer extends HTMLElement
       console.log( 'This nextScene call ignored; the viewer is not indexed.  Set indexed to true if you want to use nextScene.' );
       return;
     }
-    if ( ! this.#sceneIndices ) {
+    if ( this.#numScenes === undefined ) {
       console.log( 'This nextScene call ignored; no scenes were discovered.' );
       return;
     }
-    this.#sceneIndex = Math.min( this.#sceneIndex + 1, this.#sceneIndices.length-1 );
-    this.#config = { ...this.#config, sceneTitle: this.#sceneIndices[ this.#sceneIndex ] };
-    this.#sceneChanged = true;
-    this.#triggerWorker();
+    this.#sceneIndex = Math.min( this.#sceneIndex + 1, this.#numScenes );
+    this.#showIndexedScene( this.#sceneIndex, loadFlags );
   }
 
-  update( loadFlags={} )
+  update( loadFlags={ camera: true } )
   {
     debug && console.log( 'User called update()' );
     this.#loadFlags = loadFlags;
@@ -128,16 +131,17 @@ class VZomeViewer extends HTMLElement
       debug && console.log( 'update ignored; module not loaded' );
       return;
     }
+    // TODO: get rid of lighting and design load flags, which are ignored
     const { camera=true, lighting=true, design=true } = this.#loadFlags;
     const load = { camera, lighting, design };
     const config = { ...this.#config, load };
     if ( this.#config.url && this.#urlChanged ) {
-      debug && console.log( 'sending fetchDesign to worker' );
-      this.#viewerClient .requestDesign( this.#config.url, config );
+      debug && console.log( 'requesting design' );
+      this.#api .requestDesign( this.#config.url, config );
       this.#urlChanged = false;
     } else if ( this.#sceneChanged ) {
-      debug && console.log( 'sending selectScene to worker' );
-      this.#viewerClient .requestScene( this.#config.sceneTitle, load );
+      debug && console.log( 'requesting scene' );
+      this.#api .showTitledScene( this.#config.sceneTitle, load );
     }
   }
 
@@ -148,38 +152,41 @@ class VZomeViewer extends HTMLElement
       debug && console.log( 'loadFromText ignored; module not loaded' );
       return;
     }
-    this.#viewerClient .resetScenes();
-    this.#viewerClient .openText( name, contents );
+    this.#api .resetScenes();
+    this.#api .openText( name, contents );
   }
 
   connectedCallback()
   {
+    const callbacks = {
+      setApi: api => {
+        this.#api = api;
+      },
+      onAlert: () => {
+        this .dispatchEvent( new CustomEvent( 'vzome-design-failed' ) );
+      },
+      onSceneRendered: ( sceneIndex ) => {
+        --sceneIndex; // from 1-based to 0-based (no default scene), the contract for the vzome-design-rendered event
+        let scene = {};
+        if ( this.#indexed && !! this.#sceneTitles )
+          scene = { index: sceneIndex, title: this.#sceneTitles[ sceneIndex ] };
+        this .dispatchEvent( new CustomEvent( 'vzome-design-rendered', { detail: scene } ) );
+      },
+      onScenesDiscovered: ( scenes ) => {
+        this.#numScenes = scenes.length - 1; // strip the default scene
+        this.#sceneTitles = scenes .map( (scene,i) => scene.title ? decodeEntities( scene.title ) : `#${i}` );
+        if ( this.#indexed )
+          this.#sceneTitles = this.#sceneTitles .slice( 1 );
+        this .dispatchEvent( new CustomEvent( 'vzome-scenes-discovered', { detail: this.#sceneTitles } ) );
+        this .dispatchEvent( new CustomEvent( 'vzome-scenes', { detail: scenes .slice( 1 ) } ) );
+    }
+    };
     debug && console.log( 'custom element connected' );
     import( '../viewer/index.jsx' )
       .then( module => {
         debug && console.log( 'dynamic module loaded' );
-        module.renderViewer( this.#container, this.#config, viewer => this.#viewerClient = viewer );
-        this.#moduleLoaded = true;
-        
-        this.#viewerClient.subscribeFor( 'ALERT_RAISED', () => {
-          this .dispatchEvent( new CustomEvent( 'vzome-design-failed' ) );
-        } ); 
-        this.#viewerClient.subscribeFor( 'SCENE_RENDERED', () => {
-          let scene = {};
-          if ( this.#indexed && !! this.#sceneTitles )
-            scene = { index: this.#sceneIndex, title: this.#sceneTitles[ this.#sceneIndex ] };
-          this .dispatchEvent( new CustomEvent( 'vzome-design-rendered', { detail: scene } ) );
-        } );
-        this.#viewerClient.subscribeFor( 'SCENES_DISCOVERED', ( { scenes } ) => {
-          this.#sceneIndices = scenes .map( (scene,i) => `#${i}` ) .slice( 1 ); // strip the default scene
-          this.#sceneTitles = scenes .map( (scene,i) => scene.title ? decodeEntities( scene.title ) : `#${i}` );
-          if ( this.#indexed )
-            this.#sceneTitles = this.#sceneTitles .slice( 1 );
-          this .dispatchEvent( new CustomEvent( 'vzome-scenes-discovered', { detail: this.#sceneTitles } ) );
-
-          this .dispatchEvent( new CustomEvent( 'vzome-scenes', { detail: scenes .slice( 1 ) } ) );
-        } );
-  
+        module.renderViewer( this.#container, this.#config, callbacks );
+        this.#moduleLoaded = true;  
 
         // We used to do this in the constructor, after worker creation, for better responsiveness.
         // However, that causes a race condition on slow networks -- the model loads before the viewer
@@ -217,7 +224,7 @@ class VZomeViewer extends HTMLElement
       if ( this.#indexed )
         break;
       if ( _newValue !== this.#config.sceneTitle ) {
-        this.#config = { ...this.#config, sceneTitle: _newValue };
+        this.#config = { ...this.#config, sceneTitle: _newValue, showScenes: 'given' };
         this.#sceneChanged = true;
         // TODO: control the config prop on the viewer component, so the scenes menu behaves right
         if ( this.#reactive )
@@ -228,7 +235,11 @@ class VZomeViewer extends HTMLElement
     case "show-scenes":
       if ( this.#indexed )
         break;
-      const showScenes = _newValue;
+      const showScenes =
+        (_newValue === 'true' ) ? 'all'    :
+        (_newValue === 'false') ? 'none'   :
+        (_newValue === 'named') ? 'titled' :
+        _newValue;
       this.#config = { ...this.#config, showScenes };
       break;
   
@@ -255,10 +266,10 @@ class VZomeViewer extends HTMLElement
   
     case "tween-duration":
       const duration = _newValue;
-      // for the static case, before connectedCallback, we don't have a viewerClient yet
+      // for the static case, before connectedCallback, we don't have an API yet
       this.#config = { ...this.#config, tweening: { duration } };
       // for the dynamic case, after connectedCallback, we do
-      this.#viewerClient && this.#viewerClient .setTweenDuration( duration );
+      this.#api && this.#api .setTweenDuration( duration );
     break;
     
     case "reactive":
@@ -272,10 +283,9 @@ class VZomeViewer extends HTMLElement
         break;
       this.#indexed = true;
       this.#reactive = false;
-      this.#sceneIndex = 0;
-      this.#config = { ...this.#config, showScenes: false, sceneTitle: '#1' };
-      this.#sceneChanged = true;
-        break;
+      this.#sceneIndex = 1;
+      this.#config = { ...this.#config, showScenes: 'indexed' };
+      break;
     }
   }
 

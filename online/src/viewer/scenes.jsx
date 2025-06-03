@@ -1,30 +1,24 @@
 
-import { createEffect, createMemo, createSignal } from 'solid-js';
-
 import { Select } from "@kobalte/core/select";
 
-import { useViewer } from './context/viewer.jsx';
+import { useSceneTitles } from './context/scene.jsx';
+import { createEffect } from "solid-js";
 
 const styles = {
   margin: '1em',
   minWidth: 120,
 };
 
-const unnamedScene = ( scene, index ) => !scene.title?.trim() || ( index===0 && 'default scene' === scene.title );
-
 export const SceneMenu = (props) =>
 {
-  const { scenes, requestScene } = useViewer();
-  const namedScenes = () => scenes .filter( ( scene, index ) => !unnamedScene( scene, index ) ) .map( scene => scene.title );
-  const sceneTitles = () =>
-    ( props.show === 'named' )? namedScenes()
-    : scenes .map( (scene,index) => scene.title?.trim() || (( index === 0 )? "default scene" : `#${index}`) );
-  const [ sceneTitle, setSceneTitle ] = createSignal( sceneTitles()[0] || '' );
+  const { showTitledScene, sceneTitle, setSceneTitle, sceneTitles, } = useSceneTitles();
+
+  createEffect( () => console.log( "SceneMenu: titles=", sceneTitles(), " current=", sceneTitle() ) );
 
   const handleChange = (sceneTitle) =>
   {
     setSceneTitle( sceneTitle );
-    requestScene( sceneTitle );
+    showTitledScene( sceneTitle );
   }
 
   return (

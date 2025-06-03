@@ -228,6 +228,9 @@ const CameraProvider = ( props ) =>
   {
     const { duration=0 } = state.tweening;
 
+    if ( !goalCamera )
+      return Promise.resolve();
+
     if ( duration <= 0 ) {
       setCamera( goalCamera );
       return Promise.resolve();

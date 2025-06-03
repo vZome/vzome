@@ -1,11 +1,10 @@
 
 import { batch, createSignal } from 'solid-js';
-import { unwrap } from 'solid-js/store';
 
 import Button from "@suid/material/Button"
 
 import { resumeMenuKeyEvents, suspendMenuKeyEvents } from '../context/commands.jsx';
-import { copyScenes, insertScene, ScenesDialog } from '../dialogs/scenes.jsx';
+import { insertScene, ScenesDialog } from '../dialogs/scenes.jsx';
 import { copyOfCamera, useCamera } from '../../../viewer/context/camera.jsx';
 import { useEditor } from '../../framework/context/editor.jsx';
 import { useViewer } from '../../../viewer/context/viewer.jsx';
@@ -14,9 +13,9 @@ export const SceneControls = () =>
   {
     const buttonStyle = { margin: '4px', 'min-width': '10rem' };
     const [ showScenes, setShowScenes ] = createSignal( false );
-    const { rootController, expectResponse, sceneIndex, setSceneIndex, setReload } = useEditor();
+    const { expectResponse, sceneIndex, setSceneIndex } = useEditor();
     const { state: { camera } } = useCamera();
-    const { scenes, setScenes } = useViewer();
+    const { scenes, setScenes, setReload } = useViewer();
     const noScenes = () => !scenes || scenes.length < 2;
 
     const doOpen = () =>
