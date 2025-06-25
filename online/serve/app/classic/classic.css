@@ -784,3 +784,34 @@ button:disabled > .toolbar-image {
 .scenes-entry div::before {
   border: 0px;
 }
+
+.sharing-config {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  min-width: 900px;
+}
+.sharing-config-controls {
+  /* min-width: 450px; */
+}
+.viewer-preview {
+  position: relative;
+  height: 28rem;
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  border-radius: 4px;
+}
+.viewer-preview legend span {
+  font-size: 0.7rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.viewer-preview-inner {
+  position: absolute;
+  inset: 5px;
+  overflow: auto;
+}
+
+.vzome-viewer-buttons {
+  display: flex;
+  justify-content: center;
+}

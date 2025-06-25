@@ -5,11 +5,11 @@ import Typography from '@suid/material/Typography';
 
 import { InteractionToolProvider, useInteractionTool } from "../../viewer/context/interaction.jsx";
 import { useWorkerClient } from "../../viewer/context/worker.jsx";
-import { useViewer } from "../../viewer/context/viewer.jsx";
 import { CameraProvider, useCamera } from "../../viewer/context/camera.jsx";
 import { SceneCanvas } from '../../viewer/scenecanvas.jsx';
 
 import { ALL_ORBITS, ModelWorker, useCellOrbits } from "./state.jsx";
+import { useScene } from "../../viewer/context/scene.jsx";
 
 const CellSelectorTool = props =>
 {
@@ -48,7 +48,7 @@ const CellSelectorTool = props =>
 const SelectorCanvas = () =>
 {
   const { subscribeFor } = useWorkerClient();
-  const { scene, setScene } = useViewer();
+  const { scene, setScene } = useScene();
   const { state: { camera }, setCamera } = useCamera();
   const orbitPanels = {}; // yes, this is not reactive
   const { state: toggles, initialize } = useCellOrbits();

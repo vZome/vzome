@@ -14,6 +14,7 @@ import { BuildPlaneTool } from './buildplane.jsx'
 import { DesignViewer } from '../../viewer/index.jsx';
 import { CameraProvider } from '../../viewer/context/camera.jsx';
 import { EditorProvider } from '../framework/context/editor.jsx';
+import { SceneChangeListener, SceneProvider } from '../../viewer/context/scene.jsx';
 
 const WorkerApp = () => (
   <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
@@ -21,6 +22,7 @@ const WorkerApp = () => (
     <WorkerProvider>
     <ViewerProvider>
     <EditorProvider>
+    <SceneProvider>
       <VZomeAppBar showOpen pathToRoot='../models' forDebugger={false} title='Buildplane'
         about={ <>
           <Typography gutterBottom>
@@ -46,10 +48,13 @@ const WorkerApp = () => (
           </Typography>
         </> } />
       <div id='viewer-and-undoredo'>
+        {/* TODO: move the spinner from DesignViewer into SceneViewer, or decouple it... or just remove the option here */}
         <DesignViewer height="100%" width="100%" config={ { useSpinner: true } }
           children3d={ <BuildPlaneTool/> } />
         <UndoRedoButtons/>
       </div>
+      <SceneChangeListener/>
+    </SceneProvider>
     </EditorProvider>
     </ViewerProvider>
     </WorkerProvider>

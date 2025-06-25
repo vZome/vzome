@@ -1,5 +1,5 @@
 
-import { createEffect, createSignal } from 'solid-js';
+import { createEffect, createSignal, mergeProps } from 'solid-js';
 import { render } from 'solid-js/web';
 
 import { Button } from "@kobalte/core/button";
@@ -8,6 +8,7 @@ import { Switch } from "@kobalte/core/switch";
 import { CameraProvider, DesignViewer } from '../../viewer/index.jsx';
 import { ViewerProvider, useViewer } from '../../viewer/context/viewer.jsx';
 import { WorkerProvider, useWorkerClient } from '../../viewer/context/worker.jsx';
+import { SceneIndexingProvider, SceneProvider, useSceneIndexing } from '../../viewer/context/scene.jsx';
 
 import { instructionsCSS } from "./zometool.css.js";
 import { urlViewerCSS } from "../../viewer/urlviewer.css.js";
@@ -15,7 +16,6 @@ import { urlViewerCSS } from "../../viewer/urlviewer.css.js";
 import { ZometoolPartsElement } from './parts-list.jsx';
 import { ZometoolProductsElement } from './products-list.jsx';
 import { normalizeBOM } from './bom.js';
-import { createDefaultCameraStore } from '../../viewer/context/camera.jsx';
 
 const debug = false;
 
@@ -24,24 +24,12 @@ const partsPromise = fetch( parts_catalog_url ) .then( response => response.text
 
 const StepControls = props =>
 {
-  const { scenes, requestScene, requestBOM } = useViewer();
-  const [ index, setIndex ] = createSignal( 1 );
-  const [ maxIndex, setMaxIndex ] = createSignal( 0 );
-  const atStart = () => index() === 1;  // NOTE: scene 0 is the default scene, which we ignore
-  const atEnd = () => index() === maxIndex();
-
+  const { showIndexedScene } = useSceneIndexing();
+  const atStart = () => props.index === 1;  // NOTE: scene 0 is the default scene, which we ignore
+  const atEnd = () => props.index === props.maxIndex;
+  
   createEffect( () => {
-    if ( scenes?.length > 0 )
-      setMaxIndex( scenes?.length - 1 ) 
-  });
-
-  createEffect( () => {
-    if ( props.show ) {
-      requestScene( '#' + index(), { camera: true } );
-    } else {
-      requestScene( '#' + maxIndex(), { camera: true } );
-      requestBOM();
-    }
+    showIndexedScene( props.index, { camera: true } );
   } );
 
   const change = ( delta ) => evt =>
@@ -50,62 +38,78 @@ const StepControls = props =>
     if ( delta === 0 ) {
       newIndex = 1;
     } else if ( delta === -2 ) {
-      newIndex = maxIndex();
+      newIndex = props.maxIndex;
     } else {
-      newIndex = index() + delta;
+      newIndex = props.index + delta;
     }
-    setIndex( newIndex );
+    props.setIndex( newIndex );
   }
 
+  return (
+    <>
+      <Button disabled={atStart()} class='step-button limit-step' tooltip='First step'    onClick={ change( 0 ) } >
+        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false" class="step-button-svg">
+          <path d="M24 0v24H0V0h24z" fill="none" opacity=".87"></path>
+          <path d="M17.7 15.89L13.82 12l3.89-3.89c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-4.59 4.59c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .38-.38.38-1.02-.01-1.4zM7 6c.55 0 1 .45 1 1v10c0 .55-.45 1-1 1s-1-.45-1-1V7c0-.55.45-1 1-1z"></path>
+        </svg>
+      </Button>
+      <Button disabled={atStart()} class='step-button' tooltip='Previous step' onClick={ change( -1 ) } >
+        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false" class="step-button-svg">
+          <path d="M14.91 6.71c-.39-.39-1.02-.39-1.41 0L8.91 11.3c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L11.03 12l3.88-3.88c.38-.39.38-1.03 0-1.41z"></path>
+        </svg>
+      </Button>
+      <h1 class='step-number'>{props.index}</h1>
+      <Button disabled={atEnd()}   class='step-button' tooltip='Next step'     onClick={ change( +1 ) } >
+        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false" class="step-button-svg">
+          <path d="M9.31 6.71c-.39.39-.39 1.02 0 1.41L13.19 12l-3.88 3.88c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41L10.72 6.7c-.38-.38-1.02-.38-1.41.01z"></path>
+        </svg>
+      </Button>
+      <Button disabled={atEnd()}   class='step-button limit-step' tooltip='Last step'     onClick={ change( -2 ) } >
+        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false" class="step-button-svg">
+          <path d="M0 0h24v24H0V0z" fill="none" opacity=".87"></path>
+          <path d="M6.29 8.11L10.18 12l-3.89 3.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41L7.7 6.7c-.39-.39-1.02-.39-1.41 0-.38.39-.38 1.03 0 1.41zM17 6c.55 0 1 .45 1 1v10c0 .55-.45 1-1 1s-1-.45-1-1V7c0-.55.45-1 1-1z"></path>
+        </svg>
+      </Button>
+    </>
+  );
+}
+
+export const ZometoolInstructions = props =>
+{
+  const { scenes, requestBOM } = useViewer();
   const { subscribeFor } = useWorkerClient();
+  const { showIndexedScene } = useSceneIndexing();
+  const [ hasScenes, setHasScenes ] = createSignal( false );
+  const [ steps, setSteps ] = createSignal( false );
+  const [ maxIndex, setMaxIndex ] = createSignal( 0 );
+  const [ index, setIndex ] = createSignal( 1 );
+  const dynConfig = () => ({
+    useSpinner: false, allowFullViewport: true,
+    showSettings: true, showOutlines: true },
+    props.config, {
+    showScenes: steps()? 'indexed' : 'managed',
+    download: !steps(),  
+  } );
+  const toggleSteps = () => setSteps( v => !v );
+
+  createEffect( () => {
+    setMaxIndex( scenes?.length - 1 ) ;
+    setHasScenes( scenes?.length > 1 );
+    requestBOM();
+  });
+
+  createEffect( () => {
+    if ( ! steps() ) {
+      showIndexedScene( hasScenes()? maxIndex(): 0, { camera: true } );
+    }
+  });
+
   subscribeFor( 'BOM_CHANGED', bom => {
     partsPromise .then( parts => {
       const detail = normalizeBOM( bom, parts );
       props.dispatch( new CustomEvent( 'zometool-instructions-loaded', { detail } ) );
     });
   } );
-
-  return (
-    <div class="step-buttons">
-      <Show when={props.show}>
-        <Button disabled={atStart()} class='step-button limit-step' tooltip='First step'    onClick={ change( 0 ) } >
-          <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false" class="step-button-svg">
-            <path d="M24 0v24H0V0h24z" fill="none" opacity=".87"></path>
-            <path d="M17.7 15.89L13.82 12l3.89-3.89c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-4.59 4.59c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .38-.38.38-1.02-.01-1.4zM7 6c.55 0 1 .45 1 1v10c0 .55-.45 1-1 1s-1-.45-1-1V7c0-.55.45-1 1-1z"></path>
-          </svg>
-        </Button>
-        <Button disabled={atStart()} class='step-button' tooltip='Previous step' onClick={ change( -1 ) } >
-          <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false" class="step-button-svg">
-            <path d="M14.91 6.71c-.39-.39-1.02-.39-1.41 0L8.91 11.3c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L11.03 12l3.88-3.88c.38-.39.38-1.03 0-1.41z"></path>
-          </svg>
-        </Button>
-        <h1 class='step-number'>{index()}</h1>
-        <Button disabled={atEnd()}   class='step-button' tooltip='Next step'     onClick={ change( +1 ) } >
-          <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false" class="step-button-svg">
-            <path d="M9.31 6.71c-.39.39-.39 1.02 0 1.41L13.19 12l-3.88 3.88c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41L10.72 6.7c-.38-.38-1.02-.38-1.41.01z"></path>
-          </svg>
-        </Button>
-        <Button disabled={atEnd()}   class='step-button limit-step' tooltip='Last step'     onClick={ change( -2 ) } >
-          <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false" class="step-button-svg">
-            <path d="M0 0h24v24H0V0z" fill="none" opacity=".87"></path>
-            <path d="M6.29 8.11L10.18 12l-3.89 3.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41L7.7 6.7c-.39-.39-1.02-.39-1.41 0-.38.39-.38 1.03 0 1.41zM17 6c.55 0 1 .45 1 1v10c0 .55-.45 1-1 1s-1-.45-1-1V7c0-.55.45-1 1-1z"></path>
-          </svg>
-        </Button>
-      </Show>
-    </div>
-  );
-}
-
-const ZometoolInstructions = props =>
-{
-  const { scenes } = useViewer();
-  const [ hasScenes, setHasScenes ] = createSignal( false );
-  const [ steps, setSteps ] = createSignal( false );
-  const toggleSteps = () => setSteps( v => !v );
-
-  createEffect( () => {
-    setHasScenes( scenes?.length > 1 ) 
-  });
 
   return (
     <div class='zometool-instructions'>
@@ -120,10 +124,14 @@ const ZometoolInstructions = props =>
             </Switch.Control>
           </Switch>
         </Show>
-        <StepControls show={steps()} dispatch={props.dispatch} />
+        <div class="step-buttons">
+          <Show when={steps()}>
+            <StepControls index={index()} setIndex={setIndex} maxIndex={maxIndex()} />
+          </Show>
+        </div>
       </div>
 
-      <DesignViewer config={ { ...props.config, download: !steps(), allowFullViewport: true } }
+      <DesignViewer config={ dynConfig() }
           componentRoot={props.componentRoot}
           height="100%" width="100%" >
       </DesignViewer>
@@ -136,16 +144,15 @@ const renderComponent = ( url, container, dispatch ) =>
   {
     const bindComponent = () =>
     {
-      const cameraStore = createDefaultCameraStore();
-      const [ state, setState ] = cameraStore;
-      setState( 'tweening', { duration: 500 } );
-  
       return (
-        <CameraProvider cameraStore={cameraStore}>
+        <CameraProvider tweening={ { duration: 500 } }>
           <WorkerProvider>
-            <ViewerProvider config={{ url, preview: true, debug: false, showScenes: false, labels: true, source: true }}>
-              <ZometoolInstructions dispatch={dispatch} >
-              </ZometoolInstructions>
+            <ViewerProvider config={{ url, preview: true, debug: false, labels: true, source: true }}>
+              <SceneProvider>
+                <SceneIndexingProvider config={ {} } >
+                  <ZometoolInstructions dispatch={dispatch} />
+                </SceneIndexingProvider>
+              </SceneProvider>
             </ViewerProvider>
           </WorkerProvider>
         </CameraProvider>

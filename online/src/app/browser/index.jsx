@@ -10,12 +10,15 @@ import { DesignBrowser } from './browser.jsx';
 import { WorkerProvider } from '../../viewer/context/worker.jsx';
 import { ViewerProvider } from '../../viewer/context/viewer.jsx';
 import { CameraProvider } from '../../viewer/context/camera.jsx';
+import { SceneIndexingProvider, SceneProvider } from '../../viewer/context/scene.jsx';
 
 const Browser = () => (
   <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
     <CameraProvider>
     <WorkerProvider>
     <ViewerProvider>
+    <SceneProvider>
+    <SceneIndexingProvider>
       <VZomeAppBar title='Browser'
         about={ <>
           <Typography gutterBottom>
@@ -43,6 +46,8 @@ const Browser = () => (
           </Typography>
         </> } />
       <DesignBrowser />
+    </SceneIndexingProvider>
+    </SceneProvider>
     </ViewerProvider>
     </WorkerProvider>
     </CameraProvider>

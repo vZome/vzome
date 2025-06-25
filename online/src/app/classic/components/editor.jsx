@@ -8,24 +8,22 @@ import ToggleButtonGroup from "@suid/material/ToggleButtonGroup";
 import { LabelDialog } from '../dialogs/label.jsx';
 
 import { useCamera } from '../../../viewer/context/camera.jsx';
-import { useViewer } from '../../../viewer/context/viewer.jsx';
 import { InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
 import { useEditor } from '../../framework/context/editor.jsx';
 import { resumeMenuKeyEvents, suspendMenuKeyEvents } from '../context/commands.jsx';
 import { SceneCanvas } from '../../../viewer/index.jsx';
 
 import { SnapCameraTool } from '../tools/snapcamera.jsx';
-import { SelectionTool } from '../tools/selection.jsx';
-import { StrutDragTool } from '../tools/strutdrag.jsx';
 import { ContextualMenuArea } from '../../framework/menus.jsx';
 import { ContextualMenu } from '../menus/contextmenu.jsx';
 import { UnifiedTool } from '../tools/unified.jsx';
+import { useScene } from '../../../viewer/context/scene.jsx';
 
 export const SceneEditor = ( props ) =>
 {
   const { setState } = useEditor();
   const { setLighting } = useCamera();
-  const { scene } = useViewer();
+  const { scene } = useScene();
   const [ viewing, setViewing ] = createSignal( false );
   const toolValue = () => viewing()? 'camera' : 'select';
 

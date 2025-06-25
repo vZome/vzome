@@ -111,13 +111,13 @@ const injectCameraState = ( cameraState, camera ) =>
   camera.fov = cameraFieldOfViewY( cameraState )( 1.0 );
 }
 
-export const createDefaultCameraStore = () => createStore( { ...defaultScene() } );
+const createDefaultCameraStore = () => createStore( { ...defaultScene() } );
 
 const CameraContext = createContext( {} );
 
 const CameraProvider = ( props ) =>
 {
-  const [ state, setState ] = props.cameraStore || createDefaultCameraStore();
+  const [ state, setState ] = createDefaultCameraStore();
 
   if ( !! props.distance ) {
     setState( 'camera', fixedFrustum( props.distance ) );
@@ -125,6 +125,14 @@ const CameraProvider = ( props ) =>
 
   if ( props.outlines !== undefined ) {
     setState( 'outlines', props.outlines );
+  }
+
+  if ( !! props.lighting ) {
+    setState( 'lighting', props.lighting );
+  }
+
+  if ( props.tweening?.duration !== undefined ) {
+    setState( 'tweening', 'duration', props.tweening.duration );
   }
 
   const setCamera = loadedCamera =>
@@ -189,14 +197,12 @@ const CameraProvider = ( props ) =>
     return [ vec.x, vec.y, vec.z ];
   }
 
-  const setDistance = distance =>
-  {
-    setCamera( fixedFrustum( distance ) );
-  }
+  const setDistance = distance => setCamera( fixedFrustum( distance ) );
 
   const setLighting = lighting => setState( 'lighting', lighting );
   const togglePerspective = () => setState( 'camera', 'perspective', val => !val );
   const toggleOutlines = () => setState( 'outlines', val => !val );
+  const setTweenDuration = duration => setState( 'tweening', 'duration', duration );
 
   const resetCamera = () =>
   {
@@ -221,6 +227,9 @@ const CameraProvider = ( props ) =>
   const tweenCamera = ( goalCamera ) =>
   {
     const { duration=0 } = state.tweening;
+
+    if ( !goalCamera )
+      return Promise.resolve();
 
     if ( duration <= 0 ) {
       setCamera( goalCamera );
@@ -284,7 +293,7 @@ const CameraProvider = ( props ) =>
   const providerValue = {
     name: props.name,
     perspectiveProps, trackballProps, state,
-    resetCamera, setCamera, tweenCamera, cancelTweens, setLighting, togglePerspective, toggleOutlines, setDistance, mapViewToWorld,
+    resetCamera, setCamera, tweenCamera, cancelTweens, setLighting, togglePerspective, toggleOutlines, setDistance, mapViewToWorld, setTweenDuration,
   };
   
   // The perspectiveProps is used to initialize PerspectiveCamera in clients.

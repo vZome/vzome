@@ -40,7 +40,8 @@ export const VZomeAppBar = ( props ) =>
             <OpenMenu pathToRoot={merged.pathToRoot} forDebugger={merged.forDebugger} />
           </Show>
           <Show when={!merged.title} >
-            <SharingDialog/>
+            {/* This is here, not in ClassicApp or ClassicEditor, because the icon appears in the app bar */}
+            <SharingDialog/>  
           </Show>
           <AboutDialog title={props.customTitle? props.title : 'vZome '+ props.title} about={props.about} />
         </Toolbar>

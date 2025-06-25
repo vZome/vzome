@@ -8,22 +8,34 @@ import { render } from 'solid-js/web';
 
 import { urlViewerCSS } from '../../viewer/urlviewer.css.js';
 import { vZomeViewerCSS } from "../vzome-viewer.css";
-import { CameraProvider, DesignViewer } from '../../viewer/index.jsx';
+import { CameraProvider, SceneViewer } from '../../viewer/index.jsx';
 import { VrmlModel } from './vrml.jsx';
-import { createDefaultCameraStore, fixedFrustum } from '../../viewer/context/camera.jsx';
+import { defaultCamera, fixedFrustum } from '../../viewer/context/camera.jsx';
 
 
-const renderVrmlViewer = ( container, src, config, store ) =>
+const renderVrmlViewer = ( container, src, config ) =>
 {
+  // These happen to be defaults that match all of George Hart's VRML
+  const preTweenDistance = 20;
+  const lighting = {
+    backgroundColor: '#3380FF',
+    ambientColor: '#909090',
+    directionalLights: [
+      { direction: [ -1, -1, -1 ], color: '#909090' },
+      // { direction: [ -0.5, -1, 0 ], color: '#909090' },
+    ]
+  };
+  const postTweenCamera = { ...defaultCamera(), ...fixedFrustum( 10 ), lookDir: [ 1, 1, 0 ] };
+
   const bindComponent = () =>
   {
     return (
-      <CameraProvider cameraStore={store}>
-        <DesignViewer config={ { ...config, allowFullViewport: true, showOutlines: false } }
+      <CameraProvider distance={preTweenDistance} lighting={lighting} >
+        <SceneViewer config={ { ...config, allowFullViewport: true, showOutlines: false } }
             componentRoot={container}
-            children3d={ <VrmlModel url={src()} /> }
+            children3d={ <VrmlModel url={src()} tweening={ { duration: 800 } } camera={ postTweenCamera } /> }
             height="100%" width="100%" >
-        </DesignViewer>
+        </SceneViewer>
       </CameraProvider>
     );
   }
@@ -39,7 +51,6 @@ export class VrmlViewerElement extends HTMLElement
   #config;
   #src
   #setSrc;
-  #cameraStore;
 
   constructor()
   {
@@ -55,26 +66,11 @@ export class VrmlViewerElement extends HTMLElement
     this.#root.appendChild( this.#container );
 
     this.#config = { preview: true, showScenes: 'none', camera: true, lighting: true, design: true, };
-
-    this.#cameraStore = createDefaultCameraStore();
-
-    const [ state, setState ] = this.#cameraStore;
-
-    // These happen to be defaults that match all of George Hart's VRML
-    setState( 'camera', fixedFrustum( 10 ) );
-    setState( 'lighting', {
-      backgroundColor: '#3380FF',
-      ambientColor: '#909090',
-      directionalLights: [
-        { direction: [ -1, -1, -1 ], color: '#909090' },
-        // { direction: [ -0.5, -1, 0 ], color: '#909090' },
-      ]
-    } );
 }
 
   connectedCallback()
   {
-    renderVrmlViewer( this.#container, this.#src, this.#config, this.#cameraStore );
+    renderVrmlViewer( this.#container, this.#src, this.#config );
   }
 
   static get observedAttributes()

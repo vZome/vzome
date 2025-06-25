@@ -28,7 +28,7 @@ import { useViewer } from "../../../viewer/context/viewer.jsx";
 import { useEditor } from '../../framework/context/editor.jsx';
 import { SceneCanvas } from "../../../viewer/scenecanvas.jsx";
 import { CameraProvider, copyOfCamera } from "../../../viewer/context/camera.jsx";
-import { SceneProvider } from "../../../viewer/context/scene.jsx"
+import { SceneIndexingProvider, SceneProvider } from "../../../viewer/context/scene.jsx"
 import { useCamera } from "../../../viewer/context/camera.jsx"
 
 export const copyScenes = (scenes) => scenes .map( scene => { const { ...all } = unwrap( scene ); return { ...all }; } );
@@ -75,8 +75,8 @@ const AddSceneButton = () =>
 
 const RemoveSceneButton = props =>
   {
-    const { sceneIndex, setSceneIndex, setReload, setEdited } = useEditor();
-    const { scenes, setScenes } = useViewer();
+    const { sceneIndex, setSceneIndex, setEdited } = useEditor();
+    const { scenes, setScenes, setReload } = useViewer();
 
     const removeScene = () =>
       {
@@ -105,8 +105,8 @@ const RemoveSceneButton = props =>
   
 const DraggableScene = (props) =>
 {
-  const { sceneIndex, setSceneIndex, setReload, setEdited } = useEditor();
-  const { setScenes } = useViewer();
+  const { sceneIndex, setSceneIndex, setEdited } = useEditor();
+  const { setScenes, setReload } = useViewer();
   const sortable = createSortable(props.item);
   const [state] = useDragDropContext();
 
@@ -179,9 +179,9 @@ const SaveCameraButton = () =>
 
 const ScenesList = () =>
 {
-  const { scenes, setScenes } = useViewer();
+  const { scenes, setScenes, setReload } = useViewer();
   const trueScenes = () => scenes .slice( 1 ); // ignore the default scene
-  const { sceneIndex, setSceneIndex, setReload, setEdited } = useEditor();
+  const { sceneIndex, setSceneIndex, setEdited } = useEditor();
   const arrowKeyListener = (evt) =>
   {
     if ( ( sceneIndex() > 1 ) && (( evt.code === "ArrowUp" ) )) {
@@ -272,9 +272,10 @@ const ScenesDialog = props =>
             <div class="scene-details">
               <div class='relative-h100'>
                 <div class='absolute-0'>
-                  <SceneProvider index={ sceneIndex() }
-                        config={{ preview: true, debug: false, labels: props.config?.labels, source: false }}>
-                    <SceneCanvas height="100%" width="100%" />
+                  <SceneProvider config={{ labels: props.config?.labels }}>
+                    <SceneIndexingProvider index={ sceneIndex() }>
+                      <SceneCanvas height="100%" width="100%" />
+                    </SceneIndexingProvider>
                   </SceneProvider>
                   <Stack class='scene-actions'>
                     <SaveCameraButton/>

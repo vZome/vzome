@@ -5,23 +5,24 @@ import FormControlLabel from '@suid/material/FormControlLabel';
 import Switch from '@suid/material/Switch';
 
 // Reusing app and viewer infrastructure
-import { useViewer } from '../../viewer/context/viewer.jsx';
 import { LightedTrackballCanvas } from '../../viewer/ltcanvas.jsx';
 import { ShapedGeometry } from '../../viewer/geometry.jsx';
 import { CameraProvider } from "../../viewer/context/camera.jsx";
 
 import { ALL_ORBITS, ModelWorker, labelString, useCellOrbits } from './state.jsx';
+import { useScene, useSceneTitles } from "../../viewer/context/scene.jsx";
 
 
 const CellOrbitScene = props =>
 {
-  const { scene, requestScene } = useViewer();
+  const { scene } = useScene();
+  const { showTitledScene } = useSceneTitles();
   const { state: toggles } = useCellOrbits();
   const showCell = () => toggles[ props.cell ];
   const { showCutaway } = useContext( ViewOptions );
 
   createEffect( () => {
-    requestScene( showCutaway()? 'cutaway' : 'full', { camera: false, lighting: false } );
+    showTitledScene( showCutaway()? 'cutaway' : 'full', { camera: false } );
   });
 
   // The group is necessary due to a defect in solid-three regarding conditional components
