@@ -1,12 +1,11 @@
 
-import { createSignal } from 'solid-js';
-import { unwrap } from 'solid-js/store';
+import { batch, createSignal } from 'solid-js';
 
 import Button from "@suid/material/Button"
 
 import { resumeMenuKeyEvents, suspendMenuKeyEvents } from '../context/commands.jsx';
-import { ScenesDialog } from '../dialogs/scenes.jsx';
-import { useCamera } from '../../../viewer/context/camera.jsx';
+import { insertScene, ScenesDialog } from '../dialogs/scenes.jsx';
+import { copyOfCamera, useCamera } from '../../../viewer/context/camera.jsx';
 import { useEditor } from '../../framework/context/editor.jsx';
 import { useViewer } from '../../../viewer/context/viewer.jsx';
 
@@ -14,9 +13,9 @@ export const SceneControls = () =>
   {
     const buttonStyle = { margin: '4px', 'min-width': '10rem' };
     const [ showScenes, setShowScenes ] = createSignal( false );
-    const { rootController, controllerAction, sceneIndex, setSceneIndex } = useEditor();
+    const { expectResponse, sceneIndex, setSceneIndex } = useEditor();
     const { state: { camera } } = useCamera();
-    const { scenes } = useViewer();
+    const { scenes, setScenes, setReload } = useViewer();
     const noScenes = () => !scenes || scenes.length < 2;
 
     const doOpen = () =>
@@ -24,6 +23,7 @@ export const SceneControls = () =>
       if ( sceneIndex() === 0 ) {
         setSceneIndex( 1 );
       }
+      setReload( true );
       setShowScenes( true );
       suspendMenuKeyEvents();
     }
@@ -36,10 +36,15 @@ export const SceneControls = () =>
     
     const doCapture = () =>
     {
-      const params = { after: sceneIndex(), camera: unwrap( camera ) };
-      controllerAction( rootController(), 'captureScene', params );
-      setSceneIndex( i => ++i );
-      doOpen();
+      expectResponse( '', 'captureSnapshot', {} )
+        .then( snapshot => {
+          const newScene = { title: '', content: ' ', snapshot, camera: copyOfCamera( camera ) };
+          batch( () => {
+            setScenes( scenes => insertScene( scenes, newScene, sceneIndex() + 1 ) );
+            setSceneIndex( i => ++i );
+          });    
+          doOpen();
+        });
     }
   
     return (

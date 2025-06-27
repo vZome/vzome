@@ -4,7 +4,7 @@ import { render } from 'solid-js/web';
 
 import { vZomeViewerCSS } from "../vzome-viewer.css";
 import { urlViewerCSS } from "../../viewer/urlviewer.css.js";
-import { CameraProvider, DesignViewer } from "../../viewer/index.jsx";
+import { CameraProvider, SceneViewer } from "../../viewer/index.jsx";
 import { GltfModel } from './gltf.jsx';
 
 
@@ -14,11 +14,11 @@ const renderGlTFViewer = ( container, config ) =>
   {
     return (
       <CameraProvider>
-        <DesignViewer config={ { ...config, allowFullViewport: true, showOutlines: false } }
+        <SceneViewer config={ { ...config, allowFullViewport: true, showOutlines: false } }
             componentRoot={container}
             children3d={ <GltfModel url={config.url} /> }
             height="100%" width="100%" >
-        </DesignViewer>
+        </SceneViewer>
       </CameraProvider>
     );
   }

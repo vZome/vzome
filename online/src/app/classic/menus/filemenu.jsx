@@ -34,7 +34,7 @@ export const FileMenu = () =>
 {
   const { rootController, state, setState,
     createDesign, openDesignFile, fetchDesignUrl, importMeshFile, guard, edited } = useEditor();
-  const { setProblem } = useViewer();
+  const { setProblem, scenes } = useViewer();
   const { state: cameraState, mapViewToWorld } = useCamera();
   const [ showDialog, setShowDialog ] = createSignal( false );
   const fields = () => controllerProperty( rootController(), 'fields', 'fields', true );
@@ -148,7 +148,7 @@ export const FileMenu = () =>
     const lighting = unwrap( cameraState.lighting );
     lighting .directionalLights .forEach( light => light .worldDirection = mapViewToWorld( light.direction ) );
 
-    controllerExportAction( rootController(), format, { camera, lighting, ...params } )
+    controllerExportAction( rootController(), format, { camera, lighting, scenes: unwrap( scenes ), ...params } )
       .then( text => {
         const name = (state.designName || 'untitled') .concat( "." + extension );
         saveTextFileAs( name, text, mimeType );

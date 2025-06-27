@@ -21,43 +21,103 @@ import ShareIcon from "@suid/icons-material/Share";
 import Link from '@suid/material/Link';
 import { Tooltip } from '../../framework/tooltip.jsx'
 
+import { CameraProvider, DesignViewer } from '../../../viewer/index.jsx'
+
 import { useViewer } from "../../../viewer/context/viewer.jsx";
 import { useEditor } from '../../framework/context/editor.jsx';
 import { resumeMenuKeyEvents, suspendMenuKeyEvents } from '../context/commands.jsx';
 import { getUserRepos } from "../../../both-contexts.js";
+import { useCamera } from "../../../viewer/context/camera.jsx";
+import { ZometoolInstructions } from "../../../wc/zometool/index.jsx";
+import { instructionsCSS } from "../../../wc/zometool/zometool.css.js";
+import { SceneIndexingProvider, SceneProvider, useSceneIndexing } from "../../../viewer/context/scene.jsx";
+import { urlViewerCSS } from "../../../viewer/urlviewer.css.js";
 
-const AUTHENTICATING = 0;
-const CHOOSING_REPO = 1;
-const CONFIGURING = 2;
-const UPLOADING = 3;
+const CONFIGURING = 1;
+const AUTHENTICATING = 2;
+const CHOOSING_REPO = 3;
+const UPLOADING = 4;
 
-const ConfigPage = ( props ) =>
+const IndexButtons = (props) =>
 {
-  const { state, setState } = useEditor();
   const { scenes } = useViewer();
+  const { showIndexedScene } = useSceneIndexing();
+  const [ index, setIndex ] = createSignal( 1 );
+  createEffect( () => {
+    showIndexedScene( index(), { camera: props.loadCamera } );
+  } );
+
+  const changeScene = delta => evt => setIndex( i => i + delta );
+
+  return (
+    <div class="vzome-viewer-buttons">
+      <button class="vzome-viewer-prev-button" onClick={ changeScene( -1 ) } disabled={ index() === 1 } >Previous</button>
+      <button class="vzome-viewer-next-button" onClick={ changeScene( +1 ) } disabled={ index() === scenes.length-1 } >Next</button>
+    </div>
+  );
+}
+
+const ViewerPreview = ( props ) =>
+{
+  const normalizedStyle = () =>
+    ( props.scenesStyle === 'indexed-camera' )? 'indexed' :
+    ( props.scenesStyle === 'zometool' )? 'none' : props.scenesStyle;
+
+  const viewerConfig = () => ({
+    allowFullViewport: true,
+    showScenes: normalizedStyle(),
+  });
+  
+  let zometoolRef;
+  createEffect( () => { if (props.scenesStyle === 'zometool') zometoolRef.textContent = urlViewerCSS + instructionsCSS; } );
+
+  return (
+    <SceneIndexingProvider>              
+      <Show when={ props.scenesStyle !== 'zometool' } fallback={
+        <div style={{ height: '100%' }}>
+          <style ref={zometoolRef}></style>
+          <ZometoolInstructions style={{ position: 'relative', height: '100%' }} height='100%' width='100%'
+              config={ viewerConfig() }/>
+        </div>
+      } >
+        <Show when={ props.scenesStyle === "indexed" } >
+          <IndexButtons loadCamera={false}/>
+        </Show>
+        {/* Best to have two of these, so changing the style reinitializes the index */}
+        <Show when={ props.scenesStyle === "indexed-camera" } >
+          <IndexButtons loadCamera={true}/>
+        </Show>
+        <DesignViewer config={ viewerConfig() } style={{ position: 'relative', height: '100%' }} height='100%' width='100%' />
+      </Show>
+    </SceneIndexingProvider>
+  );
+}
+
+const ConfigPage = () =>
+{
+  const { state, setState, sceneIndex } = useEditor();
+  const { scenes, setScenes } = useViewer();
+  const { state: { camera: mainCamera } } = useCamera();
   const noScenes = () => scenes.length < 2;
 
   createEffect( () => {
-    let indexed = true;
-    scenes .slice( 1 ) .map( scene => {
-      if ( scene.title ) indexed = false;
-    });
-    const style = noScenes()? 'none' : indexed? 'indexed' : 'menu (all)';
-    setState( 'sharing', { style } );
-  });
+    // console.log( 'ConfigPage created; syncing default scene camera' );
+    setScenes( 0, 'camera', unwrap( mainCamera ) );
+  } );
 
   const handleTitleEntered = (event) => {
-    setState( 'sharing', { title: event.target.value } );
+    setState( 'sharing', 'title', event.target.value );
   }
   const handleDescriptionEntered = (event) => {
-    setState( 'sharing', { description: event.target.value } );
+    setState( 'sharing', 'description', event.target.value );
   }
   const handleStyleChange = (event) => {
-    setState( 'sharing', { style: event.target.value } );
+    setState( 'sharing', 'style', event.target.value );
   }
 
   return (
-    <>
+    <div class="sharing-config">
+    <div class="sharing-config-controls">
       <TextField onChange={handleTitleEntered}
         autoFocus
         margin="dense"
@@ -86,26 +146,26 @@ const ConfigPage = ( props ) =>
           onChange={handleStyleChange}
         >
           <MenuItem value='indexed'>Next/Prev Buttons</MenuItem>
-          <MenuItem value='indexed (load-camera)'>Next/Prev Buttons (load-camera)</MenuItem>
-          <MenuItem value='menu (named)'>Menu (named)</MenuItem>
-          <MenuItem value='menu (all)'>Menu (all)</MenuItem>
+          <MenuItem value='indexed-camera'>Next/Prev Buttons (load-camera)</MenuItem>
+          <MenuItem value='titled'>Menu (titled)</MenuItem>
+          <MenuItem value='all'>Menu (all)</MenuItem>
           <MenuItem value='zometool'>Zometool Instructions</MenuItem>
           <MenuItem value='none'>None</MenuItem>
         </Select>
       </FormControl>
-      <FormControl sx={{ 'padding-top': '20px', m: 1, minWidth: 290 }} >
-        <FormGroup aria-label="blog" row>
-          <FormControlLabel
-            control={<Checkbox checked={props.blog} onChange={ () => props.setBlog( v => !v ) } />}
-            label="Create blog post"
-          />
-          <FormControlLabel
-            control={<Checkbox disabled={!props.blog} checked={props.publish} onChange={ () => props.setPublish( v => !v ) } />}
-            label="Publish immediately"
-          />
-        </FormGroup>
-      </FormControl>
-    </>
+    </div>
+      <fieldset class="viewer-preview">
+        <legend><span>viewer preview</span></legend>
+        <div class="viewer-preview-inner">
+          <CameraProvider>
+            <SceneProvider index={ sceneIndex() } passive={true} config={{ preview: true, debug: false, labels: true, source: false }}>
+              {/* <ViewerPreview scenesStyle={ state.sharing.style } camera={ copyOfCamera( mainCamera ) } /> */}
+              <ViewerPreview scenesStyle={ state.sharing.style } />
+            </SceneProvider>
+          </CameraProvider>
+        </div>
+      </fieldset>
+    </div>
   );
 }
 
@@ -116,7 +176,7 @@ export const SharingDialog = ( props ) =>
   const [ repo, setRepo ] = createSignal( null );
   const [ repos, setRepos ] = createSignal( [] );
   const [ error, setError ] = createSignal( '' );
-  const [ stage, setStage ] = createSignal( AUTHENTICATING );
+  const [ stage, setStage ] = createSignal( CONFIGURING );
   const [ disabled, setDisabled ] = createSignal( true );
   const [ blog, setBlog ] = createSignal( false );
   const [ publish, setPublish ] = createSignal( false );
@@ -126,38 +186,47 @@ export const SharingDialog = ( props ) =>
   const TARGET_KEY = 'classic-github-target-details';
 
   const handleClickOpen = () => {
-    setStage( CHOOSING_REPO );
     setError( '' );
     suspendMenuKeyEvents();
-    setOpen( true );  
-    const target = localStorage .getItem( TARGET_KEY );
-    if ( !!target ) {
-      const stored = JSON.parse( target );
-      setTarget( stored );
-      getUserRepos( stored )
-        .then( repos => {
-          if ( repos.length === 0 ) {
-            setError( 'You are authenticated to GitHub, but no repositories were found.  Please create a repository.' );
-          } else {
-            const { orgName, repoName } = stored;
-            setRepo( orgName + '/' + repoName );
-            setRepos( repos );
-            setDisabled( false );
-          }
-        })
-        .catch( error => {
-          setError( `Unable to list GitHub repos: ${error.message}` );
-        } );
-    } else {
-      setStage( AUTHENTICATING );
-      setDisabled( true );
-    }
+    setDisabled( false );
+    setStage( CONFIGURING );
+    setOpen( true );
+    return;
   };
+
   const handleCancel = () => {
     setOpen( false );
     resumeMenuKeyEvents();
   };
-  const handleShare = () =>{
+  
+  const nextState = () =>
+  {
+    if ( stage()===CONFIGURING ) {
+      const target = localStorage .getItem( TARGET_KEY );
+      if ( !!target ) {
+        setStage( CHOOSING_REPO );
+        const stored = JSON.parse( target );
+        setTarget( stored );
+        getUserRepos( stored )
+          .then( repos => {
+            if ( repos.length === 0 ) {
+              setError( 'You are authenticated to GitHub, but no repositories were found.  Please create a repository.' );
+            } else {
+              const { orgName, repoName } = stored;
+              setRepo( orgName + '/' + repoName );
+              setRepos( repos );
+              setDisabled( false );
+            }
+          })
+          .catch( error => {
+            setError( `Unable to list GitHub repos: ${error.message}` );
+          } );
+      } else {
+        setStage( AUTHENTICATING );
+        setDisabled( true );
+      }
+      return;
+    }
     if ( stage()===AUTHENTICATING ) {
       setStage( CHOOSING_REPO );
       getUserRepos( target() )
@@ -175,10 +244,6 @@ export const SharingDialog = ( props ) =>
       const newTarget = { token, orgName, repoName, branchName };
       setTarget( newTarget );
       localStorage .setItem( TARGET_KEY, JSON.stringify( newTarget ) );
-      setStage( CONFIGURING );
-      return;
-    }
-    if ( stage()===CONFIGURING ) {
       setStage( UPLOADING );
       setDisabled( true );
       shareToGitHub( unwrap( target() ), blog(), publish() )
@@ -199,7 +264,7 @@ export const SharingDialog = ( props ) =>
   const handleRepoChange = (event) => {
     setRepo( event.target.value );
   };
-  
+
   return (
     <>
       <Tooltip title='Share to GitHub' aria-label="share">
@@ -207,7 +272,7 @@ export const SharingDialog = ( props ) =>
           <ShareIcon fontSize="large"/>
         </IconButton>
       </Tooltip>
-      <Dialog open={open()} onClose={handleCancel} aria-labelledby="form-dialog-title" maxWidth='sm' fullWidth={true}>
+      <Dialog open={open()} onClose={handleCancel} aria-labelledby="form-dialog-title" maxWidth='lg' fullWidth={false}>
         <DialogTitle id="form-dialog-title">{error()? 'GitHub Sharing Error' : 'Share to GitHub' }</DialogTitle>
         <DialogContent>
           <Switch fallback={
@@ -238,10 +303,22 @@ export const SharingDialog = ( props ) =>
               />
             </Match>
             <Match when={stage()===CHOOSING_REPO}>
+              <FormControl sx={{ 'padding-block': '20px', m: 1, minWidth: 290 }} >
+                <FormGroup aria-label="blog" row>
+                  <FormControlLabel
+                    control={<Checkbox checked={blog()} onChange={ () => setBlog( v => !v ) } />}
+                    label="Create blog post"
+                  />
+                  <FormControlLabel
+                    control={<Checkbox disabled={!blog()} checked={publish()} onChange={ () => setPublish( v => !v ) } />}
+                    label="Publish immediately"
+                  />
+                </FormGroup>
+              </FormControl>
               <DialogContentText>
                 Select a GitHub repository:
               </DialogContentText>
-              <FormControl sx={{ 'padding-top': '20px', m: 1, minWidth: 290 }} size="medium" >
+              <FormControl sx={{ 'padding-block': '20px', m: 1, minWidth: 290 }} size="medium" >
                 <Show when={repos().length > 0} fallback={
                   <DialogContentText sx={{ 'font-style': 'italic' }}>loading...</DialogContentText>
                 }>
@@ -258,7 +335,7 @@ export const SharingDialog = ( props ) =>
               </FormControl>
             </Match>
             <Match when={stage()===CONFIGURING}>
-              <ConfigPage blog={blog()} setBlog={setBlog} publish={publish()} setPublish={setPublish} />
+              <ConfigPage/>
             </Match>
           </Switch>
         </DialogContent>
@@ -266,8 +343,8 @@ export const SharingDialog = ( props ) =>
           <Button onClick={handleCancel} color="secondary">
             Cancel
           </Button>
-          <Button disabled={disabled() || error()} onClick={handleShare} color="primary">
-            { stage()===AUTHENTICATING? 'Authenticate' : stage()===CHOOSING_REPO? 'Confirm' : 'Share' }
+          <Button disabled={disabled() || error()} onClick={nextState} color="primary">
+            { stage()===AUTHENTICATING? 'Authenticate' : stage()===CONFIGURING? 'Confirm' : 'Share' }
           </Button>
         </DialogActions>
       </Dialog>

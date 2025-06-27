@@ -729,7 +729,6 @@ const makeFloatMatrices = ( matrices ) =>
       getOrbitSource, getBall,
       snapshotNodes: [ '--END--' ],
       scenes: [],
-      camera: {},
       editor,
       field, legacyField, fieldApp,
       renderedModel, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };

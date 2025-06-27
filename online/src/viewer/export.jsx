@@ -45,7 +45,7 @@ export const ExportMenu = (props) =>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal mount={props.root}>
         <DropdownMenu.Content class="exports__content">
-          <DropdownMenu.Item closeOnSelect={true} class="exports__item">
+          <DropdownMenu.Item closeOnSelect={true} class="exports__item" disabled={ ! source?.url }>
             <Link class="link" href={ editUrlBase + source.url } target="_blank" rel="noopener">
               Open in Online vZome
             </Link>

@@ -10,17 +10,17 @@ import { ToolsMenu } from './menus/toolsmenu.jsx';
 import { SystemMenu } from './menus/systemmenu.jsx';
 import { HelpMenu } from './menus/help.jsx';
 
-import { controllerProperty, useEditor } from '../framework/context/editor.jsx';
+import { useEditor } from '../framework/context/editor.jsx';
 
 import { VZomeAppBar } from './components/appbar.jsx';
 import { ClassicEditor } from './classic.jsx';
 import { SymmetryProvider } from './context/symmetry.jsx';
 import { CommandsProvider } from './context/commands.jsx';
+import { SceneChangeListener } from '../../viewer/context/scene.jsx';
 
 const Persistence = () =>
 {
-  const { state, rootController } = useEditor();
-  const edited = () => controllerProperty( rootController(), 'edited' ) === 'true';
+  const { state, edited } = useEditor();
   return (
     <div class='persistence' >
       <Show when={state?.designName} >
@@ -72,6 +72,10 @@ export const ClassicApp = () =>
             </Typography>
           </> }
         />
+
+        {/* This hooks up the main scene to worker changes */}
+        <SceneChangeListener/>
+
         <ClassicEditor/>
       </CommandsProvider>
     </SymmetryProvider>

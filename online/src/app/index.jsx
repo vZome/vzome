@@ -7,7 +7,6 @@ import Typography from '@suid/material/Typography'
 import Link from '@suid/material/Link'
 
 // import { DesignHistoryInspector } from './components/inspector.jsx'
-import { getModelURL } from './classic/components/folder.jsx';
 import { VZomeAppBar } from './classic/components/appbar.jsx';
 import { WorkerProvider } from '../viewer/context/worker.jsx';
 import { ViewerProvider } from '../viewer/context/viewer.jsx';
@@ -16,6 +15,7 @@ import { CameraProvider } from '../viewer/context/camera.jsx';
 import { EditorProvider } from './framework/context/editor.jsx';
 import { ImageCaptureProvider } from '../viewer/context/export.jsx';
 import { ClassicApp } from './classic/index.jsx';
+import { SceneIndexingProvider, SceneProvider } from '../viewer/context/scene.jsx';
 
 const queryParams = new URLSearchParams( window.location.search );
 const relativeUrl = queryParams.get( 'url' ); // support for legacy viewer usage (old vZome shares)
@@ -57,7 +57,9 @@ const LegacyViewer = () =>
           Click on the folder icon try out some of the built-in designs, or load one of your own!
         </Typography>
       } />
-      <DesignViewer height="100%" width="100%" config={ { useSpinner: true, showScenes: 'named' } } />
+      <SceneIndexingProvider>
+        <DesignViewer height="100%" width="100%" config={ { useSpinner: true, showScenes: 'titled' } } />
+      </SceneIndexingProvider>
     </>
   );
 }
@@ -77,7 +79,9 @@ const Online = () =>
           <ImageCaptureProvider>
             <ViewerProvider config={config}>
               <EditorProvider>
-                { legacyViewerMode? <LegacyViewer/> : <ClassicApp/>}
+                <SceneProvider>
+                  {legacyViewerMode ? <LegacyViewer /> : <ClassicApp />}
+                </SceneProvider>
               </EditorProvider>
             </ViewerProvider>
           </ImageCaptureProvider>

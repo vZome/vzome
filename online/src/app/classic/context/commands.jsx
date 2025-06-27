@@ -6,6 +6,7 @@ import { controllerExportAction, subController, useEditor } from "../../framewor
 import { useCamera } from "../../../viewer/context/camera.jsx";
 import { useSymmetry } from './symmetry.jsx';
 import { saveTextFileAs, saveTextFile } from "../../../viewer/util/files.js";
+import { useViewer } from "../../../viewer/context/viewer.jsx";
 
 let menuKeyEventsSuspended = false;
 
@@ -16,40 +17,42 @@ const CommandsContext = createContext();
 
 export const CommandsProvider = props =>
 {
-  const { rootController, controllerAction, state, setState } = useEditor();
+  const { rootController, controllerAction, state, setState, setEdited } = useEditor();
   const { showPolytopesDialog, symmetryController } = useSymmetry();
   const { state: cameraState } = useCamera();
+  const { scenes } = useViewer();
   const globalAction   = action => () => controllerAction( rootController(), action );
   const undoRedoAction = action => () => controllerAction( subController( rootController(), 'undoRedo' ), action );
   const symmetryAction = ( symm, action ) => () => controllerAction( subController( rootController(), `symmetry.${symm}` ), action );
   
   const doSave = ( chooseFile = false ) =>
-    {
-      let name;
-      const { camera, lighting } = unwrap( cameraState );
-      controllerExportAction( rootController(), 'vZome', { camera, lighting } )
-        .then( text => {
-          name = state?.designName || 'untitled';
-          const mimeType = 'application/xml';
-          if ( state.fileHandle && !chooseFile )
-            return saveTextFile( state.fileHandle, text, mimeType )
-          else
-            return saveTextFileAs( name + '.vZome', text, mimeType );
-        })
-        .then( result => {
-          const { handle, success } = result;
-          if ( success ) {
-            if ( !!handle ) { // file system API supported
-              setState( 'fileHandle', handle );
-              name = handle.name;
-              if ( name .toLowerCase() .endsWith( '.vZome' .toLowerCase() ) )
-                name = name .substring( 0, name.length - 6 );
-            }
-            setState( 'designName', name ); // cooperatively managed by both worker and client
-            controllerAction( rootController(), 'clearChanges' );
+  {
+    let name;
+    const { camera, lighting } = unwrap( cameraState );
+    controllerExportAction( rootController(), 'vZome', { camera, lighting, scenes: unwrap( scenes ) } )
+      .then( text => {
+        name = state?.designName || 'untitled';
+        const mimeType = 'application/xml';
+        if ( state.fileHandle && !chooseFile )
+          return saveTextFile( state.fileHandle, text, mimeType )
+        else
+          return saveTextFileAs( name + '.vZome', text, mimeType );
+      })
+      .then( result => {
+        const { handle, success } = result;
+        if ( success ) {
+          if ( !!handle ) { // file system API supported
+            setState( 'fileHandle', handle );
+            name = handle.name;
+            if ( name .toLowerCase() .endsWith( '.vZome' .toLowerCase() ) )
+              name = name .substring( 0, name.length - 6 );
           }
-        })
-    }
+          setState( 'designName', name ); // cooperatively managed by both worker and client
+          controllerAction( rootController(), 'clearChanges' );
+          setEdited( false );
+        }
+      })
+  }
   
   const doCut = () =>
   {
@@ -60,24 +63,24 @@ export const CommandsProvider = props =>
       });
   }
   const doCopy = () =>
-    {
-      controllerExportAction( rootController(), 'cmesh', { selection: true } )
-        .then( text => {
-          navigator.clipboard .writeText( text );
-        });
+  {
+    controllerExportAction( rootController(), 'cmesh', { selection: true } )
+      .then( text => {
+        navigator.clipboard .writeText( text );
+      });
+  }
+  const doPaste = () =>
+  {
+    if ( ! navigator.clipboard .readText ) {
+      console.warn( 'Clipboard paste is not supported in this browser.' );
+      setState( 'problem', 'Clipboard paste is not supported in this browser.' );
+      return;
     }
-    const doPaste = () =>
-    {
-      if ( ! navigator.clipboard .readText ) {
-        console.warn( 'Clipboard paste is not supported in this browser.' );
-        setState( 'problem', 'Clipboard paste is not supported in this browser.' );
-        return;
-      }
-      navigator.clipboard .readText()
-        .then( text => {
-          controllerAction( rootController(), "ImportColoredMeshJson/clipboard", { vef: text } )
-        });
-    }
+    navigator.clipboard .readText()
+      .then( text => {
+        controllerAction( rootController(), "ImportColoredMeshJson/clipboard", { vef: text } )
+      });
+  }
       
   const commands = {};
 
