@@ -552,14 +552,6 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         // A subclass could return reciprocalFactors or perform some normalization or reduction instead of throwing an exception
     }
 
-    public final static int DEFAULT_FORMAT = 0; // 4 + 3φ
-
-    public final static int EXPRESSION_FORMAT = 1; // 4 +3*phi
-
-    public final static int ZOMIC_FORMAT = 2; // 4 3
-
-    public final static int VEF_FORMAT = 3; // (3,4)
-
     @Override
     public AlgebraicNumber zero()
     {
@@ -682,6 +674,8 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
 	 * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
 	 * {@code ZOMIC_FORMAT      // 4 3}<br>
 	 * {@code VEF_FORMAT        // (3,4)}
+     * {@code MATHML_FORMAT     // Use getMathML()}
+     * {@code MATH_FORMAT       // Originally used in JavaScript parts panel, not in Java}
      */
     void getNumberExpression( StringBuffer buf, BigRational[] factors, int format )
     {
@@ -705,7 +699,13 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
             }
             buf.append( ")" );
             break;
+            
+        case MATHML_FORMAT:
+            buf.append( this.getMathML( factors ) );
+            break;
 
+//        case DEFAULT_FORMAT:
+//        case MATH_FORMAT:
         default:
             int first = 0;
             for ( int i = 0; i < factors.length; i++ )
@@ -738,7 +738,17 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
                         if ( format == EXPRESSION_FORMAT )
                             buf .append( "*" );
                     }
-                    String multiplier = this .getIrrational( i, format );
+                    // The Java version of getIrrational() throws an exception 
+                    // if format != DEFAULT_FORMAT || format != EXPRESSION_FORMAT,
+                    // but the JavaScript version just returns 'undefined'
+                    // which then causes buf.append() to throw an invalid overload exception. 
+                    // This occurs when new formats like MATH_FORMAT
+                    // are added online and fall through to this default for non-legacy fields. 
+                    // Here we limit the value of format to avoid that issue.
+                    int fmt = format == AbstractAlgebraicField.EXPRESSION_FORMAT
+                        ? AbstractAlgebraicField.EXPRESSION_FORMAT
+                        : AbstractAlgebraicField.DEFAULT_FORMAT;
+                    String multiplier = this .getIrrational( i, fmt );
                     buf .append(  multiplier );
                 }
             }
