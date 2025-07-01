@@ -21,6 +21,13 @@ const normalizePreviewCamera = camera =>
 export const normalizePreview = ( preview ) =>
 {
   const { polygons, lights, embedding, orientations, instances } = preview;
+
+  const transpose = [ ...embedding ];
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3; j++) {
+      transpose[ i*4 + j ] = embedding[ j*4 + i ];
+    }
+  }
   
   const dlights = lights.directionalLights.map( ({ direction, color }) => {
     const { x, y, z } = direction
@@ -138,7 +145,8 @@ export const normalizePreview = ( preview ) =>
   }
 
   return {
-    embedding, orientations, polygons, shapes, instances: normalizedInstances, snapshots, // worker state
+    embedding: transpose,
+    orientations, polygons, shapes, instances: normalizedInstances, snapshots, // worker state
     scenes: normalizedScenes, lighting // client state
   };
 }
