@@ -12,6 +12,12 @@
 
 <style>
   .mathpad { margin: 8px; }
+
+  img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
+  }
+
 </style>
 
 <section id="title">
@@ -48,48 +54,9 @@
 </section>
 
 <section id="three-cards">
-  <h3>Drawing Geometric Figures</h3>
+  <h3>Drawing Polygonal Geometric Figures</h3>
   <div style="margin: 1em;">We use vectors to encode the parts of the figure.</div>
   <div style="margin: 1em;">Linear transformations (scaling, translation, and rotation) give us symmetry, similarity, and proportion.</div>
-  <div style="display: grid; grid-template-columns: 8rem 8rem 8rem; gap: 2em; height: 12rem; margin-left: 3rem;">
-    <div>
-      <img src="https://github.com/user-attachments/assets/879c2d47-74d8-4a3e-b576-332ad06a1524" />
-    </div>
-    <div class="next">
-      <img width="351" alt="12fold-tiling" src="https://github.com/user-attachments/assets/fb9f91bf-cba8-4ad8-a6b8-1aa57092b353" />
-    </div>
-    <div class="next">
-      <img src="https://nbviewer.org/github/vorth/ipython/blob/master/plasticFractal-01.png" alt="plastic-fractal">
-    </div>
-  </div>
-</section>
-
-<section id="rings-rich">
-  <h3>Kinds of Numbers</h3>
-  <ul>
-    <li>Real numbers can represent anything, but computations can introduce roundoff error, and nothing is ever exact.</li>
-    <br>
-    <li>Integer arithmetic is exact, but limits our geometry considerably.</li>
-    <br>
-    <li>There is an alternative: number systems that we can use exactly, but still give more expressiveness than integers.</li>
-  </ul>
-</section>
-
-<section id="dodec-coords">
-  <figure>
-    <div style='z-index: 1; margin-inline: 1em;'>
-      <vzome-viewer-previous viewer='Dodecahedron-coordinates' load-camera='true' label='previous'></vzome-viewer-previous>
-      <vzome-viewer-next     viewer='Dodecahedron-coordinates' load-camera='true' label='next'></vzome-viewer-next>
-    </div>
-    <vzome-viewer style="width: 100%; height: 100%" labels="true" show-perspective="false"
-        indexed='true' id="Dodecahedron-coordinates"
-        src="https://vorth.github.io/vzome-sharing/2025/02/19/16-17-17-758Z-Dodecahedron-coordinates/Dodecahedron-coordinates.vZome" >
-    </vzome-viewer>
-  </figure>
-</section>
-
-<!-- <section>
-  <h3>Linear Transformation</h3>
   <div style="margin-left: 2em;">
     <math>
       <mrow>
@@ -146,7 +113,50 @@
       </mrow>
     </math>
   </div>
-</section> -->
+  <div style="margin: 1em;">What sorts of figures can we create?</div>
+</section>
+
+<section id="plastic-fractal">
+  <figure>
+    <img style="object-fit: contain;" src="https://nbviewer.org/github/vorth/ipython/blob/master/plasticFractal-01.png" alt="plastic-fractal">
+  </figure>
+</section>
+
+<section id="plastic-fractal">
+  <figure>
+    <img style="object-fit: contain;" alt="12fold-tiling" src="../assets/12fold-tiling.png" />
+  </figure>
+</section>
+
+<section id="plastic-fractal">
+  <figure>
+    <img style="object-fit: contain;" src="../assets/all-61-zonohedron-smallest.png" alt="zonohedron">
+  </figure>
+</section>
+
+<section id="rings-rich">
+  <h3>Kinds of Numbers</h3>
+  <ul>
+    <li>Real numbers can represent anything, but computations can introduce roundoff error, and nothing is ever exact.</li>
+    <br>
+    <li>Integer arithmetic is exact, but limits our geometry considerably.</li>
+    <br>
+    <li>There is an alternative: number systems that we can use exactly, but still give more expressiveness than integers.</li>
+  </ul>
+</section>
+
+<section id="dodec-coords">
+  <figure>
+    <div style='z-index: 1; margin-inline: 1em;'>
+      <vzome-viewer-previous viewer='Dodecahedron-coordinates' load-camera='true' label='previous'></vzome-viewer-previous>
+      <vzome-viewer-next     viewer='Dodecahedron-coordinates' load-camera='true' label='next'></vzome-viewer-next>
+    </div>
+    <vzome-viewer style="width: 100%; height: 100%" labels="true" show-perspective="false"
+        indexed='true' id="Dodecahedron-coordinates"
+        src="https://vorth.github.io/vzome-sharing/2025/02/19/16-17-17-758Z-Dodecahedron-coordinates/Dodecahedron-coordinates.vZome" >
+    </vzome-viewer>
+  </figure>
+</section>
 
 <section id="golden-ratio">
   <h3>The Golden Ratio</h3>
@@ -360,7 +370,7 @@
 </section>
 
 <section id="vzome-fields">
-  <h3>Symmetry in vZome</h3>
+  <h3>Rings, Fields, and Symmetry in vZome</h3>
   <div style="margin-left: 2em;">
     Let's look at how these concepts manifest in <a href="http://vzome.com/app" target="_blank" rel="noopener noreferrer">vZome</a>.
   </div>
@@ -373,8 +383,8 @@
     <br>
     <li>Analogues of the octahedron and cube in any dimension</li>
     <br>
-    <li>Want scaling? Use dyadic rationals (another ring!)</li>
-    <br>
+    <!-- <li>Want scaling? Use dyadic rationals (another ring!)</li>
+    <br> -->
     <li>Peter Pearce, <a href="https://pjpearcedesign.com/index.php/play/educational-toys-games/geometry-kits/" target="_blank" rel="noopener noreferrer">Synestructics SuperStructures</a></li>
   </ul>
 </section>
