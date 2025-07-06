@@ -59,7 +59,7 @@ subtitle: The basic geometry of Zometool balls and struts
     } );
     welcomeViewer .addEventListener( "vzome-design-rendered", ( { detail: scene } ) => {
       const { index } = scene;
-      titleText .innerHTML = scenes[ index ] .title;
+      // titleText .innerHTML = scenes[ index ] .title;
       descriptionText .innerHTML = scenes[ index ] .content;
     } );
 
