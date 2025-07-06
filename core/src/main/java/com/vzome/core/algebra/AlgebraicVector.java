@@ -174,10 +174,12 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
      * Formats an AlgebraicVector as a String using the specified format.
      *  
      * @param format may be any of the following:
-     * {@code AlgebraicField.DEFAULT_FORMAT = 0; // 4 + 3φ}
+     * {@code AlgebraicField.DEFAULT_FORMAT = 0;    // 4 + 3φ}
      * {@code AlgebraicField.EXPRESSION_FORMAT = 1; // 4 +3*phi}
-     * {@code AlgebraicField.ZOMIC_FORMAT = 2; // 4 3}
-     * {@code AlgebraicField.VEF_FORMAT = 3; // (3,4)}
+     * {@code AlgebraicField.ZOMIC_FORMAT = 2;      // 4 3}
+     * {@code AlgebraicField.VEF_FORMAT = 3;        // (3,4)}
+     * {@code AlgebraicField.MATHML_FORMAT = 4;     // Use getMathML()}
+     * {@code AlgebraicField.MATH_FORMAT = 5;       // Originally used in JavaScript parts panel, not in Java}
      * 
      * @return this vector formatted as specified
      */
@@ -301,10 +303,12 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
      * 
      * @param buf a StringBuffer to which the formatted vector will be appended.
      * @param format may be any of the following:
-     * {@code AlgebraicField.DEFAULT_FORMAT = 0; // 4 + 3φ}
+     * {@code AlgebraicField.DEFAULT_FORMAT = 0;    // 4 + 3φ}
      * {@code AlgebraicField.EXPRESSION_FORMAT = 1; // 4 +3*phi}
-     * {@code AlgebraicField.ZOMIC_FORMAT = 2; // 4 3}
-     * {@code AlgebraicField.VEF_FORMAT = 3; // (3,4)}
+     * {@code AlgebraicField.ZOMIC_FORMAT = 2;      // 4 3}
+     * {@code AlgebraicField.VEF_FORMAT = 3;        // (3,4)}
+     * {@code AlgebraicField.MATHML_FORMAT = 4;     // Use getMathML()}
+     * {@code AlgebraicField.MATH_FORMAT = 5;       // Originally used in JavaScript parts panel, not in Java}
      */
     public void getVectorExpression( StringBuffer buf, int format )
     {
@@ -329,10 +333,12 @@ public final class AlgebraicVector implements Comparable<AlgebraicVector>
      * TODO: Avoid the redundancy by deprecating this method, then replacing it with toString(format)
      *  
      * @param format may be any of the following:
-     * {@code AlgebraicField.DEFAULT_FORMAT = 0; // 4 + 3φ}
+     * {@code AlgebraicField.DEFAULT_FORMAT = 0;    // 4 + 3φ}
      * {@code AlgebraicField.EXPRESSION_FORMAT = 1; // 4 +3*phi}
-     * {@code AlgebraicField.ZOMIC_FORMAT = 2; // 4 3}
-     * {@code AlgebraicField.VEF_FORMAT = 3; // (3,4)}
+     * {@code AlgebraicField.ZOMIC_FORMAT = 2;      // 4 3}
+     * {@code AlgebraicField.VEF_FORMAT = 3;        // (3,4)}
+     * {@code AlgebraicField.MATHML_FORMAT = 4;     // Use getMathML()}
+     * {@code AlgebraicField.MATH_FORMAT = 5;       // Originally used in JavaScript parts panel, not in Java}
      * 
      * @return this vector formatted as specified
      */
