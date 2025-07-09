@@ -99,6 +99,10 @@ namespace com.vzome.core.algebra {
 
         dividedBy(that: AlgebraicNumber): AlgebraicNumber;
 
+        /**
+         * 
+         * @return {number}
+         */
         evaluate(): number;
 
         isRational(): boolean;
@@ -139,6 +143,8 @@ namespace com.vzome.core.algebra {
          * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
          * {@code ZOMIC_FORMAT      // 4 3}<br>
          * {@code VEF_FORMAT        // (3,4)}<br>
+         * {@code MATHML_FORMAT     // Use getMathML()}
+         * {@code MATH_FORMAT       // Originally used in JavaScript parts panel, not in Java}
          */
         getNumberExpression(buf: java.lang.StringBuffer, format: number);
 
@@ -151,6 +157,9 @@ namespace com.vzome.core.algebra {
          * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
          * {@code ZOMIC_FORMAT      // 4 3}<br>
          * {@code VEF_FORMAT        // (3,4)}
+         * {@code MATHML_FORMAT     // Use getMathML()}
+         * {@code MATH_FORMAT       // Originally used in JavaScript parts panel, not in Java}
+         * 
          * @return {string}
          */
         toString(format: number): string;

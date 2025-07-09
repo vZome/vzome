@@ -90,7 +90,7 @@ namespace com.vzome.core.algebra {
                     return n == null ? null : n['times$com_vzome_core_algebra_AlgebraicNumber'](this.createRational$long(2));
                 };
             default:
-                for(let format: number = AbstractAlgebraicField.DEFAULT_FORMAT; format <= AbstractAlgebraicField.EXPRESSION_FORMAT; format++) {{
+                for(let format: number = com.vzome.core.algebra.AlgebraicField.DEFAULT_FORMAT; format <= com.vzome.core.algebra.AlgebraicField.EXPRESSION_FORMAT; format++) {{
                     for(let i: number = 1; i < this.getOrder(); i++) {{
                         if (this['getIrrational$int$int'](i, format) === name){
                             return this.getUnitTerm(i);
@@ -102,7 +102,7 @@ namespace com.vzome.core.algebra {
         }
 
         public getIrrational$int(i: number): string {
-            return this['getIrrational$int$int'](i, AbstractAlgebraicField.DEFAULT_FORMAT);
+            return this['getIrrational$int$int'](i, com.vzome.core.algebra.AlgebraicField.DEFAULT_FORMAT);
         }
 
         name: string;
@@ -520,14 +520,6 @@ namespace com.vzome.core.algebra {
             throw new java.lang.IllegalStateException(msg);
         }
 
-        public static DEFAULT_FORMAT: number = 0;
-
-        public static EXPRESSION_FORMAT: number = 1;
-
-        public static ZOMIC_FORMAT: number = 2;
-
-        public static VEF_FORMAT: number = 3;
-
         /**
          * 
          * @return {*}
@@ -650,6 +642,8 @@ namespace com.vzome.core.algebra {
          * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
          * {@code ZOMIC_FORMAT      // 4 3}<br>
          * {@code VEF_FORMAT        // (3,4)}
+         * {@code MATHML_FORMAT     // Use getMathML()}
+         * {@code MATH_FORMAT       // Originally used in JavaScript parts panel, not in Java}
          */
         getNumberExpression(buf: java.lang.StringBuffer, factors: com.vzome.core.algebra.BigRational[], format: number) {
             switch((format)) {
@@ -666,6 +660,9 @@ namespace com.vzome.core.algebra {
                     if (i > 1)buf.append(",");
                 };}
                 buf.append(")");
+                break;
+            case 4 /* MATHML_FORMAT */:
+                buf.append(this.getMathML(factors));
                 break;
             default:
                 let first: number = 0;
@@ -687,9 +684,10 @@ namespace com.vzome.core.algebra {
                     if (i === 0)buf.append(factor.toString()); else {
                         if (!factor.isOne()){
                             buf.append(factor.toString());
-                            if (format === AbstractAlgebraicField.EXPRESSION_FORMAT)buf.append("*");
+                            if (format === com.vzome.core.algebra.AlgebraicField.EXPRESSION_FORMAT)buf.append("*");
                         }
-                        const multiplier: string = this['getIrrational$int$int'](i, format);
+                        const fmt: number = format === com.vzome.core.algebra.AlgebraicField.EXPRESSION_FORMAT ? com.vzome.core.algebra.AlgebraicField.EXPRESSION_FORMAT : com.vzome.core.algebra.AlgebraicField.DEFAULT_FORMAT;
+                        const multiplier: string = this['getIrrational$int$int'](i, fmt);
                         buf.append(multiplier);
                     }
                 };}
@@ -848,7 +846,7 @@ namespace com.vzome.core.algebra {
                     if (!factor.isOne()){
                         buf.append(factor.getMathML());
                     }
-                    const multiplier: string = this['getIrrational$int$int'](i, AbstractAlgebraicField.DEFAULT_FORMAT);
+                    const multiplier: string = this['getIrrational$int$int'](i, com.vzome.core.algebra.AlgebraicField.DEFAULT_FORMAT);
                     buf.append("<mi>");
                     buf.append(multiplier);
                     buf.append("</mi>");

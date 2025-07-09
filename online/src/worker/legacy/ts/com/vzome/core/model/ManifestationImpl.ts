@@ -4,7 +4,7 @@ namespace com.vzome.core.model {
      * @author Scott Vorthmann
      * @class
      */
-    export abstract class ManifestationImpl implements com.vzome.core.model.GroupElement, com.vzome.core.model.Manifestation, com.vzome.core.model.HasRenderedObject {
+    export abstract class ManifestationImpl implements com.vzome.core.model.Manifestation, com.vzome.core.model.HasRenderedObject {
         mManifests: java.util.List<com.vzome.core.construction.Construction>;
 
         mRendered: com.vzome.core.render.RenderedManifestation;

@@ -337,10 +337,12 @@ namespace com.vzome.core.algebra {
          * 
          * @param {java.lang.StringBuffer} buf a StringBuffer to which the formatted vector will be appended.
          * @param {number} format may be any of the following:
-         * {@code AlgebraicField.DEFAULT_FORMAT = 0; // 4 + 3φ}
+         * {@code AlgebraicField.DEFAULT_FORMAT = 0;    // 4 + 3φ}
          * {@code AlgebraicField.EXPRESSION_FORMAT = 1; // 4 +3*phi}
-         * {@code AlgebraicField.ZOMIC_FORMAT = 2; // 4 3}
-         * {@code AlgebraicField.VEF_FORMAT = 3; // (3,4)}
+         * {@code AlgebraicField.ZOMIC_FORMAT = 2;      // 4 3}
+         * {@code AlgebraicField.VEF_FORMAT = 3;        // (3,4)}
+         * {@code AlgebraicField.MATHML_FORMAT = 4;     // Use getMathML()}
+         * {@code AlgebraicField.MATH_FORMAT = 5;       // Originally used in JavaScript parts panel, not in Java}
          */
         public getVectorExpression(buf?: any, format?: any) {
             if (((buf != null && buf instanceof <any>java.lang.StringBuffer) || buf === null) && ((typeof format === 'number') || format === null)) {
