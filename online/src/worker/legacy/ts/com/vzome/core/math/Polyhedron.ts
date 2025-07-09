@@ -309,7 +309,7 @@ namespace com.vzome.core.math {
 
     export namespace Polyhedron {
 
-        export class Face extends java.util.ArrayList<number> implements java.lang.Cloneable {
+        export class Face extends java.util.ArrayList<number> {
             public __parent: any;
             constructor(__parent: any) {
                 super();
@@ -398,7 +398,7 @@ namespace com.vzome.core.math {
             }
         }
         Face["__class"] = "com.vzome.core.math.Polyhedron.Face";
-        Face["__interfaces"] = ["java.util.RandomAccess","java.lang.Cloneable","java.util.List","java.util.Collection","java.lang.Iterable","java.io.Serializable"];
+        Face["__interfaces"] = ["java.util.RandomAccess","java.util.List","java.lang.Cloneable","java.util.Collection","java.lang.Iterable","java.io.Serializable"];
 
 
 

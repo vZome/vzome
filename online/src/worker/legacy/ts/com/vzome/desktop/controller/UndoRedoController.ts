@@ -1,6 +1,6 @@
 /* Generated from Java with JSweet 3.2.0-SNAPSHOT - http://www.jsweet.org */
 namespace com.vzome.desktop.controller {
-    export class UndoRedoController extends com.vzome.desktop.controller.DefaultController implements com.vzome.desktop.api.Controller {
+    export class UndoRedoController extends com.vzome.desktop.controller.DefaultController {
         /*private*/ model: com.vzome.core.editor.EditHistory;
 
         public constructor(model: com.vzome.core.editor.EditHistory) {

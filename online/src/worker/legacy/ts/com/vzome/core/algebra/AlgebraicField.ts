@@ -191,6 +191,10 @@ namespace com.vzome.core.algebra {
 
         export const VEF_FORMAT: number = 3;
 
+        export const MATHML_FORMAT: number = 4;
+
+        export const MATH_FORMAT: number = 5;
+
         export function getIrrationals(field: AlgebraicField): string[] {
             const len: number = field.getNumIrrationals();
             const result: string[] = (s => { let a=[]; while(s-->0) a.push(null); return a; })(len);

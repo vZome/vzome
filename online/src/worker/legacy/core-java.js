@@ -3981,33 +3981,6 @@ export var com;
                             this.orbits = new com.vzome.core.math.symmetry.OrbitSet(symmetry);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getEmbedding() {
-                            const symmetry = this.getSymmetry();
-                            const field = symmetry.getField();
-                            const embedding = (s => { let a = []; while (s-- > 0)
-                                a.push(0); return a; })(16);
-                            for (let i = 0; i < 3; i++) {
-                                {
-                                    const columnSelect = field.basisVector(3, i);
-                                    const colRV = symmetry.embedInR3(columnSelect);
-                                    embedding[i * 4 + 0] = colRV.x;
-                                    embedding[i * 4 + 1] = colRV.y;
-                                    embedding[i * 4 + 2] = colRV.z;
-                                    embedding[i * 4 + 3] = 0.0;
-                                }
-                                ;
-                            }
-                            embedding[12] = 0.0;
-                            embedding[13] = 0.0;
-                            embedding[14] = 0.0;
-                            embedding[15] = 1.0;
-                            return embedding;
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getZone(orbit, orientation) {
                             return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
@@ -4064,6 +4037,33 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getEmbedding() {
+                            const symmetry = this.getSymmetry();
+                            const field = symmetry.getField();
+                            const embedding = (s => { let a = []; while (s-- > 0)
+                                a.push(0); return a; })(16);
+                            for (let i = 0; i < 3; i++) {
+                                {
+                                    const columnSelect = field.basisVector(3, i);
+                                    const colRV = symmetry.embedInR3(columnSelect);
+                                    embedding[i * 4 + 0] = colRV.x;
+                                    embedding[i * 4 + 1] = colRV.y;
+                                    embedding[i * 4 + 2] = colRV.z;
+                                    embedding[i * 4 + 3] = 0.0;
+                                }
+                                ;
+                            }
+                            embedding[12] = 0.0;
+                            embedding[13] = 0.0;
+                            embedding[14] = 0.0;
+                            embedding[15] = 1.0;
+                            return embedding;
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
                         }
                         /**
                          *
@@ -6363,7 +6363,7 @@ export var com;
                     }
                     Polyhedron.Face = Face;
                     Face["__class"] = "com.vzome.core.math.Polyhedron.Face";
-                    Face["__interfaces"] = ["java.util.RandomAccess", "java.lang.Cloneable", "java.util.List", "java.util.Collection", "java.lang.Iterable", "java.io.Serializable"];
+                    Face["__interfaces"] = ["java.util.RandomAccess", "java.util.List", "java.lang.Cloneable", "java.util.Collection", "java.lang.Iterable", "java.io.Serializable"];
                     (function (Face) {
                         class Triangle {
                             constructor(__parent, v0, v1, v2) {
@@ -16815,33 +16815,6 @@ export var com;
                         this.setStyle(styleName);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getEmbedding() {
-                        const symmetry = this.getSymmetry();
-                        const field = symmetry.getField();
-                        const embedding = (s => { let a = []; while (s-- > 0)
-                            a.push(0); return a; })(16);
-                        for (let i = 0; i < 3; i++) {
-                            {
-                                const columnSelect = field.basisVector(3, i);
-                                const colRV = symmetry.embedInR3(columnSelect);
-                                embedding[i * 4 + 0] = colRV.x;
-                                embedding[i * 4 + 1] = colRV.y;
-                                embedding[i * 4 + 2] = colRV.z;
-                                embedding[i * 4 + 3] = 0.0;
-                            }
-                            ;
-                        }
-                        embedding[12] = 0.0;
-                        embedding[13] = 0.0;
-                        embedding[14] = 0.0;
-                        embedding[15] = 1.0;
-                        return embedding;
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getOrientations$() {
-                        return this.getOrientations(false);
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getZone(orbit, orientation) {
                         return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                     }
@@ -16919,6 +16892,33 @@ export var com;
                         }
                         else
                             throw new Error('invalid overload');
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getEmbedding() {
+                        const symmetry = this.getSymmetry();
+                        const field = symmetry.getField();
+                        const embedding = (s => { let a = []; while (s-- > 0)
+                            a.push(0); return a; })(16);
+                        for (let i = 0; i < 3; i++) {
+                            {
+                                const columnSelect = field.basisVector(3, i);
+                                const colRV = symmetry.embedInR3(columnSelect);
+                                embedding[i * 4 + 0] = colRV.x;
+                                embedding[i * 4 + 1] = colRV.y;
+                                embedding[i * 4 + 2] = colRV.z;
+                                embedding[i * 4 + 3] = 0.0;
+                            }
+                            ;
+                        }
+                        embedding[12] = 0.0;
+                        embedding[13] = 0.0;
+                        embedding[14] = 0.0;
+                        embedding[15] = 1.0;
+                        return embedding;
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getOrientations$() {
+                        return this.getOrientations(false);
                     }
                     static logger_$LI$() { if (SymmetrySystem.logger == null) {
                         SymmetrySystem.logger = java.util.logging.Logger.getLogger("com.vzome.core.editor");
@@ -18578,10 +18578,12 @@ export var com;
                      *
                      * @param {java.lang.StringBuffer} buf a StringBuffer to which the formatted vector will be appended.
                      * @param {number} format may be any of the following:
-                     * {@code AlgebraicField.DEFAULT_FORMAT = 0; // 4 + 3φ}
+                     * {@code AlgebraicField.DEFAULT_FORMAT = 0;    // 4 + 3φ}
                      * {@code AlgebraicField.EXPRESSION_FORMAT = 1; // 4 +3*phi}
-                     * {@code AlgebraicField.ZOMIC_FORMAT = 2; // 4 3}
-                     * {@code AlgebraicField.VEF_FORMAT = 3; // (3,4)}
+                     * {@code AlgebraicField.ZOMIC_FORMAT = 2;      // 4 3}
+                     * {@code AlgebraicField.VEF_FORMAT = 3;        // (3,4)}
+                     * {@code AlgebraicField.MATHML_FORMAT = 4;     // Use getMathML()}
+                     * {@code AlgebraicField.MATH_FORMAT = 5;       // Originally used in JavaScript parts panel, not in Java}
                      */
                     getVectorExpression(buf, format) {
                         if (((buf != null && buf instanceof java.lang.StringBuffer) || buf === null) && ((typeof format === 'number') || format === null)) {
@@ -18761,7 +18763,7 @@ export var com;
                                 }
                                 ;
                             default:
-                                for (let format = AbstractAlgebraicField.DEFAULT_FORMAT; format <= AbstractAlgebraicField.EXPRESSION_FORMAT; format++) {
+                                for (let format = com.vzome.core.algebra.AlgebraicField.DEFAULT_FORMAT; format <= com.vzome.core.algebra.AlgebraicField.EXPRESSION_FORMAT; format++) {
                                     {
                                         for (let i = 1; i < this.getOrder(); i++) {
                                             {
@@ -18778,7 +18780,7 @@ export var com;
                         return null;
                     }
                     getIrrational$int(i) {
-                        return this['getIrrational$int$int'](i, AbstractAlgebraicField.DEFAULT_FORMAT);
+                        return this['getIrrational$int$int'](i, com.vzome.core.algebra.AlgebraicField.DEFAULT_FORMAT);
                     }
                     /*private*/ initSmallSeries() {
                         if (this.smallSeries == null) {
@@ -19342,6 +19344,8 @@ export var com;
                      * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
                      * {@code ZOMIC_FORMAT      // 4 3}<br>
                      * {@code VEF_FORMAT        // (3,4)}
+                     * {@code MATHML_FORMAT     // Use getMathML()}
+                     * {@code MATH_FORMAT       // Originally used in JavaScript parts panel, not in Java}
                      */
                     getNumberExpression(buf, factors, format) {
                         switch ((format)) {
@@ -19368,7 +19372,7 @@ export var com;
                                 buf.append(")");
                                 break;
                             case 4 /* MATHML_FORMAT */:
-                                buf.append( this.getMathML( factors ) );
+                                buf.append(this.getMathML(factors));
                                 break;
                             default:
                                 let first = 0;
@@ -19394,19 +19398,10 @@ export var com;
                                         else {
                                             if (!factor.isOne()) {
                                                 buf.append(factor.toString());
-                                                if (format === AbstractAlgebraicField.EXPRESSION_FORMAT)
+                                                if (format === com.vzome.core.algebra.AlgebraicField.EXPRESSION_FORMAT)
                                                     buf.append("*");
                                             }
-                                            // The Java version of getIrrational() throws an exception 
-                                            // if format is out of range, but the JavaScript version
-                                            // just returns undefined which causes buf.append() 
-                                            // to throw an invalid overload exception. This occurs
-                                            // when new formats like MATH_FORMAT
-                                            // are added online and fall through to this default
-                                            // for non-legacy fields.
-                                            const fmt = format == AbstractAlgebraicField.EXPRESSION_FORMAT
-                                                ? AbstractAlgebraicField.EXPRESSION_FORMAT
-                                                : AbstractAlgebraicField.DEFAULT_FORMAT;
+                                            const fmt = format === com.vzome.core.algebra.AlgebraicField.EXPRESSION_FORMAT ? com.vzome.core.algebra.AlgebraicField.EXPRESSION_FORMAT : com.vzome.core.algebra.AlgebraicField.DEFAULT_FORMAT;
                                             const multiplier = this['getIrrational$int$int'](i, fmt);
                                             buf.append(multiplier);
                                         }
@@ -19596,7 +19591,7 @@ export var com;
                                     if (!factor.isOne()) {
                                         buf.append(factor.getMathML());
                                     }
-                                    const multiplier = this['getIrrational$int$int'](i, AbstractAlgebraicField.DEFAULT_FORMAT);
+                                    const multiplier = this['getIrrational$int$int'](i, com.vzome.core.algebra.AlgebraicField.DEFAULT_FORMAT);
                                     buf.append("<mi>");
                                     buf.append(multiplier);
                                     buf.append("</mi>");
@@ -19624,10 +19619,6 @@ export var com;
                     }
                 }
                 AbstractAlgebraicField.SMALL_SERIES_THRESHOLD = 30.0;
-                AbstractAlgebraicField.DEFAULT_FORMAT = 0;
-                AbstractAlgebraicField.EXPRESSION_FORMAT = 1;
-                AbstractAlgebraicField.ZOMIC_FORMAT = 2;
-                AbstractAlgebraicField.VEF_FORMAT = 3;
                 algebra.AbstractAlgebraicField = AbstractAlgebraicField;
                 AbstractAlgebraicField["__class"] = "com.vzome.core.algebra.AbstractAlgebraicField";
                 AbstractAlgebraicField["__interfaces"] = ["com.vzome.core.algebra.AlgebraicField"];
@@ -20042,6 +20033,8 @@ export var com;
                     AlgebraicField.EXPRESSION_FORMAT = 1;
                     AlgebraicField.ZOMIC_FORMAT = 2;
                     AlgebraicField.VEF_FORMAT = 3;
+                    AlgebraicField.MATHML_FORMAT = 4;
+                    AlgebraicField.MATH_FORMAT = 5;
                     function getIrrationals(field) {
                         const len = field.getNumIrrationals();
                         const result = (s => { let a = []; while (s-- > 0)
@@ -48563,33 +48556,6 @@ export var com;
                             this.__parent = __parent;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getEmbedding() {
-                            const symmetry = this.getSymmetry();
-                            const field = symmetry.getField();
-                            const embedding = (s => { let a = []; while (s-- > 0)
-                                a.push(0); return a; })(16);
-                            for (let i = 0; i < 3; i++) {
-                                {
-                                    const columnSelect = field.basisVector(3, i);
-                                    const colRV = symmetry.embedInR3(columnSelect);
-                                    embedding[i * 4 + 0] = colRV.x;
-                                    embedding[i * 4 + 1] = colRV.y;
-                                    embedding[i * 4 + 2] = colRV.z;
-                                    embedding[i * 4 + 3] = 0.0;
-                                }
-                                ;
-                            }
-                            embedding[12] = 0.0;
-                            embedding[13] = 0.0;
-                            embedding[14] = 0.0;
-                            embedding[15] = 1.0;
-                            return embedding;
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getZone(orbit, orientation) {
                             return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
@@ -48640,6 +48606,33 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getEmbedding() {
+                            const symmetry = this.getSymmetry();
+                            const field = symmetry.getField();
+                            const embedding = (s => { let a = []; while (s-- > 0)
+                                a.push(0); return a; })(16);
+                            for (let i = 0; i < 3; i++) {
+                                {
+                                    const columnSelect = field.basisVector(3, i);
+                                    const colRV = symmetry.embedInR3(columnSelect);
+                                    embedding[i * 4 + 0] = colRV.x;
+                                    embedding[i * 4 + 1] = colRV.y;
+                                    embedding[i * 4 + 2] = colRV.z;
+                                    embedding[i * 4 + 3] = 0.0;
+                                }
+                                ;
+                            }
+                            embedding[12] = 0.0;
+                            embedding[13] = 0.0;
+                            embedding[14] = 0.0;
+                            embedding[15] = 1.0;
+                            return embedding;
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
                         }
                         /**
                          *
