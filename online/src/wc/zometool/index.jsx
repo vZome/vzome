@@ -8,7 +8,7 @@ import { Switch } from "@kobalte/core/switch";
 import { CameraProvider, DesignViewer } from '../../viewer/index.jsx';
 import { ViewerProvider, useViewer } from '../../viewer/context/viewer.jsx';
 import { WorkerProvider, useWorkerClient } from '../../viewer/context/worker.jsx';
-import { SceneIndexingProvider, SceneProvider, useSceneIndexing } from '../../viewer/context/scene.jsx';
+import { getSceneTitleIndex, SceneIndexingProvider, SceneProvider, SceneTitlesProvider, useSceneIndexing } from '../../viewer/context/scene.jsx';
 
 import { instructionsCSS } from "./zometool.css.js";
 import { urlViewerCSS } from "../../viewer/urlviewer.css.js";
@@ -25,7 +25,7 @@ const partsPromise = fetch( parts_catalog_url ) .then( response => response.text
 const StepControls = props =>
 {
   const { showIndexedScene } = useSceneIndexing();
-  const atStart = () => props.index === 1;  // NOTE: scene 0 is the default scene, which we ignore
+  const atStart = () => props.index === props.minIndex;  // NOTE: scene 0 is the default scene, which we ignore
   const atEnd = () => props.index === props.maxIndex;
   
   createEffect( () => {
@@ -36,7 +36,7 @@ const StepControls = props =>
   {
     let newIndex;
     if ( delta === 0 ) {
-      newIndex = 1;
+      newIndex = props.minIndex;
     } else if ( delta === -2 ) {
       newIndex = props.maxIndex;
     } else {
@@ -47,7 +47,7 @@ const StepControls = props =>
 
   return (
     <>
-      <Button disabled={atStart()} class='step-button limit-step' tooltip='First step'    onClick={ change( 0 ) } >
+      <Button disabled={atStart()} class='step-button limit-step' tooltip='First step' onClick={ change( 0 ) } >
         <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false" class="step-button-svg">
           <path d="M24 0v24H0V0h24z" fill="none" opacity=".87"></path>
           <path d="M17.7 15.89L13.82 12l3.89-3.89c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-4.59 4.59c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .38-.38.38-1.02-.01-1.4zM7 6c.55 0 1 .45 1 1v10c0 .55-.45 1-1 1s-1-.45-1-1V7c0-.55.45-1 1-1z"></path>
@@ -58,13 +58,13 @@ const StepControls = props =>
           <path d="M14.91 6.71c-.39-.39-1.02-.39-1.41 0L8.91 11.3c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L11.03 12l3.88-3.88c.38-.39.38-1.03 0-1.41z"></path>
         </svg>
       </Button>
-      <h1 class='step-number'>{props.index}</h1>
-      <Button disabled={atEnd()}   class='step-button' tooltip='Next step'     onClick={ change( +1 ) } >
+      <h1 class='step-number'>{props.index - props.minIndex + 1}</h1>
+      <Button disabled={atEnd()} class='step-button' tooltip='Next step' onClick={ change( +1 ) } >
         <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false" class="step-button-svg">
           <path d="M9.31 6.71c-.39.39-.39 1.02 0 1.41L13.19 12l-3.88 3.88c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41L10.72 6.7c-.38-.38-1.02-.38-1.41.01z"></path>
         </svg>
       </Button>
-      <Button disabled={atEnd()}   class='step-button limit-step' tooltip='Last step'     onClick={ change( -2 ) } >
+      <Button disabled={atEnd()} class='step-button limit-step' tooltip='Last step' onClick={ change( -2 ) } >
         <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false" class="step-button-svg">
           <path d="M0 0h24v24H0V0z" fill="none" opacity=".87"></path>
           <path d="M6.29 8.11L10.18 12l-3.89 3.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41L7.7 6.7c-.39-.39-1.02-.39-1.41 0-.38.39-.38 1.03 0 1.41zM17 6c.55 0 1 .45 1 1v10c0 .55-.45 1-1 1s-1-.45-1-1V7c0-.55.45-1 1-1z"></path>
@@ -81,7 +81,8 @@ export const ZometoolInstructions = props =>
   const { showIndexedScene } = useSceneIndexing();
   const [ hasScenes, setHasScenes ] = createSignal( false );
   const [ steps, setSteps ] = createSignal( false );
-  const [ maxIndex, setMaxIndex ] = createSignal( 0 );
+  const [ minIndex, setMinIndex ] = createSignal( 1 );
+  const [ maxIndex, setMaxIndex ] = createSignal( 1 );
   const [ index, setIndex ] = createSignal( 1 );
   const dynConfig = () => ({
     useSpinner: false, allowFullViewport: true,
@@ -93,7 +94,16 @@ export const ZometoolInstructions = props =>
   const toggleSteps = () => setSteps( v => !v );
 
   createEffect( () => {
-    setMaxIndex( scenes?.length - 1 ) ;
+    let minIndex = 1;
+    let maxIndex = scenes?.length - 1;
+    if ( props.config?.module ) {
+      minIndex = getSceneTitleIndex( scenes, props.config?.module + ' start' );
+      maxIndex = getSceneTitleIndex( scenes, props.config?.module + ' end' );
+      // TODO: error checking!!
+    }
+    setMinIndex( minIndex );
+    setIndex( minIndex );
+    setMaxIndex( maxIndex );
     setHasScenes( scenes?.length > 1 );
     requestBOM();
   });
@@ -126,7 +136,7 @@ export const ZometoolInstructions = props =>
         </Show>
         <div class="step-buttons">
           <Show when={steps()}>
-            <StepControls index={index()} setIndex={setIndex} maxIndex={maxIndex()} />
+            <StepControls index={index()} setIndex={setIndex} minIndex={minIndex()} maxIndex={maxIndex()} />
           </Show>
         </div>
       </div>
@@ -140,7 +150,7 @@ export const ZometoolInstructions = props =>
   );
 }
 
-const renderComponent = ( url, container, dispatch ) =>
+const renderComponent = ( url, container, dispatch, config ) =>
   {
     const bindComponent = () =>
     {
@@ -150,7 +160,7 @@ const renderComponent = ( url, container, dispatch ) =>
             <ViewerProvider config={{ url, preview: true, debug: false, labels: true, source: true }}>
               <SceneProvider>
                 <SceneIndexingProvider config={ {} } >
-                  <ZometoolInstructions dispatch={dispatch} />
+                  <ZometoolInstructions dispatch={dispatch} config={config} />
                 </SceneIndexingProvider>
               </SceneProvider>
             </ViewerProvider>
@@ -173,6 +183,7 @@ class ZometoolInstructionsElement extends HTMLElement
 {
   #container;
   #url;
+  #module;
 
   constructor()
   {
@@ -190,12 +201,12 @@ class ZometoolInstructionsElement extends HTMLElement
   {
     debug && console.log( 'ZometoolInstructionsElement connected' );
 
-    renderComponent( this.#url, this.#container, evt => this.dispatchEvent(evt) );
+    renderComponent( this.#url, this.#container, evt => this.dispatchEvent(evt), { module: this.#module } );
   }
 
   static get observedAttributes()
   {
-    return [ "src", ];
+    return [ "src", "module" ];
   }
 
   // This callback can happen *before* connectedCallback()!
@@ -203,6 +214,11 @@ class ZometoolInstructionsElement extends HTMLElement
   {
     debug && console.log( 'ZometoolInstructionsElement attribute changed' );
     switch (attributeName) {
+
+    case "module":
+      this.#module = _newValue;
+      console.log( `module ${this.#module}` );
+      break;
 
     case "src":
       this.#url = new URL( _newValue, window.location ) .toString();

@@ -105,6 +105,29 @@ const useSceneTitles = () => { return useContext( SceneTitlesContext ); };
 
 const unnamedScene = ( scene, index ) => !scene.title?.trim() || ( index===0 && 'default scene' === scene.title );
 
+const getSceneTitleIndex = ( scenes, title ) =>
+{
+  if ( !title )
+    return 0;
+  title = encodeEntities( title ); // was happening in actions.js... still necessary?
+  let index;
+  if ( title.startsWith( '#' ) ) {
+    const indexStr = title.substring( 1 );
+    index = parseInt( indexStr );
+    if ( isNaN( index ) || index < 0 || index > scenes.length ) {
+      console.log( `WARNING: ${index} is not a scene index` );
+      index = 0;
+    }
+  } else {
+    index = scenes .map( s => s.title?.trim() ) .indexOf( title );
+    if ( index < 0 ) {
+      console.log( `WARNING: no scene titled "${title}"` );
+      index = 0;
+    }
+  }
+  return index;
+}
+
 const SceneTitlesProvider = (props) =>
 {
   const { scenes } = useViewer();
@@ -116,32 +139,9 @@ const SceneTitlesProvider = (props) =>
     : scenes .map( (scene,index) => scene.title?.trim() || (( index === 0 )? "default scene" : `#${index}`) );
   const [ sceneTitle, setSceneTitle ] = createSignal(( props.show === 'given' )? props.title : sceneTitles()[0] );
   
-  const getSceneIndex = ( title ) =>
-  {
-    if ( !title )
-      return 0;
-    title = encodeEntities( title ); // was happening in actions.js... still necessary?
-    let index;
-    if ( title.startsWith( '#' ) ) {
-      const indexStr = title.substring( 1 );
-      index = parseInt( indexStr );
-      if ( isNaN( index ) || index < 0 || index > scenes.length ) {
-        console.log( `WARNING: ${index} is not a scene index` );
-        index = 0;
-      }
-    } else {
-      index = scenes .map( s => s.title ) .indexOf( title );
-      if ( index < 0 ) {
-        console.log( `WARNING: no scene titled "${title}"` );
-        index = 0;
-      }
-    }
-    return index;
-  }
-
   const showTitledScene = ( name, config ) =>
   {
-    const index = getSceneIndex( name );
+    const index = getSceneTitleIndex( scenes, name );
     if ( index < scenes.length ) {
       showIndexedScene( index, config );
     }
@@ -209,4 +209,5 @@ export {
   SceneIndexingProvider, useSceneIndexing, 
   SceneTitlesProvider, useSceneTitles,
   SceneChangeListener,
+  getSceneTitleIndex,
 };

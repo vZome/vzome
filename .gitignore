@@ -91,3 +91,5 @@ online/serve/modules/
 core/failures.xml
 
 website/Gemfile.lock
+
+website/docs/assets/
