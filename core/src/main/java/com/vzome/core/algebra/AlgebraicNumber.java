@@ -53,6 +53,7 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
      * @param n is the value to be multiplied
      * @return this * n
      */
+    @Override
     public AlgebraicNumber timesInt( int n );
 
     /**
@@ -106,6 +107,7 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
 
     public AlgebraicNumber dividedBy( AlgebraicNumber that );
 
+    @Override
     public double evaluate();
 
 
@@ -137,6 +139,8 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
      * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
      * {@code ZOMIC_FORMAT      // 4 3}<br>
      * {@code VEF_FORMAT        // (3,4)}<br>
+     * {@code MATHML_FORMAT     // Use getMathML()}
+     * {@code MATH_FORMAT       // Originally used in JavaScript parts panel, not in Java}
      */
     public void getNumberExpression( StringBuffer buf, int format );
 
@@ -149,6 +153,9 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
      * {@code EXPRESSION_FORMAT // 4 +3*phi}<br>
      * {@code ZOMIC_FORMAT      // 4 3}<br>
      * {@code VEF_FORMAT        // (3,4)}
+     * {@code MATHML_FORMAT     // Use getMathML()}
+     * {@code MATH_FORMAT       // Originally used in JavaScript parts panel, not in Java}
+     * 
      * @return 
      */
     public String toString( int format );
