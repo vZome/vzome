@@ -285,6 +285,17 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
           this.setSymmetryController( name );
         }
 
+        else if ( action.startsWith( "AdjustSelectionByOrbitLength/") ) {
+          // This is a special case where we need to parse the action string
+          // to extract parameters, so we handle it here instead of
+          // delegating to legacyDesign.configureAndPerformEdit()
+          const tail = action.substring( "AdjustSelectionByOrbitLength/" .length );
+          const props = new JsProperties( {} );
+          this.symmController .parseOrbitLength( tail, props );
+          this.legacyDesign .configureAndPerformEdit( "AdjustSelectionByOrbitLength/" + props.get( "mode" ), props && props.getConfig() );
+          this.firePropertyChange( 'edited', '', 'true' ); // value really doesn't matter
+        }
+
         else {
           this.legacyDesign.configureAndPerformEdit(action, params && params.getConfig());
           this.firePropertyChange( 'edited', '', 'true' ); // value really doesn't matter

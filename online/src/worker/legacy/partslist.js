@@ -71,15 +71,15 @@ export const createPartsList = ( shapes, controller ) =>
     else if ( ! orbit )
       panels += count;
     else {
-      const len = field .createAlgebraicNumberFromTD( JSON.parse( length ) );
-      acc.push( { orbit, length: len .toString( 5 ), count }); // 5 is "MATH" format
+      const len = field .createAlgebraicNumberFromTD( JSON .parse( length ) );
+      acc.push( { orbit, length: len .toString( 5 /* MATH_FORMAT */ ), zomic: len .toString( 2 /* ZOMIC_FORMAT */ ), count });
       struts += count;
     }
     return acc;
   }, [] );
 
   const orbits = unsortedOrbits .toSorted( ( a, b ) => orbitOrder( a.orbit ) - orbitOrder( b.orbit ) );
-  const orbitColors = orbits.map( ( { orbit, length, count } ) =>
-    ({ length, count, color: controller .getProperty( `orbitColor.${orbit}` ) || '128,128,128' }) );
+  const orbitColors = orbits.map( ( { orbit, length, count, zomic } ) =>
+    ({ length, zomic, count, orbit, color: controller .getProperty( `orbitColor.${orbit}` ) || '128,128,128' }) );
   return { balls, struts, panels, orbitColors };
 }

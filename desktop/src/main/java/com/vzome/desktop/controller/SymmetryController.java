@@ -349,4 +349,25 @@ public class SymmetryController extends DefaultController
     {
         return this .symmetrySystem .getRenderingStyle();
     }
+
+    public void parseOrbitLength( String string, Map<String,Object> props )
+    {
+      // struts lengths may include fractions, 
+      // so only split on the first two slashes to make 3 sections max. 
+      String[] sections = string .split( "/", 3 );
+      String mode = sections[ 0 ];
+      props .put( "mode", mode );
+      String orbitStr = sections[ 1 ];
+      Direction orbit = this .getOrbits() .getDirection( orbitStr );
+      props .put( "orbit", orbit );
+      if ( mode .endsWith( "Struts" ) )
+      {
+          String lengthStr = sections[ 2 ];
+          AlgebraicNumber unitScalar = orbit .getLengthInUnits( this .getSymmetry().getField().one() );
+          AlgebraicNumber length = unitScalar .getField() .parseNumber( lengthStr );
+          AlgebraicNumber rawLength = length .dividedBy( unitScalar );
+          if ( rawLength != null )
+              props .put( "length", rawLength );
+      }
+    }
 }

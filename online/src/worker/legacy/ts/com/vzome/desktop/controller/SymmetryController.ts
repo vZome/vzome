@@ -311,6 +311,22 @@ namespace com.vzome.desktop.controller {
         public getRenderingStyle(): com.vzome.core.editor.api.Shapes {
             return this.symmetrySystem.getRenderingStyle();
         }
+
+        public parseOrbitLength(string: string, props: java.util.Map<string, any>) {
+            const sections: string[] = string.split("/", 3);
+            const mode: string = sections[0];
+            props.put("mode", mode);
+            const orbitStr: string = sections[1];
+            const orbit: com.vzome.core.math.symmetry.Direction = this.getOrbits().getDirection(orbitStr);
+            props.put("orbit", orbit);
+            if (/* endsWith */((str, searchString) => { let pos = str.length - searchString.length; let lastIndex = str.indexOf(searchString, pos); return lastIndex !== -1 && lastIndex === pos; })(mode, "Struts")){
+                const lengthStr: string = sections[2];
+                const unitScalar: com.vzome.core.algebra.AlgebraicNumber = orbit.getLengthInUnits(this.getSymmetry().getField().one());
+                const length: com.vzome.core.algebra.AlgebraicNumber = unitScalar.getField().parseNumber(lengthStr);
+                const rawLength: com.vzome.core.algebra.AlgebraicNumber = length.dividedBy(unitScalar);
+                if (rawLength != null)props.put("length", rawLength);
+            }
+        }
     }
     SymmetryController["__class"] = "com.vzome.desktop.controller.SymmetryController";
     SymmetryController["__interfaces"] = ["com.vzome.desktop.api.Controller"];
