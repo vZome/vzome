@@ -86,7 +86,12 @@ const InteractionToolProvider = (props) =>
       lastPointerDown = null;  
     },
     
-    onTrackballEnd: () => {},
+    onTrackballEnd: () => {
+      const handler = tool && tool() ?.onTrackballEnd;
+      if ( handler ) {
+        handler();
+      }
+    },
   
     onContextMenu: ( id, position, type, selected, label ) => tool() ?.onContextMenu && tool() .onContextMenu( id, position, type, selected, label ),
 
