@@ -3981,10 +3981,6 @@ export var com;
                             this.orbits = new com.vzome.core.math.symmetry.OrbitSet(symmetry);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
                             if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                                 let __args = arguments;
@@ -4039,6 +4035,14 @@ export var com;
                                 throw new Error('invalid overload');
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {
                             const symmetry = this.getSymmetry();
                             const field = symmetry.getField();
@@ -4060,10 +4064,6 @@ export var com;
                             embedding[14] = 0.0;
                             embedding[15] = 1.0;
                             return embedding;
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
                         }
                         /**
                          *
@@ -16815,10 +16815,6 @@ export var com;
                         this.setStyle(styleName);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getZone(orbit, orientation) {
-                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getOrientations(rowMajor) {
                         if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                             let __args = arguments;
@@ -16894,6 +16890,14 @@ export var com;
                             throw new Error('invalid overload');
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getOrientations$() {
+                        return this.getOrientations(false);
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getZone(orbit, orientation) {
+                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getEmbedding() {
                         const symmetry = this.getSymmetry();
                         const field = symmetry.getField();
@@ -16915,10 +16919,6 @@ export var com;
                         embedding[14] = 0.0;
                         embedding[15] = 1.0;
                         return embedding;
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getOrientations$() {
-                        return this.getOrientations(false);
                     }
                     static logger_$LI$() { if (SymmetrySystem.logger == null) {
                         SymmetrySystem.logger = java.util.logging.Logger.getLogger("com.vzome.core.editor");
@@ -35333,6 +35333,22 @@ export var com;
                     getRenderingStyle() {
                         return this.symmetrySystem.getRenderingStyle();
                     }
+                    parseOrbitLength(string, props) {
+                        const sections = string.split("/", 3);
+                        const mode = sections[0];
+                        props.put("mode", mode);
+                        const orbitStr = sections[1];
+                        const orbit = this.getOrbits().getDirection(orbitStr);
+                        props.put("orbit", orbit);
+                        if ( /* endsWith */((str, searchString) => { let pos = str.length - searchString.length; let lastIndex = str.indexOf(searchString, pos); return lastIndex !== -1 && lastIndex === pos; })(mode, "Struts")) {
+                            const lengthStr = sections[2];
+                            const unitScalar = orbit.getLengthInUnits(this.getSymmetry().getField().one());
+                            const length = unitScalar.getField().parseNumber(lengthStr);
+                            const rawLength = length.dividedBy(unitScalar);
+                            if (rawLength != null)
+                                props.put("length", rawLength);
+                        }
+                    }
                 }
                 controller.SymmetryController = SymmetryController;
                 SymmetryController["__class"] = "com.vzome.desktop.controller.SymmetryController";
@@ -48556,10 +48572,6 @@ export var com;
                             this.__parent = __parent;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
                             if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                                 let __args = arguments;
@@ -48608,6 +48620,14 @@ export var com;
                                 throw new Error('invalid overload');
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {
                             const symmetry = this.getSymmetry();
                             const field = symmetry.getField();
@@ -48629,10 +48649,6 @@ export var com;
                             embedding[14] = 0.0;
                             embedding[15] = 1.0;
                             return embedding;
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
                         }
                         /**
                          *

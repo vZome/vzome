@@ -789,33 +789,9 @@ public class DocumentController extends DefaultGraphicsController implements Sce
                 else if ( action.startsWith( "AdjustSelectionByOrbitLength/" ) )
                 {
                     String tail = action.substring( "AdjustSelectionByOrbitLength/" .length() );
-                    // struts lengths may include fractions, 
-                    // so only split on the first two slashes to make 3 sections max. 
-                    String[] sections = tail .split( "/", 3 );
-                    String mode = sections[ 0 ];
-                    String orbitStr = sections[ 1 ];
-                    if ( mode .endsWith( "Struts" ) )
-                    {
-                        Map<String,Object> props = new HashMap<>();
-                        Direction orbit = symmetryController .getOrbits() .getDirection( orbitStr );
-                        props .put( "orbit", orbit );
-
-                        String lengthStr = sections[ 2 ];
-                        AlgebraicNumber unitScalar = orbit .getLengthInUnits( symmetryController.getSymmetry().getField().one() );
-                        AlgebraicNumber length = unitScalar .getField() .parseNumber( lengthStr );
-                        AlgebraicNumber rawLength = length .dividedBy( unitScalar );
-                        if ( rawLength != null )
-                            props .put( "length", rawLength );
-
-                        documentModel .doEdit( "AdjustSelectionByOrbitLength/" + mode, props );
-                    }
-                    else
-                    {
-                        Direction orbit = symmetryController.getOrbits().getDirection( orbitStr );
-                        Map<String,Object> props = new HashMap<>();
-                        props .put( "orbit", orbit );
-                        documentModel .doEdit( "AdjustSelectionByOrbitLength/" + mode, props );
-                    }
+                    Map<String,Object> props = new HashMap<>();
+                    symmetryController .parseOrbitLength( tail, props );
+                    documentModel .doEdit( "AdjustSelectionByOrbitLength/" + props.get( "mode"), props );
                 }
                 else
                 {

@@ -47,7 +47,7 @@ public class PickingController extends DefaultGraphicsController
         case "SelectCollinear":
         case "SelectParallelStruts":
         case "AdjustSelectionByOrbitLength/selectSimilarStruts":
-		case "ReplaceWithShape":
+        case "ReplaceWithShape":
             this .delegate .doManifestationAction( this .pickedManifestation, action );
             break;
             

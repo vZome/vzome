@@ -250,7 +250,7 @@ button:disabled > .toolbar-image {
 }
 
 .editor-drawer {
-  width: 320px;
+  width: 360px;
   border-inline-start: 1px solid darkgray;
 }
 
@@ -761,10 +761,16 @@ button:disabled > .toolbar-image {
   margin: 16px 8px 8px 12px;
   font-size: smaller;
   font-weight: bold;
+  display: flex;
 }
 
 .parts-count {
   font-weight: normal;
+  margin-inline-start: 6px;
+}
+
+.parts-buttons {
+  margin-inline-start: auto;
 }
 
 .scene-details {
