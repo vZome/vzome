@@ -89,7 +89,7 @@ public class DaeExporter extends GeometryExporter
         private Document doc;
         private XPath xpath;
         private Element visual_scene_node_template, oriented_shape_template, geometry_template, shape_template,
-        visual_scene, library_nodes, library_geometries,
+        visual_scene, model_group, library_nodes, library_geometries,
         material_template, library_materials, effect_template, library_effects;
         private int instanceNum = 0, shapeNum = 0, colorNum = 0, nodeNum = 0;
         private String embeddingMatrixText = null;
@@ -105,7 +105,7 @@ public class DaeExporter extends GeometryExporter
             InputStream bytes = getClass() .getClassLoader() .getResourceAsStream( templatePath );
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            //            factory .setNamespaceAware(true);
+            factory .setNamespaceAware(true);
             DocumentBuilder builder;
             try {
                 builder = factory.newDocumentBuilder();
@@ -114,29 +114,55 @@ public class DaeExporter extends GeometryExporter
                 // Create XPathFactory object
                 XPathFactory xpathFactory = XPathFactory.newInstance();
 
-                // Create XPath object
+                // Create XPath object with namespace awareness
                 xpath = xpathFactory.newXPath();
+                xpath.setNamespaceContext(new javax.xml.namespace.NamespaceContext() {
+                    @Override
+                    public String getNamespaceURI(String prefix) {
+                        if (prefix == null) throw new NullPointerException("Null prefix");
+                        if ("c".equals(prefix)) return "http://www.collada.org/2005/11/COLLADASchema";
+                        return javax.xml.XMLConstants.NULL_NS_URI;
+                    }
 
-                visual_scene_node_template = (Element) xpath .evaluate( "//node[@id='instance']", doc .getDocumentElement(), XPathConstants.NODE );
+                    @Override
+                    public String getPrefix(String uri) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public java.util.Iterator<String> getPrefixes(String uri) {
+                        throw new UnsupportedOperationException();
+                    }
+                });
+
+                // Get the instance template and the visual scene
+                visual_scene_node_template = (Element) xpath .evaluate( "//c:node[@id='instance']", doc .getDocumentElement(), XPathConstants.NODE );
                 visual_scene = (Element) visual_scene_node_template .getParentNode();
                 visual_scene .removeChild( visual_scene_node_template );
 
-                oriented_shape_template = (Element) xpath .evaluate( "//node[@id='oriented-shape']", doc .getDocumentElement(), XPathConstants.NODE );
+                // Create a group node for all model instances
+                model_group = doc.createElementNS("http://www.collada.org/2005/11/COLLADASchema", "node");
+                model_group.setAttribute("id", "vZome-model-instances");
+                // Insert it after the last light node
+                Element lastLight = (Element) xpath .evaluate( "//c:node[@id='light4']", doc .getDocumentElement(), XPathConstants.NODE );
+                lastLight.getParentNode().insertBefore(model_group, lastLight.getNextSibling());
+
+                oriented_shape_template = (Element) xpath .evaluate( "//c:node[@id='oriented-shape']", doc .getDocumentElement(), XPathConstants.NODE );
                 library_nodes = (Element) oriented_shape_template .getParentNode();
                 library_nodes .removeChild( oriented_shape_template );
 
-                shape_template = (Element) xpath .evaluate( "//node[@id='shape-node']", doc .getDocumentElement(), XPathConstants.NODE );
+                shape_template = (Element) xpath .evaluate( "//c:node[@id='shape-node']", doc .getDocumentElement(), XPathConstants.NODE );
                 library_nodes .removeChild( shape_template );
 
-                geometry_template = (Element) xpath .evaluate( "//geometry[@id='shape-geom']", doc .getDocumentElement(), XPathConstants.NODE );
+                geometry_template = (Element) xpath .evaluate( "//c:geometry[@id='shape-geom']", doc .getDocumentElement(), XPathConstants.NODE );
                 library_geometries = (Element) geometry_template .getParentNode();
                 library_geometries .removeChild( geometry_template );
 
-                material_template = (Element) xpath .evaluate( "//material[@id='color']", doc .getDocumentElement(), XPathConstants.NODE );
+                material_template = (Element) xpath .evaluate( "//c:material[@id='color']", doc .getDocumentElement(), XPathConstants.NODE );
                 library_materials = (Element) material_template .getParentNode();
                 library_materials .removeChild( material_template );
 
-                effect_template = (Element) xpath .evaluate( "//effect[@id='color-fx']", doc .getDocumentElement(), XPathConstants.NODE );
+                effect_template = (Element) xpath .evaluate( "//c:effect[@id='color-fx']", doc .getDocumentElement(), XPathConstants.NODE );
                 library_effects = (Element) effect_template .getParentNode();
                 library_effects .removeChild( effect_template );
 
@@ -206,12 +232,12 @@ public class DaeExporter extends GeometryExporter
                 effect .setAttribute( "id", effectId );
                 library_effects .appendChild( effect );
                 try {
-                    Element instance_effect = (Element) xpath .evaluate( "instance_effect", material, XPathConstants.NODE );
+                    Element instance_effect = (Element) xpath .evaluate( "c:instance_effect", material, XPathConstants.NODE );
                     instance_effect .setAttribute( "url", "#" + effectId );
-                    Element diffuse_color = (Element) xpath .evaluate( "profile_COMMON//diffuse/color", effect, XPathConstants.NODE );
+                    Element diffuse_color = (Element) xpath .evaluate( "c:profile_COMMON//c:diffuse/c:color", effect, XPathConstants.NODE );
                     diffuse_color .setTextContent( sb .toString() );
                     if ( alphaComponent < 1.0f ) {
-                        Element transparency_float = (Element) xpath.evaluate("profile_COMMON//transparency/float", effect, XPathConstants.NODE);
+                        Element transparency_float = (Element) xpath.evaluate("c:profile_COMMON//c:transparency/c:float", effect, XPathConstants.NODE);
                         transparency_float.setTextContent(alphaComponent.toString());
                     }
                 } catch ( XPathExpressionException e ) {
@@ -295,39 +321,39 @@ public class DaeExporter extends GeometryExporter
                 geometry .setAttribute( "id", geomId );
                 library_geometries .appendChild( geometry );
                 try {
-                    Element source = (Element) xpath .evaluate( "mesh/source[@name='position']", geometry, XPathConstants.NODE );
+                    Element source = (Element) xpath .evaluate( "c:mesh/c:source[@name='position']", geometry, XPathConstants.NODE );
                     source .setAttribute( "id", positionsId );
-                    Element float_array = (Element) xpath .evaluate( "float_array", source, XPathConstants.NODE );
+                    Element float_array = (Element) xpath .evaluate( "c:float_array", source, XPathConstants.NODE );
                     float_array .setAttribute( "id", positionsArrayId );
                     float_array .setAttribute( "count", "" + ( 3 * vertexCount ) );
                     float_array .setTextContent( vertices .toString() );
-                    Element accessor = (Element) xpath .evaluate( "technique_common/accessor", source, XPathConstants.NODE );
+                    Element accessor = (Element) xpath .evaluate( "c:technique_common/c:accessor", source, XPathConstants.NODE );
                     accessor .setAttribute( "source", "#" +  positionsArrayId );
                     accessor .setAttribute( "count", "" + vertexCount );
 
-                    source = (Element) xpath .evaluate( "mesh/source[@name='normal']", geometry, XPathConstants.NODE );
+                    source = (Element) xpath .evaluate( "c:mesh/c:source[@name='normal']", geometry, XPathConstants.NODE );
                     source .setAttribute( "id", normalsId );
-                    float_array = (Element) xpath .evaluate( "float_array", source, XPathConstants.NODE );
+                    float_array = (Element) xpath .evaluate( "c:float_array", source, XPathConstants.NODE );
                     float_array .setAttribute( "id", normalsArrayId );
                     float_array .setAttribute( "count", "" + ( 3 * normalCount ) );
                     float_array .setTextContent( normals .toString() );
-                    accessor = (Element) xpath .evaluate( "technique_common/accessor", source, XPathConstants.NODE );
+                    accessor = (Element) xpath .evaluate( "c:technique_common/c:accessor", source, XPathConstants.NODE );
                     accessor .setAttribute( "source", "#" +  normalsArrayId );
                     accessor .setAttribute( "count", "" + normalCount );
 
-                    Element vertices_node = (Element) xpath .evaluate( "mesh/vertices", geometry, XPathConstants.NODE );
+                    Element vertices_node = (Element) xpath .evaluate( "c:mesh/c:vertices", geometry, XPathConstants.NODE );
                     vertices_node .setAttribute( "id", verticesId );
-                    Element input = (Element) xpath .evaluate( "input[@semantic='POSITION']", vertices_node, XPathConstants.NODE );
+                    Element input = (Element) xpath .evaluate( "c:input[@semantic='POSITION']", vertices_node, XPathConstants.NODE );
                     input .setAttribute( "source", "#" + positionsId );
 
-                    Element triangles_node = (Element) xpath .evaluate( "mesh/triangles", geometry, XPathConstants.NODE );
+                    Element triangles_node = (Element) xpath .evaluate( "c:mesh/c:triangles", geometry, XPathConstants.NODE );
                     triangles_node .setAttribute( "count", triangleCount + "" );
                     triangles_node .setAttribute( "material", materialId );
-                    input = (Element) xpath .evaluate( "input[@semantic='VERTEX']", triangles_node, XPathConstants.NODE );
+                    input = (Element) xpath .evaluate( "c:input[@semantic='VERTEX']", triangles_node, XPathConstants.NODE );
                     input .setAttribute( "source", "#" + verticesId );
-                    input = (Element) xpath .evaluate( "input[@semantic='NORMAL']", triangles_node, XPathConstants.NODE );
+                    input = (Element) xpath .evaluate( "c:input[@semantic='NORMAL']", triangles_node, XPathConstants.NODE );
                     input .setAttribute( "source", "#" + normalsId );
-                    Element p = (Element) xpath .evaluate( "p", triangles_node, XPathConstants.NODE );
+                    Element p = (Element) xpath .evaluate( "c:p", triangles_node, XPathConstants.NODE );
                     p .setTextContent( triangles .toString() );
 
                 } catch ( XPathExpressionException e ) {
@@ -355,9 +381,9 @@ public class DaeExporter extends GeometryExporter
                 shape_node .setAttribute( "id", nodeId );
                 library_nodes .appendChild( shape_node );
                 try {
-                    Element instance_geometry = (Element) xpath .evaluate( "instance_geometry", shape_node, XPathConstants.NODE );
+                    Element instance_geometry = (Element) xpath .evaluate( "c:instance_geometry", shape_node, XPathConstants.NODE );
                     instance_geometry .setAttribute( "url", "#" + shapeId + "-geom" );
-                    Element instance_material = (Element) xpath .evaluate( "bind_material//instance_material", instance_geometry, XPathConstants.NODE );
+                    Element instance_material = (Element) xpath .evaluate( "c:bind_material//c:instance_material", instance_geometry, XPathConstants.NODE );
                     instance_material .setAttribute( "symbol", shapeId + "-material" );
                     instance_material .setAttribute( "target", "#" + colorId );
 
@@ -378,7 +404,7 @@ public class DaeExporter extends GeometryExporter
                 Element oriented_shape = (Element) oriented_shape_template .cloneNode( true );
                 try {
                     StringBuffer sb = new StringBuffer();
-                    Element matrix = (Element) xpath .evaluate( "matrix", oriented_shape, XPathConstants.NODE );
+                    Element matrix = (Element) xpath .evaluate( "c:matrix", oriented_shape, XPathConstants.NODE );
                     AlgebraicMatrix transform = rm .getOrientation();
                     for (int i = 0; i < 3; i++) {
                         for (int j = 0; j < 3; j++) {
@@ -389,7 +415,7 @@ public class DaeExporter extends GeometryExporter
                     }
                     sb .append( "0.0 0.0 0.0 1.0" );
                     matrix .setTextContent( sb .toString() );
-                    Element instance_node = (Element) xpath .evaluate( "instance_node", oriented_shape, XPathConstants.NODE );
+                    Element instance_node = (Element) xpath .evaluate( "c:instance_node", oriented_shape, XPathConstants.NODE );
                     instance_node .setAttribute( "url", "#" + nodeId );
                     oriented_shape .setAttribute( "id", orientedShapeId );
                     library_nodes .appendChild( oriented_shape );
@@ -405,7 +431,7 @@ public class DaeExporter extends GeometryExporter
         {
             Element visual_scene_node = (Element) visual_scene_node_template .cloneNode( true );
             try {
-                Element translate = (Element) xpath .evaluate( "translate", visual_scene_node, XPathConstants.NODE );
+                Element translate = (Element) xpath .evaluate( "c:translate", visual_scene_node, XPathConstants.NODE );
                 AlgebraicVector location = rm .getLocationAV(); // don't want embedding yet
                 if ( location == null )
                     visual_scene_node .removeChild( translate );
@@ -413,17 +439,17 @@ public class DaeExporter extends GeometryExporter
                     translate .setTextContent( location .toRealVector() .spacedString() );
 
                 // Apply the global embedding, if non-trivial.
-                Element matrix = (Element) xpath .evaluate( "matrix", visual_scene_node, XPathConstants.NODE );
+                Element matrix = (Element) xpath .evaluate( "c:matrix", visual_scene_node, XPathConstants.NODE );
                 if ( this .embeddingMatrixText == null )
                     visual_scene_node .removeChild( matrix );
                 else {
                     matrix .setTextContent( embeddingMatrixText );
                 }
 
-                Element instance_node = (Element) xpath .evaluate( "instance_node", visual_scene_node, XPathConstants.NODE );
+                Element instance_node = (Element) xpath .evaluate( "c:instance_node", visual_scene_node, XPathConstants.NODE );
                 instance_node .setAttribute( "url", "#" + shapeId );
                 visual_scene_node .setAttribute( "id", "instance" + Integer .toString( instanceNum++ ) );
-                visual_scene .appendChild( visual_scene_node );
+                model_group .appendChild( visual_scene_node );
             } catch ( XPathExpressionException e ) {
                 e.printStackTrace();
             }
