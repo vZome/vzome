@@ -10,6 +10,7 @@ import { TrackballControls } from "./trackballcontrols.jsx";
 import { useInteractionTool } from "../viewer/context/interaction.jsx";
 import { useCamera } from "../viewer/context/camera.jsx";
 import { Labels } from "./labels.jsx";
+import { EnhancedLabels, OrientedLabels } from "./panellabels.jsx";
 import { useViewer } from "./context/viewer.jsx";
 
 const Lighting = () =>
@@ -125,7 +126,10 @@ export const LightedTrackballCanvas = ( props ) =>
 
       {props.children}
 
-      {labels && labels() && <Labels size={canvasSize()} />}
+      {labels && labels() && <>
+        <OrientedLabels size={canvasSize()} />
+        <EnhancedLabels size={canvasSize()} />
+      </>}
     </Canvas>;
   
   canvas.style.display = 'flex';

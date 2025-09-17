@@ -27,7 +27,7 @@ const defaultCamera = () => ({
 });
 
 const defaultLighting = () => ({
-  backgroundColor: '#8CC2E7',
+  backgroundColor: '#808080',
   ambientColor: '#333333',
   directionalLights: [ // These are the vZome defaults, for consistency
     { direction: [ 1, -1, -0.3 ], color: '#FDFDFD' },

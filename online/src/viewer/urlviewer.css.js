@@ -6,11 +6,32 @@ svg {
 
 .vzome-label {
   color: var(--vzome-label-color);
-  background-color: var(--vzome-label-background);
-  font-size: var(--vzome-label-size);
+  background-color: transparent !important;
+  font-size: var(--vzome-label-font-px, var(--vzome-label-size));
   font-style: var(--vzome-label-style);
   font-weight: var(--vzome-label-weight);
 }
+
+.vzome-label .katex { font-size: inherit !important; }
+.vzome-label .katex-display { margin: 0; text-align: center; }
+
+.vzome-panel-label {
+  color: var(--vzome-label-color, #333);
+  background-color: transparent !important;
+  font-size: var(--vzome-label-font-px, var(--vzome-label-size, 14px));
+  font-style: var(--vzome-label-style, normal);
+  font-weight: var(--vzome-label-weight, normal);
+  padding: 0;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  font-family: 'KaTeX_Main', 'Times New Roman', serif;
+  line-height: 1.2;
+}
+
+.vzome-panel-label .katex { font-size: inherit !important; }
+.vzome-panel-label .katex-display { margin: 0; text-align: center; }
 
 .select__trigger {
   display: inline-flex;

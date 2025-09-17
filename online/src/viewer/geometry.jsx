@@ -1,5 +1,5 @@
 
-import { createEffect, createMemo, onMount } from "solid-js";
+import { createEffect, createMemo, onMount, Show, For } from "solid-js";
 import { Vector3, Matrix4, BufferGeometry, Float32BufferAttribute } from "three";
 import { useThree } from "solid-three";
 
@@ -7,6 +7,7 @@ import { useInteractionTool } from "./context/interaction.jsx";
 
 import { GLTFExporter } from "three-stdlib";
 import { Label } from "./labels.jsx";
+import { PanelLabel } from "./panellabels.jsx";
 import { useGltfExporter, useImageCapture } from "./context/export.jsx";
 import { useScene } from "./context/scene.jsx";
 
@@ -85,7 +86,8 @@ const Instance = ( props ) =>
           <lineBasicMaterial attach="material" linewidth={4.4} color='black' />
         </lineSegments>
       }
-      {!!props.label && <Label parent={meshRef} position={props.geometry.shapeCentroid} text={props.label} />}
+  {!!props.label && props.type === 'panel' && props.geometry && props.geometry.shapeCentroid && <PanelLabel parent={meshRef} position={props.geometry.shapeCentroid} text={props.label} type={props.type} />}
+  {!!props.label && props.type !== 'panel' && props.geometry && props.geometry.shapeCentroid && <Label parent={meshRef} position={props.geometry.shapeCentroid} text={props.label} type={props.type} />}
     </group>
   )
 }

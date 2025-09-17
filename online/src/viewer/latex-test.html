@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaTeX Panel Labels Test</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-label {
+            display: inline-block;
+            margin: 10px;
+            padding: 6px 12px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 6px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+        }
+        .examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>LaTeX Panel Labels Test</h1>
+    
+    <p>This page demonstrates the LaTeX rendering capabilities for vZome panel labels.</p>
+    
+    <h2>Mathematical Expressions</h2>
+    <div class="examples">
+        <div class="test-label" data-latex="$x^2 + y^2 = r^2$">Pythagorean theorem</div>
+        <div class="test-label" data-latex="$\int_0^\infty e^{-x} dx = 1$">Integral</div>
+        <div class="test-label" data-latex="$\sum_{i=1}^n i = \frac{n(n+1)}{2}$">Sum formula</div>
+        <div class="test-label" data-latex="$\phi = \frac{1 + \sqrt{5}}{2}$">Golden ratio</div>
+    </div>
+    
+    <h2>Greek Letters and Symbols</h2>
+    <div class="examples">
+        <div class="test-label" data-latex="$\alpha, \beta, \gamma$">Greek letters</div>
+        <div class="test-label" data-latex="$\pi, \sigma, \phi$">More Greek</div>
+        <div class="test-label" data-latex="$\nabla, \partial, \infty$">Operators</div>
+        <div class="test-label" data-latex="$\theta, \omega, \xi$">Angles</div>
+    </div>
+    
+    <h2>Complex Expressions</h2>
+    <div class="examples">
+        <div class="test-label" data-latex="$$\lim_{x \to \infty} \frac{1}{x} = 0$$">Limit</div>
+        <div class="test-label" data-latex="$$\frac{\partial^2 u}{\partial t^2} = c^2 \nabla^2 u$$">Wave equation</div>
+        <div class="test-label" data-latex="$$e^{i\pi} + 1 = 0$$">Euler's identity</div>
+        <div class="test-label" data-latex="$$\sqrt[n]{a^n} = |a|$$">Root formula</div>
+    </div>
+    
+    <h2>Plain Text (Fallback)</h2>
+    <div class="examples">
+        <div class="test-label">Simple text label</div>
+        <div class="test-label">Another text label</div>
+        <div class="test-label">No math here</div>
+        <div class="test-label">Just plain text</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script>
+        // Render LaTeX in test labels
+        document.querySelectorAll('.test-label[data-latex]').forEach(element => {
+            const latex = element.getAttribute('data-latex');
+            try {
+                const isDisplayMode = latex.startsWith('$$') && latex.endsWith('$$');
+                const mathText = latex.replace(/^\$+|\$+$/g, '');
+                katex.render(mathText, element, {
+                    displayMode: isDisplayMode,
+                    throwOnError: false
+                });
+            } catch (err) {
+                console.warn('KaTeX rendering failed:', err);
+                element.textContent = latex;
+            }
+        });
+    </script>
+</body>
+</html>

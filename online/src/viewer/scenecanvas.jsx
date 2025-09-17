@@ -1,7 +1,7 @@
 
 import { LightedTrackballCanvas } from './ltcanvas.jsx';
 import { ShapedGeometry } from './geometry.jsx';
-import { mergeProps } from 'solid-js';
+import { mergeProps, Show } from 'solid-js';
 import { useScene } from './context/scene.jsx';
 
 const SceneCanvas = ( props ) =>
