@@ -14,7 +14,9 @@ export class PickingController extends com.vzome.desktop.controller.DefaultContr
     if (id) {
       const rm = this.renderedModel.getRenderedManifestation(id);
       const picked = rm.getManifestation();
-      super.doParamAction(action, new JsProperties({ ...config, picked }));
+      const orbit = rm.getStrutOrbit();
+      const length = rm.getStrutLength();
+      super.doParamAction(action, new JsProperties({ ...config, picked, orbit, length }));
     }
 
     else
