@@ -1,7 +1,7 @@
 
 
 import { render } from 'solid-js/web';
-import { ErrorBoundary } from "solid-js";
+import { ErrorBoundary, Show } from "solid-js";
 
 import Typography from '@suid/material/Typography'
 import Link from '@suid/material/Link'
@@ -78,11 +78,15 @@ const Online = () =>
         <WorkerProvider>
           <ImageCaptureProvider>
             <ViewerProvider config={config}>
-              <EditorProvider>
-                <SceneProvider>
-                  {legacyViewerMode ? <LegacyViewer /> : <ClassicApp />}
-                </SceneProvider>
-              </EditorProvider>
+              <SceneProvider>
+                <Show when={ ! legacyViewerMode } fallback={
+                  <LegacyViewer />
+                } >
+                  <EditorProvider>
+                    <ClassicApp />
+                  </EditorProvider>
+                </Show>
+              </SceneProvider>
             </ViewerProvider>
           </ImageCaptureProvider>
         </WorkerProvider>
