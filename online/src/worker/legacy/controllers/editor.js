@@ -286,13 +286,25 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
         }
 
         else if ( action.startsWith( "AdjustSelectionByOrbitLength/") ) {
-          // This is a special case where we need to parse the action string
+          // There are two cases to handle:
+          //   1. the parts list, where the action string includes the orbit and length
+          //   2. the pickingController, where the orbit and length are in params
+          // The first is a special case where we need to parse the action string
           // to extract parameters, so we handle it here instead of
-          // delegating to legacyDesign.configureAndPerformEdit()
+          // delegating to legacyDesign.configureAndPerformEdit().
+          const { orbit, length } = params.getConfig();
           const tail = action.substring( "AdjustSelectionByOrbitLength/" .length );
-          const props = new JsProperties( {} );
-          this.symmController .parseOrbitLength( tail, props );
-          this.legacyDesign .configureAndPerformEdit( "AdjustSelectionByOrbitLength/" + props.get( "mode" ), props && props.getConfig() );
+          let config;
+          if ( orbit && length ) {
+            const mode = tail;
+            config = { mode, orbit, length };
+          }
+          else {
+            const props = new JsProperties( {} );
+            this.symmController .parseOrbitLength( tail, props );
+            config = props .getConfig();
+          }
+          this.legacyDesign .configureAndPerformEdit( "AdjustSelectionByOrbitLength/" + config.mode, config );
           this.firePropertyChange( 'edited', '', 'true' ); // value really doesn't matter
         }
 
