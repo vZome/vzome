@@ -183,6 +183,10 @@ export const CommandsProvider = props =>
   createCommand( 'tetrasymm',          { mods:"⌥⌘", key:"T" }, symmetryAction( 'octahedral', 'tetrasymm' ) );
   createCommand( 'showPolytopeDialog', { mods:"⌥⌘", key:"P" }, showPolytopesDialog );
 
+  // Route Replace With Panels through the symmetry controller so it appends the
+  // current system and style (mode) like the desktop app does.
+  createCommand( 'ReplaceWithShape', undefined, () => controllerAction( symmetryController(), 'ReplaceWithShape' ) );
+
   return (
     <CommandsContext.Provider value={{ registerKeyListener, getCommand }}>
       {props.children}
