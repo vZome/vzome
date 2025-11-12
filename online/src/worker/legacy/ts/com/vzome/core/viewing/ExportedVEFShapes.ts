@@ -115,33 +115,6 @@ namespace com.vzome.core.viewing {
                         }
                     }
                 }
-            } else if (((prefsFolder != null && prefsFolder instanceof <any>java.io.File) || prefsFolder === null) && ((typeof pkgName === 'string') || pkgName === null) && ((typeof name === 'string') || name === null) && ((alias != null && (alias.constructor != null && alias.constructor["__interfaces"] != null && alias.constructor["__interfaces"].indexOf("com.vzome.core.math.symmetry.Symmetry") >= 0)) || alias === null) && ((typeof symm === 'boolean') || symm === null) && fallback === undefined && isSnub === undefined) {
-                let __args = arguments;
-                let symm: any = __args[3];
-                let useZomic: any = __args[4];
-                {
-                    let __args = arguments;
-                    let alias: any = null;
-                    let fallback: any = new com.vzome.core.viewing.OctahedralShapes(__args[1], __args[2], __args[4]);
-                    {
-                        let __args = arguments;
-                        let isSnub: any = false;
-                        super(pkgName, name, alias, symm);
-                        if (this.fallback === undefined) { this.fallback = null; } 
-                        if (this.isSnub === undefined) { this.isSnub = false; } 
-                        this.colors = new java.util.Properties();
-                        this.fallback = fallback;
-                        this.isSnub = isSnub;
-                        const colorProps: string = ExportedVEFShapes.MODEL_PREFIX + pkgName + "/colors.properties";
-                        const resource: string = com.vzome.xml.ResourceLoader.loadStringResource(colorProps);
-                        if (resource != null)try {
-                            const inputStream: java.io.InputStream = new java.io.ByteArrayInputStream(/* getBytes */(resource).split('').map(s => s.charCodeAt(0)));
-                            this.colors.load(inputStream);
-                        } catch(ioe) {
-                            if (ExportedVEFShapes.LOGGER_$LI$().isLoggable(java.util.logging.Level.FINE))ExportedVEFShapes.LOGGER_$LI$().fine("problem with shape color properties: " + colorProps);
-                        }
-                    }
-                }
             } else if (((prefsFolder != null && prefsFolder instanceof <any>java.io.File) || prefsFolder === null) && ((typeof pkgName === 'string') || pkgName === null) && ((typeof name === 'string') || name === null) && ((alias != null && (alias.constructor != null && alias.constructor["__interfaces"] != null && alias.constructor["__interfaces"].indexOf("com.vzome.core.math.symmetry.Symmetry") >= 0)) || alias === null) && symm === undefined && fallback === undefined && isSnub === undefined) {
                 let __args = arguments;
                 let symm: any = __args[3];
