@@ -93,3 +93,6 @@ core/failures.xml
 website/Gemfile.lock
 
 website/docs/assets/
+website/scrape/
+website/.yalc/
+website/_site/
