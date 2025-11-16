@@ -3,13 +3,14 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-# building and deploying a Jekyll site to GitHub Pages
+# building and deploying an 11ty site to Dreamhost
 name: vZome website
 
 on:
-  # Runs on pushes targeting the default branch, changing "docs"
+  # Runs on pushes targeting the default branch, changing "website"
   push:
-    branches: ["main"]
+    # TODO: change to main when ready
+    branches: ["11ty-site"]
     paths:
       - 'website/**'
 
@@ -38,23 +39,22 @@ jobs:
         uses: actions/checkout@v4
         with:
           lfs: 'true'
-      - name: Setup Ruby
-        # https://github.com/ruby/setup-ruby/releases/tag/v1.207.0
-        uses: ruby/setup-ruby@4a9ddd6f338a97768b8006bf671dfbad383215f4
+
+      - name: Checkout nested repo
+        uses: actions/checkout@v4
         with:
-          ruby-version: '3.1' # Not needed with a .ruby-version file
-          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-          cache-version: 0 # Increment this number if you need to re-download cached gems
-          working-directory: website
-      - name: Build with Jekyll
+          repository: vorth/vzome-sharing
+          path: website/vzome-sharing
+          ref: 11ty-build
+          token: ${{ secrets.GITHUB_TOKEN }}  # Use PAT if private repo
+
+      - name: Build with 11ty
         # Outputs to the './_site' directory by default
         run: |
           cd website
-          pwd
-          bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+          yarn init
+          yarn exec eleventy
           find _site
-        env:
-          JEKYLL_ENV: production
 
       - name: Configure SSH
         run: |
@@ -74,8 +74,10 @@ jobs:
           HOSTING_FQDN: ${{ secrets.HOSTING_FQDN }}
       - name: Publish website to DreamHost
         run: |
+          # TODO: remove the mkdir, and change test11ty to .
           sftp -b - dreamhost <<END
-            cd vzome.com/
-            put -r ./website/_site/* .
+            cd vzome.com
+            mkdir test11ty
+            put -r ./website/_site/* test11ty
           END
 

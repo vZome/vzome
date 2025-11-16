@@ -11,7 +11,7 @@ Please visit the [main vZome web site](https://www.vzome.com) for general inform
 The best way to get help quickly is to join our [Discord server](http://discord.gg/vhyFsNAFPS), and ask there.
 It is also the best way to learn about new features, and even to help set priorities for vZome.
 
-## [Quick Start Guide](./quick-start)
+## [Quick Start Guide](./quick-start.html)
 
 Just the basics to get you started creating geometric designs with vZome.
 
@@ -25,12 +25,12 @@ Significant new features get a dedicated YouTube video:
   </iframe>
 </figure>
 
-## [vZome Online Web Applications](./online)
+## [vZome Online Web Applications](./online.html)
 
 vZome code has been ported to run in the browser, and there are a number of
 web applications you can explore.
 
-## [Sharing vZome Designs](./sharing)
+## [Sharing vZome Designs](./sharing.html)
 
 vZome supports sharing designs via GitHub, including generation of simple web pages with embedded interactive 3D views like this:
 
@@ -45,28 +45,28 @@ vZome supports sharing designs via GitHub, including generation of simple web pa
   </figcaption>
 </figure>
 
-## [Embedding vZome Designs in Web Pages](./web-component)
+## [Embedding vZome Designs in Web Pages](./web-component.html)
 
 The interactive 3D viewer shown above is a standard *web component*, and can be embedded in any HTML page,
 independent of whether you host the vZome design on GitHub or your own web server.
 
-## [vZome Toolbars for Diehards](./toolbars-for-diehards)
+## [vZome Toolbars for Diehards](./toolbars-for-diehards.html)
 
 You can use modern vZome but still have the tools from older versions.
 
-## [vZome Content Workflows](./content-workflows)
+## [vZome Content Workflows](./content-workflows.html)
 
 Have you ever wished that you could automatically capture an image or export with every vZome file you save?
 
-## [Ray-tracing with POV-Ray on Mac OS](./povray)
+## [Ray-tracing with POV-Ray on Mac OS](./povray.html)
 
 Ray-traced vZome models are easy again, for Mac users using POV-Ray.
 
-## [Running vZome on Linux](./running-on-linux)
+## [Running vZome on Linux](./running-on-linux.html)
 
 Instructions for how to install and run vZome on a Linux system
 
-## [Capturing Vector Graphics (e.g. PDF)](./capture-vector-graphics)
+## [Capturing Vector Graphics (e.g. PDF)](./capture-vector-graphics.html)
 
 Are you still capturing JPEG images to print your vZome creations? There's a better way, for most cases: vector graphics.
 
