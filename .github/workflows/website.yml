@@ -37,6 +37,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        ref: 11ty-site
         with:
           lfs: 'true'
 
