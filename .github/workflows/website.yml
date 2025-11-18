@@ -37,8 +37,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        ref: 11ty-site
         with:
+          ref: 11ty-site
           lfs: 'true'
 
       - name: Checkout nested repo
