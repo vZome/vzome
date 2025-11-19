@@ -3,7 +3,7 @@ export default async function (eleventyConfig) {
 
 	eleventyConfig.addPassthroughCopy("assets");
 
-  eleventyConfig.addGlobalData("layout", "page.njk");
+  eleventyConfig.addGlobalData("layout", "page");
 
 	// eleventyConfig.addLayoutAlias("vzome", "vzome-sharing/_layouts/vzome.html");
 
