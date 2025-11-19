@@ -113,7 +113,7 @@
       <div class="container-md">
         <div class="row">
           <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
-            <div class="page-heading">
+            <div class="{{ page-type }}-heading">
               <h1>{% if title %}{{ title }}{% else %}<br/>{% endif %}</h1>
               {% if subtitle %}
                 {% if layout == "page" %}
@@ -124,15 +124,15 @@
                 {% endif %}
               {% endif %}
               
-              {% if layout == "post" %} 
+              {% if page-type == "post" %} 
                 {% if author %}
                   By <strong>{{ author }}</strong><br>
                 {% endif%}
-                <span class="post-meta">Posted on {{ date | date: date_format }}</span>
+                <span class="post-meta">Posted on {{ page.date | date: "%B %-d, %Y" }}</span>
                 {% if last-updated %}
                   <span class="post-meta">
                     <span class="d-none d-md-inline middot">&middot;</span>
-                    Last updated {{ last-updated | date: date_format }}
+                    Last updated {{ last-updated | date: "%B %-d, %Y" }}
                   </span>
                 {% endif %}
                 {% if readtime %}

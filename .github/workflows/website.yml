@@ -10,7 +10,7 @@ on:
   # Runs on pushes targeting the default branch, changing "website"
   push:
     # TODO: change to main when ready
-    branches: ["11ty-site"]
+    branches: ["main"]
     paths:
       - 'website/**'
 
@@ -38,7 +38,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: 11ty-site
           lfs: 'true'
 
       - name: Checkout nested repo
@@ -75,10 +74,8 @@ jobs:
           HOSTING_FQDN: ${{ secrets.HOSTING_FQDN }}
       - name: Publish website to DreamHost
         run: |
-          # TODO: remove the mkdir, and change test11ty to .
           sftp -b - dreamhost <<END
             cd vzome.com
-            mkdir test11ty
-            put -r ./website/_site/* test11ty
+            put -r ./website/_site/* .
           END
 
