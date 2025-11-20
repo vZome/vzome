@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>{{ title }}</title>
+
+  <meta name="author" content="Scott Vorthmann">
+  <meta name="description" content="{{ description }}">
+  <meta name="keywords" content="vZome,Zometool,zome,geometry,design,software,application,discrete,exact,online">
+
+  <link rel="alternate" type="application/rss+xml" title="vZome (Under Construction)" href="https://www.vzome.com/feed.xml">
+      
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800">
+  <link rel="stylesheet" href="/assets/css/bootstrap-social.css">
+  <link rel="stylesheet" href="/assets/css/beautifuljekyll.css">
+  <link rel="stylesheet" href="/assets/css/custom-styles.css">
+
+  <meta property="og:site_name" content="vZome (Under Construction)">
+  <meta property="og:title" content="{{ title }}">
+  <meta property="og:description" content="{{ description }}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="/docs">
+
+  <link rel="canonical" href="/docs">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="@vzome">
+  <meta name="twitter:creator" content="@vzome">
+  <meta property="twitter:title" content="{{ title }}">
+  <meta property="twitter:description" content="{{ description }}">
+
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-xl navbar-light fixed-top navbar-custom top-nav-regular">
+
+    <a class="navbar-brand navbar-brand-logo" href="https://www.vzome.com/"><img alt="vZome (Under Construction) Logo" src="/assets/vzome-6-logo.png"/></a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/new-index">Home</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="/docs/" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About</a>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/about">vZome</a>
+            <a class="dropdown-item" href="/about/zometool">Zometool</a>
+            <a class="dropdown-item" href="/docs/history">History</a>
+          </div>
+        </li>
+      
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="/docs" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Docs</a>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/docs/quick-start">Quick Start</a>
+            <a class="dropdown-item" href="/docs/sharing">Sharing</a>
+            <a class="dropdown-item" href="/docs/web-component">Web Embedding</a>
+            <a class="dropdown-item" href="/docs">Misc</a>
+          </div>
+        </li>
+      
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="/docs" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Showcase</a>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/geometry/">Geometry Blog</a>
+            <a class="dropdown-item" href="/home/showcase/">Gallery</a>
+          </div>
+        </li>
+        
+        <li class="nav-item">
+          <a class="nav-link" id="nav-search-link" href="/docs" title="Search">
+            <span id="nav-search-icon" class="fa fa-search"></span>
+            <span id="nav-search-text">Search</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+  </nav>
+
+  <div id="beautifuljekyll-search-overlay">
+
+    <div id="nav-search-exit" title="Exit search">✕</div>
+    <input type="text" id="nav-search-input" placeholder="Search">
+    <ul id="search-results-container"></ul>
+    
+    <script src="https://unpkg.com/simple-jekyll-search@latest/dest/simple-jekyll-search.min.js"></script>
+    <script>
+      SimpleJekyllSearch({
+        searchInput: document.getElementById('nav-search-input'),
+        resultsContainer: document.getElementById('search-results-container'),
+        json: '/assets/data/searchcorpus.json' 
+      });
+    </script>
+  </div>
+
+  <header class="header-section ">
+    <div class="intro-header ">
+      
+      <div class="container-md">
+        <div class="row">
+          <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
+            <div class="{{ page-type }}-heading">
+              <h1>{% if title %}{{ title }}{% else %}<br/>{% endif %}</h1>
+              {% if subtitle %}
+                {% if layout == "page" %}
+                  <hr class="small">
+                  <span class="page-subheading">{{ subtitle }}</span>
+                {% else %}
+                  <h2 class="page-subheading">{{ subtitle }}</h2>
+                {% endif %}
+              {% endif %}
+              
+              {% if page-type == "post" %} 
+                {% if author %}
+                  By <strong>{{ author }}</strong><br>
+                {% endif%}
+                <span class="post-meta">Posted on {{ page.date | date: "%B %-d, %Y" }}</span>
+                {% if last-updated %}
+                  <span class="post-meta">
+                    <span class="d-none d-md-inline middot">&middot;</span>
+                    Last updated {{ last-updated | date: "%B %-d, %Y" }}
+                  </span>
+                {% endif %}
+                {% if readtime %}
+                  {% include readtime.html %}
+                {% endif %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </header>
+
+
+  <main class=" container-md ">
+    <div class="row">
+      <div class=" col-xl-8 offset-xl-2 col-lg-10 offset-lg-1 ">
+
+        {{ content }}
+
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container-md beautiful-jekyll-footer">
+      <div class="row">
+        <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
+        
+        <ul class="list-inline text-center footer-links">
+          <li class="list-inline-item">
+            <a href="https://www.vzome.com/cdn-cgi/l/email-protection#cfa6a1a9a08fb9b5a0a2aae1aca0a2" title="Email me">
+              <span class="fa-stack fa-lg" aria-hidden="true">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+              </span>
+              <span class="sr-only">Email me</span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.vzome.com/feed.xml" title="RSS">
+              <span class="fa-stack fa-lg" aria-hidden="true">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fas fa-rss fa-stack-1x fa-inverse"></i>
+              </span>
+              <span class="sr-only">RSS</span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.facebook.com/vzome" title="Facebook">
+              <span class="fa-stack fa-lg" aria-hidden="true">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fab fa-facebook fa-stack-1x fa-inverse"></i>
+              </span>
+              <span class="sr-only">Facebook</span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://github.com/vzome" title="GitHub">
+              <span class="fa-stack fa-lg" aria-hidden="true">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+              </span>
+              <span class="sr-only">GitHub</span>
+            </a>
+            </li>
+          <li class="list-inline-item">
+            <a href="https://twitter.com/vzome" title="X (Twitter)">
+              <span class="fa-stack fa-lg" aria-hidden="true">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fab fa-x-twitter fa-stack-1x fa-inverse"></i>
+              </span>
+              <span class="sr-only">X (Twitter)</span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://www.youtube.com/c/vzome" title="YouTube">
+              <span class="fa-stack fa-lg" aria-hidden="true">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fab fa-youtube fa-stack-1x fa-inverse"></i>
+              </span>
+              <span class="sr-only">YouTube</span>
+            </a>
+          </li>
+          <li class="list-inline-item">
+            <a href="https://discord.com/invite/vhyFsNAFPS" title="Discord">
+              <span class="fa-stack fa-lg" aria-hidden="true">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fab fa-discord fa-stack-1x fa-inverse"></i>
+              </span>
+              <span class="sr-only">Discord</span>
+            </a>
+          </li>
+        </ul>
+
+        <p class="copyright text-muted">
+          Scott Vorthmann
+          &nbsp;&bull;&nbsp;
+          2025
+        </p>
+        <p class="theme-by text-muted">
+          Powered by
+          <a href="https://www.11ty.dev">11ty</a> and
+          <a href="https://beautifuljekyll.com">Beautiful Jekyll</a>
+        </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  <!-- doing something a bit funky here because I want to be careful not to include JQuery twice! -->
+  <script src="/assets/js/beautifuljekyll.js"></script>
+
+</body>
+</html>

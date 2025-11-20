@@ -1,2 +1,6 @@
 _scraped/
-README.md
+**/README.md
+
+vzome-sharing/_includes
+vzome-sharing/_layouts
+vzome-sharing/about.md

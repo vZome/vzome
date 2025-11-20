@@ -3,9 +3,6 @@ title: vZome Documentation
 share-description: Documentation for vZome, a 3D modeling app for Zometool and other geometries
 ---
 
-This page contains  documentation about vZome, a 3D modeling app for Zometool and other geometries.
-Please visit the [main vZome web site](https://www.vzome.com) for general information.
-
 ## [Join the Discord](http://discord.gg/vhyFsNAFPS)
 
 The best way to get help quickly is to join our [Discord server](http://discord.gg/vhyFsNAFPS), and ask there.

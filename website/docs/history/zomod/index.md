@@ -82,8 +82,7 @@ Balls must be explicitly created, with the `B` command, and struts are created
 with the `S` command.  The different strut shapes (not colors) are indicated
 with `P` for pentagon, `T` for triangle, `R` for rectangle, and `D` for diamond
 (the green strut cross-section).
-If you want the details on the syntax, you can
-[download the Zomod manual](/assets/Zomod 1.5.1 Manual.pdf).
+If you want the details on the syntax, you can [download the Zomod manual.](/assets/Zomod 1.5.1 Manual.pdf)
 It was all Will Ackel's invention, and the strut direction indexing he designed is still used
 in the Zomic scripting supported by vZome.
 

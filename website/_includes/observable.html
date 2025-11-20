@@ -1,0 +1,24 @@
+---
+layout: post
+---
+
+<!-- Enable embedding Observable notebooks -->
+<script type="text/javascript">
+    async function embedNotebook( url, exclude ) {
+      if ( ! url .startsWith( "http" ) ) {
+        url = "https://api.observablehq.com/" + url + ".js?v=3"
+      }
+      const notebook = await import( url );
+      const observable = await import( "https://unpkg.com/@observablehq/runtime@4/dist/runtime.js" );
+      const inspector = observable.Inspector.into( document .querySelector( "#cells" ) );
+      new observable.Runtime() .module( notebook.default, name => {
+        if ( ! name )
+          return true;
+        if ( exclude .includes( name ) )
+          return true;
+        return inspector();
+      });
+    }
+  </script>
+
+{{ content }}

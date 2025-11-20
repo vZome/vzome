@@ -47,7 +47,7 @@ p {
 }
 h1,h2,h3,h4,h5,h6 {
   font-family: var(--header-font);
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.1;
 }
 h1 {
@@ -461,6 +461,7 @@ footer .footer-custom-content {
 
 .posts-list {
     margin: 0;
+    border-top: 2px solid #eee;
 }
 
 .post-preview {
@@ -471,7 +472,7 @@ footer .footer-custom-content {
 
 @media (min-width: 768px) {
   .post-preview {
-    padding: 2.1875rem 0;
+    padding: 20px 0;
   }
 }
 
@@ -541,10 +542,11 @@ footer .footer-custom-content {
 }
 .post-preview .post-image-short {
   margin-top: -2.1875rem;
+  height: 7rem;
 }
 @media (max-width: 767px) {
   .post-preview .post-image {
-    height: 9rem;
+    height: 7rem;
     width: 9rem;
   }
   .post-preview .post-image-short {
@@ -650,7 +652,7 @@ footer .footer-custom-content {
 /* --- Post and page headers --- */
 
 .intro-header {
-  margin: 5rem 0 1.25rem;
+  margin: 5rem 0 2.75rem;
   position: relative;
 }
 .intro-header.big-img {
@@ -745,9 +747,9 @@ nav.top-nav-short-permanent ~ header > .intro-header.big-img {
   .intro-header.big-img .post-heading {
     padding: 9.375rem 0;
   }
-  .intro-header .page-heading h1 {
-    font-size: 5rem;
-  }
+  /* .intro-header .page-heading h1 {
+    font-size: 4rem;
+  } */
   .intro-header .post-heading h1 {
     font-size: 3.125rem;
   }
@@ -791,7 +793,7 @@ nav.top-nav-short-permanent ~ header > .intro-header.big-img {
   font-family: var(--header-font);
   text-transform: uppercase;
   font-size: 0.875rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 1px;
   padding: 0.625rem 0.3125rem;
   background-color: var(--page-col);
