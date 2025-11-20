@@ -47,6 +47,14 @@ jobs:
           path: website/vzome-sharing
           ref: 11ty-build
           token: ${{ secrets.GITHUB_TOKEN }}  # Use PAT if private repo
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'  # or whatever version you're using
+      
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Build with 11ty
         # Outputs to the './_site' directory by default
