@@ -60,7 +60,7 @@ jobs:
         # Outputs to the './_site' directory by default
         run: |
           cd website
-          yarn init
+          yarn install
           yarn exec eleventy
           find _site
 
