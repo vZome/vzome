@@ -61,11 +61,6 @@ public class ExportedVEFShapes extends AbstractShapes
         this( prefsFolder, pkgName, name, null, symm );
     }
 
-    public ExportedVEFShapes( File prefsFolder, String pkgName, String name, Symmetry symm, boolean useZomic )
-    {
-        this( prefsFolder, pkgName, name, null, symm, new OctahedralShapes( pkgName, name, symm ) );
-    }
-
     public ExportedVEFShapes( File prefsFolder, String pkgName, String name, String alias, Symmetry symm )
     {
         this( prefsFolder, pkgName, name, alias, symm, new OctahedralShapes( pkgName, name, symm ) );

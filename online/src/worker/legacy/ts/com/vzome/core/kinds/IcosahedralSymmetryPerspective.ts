@@ -47,10 +47,10 @@ namespace com.vzome.core.kinds {
                     const tinyShapes: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "tiny", "tiny connectors", this.symmetry);
                     const tinyDodecs: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "dodecs", "small dodecahedra", "tiny dodecahedra", this.symmetry, tinyShapes);
                     const bigZome: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "bigzome", "Big Zome", this.symmetry, tinyShapes);
-                    const noTwist: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "noTwist", "no-twist 121 zone", this.symmetry, true);
+                    const noTwist: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "noTwist", "no-twist 121 zone", null, this.symmetry);
                     const vienne2: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "vienne2", "Vienne", this.symmetry, icosadefaultShapes);
                     const vienne3: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "vienne3", "Vienne lifelike", this.symmetry, vienne2);
-                    const vienne: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "vienne", "Vienne 121 zone", this.symmetry, true);
+                    const vienne: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "vienne", "Vienne 121 zone", null, this.symmetry);
                     const dimtoolShapes: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "dimtool", "dimtool", this.symmetry, icosadefaultShapes);
                     this.setDefaultGeometry(printableShapes);
                     this.addShapes(icosadefaultShapes);
@@ -97,10 +97,10 @@ namespace com.vzome.core.kinds {
                 const tinyShapes: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "tiny", "tiny connectors", this.symmetry);
                 const tinyDodecs: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "dodecs", "small dodecahedra", "tiny dodecahedra", this.symmetry, tinyShapes);
                 const bigZome: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "bigzome", "Big Zome", this.symmetry, tinyShapes);
-                const noTwist: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "noTwist", "no-twist 121 zone", this.symmetry, true);
+                const noTwist: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "noTwist", "no-twist 121 zone", null, this.symmetry);
                 const vienne2: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "vienne2", "Vienne", this.symmetry, icosadefaultShapes);
                 const vienne3: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "vienne3", "Vienne lifelike", this.symmetry, vienne2);
-                const vienne: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "vienne", "Vienne 121 zone", this.symmetry, true);
+                const vienne: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "vienne", "Vienne 121 zone", null, this.symmetry);
                 const dimtoolShapes: com.vzome.core.viewing.AbstractShapes = new com.vzome.core.viewing.ExportedVEFShapes(null, "dimtool", "dimtool", this.symmetry, icosadefaultShapes);
                 this.setDefaultGeometry(printableShapes);
                 this.addShapes(icosadefaultShapes);
