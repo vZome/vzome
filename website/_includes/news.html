@@ -1,0 +1,121 @@
+---
+layout: page
+pagination:
+  data: collections.news
+  size: 10
+  reverse: true
+---
+
+{% assign posts = pagination.items %}
+
+<!-- role="list" needed so that `list-style: none` in Safari doesn't remove the list semantics -->
+<ul class="posts-list list-unstyled" role="list">
+  {% for post in posts %}
+  <li class="post-preview">
+    <article>
+
+      {% capture excerpt_vzome %}
+        {%- if post.data.description -%}
+          {{ post.data.description | strip_html | xml_escape  }}
+        {%- else -%}
+        {%- endif -%}
+      {% endcapture %}
+      {% assign excerpt_vzome=excerpt_vzome | strip %}
+
+      {%- capture thumbnail -%}
+        {% if post.data.thumbnail-img %}
+          {{ post.data.thumbnail-img }}
+        {% elsif post.data.cover-img %}
+          {% if post.data.cover-img.first %}
+            {{ post.data.cover-img[0].first.first }}
+          {% else %}
+            {{ post.data.cover-img }}
+          {% endif %}
+        {% elsif post.data.image %}
+          {{ post.data.image }}
+        {% else %}
+        {% endif %}
+      {% endcapture %}
+      {% assign thumbnail=thumbnail | strip %}
+
+      {% if site.feed_show_excerpt == false %}
+      {% if thumbnail != "" %}
+      <div class="post-image post-image-normal">
+        <a href="{{ post.url | relative_url }}" aria-label="Thumbnail">
+          <img src="{{ thumbnail | relative_url }}" alt="Post thumbnail">
+        </a>
+      </div>
+      {% endif %}
+      {% endif %}
+
+      <a href="{{ post.url | relative_url }}">
+        <h2 class="post-title">{{ post.data.title | strip_html }}</h2>
+
+        {% if post.data.subtitle %}
+          <h3 class="post-subtitle">
+          {{ post.data.subtitle | strip_html }}
+          </h3>
+        {% endif %}
+      </a>
+
+      <p class="post-meta">
+        {% assign date_format = site.date_format | default: "%B %-d, %Y" %}
+        Posted on {{ post.date | date: date_format }}
+      </p>
+
+      {% if thumbnail != "" %}
+      <div class="post-image post-image-small">
+        <a href="{{ post.data.url | relative_url }}" aria-label="Thumbnail">
+          <img src="{{ thumbnail | relative_url }}" alt="Post thumbnail">
+        </a>
+      </div>
+      {% endif %}
+
+      {% unless site.feed_show_excerpt == false %}
+      {% if thumbnail != "" %}
+      <div class="post-image post-image-short">
+        <a href="{{ post.data.url | relative_url }}" aria-label="Thumbnail">
+          <img src="{{ thumbnail | relative_url }}" alt="Post thumbnail">
+        </a>
+      </div>
+      {% endif %}
+
+      <div class="post-entry">
+        {% assign excerpt_length = site.excerpt_length | default: 50 %}
+        {{ excerpt_vzome | strip_html | truncatewords: excerpt_length }}
+      </div>
+      {% endunless %}
+
+      {% if site.feed_show_tags != false and post.data.tags.size > 0 %}
+      <!-- <div class="blog-tags">
+        <span>Tags:</span> -->
+        <!-- role="list" needed so that `list-style: none` in Safari doesn't remove the list semantics -->
+        <!-- <ul class="d-inline list-inline" role="list">
+          {% for tag in post.data.tags %}
+          <li class="list-inline-item">
+            <a href="{{ '/tags' | relative_url }}#{{- tag -}}">{{- tag -}}</a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div> -->
+      {% endif %}
+
+    </article>
+  </li>
+  {% endfor %}
+</ul>
+
+{% if pagination.pages.length > 1 %}
+<ul class="pagination main-pager">
+  {% if pagination.href.previous %}
+  <li class="page-item previous">
+    <a class="page-link" href="{{ pagination.href.previous | relative_url }}">&larr; Newer Posts</a>
+  </li>
+  {% endif %}
+  {% if pagination.href.next %}
+  <li class="page-item next">
+    <a class="page-link" href="{{ pagination.href.next | relative_url }}">Older Posts &rarr;</a>
+  </li>
+  {% endif %}
+</ul>
+{% endif %}

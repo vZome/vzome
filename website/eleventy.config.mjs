@@ -14,4 +14,8 @@ export default async function (eleventyConfig) {
 		return collectionsApi .getFilteredByTag("posts") .filter( item => item.data.published !== false );
   });
 
+  eleventyConfig.addCollection( "newsPublished", (collectionsApi) => {
+		return collectionsApi .getFilteredByTag("news") .filter( item => item.data.published !== false );
+  });
+
 };
