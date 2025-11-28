@@ -1,5 +1,5 @@
 
-import { Divider, Menu, SubMenu, CommandAction } from "../../framework/menus.jsx";
+import { Divider, Menu, SubMenu, CommandAction, DeclarativeMenu } from "../../framework/menus.jsx";
 import { controllerProperty, useEditor } from '../../framework/context/editor.jsx';
 
 export const ConstructMenu = () =>
@@ -8,46 +8,42 @@ export const ConstructMenu = () =>
   const affineModes = () => controllerProperty( rootController(), 'affinePolygon.modes', 'affinePolygon.modes', true );
   const affineLabels = () => controllerProperty( rootController(), 'affinePolygon.labels', 'affinePolygon.labels', true );
 
+  const items = [
+    { label: "Loop Balls",               action: "JoinPoints/CLOSED_LOOP" },
+    { label: "Chain Balls",              action: "JoinPoints/CHAIN_BALLS" },
+    { label: "Join Balls to Last",       action: "JoinPoints/ALL_TO_LAST" },
+    { label: "Make All Possible Struts", action: "JoinPoints/ALL_POSSIBLE" },
+    { divider: true },
+    { label: "Panel",                    action: "panel" },
+    { label: "Panel/Strut Vertices",     action: "ShowVertices" },
+    { label: "Panel Normals",            action: "ShowNormals" },
+    { divider: true },
+    { label: "Centroid",                 action: "NewCentroid" },
+    { label: "Strut Midpoints",          action: "midpoint" },
+    { label: "Panel Centroids",          action: "PanelCentroids" },
+    { label: "Panel Perimeters",         action: "PanelPerimeters" },
+    { divider: true },
+    { label: "Line-Line Intersection",   action: "StrutIntersection" },
+    { label: "Line-Plane Intersection",  action: "LinePlaneIntersect" },
+    { label: "Panel-Panel Projection",   action: "PanelPanelIntersection" },
+    { label: "Cross Product",            action: "CrossProduct" },
+    { label: "Normal to Skew Lines",     action: "JoinSkewLines" },
+    { divider: true },
+    { label: "Ball At Origin",           action: "ShowPoint/origin" },
+    { divider: true },
+    { label: "2D Convex Hull",           action: "ConvexHull2d" },
+    { 
+      label: "3D Convex Hull", 
+      submenu: [
+        { label: "Complete",               action: "ConvexHull3d" },
+        { label: "Panels Only",            action: "ConvexHull3d/onlyPanels" },
+        { label: "Struts Only",            action: "ConvexHull3d/noPanels" },
+      ]
+    }
+  ];
+
   return (
-    <Menu label="Construct">
-        <CommandAction label="Loop Balls"         action="JoinPoints/CLOSED_LOOP" />
-        <CommandAction label="Chain Balls"        action="JoinPoints/CHAIN_BALLS" />
-        <CommandAction label="Join Balls to Last" action="JoinPoints/ALL_TO_LAST" />
-        <CommandAction label="Make All Possible Struts" action="JoinPoints/ALL_POSSIBLE" />
-
-        <Divider />
-
-        <CommandAction label="Panel" action="panel" />
-        <CommandAction label="Panel/Strut Vertices" action="ShowVertices" />
-        <CommandAction label="Panel Normals" action="ShowNormals" />
-
-        <Divider />
-        
-        <CommandAction label="Centroid" action="NewCentroid" />
-        <CommandAction label="Strut Midpoints" action="midpoint" />
-        <CommandAction label="Panel Centroids" action="PanelCentroids" />
-        <CommandAction label="Panel Perimeters" action="PanelPerimeters" />
-
-        <Divider />
-
-        <CommandAction label="Line-Line Intersection"  action="StrutIntersection" />
-        <CommandAction label="Line-Plane Intersection" action="LinePlaneIntersect" />
-        <CommandAction label="Panel-Panel Projection"  action="PanelPanelIntersection" />
-        <CommandAction label="Cross Product" action="CrossProduct" />
-        <CommandAction label="Normal to Skew Lines" action="JoinSkewLines" />
-
-        <Divider />
-        
-        <CommandAction label="Ball At Origin" action="ShowPoint/origin" />
-
-        <Divider />
-        
-        <CommandAction label="2D Convex Hull" action="ConvexHull2d" />
-        <SubMenu label="3D Convex Hull">
-          <CommandAction label="Complete" action="ConvexHull3d" />
-          <CommandAction label="Panels Only" action="ConvexHull3d/onlyPanels" />
-          <CommandAction label="Struts Only" action="ConvexHull3d/noPanels" />
-        </SubMenu>
+    <DeclarativeMenu label="Construct" items={items}>
 
         <Divider />
         
@@ -56,6 +52,6 @@ export const ConstructMenu = () =>
           <CommandAction label={`Affine ${affineLabels()[i()]}`} action={`AffinePolygon/${value}`} />
         }</For>
         <CommandAction label="Parallelepiped" action="Parallelepiped" />
-    </Menu>
+    </DeclarativeMenu>
   );
 }

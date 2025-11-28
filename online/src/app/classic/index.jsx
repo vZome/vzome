@@ -9,6 +9,7 @@ import { ConstructMenu } from './menus/constructmenu.jsx';
 import { ToolsMenu } from './menus/toolsmenu.jsx';
 import { SystemMenu } from './menus/systemmenu.jsx';
 import { HelpMenu } from './menus/help.jsx';
+import { CustomMenu } from './menus/custommenu.jsx';
 
 import { useEditor } from '../framework/context/editor.jsx';
 
@@ -53,6 +54,7 @@ export const ClassicApp = () =>
               <ToolsMenu/>
               <SystemMenu/>
               <HelpMenu/>
+              <CustomMenu/>
             </Menubar>
             <Persistence/>
           </>}
