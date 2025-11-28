@@ -2,6 +2,7 @@ export default async function (eleventyConfig) {
 	// Output directory: _site
 
 	eleventyConfig.addPassthroughCopy("assets");
+	eleventyConfig.addPassthroughCopy("media");
 
   eleventyConfig.addGlobalData("layout", "page");
   eleventyConfig.addGlobalData("page-type", "page");
