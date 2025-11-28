@@ -138,6 +138,9 @@ export const CommandsProvider = props =>
       registerKeyListener( modifiers, keyEquiv.deleteKey, keyEquiv.key, handler );
       keystroke = (!keyEquiv)? '' : ( keyEquiv.deleteKey? "⌫" : prefix + keyEquiv.key );
     }
+    if ( !! commands[ action ] ) {
+      console.warn( `Command for action ${action} is being replaced; original key binding may be lost.` );
+    }
     commands[ action ] = { keystroke, handler };
     return commands[ action ];
   }
@@ -186,6 +189,26 @@ export const CommandsProvider = props =>
   // Route Replace With Panels through the symmetry controller so it appends the
   // current system and style (mode) like the desktop app does.
   createCommand( 'ReplaceWithShape', undefined, () => controllerAction( symmetryController(), 'ReplaceWithShape' ) );
+
+  const createCustomCommands = items => {
+    items .forEach( item => {
+      if ( item .action && ! commands[ item .action ] ) {
+        createCommand( item .action, item .key? { mods: item .mods || '⌥⌃', key: item .key } : undefined );
+      } else if ( !! item .submenu ) {
+        createCustomCommands( item .submenu );
+      }
+    } );
+  }
+  const customMenuItems = localStorage .getItem( 'vzome-custom-menu' );
+  if ( customMenuItems ) {
+    try {
+      const items = JSON .parse( customMenuItems );
+      createCustomCommands( items );
+    }
+    catch ( e ) {
+      console.error( "Error parsing custom menu items from localStorage:", e );
+    }
+  }
 
   return (
     <CommandsContext.Provider value={{ registerKeyListener, getCommand }}>

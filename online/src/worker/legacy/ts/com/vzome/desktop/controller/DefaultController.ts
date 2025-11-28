@@ -28,7 +28,7 @@ namespace com.vzome.desktop.controller {
                 this.doAction(action);
             } catch(ex) {
                 console.error(ex.message, ex);
-                this.mErrors.reportError(com.vzome.desktop.api.Controller.UNKNOWN_ERROR_CODE, [ex]);
+                this.mErrors.reportError(com.vzome.desktop.api.Controller.UNKNOWN_ERROR_CODE, [ex, action]);
             }
         }
 
