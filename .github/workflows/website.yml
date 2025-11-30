@@ -61,7 +61,7 @@ jobs:
         run: |
           cd website
           yarn install
-          yarn exec eleventy
+          IMAGES_URL=https://pub-72dcd7653cf3451d9ef0ad02dda76a89.r2.dev yarn exec eleventy
           find _site
 
       - name: Configure SSH
