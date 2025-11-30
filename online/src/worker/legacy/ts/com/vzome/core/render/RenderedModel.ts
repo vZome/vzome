@@ -420,14 +420,6 @@ namespace com.vzome.core.render {
 
         export class SymmetryOrbitSource implements com.vzome.core.editor.api.OrbitSource {
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
-                return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getOrientations$(): number[][] {
-                return this.getOrientations(false);
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             getEmbedding(): number[] {
                 const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
                 const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
@@ -445,6 +437,10 @@ namespace com.vzome.core.render {
                 embedding[14] = 0.0;
                 embedding[15] = 1.0;
                 return embedding;
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
+                return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             public getOrientations(rowMajor?: any): number[][] {
@@ -484,6 +480,10 @@ namespace com.vzome.core.render {
                 } else if (rowMajor === undefined) {
                     return <any>this.getOrientations$();
                 } else throw new Error('invalid overload');
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getOrientations$(): number[][] {
+                return this.getOrientations(false);
             }
             symmetry: com.vzome.core.math.symmetry.Symmetry;
 

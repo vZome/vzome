@@ -43,7 +43,7 @@ public class DefaultController implements Controller
         } catch ( Exception ex )
         {
             ex .printStackTrace();
-            mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ ex } );
+            mErrors .reportError( UNKNOWN_ERROR_CODE, new Object[]{ ex, action } );
         }
     }
 

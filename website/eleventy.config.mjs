@@ -2,6 +2,7 @@ export default async function (eleventyConfig) {
 	// Output directory: _site
 
 	eleventyConfig.addPassthroughCopy("assets");
+	eleventyConfig.addPassthroughCopy("media");
 
   eleventyConfig.addGlobalData("layout", "page");
   eleventyConfig.addGlobalData("page-type", "page");
@@ -12,6 +13,10 @@ export default async function (eleventyConfig) {
 
   eleventyConfig.addCollection( "geomPublished", (collectionsApi) => {
 		return collectionsApi .getFilteredByTag("posts") .filter( item => item.data.published !== false );
+  });
+
+  eleventyConfig.addCollection( "newsPublished", (collectionsApi) => {
+		return collectionsApi .getFilteredByTag("news") .filter( item => item.data.published !== false );
   });
 
 };

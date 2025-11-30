@@ -24,8 +24,13 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
   reportError( message, args ) {
     console.log('controller error:', message, args);
     if (message === com.vzome.desktop.api.Controller.UNKNOWN_ERROR_CODE) {
-      const ex = args[0];
-      this.clientEvents .errorReported(ex.message);
+      const exception = args[0];
+      const action = args[1];
+      if ( exception.constructor.__class === 'com.vzome.core.commands.Command.Failure' ) {
+        this.clientEvents .errorReported( exception .message );
+      } else {
+        this.clientEvents .errorReported( `Internal error: unable to perform action "${action}"` );
+      }
     }
     else
       this.clientEvents .errorReported(message);

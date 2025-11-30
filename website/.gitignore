@@ -13,3 +13,5 @@
 .pnp.*
 _scraped/
 _site/
+
+media/
