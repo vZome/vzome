@@ -32,6 +32,7 @@ import { ZometoolInstructions } from "../../../wc/zometool/index.jsx";
 import { instructionsCSS } from "../../../wc/zometool/zometool.css.js";
 import { SceneIndexingProvider, SceneProvider, useSceneIndexing } from "../../../viewer/context/scene.jsx";
 import { urlViewerCSS } from "../../../viewer/urlviewer.css.js";
+import { useImageCapture, ImageCaptureProvider } from "../../../viewer/context/export.jsx";
 
 const CONFIGURING = 1;
 const AUTHENTICATING = 2;
@@ -157,12 +158,14 @@ const ConfigPage = () =>
       <fieldset class="viewer-preview">
         <legend><span>viewer preview</span></legend>
         <div class="viewer-preview-inner">
-          <CameraProvider>
-            <SceneProvider index={ sceneIndex() } passive={true} config={{ preview: true, debug: false, labels: true, source: false }}>
-              {/* <ViewerPreview scenesStyle={ state.sharing.style } camera={ copyOfCamera( mainCamera ) } /> */}
-              <ViewerPreview scenesStyle={ state.sharing.style } />
-            </SceneProvider>
-          </CameraProvider>
+          <ImageCaptureProvider>
+            <CameraProvider>
+              <SceneProvider index={ sceneIndex() } passive={true} config={{ preview: true, debug: false, labels: true, source: false }}>
+                {/* <ViewerPreview scenesStyle={ state.sharing.style } camera={ copyOfCamera( mainCamera ) } /> */}
+                <ViewerPreview scenesStyle={ state.sharing.style } />
+              </SceneProvider>
+            </CameraProvider>
+          </ImageCaptureProvider>
         </div>
       </fieldset>
     </div>
@@ -180,18 +183,39 @@ export const SharingDialog = ( props ) =>
   const [ disabled, setDisabled ] = createSignal( true );
   const [ blog, setBlog ] = createSignal( false );
   const [ publish, setPublish ] = createSignal( false );
+  const { setProblem } = useViewer();
 
   const { shareToGitHub } = useEditor();
+  const { capturer } = useImageCapture();
 
   const TARGET_KEY = 'classic-github-target-details';
 
+  let image = null;
+
   const handleClickOpen = () => {
-    setError( '' );
-    suspendMenuKeyEvents();
-    setDisabled( false );
-    setStage( CONFIGURING );
-    setOpen( true );
-    return;
+
+    // We have to capture the image first, because any other approach
+    // seems to yield an empty image, perhaps due to the dialog messing up
+    // the GPU state.
+    const { capture } = capturer();
+    capture( 'image/png', blob => {
+      if ( blob.size === 0 ) {
+        setProblem( 'Captured image is empty; please report this as a defect' );
+        return;
+      }
+
+      const reader = new FileReader();
+      reader .onloadend = () => {
+        const imageDataUrl = reader.result;
+        image = imageDataUrl .substring( 22 ); // remove "data:image/png;base64,"
+        setError( '' );
+        suspendMenuKeyEvents();
+        setDisabled( false );
+        setStage( CONFIGURING );
+        setOpen( true );
+      }
+      reader .readAsDataURL( blob );
+    });
   };
 
   const handleCancel = () => {
@@ -205,6 +229,7 @@ export const SharingDialog = ( props ) =>
       const target = localStorage .getItem( TARGET_KEY );
       if ( !!target ) {
         setStage( CHOOSING_REPO );
+        setDisabled( true );
         const stored = JSON.parse( target );
         setTarget( stored );
         getUserRepos( stored )
@@ -246,7 +271,7 @@ export const SharingDialog = ( props ) =>
       localStorage .setItem( TARGET_KEY, JSON.stringify( newTarget ) );
       setStage( UPLOADING );
       setDisabled( true );
-      shareToGitHub( unwrap( target() ), blog(), publish() )
+      shareToGitHub( unwrap( target() ), blog(), publish(), image )
         .then( url => {
           window.open( url, '_blank' );
           setOpen( false );

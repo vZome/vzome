@@ -189,13 +189,10 @@ export const ShapedGeometry = ( props ) =>
     //   https://github.com/pmndrs/react-three-fiber/discussions/2054
     //   https://stackoverflow.com/questions/12168909/blob-from-dataurl
     gl() .render( scene(), camera() ); // The HTML canvas state is only guaranteed immediately after render
-    const dataUrl = gl() .domElement .toDataURL( mimeType );
-    fetch( dataUrl )
-      .then( res => res.blob() )
-      .then( blob => {
-        console.log( `Captured ${mimeType} image of size ${blob.size} bytes` );
-        saveBlob( blob );
-      } );
+    gl() .domElement .toBlob( blob => {
+      console.log( `Captured ${mimeType} image of size ${blob.size} bytes` );
+      saveBlob( blob );
+    }, mimeType );
   }
   setCapturer( { capture } );
 

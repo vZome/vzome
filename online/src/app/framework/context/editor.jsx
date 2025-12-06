@@ -6,7 +6,6 @@ import * as actions from '../../../viewer/util/actions.js';
 import { Guardrail } from "../guardrail.jsx";
 import { copyOfCamera, useCamera } from "../../../viewer/context/camera.jsx";
 import { useWorkerClient } from "../../../viewer/context/worker.jsx";
-import { useImageCapture } from "../../../viewer/context/export.jsx";
 import { useViewer } from "../../../viewer/context/viewer.jsx";
 
 const defaultSharingStyle = scenes => {
@@ -39,8 +38,7 @@ const EditorProvider = props =>
 {
   const workerClient = useWorkerClient();
   const { resetCamera, state: cameraState } = useCamera();
-  const { resetScenes, setReload, setSource } = useViewer();
-  const { capturer } = useImageCapture();
+  const { scenes, resetScenes, setReload, setSource } = useViewer();
   // Beware, createStore does not make a copy, shallow or deep!
   const [ state, setState ] = createStore( { ...initialState() } );
 
@@ -224,31 +222,17 @@ const EditorProvider = props =>
 
   const indexResources = () => workerClient .postMessage( { type: 'WINDOW_LOCATION', payload: window.location.toString() } );
   
-  const shareToGitHub = ( target, blog, publish ) =>
+  const shareToGitHub = ( target, blog, publish, image ) =>
   {
-    const { capture } = capturer();  
     const name = state?.designName || 'untitled';
     const config = { ...unwrap( state.sharing ), blog, publish, originalDate: state.originalDate };
     return new Promise( ( resolve, reject ) =>
     {
-      new Promise(( resolve, reject ) => {
-        const reader = new FileReader();
-        reader .onloadend = () => resolve( reader.result );
-        capture( 'image/png', blob => {
-          if ( blob.size === 0 ) {
-            reject( 'Captured image is empty; please report this as a defect' );
-          }
-          reader .readAsDataURL( blob );
-        } );
-      })
-        .then( ( imageDataUrl ) => {
-          const image = imageDataUrl .substring( 22 ); // remove "data:image/png;base64,"
-          const camera   = unwrap( cameraState.camera );
-          const lighting = unwrap( cameraState.lighting );
-          expectResponse( '', 'shareToGitHub', { target, config, data: { name, image, camera, lighting } } )
-            .then( url => resolve( url ) )
-            .catch( error => reject( error ) );
-        })
+      const camera   = unwrap( cameraState.camera );
+      const lighting = unwrap( cameraState.lighting );
+      const scenes2  = unwrap( scenes );
+      expectResponse( '', 'shareToGitHub', { target, config, data: { name, image, camera, lighting, scenes: scenes2 } } )
+        .then( url => resolve( url ) )
         .catch( error => reject( error ) );
     } );
   }
