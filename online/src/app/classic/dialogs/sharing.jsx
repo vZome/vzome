@@ -32,7 +32,7 @@ import { ZometoolInstructions } from "../../../wc/zometool/index.jsx";
 import { instructionsCSS } from "../../../wc/zometool/zometool.css.js";
 import { SceneIndexingProvider, SceneProvider, useSceneIndexing } from "../../../viewer/context/scene.jsx";
 import { urlViewerCSS } from "../../../viewer/urlviewer.css.js";
-import { useImageCapture } from "../../../viewer/context/export.jsx";
+import { useImageCapture, ImageCaptureProvider } from "../../../viewer/context/export.jsx";
 
 const CONFIGURING = 1;
 const AUTHENTICATING = 2;
@@ -158,12 +158,14 @@ const ConfigPage = () =>
       <fieldset class="viewer-preview">
         <legend><span>viewer preview</span></legend>
         <div class="viewer-preview-inner">
-          <CameraProvider>
-            <SceneProvider index={ sceneIndex() } passive={true} config={{ preview: true, debug: false, labels: true, source: false }}>
-              {/* <ViewerPreview scenesStyle={ state.sharing.style } camera={ copyOfCamera( mainCamera ) } /> */}
-              <ViewerPreview scenesStyle={ state.sharing.style } />
-            </SceneProvider>
-          </CameraProvider>
+          <ImageCaptureProvider>
+            <CameraProvider>
+              <SceneProvider index={ sceneIndex() } passive={true} config={{ preview: true, debug: false, labels: true, source: false }}>
+                {/* <ViewerPreview scenesStyle={ state.sharing.style } camera={ copyOfCamera( mainCamera ) } /> */}
+                <ViewerPreview scenesStyle={ state.sharing.style } />
+              </SceneProvider>
+            </CameraProvider>
+          </ImageCaptureProvider>
         </div>
       </fieldset>
     </div>
