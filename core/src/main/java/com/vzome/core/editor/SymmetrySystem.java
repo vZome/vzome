@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Document;
@@ -35,7 +36,7 @@ import com.vzome.xml.DomUtils;
 
 public class SymmetrySystem implements OrbitSource
 {
-    private static final Logger logger = Logger .getLogger( "com.vzome.core.editor" );
+    private static final Logger LOGGER = Logger .getLogger( "com.vzome.core.editor" );
     private int nextNewAxis = 0;
 
     private final Symmetry symmetry;
@@ -81,30 +82,34 @@ public class SymmetrySystem implements OrbitSource
                     String name = dirElem .getAttribute( "name" );
                     Direction orbit = null;
                     String nums = dirElem .getAttribute( "prototype" );
-                    if ( nums != null && ! nums .isEmpty() )
-                    {
+                    if (nums != null && !nums.isEmpty()) {
                         try {
-                            AlgebraicVector prototype = symmetry .getField() .parseVector( nums );
-                            orbit = symmetry .createNewZoneOrbit( name, 0, Symmetry.NO_ROTATION, prototype );
-                        } catch ( NumberFormatException e )
-                        {
-                            System.err.println( "Integer overflow happened while creating orbit: " + name );
+                            AlgebraicVector prototype = symmetry.getField().parseVector(nums);
+                            orbit = symmetry.createNewZoneOrbit(name, 0, Symmetry.NO_ROTATION, prototype);
+                        } catch (NumberFormatException e) {
+                            if (LOGGER.isLoggable(Level.INFO)) {
+                                // It's OK that we didn't regenerate the automatic orbit here.
+                                // It's just an optimization that will be rebuilt if necessary,
+                                // but let's log the failure anyway.
+                                String msg = "Integer overflow while recreating automatic orbit: " + name
+                                        + ". Failed to parseVector('" + nums + "').";
+                                LOGGER.info(msg);
+                            }
                             continue;
                         }
-                        orbit .setAutomatic( true );
+                        orbit.setAutomatic(true);
                         try {
-                            int autoNum = Integer .parseInt( name );
-                            this .nextNewAxis = Math .max( this .nextNewAxis, autoNum + 1 );
-                        } catch ( NumberFormatException e ) {
+                            int autoNum = Integer.parseInt(name);
+                            this.nextNewAxis = Math.max(this.nextNewAxis, autoNum + 1);
+                        } catch (NumberFormatException e) {
                             // never mind, these used to be named things like "unnamed_13"
-                            System.err.println( e .getMessage() );
+                            LOGGER.fine(e.getMessage());
                         }
-                    }
-                    else
-                    {
-                        orbit = symmetry .getDirection( name );
-                        if ( orbit == null )
+                    } else {
+                        orbit = symmetry.getDirection(name);
+                        if (orbit == null) {
                             continue;
+                        }
                     }
                     orbits .add( orbit );
 
@@ -160,6 +165,7 @@ public class SymmetrySystem implements OrbitSource
         }
     }
 
+    @Override
     @JsonIgnore
     public String getName()
     {
@@ -245,6 +251,7 @@ public class SymmetrySystem implements OrbitSource
         return orbit;
     }
 
+    @Override
     public Color getVectorColor( AlgebraicVector vector )
     {
         if( vector == null ||  vector.isOrigin() ) {
@@ -340,7 +347,7 @@ public class SymmetrySystem implements OrbitSource
         if ( result != null )
             this .shapes = result;
         else {
-            logger .warning( "UNKNOWN STYLE NAME: " + styleName );
+            LOGGER .warning( "UNKNOWN STYLE NAME: " + styleName );
             this .shapes = this .symmetryPerspective .getDefaultGeometry();
         }
     }

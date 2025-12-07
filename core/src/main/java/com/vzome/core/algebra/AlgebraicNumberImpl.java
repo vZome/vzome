@@ -4,6 +4,8 @@ package com.vzome.core.algebra;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,6 +21,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 @JsonSerialize( using = AlgebraicNumberImpl.Serializer.class )
 public class AlgebraicNumberImpl implements AlgebraicNumber
 {
+    private static final Logger LOGGER = Logger .getLogger( "com.vzome.core.algebra" );
     private final AbstractAlgebraicField field;
     private final BigRational[] factors;
 
@@ -28,6 +31,8 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
     private Double doubleValue;	// initialized on first use
     private Integer signum;     // initialized on first use
     private final String[] toString = new String[AlgebraicField .MATH_FORMAT + 1]; // cache various String representations
+    // TODO: Add support for a new TD_FORMAT and cache trailingDivisorString in the same array as other String representations
+    private String trailingDivisorString; // initialized on first use
 
     private Integer hashCode;	// initialized on first use
 
@@ -539,17 +544,77 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         return this .toString( AlgebraicField .DEFAULT_FORMAT );
     }
     
-    @Override
-    public int[] toTrailingDivisor()
-    {
-        BigInteger divisor = this .getDivisor();
-        int order = this .factors .length;
-        int[] result = new int[ order + 1 ];
-        result[ order ] = divisor .intValue();
-        for ( int i = 0; i < order; i++ ) {
-            result[ i ] = ((BigRationalImpl) this .factors[ i ] .times( new BigRationalImpl( divisor, BigInteger.ONE ) )) .getNumerator() .intValue();
+    /**
+     * Logs (but allows) any loss of data resulting from the narrowing conversion of a BigInteger to an int
+     * @param bInt
+     * @param index
+     * @return {@code bInt.intValue()}
+     */
+    protected int checkedIntValue(BigInteger bInt, int index) {
+        try {
+            return bInt.intValueExact();
+        } catch(ArithmeticException ex) {
+            int lossyValue = bInt.intValue();
+            String msg = this.toString() + "\n\tData loss at term[" + index + "] converting " + bInt + " to " + lossyValue;
+            if(LOGGER.isLoggable(Level.SEVERE)) {
+                LOGGER.severe(msg);
+            } else {
+                System.err.println(msg);
+            }
+            return lossyValue;
         }
+    }
+    
+    /**
+     * {@codetoTrailingDivisor()} is a narrowing (and thus potentially lossy) 
+     * conversion to an integer array. 
+     * Each element of the array is the numerator of the corresponding term 
+     * of this {@code AlgebraicNumberImpl} scaled up by the lcm of all terms.
+     * The last (trailing) element of the array is the lcm of all of the terms.
+     * TODO: Deprecate {@code toTrailingDivisor()} and {@code checkedIntValue()} 
+     *  and replace them with {@code toTrailingDivisorString()}.
+     * @return {@code int[]} (narrowing)
+     */
+    @Override
+    public int[] toTrailingDivisor() {
+        int order = this.factors.length;
+        int[] result = new int[order + 1];
+        final BigInteger divisor = this.getDivisor();
+        final BigRational lcm = new BigRationalImpl(divisor);
+        for (int i = 0; i < order; i++) {
+            final BigRationalImpl term = (BigRationalImpl) lcm.times(this.factors[i]);
+            result[i] = checkedIntValue(term.getNumerator(), i);
+        }
+        // append the "trailing" divisor
+        result[order] = checkedIntValue(divisor, order);
         return result;
+    }
+
+    /**
+     * {@code toTrailingDivisorString()} is a lossless alternative to {@code toTrailingDivisor()}.
+     * * Each element of the serialized array is the numerator of the corresponding term 
+     * of this {@code AlgebraicNumberImpl} scaled up by the lcm of all terms.
+     * The last (trailing) element of the array is the lcm of all of the terms.
+     * A String representation of the array is returned so it's portable between java and JavaScript
+     * without exposing the underlying Java BigInteger or JavaScript BigInt data type.
+     * @return {@code String} instead of {@code int[]}
+     */
+    @Override
+    public String toTrailingDivisorString() {
+        if(trailingDivisorString == null) {
+            int order = this.factors.length;
+            BigInteger[] result = new BigInteger[order + 1];
+            final BigInteger divisor = this.getDivisor();
+        final BigRational lcm = new BigRationalImpl(divisor);
+        for (int i = 0; i < order; i++) {
+            final BigRationalImpl term = (BigRationalImpl) lcm.times(this.factors[i]);
+            result[i] = term.getNumerator();
+            }
+            // append the "trailing" divisor
+            result[order] = divisor;
+            this.trailingDivisorString = Arrays.toString(result).replace(" ", "");
+        }
+        return this.trailingDivisorString;
     }
 
     // JSON serialization:
