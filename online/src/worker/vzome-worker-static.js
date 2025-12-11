@@ -253,11 +253,8 @@ const shareToGitHub = async ( target, config, data, report ) =>
       .then( () => {
         report( { type: 'SHARE_SUCCESS', payload: gitUrl } );
       })
-      .catch((error) => {
-        if ( error.message .includes( 'Update is not a fast forward' ) )
-          report( { type: 'SHARE_FAILURE', payload: 'You are sharing too frequently; wait a minute and try again.' } );
-        else
-          report( { type: 'SHARE_FAILURE', payload: error.message } );
+      .catch(( { message, status } ) => {
+        report( { type: 'SHARE_FAILURE', payload: { message, status } } );
       });
     });
 }
