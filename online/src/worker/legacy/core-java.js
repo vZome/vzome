@@ -1140,6 +1140,10 @@ export var com;
                 getNumMultipliers() {
                     return this.getNumIrrationals();
                 }
+                parseInt(s) {
+                    const f = (this.delegate["parseInt"]);
+                    return (f((s)));
+                }
                 add(v1, v2) {
                     const f = (this.delegate["plus"]);
                     return (f((v1), (v2)));
@@ -1439,8 +1443,8 @@ export var com;
                                     throw new java.lang.RuntimeException("VEF format error: \"" + string + "\" has too many factors for " + this.getName() + " field");
                                 }
                                 const parts = tokens.nextToken().split("/");
-                                numStack.push(javaemul.internal.IntegerHelper.parseInt(parts[0]));
-                                denomStack.push((parts.length > 1) ? javaemul.internal.IntegerHelper.parseInt(parts[1]) : 1);
+                                numStack.push(this.parseInt(parts[0]));
+                                denomStack.push((parts.length > 1) ? this.parseInt(parts[1]) : 1);
                             }
                         }
                         ;
@@ -1455,8 +1459,8 @@ export var com;
                     }
                     else {
                         const parts = string.split("/");
-                        pairs[0] = javaemul.internal.IntegerHelper.parseInt(parts[0]);
-                        pairs[1] = (parts.length > 1) ? javaemul.internal.IntegerHelper.parseInt(parts[1]) : 1;
+                        pairs[0] = this.parseInt(parts[0]);
+                        pairs[1] = (parts.length > 1) ? this.parseInt(parts[1]) : 1;
                     }
                     return this.createAlgebraicNumberFromPairs(pairs);
                 }
@@ -1561,9 +1565,9 @@ export var com;
                         {
                             const digit = tokens.nextToken();
                             const parts = digit.split("/");
-                            pairs[i * 2] = javaemul.internal.IntegerHelper.parseInt(parts[0]);
+                            pairs[i * 2] = this.parseInt(parts[0]);
                             if (parts.length > 1)
-                                pairs[i * 2 + 1] = javaemul.internal.IntegerHelper.parseInt(parts[1]);
+                                pairs[i * 2 + 1] = this.parseInt(parts[1]);
                             else
                                 pairs[i * 2 + 1] = 1;
                         }
@@ -1580,7 +1584,7 @@ export var com;
                     let div = 1;
                     if ( /* startsWith */((str, searchString, position = 0) => str.substr(position, searchString.length) === searchString)(string, "(")) {
                         const closeParen = string.indexOf(')');
-                        div = javaemul.internal.IntegerHelper.parseInt(string.substring(closeParen + 2));
+                        div = this.parseInt(string.substring(closeParen + 2));
                         string = string.substring(1, closeParen);
                     }
                     let phis = 0;
@@ -1592,7 +1596,7 @@ export var com;
                         else if (part === ("-"))
                             phis = -1;
                         else
-                            phis = javaemul.internal.IntegerHelper.parseInt(part);
+                            phis = this.parseInt(part);
                         string = string.substring(phiIndex + 3);
                     }
                     let ones;
@@ -1601,7 +1605,7 @@ export var com;
                     else {
                         if ( /* startsWith */((str, searchString, position = 0) => str.substr(position, searchString.length) === searchString)(string, "+"))
                             string = string.substring(1);
-                        ones = javaemul.internal.IntegerHelper.parseInt(string);
+                        ones = this.parseInt(string);
                     }
                     return this.createAlgebraicNumber$int$int$int$int(ones, phis, div, 0);
                 }
@@ -3981,6 +3985,10 @@ export var com;
                             this.orbits = new com.vzome.core.math.symmetry.OrbitSet(symmetry);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations$() {
                             return this.getOrientations(false);
                         }
@@ -4037,10 +4045,6 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {
@@ -16815,6 +16819,10 @@ export var com;
                         this.setStyle(styleName);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getZone(orbit, orientation) {
+                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getOrientations$() {
                         return this.getOrientations(false);
                     }
@@ -16892,10 +16900,6 @@ export var com;
                         }
                         else
                             throw new Error('invalid overload');
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getZone(orbit, orientation) {
-                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getEmbedding() {
@@ -48537,6 +48541,10 @@ export var com;
                             this.__parent = __parent;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations$() {
                             return this.getOrientations(false);
                         }
@@ -48587,10 +48595,6 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {

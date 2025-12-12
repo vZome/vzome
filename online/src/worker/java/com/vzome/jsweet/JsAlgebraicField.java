@@ -64,6 +64,12 @@ public class JsAlgebraicField implements AlgebraicField
         return getNumIrrationals();
     }
 
+    int parseInt( String s )
+    {
+        Function f = (Function) this.delegate .$get( "parseInt" );
+        return (int) f.$apply( any( s ) );
+    }
+
     int[] add( int[] v1, int[] v2 )
     {
         Function f = (Function) this.delegate .$get( "plus" );
@@ -364,8 +370,8 @@ public class JsAlgebraicField implements AlgebraicField
                     throw new RuntimeException( "VEF format error: \"" + string + "\" has too many factors for " + this.getName() + " field" );
                 }
                 String[] parts = tokens .nextToken() .split( "/" );
-                numStack   .push( Integer .parseInt( parts[ 0 ] ) );
-                denomStack .push( (parts.length > 1)? Integer .parseInt( parts[ 1 ] ) : 1 );
+                numStack   .push( this .parseInt( parts[ 0 ] ) );
+                denomStack .push( (parts.length > 1)? this .parseInt( parts[ 1 ] ) : 1 );
             }
             int i = 0;
             while( ! numStack.empty() ) {
@@ -377,8 +383,8 @@ public class JsAlgebraicField implements AlgebraicField
             // format >= 7 supports the rational numeric format which expects no irrational factors,
             // so there are no parentheses or commas, but still allows the optional "/" if a denominator is specified.
             String[] parts = string .split( "/" );
-            pairs[ 0 ] = Integer .parseInt( parts[ 0 ] );
-            pairs[ 1 ] = (parts.length > 1)? Integer .parseInt( parts[ 1 ] ) : 1;
+            pairs[ 0 ] = this .parseInt( parts[ 0 ] );
+            pairs[ 1 ] = (parts.length > 1)? this .parseInt( parts[ 1 ] ) : 1;
         }
         return this .createAlgebraicNumberFromPairs( pairs );
     }
@@ -448,9 +454,9 @@ public class JsAlgebraicField implements AlgebraicField
         for ( int i = 0; i < order; i++ ) {
             String digit = tokens.nextToken();
             String[] parts = digit.split( "/" );
-            pairs[ i * 2 ] = Integer.parseInt( parts[ 0 ] );
+            pairs[ i * 2 ] = this .parseInt( parts[ 0 ] );
             if ( parts.length > 1 )
-                pairs[ i * 2 + 1 ] = Integer.parseInt( parts[ 1 ] );
+                pairs[ i * 2 + 1 ] = this .parseInt( parts[ 1 ] );
             else
                 pairs[ i * 2 + 1 ] = 1;
         }
@@ -463,7 +469,7 @@ public class JsAlgebraicField implements AlgebraicField
         int div = 1;
         if ( string .startsWith( "(" ) ) {
             int closeParen = string .indexOf( ')' );
-            div = Integer .parseInt( string .substring( closeParen+2 ) );
+            div = this .parseInt( string .substring( closeParen+2 ) );
             string = string .substring( 1, closeParen );
         }
 
@@ -476,7 +482,7 @@ public class JsAlgebraicField implements AlgebraicField
             else if ( part .equals( "-" ) )
                 phis = -1;
             else
-                phis = Integer .parseInt( part );
+                phis = this .parseInt( part );
             string = string .substring( phiIndex+3 );
         }
 
@@ -486,7 +492,7 @@ public class JsAlgebraicField implements AlgebraicField
         else {
             if ( string .startsWith( "+" ) )
                 string = string .substring( 1 );
-            ones = Integer .parseInt( string );
+            ones = this .parseInt( string );
         }
         return createAlgebraicNumber( ones, phis, div, 0 );
     }
