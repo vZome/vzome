@@ -69,6 +69,11 @@ export function simplify4( v0, v1, v2, v3 )
   return [ s0*v0/g, s1*v1/g, s2*v2/g, v3/g ]
 }
 
+function parseInt( s )
+{
+  return BigInt( s );
+}
+
 function plus2( a, b )
 {
   const [ a0=0n, a1=0n, ad=1n] = a, [b0=0n, b1=0n, bd=1n ] = b
@@ -389,6 +394,6 @@ export const createField = ( { name, order, times, embed, reciprocal, getIrratio
     plus, minus, times, embed, reciprocal, negate, getIrrational,
     scalarmul, vectoradd, quatTransform, quatmul,
     embedv: (v) => v.map( embed ),
-    createNumberFromPairs, createNumber, toString,
+    createNumberFromPairs, createNumber, toString, parseInt,
   }
 }

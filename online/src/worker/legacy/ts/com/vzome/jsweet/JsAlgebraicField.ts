@@ -62,6 +62,11 @@ namespace com.vzome.jsweet {
             return this.getNumIrrationals();
         }
 
+        parseInt(s: string): number {
+            const f: Function = <any>(this.delegate["parseInt"]);
+            return <any>(f(<any>((<any>(s)))));
+        }
+
         add(v1: number[], v2: number[]): number[] {
             const f: Function = <any>(this.delegate["plus"]);
             return <any>(f(<any>((<any>(v1))), <any>((<any>(v2)))));
@@ -363,8 +368,8 @@ namespace com.vzome.jsweet {
                         throw new java.lang.RuntimeException("VEF format error: \"" + string + "\" has too many factors for " + this.getName() + " field");
                     }
                     const parts: string[] = tokens.nextToken().split("/");
-                    numStack.push(javaemul.internal.IntegerHelper.parseInt(parts[0]));
-                    denomStack.push((parts.length > 1) ? javaemul.internal.IntegerHelper.parseInt(parts[1]) : 1);
+                    numStack.push(this.parseInt(parts[0]));
+                    denomStack.push((parts.length > 1) ? this.parseInt(parts[1]) : 1);
                 }};
                 let i: number = 0;
                 while((!numStack.empty())) {{
@@ -373,8 +378,8 @@ namespace com.vzome.jsweet {
                 }};
             } else {
                 const parts: string[] = string.split("/");
-                pairs[0] = javaemul.internal.IntegerHelper.parseInt(parts[0]);
-                pairs[1] = (parts.length > 1) ? javaemul.internal.IntegerHelper.parseInt(parts[1]) : 1;
+                pairs[0] = this.parseInt(parts[0]);
+                pairs[1] = (parts.length > 1) ? this.parseInt(parts[1]) : 1;
             }
             return this.createAlgebraicNumberFromPairs(pairs);
         }
@@ -466,8 +471,8 @@ namespace com.vzome.jsweet {
             for(let i: number = 0; i < order; i++) {{
                 const digit: string = tokens.nextToken();
                 const parts: string[] = digit.split("/");
-                pairs[i * 2] = javaemul.internal.IntegerHelper.parseInt(parts[0]);
-                if (parts.length > 1)pairs[i * 2 + 1] = javaemul.internal.IntegerHelper.parseInt(parts[1]); else pairs[i * 2 + 1] = 1;
+                pairs[i * 2] = this.parseInt(parts[0]);
+                if (parts.length > 1)pairs[i * 2 + 1] = this.parseInt(parts[1]); else pairs[i * 2 + 1] = 1;
             };}
             return this.createAlgebraicNumberFromPairs(pairs);
         }
@@ -481,20 +486,20 @@ namespace com.vzome.jsweet {
             let div: number = 1;
             if (/* startsWith */((str, searchString, position = 0) => str.substr(position, searchString.length) === searchString)(string, "(")){
                 const closeParen: number = string.indexOf(')');
-                div = javaemul.internal.IntegerHelper.parseInt(string.substring(closeParen + 2));
+                div = this.parseInt(string.substring(closeParen + 2));
                 string = string.substring(1, closeParen);
             }
             let phis: number = 0;
             const phiIndex: number = string.indexOf("phi");
             if (phiIndex >= 0){
                 const part: string = string.substring(0, phiIndex);
-                if (part.length === 0)phis = 1; else if (part === ("-"))phis = -1; else phis = javaemul.internal.IntegerHelper.parseInt(part);
+                if (part.length === 0)phis = 1; else if (part === ("-"))phis = -1; else phis = this.parseInt(part);
                 string = string.substring(phiIndex + 3);
             }
             let ones: number;
             if (string.length === 0)ones = 0; else {
                 if (/* startsWith */((str, searchString, position = 0) => str.substr(position, searchString.length) === searchString)(string, "+"))string = string.substring(1);
-                ones = javaemul.internal.IntegerHelper.parseInt(string);
+                ones = this.parseInt(string);
             }
             return this.createAlgebraicNumber$int$int$int$int(ones, phis, div, 0);
         }
