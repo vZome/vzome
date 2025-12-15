@@ -25,6 +25,7 @@ const ViewerProvider = ( props ) =>
   const requestDesign = ( url, config ) =>
   {
     setWaiting( true );
+    setProblem( '' );
     config.snapshot = -1;
     postMessage( fetchDesign( url, config ) );
   }
@@ -32,6 +33,7 @@ const ViewerProvider = ( props ) =>
   const openText = ( name, contents ) =>
   {
     setWaiting( true );
+    setProblem( '' );
     postMessage( openTextContent( name, contents ) );
   }
 

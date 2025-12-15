@@ -13,7 +13,7 @@ export const SceneMenu = (props) =>
 {
   const { showTitledScene, sceneTitle, setSceneTitle, sceneTitles, } = useSceneTitles();
 
-  createEffect( () => console.log( "SceneMenu: titles=", sceneTitles(), " current=", sceneTitle() ) );
+  // createEffect( () => console.log( "SceneMenu: titles=", sceneTitles(), " current=", sceneTitle() ) );
 
   const handleChange = (sceneTitle) =>
   {

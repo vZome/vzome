@@ -1,6 +1,8 @@
 import { EXPORT_FORMATS } from "../../viewer/context/viewer";
 import { saveFile, saveTextFile } from "../../viewer/util/files";
 
+const regression = new URLSearchParams(window.location.search).has('regression');
+
 // Generate labels for all checkboxes based on EXPORT_FORMATS
 document.querySelectorAll('.format-option input[type="checkbox"]').forEach(checkbox => {
   const format = checkbox.id.replace('format-', '');
@@ -60,9 +62,13 @@ function updateBatchExportButton() {
   const batchExportBtn = document.getElementById('batchExportBtn');
   batchExportBtn.disabled = vZomeFiles.length === 0;
   if (vZomeFiles.length > 0) {
-    batchExportBtn.textContent = `Batch Export (${vZomeFiles.length} files)`;
+    if (regression) {
+      batchExportBtn.textContent = `Run Regression (${vZomeFiles.length} files)`;
+    } else {
+      batchExportBtn.textContent = `Batch Export (${vZomeFiles.length} files)`;
+    }
   } else {
-    batchExportBtn.textContent = 'Batch Export';
+    batchExportBtn.textContent = regression ? 'Run Regression' : 'Batch Export';
   }
 }
 
@@ -87,9 +93,69 @@ const progressContainer = document.getElementById('progressContainer');
 const progressBarFill = document.getElementById('progressBarFill');
 const progressText = document.getElementById('progressText');
 
-batchExportBtn.addEventListener('click', () => {
-  modal.classList.add('show');
+batchExportBtn.addEventListener('click', async () => {
+  if (regression) {
+    await runRegression();
+  } else {
+    modal.classList.add('show');
+  }
 });
+
+async function runRegression() {
+  if (vZomeFiles.length === 0) {
+    console.log('No vZome files found in the selected directory.');
+    return;
+  }
+
+  console.log(`Starting regression test with ${vZomeFiles.length} files`);
+  const successes = [];
+  const failures = [];
+  
+  for (const vZomeFile of vZomeFiles) {
+    try {
+      console.log(`Loading ${vZomeFile.path}...`);
+      await loadFileInViewer(vZomeFile);
+      await sleep(100); // Brief pause for loading
+      successes.push(vZomeFile.path);
+    } catch (error) {
+      failures.push(vZomeFile.path);
+      console.error(`✗ ${vZomeFile.path}: ${error.message}`, error);
+    }
+  }
+
+  console.log(`Regression complete: ${successes.length} succeeded`);
+  console.dir({ successes, failures });
+  
+  // Show results dialog
+  showRegressionResults(successes, failures);
+}
+
+function showRegressionResults(successes, failures) {
+  const resultsModal = document.getElementById('regressionResultsModal');
+  const resultsDiv = document.getElementById('regressionResults');
+  const closeBtn = document.getElementById('resultsCloseBtn');
+  
+  let html = `<div class="success">✓ ${successes.length} succeeded</div>`;
+  
+  if (failures.length > 0) {
+    html += `<div class="failure">✗ ${failures.length} failed:\n\n`;
+    html += failures.map(path => `  ${path}`).join('\n');
+    html += '</div>';
+  }
+  
+  resultsDiv.innerHTML = html;
+  resultsModal.classList.add('show');
+  
+  closeBtn.onclick = () => {
+    resultsModal.classList.remove('show');
+  };
+  
+  resultsModal.onclick = (e) => {
+    if (e.target === resultsModal) {
+      resultsModal.classList.remove('show');
+    }
+  };
+}
 
 cancelBtn.addEventListener('click', () => {
   modal.classList.remove('show');

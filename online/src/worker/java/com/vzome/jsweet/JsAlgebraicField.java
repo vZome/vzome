@@ -474,7 +474,12 @@ public class JsAlgebraicField implements AlgebraicField
         }
 
         int phis = 0;
+        int bump = 3;
         int phiIndex = string .indexOf( "phi" );
+        if ( phiIndex < 0 ) {
+          phiIndex = string .indexOf( "sqrt2" );
+          bump = 5;
+        }
         if ( phiIndex >= 0 ) {
             String part = string .substring( 0, phiIndex );
             if ( part .length() == 0 )
@@ -483,7 +488,7 @@ public class JsAlgebraicField implements AlgebraicField
                 phis = -1;
             else
                 phis = this .parseInt( part );
-            string = string .substring( phiIndex+3 );
+            string = string .substring( phiIndex+bump);
         }
 
         int ones;
