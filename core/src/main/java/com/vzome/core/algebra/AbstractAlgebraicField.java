@@ -339,14 +339,13 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     @Override
     public final AlgebraicNumber createAlgebraicNumber( int ones, int irrat, int denominator, int scalePower )
     {
-        int[] factors = new int[ this .order + 1 ];
+        int[] factors = new int[ this .order ];
         factors[ 0 ] = ones;
         factors[ 1 ] = irrat;
-        for ( int i = 2; i < this .order; i++ ) {
+        for ( int i = 2; i < factors.length; i++ ) {
             factors[ i ] = 0;
         }
-        factors[ this .order ] = denominator;
-        AlgebraicNumber result = this.numberFactory .createAlgebraicNumberFromTD( this, factors );
+        AlgebraicNumber result = this.numberFactory .createAlgebraicNumber( this, factors, denominator );
         if ( scalePower != 0 ) {
             AlgebraicNumber multiplier = this .createPower( scalePower );
             return result .times( multiplier );
@@ -464,9 +463,14 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         if ( n < 0 ) {
             return zero();
         }
-        int[] factors = this .zero() .toTrailingDivisor(); // makes a copy
-        factors[ n ] = factors[ factors.length - 1 ]; // copies the 1n denominator
-        return this .numberFactory .createAlgebraicNumberFromTD( this, factors );
+        int[] numerators = new int[getOrder()];
+        // Initializing primitive arrays to 0 is automatic in Java, 
+        // but not in JavaScript, so in case the JSweet port needs it...
+        for (int i = 0; i < numerators.length; i++) {
+            numerators[i] = 0;
+        }
+        numerators[n] = 1;
+        return this .numberFactory .createAlgebraicNumber(this, numerators, 1);
     }
 
     /**

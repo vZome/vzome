@@ -586,15 +586,12 @@ public class PolygonField extends ParameterizedField
      */
     public AlgebraicNumber getUnitDiagonal(int n) {
         if(n >= getOrder() && n < diagonalCount()) {
-            int[] terms = this .zero() .toTrailingDivisor(); // makes a copy
+            int[] numerators = new int[getOrder()];
             int row = n - getOrder();
-            for(int i = 0; i < getOrder(); i++) {
-                int term = normalizerMatrix[row][i];
-                if ( term != 0 ) {
-                    terms[i] = term;
-                }
+            for (int i = 0; i < numerators.length; i++) {
+                numerators[i] = normalizerMatrix[row][i];
             }
-            return createAlgebraicNumberFromTD( terms );
+            return this.numberFactory.createAlgebraicNumber(this, numerators, 1);
         }
         return super.getUnitTerm(n);
     }
