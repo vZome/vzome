@@ -299,7 +299,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     public final AlgebraicNumber createAlgebraicNumberFromTD( int[] trailingDivisorForm )
     {
         int terms = trailingDivisorForm.length - 1;
-        if ( terms == 2 && this.getOrder() > 2 ) {
+        if ( terms == 2 && this.getOrder() > 2 && this.getGoldenRatio() != null) {
             
             // Momentarily switch to rational pairs (not reduced), in order to call convertGoldenNumberPairs
             //  [ a1, a2, d ] => [ a1, d, a2, d, ... aN, d ]
@@ -605,7 +605,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
             for (int i = 0; i < pairs.length; i++) {
                 pairs[ i ] = nums[ c ][ i ];
             }
-            if ( pairs.length == 4 && getOrder() > 2 ) {
+            if ( pairs.length == 4 && getOrder() > 2 && this.getGoldenRatio() != null) {
                 pairs = this .convertGoldenNumberPairs( pairs );
             }
             coords[c] = this.numberFactory .createAlgebraicNumberFromPairs( this, pairs );
@@ -803,7 +803,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
                 pairs[ i++ ] = numStack   .pop();
                 pairs[ i++ ] = denomStack .pop();
             }
-            if ( i == 4 && getOrder() > 2 ) {
+            if ( i == 4 && getOrder() > 2 && this.getGoldenRatio() != null) {
                 pairs = this .convertGoldenNumberPairs( new long[] { pairs[0], pairs[1], pairs[2], pairs[3] } );
             }
         }
