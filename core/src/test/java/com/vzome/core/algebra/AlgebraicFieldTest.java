@@ -16,6 +16,8 @@ import com.vzome.core.editor.Application;
 import com.vzome.core.generic.Utilities;
 import com.vzome.fields.sqrtphi.SqrtPhiField;
 
+import defs.js.BigInt;
+
 /**
  * @author David Hall
  */
@@ -187,19 +189,23 @@ public class AlgebraicFieldTest {
             num = field.parseVefNumber("(1,2)", false);
             assertEquals(msg, golden2, num);
             
-            num = field .createAlgebraicNumberFromTD( new int[]{ 0, 0, 1 } );
+            BigInt b0 = new BigInt(0);
+            BigInt b1 = new BigInt(1);
+            BigInt b2 = new BigInt(2);
+            
+            num = field .createAlgebraicNumberFromTDExact( new BigInt[]{ b0, b0, b1 } );
             assertTrue( msg, num.isZero() );
             
-            num = field .createAlgebraicNumberFromTD( new int[]{ 1, 0, 1 } );
+            num = field .createAlgebraicNumberFromTDExact( new BigInt[]{ b1, b0, b1 } );
             assertTrue( msg, num.isOne() );
             
-            num = field .createAlgebraicNumberFromTD( new int[]{ 0, 1, 1 } );
+            num = field .createAlgebraicNumberFromTDExact( new BigInt[]{ b0, b1, b1 } );
             assertEquals( msg, golden, num );
             
-            num = field .createAlgebraicNumberFromTD( new int[]{ 1, 1, 1 } );
+            num = field .createAlgebraicNumberFromTDExact( new BigInt[]{ b1, b1, b1 } );
             assertEquals( msg, golden1, num );
             
-            num = field .createAlgebraicNumberFromTD( new int[]{ 2, 1, 1 } );
+            num = field .createAlgebraicNumberFromTDExact( new BigInt[]{ b2, b1, b1 } );
             assertEquals( msg, golden2, num );
         }
     }

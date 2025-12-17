@@ -12,8 +12,6 @@ public interface AlgebraicNumberFactory
 
     AlgebraicNumber createAlgebraicNumber( AlgebraicField field, int[] numerators, int divisor );
 
-    AlgebraicNumber createAlgebraicNumberFromTD( AlgebraicField field, int[] trailingDivisorForm );
-
     AlgebraicNumber createAlgebraicNumberFromTDExact( AlgebraicField field, BigInt[] trailingDivisorForm );
 
     AlgebraicNumber createAlgebraicNumberFromPairs( AlgebraicField field, long[] pairs );

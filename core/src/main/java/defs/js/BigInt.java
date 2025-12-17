@@ -61,11 +61,24 @@ public class BigInt {
         return new BigInt(big.abs());
     }
     
-    // Comparison operations
-    public boolean equals(BigInt other) {
+    // Comparison operations    
+//    @Override
+//    public int hashCode() {
+//        return big.hashCode();
+//    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        BigInt other = (BigInt) obj;
         return this.big.equals(other.big);
     }
-    
+
     public int compareTo(BigInt other) {
         return this.big.compareTo(other.big);
     }

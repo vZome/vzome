@@ -293,39 +293,6 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     }
 
     /**
-     * Generates an AlgebraicNumber from a "trailing divisor" int array representation.
-     * @param trailingDivisorForm numerators trailed by a common denominator for all numerators
-     * @return
-     */
-    @Override
-    public final AlgebraicNumber createAlgebraicNumberFromTD( int[] trailingDivisorForm )
-    {
-        int terms = trailingDivisorForm.length - 1;
-        if ( terms == 2 && this.getOrder() > 2 && this.getGoldenRatio() != null) {
-            
-            // Momentarily switch to rational pairs (not reduced), in order to call convertGoldenNumberPairs
-            //  [ a1, a2, d ] => [ a1, d, a2, d, ... aN, d ]
-            long[] pairs = new long[ 2*terms ];
-            int divisor = trailingDivisorForm[ terms ];
-            for (int i = 0; i < terms; i++) {
-                pairs[ 2*i + 0 ] = trailingDivisorForm[ i ];
-                pairs[ 2*i + 1 ] = divisor;
-            }
-            
-            pairs = this .convertGoldenNumberPairs( pairs );
-            
-            // Now switch back.  Since only zero-valued terms were introduced, we don't need to reduce the fractions.
-            terms = pairs.length/2;
-            trailingDivisorForm = new int[ terms + 1 ];
-            trailingDivisorForm[ terms ] = (int) pairs[ 1 ]; // trailing denominator
-            for ( int i = 0; i < pairs.length/2; i++ ) {
-                trailingDivisorForm[ i ] = (int) pairs[ 2*i ];
-            }
-        }
-        return this.numberFactory .createAlgebraicNumberFromTD( this, trailingDivisorForm );
-    }
-
-    /**
      * TODO: BigInt.toLong() may throw an ArithmeticException here. 
      * That's why it's deprecated.
      * I'm going to live with that possibility for now to avoid the overhead

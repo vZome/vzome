@@ -89,7 +89,8 @@ public class JsonMapper
                     node .put( "orbit", orbit .getName() );
                     node .put( "orbitC", orbit .getCanonicalName() );
                     AlgebraicNumber length = shape .getLength();
-                    node .put( "length", this .objectMapper .valueToTree( length.toTrailingDivisor() ) .toString() );
+                    // TODO: Verify that json serialization works both ways
+                    node .put( "length", this .objectMapper .valueToTree( length.toTrailingDivisorExact() ) .toString() );
                     name = orbit .getLengthName( length );
                     if ( name == "" ) {
                         StringBuffer buf = new StringBuffer();

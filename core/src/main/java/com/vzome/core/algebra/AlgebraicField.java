@@ -52,13 +52,6 @@ public interface AlgebraicField
     AlgebraicNumber createAlgebraicNumber( int[] terms );
 
     /**
-     * Generates an AlgebraicNumber from a "trailing divisor" int array representation.
-     * @param trailingDivisorForm numerators trailed by a common denominator for all numerators
-     * @return
-     */
-    AlgebraicNumber createAlgebraicNumberFromTD( int[] trailingDivisorForm );
-
-    /**
      * Generates an AlgebraicNumber from a "trailing divisor" BigInt array representation.
      * @param trailingDivisorForm numerators trailed by a common denominator for all numerators
      * @return

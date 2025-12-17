@@ -67,22 +67,6 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         }
 
         @Override
-        public AlgebraicNumber createAlgebraicNumberFromTD( AlgebraicField field, int[] trailingDivisorForm )
-        {
-            int n = trailingDivisorForm .length;    
-            int denominator = 1;
-            if ( n == field .getOrder() + 1 ) {
-                --n;
-                denominator = trailingDivisorForm[ n ];
-            }
-            BigRational[] brs = new BigRational[ n ];
-            for ( int j = 0; j < n; j++ ) {
-                brs[ j ] = new BigRationalImpl( trailingDivisorForm[ j ], denominator );
-            }
-            return new AlgebraicNumberImpl( field, brs );
-        }
-
-        @Override
         public AlgebraicNumber createAlgebraicNumberFromTDExact( AlgebraicField field, BigInt[] trailingDivisorForm )
         {
             int n = trailingDivisorForm .length;    
@@ -582,31 +566,6 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
     }
     
     /**
-     * {@codetoTrailingDivisor()} is a narrowing (and thus potentially lossy) 
-     * conversion to an integer array. 
-     * Each element of the array is the numerator of the corresponding term 
-     * of this {@code AlgebraicNumberImpl} scaled up by the lcm of all terms.
-     * The last (trailing) element of the array is the lcm of all of the terms.
-     * TODO: Deprecate {@code toTrailingDivisor()} and {@code checkedIntValue()} 
-     *  and replace them with {@code toTrailingDivisorExact()}.
-     * @return {@code int[]} (narrowing)
-     */
-    @Override
-    public int[] toTrailingDivisor() {
-        int order = this.factors.length;
-        int[] result = new int[order + 1];
-        final BigInteger divisor = this.getDivisor();
-        final BigRational lcm = new BigRationalImpl(divisor);
-        for (int i = 0; i < order; i++) {
-            final BigRationalImpl term = (BigRationalImpl) lcm.times(this.factors[i]);
-            result[i] = checkedIntValue(term.getNumerator(), i);
-        }
-        // append the "trailing" divisor
-        result[order] = checkedIntValue(divisor, order);
-        return result;
-    }
-
-    /**
      * {@code toTrailingDivisorExact()} is a lossless alternative to {@code toTrailingDivisor()}.
      * * Each element of the serialized array is the numerator of the corresponding term 
      * of this {@code AlgebraicNumberImpl} scaled up by the lcm of all terms.
@@ -666,7 +625,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
             }
             else if ( ( view != null ) && Views.TrailingDivisor.class .isAssignableFrom( view ) )
             {
-                jgen .writeObject( value .toTrailingDivisor() );
+                jgen .writeObject( value .toTrailingDivisorExact() );
             }
             else
             {
