@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import defs.js.BigInt;
@@ -616,19 +617,24 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         public void serialize( AlgebraicNumberImpl value, JsonGenerator jgen, SerializerProvider provider ) 
             throws IOException, JsonProcessingException
         {
-            @SuppressWarnings("rawtypes")
-            Class view = provider .getActiveView();
-            if ( ( view != null ) && Views.Real.class .isAssignableFrom( view ) )
-            {
-                jgen .writeNumber( value .evaluate() );
-            }
-            else if ( ( view != null ) && Views.TrailingDivisor.class .isAssignableFrom( view ) )
-            {
-                jgen .writeObject( value .toTrailingDivisor() );
-            }
-            else
-            {
-                jgen .writeObject( value .factors );
+            try {
+                @SuppressWarnings("rawtypes")
+                Class view = provider .getActiveView();
+                if ( ( view != null ) && Views.Real.class .isAssignableFrom( view ) )
+                {
+                    jgen .writeNumber( value .evaluate() );
+                }
+                else if ( ( view != null ) && Views.TrailingDivisor.class .isAssignableFrom( view ) )
+                {
+                    jgen .writeObject( value .toTrailingDivisor() );
+                }
+                else
+                {
+                    jgen .writeObject( value .factors );
+                }
+            } catch(InvalidDefinitionException ex) {
+                LOGGER.severe("Exception during json serialization of AlgebraicNumber " + value.toString());
+                ex.printStackTrace();
             }
         }
     }
