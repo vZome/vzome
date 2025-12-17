@@ -6,6 +6,8 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Symmetry;
 
+import defs.js.BigInt;
+
 public interface AlgebraicField
 {
     public interface Registry
@@ -55,6 +57,13 @@ public interface AlgebraicField
      * @return
      */
     AlgebraicNumber createAlgebraicNumberFromTD( int[] trailingDivisorForm );
+
+    /**
+     * Generates an AlgebraicNumber from a "trailing divisor" BigInt array representation.
+     * @param trailingDivisorForm numerators trailed by a common denominator for all numerators
+     * @return
+     */
+    AlgebraicNumber createAlgebraicNumberFromTDExact( BigInt[] trailingDivisorForm );
 
     /**
      * Generates an AlgebraicNumber with the specified numerators,

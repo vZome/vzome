@@ -14,6 +14,8 @@ import com.vzome.core.algebra.PolygonField;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.AntiprismSymmetry;
 
+import defs.js.BigInt;
+
 public class MathTableExporter extends GeometryExporter {
     private static final int X = AlgebraicVector.X;
     private static final int Y = AlgebraicVector.Y;
@@ -321,7 +323,7 @@ public class MathTableExporter extends GeometryExporter {
         .append("', 'dec': ").append(n.evaluate())
         .append(", 'tdf': [");
         String delim = "";
-        for(int term : n.toTrailingDivisor()) {
+        for(BigInt term : n.toTrailingDivisorExact()) {
             buf.append(delim);
             delim = ", ";
             buf.append(term);

@@ -2,6 +2,7 @@
 
 package com.vzome.core.math.symmetry;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -216,9 +217,9 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
                 y = y .dividedBy( x );
                 z = z .dividedBy( x );
                 this .canonicalName = "["
-                        + y .toTrailingDivisorString()
+                        + Arrays.toString( y .toTrailingDivisorExact() ) .replace( " ", "" )
                         + ","
-                        + z .toTrailingDivisorString()
+                        + Arrays.toString( z .toTrailingDivisorExact() ) .replace( " ", "" )
                         + "]";
                 logger.finer("Direction.canonicalName: " + this.canonicalName);
             }

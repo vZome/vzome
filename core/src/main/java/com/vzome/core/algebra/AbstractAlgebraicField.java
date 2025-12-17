@@ -11,6 +11,8 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Symmetry;
 
+import defs.js.BigInt;
+
 public abstract class AbstractAlgebraicField implements AlgebraicField
 {
     abstract BigRational[] multiply( BigRational[] v1, BigRational[] v2 );
@@ -315,7 +317,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
             // Now switch back.  Since only zero-valued terms were introduced, we don't need to reduce the fractions.
             terms = pairs.length/2;
             trailingDivisorForm = new int[ terms + 1 ];
-            trailingDivisorForm[ terms ] = (int) pairs[ 1 ];
+            trailingDivisorForm[ terms ] = (int) pairs[ 1 ]; // trailing denominator
             for ( int i = 0; i < pairs.length/2; i++ ) {
                 trailingDivisorForm[ i ] = (int) pairs[ 2*i ];
             }
@@ -323,6 +325,42 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         return this.numberFactory .createAlgebraicNumberFromTD( this, trailingDivisorForm );
     }
 
+    /**
+     * TODO: BigInt.toLong() may throw an ArithmeticException here. 
+     * That's why it's deprecated.
+     * I'm going to live with that possibility for now to avoid the overhead
+     * of calling a BigInt version of convertGoldenNumberPairs().
+     */
+    @SuppressWarnings({"deprecation"})
+    @Override
+    public final AlgebraicNumber createAlgebraicNumberFromTDExact( BigInt[] trailingDivisorForm )
+    {
+        int terms = trailingDivisorForm.length - 1;
+        if ( terms == 2 && this.getOrder() > 2 && this.getGoldenRatio() != null) {
+            // Momentarily switch to rational pairs (not reduced), in order to call convertGoldenNumberPairs
+            //  [ a1, a2, d ] => [ a1, d, a2, d, ... aN, d ]
+            long[] pairs = new long[ 2*terms ];
+            
+            long divisor = trailingDivisorForm[ terms ].toLong();
+            for (int i = 0; i < terms; i++) {
+                pairs[ 2*i + 0 ] = trailingDivisorForm[ i ].toLong();
+                pairs[ 2*i + 1 ] = divisor;
+            }
+            
+            // All of this is just so we can call convertGoldenNumberPairs with longs instead of BigInts
+            pairs = this .convertGoldenNumberPairs( pairs );
+            
+            // Now switch back.  Since only zero-valued terms were introduced, we don't need to reduce the fractions.
+            terms = pairs.length/2;
+            trailingDivisorForm = new BigInt[ terms + 1 ];
+            trailingDivisorForm[ terms ] = new BigInt(pairs[ 1 ]); // trailing denominator
+            for ( int i = 0; i < pairs.length/2; i++ ) {
+                trailingDivisorForm[ i ] = new BigInt(pairs[ 2*i ]);
+            }
+        }
+        return this.numberFactory .createAlgebraicNumberFromTDExact( this, trailingDivisorForm );
+    }
+   
     /**
      * Generates an AlgebraicNumber with the specified numerators,
      * all having a common denominator as specified.

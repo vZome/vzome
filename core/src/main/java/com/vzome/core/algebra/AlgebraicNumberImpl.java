@@ -13,6 +13,8 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
+import defs.js.BigInt;
+
 /**
  * 
  * Immutable representation of an Algebraic Number
@@ -31,9 +33,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
     private Double doubleValue;	// initialized on first use
     private Integer signum;     // initialized on first use
     private final String[] toString = new String[AlgebraicField .MATH_FORMAT + 1]; // cache various String representations
-    // TODO: Add support for a new TD_FORMAT and cache trailingDivisorString in the same array as other String representations
-    private String trailingDivisorString; // initialized on first use
-
+    
     private Integer hashCode;	// initialized on first use
 
     public static AlgebraicNumberFactory FACTORY = new AlgebraicNumberFactory()
@@ -69,7 +69,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         @Override
         public AlgebraicNumber createAlgebraicNumberFromTD( AlgebraicField field, int[] trailingDivisorForm )
         {
-            int n = trailingDivisorForm .length;
+            int n = trailingDivisorForm .length;    
             int denominator = 1;
             if ( n == field .getOrder() + 1 ) {
                 --n;
@@ -78,6 +78,22 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
             BigRational[] brs = new BigRational[ n ];
             for ( int j = 0; j < n; j++ ) {
                 brs[ j ] = new BigRationalImpl( trailingDivisorForm[ j ], denominator );
+            }
+            return new AlgebraicNumberImpl( field, brs );
+        }
+
+        @Override
+        public AlgebraicNumber createAlgebraicNumberFromTDExact( AlgebraicField field, BigInt[] trailingDivisorForm )
+        {
+            int n = trailingDivisorForm .length;    
+            BigInteger denominator = BigInteger.ONE;
+            if ( n == field .getOrder() + 1 ) {
+                --n;
+                denominator = new BigInteger(trailingDivisorForm[ n ].toString());
+            }
+            BigRational[] brs = new BigRational[ n ];
+            for ( int j = 0; j < n; j++ ) {
+                brs[ j ] = new BigRationalImpl( new BigInteger(trailingDivisorForm[ j ].toString()), denominator );
             }
             return new AlgebraicNumberImpl( field, brs );
         }
@@ -572,7 +588,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * of this {@code AlgebraicNumberImpl} scaled up by the lcm of all terms.
      * The last (trailing) element of the array is the lcm of all of the terms.
      * TODO: Deprecate {@code toTrailingDivisor()} and {@code checkedIntValue()} 
-     *  and replace them with {@code toTrailingDivisorString()}.
+     *  and replace them with {@code toTrailingDivisorExact()}.
      * @return {@code int[]} (narrowing)
      */
     @Override
@@ -591,30 +607,27 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
     }
 
     /**
-     * {@code toTrailingDivisorString()} is a lossless alternative to {@code toTrailingDivisor()}.
+     * {@code toTrailingDivisorExact()} is a lossless alternative to {@code toTrailingDivisor()}.
      * * Each element of the serialized array is the numerator of the corresponding term 
      * of this {@code AlgebraicNumberImpl} scaled up by the lcm of all terms.
      * The last (trailing) element of the array is the lcm of all of the terms.
-     * A String representation of the array is returned so it's portable between java and JavaScript
+     * A BigInt array is returned so it's lossless and portable between java and JavaScript
      * without exposing the underlying Java BigInteger or JavaScript BigInt data type.
-     * @return {@code String} instead of {@code int[]}
+     * @return {@code BigInt[]} instead of {@code int[]}
      */
     @Override
-    public String toTrailingDivisorString() {
-        if(trailingDivisorString == null) {
-            int order = this.factors.length;
-            BigInteger[] result = new BigInteger[order + 1];
-            final BigInteger divisor = this.getDivisor();
+    public BigInt[] toTrailingDivisorExact() {
+        int order = this.factors.length;
+        BigInt[] result = new BigInt[order + 1];
+        final BigInteger divisor = this.getDivisor();
         final BigRational lcm = new BigRationalImpl(divisor);
         for (int i = 0; i < order; i++) {
             final BigRationalImpl term = (BigRationalImpl) lcm.times(this.factors[i]);
-            result[i] = term.getNumerator();
-            }
-            // append the "trailing" divisor
-            result[order] = divisor;
-            this.trailingDivisorString = Arrays.toString(result).replace(" ", "");
+            result[i] = new BigInt(term.getNumerator().toString());
         }
-        return this.trailingDivisorString;
+        // append the "trailing" divisor
+        result[order] = new BigInt(divisor.toString());
+        return result;
     }
 
     // JSON serialization:

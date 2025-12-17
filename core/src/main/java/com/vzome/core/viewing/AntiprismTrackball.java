@@ -12,6 +12,8 @@ import com.vzome.core.algebra.AlgebraicVector;
 import com.vzome.core.algebra.PolygonField;
 import com.vzome.core.math.symmetry.AntiprismSymmetry;
 
+import defs.js.BigInt;
+
 public class AntiprismTrackball {
     private static final Logger LOGGER = Logger.getLogger( new Throwable().getStackTrace()[0].getClassName() );
     
@@ -49,7 +51,7 @@ public class AntiprismTrackball {
                 buf.append(delim2);
                 buf.append(" [");
                 String delim3 = "";
-                for(int i : num.toTrailingDivisor()) {
+                for(BigInt i : num.toTrailingDivisorExact()) {
                     buf.append(delim3);
                     buf.append(" ");
                     buf.append(i);
