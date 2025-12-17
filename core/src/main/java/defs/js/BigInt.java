@@ -131,6 +131,10 @@ public class BigInt {
         return this.big.toString(radix);
     }
     
+    // Don't use LOGGER yet since I don't know how it will affect the JSweet mapping to JavaScript
+    // If we do use it, we can use the same logger as "com.vzome.core.algebra" 
+    // even though BigInt is in the defs.js package.
+    // private static final Logger LOGGER = Logger .getLogger( "com.vzome.core.algebra" );
     /**
      * Converts this {@code BigInt} to a {@code long}, checking
      * for lost information.  If the value of this {@code BigInt}
@@ -146,12 +150,26 @@ public class BigInt {
      * @see BigInteger#longValueExact
      * 
      * @deprecated Use {@code toString()} instead, to avoid possible data loss.
+     * 
+     * Logs (but allows) any loss of data resulting from the narrowing conversion of a BigInteger to an int
      */
     @Deprecated
     public long toLong() {
-        return this.big.longValueExact();
+        try {
+            return this.big.longValueExact();
+        } catch(ArithmeticException ex) {
+            int lossyValue = this.big.intValue();
+            String msg = this.toString() + "\n\tData loss converting " + this.big + " to " + lossyValue;
+            // If logging works with JSweet, then we should uncomment this
+//            if(LOGGER.isLoggable(Level.SEVERE)) {
+//                LOGGER.severe(msg);
+//            } else {
+                System.err.println(msg);
+//            }
+            return lossyValue;
+        }
     }
-    
+
 //    @Deprecated
 //    public double toDouble() {
 //        throw new UnsupportedOperationException("Not implemented in Java");
