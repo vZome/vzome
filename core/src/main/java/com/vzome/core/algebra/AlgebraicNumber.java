@@ -162,5 +162,5 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
      */
     public String toString( int format );
     
-    public BigInt[] toTrailingDivisorExact();
+    public BigInt[] toTrailingDivisor();
 }

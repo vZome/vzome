@@ -51,7 +51,7 @@ public class AntiprismTrackball {
                 buf.append(delim2);
                 buf.append(" [");
                 String delim3 = "";
-                for(BigInt i : num.toTrailingDivisorExact()) {
+                for(BigInt i : num.toTrailingDivisor()) {
                     buf.append(delim3);
                     buf.append(" ");
                     buf.append(i);

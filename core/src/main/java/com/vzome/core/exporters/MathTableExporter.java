@@ -323,7 +323,7 @@ public class MathTableExporter extends GeometryExporter {
         .append("', 'dec': ").append(n.evaluate())
         .append(", 'tdf': [");
         String delim = "";
-        for(BigInt term : n.toTrailingDivisorExact()) {
+        for(BigInt term : n.toTrailingDivisor()) {
             buf.append(delim);
             delim = ", ";
             buf.append(term);

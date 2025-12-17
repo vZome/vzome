@@ -300,7 +300,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      */
     @SuppressWarnings({"deprecation"})
     @Override
-    public final AlgebraicNumber createAlgebraicNumberFromTDExact( BigInt[] trailingDivisorForm )
+    public final AlgebraicNumber createAlgebraicNumberFromTD( BigInt[] trailingDivisorForm )
     {
         int terms = trailingDivisorForm.length - 1;
         if ( terms == 2 && this.getOrder() > 2 && this.getGoldenRatio() != null) {
@@ -325,7 +325,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
                 trailingDivisorForm[ i ] = new BigInt(pairs[ 2*i ]);
             }
         }
-        return this.numberFactory .createAlgebraicNumberFromTDExact( this, trailingDivisorForm );
+        return this.numberFactory .createAlgebraicNumberFromTD( this, trailingDivisorForm );
     }
    
     /**
@@ -629,7 +629,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         int dims = nums.length;
         AlgebraicNumber[] coords = new AlgebraicNumber[ dims ];
         for(int c = 0; c < coords.length; c++) {
-            coords[c] = this.createAlgebraicNumberFromTDExact( nums[c] );
+            coords[c] = this.createAlgebraicNumberFromTD( nums[c] );
         }
         return new AlgebraicVector( coords );
     }

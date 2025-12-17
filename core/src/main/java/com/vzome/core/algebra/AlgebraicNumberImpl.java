@@ -67,7 +67,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         }
 
         @Override
-        public AlgebraicNumber createAlgebraicNumberFromTDExact( AlgebraicField field, BigInt[] trailingDivisorForm )
+        public AlgebraicNumber createAlgebraicNumberFromTD( AlgebraicField field, BigInt[] trailingDivisorForm )
         {
             int n = trailingDivisorForm .length;    
             BigInteger denominator = BigInteger.ONE;
@@ -566,16 +566,15 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
     }
     
     /**
-     * {@code toTrailingDivisorExact()} is a lossless alternative to {@code toTrailingDivisor()}.
      * * Each element of the serialized array is the numerator of the corresponding term 
      * of this {@code AlgebraicNumberImpl} scaled up by the lcm of all terms.
      * The last (trailing) element of the array is the lcm of all of the terms.
      * A BigInt array is returned so it's lossless and portable between java and JavaScript
      * without exposing the underlying Java BigInteger or JavaScript BigInt data type.
-     * @return {@code BigInt[]} instead of {@code int[]}
+     * @return {@code BigInt[]} instead of the old {@code int[]}
      */
     @Override
-    public BigInt[] toTrailingDivisorExact() {
+    public BigInt[] toTrailingDivisor() {
         int order = this.factors.length;
         BigInt[] result = new BigInt[order + 1];
         final BigInteger divisor = this.getDivisor();
@@ -625,7 +624,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
             }
             else if ( ( view != null ) && Views.TrailingDivisor.class .isAssignableFrom( view ) )
             {
-                jgen .writeObject( value .toTrailingDivisorExact() );
+                jgen .writeObject( value .toTrailingDivisor() );
             }
             else
             {

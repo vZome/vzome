@@ -113,13 +113,13 @@ public class AlgebraicNumberTest
         };
 
         AlgebraicNumber n0 = field.createAlgebraicNumber( ones, irrat, denom, 0 );
-        AlgebraicNumber n1 = field.createAlgebraicNumberFromTDExact( td );
+        AlgebraicNumber n1 = field.createAlgebraicNumberFromTD( td );
 
         assertEquals( n0, n1 );
 
         assertEquals( n0 .toString(), n1 .toString( DEFAULT_FORMAT ) );
         assertEquals("(1,7/5)", n1.toString(VEF_FORMAT)); // irrational is listed first in VEF format
-        assertArrayEquals( td, n0 .toTrailingDivisorExact() );
+        assertArrayEquals( td, n0 .toTrailingDivisor() );
     }
     
     @Test

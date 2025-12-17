@@ -193,19 +193,19 @@ public class AlgebraicFieldTest {
             BigInt b1 = new BigInt(1);
             BigInt b2 = new BigInt(2);
             
-            num = field .createAlgebraicNumberFromTDExact( new BigInt[]{ b0, b0, b1 } );
+            num = field .createAlgebraicNumberFromTD( new BigInt[]{ b0, b0, b1 } );
             assertTrue( msg, num.isZero() );
             
-            num = field .createAlgebraicNumberFromTDExact( new BigInt[]{ b1, b0, b1 } );
+            num = field .createAlgebraicNumberFromTD( new BigInt[]{ b1, b0, b1 } );
             assertTrue( msg, num.isOne() );
             
-            num = field .createAlgebraicNumberFromTDExact( new BigInt[]{ b0, b1, b1 } );
+            num = field .createAlgebraicNumberFromTD( new BigInt[]{ b0, b1, b1 } );
             assertEquals( msg, golden, num );
             
-            num = field .createAlgebraicNumberFromTDExact( new BigInt[]{ b1, b1, b1 } );
+            num = field .createAlgebraicNumberFromTD( new BigInt[]{ b1, b1, b1 } );
             assertEquals( msg, golden1, num );
             
-            num = field .createAlgebraicNumberFromTDExact( new BigInt[]{ b2, b1, b1 } );
+            num = field .createAlgebraicNumberFromTD( new BigInt[]{ b2, b1, b1 } );
             assertEquals( msg, golden2, num );
         }
     }

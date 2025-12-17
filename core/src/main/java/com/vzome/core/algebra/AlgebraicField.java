@@ -56,7 +56,7 @@ public interface AlgebraicField
      * @param trailingDivisorForm numerators trailed by a common denominator for all numerators
      * @return
      */
-    AlgebraicNumber createAlgebraicNumberFromTDExact( BigInt[] trailingDivisorForm );
+    AlgebraicNumber createAlgebraicNumberFromTD( BigInt[] trailingDivisorForm );
 
     /**
      * Generates an AlgebraicNumber with the specified numerators,

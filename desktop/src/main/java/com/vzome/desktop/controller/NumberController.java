@@ -38,7 +38,7 @@ public class NumberController extends DefaultController
             return result;
 
         case "values":
-            BigInt[] td = value .toTrailingDivisorExact();
+            BigInt[] td = value .toTrailingDivisor();
             result = new String[ td .length ];
             for( int i = 0; i < td .length; i++ )
                 result[ i ] = td[ i ] .toString();

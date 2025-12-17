@@ -217,9 +217,9 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
                 y = y .dividedBy( x );
                 z = z .dividedBy( x );
                 this .canonicalName = "["
-                        + Arrays.toString( y .toTrailingDivisorExact() ) .replace( " ", "" )
+                        + Arrays.toString( y .toTrailingDivisor() ) .replace( " ", "" )
                         + ","
-                        + Arrays.toString( z .toTrailingDivisorExact() ) .replace( " ", "" )
+                        + Arrays.toString( z .toTrailingDivisor() ) .replace( " ", "" )
                         + "]";
                 logger.finer("Direction.canonicalName: " + this.canonicalName);
             }
