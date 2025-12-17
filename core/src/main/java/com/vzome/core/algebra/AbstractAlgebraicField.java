@@ -655,13 +655,14 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         return new AlgebraicVector( coords );
     }
 
+    // createVectorFromTDs() is only used by ColoredMeshJson and SimpleMeshJson
     @Override
-    public AlgebraicVector createVectorFromTDs( int[][] nums )
+    public AlgebraicVector createVectorFromTDs( BigInt[][] nums )
     {
         int dims = nums.length;
         AlgebraicNumber[] coords = new AlgebraicNumber[ dims ];
         for(int c = 0; c < coords.length; c++) {
-          coords[c] = this.createAlgebraicNumberFromTD( nums[c] );
+            coords[c] = this.createAlgebraicNumberFromTDExact( nums[c] );
         }
         return new AlgebraicVector( coords );
     }

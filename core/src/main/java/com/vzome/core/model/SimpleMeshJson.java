@@ -28,6 +28,8 @@ import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.editor.api.Manifestations;
 import com.vzome.core.math.Projection;
 
+import defs.js.BigInt;
+
 public class SimpleMeshJson
 {
     public static void generate( Iterable<Manifestation> model, AlgebraicField field, Writer writer ) throws IOException
@@ -58,6 +60,7 @@ public class SimpleMeshJson
             else if ( man instanceof Panel )
             {
                 @SuppressWarnings("unchecked")
+                // DJH: TODO: Ensure that AlgebraicVector serializes BigInt properly to Json here                
                 Stream<AlgebraicVector> vertexStream = StreamSupport.stream( ( (Iterable<AlgebraicVector>) man ).spliterator(), false);
                 JsonNode node = mapper .valueToTree( vertexStream.map( v -> sortedVertexList .indexOf( v ) ). collect( Collectors.toList() ) );
                 faceNodes .add( node );
@@ -78,6 +81,7 @@ public class SimpleMeshJson
         for ( AlgebraicVector algebraicVector : sortedVertexList ) {
             algebraicVector = algebraicVector .minus( origin );
             // This awkward serialize+deserialize seems to be the only way to use views with streaming JSON
+            // DJH: TODO: Ensure that AlgebraicVector serializes BigInt properly to Json here
             generator .writeObject( mapper .readTree( objectWriter .writeValueAsString( algebraicVector ) ) );            
         }
         generator .writeEndArray();
@@ -120,7 +124,21 @@ public class SimpleMeshJson
                 for ( JsonNode numberNode : vectorNode ) {
                     nums[ i++ ] = mapper .treeToValue( numberNode, new int[]{}.getClass() ); // JSweet compiler confused by int[].class
                 }
-                AlgebraicVector vertex = field .createVectorFromTDs( nums );
+                // This same code is in SimpleMeshJson and ColoredMeshJson
+                // TODO: This HACK converts the old json mapper int[][] to BigInt[][]
+                // so we can call createVectorFromTDs() with BigInt arrays to avoid data loss
+                // eventually we hope to be able to map from json straight to BigInt
+                // and avoid this secondary loop.
+                // Corresponding to that, we need to
+                // ensure that AlgebraicVector serializes BigInt properly to Json in generate() above.
+                BigInt[][] bigs = new BigInt[dimension][];
+                for (int j = 0; j < nums.length; j++) {
+                    bigs[j] = new BigInt[nums[j].length];
+                    for (int k = 0; k < bigs[j].length; k++) {
+                        bigs[j][k] = new BigInt(nums[j][k]);
+                    }
+                }
+                AlgebraicVector vertex = field .createVectorFromTDs( bigs );
                 vertex = vertex .scale( scale );
                 if ( vertex .dimension() > 3 )
                     vertex = projection .projectImage( vertex, wFirst );

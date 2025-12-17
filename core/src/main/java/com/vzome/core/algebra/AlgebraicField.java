@@ -182,8 +182,10 @@ public interface AlgebraicField
      * If the order of the field is N, each inner array will be of length N+1, with the last
      * element being the divisor.
      * @return
+     * 
+     * Note that createVectorFromTDs() is only used by ColoredMeshJson and SimpleMeshJson
      */
-    AlgebraicVector createVectorFromTDs( int[][] nums );
+    AlgebraicVector createVectorFromTDs( BigInt[][] nums ); 
     
     /**
      * Generates an AlgebraicVector with all AlgebraicNumber terms being integers (having unit denominators).
