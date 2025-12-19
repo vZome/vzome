@@ -313,6 +313,7 @@ const controllerProperty = ( controller, propName, changeName=propName, isList=f
   return controller[ propName ];
 }
 
+// TODO: use viewer context to replace this when it is the root controller (is it ever not the root?)
 const controllerExportAction = ( controller, format, parameters={} ) =>
 {
   const controllerPath = controller.__path .join( ':' );

@@ -70,6 +70,8 @@ export const endPreviewStrut = () => workerAction( 'PREVIEW_STRUT_END', {} );
 // This is for buildplane
 export const setHingeStrut = ( strutId, centerId, diskZone, hingeZone ) => workerAction( 'HINGE_STRUT_SELECTED', { strutId, centerId, diskZone, hingeZone } );
 
+export const requestExport = ( format, params={} ) => workerAction( 'EXPORT_TRIGGERED', { ...params, format } );
+
 
 // Public Domain/MIT, from a Stack Overflow answer
 export const generateUUID = () =>

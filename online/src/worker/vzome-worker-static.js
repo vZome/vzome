@@ -459,6 +459,24 @@ onmessage = ({ data }) =>
       break;
     }
 
+    case 'EXPORT_TRIGGERED':
+    {
+      const { format, camera, lighting, scenes } = payload;
+      if ( format === 'shapes' ) {
+        const preview = exportPreview( camera, lighting, scenes );
+        clientEvents( sendToClient ) .textExported( 'exportText', preview );
+        return;
+      }
+      if ( format === 'vZome' ) {
+        const xml = design.wrapper .serializeVZomeXml( lighting, camera, scenes );
+        clientEvents( sendToClient ) .textExported( 'exportText', xml );
+        return;
+      }
+      // TODO: what happens if it is a preview, and there is no design.wrapper?
+      design.wrapper .doAction( '', 'exportText', payload );
+      break;
+    }
+
     case 'ACTION_TRIGGERED':
     {
       const { controllerPath, action, parameters, polygons } = payload;
@@ -488,12 +506,14 @@ onmessage = ({ data }) =>
           return;
         }
         if ( action === 'exportText' && parameters.format === 'shapes' ) {
+          // TODO: fold this into 'EXPORT_TRIGGERED' above
           const { camera, lighting, scenes } = parameters;
           const preview = exportPreview( camera, lighting, scenes );
           clientEvents( sendToClient ) .textExported( action, preview );
           return;
         }
         if ( action === 'exportText' && parameters.format === 'vZome' ) {
+          // TODO: fold this into 'EXPORT_TRIGGERED' above
           const { camera, lighting, scenes } = parameters;
           const xml = design.wrapper .serializeVZomeXml( lighting, camera, scenes );
           clientEvents( sendToClient ) .textExported( action, xml );

@@ -24,6 +24,7 @@ class VZomeViewer extends HTMLElement
   #sceneTitles;
 
   #api;
+  #designPromise;
 
   constructor()
   {
@@ -46,6 +47,8 @@ class VZomeViewer extends HTMLElement
       useSpinner:      false,
     };
 
+    this.#designPromise = null;
+
     this.#indexed = false;
     this.#urlChanged = true;
     this.#sceneChanged = false;
@@ -58,9 +61,9 @@ class VZomeViewer extends HTMLElement
 
   #showIndexedScene( index, loadFlags={ camera: true } )
   {
-    if ( ! this.#moduleLoaded ) {
+    if ( ! this.#api ) {
       // User code called #showIndexedScene() in initialization or an event handler, before the dynamic import has completed
-      debug && console.log( '#showIndexedScene ignored; module not loaded' );
+      debug && console.log( '#showIndexedScene ignored; component API not loaded' );
       return;
     }
     this.#api .showIndexedScene( index, loadFlags );
@@ -126,9 +129,9 @@ class VZomeViewer extends HTMLElement
 
   #triggerWorker()
   {
-    if ( ! this.#moduleLoaded ) {
+    if ( ! this.#api ) {
       // User code called update() in initialization or an event handler, before the dynamic import has completed
-      debug && console.log( 'update ignored; module not loaded' );
+      debug && console.log( 'update ignored; component API not loaded' );
       return;
     }
     // TODO: get rid of lighting and design load flags, which are ignored
@@ -145,15 +148,33 @@ class VZomeViewer extends HTMLElement
     }
   }
 
-  loadFromText( name, contents )
+  async loadFromText( name, contents )
   {
-    if ( ! this.#moduleLoaded ) {
+    if ( ! this.#api ) {
       // User code called update() in initialization or an event handler, before the dynamic import has completed
-      debug && console.log( 'loadFromText ignored; module not loaded' );
-      return;
+      const errorMsg = 'loadFromText ignored; component API not loaded';
+      console.log( errorMsg );
+      return Promise .reject( new Error( errorMsg ) );
     }
-    this.#api .resetScenes();
-    this.#api .openText( name, contents );
+    if ( !! this.#designPromise ) {
+      const errorMsg = 'loadFromText ignored; Waiting for previous design to load';
+      console.log( errorMsg );
+      return Promise .reject( new Error( errorMsg ) );
+    }
+    return new Promise( ( resolve, reject ) => {
+      this.#designPromise = { resolve, reject };
+      this.#api .resetScenes();
+      this.#api .openText( name, contents );
+    } );
+  }
+
+  async exportText( format, params={} )
+  {
+    if ( ! this.#api ) {
+      debug && console.log( 'exportText ignored; component API not loaded' );
+      return Promise .reject( new Error( 'exportText ignored; component API not loaded' ) );
+    }
+    return this.#api .exportAs( format, params );
   }
 
   connectedCallback()
@@ -162,8 +183,12 @@ class VZomeViewer extends HTMLElement
       setApi: api => {
         this.#api = api;
       },
-      onAlert: () => {
+      onAlert: ( error ) => {
         this .dispatchEvent( new CustomEvent( 'vzome-design-failed' ) );
+        if ( !! this.#designPromise ) {
+          this.#designPromise .reject( error );
+          this.#designPromise = null;
+        }
       },
       onSceneRendered: ( sceneIndex ) => {
         --sceneIndex; // from 1-based to 0-based (no default scene), the contract for the vzome-design-rendered event
@@ -171,8 +196,12 @@ class VZomeViewer extends HTMLElement
         if ( this.#indexed && !! this.#sceneTitles )
           scene = { index: sceneIndex, title: this.#sceneTitles[ sceneIndex ] };
         this .dispatchEvent( new CustomEvent( 'vzome-design-rendered', { detail: scene } ) );
+        if ( !! this.#designPromise ) {
+          this.#designPromise .resolve();
+          this.#designPromise = null;
+        }
       },
-      onScenesDiscovered: ( scenes ) => {
+      onScenesDiscovered: ( scenes ) => { // only triggered for previews
         this.#numScenes = scenes.length - 1; // strip the default scene
         this.#sceneTitles = scenes .map( (scene,i) => scene.title ? decodeEntities( scene.title ) : `#${i}` );
         if ( this.#indexed )

@@ -93,7 +93,7 @@ const SceneIndexingProvider = ( props ) =>
   } );
   
   return (
-    <SceneIndexingContext.Provider value={ { showIndexedScene, lastSceneIndex } }>
+    <SceneIndexingContext.Provider value={ { showIndexedScene, lastSceneIndex, setLastSceneIndex } }>
       {props.children}
     </SceneIndexingContext.Provider>
   );

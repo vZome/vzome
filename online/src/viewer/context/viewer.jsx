@@ -3,8 +3,8 @@ import { createContext, createSignal, useContext } from "solid-js";
 import { createStore, reconcile, unwrap } from "solid-js/store";
 
 import { useWorkerClient } from "./worker.jsx";
-import { useCamera } from "./camera.jsx";
-import { decodeEntities, fetchDesign, selectSnapshot, openTextContent, encodeEntities } from "../util/actions.js";
+import { INITIAL_DISTANCE, useCamera } from "./camera.jsx";
+import { decodeEntities, fetchDesign, requestExport, openTextContent } from "../util/actions.js";
 
 const ViewerContext = createContext( { scene: ()=> { console.log( 'NO ViewerProvider' ); }, problem: ()=>null } );
 
@@ -17,8 +17,8 @@ const ViewerProvider = ( props ) =>
   const [ problem, setProblem ] = createSignal( '' ); // cooperatively managed by both worker and client
   const [ waiting, setWaiting ] = createSignal( false );
   const [ labels, setLabels ] = createSignal( showLabels );
-  const { postMessage, subscribeFor } = useWorkerClient();
-  const { state, setTweenDuration, tweenCamera, setLighting } = useCamera();
+  const { postMessage, subscribeFor, postRequest } = useWorkerClient();
+  const { state, setTweenDuration, tweenCamera, setLighting, mapViewToWorld } = useCamera();
 
   const requestDesign = ( url, config ) =>
   {
@@ -34,6 +34,29 @@ const ViewerProvider = ( props ) =>
   }
 
   url && postMessage( fetchDesign( url, props.config ) );
+
+  let exportPromise = null;
+
+  const exportAs = async ( format, params={} ) =>
+  {
+    const camera = unwrap( state.camera );
+    camera .magnification = Math.log( camera.distance / INITIAL_DISTANCE );
+
+    const lighting = unwrap( state.lighting );
+    lighting .directionalLights .forEach( light => light .worldDirection = mapViewToWorld( light.direction ) );
+
+    return new Promise( ( resolve, reject ) => {
+      exportPromise = { resolve, reject };
+      postMessage( requestExport( format, { ...params, camera, lighting, scenes: unwrap( scenes ), } ) );
+    } );
+  }
+  
+  subscribeFor( 'TEXT_EXPORTED', ( { text } ) => {
+    if ( exportPromise ) {
+      exportPromise .resolve( text );
+      exportPromise = null;
+    }
+  } );
 
   subscribeFor( 'SCENES_DISCOVERED', ( { lighting, scenes } ) => {
     setWaiting( false );
@@ -53,7 +76,12 @@ const ViewerProvider = ( props ) =>
   } );
   
   subscribeFor( 'ALERT_RAISED', ( problem ) => {
-    setProblem( problem );
+    if ( exportPromise ) {
+      exportPromise .reject( problem );
+      exportPromise = null;
+    } else {
+      setProblem( problem );
+    }
     setWaiting( false );
   } );
       
@@ -67,6 +95,7 @@ const ViewerProvider = ( props ) =>
     requestBOM: () => postMessage( { type: 'BOM_REQUESTED' } ),
     setTweenDuration,
     useWorker: useWorkerClient,
+    exportAs,
   };
 
   return (

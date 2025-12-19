@@ -203,19 +203,22 @@ const UrlViewer = (props) =>
 
 const WebComponentBindings = (props) =>
 {
-  const { showIndexedScene, lastSceneIndex } = useSceneIndexing();
+  const { showIndexedScene, lastSceneIndex, setLastSceneIndex } = useSceneIndexing();
   const { setTweenDuration } = useCamera();
-  const { requestDesign } = useViewer();
+  const { requestDesign, resetScenes, openText, exportAs, } = useViewer();
   const { showTitledScene } = useSceneTitles();
-  const apiObject = { showIndexedScene, showTitledScene, requestDesign, setTweenDuration };
+  const apiObject = { showIndexedScene, showTitledScene, requestDesign, setTweenDuration, resetScenes, openText, exportAs, };
   const { subscribeFor } = useWorkerClient();
   const { setApi, onAlert, onSceneRendered, onScenesDiscovered } = props.callbacks;
   setApi( apiObject );
   subscribeFor( 'ALERT_RAISED', onAlert ); 
-  subscribeFor( 'SCENES_DISCOVERED', ( { scenes } ) => onScenesDiscovered( scenes ) );
+  subscribeFor( 'SCENES_DISCOVERED', ( { scenes } ) => { setLastSceneIndex(null); onScenesDiscovered( scenes ); } );
 
   createEffect( () => {
-    if ( !! lastSceneIndex() ) {
+    // The setLastSceneIndex(null) call above ensures that this effect runs after the first scene is shown,
+    //   even if the first scene index is 0, unchanged from the last scene of the last design.
+    //   This supports reuse of a viewer component for multiple designs, as in our regression test.
+    if ( lastSceneIndex() !== null ) {
       onSceneRendered( lastSceneIndex() );
     }
   });
