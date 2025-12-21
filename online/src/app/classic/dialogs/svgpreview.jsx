@@ -10,13 +10,13 @@ import Button from "@suid/material/Button"
 import Switch from "@suid/material/Switch";
 import FormControlLabel from "@suid/material/FormControlLabel";
 
-import { controllerExportAction, useEditor } from '../../framework/context/editor.jsx';
 import { useCamera } from "../../../viewer/context/camera"
+import { useViewer } from "../../../viewer/context/viewer"
 
 const SvgPreviewDialog = props =>
 {
-  const { rootController } = useEditor();
   const { state, mapViewToWorld } = useCamera();
+  const { exportAs } = useViewer();
   const [ useLighting, setUseLighting ] = createSignal( true );
   const [ useShapes, setUseShapes ] = createSignal( true );
   const [ drawOutlines, setDrawOutlines ] = createSignal( false );
@@ -38,7 +38,7 @@ const SvgPreviewDialog = props =>
         showBackground: showBackground(),
         useLighting   : useLighting(),
       }
-      controllerExportAction( rootController(), 'svg', params )
+      exportAs( 'svg', params )
         .then( text => {
           svgRef .innerHTML = text; // automatically parses the text
         });
@@ -46,7 +46,7 @@ const SvgPreviewDialog = props =>
     }
   });
 
-  const exportAs = ( ext, mime ) => () =>
+  const exportConfigured = ( ext, mime ) => () =>
   {
     props.close();
     const params = {
@@ -56,7 +56,7 @@ const SvgPreviewDialog = props =>
       showBackground: showBackground(),
       useLighting   : useLighting(),
     }
-    props.exportAs( ext, mime, ext, params )();
+    props.exportFile( ext, mime, ext, params )();
   }
 
   return (
@@ -92,9 +92,9 @@ const SvgPreviewDialog = props =>
       </DialogContent>
       <DialogActions>
         <Button size="small" onClick={ ()=>props.close() } color="primary">Cancel</Button>
-        <Button size="small" onClick={ exportAs( 'svg', 'image/svg+xml' ) } color="primary">Save SVG</Button>
-        <Button size="small" onClick={ exportAs( 'pdf', 'application/pdf' ) } color="primary">Save PDF</Button>
-        <Button size="small" onClick={ exportAs( 'ps', 'application/postscript' ) } color="primary">Save Postscript</Button>
+        <Button size="small" onClick={ exportConfigured( 'svg', 'image/svg+xml' ) } color="primary">Save SVG</Button>
+        <Button size="small" onClick={ exportConfigured( 'pdf', 'application/pdf' ) } color="primary" disabled={true}>Save PDF</Button> {/* missing boilerplate resource */}
+        <Button size="small" onClick={ exportConfigured( 'ps', 'application/postscript' ) } color="primary">Save Postscript</Button>
       </DialogActions>
     </Dialog>
   );

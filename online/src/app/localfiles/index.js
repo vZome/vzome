@@ -1,4 +1,22 @@
-import { saveTextFile } from "../../viewer/util/files";
+import { EXPORT_FORMATS } from "../../viewer/context/viewer";
+import { saveFile, saveTextFile } from "../../viewer/util/files";
+
+// Generate labels for all checkboxes based on EXPORT_FORMATS
+document.querySelectorAll('.format-option input[type="checkbox"]').forEach(checkbox => {
+  const format = checkbox.id.replace('format-', '');
+  const formatInfo = EXPORT_FORMATS[format];
+  if (formatInfo) {
+    const label = document.createElement('label');
+    label.setAttribute('for', checkbox.id);
+    label.textContent = formatInfo.label;
+    checkbox.parentElement.appendChild(label);
+    
+    // Gray out label when checkbox is disabled
+    if (checkbox.disabled) {
+      label.style.color = '#999';
+    }
+  }
+});
 
 const fileTree = document .querySelector( 'file-tree' );
 const viewer = document .querySelector( '#viewer' );
@@ -85,25 +103,6 @@ modal.addEventListener('click', (e) => {
   }
 });
 
-// Get format extension mapping
-const formatExtensions = {
-  'pov': 'pov',
-  'shapes': 'shapes.json',
-  'vrml': 'vrml',
-  'stl': 'stl',
-  'off': 'off',
-  'ply': 'ply',
-  'step': 'step',
-  'mesh': 'mesh.json',
-  'cmesh': 'cmesh.json',
-  'dxf': 'dxf',
-  'scad': 'scad',
-  'build123d': 'py',
-  'svg': 'svg',
-  'pdf': 'pdf',
-  'ps': 'ps',
-};
-
 // Export functionality
 exportBtn.addEventListener('click', async () => {
   const checkboxes = document.querySelectorAll('.format-option input[type="checkbox"]:checked');
@@ -187,13 +186,19 @@ async function loadFileInViewer(vZomeFile)
 
 async function exportFormat(baseName, format, dirHandle)
 {
-  const extension = formatExtensions[format];
-  const fileName = `${baseName}.${extension}`;
+  const { ext=format, mime, image } = EXPORT_FORMATS[format];
+  const fileName = `${baseName}.${ext}`;
   const fileHandle = await dirHandle .getFileHandle( fileName, { create: true } );
  
-  return viewer.exportText( format ) .then( async ( exportedText ) => {
-    return saveTextFile( fileHandle, exportedText, 'text/plain' ); // TODO: set correct MIME type based on format
-  } );
+  if ( image ) {
+    return viewer.captureImage( format ) .then( async ( blob ) => {
+      return saveFile( fileHandle, blob, mime );
+    } );
+  } else {
+    return viewer.exportText( format ) .then( async ( exportedText ) => {
+      return saveTextFile( fileHandle, exportedText, mime );
+    } );
+  }
 }
 
 function sleep(ms) {

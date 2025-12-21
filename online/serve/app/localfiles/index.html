@@ -267,19 +267,34 @@
         <div class="formats-container">
 
           <details class="format-group">
+            <summary>2D Image</summary>
+            <div class="format-options">
+              <div class="format-option">
+                <input type="checkbox" id="format-png" value="png">
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-jpg" value="jpg">
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-webp" value="webp">
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-bmp" value="bmp">
+              </div>
+            </div>
+          </details>
+
+          <details class="format-group">
             <summary>2D Vector Graphics</summary>
             <div class="format-options">
               <div class="format-option">
                 <input type="checkbox" id="format-svg" value="svg">
-                <label for="format-svg">SVG</label>
               </div>
               <div class="format-option">
-                <input type="checkbox" id="format-pdf" value="pdf">
-                <label for="format-pdf">PDF</label>
+                <input type="checkbox" id="format-pdf" value="pdf" disabled>
               </div>
               <div class="format-option">
                 <input type="checkbox" id="format-ps" value="ps">
-                <label for="format-ps">PostScript</label>
               </div>
             </div>
           </details>
@@ -289,15 +304,12 @@
             <div class="format-options">
               <div class="format-option">
                 <input type="checkbox" id="format-pov" value="pov">
-                <label for="format-pov">POV-Ray</label>
               </div>
               <div class="format-option">
                 <input type="checkbox" id="format-shapes" value="shapes">
-                <label for="format-shapes">vZome Shapes JSON</label>
               </div>
               <div class="format-option">
-                <input type="checkbox" id="format-vrml" value="vrml">
-                <label for="format-vrml">VRML</label>
+                <input type="checkbox" id="format-vrml" value="vrml" disabled>
               </div>
             </div>
           </details>
@@ -307,19 +319,15 @@
             <div class="format-options">
               <div class="format-option">
                 <input type="checkbox" id="format-stl" value="stl">
-                <label for="format-stl">StL (mm)</label>
               </div>
               <div class="format-option">
                 <input type="checkbox" id="format-off" value="off">
-                <label for="format-off">OFF</label>
               </div>
               <div class="format-option">
                 <input type="checkbox" id="format-ply" value="ply">
-                <label for="format-ply">PLY</label>
               </div>
               <div class="format-option">
                 <input type="checkbox" id="format-step" value="step">
-                <label for="format-step">STEP</label>
               </div>
             </div>
           </details>
@@ -329,15 +337,12 @@
             <div class="format-options">
               <div class="format-option">
                 <input type="checkbox" id="format-mesh" value="mesh">
-                <label for="format-mesh">Simple Mesh JSON</label>
               </div>
               <div class="format-option">
                 <input type="checkbox" id="format-cmesh" value="cmesh">
-                <label for="format-cmesh">Color Mesh JSON</label>
               </div>
               <div class="format-option">
                 <input type="checkbox" id="format-dxf" value="dxf">
-                <label for="format-dxf">AutoCAD DXF</label>
               </div>
             </div>
           </details>
@@ -358,7 +363,7 @@
       </div>
     </div>
 
-    <script>
+    <script type="module">
       // Check that service workers are supported
       if ('serviceWorker' in navigator) {
         // Use the window load event to keep the page load performant

@@ -505,20 +505,6 @@ onmessage = ({ data }) =>
           sendToClient( { type: 'CAMERA_SNAPPED', payload: { up: result.up, lookDir: result.lookDir } } );
           return;
         }
-        if ( action === 'exportText' && parameters.format === 'shapes' ) {
-          // TODO: fold this into 'EXPORT_TRIGGERED' above
-          const { camera, lighting, scenes } = parameters;
-          const preview = exportPreview( camera, lighting, scenes );
-          clientEvents( sendToClient ) .textExported( action, preview );
-          return;
-        }
-        if ( action === 'exportText' && parameters.format === 'vZome' ) {
-          // TODO: fold this into 'EXPORT_TRIGGERED' above
-          const { camera, lighting, scenes } = parameters;
-          const xml = design.wrapper .serializeVZomeXml( lighting, camera, scenes );
-          clientEvents( sendToClient ) .textExported( action, xml );
-          return;
-        }
         // console.log( "action", uniqueId );
         design.wrapper .doAction( controllerPath, action, parameters );
         reportDefaultScene( sendToClient );

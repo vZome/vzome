@@ -107,4 +107,42 @@ const ViewerProvider = ( props ) =>
 
 const useViewer = () => { return useContext( ViewerContext ); };
 
+export const EXPORT_FORMATS = {
+
+  // Key values are as defined in desktop vZome code.
+
+  // 3D Rendering
+  dae:       { label: 'Collada (DAE)',     mime: 'model/vnd.collada+xml' },
+  gltf:      { label: 'glTF',              mime: 'model/gltf+json' },
+  pov:       { label: 'POV-Ray',           mime: 'text/plain',           ext: "shapes.json" },
+  shapes:    { label: 'vZome Shapes JSON', mime: 'application/json' },
+  vrml:      { label: 'VRML',              mime: 'model/vrml' },
+
+  // 3D Panels
+  stl:       { label: 'StL (mm)',          mime: 'model/stl' },
+  off:       { label: 'OFF',               mime: 'text/plain' },
+  ply:       { label: 'PLY',               mime: 'text/plain' },
+  step:      { label: 'STEP',              mime: 'application/STEP' },
+
+  // 3D Points & Lines
+  mesh:      { label: 'Simple Mesh JSON',  mime: 'application/json',     ext: "mesh.json" },
+  cmesh:     { label: 'Colored Mesh JSON', mime: 'application/json',     ext: "cmesh.json" },
+  dxf:       { label: 'AutoCAD DXF',       mime: 'application/dxf' },
+
+  // 3D Balls & Sticks
+  scad:      { label: 'OpenSCAD',          mime: 'text/plain' },
+  build123d: { label: 'Build123d Python',  mime: 'text/x-python',        ext: "py" },
+
+  // 2D Vector Drawing
+  svg:       { label: 'SVG',          mime: 'image/svg+xml' },
+  pdf:       { label: 'PDF',          mime: 'application/pdf' },
+  ps:        { label: 'Postscript',   mime: 'application/postscript' },
+
+  // Image
+  png:       { image: true, label: 'PNG',  mime: 'image/png' },
+  jpg:       { image: true, label: 'JPG',  mime: 'image/jpeg' },
+  webp:      { image: true, label: 'WEBP', mime: 'image/webp' },
+  bmp:       { image: true, label: 'BMP',  mime: 'image/bmp' },
+}
+
 export { ViewerProvider, useViewer };

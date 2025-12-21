@@ -1,17 +1,16 @@
 
 import { createEffect, createSignal, mergeProps, onMount } from "solid-js";
-import { unwrap } from "solid-js/store";
 
-import { controllerExportAction, controllerProperty, useEditor } from '../../framework/context/editor.jsx';
+import { controllerProperty, useEditor } from '../../framework/context/editor.jsx';
 import { suspendMenuKeyEvents } from '../context/commands.jsx';
-import { saveFileAs, openFile, saveTextFileAs, saveTextFile } from "../../../viewer/util/files.js";
+import { saveFileAs, openFile, saveTextFileAs, } from "../../../viewer/util/files.js";
 
 import { CommandAction, Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
 import { UrlDialog } from '../dialogs/webloader.jsx'
 import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
-import { INITIAL_DISTANCE, useCamera } from "../../../viewer/context/camera.jsx";
+import { useCamera } from "../../../viewer/context/camera.jsx";
 import { useImageCapture } from "../../../viewer/context/export.jsx";
-import { useViewer } from "../../../viewer/context/viewer.jsx";
+import { useViewer, EXPORT_FORMATS } from "../../../viewer/context/viewer.jsx";
 
 const queryParams = new URLSearchParams( window.location.search );
 const relativeUrl = queryParams.get( 'design' );
@@ -34,8 +33,8 @@ export const FileMenu = () =>
 {
   const { rootController, state, setState,
     createDesign, openDesignFile, fetchDesignUrl, importMeshFile, guard, edited } = useEditor();
-  const { setProblem, scenes } = useViewer();
-  const { state: cameraState, mapViewToWorld } = useCamera();
+  const { setProblem, exportAs } = useViewer();
+  const { state: cameraState } = useCamera();
   const [ showDialog, setShowDialog ] = createSignal( false );
   const fields = () => controllerProperty( rootController(), 'fields', 'fields', true );
 
@@ -140,26 +139,19 @@ export const FileMenu = () =>
 
   const [ svgPreview, setSvgPreview ] = createSignal( false );
 
-  const exportAs = ( extension, mimeType, format=extension, params={} ) => evt =>
+  const exportFile = ( extension, mimeType, format, params={} ) => evt =>
   {
-    const camera = unwrap( cameraState.camera );
-    camera .magnification = Math.log( camera.distance / INITIAL_DISTANCE );
-
-    const lighting = unwrap( cameraState.lighting );
-    lighting .directionalLights .forEach( light => light .worldDirection = mapViewToWorld( light.direction ) );
-
-    controllerExportAction( rootController(), format, { camera, lighting, scenes: unwrap( scenes ), ...params } )
+    exportAs( format, params )
       .then( text => {
         const name = (state.designName || 'untitled') .concat( "." + extension );
         saveTextFileAs( name, text, mimeType );
       });
   }
 
-  const { capturer } = useImageCapture();
-  const captureImage = ( extension, mimeType ) => evt =>
+  const { captureImage } = useImageCapture();
+  const doCaptureImage = ( extension, mimeType ) => evt =>
   {
-    const { capture } = capturer();
-    capture( mimeType, blob => {
+    captureImage( mimeType ) .then( blob => {
       if ( blob.size === 0 ) {
         setProblem( 'Captured image is empty; please report this as a defect' );
         return;
@@ -171,21 +163,21 @@ export const FileMenu = () =>
 
   const ExportItem = props =>
   {
-    props = mergeProps( { format: props.ext }, props );
+    const { ext=props.format, mime, label } = EXPORT_FORMATS[ props.format ];
     const params = { drawOutlines: cameraState.outlines }; // for SVG
-    return <MenuItem onClick={ exportAs( props.ext, props.mime, props.format, params ) } disabled={props.disabled}>{props.label}</MenuItem>
+    return <MenuItem onClick={ exportFile( ext, mime, props.format, params ) } disabled={props.disabled}>{label}</MenuItem>
   }
 
   const ImageCaptureItem = props =>
   {
-    return <MenuItem onClick={ captureImage( props.ext, props.mime ) } disabled={props.disabled}>{props.label}</MenuItem>
+    return <MenuItem onClick={ doCaptureImage( props.ext, props.mime ) } disabled={props.disabled}>{props.label}</MenuItem>
   }
   
     return (
     <Menu label="File" dialogs={<>
       <UrlDialog show={showDialog()} setShow={setShowDialog} openDesign={openUrl} />
 
-      <SvgPreviewDialog open={svgPreview()} close={()=>setSvgPreview(false)} exportAs={exportAs} />
+      <SvgPreviewDialog open={svgPreview()} close={()=>setSvgPreview(false)} exportFile={exportFile} />
     </>}>
         <SubMenu label="New Design...">
           <For each={fields()}>{ field =>
@@ -217,25 +209,25 @@ export const FileMenu = () =>
         <Divider/>
 
         <SubMenu label="Export 3D Rendering">
-          <ExportItem label="Collada DAE" ext="dae" mime="text/plain" disabled={true} />
-          <ExportItem label="POV-Ray" ext="pov" mime="text/plain" />
-          <ExportItem label="vZome Shapes JSON" format="shapes" ext="shapes.json" mime="application/json" />
-          <ExportItem label="VRML" ext="vrml" mime="text/plain" />
+          <ExportItem format="dae" disabled={true} />
+          <ExportItem format="pov" />
+          <ExportItem format="shapes" />
+          <ExportItem format="vrml" disabled={true} />  {/*  missing boilerplate resource */}
         </SubMenu>
         <SubMenu label="Export 3D Panels">
-          <ExportItem label="StL (mm)" ext="stl" mime="application/sla" />
-          <ExportItem label="OFF" ext="off" mime="text/plain" />
-          <ExportItem label="PLY" ext="ply" mime="text/plain" />
-          <ExportItem label="STEP" ext="step" mime="text/plain" />
+          <ExportItem format="stl" />
+          <ExportItem format="off" />
+          <ExportItem format="ply" />
+          <ExportItem format="step" />
         </SubMenu>
         <SubMenu label="Export 3D Points & Lines">
-          <ExportItem label="Simple Mesh JSON" format="mesh" ext="mesh.json" mime="application/json" />
-          <ExportItem label="Color Mesh JSON" format="cmesh" ext="cmesh.json" mime="application/json" />
-          <ExportItem label="AutoCAD DXF" ext="dxf" mime="text/plain" />
+          <ExportItem format="mesh" />
+          <ExportItem format="cmesh" />
+          <ExportItem format="dxf" />
         </SubMenu>
         <SubMenu label="Export 3D Balls & Sticks">
-          <ExportItem label="OpenSCAD" ext="scad" mime="text/plain" />
-          <ExportItem label="Python build123d" ext="py" format="build123d" mime="text/plain" />
+          <ExportItem format="scad" />
+          <ExportItem format="build123d" />
         </SubMenu>
 
         <Divider/>
@@ -254,9 +246,9 @@ export const FileMenu = () =>
         <MenuItem disabled={true} action="capture-wiggle-gif" >Capture Animation</MenuItem>
 
         <SubMenu label="Capture Vector Drawing">
-          <ExportItem label="PDF" ext="pdf" mime="application/pdf" />
-          <ExportItem label="SVG" ext="svg" mime="image/svg+xml" />
-          <ExportItem label="Postscript" ext="ps" mime="application/postscript" />
+          <ExportItem format="pdf" disabled={true} /> {/*  missing boilerplate resource */}
+          <ExportItem format="svg" />
+          <ExportItem format="ps" />
           <Divider/>
           <MenuItem onClick={ ()=>setSvgPreview(true) } >Customize...</MenuItem>
         </SubMenu>

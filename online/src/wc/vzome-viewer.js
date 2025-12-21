@@ -168,6 +168,15 @@ class VZomeViewer extends HTMLElement
     } );
   }
 
+  async captureImage( format, params={} )
+  {
+    if ( ! this.#api ) {
+      debug && console.log( 'captureImage ignored; component API not loaded' );
+      return Promise .reject( new Error( 'captureImage ignored; component API not loaded' ) );
+    }
+    return this.#api .captureImage( format, params );
+  }
+
   async exportText( format, params={} )
   {
     if ( ! this.#api ) {
