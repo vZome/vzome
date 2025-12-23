@@ -5,7 +5,7 @@ import { controllerProperty, useEditor } from '../../framework/context/editor.js
 import { suspendMenuKeyEvents } from '../context/commands.jsx';
 import { saveFileAs, openFile, saveTextFileAs, } from "../../../viewer/util/files.js";
 
-import { CommandAction, Divider, Menu, MenuAction, MenuItem, SubMenu } from "../../framework/menus.jsx";
+import { CommandAction, Divider, Menu, MenuAction, MenuItem, SubMenu, LinkItem, } from "../../framework/menus.jsx";
 import { UrlDialog } from '../dialogs/webloader.jsx'
 import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
 import { useCamera } from "../../../viewer/context/camera.jsx";
@@ -190,6 +190,14 @@ export const FileMenu = () =>
         <MenuAction label="Open As New Design..."     onClick={() => guard(handleOpen(true))} />
         { dropboxEnabled &&
            <MenuAction label="Choose from Dropbox..." onClick={() => guard(showDropboxChooser)} /> }
+
+        <Divider/>
+
+        <SubMenu label="Support Apps">
+          <LinkItem label='GitHub Share Browser'       href='/app/browser' />
+          <LinkItem label='Local File Browser'         href='/app/localfiles' />
+          <LinkItem label='Build Plane (Experimental)' href='/app/buildplane' disabled={true} />
+        </SubMenu>
 
         <Divider/>
 

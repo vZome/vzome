@@ -1,15 +1,6 @@
 
-import { Link } from "@kobalte/core/link";
-import { Divider, Menu, MenuItem, SubMenu } from "../../framework/menus.jsx";
+import { Divider, Menu, MenuItem, SubMenu, LinkItem, } from "../../framework/menus.jsx";
 import { useEditor } from '../../framework/context/editor.jsx';
-
-const LinkItem  = props => (
-  <MenuItem>
-    <Link class="link" href={props.href} target="_blank" rel="noopener">
-      {props.label}
-    </Link>
-  </MenuItem>
-);
 
 export const HelpMenu = () =>
 {
