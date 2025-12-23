@@ -1,6 +1,7 @@
 
 import { mergeProps, Show, Switch } from "solid-js";
 
+import { Link } from "@kobalte/core/link";
 import { Menubar } from "@kobalte/core/menubar";
 import { ContextMenu } from "@kobalte/core/context-menu";
 
@@ -216,3 +217,11 @@ export const DeclarativeMenu = (props) =>
     </Menu>
   );
 }
+
+export const LinkItem  = props => (
+  <MenuItem disabled={props.disabled}>
+    <Link class="link" href={props.href} target="_blank" rel="noopener">
+      {props.label}
+    </Link>
+  </MenuItem>
+);

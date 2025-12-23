@@ -90,12 +90,6 @@ const EditorProvider = props =>
         break;
       }
 
-      case 'TEXT_EXPORTED': {
-        const { action, text } = data.payload;
-        exportPromises[ action ] .resolve( text );
-        break;
-      }
-
       case 'TEXT_FETCHED': { // we receive this event twice per fetch?
         setSource( 'url', undefined ); // we are editing, so disable the original URL for viewer preview
         let { name } = data.payload;
@@ -313,11 +307,4 @@ const controllerProperty = ( controller, propName, changeName=propName, isList=f
   return controller[ propName ];
 }
 
-const controllerExportAction = ( controller, format, parameters={} ) =>
-{
-  const controllerPath = controller.__path .join( ':' );
-  parameters.format = format;
-  return controller.__store .expectResponse( controllerPath, "exportText", parameters );
-}
-
-export { EditorProvider, useEditor, subController, controllerProperty, controllerExportAction };
+export { EditorProvider, useEditor, subController, controllerProperty };

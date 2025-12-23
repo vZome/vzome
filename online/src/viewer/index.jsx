@@ -13,7 +13,7 @@ import { ViewerProvider, useViewer } from './context/viewer.jsx';
 import { SceneIndexingProvider, SceneProvider, SceneTitlesProvider, useScene, useSceneIndexing, useSceneTitles } from './context/scene.jsx';
 import { InteractionToolProvider } from './context/interaction.jsx';
 import { CameraProvider, useCamera } from './context/camera.jsx';
-import { GltfExportProvider } from './context/export.jsx';
+import { GltfExportProvider, ImageCaptureProvider, useImageCapture } from './context/export.jsx';
 
 import { SceneCanvas } from "./scenecanvas.jsx";
 import { Spinner } from './spinner.jsx';
@@ -175,6 +175,7 @@ const DesignViewer = ( props ) =>
 const UrlViewer = (props) =>
 {
   return (
+    <ImageCaptureProvider>
     <CameraProvider tweening={props.config?.tweening}>
       <WorkerProvider>
         <ViewerProvider
@@ -198,24 +199,29 @@ const UrlViewer = (props) =>
         </ViewerProvider>
       </WorkerProvider>
     </CameraProvider>
+    </ImageCaptureProvider>
   );
 }
 
 const WebComponentBindings = (props) =>
 {
-  const { showIndexedScene, lastSceneIndex } = useSceneIndexing();
+  const { showIndexedScene, lastSceneIndex, setLastSceneIndex } = useSceneIndexing();
   const { setTweenDuration } = useCamera();
-  const { requestDesign } = useViewer();
+  const { requestDesign, resetScenes, openText, exportAs, } = useViewer();
+  const { captureImage } = useImageCapture();
   const { showTitledScene } = useSceneTitles();
-  const apiObject = { showIndexedScene, showTitledScene, requestDesign, setTweenDuration };
+  const apiObject = { showIndexedScene, showTitledScene, requestDesign, setTweenDuration, resetScenes, openText, exportAs, captureImage, };
   const { subscribeFor } = useWorkerClient();
   const { setApi, onAlert, onSceneRendered, onScenesDiscovered } = props.callbacks;
   setApi( apiObject );
   subscribeFor( 'ALERT_RAISED', onAlert ); 
-  subscribeFor( 'SCENES_DISCOVERED', ( { scenes } ) => onScenesDiscovered( scenes ) );
+  subscribeFor( 'SCENES_DISCOVERED', ( { scenes } ) => { setLastSceneIndex(null); onScenesDiscovered( scenes ); } );
 
   createEffect( () => {
-    if ( !! lastSceneIndex() ) {
+    // The setLastSceneIndex(null) call above ensures that this effect runs after the first scene is shown,
+    //   even if the first scene index is 0, unchanged from the last scene of the last design.
+    //   This supports reuse of a viewer component for multiple designs, as in our regression test.
+    if ( lastSceneIndex() !== null ) {
       onSceneRendered( lastSceneIndex() );
     }
   });

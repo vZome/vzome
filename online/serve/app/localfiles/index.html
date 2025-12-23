@@ -39,37 +39,331 @@
         position: absolute;
         inset: 0;
       }
+
+      .left-panel {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      .file-tree-container {
+        flex: 1;
+        overflow: auto;
+      }
+
+      .batch-export-button {
+        margin: 1rem;
+        padding: 0.75rem 1.5rem;
+        background-color: #01203d;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-weight: 500;
+      }
+
+      .batch-export-button:hover {
+        background-color: #013a5d;
+      }
+
+      .batch-export-button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-content {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        max-width: 500px;
+        width: 90%;
+        height: 80dvh;
+        display: grid;
+        grid-template-rows: min-content 1fr min-content min-content;
+      }
+
+      .modal-header {
+        margin-bottom: 1.5rem;
+      }
+
+      .modal-header h2 {
+        margin: 0;
+        color: #01203d;
+      }
+
+      .formats-container {
+        overflow: auto;
+      }
+
+      .format-group {
+        margin-bottom: 1rem;
+      }
+
+      .format-group summary {
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #01203d;
+        padding: 0.5rem;
+        border-radius: 4px;
+        user-select: none;
+        list-style: none;
+      }
+
+      .format-group summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .format-group summary::before {
+        content: '▶';
+        display: inline-block;
+        margin-right: 0.5rem;
+        transition: transform 0.2s;
+      }
+
+      .format-group[open] summary::before {
+        transform: rotate(90deg);
+      }
+
+      .format-group summary:hover {
+        background-color: #f0f0f0;
+      }
+
+      .format-group .format-options {
+        padding-left: 1.5rem;
+        padding-top: 0.5rem;
+      }
+
+      .format-option {
+        display: flex;
+        align-items: center;
+        margin: 0.5rem 0;
+      }
+
+      .format-option input[type="checkbox"] {
+        margin-right: 0.5rem;
+        width: 1.2rem;
+        height: 1.2rem;
+        cursor: pointer;
+      }
+
+      .format-option label {
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .modal-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 1.5rem;
+      }
+
+      .modal-button {
+        padding: 0.5rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        font-weight: 500;
+      }
+
+      .modal-button.primary {
+        background-color: #01203d;
+        color: white;
+      }
+
+      .modal-button.primary:hover {
+        background-color: #013a5d;
+      }
+
+      .modal-button.primary:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      .modal-button.secondary {
+        background-color: #f0f0f0;
+        color: #333;
+      }
+
+      .modal-button.secondary:hover {
+        background-color: #e0e0e0;
+      }
+
+      .progress-container {
+        margin-top: 1rem;
+        display: none;
+      }
+
+      .progress-container.show {
+        display: block;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 20px;
+        background-color: #f0f0f0;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 0.5rem;
+      }
+
+      .progress-bar-fill {
+        height: 100%;
+        background-color: #01203d;
+        transition: width 0.3s ease;
+      }
+
+      .progress-text {
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        color: #666;
+      }
     </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <script src="https://cdn.jsdelivr.net/npm/@dannymoerkerke/file-tree@0.0.5/dist/file-tree.min.js" type="module"></script>
     <script type="module" src="/modules/vzome-viewer.js"></script>
-    <script type="module">
-      const fileTree = document .querySelector( 'file-tree' );
-      const viewer = document .querySelector( '#viewer' );
-      fileTree.addEventListener('file-selected', ({ detail }) =>
-        {
-          if ( detail.path .endsWith( '.vZome' ) )
-          {
-            const { file, path } = detail;
-            const { name, contents } = file;
-            console.log( 'loading', path );
-            viewer .loadFromText( name, contents );
-          }
-        }
-      );
-
-    </script>
+    <script type="module" src="/modules/vzome-files.js"></script>
 
     <section>
-      <file-tree>
-        <button type="button" slot="browse-button">Open directory</button>
-      </file-tree>
+      <div class="left-panel">
+        <button type="button" class="batch-export-button" id="openFolderButton">Choose Folder</button>
+        <div class="file-tree-container">
+          <file-tree></file-tree>
+        </div>
+        <button type="button" class="batch-export-button" id="batchExportBtn">Batch Export</button>
+      </div>
       <vzome-viewer id="viewer" class="vzome-viewer" show-scenes="all" download="false" progress="true" style="width: 100%; height: 100%;"></vzome-viewer>        
     </section>
 
-    <script>
+    <!-- Batch Export Modal -->
+    <div id="batchExportModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Batch Export</h2>
+        </div>
+        
+        <div class="formats-container">
+
+          <details class="format-group">
+            <summary>2D Image</summary>
+            <div class="format-options">
+              <div class="format-option">
+                <input type="checkbox" id="format-png" value="png">
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-jpg" value="jpg">
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-webp" value="webp">
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-bmp" value="bmp">
+              </div>
+            </div>
+          </details>
+
+          <details class="format-group">
+            <summary>2D Vector Graphics</summary>
+            <div class="format-options">
+              <div class="format-option">
+                <input type="checkbox" id="format-svg" value="svg">
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-pdf" value="pdf" disabled>
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-ps" value="ps">
+              </div>
+            </div>
+          </details>
+
+          <details class="format-group">
+            <summary>3D Rendering</summary>
+            <div class="format-options">
+              <div class="format-option">
+                <input type="checkbox" id="format-pov" value="pov">
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-shapes" value="shapes">
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-vrml" value="vrml" disabled>
+              </div>
+            </div>
+          </details>
+
+          <details class="format-group">
+            <summary>3D Panels</summary>
+            <div class="format-options">
+              <div class="format-option">
+                <input type="checkbox" id="format-stl" value="stl">
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-off" value="off">
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-ply" value="ply">
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-step" value="step">
+              </div>
+            </div>
+          </details>
+
+          <details class="format-group">
+            <summary>3D Points & Lines</summary>
+            <div class="format-options">
+              <div class="format-option">
+                <input type="checkbox" id="format-mesh" value="mesh">
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-cmesh" value="cmesh">
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-dxf" value="dxf">
+              </div>
+            </div>
+          </details>
+
+        </div>
+
+        <div class="progress-container" id="progressContainer">
+          <div class="progress-bar">
+            <div class="progress-bar-fill" id="progressBarFill"></div>
+          </div>
+          <div class="progress-text" id="progressText">Processing...</div>
+        </div>
+
+        <div class="modal-buttons">
+          <button type="button" class="modal-button secondary" id="cancelBtn">Cancel</button>
+          <button type="button" class="modal-button primary" id="exportBtn">Export</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
       // Check that service workers are supported
       if ('serviceWorker' in navigator) {
         // Use the window load event to keep the page load performant

@@ -53,6 +53,7 @@ export const esbuildConfig = {
     'fivecell'        : 'src/app/fivecell/index.jsx',
     'bhall-basic'     : 'src/app/bhall/basic/index.jsx',
     '59icosahedra'    : 'src/app/59icosahedra/index.jsx',
+    'vzome-files'     : 'src/app/localfiles/index.js',
   // web components, not used by apps
     'vzome-viewer'        : 'src/wc/vzome-viewer.js',
     'gltf-viewer'         : 'src/wc/gltf/index.jsx',

@@ -1,9 +1,7 @@
 
 import { createContext, useContext } from "solid-js";
-import { unwrap } from "solid-js/store";
 
-import { controllerExportAction, subController, useEditor } from "../../framework/context/editor.jsx";
-import { useCamera } from "../../../viewer/context/camera.jsx";
+import { subController, useEditor } from "../../framework/context/editor.jsx";
 import { useSymmetry } from './symmetry.jsx';
 import { saveTextFileAs, saveTextFile } from "../../../viewer/util/files.js";
 import { useViewer } from "../../../viewer/context/viewer.jsx";
@@ -19,8 +17,7 @@ export const CommandsProvider = props =>
 {
   const { rootController, controllerAction, state, setState, setEdited } = useEditor();
   const { showPolytopesDialog, symmetryController } = useSymmetry();
-  const { state: cameraState } = useCamera();
-  const { scenes } = useViewer();
+  const { exportAs } = useViewer();
   const globalAction   = action => () => controllerAction( rootController(), action );
   const undoRedoAction = action => () => controllerAction( subController( rootController(), 'undoRedo' ), action );
   const symmetryAction = ( symm, action ) => () => controllerAction( subController( rootController(), `symmetry.${symm}` ), action );
@@ -28,8 +25,7 @@ export const CommandsProvider = props =>
   const doSave = ( chooseFile = false ) =>
   {
     let name;
-    const { camera, lighting } = unwrap( cameraState );
-    controllerExportAction( rootController(), 'vZome', { camera, lighting, scenes: unwrap( scenes ) } )
+    exportAs( 'vZome' )
       .then( text => {
         name = state?.designName || 'untitled';
         const mimeType = 'application/xml';
@@ -56,7 +52,7 @@ export const CommandsProvider = props =>
   
   const doCut = () =>
   {
-    controllerExportAction( rootController(), 'cmesh', { selection: true } )
+    exportAs( 'cmesh', { selection: true } )
       .then( text => {
         navigator.clipboard .writeText( text );
         controllerAction( rootController(), 'Delete' );
@@ -64,7 +60,7 @@ export const CommandsProvider = props =>
   }
   const doCopy = () =>
   {
-    controllerExportAction( rootController(), 'cmesh', { selection: true } )
+    exportAs( 'cmesh', { selection: true } )
       .then( text => {
         navigator.clipboard .writeText( text );
       });
