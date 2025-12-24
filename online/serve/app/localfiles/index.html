@@ -40,15 +40,23 @@
         inset: 0;
       }
 
+      .left-panel-box {
+        position: relative;
+      }
       .left-panel {
-        display: flex;
-        flex-direction: column;
+        position: absolute;
+        inset: 0;
         height: 100%;
+        display: grid;
+        grid-template-rows: min-content 1fr min-content;
       }
 
       .file-tree-container {
-        flex: 1;
-        overflow: auto;
+        position: relative;
+      }
+      file-tree {
+        position: absolute;
+        inset: 0;
       }
 
       .batch-export-button {
@@ -247,12 +255,14 @@
     <script type="module" src="/modules/vzome-files.js"></script>
 
     <section>
-      <div class="left-panel">
-        <button type="button" class="batch-export-button" id="openFolderButton">Choose Folder</button>
-        <div class="file-tree-container">
-          <file-tree></file-tree>
+      <div class="left-panel-box">
+        <div class="left-panel">
+          <button type="button" class="batch-export-button" id="openFolderButton">Choose Folder</button>
+          <div class="file-tree-container">
+            <file-tree></file-tree>
+          </div>
+          <button type="button" class="batch-export-button" id="batchExportBtn">Batch Export</button>
         </div>
-        <button type="button" class="batch-export-button" id="batchExportBtn">Batch Export</button>
       </div>
       <vzome-viewer id="viewer" class="vzome-viewer" show-scenes="all" download="false" progress="true" style="width: 100%; height: 100%;"></vzome-viewer>        
     </section>
@@ -291,7 +301,7 @@
                 <input type="checkbox" id="format-svg" value="svg">
               </div>
               <div class="format-option">
-                <input type="checkbox" id="format-pdf" value="pdf" disabled>
+                <input type="checkbox" id="format-pdf" value="pdf">
               </div>
               <div class="format-option">
                 <input type="checkbox" id="format-ps" value="ps">
@@ -303,13 +313,16 @@
             <summary>3D Rendering</summary>
             <div class="format-options">
               <div class="format-option">
-                <input type="checkbox" id="format-pov" value="pov">
-              </div>
-              <div class="format-option">
                 <input type="checkbox" id="format-shapes" value="shapes">
               </div>
               <div class="format-option">
-                <input type="checkbox" id="format-vrml" value="vrml" disabled>
+                <input type="checkbox" id="format-gltf" value="gltf" disabled>
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-pov" value="pov">
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-vrml" value="vrml">
               </div>
             </div>
           </details>
@@ -343,6 +356,18 @@
               </div>
               <div class="format-option">
                 <input type="checkbox" id="format-dxf" value="dxf">
+              </div>
+            </div>
+          </details>
+
+          <details class="format-group">
+            <summary>3D Balls & Sticks</summary>
+            <div class="format-options">
+              <div class="format-option">
+                <input type="checkbox" id="format-scad" value="scad">
+              </div>
+              <div class="format-option">
+                <input type="checkbox" id="format-build123d" value="build123d">
               </div>
             </div>
           </details>

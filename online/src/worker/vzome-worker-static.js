@@ -467,12 +467,16 @@ onmessage = ({ data }) =>
         clientEvents( sendToClient ) .textExported( 'exportText', preview );
         return;
       }
+
+      if ( !design?.wrapper ) {
+        sendToClient( { type: 'ALERT_RAISED', payload: `No design loaded; cannot export as ${format}.` } );
+        return;
+      }
       if ( format === 'vZome' ) {
         const xml = design.wrapper .serializeVZomeXml( lighting, camera, scenes );
         clientEvents( sendToClient ) .textExported( 'exportText', xml );
         return;
       }
-      // TODO: what happens if it is a preview, and there is no design.wrapper?
       design.wrapper .doAction( '', 'exportText', payload );
       break;
     }

@@ -17,9 +17,11 @@ const ViewerProvider = ( props ) =>
   const [ problem, setProblem ] = createSignal( '' ); // cooperatively managed by both worker and client
   const [ waiting, setWaiting ] = createSignal( false );
   const [ labels, setLabels ] = createSignal( showLabels );
-  const { postMessage, subscribeFor, postRequest } = useWorkerClient();
+  const { postMessage, subscribeFor } = useWorkerClient();
   const { state, setTweenDuration, tweenCamera, setLighting, mapViewToWorld } = useCamera();
 
+  const indexResources = () => postMessage( { type: 'WINDOW_LOCATION', payload: window.location.toString() } );
+  
   const requestDesign = ( url, config ) =>
   {
     setWaiting( true );
@@ -95,7 +97,7 @@ const ViewerProvider = ( props ) =>
     requestBOM: () => postMessage( { type: 'BOM_REQUESTED' } ),
     setTweenDuration,
     useWorker: useWorkerClient,
-    exportAs,
+    exportAs, indexResources,
   };
 
   return (
@@ -114,8 +116,8 @@ export const EXPORT_FORMATS = {
   // 3D Rendering
   dae:       { label: 'Collada (DAE)',     mime: 'model/vnd.collada+xml' },
   gltf:      { label: 'glTF',              mime: 'model/gltf+json' },
-  pov:       { label: 'POV-Ray',           mime: 'text/plain',           ext: "shapes.json" },
-  shapes:    { label: 'vZome Shapes JSON', mime: 'application/json' },
+  pov:       { label: 'POV-Ray',           mime: 'text/plain' },
+  shapes:    { label: 'vZome Shapes JSON', mime: 'application/json',           ext: "shapes.json" },
   vrml:      { label: 'VRML',              mime: 'model/vrml' },
 
   // 3D Panels

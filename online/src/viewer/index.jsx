@@ -207,12 +207,14 @@ const WebComponentBindings = (props) =>
 {
   const { showIndexedScene, lastSceneIndex, setLastSceneIndex } = useSceneIndexing();
   const { setTweenDuration } = useCamera();
-  const { requestDesign, resetScenes, openText, exportAs, } = useViewer();
+  const { requestDesign, resetScenes, openText, exportAs, indexResources, } = useViewer();
   const { captureImage } = useImageCapture();
   const { showTitledScene } = useSceneTitles();
   const apiObject = { showIndexedScene, showTitledScene, requestDesign, setTweenDuration, resetScenes, openText, exportAs, captureImage, };
   const { subscribeFor } = useWorkerClient();
   const { setApi, onAlert, onSceneRendered, onScenesDiscovered } = props.callbacks;
+
+  indexResources(); // enable exports from local files
   setApi( apiObject );
   subscribeFor( 'ALERT_RAISED', onAlert ); 
   subscribeFor( 'SCENES_DISCOVERED', ( { scenes } ) => { setLastSceneIndex(null); onScenesDiscovered( scenes ); } );
