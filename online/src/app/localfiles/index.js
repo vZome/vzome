@@ -68,6 +68,7 @@ function updateBatchExportButton() {
 
 document.getElementById('openFolderButton') .addEventListener('click', () => {
   fileTree .openDirectory() .then( async handle => {
+    if ( !handle ) return;
     vZomeFiles = [];
     await collectVZomeFiles(handle);
     updateBatchExportButton();

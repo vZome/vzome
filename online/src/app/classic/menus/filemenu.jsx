@@ -220,7 +220,7 @@ export const FileMenu = () =>
           <ExportItem format="dae" disabled={true} />
           <ExportItem format="pov" />
           <ExportItem format="shapes" />
-          <ExportItem format="vrml" disabled={true} />  {/*  missing boilerplate resource */}
+          <ExportItem format="vrml" />
         </SubMenu>
         <SubMenu label="Export 3D Panels">
           <ExportItem format="stl" />
@@ -254,7 +254,7 @@ export const FileMenu = () =>
         <MenuItem disabled={true} action="capture-wiggle-gif" >Capture Animation</MenuItem>
 
         <SubMenu label="Capture Vector Drawing">
-          <ExportItem format="pdf" disabled={true} /> {/*  missing boilerplate resource */}
+          <ExportItem format="pdf" />
           <ExportItem format="svg" />
           <ExportItem format="ps" />
           <Divider/>

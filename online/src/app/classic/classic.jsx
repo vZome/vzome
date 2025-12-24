@@ -12,10 +12,12 @@ import { ErrorAlert } from "./components/alert.jsx";
 import { SceneControls } from './components/scenecontrols.jsx';
 import { MeasurePanel } from './components/measure.jsx';
 import { PartsPanel } from './components/partstable.jsx';
+import { useViewer } from '../../viewer/context/viewer.jsx';
 
 export const ClassicEditor = () =>
 {
-  const { rootController, indexResources } = useEditor();
+  const { rootController } = useEditor();
+  const { indexResources } = useViewer();
   indexResources();
 
   const bookmarkController = () => subController( rootController(), 'bookmark' );

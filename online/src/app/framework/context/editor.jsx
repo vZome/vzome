@@ -214,8 +214,6 @@ const EditorProvider = props =>
     workerClient .postMessage( actions.newDesign( field ) );
   }
 
-  const indexResources = () => workerClient .postMessage( { type: 'WINDOW_LOCATION', payload: window.location.toString() } );
-  
   const shareToGitHub = ( target, blog, publish, image ) =>
   {
     const name = state?.designName || 'untitled';
@@ -255,7 +253,6 @@ const EditorProvider = props =>
     ...store,
     guard, edited, setEdited,
     rootController,
-    indexResources,
     controllerAction,
     shareToGitHub,
     createDesign,
