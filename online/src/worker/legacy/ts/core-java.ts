@@ -4179,29 +4179,6 @@ namespace com.vzome.core.render {
 
         export class SymmetryOrbitSource implements com.vzome.core.editor.api.OrbitSource {
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getOrientations$(): number[][] {
-                return this.getOrientations(false);
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getEmbedding(): number[] {
-                const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
-                const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
-                const embedding: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(16);
-                for(let i: number = 0; i < 3; i++) {{
-                    const columnSelect: com.vzome.core.algebra.AlgebraicVector = field.basisVector(3, i);
-                    const colRV: com.vzome.core.math.RealVector = symmetry.embedInR3(columnSelect);
-                    embedding[i * 4 + 0] = colRV.x;
-                    embedding[i * 4 + 1] = colRV.y;
-                    embedding[i * 4 + 2] = colRV.z;
-                    embedding[i * 4 + 3] = 0.0;
-                };}
-                embedding[12] = 0.0;
-                embedding[13] = 0.0;
-                embedding[14] = 0.0;
-                embedding[15] = 1.0;
-                return embedding;
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             public getOrientations(rowMajor?: any): number[][] {
                 if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                     let __args = arguments;
@@ -4243,6 +4220,29 @@ namespace com.vzome.core.render {
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
                 return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getOrientations$(): number[][] {
+                return this.getOrientations(false);
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getEmbedding(): number[] {
+                const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
+                const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
+                const embedding: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(16);
+                for(let i: number = 0; i < 3; i++) {{
+                    const columnSelect: com.vzome.core.algebra.AlgebraicVector = field.basisVector(3, i);
+                    const colRV: com.vzome.core.math.RealVector = symmetry.embedInR3(columnSelect);
+                    embedding[i * 4 + 0] = colRV.x;
+                    embedding[i * 4 + 1] = colRV.y;
+                    embedding[i * 4 + 2] = colRV.z;
+                    embedding[i * 4 + 3] = 0.0;
+                };}
+                embedding[12] = 0.0;
+                embedding[13] = 0.0;
+                embedding[14] = 0.0;
+                embedding[15] = 1.0;
+                return embedding;
             }
             symmetry: com.vzome.core.math.symmetry.Symmetry;
 
@@ -17116,29 +17116,6 @@ namespace com.vzome.core.editor {
 namespace com.vzome.core.editor {
     export class SymmetrySystem implements com.vzome.core.editor.api.OrbitSource {
         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-        getOrientations$(): number[][] {
-            return this.getOrientations(false);
-        }
-        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-        getEmbedding(): number[] {
-            const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
-            const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
-            const embedding: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(16);
-            for(let i: number = 0; i < 3; i++) {{
-                const columnSelect: com.vzome.core.algebra.AlgebraicVector = field.basisVector(3, i);
-                const colRV: com.vzome.core.math.RealVector = symmetry.embedInR3(columnSelect);
-                embedding[i * 4 + 0] = colRV.x;
-                embedding[i * 4 + 1] = colRV.y;
-                embedding[i * 4 + 2] = colRV.z;
-                embedding[i * 4 + 3] = 0.0;
-            };}
-            embedding[12] = 0.0;
-            embedding[13] = 0.0;
-            embedding[14] = 0.0;
-            embedding[15] = 1.0;
-            return embedding;
-        }
-        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
         public getOrientations(rowMajor?: any): number[][] {
             if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                 let __args = arguments;
@@ -17191,6 +17168,29 @@ namespace com.vzome.core.editor {
         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
         getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
             return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+        }
+        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+        getOrientations$(): number[][] {
+            return this.getOrientations(false);
+        }
+        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+        getEmbedding(): number[] {
+            const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
+            const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
+            const embedding: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(16);
+            for(let i: number = 0; i < 3; i++) {{
+                const columnSelect: com.vzome.core.algebra.AlgebraicVector = field.basisVector(3, i);
+                const colRV: com.vzome.core.math.RealVector = symmetry.embedInR3(columnSelect);
+                embedding[i * 4 + 0] = colRV.x;
+                embedding[i * 4 + 1] = colRV.y;
+                embedding[i * 4 + 2] = colRV.z;
+                embedding[i * 4 + 3] = 0.0;
+            };}
+            embedding[12] = 0.0;
+            embedding[13] = 0.0;
+            embedding[14] = 0.0;
+            embedding[15] = 1.0;
+            return embedding;
         }
         static logger: java.util.logging.Logger; public static logger_$LI$(): java.util.logging.Logger { if (SymmetrySystem.logger == null) { SymmetrySystem.logger = java.util.logging.Logger.getLogger("com.vzome.core.editor"); }  return SymmetrySystem.logger; }
 
@@ -36126,6 +36126,7 @@ namespace com.vzome.fields.sqrtphi {
                 case com.vzome.api.Tool.Kind.TRANSFORM:
                     result.add(new com.vzome.core.tools.ScalingToolFactory(tools, pentaSymm).createPredefinedTool("scale down"));
                     result.add(new com.vzome.core.tools.ScalingToolFactory(tools, pentaSymm).createPredefinedTool("scale up"));
+                    result.add(new com.vzome.core.tools.RotationToolFactory(tools, pentaSymm, false).createPredefinedTool("fivefold rotation through origin"));
                     result.add(new com.vzome.core.tools.RotationToolFactory(tools, pentaSymm, true).createPredefinedTool("fivefold rotation through origin"));
                     break;
                 default:
@@ -46549,29 +46550,6 @@ namespace com.vzome.core.edits {
         export class ReplaceWithShape$0 implements com.vzome.core.editor.api.OrbitSource {
             public __parent: any;
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getOrientations$(): number[][] {
-                return this.getOrientations(false);
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getEmbedding(): number[] {
-                const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
-                const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
-                const embedding: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(16);
-                for(let i: number = 0; i < 3; i++) {{
-                    const columnSelect: com.vzome.core.algebra.AlgebraicVector = field.basisVector(3, i);
-                    const colRV: com.vzome.core.math.RealVector = symmetry.embedInR3(columnSelect);
-                    embedding[i * 4 + 0] = colRV.x;
-                    embedding[i * 4 + 1] = colRV.y;
-                    embedding[i * 4 + 2] = colRV.z;
-                    embedding[i * 4 + 3] = 0.0;
-                };}
-                embedding[12] = 0.0;
-                embedding[13] = 0.0;
-                embedding[14] = 0.0;
-                embedding[15] = 1.0;
-                return embedding;
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             public getOrientations(rowMajor?: any): number[][] {
                 if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                     let __args = arguments;
@@ -46611,6 +46589,29 @@ namespace com.vzome.core.edits {
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
                 return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getOrientations$(): number[][] {
+                return this.getOrientations(false);
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getEmbedding(): number[] {
+                const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
+                const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
+                const embedding: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(16);
+                for(let i: number = 0; i < 3; i++) {{
+                    const columnSelect: com.vzome.core.algebra.AlgebraicVector = field.basisVector(3, i);
+                    const colRV: com.vzome.core.math.RealVector = symmetry.embedInR3(columnSelect);
+                    embedding[i * 4 + 0] = colRV.x;
+                    embedding[i * 4 + 1] = colRV.y;
+                    embedding[i * 4 + 2] = colRV.z;
+                    embedding[i * 4 + 3] = 0.0;
+                };}
+                embedding[12] = 0.0;
+                embedding[13] = 0.0;
+                embedding[14] = 0.0;
+                embedding[15] = 1.0;
+                return embedding;
             }
             /**
              * 
