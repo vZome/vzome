@@ -215,6 +215,7 @@ namespace com.vzome.fields.sqrtphi {
                 case com.vzome.api.Tool.Kind.TRANSFORM:
                     result.add(new com.vzome.core.tools.ScalingToolFactory(tools, pentaSymm).createPredefinedTool("scale down"));
                     result.add(new com.vzome.core.tools.ScalingToolFactory(tools, pentaSymm).createPredefinedTool("scale up"));
+                    result.add(new com.vzome.core.tools.RotationToolFactory(tools, pentaSymm, false).createPredefinedTool("fivefold rotation through origin"));
                     result.add(new com.vzome.core.tools.RotationToolFactory(tools, pentaSymm, true).createPredefinedTool("fivefold rotation through origin"));
                     break;
                 default:

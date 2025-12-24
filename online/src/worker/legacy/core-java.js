@@ -1588,7 +1588,12 @@ export var com;
                         string = string.substring(1, closeParen);
                     }
                     let phis = 0;
-                    const phiIndex = string.indexOf("phi");
+                    let bump = 3;
+                    let phiIndex = string.indexOf("phi");
+                    if (phiIndex < 0) {
+                        phiIndex = string.indexOf("sqrt2");
+                        bump = 5;
+                    }
                     if (phiIndex >= 0) {
                         const part = string.substring(0, phiIndex);
                         if (part.length === 0)
@@ -1597,7 +1602,7 @@ export var com;
                             phis = -1;
                         else
                             phis = this.parseInt(part);
-                        string = string.substring(phiIndex + 3);
+                        string = string.substring(phiIndex + bump);
                     }
                     let ones;
                     if (string.length === 0)
@@ -3985,14 +3990,6 @@ export var com;
                             this.orbits = new com.vzome.core.math.symmetry.OrbitSet(symmetry);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
                             if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                                 let __args = arguments;
@@ -4045,6 +4042,14 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {
@@ -16819,14 +16824,6 @@ export var com;
                         this.setStyle(styleName);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getZone(orbit, orientation) {
-                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getOrientations$() {
-                        return this.getOrientations(false);
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getOrientations(rowMajor) {
                         if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                             let __args = arguments;
@@ -16900,6 +16897,14 @@ export var com;
                         }
                         else
                             throw new Error('invalid overload');
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getZone(orbit, orientation) {
+                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getOrientations$() {
+                        return this.getOrientations(false);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getEmbedding() {
@@ -36881,6 +36886,7 @@ export var com;
                                 case com.vzome.api.Tool.Kind.TRANSFORM:
                                     result.add(new com.vzome.core.tools.ScalingToolFactory(tools, pentaSymm).createPredefinedTool("scale down"));
                                     result.add(new com.vzome.core.tools.ScalingToolFactory(tools, pentaSymm).createPredefinedTool("scale up"));
+                                    result.add(new com.vzome.core.tools.RotationToolFactory(tools, pentaSymm, false).createPredefinedTool("fivefold rotation through origin"));
                                     result.add(new com.vzome.core.tools.RotationToolFactory(tools, pentaSymm, true).createPredefinedTool("fivefold rotation through origin"));
                                     break;
                                 default:
@@ -48541,14 +48547,6 @@ export var com;
                             this.__parent = __parent;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
                             if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                                 let __args = arguments;
@@ -48595,6 +48593,14 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {

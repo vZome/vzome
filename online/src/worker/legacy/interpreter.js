@@ -71,6 +71,9 @@ export class Interpreter
     this.editContext = {
       performAndRecord: edit => {
         edit .perform();
+        if ( edit .isNoOp() )
+          // TODO: get stricter for more modern designs, where this should never happen
+          console.log( 'WARNING: No-op edit:', edit.constructor.name );
         this.cursor.history .addEdit( edit ); // must use the current cursor!
       },
       createLegacyCommand: name => this.design.editContext .createLegacyCommand( name ),

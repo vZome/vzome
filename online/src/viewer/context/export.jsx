@@ -24,8 +24,18 @@ export const ImageCaptureProvider = (props) =>
 {
   const [ capturer, setCapturer ] = createSignal( {} );
 
+  const captureImage = ( format, params ) => { // params are ignored!
+    return new Promise( ( resolve, reject ) => {
+      try {
+        capturer() .capture( format, resolve )
+      } catch (error) {
+        reject( error );
+      }
+    } );
+  }
+
   return (
-    <ImageCaptureContext.Provider value={ { capturer, setCapturer } }>
+    <ImageCaptureContext.Provider value={ { setCapturer, captureImage } }>
       {props.children}
     </ImageCaptureContext.Provider>
   );

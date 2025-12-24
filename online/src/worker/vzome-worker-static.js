@@ -439,8 +439,13 @@ onmessage = ({ data }) =>
     case 'EDIT_SELECTED': {
       const { before, after } = payload; // only one of these will have an edit ID
       const edit = before || after;
-      const response = prepareEditSceneResponse( design, edit, !!before );
-      sendToClient( { type: 'SCENE_RENDERED', payload: response } );
+      try {
+        const response = prepareEditSceneResponse( design, edit, !!before );
+        sendToClient( { type: 'SCENE_RENDERED', payload: response } );
+      } catch (error) {
+        console.log( `EDIT_SELECTED error: ${error.message}` );
+        sendToClient( { type: 'ALERT_RAISED', payload: error.message } );
+      }
       break;
     }
 
@@ -456,6 +461,28 @@ onmessage = ({ data }) =>
         console.log( `Macro error: ${error.message}` );
         sendToClient( { type: 'ALERT_RAISED', payload: `Failed to complete macro.` } );
       }
+      break;
+    }
+
+    case 'EXPORT_TRIGGERED':
+    {
+      const { format, camera, lighting, scenes } = payload;
+      if ( format === 'shapes' ) {
+        const preview = exportPreview( camera, lighting, scenes );
+        clientEvents( sendToClient ) .textExported( 'exportText', preview );
+        return;
+      }
+
+      if ( !design?.wrapper ) {
+        sendToClient( { type: 'ALERT_RAISED', payload: `No design loaded; cannot export as ${format}.` } );
+        return;
+      }
+      if ( format === 'vZome' ) {
+        const xml = design.wrapper .serializeVZomeXml( lighting, camera, scenes );
+        clientEvents( sendToClient ) .textExported( 'exportText', xml );
+        return;
+      }
+      design.wrapper .doAction( '', 'exportText', payload );
       break;
     }
 
@@ -485,18 +512,6 @@ onmessage = ({ data }) =>
           const { up, lookDir } = parameters;
           const result = design.wrapper .snapCamera( symmController.controller, up, lookDir );
           sendToClient( { type: 'CAMERA_SNAPPED', payload: { up: result.up, lookDir: result.lookDir } } );
-          return;
-        }
-        if ( action === 'exportText' && parameters.format === 'shapes' ) {
-          const { camera, lighting, scenes } = parameters;
-          const preview = exportPreview( camera, lighting, scenes );
-          clientEvents( sendToClient ) .textExported( action, preview );
-          return;
-        }
-        if ( action === 'exportText' && parameters.format === 'vZome' ) {
-          const { camera, lighting, scenes } = parameters;
-          const xml = design.wrapper .serializeVZomeXml( lighting, camera, scenes );
-          clientEvents( sendToClient ) .textExported( action, xml );
           return;
         }
         // console.log( "action", uniqueId );

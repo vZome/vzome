@@ -186,7 +186,7 @@ export const SharingDialog = ( props ) =>
   const { setProblem } = useViewer();
 
   const { shareToGitHub } = useEditor();
-  const { capturer } = useImageCapture();
+  const { captureImage } = useImageCapture();
 
   const TARGET_KEY = 'classic-github-target-details';
 
@@ -197,8 +197,7 @@ export const SharingDialog = ( props ) =>
     // We have to capture the image first, because any other approach
     // seems to yield an empty image, perhaps due to the dialog messing up
     // the GPU state.
-    const { capture } = capturer();
-    capture( 'image/png', blob => {
+    captureImage( 'image/png' ) .then( blob => {
       if ( blob.size === 0 ) {
         setProblem( 'Captured image is empty; please report this as a defect' );
         return;

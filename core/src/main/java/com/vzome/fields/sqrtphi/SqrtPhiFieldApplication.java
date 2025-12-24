@@ -177,6 +177,9 @@ public class SqrtPhiFieldApplication extends DefaultFieldApplication
 			case TRANSFORM:
 				result .add( new ScalingToolFactory( tools, pentaSymm ) .createPredefinedTool( "scale down" ) );
 				result .add( new ScalingToolFactory( tools, pentaSymm ) .createPredefinedTool( "scale up" ) );
+        // Originally, we did not use the symmetry name, so there are old files that use this version.
+				result .add( new RotationToolFactory(tools, pentaSymm, false) .createPredefinedTool( "fivefold rotation through origin" ) );
+        // In commit 3c05ae8ef2d9ff66, we (inadvertently?) changed the name to include the symmetry.
 				result .add( new RotationToolFactory(tools, pentaSymm, true) .createPredefinedTool( "fivefold rotation through origin" ) );
 				break;
 

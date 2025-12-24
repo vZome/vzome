@@ -98,6 +98,7 @@ const createWorker = () =>
 
 const stubContext = {
   postMessage:  () => { throw new Error( 'NO WORKER PROVIDER!'); },
+  postRequest:  () => { throw new Error( 'NO WORKER PROVIDER!'); },
   subscribe:    () => { throw new Error( 'NO WORKER PROVIDER!'); },
   subscribeFor: () => { throw new Error( 'NO WORKER PROVIDER!'); },
 }
