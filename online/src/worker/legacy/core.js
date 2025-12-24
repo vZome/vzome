@@ -14,6 +14,12 @@ import { com } from './core-java.js'
 import { java } from './candies/j4ts-2.1.0-SNAPSHOT/bundle.js'
 import { createParser } from './parser.js'
 
+// monkey-patch
+com.vzome.core.editor.api.SideEffects.logBugAccommodation = function(message) {
+  console.log("SideEffects logBugAccommodation: " + message);
+  throw new Error(message);
+}
+
 // Copied from core/src/main/resources/com/vzome/core/editor/defaultPrefs.properties
 const defaults = {
 
@@ -610,7 +616,7 @@ const makeFloatMatrices = ( matrices ) =>
         if ( error .message .endsWith( 'command is not available yet' ) )
           throw new Error( `${xmlElement.tagName} command is not available`);
         else
-          throw error;
+          throw new Error( `${xmlElement.tagName} failure: ${error.message}` );
       }
       checkSideEffects( edit, wrappedElement );
 

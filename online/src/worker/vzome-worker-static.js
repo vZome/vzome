@@ -439,8 +439,13 @@ onmessage = ({ data }) =>
     case 'EDIT_SELECTED': {
       const { before, after } = payload; // only one of these will have an edit ID
       const edit = before || after;
-      const response = prepareEditSceneResponse( design, edit, !!before );
-      sendToClient( { type: 'SCENE_RENDERED', payload: response } );
+      try {
+        const response = prepareEditSceneResponse( design, edit, !!before );
+        sendToClient( { type: 'SCENE_RENDERED', payload: response } );
+      } catch (error) {
+        console.log( `EDIT_SELECTED error: ${error.message}` );
+        sendToClient( { type: 'ALERT_RAISED', payload: error.message } );
+      }
       break;
     }
 

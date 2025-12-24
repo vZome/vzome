@@ -246,6 +246,23 @@
         font-size: 0.9rem;
         color: #666;
       }
+
+      #regressionResults {
+        font-family: monospace;
+        white-space: pre-wrap;
+        background-color: #f5f5f5;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+      }
+
+      #regressionResults .success {
+        color: #0a6;
+      }
+
+      #regressionResults .failure {
+        color: #c33;
+      }
     </style>
   </head>
   <body>
@@ -384,6 +401,19 @@
         <div class="modal-buttons">
           <button type="button" class="modal-button secondary" id="cancelBtn">Cancel</button>
           <button type="button" class="modal-button primary" id="exportBtn">Export</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Regression Results Modal -->
+    <div id="regressionResultsModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Regression Test Results</h2>
+        </div>
+        <div id="regressionResults" style="overflow: auto; max-height: 50dvh;"></div>
+        <div class="modal-buttons">
+          <button type="button" class="modal-button primary" id="resultsCloseBtn">Close</button>
         </div>
       </div>
     </div>

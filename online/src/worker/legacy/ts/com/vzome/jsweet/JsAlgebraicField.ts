@@ -490,11 +490,16 @@ namespace com.vzome.jsweet {
                 string = string.substring(1, closeParen);
             }
             let phis: number = 0;
-            const phiIndex: number = string.indexOf("phi");
+            let bump: number = 3;
+            let phiIndex: number = string.indexOf("phi");
+            if (phiIndex < 0){
+                phiIndex = string.indexOf("sqrt2");
+                bump = 5;
+            }
             if (phiIndex >= 0){
                 const part: string = string.substring(0, phiIndex);
                 if (part.length === 0)phis = 1; else if (part === ("-"))phis = -1; else phis = this.parseInt(part);
-                string = string.substring(phiIndex + 3);
+                string = string.substring(phiIndex + bump);
             }
             let ones: number;
             if (string.length === 0)ones = 0; else {
