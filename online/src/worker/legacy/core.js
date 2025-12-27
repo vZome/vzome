@@ -105,23 +105,40 @@ const makeFloatMatrices = ( matrices ) =>
   });
 }
 
-  export const vzomePkg = com.vzome;
-  const util = java.util;
+export const vzomePkg = com.vzome;
+const util = java.util;
 
-  // This is a bit of a hack, but how else would you configure system props for JSweet?
-  java.lang.System.propertyMap_$LI$().put( "gwt.logging.enabled", "TRUE" );
-  configureLogging( util.logging );
+// This is a bit of a hack, but how else would you configure system props for JSweet?
+java.lang.System.propertyMap_$LI$().put( "gwt.logging.enabled", "TRUE" );
+configureLogging( util.logging );
 
-  class ImportColoredMeshJson extends vzomePkg.core.edits.ImportMesh
-  {
+const verticesBigIntReviver = ( key, value, context ) =>
+{
+  // Leaves are revived first, so we have to convert large numbers to BigInt using source string.
+  if ( typeof value === 'number' && context && context.source ) {
+    if ( context.source !== value.toString() ) {
+      // precision loss in value, so ignore it
+      return context.source; // Return as String instead; will be converted to BigInt later
+    }
+    return value; // Safe to return as Number
+  }
+  return value;
+}
+
+class ImportColoredMeshJson extends vzomePkg.core.edits.ImportMesh
+{
     getXmlElementName() { return "ImportColoredMeshJson"; }
 
     parseMeshData( offset, events, registry )
     {
       // TODO: handle projection and scale
-      const coloredMesh = JSON.parse( this.meshData )
+
+      const coloredMesh = JSON.parse( this.meshData, verticesBigIntReviver ); // No loss of integer precision!
       const field = registry.getField( coloredMesh.field )
       const vertices = coloredMesh.vertices.map( nums => {
+        // This does not care whether nums has Strings or Numbers or BigInts.
+        //   For JsAlgebraicField, all turned into BigInts.
+        //   For legacy fields (JavaAlgebraicField), all turned into JavaBigRationals (pairs of BigInts).
         let vertex = field.createVectorFromTDs( nums )
         if ( vertex.dimension() > 3 )
             vertex = this.projection.projectImage( vertex, false )
@@ -151,10 +168,10 @@ const makeFloatMatrices = ( matrices ) =>
       });
       // TODO: handle panels
     }
-  }
+}
 
-  class ImportSimpleMeshJson extends vzomePkg.core.edits.ImportMesh
-  {
+class ImportSimpleMeshJson extends vzomePkg.core.edits.ImportMesh
+{
     scaleAndProject = true;
 
     getXmlElementName() { return "ImportSimpleMeshJson"; }
@@ -189,9 +206,12 @@ const makeFloatMatrices = ( matrices ) =>
           this.projection = new vzomePkg.core.math.Projection.Default( field );
       }
 
-      const simpleMesh = JSON.parse( this.meshData )
+      const simpleMesh = JSON.parse( this.meshData, verticesBigIntReviver ); // No loss of integer precision!
       const field = registry.getField( simpleMesh.field || 'golden' )
       const vertices = simpleMesh.vertices.map( nums => {
+        // This does not care whether nums has Strings or Numbers or BigInts.
+        //   For JsAlgebraicField, all turned into BigInts.
+        //   For legacy fields (JavaAlgebraicField), all turned into JavaBigRationals (pairs of BigInts).
         let vertex = field.createVectorFromTDs( nums );
         vertex = vertex .scale( this.scale );
         if ( vertex.dimension() > 3 )
@@ -215,10 +235,10 @@ const makeFloatMatrices = ( matrices ) =>
         events.constructionAdded( new vzomePkg.core.construction.PolygonFromVertices( points ) );
       });
     }
-  }
+}
 
-  const xmlToEditClass = editName =>
-  {
+const xmlToEditClass = editName =>
+{
     if ( editName === 'CommandEdit' ) {
       // The constructor pattern is wrong
       return undefined
@@ -235,10 +255,10 @@ const makeFloatMatrices = ( matrices ) =>
     }
     editName = legacyNames[ editName ] || editName
     return vzomePkg.core.edits[ editName ] || vzomePkg.core.editor[ editName ]
-  }
+}
 
-  const editFactory = ( editor, toolFactories, toolsModel ) => xmlElement =>
-  {
+const editFactory = ( editor, toolFactories, toolsModel ) => xmlElement =>
+{
     editor.setAdapter( null ) // This should trigger NPEs in any edits that have side-effects in their constructor
 
     let editName = xmlElement.getLocalName()
@@ -286,12 +306,12 @@ const makeFloatMatrices = ( matrices ) =>
     }
     else
       return new vzomePkg.core.editor.CommandEdit( null, editor )
-  }
+}
 
-  const resources = {}
+const resources = {}
 
-  export const loadAndInjectResource = async ( path, url ) =>
-  {
+export const loadAndInjectResource = async ( path, url ) =>
+{
     const response = await fetch( url )
     if ( ! response.ok ) {
       console.log( `No resource for ${path}` )
@@ -304,7 +324,7 @@ const makeFloatMatrices = ( matrices ) =>
       return
     }
     resources[ path ] = text
-  }
+}
 
   // Now we can setup the ResourceLoader; we must do this before initializing the fieldApps,
   //  since they need the colors.properties to create the ExportedVEFShapes.

@@ -297,7 +297,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
      * of calling a BigInt version of convertGoldenNumberPairs().
      */
     @SuppressWarnings({"deprecation"})
-    final AlgebraicNumber createAlgebraicNumberFromTD( BigRational[] trailingDivisorForm )
+    public final AlgebraicNumber createAlgebraicNumberFromTD( BigRational[] trailingDivisorForm )
     {
         int terms = trailingDivisorForm.length - 1;
         if ( terms == 2 && this.getOrder() > 2 && this.getGoldenRatio() != null) {
@@ -311,16 +311,10 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
                 pairs[ 2*i + 1 ] = divisor;
             }
             
-            // All of this is just so we can call convertGoldenNumberPairs with longs instead of BigInts
+            // All of this is just so we can call convertGoldenNumberPairs with longs instead of BigIntegers
             pairs = this .convertGoldenNumberPairs( pairs );
-            
-            // Now switch back.  Since only zero-valued terms were introduced, we don't need to reduce the fractions.
-            terms = pairs.length/2;
-            trailingDivisorForm = new BigRational[ terms + 1 ];
-            trailingDivisorForm[ terms ] = new BigRationalImpl(pairs[ 1 ]); // trailing denominator
-            for ( int i = 0; i < pairs.length/2; i++ ) {
-                trailingDivisorForm[ i ] = new BigRationalImpl(pairs[ 2*i ]);
-            }
+
+            return this .numberFactory .createAlgebraicNumberFromPairs( this, pairs );
         }
 
         return this.numberFactory .createAlgebraicNumberFromTD( this, trailingDivisorForm );
@@ -775,11 +769,10 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
     @Override
     public AlgebraicNumber parseVefNumber( String string, boolean isRational )
     {
-        long[] pairs = new long[ this .getOrder() * 2 ];
-        // The pairs array is pre-initialized with zeros since it's a native type (not Integer)
-        // so we can simply set all of the denominators to 1.
-        for ( int i = 1; i < pairs.length; i+=2 ) {
-            pairs[ i ] = 1;
+        String[] fractions = new String[ this .getOrder() ];
+        // initialize all pairs to "0/1", in case the string provides fewer factors than the field order
+        for ( int i = 0; i < this .getOrder(); i++ ) {
+            fractions[ i ] = "0/1";
         }
         // if the field is declared as rational, then we won't allow the irrational syntax using parenthesis
         // if the field is NOT declared as rational, then we will still allow the rational format as shorthand with no parenthesis
@@ -795,33 +788,40 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
             // With an order 6 field, if only 2 factors are provided, "(3,-2)" must still be parsed into a 6 element array as {-2, 3, 0, 0, 0, 0}
             // Since VEF version 7 no longer requires that all factors be provided, we need to push the factors onto a stack
             // and pop them off to reverse the order as they are inserted into the begining of the factors array.
-            Stack<Integer> numStack = new Stack<>();
-            Stack<Integer> denomStack = new Stack<>();
+            Stack<String> numStack = new Stack<>();
+            Stack<String> denomStack = new Stack<>();
             while( tokens .hasMoreTokens() ) {
                 if( numStack.size() >= this .getOrder() ) {
                     throw new RuntimeException( "VEF format error: \"" + string + "\" has too many factors for " + this.getName() + " field" );
                 }
                 String[] parts = tokens .nextToken() .split( "/" );
-                numStack   .push( Integer .parseInt( parts[ 0 ] ) );
-                denomStack .push( (parts.length > 1)? Integer .parseInt( parts[ 1 ] ) : 1 );
+                numStack   .push( parts[ 0 ] );
+                denomStack .push( (parts.length > 1)? parts[ 1 ] : "1" );
             }
             int i = 0;
             while( ! numStack.empty() ) {
-                pairs[ i++ ] = numStack   .pop();
-                pairs[ i++ ] = denomStack .pop();
+                fractions[ i++ ] = numStack .pop() + "/" + denomStack .pop();
             }
-            if ( i == 4 && getOrder() > 2 && this.getGoldenRatio() != null) {
+            if ( i == 2 && getOrder() > 2 && this.getGoldenRatio() != null) {
+                String[][] fractionParts = new String[][] {
+                    fractions[0] .split( "/" ),
+                    fractions[1] .split( "/" )
+                };
+                long[] pairs = new long[] {
+                    Long.parseLong( fractionParts[0][0] ), Long.parseLong( fractionParts[0][1] ),
+                    Long.parseLong( fractionParts[1][0] ), Long.parseLong( fractionParts[1][1] )
+                };
                 pairs = this .convertGoldenNumberPairs( new long[] { pairs[0], pairs[1], pairs[2], pairs[3] } );
+                return this .numberFactory .createAlgebraicNumberFromPairs( this, pairs );
             }
         }
         else {
             // format >= 7 supports the rational numeric format which expects no irrational factors,
             // so there are no parentheses or commas, but still allows the optional "/" if a denominator is specified.
             String[] parts = string .split( "/" );
-            pairs[ 0 ] = Integer .parseInt( parts[ 0 ] );
-            pairs[ 1 ] = (parts.length > 1)? Integer .parseInt( parts[ 1 ] ) : 1;
+            fractions[ 0 ] = parts[ 0 ] + "/" + ((parts.length > 1)? parts[ 1 ] : "1");
         }
-        return this.numberFactory .createAlgebraicNumberFromPairs( this, pairs );
+        return this .parseNumber( String.join( " ", fractions ) );
     }
 
     @Override

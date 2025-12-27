@@ -158,6 +158,10 @@ namespace com.vzome.core.edits {
         export class ReplaceWithShape$0 implements com.vzome.core.editor.api.OrbitSource {
             public __parent: any;
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getOrientations$(): number[][] {
+                return this.getOrientations(false);
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             getEmbedding(): number[] {
                 const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
                 const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
@@ -179,10 +183,6 @@ namespace com.vzome.core.edits {
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
                 return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getOrientations$(): number[][] {
-                return this.getOrientations(false);
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             public getOrientations(rowMajor?: any): number[][] {

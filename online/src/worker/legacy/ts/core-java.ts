@@ -3532,6 +3532,10 @@ namespace com.vzome.core.render {
                 } else throw new Error('invalid overload');
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getOrientations$(): number[][] {
+                return this.getOrientations(false);
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             getEmbedding(): number[] {
                 const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
                 const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
@@ -3549,10 +3553,6 @@ namespace com.vzome.core.render {
                 embedding[14] = 0.0;
                 embedding[15] = 1.0;
                 return embedding;
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getOrientations$(): number[][] {
-                return this.getOrientations(false);
             }
             symmetry: com.vzome.core.math.symmetry.Symmetry;
 
@@ -16481,6 +16481,10 @@ namespace com.vzome.core.editor {
             } else throw new Error('invalid overload');
         }
         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+        getOrientations$(): number[][] {
+            return this.getOrientations(false);
+        }
+        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
         getEmbedding(): number[] {
             const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
             const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
@@ -16498,10 +16502,6 @@ namespace com.vzome.core.editor {
             embedding[14] = 0.0;
             embedding[15] = 1.0;
             return embedding;
-        }
-        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-        getOrientations$(): number[][] {
-            return this.getOrientations(false);
         }
         static LOGGER: java.util.logging.Logger; public static LOGGER_$LI$(): java.util.logging.Logger { if (SymmetrySystem.LOGGER == null) { SymmetrySystem.LOGGER = java.util.logging.Logger.getLogger("com.vzome.core.editor"); }  return SymmetrySystem.LOGGER; }
 
@@ -18280,7 +18280,26 @@ namespace com.vzome.core.algebra {
             return this.numberFactory.createAlgebraicNumber(this, terms, 1);
         }
 
-        createAlgebraicNumberFromTD(trailingDivisorForm: com.vzome.core.algebra.BigRational[]): com.vzome.core.algebra.AlgebraicNumber {
+        /**
+         * TODO: BigInteger.longValue() may silently lose precision here.
+         * That's why it's deprecated.
+         * I'm going to live with that possibility for now to avoid the overhead
+         * of calling a BigInt version of convertGoldenNumberPairs().
+         * @param {com.vzome.core.algebra.BigRational[]} trailingDivisorForm
+         * @return {*}
+         */
+        public createAlgebraicNumberFromTD(trailingDivisorForm: com.vzome.core.algebra.BigRational[]): com.vzome.core.algebra.AlgebraicNumber {
+            const terms: number = trailingDivisorForm.length - 1;
+            if (terms === 2 && this.getOrder() > 2 && this.getGoldenRatio() != null){
+                let pairs: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(2 * terms);
+                const divisor: number = trailingDivisorForm[terms].getNumerator().longValue();
+                for(let i: number = 0; i < terms; i++) {{
+                    pairs[2 * i + 0] = trailingDivisorForm[i].getNumerator().longValue();
+                    pairs[2 * i + 1] = divisor;
+                };}
+                pairs = this.convertGoldenNumberPairs(pairs);
+                return this.numberFactory.createAlgebraicNumberFromPairs(this, pairs);
+            }
             return this.numberFactory.createAlgebraicNumberFromTD(this, trailingDivisorForm);
         }
 
@@ -18699,36 +18718,37 @@ namespace com.vzome.core.algebra {
          * @return {*}
          */
         public parseVefNumber(string: string, isRational: boolean): com.vzome.core.algebra.AlgebraicNumber {
-            let pairs: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(this.getOrder() * 2);
-            for(let i: number = 1; i < pairs.length; i += 2) {{
-                pairs[i] = 1;
+            const fractions: string[] = (s => { let a=[]; while(s-->0) a.push(null); return a; })(this.getOrder());
+            for(let i: number = 0; i < this.getOrder(); i++) {{
+                fractions[i] = "0/1";
             };}
             if ((!isRational) && /* startsWith */((str, searchString, position = 0) => str.substr(position, searchString.length) === searchString)(string, "(") && /* endsWith */((str, searchString) => { let pos = str.length - searchString.length; let lastIndex = str.indexOf(searchString, pos); return lastIndex !== -1 && lastIndex === pos; })(string, ")")){
                 const tokens: java.util.StringTokenizer = new java.util.StringTokenizer(string.substring(1, string.length - 1), ",");
-                const numStack: java.util.Stack<number> = <any>(new java.util.Stack<any>());
-                const denomStack: java.util.Stack<number> = <any>(new java.util.Stack<any>());
+                const numStack: java.util.Stack<string> = <any>(new java.util.Stack<any>());
+                const denomStack: java.util.Stack<string> = <any>(new java.util.Stack<any>());
                 while((tokens.hasMoreTokens())) {{
                     if (numStack.size() >= this.getOrder()){
                         throw new java.lang.RuntimeException("VEF format error: \"" + string + "\" has too many factors for " + this.getName() + " field");
                     }
                     const parts: string[] = tokens.nextToken().split("/");
-                    numStack.push(javaemul.internal.IntegerHelper.parseInt(parts[0]));
-                    denomStack.push((parts.length > 1) ? javaemul.internal.IntegerHelper.parseInt(parts[1]) : 1);
+                    numStack.push(parts[0]);
+                    denomStack.push((parts.length > 1) ? parts[1] : "1");
                 }};
                 let i: number = 0;
                 while((!numStack.empty())) {{
-                    pairs[i++] = numStack.pop();
-                    pairs[i++] = denomStack.pop();
+                    fractions[i++] = numStack.pop() + "/" + denomStack.pop();
                 }};
-                if (i === 4 && this.getOrder() > 2 && this.getGoldenRatio() != null){
+                if (i === 2 && this.getOrder() > 2 && this.getGoldenRatio() != null){
+                    const fractionParts: string[][] = [fractions[0].split("/"), fractions[1].split("/")];
+                    let pairs: number[] = [javaemul.internal.LongHelper.parseLong(fractionParts[0][0]), javaemul.internal.LongHelper.parseLong(fractionParts[0][1]), javaemul.internal.LongHelper.parseLong(fractionParts[1][0]), javaemul.internal.LongHelper.parseLong(fractionParts[1][1])];
                     pairs = this.convertGoldenNumberPairs([pairs[0], pairs[1], pairs[2], pairs[3]]);
+                    return this.numberFactory.createAlgebraicNumberFromPairs(this, pairs);
                 }
             } else {
                 const parts: string[] = string.split("/");
-                pairs[0] = javaemul.internal.IntegerHelper.parseInt(parts[0]);
-                pairs[1] = (parts.length > 1) ? javaemul.internal.IntegerHelper.parseInt(parts[1]) : 1;
+                fractions[0] = parts[0] + "/" + ((parts.length > 1) ? parts[1] : "1");
             }
-            return this.numberFactory.createAlgebraicNumberFromPairs(this, pairs);
+            return this.parseNumber$java_lang_String(javaemul.internal.StringHelper.join(" ", fractions));
         }
 
         public parseNumber$java_lang_String(nums: string): com.vzome.core.algebra.AlgebraicNumber {
@@ -32472,11 +32492,13 @@ namespace com.vzome.desktop.controller {
         public setModelProperty(property: string, value: any) {
             switch((property)) {
             case "values":
-                const values: java.util.StringTokenizer = new java.util.StringTokenizer(<string>value);
-                const inputs: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(this.field.getOrder());
-                let divisor: number = 1;
-                for(let i: number = 0; values.hasMoreTokens(); i++) {if (i < inputs.length)inputs[i] = javaemul.internal.IntegerHelper.parseInt(values.nextToken()); else divisor = javaemul.internal.IntegerHelper.parseInt(values.nextToken());;}
-                this.value = this.field['createAlgebraicNumber$int_A'](inputs).dividedBy(this.field['createRational$long'](divisor));
+                const tokens: string[] = (<string>value).split(" ");
+                const divisor: string = tokens[tokens.length - 1];
+                let rejoined: string = "";
+                for(let i: number = 0; i < tokens.length - 1; i++) {{
+                    rejoined += tokens[i] + "/" + divisor + " ";
+                };}
+                this.value = this.field.parseNumber(rejoined);
                 return;
             case "named-value":
                 this.setValueByName(/* valueOf */String(value).toString());
@@ -45618,6 +45640,10 @@ namespace com.vzome.core.edits {
                 } else throw new Error('invalid overload');
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getOrientations$(): number[][] {
+                return this.getOrientations(false);
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             getEmbedding(): number[] {
                 const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
                 const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
@@ -45635,10 +45661,6 @@ namespace com.vzome.core.edits {
                 embedding[14] = 0.0;
                 embedding[15] = 1.0;
                 return embedding;
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getOrientations$(): number[][] {
-                return this.getOrientations(false);
             }
             /**
              * 

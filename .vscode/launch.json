@@ -15,8 +15,8 @@
       "name":                             "debug desktop vZome",
       "type": "java",
       "request": "launch",
-      "mainClass": "org.vorthmann.zome.ui.ApplicationUI",
-      "args": "${command:SpecifyProgramArgs}"
+      "mainClass": "org.vorthmann.zome.ui.ApplicationUI"
+      // "args": "${command:SpecifyProgramArgs}"
     },
     {
       "name":                             "classic PWA",

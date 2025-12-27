@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vzome:vZome xmlns:vzome="http://xml.vzome.com/vZome/4.0.0/" edition="online" version="1.0" buildNumber="DEV" field="golden">
+  <EditHistory editNumber="6" lastStickyEdit="-1">
+    <ImportColoredMeshJson scale="1 0">
+      {
+  "field": "golden",
+  "vertices": [
+    [
+      [
+        16094540390572400,
+        30325365006517340,
+        1120050768171825
+      ],
+      [
+        -10462069675531580,
+        -24026247409182140,
+        1120050768171825
+      ],
+      [
+        648136820912310600,
+        10493446989098560,
+        1120050768171825
+      ]
+    ],
+    [
+      [
+        61183431670482060,
+        "10506071971186960",
+        1120050768171825
+      ],
+      [
+        14829359062111480,
+        20393717341024460,
+        1120050768171825
+      ],
+      [
+        20393717341024460,
+        35223076403135940,
+        1120050768171825
+      ]
+    ],
+    [
+      [
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ]
+  ],
+  "balls": [
+    {
+      "vertex": 2,
+      "color": "#f2f2f2"
+    }
+  ],
+  "struts": [],
+  "panels": [
+    {
+      "vertices": [
+        0,
+        1,
+        2
+      ],
+      "color": "#660000"
+    }
+  ]
+}
+
+    </ImportColoredMeshJson>
+    <BeginBlock/>
+    <DeselectAll/>
+    <SelectManifestation>
+      <polygonVertex at="643781615622896/44802030726873 6065073001303468/224010153634365 -2092413935106316/224010153634365 -4805249481836428/224010153634365 8641824278830808/14934010242291 2098689397819712/224010153634365"/>
+      <polygonVertex at="61183431670482064/1120050768171825 300173484891056/32001450519195 2965871812422296/224010153634365 4078743468204892/224010153634365 4078743468204892/224010153634365 2348205093542396/74670051211455"/>
+      <polygonVertex at="0 0 0 0 0 0"/>
+    </SelectManifestation>
+    <EndBlock/>
+    <DeselectAll/>
+  </EditHistory>
+  <SymmetrySystem name="icosahedral" renderingStyle="printable">
+    <Direction name="blue" orbit="[[0,0,1],[0,0,1]]" color="0,142,194"/>
+    <Direction name="yellow" orbit="[[0,0,1],[2,-1,1]]" color="255,179,26"/>
+    <Direction name="red" orbit="[[-1,1,1],[0,0,1]]" color="217,18,24"/>
+    <Direction name="green" orbit="[[2,-1,1],[5,-3,1]]" color="0,153,63"/>
+    <Direction name="orange" orbit="[[-4,3,5],[3,-1,5]]" color="235,82,0"/>
+    <Direction name="purple" orbit="[[2,-1,1],[0,0,1]]" color="125,54,211"/>
+    <Direction name="black" orbit="[[-2,3,11],[-7,5,11]]" color="50,50,50"/>
+    <Direction name="lavender" orbit="[[-3,2,1],[-3,2,1]]" color="175,135,255"/>
+    <Direction name="olive" orbit="[[3,-1,5],[0,0,1]]" color="100,113,0"/>
+    <Direction name="maroon" orbit="[[5,-3,1],[0,0,1]]" color="117,0,50"/>
+    <Direction name="rose" orbit="[[0,0,1],[-4,3,5]]" color="255,51,143"/>
+    <Direction name="navy" orbit="[[-1,1,2],[2,-1,2]]" color="0,0,153"/>
+    <Direction name="turquoise" orbit="[[2,-1,2],[-3,2,2]]" color="0,179,161"/>
+    <Direction name="coral" orbit="[[-3,2,2],[-1,1,2]]" color="255,126,106"/>
+    <Direction name="sulfur" orbit="[[-1,1,3],[0,0,1]]" color="230,245,62"/>
+    <Direction name="sand" orbit="[[-8,5,1],[5,-3,1]]" color="154,117,74"/>
+    <Direction name="apple" orbit="[[2,-1,3],[-1,1,3]]" color="116,195,0"/>
+    <Direction name="cinnamon" orbit="[[5,-3,2],[2,-1,2]]" color="136,37,0"/>
+    <Direction name="spruce" orbit="[[-5,4,11],[-5,4,11]]" color="18,73,48"/>
+    <Direction name="brown" orbit="[[2,-1,3],[5,-3,3]]" color="107,53,26"/>
+    <Direction prototype="1015854677107556782309007918670307936/50180548931291810818108953225 -2790367795861029478205716936911280/223024661916852492524928681 -124290437469315576658361014159976389232/250902744656459054090544766125 5121047671318227698565822204517282784/16726849643763936939369651075 10749765625418209539639015544105328/3097564748845173507290676125 -538141327517193417706152285280897616/250902744656459054090544766125" name="0" orbit="[[-717131758511030520828031380529250504631127521536943032644850308358,484726273566090416108797676754832798803018447640508623389852797673,359603185307058360473750725924438496904032332834790762065761822311],[-476582766414412316192488321212763035847534137168466823892218985205,320723427994176249261242187857423224701652793682261775140175242319,359603185307058360473750725924438496904032332834790762065761822311]]" color="255,255,255"/>
+  </SymmetrySystem>
+  <OtherSymmetries>
+    <SymmetrySystem name="octahedral" renderingStyle="trapezoids">
+      <Direction name="blue" orbit="[[0,0,1],[0,0,1]]" color="0,142,194"/>
+      <Direction name="yellow" orbit="[[1,0,1],[-1,0,1]]" color="255,179,26"/>
+      <Direction name="green" orbit="[[0,0,1],[-1,0,1]]" color="0,153,63"/>
+      <Direction name="lavender" orbit="[[1,2,1],[-1,0,1]]" color="175,135,255"/>
+      <Direction name="olive" orbit="[[1,0,1],[3,-2,1]]" color="100,113,0"/>
+      <Direction name="maroon" orbit="[[-1,2,1],[1,0,1]]" color="117,0,50"/>
+      <Direction name="brown" orbit="[[1,0,1],[-2,0,1]]" color="107,53,26"/>
+      <Direction name="red" orbit="[[-1,1,1],[0,0,1]]" color="217,18,24"/>
+      <Direction name="purple" orbit="[[0,0,1],[2,-1,1]]" color="125,54,211"/>
+      <Direction name="black" orbit="[[0,1,1],[1,-1,1]]" color="50,50,50"/>
+      <Direction name="turquoise" orbit="[[-1,2,1],[1,-2,1]]" color="0,179,161"/>
+    </SymmetrySystem>
+  </OtherSymmetries>
+  <Tools/>
+  <sceneModel ambientLight="51,51,51" background="140,194,231">
+    <directionalLight color="253,253,253" x="1" y="-1" z="-0.3"/>
+    <directionalLight color="181,181,181" x="-1" y="0" z="-0.2"/>
+    <directionalLight color="48,48,48" x="0" y="0" z="-1"/>
+  </sceneModel>
+  <Viewing>
+    <ViewModel distance="1901.963373406622" far="3803.926746813244" near="1.761077197598724" parallel="false" stereoAngle="0.0" width="855.8835180329799">
+      <LookAtPoint x="0" y="0" z="0"/>
+      <UpDirection x="0.6569801403928512" y="0.7389101890587461" z="-0.14962896656249433"/>
+      <LookDirection x="0.6461373257051212" y="-0.44960543521240365" z="0.6167345530761994"/>
+    </ViewModel>
+  </Viewing>
+  <notes/>
+</vzome:vZome>

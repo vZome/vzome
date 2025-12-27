@@ -3386,6 +3386,10 @@ export var com;
                                 throw new Error('invalid overload');
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {
                             const symmetry = this.getSymmetry();
                             const field = symmetry.getField();
@@ -3407,10 +3411,6 @@ export var com;
                             embedding[14] = 0.0;
                             embedding[15] = 1.0;
                             return embedding;
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
                         }
                         /**
                          *
@@ -16246,6 +16246,10 @@ export var com;
                             throw new Error('invalid overload');
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getOrientations$() {
+                        return this.getOrientations(false);
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getEmbedding() {
                         const symmetry = this.getSymmetry();
                         const field = symmetry.getField();
@@ -16267,10 +16271,6 @@ export var com;
                         embedding[14] = 0.0;
                         embedding[15] = 1.0;
                         return embedding;
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getOrientations$() {
-                        return this.getOrientations(false);
                     }
                     static LOGGER_$LI$() { if (SymmetrySystem.LOGGER == null) {
                         SymmetrySystem.LOGGER = java.util.logging.Logger.getLogger("com.vzome.core.editor");
@@ -18269,7 +18269,30 @@ export var com;
                     createAlgebraicNumber$int_A(terms) {
                         return this.numberFactory.createAlgebraicNumber(this, terms, 1);
                     }
+                    /**
+                     * TODO: BigInteger.longValue() may silently lose precision here.
+                     * That's why it's deprecated.
+                     * I'm going to live with that possibility for now to avoid the overhead
+                     * of calling a BigInt version of convertGoldenNumberPairs().
+                     * @param {com.vzome.core.algebra.BigRational[]} trailingDivisorForm
+                     * @return {*}
+                     */
                     createAlgebraicNumberFromTD(trailingDivisorForm) {
+                        const terms = trailingDivisorForm.length - 1;
+                        if (terms === 2 && this.getOrder() > 2 && this.getGoldenRatio() != null) {
+                            let pairs = (s => { let a = []; while (s-- > 0)
+                                a.push(0); return a; })(2 * terms);
+                            const divisor = trailingDivisorForm[terms].getNumerator().longValue();
+                            for (let i = 0; i < terms; i++) {
+                                {
+                                    pairs[2 * i + 0] = trailingDivisorForm[i].getNumerator().longValue();
+                                    pairs[2 * i + 1] = divisor;
+                                }
+                                ;
+                            }
+                            pairs = this.convertGoldenNumberPairs(pairs);
+                            return this.numberFactory.createAlgebraicNumberFromPairs(this, pairs);
+                        }
                         return this.numberFactory.createAlgebraicNumberFromTD(this, trailingDivisorForm);
                     }
                     createAlgebraicNumber$int_A$int(numerators, denominator) {
@@ -18760,11 +18783,11 @@ export var com;
                      * @return {*}
                      */
                     parseVefNumber(string, isRational) {
-                        let pairs = (s => { let a = []; while (s-- > 0)
-                            a.push(0); return a; })(this.getOrder() * 2);
-                        for (let i = 1; i < pairs.length; i += 2) {
+                        const fractions = (s => { let a = []; while (s-- > 0)
+                            a.push(null); return a; })(this.getOrder());
+                        for (let i = 0; i < this.getOrder(); i++) {
                             {
-                                pairs[i] = 1;
+                                fractions[i] = "0/1";
                             }
                             ;
                         }
@@ -18778,29 +18801,30 @@ export var com;
                                         throw new java.lang.RuntimeException("VEF format error: \"" + string + "\" has too many factors for " + this.getName() + " field");
                                     }
                                     const parts = tokens.nextToken().split("/");
-                                    numStack.push(javaemul.internal.IntegerHelper.parseInt(parts[0]));
-                                    denomStack.push((parts.length > 1) ? javaemul.internal.IntegerHelper.parseInt(parts[1]) : 1);
+                                    numStack.push(parts[0]);
+                                    denomStack.push((parts.length > 1) ? parts[1] : "1");
                                 }
                             }
                             ;
                             let i = 0;
                             while ((!numStack.empty())) {
                                 {
-                                    pairs[i++] = numStack.pop();
-                                    pairs[i++] = denomStack.pop();
+                                    fractions[i++] = numStack.pop() + "/" + denomStack.pop();
                                 }
                             }
                             ;
-                            if (i === 4 && this.getOrder() > 2 && this.getGoldenRatio() != null) {
+                            if (i === 2 && this.getOrder() > 2 && this.getGoldenRatio() != null) {
+                                const fractionParts = [fractions[0].split("/"), fractions[1].split("/")];
+                                let pairs = [javaemul.internal.LongHelper.parseLong(fractionParts[0][0]), javaemul.internal.LongHelper.parseLong(fractionParts[0][1]), javaemul.internal.LongHelper.parseLong(fractionParts[1][0]), javaemul.internal.LongHelper.parseLong(fractionParts[1][1])];
                                 pairs = this.convertGoldenNumberPairs([pairs[0], pairs[1], pairs[2], pairs[3]]);
+                                return this.numberFactory.createAlgebraicNumberFromPairs(this, pairs);
                             }
                         }
                         else {
                             const parts = string.split("/");
-                            pairs[0] = javaemul.internal.IntegerHelper.parseInt(parts[0]);
-                            pairs[1] = (parts.length > 1) ? javaemul.internal.IntegerHelper.parseInt(parts[1]) : 1;
+                            fractions[0] = parts[0] + "/" + ((parts.length > 1) ? parts[1] : "1");
                         }
-                        return this.numberFactory.createAlgebraicNumberFromPairs(this, pairs);
+                        return this.parseNumber$java_lang_String(javaemul.internal.StringHelper.join(" ", fractions));
                     }
                     parseNumber$java_lang_String(nums) {
                         const tokens = new java.util.StringTokenizer(nums, " ");
@@ -33108,18 +33132,16 @@ export var com;
                     setModelProperty(property, value) {
                         switch ((property)) {
                             case "values":
-                                const values = new java.util.StringTokenizer(value);
-                                const inputs = (s => { let a = []; while (s-- > 0)
-                                    a.push(0); return a; })(this.field.getOrder());
-                                let divisor = 1;
-                                for (let i = 0; values.hasMoreTokens(); i++) {
-                                    if (i < inputs.length)
-                                        inputs[i] = javaemul.internal.IntegerHelper.parseInt(values.nextToken());
-                                    else
-                                        divisor = javaemul.internal.IntegerHelper.parseInt(values.nextToken());
+                                const tokens = value.split(" ");
+                                const divisor = tokens[tokens.length - 1];
+                                let rejoined = "";
+                                for (let i = 0; i < tokens.length - 1; i++) {
+                                    {
+                                        rejoined += tokens[i] + "/" + divisor + " ";
+                                    }
                                     ;
                                 }
-                                this.value = this.field['createAlgebraicNumber$int_A'](inputs).dividedBy(this.field['createRational$long'](divisor));
+                                this.value = this.field.parseNumber(rejoined);
                                 return;
                             case "named-value":
                                 this.setValueByName(/* valueOf */ String(value).toString());
@@ -47646,6 +47668,10 @@ export var com;
                                 throw new Error('invalid overload');
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {
                             const symmetry = this.getSymmetry();
                             const field = symmetry.getField();
@@ -47667,10 +47693,6 @@ export var com;
                             embedding[14] = 0.0;
                             embedding[15] = 1.0;
                             return embedding;
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
                         }
                         /**
                          *
