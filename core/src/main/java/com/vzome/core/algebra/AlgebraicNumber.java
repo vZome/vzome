@@ -1,8 +1,6 @@
 
 package com.vzome.core.algebra;
 
-import defs.js.BigInt;
-
 /**
  * 
  * Immutable representation of an Algebraic Number
@@ -162,5 +160,5 @@ public interface AlgebraicNumber extends Fields.Element<AlgebraicNumber>, Compar
      */
     public String toString( int format );
     
-    public BigInt[] toTrailingDivisor();
+    public String[] toTrailingDivisor();
 }

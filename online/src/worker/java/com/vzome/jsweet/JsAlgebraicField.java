@@ -139,7 +139,8 @@ public class JsAlgebraicField implements AlgebraicField
         return new AlgebraicVector( x, y, z );
     }
 
-    @Override
+    // NOT an override, specific to this Javascript implementation, used only
+    //  when deserializing from colored/simple mesh JSON (or VEF?)
     public AlgebraicVector createVectorFromTDs( int[][] nums )
     {
         int dims = nums.length;
@@ -266,7 +267,8 @@ public class JsAlgebraicField implements AlgebraicField
         if ( n < 0 ) {
             return zero();
         }
-        int[] factors = this .zero() .toTrailingDivisor(); // makes a copy
+        Function f = (Function) this.delegate .$get( "zeroCopy" );
+        int[] factors = f.$apply();
         factors[ n ] = factors[ factors.length - 1 ]; // copies the 1n denominator
         return new JsAlgebraicNumber( this, factors );
     }
@@ -277,8 +279,8 @@ public class JsAlgebraicField implements AlgebraicField
         return this .createRational( wholeNumber, 1 );
     }
 
-    @Override
-    public AlgebraicNumber createAlgebraicNumberFromTD( int[] trailingDivisorForm )
+    // NOT an override, specific to this Javascript implementation, only used internally
+    private AlgebraicNumber createAlgebraicNumberFromTD( int[] trailingDivisorForm )
     {
         Function f = (Function) this.delegate .$get( "createNumber" );
         int[] simplified = f.$apply( any( trailingDivisorForm ) );
@@ -303,7 +305,7 @@ public class JsAlgebraicField implements AlgebraicField
     /**
      * Generates an AlgebraicNumber with integer terms (having only unit denominators).
      * Use {@code createAlgebraicNumber( int[] numerators, int denominator )} 
-     * or {@code createAlgebraicNumber( BigRational[] factors )} 
+     * or {@code createAlgebraicNumber( int[] factors )} 
      * if denominators other than one are required.
      * @param terms
      * @return
@@ -317,7 +319,8 @@ public class JsAlgebraicField implements AlgebraicField
     @Override
     public AlgebraicNumber createAlgebraicNumber( int[] numerators, int denominator )
     {
-        int[] factors = this .zero() .toTrailingDivisor(); // makes a copy
+        Function f = (Function) this.delegate .$get( "zeroCopy" );
+        int[] factors = f.$apply();
         System .arraycopy( numerators, 0, factors, 0, numerators.length );
         factors[ numerators.length ] = denominator;
         return this .createAlgebraicNumberFromTD( factors );
@@ -343,7 +346,7 @@ public class JsAlgebraicField implements AlgebraicField
     }
 
     /**
-     * Modeled after AbstractAlgebraicField, with a switch from BigRationals to int[]s.
+     * Modeled after AbstractAlgebraicField, with a switch from ints to int[]s.
      */
     @Override
     public AlgebraicNumber parseVefNumber( String string, boolean isRational )

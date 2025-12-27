@@ -243,6 +243,8 @@ public class XmlSaveFormat
             }
             // DJH - TODO: Handle BigIntegers
             // parseAlgebraicObject is currently limited to parsing Integer valued vectors, not Longs, and definitely not BigIntegers
+            // SV - This is probably fine, since this code only runs when loading old files,
+            //   which all predate BigInteger support.
             value = mField .createVector( result3d );
         }
         else if ( valName .equals( "GoldenVector" ) )

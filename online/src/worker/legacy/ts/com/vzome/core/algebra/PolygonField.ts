@@ -459,15 +459,12 @@ namespace com.vzome.core.algebra {
          */
         public getUnitDiagonal(n: number): com.vzome.core.algebra.AlgebraicNumber {
             if (n >= this.getOrder() && n < this.diagonalCount()){
-                const terms: number[] = this.zero().toTrailingDivisor();
+                const numerators: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(this.getOrder());
                 const row: number = n - this.getOrder();
-                for(let i: number = 0; i < this.getOrder(); i++) {{
-                    const term: number = this.normalizerMatrix[row][i];
-                    if (term !== 0){
-                        terms[i] = term;
-                    }
+                for(let i: number = 0; i < numerators.length; i++) {{
+                    numerators[i] = this.normalizerMatrix[row][i];
                 };}
-                return this.createAlgebraicNumberFromTD(terms);
+                return this.numberFactory.createAlgebraicNumber(this, numerators, 1);
             }
             return super.getUnitTerm(n);
         }

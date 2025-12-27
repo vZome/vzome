@@ -164,7 +164,7 @@ namespace com.vzome.core.algebra {
          */
         toString(format: number): string;
 
-        toTrailingDivisor(): number[];
+        toTrailingDivisor(): string[];
     }
 
     export namespace AlgebraicNumber {

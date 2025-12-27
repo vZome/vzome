@@ -20,14 +20,6 @@ namespace com.vzome.core.algebra {
 
         getName(): string;
 
-        /**
-         * Generates an AlgebraicNumber from a "trailing divisor" int array representation.
-         * @param {int[]} trailingDivisorForm numerators trailed by a common denominator for all numerators
-         * @return
-         * @return {*}
-         */
-        createAlgebraicNumberFromTD(trailingDivisorForm: number[]): com.vzome.core.algebra.AlgebraicNumber;
-
         createAlgebraicNumber(ones?: any, irrat?: any, denominator?: any, scalePower?: any): com.vzome.core.algebra.AlgebraicNumber;
 
         /**
@@ -105,17 +97,6 @@ namespace com.vzome.core.algebra {
          * @return {com.vzome.core.algebra.AlgebraicVector} an AlgebraicVector
          */
         createVector(nums: number[][]): com.vzome.core.algebra.AlgebraicVector;
-
-        /**
-         * 
-         * @param {int[][]} nums nums is an array of integer arrays: One array of coordinate terms per dimension.
-         * Each inner array is in "trailing divisor" form, to represent a rational AlgebraicNumber.
-         * If the order of the field is N, each inner array will be of length N+1, with the last
-         * element being the divisor.
-         * @return
-         * @return {com.vzome.core.algebra.AlgebraicVector}
-         */
-        createVectorFromTDs(nums: number[][]): com.vzome.core.algebra.AlgebraicVector;
 
         /**
          * Generates an AlgebraicVector with all AlgebraicNumber terms being integers (having unit denominators).

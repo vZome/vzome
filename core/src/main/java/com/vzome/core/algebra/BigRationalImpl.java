@@ -20,6 +20,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  *   -  numerator and denominator will both be represented by a long whenever possible
  *   -  unless either numerator or denominator equals Long.MIN_VALUE in which case they will both be big.
  *   -  A denominator of 0 will throw an IllegalArgumentException. 
+ * 
+ * NOTE: This class must never be used in Java code that will be transpiled to JavaScript
+ *   with JSweet.  For those cases, the AlgebraicNumberFactory exists to create BigRational.
  */
 public class BigRationalImpl implements Comparable<BigRationalImpl>, BigRational
 {

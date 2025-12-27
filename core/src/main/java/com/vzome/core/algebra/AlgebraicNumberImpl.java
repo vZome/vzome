@@ -14,8 +14,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
-import defs.js.BigInt;
-
 /**
  * 
  * Immutable representation of an Algebraic Number
@@ -68,17 +66,19 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         }
 
         @Override
-        public AlgebraicNumber createAlgebraicNumberFromTD( AlgebraicField field, BigInt[] trailingDivisorForm )
+        public AlgebraicNumber createAlgebraicNumberFromTD( AlgebraicField field, BigRational[] trailingDivisorForm )
         {
             int n = trailingDivisorForm .length;    
-            BigInteger denominator = BigInteger.ONE;
+            // The denominator is optional; if it's missing, assume 1
+            BigRational denominator = BigRationalImpl.ONE;
             if ( n == field .getOrder() + 1 ) {
                 --n;
-                denominator = new BigInteger(trailingDivisorForm[ n ].toString());
+                denominator = trailingDivisorForm[ n ];
             }
+
             BigRational[] brs = new BigRational[ n ];
             for ( int j = 0; j < n; j++ ) {
-                brs[ j ] = new BigRationalImpl( new BigInteger(trailingDivisorForm[ j ].toString()), denominator );
+                brs[ j ] = trailingDivisorForm[ j ] .dividedBy( denominator );
             }
             return new AlgebraicNumberImpl( field, brs );
         }
@@ -110,6 +110,18 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         public int nextPrime( int prime )
         {
             return BigInteger.valueOf( prime ).nextProbablePrime() .intValue();
+        }
+
+        @Override
+        public BigRational parseBigRational(String str)
+        {
+          return new BigRationalImpl(str);
+        }
+
+        @Override
+        public AlgebraicNumber createAlgebraicNumberFromBRs(AlgebraicField field, BigRational[] pairs)
+        {
+          return new AlgebraicNumberImpl( field, pairs );
         }
     };
     
@@ -570,22 +582,24 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
      * * Each element of the serialized array is the numerator of the corresponding term 
      * of this {@code AlgebraicNumberImpl} scaled up by the lcm of all terms.
      * The last (trailing) element of the array is the lcm of all of the terms.
-     * A BigInt array is returned so it's lossless and portable between java and JavaScript
+     * A String array is returned so it's lossless and portable between java and JavaScript
      * without exposing the underlying Java BigInteger or JavaScript BigInt data type.
-     * @return {@code BigInt[]} instead of the old {@code int[]}
+     * All array elements will have unit divisor (be integers).
+     * @return {@code String[]} instead of the old {@code int[]}
      */
     @Override
-    public BigInt[] toTrailingDivisor() {
+    public String[] toTrailingDivisor()
+    {
         int order = this.factors.length;
-        BigInt[] result = new BigInt[order + 1];
-        final BigInteger divisor = this.getDivisor();
-        final BigRational lcm = new BigRationalImpl(divisor);
+        String[] result = new String[order + 1];
+        final BigRational lcm = new BigRationalImpl( this.getDivisor() );
         for (int i = 0; i < order; i++) {
             final BigRationalImpl term = (BigRationalImpl) lcm.times(this.factors[i]);
-            result[i] = new BigInt(term.getNumerator().toString());
+            // TODO: check that the denominator is 1
+            result[i] = term .toString();
         }
         // append the "trailing" divisor
-        result[order] = new BigInt(divisor.toString());
+        result[order] = lcm.toString();
         return result;
     }
 

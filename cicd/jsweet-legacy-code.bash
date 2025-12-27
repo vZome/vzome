@@ -24,7 +24,7 @@ banner 'Transpiling core Java sources with JSweet' #############################
 ./gradlew --continue -p online coreClean core &> core-errors.txt    # ignore the exit code, it always fails
 cat core-errors.txt
 
-grep -q 'transpilation failed with 35 error(s) and 0 warning(s)' core-errors.txt \
+grep -q 'transpilation failed with 27 error(s) and 0 warning(s)' core-errors.txt \
   && banner 'JSweet core transpile found the expected errors' \
   || { banner 'UNEXPECTED CHANGE IN JSWEET CORE ERRORS'; exit 1; }
 

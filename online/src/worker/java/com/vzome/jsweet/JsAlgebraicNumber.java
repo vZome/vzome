@@ -11,7 +11,7 @@ import com.vzome.core.algebra.AlgebraicNumber;
 public class JsAlgebraicNumber implements AlgebraicNumber
 {
     private final JsAlgebraicField field;
-    private final int[] factors;
+    private final int[] factors; // actually BigInt[], but JSweet does not need to know that
 
     public JsAlgebraicNumber( JsAlgebraicField field, int[] factors )
     {
@@ -32,9 +32,9 @@ public class JsAlgebraicNumber implements AlgebraicNumber
     }
 
     @Override
-    public int[] toTrailingDivisor()
+    public String[] toTrailingDivisor()
     {
-        return any(array(factors).slice());
+        return any(array(factors).map( ( bi ) -> bi.toString() ));
     }
 
     /**

@@ -24,8 +24,6 @@ import org.junit.Test;
 
 import com.vzome.fields.sqrtphi.SqrtPhiField;
 
-import defs.js.BigInt;
-
 public class AlgebraicNumberTest
 {
     @Test
@@ -106,14 +104,14 @@ public class AlgebraicNumberTest
     {
         AlgebraicField field = new PentagonField();
         int ones = 7, irrat = 5, denom = 5;
-        BigInt[] td = new BigInt[] { 
-            new BigInt(ones),
-            new BigInt(irrat),
-            new BigInt(denom)
+        BigRational[] td = new BigRational[] { 
+            new BigRationalImpl(ones),
+            new BigRationalImpl(irrat),
+            new BigRationalImpl(denom)
         };
 
         AlgebraicNumber n0 = field.createAlgebraicNumber( ones, irrat, denom, 0 );
-        AlgebraicNumber n1 = field.createAlgebraicNumberFromTD( td );
+        AlgebraicNumber n1 = ((AbstractAlgebraicField) field) .createAlgebraicNumberFromTD( td );
 
         assertEquals( n0, n1 );
 

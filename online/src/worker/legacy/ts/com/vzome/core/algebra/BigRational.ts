@@ -4,7 +4,7 @@ namespace com.vzome.core.algebra {
      * Immutable Abstract Data Type for arbitrarily large rational numbers.
      * @class
      */
-    export interface BigRational extends com.vzome.core.algebra.Fields.Element<BigRational> {
+    export interface BigRational extends com.vzome.core.algebra.Fields.RationalElement<java.math.BigInteger, BigRational> {
         isNegative(): boolean;
     }
 }

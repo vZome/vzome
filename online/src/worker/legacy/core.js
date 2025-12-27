@@ -325,7 +325,6 @@ const makeFloatMatrices = ( matrices ) =>
 
   const fieldApps = {}
   const wrapLegacyField = ( legacyField ) => ({
-    origin: () => legacyField.origin( 3 ).getComponents().map( an => an.toTrailingDivisor() ),
     name: legacyField.getName(),
   })
   const addLegacyField = ( fieldClass, appClass ) =>

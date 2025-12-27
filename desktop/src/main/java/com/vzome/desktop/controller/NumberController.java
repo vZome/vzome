@@ -8,8 +8,6 @@ import java.util.StringTokenizer;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 
-import defs.js.BigInt;
-
 public class NumberController extends DefaultController
 {
     private AlgebraicNumber value;
@@ -38,10 +36,10 @@ public class NumberController extends DefaultController
             return result;
 
         case "values":
-            BigInt[] td = value .toTrailingDivisor();
+            String[] td = value .toTrailingDivisor();
             result = new String[ td .length ];
             for( int i = 0; i < td .length; i++ )
-                result[ i ] = td[ i ] .toString();
+                result[ i ] = td[ i ];
             return result;
 
         case "named-values":

@@ -6,8 +6,6 @@ import com.vzome.core.construction.Point;
 import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.Symmetry;
 
-import defs.js.BigInt;
-
 public interface AlgebraicField
 {
     public interface Registry
@@ -50,13 +48,6 @@ public interface AlgebraicField
      * @return
      */
     AlgebraicNumber createAlgebraicNumber( int[] terms );
-
-    /**
-     * Generates an AlgebraicNumber from a "trailing divisor" BigInt array representation.
-     * @param trailingDivisorForm numerators trailed by a common denominator for all numerators
-     * @return
-     */
-    AlgebraicNumber createAlgebraicNumberFromTD( BigInt[] trailingDivisorForm );
 
     /**
      * Generates an AlgebraicNumber with the specified numerators,
@@ -167,19 +158,7 @@ public interface AlgebraicField
      * @return an AlgebraicVector
      */
     AlgebraicVector createVector( int[][] nums );
-    
-    /**
-     * 
-     * @param nums nums is an array of integer arrays: One array of coordinate terms per dimension.
-     * Each inner array is in "trailing divisor" form, to represent a rational AlgebraicNumber.
-     * If the order of the field is N, each inner array will be of length N+1, with the last
-     * element being the divisor.
-     * @return
-     * 
-     * Note that createVectorFromTDs() is only used by ColoredMeshJson and SimpleMeshJson
-     */
-    AlgebraicVector createVectorFromTDs( BigInt[][] nums ); 
-    
+        
     /**
      * Generates an AlgebraicVector with all AlgebraicNumber terms being integers (having unit denominators).
      * Contrast this with {@code createVector(int[][] nums)} which requires all denominators to be specified.

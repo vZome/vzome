@@ -217,6 +217,7 @@ namespace com.vzome.core.math.symmetry {
                     y = y.dividedBy(x);
                     z = z.dividedBy(x);
                     this.canonicalName = "[" + /* replace */java.util.Arrays.toString(y.toTrailingDivisor()).split(" ").join("") + "," + /* replace */java.util.Arrays.toString(z.toTrailingDivisor()).split(" ").join("") + "]";
+                    Direction.logger_$LI$().finer("Direction.canonicalName: " + this.canonicalName);
                 }
             }
             return this.canonicalName;

@@ -28,9 +28,9 @@ namespace com.vzome.desktop.controller {
                 for(let i: number = 1; i < order; i++) {result[i] = this.field['getIrrational$int'](i);}
                 return result;
             case "values":
-                const td: number[] = this.value.toTrailingDivisor();
+                const td: string[] = this.value.toTrailingDivisor();
                 result = (s => { let a=[]; while(s-->0) a.push(null); return a; })(td.length);
-                for(let i: number = 0; i < td.length; i++) {result[i] = /* toString */(''+(td[i]));}
+                for(let i: number = 0; i < td.length; i++) {result[i] = td[i];}
                 return result;
             case "named-values":
                 return this.getNamedValues();

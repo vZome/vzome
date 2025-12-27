@@ -135,11 +135,6 @@ namespace com.vzome.jsweet {
             return new com.vzome.core.algebra.AlgebraicVector(x, y, z);
         }
 
-        /**
-         * 
-         * @param {int[][]} nums
-         * @return {com.vzome.core.algebra.AlgebraicVector}
-         */
         public createVectorFromTDs(nums: number[][]): com.vzome.core.algebra.AlgebraicVector {
             const dims: number = nums.length;
             const coords: com.vzome.core.algebra.AlgebraicNumber[] = (s => { let a=[]; while(s-->0) a.push(null); return a; })(dims);
@@ -271,7 +266,8 @@ namespace com.vzome.jsweet {
             if (n < 0){
                 return this.zero();
             }
-            const factors: number[] = this.zero().toTrailingDivisor();
+            const f: Function = <any>(this.delegate["zeroCopy"]);
+            const factors: number[] = <any>(f());
             factors[n] = factors[factors.length - 1];
             return new com.vzome.jsweet.JsAlgebraicNumber(this, factors);
         }
@@ -280,12 +276,7 @@ namespace com.vzome.jsweet {
             return this.createRational$long$long(wholeNumber, 1);
         }
 
-        /**
-         * 
-         * @param {int[]} trailingDivisorForm
-         * @return {*}
-         */
-        public createAlgebraicNumberFromTD(trailingDivisorForm: number[]): com.vzome.core.algebra.AlgebraicNumber {
+        /*private*/ createAlgebraicNumberFromTD(trailingDivisorForm: number[]): com.vzome.core.algebra.AlgebraicNumber {
             const f: Function = <any>(this.delegate["createNumber"]);
             const simplified: number[] = <any>(f(<any>((<any>(trailingDivisorForm)))));
             return new com.vzome.jsweet.JsAlgebraicNumber(this, simplified);
@@ -322,7 +313,8 @@ namespace com.vzome.jsweet {
         }
 
         public createAlgebraicNumber$int_A$int(numerators: number[], denominator: number): com.vzome.core.algebra.AlgebraicNumber {
-            const factors: number[] = this.zero().toTrailingDivisor();
+            const f: Function = <any>(this.delegate["zeroCopy"]);
+            const factors: number[] = <any>(f());
             java.lang.System.arraycopy(numerators, 0, factors, 0, numerators.length);
             factors[numerators.length] = denominator;
             return this.createAlgebraicNumberFromTD(factors);
@@ -352,7 +344,7 @@ namespace com.vzome.jsweet {
         }
 
         /**
-         * Modeled after AbstractAlgebraicField, with a switch from BigRationals to int[]s.
+         * Modeled after AbstractAlgebraicField, with a switch from ints to int[]s.
          * @param {string} string
          * @param {boolean} isRational
          * @return {*}

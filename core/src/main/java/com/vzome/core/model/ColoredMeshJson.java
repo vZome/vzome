@@ -18,9 +18,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.vzome.core.algebra.AbstractAlgebraicField;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.BigRational;
+import com.vzome.core.algebra.BigRationalImpl;
 import com.vzome.core.construction.Color;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.FreePoint;
@@ -30,8 +33,6 @@ import com.vzome.core.construction.PolygonFromVertices;
 import com.vzome.core.construction.SegmentJoiningPoints;
 import com.vzome.core.editor.api.Manifestations;
 import com.vzome.core.math.Projection;
-
-import defs.js.BigInt;
 
 public class ColoredMeshJson
 {
@@ -75,7 +76,7 @@ public class ColoredMeshJson
             {
                 ObjectNode panelJson = mapper .createObjectNode();
                 @SuppressWarnings("unchecked")
-                // DJH: TODO: Ensure that AlgebraicVector serializes BigInt properly to Json here
+                // DJH: TODO: Ensure that AlgebraicVector serializes BigRational properly to Json here
                 Stream<AlgebraicVector> vertexStream = StreamSupport.stream( ( (Iterable<AlgebraicVector>) man ).spliterator(), false);
                 JsonNode node = mapper .valueToTree( vertexStream.map( v -> sortedVertexList .indexOf( v ) ). collect( Collectors.toList() ) );
                 panelJson .set( "vertices", node );
@@ -98,7 +99,7 @@ public class ColoredMeshJson
         for ( AlgebraicVector algebraicVector : sortedVertexList ) {
             algebraicVector = algebraicVector .minus( origin );
             // This awkward serialize+deserialize seems to be the only way to use views with streaming JSON
-            // DJH: TODO: Ensure that AlgebraicVector serializes BigInt properly to Json here
+            // DJH: TODO: Ensure that AlgebraicVector serializes BigRational properly to Json here
             generator .writeObject( mapper .readTree( objectWriter .writeValueAsString( algebraicVector ) ) );            
         }
         generator .writeEndArray();
@@ -133,26 +134,13 @@ public class ColoredMeshJson
             JsonNode verticesNode = node .get( "vertices" );
             for ( JsonNode vectorNode : verticesNode ) {
                 int dimension = vectorNode .size();
-                int[][] nums = new int[dimension][];
+                BigRational[][] nums = new BigRational[dimension][];
                 int i = 0;
                 for ( JsonNode numberNode : vectorNode ) {
-                    nums[ i++ ] = mapper .treeToValue( numberNode, new int[]{}.getClass() ); // JSweet compiler confused by int[].class
+                    nums[ i++ ] = mapper .treeToValue( numberNode, new BigRationalImpl[]{}.getClass() ); // JSweet compiler confused by int[].class
                 }
                 // This same code is in SimpleMeshJson and ColoredMeshJson
-                // TODO: This HACK converts the old json mapper int[][] to BigInt[][]
-                // so we can call createVectorFromTDs() with BigInt arrays to avoid data loss
-                // eventually we hope to be able to map from json straight to BigInt
-                // and avoid this secondary loop.
-                // Corresponding to that, we need to
-                // ensure that AlgebraicVector serializes BigInt properly to Json in generate() above.
-                BigInt[][] bigs = new BigInt[dimension][];
-                for (int j = 0; j < nums.length; j++) {
-                    bigs[j] = new BigInt[nums[j].length];
-                    for (int k = 0; k < bigs[j].length; k++) {
-                        bigs[j][k] = new BigInt(nums[j][k]);
-                    }
-                }
-                AlgebraicVector vertex = field .createVectorFromTDs( bigs );
+                AlgebraicVector vertex = ((AbstractAlgebraicField) field) .createVectorFromTDs( nums );
                 if ( vertex .dimension() > 3 )
                     vertex = projection .projectImage( vertex, false );
                 if ( offset != null )
