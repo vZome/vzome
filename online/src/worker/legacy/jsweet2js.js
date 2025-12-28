@@ -29,6 +29,20 @@ class JavaAlgebraicNumberFactory
       return new JavaAlgebraicNumber( legacyField, factors )
     }
 
+  parseBigRational( str )
+  {
+    const parts = str .split( '/' )
+    if ( parts .length === 1 ) {
+      return new JavaBigRational( BigInt( parts[ 0 ] ), 1n )
+    }
+    else if ( parts .length === 2 ) {
+      return new JavaBigRational( BigInt( parts[ 0 ] ), BigInt( parts[ 1 ] ) )
+    }
+    else {
+      throw new Error( "Bad rational string: " + str )
+    }
+  }
+
   createAlgebraicNumber( legacyField, numerators, divisor )
     {
       const bigRats = []
@@ -57,6 +71,11 @@ class JavaAlgebraicNumberFactory
       }
       return new JavaAlgebraicNumber( legacyField, bigRats )
     }
+  
+  createAlgebraicNumberFromBRs( legacyField, bigRationals )
+  {
+    return new JavaAlgebraicNumber( legacyField, bigRationals )
+  }
   
   isPrime( prime )
     {
@@ -172,8 +191,8 @@ class JavaAlgebraicNumber
 
   toTrailingDivisor()
   {
-    const pairs = this.bigRationals.reduce( ( a, current ) => a.concat( [ current.getNumerator(), current.getDenominator() ] ), [] )
-    return createNumberFromPairs( pairs )
+    const pairs = this.bigRationals.reduce( ( a, current ) => a.concat( [ current.getNumerator(), current.getDenominator() ] ), [] );
+    return createNumberFromPairs( pairs ) .map( br => br.toString() );
   }
 
   negate()

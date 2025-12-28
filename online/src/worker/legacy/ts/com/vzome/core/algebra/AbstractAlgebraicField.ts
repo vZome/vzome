@@ -269,27 +269,24 @@ namespace com.vzome.core.algebra {
         }
 
         /**
-         * Generates an AlgebraicNumber from a "trailing divisor" int array representation.
-         * @param {int[]} trailingDivisorForm numerators trailed by a common denominator for all numerators
-         * @return
+         * TODO: BigInteger.longValue() may silently lose precision here.
+         * That's why it's deprecated.
+         * I'm going to live with that possibility for now to avoid the overhead
+         * of calling a BigInt version of convertGoldenNumberPairs().
+         * @param {com.vzome.core.algebra.BigRational[]} trailingDivisorForm
          * @return {*}
          */
-        public createAlgebraicNumberFromTD(trailingDivisorForm: number[]): com.vzome.core.algebra.AlgebraicNumber {
-            let terms: number = trailingDivisorForm.length - 1;
-            if (terms === 2 && this.getOrder() > 2){
+        public createAlgebraicNumberFromTD(trailingDivisorForm: com.vzome.core.algebra.BigRational[]): com.vzome.core.algebra.AlgebraicNumber {
+            const terms: number = trailingDivisorForm.length - 1;
+            if (terms === 2 && this.getOrder() > 2 && this.getGoldenRatio() != null){
                 let pairs: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(2 * terms);
-                const divisor: number = trailingDivisorForm[terms];
+                const divisor: number = trailingDivisorForm[terms].getNumerator().longValue();
                 for(let i: number = 0; i < terms; i++) {{
-                    pairs[2 * i + 0] = trailingDivisorForm[i];
+                    pairs[2 * i + 0] = trailingDivisorForm[i].getNumerator().longValue();
                     pairs[2 * i + 1] = divisor;
                 };}
                 pairs = this.convertGoldenNumberPairs(pairs);
-                terms = (pairs.length / 2|0);
-                trailingDivisorForm = (s => { let a=[]; while(s-->0) a.push(0); return a; })(terms + 1);
-                trailingDivisorForm[terms] = (<number>pairs[1]|0);
-                for(let i: number = 0; i < (pairs.length / 2|0); i++) {{
-                    trailingDivisorForm[i] = (<number>pairs[2 * i]|0);
-                };}
+                return this.numberFactory.createAlgebraicNumberFromPairs(this, pairs);
             }
             return this.numberFactory.createAlgebraicNumberFromTD(this, trailingDivisorForm);
         }
@@ -299,14 +296,13 @@ namespace com.vzome.core.algebra {
         }
 
         public createAlgebraicNumber$int$int$int$int(ones: number, irrat: number, denominator: number, scalePower: number): com.vzome.core.algebra.AlgebraicNumber {
-            const factors: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(this.order + 1);
+            const factors: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(this.order);
             factors[0] = ones;
             factors[1] = irrat;
-            for(let i: number = 2; i < this.order; i++) {{
+            for(let i: number = 2; i < factors.length; i++) {{
                 factors[i] = 0;
             };}
-            factors[this.order] = denominator;
-            const result: com.vzome.core.algebra.AlgebraicNumber = this.numberFactory.createAlgebraicNumberFromTD(this, factors);
+            const result: com.vzome.core.algebra.AlgebraicNumber = this.numberFactory.createAlgebraicNumber(this, factors, denominator);
             if (scalePower !== 0){
                 const multiplier: com.vzome.core.algebra.AlgebraicNumber = this.createPower$int(scalePower);
                 return result['times$com_vzome_core_algebra_AlgebraicNumber'](multiplier);
@@ -438,9 +434,12 @@ namespace com.vzome.core.algebra {
             if (n < 0){
                 return this.zero();
             }
-            const factors: number[] = this.zero().toTrailingDivisor();
-            factors[n] = factors[factors.length - 1];
-            return this.numberFactory.createAlgebraicNumberFromTD(this, factors);
+            const numerators: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(this.getOrder());
+            for(let i: number = 0; i < numerators.length; i++) {{
+                numerators[i] = 0;
+            };}
+            numerators[n] = 1;
+            return this.numberFactory.createAlgebraicNumber(this, numerators, 1);
         }
 
         /**
@@ -573,7 +572,7 @@ namespace com.vzome.core.algebra {
                 for(let i: number = 0; i < pairs.length; i++) {{
                     pairs[i] = nums[c][i];
                 };}
-                if (pairs.length === 4 && this.getOrder() > 2){
+                if (pairs.length === 4 && this.getOrder() > 2 && this.getGoldenRatio() != null){
                     pairs = this.convertGoldenNumberPairs(pairs);
                 }
                 coords[c] = this.numberFactory.createAlgebraicNumberFromPairs(this, pairs);
@@ -581,12 +580,7 @@ namespace com.vzome.core.algebra {
             return new com.vzome.core.algebra.AlgebraicVector(coords);
         }
 
-        /**
-         * 
-         * @param {int[][]} nums
-         * @return {com.vzome.core.algebra.AlgebraicVector}
-         */
-        public createVectorFromTDs(nums: number[][]): com.vzome.core.algebra.AlgebraicVector {
+        public createVectorFromTDs(nums: com.vzome.core.algebra.BigRational[][]): com.vzome.core.algebra.AlgebraicVector {
             const dims: number = nums.length;
             const coords: com.vzome.core.algebra.AlgebraicNumber[] = (s => { let a=[]; while(s-->0) a.push(null); return a; })(dims);
             for(let c: number = 0; c < coords.length; c++) {{
@@ -712,36 +706,37 @@ namespace com.vzome.core.algebra {
          * @return {*}
          */
         public parseVefNumber(string: string, isRational: boolean): com.vzome.core.algebra.AlgebraicNumber {
-            let pairs: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(this.getOrder() * 2);
-            for(let i: number = 1; i < pairs.length; i += 2) {{
-                pairs[i] = 1;
+            const fractions: string[] = (s => { let a=[]; while(s-->0) a.push(null); return a; })(this.getOrder());
+            for(let i: number = 0; i < this.getOrder(); i++) {{
+                fractions[i] = "0/1";
             };}
             if ((!isRational) && /* startsWith */((str, searchString, position = 0) => str.substr(position, searchString.length) === searchString)(string, "(") && /* endsWith */((str, searchString) => { let pos = str.length - searchString.length; let lastIndex = str.indexOf(searchString, pos); return lastIndex !== -1 && lastIndex === pos; })(string, ")")){
                 const tokens: java.util.StringTokenizer = new java.util.StringTokenizer(string.substring(1, string.length - 1), ",");
-                const numStack: java.util.Stack<number> = <any>(new java.util.Stack<any>());
-                const denomStack: java.util.Stack<number> = <any>(new java.util.Stack<any>());
+                const numStack: java.util.Stack<string> = <any>(new java.util.Stack<any>());
+                const denomStack: java.util.Stack<string> = <any>(new java.util.Stack<any>());
                 while((tokens.hasMoreTokens())) {{
                     if (numStack.size() >= this.getOrder()){
                         throw new java.lang.RuntimeException("VEF format error: \"" + string + "\" has too many factors for " + this.getName() + " field");
                     }
                     const parts: string[] = tokens.nextToken().split("/");
-                    numStack.push(javaemul.internal.IntegerHelper.parseInt(parts[0]));
-                    denomStack.push((parts.length > 1) ? javaemul.internal.IntegerHelper.parseInt(parts[1]) : 1);
+                    numStack.push(parts[0]);
+                    denomStack.push((parts.length > 1) ? parts[1] : "1");
                 }};
                 let i: number = 0;
                 while((!numStack.empty())) {{
-                    pairs[i++] = numStack.pop();
-                    pairs[i++] = denomStack.pop();
+                    fractions[i++] = numStack.pop() + "/" + denomStack.pop();
                 }};
-                if (i === 4 && this.getOrder() > 2){
+                if (i === 2 && this.getOrder() > 2 && this.getGoldenRatio() != null){
+                    const fractionParts: string[][] = [fractions[0].split("/"), fractions[1].split("/")];
+                    let pairs: number[] = [javaemul.internal.LongHelper.parseLong(fractionParts[0][0]), javaemul.internal.LongHelper.parseLong(fractionParts[0][1]), javaemul.internal.LongHelper.parseLong(fractionParts[1][0]), javaemul.internal.LongHelper.parseLong(fractionParts[1][1])];
                     pairs = this.convertGoldenNumberPairs([pairs[0], pairs[1], pairs[2], pairs[3]]);
+                    return this.numberFactory.createAlgebraicNumberFromPairs(this, pairs);
                 }
             } else {
                 const parts: string[] = string.split("/");
-                pairs[0] = javaemul.internal.IntegerHelper.parseInt(parts[0]);
-                pairs[1] = (parts.length > 1) ? javaemul.internal.IntegerHelper.parseInt(parts[1]) : 1;
+                fractions[0] = parts[0] + "/" + ((parts.length > 1) ? parts[1] : "1");
             }
-            return this.numberFactory.createAlgebraicNumberFromPairs(this, pairs);
+            return this.parseNumber$java_lang_String(javaemul.internal.StringHelper.join(" ", fractions));
         }
 
         public parseNumber$java_lang_String(nums: string): com.vzome.core.algebra.AlgebraicNumber {
@@ -764,14 +759,12 @@ namespace com.vzome.core.algebra {
 
         /*private*/ parseNumber$java_util_StringTokenizer(tokens: java.util.StringTokenizer): com.vzome.core.algebra.AlgebraicNumber {
             const order: number = this.getOrder();
-            const pairs: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(order * 2);
+            const bigs: com.vzome.core.algebra.BigRational[] = (s => { let a=[]; while(s-->0) a.push(null); return a; })(order);
             for(let i: number = 0; i < order; i++) {{
                 const digit: string = tokens.nextToken();
-                const parts: string[] = digit.split("/");
-                pairs[i * 2] = javaemul.internal.LongHelper.parseLong(parts[0]);
-                if (parts.length > 1)pairs[i * 2 + 1] = javaemul.internal.LongHelper.parseLong(parts[1]); else pairs[i * 2 + 1] = 1;
+                bigs[i] = this.numberFactory.parseBigRational(digit);
             };}
-            return this.numberFactory.createAlgebraicNumberFromPairs(this, pairs);
+            return this.numberFactory.createAlgebraicNumberFromBRs(this, bigs);
         }
 
         /**

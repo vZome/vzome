@@ -217,6 +217,7 @@ public class XmlSaveFormat
                 String token = tokens .nextToken();
                 if ( token == null )
                     throw new IllegalStateException( "RationalVector nums too short for field " + mField .getName() );
+                // DJH - TODO: Handle BigIntegers
                 result[ i * 2 ] = Integer .parseInt( token );
             }
             if ( denoms != null && ! denoms .isEmpty() )
@@ -227,6 +228,7 @@ public class XmlSaveFormat
                     String token = tokens .nextToken();
                     if ( token == null )
                         throw new IllegalStateException( "RationalVector denoms too short for field " + mField .getName() );
+                    // DJH - TODO: Handle BigIntegers
                     result[ i * 2 + 1 ] = Integer .parseInt( token );
                 }
             }
@@ -239,7 +241,10 @@ public class XmlSaveFormat
                 result3d[1][i] = result[i+oneThirdLen];
                 result3d[2][i] = result[i+twoThirdLen];
             }
+            // DJH - TODO: Handle BigIntegers
             // parseAlgebraicObject is currently limited to parsing Integer valued vectors, not Longs, and definitely not BigIntegers
+            // SV - This is probably fine, since this code only runs when loading old files,
+            //   which all predate BigInteger support.
             value = mField .createVector( result3d );
         }
         else if ( valName .equals( "GoldenVector" ) )

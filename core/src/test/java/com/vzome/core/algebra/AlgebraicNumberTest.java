@@ -104,15 +104,20 @@ public class AlgebraicNumberTest
     {
         AlgebraicField field = new PentagonField();
         int ones = 7, irrat = 5, denom = 5;
+        BigRational[] td = new BigRational[] { 
+            new BigRationalImpl(ones),
+            new BigRationalImpl(irrat),
+            new BigRationalImpl(denom)
+        };
 
         AlgebraicNumber n0 = field.createAlgebraicNumber( ones, irrat, denom, 0 );
-        AlgebraicNumber n1 = field.createAlgebraicNumberFromTD( new int[] { ones, irrat, denom } );
+        AlgebraicNumber n1 = ((AbstractAlgebraicField) field) .createAlgebraicNumberFromTD( td );
 
         assertEquals( n0, n1 );
 
         assertEquals( n0 .toString(), n1 .toString( DEFAULT_FORMAT ) );
         assertEquals("(1,7/5)", n1.toString(VEF_FORMAT)); // irrational is listed first in VEF format
-        assertArrayEquals( new int[] { ones, irrat, denom }, n0 .toTrailingDivisor() );
+        assertArrayEquals( td, n0 .toTrailingDivisor() );
     }
     
     @Test

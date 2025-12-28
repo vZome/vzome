@@ -30,10 +30,10 @@ namespace com.vzome.jsweet {
 
         /**
          * 
-         * @return {int[]}
+         * @return {java.lang.String[]}
          */
-        public toTrailingDivisor(): number[] {
-            return <any>((<any>(this.factors).slice()));
+        public toTrailingDivisor(): string[] {
+            return <any>((<any>(this.factors).map((bi) => bi.toString())));
         }
 
         /**

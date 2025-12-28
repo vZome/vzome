@@ -3,8 +3,6 @@ package com.vzome.desktop.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
-
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 
@@ -36,10 +34,10 @@ public class NumberController extends DefaultController
             return result;
 
         case "values":
-            int[] td = value .toTrailingDivisor();
+            String[] td = value .toTrailingDivisor();
             result = new String[ td .length ];
             for( int i = 0; i < td .length; i++ )
-                result[ i ] = Integer .toString( td[ i ] );
+                result[ i ] = td[ i ];
             return result;
 
         case "named-values":
@@ -108,15 +106,15 @@ public class NumberController extends DefaultController
     {
         switch ( property ) {
         case "values":
-            StringTokenizer values = new StringTokenizer( (String) value );
-            int[] inputs = new int[ field .getOrder() ]; // divisor will be the last int
-            int divisor = 1;
-            for ( int i = 0; values .hasMoreTokens(); i++ )
-                if ( i < inputs.length )
-                    inputs[ i ] = Integer .parseInt( values .nextToken() );
-                else
-                    divisor = Integer .parseInt( values .nextToken() );
-            this .value = field .createAlgebraicNumber( inputs ) .dividedBy( field .createRational( divisor ) );
+            // Since the value is a space-delimited string, we can treat it as a vector with one element
+            String[] tokens = ((String) value).split( " " );
+            // Take the last token and append it to all others
+            String divisor = tokens[tokens.length - 1];
+            String rejoined = "";
+            for (int i = 0; i < tokens.length - 1; i++) {
+                rejoined += tokens[i] + "/" + divisor + " ";
+            }
+            this.value = field .parseNumber( rejoined );
             return;
 
         case "named-value":

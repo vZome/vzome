@@ -28,9 +28,9 @@ namespace com.vzome.desktop.controller {
                 for(let i: number = 1; i < order; i++) {result[i] = this.field['getIrrational$int'](i);}
                 return result;
             case "values":
-                const td: number[] = this.value.toTrailingDivisor();
+                const td: string[] = this.value.toTrailingDivisor();
                 result = (s => { let a=[]; while(s-->0) a.push(null); return a; })(td.length);
-                for(let i: number = 0; i < td.length; i++) {result[i] = /* toString */(''+(td[i]));}
+                for(let i: number = 0; i < td.length; i++) {result[i] = td[i];}
                 return result;
             case "named-values":
                 return this.getNamedValues();
@@ -75,11 +75,13 @@ namespace com.vzome.desktop.controller {
         public setModelProperty(property: string, value: any) {
             switch((property)) {
             case "values":
-                const values: java.util.StringTokenizer = new java.util.StringTokenizer(<string>value);
-                const inputs: number[] = (s => { let a=[]; while(s-->0) a.push(0); return a; })(this.field.getOrder());
-                let divisor: number = 1;
-                for(let i: number = 0; values.hasMoreTokens(); i++) {if (i < inputs.length)inputs[i] = javaemul.internal.IntegerHelper.parseInt(values.nextToken()); else divisor = javaemul.internal.IntegerHelper.parseInt(values.nextToken());;}
-                this.value = this.field['createAlgebraicNumber$int_A'](inputs).dividedBy(this.field['createRational$long'](divisor));
+                const tokens: string[] = (<string>value).split(" ");
+                const divisor: string = tokens[tokens.length - 1];
+                let rejoined: string = "";
+                for(let i: number = 0; i < tokens.length - 1; i++) {{
+                    rejoined += tokens[i] + "/" + divisor + " ";
+                };}
+                this.value = this.field.parseNumber(rejoined);
                 return;
             case "named-value":
                 this.setValueByName(/* valueOf */String(value).toString());

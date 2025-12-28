@@ -4,11 +4,14 @@ package com.vzome.core.algebra;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 /**
@@ -19,6 +22,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 @JsonSerialize( using = AlgebraicNumberImpl.Serializer.class )
 public class AlgebraicNumberImpl implements AlgebraicNumber
 {
+    private static final Logger LOGGER = Logger .getLogger( "com.vzome.core.algebra" );
     private final AbstractAlgebraicField field;
     private final BigRational[] factors;
 
@@ -28,7 +32,7 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
     private Double doubleValue;	// initialized on first use
     private Integer signum;     // initialized on first use
     private final String[] toString = new String[AlgebraicField .MATH_FORMAT + 1]; // cache various String representations
-
+    
     private Integer hashCode;	// initialized on first use
 
     public static AlgebraicNumberFactory FACTORY = new AlgebraicNumberFactory()
@@ -62,17 +66,19 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         }
 
         @Override
-        public AlgebraicNumber createAlgebraicNumberFromTD( AlgebraicField field, int[] trailingDivisorForm )
+        public AlgebraicNumber createAlgebraicNumberFromTD( AlgebraicField field, BigRational[] trailingDivisorForm )
         {
-            int n = trailingDivisorForm .length;
-            int denominator = 1;
+            int n = trailingDivisorForm .length;    
+            // The denominator is optional; if it's missing, assume 1
+            BigRational denominator = BigRationalImpl.ONE;
             if ( n == field .getOrder() + 1 ) {
                 --n;
                 denominator = trailingDivisorForm[ n ];
             }
+
             BigRational[] brs = new BigRational[ n ];
             for ( int j = 0; j < n; j++ ) {
-                brs[ j ] = new BigRationalImpl( trailingDivisorForm[ j ], denominator );
+                brs[ j ] = trailingDivisorForm[ j ] .dividedBy( denominator );
             }
             return new AlgebraicNumberImpl( field, brs );
         }
@@ -104,6 +110,18 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         public int nextPrime( int prime )
         {
             return BigInteger.valueOf( prime ).nextProbablePrime() .intValue();
+        }
+
+        @Override
+        public BigRational parseBigRational(String str)
+        {
+          return new BigRationalImpl(str);
+        }
+
+        @Override
+        public AlgebraicNumber createAlgebraicNumberFromBRs(AlgebraicField field, BigRational[] pairs)
+        {
+          return new AlgebraicNumberImpl( field, pairs );
         }
     };
     
@@ -539,16 +557,49 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         return this .toString( AlgebraicField .DEFAULT_FORMAT );
     }
     
-    @Override
-    public int[] toTrailingDivisor()
-    {
-        BigInteger divisor = this .getDivisor();
-        int order = this .factors .length;
-        int[] result = new int[ order + 1 ];
-        result[ order ] = divisor .intValue();
-        for ( int i = 0; i < order; i++ ) {
-            result[ i ] = ((BigRationalImpl) this .factors[ i ] .times( new BigRationalImpl( divisor, BigInteger.ONE ) )) .getNumerator() .intValue();
+    /**
+     * Logs (but allows) any loss of data resulting from the narrowing conversion of a BigInteger to an int
+     * @param bInt
+     * @param index
+     * @return {@code bInt.intValue()}
+     */
+    protected int checkedIntValue(BigInteger bInt, int index) {
+        try {
+            return bInt.intValueExact();
+        } catch(ArithmeticException ex) {
+            int lossyValue = bInt.intValue();
+            String msg = this.toString() + "\n\tData loss at term[" + index + "] converting " + bInt + " to " + lossyValue;
+            if(LOGGER.isLoggable(Level.SEVERE)) {
+                LOGGER.severe(msg);
+            } else {
+                System.err.println(msg);
+            }
+            return lossyValue;
         }
+    }
+    
+    /**
+     * * Each element of the serialized array is the numerator of the corresponding term 
+     * of this {@code AlgebraicNumberImpl} scaled up by the lcm of all terms.
+     * The last (trailing) element of the array is the lcm of all of the terms.
+     * A String array is returned so it's lossless and portable between java and JavaScript
+     * without exposing the underlying Java BigInteger or JavaScript BigInt data type.
+     * All array elements will have unit divisor (be integers).
+     * @return {@code String[]} instead of the old {@code int[]}
+     */
+    @Override
+    public String[] toTrailingDivisor()
+    {
+        int order = this.factors.length;
+        String[] result = new String[order + 1];
+        final BigRational lcm = new BigRationalImpl( this.getDivisor() );
+        for (int i = 0; i < order; i++) {
+            final BigRationalImpl term = (BigRationalImpl) lcm.times(this.factors[i]);
+            // TODO: check that the denominator is 1
+            result[i] = term .toString();
+        }
+        // append the "trailing" divisor
+        result[order] = lcm.toString();
         return result;
     }
 
@@ -580,19 +631,24 @@ public class AlgebraicNumberImpl implements AlgebraicNumber
         public void serialize( AlgebraicNumberImpl value, JsonGenerator jgen, SerializerProvider provider ) 
             throws IOException, JsonProcessingException
         {
-            @SuppressWarnings("rawtypes")
-            Class view = provider .getActiveView();
-            if ( ( view != null ) && Views.Real.class .isAssignableFrom( view ) )
-            {
-                jgen .writeNumber( value .evaluate() );
-            }
-            else if ( ( view != null ) && Views.TrailingDivisor.class .isAssignableFrom( view ) )
-            {
-                jgen .writeObject( value .toTrailingDivisor() );
-            }
-            else
-            {
-                jgen .writeObject( value .factors );
+            try {
+                @SuppressWarnings("rawtypes")
+                Class view = provider .getActiveView();
+                if ( ( view != null ) && Views.Real.class .isAssignableFrom( view ) )
+                {
+                    jgen .writeNumber( value .evaluate() );
+                }
+                else if ( ( view != null ) && Views.TrailingDivisor.class .isAssignableFrom( view ) )
+                {
+                    jgen .writeObject( value .toTrailingDivisor() );
+                }
+                else
+                {
+                    jgen .writeObject( value .factors );
+                }
+            } catch(InvalidDefinitionException ex) {
+                LOGGER.severe("Exception during json serialization of AlgebraicNumber " + value.toString());
+                ex.printStackTrace();
             }
         }
     }

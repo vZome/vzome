@@ -691,397 +691,6 @@ export var com;
     (function (vzome) {
         var jsweet;
         (function (jsweet) {
-            class JsSelection {
-                constructor(field, adapter) {
-                    if (this.adapter === undefined) {
-                        this.adapter = null;
-                    }
-                    if (this.field === undefined) {
-                        this.field = null;
-                    }
-                    this.field = field;
-                    this.adapter = adapter;
-                }
-                setAdapter(adapter) {
-                    this.adapter = adapter;
-                }
-                /**
-                 *
-                 * @return {*}
-                 */
-                iterator() {
-                    if (this.adapter == null)
-                        return java.util.Collections.emptyIterator();
-                    const f = (this.adapter["selectedIterator"]);
-                    const jSiterator = f.apply(this.adapter);
-                    return new JsSelection.JsSelection$0(this, jSiterator);
-                }
-                /**
-                 *
-                 */
-                clear() {
-                    (this.adapter["clearSelection"]).apply(this.adapter);
-                }
-                /**
-                 *
-                 * @param {*} man
-                 * @return {boolean}
-                 */
-                manifestationSelected(man) {
-                    const vectors = man.getVectors();
-                    return (this.adapter["manifestationSelected"]).apply(this.adapter, [vectors]);
-                }
-                /**
-                 *
-                 * @param {*} man
-                 */
-                select(man) {
-                    const vectors = man.getVectors();
-                    (this.adapter["select"]).apply(this.adapter, [vectors]);
-                }
-                /**
-                 *
-                 * @param {*} man
-                 */
-                unselect(man) {
-                    const vectors = man.getVectors();
-                    (this.adapter["unselect"]).apply(this.adapter, [vectors]);
-                }
-                /**
-                 *
-                 * @return {number}
-                 */
-                size() {
-                    return ((this.adapter["selectionSize"]).apply(this.adapter) | 0);
-                }
-                /**
-                 *
-                 */
-                gatherGroup() {
-                    (this.adapter["createGroup"]).apply(this.adapter);
-                }
-                /**
-                 *
-                 */
-                scatterGroup() {
-                    (this.adapter["disbandGroup"]).apply(this.adapter);
-                }
-                /**
-                 *
-                 */
-                gatherGroup211() {
-                    (this.adapter["createLegacyGroup"]).apply(this.adapter);
-                }
-                /**
-                 *
-                 */
-                scatterGroup211() {
-                    (this.adapter["disbandLegacyGroup"]).apply(this.adapter);
-                }
-                /**
-                 *
-                 * @param {*} man
-                 */
-                selectWithGrouping(man) {
-                    if (man == null)
-                        return;
-                    const vectors = man.getVectors();
-                    (this.adapter["selectWithGrouping"]).apply(this.adapter, [vectors]);
-                }
-                /**
-                 *
-                 * @param {*} man
-                 */
-                unselectWithGrouping(man) {
-                    if (man == null)
-                        return;
-                    const vectors = man.getVectors();
-                    (this.adapter["unselectWithGrouping"]).apply(this.adapter, [vectors]);
-                }
-                /**
-                 *
-                 * @return {boolean}
-                 */
-                isSelectionAGroup() {
-                    return (this.adapter["selectionIsGroup"]).apply(this.adapter);
-                }
-                /**
-                 *
-                 * @param {java.lang.Class} class1
-                 * @return {*}
-                 */
-                getSingleSelection(class1) {
-                    throw new java.lang.RuntimeException("unimplemented getSingleSelection");
-                }
-                /**
-                 *
-                 * @param {*} bookmarkedSelection
-                 */
-                copy(bookmarkedSelection) {
-                    throw new java.lang.RuntimeException("unimplemented");
-                }
-            }
-            jsweet.JsSelection = JsSelection;
-            JsSelection["__class"] = "com.vzome.jsweet.JsSelection";
-            JsSelection["__interfaces"] = ["com.vzome.core.editor.api.Selection", "java.lang.Iterable"];
-            (function (JsSelection) {
-                class JsSelection$0 {
-                    constructor(__parent, jSiterator) {
-                        this.jSiterator = jSiterator;
-                        this.__parent = __parent;
-                        this.peek = this.jSiterator.next();
-                    }
-                    /**
-                     *
-                     * @return {boolean}
-                     */
-                    hasNext() {
-                        return !this.peek.done;
-                    }
-                    /**
-                     *
-                     * @return {*}
-                     */
-                    next() {
-                        const result = com.vzome.jsweet.JsManifestation.manifest(this.peek.value, this.__parent.field, this.__parent.adapter);
-                        this.peek = this.jSiterator.next();
-                        return result;
-                    }
-                }
-                JsSelection.JsSelection$0 = JsSelection$0;
-                JsSelection$0["__interfaces"] = ["java.util.Iterator"];
-            })(JsSelection = jsweet.JsSelection || (jsweet.JsSelection = {}));
-        })(jsweet = vzome.jsweet || (vzome.jsweet = {}));
-    })(vzome = com.vzome || (com.vzome = {}));
-})(com || (com = {}));
-(function (com) {
-    var vzome;
-    (function (vzome) {
-        var jsweet;
-        (function (jsweet) {
-            class JsEditContext {
-                constructor() {
-                }
-                /**
-                 *
-                 * @param {*} xml
-                 * @return {com.vzome.core.editor.api.UndoableEdit}
-                 */
-                createEdit(xml) {
-                    throw new java.lang.RuntimeException("unimplemented createEdit");
-                }
-                /**
-                 *
-                 * @param {com.vzome.core.editor.api.UndoableEdit} edit
-                 */
-                performAndRecord(edit) {
-                    throw new java.lang.RuntimeException("unimplemented performAndRecord");
-                }
-                /**
-                 *
-                 * @param {string} cmdName
-                 * @return {*}
-                 */
-                createLegacyCommand(cmdName) {
-                    throw new java.lang.RuntimeException("unimplemented createLegacyCommand");
-                }
-                /**
-                 *
-                 * @param {string} action
-                 * @param {*} props
-                 * @return {boolean}
-                 */
-                doEdit(action, props) {
-                    throw new java.lang.RuntimeException("unimplemented doEdit");
-                }
-            }
-            jsweet.JsEditContext = JsEditContext;
-            JsEditContext["__class"] = "com.vzome.jsweet.JsEditContext";
-            JsEditContext["__interfaces"] = ["com.vzome.core.editor.api.Context"];
-        })(jsweet = vzome.jsweet || (vzome.jsweet = {}));
-    })(vzome = com.vzome || (com.vzome = {}));
-})(com || (com = {}));
-(function (com) {
-    var vzome;
-    (function (vzome) {
-        var jsweet;
-        (function (jsweet) {
-            class JsRealizedModel {
-                constructor(field, adapter) {
-                    if (this.field === undefined) {
-                        this.field = null;
-                    }
-                    if (this.adapter === undefined) {
-                        this.adapter = null;
-                    }
-                    this.field = field;
-                    this.adapter = adapter;
-                }
-                setAdapter(adapter) {
-                    this.adapter = adapter;
-                }
-                /**
-                 *
-                 * @return {*}
-                 */
-                iterator() {
-                    const f = (this.adapter["allIterator"]);
-                    const jSiterator = f.apply(this.adapter);
-                    return new JsRealizedModel.JsRealizedModel$0(this, jSiterator);
-                }
-                /**
-                 *
-                 * @return {*}
-                 */
-                getField() {
-                    return this.field;
-                }
-                /**
-                 *
-                 * @param {com.vzome.core.construction.Construction} c
-                 * @return {*}
-                 */
-                findConstruction(c) {
-                    if (c == null)
-                        return null;
-                    let vectors = com.vzome.jsweet.JsManifestation.canonicalizeConstruction(c);
-                    if (vectors == null)
-                        return null;
-                    vectors = (this.adapter["findOrCreateManifestation"]).apply(this.adapter, [vectors]);
-                    if (vectors == null)
-                        return null;
-                    return com.vzome.jsweet.JsManifestation.manifest(vectors, this.field, this.adapter);
-                }
-                /**
-                 *
-                 * @param {*} man
-                 */
-                remove(man) {
-                    const vectors = man.getVectors();
-                    (this.adapter["delete"]).apply(this.adapter, [vectors]);
-                }
-                /**
-                 *
-                 * @param {com.vzome.core.construction.Construction} c
-                 * @return {*}
-                 */
-                getManifestation(c) {
-                    return this.findConstruction(c);
-                }
-                /**
-                 *
-                 * @param {*} man
-                 */
-                show(man) {
-                    const vectors = man.getVectors();
-                    (this.adapter["showManifestation"]).apply(this.adapter, [vectors]);
-                }
-                /**
-                 *
-                 * @param {*} man
-                 */
-                hide(man) {
-                    const vectors = man.getVectors();
-                    (this.adapter["hideManifestation"]).apply(this.adapter, [vectors]);
-                }
-                /**
-                 *
-                 * @param {*} man
-                 * @param {com.vzome.core.construction.Color} color
-                 */
-                setColor(man, color) {
-                    man.setColor(color);
-                }
-                /**
-                 *
-                 * @param {*} man
-                 * @param {string} label
-                 */
-                setLabel(man, label) {
-                    man.setLabel(label);
-                }
-                /**
-                 *
-                 * @param {*} man
-                 */
-                add(man) {
-                    const vectors = man.getVectors();
-                    (this.adapter["showManifestation"]).apply(this.adapter, [vectors]);
-                }
-                /**
-                 *
-                 * @param {string} signature
-                 * @return {*}
-                 */
-                findPerEditManifestation(signature) {
-                    return null;
-                }
-                /**
-                 *
-                 * @param {string} signature
-                 * @param {*} m
-                 */
-                addPerEditManifestation(signature, m) {
-                }
-                /**
-                 *
-                 */
-                clearPerEditManifestations() {
-                }
-                /**
-                 *
-                 * @param {com.vzome.core.construction.Construction} c
-                 * @return {*}
-                 */
-                removeConstruction(c) {
-                    throw new java.lang.RuntimeException("unimplemented");
-                }
-                /**
-                 *
-                 * @return {number}
-                 */
-                size() {
-                    throw new java.lang.RuntimeException("unimplemented");
-                }
-            }
-            jsweet.JsRealizedModel = JsRealizedModel;
-            JsRealizedModel["__class"] = "com.vzome.jsweet.JsRealizedModel";
-            JsRealizedModel["__interfaces"] = ["com.vzome.core.model.RealizedModel", "java.lang.Iterable"];
-            (function (JsRealizedModel) {
-                class JsRealizedModel$0 {
-                    constructor(__parent, jSiterator) {
-                        this.jSiterator = jSiterator;
-                        this.__parent = __parent;
-                        this.peek = this.jSiterator.next();
-                    }
-                    /**
-                     *
-                     * @return {boolean}
-                     */
-                    hasNext() {
-                        return !this.peek.done;
-                    }
-                    /**
-                     *
-                     * @return {*}
-                     */
-                    next() {
-                        const result = com.vzome.jsweet.JsManifestation.manifest(this.peek.value, this.__parent.field, this.__parent.adapter);
-                        this.peek = this.jSiterator.next();
-                        return result;
-                    }
-                }
-                JsRealizedModel.JsRealizedModel$0 = JsRealizedModel$0;
-                JsRealizedModel$0["__interfaces"] = ["java.util.Iterator"];
-            })(JsRealizedModel = jsweet.JsRealizedModel || (jsweet.JsRealizedModel = {}));
-        })(jsweet = vzome.jsweet || (vzome.jsweet = {}));
-    })(vzome = com.vzome || (com.vzome = {}));
-})(com || (com = {}));
-(function (com) {
-    var vzome;
-    (function (vzome) {
-        var jsweet;
-        (function (jsweet) {
             class JsAlgebraicField {
                 constructor(delegate) {
                     if (this.delegate === undefined) {
@@ -1201,11 +810,6 @@ export var com;
                     const z = this.createAlgebraicNumberFromPairs(nums[2]);
                     return new com.vzome.core.algebra.AlgebraicVector(x, y, z);
                 }
-                /**
-                 *
-                 * @param {int[][]} nums
-                 * @return {com.vzome.core.algebra.AlgebraicVector}
-                 */
                 createVectorFromTDs(nums) {
                     const dims = nums.length;
                     const coords = (s => { let a = []; while (s-- > 0)
@@ -1346,19 +950,15 @@ export var com;
                     if (n < 0) {
                         return this.zero();
                     }
-                    const factors = this.zero().toTrailingDivisor();
+                    const f = (this.delegate["zeroCopy"]);
+                    const factors = (f());
                     factors[n] = factors[factors.length - 1];
                     return new com.vzome.jsweet.JsAlgebraicNumber(this, factors);
                 }
                 createRational$long(wholeNumber) {
                     return this.createRational$long$long(wholeNumber, 1);
                 }
-                /**
-                 *
-                 * @param {int[]} trailingDivisorForm
-                 * @return {*}
-                 */
-                createAlgebraicNumberFromTD(trailingDivisorForm) {
+                /*private*/ createAlgebraicNumberFromTD(trailingDivisorForm) {
                     const f = (this.delegate["createNumber"]);
                     const simplified = (f((trailingDivisorForm)));
                     return new com.vzome.jsweet.JsAlgebraicNumber(this, simplified);
@@ -1393,7 +993,8 @@ export var com;
                     return this.createAlgebraicNumber$int_A$int(terms, 1);
                 }
                 createAlgebraicNumber$int_A$int(numerators, denominator) {
-                    const factors = this.zero().toTrailingDivisor();
+                    const f = (this.delegate["zeroCopy"]);
+                    const factors = (f());
                     java.lang.System.arraycopy(numerators, 0, factors, 0, numerators.length);
                     factors[numerators.length] = denominator;
                     return this.createAlgebraicNumberFromTD(factors);
@@ -1425,7 +1026,7 @@ export var com;
                     return new com.vzome.core.algebra.AlgebraicMatrix(columns);
                 }
                 /**
-                 * Modeled after AbstractAlgebraicField, with a switch from BigRationals to int[]s.
+                 * Modeled after AbstractAlgebraicField, with a switch from ints to int[]s.
                  * @param {string} string
                  * @param {boolean} isRational
                  * @return {*}
@@ -1689,206 +1290,6 @@ export var com;
     (function (vzome) {
         var jsweet;
         (function (jsweet) {
-            class JsManifestation {
-                constructor(field, adapter, vectors) {
-                    if (this.vectors === undefined) {
-                        this.vectors = null;
-                    }
-                    if (this.field === undefined) {
-                        this.field = null;
-                    }
-                    if (this.adapter === undefined) {
-                        this.adapter = null;
-                    }
-                    this.field = field;
-                    this.adapter = adapter;
-                    this.vectors = vectors;
-                }
-                getVectors() {
-                    return this.vectors;
-                }
-                /**
-                 *
-                 * @return {com.vzome.core.construction.Color}
-                 */
-                getColor() {
-                    const colorful = (this.adapter["manifestationHasColor"]).apply(this.adapter, [this.vectors]);
-                    if (!colorful)
-                        return null;
-                    const rgb = ((this.adapter["manifestationColor"]).apply(this.adapter, [this.vectors]) | 0);
-                    return new com.vzome.core.construction.Color(rgb);
-                }
-                /**
-                 *
-                 * @return {string}
-                 */
-                getLabel() {
-                    return null;
-                }
-                /**
-                 *
-                 * @param {string} label
-                 */
-                setLabel(label) {
-                }
-                /**
-                 *
-                 * @param {com.vzome.core.construction.Color} color
-                 */
-                setColor(color) {
-                    if (color != null)
-                        (this.adapter["setManifestationColor"]).apply(this.adapter, [this.vectors, color.getRGB()]);
-                }
-                /**
-                 *
-                 * @return {boolean}
-                 */
-                isRendered() {
-                    return (this.adapter["manifestationRendered"]).apply(this.adapter, [this.vectors]);
-                }
-                /**
-                 *
-                 * @param {com.vzome.core.construction.Construction} mConstruction
-                 */
-                addConstruction(mConstruction) {
-                }
-                /**
-                 *
-                 * @param {com.vzome.core.construction.Construction} mConstruction
-                 */
-                removeConstruction(mConstruction) {
-                }
-                /**
-                 *
-                 * @return {boolean}
-                 */
-                isUnnecessary() {
-                    return true;
-                }
-                /**
-                 *
-                 * @return {com.vzome.core.construction.Construction}
-                 */
-                getFirstConstruction() {
-                    return this.toConstruction();
-                }
-                static canonicalizeNumbers(...ns) {
-                    return java.util.Arrays.stream(ns).map((n) => n.toTrailingDivisor()).toArray();
-                }
-                /**
-                 * Note: this does NOT order the vectors canonically in the outermost array
-                 * @param {com.vzome.core.algebra.AlgebraicVector[]} vs
-                 * @return
-                 * @return {int[][][]}
-                 */
-                static canonicalizeVectors(...vs) {
-                    return java.util.Arrays.stream(vs).map((v) => JsManifestation.canonicalizeNumbers.apply(this, v.getComponents())).toArray();
-                }
-                static canonicalizeConstruction(c) {
-                    if (c != null && c instanceof com.vzome.core.construction.Point) {
-                        const p = c;
-                        return JsManifestation.canonicalizeVectors(p.getLocation());
-                    }
-                    else if (c != null && c instanceof com.vzome.core.construction.Segment) {
-                        const s = c;
-                        return JsManifestation.canonicalizeVectors(s.getStart(), s.getEnd());
-                    }
-                    else if (c != null && c instanceof com.vzome.core.construction.Polygon) {
-                        return JsManifestation.canonicalizeVectors.apply(this, c.getVertices());
-                    }
-                    return null;
-                }
-                static manifest(vectors, field, adapter) {
-                    switch ((vectors.length)) {
-                        case 1:
-                            return new com.vzome.jsweet.JsBall(field, adapter, vectors);
-                        case 2:
-                            const strut = new com.vzome.jsweet.JsStrut(field, adapter, vectors);
-                            if (strut.getOffset().isOrigin())
-                                return null;
-                            else
-                                return strut;
-                        default:
-                            return new com.vzome.jsweet.JsPanel(field, adapter, vectors);
-                    }
-                }
-                /**
-                 *
-                 * @param {boolean} b
-                 */
-                setHidden(b) {
-                }
-                /**
-                 *
-                 * @return {boolean}
-                 */
-                isHidden() {
-                    return (this.adapter["manifestationHidden"]).apply(this.adapter, [this.vectors]);
-                }
-                /**
-                 *
-                 * @param {com.vzome.core.model.Group} container
-                 */
-                setContainer(container) {
-                    throw new java.lang.RuntimeException("unimplemented");
-                }
-                /**
-                 *
-                 * @return {com.vzome.core.model.Group}
-                 */
-                getContainer() {
-                    const members = (this.adapter["getLargestGroup"]).apply(this.adapter, [this.vectors]);
-                    if (members == null)
-                        return null;
-                    const group = new com.vzome.core.model.Group();
-                    for (let i = 0; i < members.length; i++) {
-                        {
-                            group.add(JsManifestation.manifest(members[i], this.field, this.adapter));
-                        }
-                        ;
-                    }
-                    return group;
-                }
-                /**
-                 *
-                 * @param {*} renderedObject
-                 */
-                setRenderedObject(renderedObject) {
-                }
-                /**
-                 *
-                 * @return {*}
-                 */
-                getConstructions() {
-                    throw new java.lang.RuntimeException("unimplemented");
-                }
-                /**
-                 *
-                 * @param {*} doc
-                 * @return {*}
-                 */
-                getXml(doc) {
-                    throw new java.lang.RuntimeException("unimplemented");
-                }
-                /**
-                 *
-                 * @return {com.vzome.core.algebra.AlgebraicVector}
-                 */
-                getCentroid() {
-                    throw new java.lang.RuntimeException("unimplemented");
-                }
-            }
-            jsweet.JsManifestation = JsManifestation;
-            JsManifestation["__class"] = "com.vzome.jsweet.JsManifestation";
-            JsManifestation["__interfaces"] = ["com.vzome.core.model.GroupElement", "com.vzome.core.model.Manifestation"];
-        })(jsweet = vzome.jsweet || (vzome.jsweet = {}));
-    })(vzome = com.vzome || (com.vzome = {}));
-})(com || (com = {}));
-(function (com) {
-    var vzome;
-    (function (vzome) {
-        var jsweet;
-        (function (jsweet) {
             class JsAlgebraicNumber {
                 constructor(field, factors) {
                     if (this.field === undefined) {
@@ -1916,10 +1317,10 @@ export var com;
                 }
                 /**
                  *
-                 * @return {int[]}
+                 * @return {java.lang.String[]}
                  */
                 toTrailingDivisor() {
-                    return (this.factors).slice();
+                    return (this.factors).map((bi) => bi.toString());
                 }
                 /**
                  *
@@ -2366,69 +1767,6 @@ export var com;
             jsweet.JsEditorModel = JsEditorModel;
             JsEditorModel["__class"] = "com.vzome.jsweet.JsEditorModel";
             JsEditorModel["__interfaces"] = ["com.vzome.core.editor.api.EditorModel", "com.vzome.core.editor.api.LegacyEditorModel", "com.vzome.core.editor.api.ImplicitSymmetryParameters", "com.vzome.core.editor.api.SymmetryAware"];
-        })(jsweet = vzome.jsweet || (vzome.jsweet = {}));
-    })(vzome = com.vzome || (com.vzome = {}));
-})(com || (com = {}));
-(function (com) {
-    var vzome;
-    (function (vzome) {
-        var jsweet;
-        (function (jsweet) {
-            class JsAdapter {
-                static mapVectorToJava(vector, field) {
-                    const ans = java.util.stream.Stream.of(vector).map((ints) => new com.vzome.jsweet.JsAlgebraicNumber(field, ints)).toArray();
-                    return new com.vzome.core.algebra.AlgebraicVector(ans);
-                }
-                static mapVectorToJavascript(vector) {
-                    return java.util.stream.Stream.of(vector.getComponents()).map((an) => an.toTrailingDivisor()).toArray();
-                }
-                static getZoneGrid(orbits, planeNormal) {
-                    const field = orbits.getSymmetry().getField();
-                    const normal = JsAdapter.mapVectorToJava(planeNormal, field);
-                    const planeColor = orbits.getVectorColor(normal).toWebString();
-                    const planeName = orbits.getSymmetry()['getAxis$com_vzome_core_algebra_AlgebraicVector'](normal).getOrbit().getName();
-                    const zonesList = (new java.util.ArrayList());
-                    const planeOrbits = new com.vzome.core.math.symmetry.PlaneOrbitSet(orbits.getOrbits(), normal);
-                    for (const iterator = planeOrbits.zones(); iterator.hasNext();) {
-                        {
-                            const zone = iterator.next();
-                            const orbit = zone.getDirection();
-                            if (!orbit.isStandard())
-                                continue;
-                            const gridPoints = (new java.util.ArrayList());
-                            const zoneNormal = zone.normal();
-                            const zoneColor = orbits.getVectorColor(zoneNormal).toWebString();
-                            let scale = orbit.getUnitLength();
-                            for (let i = 0; i < 5; i++) {
-                                {
-                                    scale = scale['times$com_vzome_core_algebra_AlgebraicNumber'](field.createPower$int(1));
-                                    const gridPoint = zoneNormal.scale(scale);
-                                    gridPoints.add(gridPoint);
-                                }
-                                ;
-                            }
-                            const vectors = gridPoints.stream().toArray((size) => (s => { let a = []; while (s-- > 0)
-                                a.push(null); return a; })(size));
-                            const zoneObj = ((target) => {
-                                target["color"] = zoneColor;
-                                target["vectors"] = vectors;
-                                return target;
-                            })(new Object());
-                            zonesList.add(zoneObj);
-                        }
-                        ;
-                    }
-                    const zones = zonesList.stream().toArray((size) => (s => { let a = []; while (s-- > 0)
-                        a.push(null); return a; })(size));
-                    return ((target) => {
-                        target["color"] = planeColor;
-                        target["zones"] = zones;
-                        return target;
-                    })(new Object());
-                }
-            }
-            jsweet.JsAdapter = JsAdapter;
-            JsAdapter["__class"] = "com.vzome.jsweet.JsAdapter";
         })(jsweet = vzome.jsweet || (vzome.jsweet = {}));
     })(vzome = com.vzome || (com.vzome = {}));
 })(com || (com = {}));
@@ -3990,6 +3328,10 @@ export var com;
                             this.orbits = new com.vzome.core.math.symmetry.OrbitSet(symmetry);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
                             if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                                 let __args = arguments;
@@ -4042,10 +3384,6 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations$() {
@@ -10840,6 +10178,7 @@ export var com;
                                     y = y.dividedBy(x);
                                     z = z.dividedBy(x);
                                     this.canonicalName = "[" + /* replace */ java.util.Arrays.toString(y.toTrailingDivisor()).split(" ").join("") + "," + /* replace */ java.util.Arrays.toString(z.toTrailingDivisor()).split(" ").join("") + "]";
+                                    Direction.logger_$LI$().finer("Direction.canonicalName: " + this.canonicalName);
                                 }
                             }
                             return this.canonicalName;
@@ -16779,7 +16118,10 @@ export var com;
                                                 orbit = this.symmetry.createNewZoneOrbit(name, 0, com.vzome.core.math.symmetry.Symmetry.NO_ROTATION, prototype);
                                             }
                                             catch (e) {
-                                                console.error("Integer overflow happened while creating orbit: " + name);
+                                                if (SymmetrySystem.LOGGER_$LI$().isLoggable(java.util.logging.Level.INFO)) {
+                                                    const msg = "Integer overflow while recreating automatic orbit: " + name + ". Failed to parseVector(\'" + nums + "\').";
+                                                    SymmetrySystem.LOGGER_$LI$().info(msg);
+                                                }
                                                 continue;
                                             }
                                             orbit.setAutomatic(true);
@@ -16788,13 +16130,14 @@ export var com;
                                                 this.nextNewAxis = Math.max(this.nextNewAxis, autoNum + 1);
                                             }
                                             catch (e) {
-                                                console.error(e.message);
+                                                SymmetrySystem.LOGGER_$LI$().fine(e.message);
                                             }
                                         }
                                         else {
                                             orbit = this.symmetry.getDirection(name);
-                                            if (orbit == null)
+                                            if (orbit == null) {
                                                 continue;
+                                            }
                                         }
                                         this.orbits.add(orbit);
                                         let color = colors.getColor(com.vzome.core.render.Colors.DIRECTION_$LI$() + orbit.getCanonicalName());
@@ -16822,6 +16165,10 @@ export var com;
                             }
                         }
                         this.setStyle(styleName);
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getZone(orbit, orientation) {
+                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getOrientations(rowMajor) {
@@ -16899,10 +16246,6 @@ export var com;
                             throw new Error('invalid overload');
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getZone(orbit, orientation) {
-                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getOrientations$() {
                         return this.getOrientations(false);
                     }
@@ -16929,9 +16272,9 @@ export var com;
                         embedding[15] = 1.0;
                         return embedding;
                     }
-                    static logger_$LI$() { if (SymmetrySystem.logger == null) {
-                        SymmetrySystem.logger = java.util.logging.Logger.getLogger("com.vzome.core.editor");
-                    } return SymmetrySystem.logger; }
+                    static LOGGER_$LI$() { if (SymmetrySystem.LOGGER == null) {
+                        SymmetrySystem.LOGGER = java.util.logging.Logger.getLogger("com.vzome.core.editor");
+                    } return SymmetrySystem.LOGGER; }
                     setEditorModel(editor) {
                         this.editor = editor;
                     }
@@ -16953,6 +16296,10 @@ export var com;
                             }
                         }
                     }
+                    /**
+                     *
+                     * @return {string}
+                     */
                     getName() {
                         return this.symmetry.getName();
                     }
@@ -17036,6 +16383,11 @@ export var com;
                         this.orbitColors.put(orbit.getCanonicalName(), color);
                         return orbit;
                     }
+                    /**
+                     *
+                     * @param {com.vzome.core.algebra.AlgebraicVector} vector
+                     * @return {com.vzome.core.construction.Color}
+                     */
                     getVectorColor(vector) {
                         if (vector == null || vector.isOrigin()) {
                             return this.colors.getColor(com.vzome.core.render.Colors.CONNECTOR_$LI$());
@@ -17126,7 +16478,7 @@ export var com;
                         if (result != null)
                             this.shapes = result;
                         else {
-                            SymmetrySystem.logger_$LI$().warning("UNKNOWN STYLE NAME: " + styleName);
+                            SymmetrySystem.LOGGER_$LI$().warning("UNKNOWN STYLE NAME: " + styleName);
                             this.shapes = this.symmetryPerspective.getDefaultGeometry();
                         }
                     }
@@ -18918,35 +18270,28 @@ export var com;
                         return this.numberFactory.createAlgebraicNumber(this, terms, 1);
                     }
                     /**
-                     * Generates an AlgebraicNumber from a "trailing divisor" int array representation.
-                     * @param {int[]} trailingDivisorForm numerators trailed by a common denominator for all numerators
-                     * @return
+                     * TODO: BigInteger.longValue() may silently lose precision here.
+                     * That's why it's deprecated.
+                     * I'm going to live with that possibility for now to avoid the overhead
+                     * of calling a BigInt version of convertGoldenNumberPairs().
+                     * @param {com.vzome.core.algebra.BigRational[]} trailingDivisorForm
                      * @return {*}
                      */
                     createAlgebraicNumberFromTD(trailingDivisorForm) {
-                        let terms = trailingDivisorForm.length - 1;
-                        if (terms === 2 && this.getOrder() > 2) {
+                        const terms = trailingDivisorForm.length - 1;
+                        if (terms === 2 && this.getOrder() > 2 && this.getGoldenRatio() != null) {
                             let pairs = (s => { let a = []; while (s-- > 0)
                                 a.push(0); return a; })(2 * terms);
-                            const divisor = trailingDivisorForm[terms];
+                            const divisor = trailingDivisorForm[terms].getNumerator().longValue();
                             for (let i = 0; i < terms; i++) {
                                 {
-                                    pairs[2 * i + 0] = trailingDivisorForm[i];
+                                    pairs[2 * i + 0] = trailingDivisorForm[i].getNumerator().longValue();
                                     pairs[2 * i + 1] = divisor;
                                 }
                                 ;
                             }
                             pairs = this.convertGoldenNumberPairs(pairs);
-                            terms = (pairs.length / 2 | 0);
-                            trailingDivisorForm = (s => { let a = []; while (s-- > 0)
-                                a.push(0); return a; })(terms + 1);
-                            trailingDivisorForm[terms] = (pairs[1] | 0);
-                            for (let i = 0; i < (pairs.length / 2 | 0); i++) {
-                                {
-                                    trailingDivisorForm[i] = (pairs[2 * i] | 0);
-                                }
-                                ;
-                            }
+                            return this.numberFactory.createAlgebraicNumberFromPairs(this, pairs);
                         }
                         return this.numberFactory.createAlgebraicNumberFromTD(this, trailingDivisorForm);
                     }
@@ -18955,17 +18300,16 @@ export var com;
                     }
                     createAlgebraicNumber$int$int$int$int(ones, irrat, denominator, scalePower) {
                         const factors = (s => { let a = []; while (s-- > 0)
-                            a.push(0); return a; })(this.order + 1);
+                            a.push(0); return a; })(this.order);
                         factors[0] = ones;
                         factors[1] = irrat;
-                        for (let i = 2; i < this.order; i++) {
+                        for (let i = 2; i < factors.length; i++) {
                             {
                                 factors[i] = 0;
                             }
                             ;
                         }
-                        factors[this.order] = denominator;
-                        const result = this.numberFactory.createAlgebraicNumberFromTD(this, factors);
+                        const result = this.numberFactory.createAlgebraicNumber(this, factors, denominator);
                         if (scalePower !== 0) {
                             const multiplier = this.createPower$int(scalePower);
                             return result['times$com_vzome_core_algebra_AlgebraicNumber'](multiplier);
@@ -19110,9 +18454,16 @@ export var com;
                         if (n < 0) {
                             return this.zero();
                         }
-                        const factors = this.zero().toTrailingDivisor();
-                        factors[n] = factors[factors.length - 1];
-                        return this.numberFactory.createAlgebraicNumberFromTD(this, factors);
+                        const numerators = (s => { let a = []; while (s-- > 0)
+                            a.push(0); return a; })(this.getOrder());
+                        for (let i = 0; i < numerators.length; i++) {
+                            {
+                                numerators[i] = 0;
+                            }
+                            ;
+                        }
+                        numerators[n] = 1;
+                        return this.numberFactory.createAlgebraicNumber(this, numerators, 1);
                     }
                     /**
                      * Drop one coordinate from the 4D vector. If wFirst (the usual), then drop
@@ -19279,7 +18630,7 @@ export var com;
                                     }
                                     ;
                                 }
-                                if (pairs.length === 4 && this.getOrder() > 2) {
+                                if (pairs.length === 4 && this.getOrder() > 2 && this.getGoldenRatio() != null) {
                                     pairs = this.convertGoldenNumberPairs(pairs);
                                 }
                                 coords[c] = this.numberFactory.createAlgebraicNumberFromPairs(this, pairs);
@@ -19288,11 +18639,6 @@ export var com;
                         }
                         return new com.vzome.core.algebra.AlgebraicVector(coords);
                     }
-                    /**
-                     *
-                     * @param {int[][]} nums
-                     * @return {com.vzome.core.algebra.AlgebraicVector}
-                     */
                     createVectorFromTDs(nums) {
                         const dims = nums.length;
                         const coords = (s => { let a = []; while (s-- > 0)
@@ -19437,11 +18783,11 @@ export var com;
                      * @return {*}
                      */
                     parseVefNumber(string, isRational) {
-                        let pairs = (s => { let a = []; while (s-- > 0)
-                            a.push(0); return a; })(this.getOrder() * 2);
-                        for (let i = 1; i < pairs.length; i += 2) {
+                        const fractions = (s => { let a = []; while (s-- > 0)
+                            a.push(null); return a; })(this.getOrder());
+                        for (let i = 0; i < this.getOrder(); i++) {
                             {
-                                pairs[i] = 1;
+                                fractions[i] = "0/1";
                             }
                             ;
                         }
@@ -19455,29 +18801,30 @@ export var com;
                                         throw new java.lang.RuntimeException("VEF format error: \"" + string + "\" has too many factors for " + this.getName() + " field");
                                     }
                                     const parts = tokens.nextToken().split("/");
-                                    numStack.push(javaemul.internal.IntegerHelper.parseInt(parts[0]));
-                                    denomStack.push((parts.length > 1) ? javaemul.internal.IntegerHelper.parseInt(parts[1]) : 1);
+                                    numStack.push(parts[0]);
+                                    denomStack.push((parts.length > 1) ? parts[1] : "1");
                                 }
                             }
                             ;
                             let i = 0;
                             while ((!numStack.empty())) {
                                 {
-                                    pairs[i++] = numStack.pop();
-                                    pairs[i++] = denomStack.pop();
+                                    fractions[i++] = numStack.pop() + "/" + denomStack.pop();
                                 }
                             }
                             ;
-                            if (i === 4 && this.getOrder() > 2) {
+                            if (i === 2 && this.getOrder() > 2 && this.getGoldenRatio() != null) {
+                                const fractionParts = [fractions[0].split("/"), fractions[1].split("/")];
+                                let pairs = [javaemul.internal.LongHelper.parseLong(fractionParts[0][0]), javaemul.internal.LongHelper.parseLong(fractionParts[0][1]), javaemul.internal.LongHelper.parseLong(fractionParts[1][0]), javaemul.internal.LongHelper.parseLong(fractionParts[1][1])];
                                 pairs = this.convertGoldenNumberPairs([pairs[0], pairs[1], pairs[2], pairs[3]]);
+                                return this.numberFactory.createAlgebraicNumberFromPairs(this, pairs);
                             }
                         }
                         else {
                             const parts = string.split("/");
-                            pairs[0] = javaemul.internal.IntegerHelper.parseInt(parts[0]);
-                            pairs[1] = (parts.length > 1) ? javaemul.internal.IntegerHelper.parseInt(parts[1]) : 1;
+                            fractions[0] = parts[0] + "/" + ((parts.length > 1) ? parts[1] : "1");
                         }
-                        return this.numberFactory.createAlgebraicNumberFromPairs(this, pairs);
+                        return this.parseNumber$java_lang_String(javaemul.internal.StringHelper.join(" ", fractions));
                     }
                     parseNumber$java_lang_String(nums) {
                         const tokens = new java.util.StringTokenizer(nums, " ");
@@ -19500,21 +18847,16 @@ export var com;
                     }
                     /*private*/ parseNumber$java_util_StringTokenizer(tokens) {
                         const order = this.getOrder();
-                        const pairs = (s => { let a = []; while (s-- > 0)
-                            a.push(0); return a; })(order * 2);
+                        const bigs = (s => { let a = []; while (s-- > 0)
+                            a.push(null); return a; })(order);
                         for (let i = 0; i < order; i++) {
                             {
                                 const digit = tokens.nextToken();
-                                const parts = digit.split("/");
-                                pairs[i * 2] = javaemul.internal.LongHelper.parseLong(parts[0]);
-                                if (parts.length > 1)
-                                    pairs[i * 2 + 1] = javaemul.internal.LongHelper.parseLong(parts[1]);
-                                else
-                                    pairs[i * 2 + 1] = 1;
+                                bigs[i] = this.numberFactory.parseBigRational(digit);
                             }
                             ;
                         }
-                        return this.numberFactory.createAlgebraicNumberFromPairs(this, pairs);
+                        return this.numberFactory.createAlgebraicNumberFromBRs(this, bigs);
                     }
                     /**
                      *
@@ -21746,275 +21088,6 @@ export var com;
                 RealVector["__class"] = "com.vzome.core.math.RealVector";
             })(math = core.math || (core.math = {}));
         })(core = vzome.core || (vzome.core = {}));
-    })(vzome = com.vzome || (com.vzome = {}));
-})(com || (com = {}));
-(function (com) {
-    var vzome;
-    (function (vzome) {
-        var jsweet;
-        (function (jsweet) {
-            class JsPanel extends com.vzome.jsweet.JsManifestation {
-                constructor(field, adapter, coords) {
-                    super(field, adapter, coords);
-                }
-                /**
-                 *
-                 * @return {com.vzome.core.construction.Construction}
-                 */
-                toConstruction() {
-                    const projected = (new java.util.ArrayList());
-                    for (let i = 0; i < this.vectors.length; i++) {
-                        {
-                            const pt = this.field.createVectorFromTDs(this.vectors[i]);
-                            projected.add(new com.vzome.core.construction.FreePoint(this.field.projectTo3d(pt, true)));
-                        }
-                        ;
-                    }
-                    return new com.vzome.core.construction.PolygonFromVertices(projected);
-                }
-                /**
-                 *
-                 * @return {com.vzome.core.algebra.AlgebraicVector}
-                 */
-                getLocation() {
-                    return null;
-                }
-                getNormal$() {
-                    return this.getZoneVector();
-                }
-                /**
-                 *
-                 * @return {com.vzome.core.algebra.AlgebraicVector}
-                 */
-                getZoneVector() {
-                    const v0 = this.field.createVectorFromTDs(this.vectors[0]);
-                    const v1 = this.field.createVectorFromTDs(this.vectors[1]);
-                    const v2 = this.field.createVectorFromTDs(this.vectors[2]);
-                    return com.vzome.core.algebra.AlgebraicVectors.getNormal$com_vzome_core_algebra_AlgebraicVector$com_vzome_core_algebra_AlgebraicVector$com_vzome_core_algebra_AlgebraicVector(v0, v1, v2);
-                }
-                /**
-                 *
-                 * @return {*}
-                 */
-                iterator() {
-                    return new JsPanel.JsPanel$0(this);
-                }
-                /**
-                 *
-                 * @param {com.vzome.core.algebra.AlgebraicVector} vector
-                 */
-                setZoneVector(vector) {
-                }
-                /**
-                 *
-                 * @return {com.vzome.core.algebra.AlgebraicVector}
-                 */
-                getFirstVertex() {
-                    return this.field.createVectorFromTDs(this.vectors[0]);
-                }
-                /**
-                 *
-                 * @return {number}
-                 */
-                getVertexCount() {
-                    return this.vectors.length;
-                }
-                /**
-                 *
-                 * @return {*}
-                 */
-                getQuadrea() {
-                    return this.field.one();
-                }
-                getNormal$com_vzome_core_math_symmetry_Embedding(embedding) {
-                    throw new java.lang.RuntimeException("unimplemented");
-                }
-                /**
-                 *
-                 * @param {*} embedding
-                 * @return {com.vzome.core.math.RealVector}
-                 */
-                getNormal(embedding) {
-                    if (((embedding != null && (embedding.constructor != null && embedding.constructor["__interfaces"] != null && embedding.constructor["__interfaces"].indexOf("com.vzome.core.math.symmetry.Embedding") >= 0)) || embedding === null)) {
-                        return this.getNormal$com_vzome_core_math_symmetry_Embedding(embedding);
-                    }
-                    else if (embedding === undefined) {
-                        return this.getNormal$();
-                    }
-                    else
-                        throw new Error('invalid overload');
-                }
-            }
-            jsweet.JsPanel = JsPanel;
-            JsPanel["__class"] = "com.vzome.jsweet.JsPanel";
-            JsPanel["__interfaces"] = ["com.vzome.core.model.GroupElement", "com.vzome.core.model.Panel", "com.vzome.core.model.Manifestation", "java.lang.Iterable"];
-            (function (JsPanel) {
-                class JsPanel$0 {
-                    constructor(__parent) {
-                        this.__parent = __parent;
-                        this.i = 0;
-                    }
-                    /**
-                     *
-                     * @return {boolean}
-                     */
-                    hasNext() {
-                        return this.i < this.__parent.vectors.length;
-                    }
-                    /**
-                     *
-                     * @return {com.vzome.core.algebra.AlgebraicVector}
-                     */
-                    next() {
-                        return this.__parent.field.createVectorFromTDs(this.__parent.vectors[this.i++]);
-                    }
-                }
-                JsPanel.JsPanel$0 = JsPanel$0;
-                JsPanel$0["__interfaces"] = ["java.util.Iterator"];
-            })(JsPanel = jsweet.JsPanel || (jsweet.JsPanel = {}));
-        })(jsweet = vzome.jsweet || (vzome.jsweet = {}));
-    })(vzome = com.vzome || (com.vzome = {}));
-})(com || (com = {}));
-(function (com) {
-    var vzome;
-    (function (vzome) {
-        var jsweet;
-        (function (jsweet) {
-            class JsBall extends com.vzome.jsweet.JsManifestation {
-                constructor(field, adapter, coords) {
-                    super(field, adapter, coords);
-                }
-                /**
-                 *
-                 * @return {com.vzome.core.algebra.AlgebraicVector}
-                 */
-                getLocation() {
-                    return this.field.createVectorFromTDs(this.vectors[0]);
-                }
-                /**
-                 *
-                 * @return {com.vzome.core.construction.Construction}
-                 */
-                toConstruction() {
-                    return new com.vzome.core.construction.FreePoint(this.getLocation());
-                }
-                /**
-                 *
-                 * @param {*} other
-                 * @return {number}
-                 */
-                compareTo(other) {
-                    if (this === other) {
-                        return 0;
-                    }
-                    if ( /* equals */((o1, o2) => { if (o1 && o1.equals) {
-                        return o1.equals(o2);
-                    }
-                    else {
-                        return o1 === o2;
-                    } })(other, this)) {
-                        return 0;
-                    }
-                    return this.getLocation().compareTo(other.getLocation());
-                }
-            }
-            jsweet.JsBall = JsBall;
-            JsBall["__class"] = "com.vzome.jsweet.JsBall";
-            JsBall["__interfaces"] = ["com.vzome.core.model.GroupElement", "com.vzome.core.model.Connector", "java.lang.Comparable", "com.vzome.core.model.Manifestation"];
-        })(jsweet = vzome.jsweet || (vzome.jsweet = {}));
-    })(vzome = com.vzome || (com.vzome = {}));
-})(com || (com = {}));
-(function (com) {
-    var vzome;
-    (function (vzome) {
-        var jsweet;
-        (function (jsweet) {
-            class JsStrut extends com.vzome.jsweet.JsManifestation {
-                constructor(field, adapter, coords) {
-                    super(field, adapter, coords);
-                }
-                /**
-                 *
-                 * @return {com.vzome.core.algebra.AlgebraicVector}
-                 */
-                getLocation() {
-                    return this.field.createVectorFromTDs(this.vectors[0]);
-                }
-                /**
-                 *
-                 * @return {com.vzome.core.construction.Construction}
-                 */
-                toConstruction() {
-                    return new com.vzome.core.construction.SegmentJoiningPoints(new com.vzome.core.construction.FreePoint(this.getLocation()), new com.vzome.core.construction.FreePoint(this.getEnd()));
-                }
-                /**
-                 *
-                 * @return {com.vzome.core.algebra.AlgebraicVector}
-                 */
-                getEnd() {
-                    return this.field.createVectorFromTDs(this.vectors[1]);
-                }
-                /**
-                 *
-                 * @return {com.vzome.core.algebra.AlgebraicVector}
-                 */
-                getOffset() {
-                    const start = this.getLocation();
-                    const end = this.getEnd();
-                    return end.minus(start);
-                }
-                /**
-                 *
-                 * @param {com.vzome.core.algebra.AlgebraicVector} vector
-                 */
-                setZoneVector(vector) {
-                }
-                /**
-                 *
-                 * @return {com.vzome.core.algebra.AlgebraicVector}
-                 */
-                getZoneVector() {
-                    return this.getOffset();
-                }
-                /**
-                 *
-                 * @param {*} other
-                 * @return {number}
-                 */
-                compareTo(other) {
-                    if (this === other) {
-                        return 0;
-                    }
-                    if ( /* equals */((o1, o2) => { if (o1 && o1.equals) {
-                        return o1.equals(o2);
-                    }
-                    else {
-                        return o1 === o2;
-                    } })(other, this)) {
-                        return 0;
-                    }
-                    const thisFirst = this.getCanonicalLesserEnd();
-                    const thisLast = this.getCanonicalGreaterEnd();
-                    const otherFirst = other.getCanonicalLesserEnd();
-                    const otherLast = other.getCanonicalGreaterEnd();
-                    const comparison = thisFirst.compareTo(otherFirst);
-                    return (comparison === 0) ? thisLast.compareTo(otherLast) : comparison;
-                }
-                getCanonicalLesserEnd() {
-                    const m_end1 = this.getLocation();
-                    const m_end2 = this.getEnd();
-                    return (m_end1.compareTo(m_end2) < 0) ? m_end1 : m_end2;
-                }
-                getCanonicalGreaterEnd() {
-                    const m_end1 = this.getLocation();
-                    const m_end2 = this.getEnd();
-                    return (m_end1.compareTo(m_end2) > 0) ? m_end1 : m_end2;
-                }
-            }
-            jsweet.JsStrut = JsStrut;
-            JsStrut["__class"] = "com.vzome.jsweet.JsStrut";
-            JsStrut["__interfaces"] = ["com.vzome.core.model.GroupElement", "com.vzome.core.model.Strut", "java.lang.Comparable", "com.vzome.core.model.Manifestation"];
-        })(jsweet = vzome.jsweet || (vzome.jsweet = {}));
     })(vzome = com.vzome || (com.vzome = {}));
 })(com || (com = {}));
 (function (com) {
@@ -34012,7 +33085,7 @@ export var com;
                                 result = (s => { let a = []; while (s-- > 0)
                                     a.push(null); return a; })(td.length);
                                 for (let i = 0; i < td.length; i++) {
-                                    result[i] = /* toString */ ('' + (td[i]));
+                                    result[i] = td[i];
                                 }
                                 return result;
                             case "named-values":
@@ -34059,18 +33132,16 @@ export var com;
                     setModelProperty(property, value) {
                         switch ((property)) {
                             case "values":
-                                const values = new java.util.StringTokenizer(value);
-                                const inputs = (s => { let a = []; while (s-- > 0)
-                                    a.push(0); return a; })(this.field.getOrder());
-                                let divisor = 1;
-                                for (let i = 0; values.hasMoreTokens(); i++) {
-                                    if (i < inputs.length)
-                                        inputs[i] = javaemul.internal.IntegerHelper.parseInt(values.nextToken());
-                                    else
-                                        divisor = javaemul.internal.IntegerHelper.parseInt(values.nextToken());
+                                const tokens = value.split(" ");
+                                const divisor = tokens[tokens.length - 1];
+                                let rejoined = "";
+                                for (let i = 0; i < tokens.length - 1; i++) {
+                                    {
+                                        rejoined += tokens[i] + "/" + divisor + " ";
+                                    }
                                     ;
                                 }
-                                this.value = this.field['createAlgebraicNumber$int_A'](inputs).dividedBy(this.field['createRational$long'](divisor));
+                                this.value = this.field.parseNumber(rejoined);
                                 return;
                             case "named-value":
                                 this.setValueByName(/* valueOf */ String(value).toString());
@@ -42508,18 +41579,16 @@ export var com;
                      */
                     getUnitDiagonal(n) {
                         if (n >= this.getOrder() && n < this.diagonalCount()) {
-                            const terms = this.zero().toTrailingDivisor();
+                            const numerators = (s => { let a = []; while (s-- > 0)
+                                a.push(0); return a; })(this.getOrder());
                             const row = n - this.getOrder();
-                            for (let i = 0; i < this.getOrder(); i++) {
+                            for (let i = 0; i < numerators.length; i++) {
                                 {
-                                    const term = this.normalizerMatrix[row][i];
-                                    if (term !== 0) {
-                                        terms[i] = term;
-                                    }
+                                    numerators[i] = this.normalizerMatrix[row][i];
                                 }
                                 ;
                             }
-                            return this.createAlgebraicNumberFromTD(terms);
+                            return this.numberFactory.createAlgebraicNumber(this, numerators, 1);
                         }
                         return super.getUnitTerm(n);
                     }
@@ -48547,6 +47616,10 @@ export var com;
                             this.__parent = __parent;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
                             if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                                 let __args = arguments;
@@ -48593,10 +47666,6 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations$() {
@@ -54146,7 +53215,7 @@ com.vzome.desktop.controller.ZoneVectorBall.logger_$LI$();
 com.vzome.desktop.controller.DefaultController.logger_$LI$();
 com.vzome.xml.ResourceLoader.logger_$LI$();
 com.vzome.xml.ResourceLoader.RESOURCE_LOADER_$LI$();
-com.vzome.core.editor.SymmetrySystem.logger_$LI$();
+com.vzome.core.editor.SymmetrySystem.LOGGER_$LI$();
 com.vzome.core.editor.SelectionSummary.LOGGER_$LI$();
 com.vzome.core.editor.SelectionImpl.logger_$LI$();
 com.vzome.core.edits.ManifestationColorMappers.colorMappers_$LI$();

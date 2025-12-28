@@ -1,6 +1,10 @@
 
 
-BigInt.prototype.toJSON = function() { return Number(this)  }  // What will this do when the BigInt is too big?
+BigInt.prototype.toJSON = function() // Can't use arrow function here, because 'this' is needed
+{
+  const float = Number(this);
+  return Number.isSafeInteger(float) ? float : this.toString();
+}
 
 // Most of this code is from Jacob Rus: https://observablehq.com/@jrus/zome-arithmetic
 
@@ -159,24 +163,6 @@ function createNumber3( trailingDivisor )
 {
   const [ a0=0n, a1=0n, a2=0n, d=1n ] = trailingDivisor
   return simplify4( BigInt(a0), BigInt(a1), BigInt(a2), BigInt(d) )
-}
-
-const origin2 = dimensions =>
-{
-  const result = []
-  for ( let index = 0; index < dimensions; index++ ) {
-    result.push( [ 0n, 0n, 1n ] )
-  }
-  return result
-}
-
-const origin3 = dimensions =>
-{
-  const result = []
-  for ( let index = 0; index < dimensions; index++ ) {
-    result.push( [ 0n, 0n, 0n, 1n ] )
-  }
-  return result
 }
 
 const Format = { DEFAULT: 0, EXPRESSION: 1, ZOMIC: 2, VEF: 3, MATHML: 4, MATH: 5 }
@@ -340,7 +326,6 @@ export const createField = ( { name, order, times, embed, reciprocal, getIrratio
   let scalarTerm = 1
   let zero = [ 0n, 0n, 1n ]
   let one = [ 1n, 0n, 1n ]
-  let origin = origin2
   let negate = negate2
   let plus = plus2
   let minus = minus2
@@ -351,7 +336,6 @@ export const createField = ( { name, order, times, embed, reciprocal, getIrratio
     scalarTerm = 2
     zero = [ 0n, 0n, 0n, 1n ]
     one = [ 1n, 0n, 0n, 1n ]
-    origin = origin3
     negate = negate3
     plus = plus3
     minus = minus3
@@ -390,7 +374,8 @@ export const createField = ( { name, order, times, embed, reciprocal, getIrratio
 
   return {
     name, order,
-    scalarTerm, zero, one, origin,
+    scalarTerm, zero, one,
+    zeroCopy: () => zero.slice(),
     plus, minus, times, embed, reciprocal, negate, getIrrational,
     scalarmul, vectoradd, quatTransform, quatmul,
     embedv: (v) => v.map( embed ),

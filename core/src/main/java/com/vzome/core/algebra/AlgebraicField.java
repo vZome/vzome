@@ -50,13 +50,6 @@ public interface AlgebraicField
     AlgebraicNumber createAlgebraicNumber( int[] terms );
 
     /**
-     * Generates an AlgebraicNumber from a "trailing divisor" int array representation.
-     * @param trailingDivisorForm numerators trailed by a common denominator for all numerators
-     * @return
-     */
-    AlgebraicNumber createAlgebraicNumberFromTD( int[] trailingDivisorForm );
-
-    /**
      * Generates an AlgebraicNumber with the specified numerators,
      * all having a common denominator as specified.
      * @param numerators
@@ -165,17 +158,7 @@ public interface AlgebraicField
      * @return an AlgebraicVector
      */
     AlgebraicVector createVector( int[][] nums );
-    
-    /**
-     * 
-     * @param nums nums is an array of integer arrays: One array of coordinate terms per dimension.
-     * Each inner array is in "trailing divisor" form, to represent a rational AlgebraicNumber.
-     * If the order of the field is N, each inner array will be of length N+1, with the last
-     * element being the divisor.
-     * @return
-     */
-    AlgebraicVector createVectorFromTDs( int[][] nums );
-    
+        
     /**
      * Generates an AlgebraicVector with all AlgebraicNumber terms being integers (having unit denominators).
      * Contrast this with {@code createVector(int[][] nums)} which requires all denominators to be specified.

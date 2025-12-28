@@ -221,6 +221,7 @@ public class Direction implements Comparable<Direction>, Iterable<Axis>
                         + ","
                         + Arrays.toString( z .toTrailingDivisor() ) .replace( " ", "" )
                         + "]";
+                logger.finer("Direction.canonicalName: " + this.canonicalName);
             }
         }
         return this .canonicalName;

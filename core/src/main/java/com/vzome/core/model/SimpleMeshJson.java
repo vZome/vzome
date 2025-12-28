@@ -16,9 +16,12 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.vzome.core.algebra.AbstractAlgebraicField;
 import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
+import com.vzome.core.algebra.BigRational;
+import com.vzome.core.algebra.BigRationalImpl;
 import com.vzome.core.construction.ConstructionChanges;
 import com.vzome.core.construction.FreePoint;
 import com.vzome.core.construction.Point;
@@ -58,6 +61,7 @@ public class SimpleMeshJson
             else if ( man instanceof Panel )
             {
                 @SuppressWarnings("unchecked")
+                // DJH: TODO: Ensure that AlgebraicVector serializes BigRational properly to Json here                
                 Stream<AlgebraicVector> vertexStream = StreamSupport.stream( ( (Iterable<AlgebraicVector>) man ).spliterator(), false);
                 JsonNode node = mapper .valueToTree( vertexStream.map( v -> sortedVertexList .indexOf( v ) ). collect( Collectors.toList() ) );
                 faceNodes .add( node );
@@ -78,6 +82,7 @@ public class SimpleMeshJson
         for ( AlgebraicVector algebraicVector : sortedVertexList ) {
             algebraicVector = algebraicVector .minus( origin );
             // This awkward serialize+deserialize seems to be the only way to use views with streaming JSON
+            // DJH: TODO: Ensure that AlgebraicVector serializes BigRational properly to Json here
             generator .writeObject( mapper .readTree( objectWriter .writeValueAsString( algebraicVector ) ) );            
         }
         generator .writeEndArray();
@@ -115,12 +120,13 @@ public class SimpleMeshJson
             JsonNode verticesNode = node .get( "vertices" );
             for ( JsonNode vectorNode : verticesNode ) {
                 int dimension = vectorNode .size();
-                int[][] nums = new int[dimension][];
+                BigRational[][] nums = new BigRational[dimension][];
                 int i = 0;
                 for ( JsonNode numberNode : vectorNode ) {
-                    nums[ i++ ] = mapper .treeToValue( numberNode, new int[]{}.getClass() ); // JSweet compiler confused by int[].class
+                    nums[ i++ ] = mapper .treeToValue( numberNode, new BigRationalImpl[]{}.getClass() ); // JSweet compiler confused by int[].class
                 }
-                AlgebraicVector vertex = field .createVectorFromTDs( nums );
+                // This same code is in SimpleMeshJson and ColoredMeshJson
+                AlgebraicVector vertex = ((AbstractAlgebraicField) field) .createVectorFromTDs( nums );
                 vertex = vertex .scale( scale );
                 if ( vertex .dimension() > 3 )
                     vertex = projection .projectImage( vertex, wFirst );

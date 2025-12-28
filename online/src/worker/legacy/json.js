@@ -67,7 +67,8 @@ export const modelToJS = ( manifestations, withColors=true ) =>
 
   const vertices = sortedVertices .asArray() .map( vertex => {
     const xyzANs = vertex .minus( origin ) .getComponents();
-    return xyzANs .map( an => an.toTrailingDivisor() .map( big => Number( big ) ) );
+    // toTD returns an array of strings, and we want actual BigInts
+    return xyzANs .map( an => an.toTrailingDivisor() .map( str => BigInt( str ) ) );
   } );
 
   if ( withColors )
