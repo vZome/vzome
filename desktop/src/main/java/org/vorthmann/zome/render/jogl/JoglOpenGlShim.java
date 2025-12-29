@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GL2ES2;
-import com.jogamp.opengl.math.FloatUtil;
+import com.jogamp.math.FloatUtil;
 import com.vzome.opengl.OpenGlShim;
 
 /**

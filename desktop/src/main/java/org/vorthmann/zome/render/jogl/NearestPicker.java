@@ -1,7 +1,7 @@
 package org.vorthmann.zome.render.jogl;
 
-import com.jogamp.opengl.math.FloatUtil;
-import com.jogamp.opengl.math.Vec3f;
+import com.jogamp.math.FloatUtil;
+import com.jogamp.math.Vec3f;
 import com.vzome.core.math.Line;
 import com.vzome.core.render.RenderedManifestation;
 import com.vzome.core.render.ShapeAndInstances;
