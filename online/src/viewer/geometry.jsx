@@ -42,7 +42,7 @@ const Instance = ( props ) =>
   }
   const handlePointerDown = ( e ) =>
   {
-    if ( e.button !== 0 ) // left-clicks only, please
+    if ( e.nativeEvent.button !== 0 ) // left-clicks only, please
       return;
     const handler = tool ?.onDragStart;
     if ( handler ) {
@@ -60,7 +60,7 @@ const Instance = ( props ) =>
   }
   const handlePointerUp = ( e ) =>
   {
-    if ( e.button !== 0 ) // left-clicks only, please
+    if ( e.nativeEvent.button !== 0 ) // left-clicks only, please
       return;
     const handler = tool ?.onDragEnd;
     if ( handler ) {

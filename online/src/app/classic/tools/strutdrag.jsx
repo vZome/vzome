@@ -1,7 +1,7 @@
 
 import { createEffect, createSignal } from 'solid-js';
 import { Vector3 } from 'three';
-import { useThree } from 'solid-three';
+import { T, useThree } from "../../../viewer/util/solid-three.js";
 
 import { useInteractionTool } from '../../../viewer/context/interaction.jsx';
 import { ObjectTrackball } from './trackball.jsx';
@@ -92,12 +92,12 @@ const StrutDragTool = props =>
 
   return (
     <Show when={operating()}>
-      <group position={position()}>
+      <T.Group position={position()}>
         <ObjectTrackball startEvent={operating()} line={line()} setLine={setLine} rotateSpeed={0.9} debug={false} />
         <Show when={props.debug}>
           <VectorArrow vector={line()} />
         </Show>
-      </group>
+      </T.Group>
     </Show>
   );
 }

@@ -1,6 +1,6 @@
 
-import { Color } from "three";
-import { createRenderEffect, onMount } from "solid-js";
+import { Color, Scene } from "three";
+import { createRenderEffect, onMount, For, Show } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
 import { Canvas, T, useFrame } from "./util/solid-three.js";
@@ -8,8 +8,8 @@ import { Canvas, T, useFrame } from "./util/solid-three.js";
 import { TrackballControls } from "./trackballcontrols.jsx";
 import { PerspectiveCamera } from "./perspectivecamera.jsx";
 import { OrthographicCamera } from "./orthographiccamera.jsx";
-import { useInteractionTool } from "../viewer/context/interaction.jsx";
-import { useCamera } from "../viewer/context/camera.jsx";
+import { useInteractionTool } from "./context/interaction.jsx";
+import { useCamera } from "./context/camera.jsx";
 import { Labels } from "./labels.jsx";
 import { useViewer } from "./context/viewer.jsx";
 
@@ -107,8 +107,12 @@ export const LightedTrackballCanvas = ( props ) =>
 
   const canvas =
     <Canvas class='canvas3d' dpr={ window.devicePixelRatio } 
-        gl={{ antialias: true, alpha: false, preserveDrawingBuffer: true }}
-        height={props.height ?? "100vh"} width={props.width ?? "100vw"}
+        gl={{ args: [{ antialias: true, alpha: false, preserveDrawingBuffer: true }] }}
+        style={{
+          height: props.height ?? "100%",
+          width: props.width ?? "100%",
+          display: 'flex',
+        }}
         frameloop="always" onPointerMissed={handlePointerMissed} >
 
       { /* This should add the camera to the scene so that the lights move with the camera,
@@ -125,7 +129,6 @@ export const LightedTrackballCanvas = ( props ) =>
       {labels && labels() && <Labels size={canvasSize()} />}
     </Canvas>;
   
-  canvas.style.display = 'flex';
   size = createElementSize( canvas );
 
   createRenderEffect( () => {
