@@ -1,6 +1,6 @@
 package org.vorthmann.zome.render.jogl;
 
-import com.jogamp.opengl.math.Vec3f;
+import com.jogamp.math.Vec3f;
 
 /*
  * Copyright (c) 2007 Sun Microsystems, Inc. All Rights Reserved.
