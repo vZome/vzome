@@ -7,7 +7,7 @@
       "request": "launch",
       "url": "http://localhost:8532/app/test/",
       "pathMapping": {
-        "/app/": "${workspaceFolder}/online/src/serve/app",
+        "/app/": "${workspaceFolder}/online/serve/app",
         "/": "${workspaceFolder}/online/src"
       }
     },
@@ -25,7 +25,7 @@
       "url": "https://localhost:8532/app/classic?debug=true",
       "pathMapping": {
         "/": "${workspaceFolder}/online/src",
-        "/app/": "${workspaceFolder}/online/src/serve/app"
+        "/app/": "${workspaceFolder}/online/serve/app"
       }
     },
     {
@@ -43,7 +43,7 @@
       "request": "launch",
       "url": "http://localhost:8532/app/test/regression.html",
       "pathMapping": {
-        "/app/": "${workspaceFolder}/online/src/serve/app",
+        "/app/": "${workspaceFolder}/online/serve/app",
         "/": "${workspaceFolder}/online/src"
       }
     },
@@ -54,7 +54,7 @@
       "url": "http://localhost:8532/app/test/orbitscan.html",
       "pathMapping": {
         "/": "${workspaceFolder}/online/src",
-        "/app/": "${workspaceFolder}/online/src/serve/app"
+        "/app/": "${workspaceFolder}/online/serve/app"
       }
     }
   ]
