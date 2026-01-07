@@ -427,10 +427,8 @@ onmessage = ({ data }) =>
     }
 
     case 'BOM_REQUESTED': {
-      if ( !design?.rendered?.scenes )
-        break;
       partsPromise .then( ({ colors }) => {
-        const bom = assemblePartsList( design.rendered, colors );
+        const bom = assemblePartsList( design.rendered, colors, payload );
         sendToClient( { type: 'BOM_CHANGED', payload: bom } );
       });
       break;

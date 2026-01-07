@@ -19,11 +19,11 @@ const countPartsForSnapshot = ( instances, shapes, colors ) =>
 }
 
 // For the Zometool component
-export const assemblePartsList = ( rendered, colors ) =>
+export const assemblePartsList = ( rendered, colors, scenes ) =>
 {
   const bom = {};
   // union the BOMs for all scenes
-  const { shapes, scenes, snapshots } = rendered;
+  const { shapes, snapshots } = rendered;
   for ( const { snapshot } of scenes .slice( 1 ) ) {
     const snapshotBom = countPartsForSnapshot( snapshots[ snapshot ], shapes, colors );
     for ( const [ row, bins ] of Object.entries( snapshotBom ) ) {
