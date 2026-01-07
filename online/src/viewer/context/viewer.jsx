@@ -96,7 +96,7 @@ const ViewerProvider = ( props ) =>
     resetScenes: () => setScenes( [] ),
     setProblem,
     clearProblem: () => setProblem( '' ),
-    requestBOM: () => postMessage( { type: 'BOM_REQUESTED' } ),
+    requestBOM: ( scenes ) => postMessage( { type: 'BOM_REQUESTED', payload: scenes } ),
     setTweenDuration,
     useWorker: useWorkerClient,
     exportAs, indexResources,

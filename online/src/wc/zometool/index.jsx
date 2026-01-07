@@ -1,6 +1,7 @@
 
 import { createEffect, createSignal, mergeProps } from 'solid-js';
 import { render } from 'solid-js/web';
+import { unwrap } from 'solid-js/store';
 
 import { Button } from "@kobalte/core/button";
 import { Switch } from "@kobalte/core/switch";
@@ -105,7 +106,8 @@ export const ZometoolInstructions = props =>
     setIndex( minIndex );
     setMaxIndex( maxIndex );
     setHasScenes( scenes?.length > 1 );
-    requestBOM();
+    if ( scenes?.length > 1 )
+      requestBOM( unwrap(scenes) );
   });
 
   createEffect( () => {
