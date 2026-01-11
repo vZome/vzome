@@ -20,11 +20,10 @@ export const fetchUrlJSON = async ( url ) =>
   const text = await fetchUrlText( url );
   return JSON .parse( text );
 }
-  
-export const downloadJSON = ( data, filename ) =>
+
+export const downloadText = ( text, filename, mimeType ) =>
 {
-  const jsonString = JSON.stringify( data, null, 2 );
-  const blob = new Blob( [jsonString], { type: 'application/json' } );
+  const blob = new Blob( [text], { type: mimeType } );
   const url = URL.createObjectURL( blob );
   const a = document.createElement( 'a' );
   a.href = url;
@@ -33,4 +32,10 @@ export const downloadJSON = ( data, filename ) =>
   a.click();
   document.body.removeChild( a );
   URL.revokeObjectURL( url );
+}
+
+export const downloadJSON = ( data, filename ) =>
+{
+  const jsonString = JSON.stringify( data, null, 2 );
+  downloadText( jsonString, filename, 'application/json' );
 }

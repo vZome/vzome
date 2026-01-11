@@ -8,9 +8,9 @@
   and planarity of faces, to find the vertex pre-images in 4D.
 */
 
-import { downloadJSON, fetchUrlJSON, } from "./utils.js";
+import { downloadJSON, downloadText, fetchUrlJSON, } from "./utils.js";
 import { initialize, vzomePkg, util, coloredMeshToSimpleMesh, simpleMeshToTopologicalMesh,
-          enhanced4dToSimpleMesh, enhanced4dToTopologicalMesh, } from "/modules/vzome-legacy.js";
+          enhanced4dToSimpleMesh, enhanced4dToTopologicalMesh, enhancedMeshTo4OFF, } from "/modules/vzome-legacy.js";
 
 Promise.all( [ initialize(), fetchUrlJSON( "./CRF.tmesh.json" ), fetchUrlJSON( "./starter-blues.cmesh.json" ) ] )
   .then( async ( [ api, topoMesh3d, starterCMesh ] ) =>
@@ -209,36 +209,81 @@ Promise.all( [ initialize(), fetchUrlJSON( "./CRF.tmesh.json" ), fetchUrlJSON( "
         }
       } );
 
-      cell .is4D = true;
+      cell .is4D = true;      
       ++ cellsLifted;
     }
 
-    // // create a colored mesh of the last portal face pair for download
-    // const portalFacesMesh = { field: enhancedMesh.field .getName(), vertices: [], edges: [], faces: [] };
-    // const vertexSet = new Set();
-    // let vertexIndex = 0;
-    // portalFaces .forEach( face => {
-    //   const faceVertexIndices = [];
-    //   face .adjacentEdges .forEach( edge => {
-    //     edge .endpoints .forEach( vertex => {
-    //       if ( ! vertexSet .has( vertex ) ) {
-    //         vertex .newIndex = vertexSet .size;
-    //         vertexSet .add( vertex );
-    //         portalFacesMesh .vertices .push( vertex .newIndex );
-    //         ++ vertexIndex;
-    //       }
-    //       faceVertexIndices .push( vertex .newIndex );
-    //     } );
-    //   } );
-    //   portalFacesMesh .faces .push( faceVertexIndices );
-    // } );
-    // portalFacesMesh .vertices = Array .from( vertexSet ) .map( vertex => {
-    //   const xyzANs = vertex .vector .getComponents();
-    //   // toTD returns an array of strings, and we want actual BigInts
-    //   return xyzANs .map( an => an.toTrailingDivisor() .map( str => BigInt( str ) ) );
-    // } );
+    console .log( `Lifted ${ cellsLifted } cells to 4D.` );
 
-    // downloadJSON( portalFacesMesh, "portal-faces.mesh.json" );
+    // Now, mirror everything in the negative W direction
+    enhancedMesh .vertices .forEach( vertex => {
+      if ( vertex .is4D && ! vertex .reflection ) {
+        const w = vertex .vector4d .getComponent( 0 );
+        if ( w .isZero() ) {
+          vertex .reflection = vertex .index; // mark for later processing
+        } else {
+          const negVec4d = new vzomePkg.core.algebra.AlgebraicVector(
+            w .negate(),
+            vertex .vector4d .getComponent( 1 ),
+            vertex .vector4d .getComponent( 2 ),
+            vertex .vector4d .getComponent( 3 )
+          );
+          const rVertex = { index: enhancedMesh .vertices .length, vector4d: negVec4d, is4D: true, reflection: vertex.index, adjacentEdges: [] };
+          vertex .reflection = rVertex .index;
+          enhancedMesh .vertices .push( rVertex );
+        }
+      }
+    } );
+    enhancedMesh .edges .forEach( edge => {
+      if ( edge .is4D && ! edge .reflection ) {
+        if ( edge .endpoints .some( v => v.reflection !== v.index ) ) {
+          const rEdge = { index: enhancedMesh .edges .length, adjacentFaces: [], is4D: true, reflection: edge.index };
+          edge .reflection = rEdge .index;
+          enhancedMesh .edges .push( rEdge );
+          rEdge .endpoints = edge .endpoints .map( vertex => {
+            const rVertex = enhancedMesh .vertices[ vertex .reflection ];
+            rVertex .adjacentEdges .push( rEdge );
+            return rVertex;
+          } );
+        } else {
+          edge .reflection = edge .index;
+        }
+      }
+    } );
+    enhancedMesh .faces .forEach( face => {
+      if ( face .is4D && ! face .reflection ) {
+        if ( face .adjacentEdges .some( e => e .reflection !== e .index ) ) {
+          const rFace = { index: enhancedMesh .faces .length, adjacentCells: [], is4D: true, reflection: face.index };
+          face .reflection = rFace .index;
+          enhancedMesh .faces .push( rFace );
+          rFace .adjacentEdges = face .adjacentEdges .map( edge => {
+            const rEdge = enhancedMesh .edges[ edge .reflection ];
+            rEdge .adjacentFaces .push( rFace );
+            return rEdge;
+          } );
+        } else {
+          face .reflection = face .index;
+        }
+      }
+    } );
+    enhancedMesh .cells .forEach( cell => {
+      if ( cell .is4D && ! cell .reflection ) {
+        if ( cell .adjacentFaces .some( f => f .reflection !== f .index ) ) {
+          const rCell = { index: enhancedMesh .cells .length, is4D: true, reflection: cell.index };
+          cell .reflection = rCell .index;
+          enhancedMesh .cells .push( rCell );
+          rCell .adjacentFaces = cell .adjacentFaces .map( face => {
+            const rFace = enhancedMesh .faces[ face .reflection ];
+            rFace .adjacentCells .push( rCell );
+            return rFace;
+          } );
+        } else {
+          cell .reflection = cell .index;
+        }
+      }
+    } );
+
+    downloadText( enhancedMeshTo4OFF( enhancedMesh ), "JK-CRF-4d.off", "text/plain" );
 
     // Extract a topological mesh to be used in Observable notebooks
     downloadJSON( enhanced4dToTopologicalMesh( enhancedMesh ), "lifted-4d.tmesh.json" );

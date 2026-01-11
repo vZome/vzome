@@ -352,3 +352,40 @@ export const enhanced4dToSimpleMesh = ( enhancedMesh ) =>
   return inflatedSimpleMesh;
 }
 
+export const enhancedMeshTo4OFF = ( { vertices, edges, faces, cells } ) =>
+{
+  let off = "4OFF\n";
+  off += `${ vertices .length } ${ faces .length } ${ edges .length } ${ cells .length } 0\n`;
+
+  off += "\n# Vertices\n";
+  vertices .forEach( vertex => {
+    let vec4d = vertex .vector4d;
+    if ( ! vec4d ) {
+      vec4d = vertex .vector .inflateTo4d( true );
+    }
+    const components = vec4d .getComponents() .map( comp => comp .evaluate() );
+    off += `${ components[1] .toString() } ${ components[2] .toString() } ${ components[3] .toString() } ${ components[0] .toString() }\n`;
+  } );
+
+  off += "\n# Faces\n";
+  faces .forEach( face => {
+    off += `${ face .adjacentEdges .length } `;
+    face .adjacentEdges .forEach( edge => {
+      off += `${ edge .index } `;
+    } );
+    off += "\n";
+  } );
+  off += "\n";
+
+  off += "# Cells\n";
+  cells .forEach( cell => {
+    off += `${ cell .adjacentFaces .length } `;
+    cell .adjacentFaces .forEach( face => {
+      off += `${ face .index } `;
+    } );
+    off += "\n";
+  } );
+  off += "\n";
+
+  return off; 
+}
