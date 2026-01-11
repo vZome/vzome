@@ -54,15 +54,12 @@ import com.vzome.core.math.RealVector;
 import com.vzome.core.math.symmetry.OrbitSet;
 import com.vzome.core.math.symmetry.QuaternionicSymmetry;
 import com.vzome.core.model.ColoredMeshJson;
-import com.vzome.core.model.Connector;
 import com.vzome.core.model.Exporter;
 import com.vzome.core.model.Manifestation;
 import com.vzome.core.model.ManifestationChanges;
 import com.vzome.core.model.ManifestationImpl;
-import com.vzome.core.model.Panel;
 import com.vzome.core.model.RealizedModelImpl;
 import com.vzome.core.model.SimpleMeshJson;
-import com.vzome.core.model.Strut;
 import com.vzome.core.model.VefModelExporter;
 import com.vzome.core.render.RenderedModel;
 import com.vzome.core.tools.BookmarkToolFactory;
@@ -273,6 +270,7 @@ public class DocumentModel implements Snapshot .Recorder, Context, DocumentIntf
             public void showCommand( Element xml, int editNumber )
             {
                 String str = editNumber + ": " + DomSerializer .toString( xml );
+                logger.fine(str);
                 DocumentModel.this .firePropertyChange( "current.edit.xml", null, str );
             }
 
@@ -502,18 +500,7 @@ public class DocumentModel implements Snapshot .Recorder, Context, DocumentIntf
 
     public RealVector getCentroid( Manifestation target )
     {
-        AlgebraicVector v;
-        if ( target instanceof Connector )
-            v = ( (Connector) target ) .getLocation();
-        else if ( target instanceof Strut ) {
-            v = ((Strut) target) .getCentroid( );
-        }
-        else if ( target instanceof Panel )
-            v = ((Panel) target) .getCentroid( );
-        else
-            v = this.getField().origin(3);
-
-        return this .renderedModel .renderVector( v );
+        return this.renderedModel.renderVector(target == null ? getField().origin(3) : target.getCentroid());
     }
 
     public RealVector getParamLocation( String string )
@@ -710,6 +697,7 @@ public class DocumentModel implements Snapshot .Recorder, Context, DocumentIntf
         return false;
     }
 
+    @Override
     public Element getDetailsXml( Document doc, boolean includeSymmetriesAndTools )
     {
         Element vZomeRoot = doc .createElementNS( XmlSaveFormat.CURRENT_FORMAT, "vzome:vZome" );
@@ -877,6 +865,7 @@ public class DocumentModel implements Snapshot .Recorder, Context, DocumentIntf
         lesson .newSnapshotPage( id, camera );
     }
 
+    @Override
     public RenderedModel getRenderedModel()
     {
         return this .renderedModel;
@@ -898,6 +887,7 @@ public class DocumentModel implements Snapshot .Recorder, Context, DocumentIntf
         return (Segment) editorModel .getSelectedConstruction( Segment.class );
     }
 
+    @Override
     public ToolsModel getToolsModel()
     {
         return this .tools;
@@ -923,11 +913,13 @@ public class DocumentModel implements Snapshot .Recorder, Context, DocumentIntf
         return this .mHistory;
     }
 
+    @Override
     public EditorModel getEditorModel()
     {
         return this .editorModel;
     }
 
+    @Override
     public Lights getSceneLighting()
     {
         return this.sceneLighting;
