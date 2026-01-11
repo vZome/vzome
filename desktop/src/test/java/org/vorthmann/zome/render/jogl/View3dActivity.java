@@ -26,13 +26,13 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 
+import com.jogamp.math.FloatUtil;
+import com.jogamp.math.Ray;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
-import com.jogamp.opengl.math.FloatUtil;
-import com.jogamp.opengl.math.Ray;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.vzome.api.Application;
 import com.vzome.api.Document;
