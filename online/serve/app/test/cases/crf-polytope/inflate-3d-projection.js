@@ -8,7 +8,7 @@
   and planarity of faces, to find the vertex pre-images in 4D.
 */
 
-import { downloadJSON, downloadText, fetchUrlJSON, } from "./utils.js";
+import { downloadJSON, downloadText, fetchUrlJSON, fetchUrlText, } from "./utils.js";
 import { initialize, vzomePkg, util, coloredMeshToSimpleMesh, simpleMeshToTopologicalMesh,
           enhanced4dToSimpleMesh, enhanced4dToTopologicalMesh, enhancedMeshTo4OFF, } from "/modules/vzome-legacy.js";
 
@@ -283,11 +283,116 @@ Promise.all( [ initialize(), fetchUrlJSON( "./CRF.tmesh.json" ), fetchUrlJSON( "
       }
     } );
 
-    downloadText( enhancedMeshTo4OFF( enhancedMesh ), "JK-CRF-4d.off", "text/plain" );
+    // downloadText( enhancedMeshTo4OFF( enhancedMesh ), "JK-CRF-4d.off", "text/plain" );
 
-    // Extract a topological mesh to be used in Observable notebooks
-    downloadJSON( enhanced4dToTopologicalMesh( enhancedMesh ), "lifted-4d.tmesh.json" );
+    // Now, a miracle occurs: the OFF file just exported was loaded into Stella4D by
+    //  Nathaniel from the vZome Discord server, and Stella4D confirmed that the vertex
+    //  data was complete for convex 4D polytope.  It reported:
+    //     vertices: 704
+    //     edges:    2352
+    //     faces:    2096
+    //     cells:    448
+    // Next, I installed `qhull` (http://www.qhull.org/), and handcrafted an input file,
+    //  `qhull-input.txt`.  I then ran:
+    //      $  cat qhull-input.txt | qhull o > JK-CRF-qhull.off
+    //      $  cat qhull-input.txt | qhull Fv > qhull-cell-vertices.txt
+    //      $  cat qhull-input.txt | qhull Fn > qhull-cell-neighbors.txt
+    //  Note that I cannot use `qhull p` to get vertices because the indices will be off.
+    //  In `qhull-cell-vertices.txt`, the vertex indices match my internal indices.
 
-    // Finally, extract all 4D faces, edge, and vertices into a simple mesh for download
-    downloadJSON( enhanced4dToSimpleMesh( enhancedMesh ), "lifted-4d.mesh.json" );
+    // Now, I can load `qhull-cell-vertices.txt` and `qhull-cell-neighbors.txt` to reconstruct
+    //  the topological mesh with complete edge, face, and cell data, *replacing* the existing topology
+    //  (which is incomplete anyway).
+
+    const representativeEdgeVector = enhancedMesh .edges[ 0 ] .endpoints[0] .vector4d .minus( enhancedMesh .edges[0] .endpoints[1] .vector4d );
+    const repEdgeLengthSquared = representativeEdgeVector .dot( representativeEdgeVector );
+
+    enhancedMesh .edges = [];
+    enhancedMesh .faces = [];
+    enhancedMesh .cells = [];
+    enhancedMesh .vertices .forEach( vertex => {
+      vertex .adjacentEdges = [];
+      if ( ! vertex .is4D ) {
+        // This is legit, since the OFF export already works this way, and Stella4D accepted it.
+        vertex .vector4d = vertex .vector .inflateTo4d( true ); // w=0
+        vertex .is4D = true;
+      }
+    } );
+    Promise.all( [ fetchUrlText( "./output/qhull-cell-vertices.txt" ), fetchUrlText( "./output/qhull-cell-neighbors.txt" ) ] )
+      .then( async ( [ verticesText, neighborCellsText ] ) => {
+
+        const verticesLines = verticesText .trim() .split( "\n" ) .slice( 1 ); // skip first line
+        const neighborCellsLines = neighborCellsText .trim() .split( "\n" ) .slice( 1 ); // skip first line
+
+        verticesLines .forEach( ( line, index ) => {
+          const adjacentVertices = line .trim() .split( /\s+/ ) .slice( 1 ) .map( s => parseInt( s ) );
+          const adjacentCells = neighborCellsLines[ index ] .trim() .split( /\s+/ ) .slice( 1 ) .map( s => parseInt( s ) );
+          const cell = { index: enhancedMesh .cells .length, adjacentFaces: [], adjacentVertices, adjacentCells, is4D: true };
+          enhancedMesh .cells .push( cell );
+        } );
+
+        console.log( verticesLines[ 0 ] );
+
+        enhancedMesh .cells .forEach( cell => {
+          // For each neighboring cell, find or create the face that separates them
+          cell .adjacentCells .forEach( neighborCellIndex => {
+            // To avoid duplicating faces, only create the face if this cell's index is less than the neighbor's index
+            if ( cell .index < neighborCellIndex ) {
+              const neighborCell = enhancedMesh .cells[ neighborCellIndex ];
+              // Find the common vertices between the two cells
+              const commonVertices = cell .adjacentVertices .filter( vIndex => neighborCell .adjacentVertices .includes( vIndex ) );
+              // Create edges for each pair of common vertices
+              const faceEdges = [];
+              for ( let i = 0; i < commonVertices .length; i++ ) {
+                for ( let j = i + 1; j < commonVertices .length; j++ ) {
+                  const vAIndex = commonVertices[ i ];
+                  const vBIndex = commonVertices[ j ];
+                  // Check if this edge already exists
+                  let edge = enhancedMesh .edges .find( e =>
+                    ( e .endpoints[0] .index === vAIndex && e .endpoints[1] .index === vBIndex ) ||
+                    ( e .endpoints[0] .index === vBIndex && e .endpoints[1] .index === vAIndex )
+                  );
+                  if ( ! edge ) {
+                    // Create new edge
+                    const vA = enhancedMesh .vertices[ vAIndex ];
+                    const vB = enhancedMesh .vertices[ vBIndex ];
+                    // Check if this potential edge is the right length
+                    const edgeVector = vA .vector4d .minus( vB .vector4d );
+                    const edgeLengthSquared = edgeVector .dot( edgeVector );
+                    if ( ! edgeLengthSquared .equals( repEdgeLengthSquared ) ) {
+                      continue; // skip edges that are not the correct length
+                    }
+                    edge = { index: enhancedMesh .edges .length, endpoints: [ vA, vB ], adjacentFaces: [], is4D: true };
+                    enhancedMesh .edges .push( edge );
+                    // Link edge to vertices
+                    vA .adjacentEdges .push( edge );
+                    vB .adjacentEdges .push( edge );
+                  }
+                  faceEdges .push( edge );
+                }
+              }
+              // Create the face
+              const face = { index: enhancedMesh .faces .length, adjacentEdges: faceEdges, adjacentCells: [ cell, neighborCell ], is4D: true };
+              enhancedMesh .faces .push( face );
+              // Link face to edges
+              faceEdges .forEach( edge => {
+                edge .adjacentFaces .push( face );
+              } );
+              // Link face to cells
+              cell .adjacentFaces .push( face );
+              neighborCell .adjacentFaces .push( face );
+            }
+          } );
+        } );
+
+        console .log( `Reconstructed mesh has ${ enhancedMesh .vertices .length } vertices, ${ enhancedMesh .edges .length } edges, ${ enhancedMesh .faces .length } faces, and ${ enhancedMesh .cells .length } cells.` );
+
+        downloadText( enhancedMeshTo4OFF( enhancedMesh ), "JK-CRF-4d.off", "text/plain" );
+
+        // Extract a topological mesh to be used in Observable notebooks
+        downloadJSON( enhanced4dToTopologicalMesh( enhancedMesh ), "lifted-4d.tmesh.json" );
+
+        // Finally, extract all 4D faces, edge, and vertices into a simple mesh for download
+        downloadJSON( enhanced4dToSimpleMesh( enhancedMesh ), "lifted-4d.mesh.json" );
+      } );
   } );

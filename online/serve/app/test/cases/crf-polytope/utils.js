@@ -1,5 +1,5 @@
 
-const fetchUrlText = async ( url ) =>
+export const fetchUrlText = async ( url ) =>
 {
   let response;
   try {
