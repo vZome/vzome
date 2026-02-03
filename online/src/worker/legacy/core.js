@@ -369,7 +369,7 @@ export const loadAndInjectResource = async ( path, url ) =>
     addLegacyField( vzomePkg.core.algebra.SnubDodecField, vzomePkg.core.kinds.SnubDodecFieldApplication )
     addLegacyField( vzomePkg.core.algebra.SuperGoldenField, vzomePkg.core.kinds.DefaultFieldApplication )
     addLegacyField( vzomePkg.core.algebra.PlasticNumberField, vzomePkg.core.kinds.DefaultFieldApplication )
-    addLegacyField( vzomePkg.core.algebra.PlasticPhiField, vzomePkg.core.kinds.DefaultFieldApplication )
+    addLegacyField( vzomePkg.core.algebra.PlasticPhiField, vzomePkg.core.kinds.PlasticPhiFieldApplication )
     addLegacyField( vzomePkg.core.algebra.EdPeggField, vzomePkg.core.kinds.DefaultFieldApplication )  
   });
   const getFieldApp = ( name='golden' ) =>

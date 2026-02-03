@@ -459,8 +459,8 @@ namespace com.vzome.core.render {
                 } else throw new Error('invalid overload');
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getOrientations$(): number[][] {
-                return this.getOrientations(false);
+            getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
+                return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             getEmbedding(): number[] {
@@ -482,8 +482,8 @@ namespace com.vzome.core.render {
                 return embedding;
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
-                return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
+            getOrientations$(): number[][] {
+                return this.getOrientations(false);
             }
             symmetry: com.vzome.core.math.symmetry.Symmetry;
 

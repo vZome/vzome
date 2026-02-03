@@ -21976,6 +21976,120 @@ export var com;
         (function (core) {
             var kinds;
             (function (kinds) {
+                class PlasticPhiFieldApplication extends com.vzome.core.kinds.DefaultFieldApplication {
+                    constructor(field) {
+                        super(field);
+                        if (this.icosahedralPerspective === undefined) {
+                            this.icosahedralPerspective = null;
+                        }
+                        this.symmetryPerspectives = (new java.util.ArrayList());
+                        if (this.H4 === undefined) {
+                            this.H4 = null;
+                        }
+                        this.h4Builder = null;
+                        this.icosahedralPerspective = new com.vzome.core.kinds.IcosahedralSymmetryPerspective(this.getField());
+                        this.symmetryPerspectives.add(this.icosahedralPerspective);
+                        this.symmetryPerspectives.add(super.getDefaultSymmetryPerspective());
+                        this.H4 = new com.vzome.core.math.symmetry.QuaternionicSymmetry("H_4", "com/vzome/core/math/symmetry/H4roots.vef", this.getField());
+                    }
+                    /**
+                     *
+                     * @return {com.vzome.core.algebra.PlasticPhiField}
+                     */
+                    getField() {
+                        return super.getField();
+                    }
+                    /**
+                     *
+                     * @return {*}
+                     */
+                    getSymmetryPerspectives() {
+                        return this.symmetryPerspectives;
+                    }
+                    /**
+                     *
+                     * @return {*}
+                     */
+                    getDefaultSymmetryPerspective() {
+                        return this.icosahedralPerspective;
+                    }
+                    /**
+                     *
+                     * @param {string} symmName
+                     * @return {*}
+                     */
+                    getSymmetryPerspective(symmName) {
+                        for (let index = this.symmetryPerspectives.iterator(); index.hasNext();) {
+                            let sp = index.next();
+                            {
+                                if (sp.getName() === symmName) {
+                                    return sp;
+                                }
+                            }
+                        }
+                        return super.getSymmetryPerspective(symmName);
+                    }
+                    /**
+                     *
+                     * @param {*} toolFactories
+                     * @param {com.vzome.core.editor.ToolsModel} tools
+                     */
+                    registerToolFactories(toolFactories, tools) {
+                        super.registerToolFactories(toolFactories, tools);
+                        const symm = this.icosahedralPerspective.getSymmetry();
+                        toolFactories.put("AxialStretchTool", new com.vzome.core.tools.AxialStretchTool.Factory(tools, symm, false, false, false));
+                        toolFactories.put("SymmetryTool", new com.vzome.core.tools.IcosahedralToolFactory(tools, symm));
+                    }
+                    /**
+                     *
+                     * @param {string} name
+                     * @return {com.vzome.core.math.symmetry.QuaternionicSymmetry}
+                     */
+                    getQuaternionSymmetry(name) {
+                        switch ((name)) {
+                            case "H_4":
+                                return this.H4;
+                            default:
+                                return null;
+                        }
+                    }
+                    /**
+                     *
+                     * @param {string} groupName
+                     * @param {number} index
+                     * @param {number} edgesToRender
+                     * @param {com.vzome.core.algebra.AlgebraicNumber[]} edgeScales
+                     * @param {*} listener
+                     */
+                    constructPolytope(groupName, index, edgesToRender, edgeScales, listener) {
+                        switch ((groupName)) {
+                            case "H4":
+                                if (this.h4Builder == null) {
+                                    const qsymm = new com.vzome.core.math.symmetry.QuaternionicSymmetry("H_4", "com/vzome/core/math/symmetry/H4roots.vef", this.getField());
+                                    this.h4Builder = new com.vzome.core.commands.CommandUniformH4Polytope(this.getField(), qsymm, 0);
+                                }
+                                this.h4Builder.generate(index, edgesToRender, edgeScales, listener);
+                                break;
+                            default:
+                                super.constructPolytope(groupName, index, edgesToRender, edgeScales, listener);
+                                break;
+                        }
+                    }
+                }
+                kinds.PlasticPhiFieldApplication = PlasticPhiFieldApplication;
+                PlasticPhiFieldApplication["__class"] = "com.vzome.core.kinds.PlasticPhiFieldApplication";
+                PlasticPhiFieldApplication["__interfaces"] = ["com.vzome.core.math.symmetry.Symmetries4D", "com.vzome.core.editor.FieldApplication"];
+            })(kinds = core.kinds || (core.kinds = {}));
+        })(core = vzome.core || (vzome.core = {}));
+    })(vzome = com.vzome || (com.vzome = {}));
+})(com || (com = {}));
+(function (com) {
+    var vzome;
+    (function (vzome) {
+        var core;
+        (function (core) {
+            var kinds;
+            (function (kinds) {
                 /**
                  * Everything here is stateless, or at worst, a cache (like Shapes).
                  * An instance of this can be shared by many DocumentModels.

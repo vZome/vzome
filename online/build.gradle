@@ -165,6 +165,7 @@ core.config {
     'com/vzome/core/kinds/HeptagonFieldApplication.java',
     'com/vzome/core/kinds/SnubCubeFieldApplication.java',
     'com/vzome/core/kinds/SnubDodecFieldApplication.java',
+    'com/vzome/core/kinds/PlasticPhiFieldApplication.java',
     'com/vzome/core/kinds/PolygonFieldApplication.java',
     'com/vzome/core/kinds/AbstractSymmetryPerspective.java',
     'com/vzome/core/kinds/OctahedralSymmetryPerspective.java',
