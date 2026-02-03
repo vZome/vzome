@@ -736,7 +736,7 @@ namespace com.vzome.core.algebra {
                 const parts: string[] = string.split("/");
                 fractions[0] = parts[0] + "/" + ((parts.length > 1) ? parts[1] : "1");
             }
-            return this.parseNumber$java_lang_String(javaemul.internal.StringHelper.join(" ", fractions));
+            return this.parseNumberStrs(fractions);
         }
 
         public parseNumber$java_lang_String(nums: string): com.vzome.core.algebra.AlgebraicNumber {
@@ -763,6 +763,18 @@ namespace com.vzome.core.algebra {
             for(let i: number = 0; i < order; i++) {{
                 const digit: string = tokens.nextToken();
                 bigs[i] = this.numberFactory.parseBigRational(digit);
+            };}
+            return this.numberFactory.createAlgebraicNumberFromBRs(this, bigs);
+        }
+
+        /*private*/ parseNumberStrs(numStrs: string[]): com.vzome.core.algebra.AlgebraicNumber {
+            const order: number = this.getOrder();
+            if (numStrs.length !== order){
+                throw new java.lang.IllegalStateException("Field order (" + order + ") does not match token count: " + numStrs.length);
+            }
+            const bigs: com.vzome.core.algebra.BigRational[] = (s => { let a=[]; while(s-->0) a.push(null); return a; })(order);
+            for(let i: number = 0; i < order; i++) {{
+                bigs[i] = this.numberFactory.parseBigRational(numStrs[i]);
             };}
             return this.numberFactory.createAlgebraicNumberFromBRs(this, bigs);
         }

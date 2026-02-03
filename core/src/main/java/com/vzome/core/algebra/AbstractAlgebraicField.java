@@ -821,7 +821,7 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
             String[] parts = string .split( "/" );
             fractions[ 0 ] = parts[ 0 ] + "/" + ((parts.length > 1)? parts[ 1 ] : "1");
         }
-        return this .parseNumber( String.join( " ", fractions ) );
+        return this .parseNumberStrs( fractions );
     }
 
     @Override
@@ -843,6 +843,19 @@ public abstract class AbstractAlgebraicField implements AlgebraicField
         for ( int i = 0; i < order; i++ ) {
             String digit = tokens .nextToken();
             bigs[ i ] = this.numberFactory .parseBigRational( digit );
+        }
+        return this.numberFactory .createAlgebraicNumberFromBRs( this, bigs );
+    }
+
+    private AlgebraicNumber parseNumberStrs( String[] numStrs )
+    {
+        int order = this .getOrder();
+        if ( numStrs .length != order ) {
+            throw new IllegalStateException( "Field order (" + order + ") does not match token count: " + numStrs .length );
+        }
+        BigRational[] bigs = new BigRational[ order ];
+        for ( int i = 0; i < order; i++ ) {
+            bigs[ i ] = this.numberFactory .parseBigRational( numStrs[ i ] );
         }
         return this.numberFactory .createAlgebraicNumberFromBRs( this, bigs );
     }
