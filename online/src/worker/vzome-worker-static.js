@@ -168,6 +168,9 @@ const createDesign = async ( report, fieldName ) =>
     design = await legacy .newDesign( fieldName, clientEvents( report ) );
     report({ type: 'CONTROLLER_CREATED' }); // do we really need this for previewing?
     reportDefaultScene( report );
+    
+    // Support exports that rely on resources being loaded
+    Promise.all( resourceIndex .map( path => legacy.loadAndInjectResource( path, new URL( `/app/classic/resources/${path}`, baseURL ) ) ) );
   } catch (error) {
     console.log(`createDesign failure: ${error.message}`);
     report({ type: 'ALERT_RAISED', payload: 'Failed to create vZome model.' });
@@ -185,6 +188,7 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, shapshot=D
         report( { type: 'ALERT_RAISED', payload: 'Unable to load .vZome content' } );
         return;
       }
+
       const doLoad = async () => {
         design = await legacy .loadDesign( xml, debug, polygons, events );
         report( { type: 'CONTROLLER_CREATED' } ); // do we really need this for previewing?
@@ -210,7 +214,10 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, shapshot=D
           .catch( error => {
             console.log( `openDesign failure: ${error.message}` );
             report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model: ${error.message}` } );
-          })
+          });
+    
+      // Support exports that rely on resources being loaded
+      Promise.all( resourceIndex .map( path => legacy.loadAndInjectResource( path, new URL( `/app/classic/resources/${path}`, baseURL ) ) ) );
     } )
 
     .catch( error => {
@@ -397,8 +404,6 @@ onmessage = ({ data }) =>
 
     case 'WINDOW_LOCATION':
       baseURL = payload;
-      importLegacy()
-        .then( legacy => Promise.all( resourceIndex .map( path => legacy.loadAndInjectResource( path, new URL( `/app/classic/resources/${path}`, baseURL ) ) ) ) );
       break;
 
     case 'URL_PROVIDED':
