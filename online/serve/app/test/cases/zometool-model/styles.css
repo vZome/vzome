@@ -31,8 +31,9 @@ h1 {
   display: grid;
   column-gap: 2rem;
   row-gap: 1rem;
+  padding-block-start: 1rem;
   grid-template-columns: 2fr 1.2fr;
-  grid-template-rows: 2fr min-content 2fr 4fr;
+  grid-template-rows: 3fr min-content 2fr 3fr;
   grid-template-areas:
     "viewer description"
     "viewer difficulty"
@@ -45,8 +46,7 @@ h1 {
 
 .zometool-model-description {
   grid-area: description;
-  padding-inline-end: 1rem;
-  padding-block-start: 1rem;
+  overflow: auto;
 }
 
 .zometool-model-difficulty {
