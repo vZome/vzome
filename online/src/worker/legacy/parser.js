@@ -131,11 +131,12 @@ export const createParser = ( documentFactory ) => ( xmlText ) =>
   const historyElement = vZomeRoot.getChildElement( "EditHistory" ) || vZomeRoot.getChildElement( "editHistory" ) || vZomeRoot.getChildElement( "EditHistoryDetails" );
   const xmlTree = assignIds( historyElement.nativeElement );
   const edits = new ParsedEdit( xmlTree, null, legacyDesign.interpretEdit );
-  const targetEditId = `:${edits.getAttribute( "editNumber" )}:`
+  const targetEdit = Number( edits.getAttribute( "editNumber" ) );
+  const targetEditId = `:${targetEdit}:`
   const firstEdit = edits.firstChild()
 
   const snapshotNodes = [ ...findSnapshotNodes( xmlTree ), targetEditId ]; // The extra snapshot is discarded later
   const scenes = parseArticle( vZomeRoot.getChildElement( "notes" ) );
 
-  return { ...legacyDesign, firstEdit, camera, lighting, xmlTree, scenes, snapshotNodes }
+  return { ...legacyDesign, firstEdit, camera, lighting, xmlTree, scenes, snapshotNodes, targetEdit }
 }
