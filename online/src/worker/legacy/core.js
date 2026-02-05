@@ -315,7 +315,10 @@ export const loadAndInjectResource = async ( path, url ) =>
 {
     const response = await fetch( url )
     if ( ! response.ok ) {
-      console.log( `No resource for ${path}` )
+      // use console.debug() instead of console.log() 
+      // because these messages occur every time the src changes
+      // and can get pretty verbose in the js console
+      console.debug( `No resource for ${path}` )
       return
     }
     const text = await response.text()
