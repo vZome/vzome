@@ -280,8 +280,8 @@ const fileLoader = ( report, payload ) =>
   report( { type: 'FETCH_STARTED', payload: { name, preview: false } } );
   console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% editing ${name}` );
   const xmlLoading = fetchFileText( file );
-
-  xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { text } } ) ); // Don't send the name yet, parse/interpret may fail
+  // trim incoming text ASAP here.
+  xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { text: text.trim()} } ) ); // Don't send the name yet, parse/interpret may fail
 
   openDesign( xmlLoading, name, report, debug, polygons );
 }
@@ -324,12 +324,14 @@ const urlLoader = async ( report, payload ) =>
   const name = url.split( '\\' ).pop().split( '/' ).pop()
   report( { type: 'FETCH_STARTED', payload } );
 
-  console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${preview? "previewing" : "interpreting " } ${url}` );
+  const isDataUrl = url.startsWith("data:")
+  console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${preview && !isDataUrl ? "previewing" : "interpreting " } ${isDataUrl ? url.substring(0, 200) + " ..." : url}` );
   const xmlLoading = source && fetchUrlText( url );
   source && xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { text, url } } ) ); // Don't send the name yet, parse/interpret may fail
 
   const events = clientEvents( report );
-  if ( preview ) {
+  // data URLs can't have an associated .shapes.json, so don't bother trying
+  if ( preview && ! isDataUrl ) {
     // The client prefers to show a preview if possible.
     const previewUrl = url.substring( 0, url.length-6 ).concat( ".shapes.json" );
     return fetchUrlText( previewUrl )

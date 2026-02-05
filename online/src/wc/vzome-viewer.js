@@ -164,7 +164,7 @@ class VZomeViewer extends HTMLElement
     return new Promise( ( resolve, reject ) => {
       this.#designPromise = { resolve, reject };
       this.#api .resetScenes();
-      this.#api .openText( name, contents );
+      this.#api .openText( name, contents.trim() );
     } );
   }
 
