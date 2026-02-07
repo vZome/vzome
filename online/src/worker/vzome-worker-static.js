@@ -168,14 +168,23 @@ const createDesign = async ( report, fieldName ) =>
     design = await legacy .newDesign( fieldName, clientEvents( report ) );
     report({ type: 'CONTROLLER_CREATED' }); // do we really need this for previewing?
     reportDefaultScene( report );
-    
-    // Support exports that rely on resources being loaded
-    Promise.all( resourceIndex .map( path => legacy.loadAndInjectResource( path, new URL( `/app/classic/resources/${path}`, baseURL ) ) ) );
   } catch (error) {
     console.log(`createDesign failure: ${error.message}`);
     report({ type: 'ALERT_RAISED', payload: 'Failed to create vZome model.' });
     return false;
   }
+}
+
+let resourcesPromise = null;
+
+export const whenResourcesLoaded = async () =>
+{
+  if ( resourcesPromise === null ) {
+    // Support exports that rely on resources being loaded
+    const legacy = await importLegacy();
+    resourcesPromise = Promise.all( resourceIndex .map( path => legacy.loadAndInjectResource( path, new URL( `/app/classic/resources/${path}`, baseURL ) ) ) );
+  }
+  return resourcesPromise;
 }
 
 const openDesign = async ( xmlLoading, name, report, debug, polygons, shapshot=DEFAULT_SNAPSHOT ) =>
@@ -215,9 +224,6 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, shapshot=D
             console.log( `openDesign failure: ${error.message}` );
             report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model: ${error.message}` } );
           });
-    
-      // Support exports that rely on resources being loaded
-      Promise.all( resourceIndex .map( path => legacy.loadAndInjectResource( path, new URL( `/app/classic/resources/${path}`, baseURL ) ) ) );
     } )
 
     .catch( error => {
@@ -485,7 +491,9 @@ onmessage = ({ data }) =>
         clientEvents( sendToClient ) .textExported( 'exportText', xml );
         return;
       }
-      design.wrapper .doAction( '', 'exportText', payload );
+      whenResourcesLoaded() .then( () => {
+        design.wrapper .doAction( '', 'exportText', payload );
+      } );
       break;
     }
 
