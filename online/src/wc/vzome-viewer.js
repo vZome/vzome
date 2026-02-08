@@ -191,6 +191,8 @@ class VZomeViewer extends HTMLElement
     const callbacks = {
       setApi: api => {
         this.#api = api;
+        debug && console.log( 'vzome-viewer-ready' );
+        this .dispatchEvent( new CustomEvent( 'vzome-viewer-ready' ) );
       },
       onAlert: ( error ) => {
         this .dispatchEvent( new CustomEvent( 'vzome-design-failed' ) );
