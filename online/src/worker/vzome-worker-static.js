@@ -168,14 +168,23 @@ const createDesign = async ( report, fieldName ) =>
     design = await legacy .newDesign( fieldName, clientEvents( report ) );
     report({ type: 'CONTROLLER_CREATED' }); // do we really need this for previewing?
     reportDefaultScene( report );
-    
-    // Support exports that rely on resources being loaded
-    Promise.all( resourceIndex .map( path => legacy.loadAndInjectResource( path, new URL( `/app/classic/resources/${path}`, baseURL ) ) ) );
   } catch (error) {
     console.log(`createDesign failure: ${error.message}`);
     report({ type: 'ALERT_RAISED', payload: 'Failed to create vZome model.' });
     return false;
   }
+}
+
+let resourcesPromise = null;
+
+export const whenResourcesLoaded = async () =>
+{
+  if ( resourcesPromise === null ) {
+    // Support exports that rely on resources being loaded
+    const legacy = await importLegacy();
+    resourcesPromise = Promise.all( resourceIndex .map( path => legacy.loadAndInjectResource( path, new URL( `/app/classic/resources/${path}`, baseURL ) ) ) );
+  }
+  return resourcesPromise;
 }
 
 const openDesign = async ( xmlLoading, name, report, debug, polygons, shapshot=DEFAULT_SNAPSHOT ) =>
@@ -215,9 +224,6 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, shapshot=D
             console.log( `openDesign failure: ${error.message}` );
             report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model: ${error.message}` } );
           });
-    
-      // Support exports that rely on resources being loaded
-      Promise.all( resourceIndex .map( path => legacy.loadAndInjectResource( path, new URL( `/app/classic/resources/${path}`, baseURL ) ) ) );
     } )
 
     .catch( error => {
@@ -236,14 +242,23 @@ const exportPreview = ( camera, lighting, scenes ) =>
   return JSON.stringify( rendered, null, 2 );
 }
 
+const SCENE_UIS = {
+  'indexed'       : 'indexed',
+  'indexed-camera': 'indexed (load-camera)',
+  'titled'        : 'menu (named)',
+  'all'           : 'menu (all)',
+  'zometool'      : 'zometool',
+  'none'          : 'none',
+}
+
 const shareToGitHub = async ( target, config, data, report ) =>
 {
   const { orgName, repoName, branchName } = target;
   const { title, description, blog, publish, style, originalDate } = config;
   const { name, camera, lighting, image, scenes } = data;
   const preview = exportPreview( camera, lighting, scenes );
-  importLegacy()
-    .then( module => {
+  Promise.all( [ importLegacy(), whenResourcesLoaded() ] )
+    .then( ([ module ]) => {
       const xml = design.wrapper .serializeVZomeXml( lighting, camera, scenes );
       const creation = ( originalDate || new Date() ) .toISOString();
       const date = creation .substring( 0, 10 );
@@ -254,7 +269,7 @@ const shareToGitHub = async ( target, config, data, report ) =>
       shareData .setEntryHandler( { addEntry: (path, data, encoding) => {
         data && uploads .push( { path, encoding, data } );
       } } );
-      const gitUrl = shareData .generateContent( orgName, repoName, branchName, title, description, blog, publish, style );
+      const gitUrl = shareData .generateContent( orgName, repoName, branchName, title, description, blog, publish, SCENE_UIS[ style ] );
 
       commitToGitHub( target, uploads, `Online share - ${name}` )
       .then( () => {
@@ -487,7 +502,9 @@ onmessage = ({ data }) =>
         clientEvents( sendToClient ) .textExported( 'exportText', xml );
         return;
       }
-      design.wrapper .doAction( '', 'exportText', payload );
+      whenResourcesLoaded() .then( () => {
+        design.wrapper .doAction( '', 'exportText', payload );
+      } );
       break;
     }
 
