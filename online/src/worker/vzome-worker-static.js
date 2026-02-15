@@ -242,14 +242,23 @@ const exportPreview = ( camera, lighting, scenes ) =>
   return JSON.stringify( rendered, null, 2 );
 }
 
+const SCENE_UIS = {
+  'indexed'       : 'indexed',
+  'indexed-camera': 'indexed (load-camera)',
+  'titled'        : 'menu (named)',
+  'all'           : 'menu (all)',
+  'zometool'      : 'zometool',
+  'none'          : 'none',
+}
+
 const shareToGitHub = async ( target, config, data, report ) =>
 {
   const { orgName, repoName, branchName } = target;
   const { title, description, blog, publish, style, originalDate } = config;
   const { name, camera, lighting, image, scenes } = data;
   const preview = exportPreview( camera, lighting, scenes );
-  importLegacy()
-    .then( module => {
+  Promise.all( [ importLegacy(), whenResourcesLoaded() ] )
+    .then( ([ module ]) => {
       const xml = design.wrapper .serializeVZomeXml( lighting, camera, scenes );
       const creation = ( originalDate || new Date() ) .toISOString();
       const date = creation .substring( 0, 10 );
@@ -260,7 +269,7 @@ const shareToGitHub = async ( target, config, data, report ) =>
       shareData .setEntryHandler( { addEntry: (path, data, encoding) => {
         data && uploads .push( { path, encoding, data } );
       } } );
-      const gitUrl = shareData .generateContent( orgName, repoName, branchName, title, description, blog, publish, style );
+      const gitUrl = shareData .generateContent( orgName, repoName, branchName, title, description, blog, publish, SCENE_UIS[ style ] );
 
       commitToGitHub( target, uploads, `Online share - ${name}` )
       .then( () => {
