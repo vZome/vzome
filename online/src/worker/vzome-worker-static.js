@@ -340,7 +340,15 @@ const urlLoader = async ( report, payload ) =>
   report( { type: 'FETCH_STARTED', payload } );
 
   const isDataUrl = url.startsWith("data:")
-  console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${preview && !isDataUrl ? "previewing" : "interpreting " } ${isDataUrl ? url.substring(0, 200) + " ..." : url}` );
+  const logMsg = `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${preview && !isDataUrl ? "previewing" : "interpreting"}`
+  if(isDataUrl) {
+    // A data URL can get long, so collapse it in the console by default.
+    console.groupCollapsed( `${logMsg} dataUrl: (${url.length} bytes)` )
+    console.log(url)
+    console.groupEnd()
+  } else {
+    console.log(`${logMsg} ${url}`);
+  }
   const xmlLoading = source && fetchUrlText( url );
   source && xmlLoading .then( text => report( { type: 'TEXT_FETCHED', payload: { text, url } } ) ); // Don't send the name yet, parse/interpret may fail
 
