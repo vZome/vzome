@@ -19,10 +19,10 @@ const Browser = () => (
     <ViewerProvider>
     <SceneProvider>
     <SceneIndexingProvider>
-      <VZomeAppBar title='Browser'
+      <VZomeAppBar title='GitHub Browser'
         about={ <>
           <Typography gutterBottom>
-            vZome Browser shows all of
+            vZome GitHub Browser shows all of
             the <Link target="_blank" rel="noopener" href="https://vzome.com/home/">vZome</Link> designs
             uploaded and available in
             a <Link target="_blank" rel="noopener" href="https://vzome.github.io/vzome//sharing.html">vZome sharing</Link> GitHub repository.
