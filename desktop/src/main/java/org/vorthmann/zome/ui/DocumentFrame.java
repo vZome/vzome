@@ -113,6 +113,10 @@ public class DocumentFrame extends JFrame implements PropertyChangeListener, Con
     }
     
     private static final JColorChooser colorChooser = new JColorChooser();
+    static {
+        colorChooser.addChooserPanel( new ColorListPanel( true ) );  // Zometool Colors (read-only)
+        colorChooser.addChooserPanel( new ColorListPanel() );        // Saved Colors (editable)
+    }
     
     void setAppUI( PropertyChangeListener appUI )
     {
