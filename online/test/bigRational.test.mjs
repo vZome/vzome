@@ -413,6 +413,29 @@ describe( 'JavaBigRational', () => {
     });
   });
 
+  // ── monotonic transition (to big representation) ───────────────────────────
+
+  describe( 'monotonicity', () => {
+    // Verifies there is a single transition threshold for BigInt representation.
+    it( 'big-ness is monotonic for values near MAX_SAFE_INTEGER', () => {
+      const SAFE = BigInt(Number.MAX_SAFE_INTEGER)
+      const span = 5 // how far to test above and below the transition threshold
+      let transitions = 0
+      for ( let i = -span; i <= span; i++ ) {
+        const S = SAFE + BigInt(i)
+        // console.log(S) // displays BEFORE test results
+        const curr = rat(S     , 1n)
+        const next = rat(S + 1n, 1n)
+        if ( curr.big != next.big ) {
+          transitions++
+          // console.log(curr) // displays BEFORE test results
+          // console.log(next) // displays BEFORE test results
+        }
+      }
+      assert.equal(transitions, 1 );
+    });
+  });
+
   // ── bugfix1 from Java tests ────────────────────────────────
 
   describe( 'bugfix1', () => {
