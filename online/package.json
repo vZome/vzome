@@ -6,7 +6,8 @@
     "build": "node scripts/prod-build.mjs",
     "nolegacy": "node scripts/test-app.mjs nolegacy",
     "dev": "node scripts/test-app.mjs",
-    "https": "node scripts/test-https.mjs"
+    "https": "node scripts/test-https.mjs",
+    "test": "node --import ./test/setup.mjs --test ./test/*.test.mjs"
   },
   "dependencies": {
     "@kobalte/core": "^0.13.3",
