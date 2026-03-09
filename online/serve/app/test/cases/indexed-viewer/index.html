@@ -45,6 +45,10 @@
         showDesign();
       } );
 
+      welcomeViewer .addEventListener( "vzome-viewer-ready", (e) => {
+        console.log( 'Thanks for letting me know the viewer is ready.');
+      } );
+
       const showDesign = () =>
       {
         title .innerHTML = 'Dodecahedron';
