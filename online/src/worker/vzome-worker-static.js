@@ -611,7 +611,7 @@ onmessage = ({ data }) =>
     }
   
     default:
-      console.log( 'action not handled:', type, payload );
+      console.log( 'action not handled:', data, type, payload );
   }
   } catch (error) {
     console.log( `${type} onmessage error: ${error.message}` );
