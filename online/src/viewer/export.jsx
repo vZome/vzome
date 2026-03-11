@@ -32,7 +32,9 @@ export const ExportMenu = (props) =>
     //   saveTextFileAs( fileName, fullText, 'application/xml' );
     // }
     // else
-    saveTextFileAs( fileName, text, 'application/xml' );
+    // Be sure to trim the text to ensure any leading whitespace doesn't choke the SAX parser
+    // if the download is opened in desktop
+    saveTextFileAs( fileName, text.trim(), 'application/xml' );
   }
 
   return (
