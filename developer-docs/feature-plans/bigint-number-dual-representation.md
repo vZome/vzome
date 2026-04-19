@@ -147,3 +147,97 @@ The `createBigRational`, `parseBigRational`, etc. methods in `JavaAlgebraicNumbe
 For typical vZome models, the vast majority of rational numbers have small numerators and denominators (single/double digit). These will stay entirely in the `Number` path, avoiding all `BigInt` overhead. The BigInt promotion path handles edge cases (large polygon fields, extreme coordinate values) correctly but rarely fires.
 
 The Java experience shows this dual-representation strategy is very effective — it was a deliberate performance optimization by David Hall. The same wins should translate to JavaScript, where the `BigInt` vs `Number` performance gap is arguably even larger than Java's `BigInteger` vs `long` gap.
+
+## Design Review Notes
+
+### Clarification: Step 4 overflow checks are precision guards, not storage guards
+
+The `safeAdd` and `safeMul` helpers check whether the result exceeds `MAX_SAFE_INTEGER`, but there is no risk of `r` being "too large or too small" for the `Number` type to *store*. JS `Number` (IEEE 754 double) can represent values up to ~1.8 × 10^308. The issue is **precision**, not capacity: when two safe integers are multiplied and the mathematical result exceeds 2^53, the `Number` representation silently rounds to the nearest representable float. The range check detects when we've left the zone where integer arithmetic is exact, signaling that we should redo the operation with `BigInt`.
+
+In short: `r` always gets a value — it's just potentially an *inexact* one. The existing comment in the code snippet ("Check if result is safe and not losing precision") is the correct framing.
+
+### Analysis: Step 9 understates the scope of the `common.js` problem
+
+Step 9 correctly identifies that `createBigRational`, `parseBigRational`, etc. coerce to `BigInt` at entry, and that updating those callers to pass `Number` when possible is worthwhile. However, this is a minor concern because the `JavaBigRational` constructor already **demotes back to Number** after GCD reduction (via `reduceBigInts`). The round-trip `Number → BigInt → Number` is wasteful but happens only at construction time.
+
+The larger issue is that there are **two completely separate arithmetic systems** in the codebase, and the `JavaBigRational` optimization only benefits one of them:
+
+1. **`JavaBigRational` arithmetic** — used by `JavaAlgebraicNumber.plus()`, which calls `JavaBigRational.plus()` on each coefficient. This benefits from the dual-representation optimization.
+
+2. **Trailing-divisor BigInt arrays** — used by the field-specific code in `common.js` and field modules like `golden.js`. An algebraic number is represented as e.g. `[a0, a1, d]` (all BigInt), meaning $(a_0 + a_1\phi) / d$. Functions like `plus2`, `times` (in `golden.js`), `reciprocal`, and `simplify3`/`simplify4` operate entirely on raw BigInts and are **completely untouched** by the `JavaBigRational` optimization.
+
+The two systems are bridged by `JavaAlgebraicNumber.toTrailingDivisor()`, which extracts BigInts from each `JavaBigRational` via `getNumerator()`/`getDenominator()` (these always return BigInt, re-promoting any Number values), then passes them to `createNumberFromPairs` in `common.js`.
+
+Critically, `JavaAlgebraicNumber.times()` delegates to the field's `multiply` function, which calls the field-specific `times` (e.g., `golden.js`), which operates on trailing-divisor BigInt arrays via `simplify3`. **Multiplication — likely the most expensive algebraic operation — bypasses the `JavaBigRational` optimization entirely.**
+
+This means the dual-representation work in `JavaBigRational` optimizes addition (and scalar operations like `negate`, `reciprocal`), but the `common.js` trailing-divisor path remains an independent hot path that needs its own Number/BigInt dual-representation treatment to get the full benefit. This should be a high-priority follow-up.
+
+### Analysis: The two algebraic number classes serve completely separate fields
+
+The two arithmetic systems are not two paths through the same code — they are used by **entirely different fields**, selected at setup time in `core.js`:
+
+| Fields | AlgebraicNumber class | Multiplication path |
+|--------|-----------------------|--------------------|
+| golden, root2, root3, heptagon | `JsAlgebraicNumber` (core-java.js) | BigInt trailing-divisor arrays via field module `times()` → `simplify3()` in `common.js` |
+| sqrtphi, snubCube, snubDodec, polygon, etc. | `JavaAlgebraicNumber` (jsweet2js.js) | `JavaBigRational.times()` + `JavaBigRational.plus()` via transpiled Java tensor multiply |
+
+In `core.js`, `addNewField` creates a `JsAlgebraicField` wrapping a pure JS field delegate (e.g., `goldenField`). All number-creation methods produce `JsAlgebraicNumber` instances, whose `factors` are trailing-divisor BigInt arrays. `addLegacyField` creates a transpiled `AbstractAlgebraicField` subclass, passing a `JavaAlgebraicNumberFactory`, and all number-creation methods produce `JavaAlgebraicNumber` instances backed by `JavaBigRational[]`.
+
+**The two classes never interoperate.** A field is entirely `JsAlgebraicField`-based or entirely `AbstractAlgebraicField`-based. They share only the `toTrailingDivisor()` serialization format.
+
+Since the golden field is the default — and the vast majority of `.vZome` files use it — **the most common multiplication path is the BigInt trailing-divisor one, which gets zero benefit from the `JavaBigRational` dual-representation optimization.**
+
+The `JavaBigRational` optimization covers only the less-common legacy fields (sqrtphi, snubCube, snubDodec, polygon, etc.).
+
+### Optimizing the primary multiplication path (`common.js`)
+
+To get the full performance benefit for golden, root2, root3, and heptagon fields, the trailing-divisor functions in `common.js` and field modules need their own Number/BigInt dual-representation treatment:
+
+1. **Dual-representation trailing-divisor arrays.** Currently `[a0, a1, d]` is always all-BigInt. Instead, arrays could be all-Number when values fit in the safe integer range, promoted to all-BigInt when any value overflows — mirroring the `JavaBigRational` strategy.
+
+2. **Number-path `simplify3` / `simplify4` / `gcd`.** These are the innermost hot functions. A Number variant would use `gcdNumber`, regular `%` and `/`, and overflow checks. If any intermediate result overflows, fall back to the BigInt path.
+
+3. **Number-path field `times` / `reciprocal`.** E.g., golden `times`:
+   ```js
+   function times(a, b) {
+     const [a0, a1, ad] = a, [b0, b1, bd] = b;
+     return simplify3(a0*b0 + a1*b1, a0*b1 + a1*b0 + a1*b1, ad*bd);
+   }
+   ```
+   The Number version would do the same arithmetic with `safeMul`/`safeAdd`, falling back to BigInt on any overflow.
+
+4. **`plus2` / `minus2` / `plus3` / `minus3`** — same treatment.
+
+5. **`createNumberFromPairs2` / `createNumberFromPairs3`** — these currently force `BigInt()` coercion on all inputs. They should pass Numbers through when possible.
+
+6. **`parseInt` in `common.js`** — currently returns `BigInt(s)` unconditionally. Should return a plain `Number` when the parsed value fits in the safe range, since this is the entry point for most values parsed from `.vZome` XML.
+
+This work is independent of and complementary to the `JavaBigRational` optimization. Together they cover both field families.
+
+## Implementation: `common.js` Dual-Representation (completed)
+
+The following changes implement the Number/BigInt dual-representation for the trailing-divisor arithmetic path used by golden, root2, root3, and heptagon fields.
+
+### `common.js` changes
+
+- Added `MAX_SAFE`, `isBig()`, `safeAdd`/`safeSub`/`safeMul`, `gcdNumber` — Number-safe arithmetic helpers with overflow detection (return `null` on overflow).
+- Added `toBigInts3`/`toBigInts4` — promote a Number tuple to BigInt for fallback paths.
+- Added `demote3`/`demote4` — convert BigInt results back to Number when all elements fit in safe range.
+- `simplify3`/`simplify4` now dispatch to `simplifyNumber3`/`simplifyBigInt3` (and `4`-variants) based on `typeof` of the first element. BigInt results are demoted to Number when they fit.
+- `plus2`/`minus2`/`negate2`/`plus3`/`minus3`/`negate3` try Number arithmetic first (with same-denominator fast path), fall back to BigInt on overflow.
+- `createNumberFromPairs2`/`createNumberFromPairs3` accept Number inputs and try Number-path multiplication before falling back to BigInt.
+- `createNumber2`/`createNumber3` accept Number inputs and route to the appropriate simplify path.
+- `parseInt` returns `Number` when the parsed value is a safe integer, `BigInt` otherwise.
+- `createField` uses Number constants for `zero` (e.g. `[0, 0, 1]`) and `one` (`[1, 0, 1]`), and Number defaults throughout `scalarmul`, `vectoradd`, `quatmul`, `quatconj`, `quatTransform`.
+- `toString2`/`toString3` promote to BigInt at entry (formatting is not performance-critical) so their existing `=== 0n` comparisons continue to work.
+- `bigRationalToString`/`bigRationalToMathML` use `==` instead of `===` for the denominator-is-one check, so they work with both Number and BigInt.
+
+### Field module changes (`golden.js`, `root2.js`, `root3.js`, `heptagon.js`)
+
+- `times` and `reciprocal` check `typeof` of the divisor element. If both inputs are Number, they perform Number arithmetic and verify all intermediates and results are within `MAX_SAFE_INTEGER`. On any overflow, they promote to BigInt and redo the operation.
+- `embed` uses `Number()` conversion on array elements (works for both Number and BigInt).
+- `golden.js`: quaternion constants, `goldenSequence`, `goldenRatio`, and `grsign` changed from BigInt literals to Number literals.
+
+### Invariant
+
+All trailing-divisor arrays are either **all Number** or **all BigInt**. The type is detected via `typeof` on the last element (the divisor). Values start as Number and stay Number for typical vZome models (small coefficients). BigInt promotion happens automatically when intermediates exceed $2^{53}$, and demotion back to Number occurs after GCD simplification when results fit again.
