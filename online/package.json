@@ -50,7 +50,7 @@
     "@babel/core": "^7.21.4",
     "@babel/preset-typescript": "^7.21.4",
     "babel-preset-solid": "^1.7.3",
-    "esbuild": "^0.17",
+    "esbuild": "^0.25.0",
     "eslint": "^8.5.0"
   },
   "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
