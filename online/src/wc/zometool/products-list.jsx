@@ -42,8 +42,7 @@ const ZometoolProducts = props =>
         <For each={matchingProducts()} >
           { ( { name, url } ) =>
             <li class='matched-product'>
-              <div class='product-name'>{name}</div>
-              <Link class="link" href={productUrl(url)} target="_blank" rel="noopener">View Product</Link>
+              <Link class="link" href={productUrl(url)} target="_blank" rel="noopener">{name}</Link>
             </li>
           }
         </For>

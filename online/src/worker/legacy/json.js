@@ -33,12 +33,14 @@ class VertexSet
   }
 }
 
-export const modelToJS = ( manifestations, withColors=true ) =>
+export const modelToJS = ( manifestations, legacyField, withColors=true ) =>
 {
   const sortedVertices = new VertexSet();
-  const origin = com.vzome.core.editor.api.Manifestations.sortVertices( manifestations, sortedVertices );
-  const field = origin .getField() .getName();
-
+  const field = legacyField.getName()
+  let origin = com.vzome.core.editor.api.Manifestations.sortVertices( manifestations, sortedVertices );
+  if(!origin) { // manifestations may be empty or might not include any balls
+    origin = legacyField.origin(3);
+  }
   const balls = [];
   const struts = [];
   const panels = [];

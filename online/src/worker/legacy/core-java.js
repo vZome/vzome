@@ -3328,6 +3328,33 @@ export var com;
                             this.orbits = new com.vzome.core.math.symmetry.OrbitSet(symmetry);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getEmbedding() {
+                            const symmetry = this.getSymmetry();
+                            const field = symmetry.getField();
+                            const embedding = (s => { let a = []; while (s-- > 0)
+                                a.push(0); return a; })(16);
+                            for (let i = 0; i < 3; i++) {
+                                {
+                                    const columnSelect = field.basisVector(3, i);
+                                    const colRV = symmetry.embedInR3(columnSelect);
+                                    embedding[i * 4 + 0] = colRV.x;
+                                    embedding[i * 4 + 1] = colRV.y;
+                                    embedding[i * 4 + 2] = colRV.z;
+                                    embedding[i * 4 + 3] = 0.0;
+                                }
+                                ;
+                            }
+                            embedding[12] = 0.0;
+                            embedding[13] = 0.0;
+                            embedding[14] = 0.0;
+                            embedding[15] = 1.0;
+                            return embedding;
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getZone(orbit, orientation) {
                             return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
@@ -3384,33 +3411,6 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getEmbedding() {
-                            const symmetry = this.getSymmetry();
-                            const field = symmetry.getField();
-                            const embedding = (s => { let a = []; while (s-- > 0)
-                                a.push(0); return a; })(16);
-                            for (let i = 0; i < 3; i++) {
-                                {
-                                    const columnSelect = field.basisVector(3, i);
-                                    const colRV = symmetry.embedInR3(columnSelect);
-                                    embedding[i * 4 + 0] = colRV.x;
-                                    embedding[i * 4 + 1] = colRV.y;
-                                    embedding[i * 4 + 2] = colRV.z;
-                                    embedding[i * 4 + 3] = 0.0;
-                                }
-                                ;
-                            }
-                            embedding[12] = 0.0;
-                            embedding[13] = 0.0;
-                            embedding[14] = 0.0;
-                            embedding[15] = 1.0;
-                            return embedding;
                         }
                         /**
                          *
@@ -16167,6 +16167,33 @@ export var com;
                         this.setStyle(styleName);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getEmbedding() {
+                        const symmetry = this.getSymmetry();
+                        const field = symmetry.getField();
+                        const embedding = (s => { let a = []; while (s-- > 0)
+                            a.push(0); return a; })(16);
+                        for (let i = 0; i < 3; i++) {
+                            {
+                                const columnSelect = field.basisVector(3, i);
+                                const colRV = symmetry.embedInR3(columnSelect);
+                                embedding[i * 4 + 0] = colRV.x;
+                                embedding[i * 4 + 1] = colRV.y;
+                                embedding[i * 4 + 2] = colRV.z;
+                                embedding[i * 4 + 3] = 0.0;
+                            }
+                            ;
+                        }
+                        embedding[12] = 0.0;
+                        embedding[13] = 0.0;
+                        embedding[14] = 0.0;
+                        embedding[15] = 1.0;
+                        return embedding;
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getOrientations$() {
+                        return this.getOrientations(false);
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getZone(orbit, orientation) {
                         return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                     }
@@ -16244,33 +16271,6 @@ export var com;
                         }
                         else
                             throw new Error('invalid overload');
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getOrientations$() {
-                        return this.getOrientations(false);
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getEmbedding() {
-                        const symmetry = this.getSymmetry();
-                        const field = symmetry.getField();
-                        const embedding = (s => { let a = []; while (s-- > 0)
-                            a.push(0); return a; })(16);
-                        for (let i = 0; i < 3; i++) {
-                            {
-                                const columnSelect = field.basisVector(3, i);
-                                const colRV = symmetry.embedInR3(columnSelect);
-                                embedding[i * 4 + 0] = colRV.x;
-                                embedding[i * 4 + 1] = colRV.y;
-                                embedding[i * 4 + 2] = colRV.z;
-                                embedding[i * 4 + 3] = 0.0;
-                            }
-                            ;
-                        }
-                        embedding[12] = 0.0;
-                        embedding[13] = 0.0;
-                        embedding[14] = 0.0;
-                        embedding[15] = 1.0;
-                        return embedding;
                     }
                     static LOGGER_$LI$() { if (SymmetrySystem.LOGGER == null) {
                         SymmetrySystem.LOGGER = java.util.logging.Logger.getLogger("com.vzome.core.editor");
@@ -18824,7 +18824,7 @@ export var com;
                             const parts = string.split("/");
                             fractions[0] = parts[0] + "/" + ((parts.length > 1) ? parts[1] : "1");
                         }
-                        return this.parseNumber$java_lang_String(javaemul.internal.StringHelper.join(" ", fractions));
+                        return this.parseNumberStrs(fractions);
                     }
                     parseNumber$java_lang_String(nums) {
                         const tokens = new java.util.StringTokenizer(nums, " ");
@@ -18853,6 +18853,21 @@ export var com;
                             {
                                 const digit = tokens.nextToken();
                                 bigs[i] = this.numberFactory.parseBigRational(digit);
+                            }
+                            ;
+                        }
+                        return this.numberFactory.createAlgebraicNumberFromBRs(this, bigs);
+                    }
+                    /*private*/ parseNumberStrs(numStrs) {
+                        const order = this.getOrder();
+                        if (numStrs.length !== order) {
+                            throw new java.lang.IllegalStateException("Field order (" + order + ") does not match token count: " + numStrs.length);
+                        }
+                        const bigs = (s => { let a = []; while (s-- > 0)
+                            a.push(null); return a; })(order);
+                        for (let i = 0; i < order; i++) {
+                            {
+                                bigs[i] = this.numberFactory.parseBigRational(numStrs[i]);
                             }
                             ;
                         }
@@ -21950,6 +21965,120 @@ export var com;
                 kinds.SnubCubeFieldApplication = SnubCubeFieldApplication;
                 SnubCubeFieldApplication["__class"] = "com.vzome.core.kinds.SnubCubeFieldApplication";
                 SnubCubeFieldApplication["__interfaces"] = ["com.vzome.core.math.symmetry.Symmetries4D", "com.vzome.core.editor.FieldApplication"];
+            })(kinds = core.kinds || (core.kinds = {}));
+        })(core = vzome.core || (vzome.core = {}));
+    })(vzome = com.vzome || (com.vzome = {}));
+})(com || (com = {}));
+(function (com) {
+    var vzome;
+    (function (vzome) {
+        var core;
+        (function (core) {
+            var kinds;
+            (function (kinds) {
+                class PlasticPhiFieldApplication extends com.vzome.core.kinds.DefaultFieldApplication {
+                    constructor(field) {
+                        super(field);
+                        if (this.icosahedralPerspective === undefined) {
+                            this.icosahedralPerspective = null;
+                        }
+                        this.symmetryPerspectives = (new java.util.ArrayList());
+                        if (this.H4 === undefined) {
+                            this.H4 = null;
+                        }
+                        this.h4Builder = null;
+                        this.icosahedralPerspective = new com.vzome.core.kinds.IcosahedralSymmetryPerspective(this.getField());
+                        this.symmetryPerspectives.add(this.icosahedralPerspective);
+                        this.symmetryPerspectives.add(super.getDefaultSymmetryPerspective());
+                        this.H4 = new com.vzome.core.math.symmetry.QuaternionicSymmetry("H_4", "com/vzome/core/math/symmetry/H4roots.vef", this.getField());
+                    }
+                    /**
+                     *
+                     * @return {com.vzome.core.algebra.PlasticPhiField}
+                     */
+                    getField() {
+                        return super.getField();
+                    }
+                    /**
+                     *
+                     * @return {*}
+                     */
+                    getSymmetryPerspectives() {
+                        return this.symmetryPerspectives;
+                    }
+                    /**
+                     *
+                     * @return {*}
+                     */
+                    getDefaultSymmetryPerspective() {
+                        return this.icosahedralPerspective;
+                    }
+                    /**
+                     *
+                     * @param {string} symmName
+                     * @return {*}
+                     */
+                    getSymmetryPerspective(symmName) {
+                        for (let index = this.symmetryPerspectives.iterator(); index.hasNext();) {
+                            let sp = index.next();
+                            {
+                                if (sp.getName() === symmName) {
+                                    return sp;
+                                }
+                            }
+                        }
+                        return super.getSymmetryPerspective(symmName);
+                    }
+                    /**
+                     *
+                     * @param {*} toolFactories
+                     * @param {com.vzome.core.editor.ToolsModel} tools
+                     */
+                    registerToolFactories(toolFactories, tools) {
+                        super.registerToolFactories(toolFactories, tools);
+                        const symm = this.icosahedralPerspective.getSymmetry();
+                        toolFactories.put("AxialStretchTool", new com.vzome.core.tools.AxialStretchTool.Factory(tools, symm, false, false, false));
+                        toolFactories.put("SymmetryTool", new com.vzome.core.tools.IcosahedralToolFactory(tools, symm));
+                    }
+                    /**
+                     *
+                     * @param {string} name
+                     * @return {com.vzome.core.math.symmetry.QuaternionicSymmetry}
+                     */
+                    getQuaternionSymmetry(name) {
+                        switch ((name)) {
+                            case "H_4":
+                                return this.H4;
+                            default:
+                                return null;
+                        }
+                    }
+                    /**
+                     *
+                     * @param {string} groupName
+                     * @param {number} index
+                     * @param {number} edgesToRender
+                     * @param {com.vzome.core.algebra.AlgebraicNumber[]} edgeScales
+                     * @param {*} listener
+                     */
+                    constructPolytope(groupName, index, edgesToRender, edgeScales, listener) {
+                        switch ((groupName)) {
+                            case "H4":
+                                if (this.h4Builder == null) {
+                                    const qsymm = new com.vzome.core.math.symmetry.QuaternionicSymmetry("H_4", "com/vzome/core/math/symmetry/H4roots.vef", this.getField());
+                                    this.h4Builder = new com.vzome.core.commands.CommandUniformH4Polytope(this.getField(), qsymm, 0);
+                                }
+                                this.h4Builder.generate(index, edgesToRender, edgeScales, listener);
+                                break;
+                            default:
+                                super.constructPolytope(groupName, index, edgesToRender, edgeScales, listener);
+                                break;
+                        }
+                    }
+                }
+                kinds.PlasticPhiFieldApplication = PlasticPhiFieldApplication;
+                PlasticPhiFieldApplication["__class"] = "com.vzome.core.kinds.PlasticPhiFieldApplication";
+                PlasticPhiFieldApplication["__interfaces"] = ["com.vzome.core.math.symmetry.Symmetries4D", "com.vzome.core.editor.FieldApplication"];
             })(kinds = core.kinds || (core.kinds = {}));
         })(core = vzome.core || (vzome.core = {}));
     })(vzome = com.vzome || (com.vzome = {}));
@@ -47616,6 +47745,33 @@ export var com;
                             this.__parent = __parent;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getEmbedding() {
+                            const symmetry = this.getSymmetry();
+                            const field = symmetry.getField();
+                            const embedding = (s => { let a = []; while (s-- > 0)
+                                a.push(0); return a; })(16);
+                            for (let i = 0; i < 3; i++) {
+                                {
+                                    const columnSelect = field.basisVector(3, i);
+                                    const colRV = symmetry.embedInR3(columnSelect);
+                                    embedding[i * 4 + 0] = colRV.x;
+                                    embedding[i * 4 + 1] = colRV.y;
+                                    embedding[i * 4 + 2] = colRV.z;
+                                    embedding[i * 4 + 3] = 0.0;
+                                }
+                                ;
+                            }
+                            embedding[12] = 0.0;
+                            embedding[13] = 0.0;
+                            embedding[14] = 0.0;
+                            embedding[15] = 1.0;
+                            return embedding;
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getZone(orbit, orientation) {
                             return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
@@ -47666,33 +47822,6 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getEmbedding() {
-                            const symmetry = this.getSymmetry();
-                            const field = symmetry.getField();
-                            const embedding = (s => { let a = []; while (s-- > 0)
-                                a.push(0); return a; })(16);
-                            for (let i = 0; i < 3; i++) {
-                                {
-                                    const columnSelect = field.basisVector(3, i);
-                                    const colRV = symmetry.embedInR3(columnSelect);
-                                    embedding[i * 4 + 0] = colRV.x;
-                                    embedding[i * 4 + 1] = colRV.y;
-                                    embedding[i * 4 + 2] = colRV.z;
-                                    embedding[i * 4 + 3] = 0.0;
-                                }
-                                ;
-                            }
-                            embedding[12] = 0.0;
-                            embedding[13] = 0.0;
-                            embedding[14] = 0.0;
-                            embedding[15] = 1.0;
-                            return embedding;
                         }
                         /**
                          *

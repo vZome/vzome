@@ -75,7 +75,7 @@ const initializeDesign = ( loading, polygons, legacyDesign, core, clientEvents )
   // polygons is a configuration from the client, to distinguish between a modern client
   //   and the legacy React-based interpreter/debugger UI.  They require different shape encodings.
 
-  const { lighting, camera, scenes, snapshotNodes } = legacyDesign;
+  const { lighting, camera, scenes, snapshotNodes, history, targetEdit } = legacyDesign;
   const renderHistory = new RenderHistory( legacyDesign, polygons );                          // used for all normal rendering
   const interpreter = new Interpreter( legacyDesign, renderHistory );
   const renderingChanges = renderedModelTransducer( renderHistory.getShapes(), clientEvents ); // used only for preview struts
@@ -83,6 +83,7 @@ const initializeDesign = ( loading, polygons, legacyDesign, core, clientEvents )
   if ( loading ) {
     // interpretation may take several seconds, which is why we already reported PARSE_COMPLETED
     interpreter .interpret( Step.DONE );
+    history .goToEdit( targetEdit )
   } // else in debug mode, we'll interpret incrementally
 
   // TODO: define a better contract for before/after.

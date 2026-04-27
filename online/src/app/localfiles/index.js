@@ -211,7 +211,7 @@ exportBtn.addEventListener('click', async () => {
 
       for (const format of selectedFormats) {
         try {
-          progressText.textContent = `Exporting ${baseName} as ${format}...`;
+          progressText.textContent = `Exporting ${baseName} as ${EXPORT_FORMATS[format].label}...`;
           
           await exportFormat( baseName, format, vZomeFile.folder );
           
@@ -253,8 +253,9 @@ async function loadFileInViewer(vZomeFile)
 
 async function exportFormat(baseName, format, dirHandle)
 {
-  const { ext=format, mime, image } = EXPORT_FORMATS[format];
-  const fileName = `${baseName}.${ext}`;
+  const { ext, mime, image } = EXPORT_FORMATS[format];
+  // Some formats don't specify an extension
+  const fileName = `${baseName}.${ext ? ext : format}`; 
   const fileHandle = await dirHandle .getFileHandle( fileName, { create: true } );
  
   if ( image ) {

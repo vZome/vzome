@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="CRF Polytope Inflater"
+    />
+    <title>CRF Polytope Inflater</title>
+
+    <style>
+      body {
+        max-width: 650px;
+        margin: auto;
+      }
+    </style>
+
+    <!-- Uncomment just one of the scripts below. -->
+
+    <!-- <script type="module" src="./inflate-2d-projection.js"></script> -->
+
+    <!-- <script type="module" src="./add-mesh-cells.js"></script> -->
+    
+    <script type="module" src="./inflate-3d-projection.js"></script>
+
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <h1>Inflating a 2D CRF Polytope to 3D</h1>
+    <article>
+      <section>
+        This app employs assumptions about Convex Regular-Faced (CRF) polytopes
+        to recover full 3D coordinates from a 2D projection.
+      </section>
+      <br>
+      <pre id="root"></pre>
+    </article>
+  </body>
+</html>

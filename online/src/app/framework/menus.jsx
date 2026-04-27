@@ -180,10 +180,10 @@ export const createCheckboxItem = ( controller ) => ( props ) =>
 const DeclarativeMenuItems = props =>
 {
   return (
-    <For each={props.items}>{ ({ label, action, key, mods, divider, submenu, menuSlot }) =>
+    <For each={props.items}>{ ({ label, action, key, mods, divider, submenu, menuSlot, disabled }) =>
       <Switch fallback={
 
-          <CommandAction label={label} action={action || label} mods={mods || "⌥⌃"} key={key} disabled={props.disabled} />
+          <CommandAction label={label} action={action || label} mods={mods || "⌥⌃"} key={key} disabled={disabled || props.disabled} />
 
         }>
         <Match when={divider}>
@@ -193,8 +193,8 @@ const DeclarativeMenuItems = props =>
         </Match>
         <Match when={submenu}>
 
-          <SubMenu label={label} disabled={props.disabled}>
-            <DeclarativeMenuItems items={submenu} menuSlots={props.menuSlots} disabled={props.disabled} defaultMods={props.defaultMods} />
+          <SubMenu label={label} disabled={disabled || props.disabled}>
+            <DeclarativeMenuItems items={submenu} menuSlots={props.menuSlots} disabled={disabled || props.disabled} defaultMods={props.defaultMods} />
           </SubMenu>
 
         </Match>
@@ -211,7 +211,7 @@ const DeclarativeMenuItems = props =>
 export const DeclarativeMenu = (props) =>
 {
   return (
-    <Menu label={props.label}>
+    <Menu label={props.label} disabled={props.disabled}>
       <DeclarativeMenuItems items={props.items} menuSlots={props.menuSlots} disabled={props.disabled} defaultMods={props.defaultMods} />
       { props.children }
     </Menu>

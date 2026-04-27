@@ -255,7 +255,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
           case 'mesh':
           case 'cmesh': {
             const source = selection? this.legacyDesign .editor .selection : this.legacyDesign .editor .getRealizedModel();
-            const mesh = modelToJS( source, format==='cmesh' );
+            const mesh = modelToJS( source, this.legacyDesign.legacyField, format==='cmesh' );
             exported = JSON.stringify( mesh, null, 2 );
             break;
           }

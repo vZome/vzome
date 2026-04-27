@@ -13,7 +13,6 @@ class VZomeViewer extends HTMLElement
   #reactive;
   #urlChanged;
   #sceneChanged;
-  #moduleLoaded;
   #updateCalled;
   #loadFlags;
 
@@ -23,7 +22,8 @@ class VZomeViewer extends HTMLElement
 
   #sceneTitles;
 
-  #api;
+  #whenApiReady;
+  #resolveApiReady;
   #designPromise;
 
   constructor()
@@ -47,13 +47,21 @@ class VZomeViewer extends HTMLElement
       useSpinner:      false,
     };
 
+    /*
+      This is a "one-shot" promise that resolves when the viewer API is ready.  We use it to queue up
+      API calls that happen before the viewer is ready.
+
+      If the component is disconnected and reconnected (e.g. moved in the DOM), connectedCallback
+      fires again but the promise is already resolved with the old API.  If that's a concern, we'd
+      need to recreate the promise in disconnectedCallback or connectedCallback.
+    */
+    this.#whenApiReady = new Promise( ( resolve ) => this.#resolveApiReady = resolve );
     this.#designPromise = null;
 
     this.#indexed = false;
     this.#urlChanged = true;
     this.#sceneChanged = false;
     this.#reactive = true;
-    this.#moduleLoaded = false;
     this.#updateCalled = false;
     this.#loadFlags = {};
     debug && console.log( 'custom element constructed' );
@@ -61,12 +69,9 @@ class VZomeViewer extends HTMLElement
 
   #showIndexedScene( index, loadFlags={ camera: true } )
   {
-    if ( ! this.#api ) {
-      // User code called #showIndexedScene() in initialization or an event handler, before the dynamic import has completed
-      debug && console.log( '#showIndexedScene ignored; component API not loaded' );
-      return;
-    }
-    this.#api .showIndexedScene( index, loadFlags );
+    this. #whenApiReady .then( api => {
+      api .showIndexedScene( index, loadFlags );
+    } );
   }
 
   selectScene( index, loadFlags={ camera: true } )
@@ -129,68 +134,57 @@ class VZomeViewer extends HTMLElement
 
   #triggerWorker()
   {
-    if ( ! this.#api ) {
-      // User code called update() in initialization or an event handler, before the dynamic import has completed
-      debug && console.log( 'update ignored; component API not loaded' );
-      return;
-    }
-    // TODO: get rid of lighting and design load flags, which are ignored
-    const { camera=true, lighting=true, design=true } = this.#loadFlags;
-    const load = { camera, lighting, design };
-    const config = { ...this.#config, load };
-    if ( this.#config.url && this.#urlChanged ) {
-      debug && console.log( 'requesting design' );
-      this.#api .requestDesign( this.#config.url, config );
-      this.#urlChanged = false;
-    } else if ( this.#sceneChanged ) {
-      debug && console.log( 'requesting scene' );
-      this.#api .showTitledScene( this.#config.sceneTitle, load );
-    }
+    this. #whenApiReady .then( api => {
+      // TODO: get rid of lighting and design load flags, which are ignored
+      const { camera=true, lighting=true, design=true } = this.#loadFlags;
+      const load = { camera, lighting, design };
+      const config = { ...this.#config, load };
+      if ( this.#config.url && this.#urlChanged ) {
+        debug && console.log( 'requesting design' );
+        api .requestDesign( this.#config.url, config );
+        this.#urlChanged = false;
+      } else if ( this.#sceneChanged ) {
+        debug && console.log( 'requesting scene' );
+        api .showTitledScene( this.#config.sceneTitle, load );
+      }
+    } );
   }
 
   async loadFromText( name, contents )
   {
-    if ( ! this.#api ) {
-      // User code called update() in initialization or an event handler, before the dynamic import has completed
-      const errorMsg = 'loadFromText ignored; component API not loaded';
-      console.log( errorMsg );
-      return Promise .reject( new Error( errorMsg ) );
-    }
-    if ( !! this.#designPromise ) {
-      const errorMsg = 'loadFromText ignored; Waiting for previous design to load';
-      console.log( errorMsg );
-      return Promise .reject( new Error( errorMsg ) );
-    }
-    return new Promise( ( resolve, reject ) => {
-      this.#designPromise = { resolve, reject };
-      this.#api .resetScenes();
-      this.#api .openText( name, contents );
+    return this. #whenApiReady .then( api => {
+      if ( !! this.#designPromise ) {
+        const errorMsg = 'loadFromText ignored; Waiting for previous design to load';
+        console.log( errorMsg );
+        return Promise .reject( new Error( errorMsg ) );
+      }
+      return new Promise( ( resolve, reject ) => {
+        this.#designPromise = { resolve, reject };
+        api .resetScenes();
+        api .openText( name, contents );
+      } );
     } );
   }
 
   async captureImage( format, params={} )
   {
-    if ( ! this.#api ) {
-      debug && console.log( 'captureImage ignored; component API not loaded' );
-      return Promise .reject( new Error( 'captureImage ignored; component API not loaded' ) );
-    }
-    return this.#api .captureImage( format, params );
+    return this. #whenApiReady .then( api => {
+      return api .captureImage( format, params );
+    } );
   }
 
   async exportText( format, params={} )
   {
-    if ( ! this.#api ) {
-      debug && console.log( 'exportText ignored; component API not loaded' );
-      return Promise .reject( new Error( 'exportText ignored; component API not loaded' ) );
-    }
-    return this.#api .exportAs( format, params );
+    return this. #whenApiReady .then( api => {
+      return api .exportAs( format, params );
+    } );
   }
 
   connectedCallback()
   {
     const callbacks = {
       setApi: api => {
-        this.#api = api;
+        this.#resolveApiReady( api );
       },
       onAlert: ( error ) => {
         this .dispatchEvent( new CustomEvent( 'vzome-design-failed' ) );
@@ -224,7 +218,6 @@ class VZomeViewer extends HTMLElement
       .then( module => {
         debug && console.log( 'dynamic module loaded' );
         module.renderViewer( this.#container, this.#config, callbacks );
-        this.#moduleLoaded = true;  
 
         // We used to do this in the constructor, after worker creation, for better responsiveness.
         // However, that causes a race condition on slow networks -- the model loads before the viewer
@@ -304,10 +297,11 @@ class VZomeViewer extends HTMLElement
   
     case "tween-duration":
       const duration = _newValue;
-      // for the static case, before connectedCallback, we don't have an API yet
+      // for the static case, before connectedCallback, where we don't have an API yet
       this.#config = { ...this.#config, tweening: { duration } };
-      // for the dynamic case, after connectedCallback, we do
-      this.#api && this.#api .setTweenDuration( duration );
+      // This handles the dynamic case, after connectedCallback.  However, it will also fire
+      //   once for the static case.  That's not ideal, but it is simpler than trying to detect the static case and skip the API call.
+      this.#whenApiReady .then( ( api ) => api .setTweenDuration( duration ) );
     break;
     
     case "reactive":

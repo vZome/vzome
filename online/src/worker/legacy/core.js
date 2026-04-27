@@ -13,6 +13,7 @@ import groupResources from './resources/com/vzome/core/math/symmetry/index.js'
 import { com } from './core-java.js'
 import { java } from './candies/j4ts-2.1.0-SNAPSHOT/bundle.js'
 import { createParser } from './parser.js'
+import { enhanceTopologicalMesh, } from './meshes.js';
 
 // monkey-patch
 com.vzome.core.editor.api.SideEffects.logBugAccommodation = function(message) {
@@ -106,7 +107,7 @@ const makeFloatMatrices = ( matrices ) =>
 }
 
 export const vzomePkg = com.vzome;
-const util = java.util;
+export const util = java.util;
 
 // This is a bit of a hack, but how else would you configure system props for JSweet?
 java.lang.System.propertyMap_$LI$().put( "gwt.logging.enabled", "TRUE" );
@@ -314,7 +315,10 @@ export const loadAndInjectResource = async ( path, url ) =>
 {
     const response = await fetch( url )
     if ( ! response.ok ) {
-      console.log( `No resource for ${path}` )
+      // use console.debug() instead of console.log() 
+      // because these messages occur every time the src changes
+      // and can get pretty verbose in the js console
+      console.debug( `No resource for ${path}` )
       return
     }
     const text = await response.text()
@@ -368,7 +372,7 @@ export const loadAndInjectResource = async ( path, url ) =>
     addLegacyField( vzomePkg.core.algebra.SnubDodecField, vzomePkg.core.kinds.SnubDodecFieldApplication )
     addLegacyField( vzomePkg.core.algebra.SuperGoldenField, vzomePkg.core.kinds.DefaultFieldApplication )
     addLegacyField( vzomePkg.core.algebra.PlasticNumberField, vzomePkg.core.kinds.DefaultFieldApplication )
-    addLegacyField( vzomePkg.core.algebra.PlasticPhiField, vzomePkg.core.kinds.DefaultFieldApplication )
+    addLegacyField( vzomePkg.core.algebra.PlasticPhiField, vzomePkg.core.kinds.PlasticPhiFieldApplication )
     addLegacyField( vzomePkg.core.algebra.EdPeggField, vzomePkg.core.kinds.DefaultFieldApplication )  
   });
   const getFieldApp = ( name='golden' ) =>
@@ -759,12 +763,16 @@ export const loadAndInjectResource = async ( path, url ) =>
       renderedModel, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };
   }
 
-  export const initialize = async () =>
-  {
-    await Promise.all( [ fieldsReady, shapesReady ] );
-    const parse = createParser( documentFactory );
-    return { getFieldNames, getField, getFieldLabel, getSymmetry, documentFactory, parse };
-  }
+export const initialize = async () =>
+{
+  await Promise.all( [ fieldsReady, shapesReady ] );
+  const parse = createParser( documentFactory );
+  return {
+    getFieldNames, getField, getFieldLabel, getSymmetry,
+    documentFactory, parse,
+    enhanceTopologicalMesh: enhanceTopologicalMesh( getField ),
+  };
+}
 
   export const convertColor = color =>
   {

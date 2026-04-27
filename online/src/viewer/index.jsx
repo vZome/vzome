@@ -214,7 +214,7 @@ const WebComponentBindings = (props) =>
   const { subscribeFor } = useWorkerClient();
   const { setApi, onAlert, onSceneRendered, onScenesDiscovered } = props.callbacks;
 
-  indexResources(); // enable exports from local files
+  indexResources(); // doesn't really load resources, just provides the base URL to the worker
   setApi( apiObject );
   subscribeFor( 'ALERT_RAISED', onAlert ); 
   subscribeFor( 'SCENES_DISCOVERED', ( { scenes } ) => { setLastSceneIndex(null); onScenesDiscovered( scenes ); } );
