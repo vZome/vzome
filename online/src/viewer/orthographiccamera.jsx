@@ -11,7 +11,7 @@ export const OrthographicCamera = (props) =>
   const { perspectiveProps, state } = useCamera();
   const halfWidth = () => perspectiveProps.width / 2;
   let cam;
-  const { scene, setCurrentCamera } = useThree();
+  const { scene, setCamera } = useThree();
 
   createEffect( () => {
     if ( state.outlines )
@@ -37,7 +37,7 @@ export const OrthographicCamera = (props) =>
   });
 
   createEffect( () => {
-    setCurrentCamera( cam );
+    setCamera( cam );
     // I don't know why this is necessary... I guess a camera is not added automatically
     scene .add( cam );
     onCleanup( () => scene .remove( cam ) );

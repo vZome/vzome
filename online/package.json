@@ -21,7 +21,7 @@
     "antlr4": "^4.13.1-patch-1",
     "chevrotain": "^11.0.3",
     "solid-js": "^1.9.10",
-    "solid-three": "^0.3.0-next.11",
+    "solid-three": "https://pkg.pr.new/solid-three@5449e5a",
     "three": "^0.184.0",
     "three-stdlib": "^2.36.0",
     "txml": "^5.1.1",

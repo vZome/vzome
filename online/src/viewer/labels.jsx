@@ -5,7 +5,7 @@ import { CSS2DObject, CSS2DRenderer } from "three-stdlib";
 
 export const Labels = (props) =>
 {
-  const { scene, currentCamera: camera, canvas } = useThree();
+  const { scene, camera, canvas } = useThree();
 
   let labelRenderer;
   onMount( () => {

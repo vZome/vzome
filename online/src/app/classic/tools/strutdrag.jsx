@@ -25,7 +25,7 @@ of TrackballControls.js and implement the transformations myself.  See ObjectTra
 
 const StrutDragTool = props =>
 {
-  const { currentCamera: { position: eye } } = useThree();
+  const { camera: { position: eye } } = useThree();
   const { startPreviewStrut, endPreviewStrut, movePreviewStrut } = useEditor();
 
   const [ line, setLine ] = createSignal( [ 0, 0, 1 ] );

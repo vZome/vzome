@@ -14,7 +14,7 @@ const defaultDrag = {
 
 const ObjectTrackball = (props) =>
 {
-  const { gl, bounds: size, currentCamera : camera } = useThree();
+  const { gl, bounds: size, camera } = useThree();
   const [ drag, setDrag ] = createSignal( defaultDrag );
 
   const worldDragVector = new Vector3(); // avoid reactive allocations

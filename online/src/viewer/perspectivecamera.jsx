@@ -10,7 +10,7 @@ export const PerspectiveCamera = (props) =>
 {
   const { perspectiveProps, state : cameraConfig } = useCamera();
   let cam;
-  const { setCurrentCamera, scene } = useThree();
+  const { setCamera, scene } = useThree();
 
   createEffect( () => {
     if ( cameraConfig.outlines )
@@ -33,7 +33,7 @@ export const PerspectiveCamera = (props) =>
   });
 
   createEffect( () => {
-    setCurrentCamera( cam );
+    setCamera( cam );
     // I don't know why this is necessary... I guess a camera is not added automatically
     scene .add( cam );
     onCleanup( () => scene .remove( cam ) );

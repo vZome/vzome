@@ -179,7 +179,7 @@ const InstancedShape = ( props ) =>
 export const ShapedGeometry = ( props ) =>
 {
   const { setExporter } = useGltfExporter();
-  const { scene, render, canvas, currentCamera: camera } = useThree();
+  const { scene, render, canvas, camera } = useThree();
   const exportGltf = callback => {
     const exporter = new GLTFExporter();
     const onError = ( error ) => {
