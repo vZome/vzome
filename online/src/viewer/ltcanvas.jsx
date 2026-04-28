@@ -1,5 +1,5 @@
 
-import { Color, Scene } from "three";
+import { Color, Scene, WebGLRenderer, } from "three";
 import { createRenderEffect, onMount, For, Show } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
@@ -105,15 +105,27 @@ export const LightedTrackballCanvas = ( props ) =>
     }
   }
 
+  const makeCustomRenderer = ( canvas ) =>
+  {
+    const renderer = new WebGLRenderer({
+      powerPreference: "high-performance",
+      canvas,
+      antialias: true,
+      alpha: true,
+      preserveDrawingBuffer: true,
+    });
+    // renderer.xr.enabled = true;
+    return renderer;
+  }
+
   const canvas =
-    <Canvas class='canvas3d' dpr={ window.devicePixelRatio } 
-        gl={{ args: [{ antialias: true, alpha: false, preserveDrawingBuffer: true }] }}
+    <Canvas class='canvas3d' dpr={ window.devicePixelRatio } gl={makeCustomRenderer}
         style={{
           height: props.height ?? "100%",
           width: props.width ?? "100%",
           display: 'flex',
         }}
-        frameloop="always" onPointerMissed={handlePointerMissed} >
+        frameloop="always" onClick={handlePointerMissed} >
 
       { /* This should add the camera to the scene so that the lights move with the camera,
             but it apparently does not. */ }
