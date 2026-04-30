@@ -68,6 +68,16 @@ const Instance = ( props ) =>
       handler( e.nativeEvent, props.id, props.position, props.type, props.selected, props.label );
     }
   }
+  const handleClick = ( e ) =>
+  {
+    if ( e.nativeEvent.button !== 0 ) // left-clicks only, please
+      return;
+    const handler = tool ?.onClick;
+    if ( handler ) {
+      e.stopPropagation();
+      handler( e.nativeEvent, props.id, props.position, props.type, props.selected, props.label );
+    }
+  }
 
   onMount( () => linesRef && linesRef.layers.set( 4 ) );
 
@@ -81,6 +91,7 @@ const Instance = ( props ) =>
     <T.Group position={ props.position } name={props.id} >
       <T.Mesh matrixAutoUpdate={false} ref={meshRef} geometry={props.geometry}
           onPointerEnter={handleHover(true)} onPointerLeave={handleHover(false)} onPointerMove={handlePointerMove}
+          onClick={handleClick}
           onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onContextMenu={handleContextMenu}>
         <T.MeshLambertMaterial attach="material" color={color} emissive={emissive()} />
       </T.Mesh>

@@ -97,10 +97,14 @@ export const LightedTrackballCanvas = ( props ) =>
   }
   const handlePointerMissed = ( e ) =>
   {
-    const handler = tool && tool() ?.bkgdClick;
+    console.log("canvas onClickMissed");
+    const handler = tool ?.bkgdClick;
 
-    if ( isLeftMouseButton( e ) && handler ) {
-      e.stopPropagation();
+    // NOTE: this is a solid-three handler, so the event is wrapped in a synthetic event,
+    //  and the native event is in e.nativeEvent.  We have to check the button on the native event,
+    //  but we can stop propagation on the synthetic event.
+    if ( isLeftMouseButton( e.nativeEvent ) && handler ) {
+      // e.stopPropagation();  // NOT available!  Is this a problem?
       handler( e );
     }
   }
@@ -125,7 +129,7 @@ export const LightedTrackballCanvas = ( props ) =>
           width: props.width ?? "100%",
           display: 'flex',
         }}
-        frameloop="always" onClick={handlePointerMissed} >
+        frameloop="always" onClickMissed={handlePointerMissed} >
 
       { /* This should add the camera to the scene so that the lights move with the camera,
             but it apparently does not. */ }

@@ -43,7 +43,8 @@ const UnifiedTool = props =>
     
     bkgdClick: () =>
     {
-      controllerAction( rootController(), 'DeselectAll' );
+      if ( ! operating() ) // don't deselect if we are in the middle of dragging a strut
+        controllerAction( rootController(), 'DeselectAll' );
     },
     
     onWheel: deltaY => {
