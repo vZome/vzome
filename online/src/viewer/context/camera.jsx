@@ -5,6 +5,8 @@ import { Group, Tween, Easing } from '@tweenjs/tween.js';
 
 import { createStore } from 'solid-js/store';
 
+const METERS_PER_UNIT = 0.0088; // default global scale for vZome models
+
 export const INITIAL_DISTANCE = 108;
 const NEAR_FACTOR = 0.1 / INITIAL_DISTANCE;
 const FAR_FACTOR = 2.0;
@@ -118,6 +120,7 @@ const CameraContext = createContext( {} );
 const CameraProvider = ( props ) =>
 {
   const [ state, setState ] = createDefaultCameraStore();
+  const globalScale = props.scale || METERS_PER_UNIT;
 
   if ( !! props.distance ) {
     setState( 'camera', fixedFrustum( props.distance ) );
@@ -292,7 +295,7 @@ const CameraProvider = ( props ) =>
   
   const providerValue = {
     name: props.name,
-    perspectiveProps, trackballProps, state,
+    perspectiveProps, trackballProps, state, globalScale,
     resetCamera, setCamera, tweenCamera, cancelTweens, setLighting, togglePerspective, toggleOutlines, setDistance, mapViewToWorld, setTweenDuration,
   };
   

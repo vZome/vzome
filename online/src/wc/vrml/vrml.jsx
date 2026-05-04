@@ -1,8 +1,8 @@
 
 import { createEffect, createResource } from "solid-js";
-import { useThree } from "../../viewer/util/solid-three.js";
 import { VRMLLoader } from "./VRMLLoader.js";
 import { useCamera } from "../../viewer/context/camera.jsx";
+import { useWebXRClient } from "../../viewer/webxr.jsx";
 
 const loader = new VRMLLoader();
 
@@ -18,16 +18,19 @@ export const VrmlModel = (props) =>
 {
   const [ data ] = createResource( () => props.url, fetchVrml );
   const { tweenCamera, setTweenDuration } = useCamera();
-
-  let priorScene;
   
-  const { scene } = useThree();
   createEffect( () => {
+    const { getRootGroup } = useWebXRClient();
+    const group = getRootGroup();
     const loadedScene = data();
     if ( !!loadedScene ) {
-      if ( !! priorScene ) scene() .remove( priorScene );
-      scene() .add( loadedScene );
-      priorScene = loadedScene;
+      group.clear();
+      group .add( loadedScene );
+      // Snapshot the array first, then move each child
+      const children = [...loadedScene.children];
+      for (const child of children) {
+        group.add(child); // automatically removes from loadedScene
+      }
 
       if ( props.tweening?.duration ) {
         setTimeout( () => {

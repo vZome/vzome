@@ -4,11 +4,11 @@
 import { createEffect, onCleanup } from 'solid-js';
 import { useThree, T } from "./util/solid-three.js";
 
-import { useCamera } from "../viewer/context/camera.jsx";
+import { useCamera, } from "../viewer/context/camera.jsx";
 
 export const PerspectiveCamera = (props) =>
 {
-  const { perspectiveProps, state : cameraConfig } = useCamera();
+  const { perspectiveProps, state : cameraConfig, globalScale, } = useCamera();
   let cam;
   const { setCamera, scene } = useThree();
 
@@ -21,12 +21,12 @@ export const PerspectiveCamera = (props) =>
 
   createEffect( () => {
     const [ x, y, z ] = perspectiveProps .target;
-    cam .lookAt( x, y, z );
+    cam .lookAt( x * globalScale, y * globalScale, z * globalScale );
   });
 
   createEffect(() => {
-    cam.near = perspectiveProps .near;
-    cam.far = perspectiveProps .far;
+    cam.near = perspectiveProps .near * globalScale;
+    cam.far = perspectiveProps .far * globalScale;
     cam.fov = perspectiveProps .fov( props.aspect );
     cam.aspect = props.aspect;
     cam.updateProjectionMatrix();
@@ -40,7 +40,7 @@ export const PerspectiveCamera = (props) =>
   } );
 
   return (
-    <T.PerspectiveCamera ref={cam} position={perspectiveProps .position} up={perspectiveProps .up} >
+    <T.PerspectiveCamera ref={cam} position={perspectiveProps .position.map( e => e * globalScale )} up={perspectiveProps .up} >
       {props.children}
     </T.PerspectiveCamera>
   );

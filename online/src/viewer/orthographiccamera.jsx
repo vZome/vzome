@@ -4,11 +4,11 @@
 import { createEffect, onCleanup } from 'solid-js';
 import { useThree, T } from "./util/solid-three.js";
 
-import { useCamera } from "../viewer/context/camera.jsx";
+import { useCamera, } from "../viewer/context/camera.jsx";
 
 export const OrthographicCamera = (props) =>
 {
-  const { perspectiveProps, state } = useCamera();
+  const { perspectiveProps, state, globalScale } = useCamera();
   const halfWidth = () => perspectiveProps.width / 2;
   let cam;
   const { scene, setCamera } = useThree();
@@ -21,19 +21,19 @@ export const OrthographicCamera = (props) =>
   });
 
   createEffect(() => {
-    cam.near = perspectiveProps .near;
-    cam.far = perspectiveProps .far;
-    cam.left = -halfWidth();
-    cam.right = halfWidth();
+    cam.near = perspectiveProps .near * globalScale;
+    cam.far = perspectiveProps .far * globalScale;
+    cam.left = -halfWidth() * globalScale;
+    cam.right = halfWidth() * globalScale;
     const halfHeight = halfWidth() / props.aspect;
-    cam.top = halfHeight;
-    cam.bottom = -halfHeight;
+    cam.top = halfHeight * globalScale;
+    cam.bottom = -halfHeight * globalScale;
     cam.updateProjectionMatrix();
   });
 
   createEffect( () => {
     const [ x, y, z ] = perspectiveProps .target;
-    cam .lookAt( x, y, z );
+    cam .lookAt( x * globalScale, y * globalScale, z * globalScale );
   });
 
   createEffect( () => {
@@ -44,7 +44,7 @@ export const OrthographicCamera = (props) =>
   } );
 
   return (
-    <T.OrthographicCamera ref={cam} position={perspectiveProps .position} up={perspectiveProps .up} >
+    <T.OrthographicCamera ref={cam} position={perspectiveProps .position.map( e => e * globalScale )} up={perspectiveProps .up} >
       {props.children}
     </T.OrthographicCamera>
   );

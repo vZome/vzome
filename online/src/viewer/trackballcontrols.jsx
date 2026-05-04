@@ -7,6 +7,7 @@ import { TrackballControls as TrackballControlsImpl } from "three-stdlib";
 
 import { useCamera } from "../viewer/context/camera.jsx";
 import { useInteractionTool } from "../viewer/context/interaction.jsx";
+import { useWebXRClient } from "../viewer/webxr.jsx";
 
 export const TrackballControls = (props) =>
 {
@@ -14,6 +15,7 @@ export const TrackballControls = (props) =>
   const { perspectiveProps, trackballProps, name, cancelTweens } = useCamera();
   const [ tool ] = useInteractionTool();
   const { canvas, bounds } = useThree();
+  const { setTrackball } = useWebXRClient();
 
   createEffect(() => {
     // SV: This effect is necessary so that we get correctly connected to the domElement
@@ -24,7 +26,9 @@ export const TrackballControls = (props) =>
   });
 
   const trackballControls = createMemo( () => {
-    return new TrackballControlsImpl( trackballProps .camera );
+    const controls = new TrackballControlsImpl( trackballProps .camera );
+    setTrackball(controls);
+    return controls;
   } );
 
   useFrame(() => {

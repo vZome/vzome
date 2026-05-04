@@ -12,6 +12,7 @@ import { useInteractionTool } from "./context/interaction.jsx";
 import { useCamera } from "./context/camera.jsx";
 import { Labels } from "./labels.jsx";
 import { useViewer } from "./context/viewer.jsx";
+import { WebXRSupport } from "./webxr.jsx";
 
 const Lighting = () =>
 {
@@ -130,19 +131,22 @@ export const LightedTrackballCanvas = ( props ) =>
           display: 'flex',
         }}
         frameloop="always" onClickMissed={handlePointerMissed} >
+      <WebXRSupport>
 
-      { /* This should add the camera to the scene so that the lights move with the camera,
-            but it apparently does not. */ }
-      <ControlledCamera aspect={aspect()} >
-        <Lighting />
-      </ControlledCamera>
+        { /* This should add the camera to the scene so that the lights move with the camera,
+              but it apparently does not. */ }
+        <ControlledCamera aspect={aspect()} >
+          <Lighting />
+        </ControlledCamera>
 
-      <TrackballControls rotationOnly={props.rotationOnly}
-        rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} />
+        <TrackballControls rotationOnly={props.rotationOnly}
+          rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} />
 
-      {props.children}
+        {props.children}
 
-      {labels && labels() && <Labels size={canvasSize()} />}
+        {labels && labels() && <Labels size={canvasSize()} />}
+
+      </WebXRSupport>
     </Canvas>;
   
   size = createElementSize( canvas );
