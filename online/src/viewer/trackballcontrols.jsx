@@ -7,7 +7,7 @@ import { TrackballControls as TrackballControlsImpl } from "three-stdlib";
 
 import { useCamera } from "../viewer/context/camera.jsx";
 import { useInteractionTool } from "../viewer/context/interaction.jsx";
-import { useWebXRClient } from "../viewer/webxr.jsx";
+import { useWebXRClient } from "../viewer/context/webxr.jsx";
 
 export const TrackballControls = (props) =>
 {

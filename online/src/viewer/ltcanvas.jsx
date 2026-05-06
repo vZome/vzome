@@ -12,7 +12,7 @@ import { useInteractionTool } from "./context/interaction.jsx";
 import { useCamera } from "./context/camera.jsx";
 import { Labels } from "./labels.jsx";
 import { useViewer } from "./context/viewer.jsx";
-import { WebXRSupport } from "./webxr.jsx";
+import { WebXRSupport } from "./context/webxr.jsx";
 
 const Lighting = () =>
 {

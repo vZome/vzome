@@ -9,7 +9,7 @@ import { vZomeViewerCSS } from "../vzome-viewer.css";
 import { urlViewerCSS } from "../../viewer/urlviewer.css.js";
 import { CameraProvider, SceneViewer } from "../../viewer/index.jsx";
 import { useCamera } from "../../viewer/context/camera.jsx";
-import { useWebXRClient } from "../../viewer/webxr.jsx";
+import { useWebXRClient } from "../../viewer/context/webxr.jsx";
 
 
 const renderGlTFViewer = ( container, config ) =>

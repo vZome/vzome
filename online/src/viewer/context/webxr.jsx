@@ -1,9 +1,9 @@
 import { createContext, onMount, useContext, } from "solid-js";
 
 import { Vector3, Quaternion, } from "three";
-import { T, useThree, useFrame, } from "./util/solid-three.js";
+import { T, useThree, useFrame, } from "../util/solid-three.js";
 import { GLTFExporter, ARButton, createText, } from "three-stdlib";
-import { useCamera } from "./context/camera.jsx";
+import { useCamera } from "./camera.jsx";
 
 export const WebXRSupport = (props) =>
 {

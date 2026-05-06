@@ -2,7 +2,7 @@
 import { createEffect, createResource } from "solid-js";
 import { VRMLLoader } from "./VRMLLoader.js";
 import { useCamera } from "../../viewer/context/camera.jsx";
-import { useWebXRClient } from "../../viewer/webxr.jsx";
+import { useWebXRClient } from "../../viewer/context/webxr.jsx";
 
 const loader = new VRMLLoader();
 
