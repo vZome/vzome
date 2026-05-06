@@ -20,18 +20,10 @@ export const VrmlModel = (props) =>
   const { tweenCamera, setTweenDuration } = useCamera();
   
   createEffect( () => {
-    const { getRootGroup } = useWebXRClient();
-    const group = getRootGroup();
+    const { setRootScene } = useWebXRClient();
     const loadedScene = data();
     if ( !!loadedScene ) {
-      group.clear();
-      group .add( loadedScene );
-      // Snapshot the array first, then move each child
-      const children = [...loadedScene.children];
-      for (const child of children) {
-        group.add(child); // automatically removes from loadedScene
-      }
-
+      setRootScene( loadedScene );
       if ( props.tweening?.duration ) {
         setTimeout( () => {
           setTweenDuration( props.tweening.duration );

@@ -119,11 +119,20 @@ export const WebXRSupport = (props) =>
     }
   } );
 
-  const getRootGroup = () => { return originGroup; };
+  const setRootScene = ( scene ) =>
+  {
+    originGroup.clear();
+    originGroup .add( scene );
+    // Snapshot the array first, then move each child
+    const children = [...scene.children];
+    for (const child of children) {
+      originGroup.add(child); // automatically removes from scene
+    }
+  };
 
   return (
     <T.Group ref={originGroup} scale={globalScale} >
-      <WebXRContext.Provider value={ { setTrackball, getRootGroup, } }>
+      <WebXRContext.Provider value={ { setTrackball, setRootScene, } }>
         {props.children}
       </WebXRContext.Provider>
     </T.Group>
