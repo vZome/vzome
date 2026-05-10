@@ -36,10 +36,6 @@ export const WebXRSupport = (props) =>
 
       canvas.parentElement.appendChild( ARButton.createButton(gl, { optionalFeatures: ['local-floor'] }));
 
-      instructionText = createText( 'Grip to move the model', 0.03 );
-      scene.add( instructionText );
-      instructionText.visible = false;
-
       gl.xr.addEventListener('sessionstart', () => {
         // Toggle scene background/fog and orbit trackball for AR passthrough
         _origBackground = scene.background;
@@ -55,7 +51,6 @@ export const WebXRSupport = (props) =>
         scene.background = null;
         scene.fog = null;
         trackball.enabled = false;
-        instructionText.visible = true;
         needsInitialPlacement = true;
       });
 
@@ -80,17 +75,22 @@ export const WebXRSupport = (props) =>
         trackball.target.copy( _origControlsTarget );
         trackball.enabled = true;
 
+        if ( instructionText )
+          scene.remove( instructionText );
+
         needsCameraRestore = true;
       });
 
       for (let i = 0; i < 2; i++) {
         const controller = gl.xr.getController( i );
         controller.addEventListener( 'squeezestart', () => {
+          if (instructionText) {
+            instructionText.visible = false;
+          }
           controller.attach( originGroup );
         });
         controller.addEventListener( 'squeezeend', () => {
           scene.attach( originGroup );
-          if (instructionText) instructionText.visible = false;
         });
         scene.add( controller );
       }
@@ -119,10 +119,10 @@ export const WebXRSupport = (props) =>
           .addScaledVector(_forward, 0.7)
           .add(new Vector3(0, -0.2, 0))
       );
-      if (instructionText) {
-        instructionText.position.copy(_viewerPos).addScaledVector(_forward, 0.6);
-        instructionText.quaternion.copy(_viewerQuat);
-      }
+      instructionText = createText( 'Grip to move the model', 0.06 );
+      scene.add( instructionText );
+      instructionText.position.copy(_viewerPos).addScaledVector(_forward, 0.8);
+      instructionText.quaternion.copy(_viewerQuat);
       needsInitialPlacement = false;
     }
   } );
