@@ -25,69 +25,77 @@ export const WebXRSupport = (props) =>
 
   const setTrackball = (tb) => { trackball = tb; };
 
-  onMount( () =>{
-    canvas.parentElement.appendChild(ARButton.createButton(gl, {
-      optionalFeatures: ['local-floor']
-    }));
+  onMount( () => {
+    if ( navigator.xr?.isSessionSupported )
+      navigator.xr.isSessionSupported('immersive-ar' ).then( ( supported ) =>
+    {
+      if ( !supported ) {
+        console.warn( 'WebXR AR not supported' );
+        return;
+      }
 
-    instructionText = createText( 'Grip to move the model', 0.03 );
-    scene.add( instructionText );
-    instructionText.visible = false;
+      canvas.parentElement.appendChild( ARButton.createButton(gl, { optionalFeatures: ['local-floor'] }));
 
-    gl.xr.addEventListener('sessionstart', () => {
-      // Toggle scene background/fog and orbit trackball for AR passthrough
-      _origBackground = scene.background;
-      _origFog = scene.fog;
-      _origFov = store.camera.fov;
-      _origAspect = store.camera.aspect;
-      _origNear = store.camera.near;
-      _origFar = store.camera.far;
-      _origCameraPos = store.camera.position.clone();
-      _origCameraQuat = store.camera.quaternion.clone();
-      _origControlsTarget = trackball.target.clone();
-
-      scene.background = null;
-      scene.fog = null;
-      trackball.enabled = false;
-      instructionText.visible = true;
-      needsInitialPlacement = true;
-    });
-
-    gl.xr.addEventListener('sessionend', () => {
-      scene.background = _origBackground;
-      scene.fog = _origFog;
-
+      instructionText = createText( 'Grip to move the model', 0.03 );
+      scene.add( instructionText );
       instructionText.visible = false;
-      originGroup.position.copy( new Vector3(0, 0, 0) );
 
-      // 1. Restore your saved camera parameters
-      store.camera.fov = _origFov;
-      store.camera.aspect = _origAspect;
-      store.camera.near   = _origNear;
-      store.camera.far    = _origFar;
+      gl.xr.addEventListener('sessionstart', () => {
+        // Toggle scene background/fog and orbit trackball for AR passthrough
+        _origBackground = scene.background;
+        _origFog = scene.fog;
+        _origFov = store.camera.fov;
+        _origAspect = store.camera.aspect;
+        _origNear = store.camera.near;
+        _origFar = store.camera.far;
+        _origCameraPos = store.camera.position.clone();
+        _origCameraQuat = store.camera.quaternion.clone();
+        _origControlsTarget = trackball.target.clone();
 
-      // 3. Restore position/rotation/scale if you saved them
-      store.camera.position.copy(_origCameraPos);
-      store.camera.quaternion.copy(_origCameraQuat);
-
-      // 5. If you use OrbitControls, re-sync it to the restored camera state
-      trackball.target.copy( _origControlsTarget );
-      trackball.enabled = true;
-
-      needsCameraRestore = true;
-    });
-
-    for (let i = 0; i < 2; i++) {
-      const controller = gl.xr.getController( i );
-      controller.addEventListener( 'squeezestart', () => {
-        controller.attach( originGroup );
+        scene.background = null;
+        scene.fog = null;
+        trackball.enabled = false;
+        instructionText.visible = true;
+        needsInitialPlacement = true;
       });
-      controller.addEventListener( 'squeezeend', () => {
-        scene.attach( originGroup );
-        if (instructionText) instructionText.visible = false;
+
+      gl.xr.addEventListener('sessionend', () => {
+        scene.background = _origBackground;
+        scene.fog = _origFog;
+
+        instructionText.visible = false;
+        originGroup.position.copy( new Vector3(0, 0, 0) );
+
+        // 1. Restore your saved camera parameters
+        store.camera.fov = _origFov;
+        store.camera.aspect = _origAspect;
+        store.camera.near   = _origNear;
+        store.camera.far    = _origFar;
+
+        // 3. Restore position/rotation/scale if you saved them
+        store.camera.position.copy(_origCameraPos);
+        store.camera.quaternion.copy(_origCameraQuat);
+
+        // 5. If you use OrbitControls, re-sync it to the restored camera state
+        trackball.target.copy( _origControlsTarget );
+        trackball.enabled = true;
+
+        needsCameraRestore = true;
       });
-      scene.add( controller );
-    }
+
+      for (let i = 0; i < 2; i++) {
+        const controller = gl.xr.getController( i );
+        controller.addEventListener( 'squeezestart', () => {
+          controller.attach( originGroup );
+        });
+        controller.addEventListener( 'squeezeend', () => {
+          scene.attach( originGroup );
+          if (instructionText) instructionText.visible = false;
+        });
+        scene.add( controller );
+      }
+      
+    } );
   } );
 
   const _forward = new Vector3();
@@ -121,6 +129,7 @@ export const WebXRSupport = (props) =>
 
   const setRootScene = ( scene ) =>
   {
+    // This is very heavy handed, and is only used by the glTF and VRML viewers.
     originGroup.clear();
     originGroup .add( scene );
     // Snapshot the array first, then move each child
