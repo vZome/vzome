@@ -51,6 +51,14 @@ export const WebXRSupport = (props) =>
         scene.background = null;
         scene.fog = null;
         trackball.enabled = false;
+
+        // XR controls FOV/pose from the headset, but near/far come from the Three.js camera.
+        // The saved values reflect vZome's abstract coordinate scale; AR is real-world scale,
+        // so override with values appropriate for meters (1 cm – 100 m).
+        store.camera.near = 0.01;
+        store.camera.far = 100;
+        store.camera.updateProjectionMatrix();
+
         needsInitialPlacement = true;
       });
 
