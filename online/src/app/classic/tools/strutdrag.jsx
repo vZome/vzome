@@ -1,7 +1,7 @@
 
 import { createEffect, createSignal } from 'solid-js';
 import { Vector3 } from 'three';
-import { useThree } from "solid-three";
+import { T, useThree } from "../../../viewer/util/solid-three.js";
 
 import { useInteractionTool } from '../../../viewer/context/interaction.jsx';
 import { ObjectTrackball } from './trackball.jsx';
@@ -25,8 +25,8 @@ of TrackballControls.js and implement the transformations myself.  See ObjectTra
 
 const StrutDragTool = props =>
 {
-  const eye = useThree(({ camera }) => camera.position);
-  const { startPreviewStrut, endPreviewStrut, movePreviewStrut, scalePreviewStrut } = useEditor();
+  const { camera: { position: eye } } = useThree();
+  const { startPreviewStrut, endPreviewStrut, movePreviewStrut } = useEditor();
 
   const [ line, setLine ] = createSignal( [ 0, 0, 1 ] );
   const [ operating, setOperating ] = createSignal( null );
@@ -68,7 +68,7 @@ const StrutDragTool = props =>
         return;
       totalY = 0;
       setPosition( position );
-      const { x, y, z } = new Vector3() .copy( eye() ) .sub( new Vector3( ...position ) ) .normalize();
+      const { x, y, z } = new Vector3() .copy( eye ) .sub( new Vector3( ...position ) ) .normalize();
       setLine( [ x, y, z ] );
       startPreviewStrut( id, [ x, y, z ] );
       setOperating( evt ); // so we can pass it to the ObjectTrackball
@@ -92,12 +92,12 @@ const StrutDragTool = props =>
 
   return (
     <Show when={operating()}>
-      <group position={position()}>
+      <T.Group position={position()}>
         <ObjectTrackball startEvent={operating()} line={line()} setLine={setLine} rotateSpeed={0.9} debug={false} />
         <Show when={props.debug}>
           <VectorArrow vector={line()} />
         </Show>
-      </group>
+      </T.Group>
     </Show>
   );
 }

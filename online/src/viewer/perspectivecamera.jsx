@@ -1,47 +1,47 @@
 
 // Adapted from https://github.com/nksaraf/react-three-fiber/commit/581d02376d4304fb3bab5445435a61c53cc5cdc2
 
-import { createEffect, untrack, onCleanup } from 'solid-js';
-import { useThree } from 'solid-three';
+import { createEffect, onCleanup } from 'solid-js';
+import { useThree, T } from "./util/solid-three.js";
+
+import { useCamera, } from "../viewer/context/camera.jsx";
 
 export const PerspectiveCamera = (props) =>
 {
-  const set = useThree(({ set }) => set);
-  const scene = useThree(({ scene }) => scene);
-  const camera = useThree(({ camera }) => camera);
-  const size = useThree(({ size }) => size);
-
+  const { perspectiveProps, state : cameraConfig, globalScale, } = useCamera();
   let cam;
+  const { setCamera, scene } = useThree();
 
   createEffect( () => {
-    if ( props.outlines )
+    if ( cameraConfig.outlines )
       cam.layers .enable( 4 );
     else
       cam.layers .disable( 4 );
   });
 
   createEffect( () => {
-    const [ x, y, z ] = props.target;
-    cam .lookAt( x, y, z );
+    const [ x, y, z ] = perspectiveProps .target;
+    cam .lookAt( x * globalScale, y * globalScale, z * globalScale );
   });
 
   createEffect(() => {
-    cam.near = props.near;
-    cam.far = props.far;
-    cam.fov = props.fov;
-    cam.aspect = size().width / size().height;
+    cam.near = perspectiveProps .near * globalScale;
+    cam.far = perspectiveProps .far * globalScale;
+    cam.fov = perspectiveProps .fov( props.aspect );
+    cam.aspect = props.aspect;
     cam.updateProjectionMatrix();
   });
 
-  createEffect(() => {
-    const oldCam = untrack(() => camera());
-    set()({ camera: cam });
-    scene() .add( cam ); // The camera will work without this, but the *lights* won't!
-    onCleanup(() => {
-      set()({ camera: oldCam });
-      scene() .remove( cam );
-    });
-  });
+  createEffect( () => {
+    setCamera( cam );
+    // I don't know why this is necessary... I guess a camera is not added automatically
+    scene .add( cam );
+    onCleanup( () => scene .remove( cam ) );
+  } );
 
-  return <perspectiveCamera ref={cam} position={props.position} {...props} />
+  return (
+    <T.PerspectiveCamera ref={cam} position={perspectiveProps .position.map( e => e * globalScale )} up={perspectiveProps .up} >
+      {props.children}
+    </T.PerspectiveCamera>
+  );
 }

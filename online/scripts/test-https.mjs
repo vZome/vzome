@@ -9,17 +9,17 @@ const commonConfig = {
   conditions: ["development", "browser"],
   minify: false,
   sourcemap: true,
-  outdir: 'public/modules',
+  outdir: 'serve/modules',
 };
 let ctx = await esbuild.context( commonConfig );
 
 const security = {
-  key: fs.readFileSync('public/localhost-key.pem'),
-  cert: fs.readFileSync('public/localhost.pem')
+  key: fs.readFileSync('serve/localhost-key.pem'),
+  cert: fs.readFileSync('serve/localhost.pem')
 };
 
 // Start esbuild's server on a random local port
-ctx .serve( { servedir: 'public' } )
+ctx .serve( { servedir: 'serve' } )
 .then( result => {
   // The result tells us where esbuild's local server is
   const { host, port } = result;

@@ -1,6 +1,6 @@
 
 import { createEffect, createResource } from "solid-js";
-import { loadingFn, useThree } from "solid-three";
+import { useThree } from "../../viewer/util/solid-three.js";
 import { GLTFLoader, DRACOLoader } from "three-stdlib";
 
 let dracoLoader = null;
@@ -70,7 +70,7 @@ export const GltfModel = (props) =>
     return null;
 
   const [data] = useGLTF( props.url );
-  const scene = useThree(({ scene }) => scene);
+  const { scene } = useThree();
   createEffect( () => {
     const loadedScene = data() ?.scene;
     if ( !!loadedScene ) {

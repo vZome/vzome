@@ -1,9 +1,9 @@
 
 import { Show, createEffect, createSignal, onCleanup } from "solid-js";
 import { Matrix4, Quaternion, Vector3 } from 'three';
-import { useFrame, useThree } from "solid-three";
-import { DragHandler } from "./drag.ts";
-import { VectorArrow } from "./arrow.jsx";
+import { useFrame, useThree } from "../../../viewer/util/solid-three.js";
+import { DragHandler } from "./drag";
+import { VectorArrow } from "./arrow";
 
 const defaultDrag = {
   direction: [ 1, 0 ],
@@ -14,15 +14,13 @@ const defaultDrag = {
 
 const ObjectTrackball = (props) =>
 {
-  const gl = useThree(({ gl }) => gl);
-  const size = useThree(({ size }) => size);
-  const camera = useThree(({ camera }) => camera);
+  const { gl, bounds: size, camera } = useThree();
   const [ drag, setDrag ] = createSignal( defaultDrag );
 
   const worldDragVector = new Vector3(); // avoid reactive allocations
   const viewToWorld = new Matrix4();
   // not reactive, camera can't change during drag
-  viewToWorld .extractRotation( camera() .matrixWorld ); // I was certain this should be .matrixWorldInverse!
+  viewToWorld .extractRotation( camera .matrixWorld ); // I was certain this should be .matrixWorldInverse!
   const worldDrag = () =>
   {
     const { direction } = drag();
@@ -57,14 +55,14 @@ const ObjectTrackball = (props) =>
     }
   });
 
-  const controls = new DragHandler( setDrag, gl().domElement, props.startEvent );  
+  const controls = new DragHandler( setDrag, gl.domElement, props.startEvent );  
 
   createEffect(() => {
     // SV: This effect is necessary so that we get correctly connected to the domElement
     //   *after* it has been connected to the document and assigned a valid size.
-    if ( size().height < 0 ) // should never happen, just making a dependency
-      console.log( 'height is', size().height ); // This is the change we care about.
-      controls.connect(gl().domElement);
+    if ( size.height < 0 ) // should never happen, just making a dependency
+      console.log( 'height is', size.height ); // This is the change we care about.
+      controls.connect(gl.domElement);
   });
 
   useFrame(() => {
@@ -72,7 +70,7 @@ const ObjectTrackball = (props) =>
       controls.doDrag();
   });
 
-  controls.connect(gl().domElement);
+  controls.connect(gl.domElement);
 
   onCleanup(() => {
     controls.dispose();

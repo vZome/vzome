@@ -1,27 +1,34 @@
 
 // modified copy from https://github.com/devinxi/vinxi/blob/1514f966d9cdcc2c19e2733a8c7bf03831f7ecf3/packages/solid-drei/src/OrbitControls.tsx
 
-import { createEffect, createMemo, onCleanup } from "solid-js";
-import { useFrame, useThree } from "solid-three";
+import { createEffect, createMemo, onCleanup, mergeProps } from "solid-js";
+import { useFrame, useThree } from "./util/solid-three.js";
 import { TrackballControls as TrackballControlsImpl } from "three-stdlib";
+
+import { useCamera } from "../viewer/context/camera.jsx";
+import { useInteractionTool } from "../viewer/context/interaction.jsx";
+import { useWebXRClient } from "../viewer/context/webxr.jsx";
 
 export const TrackballControls = (props) =>
 {
-  const gl = useThree(({ gl }) => gl);
-  const set = useThree(({ set }) => set);
-  const get = useThree(({ get }) => get);
-  const size = useThree(({ size }) => size);
+  props = mergeProps( { rotateSpeed: 4.5, zoomSpeed: 3, panSpeed: 1 }, props );
+  const { perspectiveProps, trackballProps, name, cancelTweens } = useCamera();
+  const [ tool ] = useInteractionTool();
+  const { canvas, bounds } = useThree();
+  const { setTrackball } = useWebXRClient();
 
   createEffect(() => {
     // SV: This effect is necessary so that we get correctly connected to the domElement
     //   *after* it has been connected to the document and assigned a valid size.
-    if ( size().height < 0 ) // should never happen, just making a dependency
-      console.log( 'height is', size().height ); // This is the change we care about.
-    trackballControls() .connect( gl().domElement );
+    if ( bounds.height < 0 ) // should never happen, just making a dependency
+      console.log( 'height is', bounds.height ); // This is the change we care about.
+    trackballControls() .connect( canvas );
   });
 
   const trackballControls = createMemo( () => {
-    return new TrackballControlsImpl( props.camera, gl().domElement );
+    const controls = new TrackballControlsImpl( trackballProps .camera );
+    setTrackball(controls);
+    return controls;
   } );
 
   useFrame(() => {
@@ -34,7 +41,7 @@ export const TrackballControls = (props) =>
   });
 
   createEffect( () => {
-    trackballControls() .enabled = props.enabled;
+    trackballControls() .enabled = ( tool === undefined ) || tool .allowTrackball();
   });
 
   createEffect(() =>
@@ -53,37 +60,36 @@ export const TrackballControls = (props) =>
     }
     controls.rotateSpeed = props.rotateSpeed;
 
-    controls.connect( gl().domElement );
+    controls.connect( canvas );
 
-    const onStart = () => {
-      props.trackballStart && props.trackballStart( controls .target, props.name );
-    }
+    // These listeners are now tightly coupled to the camera and tool contexts.
+    //   Earlier, the listeners were injected as props.
+    const onStart = () => cancelTweens();
+    const onChange = () => trackballProps .sync( controls .target, name );
+    const onEnd = () => ( tool !== undefined ) && tool .onTrackballEnd();
     controls .addEventListener( "start", onStart );
-    const onChange = () => props.sync( controls .target, props.name );
     controls .addEventListener( "change", onChange );
-    const onEnd = () => {
-      props.trackballEnd && props.trackballEnd( controls .target, props.name );
-    }
     controls .addEventListener( "end", onEnd );
-
     onCleanup(() => {
+      controls .removeEventListener( "start", onStart );
       controls .removeEventListener( "change", onChange );
+      controls .removeEventListener( "end", onEnd );
       controls .dispose();
     });
   });
 
   createEffect(() => {
-    const [ x, y, z ] = props.target;
+    const [ x, y, z ] = perspectiveProps .target;
     trackballControls() .target .set( x, y, z );
   });
 
-  createEffect(() => {
-    if (props.makeDefault) {
-      const old = get()().controls;
-      set()({ controls: trackballControls() });
-      onCleanup(() => set()({ controls: old }));
-    }
-  });
+  // createEffect(() => {
+  //   if (props.makeDefault) {
+  //     const old = get()().controls;
+  //     set()({ controls: trackballControls() });
+  //     onCleanup(() => set()({ controls: old }));
+  //   }
+  // });
 
   return null;
 };

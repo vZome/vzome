@@ -14,7 +14,7 @@ import { InteractionToolProvider } from '../../../viewer/context/interaction.jsx
 import { SceneCanvas } from '../../../viewer/scenecanvas.jsx';
 
 import { SnapCameraTool } from '../tools/snapcamera.jsx';
-import { ImageCaptureProvider } from '../../../viewer/context/export.jsx';
+import { GltfExportProvider, ImageCaptureProvider } from '../../../viewer/context/export.jsx';
 import { ZoomSlider } from './zoomslider.jsx';
 import { SceneProvider, useScene } from '../../../viewer/context/scene.jsx';
 
@@ -80,6 +80,8 @@ export const CameraControls = () =>
 {
   return (
     <ImageCaptureProvider> {/* We need this just so we don't set the main capturer from this GL context */}
+    <GltfExportProvider> {/* We need this just so we don't set the main exporter from this GL context */}
+
       <InteractionToolProvider>
         {/* provider and CameraTool just to get the desired cursor */}
         <SnapCameraTool />
@@ -87,6 +89,7 @@ export const CameraControls = () =>
           <CameraControlsUI />
         </SceneProvider>
       </InteractionToolProvider>
+    </GltfExportProvider>
     </ImageCaptureProvider>
   );
 }

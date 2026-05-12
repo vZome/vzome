@@ -4,7 +4,7 @@ import { Link } from "@kobalte/core/link";
 
 import { useViewer } from "./context/viewer.jsx";
 import { useGltfExporter } from "./context/export.jsx";
-import { saveTextFileAs } from "../viewer/util/files.js";
+import { saveFileAs, saveTextFileAs } from "../viewer/util/files.js";
 
 const editUrlBase = 'https://vzome.com/app/classic/index.html?design=';
 
@@ -17,9 +17,9 @@ export const ExportMenu = (props) =>
   {
     const { name } = source;
     const vName = name || 'untitled.vZome';
-    const fileName = vName .substring( 0, vName.length-6 ) .concat( ".gltf" );
+    const fileName = vName .substring( 0, vName.length-6 ) .concat( ".glb" );
     const { exportGltf } = exporter();
-    exportGltf( gltf => saveTextFileAs( fileName, JSON.stringify( gltf, null, 2 ), 'model/gltf+json' ) );
+    exportGltf( glb => saveFileAs( fileName, glb, 'model/gltf+binary' ) );
   }
 
   const downloadVZome = () =>

@@ -1,7 +1,7 @@
 
 import { For, Show, createEffect, createMemo } from 'solid-js';
 import { createStore, reconcile, unwrap } from 'solid-js/store';
-import { DoubleSide, Matrix4, Quaternion, Vector3, CylinderGeometry, TorusGeometry } from 'three';
+import { DoubleSide, Matrix4, Quaternion, Vector3, CylinderGeometry, TorusGeometry, } from 'three';
 
 import { normalize, vlength, vscale } from './vectors.js';
 import { reducer, initialState, doToggleDisk, doSetCenter, doStrutPreview, doSelectPlane, doSelectHinge, doToggleBuild } from './planes.js';
@@ -9,6 +9,7 @@ import { useWorkerClient } from '../../viewer/context/worker.jsx';
 import { createStrut, joinBalls, newDesign } from '../../viewer/util/actions.js';
 import { useInteractionTool } from '../../viewer/context/interaction.jsx';
 import { setHingeStrut } from '../../viewer/util/actions.js';
+import { T } from '../../viewer/util/solid-three.js';
 
 const makeRotation = ( from, to ) =>
 {
@@ -45,10 +46,10 @@ const StrutPreview = props =>
   const strutQuaternion = () => makeRotation( CYLINDER_AXIS, props.endPt );
 
   return (
-    <mesh position={strutCenter()} quaternion={strutQuaternion()}
+    <T.Mesh position={strutCenter()} quaternion={strutQuaternion()}
         geometry={ new CylinderGeometry( cylinderSize, cylinderSize, strutLength(), 12, 1, true )} >
-      <meshLambertMaterial color={"white"} side={DoubleSide} />
-    </mesh>
+      <T.MeshLambertMaterial attach="material" color={"white"} side={DoubleSide} />
+    </T.Mesh>
   );
 }
 
@@ -69,7 +70,7 @@ const BuildDot = props =>
   }
 
   return (
-    <mesh position={props.position} quaternion={props.diskRotation} material={props.material}
+    <T.Mesh position={props.position} quaternion={props.diskRotation} material={props.material}
         onPointerOver={ handleHover( true ) } onPointerOut={ handleHover( false ) } onClick={ handleClick }
         geometry={ new CylinderGeometry( 0.5, 0.5, 0.35, 20 )} />
   )
@@ -84,15 +85,15 @@ const BuildZone = props =>
   let materialRef;
 
   return (
-    <group>
-      <meshLambertMaterial ref={materialRef} color={props.zone.color} side={DoubleSide} />
-      <mesh position={coneCenter()} quaternion={zoneQuaternion()} material={materialRef}
+    <T.Group>
+      <T.MeshLambertMaterial attach="material" ref={materialRef} color={props.zone.color} side={DoubleSide} />
+      <T.Mesh position={coneCenter()} quaternion={zoneQuaternion()} material={materialRef}
           geometry={ new CylinderGeometry( 1/16, 1/6, 1, 12, 1, false )} />
         <For each={ props.zone.vectors }>{ ( v, i ) =>
           <BuildDot position={v} material={materialRef} diskRotation={props.diskRotation}
             previewStrut={props.previewStrut} createStrut={ handleClick( i() ) } />
         }</For>
-    </group>
+    </T.Group>
   );
 }
 
@@ -108,12 +109,12 @@ const HingeOption = props =>
   const zoneQuaternion = createMemo( () => makeRotation( CYLINDER_AXIS, props.zone.vectors[ 0 ] ) );
 
   return (
-    <group>
-      <mesh position={tubeCenter()} quaternion={zoneQuaternion()} onClick={handleClick}
+    <T.Group>
+      <T.Mesh position={tubeCenter()} quaternion={zoneQuaternion()} onClick={handleClick}
           geometry={ new CylinderGeometry( 0.6, 0.6, 3, 36 )} >
-        <meshLambertMaterial color={props.zone.color} side={DoubleSide} />
-      </mesh>
-    </group>
+        <T.MeshLambertMaterial attach="material" color={props.zone.color} side={DoubleSide} />
+      </T.Mesh>
+    </T.Group>
   );
 }
 
@@ -127,12 +128,12 @@ const PlaneOption = props =>
     props.changePlane( props.zone.name, props.zone.orientation );
   }
   return (
-    <group>
-      <mesh quaternion={quaternion()} onClick={handleClick}
+    <T.Group>
+      <T.Mesh quaternion={quaternion()} onClick={handleClick}
           geometry={ new CylinderGeometry( 5, 5, 0.4, 48 )} >
-        <meshLambertMaterial color={props.zone.color} transparent={true} opacity={0.5} />
-      </mesh>
-    </group>
+        <T.MeshLambertMaterial attach="material" color={props.zone.color} transparent={true} opacity={0.5} />
+      </T.Mesh>
+    </T.Group>
   );
 }
 
@@ -148,18 +149,18 @@ const Hinge = props =>
   const globalRotation = createMemo( () => makeOrientation( buildPlanes(), props.state.hingeZone.orientation ) );
 
   return (
-    <group position={props.state.center.position} quaternion={globalRotation()}>
-      <mesh quaternion={hingeQuaternion()}
+    <T.Group position={props.state.center.position} quaternion={globalRotation()}>
+      <T.Mesh quaternion={hingeQuaternion()}
           geometry={ new CylinderGeometry( 1/2, 1/2, 2*discSize, 12, 1, false ) } >
-        <meshLambertMaterial attach="material" transparent={true} opacity={0.5} color={plane().color} />
-      </mesh>
+        <T.MeshLambertMaterial attach="material" attach="material" transparent={true} opacity={0.5} color={plane().color} />
+      </T.Mesh>
 
-      <group position={disksCenter()}>
+      <T.Group position={disksCenter()}>
         <For each={ plane().zones }>{ ( zone ) =>
           <PlaneOption zone={zone} changePlane={doChangePlane} />
         }</For>
-      </group>
-    </group>
+      </T.Group>
+    </T.Group>
   )
 }
 
@@ -253,18 +254,18 @@ export const BuildPlaneTool = props =>
   }
   
   return (
-    <group>
+    <T.Group>
     <Show when={state.buildPlanes && state.enabled && state.center}>
-      <group position={state.center.position}>
-        <group quaternion={globalRotation()}>
-          <mesh quaternion={diskRotation()} onClick={diskClick}
+      <T.Group position={state.center.position}>
+        <T.Group quaternion={globalRotation()}>
+          <T.Mesh quaternion={diskRotation()} onClick={diskClick}
               geometry={ new CylinderGeometry( discSize, discSize, 0.05, 60 ) } >
-            <meshLambertMaterial transparent={true} opacity={0.5} color={plane().color} />
-          </mesh>
-          <mesh quaternion={hoopRotation()}
+            <T.MeshLambertMaterial attach="material" transparent={true} opacity={0.5} color={plane().color} />
+          </T.Mesh>
+          <T.Mesh quaternion={hoopRotation()}
               geometry={ new TorusGeometry( discSize, 0.5, 15, 60 ) } >
-            <meshLambertMaterial transparent={true} opacity={0.5} color={plane().color} />
-          </mesh>
+            <T.MeshLambertMaterial attach="material" transparent={true} opacity={0.5} color={plane().color} />
+          </T.Mesh>
           <For each={ plane().zones }>{ ( zone, zoneIndex ) =>
             <Show when={state.buildingStruts} fallback={
               <HingeOption zone={zone} changeHinge={doChangeHinge} />
@@ -273,26 +274,26 @@ export const BuildPlaneTool = props =>
                 previewStrut={actions.previewStrut} createStrut={ createZoneStrut( zoneIndex() ) } />
             </Show>
           }</For>
-          <group>
+          <T.Group>
             {/* This one is relative to the state.center AND oriented the global rotation */}
             <Show when={ state.preview && ! state.preview?.forBall }>
               <StrutPreview endPt={state.preview.endPt} />
             </Show>
-          </group>
-        </group>
-        <group>
+          </T.Group>
+        </T.Group>
+        <T.Group>
           {/* This one is relative to the state.center only */}
           <Show when={ state.preview?.forBall }>
             <StrutPreview endPt={state.preview.endPt} />
           </Show>
-        </group>
-      </group>
-      <group>
+        </T.Group>
+      </T.Group>
+      <T.Group>
         <Show when={ !state.buildingStruts }>
           <Hinge state={state} changePlane={actions.changePlane} />
         </Show>
-      </group>
+      </T.Group>
     </Show>
-    </group>
+    </T.Group>
   )
 }

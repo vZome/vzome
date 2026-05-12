@@ -76,32 +76,24 @@ export const esbuildConfig = {
     '.svg': 'text',    // see https://esbuild.github.io/content-types/#text
   },
   format: 'esm',
-  target: 'es2022',    // see https://esbuild.github.io/api/#target
-  platform: 'browser', // see https://esbuild.github.io/api/#platform
+  target: 'es2022',
+  platform: 'browser',
   plugins: [           // see https://esbuild.github.io/plugins/
     solidPlugin(  // This allows esbuild's JSX conversion to handle SolidJS's flavor of JSX
       {
         solid: {
           moduleName: "solid-js/web",
-          // @ts-ignore
-          generate: "dynamic",
           renderers: [
             {
               name: "dom",
               moduleName: "solid-js/web",
               elements: [...DOMElements.values(), ...SVGElements.values()],
             },
-            {
-              // This is Solid's "universal renderer" needed by the current version of solid-three.
-              //   When I finally upgrade to the simpler version of solid-three under development,
-              //   I believe this will be unnecessary.
-              name: "universal",
-              moduleName: "solid-three",
-              elements: [],
-            },
           ],
         },
       }
     )
   ],
+
+
 };

@@ -18,6 +18,7 @@ import { ClassicEditor } from './classic.jsx';
 import { SymmetryProvider } from './context/symmetry.jsx';
 import { CommandsProvider } from './context/commands.jsx';
 import { SceneChangeListener } from '../../viewer/context/scene.jsx';
+import { GltfExportProvider } from '../../viewer/context/export.jsx';
 
 const Persistence = () =>
 {
@@ -45,6 +46,7 @@ export const ClassicApp = () =>
   return (
     <SymmetryProvider>
       <CommandsProvider>
+        <GltfExportProvider>
         <VZomeAppBar title=''
           spacer={ <>
             <Menubar>
@@ -79,6 +81,7 @@ export const ClassicApp = () =>
         <SceneChangeListener/>
 
         <ClassicEditor/>
+      </GltfExportProvider>
       </CommandsProvider>
     </SymmetryProvider>
   );

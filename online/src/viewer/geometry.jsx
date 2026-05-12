@@ -1,7 +1,8 @@
 
-import { createEffect, createMemo, onMount } from "solid-js";
-import { Vector3, Matrix4, BufferGeometry, Float32BufferAttribute } from "three";
-import { useThree } from "solid-three";
+import { createEffect, createMemo, onCleanup, onMount } from "solid-js";
+import { Vector3, Matrix4, BufferGeometry, Float32BufferAttribute, Color } from "three";
+
+import { T, useThree } from "./util/solid-three.js";
 
 import { useInteractionTool } from "./context/interaction.jsx";
 
@@ -41,7 +42,7 @@ const Instance = ( props ) =>
   }
   const handlePointerDown = ( e ) =>
   {
-    if ( e.button !== 0 ) // left-clicks only, please
+    if ( e.nativeEvent.button !== 0 ) // left-clicks only, please
       return;
     const handler = tool ?.onDragStart;
     if ( handler ) {
@@ -59,9 +60,19 @@ const Instance = ( props ) =>
   }
   const handlePointerUp = ( e ) =>
   {
-    if ( e.button !== 0 ) // left-clicks only, please
+    if ( e.nativeEvent.button !== 0 ) // left-clicks only, please
       return;
     const handler = tool ?.onDragEnd;
+    if ( handler ) {
+      e.stopPropagation();
+      handler( e.nativeEvent, props.id, props.position, props.type, props.selected, props.label );
+    }
+  }
+  const handleClick = ( e ) =>
+  {
+    if ( e.nativeEvent.button !== 0 ) // left-clicks only, please
+      return;
+    const handler = tool ?.onClick;
     if ( handler ) {
       e.stopPropagation();
       handler( e.nativeEvent, props.id, props.position, props.type, props.selected, props.label );
@@ -70,23 +81,27 @@ const Instance = ( props ) =>
 
   onMount( () => linesRef && linesRef.layers.set( 4 ) );
 
+  // Adopting changes as required by https://discourse.threejs.org/t/updates-to-color-management-in-three-js-r152/50791
+  const color = new Color() .setStyle( props.color ); // not reactive, don't care, I think
+
   // TODO give users control over emissive color
   const emissive = () => props.selected? "#c8c8c8" : "black"
   // TODO: cache materials
   return (
-    <group position={ props.position } name={props.id} >
-      <mesh matrixAutoUpdate={false} ref={meshRef} geometry={props.geometry}
-          onPointerOver={handleHover(true)} onPointerOut={handleHover(false)} onPointerMove={handlePointerMove}
+    <T.Group position={ props.position } name={props.id} >
+      <T.Mesh matrixAutoUpdate={false} ref={meshRef} geometry={props.geometry}
+          onPointerEnter={handleHover(true)} onPointerLeave={handleHover(false)} onPointerMove={handlePointerMove}
+          onClick={handleClick}
           onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onContextMenu={handleContextMenu}>
-        <meshLambertMaterial attach="material" color={props.color} emissive={emissive()} />
-      </mesh>
+        <T.MeshLambertMaterial attach="material" color={color} emissive={emissive()} />
+      </T.Mesh>
       { !!props.outlineGeometry &&
-        <lineSegments matrixAutoUpdate={false} ref={linesRef} geometry={props.outlineGeometry} >
-          <lineBasicMaterial attach="material" linewidth={4.4} color='black' />
-        </lineSegments>
+        <T.LineSegments matrixAutoUpdate={false} ref={linesRef} geometry={props.outlineGeometry} >
+          <T.LineBasicMaterial attach="material" linewidth={4.4} color='black' />
+        </T.LineSegments>
       }
       {!!props.label && <Label parent={meshRef} position={props.geometry.shapeCentroid} text={props.label} />}
-    </group>
+    </T.Group>
   )
 }
 
@@ -139,6 +154,7 @@ const InstancedShape = ( props ) =>
     geometry.setAttribute( 'normal', new Float32BufferAttribute( normals, 3 ) );
     geometry.computeBoundingSphere();
     geometry.shapeCentroid = centroid( vertices );
+    onCleanup( () => geometry.dispose() );
     return geometry;
   } );
 
@@ -158,9 +174,10 @@ const InstancedShape = ( props ) =>
     geometry .setIndex( indices );
     geometry .setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
     geometry .computeBoundingSphere();
+    onCleanup( () => geometry.dispose() );
     return geometry;
   } );
-
+  
   return (
     <>
       <For each={props.shape.instances}>{ instance =>
@@ -172,24 +189,25 @@ const InstancedShape = ( props ) =>
 
 export const ShapedGeometry = ( props ) =>
 {
-  const scene = useThree(({ scene }) => scene);
   const { setExporter } = useGltfExporter();
+  const { scene, render, canvas, camera } = useThree();
   const exportGltf = callback => {
     const exporter = new GLTFExporter();
+    const onError = ( error ) => {
+      console.error( 'An error happened during glTF export:', error );
+    }
     // Parse the input and generate the glTF output
-    exporter.parse( scene(), callback, { onlyVisible: false } );
+    exporter.parse( scene, callback, onError, { onlyVisible: false, binary: true } );
   };
   setExporter( { exportGltf } );
 
-  const gl = useThree( ({ gl }) => gl );
-  const camera = useThree( ({ camera }) => camera );
   const { setCapturer } = useImageCapture();
   const capture = ( mimeType, saveBlob ) => {
     // See:
     //   https://github.com/pmndrs/react-three-fiber/discussions/2054
     //   https://stackoverflow.com/questions/12168909/blob-from-dataurl
-    gl() .render( scene(), camera() ); // The HTML canvas state is only guaranteed immediately after render
-    gl() .domElement .toBlob( blob => {
+    render( scene, camera ); // The HTML canvas state is only guaranteed immediately after render
+    canvas .toBlob( blob => {
       console.log( `Captured ${mimeType} image of size ${blob.size} bytes` );
       saveBlob( blob );
     }, mimeType );
@@ -210,11 +228,11 @@ export const ShapedGeometry = ( props ) =>
   })
   return (
     // <Show when={ () => props.shapes }>
-      <group matrixAutoUpdate={false} ref={groupRef} >
+      <T.Group matrixAutoUpdate={false} ref={groupRef} >
         <For each={Object.values( props.shapes || {} )}>{ shape =>
           <InstancedShape shape={shape} />
         }</For>
-      </group>
+      </T.Group>
     // </Show>
   )
 };

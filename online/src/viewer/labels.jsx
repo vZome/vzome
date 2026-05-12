@@ -1,12 +1,11 @@
 
-import { createEffect, onMount, useFrame, useThree } from "solid-three";
+import { createEffect, onMount } from "solid-js";
+import { useFrame, useThree } from "./util/solid-three.js";
 import { CSS2DObject, CSS2DRenderer } from "three-stdlib";
 
 export const Labels = (props) =>
 {
-  const scene = useThree(({ scene }) => scene);
-  const camera = useThree(({ camera }) => camera);
-  const webGL = useThree(({gl}) => gl);
+  const { scene, camera, canvas } = useThree();
 
   let labelRenderer;
   onMount( () => {
@@ -20,7 +19,7 @@ export const Labels = (props) =>
     labelsElem.style.height = '100%';
     labelsElem.classList .add( 'labels' );
 
-    webGL() .domElement .insertAdjacentElement( "beforebegin", labelsElem );
+    canvas .insertAdjacentElement( "beforebegin", labelsElem );
   });
 
   createEffect( () => {
@@ -28,7 +27,7 @@ export const Labels = (props) =>
   } );
 
   useFrame( () => {
-    labelRenderer .render( scene(), camera() );
+    labelRenderer .render( scene, camera );
   })
 
   return null;

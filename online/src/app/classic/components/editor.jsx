@@ -1,6 +1,8 @@
 
 import { Switch, Match, createSignal, createEffect } from 'solid-js';
 
+import { T } from '../../../viewer/util/solid-three.js';
+
 import SvgIcon from '@suid/material/SvgIcon'
 import ToggleButton from "@suid/material/ToggleButton";
 import ToggleButtonGroup from "@suid/material/ToggleButtonGroup";
@@ -103,7 +105,7 @@ export const SceneEditor = ( props ) =>
         <ContextualMenuArea menu={<ContextualMenu showDialog={showDialog} />} class="absolute-0" disabled={viewing()} onOpenChange={resetPicked}>
           <SceneCanvas height="100%" width="100%" scene={scene} rotationOnly={false} >
             {/* The group is only necessary because of https://github.com/solidjs-community/solid-three/issues/11 */}
-            <group>
+            <T.Group>
               <Switch fallback={
                   <UnifiedTool/>
                 }>
@@ -111,7 +113,7 @@ export const SceneEditor = ( props ) =>
                   <SnapCameraTool/>
                 </Match>
               </Switch>
-            </group>
+            </T.Group>
           </SceneCanvas>
         </ContextualMenuArea>
       </InteractionToolProvider>

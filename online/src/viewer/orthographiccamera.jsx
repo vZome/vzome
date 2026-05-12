@@ -1,49 +1,51 @@
 
 // Adapted from https://github.com/nksaraf/react-three-fiber/commit/581d02376d4304fb3bab5445435a61c53cc5cdc2
 
-import { createEffect, untrack, onCleanup } from 'solid-js';
-import { useThree } from 'solid-three';
+import { createEffect, onCleanup } from 'solid-js';
+import { useThree, T } from "./util/solid-three.js";
+
+import { useCamera, } from "../viewer/context/camera.jsx";
 
 export const OrthographicCamera = (props) =>
 {
-  const set = useThree(({ set }) => set);
-  const scene = useThree(({ scene }) => scene);
-  const camera = useThree(({ camera }) => camera);
-
+  const { perspectiveProps, state, globalScale } = useCamera();
+  const halfWidth = () => perspectiveProps.width / 2;
   let cam;
+  const { scene, setCamera } = useThree();
 
   createEffect( () => {
-    if ( props.outlines )
+    if ( state.outlines )
       cam.layers .enable( 4 );
     else
       cam.layers .disable( 4 );
   });
 
   createEffect(() => {
-    cam.near = props.near;
-    cam.far = props.far;
-    cam.left = -props.halfWidth;
-    cam.right = props.halfWidth;
-    const halfHeight = props.halfWidth / props.aspect;
-    cam.top = halfHeight;
-    cam.bottom = -halfHeight;
+    cam.near = perspectiveProps .near * globalScale;
+    cam.far = perspectiveProps .far * globalScale;
+    cam.left = -halfWidth() * globalScale;
+    cam.right = halfWidth() * globalScale;
+    const halfHeight = halfWidth() / props.aspect;
+    cam.top = halfHeight * globalScale;
+    cam.bottom = -halfHeight * globalScale;
     cam.updateProjectionMatrix();
   });
 
   createEffect( () => {
-    const [ x, y, z ] = props.target;
-    cam .lookAt( x, y, z );
+    const [ x, y, z ] = perspectiveProps .target;
+    cam .lookAt( x * globalScale, y * globalScale, z * globalScale );
   });
 
-  createEffect(() => {
-    const oldCam = untrack(() => camera());
-    set()({ camera: cam });
-    scene() .add( cam ); // The camera will work without this, but the *lights* won't!
-    onCleanup(() => {
-      set()({ camera: oldCam });
-      scene() .remove( cam );
-    });
-  });
+  createEffect( () => {
+    setCamera( cam );
+    // I don't know why this is necessary... I guess a camera is not added automatically
+    scene .add( cam );
+    onCleanup( () => scene .remove( cam ) );
+  } );
 
-  return <orthographicCamera ref={cam} position={props.position} {...props} />
+  return (
+    <T.OrthographicCamera ref={cam} position={perspectiveProps .position.map( e => e * globalScale )} up={perspectiveProps .up} >
+      {props.children}
+    </T.OrthographicCamera>
+  );
 }

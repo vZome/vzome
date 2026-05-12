@@ -1,66 +1,55 @@
 
-import { useFrame, Canvas } from "solid-three";
-import { Color } from "three";
-import { createMemo, createRenderEffect, mergeProps, onMount } from "solid-js";
+import { Color, Scene, WebGLRenderer, } from "three";
+import { createRenderEffect, onMount, For, Show } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
+import { Canvas, T, useFrame } from "./util/solid-three.js";
+
+import { TrackballControls } from "./trackballcontrols.jsx";
 import { PerspectiveCamera } from "./perspectivecamera.jsx";
 import { OrthographicCamera } from "./orthographiccamera.jsx";
-import { TrackballControls } from "./trackballcontrols.jsx";
-import { useInteractionTool } from "../viewer/context/interaction.jsx";
-import { useCamera } from "../viewer/context/camera.jsx";
+import { useInteractionTool } from "./context/interaction.jsx";
+import { useCamera } from "./context/camera.jsx";
 import { Labels } from "./labels.jsx";
 import { useViewer } from "./context/viewer.jsx";
+import { WebXRSupport } from "./context/webxr.jsx";
 
 const Lighting = () =>
 {
-  const { state } = useCamera();
-  const color = createMemo( () => new Color( state.lighting.backgroundColor ) );
-  useFrame( ({scene}) => { scene.background = color() } )
+  const { state, perspectiveProps } = useCamera();
+  // Adopting changes as required by https://discourse.threejs.org/t/updates-to-color-management-in-three-js-r152/50791
+  //   and https://discourse.threejs.org/t/updates-to-lighting-in-three-js-r155/53733
+  const mapColor = color => new Color() .setStyle( color ) .multiplyScalar( Math.PI );
+  useFrame( ({scene}) => { scene.background = new Color() .setStyle( state.lighting.backgroundColor ) } ); // NOT converting to Linear!
   let centerObject;
   // The ambientLight has to be "invisible" so we don't get an empty node in glTF export.
 
   return (
-    <>
-      <object3D ref={centerObject} visible={false} />
-      <ambientLight color={state.lighting.ambientColor} />
-      <For each={state.lighting.directionalLights}>{ ( { color, direction } ) =>
-        <directionalLight target={centerObject} intensity={1.7} color={color} position={direction.map( x => -x )} />
+    <T.Group position={perspectiveProps.position} up={perspectiveProps.up} target={perspectiveProps.target}>
+      <T.Mesh ref={centerObject} visible={false} />
+      <T.AmbientLight color={mapColor( state.lighting.ambientColor )} />
+      <For each={state.lighting.directionalLights}>{ ( { direction, color } ) =>
+        <T.DirectionalLight target={centerObject} intensity={1.4}
+          color={mapColor( color )} position={direction.map( x => -x )} />
       }</For>
-    </>
+    </T.Group>
   )
 }
 
-const LightedCameraControls = (props) =>
+const ControlledCamera = (props) =>
 {
-  const { perspectiveProps, trackballProps, name, state, cancelTweens } = useCamera();
-  const [ tool ] = useInteractionTool();
-  const enableTrackball = () => ( tool === undefined ) || tool .allowTrackball();
-  props = mergeProps( { rotateSpeed: 4.5, zoomSpeed: 3, panSpeed: 1 }, props );
-  const halfWidth = () => perspectiveProps.width / 2;
-
-  const onTrackballEnd = () => ( tool !== undefined ) && tool .onTrackballEnd();
+  const { state } = useCamera();
 
   return (
-    <>
-      <Show when={state.camera.perspective} fallback={
-        <OrthographicCamera aspect={props.aspect} name={name} outlines={state.outlines}
-            position={perspectiveProps.position} up={perspectiveProps.up} halfWidth={halfWidth()}
-            near={perspectiveProps.near} far={perspectiveProps.far} target={perspectiveProps.target} >
-          <Lighting />
-        </OrthographicCamera>
-      }>
-        <PerspectiveCamera aspect={props.aspect} name={name} outlines={state.outlines}
-            position={perspectiveProps.position} up={perspectiveProps.up} fov={perspectiveProps.fov( props.aspect )}
-            near={perspectiveProps.near} far={perspectiveProps.far} target={perspectiveProps.target} >
-          <Lighting />
-        </PerspectiveCamera>
-      </Show>
-      <TrackballControls enabled={enableTrackball()} rotationOnly={props.rotationOnly} name={name}
-        camera={trackballProps.camera} target={perspectiveProps.target} sync={trackballProps.sync}
-        trackballStart={cancelTweens} trackballEnd={onTrackballEnd}
-        rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} />
-    </>
+    <Show when={state.camera.perspective} fallback={
+      <OrthographicCamera aspect={props.aspect}>
+        {props.children}
+      </OrthographicCamera>
+    }>
+      <PerspectiveCamera aspect={props.aspect}>
+        {props.children}
+      </PerspectiveCamera>
+    </Show>
   );
 }
 
@@ -100,35 +89,66 @@ export const LightedTrackballCanvas = ( props ) =>
     }
   }
   const handleWheel = ( e ) =>
-    {
-      const handler = tool ?.onWheel;
-      if ( handler ) {
-        e.preventDefault();
-        handler( e.deltaY );
-      }
-    }
-    const handlePointerMissed = ( e ) =>
   {
+    const handler = tool ?.onWheel;
+    if ( handler ) {
+      e.preventDefault();
+      handler( e.deltaY );
+    }
+  }
+  const handlePointerMissed = ( e ) =>
+  {
+    console.log("canvas onClickMissed");
     const handler = tool ?.bkgdClick;
-    if ( isLeftMouseButton( e ) && handler ) {
-      e.stopPropagation();
+
+    // NOTE: this is a solid-three handler, so the event is wrapped in a synthetic event,
+    //  and the native event is in e.nativeEvent.  We have to check the button on the native event,
+    //  but we can stop propagation on the synthetic event.
+    if ( isLeftMouseButton( e.nativeEvent ) && handler ) {
+      // e.stopPropagation();  // NOT available!  Is this a problem?
       handler( e );
     }
   }
 
+  const makeCustomRenderer = ( canvas ) =>
+  {
+    const renderer = new WebGLRenderer({
+      powerPreference: "high-performance",
+      canvas,
+      antialias: true,
+      alpha: true,
+      preserveDrawingBuffer: true,
+    });
+    // renderer.xr.enabled = true;
+    return renderer;
+  }
+
   const canvas =
-    <Canvas class='canvas3d' dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false, preserveDrawingBuffer: true }}
-        height={props.height ?? "100vh"} width={props.width ?? "100vw"}
-        frameloop="always" onPointerMissed={handlePointerMissed} >
-      <LightedCameraControls aspect={aspect()}
-        rotationOnly={props.rotationOnly} rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} />
+    <Canvas class='canvas3d' dpr={ window.devicePixelRatio } gl={makeCustomRenderer}
+        style={{
+          height: props.height ?? "100%",
+          width: props.width ?? "100%",
+          display: 'flex',
+        }}
+        frameloop="always" onClickMissed={handlePointerMissed} >
+      <WebXRSupport>
 
-      {props.children}
+        { /* This should add the camera to the scene so that the lights move with the camera,
+              but it apparently does not. */ }
+        <ControlledCamera aspect={aspect()} >
+          <Lighting />
+        </ControlledCamera>
 
-      {labels && labels() && <Labels size={canvasSize()} />}
+        <TrackballControls rotationOnly={props.rotationOnly}
+          rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} />
+
+        {props.children}
+
+        {labels && labels() && <Labels size={canvasSize()} />}
+
+      </WebXRSupport>
     </Canvas>;
   
-  canvas.style.display = 'flex';
   size = createElementSize( canvas );
 
   createRenderEffect( () => {

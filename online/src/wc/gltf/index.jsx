@@ -2,10 +2,14 @@
 import { createSignal } from "solid-js";
 import { render } from 'solid-js/web';
 
+import { Entity, Resource, } from "solid-three";
+import { DRACOLoader, GLTFLoader, } from "three-stdlib";
+
 import { vZomeViewerCSS } from "../vzome-viewer.css";
 import { urlViewerCSS } from "../../viewer/urlviewer.css.js";
 import { CameraProvider, SceneViewer } from "../../viewer/index.jsx";
-import { GltfModel } from './gltf.jsx';
+import { useCamera } from "../../viewer/context/camera.jsx";
+import { useWebXRClient } from "../../viewer/context/webxr.jsx";
 
 
 const renderGlTFViewer = ( container, config ) =>
@@ -13,11 +17,35 @@ const renderGlTFViewer = ( container, config ) =>
   const bindComponent = () =>
   {
     return (
-      <CameraProvider>
+      <CameraProvider scale={0.1}>
         <SceneViewer config={ { ...config, allowFullViewport: true, showOutlines: false } }
             componentRoot={container}
-            children3d={ <GltfModel url={config.url} /> }
-            height="100%" width="100%" >
+            children3d={ 
+
+              <Resource
+                loader={GLTFLoader}
+                url={config.url}
+                onBeforeLoad={loader => {
+                  const dracoLoader = new DRACOLoader();
+                  dracoLoader.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5.5/");
+                  loader.setDRACOLoader(dracoLoader);
+                }}
+              >
+                {gltf => {
+                  const { setRootScene } = useWebXRClient();
+                  const { tweenCamera, setTweenDuration } = useCamera();
+                  setRootScene( gltf().scene );
+                  if ( config.tweening?.duration ) {
+                    setTimeout( () => {
+                      setTweenDuration( config.tweening.duration );
+                      tweenCamera( config.camera );
+                    } );
+                  }
+                } }
+              </Resource>
+
+            }
+          height="100%" width="100%" >
         </SceneViewer>
       </CameraProvider>
     );
