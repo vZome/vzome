@@ -152,7 +152,7 @@ const Hinge = props =>
     <T.Group position={props.state.center.position} quaternion={globalRotation()}>
       <T.Mesh quaternion={hingeQuaternion()}
           geometry={ new CylinderGeometry( 1/2, 1/2, 2*discSize, 12, 1, false ) } >
-        <T.MeshLambertMaterial attach="material" attach="material" transparent={true} opacity={0.5} color={plane().color} />
+        <T.MeshLambertMaterial attach="material" transparent={true} opacity={0.5} color={plane().color} />
       </T.Mesh>
 
       <T.Group position={disksCenter()}>
