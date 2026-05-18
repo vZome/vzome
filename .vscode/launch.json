@@ -12,6 +12,16 @@
       }
     },
     {
+      "name":                             "online tests HTTPS",
+      "type": "chrome",
+      "request": "launch",
+      "url": "https://localhost:8532/app/test/",
+      "pathMapping": {
+        "/app/": "${workspaceFolder}/online/serve/app",
+        "/": "${workspaceFolder}/online/src"
+      }
+    },
+    {
       "name":                             "debug desktop vZome",
       "type": "java",
       "request": "launch",

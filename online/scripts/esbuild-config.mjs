@@ -54,13 +54,18 @@ export const esbuildConfig = {
     'bhall-basic'     : 'src/app/bhall/basic/index.jsx',
     '59icosahedra'    : 'src/app/59icosahedra/index.jsx',
     'vzome-files'     : 'src/app/localfiles/index.js',
-  // web components, not used by apps
+
+    // web components, not used by apps
     'vzome-viewer'        : 'src/wc/vzome-viewer.js',
     'gltf-viewer'         : 'src/wc/gltf/index.jsx',
     'vrml-viewer'         : 'src/wc/vrml/index.jsx',
     'zometool'            : 'src/wc/zometool/index.jsx',
-  // client rendering code, dynamically imported for fast time-to-first-render
+
+    // client rendering code, dynamically imported for fast time-to-first-render
     'vzome-viewer-dynamic': 'src/viewer/index.jsx',
+  // XR code, dynamically imported when we know it's supported
+    'vzome-viewer-xr'     : 'src/xr/index.jsx',
+
   // Worker entry point, only used as a module worker
     'vzome-worker-static' : 'src/worker/vzome-worker-static.js',
   // Legacy code, dynamically loaded as needed by the worker to parse vZome files or edit designs
