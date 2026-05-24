@@ -1,10 +1,11 @@
 
 import { Vector3, Quaternion, } from "three";
 import { ARButton, createText, } from "three-stdlib";
+import { useThree, useFrame, T, } from "../viewer/util/solid-three.js";
 
-export const initXR = ( getRootGroup, store, trackball ) =>
+const StartXRButton = ( props ) =>
 {
-  const { scene, canvas, gl } = store;
+  const store = useThree(); // we need this so we get the live camera later at mount time
 
   let instructionText = null;
   let needsInitialPlacement = false;
@@ -15,23 +16,24 @@ export const initXR = ( getRootGroup, store, trackball ) =>
   let _origControlsTarget;
   let needsCameraRestore = false;
 
-  canvas.parentElement.appendChild( ARButton.createButton(gl, { optionalFeatures: ['local-floor'] }));
+  store.canvas.parentElement.appendChild( ARButton.createButton(store.gl, { optionalFeatures: ['local-floor'] }));
 
-  gl.xr.addEventListener('sessionstart', () => {
+  const startSession = () =>
+  {
     // Toggle scene background/fog and orbit trackball for AR passthrough
-    _origBackground = scene.background;
-    _origFog = scene.fog;
+    _origBackground = store.scene.background;
+    _origFog = store.scene.fog;
     _origFov = store.camera.fov;
     _origAspect = store.camera.aspect;
     _origNear = store.camera.near;
     _origFar = store.camera.far;
     _origCameraPos = store.camera.position.clone();
     _origCameraQuat = store.camera.quaternion.clone();
-    _origControlsTarget = trackball.target.clone();
+    _origControlsTarget = props.trackball.target.clone();
 
-    scene.background = null;
-    scene.fog = null;
-    trackball.enabled = false;
+    store.scene.background = null;
+    store.scene.fog = null;
+    props.trackball.enabled = false;
 
     // XR controls FOV/pose from the headset, but near/far come from the Three.js camera.
     // The saved values reflect vZome's abstract coordinate scale; AR is real-world scale,
@@ -40,78 +42,84 @@ export const initXR = ( getRootGroup, store, trackball ) =>
     store.camera.far = 100;
     store.camera.updateProjectionMatrix();
 
-    needsInitialPlacement = true;
-  });
+    instructionText = createText( 'Grip to move the model', 0.06 );
+    store.scene.add( instructionText );
 
-  gl.xr.addEventListener('sessionend', () => {
-    scene.background = _origBackground;
-    scene.fog = _origFog;
+    needsInitialPlacement = true;
+  }
+
+  const endSession = () =>
+  {
+    store.scene.background = _origBackground;
+    store.scene.fog = _origFog;
 
     instructionText.visible = false;
-    getRootGroup().position.copy( new Vector3(0, 0, 0) );
+    props.getRootGroup().position.copy( new Vector3(0, 0, 0) );
 
-    // 1. Restore your saved camera parameters
-    store.camera.fov = _origFov;
+    store.camera.fov    = _origFov;
     store.camera.aspect = _origAspect;
     store.camera.near   = _origNear;
     store.camera.far    = _origFar;
 
-    // 3. Restore position/rotation/scale if you saved them
     store.camera.position.copy(_origCameraPos);
     store.camera.quaternion.copy(_origCameraQuat);
 
-    // 5. If you use OrbitControls, re-sync it to the restored camera state
-    trackball.target.copy( _origControlsTarget );
-    trackball.enabled = true;
+    props.trackball.target.copy( _origControlsTarget );
+    props.trackball.enabled = true;
 
     if ( instructionText )
-      scene.remove( instructionText );
+      store.scene.remove( instructionText );
 
     needsCameraRestore = true;
-  });
+  }
+
+  store.gl.xr.addEventListener( 'sessionstart', startSession );
+  store.gl.xr.addEventListener( 'sessionend',   endSession   );
 
   for (let i = 0; i < 2; i++) {
-    const controller = gl.xr.getController( i );
+    const controller = store.gl.xr.getController( i );
     controller.addEventListener( 'squeezestart', () => {
       if (instructionText) {
         instructionText.visible = false;
       }
-      controller.attach( getRootGroup() );
+      controller.attach( props.getRootGroup() );
     });
     controller.addEventListener( 'squeezeend', () => {
-      scene.attach( getRootGroup() );
+      store.scene.attach( props.getRootGroup() );
     });
-    scene.add( controller );
+    store.scene.add( controller );
   }
 
   const _forward = new Vector3();
   const _viewerPos = new Vector3();
   const _viewerQuat = new Quaternion();
-  const eachFrame = () => {
+  useFrame( () => {
     if (needsCameraRestore) {
       needsCameraRestore = false;
       store.camera.updateProjectionMatrix();
       store.camera.updateMatrixWorld(true);
-      trackball.update();              // re-derives its internal state from camera
-      gl.render( scene, store.camera ); // render a frame to ensure the restored camera state is visible immediately
+      props.trackball.update();              // re-derives its internal state from camera
+      store.gl.render( store.scene, store.camera ); // render a frame to ensure the restored camera state is visible immediately
     }
-    if (needsInitialPlacement && gl.xr.isPresenting) {
-      const xrCamera = gl.xr.getCamera();
+    if (needsInitialPlacement && store?.gl?.xr?.isPresenting) {
+      const xrCamera = store.gl.xr.getCamera();
       xrCamera.getWorldPosition(_viewerPos);
       xrCamera.getWorldQuaternion(_viewerQuat);
       _forward.set(0, 0, -1).applyQuaternion(_viewerQuat);
-      getRootGroup().position.copy(
+
+      instructionText.position.copy(_viewerPos).addScaledVector(_forward, 0.8);
+      instructionText.quaternion.copy(_viewerQuat);
+      needsInitialPlacement = false;
+
+      props.getRootGroup().position.copy(
         _viewerPos.clone()
           .addScaledVector(_forward, 0.7)
           .add(new Vector3(0, -0.2, 0))
       );
-      instructionText = createText( 'Grip to move the model', 0.06 );
-      scene.add( instructionText );
-      instructionText.position.copy(_viewerPos).addScaledVector(_forward, 0.8);
-      instructionText.quaternion.copy(_viewerQuat);
-      needsInitialPlacement = false;
     }
-  }
+  } );
 
-  return { eachFrame, };
+  return null;
 }
+
+export default StartXRButton;

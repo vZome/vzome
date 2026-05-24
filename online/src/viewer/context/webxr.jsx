@@ -1,38 +1,23 @@
-import { createContext, onMount, useContext, } from "solid-js";
+import { lazy, Suspense, Show, createResource, createContext, useContext, } from "solid-js";
 
-import { T, useThree, useFrame, } from "../util/solid-three.js";
+import { T, } from "../util/solid-three.js";
 import { useCamera } from "./camera.jsx";
 
 export const WebXRSupport = (props) =>
 {
-  const store = useThree(); // we need this so we get the live camera later at mount time
-  const { scene, canvas, gl } = store;
   const { globalScale } = useCamera();
   let originGroup = null;
-  let xrManager = null;
   let trackball = null;
 
-  const setTrackball = (tb) => { trackball = tb; };
+  const setTrackball = (tb) => { 
+    trackball = tb;
+  };
 
-  useFrame( () => {
-    if ( xrManager ) {
-      xrManager .eachFrame();
-    }
-  } );
+  const StartXRButton = lazy(() => import( "../../xr/index.jsx" ));
 
-  onMount( () => {
-    if ( navigator.xr?.isSessionSupported )
-      navigator.xr.isSessionSupported('immersive-ar' ).then( ( supported ) =>
-    {
-      if ( !supported ) {
-        console.warn( 'WebXR AR not supported' );
-        return;
-      }
+  const checkXRSupport = async () => "isSessionSupported" in navigator.xr && await navigator.xr.isSessionSupported( 'immersive-ar' );
 
-      // avoid loading all the code and assets for WebXR if it's not supported, but load it dynamically when we know we can use it.
-      import( '../../xr/index.jsx' ).then( module => { xrManager = module.initXR( () => originGroup, store, trackball ); } );
-    } );
-  } );
+  const [xrSupported] = createResource( checkXRSupport );
 
   const setRootScene = ( scene ) =>
   {
@@ -47,11 +32,19 @@ export const WebXRSupport = (props) =>
   };
 
   return (
-    <T.Group ref={originGroup} scale={globalScale} >
-      <WebXRContext.Provider value={ { setTrackball, setRootScene, } }>
-        {props.children}
-      </WebXRContext.Provider>
-    </T.Group>
+    <>
+      <T.Group ref={originGroup} scale={globalScale} >
+        <WebXRContext.Provider value={ { setRootScene, setTrackball, } }>
+          {props.children}
+        </WebXRContext.Provider>
+      </T.Group>
+      {/* Having this Suspense inside the T.Group was causing a weird scaling issue when XR is supported */}
+      <Suspense>
+        <Show when={xrSupported()}>
+          <StartXRButton getRootGroup={() => originGroup} trackball={trackball} />
+        </Show>
+      </Suspense>
+    </>
   );
 }
 
