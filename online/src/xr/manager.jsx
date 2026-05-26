@@ -1,7 +1,7 @@
 
 import { createContext, useContext, } from "solid-js";
 import { Vector3, Quaternion, } from "three";
-import { ARButton, createText, } from "three-stdlib";
+import { ARButton, createText, XRControllerModelFactory, XRHandModelFactory, } from "three-stdlib";
 import { useThree, useFrame, } from "solid-three";
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -46,8 +46,8 @@ export const XRSessionManager = ( props ) =>
   let needsCameraRestore = false;
   let sessionStarted = false;
 
-  store.canvas.parentElement.appendChild( ARButton.createButton(store.gl, { optionalFeatures: ['local-floor'] }));
-
+  store.canvas.parentElement.appendChild( ARButton.createButton(store.gl, { optionalFeatures: ['local-floor', 'hand-tracking'] }));
+  
   const startSession = () =>
   {
     // Toggle scene background/fog and orbit trackball for AR passthrough
@@ -140,28 +140,44 @@ export const XRControllerManager = ( props ) =>
 
   let controllers = [];
 
+  const controllerModelFactory = new XRControllerModelFactory();
+  const handModelFactory = new XRHandModelFactory();
+
   onViewerStart( () => {
     controllers = [];
     for (let i = 0; i < 2; i++) {
       const controller = store.gl.xr.getController( i );
+      const controllerGrip = store.gl.xr.getControllerGrip( i );
+      controllerGrip.add( controllerModelFactory.createControllerModel( controllerGrip ) );
+
+      const hand = store.gl.xr.getHand( i );
+      hand.add(handModelFactory.createHandModel(hand, 'mesh'));
+      // const handPointer = new OculusHandPointerModel( hand, controller );
+      // hand.add( handPointer );
 
       const handleSqueezeStart = () => { for (const fn of gripStartHandlers) fn( controller ); };
       const handleSqueezeEnd   = () => { for (const fn of gripEndHandlers)   fn( controller ); };
 
       controller.addEventListener( 'squeezestart', handleSqueezeStart );
       controller.addEventListener( 'squeezeend',   handleSqueezeEnd   );
+
+      store.scene.add( hand );
       store.scene.add( controller );
-      controllers.push({ controller, handleSqueezeStart, handleSqueezeEnd });
+      store.scene.add( controllerGrip );
+
+      controllers.push({ controller, controllerGrip, hand, handleSqueezeStart, handleSqueezeEnd });
     }
   });
 
   onViewerEnd( () => {
     gripStartHandlers.length = 0;
     gripEndHandlers.length   = 0;
-    for (const { controller, handleSqueezeStart, handleSqueezeEnd } of controllers) {
+    for (const { controller, controllerGrip, hand, handleSqueezeStart, handleSqueezeEnd } of controllers) {
       controller.removeEventListener( 'squeezestart', handleSqueezeStart );
       controller.removeEventListener( 'squeezeend',   handleSqueezeEnd   );
       store.scene.remove( controller );
+      store.scene.remove( controllerGrip );
+      store.scene.remove( hand );
     }
     controllers = [];
   });
