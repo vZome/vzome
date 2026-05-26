@@ -1,6 +1,6 @@
 
 import { createEffect, createResource } from "solid-js";
-import { useThree } from "../../viewer/util/solid-three.js";
+import { useThree } from 'solid-three';
 import { GLTFLoader, DRACOLoader } from "three-stdlib";
 
 let dracoLoader = null;

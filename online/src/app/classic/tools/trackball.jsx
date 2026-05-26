@@ -1,7 +1,7 @@
 
 import { Show, createEffect, createSignal, onCleanup } from "solid-js";
 import { Matrix4, Quaternion, Vector3 } from 'three';
-import { useFrame, useThree } from "../../../viewer/util/solid-three.js";
+import { useFrame, useThree } from 'solid-three';
 import { DragHandler } from "./drag";
 import { VectorArrow } from "./arrow";
 

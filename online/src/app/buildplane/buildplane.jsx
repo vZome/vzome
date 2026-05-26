@@ -1,7 +1,7 @@
 
 import { For, Show, createEffect, createMemo } from 'solid-js';
 import { createStore, reconcile, unwrap } from 'solid-js/store';
-import { DoubleSide, Matrix4, Quaternion, Vector3, CylinderGeometry, TorusGeometry, } from 'three';
+import { DoubleSide, Matrix4, Quaternion, Vector3, CylinderGeometry, TorusGeometry, Mesh, MeshLambertMaterial, Group } from 'three';
 
 import { normalize, vlength, vscale } from './vectors.js';
 import { reducer, initialState, doToggleDisk, doSetCenter, doStrutPreview, doSelectPlane, doSelectHinge, doToggleBuild } from './planes.js';
@@ -9,7 +9,8 @@ import { useWorkerClient } from '../../viewer/context/worker.jsx';
 import { createStrut, joinBalls, newDesign } from '../../viewer/util/actions.js';
 import { useInteractionTool } from '../../viewer/context/interaction.jsx';
 import { setHingeStrut } from '../../viewer/util/actions.js';
-import { T } from '../../viewer/util/solid-three.js';
+import { createT } from 'solid-three';
+const T = createT({ Mesh, MeshLambertMaterial, Group });
 
 const makeRotation = ( from, to ) =>
 {
@@ -152,7 +153,7 @@ const Hinge = props =>
     <T.Group position={props.state.center.position} quaternion={globalRotation()}>
       <T.Mesh quaternion={hingeQuaternion()}
           geometry={ new CylinderGeometry( 1/2, 1/2, 2*discSize, 12, 1, false ) } >
-        <T.MeshLambertMaterial attach="material" attach="material" transparent={true} opacity={0.5} color={plane().color} />
+        <T.MeshLambertMaterial attach="material" transparent={true} opacity={0.5} color={plane().color} />
       </T.Mesh>
 
       <T.Group position={disksCenter()}>

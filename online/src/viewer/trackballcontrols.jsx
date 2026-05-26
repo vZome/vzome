@@ -2,7 +2,7 @@
 // modified copy from https://github.com/devinxi/vinxi/blob/1514f966d9cdcc2c19e2733a8c7bf03831f7ecf3/packages/solid-drei/src/OrbitControls.tsx
 
 import { createEffect, createMemo, onCleanup, mergeProps } from "solid-js";
-import { useFrame, useThree } from "./util/solid-three.js";
+import { useFrame, useThree } from 'solid-three';
 import { TrackballControls as TrackballControlsImpl } from "three-stdlib";
 
 import { useCamera } from "../viewer/context/camera.jsx";

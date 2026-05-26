@@ -1,7 +1,9 @@
 
 import { Switch, Match, createSignal, createEffect } from 'solid-js';
 
-import { T } from '../../../viewer/util/solid-three.js';
+import { createT } from 'solid-three';
+import { Group } from "three";
+const T = createT({ Group });
 
 import SvgIcon from '@suid/material/SvgIcon'
 import ToggleButton from "@suid/material/ToggleButton";

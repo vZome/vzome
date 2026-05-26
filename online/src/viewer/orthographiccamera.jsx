@@ -2,11 +2,13 @@
 // Adapted from https://github.com/nksaraf/react-three-fiber/commit/581d02376d4304fb3bab5445435a61c53cc5cdc2
 
 import { createEffect, onCleanup } from 'solid-js';
-import { useThree, T } from "./util/solid-three.js";
+import { useThree, createT } from 'solid-three';
+import { OrthographicCamera } from "three";
+const T = createT({ OrthographicCamera });
 
 import { useCamera, } from "../viewer/context/camera.jsx";
 
-export const OrthographicCamera = (props) =>
+export const ControlledOrthographicCamera = (props) =>
 {
   const { perspectiveProps, state, globalScale } = useCamera();
   const halfWidth = () => perspectiveProps.width / 2;

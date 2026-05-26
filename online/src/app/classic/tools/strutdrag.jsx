@@ -1,7 +1,8 @@
 
 import { createEffect, createSignal } from 'solid-js';
-import { Vector3 } from 'three';
-import { T, useThree } from "../../../viewer/util/solid-three.js";
+import { Vector3, Group } from 'three';
+import { createT, useThree } from 'solid-three';
+const T = createT({ Group });
 
 import { useInteractionTool } from '../../../viewer/context/interaction.jsx';
 import { ObjectTrackball } from './trackball.jsx';
