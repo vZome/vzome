@@ -6,30 +6,46 @@ import { useXR, useXRControllers, xrViewerPose, } from "./manager.jsx";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // XRInstructionText — contribution that displays a floating text label when a
-// session starts, positioned in front of the viewer.  Hides when the user grips.
+// session starts, positioned in front of each controller.  Hides when the user grips.
 
 export const XRInstructionText = ( props ) =>
 {
   const { onViewerStart, onViewerEnd } = useXR();
-  const { onGripStart } = useXRControllers();
+  const { onControllerConnected, onGripStart } = useXRControllers();
   const store = useThree();
 
-  let instructionText = null;
+  let instructionTextL = null;
+  let instructionTextR = null;
 
   onViewerStart( () => {
-    instructionText = createText( props.text ?? 'Grip to move the model', 0.06 );
-    store.scene.add( instructionText );
-
-    const { viewerPos, viewerQuat, forward } = xrViewerPose( store );
-    instructionText.position.copy(viewerPos).addScaledVector(forward, 0.8);
-    instructionText.quaternion.copy(viewerQuat);
-
-    onGripStart( () => { instructionText.visible = false; } );
+    onGripStart( () =>
+    {
+      instructionTextL.visible = false;
+      instructionTextR.visible = false;
+    } );
   });
 
-  onViewerEnd( () => {
-    store.scene.remove( instructionText );
-    instructionText = null;
+  onControllerConnected( ( controller, handedness, hand ) =>
+  {
+    if (handedness === 'left') {
+      instructionTextL = createText( props.text, 0.03 );
+      controller .add( instructionTextL );
+      instructionTextL.position.set( 0, 0.1, 0 );
+      instructionTextL.rotation.set( -Math.PI / 6, Math.PI / 6, 0 );
+    } else {
+      instructionTextR = createText( props.text, 0.03 );
+      controller .add( instructionTextR );
+      instructionTextR.position.set( 0, 0.1, 0 );
+      instructionTextR.rotation.set( -Math.PI / 6, -Math.PI / 6, 0 );
+    }
+  } );
+
+  onViewerEnd( () =>
+  {
+    store.scene.remove( instructionTextL );
+    store.scene.remove( instructionTextR );
+    instructionTextL = null;
+    instructionTextR = null;
   });
 
   return null;

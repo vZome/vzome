@@ -132,9 +132,11 @@ export const XRControllerManager = ( props ) =>
   const { onViewerStart, onViewerEnd } = useXR();
   const store = useThree();
 
+  const controllerConnectedHandlers = [];
   const gripStartHandlers = [];
   const gripEndHandlers   = [];
 
+  const onControllerConnected = ( fn ) => controllerConnectedHandlers.push( fn );
   const onGripStart = ( fn ) => gripStartHandlers.push( fn );
   const onGripEnd   = ( fn ) => gripEndHandlers.push( fn );
 
@@ -155,26 +157,32 @@ export const XRControllerManager = ( props ) =>
       // const handPointer = new OculusHandPointerModel( hand, controller );
       // hand.add( handPointer );
 
+      const handleControllerConnected = ( event ) => {
+        for (const fn of controllerConnectedHandlers) fn( controller, event.data.handedness, hand );
+      };
       const handleSqueezeStart = () => { for (const fn of gripStartHandlers) fn( controller ); };
       const handleSqueezeEnd   = () => { for (const fn of gripEndHandlers)   fn( controller ); };
 
+      controller.addEventListener( 'connected', handleControllerConnected );
       controller.addEventListener( 'squeezestart', handleSqueezeStart );
-      controller.addEventListener( 'squeezeend',   handleSqueezeEnd   );
+      controller.addEventListener( 'squeezeend', handleSqueezeEnd   );
 
       store.scene.add( hand );
       store.scene.add( controller );
       store.scene.add( controllerGrip );
 
-      controllers.push({ controller, controllerGrip, hand, handleSqueezeStart, handleSqueezeEnd });
+      controllers.push({ controller, controllerGrip, hand, handleControllerConnected, handleSqueezeStart, handleSqueezeEnd });
     }
   });
 
   onViewerEnd( () => {
     gripStartHandlers.length = 0;
     gripEndHandlers.length   = 0;
-    for (const { controller, controllerGrip, hand, handleSqueezeStart, handleSqueezeEnd } of controllers) {
+    controllerConnectedHandlers.length = 0;
+    for (const { controller, controllerGrip, hand, handleControllerConnected, handleSqueezeStart, handleSqueezeEnd } of controllers) {
+      controller.removeEventListener( 'connected', handleControllerConnected );
       controller.removeEventListener( 'squeezestart', handleSqueezeStart );
-      controller.removeEventListener( 'squeezeend',   handleSqueezeEnd   );
+      controller.removeEventListener( 'squeezeend', handleSqueezeEnd   );
       store.scene.remove( controller );
       store.scene.remove( controllerGrip );
       store.scene.remove( hand );
@@ -183,7 +191,7 @@ export const XRControllerManager = ( props ) =>
   });
 
   return (
-    <XRControllerContext.Provider value={{ onGripStart, onGripEnd }}>
+    <XRControllerContext.Provider value={{ onControllerConnected, onGripStart, onGripEnd }}>
       {props.children}
     </XRControllerContext.Provider>
   );
