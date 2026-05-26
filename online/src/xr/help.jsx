@@ -20,8 +20,8 @@ export const XRInstructionText = ( props ) =>
   onViewerStart( () => {
     onGripStart( () =>
     {
-      instructionTextL.visible = false;
-      instructionTextR.visible = false;
+      if ( instructionTextL ) instructionTextL.visible = false;
+      if ( instructionTextR ) instructionTextR.visible = false;
     } );
   });
 

@@ -14,7 +14,11 @@ export const XRGripToMove = () =>
   const { onGripStart, onGripEnd } = useXRControllers();
   const store = useThree();
 
+  let sessionStartQuaternion = null;
+
   onViewerStart( () => {
+    sessionStartQuaternion = getRootGroup().quaternion.clone();
+
     const { viewerPos, forward } = xrViewerPose( store );
     getRootGroup().position
       .copy(viewerPos)
@@ -25,7 +29,13 @@ export const XRGripToMove = () =>
     onGripEnd(   ( controller ) => store.scene.attach( getRootGroup() ) );
   });
 
-  onViewerEnd( () => getRootGroup().position.copy( new Vector3(0, 0, 0) ) );
+  onViewerEnd( () => {
+    getRootGroup().position.copy( new Vector3(0, 0, 0) );
+    if ( sessionStartQuaternion ) {
+      getRootGroup().quaternion.copy( sessionStartQuaternion );
+      sessionStartQuaternion = null;
+    }
+  } );
 
   return null;
 };

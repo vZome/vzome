@@ -135,18 +135,34 @@ export const XRControllerManager = ( props ) =>
   const controllerConnectedHandlers = [];
   const gripStartHandlers = [];
   const gripEndHandlers   = [];
+  const scaleStartHandlers = [];
+  const scaleEndHandlers   = [];
 
   const onControllerConnected = ( fn ) => controllerConnectedHandlers.push( fn );
   const onGripStart = ( fn ) => gripStartHandlers.push( fn );
   const onGripEnd   = ( fn ) => gripEndHandlers.push( fn );
+  const onScaleStart = ( fn ) => scaleStartHandlers.push( fn );
+  const onScaleEnd   = ( fn ) => scaleEndHandlers.push( fn );
+
+  const posA = new Vector3();
+  const posB = new Vector3();
+  const getControllerSeparation = () => {
+    const controllerA = store.gl.xr.getController( 0 );
+    const controllerB = store.gl.xr.getController( 1 );
+    return controllerA.getWorldPosition( posA ).distanceTo( controllerB.getWorldPosition( posB ) );
+  };
 
   let controllers = [];
+  let squeezedControllers = new Set();
+  let scalingActive = false;
 
   const controllerModelFactory = new XRControllerModelFactory();
   const handModelFactory = new XRHandModelFactory();
 
   onViewerStart( () => {
     controllers = [];
+    squeezedControllers.clear();
+    scalingActive = false;
     for (let i = 0; i < 2; i++) {
       const controller = store.gl.xr.getController( i );
       const controllerGrip = store.gl.xr.getControllerGrip( i );
@@ -160,8 +176,23 @@ export const XRControllerManager = ( props ) =>
       const handleControllerConnected = ( event ) => {
         for (const fn of controllerConnectedHandlers) fn( controller, event.data.handedness, hand );
       };
-      const handleSqueezeStart = () => { for (const fn of gripStartHandlers) fn( controller ); };
-      const handleSqueezeEnd   = () => { for (const fn of gripEndHandlers)   fn( controller ); };
+      const handleSqueezeStart = () => {
+        squeezedControllers.add( controller );
+        for (const fn of gripStartHandlers) fn( controller );
+        if ( !scalingActive && squeezedControllers.size === 2 ) {
+          scalingActive = true;
+          const [ controllerA, controllerB ] = Array.from( squeezedControllers );
+          for (const fn of scaleStartHandlers) fn( controllerA, controllerB );
+        }
+      };
+      const handleSqueezeEnd   = () => {
+        squeezedControllers.delete( controller );
+        for (const fn of gripEndHandlers) fn( controller );
+        if ( scalingActive && squeezedControllers.size < 2 ) {
+          scalingActive = false;
+          for (const fn of scaleEndHandlers) fn();
+        }
+      };
 
       controller.addEventListener( 'connected', handleControllerConnected );
       controller.addEventListener( 'squeezestart', handleSqueezeStart );
@@ -176,9 +207,15 @@ export const XRControllerManager = ( props ) =>
   });
 
   onViewerEnd( () => {
+    if ( scalingActive ) {
+      scalingActive = false;
+      for (const fn of scaleEndHandlers) fn();
+    }
+    squeezedControllers.clear();
     gripStartHandlers.length = 0;
     gripEndHandlers.length   = 0;
-    controllerConnectedHandlers.length = 0;
+    scaleStartHandlers.length = 0;
+    scaleEndHandlers.length   = 0;
     for (const { controller, controllerGrip, hand, handleControllerConnected, handleSqueezeStart, handleSqueezeEnd } of controllers) {
       controller.removeEventListener( 'connected', handleControllerConnected );
       controller.removeEventListener( 'squeezestart', handleSqueezeStart );
@@ -191,7 +228,7 @@ export const XRControllerManager = ( props ) =>
   });
 
   return (
-    <XRControllerContext.Provider value={{ onControllerConnected, onGripStart, onGripEnd }}>
+    <XRControllerContext.Provider value={{ onControllerConnected, onGripStart, onGripEnd, onScaleStart, onScaleEnd, getControllerSeparation }}>
       {props.children}
     </XRControllerContext.Provider>
   );
