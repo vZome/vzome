@@ -1,6 +1,8 @@
 import { lazy, Suspense, Show, createResource, createContext, useContext, } from "solid-js";
 
-import { T, } from "../util/solid-three.js";
+import { createT } from 'solid-three';
+import { Group } from "three";
+const T = createT({ Group });
 import { useCamera } from "./camera.jsx";
 
 export const WebXRSupport = (props) =>

@@ -1,13 +1,14 @@
 
-import { Color, Scene, WebGLRenderer, } from "three";
+import { Color, Scene, WebGLRenderer, Group, Mesh, AmbientLight, DirectionalLight } from "three";
 import { createRenderEffect, onMount, For, Show } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
-import { Canvas, T, useFrame } from "./util/solid-three.js";
+import { Canvas, createT, useFrame } from 'solid-three';
+const T = createT({ Group, Mesh, AmbientLight, DirectionalLight });
 
 import { TrackballControls } from "./trackballcontrols.jsx";
-import { PerspectiveCamera } from "./perspectivecamera.jsx";
-import { OrthographicCamera } from "./orthographiccamera.jsx";
+import { ControlledPerspectiveCamera } from "./perspectivecamera.jsx";
+import { ControlledOrthographicCamera } from "./orthographiccamera.jsx";
 import { useInteractionTool } from "./context/interaction.jsx";
 import { useCamera } from "./context/camera.jsx";
 import { Labels } from "./labels.jsx";
@@ -42,13 +43,13 @@ const ControlledCamera = (props) =>
 
   return (
     <Show when={state.camera.perspective} fallback={
-      <OrthographicCamera aspect={props.aspect}>
+      <ControlledOrthographicCamera aspect={props.aspect}>
         {props.children}
-      </OrthographicCamera>
+      </ControlledOrthographicCamera>
     }>
-      <PerspectiveCamera aspect={props.aspect}>
+      <ControlledPerspectiveCamera aspect={props.aspect}>
         {props.children}
-      </PerspectiveCamera>
+      </ControlledPerspectiveCamera>
     </Show>
   );
 }

@@ -1,6 +1,6 @@
 
 import { createEffect, onMount } from "solid-js";
-import { useFrame, useThree } from "./util/solid-three.js";
+import { useFrame, useThree } from 'solid-three';
 import { CSS2DObject, CSS2DRenderer } from "three-stdlib";
 
 export const Labels = (props) =>

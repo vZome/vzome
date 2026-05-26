@@ -1,8 +1,9 @@
 
 import { createEffect, createMemo, onCleanup, onMount } from "solid-js";
-import { Vector3, Matrix4, BufferGeometry, Float32BufferAttribute, Color } from "three";
+import { Vector3, Matrix4, BufferGeometry, Float32BufferAttribute, Color, Group, Mesh, MeshLambertMaterial, LineSegments, LineBasicMaterial } from "three";
 
-import { T, useThree } from "./util/solid-three.js";
+import { createT, useThree } from 'solid-three';
+const T = createT({ Group, Mesh, MeshLambertMaterial, LineSegments, LineBasicMaterial });
 
 import { useInteractionTool } from "./context/interaction.jsx";
 

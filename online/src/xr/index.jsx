@@ -2,7 +2,7 @@
 import { createContext, useContext, } from "solid-js";
 import { Vector3, Quaternion, } from "three";
 import { ARButton, createText, } from "three-stdlib";
-import { useThree, useFrame, } from "../viewer/util/solid-three.js";
+import { useThree, useFrame, } from "solid-three";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Reads the current XR viewer pose from the GL context.  Only valid to call
