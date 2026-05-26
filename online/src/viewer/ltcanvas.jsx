@@ -1,5 +1,6 @@
 
-import { Color, Scene, WebGLRenderer, Group, Mesh, AmbientLight, DirectionalLight } from "three";
+import { Color, Scene, Group, Mesh, AmbientLight, DirectionalLight } from "three";
+import { WebGPURenderer } from 'three/webgpu';
 import { createRenderEffect, onMount, For, Show } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
@@ -113,7 +114,7 @@ export const LightedTrackballCanvas = ( props ) =>
 
   const makeCustomRenderer = ( canvas ) =>
   {
-    const renderer = new WebGLRenderer({
+    const renderer = new WebGPURenderer({
       powerPreference: "high-performance",
       canvas,
       antialias: true,

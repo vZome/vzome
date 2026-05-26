@@ -2944,9 +2944,9 @@ solid-prevent-scroll@^0.1.4:
   dependencies:
     "@corvu/utils" "~0.3.1"
 
-"solid-three@https://pkg.pr.new/solid-three@4fe9e16":
+"solid-three@https://pkg.pr.new/solid-three@8348eb8":
   version "0.3.0-next.12"
-  resolved "https://pkg.pr.new/solid-three@4fe9e16#2ecfc9fbfab1409a2527a7dca4d972bda43ec581"
+  resolved "https://pkg.pr.new/solid-three@8348eb8#860a5017d7877ea127654484449cfbee48f8efae"
   dependencies:
     "@bigmistqke/solid-whenever" "^0.1.0"
     "@solid-primitives/resize-observer" "^2.0.25"

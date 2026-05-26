@@ -23,7 +23,7 @@
     "i": "^0.3.7",
     "npm": "^11.13.0",
     "solid-js": "^1.9.10",
-    "solid-three": "https://pkg.pr.new/solid-three@4fe9e16",
+    "solid-three": "https://pkg.pr.new/solid-three@8348eb8",
     "three": "^0.184.0",
     "three-stdlib": "^2.36.0",
     "txml": "^5.1.1",
