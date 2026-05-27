@@ -11,7 +11,7 @@ const ToolbarSpacer = () => ( <div style={{ 'min-width': '10px', 'min-height': '
 
 const ToolbarButton = props =>
 (
-  <button aria-label={props.label} class='toolbar-button' onClick={props.onClick} onContextMenu={props.onContextMenu} disabled={props.disabled}>
+  <button aria-label={props.label} title={props.label} class='toolbar-button' onClick={props.onClick} onContextMenu={props.onContextMenu} disabled={props.disabled}>
     <img src={ resourceUrl( `icons/tools/${props.image}.png` ) } class='toolbar-image'/>
   </button>
 )
@@ -26,10 +26,11 @@ const ToolFactoryButton = props =>
     const enabled = controllerProperty( controller(), 'enabled' );
     return enabled && (enabled === 'true');
   }
+  const label = () => controllerProperty( controller(), 'title' );
   const handleClick = () =>
     controllerAction( controller(), 'createTool' );
   return (
-    <ToolbarButton label={props.factoryName} image={`newTool/${props.factoryName}`} onClick={handleClick} disabled={!enabled()} />
+    <ToolbarButton label={label()} image={`newTool/${props.factoryName}`} onClick={handleClick} disabled={!enabled()} />
   )
 }
 
@@ -68,7 +69,7 @@ const CommandButton = props =>
   const { controllerAction } = useEditor();
   const handleClick = () => controllerAction( props.ctrlr, props.cmdName );
   return (
-    <ToolbarButton label={props.cmdName} image={`small/${props.cmdName}`} onClick={handleClick} />
+    <ToolbarButton label={props.hoverText} image={`small/${props.cmdName}`} onClick={handleClick} />
   );
 }
 
@@ -89,7 +90,7 @@ const SetColorButton = props =>
     colorInputElement.addEventListener( "change", e => setColor( e.target.value.substring(1) ), false );
   });
   return ( <>
-    <ToolbarButton label={props.cmdName} image={`small/setItemColor`} onClick={handleClick} />
+    <ToolbarButton label={props.hoverText} image={`small/setItemColor`} onClick={handleClick} />
     <input ref={colorInputElement} type="color" name="color-picker" class='hidden-color-input' />
   </>);
 }
@@ -131,9 +132,9 @@ export const ToolBar = props =>
     <div class="toolbar-wrapper">
     <div class="absolute-0">
     <div id='tools-bar' class='toolbar centered-scroller'>
-      <CommandButton ctrlr={props.editorController} cmdName='Delete'/>
-      <CommandButton ctrlr={props.editorController} cmdName='hideball'/>
-      <SetColorButton ctrlr={props.editorController} />
+      <CommandButton ctrlr={props.editorController} cmdName='Delete' hoverText='Delete'/>
+      <CommandButton ctrlr={props.editorController} cmdName='hideball' hoverText='Hide'/>
+      <SetColorButton ctrlr={props.editorController} hoverText='Set color'/>
       <ToolbarSpacer/>
       <CommandButton ctrlr={props.editorController} cmdName='JoinPoints/CLOSED_LOOP' hoverText='Connect balls in a loop'/>
       <CommandButton ctrlr={props.editorController} cmdName='JoinPoints/CHAIN_BALLS' hoverText='Connect balls in a chain'/>
