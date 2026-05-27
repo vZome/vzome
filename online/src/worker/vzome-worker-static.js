@@ -211,7 +211,11 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, shapshot=D
           const api = await legacy .initialize();
           const field = api .getField( 'golden' );
           field .setInterpreterModule( zomic, legacy .vzomePkg );
-          doLoad();
+          doLoad()
+            .catch( error => {
+              console.log( `openDesign failure: ${error.message}` );
+              report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model: ${error.message}` } );
+            });
         })
         .catch( error => {
           console.log( `openDesign failure: ${error.message}` );
