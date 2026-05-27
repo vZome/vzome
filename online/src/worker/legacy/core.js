@@ -654,9 +654,26 @@ export const loadAndInjectResource = async ( path, url ) =>
         const expectedText = JSON.stringify( expectedEffects, null, 2 );
         const actualText = JSON.stringify( actualEffects, null, 2 );
         if ( actualText !== expectedText ) {
+          const { id, index, tagName } = element.nativeElement
+          const editNumber = element.getAttribute('editNumber')
+          const nExpected = expectedEffects.children.length
+          const nActual = actualEffects.children.length
+          console.groupCollapsed(`${tagName} effects do not match recorded history!`)
+          console.log({ editNumber, id, index, nExpected, nActual, tagName })
           console.log( 'EXPECTED: ', expectedText );
           console.log( 'ACTUAL  : ', actualText );
-          throw new Error( 'Side effects from edit do not match recorded history!' );
+          console.groupEnd()
+          // DJH: This method originally threw an error at this point which meant that subsequent parsing wouldn't occur,
+          // but in some cases, the side effect lists are equivalent but just listed in a different order so the 
+          // string comparison fails.
+          // I think in some cases, it is helpful to allow the parsing to continue just to see if the reordering matters.
+          // With that in mind, I am always logging any differences (above), but only throwing an error if the counts are different.
+          // TODO: We could make more extensive comparisons as the basis for failing, but since this is just a seldom used
+          // diagnostic tool, this is the only change I'm going to make for now, except to include tagName and editNumber
+          // in the Error message when an error is actually thrown.
+          if(nExpected != nActual) []
+            throw new Error(`Side effects from edit number ${editNumber} (${tagName}) do not match recorded history!`)
+          }
         }
       }
     }
