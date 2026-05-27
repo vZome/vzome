@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test auto-import</title>
+
+  <link rel="stylesheet" href="../../vzome-viewer.css">
+
+  <script type="module" src="/modules/vzome-viewer.js"></script>
+
+</head>
+<body>
+  <article>
+    <section>
+      <vzome-viewer src="./smoke.mesh.json" >
+      </vzome-viewer>
+    </section>
+    <section>
+      <vzome-viewer src="../crf-polytope/starter-blues.cmesh.json" >
+      </vzome-viewer>
+    </section>
+    <section>
+      <vzome-viewer src="/app/classic/resources/org/vorthmann/zome/app/icosahedral.vef" >
+      </vzome-viewer>
+    </section>
+  </article>
+</body>
+</html>

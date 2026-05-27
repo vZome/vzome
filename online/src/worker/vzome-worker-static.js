@@ -301,30 +301,72 @@ const fileLoader = ( report, payload ) =>
   openDesign( xmlLoading, name, report, debug, polygons );
 }
 
+const doImport = ( text, format, report ) =>
+{
+  const action = IMPORT_ACTIONS[ format ];
+  try {
+    design.wrapper .doAction( '', action, { vef: text } );
+    reportDefaultScene( report );
+  } catch (error) {
+    console.log( `${action} actionPerformed error: ${error.message}` );
+    report( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
+  }
+}
+
+const importDesign = async ( report, url, format ) =>
+{
+  report( { type: 'FETCH_STARTED', payload: { name: 'untitled.vZome', preview: false } } );
+  try {
+    const text = await fetchUrlText( url );
+    let fieldName = 'golden';
+    if ( format !== 'vef' ) {
+      const json = JSON.parse( text ); // an extra parse, yes, but we need to get the field name out of the JSON before we can import it.
+      fieldName = json.field || fieldName;
+    }
+
+    const legacy = await importLegacy();
+    design = await legacy .newDesign( fieldName, clientEvents( report ) );
+    report({ type: 'CONTROLLER_CREATED' }); // do we really need this for previewing?
+
+    doImport( text, format, report );
+
+  } catch (error) {
+    console.log(`importDesign failure: ${error.message}`);
+    report({ type: 'ALERT_RAISED', payload: 'Failed to import vZome model.' });
+    return false;
+  }
+}
+
 const fileImporter = ( report, payload ) =>
 {
-  const IMPORT_ACTIONS = {
-    'mesh' : 'ImportSimpleMeshJson',
-    'cmesh': 'ImportColoredMeshJson',
-    'vef'  : 'LoadVEF',
-  }
   const { file, format } = payload;
-  const action = IMPORT_ACTIONS[ format ];
   fetchFileText( file )
-
-    .then( text => {
-      try {
-        design.wrapper .doAction( '', action, { vef: text } );
-        reportDefaultScene( report );
-      } catch (error) {
-        console.log( `${action} actionPerformed error: ${error.message}` );
-        report( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
-      }
-    } )
+    .then( text => doImport( text, format, report ) )
     .catch( error => {
       console.log( error.message );
       console.log( 'Import failed' );
     } )
+}
+
+const IMPORT_ACTIONS = {
+  'mesh' : 'ImportSimpleMeshJson',
+  'cmesh': 'ImportColoredMeshJson',
+  'vef'  : 'LoadVEF',
+}
+const IMPORT_FORMATS = {
+  '.mesh.json' : 'mesh',
+  '.cmesh.json': 'cmesh',
+  '.vef'       : 'vef',
+}
+const importFormat = url =>
+{
+  const normalized = url.split( /[?#]/, 1 )[0].toLowerCase();
+  for ( const extension of Object.keys( IMPORT_FORMATS ) ) {
+    if ( normalized.endsWith( extension ) ) {
+      return IMPORT_FORMATS[ extension ];
+    }
+  }
+  return undefined;
 }
 
 const defaultLoad = { design: true, bom: false, };
@@ -337,6 +379,12 @@ const urlLoader = async ( report, payload ) =>
     throw new Error( "No url field in URL_PROVIDED event payload" );
   }
   const name = url.split( '\\' ).pop().split( '/' ).pop()
+
+  const format = importFormat( url );
+  if ( !! format ) {
+    return importDesign( report, url, format );
+  }
+
   report( { type: 'FETCH_STARTED', payload } );
 
   console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${preview? "previewing" : "interpreting " } ${url}` );
