@@ -160,14 +160,14 @@ export const DesignBrowser = () =>
   });
 
   return (
-    <div id='github-browser' style={{ display: 'grid', 'grid-template-columns': '20% 80%', height: '100%' }}>
+    <div style={{ display: 'grid', 'grid-template-columns': '20% 80%', height: '100%' }}>
       <div id='users-designs' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }}>
         <UsersMenu users={options()} currentUser={githubUser()} setUser={setGithubUser} />
         <DesignList githubUser={githubUser()} designs={designs()} setUrl={selectUrl}/>
       </div>
       {/* This 'min-content 1fr' triggers an infinite loop involving the solid-three ResizeObserver,
            unless DesignViewer and LightedTrackballCanvas both have height=100%, display=flex, and overflow=hidden. */}
-      <div id='github-browser' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }}>
+      <div style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }}>
         <div id='details' style={{ 'min-height': '60px', 'border-bottom': '1px solid gray', 'background-color': 'whitesmoke' }}>
           <DesignActions githubUser={githubUser()} url={url()} path={path()} />
         </div>
