@@ -671,7 +671,7 @@ export const loadAndInjectResource = async ( path, url ) =>
           // TODO: We could make more extensive comparisons as the basis for failing, but since this is just a seldom used
           // diagnostic tool, this is the only change I'm going to make for now, except to include tagName and editNumber
           // in the Error message when an error is actually thrown.
-          if(nExpected != nActual) []
+          if(nExpected != nActual) {
             throw new Error(`Side effects from edit number ${editNumber} (${tagName}) do not match recorded history!`)
           }
         }
