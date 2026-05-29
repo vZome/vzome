@@ -2,7 +2,7 @@
 import { useThree, } from "solid-three";
 import { createText } from "three-stdlib";
 
-import { useXR, useXRControllers, xrViewerPose, } from "./manager.jsx";
+import { useXRSession, useXRControllers, xrViewerPose, } from "./manager.jsx";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // XRInstructionText — contribution that displays a floating text label when a
@@ -10,7 +10,7 @@ import { useXR, useXRControllers, xrViewerPose, } from "./manager.jsx";
 
 export const XRInstructionText = ( props ) =>
 {
-  const { onViewerStart, onViewerEnd } = useXR();
+  const { onViewerStart, onViewerEnd } = useXRSession();
   const { onControllerConnected, onGripStart } = useXRControllers();
   const store = useThree();
 

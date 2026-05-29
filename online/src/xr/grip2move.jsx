@@ -2,7 +2,7 @@
 import { Vector3, } from "three";
 import { useThree, } from "solid-three";
 
-import { useXR, useXRControllers, xrViewerPose, } from "./manager.jsx";
+import { useXRSession, useXRControllers, xrViewerPose, } from "./manager.jsx";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // XRGripToMove — contribution that lets the user grip and drag the model.
@@ -10,7 +10,7 @@ import { useXR, useXRControllers, xrViewerPose, } from "./manager.jsx";
 
 export const XRGripToMove = () =>
 {
-  const { onViewerStart, onViewerEnd, getRootGroup } = useXR();
+  const { onViewerStart, onViewerEnd, getRootGroup } = useXRSession();
   const { onGripStart, onGripEnd } = useXRControllers();
   const store = useThree();
 

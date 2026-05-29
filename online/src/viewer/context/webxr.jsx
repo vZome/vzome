@@ -1,4 +1,4 @@
-import { lazy, Suspense, Show, createResource, createContext, useContext, } from "solid-js";
+import { lazy, Suspense, Show, createContext, useContext, } from "solid-js";
 
 import { createT } from 'solid-three';
 import { Group } from "three";
@@ -42,7 +42,7 @@ export const WebXRSupport = (props) =>
       </T.Group>
       {/* Having this Suspense inside the T.Group was causing a weird scaling issue when XR is supported */}
       <Suspense>
-        <Show when={xrSupported()}>
+        <Show when={props.xrSupported && props.xrSupported()}>
           <StartXRButton getRootGroup={() => originGroup} trackball={trackball} />
         </Show>
       </Suspense>
