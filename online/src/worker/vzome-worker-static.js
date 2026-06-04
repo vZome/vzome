@@ -19,7 +19,8 @@ export const DEFAULT_SNAPSHOT = -1;
 
 // Take a normalized scene and prepare it to send to the client, by
 //   resolving the shapes and snapshot
-// TODO: change the client contract to avoid sending shapes and rotation matrices all the time!
+// TODO: once SymmetryGeometry replaces ShapedGeometry, stop sending rotation
+//   matrices per-instance and have the client resolve them from orientations.
 const prepareSceneResponse = ( design, snapshot ) =>
 {
   const { embedding, polygons, snapshots, orientations, instances } = design.rendered;
@@ -33,7 +34,7 @@ const prepareSceneResponse = ( design, snapshot ) =>
     shapes[ instance.shapeId ].instances.push( { ...instance, rotation } );
   }
   const parts = createPartsList( shapes, design.wrapper?.controller?.symmController );
-  return { shapes, embedding, polygons, parts };
+  return { shapes, embedding, polygons, parts, orientations };
 }
 
 const prepareEditSceneResponse = ( design, edit, before ) =>
@@ -56,7 +57,7 @@ const prepareEditSceneResponse = ( design, edit, before ) =>
     }
     shapes[ instance.shapeId ].instances.push( { ...instance, rotation } );
   }
-  return { scene: { shapes, polygons }, edit };
+  return { scene: { shapes, polygons, orientations }, edit };
 }
 
 const fetchUrlText = async ( url ) =>

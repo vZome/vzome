@@ -116,6 +116,66 @@ const centroid = vertices =>
   return { x: sx/num, y: sy/num, z: sz/num };
 }
 
+// Builds a triangulated (or polygon-fan) BufferGeometry for a shape, decoupled from
+// SolidJS so it can be reused outside a reactive/component context (e.g. by a
+// symmetry renderer that owns its geometries imperatively).
+export const buildShapeGeometry = ( shape, polygons ) =>
+{
+  // TODO: use indexed vertices, if I can understand how to do normals
+  const { vertices, faces } = shape;
+  const computeNormal = ( [ v0, v1, v2 ] ) => {
+    const e1 = new Vector3().subVectors( v1, v0 )
+    const e2 = new Vector3().subVectors( v2, v0 )
+    return new Vector3().crossVectors( e1, e2 ).normalize()
+  }
+  let positions = [];
+  let normals = [];
+  faces.forEach( face => {
+    const corners = face.vertices.map( i => vertices[ i ] )
+    const { x:nx, y:ny, z:nz } = computeNormal( corners )
+    const addVertex = ( { x, y, z } ) =>
+    {
+      positions.push( x, y, z );
+      normals.push( nx, ny, nz )
+    }
+    if ( polygons ) {
+      for (let index = 0; index < corners.length-2; index++) {
+        addVertex( corners[ 0 ] );
+        addVertex( corners[ (index+1) % corners.length ] );
+        addVertex( corners[ (index+2) % corners.length ] );
+      }
+    } else {
+      corners.forEach( addVertex );
+    }
+  } );
+  const geometry = new BufferGeometry();
+  geometry.setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
+  geometry.setAttribute( 'normal', new Float32BufferAttribute( normals, 3 ) );
+  geometry.computeBoundingSphere();
+  geometry.shapeCentroid = centroid( vertices );
+  return geometry;
+}
+
+// Builds a wireframe (edge) BufferGeometry for a shape's outline, decoupled from SolidJS.
+export const buildOutlineGeometry = ( shape ) =>
+{
+  const { vertices, faces } = shape;
+  let positions = [];
+  vertices .map( ( { x, y, z } ) => positions.push( x, y, z ) );
+  let indices = [];
+  faces.forEach( face => {
+    for (let i = 0; i < face.vertices.length; i++) {
+      indices .push( face.vertices[ i ] );
+      indices .push( face.vertices[ (i+1) % face.vertices.length ] );
+    }
+  } );
+  const geometry = new BufferGeometry();
+  geometry .setIndex( indices );
+  geometry .setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
+  geometry .computeBoundingSphere();
+  return geometry;
+}
+
 const InstancedShape = ( props ) =>
 {
   const { scene } = useScene();
@@ -123,62 +183,18 @@ const InstancedShape = ( props ) =>
 
   const geometry = createMemo( () =>
   {
-    // TODO: use indexed vertices, if I can understand how to do normals
-    const { vertices, faces } = props.shape;
-    const computeNormal = ( [ v0, v1, v2 ] ) => {
-      const e1 = new Vector3().subVectors( v1, v0 )
-      const e2 = new Vector3().subVectors( v2, v0 )
-      return new Vector3().crossVectors( e1, e2 ).normalize()
-    }
-    let positions = [];
-    let normals = [];
-    faces.forEach( face => {
-      const corners = face.vertices.map( i => vertices[ i ] )
-      const { x:nx, y:ny, z:nz } = computeNormal( corners )
-      const addVertex = ( { x, y, z } ) =>
-      {
-        positions.push( x, y, z );
-        normals.push( nx, ny, nz )
-      }
-      if ( scene.polygons ) {
-        for (let index = 0; index < corners.length-2; index++) {
-          addVertex( corners[ 0 ] );
-          addVertex( corners[ (index+1) % corners.length ] );
-          addVertex( corners[ (index+2) % corners.length ] );
-        }  
-      } else {
-        corners.forEach( addVertex );
-      }
-    } );
-    const geometry = new BufferGeometry();
-    geometry.setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
-    geometry.setAttribute( 'normal', new Float32BufferAttribute( normals, 3 ) );
-    geometry.computeBoundingSphere();
-    geometry.shapeCentroid = centroid( vertices );
+    const geometry = buildShapeGeometry( props.shape, scene.polygons );
     onCleanup( () => geometry.dispose() );
     return geometry;
   } );
 
   const outlineGeometry = createMemo( () =>
   {
-    const { vertices, faces } = props.shape;
-    let positions = [];
-    vertices .map( ( { x, y, z } ) => positions.push( x, y, z ) );
-    let indices = [];
-    faces.forEach( face => {
-      for (let i = 0; i < face.vertices.length; i++) {
-        indices .push( face.vertices[ i ] );
-        indices .push( face.vertices[ (i+1) % face.vertices.length ] );
-      }
-    } );
-    const geometry = new BufferGeometry();
-    geometry .setIndex( indices );
-    geometry .setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
-    geometry .computeBoundingSphere();
+    const geometry = buildOutlineGeometry( props.shape );
     onCleanup( () => geometry.dispose() );
     return geometry;
   } );
-  
+
   return (
     <>
       <For each={props.shape.instances}>{ instance =>

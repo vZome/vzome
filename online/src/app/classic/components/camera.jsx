@@ -39,6 +39,11 @@ export const CameraControlsUI = (props) =>
     }
     setScene( 'embedding', scene.embedding );
     setScene( 'polygons', scene.polygons );
+    // Needed by SymmetryGeometry (see scenecanvas.jsx's symmetryRenderer prop). This
+    // trackball preview has its own scene-loading path, separate from the main
+    // SCENE_RENDERED/SYMMETRY_CHANGED events in scene.jsx's SceneChangeListener, and it
+    // was dropping `orientations` even though prepareSceneResponse() sends it.
+    setScene( 'orientations', scene.orientations );
     updateShapes( scene.shapes );
   });
 
@@ -65,7 +70,7 @@ export const CameraControlsUI = (props) =>
       <div id="ball-and-slider">
         <div id="camera-trackball">
           <CameraProvider name='trackball' outlines={false} context={context}>
-            <SceneCanvas height="200px" width="240px" rotationOnly={true} rotateSpeed={0.7}/>
+            <SceneCanvas symmetryRenderer={true} height="200px" width="240px" rotationOnly={true} rotateSpeed={0.7}/>
           </CameraProvider>
         </div>
         <div id='zoom-slider' >

@@ -1,6 +1,7 @@
 
 import { LightedTrackballCanvas } from './ltcanvas.jsx';
 import { ShapedGeometry } from './geometry.jsx';
+import { SymmetryGeometry } from './symmetry-geometry.jsx';
 import { mergeProps } from 'solid-js';
 import { useScene } from './context/scene.jsx';
 
@@ -15,7 +16,10 @@ const SceneCanvas = ( props ) =>
         height={props.height} width={props.width} rotationOnly={props.rotationOnly}
         rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} >
       <Show when={ () => props.scene?.shapes }>
-        <ShapedGeometry embedding={scene?.embedding} shapes={scene?.shapes} />
+        { props.symmetryRenderer
+          ? <SymmetryGeometry embedding={scene?.embedding} shapes={scene?.shapes} orientations={scene?.orientations} polygons={scene?.polygons} />
+          : <ShapedGeometry embedding={scene?.embedding} shapes={scene?.shapes} />
+        }
       </Show>
       {props.children}
     </LightedTrackballCanvas>
