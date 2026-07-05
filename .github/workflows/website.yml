@@ -45,7 +45,7 @@ jobs:
         with:
           repository: vorth/vzome-sharing
           path: website/vzome-sharing
-          ref: main
+          ref: 115y-build
           token: ${{ secrets.GITHUB_TOKEN }}  # Use PAT if private repo
       
       - name: Setup Node.js
