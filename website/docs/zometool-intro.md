@@ -77,6 +77,6 @@ subtitle: The basic geometry of Zometool balls and struts
   </div>
   <textarea id="description"></textarea>
   <vzome-viewer id="welcome" indexed="true"
-    src="https://vorth.github.io/vzome-sharing/2025/07/06/09-34-12-Zometool-intro/Zometool-intro.vZome" >
+    src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2026/07/05/18-10-07-840Z-Zometool-intro/Zometool-intro.vZome" >
   </vzome-viewer>
 </section>
