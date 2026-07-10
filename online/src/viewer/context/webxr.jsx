@@ -17,7 +17,7 @@ export const WebXRSupport = (props) =>
 
   const StartXRButton = lazy(() => import( "../../xr/index.jsx" ));
 
-  const checkXRSupport = async () => "isSessionSupported" in navigator.xr && await navigator.xr.isSessionSupported( 'immersive-ar' );
+  const checkXRSupport = async () => typeof navigator.xr === "object" && navigator.xr && "isSessionSupported" in navigator.xr && await navigator.xr.isSessionSupported( 'immersive-ar' );
 
   const [xrSupported] = createResource( checkXRSupport );
 
