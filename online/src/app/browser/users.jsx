@@ -1,15 +1,118 @@
 
+import { createSignal, For, Show } from "solid-js";
+
 import { Select } from "@kobalte/core/select";
+
+import Dialog from '@suid/material/Dialog';
+import DialogTitle from '@suid/material/DialogTitle';
+import DialogContent from '@suid/material/DialogContent';
+import DialogActions from '@suid/material/DialogActions';
+import List from '@suid/material/List';
+import ListItem from '@suid/material/ListItem';
+import ListItemText from '@suid/material/ListItemText';
+import IconButton from '@suid/material/IconButton';
+import TextField from '@suid/material/TextField';
+import Button from '@suid/material/Button';
+import CircularProgress from '@suid/material/CircularProgress';
+import EditIcon from '@suid/icons-material/Edit';
+import DeleteIcon from '@suid/icons-material/Delete';
+import CheckIcon from '@suid/icons-material/Check';
+
+import { verifyGithubUser } from './github.js';
+
+const UsersEditDialog = (props) =>
+{
+  const [ newUser, setNewUser ] = createSignal( '' );
+  const [ checking, setChecking ] = createSignal( false );
+  const [ error, setError ] = createSignal( '' );
+
+  const handleClose = () =>
+  {
+    setNewUser( '' );
+    setError( '' );
+    props.onClose();
+  }
+
+  const addNewUser = async () =>
+  {
+    const user = newUser() .trim() .toLowerCase();
+    if ( ! user )
+      return;
+    if ( props.users .some( u => u .toLowerCase() === user ) ) {
+      setError( 'Already in the list' );
+      return;
+    }
+    setChecking( true );
+    setError( '' );
+    const { valid, rateLimited, resetAt } = await verifyGithubUser( user );
+    setChecking( false );
+    if ( rateLimited ) {
+      setError( `GitHub API rate limit reached.${ resetAt ? ` Try again after ${ resetAt.toLocaleTimeString() }.` : '' }` );
+      return;
+    }
+    if ( ! valid ) {
+      setError( `No public vzome-sharing repository found for "${user}"` );
+      return;
+    }
+    setNewUser( '' );
+    props.onAdd( user );
+  }
+
+  return (
+    <Dialog onClose={handleClose} aria-labelledby="users-edit-dialog-title" open={props.open}>
+      <DialogTitle id="users-edit-dialog-title">
+        Edit GitHub Users
+      </DialogTitle>
+      <DialogContent>
+        <List dense>
+          <For each={ props.users }>{ user =>
+            <ListItem
+              secondaryAction={
+                <IconButton edge="end" aria-label={`remove ${user}`} onClick={ () => props.onRemove( user ) }>
+                  <DeleteIcon />
+                </IconButton>
+              }
+            >
+              <ListItemText primary={ user } />
+            </ListItem>
+          }</For>
+        </List>
+        <div style={{ display: 'flex', gap: '0.5rem', 'align-items': 'flex-start', 'margin-top': '12px' }}>
+          <TextField
+            size="small"
+            placeholder="GitHub username"
+            value={ newUser() }
+            onChange={ e => setNewUser( e.target.value ) }
+            onKeyDown={ e => { if ( e.key === 'Enter' ) addNewUser(); } }
+            error={ !! error() }
+            helperText={ error() }
+            style={{ flex: '1 1 auto' }}
+          />
+          <IconButton aria-label="verify and add user" onClick={ addNewUser } disabled={ checking() || ! newUser() .trim() }>
+            <Show when={ ! checking() } fallback={ <CircularProgress size={20} /> }>
+              <CheckIcon />
+            </Show>
+          </IconButton>
+        </div>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>Done</Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
 
 export const UsersMenu = (props) =>
 {
+  const [ editOpen, setEditOpen ] = createSignal( false );
+
   const changeUser = user => {
     // user should never be null, now that we lowercase the query parameter first, but still...
     if ( !! user )
-      props.setUser( user );    
+      props.setUser( user );
   }
   return (
-    <div style={ { background: 'lightgray' } }>
+    <div style={ { background: 'lightgray', display: 'flex', 'align-items': 'center' } }>
       <Select
         value={props.currentUser}
         onChange={changeUser}
@@ -44,6 +147,16 @@ export const UsersMenu = (props) =>
           </Select.Content>
         </Select.Portal>
       </Select>
+      <IconButton aria-label="edit github users" size="small" onClick={ () => setEditOpen( true ) }>
+        <EditIcon fontSize="small" />
+      </IconButton>
+      <UsersEditDialog
+        open={ editOpen() }
+        users={ props.users }
+        onAdd={ props.onAddUser }
+        onRemove={ props.onRemoveUser }
+        onClose={ () => setEditOpen( false ) }
+      />
     </div>
   );
 }
