@@ -1,8 +1,11 @@
 
-import { For, Show, createEffect, createMemo, createResource, createSignal } from 'solid-js';
+import { For, Show, Switch, Match, createEffect, createMemo, createResource, createSignal } from 'solid-js';
+
+import { reconcile } from 'solid-js/store';
 
 import { fetchGitHubShares, getEmbeddingHtml, getAssetUrl } from './github.js';
 import { useViewer } from '../../viewer/context/viewer.jsx';
+import { useScene } from '../../viewer/context/scene.jsx';
 
 import { DesignViewer } from '../../viewer/index.jsx'
 
@@ -129,26 +132,46 @@ const DesignList = (props) =>
 
   const grouped = createMemo( () => groupDesigns( props.designs || [] ) );
 
+  const rateLimitMessage = () =>
+  {
+    const reset = props.resetAt;
+    const when = reset ? ` Try again after ${ reset .toLocaleTimeString() }.` : '';
+    return `GitHub API rate limit reached.${when}`;
+  }
+
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      <List dense component="nav" aria-label="vzome designs" style={{ overflow: 'auto', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }} >
-        <For each={ grouped().yearSections }>{ ( { year, months }, yi ) =>
-          <Section label={ year } startExpanded={ yi() === 0 }>
-            <For each={ months }>{ ( { month, items }, mi ) =>
-              <Section label={ MONTH_NAMES[ month ] } startExpanded={ yi() === 0 && mi() === 0 }>
-                <For each={ items }>{ design =>
-                  <DesignItem design={ design } selectedUrl={selectedUrl()} onSelect={handleSelect} />
-                }</For>
-              </Section>
-            }</For>
-          </Section>
-        }</For>
-        <Show when={ grouped().other.folders.length > 0 || grouped().other.items.length > 0 }>
-          <Section label="Other">
-            <FolderSection node={ grouped().other } selectedUrl={selectedUrl()} onSelect={handleSelect} />
-          </Section>
-        </Show>
-      </List>
+      <Switch fallback={
+        <List dense component="nav" aria-label="vzome designs" style={{ overflow: 'auto', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }} >
+          <For each={ grouped().yearSections }>{ ( { year, months }, yi ) =>
+            <Section label={ year } startExpanded={ yi() === 0 }>
+              <For each={ months }>{ ( { month, items }, mi ) =>
+                <Section label={ MONTH_NAMES[ month ] } startExpanded={ yi() === 0 && mi() === 0 }>
+                  <For each={ items }>{ design =>
+                    <DesignItem design={ design } selectedUrl={selectedUrl()} onSelect={handleSelect} />
+                  }</For>
+                </Section>
+              }</For>
+            </Section>
+          }</For>
+          <Show when={ grouped().other.folders.length > 0 || grouped().other.items.length > 0 }>
+            <Section label="Other">
+              <FolderSection node={ grouped().other } selectedUrl={selectedUrl()} onSelect={handleSelect} />
+            </Section>
+          </Show>
+        </List>
+      }>
+        <Match when={ props.rateLimited }>
+          <Typography variant='body1' color='error' style={{ 'text-align': 'center', 'margin-top': '13px', padding: '0 12px' }}>
+            <em>{ rateLimitMessage() }</em>
+          </Typography>
+        </Match>
+        <Match when={ props.loading }>
+          <Typography variant='body1' style={{ 'text-align': 'center', 'margin-top': '13px' }}>
+            <em>indexing designs...</em>
+          </Typography>
+        </Match>
+      </Switch>
     </div>
   );
 }
@@ -176,17 +199,21 @@ const DesignActions = (props) =>
     });
   }
 
-  const isGist = () => props.path .startsWith( 'https://gist.github.com/' );
+  const isGist = () => !! props.path && props.path .startsWith( 'https://gist.github.com/' );
 
   // Shared action descriptors, rendered as buttons on desktop and as menu items on mobile.
-  const actions = () => [
-    { label: 'Copy Embeddable HTML', color: 'primary', onClick: () => copyHtml( props.path, props.url ) },
-    { label: 'Copy Raw vZome URL', color: 'secondary', onClick: () => copyUrl( props.url ) },
-    isGist()
-      ? { label: 'Show Gist', color: 'primary', href: props.path }
-      : { label: 'Show GitHub Assets', color: 'primary', href: getAssetUrl( props.githubUser, props.path ) },
-    { label: 'Open in vZome online', color: 'secondary', href: classicURL + props.url },
-  ];
+  const actions = () => {
+    if ( ! props.path || ! props.url )
+      return [];
+    return [
+      { label: 'Copy Embeddable HTML', color: 'primary', onClick: () => copyHtml( props.path, props.url ) },
+      { label: 'Copy Raw vZome URL', color: 'secondary', onClick: () => copyUrl( props.url ) },
+      isGist()
+        ? { label: 'Show Gist', color: 'primary', href: props.path }
+        : { label: 'Show GitHub Assets', color: 'primary', href: getAssetUrl( props.githubUser, props.path ) },
+      { label: 'Open in vZome online', color: 'secondary', href: classicURL + props.url },
+    ];
+  };
 
   const [ menuAnchor, setMenuAnchor ] = createSignal( null );
 
@@ -248,6 +275,8 @@ let knownUsers = filterUniqueUsers( [ defaultGithubUser, ...storedUsers ] );
 export const DesignBrowser = () =>
 {
   const { requestDesign, resetScenes } = useViewer();
+  const { setScene } = useScene();
+  const clearViewer = () => setScene( reconcile( {} ) );
   const [ url, setUrl ] = createSignal( null );
   const [ path, setPath ] = createSignal( null );
   const selectUrl = ( newUrl, path ) =>
@@ -255,12 +284,22 @@ export const DesignBrowser = () =>
     if ( newUrl === url() )
       return;
     resetScenes();
+    clearViewer();
     requestDesign( newUrl, { preview: true } );
     setPath( path );
     setUrl( newUrl );
   }
   const [ githubUser, setGithubUser ] = createSignal( defaultGithubUser );
   const [ options, setOptions ] = createSignal( [ ...knownUsers ] );
+
+  const selectGithubUser = newUser =>
+  {
+    resetScenes();
+    clearViewer();
+    setPath( null );
+    setUrl( null );
+    setGithubUser( newUser );
+  }
 
   // const handleCreate = (inputValue) =>
   // {
@@ -273,7 +312,7 @@ export const DesignBrowser = () =>
 
   createEffect( () =>
   {
-    if ( designs()?.length > 0 ) {
+    if ( designs() ?.designs ?.length > 0 ) {
       // current githubUser is a valid one
       const validUser = githubUser() .toLowerCase();
       console.log( "storing vzome-github-user ", validUser );
@@ -296,8 +335,8 @@ export const DesignBrowser = () =>
   return (
     <div class='design-browser'>
       <div id='users-designs' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }}>
-        <UsersMenu users={options()} currentUser={githubUser()} setUser={setGithubUser} />
-        <DesignList githubUser={githubUser()} designs={designs()} setUrl={selectUrl}/>
+        <UsersMenu users={options()} currentUser={githubUser()} setUser={selectGithubUser} />
+        <DesignList githubUser={githubUser()} designs={designs() ?.designs} loading={designs.loading} rateLimited={designs() ?.rateLimited} resetAt={designs() ?.resetAt} setUrl={selectUrl}/>
       </div>
       {/* This 'min-content 1fr' triggers an infinite loop involving the solid-three ResizeObserver,
            unless DesignViewer and LightedTrackballCanvas both have height=100%, display=flex, and overflow=hidden. */}

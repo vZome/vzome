@@ -1,12 +1,16 @@
 
-import { fetchGists } from "./gists";
+import { fetchGists, GHRequestError } from "./gists";
 
+const isRateLimited = error => error instanceof GHRequestError && error.limits?.remaining === '0';
+
+// Resolves to { designs, rateLimited, resetAt } rather than throwing, so a rate-limit hit
+// is just data to check, not an exception that createResource would need to rethrow on every read.
 export const fetchGitHubShares = async githubUser =>
 {
   const BASE_URL = `https://raw.githubusercontent.com/${githubUser}/vzome-sharing/main/`;
 
   if ( ! githubUser ) {
-    return [];
+    return { designs: [], rateLimited: false };
   }
 
   const gistsPromise =
@@ -27,15 +31,23 @@ export const fetchGitHubShares = async githubUser =>
         };
         return designs;
       } )
-      .catch( () => {
+      .catch( error => {
+        if ( isRateLimited( error ) )
+          throw error;
         return [];
-      });
+      } );
 
   const repoPromise =
     fetch( `https://api.github.com/repos/${githubUser}/vzome-sharing/git/trees/main?recursive=1` )
-      .then( response => response.json() )
+      .then( async response => {
+        if ( ! response.ok && response.headers.get( 'x-ratelimit-remaining' ) === '0' ) {
+          const reset = new Date( response.headers.get( 'x-ratelimit-reset' ) * 1000 );
+          throw new GHRequestError( { remaining: '0', reset }, response.statusText || response.status );
+        }
+        return response.json();
+      } )
       .then( json => {
-        const designs = json.tree.filter( entry => entry.type==="blob" && entry.path.endsWith( '.vZome' ) )
+        const designs = ( json.tree || [] ) .filter( entry => entry.type==="blob" && entry.path.endsWith( '.vZome' ) )
           .map( ({ path }) => {
             const tokens = path .split( '/' );
             const url = BASE_URL + tokens .map( encodeURIComponent ) .join( '/' );
@@ -56,14 +68,22 @@ export const fetchGitHubShares = async githubUser =>
         console.log( 'Repo has', designs.length, 'entries.' );
         return designs;
       } )
-      .catch( () => {
+      .catch( error => {
+        if ( isRateLimited( error ) )
+          throw error;
         return [];
-      });
+      } );
 
-  return Promise.all( [ repoPromise, gistsPromise ] )
-      .then( ([ repoDesigns, gistDesigns ]) => {
-        return [ ...gistDesigns, ...repoDesigns ];
-      });
+  const [ repoResult, gistResult ] = await Promise.allSettled( [ repoPromise, gistsPromise ] );
+
+  const rateLimitError = [ repoResult, gistResult ] .find( r => r.status === 'rejected' ) ?.reason;
+  if ( rateLimitError )
+    return { designs: [], rateLimited: true, resetAt: rateLimitError.limits?.reset };
+
+  return {
+    designs: [ ...gistResult.value, ...repoResult.value ],
+    rateLimited: false,
+  };
 }
 
 export const getAssetUrl = ( githubUser, path ) =>
