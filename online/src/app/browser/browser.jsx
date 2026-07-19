@@ -301,6 +301,28 @@ export const DesignBrowser = () =>
     setGithubUser( newUser );
   }
 
+  const persistKnownUsers = () =>
+  {
+    const value = JSON.stringify( knownUsers );
+    localStorage .setItem( 'vzome-github-users', value );
+    setOptions( [ ...knownUsers ] );
+  }
+
+  const addUser = newUser =>
+  {
+    // explicit adds go at the end, unlike the MRU reordering that happens on successful load
+    knownUsers = filterUniqueUsers( [ ...knownUsers, newUser ] );
+    persistKnownUsers();
+  }
+
+  const removeUser = user =>
+  {
+    knownUsers = knownUsers .filter( u => u .toLowerCase() !== user .toLowerCase() );
+    persistKnownUsers();
+    if ( githubUser() .toLowerCase() === user .toLowerCase() )
+      selectGithubUser( knownUsers[0] || defaultGithubUser );
+  }
+
   // const handleCreate = (inputValue) =>
   // {
   //   const newOption = createOption( inputValue );
@@ -315,18 +337,10 @@ export const DesignBrowser = () =>
     if ( designs() ?.designs ?.length > 0 ) {
       // current githubUser is a valid one
       const validUser = githubUser() .toLowerCase();
-      console.log( "storing vzome-github-user ", validUser );
       localStorage .setItem( 'vzome-github-user', validUser );
-      // prepend it to the list
-      const newList = [ validUser, ...knownUsers ];
-      // then filter the list for uniqueness, preserving the order
-      knownUsers = filterUniqueUsers( newList );
-      // and finally store it
-      const value = JSON.stringify( knownUsers );
-      console.log( "storing vzome-github-users ", value );
-      localStorage .setItem( 'vzome-github-users', value );
-      // and update the UI
-      setOptions( [ ...knownUsers ] );
+      // prepend it to the list (MRU), then filter for uniqueness, preserving order
+      knownUsers = filterUniqueUsers( [ validUser, ...knownUsers ] );
+      persistKnownUsers();
     }
     else
       setUrl( null );
@@ -335,7 +349,7 @@ export const DesignBrowser = () =>
   return (
     <div class='design-browser'>
       <div id='users-designs' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }}>
-        <UsersMenu users={options()} currentUser={githubUser()} setUser={selectGithubUser} />
+        <UsersMenu users={options()} currentUser={githubUser()} setUser={selectGithubUser} onAddUser={addUser} onRemoveUser={removeUser} />
         <DesignList githubUser={githubUser()} designs={designs() ?.designs} loading={designs.loading} rateLimited={designs() ?.rateLimited} resetAt={designs() ?.resetAt} setUrl={selectUrl}/>
       </div>
       {/* This 'min-content 1fr' triggers an infinite loop involving the solid-three ResizeObserver,

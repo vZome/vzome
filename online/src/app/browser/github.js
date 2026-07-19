@@ -86,6 +86,23 @@ export const fetchGitHubShares = async githubUser =>
   };
 }
 
+// Checks that a GitHub account exists and has a public vzome-sharing repository.
+// Resolves to { valid, rateLimited, resetAt }, never throws.
+export const verifyGithubUser = async githubUser =>
+{
+  try {
+    const response = await fetch( `https://api.github.com/repos/${githubUser}/vzome-sharing` );
+    if ( ! response.ok && response.headers.get( 'x-ratelimit-remaining' ) === '0' ) {
+      const resetAt = new Date( response.headers.get( 'x-ratelimit-reset' ) * 1000 );
+      return { valid: false, rateLimited: true, resetAt };
+    }
+    return { valid: response.ok, rateLimited: false };
+  }
+  catch {
+    return { valid: false, rateLimited: false };
+  }
+}
+
 export const getAssetUrl = ( githubUser, path ) =>
 {
   const repoUrl = `https://github.com/${githubUser}/vzome-sharing/tree/main/`;
