@@ -34,6 +34,54 @@ body {
   height: 100%;
 }
 
+@media (max-width: 600px) {
+  .appbar-title {
+    font-size: 1.1rem !important;
+  }
+}
+
+.design-browser {
+  display: grid;
+  grid-template-columns: 20% 80%;
+  height: 100%;
+}
+
+.design-actions-desktop {
+  display: flex;
+}
+
+.design-actions-mobile {
+  display: none;
+}
+
+.design-viewer-panel #details {
+  min-height: 60px;
+}
+
+@media (max-width: 600px) {
+  .design-browser {
+    grid-template-columns: 100%;
+    grid-template-rows: 35% 65%;
+  }
+
+  .design-actions-desktop {
+    display: none;
+  }
+
+  .design-actions-mobile {
+    display: flex;
+  }
+
+  .design-viewer-panel #details {
+    min-height: 30px;
+    border-top: 1px solid gray;
+  }
+
+  .design-select-prompt {
+    display: none;
+  }
+}
+
 .absolute-0 {
   position: absolute;
   inset: 0;

@@ -28,10 +28,10 @@ export const VZomeAppBar = ( props ) =>
       <AppBar position="static" sx={{ backgroundColor: '#01203d' }}>
         <Toolbar>
           <Show when={ !merged.customTitle } fallback={
-            <Typography variant="h5" sx={{ paddingLeft: '12px', paddingRight: '40px' }}>{props.title}</Typography>
+            <Typography class='appbar-title' variant="h5" sx={{ paddingLeft: '12px', paddingRight: '40px' }}>{props.title}</Typography>
           }>
             <VZomeLogo/>
-            <Typography variant="h5" sx={{ paddingLeft: '12px', paddingRight: '40px' }}>
+            <Typography class='appbar-title' variant="h5" sx={{ paddingLeft: '12px', paddingRight: '40px' }}>
               vZome <Box component="span" fontStyle="oblique">{props.title}</Box>
             </Typography>
           </Show>

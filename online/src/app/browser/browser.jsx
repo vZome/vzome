@@ -1,5 +1,5 @@
 
-import { Show, createEffect, createResource, createSignal } from 'solid-js';
+import { For, Show, createEffect, createMemo, createResource, createSignal } from 'solid-js';
 
 import { fetchGitHubShares, getEmbeddingHtml, getAssetUrl } from './github.js';
 import { useViewer } from '../../viewer/context/viewer.jsx';
@@ -11,29 +11,143 @@ import ListItemButton from '@suid/material/ListItemButton';
 import ListItemText from '@suid/material/ListItemText';
 import Typography from '@suid/material/Typography'
 import Button from '@suid/material/Button';
+import IconButton from '@suid/material/IconButton';
+import Menu from '@suid/material/Menu';
+import MenuItem from '@suid/material/MenuItem';
+import MoreVert from '@suid/icons-material/MoreVert';
 import { UsersMenu } from './users.jsx';
+
+const MONTH_NAMES = [ 'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December' ];
+
+// Groups dated designs (gists and repo "dated" entries) into year > month sections,
+// most recent first, and nonstandard repo paths into an "Other" section that mirrors
+// their folder hierarchy, sorted alphabetically.
+const groupDesigns = designs =>
+{
+  const years = new Map(); // year -> month -> items[]
+  const otherRoot = { folders: new Map(), items: [] };
+
+  for ( const design of designs ) {
+    if ( design.kind === 'other' ) {
+      // tokens: [ ...folderNames, filename ]
+      const folderTokens = design.tokens .slice( 0, -1 );
+      let node = otherRoot;
+      for ( const folder of folderTokens ) {
+        if ( ! node.folders .has( folder ) )
+          node.folders .set( folder, { folders: new Map(), items: [] } );
+        node = node.folders .get( folder );
+      }
+      node.items .push( design );
+    }
+    else {
+      const year = design.date .getFullYear();
+      const month = design.date .getMonth(); // 0-11
+      if ( ! years .has( year ) )
+        years .set( year, new Map() );
+      const months = years .get( year );
+      if ( ! months .has( month ) )
+        months .set( month, [] );
+      months .get( month ) .push( design );
+    }
+  }
+
+  const sortByDateDesc = items => [ ...items ] .sort( ( a, b ) => b.date - a.date );
+
+  const yearSections = [ ...years .entries() ]
+    .sort( ( [ y1 ], [ y2 ] ) => y2 - y1 )
+    .map( ( [ year, months ] ) => ({
+      year,
+      months: [ ...months .entries() ]
+        .sort( ( [ m1 ], [ m2 ] ) => m2 - m1 )
+        .map( ( [ month, items ] ) => ({ month, items: sortByDateDesc( items ) }) ),
+    }) );
+
+  const sortFolder = node => ({
+    folders: [ ...node.folders .entries() ]
+      .sort( ( [ n1 ], [ n2 ] ) => n1 .localeCompare( n2 ) )
+      .map( ( [ name, child ] ) => ({ name, ...sortFolder( child ) }) ),
+    items: [ ...node.items ] .sort( ( a, b ) => a.title .localeCompare( b.title ) ),
+  });
+
+  return { yearSections, other: sortFolder( otherRoot ) };
+}
+
+const Section = (props) =>
+{
+  return (
+    <details open={ !! props.startExpanded } style={{ 'padding-left': '8px' }}>
+      <summary style={{ cursor: 'pointer', 'font-weight': props.folder ? 'normal' : 'bold', padding: '4px 0' }}>
+        { props.label }
+      </summary>
+      <div style={{ 'padding-left': '16px' }}>
+        { props.children }
+      </div>
+    </details>
+  );
+}
+
+const DesignItem = (props) =>
+{
+  const { title, details, url, path } = props.design;
+  return (
+    <ListItemButton
+      dense
+      selected={props.selectedUrl === url}
+      onClick={() => props.onSelect( url, path )}
+    >
+      <ListItemText primary={title} secondary={details} />
+    </ListItemButton>
+  );
+}
+
+const FolderSection = (props) =>
+{
+  return (
+    <>
+      <For each={ props.node.folders }>{ folder =>
+        <Section label={ folder.name } folder>
+          <FolderSection node={ folder } selectedUrl={props.selectedUrl} onSelect={props.onSelect} />
+        </Section>
+      }</For>
+      <For each={ props.node.items }>{ design =>
+        <DesignItem design={ design } selectedUrl={props.selectedUrl} onSelect={props.onSelect} />
+      }</For>
+    </>
+  );
+}
 
 const DesignList = (props) =>
 {
-  const [ selectedIndex, setSelectedIndex ] = createSignal( 0 );
+  const [ selectedUrl, setSelectedUrl ] = createSignal( null );
 
-  const handleListItemClick = (url, path, index) =>
+  const handleSelect = (url, path) =>
   {
-    setSelectedIndex( index );
+    setSelectedUrl( url );
     props.setUrl( url, path );
   };
+
+  const grouped = createMemo( () => groupDesigns( props.designs || [] ) );
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <List dense component="nav" aria-label="vzome designs" style={{ overflow: 'auto', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }} >
-        <For each={props.designs} >{ ( { title, details, url, path }, i ) =>
-          <ListItemButton
-            selected={selectedIndex() === i()}
-            onClick={() => handleListItemClick( url, path, i() )}
-          >
-            <ListItemText primary={title} secondary={details} />
-          </ListItemButton>
+        <For each={ grouped().yearSections }>{ ( { year, months }, yi ) =>
+          <Section label={ year } startExpanded={ yi() === 0 }>
+            <For each={ months }>{ ( { month, items }, mi ) =>
+              <Section label={ MONTH_NAMES[ month ] } startExpanded={ yi() === 0 && mi() === 0 }>
+                <For each={ items }>{ design =>
+                  <DesignItem design={ design } selectedUrl={selectedUrl()} onSelect={handleSelect} />
+                }</For>
+              </Section>
+            }</For>
+          </Section>
         }</For>
+        <Show when={ grouped().other.folders.length > 0 || grouped().other.items.length > 0 }>
+          <Section label="Other">
+            <FolderSection node={ grouped().other } selectedUrl={selectedUrl()} onSelect={handleSelect} />
+          </Section>
+        </Show>
       </List>
     </div>
   );
@@ -62,31 +176,51 @@ const DesignActions = (props) =>
     });
   }
 
+  const isGist = () => props.path .startsWith( 'https://gist.github.com/' );
+
+  // Shared action descriptors, rendered as buttons on desktop and as menu items on mobile.
+  const actions = () => [
+    { label: 'Copy Embeddable HTML', color: 'primary', onClick: () => copyHtml( props.path, props.url ) },
+    { label: 'Copy Raw vZome URL', color: 'secondary', onClick: () => copyUrl( props.url ) },
+    isGist()
+      ? { label: 'Show Gist', color: 'primary', href: props.path }
+      : { label: 'Show GitHub Assets', color: 'primary', href: getAssetUrl( props.githubUser, props.path ) },
+    { label: 'Open in vZome online', color: 'secondary', href: classicURL + props.url },
+  ];
+
+  const [ menuAnchor, setMenuAnchor ] = createSignal( null );
+
+  const runAction = action =>
+  {
+    setMenuAnchor( null );
+    if ( action.onClick )
+      action.onClick();
+  }
+
   return (
     <Show when={ props.url } fallback={
-      <Typography variant='h6' gutterBottom style={{ 'text-align': 'center', 'margin-top': '13px' }}>
+      <Typography class='design-select-prompt' variant='h6' gutterBottom style={{ 'text-align': 'center', 'margin-top': '13px' }}>
         <em>Select any design from the list on the left</em>
       </Typography>
     }>
-      <div style={{ display: 'flex', gap: '1rem', margin: '12px', 'justify-content': 'space-evenly' }}>
-        <Button variant="contained" color="primary" onClick={() => copyHtml( props.path, props.url )}>
-          Copy Embeddable HTML
-        </Button>
-        <Button variant="contained" color="secondary" onClick={() => copyUrl( props.url )}>
-          Copy Raw vZome URL
-        </Button>
-        <Show when={ props.path .startsWith( 'https://gist.github.com/' )} fallback={
-          <Button variant="contained" target="_blank" rel="noopener" href={ getAssetUrl( props.githubUser, props.path ) }>
-            Show GitHub Assets
+      <div class='design-actions-desktop' style={{ gap: '1rem', margin: '12px', 'justify-content': 'space-evenly' }}>
+        <For each={ actions() }>{ action =>
+          <Button variant="contained" color={ action.color } onClick={ action.onClick } target={ action.href && "_blank" } rel={ action.href && "noopener" } href={ action.href }>
+            { action.label }
           </Button>
-        }>
-          <Button variant="contained" target="_blank" rel="noopener" href={ props.path }>
-            Show Gist
-          </Button>
-        </Show>
-        <Button variant="contained" color="secondary" target="_blank" rel="noopener" href={ classicURL + props.url }>
-          Open in vZome online
-        </Button>
+        }</For>
+      </div>
+      <div class='design-actions-mobile' style={{ 'justify-content': 'center' }}>
+        <IconButton aria-label="design actions" size="small" style={{ padding: '4px' }} onClick={ e => setMenuAnchor( e.currentTarget ) }>
+          <MoreVert />
+        </IconButton>
+        <Menu anchorEl={ menuAnchor() } open={ !! menuAnchor() } onClose={ () => setMenuAnchor( null ) }>
+          <For each={ actions() }>{ action =>
+            <MenuItem onClick={ () => runAction( action ) } target={ action.href && "_blank" } rel={ action.href && "noopener" } href={ action.href } component={ action.href ? "a" : "li" }>
+              { action.label }
+            </MenuItem>
+          }</For>
+        </Menu>
       </div>
     </Show>
   );
@@ -160,15 +294,15 @@ export const DesignBrowser = () =>
   });
 
   return (
-    <div style={{ display: 'grid', 'grid-template-columns': '20% 80%', height: '100%' }}>
+    <div class='design-browser'>
       <div id='users-designs' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }}>
         <UsersMenu users={options()} currentUser={githubUser()} setUser={setGithubUser} />
         <DesignList githubUser={githubUser()} designs={designs()} setUrl={selectUrl}/>
       </div>
       {/* This 'min-content 1fr' triggers an infinite loop involving the solid-three ResizeObserver,
            unless DesignViewer and LightedTrackballCanvas both have height=100%, display=flex, and overflow=hidden. */}
-      <div style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }}>
-        <div id='details' style={{ 'min-height': '60px', 'border-bottom': '1px solid gray', 'background-color': 'whitesmoke' }}>
+      <div class='design-viewer-panel' style={{ display: 'grid', 'grid-template-rows': 'min-content 1fr' }}>
+        <div id='details' style={{ 'border-bottom': '1px solid gray', 'background-color': 'whitesmoke' }}>
           <DesignActions githubUser={githubUser()} url={url()} path={path()} />
         </div>
         <div class='relative-h100'>

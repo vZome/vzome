@@ -14,17 +14,18 @@ export const fetchGitHubShares = async githubUser =>
       .then( ({ gists }) => {
         const designs = [];
         for (const { files, created_at, id } of gists) {
+          const date = new Date( created_at );
           const details = created_at .replace( 'T', ' ' ) .replace( 'Z', '' ) + ' GIST';
           const path = `https://gist.github.com/${githubUser}/${id}`;
           for ( const [key, value] of Object.entries(files) ) {
             const { filename, raw_url } = value;
             if ( filename .endsWith( '.vZome' ) ) {
               const title = filename .substring( 0, filename .indexOf( '.vZome' ) );
-              designs.push( { title, details, path, url: raw_url } );
+              designs.push( { kind: 'gist', title, details, path, url: raw_url, date } );
             }
           }
         };
-        return designs .reverse();
+        return designs;
       } )
       .catch( () => {
         return [];
@@ -40,13 +41,17 @@ export const fetchGitHubShares = async githubUser =>
             const url = BASE_URL + tokens .map( encodeURIComponent ) .join( '/' );
             const lastToken = tokens[ tokens.length-1 ];
             const title = lastToken .substring( 0, lastToken .indexOf( '.vZome' ) );
-            let details = 'NONSTANDARD PATH';
-            if ( tokens.length === 5 ) {
-              const date = `${ tokens[0] }-${ tokens[1] }-${ tokens[2] }`;
-              const timeTokens = tokens[3] .split( '-' );
-              details = `${date}     ${ timeTokens[0] }:${ timeTokens[1] }:${ timeTokens[2] }`;
+            // dated paths look like YYYY/MM/DD/HH-MM-SS[-mmmZ]-title-slug/filename.vZome
+            const timeMatch = tokens.length === 5 && /^\d{4}$/.test( tokens[0] ) && /^\d{2}$/.test( tokens[1] ) && /^\d{2}$/.test( tokens[2] )
+              && tokens[3] .match( /^(\d{2})-(\d{2})-(\d{2})(?:[-.]\d{3}Z?)?(?:-.*)?$/ );
+            if ( timeMatch ) {
+              const [ year, month, day ] = tokens;
+              const [ , hour, minute, second ] = timeMatch;
+              const date = new Date( year, month-1, day, hour, minute, second );
+              const details = `${year}-${month}-${day}     ${hour}:${minute}:${second}`;
+              return { kind: 'dated', title, details, path, url, date };
             }
-            return { title, details, path, url };
+            return { kind: 'other', title, details: 'no timestamp', path, url, tokens };
           } );
         console.log( 'Repo has', designs.length, 'entries.' );
         return designs;
