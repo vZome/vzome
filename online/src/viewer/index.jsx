@@ -73,7 +73,7 @@ const SceneViewer = ( props ) =>
             TODO: refactor more for use in VRML and glTF, where there is no scene context.
           */}
           <Show when={scene} fallback={props.children}>
-            <SceneCanvas id='scene-canvas' height={props.height} width={props.width} >
+            <SceneCanvas symmetryRenderer={false} id='scene-canvas' height={props.height} width={props.width} >
               {props.children3d}
             </SceneCanvas>
           </Show>

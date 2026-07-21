@@ -1,8 +1,8 @@
 
-import { createContext, useContext, } from "solid-js";
+import { createContext, useContext, createEffect, on, } from "solid-js";
 import { Vector3, Quaternion, } from "three";
-import { ARButton, createText, XRControllerModelFactory, XRHandModelFactory, } from "three-stdlib";
-import { useThree, useFrame, } from "solid-three";
+import { createText, XRControllerModelFactory, XRHandModelFactory, } from "three-stdlib";
+import { useThree, useFrame, useXR, } from "solid-three";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // Reads the current XR viewer pose from the GL context.  Only valid to call
@@ -18,8 +18,8 @@ export const xrViewerPose = ( store ) => {
 // ──────────────────────────────────────────────────────────────────────────────
 // Context shared between XRSessionManager and its contribution subcomponents
 
-const XRContext = createContext();
-export const useXR = () => useContext(XRContext);
+const XRSessionContext = createContext();
+export const useXRSession = () => useContext(XRSessionContext);
 
 const XRControllerContext = createContext();
 export const useXRControllers = () => useContext(XRControllerContext);
@@ -44,10 +44,10 @@ export const XRSessionManager = ( props ) =>
   let _origCameraPos, _origCameraQuat;
   let _origControlsTarget;
   let needsCameraRestore = false;
-  let sessionStarted = false;
+  let sessionActivated = false;
+  let sessionInProgress = false;
+  let endSessionPending = false;
 
-  store.canvas.parentElement.appendChild( ARButton.createButton(store.gl, { optionalFeatures: ['local-floor', 'hand-tracking'] }));
-  
   const startSession = () =>
   {
     // Toggle scene background/fog and orbit trackball for AR passthrough
@@ -71,8 +71,7 @@ export const XRSessionManager = ( props ) =>
     store.camera.near = 0.01;
     store.camera.far  = 100;
     store.camera.updateProjectionMatrix();
-
-    sessionStarted = true; // useFrame will dispatch onViewerStart once xr.isPresenting is confirmed
+    sessionInProgress = true;
   };
 
   const endSession = () =>
@@ -91,15 +90,30 @@ export const XRSessionManager = ( props ) =>
     props.trackball.target.copy(_origControlsTarget);
     props.trackball.enabled = true;
 
-    sessionStarted = false;
+    sessionInProgress = false;
     for (const fn of viewerEndHandlers) fn();
     needsCameraRestore = true;
   };
 
-  store.gl.xr.addEventListener( 'sessionstart', startSession );
-  store.gl.xr.addEventListener( 'sessionend',   endSession   );
+  const { isPresenting } = useXR();
+
+  createEffect( on( isPresenting, ( presenting ) => {
+    if ( presenting ) {
+      endSessionPending = false;       // cancel any deferred end — brief interruption, session resumed
+      if ( !sessionInProgress ) {      // only start if not already in a session
+        startSession();
+        sessionActivated = true;
+      }
+    } else {
+      endSessionPending = true;        // defer to next frame; if presenting resumes, it will be cancelled
+    }
+  }, { defer: true } ) );
 
   useFrame( () => {
+    if (endSessionPending) {
+      endSessionPending = false;
+      endSession();
+    }
     if (needsCameraRestore) {
       needsCameraRestore = false;
       store.camera.updateProjectionMatrix();
@@ -107,18 +121,18 @@ export const XRSessionManager = ( props ) =>
       props.trackball.update();              // re-derives its internal state from camera
       store.gl.render( store.scene, store.camera ); // render a frame to ensure the restored camera state is visible immediately
     }
-    if ( sessionStarted && store?.gl?.xr?.isPresenting ) {
-      sessionStarted = false;
+    if ( sessionActivated ) {
+      sessionActivated = false;
       for (const fn of viewerStartHandlers) fn(); // xr camera pose is now available
     }
   });
 
   return (
-    <XRContext.Provider value={{ onViewerStart, onViewerEnd, getRootGroup: props.getRootGroup }}>
+    <XRSessionContext.Provider value={{ onViewerStart, onViewerEnd, getRootGroup: props.getRootGroup }}>
       <XRControllerManager>
         {props.children}
       </XRControllerManager>
-    </XRContext.Provider>
+    </XRSessionContext.Provider>
   );
 };
 
@@ -129,7 +143,7 @@ export const XRSessionManager = ( props ) =>
 
 export const XRControllerManager = ( props ) =>
 {
-  const { onViewerStart, onViewerEnd } = useXR();
+  const { onViewerStart, onViewerEnd } = useXRSession();
   const store = useThree();
 
   const controllerConnectedHandlers = [];

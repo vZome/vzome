@@ -26,6 +26,8 @@ ctx .serve( { servedir: 'serve' } )
 
   // Then start a proxy server on port 8532
   https.createServer( security, (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
     const options = {
       hostname: host,
       port: port,
@@ -38,13 +40,19 @@ ctx .serve( { servedir: 'serve' } )
     const proxyReq = http.request( options, proxyRes => {
       // If esbuild returns "not found", send a custom 404 page
       if (proxyRes.statusCode === 404) {
-        res.writeHead(404, { 'Content-Type': 'text/html' });
+        res.writeHead(404, {
+          'Content-Type': 'text/html',
+          'Access-Control-Allow-Origin': '*'
+        });
         res.end('<h1>A wacky custom 404 page</h1>');
         return;
       }
 
       // Otherwise, forward the response from esbuild to the client
-      res.writeHead( proxyRes.statusCode, proxyRes.headers );
+      res.writeHead( proxyRes.statusCode, {
+        ...proxyRes.headers,
+        'access-control-allow-origin': '*'
+      } );
       proxyRes.pipe( res, { end: true } );
     });
 

@@ -1,9 +1,10 @@
 
-import { Color, Scene, WebGLRenderer, Group, Mesh, AmbientLight, DirectionalLight } from "three";
-import { createRenderEffect, onMount, For, Show } from "solid-js";
+import { Color, Scene, Group, Mesh, AmbientLight, DirectionalLight } from "three";
+import { WebGPURenderer } from 'three/webgpu';
+import { createRenderEffect, createResource, createSignal, onMount, For, Show, Suspense } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
-import { Canvas, createT, useFrame } from 'solid-three';
+import { Canvas, createT, createXR, useFrame } from 'solid-three';
 const T = createT({ Group, Mesh, AmbientLight, DirectionalLight });
 
 import { TrackballControls } from "./trackballcontrols.jsx";
@@ -71,6 +72,19 @@ export const LightedTrackballCanvas = ( props ) =>
   const canvasSize = () => size;
   const { labels } = useViewer();
 
+  const xr = createXR();
+  const [xrSupported] = createResource( () => xr.isSupported( 'immersive-ar' ) );
+
+  // connectRef captures the canvas DOM element (via ctx.gl.domElement) and wires createXR.
+  // Canvas must be rendered inside <xr.Provider> (not pre-assigned) so that useXR() in
+  // Canvas children can find the provider context.
+  const [canvasEl, setCanvasEl] = createSignal( null );
+  size = createElementSize( canvasEl );
+  const connectRef = ( ctx ) => {
+    setCanvasEl( ctx.gl.domElement );
+    return xr.connect( ctx );
+  };
+
   const [ tool ] = useInteractionTool();
 
   const handlePointerMove = ( e ) =>
@@ -113,54 +127,75 @@ export const LightedTrackballCanvas = ( props ) =>
 
   const makeCustomRenderer = ( canvas ) =>
   {
-    const renderer = new WebGLRenderer({
+    const renderer = new WebGPURenderer({
       powerPreference: "high-performance",
       canvas,
       antialias: true,
       alpha: true,
       preserveDrawingBuffer: true,
+      forceWebGL: true,
     });
     // renderer.xr.enabled = true;
     return renderer;
   }
 
-  const canvas =
-    <Canvas class='canvas3d' dpr={ window.devicePixelRatio } gl={makeCustomRenderer}
-        style={{
-          height: props.height ?? "100%",
-          width: props.width ?? "100%",
-          display: 'flex',
-        }}
-        frameloop="always" onClickMissed={handlePointerMissed} >
-      <WebXRSupport>
-
-        { /* This should add the camera to the scene so that the lights move with the camera,
-              but it apparently does not. */ }
-        <ControlledCamera aspect={aspect()} >
-          <Lighting />
-        </ControlledCamera>
-
-        <TrackballControls rotationOnly={props.rotationOnly}
-          rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} />
-
-        {props.children}
-
-        {labels && labels() && <Labels size={canvasSize()} />}
-
-      </WebXRSupport>
-    </Canvas>;
-  
-  size = createElementSize( canvas );
-
   createRenderEffect( () => {
-    canvas.style.cursor = (tool ?.cursor()) || 'auto';
-  });
-  
-  onMount( () => {
-    // canvas .addEventListener( 'pointermove', handlePointerMove );
-    canvas .addEventListener( 'pointerup', handlePointerUp );
-    canvas .addEventListener( 'wheel', handleWheel );
+    const el = canvasEl();
+    if ( el ) el.style.cursor = (tool ?.cursor()) || 'auto';
   });
 
-  return canvas;
+  onMount( () => {
+    const el = canvasEl();
+    if ( el ) {
+      // el.addEventListener( 'pointermove', handlePointerMove );
+      el.addEventListener( 'pointerup', handlePointerUp );
+      el.addEventListener( 'wheel', handleWheel );
+    }
+  });
+
+  return (
+    <xr.Provider>
+      <div style={{ position: 'relative', height: props.height ?? "100%", width: props.width ?? "100%" }}>
+        <Canvas ref={connectRef} class='canvas3d' dpr={ window.devicePixelRatio } gl={makeCustomRenderer}
+            style={{
+              height: "100%",
+              width: "100%",
+              display: 'flex',
+            }}
+            frameloop="always" onClickMissed={handlePointerMissed} >
+          <WebXRSupport xrSupported={xrSupported}>
+
+            { /* This should add the camera to the scene so that the lights move with the camera,
+                  but it apparently does not. */ }
+            <ControlledCamera aspect={aspect()} >
+              <Lighting />
+            </ControlledCamera>
+
+            <TrackballControls rotationOnly={props.rotationOnly}
+              rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} />
+
+            {props.children}
+
+            {labels && labels() && <Labels size={canvasSize()} />}
+
+          </WebXRSupport>
+        </Canvas>
+        <Suspense>
+          <Show when={xrSupported()}>
+            <button
+              style={{
+                position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
+                padding: '12px 24px', 'border-radius': '4px', border: 'none',
+                background: 'rgba(0,0,0,0.7)', color: 'white', cursor: 'pointer',
+                'font-size': '13px', 'font-family': 'sans-serif',
+              }}
+              onClick={() => xr.enter( 'immersive-ar', { optionalFeatures: ['local-floor', 'hand-tracking'] } )}
+            >
+              START AR
+            </button>
+          </Show>
+        </Suspense>
+      </div>
+    </xr.Provider>
+  );
 }

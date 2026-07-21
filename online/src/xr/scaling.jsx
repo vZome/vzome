@@ -1,6 +1,6 @@
 import { useThree, useFrame, } from "solid-three";
 
-import { useXR, useXRControllers, } from "./manager.jsx";
+import { useXRSession, useXRControllers, } from "./manager.jsx";
 
 // ──────────────────────────────────────────────────────────────────────────────
 // XRScaling — contribution that scales the model while both grips are squeezed.
@@ -8,7 +8,7 @@ import { useXR, useXRControllers, } from "./manager.jsx";
 
 export const XRScaling = () =>
 {
-  const { onViewerStart, onViewerEnd, getRootGroup } = useXR();
+  const { onViewerStart, onViewerEnd, getRootGroup } = useXRSession();
   const { onScaleStart, onScaleEnd, getControllerSeparation } = useXRControllers();
   const store = useThree();
 

@@ -76,6 +76,12 @@ const SceneIndexingProvider = ( props ) =>
       setLastSceneIndex( sceneIndex );
       setScene( 'embedding', reconcile( scene.embedding ) );
       setScene( 'polygons', scene.polygons );
+      // Needed by SymmetryGeometry -- see the longer comment on the SCENE_RENDERED
+      // subscription below. This is the SceneViewer/DesignViewer/UrlViewer scene-loading
+      // path (via InitializeScene -> showIndexedScene), which never mounts
+      // SceneChangeListener at all, so that comment's fix doesn't reach this path either.
+      if ( scene.orientations )
+        setScene( 'orientations', scene.orientations );
       const { camera } = config || { camera: true };
       setTimeout( () => {
         ( camera? tweenCamera( scenes[ sceneIndex ] .camera ) : Promise.resolve() )
@@ -87,7 +93,7 @@ const SceneIndexingProvider = ( props ) =>
   createEffect( () => {
     if ( props.index !== undefined ) {
       // if index is given, show that scene
-      console.log( `SceneIndexingProvider effect showing ${props.index}` );     
+      console.log( `SceneIndexingProvider effect showing ${props.index}` );
       showIndexedScene( props.index );
     }
   } );
@@ -138,7 +144,21 @@ const SceneTitlesProvider = (props) =>
     : ( props.show === 'titled' )? namedScenes()
     : scenes .map( (scene,index) => scene.title?.trim() || (( index === 0 )? "default scene" : `#${index}`) );
   const [ sceneTitle, setSceneTitle ] = createSignal(( props.show === 'given' )? props.title : sceneTitles()[0] );
-  
+
+  // `scenes` (from useViewer()) loads asynchronously from the worker, so it's almost
+  // always still empty at the createSignal() call above, freezing sceneTitle at
+  // sceneTitles()[0] === undefined forever (signals don't recompute their initializer).
+  // setSceneTitle was never called anywhere to correct this once scenes actually arrive,
+  // so InitializeScene's showTitledScene(sceneTitle()) call would silently fall back to
+  // scene index 0 ("default scene") on first paint instead of the scene actually wanted.
+  if ( props.show !== 'given' ) {
+    createEffect( () => {
+      if ( sceneTitle() === undefined && scenes.length > 0 ) {
+        setSceneTitle( sceneTitles()[0] );
+      }
+    } );
+  }
+
   const showTitledScene = ( name, config ) =>
   {
     const index = getSceneTitleIndex( scenes, name );
@@ -166,6 +186,17 @@ const SceneChangeListener = () =>
   subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
     setScene( 'embedding', reconcile( scene.embedding ) );
     setScene( 'polygons', scene.polygons );
+    // Needed by SymmetryGeometry. SYMMETRY_CHANGED (above) is the usual source of
+    // scene.orientations, but the legacy Java loadDesign/newDesign path is the only one
+    // that fires it. SCENE_RENDERED always carries `orientations` too though (see
+    // prepareSceneResponse in vzome-worker-static.js), so read it here as well. Note:
+    // this SceneChangeListener component is only mounted by the classic editor and
+    // buildplane apps (see their index.jsx) -- the SceneViewer/DesignViewer/UrlViewer
+    // path (the "viewer"/web-component embed) never mounts it at all, and gets its scene
+    // data through SceneIndexingProvider's showIndexedScene() instead, which needed the
+    // identical fix separately (see below).
+    if ( scene.orientations )
+      setScene( 'orientations', scene.orientations );
     updateShapes( scene.shapes );
     // logShapes();
   } );
