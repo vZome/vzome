@@ -97,6 +97,19 @@ export const LightedTrackballCanvas = ( props ) =>
   }
   const handlePointerUp = ( e ) =>
   {
+    // SymmetryGeometry attaches its own 'pointerup' listener directly on this same canvas
+    // element (see symmetry-geometry.jsx), which calls tool.onDragEnd with the correct,
+    // complete (e, id, position, type, selected, label) it resolved itself via pickAt --
+    // and, on success, resets InteractionToolProvider's shared dragStartEmitted state back
+    // to false. If this listener also fired right after (same element, same event -- DOM
+    // doesn't suppress sibling listeners just because one called stopPropagation), it would
+    // call tool.onDragEnd(e) with everything else undefined, and by then dragStartEmitted
+    // would already be false again, so interaction.jsx's onDragEnd falls into its
+    // click-fallback branch -- a spurious extra click, possibly right after a real one.
+    // Skipped entirely when SymmetryGeometry is active, since it already fully owns
+    // pointerup itself (mirrors the same bypass on handlePointerMissed below).
+    if ( props.symmetryRenderer )
+      return;
     const handler = tool ?.onDragEnd;
     if ( isLeftMouseButton( e ) && handler ) {
       // e.stopPropagation()
@@ -113,7 +126,16 @@ export const LightedTrackballCanvas = ( props ) =>
   }
   const handlePointerMissed = ( e ) =>
   {
-    console.log("canvas onClickMissed");
+    // solid-three's onClickMissed fires whenever ITS OWN raycasting registry (built from
+    // <T.*>-declared, event-registered objects) finds zero intersections -- it has no idea
+    // SymmetryGeometry's GPU-instanced meshes exist at all, since they're never JSX-declared
+    // <T.*> elements. So with symmetryRenderer active, this would fire (and call bkgdClick,
+    // e.g. DeselectAll) on literally every click, including ones that DID hit an instance
+    // via SymmetryGeometry's own pickAt-based click handler -- immediately undoing every
+    // click-to-select. SymmetryGeometry owns both the hit and miss cases itself (see its own
+    // click handler), so this canvas-level path is skipped entirely when it's active.
+    if ( props.symmetryRenderer )
+      return;
     const handler = tool ?.bkgdClick;
 
     // NOTE: this is a solid-three handler, so the event is wrapped in a synthetic event,

@@ -19,6 +19,7 @@ import {
   BufferGeometry,
   UnsignedByteType,
   RGBAFormat,
+  WebGPURenderer,
 } from "three/webgpu";
 import {
   Fn,
@@ -58,6 +59,31 @@ export function createSymmetryRenderer(parent)
   const symmetryGroups = new Map();
   let activeGroupId = null;
   let discardInactiveShaders = false;
+
+  // Picking uses its own dedicated WebGPURenderer, rendering to an offscreen canvas that's
+  // never inserted into the DOM. This rules out any state confusion from sharing the main
+  // renderer (which owns the continuous animation-loop render of the visible scene) across
+  // two different Scene graphs. GPU resource caches (Attributes/Geometries, both WeakMaps
+  // keyed by the source BufferGeometry/attribute objects) are per-renderer-instance in
+  // three.js, so sharing geometries between the main renderer and this one is safe -- each
+  // uploads and caches its own GPU-side copy independently.
+  let pickingRendererPromise = null;
+  async function getPickingRenderer() {
+    if (!pickingRendererPromise) {
+      pickingRendererPromise = (async () => {
+        const canvas = document.createElement("canvas");
+        const renderer = new WebGPURenderer({
+          canvas,
+          antialias: false,
+          alpha: true,
+          forceWebGL: true,
+        });
+        await renderer.init();
+        return renderer;
+      })();
+    }
+    return pickingRendererPromise;
+  }
 
   function registerSymmetryGroup(groupId, orientations) {
     if (symmetryGroups.has(groupId)) {
@@ -310,6 +336,37 @@ export function createSymmetryRenderer(parent)
     syncShapeInstances(group, shapeId);
   }
 
+  // Batch equivalent of removeAllInstances + N x addInstance, but with exactly ONE
+  // syncShapeInstances call (one GPU buffer rewrite) regardless of instance count, instead of
+  // one rewrite per removeAllInstances/addInstance call -- addInstance/removeInstance are each
+  // O(instances in that shape) because syncShapeInstances rewrites the whole shape's buffers
+  // from scratch, so building up a shape via N addInstance calls is O(N^2). Callers that
+  // already know the full desired instance list for a shape (e.g. symmetry-geometry.jsx's
+  // registration effect) should use this instead. Returns the assigned instanceIds, in the
+  // same order as `instances`, for the caller to associate back with its own ids.
+  function replaceShapeInstances(styleId, shapeId, instances) {
+    const group = getActiveGroup();
+    getStyle(group, styleId);
+    ensureStyleIsActiveForInstances(group, styleId);
+    const shapeMap = new Map();
+    const assignedIds = new Array(instances.length);
+    for (let i = 0; i < instances.length; i += 1) {
+      const instanceOptions = instances[i];
+      const id = group.nextInstanceId;
+      group.nextInstanceId += 1;
+      shapeMap.set(id, {
+        position: instanceOptions.position ?? new Vector3(),
+        orientationIndex: normalizeOrientationIndex(group, instanceOptions.orientationIndex),
+        colorIndex: normalizeColorIndex(instanceOptions.colorIndex),
+        highlight: instanceOptions.highlight ?? 0,
+      });
+      assignedIds[i] = id;
+    }
+    group.instancesByShape.set(shapeId, shapeMap);
+    syncShapeInstances(group, shapeId);
+    return assignedIds;
+  }
+
   function clearActiveInstances() {
     const group = getActiveGroup();
     clearGroupInstances(group);
@@ -484,6 +541,12 @@ export function createSymmetryRenderer(parent)
     // Picking scene: mirrors the visible geometry with ID-encoded colors for hit detection
     const pickingScene = new Scene();
     const pickingOriginGroup = new Group();
+    // originGroup's transform is built as an explicit .matrix (see the comment on it, and
+    // symmetry-geometry.jsx's matrix-building effect) -- .position/.quaternion/.scale are
+    // never touched, so pickingOriginGroup must mirror .matrix directly too, with
+    // matrixAutoUpdate off for the same reason (nothing would ever recompute .matrix from
+    // position/quaternion/scale if those were used instead, and they're never set).
+    pickingOriginGroup.matrixAutoUpdate = false;
     pickingScene.add(pickingOriginGroup);
     // Use RenderTarget (not WebGLRenderTarget) so the WebGPU renderer registers the texture
     const pickingTarget = new RenderTarget(1, 1, {
@@ -901,51 +964,99 @@ export function createSymmetryRenderer(parent)
     return keys;
   }
 
+  // Picking renders into a tiny NxN target instead of a full-canvas-sized one -- rasterizing/
+  // shading a multi-megapixel target just to read one pixel back was the dominant per-click
+  // cost (noticeable even for a handful of instances, since fill cost scales with screen area,
+  // not instance count). PICK_SIZE=3 gives a 1px cursor tolerance ring on each side, useful
+  // for thin strut geometry, while keeping the target (and the readback) tiny and fixed-cost.
+  const PICK_SIZE = 3;
+  const pickProjectionMatrix = new Matrix4();
+
   // GPU picking: render an offscreen pass with per-instance ID colors, read back the pixel under
   // the cursor, and return the hit { shapeId, instanceId } or null for background.
   // Instance IDs are encoded as 24-bit values across RGB (up to ~16.7M unique instances).
-  async function pickAt(clientX, clientY, renderer, camera) {
+  // Uses its own dedicated WebGPURenderer (see getPickingRenderer above), not the main
+  // on-screen renderer, so the caller's renderer/domElement are only used for sizing/coordinate
+  // mapping to match the visible canvas.
+  async function pickAt(clientX, clientY, mainRenderer, camera) {
     if (activeGroupId === null) return null;
     const group = symmetryGroups.get(activeGroupId);
     if (!group || !group.gpu) return null;
 
     const { pickingScene, pickingOriginGroup: pickGroup, pickingTarget } = group.gpu;
 
-    // Sync picking group transform with the visible origin group
-    pickGroup.position.copy(originGroup.position);
-    pickGroup.quaternion.copy(originGroup.quaternion);
-    pickGroup.scale.copy(originGroup.scale);
+    // Sync picking group transform with the visible origin group. originGroup.matrix alone
+    // (copied here previously) is only its LOCAL transform, always identity -- the real
+    // embedding/globalScale/XR transform lives on `parent` (WebXRSupport's own originGroup,
+    // see createSymmetryRenderer's parameter comment), which originGroup is parented under.
+    // pickingScene, by contrast, is a standalone root Scene with no parent at all, so
+    // pickGroup must be given originGroup's full WORLD matrix (which does include that
+    // parent-chain scale) directly as its own local matrix. Missing this made every picking
+    // render use an unscaled (globalScale ~= 0.0088x too large) geometry -- e.g. a ball with
+    // local radius ~1 was rendered as if it had radius ~1 world units instead of ~0.0088,
+    // so the camera (positioned in real scaled-world coordinates, near plane ~0.0009) ended
+    // up INSIDE the oversized sphere: every fragment was clipped or back-facing, producing a
+    // draw call that genuinely ran (confirmed via renderer.info.render.calls) but wrote
+    // nothing visible to the target -- the root cause of the "picking renders nothing" bug.
+    originGroup.updateMatrixWorld(true);
+    pickGroup.matrix.copy(originGroup.matrixWorld);
     pickGroup.updateMatrixWorld(true);
 
-    // Resize render target to match canvas if needed
-    const canvas = renderer.domElement;
+    const pickingRenderer = await getPickingRenderer();
+
+    const canvas = mainRenderer.domElement;
     const w = canvas.width;
     const h = canvas.height;
-    if (pickingTarget.width !== w || pickingTarget.height !== h) {
-      pickingTarget.setSize(w, h);
+    if (pickingRenderer.domElement.width !== PICK_SIZE || pickingRenderer.domElement.height !== PICK_SIZE) {
+      pickingRenderer.setSize(PICK_SIZE, PICK_SIZE, false);
+    }
+    if (pickingTarget.width !== PICK_SIZE || pickingTarget.height !== PICK_SIZE) {
+      pickingTarget.setSize(PICK_SIZE, PICK_SIZE);
     }
 
-    // Render picking pass with transparent clear so background pixels have alpha=0
-    const prevClearColor = new Color();
-    const prevClearAlpha = renderer.getClearAlpha();
-    renderer.getClearColor(prevClearColor);
-    renderer.setClearColor(0x000000, 0);
-    renderer.setRenderTarget(pickingTarget);
-    renderer.render(pickingScene, camera);
-    renderer.setRenderTarget(null);
-    renderer.setClearColor(prevClearColor, prevClearAlpha);
-
-    // Convert CSS client coordinates to render target pixel coordinates
+    // Convert CSS client coordinates to full-canvas pixel coordinates (top-left origin)
     const rect = canvas.getBoundingClientRect();
     const scaleX = w / rect.width;
     const scaleY = h / rect.height;
     const pixelX = Math.floor((clientX - rect.left) * scaleX);
     const pixelY = Math.floor((clientY - rect.top) * scaleY);
-    const readY = h - pixelY - 1; // WebGL origin is bottom-left
 
-    // Read back the single pixel under the cursor
-    // readRenderTargetPixelsAsync returns a typed array (WebGPU renderer API)
-    const pixelBuffer = await renderer.readRenderTargetPixelsAsync(pickingTarget, pixelX, readY, 1, 1);
+    // Reproject so the PICK_SIZE x PICK_SIZE neighborhood around the cursor, in the full
+    // canvas's NDC space, fills the ENTIRE tiny render target -- i.e. offset+scale NDC space
+    // so only that small pixel neighborhood ever gets rasterized/shaded, regardless of the
+    // real canvas resolution. Standard GPU-picking technique (see e.g. three.js's own
+    // GPUPickHelper examples). NDC X is left-to-right like pixelX; NDC Y is bottom-to-top,
+    // the opposite of pixelY's top-to-bottom, hence the flip on the Y term.
+    const ndcCenterX = ((pixelX + 0.5) / w) * 2 - 1;
+    const ndcCenterY = 1 - ((pixelY + 0.5) / h) * 2;
+    const scaleNdcX = w / PICK_SIZE;
+    const scaleNdcY = h / PICK_SIZE;
+    pickProjectionMatrix.set(
+      scaleNdcX, 0, 0, -ndcCenterX * scaleNdcX,
+      0, scaleNdcY, 0, -ndcCenterY * scaleNdcY,
+      0, 0, 1, 0,
+      0, 0, 0, 1
+    );
+    pickProjectionMatrix.multiply(camera.projectionMatrix);
+
+    const savedProjectionMatrix = camera.projectionMatrix;
+    camera.projectionMatrix = pickProjectionMatrix;
+
+    // Render picking pass with transparent clear so background pixels have alpha=0
+    pickingRenderer.setRenderTarget(pickingTarget);
+    pickingRenderer.setClearColor(0x000000, 0);
+    pickingRenderer.clear(true, true, true);
+    pickingRenderer.render(pickingScene, camera);
+    pickingRenderer.setRenderTarget(null);
+
+    camera.projectionMatrix = savedProjectionMatrix;
+
+    // Read back the whole tiny target and use its center pixel (the exact cursor position);
+    // PICK_SIZE is intentionally small enough that reading it all back costs about the same
+    // as reading one pixel, while giving a little tolerance for future nearest-hit logic.
+    const buffer = await pickingRenderer.readRenderTargetPixelsAsync(pickingTarget, 0, 0, PICK_SIZE, PICK_SIZE);
+    const centerIdx = (Math.floor(PICK_SIZE / 2) * PICK_SIZE + Math.floor(PICK_SIZE / 2)) * 4;
+    const pixelBuffer = buffer.subarray(centerIdx, centerIdx + 4);
 
     if (pixelBuffer[3] === 0) return null; // transparent = background
 
@@ -980,6 +1091,7 @@ export function createSymmetryRenderer(parent)
     addInstance,
     removeInstance,
     removeAllInstances,
+    replaceShapeInstances,
     clearActiveInstances,
     setInstanceHighlight,
     clearHighlights,

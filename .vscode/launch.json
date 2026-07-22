@@ -12,7 +12,7 @@
       }
     },
     {
-      "name":                             "online tests HTTPS",
+      "name":                             "HTTPS online tests",
       "type": "chrome",
       "request": "launch",
       "url": "https://localhost:8532/app/test/",

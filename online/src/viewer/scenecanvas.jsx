@@ -14,7 +14,8 @@ const SceneCanvas = ( props ) =>
   return (
     <LightedTrackballCanvas
         height={props.height} width={props.width} rotationOnly={props.rotationOnly}
-        rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} >
+        rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed}
+        symmetryRenderer={props.symmetryRenderer} >
       <Show when={ () => props.scene?.shapes }>
         { props.symmetryRenderer
           ? <SymmetryGeometry embedding={scene?.embedding} shapes={scene?.shapes} orientations={scene?.orientations} polygons={scene?.polygons} />

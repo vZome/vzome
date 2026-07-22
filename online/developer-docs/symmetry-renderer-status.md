@@ -1,4 +1,4 @@
-# SymmetryGeometry Status — Phases 4/6/7 Complete; Phase 5 Deliberately Deferred
+# SymmetryGeometry Status — Phases 4/5/6/7 Complete
 
 Branch: `webgpu-try`. This document is a handoff snapshot for continuing this work in a
 fresh session. See also `symmetry-renderer-plan.md` (the original phase plan) and
@@ -25,13 +25,11 @@ canvas actually tested:
 
 New file: `online/src/viewer/symmetry-geometry.jsx`. Wired in as an opt-in prop:
 `<SceneCanvas symmetryRenderer={true} ...>` in `online/src/viewer/scenecanvas.jsx` (default
-`false`, still using `ShapedGeometry`). As of Phase 7: polygon-mode fill + outline (Phase 4),
-selection highlight (Phase 6), and labels (Phase 7) are all done. Only picking/interaction
-(Phase 5) is not — deliberately deferred at the user's direction, since it's only needed for
-*editing* use cases (classic editor, `59icosahedra`), which stay on `ShapedGeometry` for now;
-`SymmetryGeometry` is being scoped for *viewer-only* (non-editing) release first. See the
-Phase 6/7 sections below for the full rationale and what (if anything) is still missing for
-that release.
+`false`, still using `ShapedGeometry`). Polygon-mode fill + outline (Phase 4), GPU picking/
+interaction (Phase 5), selection highlight (Phase 6), and labels (Phase 7) are all done.
+Phase 5 scope was widened mid-project from "viewer-only" to "full replacement, editor
+included" — see the Phase 5 section below — so `online/src/app/classic/components/editor.jsx`
+now passes `symmetryRenderer={true}` on its main canvas.
 
 **Not yet tested**: the 59 Icosahedra stellation view (`online/src/app/59icosahedra/`), any
 other `<SceneCanvas>` call sites (`selectors.jsx`, `scenes.jsx` dialog).
@@ -490,14 +488,159 @@ actually meant to match the app's look. Fixed in `online/src/viewer/context/symm
 the same `positionNode`/`colorNode`/`emissiveNode` TSL hooks — all still supported. Simple,
 low-risk, exact-parity fix.
 
+## Phase 5 — GPU picking — COMPLETE AND VERIFIED
+
+**Status: user-confirmed working** (click-to-select highlights correctly on screen, console
+clean). Originally scoped as viewer-only/deferred (Phase 6/7 done first instead — see below),
+then the user widened scope mid-project: "Full replacement, editor included." That meant
+Phase 5 had to actually support the classic editor, not just a future non-editing viewer, so
+`online/src/app/classic/components/editor.jsx`'s main `<SceneCanvas>` now passes
+`symmetryRenderer={true}`.
+
+**Design**: `SymmetryGeometry` has no per-instance mesh for solid-three's raycaster to hit
+(everything is GPU-instanced into a handful of shared `InstancedMesh`es), so hit-testing can't
+use the normal Three.js raycasting path at all. `symmetry-renderer.js` exposes
+`pickAt(clientX, clientY, mainRenderer, camera)`: an offscreen render pass over a parallel
+`pickingScene` (one `InstancedMesh` per shape, sharing geometry/instance-attribute buffers
+with the visible fill mesh, but with a `MeshBasicNodeMaterial` that encodes each instance's id
+as an RGB color instead of its real appearance), followed by a single-pixel readback at the
+cursor position to decode the hit instance id. `symmetry-geometry.jsx` wires this directly to
+raw DOM `pointerdown`/`pointermove`/`pointerup`/`contextmenu` listeners on the canvas
+(bypassing solid-three's synthetic event system for this component's content entirely), and
+`ltcanvas.jsx`'s own competing canvas-level listeners (`handlePointerMissed`,
+`handlePointerUp`) are gated off with `if (props.symmetryRenderer) return;` to avoid double-
+handling. See the doc comments at the top of the picking effect in `symmetry-geometry.jsx` and
+above `pickAt` in `symmetry-renderer.js` for the full design rationale, including why picking
+is awaited (blocking) rather than fire-and-forget, and why hover was deliberately not
+implemented (it was already dead code in `ShapedGeometry` too — see "Bugs found" below).
+
+**The bug, and how it was found**: picking consistently found nothing — the offscreen render
+target came back completely empty (all pixels transparent) no matter what was clicked. This
+took a very long debugging session to root-cause because nearly everything about the picking
+setup was individually correct: draw calls genuinely happened
+(`renderer.info.render.calls`/`.triangles` confirmed non-zero), the picking mesh had the right
+instance count/attributes (identical to the visible fill mesh, confirmed by direct
+comparison), the camera's clip-space projection of the mesh's world position was dead center
+`(0, 0, ~0.999)` — every individual piece looked right in isolation. Things ruled out along
+the way: geometry validity, material type (node vs. plain), scene graph connectivity, camera
+matrices, render target/texture allocation (confirmed via `renderer.backend.get(texture)` that
+a real `WebGLTexture` was bound as the current render target), depth/blend state, and — after
+building a **second, fully independent `WebGPURenderer`** dedicated to picking (its own
+offscreen canvas, own GPU resource caches — confirmed via `three.js`'s `Attributes`/
+`Geometries`/`NodeManager` all being per-renderer `DataMap`s, not global, so sharing
+geometries/materials/nodes across two renderer instances is safe) — renderer-instance-level
+state confusion. The second renderer changed nothing; the failure was identical.
+
+The eventual isolating step was building a standalone, out-of-app repro with `esbuild`, then
+deliberately matching the real app's exact camera parameters (near/far/position) rather than
+arbitrary test values — at which point the repro's own onscreen sphere also went blank. That
+was the tell: **the picking scene's transform was missing `globalScale`** (≈0.0088, defined in
+`camera.jsx`, applied via `<T.Group scale={globalScale}>` in `webxr.jsx`'s `WebXRSupport`,
+which is the real `parent` that `symmetry-renderer.js`'s own `originGroup` is attached under).
+`pickAt` was syncing `pickGroup.matrix` from `originGroup.matrix` — but `.matrix` is only
+`originGroup`'s *local* transform, always identity (its real transform is entirely inherited
+from its scaled parent). `pickingScene`, unlike the main scene, is a standalone root `Scene`
+with no parent at all, so copying `.matrix` alone silently dropped the scale. The result: a
+ball with local geometry radius ~1.06 was rendered as if its world-space radius were ~1.06
+units instead of the correct ~0.0088*1.06 units — with the camera positioned in real scaled-
+world coordinates (near plane ~0.0009, distance from origin ~0.95), the camera ended up
+**inside** the oversized sphere. Every fragment was either near-clipped or back-facing, so the
+draw call ran successfully but wrote nothing visible — exactly matching every symptom
+observed. Fixed with one change in `pickAt`:
+```js
+originGroup.updateMatrixWorld(true);
+pickGroup.matrix.copy(originGroup.matrixWorld);  // was: originGroup.matrix (local-only)
+pickGroup.updateMatrixWorld(true);
+```
+
+**Second renderer kept, not reverted**: even though it turned out not to be the actual fix,
+the dedicated picking `WebGPURenderer` (lazily constructed in `getPickingRenderer()`, offscreen
+canvas, `forceWebGL: true`) was kept in the final code — it's a clean separation (picking
+render state never touches the main renderer's continuous animation-loop state) and was
+already fully working before the real bug was found, so there was no reason to revert it back
+to sharing the main renderer.
+
+### Phase 5 follow-up — performance (picking latency, O(N²) instance rebuild, drag freeze)
+
+**Status: three real bugs found and fixed; one deeper pre-existing worker-side cost found and
+deliberately left open.** Raised by the user after Phase 5 landed: pick latency was
+noticeable even for a 3-ball model, worse for large models, and strut-dragging was "too slow
+to be practical."
+
+1. **Picking rendered at full canvas resolution — FIXED.** `pickAt` was resizing
+   `pickingTarget`/`pickingRenderer` to the full on-screen canvas size (e.g. 1872×1545 ≈ 2.9M
+   pixels) every call, just to read back one pixel — fragment-fill cost scales with screen
+   area, not instance count, so this was a large fixed cost on every single click regardless
+   of model size. Fixed by keeping the picking render target permanently tiny
+   (`PICK_SIZE = 3`, a 3×3 patch for a little cursor tolerance) and reprojecting the camera
+   for that one render only: a small offset+scale matrix is premultiplied onto
+   `camera.projectionMatrix` so the `PICK_SIZE × PICK_SIZE` neighborhood around the cursor,
+   in the real canvas's NDC space, fills the *entire* tiny target — standard GPU-picking
+   technique. The mutation is synchronous (`camera.projectionMatrix = ...; render(...);
+   camera.projectionMatrix = saved;`, no `await` in between), so it can't race the main
+   render loop's own use of the same live camera object. Center pixel of the 3×3 readback
+   (index `[1,1]`, unambiguous regardless of WebGL's bottom-left readback origin since 3 is
+   odd) is used as the hit.
+
+2. **Instance registration was O(instances²) per shape — FIXED.** `symmetry-geometry.jsx`'s
+   registration effect (which every worker scene update re-runs in full, including a single
+   strut-preview move — see the pre-existing Phase 6 "known limitation" above) called
+   `renderer.removeAllInstances` then `renderer.addInstance` once per instance. Both
+   `addInstance` and `removeInstance` each independently trigger `syncShapeInstances`, which
+   rewrites that shape's *entire* GPU instance buffer from scratch — so building up a shape
+   with N instances via N `addInstance` calls did N buffer rewrites, O(N²) total, on every
+   single worker update. Fixed by adding `renderer.replaceShapeInstances(styleId, shapeId,
+   instances)` to `symmetry-renderer.js`: builds the shape's whole new instance map in one
+   pass and calls `syncShapeInstances` exactly once, returning the assigned instanceIds in
+   input order so the caller can still associate them back to vZome instance ids.
+   `symmetry-geometry.jsx`'s registration effect now builds each shape's full instance-options
+   array first, then makes one `replaceShapeInstances` call per shape (not per instance).
+   Still O(total instances) per worker update overall (no diffing against the previous
+   registration — that's the pre-existing Phase 6 limitation, not addressed here), but no
+   longer O(instances²).
+
+3. **`stopPropagation()` silently froze drag gestures after the first move — FIXED, and this
+   was the dominant complaint** ("I don't get to drag the preview strut around much at all").
+   `symmetry-geometry.jsx`'s `onPointerDown`/`onPointerMove`/`onPointerUp` are raw native DOM
+   listeners on the canvas (unlike `geometry.jsx`'s `Instance`, whose superficially-similar
+   `stopPropagation()` calls operate on solid-three's own *synthetic* event dispatch and only
+   stop bubbling to other solid-three-managed scene objects). Tools like `StrutDragTool`
+   (`app/classic/tools/strutdrag.jsx`) intentionally leave `useInteractionTool()`'s `onDrag`
+   contract as a no-op — the real drag motion is driven by `ObjectTrackball`
+   (`app/classic/tools/trackball.jsx`) via its own `DragHandler` (`drag.ts`), which attaches
+   `pointermove`/`pointerup` listeners directly to `domElement.ownerDocument`, independent of
+   the tool contract. Calling `e.stopPropagation()` on the canvas-level native `pointermove`
+   event stopped it from ever bubbling up to `document`, so `DragHandler` only ever saw the
+   very first move (from `onDragStart`'s own event, passed through directly) and then nothing
+   — the preview strut essentially never tracked the cursor. Fixed by removing
+   `stopPropagation()` from all three handlers; nothing in this component actually depends on
+   blocking native bubbling, since `ltcanvas.jsx`'s competing canvas-level listeners are
+   already gated off via `if (props.symmetryRenderer) return;`, not via `stopPropagation()`.
+   User-confirmed: "the drag is now continuous, with the preview strut orbiting around
+   correspondingly."
+
+**Deliberately left open**: even with all three fixes, large-model strut-dragging is still
+"stuttery." Root cause traced (via `console` `[Violation] 'message' handler took ~3200ms`
+warnings in `worker.jsx`) to `design.wrapper.movePreviewStrut(direction)` inside the
+Java/GWT-compiled worker core (`vzome-worker-static.js`'s `PREVIEW_STRUT_MOVE` case) — every
+drag-move posts a fresh `postMessage` to the worker (`movePreviewStrut` in
+`app/framework/context/editor.jsx`), and the response takes multiple seconds on this
+particular large model. `createPartsList` (`worker/legacy/partslist.js`), also run on every
+scene response via `reportDefaultScene`, was checked and is only O(distinct shapes), not
+O(instances) — unlikely to be the real cost. The actual multi-second cost is inside the
+compiled Java model itself, not inspectable by reading the surrounding JS. User confirmed
+`ShapedGeometry` (the old renderer) shows the same kind of lag on the same model, just less
+severely — so this is a pre-existing, deeper worker-side cost that predates
+`SymmetryGeometry`, not something introduced by it, and is being left open for its own
+separate investigation (would need actual profiling of the worker/Java call, not just JS
+source reading).
+
 ## Phase 6 — selection highlight — COMPLETE
 
-**Status: implemented, not yet manually verified on-screen** (syntax-checked only as of this
-writing). Done ahead of Phase 5 at the user's explicit direction: Phase 5 (GPU picking) is
-only needed for *editing* use cases (the classic editor, `59icosahedra`), which are staying
-on `ShapedGeometry` for now; Phase 6 (highlight) and would-be Phase 7 (labels, **not** done —
-see below) are needed to release `SymmetryGeometry` for *viewer-only* (non-editing) use
-cases, which don't need picking at all. No architectural reason 6 had to follow 5 — checked
+**Status: user-confirmed working ("Highlighting looks great").** Originally done ahead of
+Phase 5 at the user's explicit direction, since Phase 5 (GPU picking) was at the time scoped
+as only needed for *editing* use cases; Phase 5 was completed afterward in a later pass (see
+above) once the user widened scope. No architectural reason 6 had to follow 5 — checked
 `setInstanceHighlight(shapeId, instanceId, intensity)` in `symmetry-renderer.js` and
 confirmed it takes the renderer's own ids directly, nothing picking-specific.
 
@@ -544,9 +687,9 @@ models before spending time on it.
 ## Phase 7 — labels — COMPLETE AND VERIFIED
 
 **Status: user-confirmed working on-screen, appear and disappear both verified correct.**
-Done directly after Phase 6, completing the feature set needed to release `SymmetryGeometry`
-for viewer-only (non-editing) use cases — Phase 5 (picking) remains the only
-deliberately-deferred phase, needed only for editing use cases. Verification took much
+Done directly after Phase 6, at a point when Phase 5 (picking) was still scoped as
+deliberately-deferred (needed only for editing use cases); Phase 5 was completed afterward
+once that scope changed — see its section above. Verification took much
 longer than expected because it uncovered two independent, real, pre-existing bugs in
 shared label infrastructure (`labels.jsx`) that had nothing to do with `SymmetryGeometry`
 itself — see the two "shared bug" subsections below. Both are fixed and confirmed: a label

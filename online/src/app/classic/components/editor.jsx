@@ -105,7 +105,7 @@ export const SceneEditor = ( props ) =>
       <LabelDialog open={!!labeling()} close={hideLabelDialog} id={labeling()} label={label()} />
       <InteractionToolProvider>
         <ContextualMenuArea menu={<ContextualMenu showDialog={showDialog} />} class="absolute-0" disabled={viewing()} onOpenChange={resetPicked}>
-          <SceneCanvas symmetryRenderer={false} height="100%" width="100%" scene={scene} rotationOnly={false} >
+          <SceneCanvas symmetryRenderer={true} height="100%" width="100%" scene={scene} rotationOnly={false} >
             {/* The group is only necessary because of https://github.com/solidjs-community/solid-three/issues/11 */}
             <T.Group>
               <Switch fallback={
