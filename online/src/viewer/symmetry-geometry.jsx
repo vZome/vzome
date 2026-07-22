@@ -1,12 +1,14 @@
 
-import { createEffect, createSignal, Show } from "solid-js";
+import { createEffect, createSignal, onCleanup, Show } from "solid-js";
 import { Matrix4, Vector3 } from "three";
 import { CSS2DObject } from "three-stdlib";
+import { useThree } from "solid-three";
 
 import { createSymmetryRenderer } from "./context/symmetry-renderer.js";
 import { buildShapeGeometry, buildOutlineGeometry } from "./geometry.jsx";
 import { useCamera } from "./context/camera.jsx";
 import { useWebXRClient } from "./context/webxr.jsx";
+import { useInteractionTool } from "./context/interaction.jsx";
 
 const GROUP_ID = "default";
 const STYLE_ID = "default";
@@ -75,6 +77,15 @@ const SymmetryGeometryImpl = ( props ) =>
   // own id, which this map is keyed by, refreshed every time the registration effect runs.
   let instanceRefById = new Map(); // vZome instance id -> { shapeId, instanceId }
   let lastSelectedById = new Map(); // vZome instance id -> boolean, to diff against
+
+  // Phase 5 (picking): the reverse direction of instanceRefById, keyed by the renderer's
+  // own numeric instanceId (what renderer.pickAt() returns) instead of the vZome instance
+  // id -- this is what a pick hit needs to resolve into the {id, position, type, selected,
+  // label} shape useInteractionTool()'s handlers expect (matching what Instance's own
+  // solid-three event handlers pass in geometry.jsx). Rebuilt every registration cycle in
+  // lockstep with instanceRefById, for the same reason (see its comment) -- instanceIds are
+  // not stable across a full rebuild.
+  let metadataByInstanceId = new Map(); // renderer instanceId -> { id, position, type, selected, label }
 
   // Phase 7 (labels): retained from the group-registration effect below so the label-
   // positioning math (see the instance-registration effect) can replicate the GPU vertex
@@ -174,16 +185,22 @@ const SymmetryGeometryImpl = ( props ) =>
       }
     }
 
-    for ( const shapeId of registeredShapeIds ) {
-      renderer.removeAllInstances( STYLE_ID, shapeId );
-    }
-
-    // Every removeAllInstances above invalidates all previously-returned renderer
-    // instanceIds for this group, so instanceRefById (and lastSelectedById, so removed
-    // instances' ids don't linger forever) are rebuilt from scratch here rather than
-    // updated incrementally -- see the comment where they're declared.
+    // Every registration cycle rebuilds every shape's instances from scratch -- worker scene
+    // updates (e.g. a single strut-preview move during a drag) replace props.shapes wholesale
+    // (see scene.jsx), so there's no per-instance diff available here yet to do less work.
+    // What IS fixed here: batching each shape's instances into ONE renderer.replaceShapeInstances
+    // call instead of removeAllInstances + one renderer.addInstance call per instance --
+    // addInstance/removeInstance each trigger their own full GPU-buffer rewrite for the whole
+    // shape (see syncShapeInstances in symmetry-renderer.js), so building up a shape via N
+    // addInstance calls was O(N^2) in that shape's instance count, on top of running on every
+    // single worker update. replaceShapeInstances does exactly one rewrite regardless of count.
+    // This invalidates all previously-returned renderer instanceIds for this group, so
+    // instanceRefById (and lastSelectedById, so removed instances' ids don't linger forever)
+    // are rebuilt from scratch here rather than updated incrementally -- see the comment where
+    // they're declared.
     const nextInstanceRefById = new Map();
     const nextSelectedById = new Map();
+    const nextMetadataByInstanceId = new Map();
     // Phase 7: labels are rebuilt in lockstep with instances for the same reason -- there is
     // no cheaper "just this one instance changed" path today (see the Phase 6 comment on
     // instanceRefById), so every registration cycle recomputes every label from scratch.
@@ -195,9 +212,9 @@ const SymmetryGeometryImpl = ( props ) =>
 
     for ( const [ shapeId, shape ] of Object.entries( shapes ) ) {
       const centroid = shapeCentroidById.get( shapeId );
-      for ( const instance of shape.instances ) {
+      const instanceOptionsList = shape.instances.map( instance => {
         const selected = !! instance.selected;
-        const instanceId = renderer.addInstance( STYLE_ID, shapeId, {
+        return {
           position: toVector3( instance.position ),
           // scene.jsx uses orientation === -1 to mean "no orientation, use identity"
           // (see its own `(orientation < 0) ? 0 : orientation` guard), but
@@ -209,9 +226,19 @@ const SymmetryGeometryImpl = ( props ) =>
           // Phase 6 diff effect below to catch up) so a selected instance never flashes
           // unhighlighted for a frame right after a rebuild.
           highlight: selected ? SELECTED_HIGHLIGHT : 0,
-        } );
+        };
+      } );
+      const instanceIds = renderer.replaceShapeInstances( STYLE_ID, shapeId, instanceOptionsList );
+
+      shape.instances.forEach( ( instance, i ) => {
+        const selected = !! instance.selected;
+        const instanceId = instanceIds[ i ];
         nextInstanceRefById.set( instance.id, { shapeId, instanceId } );
         nextSelectedById.set( instance.id, selected );
+        nextMetadataByInstanceId.set( instanceId, {
+          id: instance.id, position: instance.position, type: instance.type,
+          selected, label: instance.label,
+        } );
 
         if ( instance.label ) {
           // Same transform the GPU vertex shader applies per-vertex (rotatedPositionNode in
@@ -238,6 +265,14 @@ const SymmetryGeometryImpl = ( props ) =>
           nextLabelById.set( instance.id, label );
           labelById.delete( instance.id );
         }
+      } );
+    }
+
+    // Shapes that existed before but have no instances in this pass still need their buffers
+    // cleared (replaceShapeInstances above only runs for shapes present in `shapes`).
+    for ( const shapeId of registeredShapeIds ) {
+      if ( ! ( shapeId in shapes ) ) {
+        renderer.removeAllInstances( STYLE_ID, shapeId );
       }
     }
 
@@ -250,6 +285,7 @@ const SymmetryGeometryImpl = ( props ) =>
     instanceRefById = nextInstanceRefById;
     lastSelectedById = nextSelectedById;
     labelById = nextLabelById;
+    metadataByInstanceId = nextMetadataByInstanceId;
   } );
 
   // Phase 6: selection highlight. Diffs instance.selected against the last-seen value per
@@ -292,6 +328,144 @@ const SymmetryGeometryImpl = ( props ) =>
     if ( ! groupReady() )
       return;
     renderer.setOutlinesVisible( !! props.polygons && !! cameraState.outlines );
+  } );
+
+  // Phase 5: picking/interaction. ShapedGeometry's Instance (geometry.jsx) gets hover/click/
+  // drag/contextMenu for free from solid-three's own per-mesh raycasting event handlers,
+  // because every ball/strut is a separate <T.Mesh>. SymmetryGeometry has no per-instance
+  // mesh at all -- everything is GPU-instanced into a handful of shared InstancedMeshes --
+  // so there is nothing for solid-three's raycaster to hit-test against. renderer.pickAt()
+  // (an offscreen ID-encoded render pass + pixel readback, built in Phase 3 but never wired
+  // up until now) is the GPU-instancing-compatible equivalent; this effect wires it directly
+  // to raw DOM pointer events on the canvas, bypassing solid-three's event system entirely
+  // for this component's content.
+  const three = useThree();
+  const [ tool ] = useInteractionTool();
+
+  // useThree().gl and .camera are live getters (see the long comment on this same footgun
+  // in labels.jsx, found and fixed earlier in this project) -- must be re-read fresh at
+  // each use, never destructured into a stale binding captured once at setup time.
+  const pick = ( clientX, clientY ) => renderer.pickAt( clientX, clientY, three.gl, three.camera );
+
+  // The only state this needs across the pointerdown -> pointermove* -> pointerup gesture:
+  // which instance (if any) pointerdown actually hit. Picking is blocking (awaited at
+  // pointerdown before anything else happens) rather than fire-and-reconcile-later --
+  // simpler and much lower-risk than trying to make a still-resolving async pick coexist
+  // with an already-in-progress drag; GPU pick latency (one offscreen render + pixel
+  // readback) is sub-frame on any reasonable hardware, so this shouldn't be perceptible as
+  // input lag for a click or drag-start specifically (unlike e.g. hover, which would need to
+  // run every frame and is a bad fit for this same approach -- not implemented here, see
+  // below). Marquee/drag-select over empty space is explicitly out of scope: it would need
+  // its own new interaction-tool contract methods (e.g. onBkgdDragStart), not a picking
+  // latency choice, since ShapedGeometry doesn't have that today either.
+  let draggingHit = null; // { id, position, type, selected } of the instance pointerdown hit, once resolved
+  // The Promise from the most recently started pointerdown's pick, resolving to the same
+  // shape as draggingHit (or null on a miss). pointerdown is itself async (it awaits the
+  // pick before setting draggingHit and calling onDragStart) -- a fast click can complete
+  // pointerdown-then-pointerup faster than one GPU pick round-trip, so pointerup can't just
+  // check draggingHit synchronously: on a fast click it would still be null even though the
+  // pick that pointerdown kicked off is genuinely going to resolve as a hit a moment later.
+  // pointerup awaits this SAME promise (never starts a second pick) so it always sees the
+  // real, final outcome of the one pick pointerdown already started, however long it takes.
+  // Known unhandled edge case: a second pointerdown arriving before the first's pick has
+  // resolved (rapid double-click, or a second touch point) overwrites pendingGesture --
+  // the first pick's own onDragStart call, if it turns out to be a hit, still fires once it
+  // resolves, but nothing here will have been waiting for it any more. Not addressed: this
+  // is a single-pointer-at-a-time design, matching Instance's own synchronous (and
+  // therefore inherently race-free) raycasting, which never had to consider this.
+  let pendingGesture = null;
+
+  const isLeftButton = e => e.button === 0;
+
+  const onPointerDown = ( e ) =>
+  {
+    if ( ! isLeftButton( e ) )
+      return;
+    pendingGesture = ( async () => {
+      const hit = await pick( e.clientX, e.clientY );
+      const meta = hit && metadataByInstanceId.get( hit.instanceId );
+      if ( ! meta )
+        return null; // miss, or a stale pick racing a rebuild (props.shapes changed mid-flight)
+      draggingHit = meta;
+      tool ?.onDragStart?.( e, meta.id, meta.position, meta.type, meta.selected );
+      return meta;
+    } )();
+    // No stopPropagation here (or in onPointerMove/onPointerUp below): unlike geometry.jsx's
+    // Instance, whose stopPropagation calls operate on solid-three's own SYNTHETIC event
+    // dispatch (stops bubbling to other solid-three-managed scene objects only), these are
+    // raw native DOM listeners on the canvas -- stopPropagation here would stop the real
+    // native event from bubbling up to `document`. Tools like StrutDragTool intentionally
+    // leave `onDrag` a no-op and drive the actual drag motion through their own document-level
+    // listeners instead (see ObjectTrackball/DragHandler in app/classic/tools/trackball.jsx
+    // and drag.ts, attached via domElement.ownerDocument.addEventListener). Calling
+    // stopPropagation here silently starved those document listeners of every pointermove
+    // after the first, breaking dragging almost immediately -- found via live testing (strut
+    // preview barely moved at all). ltcanvas.jsx's own competing canvas-level listeners are
+    // already gated off via `if (props.symmetryRenderer) return;`, not via stopPropagation, so
+    // nothing here actually depends on blocking the native bubble phase.
+  };
+
+  const onPointerMove = ( e ) =>
+  {
+    // No new pick here: matches Instance's own onPointerMove (geometry.jsx), which forwards
+    // move events using the SAME instance pointerdown/onDragStart already resolved, not
+    // whatever happens to be under the cursor mid-drag. If the pointerdown pick is still in
+    // flight (draggingHit not yet set), this move is simply dropped -- matches Instance's own
+    // behavior of doing nothing until a hit is confirmed, and any real drag has many more
+    // pointermove events coming, so losing the first one or two to pick latency is harmless.
+    if ( ! draggingHit )
+      return;
+    tool ?.onDrag?.( e, draggingHit.id, draggingHit.position, draggingHit.type, draggingHit.selected );
+  };
+
+  const onPointerUp = async ( e ) =>
+  {
+    if ( ! isLeftButton( e ) )
+      return;
+    // Wait for the SAME pick pointerdown started, if it hasn't resolved yet (fast click) --
+    // see the long comment on pendingGesture above for why this can't just check
+    // draggingHit synchronously.
+    if ( pendingGesture )
+      await pendingGesture;
+    pendingGesture = null;
+    if ( draggingHit ) {
+      const { id, position, type, selected, label } = draggingHit;
+      draggingHit = null;
+      // No stopPropagation -- see the comment in onPointerDown above. DragHandler's own
+      // document-level pointerup listener (drag.ts) needs to see this event too, to reset
+      // its internal state and detach its own document listeners.
+      tool ?.onDragEnd?.( e, id, position, type, selected, label );
+    } else {
+      // pointerdown never hit anything -- this is a background click. SymmetryGeometry owns
+      // both the hit and miss cases itself (see ltcanvas.jsx's handlePointerMissed, which
+      // skips its own solid-three-raycasting-based bkgdClick entirely when symmetryRenderer
+      // is active, precisely so it doesn't double-fire against this).
+      tool ?.bkgdClick?.();
+    }
+  };
+
+  const onContextMenu = async ( e ) =>
+  {
+    const hit = await pick( e.clientX, e.clientY );
+    if ( ! hit )
+      return;
+    const meta = metadataByInstanceId.get( hit.instanceId );
+    if ( ! meta )
+      return;
+    e.preventDefault();
+    tool ?.onContextMenu?.( meta.id, meta.position, meta.type, meta.selected, meta.label );
+  };
+
+  const canvasEl = three.canvas; // plain property, not a getter -- safe to keep, see useThree() above
+  canvasEl.addEventListener( 'pointerdown', onPointerDown );
+  canvasEl.addEventListener( 'pointermove', onPointerMove );
+  canvasEl.addEventListener( 'pointerup', onPointerUp );
+  canvasEl.addEventListener( 'contextmenu', onContextMenu );
+  onCleanup( () => {
+    canvasEl.removeEventListener( 'pointerdown', onPointerDown );
+    canvasEl.removeEventListener( 'pointermove', onPointerMove );
+    canvasEl.removeEventListener( 'pointerup', onPointerUp );
+    canvasEl.removeEventListener( 'contextmenu', onContextMenu );
   } );
 
   return null;
