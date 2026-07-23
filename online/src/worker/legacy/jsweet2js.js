@@ -1,6 +1,7 @@
 
 import { java } from "./candies/j4ts-2.1.0-SNAPSHOT/bundle.js"
-import { simplify, createNumberFromPairs } from '../fields/common'
+import { createNumberFromPairs } from '../fields/common'
+import { JavaBigRational, ZERO as BR_ZERO } from './bigRational'
 
 class JavaAlgebraicNumberFactory
 {
@@ -24,7 +25,7 @@ class JavaAlgebraicNumberFactory
       const order = legacyField.getOrder()
       const factors = [ new JavaBigRational( num, denom ) ]
       for ( let index = 1; index < order; index++ ) {
-        factors.push( ZERO )
+        factors.push( BR_ZERO )
       }
       return new JavaAlgebraicNumber( legacyField, factors )
     }
@@ -258,119 +259,8 @@ class JavaAlgebraicNumber
 }
 JavaAlgebraicNumber.__interfaces = [ "com.vzome.core.algebra.AlgebraicNumber" ]
 
-class JavaBigRational
-{
-  constructor( num, denom )
-  {
-    [ num, denom ] = simplify( [ BigInt(num), BigInt(denom) ] )
-    this.num = num
-    this.denom = denom
-  }
 
-  equals( that )
-  {
-    return this.num === that.num && this.denom === that.denom
-  }
-
-  toString()
-  {
-    if ( this.denom === 1n )
-      return this.num.toString()
-    else
-      return this.num.toString() + "/" + this.denom.toString()
-  }
-
-  getMathML()
-  {
-    if ( this.denom === 1n )
-      return `<mn>${this.num.toString()}</mn>`
-    else
-      return `<mfrac><mn>${this.num.toString()}</mn><mn>${this.denom.toString()}</mn></mfrac>`
-  }
-
-  evaluate()
-  {
-    return Number( this.num ) / Number( this.denom )
-  }
-
-  isZero()
-  {
-    return this.num === 0n
-  }
-
-  isOne()
-  {
-    return this.num === 1n && this.denom === 1n
-  }
-
-  isNegative()
-  {
-    return this.num < 0n
-  }
-
-  negate()
-  {
-    return new JavaBigRational( -this.num, this.denom )
-  }
-
-  reciprocal()
-  {
-    if ( this.isOne() )
-      return this
-    return new JavaBigRational( this.denom, this.num )
-  }
-
-  getNumerator()
-  {
-    return this.num
-  }
-
-  getDenominator()
-  {
-    return this.denom
-  }
-
-  plus( that )
-  {
-    if (this.isZero()) {
-      return that
-    }
-    if (that.isZero()) {
-      return this
-    }
-    if (this.denom === that.denom) {
-      return new JavaBigRational( this.num + that.num, this.denom )
-    }
-    // different denominators
-    const d = this.denom * that.denom
-    return new JavaBigRational( this.num*that.denom + that.num*this.denom, d )
-  }
-
-  times( that )
-  {
-    if ( this.isOne() ) {
-        return that;
-    }
-    if ( that.isOne() ) {
-        return this;
-    }
-    if ( this.isZero() || that.isZero() ) {
-      return ZERO
-    }
-    return new JavaBigRational( this.num*that.num, this.denom*that.denom )
-  }
-
-  timesInt( i )
-  {
-    if ( i === 1 )
-      return this
-    if ( i === 0 )
-      return ZERO
-    return new JavaBigRational( this.num * BigInt(i), this.denom )
-  }
-}
-
-const ZERO = new JavaBigRational( 0n, 1n )
+export { JavaBigRational }  // exported for testing
 
 export class JsProperties
 {
