@@ -863,6 +863,26 @@ time, rather than continuing to reason abstractly about solid-three's internals.
 projected-position numbers were what finally made the real cause legible — everything before
 that was consistent with several different explanations.
 
+## Perspective-only color speckling from interpolated discrete attributes
+
+**Status: fixed and reproduced with an instrumented live viewer.** Some GPUs rendered balls
+and struts with dense, incorrect-color speckles in perspective mode, while orthographic mode
+was clear. The artifact was unchanged when outlines, multisampling, or depth testing were
+disabled. A WebGL draw trace also showed one fill draw and one fill material per shape, ruling
+out duplicate geometry or simultaneous visible/picking materials.
+
+The generated fragment shader received the instanced `colorIndex` float as a normal varying
+and used `int(colorIndex)` to index the palette. Perspective-correct interpolation can turn an
+exact integer into `N - epsilon`; GLSL integer conversion truncates that to `N - 1`. This
+explains both the projection and GPU dependence, as well as the specific colors: white balls
+intermittently sampled the preceding red palette entry, while palette index zero stayed
+stable. Orthographic interpolation preserved the constant index exactly on the affected GPU.
+
+`createMaterialForGroup()` now rounds `colorIndex` with `floor(value + 0.5)` before the
+palette lookup. It applies the same protection to `pickingId`, which is also a discrete
+instanced float consumed in a fragment shader. Replacing only the palette conversion in the
+live generated shader removed the perspective artifact completely.
+
 ## Debugging technique notes for whoever continues this
 
 The Phase 3 debugging session (item 6 above especially) went through a long sequence of
