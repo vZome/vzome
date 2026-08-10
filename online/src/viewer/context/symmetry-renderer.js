@@ -386,7 +386,10 @@ export function createSymmetryRenderer(parent)
       const orientationMat = orientationUniform.element(orientationIndexNode.toInt());
       return orientationMat.mul(vec4(positionLocal, 1.0)).xyz.add(instanceTranslationNode);
     })();
-    const indexedColorNode = colorPalette.element(colorIndexNode.toInt());
+    // Fragment attributes are perspective-interpolated. An exact integer can arrive as
+    // N-epsilon, so truncating it would intermittently select the preceding palette color.
+    const roundedColorIndexNode = floor(colorIndexNode.add(float(0.5)));
+    const indexedColorNode = colorPalette.element(roundedColorIndexNode.toInt());
 
     // MeshLambertNodeMaterial (diffuse only, no specular term) to match ShapedGeometry's
     // MeshLambertMaterial exactly -- see geometry.jsx's InstancedShape. The original
@@ -403,7 +406,10 @@ export function createSymmetryRenderer(parent)
     material.emissiveNode = vec4(1.0, 1.0, 1.0, 1.0).xyz.mul(highlightIntensityNode);
 
     // Picking material: encodes per-instance ID into RGB, shares the same vertex transform
-    const pickingIdNode = attribute("pickingId", "float");
+    // Apply the same interpolation protection before encoding the discrete ID.
+    const pickingIdNode = floor(
+      attribute("pickingId", "float").add(float(0.5))
+    );
     // R = id % 256, G = floor(id/256) % 256, B = floor(id/65536)
     const pickingColorNode = vec3(
       mod(pickingIdNode, float(256.0)).div(255.0),
