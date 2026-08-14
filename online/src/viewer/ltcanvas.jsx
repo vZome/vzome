@@ -1,5 +1,5 @@
 
-import { Color, Scene, Group, Mesh, AmbientLight, DirectionalLight } from "three";
+import { Color, Scene, Group, Mesh, AmbientLight, DirectionalLight, WebGLRenderer } from "three";
 import { WebGPURenderer } from 'three/webgpu';
 import { createRenderEffect, createResource, createSignal, onMount, For, Show, Suspense } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
@@ -149,6 +149,22 @@ export const LightedTrackballCanvas = ( props ) =>
 
   const makeCustomRenderer = ( canvas ) =>
   {
+    // props.useWebGL is resolved by the capability probe upstream (see SceneCanvas and
+    // renderer-support.js). On machines where WebGPURenderer fails to initialize -- notably
+    // Intel Macs on Safari/Sequoia, where the viewer otherwise renders solid white -- we fall
+    // back to the classic WebGLRenderer here. That path also forces symmetryRenderer off (see
+    // SceneCanvas), since the classic renderer can't consume the symmetry renderer's TSL node
+    // materials; the combined fallback is WebGLRenderer + ShapedGeometry.
+    if ( props.useWebGL ) {
+      const renderer = new WebGLRenderer({
+        powerPreference: "high-performance",
+        canvas,
+        antialias: true,
+        alpha: true,
+        preserveDrawingBuffer: true,
+      });
+      return renderer;
+    }
     const renderer = new WebGPURenderer({
       powerPreference: "high-performance",
       canvas,
