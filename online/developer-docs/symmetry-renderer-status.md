@@ -928,6 +928,53 @@ transform is refreshed on every switch. All effects now gate on `activeGroupKey(
 the removed `groupReady()`. This single trigger — the orientations array itself — covers both
 the editor symmetry switch and the viewer whole-design change with one code path.
 
+## Slow picking/selection on big models — full-model rebuild per pick
+
+**Status: fixed.** Clicking to select (and especially DeselectAll over many selected struts)
+was sluggish on big models. The GPU pick itself is cheap (one tiny offscreen render + readback,
+only on pointerdown). The cost was downstream: `scene.jsx`'s `SELECTION_TOGGLED` handler did a
+full-store replace — `setScene({ ...scene, shapes })` with freshly-spread shapes/shape/instances
+— changing every store identity on every pick. That re-triggered `SymmetryGeometry`'s instance-
+registration effect, which rewrites *every* shape's whole GPU instance buffer (`replaceShapeInstances`)
+and recomputes every label. The worker emits one `SELECTION_TOGGLED` per manifestation
+(`glowChanged`), so DeselectAll of N struts was N full-model rebuilds.
+
+The renderer already had a cheap path (the Phase 6 highlight effect updates only flipped
+instances), but two things defeated it: (1) the coarse store write changed `shapes` identity, so
+every `props.shapes` effect re-ran; (2) the registration effect *reactively read* `instance.selected`
+for every instance (for anti-flash initial-highlight seeding), so even a surgical write would
+re-trigger it. Fix, both parts: (1) `scene.jsx` now does a surgical nested
+`setScene('shapes', shapeId, 'instances', index, 'selected', selected)`; (2) the registration
+effect's two `instance.selected` reads are wrapped in `untrack()`, so it no longer subscribes to
+selection — only the Phase 6 effect does. The Phase 6 effect additionally patches
+`metadataByInstanceId[...].selected` so pick metadata (passed to onDragStart/onDragEnd/onContextMenu)
+stays fresh without the registration effect re-running. Net: a selection toggle now updates one
+GPU highlight, not the whole model.
+
+### Follow-up: O(1) per-toggle highlight (removing the remaining per-message scan)
+
+**Status: fixed.** After the above, selection was still ~1s and *constant* across select,
+unselect, select-all, deselect-all on big models — the tell that the cost was a per-action full
+scan, not a per-instance rebuild. Two full scans ran **per `SELECTION_TOGGLED` message** (the
+worker sends one per manifestation): (1) `scene.jsx`'s handler did a `findIndex` over the shape's
+instances; (2) the Phase 6 highlight effect was a `createEffect` that scanned *every* instance of
+*every* shape — through slow SolidJS store proxies — just to rediscover the id the message already
+named. Single click = 1 message × O(N); select-all = N messages × O(N) = O(N²).
+
+Fix: replaced the scanning Phase 6 effect with an **imperative id-keyed highlight hook**.
+`SceneProvider` exposes `setSelectionHighlighter`/`highlightSelection`; `SymmetryGeometry`
+registers a callback (`onCleanup` unregisters) that does an O(1) `instanceRefById.get(id)` lookup
+and calls `renderer.setInstanceHighlight` directly (plus refreshes `metadataByInstanceId[...].selected`).
+`scene.jsx`'s `SELECTION_TOGGLED` handler calls `highlightSelection(shapeId, id, selected)` before
+the surgical store write. The store write still happens (correctness for ShapedGeometry / context
+menu / pick metadata), but no longer drives highlighting. The registration effect's untracked
+`selected` read still seeds initial highlight on structural rebuilds from the store (source of
+truth), so a toggle arriving before a rebuild flush is not lost. Removed `lastSelectedById` and
+`nextSelectedById` (the old diff baseline). Single-click highlight is now O(1). **Remaining
+residual (not addressed):** the `findIndex` in `scene.jsx`'s handler is still O(instances in that
+shape), and select-all/deselect-all is still N messages (O(N) round-trips) — see the deferred
+worker-batching option in the selection-highlight memory.
+
 ## Debugging technique notes for whoever continues this
 
 The Phase 3 debugging session (item 6 above especially) went through a long sequence of
