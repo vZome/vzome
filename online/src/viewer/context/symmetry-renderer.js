@@ -35,6 +35,21 @@ import {
 
 export const INITIAL_SHAPE_CAPACITY = 64;
 
+// The color palette is a single uniformArray baked into the material's colorNode when the
+// group's material is first built (createMaterialForGroup). A UniformArrayNode sizes its GPU
+// uniform buffer ONCE, from its backing array's length at shader-setup time, and the material
+// captures that specific node instance -- so the palette can neither be reassigned nor grown
+// after the material exists. Colors, unlike orientations (fixed at group registration), are
+// registered lazily and can appear long after the material is built: e.g. dragging out the
+// first strut of an orbit whose color wasn't in the initial scene calls registerColor at drag
+// time. Before this was fixed, that late registerColor reassigned a NEW (larger) uniformArray
+// the built material ignored, and the new index fell outside the old, smaller uniform buffer
+// -- the shader sampled garbage, showing the wrong color (e.g. turquoise rendered as navy).
+// So we pre-size the palette once to this fixed capacity and write colors into it in place,
+// letting UniformArrayNode's per-render update() copy the mutated backing array to the GPU.
+// 256 is far more distinct colors than any vZome symmetry model uses in practice.
+export const COLOR_PALETTE_CAPACITY = 256;
+
 
 // parent is whatever Object3D the managed originGroup should attach under -- the raw
 // Three.js scene for the non-XR desktop path, or WebXRSupport's own originGroup (see
@@ -53,8 +68,17 @@ export function createSymmetryRenderer(parent)
   originGroup.matrixAutoUpdate = false;
   parent.add(originGroup);
 
-  const colorMatrices = [];
-  let colorPalette = null;
+  // Backing array for the color palette uniformArray, pre-filled to a fixed capacity (see
+  // COLOR_PALETTE_CAPACITY) so the uniformArray node -- and thus the GPU uniform buffer it
+  // sizes once at shader build -- is large enough for every color that will ever be
+  // registered, including ones registered lazily after the material is built. Unused slots
+  // stay black; registerColor writes real colors into the next slot in place (never
+  // reassigns the array or the node). colorCount tracks how many slots are actually in use.
+  const colorMatrices = Array.from({ length: COLOR_PALETTE_CAPACITY }, () => new Vector3());
+  let colorCount = 0;
+  // Built once, up front, over the fixed-size backing array -- must exist before any material
+  // is created (createMaterialForGroup captures this exact node in its colorNode).
+  const colorPalette = uniformArray(colorMatrices);
 
   const symmetryGroups = new Map();
   let activeGroupId = null;
@@ -287,10 +311,15 @@ export function createSymmetryRenderer(parent)
   }
 
   function registerColor(colorInput) {
+    if (colorCount >= COLOR_PALETTE_CAPACITY) {
+      throw new Error(`Color palette is full (capacity ${COLOR_PALETTE_CAPACITY}).`);
+    }
     const color = normalizeColorInput(colorInput);
-    colorMatrices.push(color);
-    colorPalette = uniformArray(colorMatrices);
-    return colorMatrices.length - 1;
+    // Write in place into the pre-sized backing array; the uniformArray node (already
+    // captured by the material) copies this array to the GPU every render, so the newly
+    // written slot is picked up on the next frame without rebuilding the node or material.
+    colorMatrices[colorCount].copy(color);
+    return colorCount++;
   }
 
   function addInstance(styleId, shapeId, instanceOptions = {}) {
@@ -877,13 +906,16 @@ export function createSymmetryRenderer(parent)
   }
 
   function normalizeColorIndex(colorIndex) {
+    // colorCount, not colorMatrices.length: the backing array is pre-sized to the fixed
+    // palette capacity (mostly unwritten black slots), so validity is bounded by how many
+    // colors have actually been registered, not by the array's fixed length.
     if (colorIndex === undefined || colorIndex === null) {
-      return Math.floor(Math.random() * colorMatrices.length);
+      return Math.floor(Math.random() * colorCount);
     }
     if (!Number.isInteger(colorIndex)) {
       throw new Error("colorIndex must be an integer.");
     }
-    if (colorIndex < 0 || colorIndex >= colorMatrices.length) {
+    if (colorIndex < 0 || colorIndex >= colorCount) {
       throw new Error("colorIndex out of range.");
     }
     return colorIndex;

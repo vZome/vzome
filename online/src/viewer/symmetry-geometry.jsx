@@ -139,9 +139,12 @@ const SymmetryGeometryImpl = ( props ) =>
     if ( groupReady() || ! props.orientations || props.orientations.length === 0 || ! hasInstances )
       return;
 
-    // The renderer's material/shader is built when the group becomes active, and it
-    // indexes into the color palette unconditionally -- so at least one color must be
-    // registered before switchSymmetryGroup(), or that lookup dereferences a null palette.
+    // Pre-register every color present in the initial scene before switchSymmetryGroup()
+    // builds the material. The palette is a fixed-capacity uniformArray (see
+    // COLOR_PALETTE_CAPACITY / registerColor in symmetry-renderer.js) that tolerates colors
+    // registered lazily later too (e.g. dragging out a strut of a not-yet-seen orbit), so
+    // this loop is only an optimization -- registering the bulk of colors up front in one
+    // pass rather than trickling them in -- not a correctness requirement any more.
     for ( const shape of Object.values( shapes ) ) {
       for ( const instance of shape.instances ) {
         colorIndexFor( instance.color );
