@@ -1,5 +1,5 @@
 
-import { createEffect, createSignal, onCleanup, Show } from "solid-js";
+import { createEffect, createSignal, onCleanup, Show, untrack } from "solid-js";
 import { Matrix4, Vector3 } from "three";
 import { CSS2DObject } from "three-stdlib";
 import { useThree } from "solid-three";
@@ -10,8 +10,23 @@ import { useCamera } from "./context/camera.jsx";
 import { useWebXRClient } from "./context/webxr.jsx";
 import { useInteractionTool } from "./context/interaction.jsx";
 
-const GROUP_ID = "default";
 const STYLE_ID = "default";
+
+// The renderer supports multiple coexisting symmetry groups, each baking its own orientation
+// set into its own material's uniformArray at build time (see createMaterialForGroup /
+// symmetry-renderer.js). That orientation uniform can neither be reassigned nor resized after
+// the material exists, so a changed orientation set (icosahedral -> octahedral in the editor,
+// or loading a different design into the SAME reused viewer component -- DesignViewer is reused
+// across designs, not remounted, see index.jsx) requires switching to a DIFFERENT group keyed
+// to those orientations, not mutating the current one. There is no symmetry name available on
+// the viewer/preview path (only the editor's SYMMETRY_CHANGED carries a resourcePath), so the
+// group key is derived purely from the orientation matrices themselves: the same orientation
+// set always yields the same key (so an editor switch back to a prior symmetry reuses that
+// group cheaply, and the editor's duplicate SCENE_RENDERED-then-SYMMETRY_CHANGED sets of the
+// same array collapse to one), while any different set yields a different key. This is the one
+// value that changes on precisely -- and only -- a real symmetry change, in either scenario.
+const groupKeyForOrientations = ( orientations ) =>
+  `g${orientations.length}:` + orientations.map( flat => flat.join( ',' ) ).join( ';' );
 
 // ShapedGeometry's InstancedShape (geometry.jsx) shows selection as a binary emissive
 // swap -- "#c8c8c8" or "black" -- not a graded intensity. symmetry-renderer.js's
@@ -62,8 +77,17 @@ const SymmetryGeometryImpl = ( props ) =>
 
   const renderer = createSymmetryRenderer( props.parent );
 
-  const [ groupReady, setGroupReady ] = createSignal( false );
-  const registeredShapeIds = new Set();
+  // The renderer group key currently switched-to (null until the first group is registered).
+  // Its identity is what every downstream effect keys off; see groupKeyForOrientations.
+  const [ activeGroupKey, setActiveGroupKey ] = createSignal( null );
+  // Which renderer groups have already been registered (registerSymmetryGroup called once per
+  // key). switchSymmetryGroup itself is idempotent, but registerSymmetryGroup throws on a
+  // duplicate key, so we must track this ourselves.
+  const registeredGroupKeys = new Set();
+  // Shapes are registered per group (each group has its own slots), and different symmetries
+  // generally have different shape sets, so this can't be a single flat Set shared across
+  // groups the way it was when there was only ever one hardcoded group -- key -> Set(shapeId).
+  const registeredShapeIdsByGroup = new Map();
   const colorIndexByCss = new Map();
 
   // Phase 6 (selection highlight): keyed by vZome instance id (props.id on each entry in
@@ -87,12 +111,16 @@ const SymmetryGeometryImpl = ( props ) =>
   // not stable across a full rebuild.
   let metadataByInstanceId = new Map(); // renderer instanceId -> { id, position, type, selected, label }
 
-  // Phase 7 (labels): retained from the group-registration effect below so the label-
-  // positioning math (see the instance-registration effect) can replicate the GPU vertex
-  // shader's rotatedPositionNode transform (orientation * localVertex + instanceTranslation,
-  // see createMaterialForGroup in symmetry-renderer.js) once per label in JS, instead of
+  // Phase 7 (labels): the ACTIVE group's orientation matrices, refreshed by the group-
+  // registration effect on every symmetry switch (not just once) so the label-positioning
+  // math (see the instance-registration effect) can replicate the GPU vertex shader's
+  // rotatedPositionNode transform (orientation * localVertex + instanceTranslation, see
+  // createMaterialForGroup in symmetry-renderer.js) once per label in JS, instead of
   // per-vertex on the GPU -- there is no per-instance mesh for a <Label> to be parented to
   // and inherit that transform from "for free" the way ShapedGeometry's Instance gets it.
+  // Must track the active group: after a symmetry switch the instance orientation indices
+  // index into the NEW group's orientation set, so labels would be mis-placed if this still
+  // held the previous group's matrices.
   let orientationMatrices = [];
   // Shape centroids (local-space, one per shape, NOT per instance) are attached to the
   // BufferGeometry returned by buildShapeGeometry as .shapeCentroid (see geometry.jsx) but
@@ -132,36 +160,56 @@ const SymmetryGeometryImpl = ( props ) =>
     renderer.originGroup.matrix.copy( m );
   } );
 
+  // Group-registration / symmetry-switch effect. Re-runs whenever props.orientations changes
+  // (the single value that changes on -- and only on -- a real symmetry change; see
+  // groupKeyForOrientations). On the FIRST orientation set, and on every change to a
+  // not-yet-seen set (editor symmetry switch, or a different design loaded into this reused
+  // component), it registers a new renderer group keyed to those orientations and switches to
+  // it; switching back to a previously-seen set reuses that group with no rebuild.
   createEffect( () => {
-    const shapes = props.shapes || {};
-    const hasInstances = Object.values( shapes ) .some( shape => shape.instances.length > 0 );
-
-    if ( groupReady() || ! props.orientations || props.orientations.length === 0 || ! hasInstances )
+    if ( ! props.orientations || props.orientations.length === 0 )
       return;
 
-    // Pre-register every color present in the initial scene before switchSymmetryGroup()
-    // builds the material. The palette is a fixed-capacity uniformArray (see
-    // COLOR_PALETTE_CAPACITY / registerColor in symmetry-renderer.js) that tolerates colors
-    // registered lazily later too (e.g. dragging out a strut of a not-yet-seen orbit), so
-    // this loop is only an optimization -- registering the bulk of colors up front in one
-    // pass rather than trickling them in -- not a correctness requirement any more.
-    for ( const shape of Object.values( shapes ) ) {
-      for ( const instance of shape.instances ) {
-        colorIndexFor( instance.color );
-      }
+    const key = groupKeyForOrientations( props.orientations );
+    // untrack the read: this effect also writes activeGroupKey below, and a tracked self-read
+    // would make it re-run on its own write. Its only real dependency is props.orientations.
+    if ( key === untrack( activeGroupKey ) )
+      return; // same symmetry as currently active -- nothing to switch
+
+    // Refresh the retained active-group matrices for the label transform (see its comment) --
+    // on every switch, not just first registration, since a switch back to a previously-seen
+    // group still changes which orientation set the current instance indices refer to.
+    orientationMatrices = props.orientations.map( toMatrix4 );
+
+    if ( ! registeredGroupKeys.has( key ) ) {
+      renderer.registerSymmetryGroup( key, orientationMatrices );
+      renderer.registerStyle( key, STYLE_ID );
+      registeredGroupKeys.add( key );
     }
 
-    orientationMatrices = props.orientations.map( toMatrix4 );
-    renderer.registerSymmetryGroup( GROUP_ID, orientationMatrices );
-    renderer.registerStyle( GROUP_ID, STYLE_ID );
-    renderer.switchSymmetryGroup( GROUP_ID );
-    setGroupReady( true );
+    // switchSymmetryGroup builds this group's GPU material (with the correct orientation
+    // uniform) the first time it becomes active, and hides the previously-active group's
+    // meshes. The shape/instance effects below re-register this group's shapes and instances
+    // (keyed off activeGroupKey, which we set here), so the switch and the content refill
+    // happen in lockstep.
+    renderer.switchSymmetryGroup( key );
+    setActiveGroupKey( key );
   } );
 
   createEffect( () => {
-    if ( ! groupReady() )
+    const groupKey = activeGroupKey();
+    if ( ! groupKey )
       return;
     const shapes = props.shapes || {};
+
+    // Shapes are registered per group; different symmetries have different shape sets, and a
+    // switch back to a prior group must not re-register shapes it already has. Track them by
+    // the active group key.
+    let registeredShapeIds = registeredShapeIdsByGroup.get( groupKey );
+    if ( ! registeredShapeIds ) {
+      registeredShapeIds = new Set();
+      registeredShapeIdsByGroup.set( groupKey, registeredShapeIds );
+    }
 
     for ( const [ shapeId, shape ] of Object.entries( shapes ) ) {
       if ( ! registeredShapeIds.has( shapeId ) ) {
@@ -181,8 +229,8 @@ const SymmetryGeometryImpl = ( props ) =>
         // for everything else, so using it unconditionally is always safe. scene.polygons still
         // matters, just not here -- see the outline-visibility effect below.
         const geometry = buildShapeGeometry( shape, true );
-        renderer.registerShape( GROUP_ID, STYLE_ID, shapeId, geometry );
-        renderer.registerOutline( GROUP_ID, shapeId, buildOutlineGeometry( shape ) );
+        renderer.registerShape( groupKey, STYLE_ID, shapeId, geometry );
+        renderer.registerOutline( groupKey, shapeId, buildOutlineGeometry( shape ) );
         shapeCentroidById.set( shapeId, geometry.shapeCentroid );
         registeredShapeIds.add( shapeId );
       }
@@ -299,7 +347,7 @@ const SymmetryGeometryImpl = ( props ) =>
   // (and therefore re-runs whenever) props.shapes changes identity, same as that one, but
   // its own body only touches the GPU buffers for instances that actually flipped.
   createEffect( () => {
-    if ( ! groupReady() )
+    if ( ! activeGroupKey() )
       return;
     const shapes = props.shapes || {};
 
@@ -328,7 +376,7 @@ const SymmetryGeometryImpl = ( props ) =>
   // -- its showOutlines is scene.polygons alone -- so this is a real behavior improvement
   // over it, not just parity, per explicit direction.
   createEffect( () => {
-    if ( ! groupReady() )
+    if ( ! activeGroupKey() )
       return;
     renderer.setOutlinesVisible( !! props.polygons && !! cameraState.outlines );
   } );

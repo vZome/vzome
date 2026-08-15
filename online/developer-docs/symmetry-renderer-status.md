@@ -883,6 +883,51 @@ palette lookup. It applies the same protection to `pickingId`, which is also a d
 instanced float consumed in a fragment shader. Replacing only the palette conversion in the
 live generated shader removed the perspective artifact completely.
 
+## Stale color palette — colors registered after the material was built
+
+**Status: fixed.** Dragging out a strut in an orbit whose color was not in the initial scene
+(e.g. the turquoise icosahedral orbit) rendered in the wrong color (navy). The color palette
+is a TSL `uniformArray` captured into the material's `colorNode` at build time, and a
+`UniformArrayNode` sizes its GPU uniform buffer *once*, from its backing array's length at
+shader-setup time. `registerColor` had tried to grow the palette by pushing onto the array and
+*reassigning* `colorPalette = uniformArray(...)`, but the already-built material kept
+referencing the original, smaller node — so a color registered after the material was built
+fell outside the old uniform buffer and the shader sampled garbage. Orientations never hit this
+because the full group was registered before the material was built.
+
+Fix: pre-size the backing array to a fixed `COLOR_PALETTE_CAPACITY` (256), build the
+`uniformArray` *once* before the material, and have `registerColor` write into the next slot
+*in place* (no reassignment). `UniformArrayNode.update()` copies the mutated array to the GPU
+every render, so late colors appear on the next frame. `colorCount` (not `colorMatrices.length`,
+now a fixed 256) tracks how many slots are actually registered.
+
+## Stale orientation uniform on symmetry switch — one group per orientation set
+
+**Status: fixed.** Switching symmetry in the editor (icosahedral → octahedral), and loading a
+different design into the *reused* viewer component (`DesignViewer` is reused across designs,
+not remounted — see `index.jsx`), rendered every strut (and the trackball) with the wrong
+orientation. Same root shape as the color bug: `createMaterialForGroup` bakes
+`orientationUniform = uniformArray(group.orientations)` into the material once, and that buffer
+can't be reassigned or resized afterward. But unlike colors, orientation sets swap wholesale
+(and change length — icosahedral 60 vs. octahedral 24), so an in-place resize is impossible; a
+changed set genuinely needs a new material. `symmetry-geometry.jsx` used to register a single
+hardcoded `"default"` group once (gated on a one-shot `groupReady()` signal) and never
+re-register, so `scene.orientations` updates (which *do* flow correctly — `SYMMETRY_CHANGED`,
+`SCENE_RENDERED`, and `showIndexedScene` all funnel through `setScene('orientations', ...)`)
+never reached the shader; the instance effect meanwhile fed the *new* orientation *indices*
+into the *stale* uniform.
+
+Fix uses the renderer's already-existing multi-group machinery (`registerSymmetryGroup` /
+`switchSymmetryGroup`, which builds a fresh per-group material and hides the previous group's
+meshes). `symmetry-geometry.jsx` now derives a group key purely from the orientation matrices'
+content (`groupKeyForOrientations`) — no symmetry name is available on the viewer/preview path,
+and the content *is* the identity, so the same set reuses its group (cheap switch-back) and any
+different set gets a new one. Shape registration became per-group (`registeredShapeIdsByGroup`,
+keyed off the active group key), and the retained `orientationMatrices` used by the label
+transform is refreshed on every switch. All effects now gate on `activeGroupKey()` instead of
+the removed `groupReady()`. This single trigger — the orientations array itself — covers both
+the editor symmetry switch and the viewer whole-design change with one code path.
+
 ## Debugging technique notes for whoever continues this
 
 The Phase 3 debugging session (item 6 above especially) went through a long sequence of
