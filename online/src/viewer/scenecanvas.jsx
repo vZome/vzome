@@ -29,7 +29,7 @@ const SceneCanvas = ( props ) =>
           useWebGL={useWebGL()} symmetryRenderer={useSymmetry()} >
         <Show when={ () => props.scene?.shapes }>
           { useSymmetry()
-            ? <SymmetryGeometry embedding={scene?.embedding} shapes={scene?.shapes} orientations={scene?.orientations} polygons={scene?.polygons} />
+            ? <SymmetryGeometry embedding={scene?.embedding} shapes={scene?.shapes} orientations={scene?.orientations} polygons={scene?.polygons} symmetryId={scene?.symmetryId} />
             : <ShapedGeometry embedding={scene?.embedding} shapes={scene?.shapes} />
           }
         </Show>

@@ -1,5 +1,5 @@
 
-import { createContext, createEffect, createSignal, useContext } from "solid-js";
+import { batch, createContext, createEffect, createSignal, useContext } from "solid-js";
 import { createStore, reconcile, unwrap } from "solid-js/store";
 
 import { useWorkerClient } from "./worker.jsx";
@@ -42,7 +42,21 @@ const SceneProvider = ( props ) =>
     }
   }
 
-  const apiObject = { scene, setScene, labels, updateShapes, addShape, useViewer, }
+  // Optional imperative selection-highlight hook. SymmetryGeometry registers a callback here
+  // (id, selected) so the SELECTION_TOGGLED handler can update the one flipped instance's GPU
+  // highlight in O(1) -- an id-keyed lookup inside the renderer -- instead of the previous
+  // reactive effect that re-scanned every instance of every shape (through slow store proxies)
+  // on every toggle just to rediscover which id the message already named. That scan was the
+  // dominant per-click cost on large models; select-all/deselect-all (one SELECTION_TOGGLED per
+  // manifestation) made it O(N^2). The store's `selected` flag is still written surgically
+  // below regardless, so non-symmetry readers (ShapedGeometry, context menu) stay correct; this
+  // hook is purely the fast highlight path and is a no-op when unset (e.g. the ShapedGeometry
+  // path, which highlights reactively per-<Instance>).
+  let selectionHighlighter = null;
+  const setSelectionHighlighter = fn => { selectionHighlighter = fn; };
+  const highlightSelection = ( shapeId, id, selected ) => selectionHighlighter?.( shapeId, id, selected );
+
+  const apiObject = { scene, setScene, labels, updateShapes, addShape, useViewer, setSelectionHighlighter, highlightSelection, }
 
   return (
     <SceneContext.Provider value={ apiObject }>
@@ -176,11 +190,47 @@ const SceneTitlesProvider = (props) =>
 
 const SceneChangeListener = () =>
 {
-  const { scene, updateShapes, addShape, setScene } = useScene();
+  const { scene, updateShapes, addShape, setScene, highlightSelection } = useScene();
   const { subscribeFor } = useWorkerClient();
 
-  subscribeFor( 'SYMMETRY_CHANGED', ( { orientations } ) => {
-    setScene( 'orientations', orientations );
+  subscribeFor( 'SYMMETRY_CHANGED', ( { orientations, fieldName, symmetryName } ) => {
+    // fieldName + symmetryName (present for vZome files; see EditorController.setSymmetryController)
+    // give SymmetryGeometry a STABLE renderer-group key. Keying on the orientation float matrices
+    // instead collides across algebraic fields -- the symmetry rotations are the same reals in
+    // every field -- which reused one field's group (and shapes) for another, corrupting non-
+    // golden-field orientations. Undefined on the preview/viewer path, where SymmetryGeometry
+    // falls back to hashing the orientations.
+    const nextSymmetryId = ( fieldName && symmetryName ) ? `${fieldName}:${symmetryName}` : undefined;
+
+    // batch() is REQUIRED, not just an optimization: this handler runs from the worker's async
+    // onmessage, OUTSIDE any reactive context, so without batch each setScene flushes effects
+    // synchronously on its own. SymmetryGeometry's group-switch effect keys on symmetryId but
+    // REGISTERS the renderer group from orientations -- so an unbatched `setScene('symmetryId')`
+    // (before the `setScene('orientations')` below) fired that effect with the NEW symmetryId but
+    // the OLD orientations, registering e.g. the golden:octahedral group with the 60 icosahedral
+    // matrices. The later orientations update re-ran the effect, but the group was already
+    // registered (same key) so it kept the wrong matrices -> every octahedral strut rendered with
+    // an icosahedral rotation. batch() flushes all three writes together, so the effect sees
+    // symmetryId and orientations consistent, in one run.
+    batch( () => {
+      // Clear the OLD symmetry's shapes on a real symmetry change. SYMMETRY_CHANGED fires (with
+      // the new orientations) BEFORE the following scene render repopulates shapes, so without this
+      // the group-switch effect activates the new group while props.shapes still holds the previous
+      // symmetry's shapes -- and SymmetryGeometry then tries to register those stale instances,
+      // whose orientation indices belong to the OLD orientation set, against the NEW (possibly
+      // smaller) group ("orientationIndex out of range for group"). Clearing to {} means the effect
+      // has nothing stale to register until the new scene arrives. SYMMETRY_CHANGED only fires on
+      // load or a genuine symmetry switch (never routine edits), always followed by a scene render,
+      // so this clear is safe. Guard on an actual change so a redundant same-symmetry event doesn't
+      // needlessly drop and rebuild all shapes.
+      const symmetryChanged = nextSymmetryId === undefined || nextSymmetryId !== scene.symmetryId;
+      if ( symmetryChanged )
+        setScene( 'shapes', reconcile( {} ) );
+
+      if ( nextSymmetryId )
+        setScene( 'symmetryId', nextSymmetryId );
+      setScene( 'orientations', orientations );
+    } );
   });
 
   subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
@@ -222,13 +272,23 @@ const SceneChangeListener = () =>
   } );
   
   subscribeFor( 'SELECTION_TOGGLED', ( { shapeId, id, selected } ) => {
-    // TODO use nested signal
+    // Fast path: update the flipped instance's GPU highlight directly, id-keyed and O(1), via
+    // SymmetryGeometry's registered hook (no-op on other render paths). This is what keeps a
+    // single click's highlight cheap on a big model -- see setSelectionHighlighter in
+    // SceneProvider for why the previous reactive-scan approach was O(N) per toggle.
+    highlightSelection( shapeId, id, selected );
+
+    // Surgical nested store update: flip ONLY this one instance's `selected` flag, leaving the
+    // shapes object, the shape, and the instances array all at their existing identities. This
+    // keeps the store correct for readers that don't use the fast hook (ShapedGeometry, the
+    // context menu, pick metadata) while NOT triggering SymmetryGeometry's expensive instance-
+    // registration effect (which rebuilds whole GPU buffers) -- that effect untracks its
+    // `selected` reads precisely so a selection toggle doesn't re-run it.
     const shape = scene.shapes[ shapeId ];
-    const instances = shape .instances.map( inst => (
-      inst.id !== id ? inst : { ...inst, selected }
-    ));
-    const shapes = { ...scene.shapes, [ shapeId ]: { ...shape, instances } };
-    setScene( { ...scene, shapes } );
+    const index = shape ?.instances.findIndex( inst => inst.id === id );
+    if ( index === undefined || index < 0 )
+      return;
+    setScene( 'shapes', shapeId, 'instances', index, 'selected', selected );
     // TODO lower ambient light if anything is selected
   } );
 

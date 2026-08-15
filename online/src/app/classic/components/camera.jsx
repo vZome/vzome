@@ -1,14 +1,14 @@
 
-import { createEffect } from 'solid-js';
-import { createStore } from 'solid-js/store';
+import { Show } from 'solid-js';
 
 import Stack from "@suid/material/Stack"
 import Switch from "@suid/material/Switch";
 import FormControlLabel from "@suid/material/FormControlLabel";
 
-import { useEditor } from '../../framework/context/editor.jsx';
+import { controllerProperty } from '../../framework/context/editor.jsx';
 import { useSymmetry } from "../context/symmetry.jsx";
-import { useWorkerClient } from '../../../viewer/context/worker.jsx';
+import { WorkerProvider } from '../../../viewer/context/worker.jsx';
+import { ViewerProvider } from '../../../viewer/context/viewer.jsx';
 import { CameraProvider, useCamera } from '../../../viewer/context/camera.jsx';
 import { InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
 import { SceneCanvas } from '../../../viewer/scenecanvas.jsx';
@@ -16,39 +16,89 @@ import { SceneCanvas } from '../../../viewer/scenecanvas.jsx';
 import { SnapCameraTool } from '../tools/snapcamera.jsx';
 import { GltfExportProvider, ImageCaptureProvider } from '../../../viewer/context/export.jsx';
 import { ZoomSlider } from './zoomslider.jsx';
-import { SceneProvider, useScene } from '../../../viewer/context/scene.jsx';
+import { SceneProvider, SceneChangeListener, useScene } from '../../../viewer/context/scene.jsx';
+import { resourceUrl } from './length.jsx';
 
+
+// Loads the trackball model as an ordinary vZome design on its OWN worker and scene, fully
+// isolated from the editor's worker/scene. This replaced the old bespoke trackball path (worker
+// fetchTrackballScene/connectTrackballScene + a TRACKBALL_SCENE_LOADED message hand-fed into the
+// editor's scene store): that shared the editor's SymmetryGeometry keying and crossed the editor's
+// (e.g. rootTwo) field with the golden-field trackball template, producing wrong/colliding
+// orientations. A trackball model is just a fixed .vZome design; loading it on its own worker
+// makes it always self-consistent in its own field, with zero trackball-specific worker code.
+//
+// The `url` is the current symmetry's model resource path (was wrapper.getTrackballUrl on the
+// worker; now read client-side from the symmetry controller's modelResourcePath property). The
+// whole stack is remounted per url via <Show keyed> so a symmetry change loads a fresh worker with
+// the new trackball design -- matching how 59icosahedra's ModelWorker isolates one worker per
+// fixed model (WorkerProvider now terminates its Worker on unmount, so remounting doesn't leak).
+// Fixed `distance` + `context`-driven rotation/background sync make the trackball mirror the main
+// view. config.camera:false tells this ViewerProvider NOT to drive the camera or background from
+// the trackball design (loadDesign emits SCENES_DISCOVERED with the trackball .vZome's own camera
+// + lighting, which would otherwise clobber the main-view mirror); see ViewerProvider.
+//
+// preview:false because the trackball .vZome files have no .shapes.json preview export, so the
+// worker interprets the XML directly. SceneChangeListener (mounted below) consumes the resulting
+// SCENE_RENDERED to populate this isolated SceneProvider's shapes/orientations.
+const TrackballViewer = () =>
+{
+  const context = useCamera(); // the MAIN camera context, to mirror its rotation
+  const { symmetryController } = useSymmetry();
+  // modelResourcePath is reactive: it re-requests on symmetry change (controllerProperty), so
+  // trackballUrl() tracks the current symmetry. undefined until the symmetry controller is ready.
+  const trackballUrl = () => {
+    const symm = symmetryController();
+    const path = symm && controllerProperty( symm, 'modelResourcePath' );
+    // Must be a FULLY-QUALIFIED url: the worker runs from a blob: origin and fetches this string
+    // directly (fetchUrlText), so a root-relative "/app/classic/resources/..." would resolve
+    // against the blob origin and 403. Resolve against window.location here (the client has it;
+    // the worker doesn't, which is why the old trackball path passed baseURL to `new URL`).
+    // resourceUrl() gives the root-relative path; new URL(..., window.location) makes it absolute
+    // -- same construction as 59icosahedra's getModelURL.
+    const url = path ? new URL( resourceUrl( path ), window.location ) .toString() : undefined;
+    return url;
+  };
+
+  return (
+    <CameraProvider name='trackball' outlines={false} context={context}>
+      <Show when={ trackballUrl() } keyed>
+        { url => (
+          <WorkerProvider>
+            <ViewerProvider config={ { url, preview: false, debug: false, camera: false } }>
+              <SceneProvider>
+                <SceneChangeListener />
+                <InteractionToolProvider>
+                  <SnapCameraTool />
+                  <TrackballCanvas />
+                </InteractionToolProvider>
+              </SceneProvider>
+            </ViewerProvider>
+          </WorkerProvider>
+        ) }
+      </Show>
+    </CameraProvider>
+  );
+};
+
+// Renders the trackball scene, reading the isolated SceneProvider that SceneChangeListener above
+// populates from the worker's SCENE_RENDERED. Split out so it runs INSIDE that SceneProvider.
+const TrackballCanvas = () =>
+{
+  const { scene } = useScene();
+
+  return (
+    <SceneCanvas symmetryRenderer={true} scene={scene}
+      height="200px" width="240px" rotationOnly={true} rotateSpeed={0.7} />
+  );
+};
 
 export const CameraControlsUI = (props) =>
 {
-  const context = useCamera(); // access the main camera context, not the trackball one
-  const { isWorkerReady, subscribeFor } = useWorkerClient();
-  const { rootController, controllerAction } = useEditor();
-  const { state, setCamera, togglePerspective, toggleOutlines } = useCamera();
+  const { state, togglePerspective, toggleOutlines } = useCamera();
   const { snapping, toggleSnapping } = useSymmetry();
-  const { setScene, updateShapes } = useScene();
 
   const isPerspective = () => state.camera.perspective;
-
-  //  Now that worker and canvas are decoupled, we could just use a separate worker for the trackball scene?!
-  subscribeFor( 'TRACKBALL_SCENE_LOADED', ( scene ) => {
-    if ( scene.camera ) {
-      const { lookAt, distance, near, far, width } = state.camera;  // This looks circular, but it is not reactive code.
-      // Ignore the rotation from the loaded scene.
-      setCamera( { lookAt, distance, near, far, width } );
-    }
-    setScene( 'embedding', scene.embedding );
-    setScene( 'polygons', scene.polygons );
-    // Needed by SymmetryGeometry (see scenecanvas.jsx's symmetryRenderer prop). This
-    // trackball preview has its own scene-loading path, separate from the main
-    // SCENE_RENDERED/SYMMETRY_CHANGED events in scene.jsx's SceneChangeListener, and it
-    // was dropping `orientations` even though prepareSceneResponse() sends it.
-    setScene( 'orientations', scene.orientations );
-    updateShapes( scene.shapes );
-  });
-
-  // A special action that will result in TRACKBALL_SCENE_LOADED being sent
-  createEffect( () => isWorkerReady() && controllerAction( rootController(), 'connectTrackballScene' ) );
 
   return (
     <div id='camera-controls'>
@@ -69,9 +119,7 @@ export const CameraControlsUI = (props) =>
 
       <div id="ball-and-slider">
         <div id="camera-trackball">
-          <CameraProvider name='trackball' outlines={false} context={context}>
-            <SceneCanvas symmetryRenderer={true} height="200px" width="240px" rotationOnly={true} rotateSpeed={0.7}/>
-          </CameraProvider>
+          <TrackballViewer />
         </div>
         <div id='zoom-slider' >
           <ZoomSlider/>
@@ -84,16 +132,13 @@ export const CameraControlsUI = (props) =>
 export const CameraControls = () =>
 {
   return (
-    <ImageCaptureProvider> {/* We need this just so we don't set the main capturer from this GL context */}
-    <GltfExportProvider> {/* We need this just so we don't set the main exporter from this GL context */}
-
-      <InteractionToolProvider>
-        {/* provider and CameraTool just to get the desired cursor */}
-        <SnapCameraTool />
-        <SceneProvider passive={true}> {/* passive so it doesn't listen for the main scene */}
-          <CameraControlsUI />
-        </SceneProvider>
-      </InteractionToolProvider>
+    // These two providers isolate this component's own GL context (the trackball canvas, mounted
+    // deeper via CameraControlsUI -> TrackballViewer) so it doesn't overwrite the MAIN view's image
+    // capturer / glTF exporter. The trackball now owns its worker/scene/interaction providers
+    // itself (see TrackballViewer), so they are no longer wired up here.
+    <ImageCaptureProvider>
+    <GltfExportProvider>
+      <CameraControlsUI />
     </GltfExportProvider>
     </ImageCaptureProvider>
   );

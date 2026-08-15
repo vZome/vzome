@@ -1,5 +1,5 @@
 
-import { createEffect, createSignal, onCleanup, Show } from "solid-js";
+import { createEffect, createSignal, onCleanup, Show, untrack } from "solid-js";
 import { Matrix4, Vector3 } from "three";
 import { CSS2DObject } from "three-stdlib";
 import { useThree } from "solid-three";
@@ -9,9 +9,31 @@ import { buildShapeGeometry, buildOutlineGeometry } from "./geometry.jsx";
 import { useCamera } from "./context/camera.jsx";
 import { useWebXRClient } from "./context/webxr.jsx";
 import { useInteractionTool } from "./context/interaction.jsx";
+import { useScene } from "./context/scene.jsx";
 
-const GROUP_ID = "default";
 const STYLE_ID = "default";
+
+// The renderer supports multiple coexisting symmetry groups, each baking its own orientation
+// set into its own material's uniformArray at build time (see createMaterialForGroup /
+// symmetry-renderer.js). That orientation uniform can neither be reassigned nor resized after
+// the material exists, so a changed orientation set (icosahedral -> octahedral in the editor,
+// or loading a different design into the SAME reused viewer component -- DesignViewer is reused
+// across designs, not remounted, see index.jsx) requires switching to a DIFFERENT group keyed
+// to that symmetry, not mutating the current one.
+//
+// Preferred key: props.symmetryId = "<field>:<symmetry>", propagated from the worker for vZome
+// files (SYMMETRY_CHANGED -> scene.jsx). This is STABLE and, crucially, field-aware.
+//
+// Fallback key (previews/viewer, which carry no symmetry identity): hash the orientation float
+// matrices. This works within one field but MUST NOT be used to distinguish fields: a symmetry's
+// rotation matrices are the same real numbers in every algebraic field (octahedral rotations are
+// octahedral rotations), so an orientation hash COLLIDES across fields -- which reused one field's
+// group and its field-specific shapes for another, corrupting non-golden-field orientations. That
+// is exactly why vZome files now send field:symmetry instead of relying on the hash.
+const hashOrientations = ( orientations ) =>
+  `g${orientations.length}:` + orientations.map( flat => flat.join( ',' ) ).join( ';' );
+const groupKeyFor = ( symmetryId, orientations ) =>
+  symmetryId ? `id:${symmetryId}` : hashOrientations( orientations );
 
 // ShapedGeometry's InstancedShape (geometry.jsx) shows selection as a binary emissive
 // swap -- "#c8c8c8" or "black" -- not a graded intensity. symmetry-renderer.js's
@@ -30,11 +52,11 @@ const toMatrix4 = flat => new Matrix4().set( ...flat );
 // accepts directly in geometry.jsx's Instance), but the renderer reads position.x/y/z.
 const toVector3 = ( [ x, y, z ] ) => new Vector3( x, y, z );
 
-// Rendering-only replacement for ShapedGeometry, built on createSymmetryRenderer's
-// GPU-instanced meshes instead of one Three.js object per ball/strut. Selection highlight
-// (Phase 6) and labels (Phase 7) are implemented; no picking/interaction (Phase 5) --
-// deliberately deferred, this component is meant for viewer-only (non-editing) use cases
-// for now, see symmetry-renderer-plan.md and symmetry-renderer-status.md.
+// Replacement for ShapedGeometry, built on createSymmetryRenderer's GPU-instanced meshes instead
+// of one Three.js object per ball/strut. Fully drives the classic editor (not viewer-only):
+// GPU picking + interaction (Phase 5, see pickAt and the pointer handlers below), selection
+// highlight (Phase 6), and labels (Phase 7) are all implemented. See symmetry-renderer-plan.md
+// and symmetry-renderer-status.md.
 export const SymmetryGeometry = ( props ) =>
 {
   const { originGroupReady } = useWebXRClient();
@@ -62,21 +84,26 @@ const SymmetryGeometryImpl = ( props ) =>
 
   const renderer = createSymmetryRenderer( props.parent );
 
-  const [ groupReady, setGroupReady ] = createSignal( false );
-  const registeredShapeIds = new Set();
+  // The renderer group key currently switched-to (null until the first group is registered).
+  // Its identity is what every downstream effect keys off; see groupKeyFor.
+  const [ activeGroupKey, setActiveGroupKey ] = createSignal( null );
+  // Which renderer groups have already been registered (registerSymmetryGroup called once per
+  // key). switchSymmetryGroup itself is idempotent, but registerSymmetryGroup throws on a
+  // duplicate key, so we must track this ourselves.
+  const registeredGroupKeys = new Set();
+  // Shapes are registered per group (each group has its own slots), and different symmetries
+  // generally have different shape sets, so this can't be a single flat Set shared across
+  // groups the way it was when there was only ever one hardcoded group -- key -> Set(shapeId).
+  const registeredShapeIdsByGroup = new Map();
   const colorIndexByCss = new Map();
 
-  // Phase 6 (selection highlight): keyed by vZome instance id (props.id on each entry in
-  // shape.instances), not by renderer instanceId directly, because the instance-registration
-  // effect below fully tears down and re-adds every instance (removeAllInstances + re-add)
-  // on any props.shapes change -- including a pure SELECTION_TOGGLED, since scene.jsx
-  // replaces the whole shapes tree with new object/array identities rather than mutating a
-  // fine-grained per-instance store (see symmetry-renderer-status.md's Phase 6 section for
-  // why this wasn't also fixed here). So the renderer's own instanceId is NOT stable across
-  // a selection change and can't be cached long-term; what IS stable is the vZome instance's
-  // own id, which this map is keyed by, refreshed every time the registration effect runs.
+  // Selection highlight: maps stable vZome instance id -> renderer refs, so the O(1)
+  // highlightSelection hook (registered on the scene context below) can highlight exactly the
+  // instance a SELECTION_TOGGLED names without scanning. Keyed by vZome id, not renderer
+  // instanceId, because the instance-registration effect tears down and re-adds every instance
+  // (replaceShapeInstances) on any structural props.shapes change, so renderer instanceIds are
+  // not stable across a rebuild; the vZome id is. Refreshed every registration cycle.
   let instanceRefById = new Map(); // vZome instance id -> { shapeId, instanceId }
-  let lastSelectedById = new Map(); // vZome instance id -> boolean, to diff against
 
   // Phase 5 (picking): the reverse direction of instanceRefById, keyed by the renderer's
   // own numeric instanceId (what renderer.pickAt() returns) instead of the vZome instance
@@ -87,12 +114,16 @@ const SymmetryGeometryImpl = ( props ) =>
   // not stable across a full rebuild.
   let metadataByInstanceId = new Map(); // renderer instanceId -> { id, position, type, selected, label }
 
-  // Phase 7 (labels): retained from the group-registration effect below so the label-
-  // positioning math (see the instance-registration effect) can replicate the GPU vertex
-  // shader's rotatedPositionNode transform (orientation * localVertex + instanceTranslation,
-  // see createMaterialForGroup in symmetry-renderer.js) once per label in JS, instead of
+  // Phase 7 (labels): the ACTIVE group's orientation matrices, refreshed by the group-
+  // registration effect on every symmetry switch (not just once) so the label-positioning
+  // math (see the instance-registration effect) can replicate the GPU vertex shader's
+  // rotatedPositionNode transform (orientation * localVertex + instanceTranslation, see
+  // createMaterialForGroup in symmetry-renderer.js) once per label in JS, instead of
   // per-vertex on the GPU -- there is no per-instance mesh for a <Label> to be parented to
   // and inherit that transform from "for free" the way ShapedGeometry's Instance gets it.
+  // Must track the active group: after a symmetry switch the instance orientation indices
+  // index into the NEW group's orientation set, so labels would be mis-placed if this still
+  // held the previous group's matrices.
   let orientationMatrices = [];
   // Shape centroids (local-space, one per shape, NOT per instance) are attached to the
   // BufferGeometry returned by buildShapeGeometry as .shapeCentroid (see geometry.jsx) but
@@ -132,33 +163,57 @@ const SymmetryGeometryImpl = ( props ) =>
     renderer.originGroup.matrix.copy( m );
   } );
 
+  // Group-registration / symmetry-switch effect. Re-runs whenever props.symmetryId or
+  // props.orientations changes (the values that change on -- and only on -- a real symmetry
+  // change; see groupKeyFor). On the FIRST symmetry, and on every change to a not-yet-seen one
+  // (editor symmetry switch, or a different design loaded into this reused component), it
+  // registers a new renderer group and switches to it; switching back to a previously-seen one
+  // reuses that group with no rebuild. scene.jsx writes symmetryId then orientations in the same
+  // (batched) event handler, so both are consistent by the time this effect flushes.
   createEffect( () => {
-    const shapes = props.shapes || {};
-    const hasInstances = Object.values( shapes ) .some( shape => shape.instances.length > 0 );
-
-    if ( groupReady() || ! props.orientations || props.orientations.length === 0 || ! hasInstances )
+    if ( ! props.orientations || props.orientations.length === 0 )
       return;
 
-    // The renderer's material/shader is built when the group becomes active, and it
-    // indexes into the color palette unconditionally -- so at least one color must be
-    // registered before switchSymmetryGroup(), or that lookup dereferences a null palette.
-    for ( const shape of Object.values( shapes ) ) {
-      for ( const instance of shape.instances ) {
-        colorIndexFor( instance.color );
-      }
+    const key = groupKeyFor( props.symmetryId, props.orientations );
+    // untrack the read: this effect also writes activeGroupKey below, and a tracked self-read
+    // would make it re-run on its own write. Its real dependencies are symmetryId/orientations.
+    if ( key === untrack( activeGroupKey ) )
+      return; // same symmetry as currently active -- nothing to switch
+
+    // Refresh the retained active-group matrices for the label transform (see its comment) --
+    // on every switch, not just first registration, since a switch back to a previously-seen
+    // group still changes which orientation set the current instance indices refer to.
+    orientationMatrices = props.orientations.map( toMatrix4 );
+
+    if ( ! registeredGroupKeys.has( key ) ) {
+      renderer.registerSymmetryGroup( key, orientationMatrices );
+      renderer.registerStyle( key, STYLE_ID );
+      registeredGroupKeys.add( key );
     }
 
-    orientationMatrices = props.orientations.map( toMatrix4 );
-    renderer.registerSymmetryGroup( GROUP_ID, orientationMatrices );
-    renderer.registerStyle( GROUP_ID, STYLE_ID );
-    renderer.switchSymmetryGroup( GROUP_ID );
-    setGroupReady( true );
+    // switchSymmetryGroup builds this group's GPU material (with the correct orientation
+    // uniform) the first time it becomes active, and hides the previously-active group's
+    // meshes. The shape/instance effects below re-register this group's shapes and instances
+    // (keyed off activeGroupKey, which we set here), so the switch and the content refill
+    // happen in lockstep.
+    renderer.switchSymmetryGroup( key );
+    setActiveGroupKey( key );
   } );
 
   createEffect( () => {
-    if ( ! groupReady() )
+    const groupKey = activeGroupKey();
+    if ( ! groupKey )
       return;
     const shapes = props.shapes || {};
+
+    // Shapes are registered per group; different symmetries have different shape sets, and a
+    // switch back to a prior group must not re-register shapes it already has. Track them by
+    // the active group key.
+    let registeredShapeIds = registeredShapeIdsByGroup.get( groupKey );
+    if ( ! registeredShapeIds ) {
+      registeredShapeIds = new Set();
+      registeredShapeIdsByGroup.set( groupKey, registeredShapeIds );
+    }
 
     for ( const [ shapeId, shape ] of Object.entries( shapes ) ) {
       if ( ! registeredShapeIds.has( shapeId ) ) {
@@ -178,8 +233,8 @@ const SymmetryGeometryImpl = ( props ) =>
         // for everything else, so using it unconditionally is always safe. scene.polygons still
         // matters, just not here -- see the outline-visibility effect below.
         const geometry = buildShapeGeometry( shape, true );
-        renderer.registerShape( GROUP_ID, STYLE_ID, shapeId, geometry );
-        renderer.registerOutline( GROUP_ID, shapeId, buildOutlineGeometry( shape ) );
+        renderer.registerShape( groupKey, STYLE_ID, shapeId, geometry );
+        renderer.registerOutline( groupKey, shapeId, buildOutlineGeometry( shape ) );
         shapeCentroidById.set( shapeId, geometry.shapeCentroid );
         registeredShapeIds.add( shapeId );
       }
@@ -195,15 +250,13 @@ const SymmetryGeometryImpl = ( props ) =>
     // addInstance calls was O(N^2) in that shape's instance count, on top of running on every
     // single worker update. replaceShapeInstances does exactly one rewrite regardless of count.
     // This invalidates all previously-returned renderer instanceIds for this group, so
-    // instanceRefById (and lastSelectedById, so removed instances' ids don't linger forever)
-    // are rebuilt from scratch here rather than updated incrementally -- see the comment where
-    // they're declared.
+    // instanceRefById is rebuilt from scratch here rather than updated incrementally -- see the
+    // comment where it's declared.
     const nextInstanceRefById = new Map();
-    const nextSelectedById = new Map();
     const nextMetadataByInstanceId = new Map();
     // Phase 7: labels are rebuilt in lockstep with instances for the same reason -- there is
-    // no cheaper "just this one instance changed" path today (see the Phase 6 comment on
-    // instanceRefById), so every registration cycle recomputes every label from scratch.
+    // no cheaper "just this one instance changed" path for labels today, so every registration
+    // cycle recomputes every label from scratch.
     // Existing CSS2DObjects are reused where the vZome instance id is unchanged (skip DOM
     // element churn on every keystroke-triggered rebuild); ones for ids no longer present are
     // removed from originGroup, which -- per CSS2DObject's own "removed" listener -- also
@@ -213,7 +266,16 @@ const SymmetryGeometryImpl = ( props ) =>
     for ( const [ shapeId, shape ] of Object.entries( shapes ) ) {
       const centroid = shapeCentroidById.get( shapeId );
       const instanceOptionsList = shape.instances.map( instance => {
-        const selected = !! instance.selected;
+        // untrack the `selected` read: this registration effect rewrites every shape's whole
+        // GPU buffer, so it must NOT re-run on a mere selection toggle -- live toggles are
+        // owned by the O(1) highlightSelection hook (registered below), which updates only the
+        // flipped instance. Reading selected here (for anti-flash initial-highlight seeding, see
+        // `highlight` below) without untrack would subscribe this expensive effect to every
+        // instance's selected flag, making every pick rebuild the entire model. untrack still
+        // returns the current value; it only suppresses the dependency. (Structural reads --
+        // instances array identity, position, orientation, color -- stay tracked, so genuine
+        // edits still rebuild.)
+        const selected = untrack( () => !! instance.selected );
         return {
           position: toVector3( instance.position ),
           // scene.jsx uses orientation === -1 to mean "no orientation, use identity"
@@ -222,19 +284,21 @@ const SymmetryGeometryImpl = ( props ) =>
           // indices instead of tolerating them, so clamp here to match.
           orientationIndex: instance.orientation < 0 ? 0 : instance.orientation,
           colorIndex: colorIndexFor( instance.color ),
-          // Set the initial highlight directly (rather than relying on the separate
-          // Phase 6 diff effect below to catch up) so a selected instance never flashes
-          // unhighlighted for a frame right after a rebuild.
+          // Set the initial highlight directly (rather than relying on a later toggle to catch
+          // up) so an already-selected instance never flashes unhighlighted for a frame right
+          // after a structural rebuild. The store's `selected` is the source of truth here.
           highlight: selected ? SELECTED_HIGHLIGHT : 0,
         };
       } );
       const instanceIds = renderer.replaceShapeInstances( STYLE_ID, shapeId, instanceOptionsList );
 
       shape.instances.forEach( ( instance, i ) => {
-        const selected = !! instance.selected;
+        // untrack for the same reason as the initial-highlight read above: this only seeds the
+        // picking metadata (selected field), and must not make this effect a subscriber to
+        // selection toggles.
+        const selected = untrack( () => !! instance.selected );
         const instanceId = instanceIds[ i ];
         nextInstanceRefById.set( instance.id, { shapeId, instanceId } );
-        nextSelectedById.set( instance.id, selected );
         nextMetadataByInstanceId.set( instanceId, {
           id: instance.id, position: instance.position, type: instance.type,
           selected, label: instance.label,
@@ -283,36 +347,34 @@ const SymmetryGeometryImpl = ( props ) =>
     }
 
     instanceRefById = nextInstanceRefById;
-    lastSelectedById = nextSelectedById;
     labelById = nextLabelById;
     metadataByInstanceId = nextMetadataByInstanceId;
   } );
 
-  // Phase 6: selection highlight. Diffs instance.selected against the last-seen value per
-  // vZome instance id and only calls setInstanceHighlight for instances whose selection
-  // actually changed, so toggling a selection stays cheap regardless of model size -- unlike
-  // the instance-registration effect above, which necessarily rebuilds everything on any
-  // props.shapes change (see the comment on instanceRefById). This effect still depends on
-  // (and therefore re-runs whenever) props.shapes changes identity, same as that one, but
-  // its own body only touches the GPU buffers for instances that actually flipped.
-  createEffect( () => {
-    if ( ! groupReady() )
-      return;
-    const shapes = props.shapes || {};
-
-    for ( const shape of Object.values( shapes ) ) {
-      for ( const instance of shape.instances ) {
-        const selected = !! instance.selected;
-        if ( lastSelectedById.get( instance.id ) === selected )
-          continue;
-        const ref = instanceRefById.get( instance.id );
-        if ( ! ref )
-          continue; // shouldn't happen: registration effect above always runs first
-        renderer.setInstanceHighlight( ref.shapeId, ref.instanceId, selected ? SELECTED_HIGHLIGHT : 0 );
-        lastSelectedById.set( instance.id, selected );
-      }
-    }
+  // Selection highlight (O(1) per toggle). Registered with the scene context so scene.jsx's
+  // SELECTION_TOGGLED handler can call this directly with the exact { shapeId, id, selected }
+  // the worker named -- an id-keyed lookup, no scanning. This replaces an earlier reactive
+  // effect that re-scanned every instance of every shape (through slow SolidJS store proxies)
+  // on every toggle just to rediscover the one changed id -- O(N) per single click, and
+  // O(N^2) for select-all/deselect-all (one SELECTION_TOGGLED per manifestation).
+  //
+  // shapeId from the message is a vZome shape id; instanceRefById is keyed by vZome instance
+  // id and already carries the renderer's own shapeId/instanceId, so the message's shapeId is
+  // not needed for the lookup (kept in the signature to match the event payload). instanceRef/
+  // metadata maps are reassigned each registration cycle; this closure reads the current `let`
+  // bindings at call time, so it always sees the latest.
+  const { setSelectionHighlighter } = useScene();
+  setSelectionHighlighter( ( shapeId, id, selected ) => {
+    const ref = instanceRefById.get( id );
+    if ( ! ref )
+      return; // instance not (yet) registered in the active group
+    renderer.setInstanceHighlight( ref.shapeId, ref.instanceId, selected ? SELECTED_HIGHLIGHT : 0 );
+    // Keep pick metadata's `selected` fresh (passed to onDragStart/onDragEnd/onContextMenu).
+    const meta = metadataByInstanceId.get( ref.instanceId );
+    if ( meta )
+      meta.selected = !! selected;
   } );
+  onCleanup( () => setSelectionHighlighter( null ) );
 
   // Phase 4: outline visibility depends on two independent things, both required:
   // - props.polygons: whether this scene's faces are real polygon data at all (a format
@@ -325,7 +387,7 @@ const SymmetryGeometryImpl = ( props ) =>
   // -- its showOutlines is scene.polygons alone -- so this is a real behavior improvement
   // over it, not just parity, per explicit direction.
   createEffect( () => {
-    if ( ! groupReady() )
+    if ( ! activeGroupKey() )
       return;
     renderer.setOutlinesVisible( !! props.polygons && !! cameraState.outlines );
   } );

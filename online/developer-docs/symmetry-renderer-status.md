@@ -883,6 +883,202 @@ palette lookup. It applies the same protection to `pickingId`, which is also a d
 instanced float consumed in a fragment shader. Replacing only the palette conversion in the
 live generated shader removed the perspective artifact completely.
 
+## Stale color palette — colors registered after the material was built
+
+**Status: fixed.** Dragging out a strut in an orbit whose color was not in the initial scene
+(e.g. the turquoise icosahedral orbit) rendered in the wrong color (navy). The color palette
+is a TSL `uniformArray` captured into the material's `colorNode` at build time, and a
+`UniformArrayNode` sizes its GPU uniform buffer *once*, from its backing array's length at
+shader-setup time. `registerColor` had tried to grow the palette by pushing onto the array and
+*reassigning* `colorPalette = uniformArray(...)`, but the already-built material kept
+referencing the original, smaller node — so a color registered after the material was built
+fell outside the old uniform buffer and the shader sampled garbage. Orientations never hit this
+because the full group was registered before the material was built.
+
+Fix: pre-size the backing array to a fixed `COLOR_PALETTE_CAPACITY` (256), build the
+`uniformArray` *once* before the material, and have `registerColor` write into the next slot
+*in place* (no reassignment). `UniformArrayNode.update()` copies the mutated array to the GPU
+every render, so late colors appear on the next frame. `colorCount` (not `colorMatrices.length`,
+now a fixed 256) tracks how many slots are actually registered.
+
+## Stale orientation uniform on symmetry switch — one group per orientation set
+
+**Status: fixed.** Switching symmetry in the editor (icosahedral → octahedral), and loading a
+different design into the *reused* viewer component (`DesignViewer` is reused across designs,
+not remounted — see `index.jsx`), rendered every strut (and the trackball) with the wrong
+orientation. Same root shape as the color bug: `createMaterialForGroup` bakes
+`orientationUniform = uniformArray(group.orientations)` into the material once, and that buffer
+can't be reassigned or resized afterward. But unlike colors, orientation sets swap wholesale
+(and change length — icosahedral 60 vs. octahedral 24), so an in-place resize is impossible; a
+changed set genuinely needs a new material. `symmetry-geometry.jsx` used to register a single
+hardcoded `"default"` group once (gated on a one-shot `groupReady()` signal) and never
+re-register, so `scene.orientations` updates (which *do* flow correctly — `SYMMETRY_CHANGED`,
+`SCENE_RENDERED`, and `showIndexedScene` all funnel through `setScene('orientations', ...)`)
+never reached the shader; the instance effect meanwhile fed the *new* orientation *indices*
+into the *stale* uniform.
+
+Fix uses the renderer's already-existing multi-group machinery (`registerSymmetryGroup` /
+`switchSymmetryGroup`, which builds a fresh per-group material and hides the previous group's
+meshes). `symmetry-geometry.jsx` now derives a group key purely from the orientation matrices'
+content (`groupKeyForOrientations`) — no symmetry name is available on the viewer/preview path,
+and the content *is* the identity, so the same set reuses its group (cheap switch-back) and any
+different set gets a new one. Shape registration became per-group (`registeredShapeIdsByGroup`,
+keyed off the active group key), and the retained `orientationMatrices` used by the label
+transform is refreshed on every switch. All effects now gate on `activeGroupKey()` instead of
+the removed `groupReady()`. This single trigger — the orientations array itself — covers both
+the editor symmetry switch and the viewer whole-design change with one code path.
+
+### Follow-up: content-hash group key collided ACROSS ALGEBRAIC FIELDS
+
+**Status: fixed.** The hash-only key above (`groupKeyForOrientations`) had a latent bug that
+corrupted orientations for any non-golden field: a symmetry's orientation float matrices are its
+real rotations, which are **field-independent** for a given symmetry type (octahedral rotations
+are the same reals — ±1/0 entries — in the golden field, the root-2 field, etc.). So the hash
+**collides across fields**: loading a non-golden-field design whose orientation floats match an
+already-registered (golden) group reused that group — including its field-specific shapes and
+orientation associations — rendering the non-golden design's struts/trackball with the wrong
+orientations.
+
+Fix: propagate a stable, field-aware identity from the worker for vZome files.
+`EditorController.setSymmetryController` now includes `fieldName` (`symmetry.getField().getName()`)
+and `symmetryName` (`symmetrySystem.getName()`) in the `SYMMETRY_CHANGED` payload; `scene.jsx`
+stores `scene.symmetryId = "<field>:<symmetry>"`; `scenecanvas.jsx` passes it to
+`SymmetryGeometry`; and the key derivation became `groupKeyFor(symmetryId, orientations)` —
+`id:<field>:<symmetry>` when present, else the orientation hash. The change is purely additive
+(older/preview messages without the names simply fall back to hashing). **Known residual (by
+design, per direction):** the preview/viewer path carries no symmetry identity and still hashes,
+so two different-field designs with colliding orientation hashes loaded into the same reused
+viewer component could still collide — acceptable because a viewer usually shows one design and
+previews lack the identity anyway.
+
+### Follow-up 2: stale shapes registered against the new group ("orientationIndex out of range")
+
+**Status: fixed.** Once field:symmetry keying was in, creating a new `rootTwo` document *after* a
+golden one crashed (caught) with "orientationIndex out of range for group". Cause: a real
+sequencing gap the field change exposed. `SYMMETRY_CHANGED` fires with the NEW orientations
+*before* the following scene render repopulates `scene.shapes`. So the group-switch effect
+activated the new (rootTwo octahedral, 24 orientations) group while `props.shapes` still held the
+previous design's shapes (golden icosahedral, orientation indices up to 59). The shape-registration
+effect (which depends on both `activeGroupKey` and `props.shapes`) then tried to register those
+stale instances against the new smaller group → `normalizeOrientationIndex` threw. Fix:
+`scene.jsx`'s `SYMMETRY_CHANGED` handler now clears `scene.shapes` (via `setScene('shapes',
+reconcile({}))`) whenever the symmetry actually changes, so the effect has nothing stale to
+register until the new scene arrives. Safe because `SYMMETRY_CHANGED` fires only on load / genuine
+symmetry switch (never routine edits) and is ALWAYS followed by a scene render that repopulates
+shapes — verified for all three paths: newDesign/loadDesign (`reportDefaultScene`) and in-editor
+`setSymmetry.*` (the controller-action case does `doAction` then `reportDefaultScene`).
+
+**Correction — the ACTUAL crash site was the TRACKBALL, not the main scene.** The main-scene
+clear above was necessary but insufficient: the crash reproduced on the little symmetry trackball
+model, which has its OWN `SceneProvider` + `SymmetryGeometry` (classic `components/camera.jsx`,
+inside `CameraControls`) and its OWN scene-loading path (`TRACKBALL_SCENE_LOADED` from
+`fetchTrackballScene`), entirely separate from `SceneChangeListener`. That handler set
+`orientations`/`updateShapes` but never `symmetryId`, so the trackball's SymmetryGeometry keyed by
+the colliding orientation hash and reused the previous symmetry's group when the new trackball
+model rendered (a few seconds later — the prior trackball stays visible until then). Fix: the
+worker's `fetchTrackballScene` now ships `symmetryId: url` (the trackball model resource path,
+which is already a stable per-symmetry identity and differs by default symmetry across fields,
+e.g. golden→`icosahedral-vef.vZome` vs rootTwo→`octahedral-vef.vZome`); `camera.jsx`'s handler
+sets that `symmetryId` and clears stale shapes on change, mirroring the main-scene handler. The
+main scene uses `field:symmetry` and the trackball uses the resource URL — different SceneProvider
+stores, so the two keying schemes never conflict.
+
+### Follow-up 3: trackball rearchitected onto its own worker (removes trackball-specific code)
+
+**Status: done.** The `symmetryId:url` patch stopped the crash but the rootTwo trackball still
+rendered WRONG orientations, because the trackball .vZome templates are themselves `field="golden"`
+(e.g. `octahedral-vef.vZome`) — rendering a golden template through the editor's rootTwo worker/
+scene crosses fields. Fix (long-intended): load the trackball as an ordinary design on its OWN
+dedicated worker, following the `59icosahedra` `ModelWorker` pattern. `TrackballViewer`
+(`app/classic/components/camera.jsx`) reads the current symmetry's `modelResourcePath` client-side
+(`controllerProperty`), turns it into a URL (`resourceUrl`), and remounts a full isolated stack
+per url via `<Show keyed>`: `WorkerProvider → ViewerProvider(url) → SceneProvider →
+SceneChangeListener → InteractionToolProvider/SnapCameraTool → SceneCanvas`. The trackball is thus
+always self-consistent in its own field, with no trackball-specific worker code.
+
+Notable specifics: (1) `preview:false` — the trackball .vZome files have no `.shapes.json` preview
+export, so the preview path 404s; the XML load path is used instead. `SceneChangeListener`
+(mounted in the trackball stack) consumes the `SCENE_RENDERED` it emits to populate shapes/
+orientations. (`loadDesign`/`initializeDesign` also emits `SCENES_DISCOVERED` with the design's
+camera+lighting — see specific (3).) (2) `WorkerProvider` now terminates its `Worker` on
+`onCleanup`, so per-symmetry remounts don't leak workers. (3) `ViewerProvider` gained a
+`config.camera:false` gate (default true) that suppresses driving BOTH the camera tween AND the
+background/lighting from the loaded design on `SCENES_DISCOVERED` — the trackball mirrors the
+MAIN view's rotation and background via its `CameraProvider context={mainCamera}` sync, and the
+trackball .vZome's own saved camera+backgroundColor would otherwise clobber that mirror. The
+trackball URL must be FULLY-QUALIFIED (`new URL(resourceUrl(path), window.location)`), because the
+worker fetches it from a `blob:` origin where a root-relative path 403s (the old worker path
+resolved against `baseURL` for the same reason). **Removed** all worker-side
+trackball code (`fetchTrackballScene`, `connectTrackballScene`, the `trackballs` cache, the
+`connectTrackballScene` action, `wrapper.getTrackballUrl`) and the client `TRACKBALL_SCENE_LOADED`
+subscription + `editor.jsx` passthrough case. The main-scene `field:symmetry` keying stays (still
+needed for the editor's own symmetry switches); only the trackball's dependence on it is gone.
+
+### Follow-up 4: unbatched SYMMETRY_CHANGED registered the group with stale orientations
+
+**Status: fixed.** After all the above, an in-field symmetry switch (icosahedral → octahedral)
+rendered every strut with the wrong (still-icosahedral) rotation. Root cause found via diagnostic
+logging: `scene.jsx`'s `SYMMETRY_CHANGED` handler runs from the worker's async `onmessage`, OUTSIDE
+any reactive context, so its separate `setScene('symmetryId', ...)` and `setScene('orientations',
+...)` calls each flushed effects synchronously and independently. SymmetryGeometry's group-switch
+effect keys on `symmetryId` but *registers the renderer group from `orientations`* — so the
+`setScene('symmetryId', 'golden:octahedral')` fired that effect while `orientations` was still the
+OLD 60 icosahedral matrices, registering the `golden:octahedral` group with icosahedral matrices.
+The subsequent `setScene('orientations', <24 octahedral>)` re-ran the effect, but the group key was
+unchanged and already registered, so `registerSymmetryGroup` was skipped and the material kept the
+wrong matrices. (Confirmed by a `createMaterialForGroup` log showing `group='id:golden:octahedral'
+orientations=60`.) Fix: wrap the handler's three `setScene` calls in solid-js `batch()`, so they
+flush together and the effect sees `symmetryId` and `orientations` consistent in a single run.
+NOTE for future work: every `subscribeFor` handler runs outside a reactive owner, so any handler
+making multiple interdependent `setScene` calls needs `batch()`.
+
+## Slow picking/selection on big models — full-model rebuild per pick
+
+**Status: fixed.** Clicking to select (and especially DeselectAll over many selected struts)
+was sluggish on big models. The GPU pick itself is cheap (one tiny offscreen render + readback,
+only on pointerdown). The cost was downstream: `scene.jsx`'s `SELECTION_TOGGLED` handler did a
+full-store replace — `setScene({ ...scene, shapes })` with freshly-spread shapes/shape/instances
+— changing every store identity on every pick. That re-triggered `SymmetryGeometry`'s instance-
+registration effect, which rewrites *every* shape's whole GPU instance buffer (`replaceShapeInstances`)
+and recomputes every label. The worker emits one `SELECTION_TOGGLED` per manifestation
+(`glowChanged`), so DeselectAll of N struts was N full-model rebuilds.
+
+The renderer already had a cheap path (the Phase 6 highlight effect updates only flipped
+instances), but two things defeated it: (1) the coarse store write changed `shapes` identity, so
+every `props.shapes` effect re-ran; (2) the registration effect *reactively read* `instance.selected`
+for every instance (for anti-flash initial-highlight seeding), so even a surgical write would
+re-trigger it. Fix, both parts: (1) `scene.jsx` now does a surgical nested
+`setScene('shapes', shapeId, 'instances', index, 'selected', selected)`; (2) the registration
+effect's two `instance.selected` reads are wrapped in `untrack()`, so it no longer subscribes to
+selection — only the Phase 6 effect does. The Phase 6 effect additionally patches
+`metadataByInstanceId[...].selected` so pick metadata (passed to onDragStart/onDragEnd/onContextMenu)
+stays fresh without the registration effect re-running. Net: a selection toggle now updates one
+GPU highlight, not the whole model.
+
+### Follow-up: O(1) per-toggle highlight (removing the remaining per-message scan)
+
+**Status: fixed.** After the above, selection was still ~1s and *constant* across select,
+unselect, select-all, deselect-all on big models — the tell that the cost was a per-action full
+scan, not a per-instance rebuild. Two full scans ran **per `SELECTION_TOGGLED` message** (the
+worker sends one per manifestation): (1) `scene.jsx`'s handler did a `findIndex` over the shape's
+instances; (2) the Phase 6 highlight effect was a `createEffect` that scanned *every* instance of
+*every* shape — through slow SolidJS store proxies — just to rediscover the id the message already
+named. Single click = 1 message × O(N); select-all = N messages × O(N) = O(N²).
+
+Fix: replaced the scanning Phase 6 effect with an **imperative id-keyed highlight hook**.
+`SceneProvider` exposes `setSelectionHighlighter`/`highlightSelection`; `SymmetryGeometry`
+registers a callback (`onCleanup` unregisters) that does an O(1) `instanceRefById.get(id)` lookup
+and calls `renderer.setInstanceHighlight` directly (plus refreshes `metadataByInstanceId[...].selected`).
+`scene.jsx`'s `SELECTION_TOGGLED` handler calls `highlightSelection(shapeId, id, selected)` before
+the surgical store write. The store write still happens (correctness for ShapedGeometry / context
+menu / pick metadata), but no longer drives highlighting. The registration effect's untracked
+`selected` read still seeds initial highlight on structural rebuilds from the store (source of
+truth), so a toggle arriving before a rebuild flush is not lost. Removed `lastSelectedById` and
+`nextSelectedById` (the old diff baseline). Single-click highlight is now O(1). **Remaining
+residual (not addressed):** the `findIndex` in `scene.jsx`'s handler is still O(instances in that
+shape), and select-all/deselect-all is still N messages (O(N) round-trips) — see the deferred
+worker-batching option in the selection-highlight memory.
+
 ## Debugging technique notes for whoever continues this
 
 The Phase 3 debugging session (item 6 above especially) went through a long sequence of

@@ -131,35 +131,11 @@ const clientEvents = report =>
     xmlParsed, scenesDiscovered, snapshotCaptured, propertyChanged, errorReported, textExported, buildPlaneSelected, };
 }
 
-const trackballs = {};
-
-const fetchTrackballScene = ( url, report, polygons ) =>
-{
-  const reportTrackballScene = scene => report( { type: 'TRACKBALL_SCENE_LOADED', payload: scene } );
-  const cachedScene = trackballs[ url ];
-  if ( !!cachedScene ) {
-    reportTrackballScene( cachedScene );
-    return;
-  }
-  Promise.all( [ importLegacy(), fetchUrlText( new URL( `/app/classic/resources/${url}`, baseURL ) ) ] )
-    .then( async ([ legacy, xml ]) => {
-      const trackballDesign = await legacy .loadDesign( xml, false, polygons, clientEvents( ()=>{} ) );
-      const scene = prepareSceneResponse( trackballDesign, DEFAULT_SNAPSHOT );
-      trackballs[ url ] = scene;
-      reportTrackballScene( scene );
-    } );
-}
-
-const connectTrackballScene = ( report, polygons ) =>
-{
-  // console.log( "call", uniqueId );
-  const trackballUpdater = () => fetchTrackballScene( design.wrapper .getTrackballUrl(), report, polygons );
-  trackballUpdater();
-  design.wrapper.controller .addPropertyListener( { propertyChange: pce =>
-  {
-    if ( 'symmetry' === pce.getPropertyName() ) { trackballUpdater(); }
-  } });
-}
+// NOTE: the trackball model is no longer rendered through this (editor) worker. The classic
+// editor now loads each symmetry's trackball .vZome as an ordinary design on its OWN dedicated
+// worker (see TrackballViewer in app/classic/components/camera.jsx), so all the former
+// trackball plumbing here -- fetchTrackballScene, connectTrackballScene, the trackballs cache,
+// the 'connectTrackballScene' action, and wrapper.getTrackballUrl -- was removed.
 
 const createDesign = async ( report, fieldName ) =>
 {
@@ -563,10 +539,6 @@ onmessage = ({ data }) =>
     {
       const { controllerPath, action, parameters, polygons } = payload;
       try {
-        if ( action === 'connectTrackballScene' ) {
-          connectTrackballScene( sendToClient, polygons );
-          return;
-        }
         if ( action === 'shareToGitHub' ) {
           const { target, config, data } = parameters;
           shareToGitHub( target, config, data, sendToClient );
