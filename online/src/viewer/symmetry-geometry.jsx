@@ -19,15 +19,21 @@ const STYLE_ID = "default";
 // the material exists, so a changed orientation set (icosahedral -> octahedral in the editor,
 // or loading a different design into the SAME reused viewer component -- DesignViewer is reused
 // across designs, not remounted, see index.jsx) requires switching to a DIFFERENT group keyed
-// to those orientations, not mutating the current one. There is no symmetry name available on
-// the viewer/preview path (only the editor's SYMMETRY_CHANGED carries a resourcePath), so the
-// group key is derived purely from the orientation matrices themselves: the same orientation
-// set always yields the same key (so an editor switch back to a prior symmetry reuses that
-// group cheaply, and the editor's duplicate SCENE_RENDERED-then-SYMMETRY_CHANGED sets of the
-// same array collapse to one), while any different set yields a different key. This is the one
-// value that changes on precisely -- and only -- a real symmetry change, in either scenario.
-const groupKeyForOrientations = ( orientations ) =>
+// to that symmetry, not mutating the current one.
+//
+// Preferred key: props.symmetryId = "<field>:<symmetry>", propagated from the worker for vZome
+// files (SYMMETRY_CHANGED -> scene.jsx). This is STABLE and, crucially, field-aware.
+//
+// Fallback key (previews/viewer, which carry no symmetry identity): hash the orientation float
+// matrices. This works within one field but MUST NOT be used to distinguish fields: a symmetry's
+// rotation matrices are the same real numbers in every algebraic field (octahedral rotations are
+// octahedral rotations), so an orientation hash COLLIDES across fields -- which reused one field's
+// group and its field-specific shapes for another, corrupting non-golden-field orientations. That
+// is exactly why vZome files now send field:symmetry instead of relying on the hash.
+const hashOrientations = ( orientations ) =>
   `g${orientations.length}:` + orientations.map( flat => flat.join( ',' ) ).join( ';' );
+const groupKeyFor = ( symmetryId, orientations ) =>
+  symmetryId ? `id:${symmetryId}` : hashOrientations( orientations );
 
 // ShapedGeometry's InstancedShape (geometry.jsx) shows selection as a binary emissive
 // swap -- "#c8c8c8" or "black" -- not a graded intensity. symmetry-renderer.js's
@@ -46,11 +52,11 @@ const toMatrix4 = flat => new Matrix4().set( ...flat );
 // accepts directly in geometry.jsx's Instance), but the renderer reads position.x/y/z.
 const toVector3 = ( [ x, y, z ] ) => new Vector3( x, y, z );
 
-// Rendering-only replacement for ShapedGeometry, built on createSymmetryRenderer's
-// GPU-instanced meshes instead of one Three.js object per ball/strut. Selection highlight
-// (Phase 6) and labels (Phase 7) are implemented; no picking/interaction (Phase 5) --
-// deliberately deferred, this component is meant for viewer-only (non-editing) use cases
-// for now, see symmetry-renderer-plan.md and symmetry-renderer-status.md.
+// Replacement for ShapedGeometry, built on createSymmetryRenderer's GPU-instanced meshes instead
+// of one Three.js object per ball/strut. Fully drives the classic editor (not viewer-only):
+// GPU picking + interaction (Phase 5, see pickAt and the pointer handlers below), selection
+// highlight (Phase 6), and labels (Phase 7) are all implemented. See symmetry-renderer-plan.md
+// and symmetry-renderer-status.md.
 export const SymmetryGeometry = ( props ) =>
 {
   const { originGroupReady } = useWebXRClient();
@@ -79,7 +85,7 @@ const SymmetryGeometryImpl = ( props ) =>
   const renderer = createSymmetryRenderer( props.parent );
 
   // The renderer group key currently switched-to (null until the first group is registered).
-  // Its identity is what every downstream effect keys off; see groupKeyForOrientations.
+  // Its identity is what every downstream effect keys off; see groupKeyFor.
   const [ activeGroupKey, setActiveGroupKey ] = createSignal( null );
   // Which renderer groups have already been registered (registerSymmetryGroup called once per
   // key). switchSymmetryGroup itself is idempotent, but registerSymmetryGroup throws on a
@@ -157,19 +163,20 @@ const SymmetryGeometryImpl = ( props ) =>
     renderer.originGroup.matrix.copy( m );
   } );
 
-  // Group-registration / symmetry-switch effect. Re-runs whenever props.orientations changes
-  // (the single value that changes on -- and only on -- a real symmetry change; see
-  // groupKeyForOrientations). On the FIRST orientation set, and on every change to a
-  // not-yet-seen set (editor symmetry switch, or a different design loaded into this reused
-  // component), it registers a new renderer group keyed to those orientations and switches to
-  // it; switching back to a previously-seen set reuses that group with no rebuild.
+  // Group-registration / symmetry-switch effect. Re-runs whenever props.symmetryId or
+  // props.orientations changes (the values that change on -- and only on -- a real symmetry
+  // change; see groupKeyFor). On the FIRST symmetry, and on every change to a not-yet-seen one
+  // (editor symmetry switch, or a different design loaded into this reused component), it
+  // registers a new renderer group and switches to it; switching back to a previously-seen one
+  // reuses that group with no rebuild. scene.jsx writes symmetryId then orientations in the same
+  // (batched) event handler, so both are consistent by the time this effect flushes.
   createEffect( () => {
     if ( ! props.orientations || props.orientations.length === 0 )
       return;
 
-    const key = groupKeyForOrientations( props.orientations );
+    const key = groupKeyFor( props.symmetryId, props.orientations );
     // untrack the read: this effect also writes activeGroupKey below, and a tracked self-read
-    // would make it re-run on its own write. Its only real dependency is props.orientations.
+    // would make it re-run on its own write. Its real dependencies are symmetryId/orientations.
     if ( key === untrack( activeGroupKey ) )
       return; // same symmetry as currently active -- nothing to switch
 

@@ -153,7 +153,6 @@ const EditorProvider = props =>
       case 'INSTANCE_ADDED':
       case 'INSTANCE_REMOVED':
       case 'FETCH_STARTED':
-      case 'TRACKBALL_SCENE_LOADED':
       case 'CAMERA_SNAPPED':
       case 'SHAPE_DEFINED':
         // TODO: do these require any state changes?

@@ -21,12 +21,10 @@ const createControllers = ( design, core, renderingChanges, clientEvents ) =>
 
   const wrapper = new ControllerWrapper( '', '', controller, clientEvents );
 
-  // hacky, for trackball model
-  wrapper.getTrackballUrl = () => {
-    const symm = controller .getProperty( 'symmetry' );
-    const symmController = strutBuilder .getSubController( `symmetry.${symm}` );
-    return symmController .getProperty( 'modelResourcePath' );
-  }
+  // (The trackball model is now loaded as an ordinary design on its own worker by the classic
+  // editor -- see TrackballViewer in app/classic/components/camera.jsx -- so the former
+  // wrapper.getTrackballUrl helper was removed. The client reads the symmetry controller's
+  // modelResourcePath property directly instead.)
 
   // hacky, for preview strut
   wrapper.startPreviewStrut = ( ballId, direction ) => {

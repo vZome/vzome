@@ -10,7 +10,9 @@ const ViewerContext = createContext( { scene: ()=> { console.log( 'NO ViewerProv
 
 const ViewerProvider = ( props ) =>
 {
-  const { url, labels: showLabels } = props.config || {};
+  // config.camera (default true): whether this viewer drives the camera AND background from the
+  // loaded design on SCENES_DISCOVERED. false for the trackball, which mirrors the main view.
+  const { url, labels: showLabels, camera: driveViewFromDesign = true } = props.config || {};
   const [ reload, setReload ] = createSignal( true );
   const [ scenes, setScenes ] = createStore( [] );
   const [ source, setSource ] = createStore( {} );
@@ -66,12 +68,18 @@ const ViewerProvider = ( props ) =>
     setWaiting( false );
     const newScenes = scenes .map( scene => ({ ...scene, title: decodeEntities( scene.title ), content: decodeEntities( scene.content || ' ' ) }));
     setScenes( newScenes );
-    if ( !! lighting ) { // lighting only present in loaded designs
+    // config.camera:false means this viewer must NOT drive the camera OR the background from the
+    // loaded design -- both are owned externally. Used by the classic editor's trackball viewer,
+    // whose camera mirrors the MAIN view and whose background is synced from the main scene (both
+    // via CameraProvider context). Without this the trackball design's own saved camera/background
+    // would clobber that mirror (loadDesign/initializeDesign always emits SCENES_DISCOVERED with
+    // the design's lighting). Matches the same `camera:false` flag honored by showIndexedScene.
+    if ( !! lighting && driveViewFromDesign ) { // lighting only present in loaded designs
       const { backgroundColor } = lighting;
       setLighting( { ...state.lighting, backgroundColor } ); // no per-scene lighting yet
     }
     const camera = scenes[ 0 ].camera;
-    if ( !! camera ) // camera only present in loaded designs
+    if ( !! camera && driveViewFromDesign ) // camera only present in loaded designs
       tweenCamera( camera );
   });
   

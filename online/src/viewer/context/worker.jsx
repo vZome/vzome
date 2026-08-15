@@ -1,5 +1,5 @@
 
-import { createContext, createSignal, useContext } from "solid-js";
+import { createContext, createSignal, onCleanup, useContext } from "solid-js";
 import { generateUUID } from "../util/actions.js";
 
 const createWorker = () =>
@@ -93,7 +93,16 @@ const createWorker = () =>
     subscribers .forEach( subscriber => subscriber .onWorkerError( message ) );
   }
 
-  return { postMessage, subscribe, subscribeFor, unsubscribe, postRequest };
+  // Terminate the underlying Worker and drop subscribers. Important now that WorkerProvider can be
+  // mounted/unmounted repeatedly (the classic editor's trackball remounts a fresh worker per
+  // symmetry via <Show keyed> -- see TrackballViewer): without this, each remount would leak a
+  // live Web Worker. Safe if the worker never resolved (nothing to terminate).
+  const terminate = () => {
+    workerPromise .then( worker => worker .terminate() ) .catch( () => {} );
+    subscribers .length = 0;
+  };
+
+  return { postMessage, subscribe, subscribeFor, unsubscribe, postRequest, terminate };
 }
 
 const stubContext = {
@@ -112,6 +121,9 @@ const WorkerProvider = ( props ) =>
 
   // make sure we don't request any properties or actions too early
   workerClient .subscribeFor( 'CONTROLLER_CREATED', () => setReady( true ) );
+
+  // Release the Web Worker when this provider unmounts (e.g. the trackball's per-symmetry remount).
+  onCleanup( () => workerClient .terminate() );
   
   return (
     <WorkerContext.Provider value={ { ...workerClient, isWorkerReady } }>
