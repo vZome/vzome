@@ -7,7 +7,16 @@ import { useCamera } from "./camera.jsx";
 import { encodeEntities, selectSnapshot } from "../util/actions.js";
 import { useViewer } from "./viewer.jsx";
 
-const SceneContext = createContext( { scene: ()=> { console.log( 'NO SceneProvider' ); } } );
+// Stub used when there is no SceneProvider ancestor (e.g. the gltf-viewer / vrml-viewer web
+// components, which mount SceneViewer -> SceneCanvas -> SymmetryGeometry directly under only a
+// CameraProvider). SymmetryGeometry reads setSelectionHighlighter from here, so it must exist as a
+// no-op; without it, `setSelectionHighlighter is not a function` throws on mount. (Those viewers
+// have no vZome shapes anyway -- their content is added to the three.js scene via children3d.)
+const SceneContext = createContext( {
+  scene: () => { console.log( 'NO SceneProvider' ); },
+  setSelectionHighlighter: () => {},
+  highlightSelection: () => {},
+} );
 
 const SceneProvider = ( props ) =>
 {
