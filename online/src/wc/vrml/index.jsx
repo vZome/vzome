@@ -31,7 +31,7 @@ const renderVrmlViewer = ( container, src, config ) =>
   {
     return (
       <CameraProvider distance={preTweenDistance} lighting={lighting} scale={0.1} >
-        <SceneViewer config={ { ...config, allowFullViewport: true, showOutlines: false } }
+        <SceneViewer config={ { ...config, allowFullViewport: true, showOutlines: false, symmetryRenderer: false } }
             componentRoot={container}
             children3d={ <VrmlModel url={src()} tweening={ { duration: 800 } } camera={ postTweenCamera } /> }
             height="100%" width="100%" >

@@ -18,7 +18,7 @@ const renderGlTFViewer = ( container, config ) =>
   {
     return (
       <CameraProvider scale={0.1}>
-        <SceneViewer config={ { ...config, allowFullViewport: true, showOutlines: false } }
+        <SceneViewer config={ { ...config, allowFullViewport: true, showOutlines: false, symmetryRenderer: false } }
             componentRoot={container}
             children3d={ 
 
