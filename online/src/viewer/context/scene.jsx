@@ -214,7 +214,7 @@ const SceneChangeListener = () =>
   const { scene, updateShapes, addShape, setScene, highlightSelection } = useScene();
   const { subscribeFor } = useWorkerClient();
 
-  subscribeFor( 'SYMMETRY_CHANGED', ( { orientations, fieldName, symmetryName } ) => {
+  subscribeFor( 'SYMMETRY_CHANGED', ( { orientations, fieldName, symmetryName, embedding } ) => {
     // fieldName + symmetryName (present for vZome files; see EditorController.setSymmetryController)
     // give SymmetryGeometry a STABLE renderer-group key. Keying on the orientation float matrices
     // instead collides across algebraic fields -- the symmetry rotations are the same reals in
@@ -251,6 +251,12 @@ const SceneChangeListener = () =>
       if ( nextSymmetryId )
         setScene( 'symmetryId', nextSymmetryId );
       setScene( 'orientations', orientations );
+      // The embedding is symmetry-system-specific (e.g. heptagon antiprism is skewed, its
+      // octahedral system is trivial), so update it on a switch. Without this the embedding
+      // only refreshed on SCENE_RENDERED, leaving the new symmetry rendered with the old
+      // transform. Undefined on the viewer/preview path, which never fires SYMMETRY_CHANGED.
+      if ( embedding )
+        setScene( 'embedding', reconcile( embedding ) );
     } );
   });
 
