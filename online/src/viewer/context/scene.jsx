@@ -51,6 +51,18 @@ const SceneProvider = ( props ) =>
     }
   }
 
+  // Clear all design-derived scene state, for a component that loads a SUCCESSION of designs into
+  // ONE reused SceneProvider (the classic editor's trackball, which now keeps one long-lived
+  // worker/scene and reloads a new trackball design on every symmetry/field switch, instead of
+  // remounting). updateShapes only empties the INSTANCES of shapes absent from the next scene; it
+  // leaves stale shape ENTRIES, and never touches orientations/symmetryId. That's fine within one
+  // design, but across a field switch the shape set, orientation set, and symmetryId all differ,
+  // so the next design must start from a truly empty store: otherwise SymmetryGeometry would keep
+  // the previous field's shapes, and -- because its group-switch effect early-returns when the key
+  // is unchanged -- could fail to switch groups. reconcile('') replaces the whole store; clearing
+  // symmetryId here guarantees the next design's symmetryId reads as a change.
+  const resetScene = () => setScene( reconcile( {} ) );
+
   // Optional imperative selection-highlight hook. SymmetryGeometry registers a callback here
   // (id, selected) so the SELECTION_TOGGLED handler can update the one flipped instance's GPU
   // highlight in O(1) -- an id-keyed lookup inside the renderer -- instead of the previous
@@ -65,7 +77,7 @@ const SceneProvider = ( props ) =>
   const setSelectionHighlighter = fn => { selectionHighlighter = fn; };
   const highlightSelection = ( shapeId, id, selected ) => selectionHighlighter?.( shapeId, id, selected );
 
-  const apiObject = { scene, setScene, labels, updateShapes, addShape, useViewer, setSelectionHighlighter, highlightSelection, }
+  const apiObject = { scene, setScene, labels, updateShapes, addShape, resetScene, useViewer, setSelectionHighlighter, highlightSelection, }
 
   return (
     <SceneContext.Provider value={ apiObject }>
