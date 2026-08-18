@@ -67,7 +67,10 @@ public class JsonMapper
     
     public ObjectNode getShapeNode( Polyhedron shape )
     {
-        String shapeId = shape .getGuid() .toString();
+        // Content-derived shape key (see Polyhedron.shapeKey): dedups content-identical shapes to
+        // one definition even when realized as separate objects (e.g. across web workers), which
+        // the old per-object guid could not.
+        String shapeId = shape .getShapeKey();
         if ( ! this .shapeIds .contains( shapeId ) )
         {
             this .shapeIds .add( shapeId );
@@ -79,7 +82,7 @@ public class JsonMapper
                 return node;                
             } else {
                 ObjectNode node = this .objectMapper .createObjectNode();
-                node .put( "id", shape .getGuid() .toString() );
+                node .put( "id", shape .getShapeKey() );
                 String name = shape .getName();
                 if ( name == "ball" )
                     node .put( "name", name );
@@ -135,7 +138,9 @@ public class JsonMapper
         try {
             Manifestation man = rm .getManifestation();
             Polyhedron shape = rm .getShape();
-            String shapeId = shape .getGuid() .toString();
+            // Must match the "id" written in getShapeNode above -- both are the content-derived
+            // shape key now, so an instance's "shape" reference resolves to its shape definition.
+            String shapeId = shape .getShapeKey();
             if ( man instanceof Strut )
             {
 

@@ -98,7 +98,7 @@ namespace com.vzome.core.exporters {
             for(let index=this.mModel.iterator();index.hasNext();) {
                 let rm = index.next();
                 {
-                    const shapeName: string = "S" + /* replaceAll */rm.getShapeId().toString().replace(new RegExp("-", 'g'),"");
+                    const shapeName: string = "S" + /* replaceAll */rm.getShapeKey().replace(new RegExp("[^A-Za-z0-9_]", 'g'),"_");
                     if (!shapes.contains(shapeName)){
                         shapes.add(shapeName);
                         this.exportShape(shapeName, rm.getShape());

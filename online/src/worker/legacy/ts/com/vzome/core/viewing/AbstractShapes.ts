@@ -107,6 +107,7 @@ namespace com.vzome.core.viewing {
             if (this.mConnectorGeometry == null){
                 this.mConnectorGeometry = this.buildConnectorShape(this.mPkgName);
                 this.mConnectorGeometry.setName("ball");
+                this.mConnectorGeometry.setShapeKey(this.mSymmetry.getName() + ":" + this.mPkgName + ":ball");
             }
             return this.mConnectorGeometry;
         }
@@ -134,6 +135,7 @@ namespace com.vzome.core.viewing {
                     lengthShape.setName(orbit.getName() + strutShapesByLength.size());
                     lengthShape.setOrbit(orbit);
                     lengthShape.setLength(orbit.getLengthInUnits(length));
+                    lengthShape.setShapeKey(this.mSymmetry.getName() + ":" + orbit.getName() + ":" + length.toString(com.vzome.core.algebra.AlgebraicField.DEFAULT_FORMAT));
                 }
             }
             return lengthShape;
@@ -211,6 +213,7 @@ namespace com.vzome.core.viewing {
             let shape: com.vzome.core.math.Polyhedron = map3.get(canonicalVertices);
             if (shape == null){
                 shape = this.makePanelPolyhedron(canonicalVertices, oneSidedPanels);
+                if (shape != null)shape.setShapeKey(shape.deriveGeometricKey());
                 map3.put(canonicalVertices, shape);
             }
             return shape;

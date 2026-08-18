@@ -130,6 +130,15 @@ public class RenderedManifestation implements RenderedObject
     {
         return this .mShape .getGuid();
     }
+
+    // The stable, content-derived shape key (see Polyhedron.shapeKey), which is what scene
+    // serialization and the web client key shapes by -- distinct from getShapeId()/getGuid(),
+    // which is per-object identity that only doubles as shape identity on the desktop via
+    // object reuse. Callers that dedup/reference shapes should use this.
+    public String getShapeKey()
+    {
+        return this .mShape .getShapeKey();
+    }
     
     @JsonIgnore
     public Polyhedron getShape()

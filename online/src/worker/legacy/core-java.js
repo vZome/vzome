@@ -2547,6 +2547,9 @@ export var com;
                     getShapeId() {
                         return this.mShape.getGuid();
                     }
+                    getShapeKey() {
+                        return this.mShape.getShapeKey();
+                    }
                     getShape() {
                         return this.mShape;
                     }
@@ -3328,6 +3331,10 @@ export var com;
                             this.orbits = new com.vzome.core.math.symmetry.OrbitSet(symmetry);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {
                             const symmetry = this.getSymmetry();
                             const field = symmetry.getField();
@@ -3349,14 +3356,6 @@ export var com;
                             embedding[14] = 0.0;
                             embedding[15] = 1.0;
                             return embedding;
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
@@ -3411,6 +3410,10 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
                         /**
                          *
@@ -3817,6 +3820,7 @@ export var com;
                         if (this.mConnectorGeometry == null) {
                             this.mConnectorGeometry = this.buildConnectorShape(this.mPkgName);
                             this.mConnectorGeometry.setName("ball");
+                            this.mConnectorGeometry.setShapeKey(this.mSymmetry.getName() + ":" + this.mPkgName + ":ball");
                         }
                         return this.mConnectorGeometry;
                     }
@@ -3841,6 +3845,7 @@ export var com;
                                 lengthShape.setName(orbit.getName() + strutShapesByLength.size());
                                 lengthShape.setOrbit(orbit);
                                 lengthShape.setLength(orbit.getLengthInUnits(length));
+                                lengthShape.setShapeKey(this.mSymmetry.getName() + ":" + orbit.getName() + ":" + length.toString(com.vzome.core.algebra.AlgebraicField.DEFAULT_FORMAT));
                             }
                         }
                         return lengthShape;
@@ -3920,6 +3925,8 @@ export var com;
                         let shape = map3.get(canonicalVertices);
                         if (shape == null) {
                             shape = this.makePanelPolyhedron(canonicalVertices, oneSidedPanels);
+                            if (shape != null)
+                                shape.setShapeKey(shape.deriveGeometricKey());
                             map3.put(canonicalVertices, shape);
                         }
                         return shape;
@@ -5289,6 +5296,7 @@ export var com;
                         this.isEvil = false;
                         this.__isPanel = false;
                         this.guid = java.util.UUID.randomUUID();
+                        this.shapeKey = this.guid.toString();
                         if (this.name === undefined) {
                             this.name = null;
                         }
@@ -5333,6 +5341,7 @@ export var com;
                             }
                             this.evilTwin.isEvil = true;
                             this.evilTwin.guid = java.util.UUID.randomUUID();
+                            this.evilTwin.shapeKey = this.shapeKey + ":evil";
                             this.evilTwin.m_vertexList = (new java.util.ArrayList());
                             for (let index = this.m_vertexList.iterator(); index.hasNext();) {
                                 let vertex = index.next();
@@ -5521,6 +5530,71 @@ export var com;
                     }
                     getGuid() {
                         return this.guid;
+                    }
+                    /**
+                     * The stable, content-derived shape key used as the shape identity when serializing a scene
+                     * to a client, and (on the web) as the geometry cache/instancing key. See the shapeKey field
+                     * comment for why this is distinct from getGuid(). Defaults to the guid string until a factory
+                     * (AbstractShapes) or a future user-shape realization path sets a content-derived key.
+                     * @return {string}
+                     */
+                    getShapeKey() {
+                        return this.shapeKey;
+                    }
+                    /**
+                     * Set a readable, content-derived shape key. Used by AbstractShapes for catalog shapes, e.g.
+                     * "<symmetry>:<orbit>:<length>" (strut) or "<symmetry>:<pkg>:ball" (connector). Must be a pure
+                     * function of the shape's DEFINITION so that any worker realizing the same shape computes the
+                     * same key; do NOT fold in design/session/instance identity.
+                     * @param {string} shapeKey
+                     */
+                    setShapeKey(shapeKey) {
+                        this.shapeKey = shapeKey;
+                    }
+                    /**
+                     * Content hash of this shape's geometry, for shapes with no short readable key (panels; and,
+                     * in future, user-defined shapes assembled from a selected panel collection -- a per-design
+                     * feature not yet implemented). Deterministic across workers because it depends only on the
+                     * canonicalized vertex/face definition, matching the fields equals()/hashCode() already use.
+                     *
+                     * NOTE: intentionally NOT wired in yet for the future user-shape path -- that path also needs
+                     * a per-design shape registry (to give the shape a home and round-trip through the design XML),
+                     * which is separate work. This method is provided so that, when that feature lands, its
+                     * realization code has a ready, worker-agnostic way to derive the same key everywhere. Panels
+                     * MAY adopt it now (see AbstractShapes.getPanelShape); struts/connectors deliberately do not,
+                     * to keep their readable keys.
+                     * @return {string}
+                     */
+                    deriveGeometricKey() {
+                        const buf = new java.lang.StringBuilder();
+                        buf.append(this.isEvil ? "e:" : "s:");
+                        for (let index = this.m_vertexList.iterator(); index.hasNext();) {
+                            let v = index.next();
+                            buf.append(v.toString()).append(';');
+                        }
+                        buf.append('|');
+                        const faceStrings = (new java.util.ArrayList());
+                        for (let index = this.m_faces.iterator(); index.hasNext();) {
+                            let face = index.next();
+                            faceStrings.add(face.toString());
+                        }
+                        java.util.Collections.sort(faceStrings);
+                        for (let index = faceStrings.iterator(); index.hasNext();) {
+                            let f = index.next();
+                            buf.append(f).append(';');
+                        }
+                        const FNV_OFFSET = -3750763034362895579;
+                        const FNV_PRIME = 1099511628211;
+                        const s = buf.toString();
+                        let hash = FNV_OFFSET;
+                        for (let i = 0; i < s.length; i++) {
+                            {
+                                hash ^= (s.charAt(i)).charCodeAt(0);
+                                hash *= FNV_PRIME;
+                            }
+                            ;
+                        }
+                        return "u" + javaemul.internal.LongHelper.toHexString(hash);
                     }
                     getTriangleFaces() {
                         const result = (new java.util.ArrayList());
@@ -16167,6 +16241,10 @@ export var com;
                         this.setStyle(styleName);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getOrientations$() {
+                        return this.getOrientations(false);
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getEmbedding() {
                         const symmetry = this.getSymmetry();
                         const field = symmetry.getField();
@@ -16188,14 +16266,6 @@ export var com;
                         embedding[14] = 0.0;
                         embedding[15] = 1.0;
                         return embedding;
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getOrientations$() {
-                        return this.getOrientations(false);
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getZone(orbit, orientation) {
-                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getOrientations(rowMajor) {
@@ -16271,6 +16341,10 @@ export var com;
                         }
                         else
                             throw new Error('invalid overload');
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getZone(orbit, orientation) {
+                        return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                     }
                     static LOGGER_$LI$() { if (SymmetrySystem.LOGGER == null) {
                         SymmetrySystem.LOGGER = java.util.logging.Logger.getLogger("com.vzome.core.editor");
@@ -36431,7 +36505,7 @@ export var com;
                         for (let index = this.mModel.iterator(); index.hasNext();) {
                             let rm = index.next();
                             {
-                                const shapeName = "S" + /* replaceAll */ rm.getShapeId().toString().replace(new RegExp("-", 'g'), "");
+                                const shapeName = "S" + /* replaceAll */ rm.getShapeKey().replace(new RegExp("[^A-Za-z0-9_]", 'g'), "_");
                                 if (!shapes.contains(shapeName)) {
                                     shapes.add(shapeName);
                                     this.exportShape(shapeName, rm.getShape());
@@ -47745,6 +47819,10 @@ export var com;
                             this.__parent = __parent;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getOrientations$() {
+                            return this.getOrientations(false);
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getEmbedding() {
                             const symmetry = this.getSymmetry();
                             const field = symmetry.getField();
@@ -47766,14 +47844,6 @@ export var com;
                             embedding[14] = 0.0;
                             embedding[15] = 1.0;
                             return embedding;
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getOrientations$() {
-                            return this.getOrientations(false);
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getZone(orbit, orientation) {
-                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
@@ -47822,6 +47892,10 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getZone(orbit, orientation) {
+                            return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
                         }
                         /**
                          *
