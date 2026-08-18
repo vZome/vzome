@@ -12,6 +12,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vzome.core.algebra.AlgebraicField;
 import com.vzome.core.algebra.AlgebraicMatrix;
 import com.vzome.core.algebra.AlgebraicNumber;
 import com.vzome.core.algebra.AlgebraicVector;
@@ -125,6 +126,9 @@ public abstract class AbstractShapes implements Shapes
         if ( mConnectorGeometry == null ) {
             mConnectorGeometry = buildConnectorShape( mPkgName );
             mConnectorGeometry .setName( "ball" );
+            // Readable, content-derived shape key (see Polyhedron.shapeKey). Same identifying
+            // inputs that make this the one cached connector for this symmetry+package.
+            mConnectorGeometry .setShapeKey( mSymmetry .getName() + ":" + mPkgName + ":ball" );
         }
         return mConnectorGeometry;
     }
@@ -175,8 +179,17 @@ public abstract class AbstractShapes implements Shapes
             if ( lengthShape != null ) {
                 lengthShape .setName( orbit .getName() + strutShapesByLength .size() );
                 lengthShape .setOrbit( orbit );
-                // reproduce the calculation in LengthModel .setActualLength()                
+                // reproduce the calculation in LengthModel .setActualLength()
                 lengthShape .setLength( orbit .getLengthInUnits( length ) );
+                // Readable, content-derived shape key (see Polyhedron.shapeKey), built from the
+                // same (symmetry, orbit, length) that key this strut shape in the cache above.
+                // Call toString(int) explicitly, not the no-arg toString(): AlgebraicNumber
+                // overloads toString, and JSweet's overload resolution binds the no-arg form to
+                // toString(int) and fails to transpile. DEFAULT_FORMAT reproduces exactly what the
+                // no-arg toString() returns (it just delegates to toString(DEFAULT_FORMAT)), so the
+                // key is identical on desktop and web.
+                lengthShape .setShapeKey( mSymmetry .getName() + ":" + orbit .getName() + ":"
+                        + length .toString( AlgebraicField .DEFAULT_FORMAT ) );
             }
         }
         return lengthShape;
@@ -249,6 +262,11 @@ public abstract class AbstractShapes implements Shapes
         Polyhedron shape = map3 .get( canonicalVertices );
         if ( shape == null ) {
             shape = makePanelPolyhedron( canonicalVertices, oneSidedPanels );
+            // Panels have no short readable vocabulary (they're keyed by canonical vertices), so
+            // use the geometry content hash rather than a readable key -- panel ids aren't the
+            // ones debugged by eye. Still content-derived, so it's stable across workers.
+            if ( shape != null )
+                shape .setShapeKey( shape .deriveGeometricKey() );
             map3 .put( canonicalVertices, shape );
         }
         return shape;

@@ -44,7 +44,9 @@ class Renderer implements RenderingChanges
             ObjectNode shapeNode = this .mapper .getShapeNode( shape );
             if ( shapeNode != null )
             {
-                shapeNode .put( "id", shape .getGuid() .toString() );
+                // Content-derived shape key (see Polyhedron.shapeKey); matches the "shape"
+                // reference JsonMapper writes on each instance, so DefineMesh ids line up.
+                shapeNode .put( "id", shape .getShapeKey() );
                 sendJson( "DefineMesh", shapeNode );
             }
             node .put( "id", rm .getGuid() .toString() );

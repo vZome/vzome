@@ -125,7 +125,10 @@ public class POVRayExporter extends DocumentExporter
 		Map<AlgebraicMatrix, String> transforms = new HashMap<>();
 		Map<Color, String> colors = new HashMap<>();
         for (RenderedManifestation rm : mModel) {
-            String shapeName = "S" + rm .getShapeId() .toString() .replaceAll( "-", "" );
+            // Content-derived shape key (see Polyhedron.shapeKey); strip characters not valid in
+            // a POV-Ray identifier. Was getShapeId() (per-object UUID); the key dedups content-
+            // identical shapes and is stable, and the sanitizer keeps the declared-name legal.
+            String shapeName = "S" + rm .getShapeKey() .replaceAll( "[^A-Za-z0-9_]", "_" );
             if ( ! shapes .contains( shapeName ) ) {
                 shapes .add( shapeName );
                 exportShape( shapeName, rm .getShape() );

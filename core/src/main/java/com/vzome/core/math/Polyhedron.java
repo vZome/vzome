@@ -44,6 +44,36 @@ public class Polyhedron implements Cloneable
 
     private UUID guid = UUID .randomUUID();
 
+    // A stable, content-derived identifier for this shape, used as the shape key when a scene
+    // is serialized to a client (see JsonMapper, unity.Renderer, POVRayExporter) and, on the
+    // web, as the key under which the client caches and instances a shape's geometry.
+    //
+    // WHY THIS EXISTS SEPARATELY FROM guid:
+    //   guid is per-OBJECT identity (a fresh randomUUID per Polyhedron instance). On the desktop
+    //   that doubles as shape identity, because same-symmetry designs share ONE cached Polyhedron
+    //   object (see AbstractShapes), so its random guid is stable "by reference". On the web,
+    //   each design runs in its own worker with its own object graph, so that reference-sharing
+    //   is gone and the random guid degrades to per-worker noise -- two workers realizing the
+    //   IDENTICAL shape get different guids, so neither the design worker / shapes worker split
+    //   nor cross-design dedup can key on it. shapeKey fixes that by being a function of the
+    //   shape's DEFINITION, so any worker computes the same key for the same shape.
+    //
+    // TWO DERIVATION STRATEGIES, by shape kind:
+    //   - Catalog shapes (struts / connectors): a READABLE key derived from the same identifying
+    //     inputs AbstractShapes already caches by -- "<symmetry>:<orbit>:<length>" for struts,
+    //     "<symmetry>:<pkg>:ball" for connectors. Deliberately human-readable, because these are
+    //     the ids we debug by eye (in scene.shapes keys, the DOM, worker logs). Set by the
+    //     AbstractShapes factory methods.
+    //   - Content-hashed shapes (panels today; user-defined shapes in future): no short readable
+    //     vocabulary exists, so hash the geometry. See deriveGeometricKey(). NOTE: user-defined
+    //     shapes (a future feature: select panels -> define one shape, scoped to that design) are
+    //     the reason this lives on Polyhedron rather than only in AbstractShapes -- they are
+    //     realized outside the catalog cache, but still need the same content-derived-key contract.
+    //
+    // Defaults to the random guid's string, so any Polyhedron that never gets an explicit key
+    // (ad-hoc shapes that never reach a client) still has a unique, if unreadable, key.
+    private String shapeKey = this .guid .toString();
+
     public Polyhedron( AlgebraicField field )
     {
         this.field = field;
@@ -68,7 +98,11 @@ public class Polyhedron implements Cloneable
             }
             this .evilTwin .isEvil = true;
             this .evilTwin .guid = UUID .randomUUID();
-            
+            // clone() copied our shapeKey; the twin is a DISTINCT shape (isEvil is part of
+            // equals/hashCode), so it must get a distinct key -- but still deterministically,
+            // derived from ours, so any worker computes the same twin key. Suffix, don't randomize.
+            this .evilTwin .shapeKey = this .shapeKey + ":evil";
+
             this .evilTwin .m_vertexList = new ArrayList<>();
             // this loop should preserve the order, and thus indices for the faces below
             for ( AlgebraicVector vertex : m_vertexList ) {
@@ -404,6 +438,76 @@ public class Polyhedron implements Cloneable
     public UUID getGuid()
     {
         return this .guid;
+    }
+
+    /**
+     * The stable, content-derived shape key used as the shape identity when serializing a scene
+     * to a client, and (on the web) as the geometry cache/instancing key. See the shapeKey field
+     * comment for why this is distinct from getGuid(). Defaults to the guid string until a factory
+     * (AbstractShapes) or a future user-shape realization path sets a content-derived key.
+     */
+    @JsonIgnore
+    public String getShapeKey()
+    {
+        return this .shapeKey;
+    }
+
+    /**
+     * Set a readable, content-derived shape key. Used by AbstractShapes for catalog shapes, e.g.
+     * "<symmetry>:<orbit>:<length>" (strut) or "<symmetry>:<pkg>:ball" (connector). Must be a pure
+     * function of the shape's DEFINITION so that any worker realizing the same shape computes the
+     * same key; do NOT fold in design/session/instance identity.
+     */
+    public void setShapeKey( String shapeKey )
+    {
+        this .shapeKey = shapeKey;
+    }
+
+    /**
+     * Content hash of this shape's geometry, for shapes with no short readable key (panels; and,
+     * in future, user-defined shapes assembled from a selected panel collection -- a per-design
+     * feature not yet implemented). Deterministic across workers because it depends only on the
+     * canonicalized vertex/face definition, matching the fields equals()/hashCode() already use.
+     *
+     * NOTE: intentionally NOT wired in yet for the future user-shape path -- that path also needs
+     * a per-design shape registry (to give the shape a home and round-trip through the design XML),
+     * which is separate work. This method is provided so that, when that feature lands, its
+     * realization code has a ready, worker-agnostic way to derive the same key everywhere. Panels
+     * MAY adopt it now (see AbstractShapes.getPanelShape); struts/connectors deliberately do not,
+     * to keep their readable keys.
+     */
+    @JsonIgnore
+    public String deriveGeometricKey()
+    {
+        StringBuilder buf = new StringBuilder();
+        buf .append( isEvil ? "e:" : "s:" );
+        // Vertices in list order: getEvilTwin and the VEF/geometry builders preserve a stable
+        // order, and equals() compares m_vertexList (a List) order-sensitively, so list order is
+        // a legitimate part of identity here.
+        for ( AlgebraicVector v : m_vertexList )
+            buf .append( v .toString() ) .append( ';' );
+        buf .append( '|' );
+        // Faces are a Set (unordered); sort their string forms so the hash is order-independent,
+        // matching equals() comparing m_faces as a Set.
+        List<String> faceStrings = new ArrayList<>();
+        for ( Face face : m_faces )
+            faceStrings .add( face .toString() );
+        Collections .sort( faceStrings );
+        for ( String f : faceStrings )
+            buf .append( f ) .append( ';' );
+        // FNV-1a 64-bit hash over the characters. We only need a deterministic string, not a real
+        // UUID; UUID.nameUUIDFromBytes is not available in the JSweet shim, and this computes
+        // identically in Java and the transpiled web (pure long arithmetic, no library calls), so
+        // any worker derives the same key for the same geometry.
+        final long FNV_OFFSET = 0xcbf29ce484222325L;
+        final long FNV_PRIME  = 0x100000001b3L;
+        String s = buf .toString();
+        long hash = FNV_OFFSET;
+        for ( int i = 0; i < s .length(); i++ ) {
+            hash ^= s .charAt( i );
+            hash *= FNV_PRIME;
+        }
+        return "u" + Long .toHexString( hash );
     }
 
     @JsonProperty( "faces" )
