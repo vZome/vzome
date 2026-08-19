@@ -445,9 +445,22 @@ const SymmetryGeometryImpl = ( props ) =>
 
   const isLeftButton = e => e.button === 0;
 
+  // When the active tool is a pure camera/trackball tool (allowTrackball true -- e.g.
+  // SnapCameraTool in the camera-panel trackball view, buildplane, 59icosahedra), the drag is
+  // a camera rotation, not a selection/edit gesture. Skipping the GPU pick here is both correct
+  // (that tool has no onDragStart/onClick selection semantics to feed) and a real perf win:
+  // renderer.pickAt() lazily builds a second forceWebGL WebGPURenderer + awaits its init() on the
+  // first pick, a multi-hundred-ms-to-second stall that was otherwise hitting every trackball
+  // drag-start. Mirrors how TrackballControls already gates its own enablement on the same flag
+  // (trackballcontrols.jsx). Editing tools (allowTrackball false) are unaffected -- they pick as
+  // before.
+  const pickingSuppressed = () => tool ?.allowTrackball?.();
+
   const onPointerDown = ( e ) =>
   {
     if ( ! isLeftButton( e ) )
+      return;
+    if ( pickingSuppressed() )
       return;
     pendingGesture = ( async () => {
       const hit = await pick( e.clientX, e.clientY );
@@ -490,6 +503,8 @@ const SymmetryGeometryImpl = ( props ) =>
   {
     if ( ! isLeftButton( e ) )
       return;
+    if ( pickingSuppressed() )
+      return; // pointerdown started no pick, so there is neither a drag-end nor a bkgdClick to emit
     // Wait for the SAME pick pointerdown started, if it hasn't resolved yet (fast click) --
     // see the long comment on pendingGesture above for why this can't just check
     // draggingHit synchronously.
@@ -514,6 +529,8 @@ const SymmetryGeometryImpl = ( props ) =>
 
   const onContextMenu = async ( e ) =>
   {
+    if ( pickingSuppressed() )
+      return;
     const hit = await pick( e.clientX, e.clientY );
     if ( ! hit )
       return;
