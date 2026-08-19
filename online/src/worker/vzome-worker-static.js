@@ -33,8 +33,17 @@ const prepareSceneResponse = ( design, snapshot ) =>
     }
     shapes[ instance.shapeId ].instances.push( { ...instance, rotation } );
   }
-  const parts = createPartsList( shapes, design.wrapper?.controller?.symmController );
-  return { shapes, embedding, polygons, parts, orientations };
+  const symmController = design.wrapper?.controller?.symmController;
+  const parts = createPartsList( shapes, symmController );
+  // Stamp the render with the symmetry system it was built for. During rapid symmetry switches
+  // (e.g. the classic trackball reloading a design on each switch) a SCENE_RENDERED computed for
+  // the previous symmetry can arrive AFTER the switch, carrying shapes whose per-instance
+  // orientation indices belong to the old (larger) orientation set. The client drops any render
+  // whose symmetryId != the current one, so those stale shapes never reach the new symmetry group
+  // (where out-of-range indices throw in the renderer).
+  const orbitSource = symmController?.getOrbitSource?.();
+  const symmetryId = orbitSource ? `${orbitSource.getSymmetry().getField().getName()}:${orbitSource.getName()}` : undefined;
+  return { shapes, embedding, polygons, parts, orientations, symmetryId };
 }
 
 const prepareEditSceneResponse = ( design, edit, before ) =>
