@@ -214,6 +214,10 @@ const SceneChangeListener = () =>
   const { scene, updateShapes, addShape, setScene, highlightSelection } = useScene();
   const { subscribeFor } = useWorkerClient();
 
+  // Reads the store's current symmetryId; kept as a helper because the SCENE_RENDERED handler
+  // shadows the store `scene` with its payload parameter of the same name.
+  const storeSceneSymmetryId = () => scene.symmetryId;
+
   subscribeFor( 'SYMMETRY_CHANGED', ( { orientations, fieldName, symmetryName, embedding } ) => {
     // fieldName + symmetryName (present for vZome files; see EditorController.setSymmetryController)
     // give SymmetryGeometry a STABLE renderer-group key. Keying on the orientation float matrices
@@ -261,6 +265,17 @@ const SceneChangeListener = () =>
   });
 
   subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
+    // Drop a render that was computed for a different symmetry than the one now active. During
+    // rapid symmetry switches (notably the classic trackball, which reloads its whole design on
+    // every switch), a SCENE_RENDERED for the previous symmetry can arrive AFTER the switch,
+    // carrying shapes whose per-instance orientation indices belong to the old (larger) orientation
+    // set -- out of range for the new symmetry group, which throws in the renderer
+    // (normalizeOrientationIndex). The worker stamps each render with its symmetryId
+    // (prepareSceneResponse); drop any whose id != the current one. Only guard when both ids are
+    // known: edit/legacy render paths omit symmetryId, and the store id is unset before the first
+    // SYMMETRY_CHANGED.
+    if ( scene.symmetryId && storeSceneSymmetryId() && scene.symmetryId !== storeSceneSymmetryId() )
+      return;
     setScene( 'embedding', reconcile( scene.embedding ) );
     setScene( 'polygons', scene.polygons );
     // Needed by SymmetryGeometry. SYMMETRY_CHANGED (above) is the usual source of
