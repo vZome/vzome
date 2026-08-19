@@ -120,6 +120,7 @@ const initializeDesign = ( loading, polygons, legacyDesign, core, clientEvents )
     ...clientEvents,
     symmetryChanged: details => {
       rendered.orientations = details.orientations; // this enables future rendering to be with the right orientations
+      rendered.embedding = details.embedding; // likewise, so later SCENE_RENDERED responses don't replay the pre-switch embedding
       clientEvents .symmetryChanged( details );
     }
   }

@@ -161,6 +161,12 @@ const SymmetryGeometryImpl = ( props ) =>
       m.transpose();
     }
     renderer.originGroup.matrix.copy( m );
+    // originGroup.matrixAutoUpdate is false, so three.js never recomputes .matrixWorld from
+    // .matrix on its own; without flagging it, a changed embedding updates .matrix but the group
+    // keeps rendering its stale .matrixWorld. This is invisible for most switches (the group-
+    // switch churn happens to flush a world update), but switching TO an identity embedding (e.g.
+    // heptagon octahedral, coming from the skewed antiprism) left the old skew on screen.
+    renderer.originGroup.matrixWorldNeedsUpdate = true;
   } );
 
   // Group-registration / symmetry-switch effect. Re-runs whenever props.symmetryId or
