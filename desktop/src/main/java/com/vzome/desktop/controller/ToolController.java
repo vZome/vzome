@@ -31,6 +31,12 @@ public class ToolController extends DefaultController
 
         case "hideTool":
             this .tool .setHidden( true );
+            this .firePropertyChange( "hidden", null, "true" );
+            break;
+
+        case "unhideTool":
+            this .tool .setHidden( false );
+            this .firePropertyChange( "hidden", null, "false" );
             break;
 
         case "selectParams":
@@ -92,6 +98,9 @@ public class ToolController extends DefaultController
 
 		case "predefined":
 			return Boolean .toString( this .tool .isPredefined() );
+
+		case "hidden":
+			return Boolean .toString( this .tool .isHidden() );
 
 		case "selectInputs":
 			return Boolean .toString( this .tool .isSelectInputs() );

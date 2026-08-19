@@ -38,8 +38,12 @@ namespace com.vzome.desktop.controller {
         public propertyChange(evt: java.beans.PropertyChangeEvent) {
             switch((evt.getPropertyName())) {
             case "customTools":
+                this.firePropertyChange$java_beans_PropertyChangeEvent(new java.beans.PropertyChangeEvent(this, evt.getPropertyName(), null, evt.getNewValue()));
+                this.firePropertyChange$java_beans_PropertyChangeEvent(new java.beans.PropertyChangeEvent(this, "allCustomTools", null, this.tools.getAllCustomToolIDs(false)));
+                break;
             case "customBookmarks":
                 this.firePropertyChange$java_beans_PropertyChangeEvent(new java.beans.PropertyChangeEvent(this, evt.getPropertyName(), null, evt.getNewValue()));
+                this.firePropertyChange$java_beans_PropertyChangeEvent(new java.beans.PropertyChangeEvent(this, "allCustomBookmarks", null, this.tools.getAllCustomToolIDs(true)));
                 break;
             case "tool.instances":
                 if (evt.getOldValue() == null){
@@ -68,6 +72,10 @@ namespace com.vzome.desktop.controller {
                 return this.tools.getToolIDs(false);
             case "customBookmarks":
                 return this.tools.getToolIDs(true);
+            case "allCustomTools":
+                return this.tools.getAllCustomToolIDs(false);
+            case "allCustomBookmarks":
+                return this.tools.getAllCustomToolIDs(true);
             default:
                 break;
             }

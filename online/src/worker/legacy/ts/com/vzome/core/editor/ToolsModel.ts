@@ -80,6 +80,15 @@ namespace com.vzome.core.editor {
             return bookmarks ? this.customBookmarks.toArray<any>([]) : this.customTools.toArray<any>([]);
         }
 
+        public getAllCustomToolIDs(bookmarks: boolean): string[] {
+            const result: java.util.List<string> = <any>(new java.util.ArrayList<any>());
+            for(let index=this.values().iterator();index.hasNext();) {
+                let tool = index.next();
+                if (!tool.isPredefined() && (tool.getCategory() === com.vzome.core.tools.BookmarkTool.ID) === bookmarks)result.add(tool.getId());
+            }
+            return result.toArray<any>([]);
+        }
+
         public createEdit(className: string): com.vzome.core.editor.api.UndoableEdit {
             switch((className)) {
             case "ToolApplied":
@@ -198,6 +207,19 @@ namespace com.vzome.core.editor {
             } else {
                 this.customTools.remove(tool.getId());
                 this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customTools", null, this.getToolIDs(false));
+            }
+        }
+
+        public unhideTool(tool: com.vzome.core.editor.Tool) {
+            this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("tool.instances", null, tool);
+            if (!tool.isPredefined()){
+                if (tool.getCategory() === com.vzome.core.tools.BookmarkTool.ID){
+                    if (!this.customBookmarks.contains(tool.getId()))this.customBookmarks.add(tool.getId());
+                    this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customBookmarks", null, this.getToolIDs(true));
+                } else {
+                    if (!this.customTools.contains(tool.getId()))this.customTools.add(tool.getId());
+                    this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customTools", null, this.getToolIDs(false));
+                }
             }
         }
     }

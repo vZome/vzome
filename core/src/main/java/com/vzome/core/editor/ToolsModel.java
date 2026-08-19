@@ -90,6 +90,19 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 	    return bookmarks? this .customBookmarks .toArray( new String[]{} ) : this .customTools .toArray( new String[]{} );
 	}
 
+	// The complete roster of user-created (non-predefined) tools, INCLUDING hidden (unpinned)
+	//  ones, unlike getToolIDs() which tracks only the currently-pinned customs.  The web
+	//  client's "more tools" overflow derives from this to offer unpinned customs for re-pinning.
+	public String[] getAllCustomToolIDs( boolean bookmarks )
+	{
+	    List<String> result = new ArrayList<>();
+	    for ( Tool tool : this .values() )
+	        if ( ! tool .isPredefined()
+	                && tool .getCategory() .equals( BookmarkTool.ID ) == bookmarks )
+	            result .add( tool .getId() );
+	    return result .toArray( new String[]{} );
+	}
+
 	// Create from deserializing
 	public UndoableEdit createEdit( String className )
 	{
@@ -160,7 +173,7 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 	public Element getXml( Document doc )
 	{
         Element result = doc .createElement( "Tools" );
-        for ( Tool tool : this .values() ) 
+        for ( Tool tool : this .values() )
         	if ( ! tool .isPredefined() ){
         		Element toolElem = doc .createElement( "Tool" );
         		DomUtils .addAttribute( toolElem, "id", tool .getId() );
@@ -237,6 +250,27 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
         else {
             this .customTools .remove( tool .getId() );
             this .pcs .firePropertyChange( "customTools", null, this .getToolIDs( false ) );
+        }
+    }
+
+    public void unhideTool( Tool tool )
+    {
+        // Symmetric to hideTool: re-pin a previously hidden tool.
+        this .pcs .firePropertyChange( "tool.instances", null, tool );
+
+        // Predefined tools are not tracked in the custom lists; they reach the
+        //  toolbar via SymmetryController's builtIn*Tools, so only re-add customs here.
+        if ( ! tool .isPredefined() ) {
+            if ( tool .getCategory() .equals( BookmarkTool.ID ) ) {
+                if ( ! this .customBookmarks .contains( tool .getId() ) )
+                    this .customBookmarks .add( tool .getId() );
+                this .pcs .firePropertyChange( "customBookmarks", null, this .getToolIDs( true ) );
+            }
+            else {
+                if ( ! this .customTools .contains( tool .getId() ) )
+                    this .customTools .add( tool .getId() );
+                this .pcs .firePropertyChange( "customTools", null, this .getToolIDs( false ) );
+            }
         }
     }
 }

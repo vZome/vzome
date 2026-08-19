@@ -42,8 +42,9 @@ img {
 
 .toolbar {
   display: flex;
-  min-height: 32px;
+  min-height: 40px;
   gap: 1px;
+  align-items: flex-start;
 }
 
 .toolbar-vert {
@@ -51,17 +52,166 @@ img {
   min-width: 38px;
   gap: 1px;
   flex-direction: column;
+  align-items: center;
 }
 
 .toolbar-button {
-  padding: 0px;
-  border-width: 0px;
-  min-height: 30px;
-  min-width: 36px;
+  padding: 1px 2px;
+  min-height: 32px;
+  width: 80px;
+  flex: none;
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 3px;
+  border: 1px solid darkgray;
+  border-radius: 4px;
+  background-color: white;
 }
 
 .toolbar-image {
   border-radius: 3px;
+  flex: none;
+}
+
+/* Button caption: the former tooltip text, shown to the right of the icon. Sized to allow the
+   line to wrap at most once (2 lines), then truncate with an ellipsis. Full text remains in the
+   button's title attribute (tooltip). */
+.toolbar-label {
+  font-size: 8px;
+  line-height: 1.1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow-wrap: break-word;
+}
+
+/* Custom-tools area: one container, two states.
+   Collapsed = in the toolbar flow; expanded = a panel floating (position:fixed) above the bar. */
+.custom-tools-area {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* The collapsed, in-flow row (pinned tools + the "more" toggle). It stays in flow in both
+   states so the toolbar space beneath the floating panel is reserved and the bar never reflows.
+   A border (matching the expanded panel) distinguishes this area from the rest of the toolbar,
+   with much tighter inner padding than the expanded state. */
+.custom-tools-collapsed {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 2px 1px 3px;
+  border: 1px solid darkgray;
+  border-radius: 4px;
+}
+
+/* Shown in the collapsed row when no custom tools are pinned, in place of the button list. */
+.custom-tools-empty-label {
+  padding: 0 6px;
+  font-size: small;
+  color: gray;
+  white-space: nowrap;
+}
+
+/* The "more" toggle — a first-class child of the collapsed area, styled identically to the
+   panel's close button (both are SUID IconButtons). */
+.custom-tools-more {
+  align-self: center;
+  color: gray;
+}
+
+/* The panel's close button — a first-class affordance stuck to the right of the top arm,
+   vertically centered in the same area as the pinned tools. */
+.custom-tools-close {
+  margin-left: auto;
+  align-self: center;
+  color: gray;
+}
+
+/* Full-viewport backdrop that catches outside clicks and sits below the floating panel but
+   above the toolbar/canvas. Transparent — it only provides click-to-dismiss, dialog-style. */
+.custom-tools-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+}
+
+/* The expanded panel — an L-shaped composite (option 2). Rendered position:fixed (top/left set
+   inline from the collapsed row's viewport rect) so it floats above BOTH the toolbar and the
+   canvas, escaping the toolbar's overflow/height clipping. This wrapper is a bare column that
+   carries ONLY the drop-shadow, so the shadow follows the whole L outline (box-shadow on the
+   inner boxes would trace each rectangle and reveal the seam). No border/background here. */
+.custom-tools-panel {
+  z-index: 31;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;   /* let the arm be narrower than the body */
+  filter: drop-shadow( 0 4px 8px rgba(0, 0, 0, 0.3) );
+}
+
+/* Top arm of the L — the pinned tools + close, sized to its content (min-width matches the
+   collapsed footprint). It overlaps the body's top border by 1px and its opaque background
+   hides that 1px beneath it, so the arm and body read as one continuous outline (no crossbar
+   at the inner corner). No bottom border, for the same reason. Rounded only on the top. */
+.custom-tools-arm {
+  display: inline-flex;
+  align-items: center;
+  min-width: 120px;
+  padding: 1px 2px 1px 3px;
+  margin-bottom: -1px;       /* overlap the body's top border */
+  position: relative;
+  z-index: 1;
+  background-color: white;
+  border: 1px solid darkgray;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+}
+
+/* Body of the L — the larger rectangle (unpinned + factory rows). Full border; the top-left
+   corner is square where the arm sits against it, the other three corners rounded. */
+.custom-tools-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 240px;
+  padding: 4px 8px 8px;
+  gap: 2px;
+  background-color: white;
+  border: 1px solid darkgray;
+  border-radius: 0 4px 4px 4px;
+}
+
+.custom-tools-section-label {
+  margin-top: 8px;
+  font-size: small;
+  font-weight: 600;
+  color: gray;
+}
+
+/* The "Create a tool" section header, when no factory can fire, becomes a lighter prompt. */
+.custom-tools-hint {
+  font-weight: normal;
+}
+
+.custom-tools-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1px;
+  min-height: 34px;
+}
+
+/* The unpinned tools grow vertically as needed, wrapping to a new line after every 10 tools.
+   Width = 10 buttons (80px each) + 9 gaps (1px) = 809px. */
+.custom-tools-unpinned {
+  width: 809px;
+  max-height: 40vh;
+  overflow-y: auto;
 }
 
 .tool-config-icon-label {
@@ -219,9 +369,16 @@ button:disabled > .toolbar-image {
   transition-duration: .15s
 }
 
+/* Stacks the two toolbar rows as one grid item, sized to their content (no stretch). */
+.toolbar-rows {
+  display: flex;
+  flex-direction: column;
+}
+
 .toolbar-wrapper {
   position: relative;
-  height: 35px;
+  height: 40px;
+  flex: none;
 }
 
 .relative-h100 {

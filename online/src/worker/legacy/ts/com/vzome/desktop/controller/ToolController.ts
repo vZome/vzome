@@ -32,6 +32,11 @@ namespace com.vzome.desktop.controller {
                 break;
             case "hideTool":
                 this.tool.setHidden(true);
+                this.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("hidden", null, "true");
+                break;
+            case "unhideTool":
+                this.tool.setHidden(false);
+                this.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("hidden", null, "false");
                 break;
             case "selectParams":
                 this.tool.selectParameters();
@@ -85,6 +90,8 @@ namespace com.vzome.desktop.controller {
                 return this.tool.getCategory();
             case "predefined":
                 return javaemul.internal.BooleanHelper.toString(this.tool.isPredefined());
+            case "hidden":
+                return javaemul.internal.BooleanHelper.toString(this.tool.isHidden());
             case "selectInputs":
                 return javaemul.internal.BooleanHelper.toString(this.tool.isSelectInputs());
             case "deleteInputs":

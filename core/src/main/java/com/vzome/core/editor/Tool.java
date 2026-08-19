@@ -198,7 +198,13 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
     @Override
     public void setHidden( boolean hidden )
     {
+        boolean wasHidden = this.hidden;
         this.hidden = hidden;
-        this .tools .hideTool( this );
+        if ( hidden == wasHidden )
+            return; // no change, avoid firing spurious events
+        if ( hidden )
+            this .tools .hideTool( this );
+        else
+            this .tools .unhideTool( this );
     }
 }

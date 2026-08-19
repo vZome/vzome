@@ -220,8 +220,10 @@ namespace com.vzome.core.editor {
          * @param {boolean} hidden
          */
         public setHidden(hidden: boolean) {
+            const wasHidden: boolean = this.hidden;
             this.hidden = hidden;
-            this.tools.hideTool(this);
+            if (hidden === wasHidden)return;
+            if (hidden)this.tools.hideTool(this); else this.tools.unhideTool(this);
         }
     }
     Tool["__class"] = "com.vzome.core.editor.Tool";

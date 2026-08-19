@@ -48,10 +48,15 @@ export const ToolConfig = (props) =>
     props.onClose();
     controllerAction( props.controller, 'selectParams' );
   }
-  const handleRemove = () =>
+  // Pin state, so the dialog can offer the opposite action. A hidden (unpinned) tool
+  //  offers "Pin"; a visible (pinned) tool offers "Unpin".
+  const hidden = () => controllerProperty( props.controller, 'hidden', 'hidden', false ) === 'true';
+  const handleTogglePin = () =>
   {
+    // "Unpin": hide the tool from the toolbar; "Pin": bring it back. Either way it remains
+    //  defined, and its pinned/unpinned state persists with the design.
     props.onClose();
-    controllerAction( props.controller, 'hideTool' );
+    controllerAction( props.controller, hidden()? 'unhideTool' : 'hideTool' );
   }
   const handleKeyDown = (e) =>
   {
@@ -130,8 +135,8 @@ export const ToolConfig = (props) =>
       </>}
 
       <div class='tool-config-button'>
-        <Button size="small" variant="outlined" onClick={handleRemove} disabled={!!props.predefined} >
-          Remove {props.bookmark? 'Bookmark' : 'Tool'}
+        <Button size="small" variant="outlined" onClick={handleTogglePin} disabled={!!props.predefined} >
+          {hidden()? 'Pin' : 'Unpin'} {props.bookmark? 'Bookmark' : 'Tool'}
         </Button>
       </div>
     </Popover>

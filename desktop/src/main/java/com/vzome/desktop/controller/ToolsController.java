@@ -47,9 +47,15 @@ public class ToolsController extends DefaultController implements PropertyChange
         switch ( evt .getPropertyName() ) {
         
         case "customTools":
-        case "customBookmarks":
             // forward for the web client
             this .firePropertyChange( new PropertyChangeEvent( this, evt .getPropertyName(), null, evt .getNewValue() ) );
+            // the full roster (incl. hidden) also changed, so refresh the "more tools" overflow
+            this .firePropertyChange( new PropertyChangeEvent( this, "allCustomTools", null, this .tools .getAllCustomToolIDs( false ) ) );
+            break;
+
+        case "customBookmarks":
+            this .firePropertyChange( new PropertyChangeEvent( this, evt .getPropertyName(), null, evt .getNewValue() ) );
+            this .firePropertyChange( new PropertyChangeEvent( this, "allCustomBookmarks", null, this .tools .getAllCustomToolIDs( true ) ) );
             break;
 
         case "tool.instances":
@@ -83,6 +89,12 @@ public class ToolsController extends DefaultController implements PropertyChange
 
         case "customBookmarks":
             return this .tools .getToolIDs( true );
+
+        case "allCustomTools":
+            return this .tools .getAllCustomToolIDs( false );
+
+        case "allCustomBookmarks":
+            return this .tools .getAllCustomToolIDs( true );
 
         default:
             break;

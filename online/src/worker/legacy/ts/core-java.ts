@@ -3493,10 +3493,6 @@ namespace com.vzome.core.render {
 
         export class SymmetryOrbitSource implements com.vzome.core.editor.api.OrbitSource {
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getOrientations$(): number[][] {
-                return this.getOrientations(false);
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             getEmbedding(): number[] {
                 const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
                 const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
@@ -3514,6 +3510,10 @@ namespace com.vzome.core.render {
                 embedding[14] = 0.0;
                 embedding[15] = 1.0;
                 return embedding;
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getOrientations$(): number[][] {
+                return this.getOrientations(false);
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             public getOrientations(rowMajor?: any): number[][] {
@@ -15760,6 +15760,15 @@ namespace com.vzome.core.editor {
             return bookmarks ? this.customBookmarks.toArray<any>([]) : this.customTools.toArray<any>([]);
         }
 
+        public getAllCustomToolIDs(bookmarks: boolean): string[] {
+            const result: java.util.List<string> = <any>(new java.util.ArrayList<any>());
+            for(let index=this.values().iterator();index.hasNext();) {
+                let tool = index.next();
+                if (!tool.isPredefined() && (tool.getCategory() === com.vzome.core.tools.BookmarkTool.ID) === bookmarks)result.add(tool.getId());
+            }
+            return result.toArray<any>([]);
+        }
+
         public createEdit(className: string): com.vzome.core.editor.api.UndoableEdit {
             switch((className)) {
             case "ToolApplied":
@@ -15878,6 +15887,19 @@ namespace com.vzome.core.editor {
             } else {
                 this.customTools.remove(tool.getId());
                 this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customTools", null, this.getToolIDs(false));
+            }
+        }
+
+        public unhideTool(tool: com.vzome.core.editor.Tool) {
+            this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("tool.instances", null, tool);
+            if (!tool.isPredefined()){
+                if (tool.getCategory() === com.vzome.core.tools.BookmarkTool.ID){
+                    if (!this.customBookmarks.contains(tool.getId()))this.customBookmarks.add(tool.getId());
+                    this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customBookmarks", null, this.getToolIDs(true));
+                } else {
+                    if (!this.customTools.contains(tool.getId()))this.customTools.add(tool.getId());
+                    this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customTools", null, this.getToolIDs(false));
+                }
             }
         }
     }
@@ -16503,10 +16525,6 @@ namespace com.vzome.core.editor {
 namespace com.vzome.core.editor {
     export class SymmetrySystem implements com.vzome.core.editor.api.OrbitSource {
         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-        getOrientations$(): number[][] {
-            return this.getOrientations(false);
-        }
-        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
         getEmbedding(): number[] {
             const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
             const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
@@ -16524,6 +16542,10 @@ namespace com.vzome.core.editor {
             embedding[14] = 0.0;
             embedding[15] = 1.0;
             return embedding;
+        }
+        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+        getOrientations$(): number[][] {
+            return this.getOrientations(false);
         }
         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
         public getOrientations(rowMajor?: any): number[][] {
@@ -33124,6 +33146,11 @@ namespace com.vzome.desktop.controller {
                 break;
             case "hideTool":
                 this.tool.setHidden(true);
+                this.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("hidden", null, "true");
+                break;
+            case "unhideTool":
+                this.tool.setHidden(false);
+                this.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("hidden", null, "false");
                 break;
             case "selectParams":
                 this.tool.selectParameters();
@@ -33177,6 +33204,8 @@ namespace com.vzome.desktop.controller {
                 return this.tool.getCategory();
             case "predefined":
                 return javaemul.internal.BooleanHelper.toString(this.tool.isPredefined());
+            case "hidden":
+                return javaemul.internal.BooleanHelper.toString(this.tool.isHidden());
             case "selectInputs":
                 return javaemul.internal.BooleanHelper.toString(this.tool.isSelectInputs());
             case "deleteInputs":
@@ -33545,6 +33574,8 @@ namespace com.vzome.desktop.controller {
 }
 namespace com.vzome.desktop.controller {
     export class SymmetryController extends com.vzome.desktop.controller.DefaultController {
+        static UNTOOLBARED_LABELS: java.util.Set<string>; public static UNTOOLBARED_LABELS_$LI$(): java.util.Set<string> { if (SymmetryController.UNTOOLBARED_LABELS == null) { SymmetryController.UNTOOLBARED_LABELS = <any>(new java.util.HashSet<any>(java.util.Arrays.asList<any>("reflection through XY plane", "reflection through X=Y green plane", "symmetry around red through origin", "rotate around red through origin", "b1 move along +X"))); }  return SymmetryController.UNTOOLBARED_LABELS; }
+
         /**
          * 
          * @param {string} string
@@ -33739,14 +33770,14 @@ namespace com.vzome.desktop.controller {
                 const toolNames: java.util.List<string> = <any>(new java.util.ArrayList<any>());
                 for(let index=this.symmetrySystem.getPredefinedTools(com.vzome.api.Tool.Kind.SYMMETRY).iterator();index.hasNext();) {
                     let tool = index.next();
-                    toolNames.add(tool.getId())
+                    if (!SymmetryController.UNTOOLBARED_LABELS_$LI$().contains(tool.getLabel()))toolNames.add(tool.getId());
                 }
                 return toolNames.toArray<any>([]);
             case "builtInTransformTools":
                 const transformToolNames: java.util.List<string> = <any>(new java.util.ArrayList<any>());
                 for(let index=this.symmetrySystem.getPredefinedTools(com.vzome.api.Tool.Kind.TRANSFORM).iterator();index.hasNext();) {
                     let tool = index.next();
-                    transformToolNames.add(tool.getId())
+                    if (!SymmetryController.UNTOOLBARED_LABELS_$LI$().contains(tool.getLabel()))transformToolNames.add(tool.getId());
                 }
                 return transformToolNames.toArray<any>([]);
             default:
@@ -33939,8 +33970,12 @@ namespace com.vzome.desktop.controller {
         public propertyChange(evt: java.beans.PropertyChangeEvent) {
             switch((evt.getPropertyName())) {
             case "customTools":
+                this.firePropertyChange$java_beans_PropertyChangeEvent(new java.beans.PropertyChangeEvent(this, evt.getPropertyName(), null, evt.getNewValue()));
+                this.firePropertyChange$java_beans_PropertyChangeEvent(new java.beans.PropertyChangeEvent(this, "allCustomTools", null, this.tools.getAllCustomToolIDs(false)));
+                break;
             case "customBookmarks":
                 this.firePropertyChange$java_beans_PropertyChangeEvent(new java.beans.PropertyChangeEvent(this, evt.getPropertyName(), null, evt.getNewValue()));
+                this.firePropertyChange$java_beans_PropertyChangeEvent(new java.beans.PropertyChangeEvent(this, "allCustomBookmarks", null, this.tools.getAllCustomToolIDs(true)));
                 break;
             case "tool.instances":
                 if (evt.getOldValue() == null){
@@ -33969,6 +34004,10 @@ namespace com.vzome.desktop.controller {
                 return this.tools.getToolIDs(false);
             case "customBookmarks":
                 return this.tools.getToolIDs(true);
+            case "allCustomTools":
+                return this.tools.getAllCustomToolIDs(false);
+            case "allCustomBookmarks":
+                return this.tools.getAllCustomToolIDs(true);
             default:
                 break;
             }
@@ -45804,10 +45843,6 @@ namespace com.vzome.core.edits {
         export class ReplaceWithShape$0 implements com.vzome.core.editor.api.OrbitSource {
             public __parent: any;
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-            getOrientations$(): number[][] {
-                return this.getOrientations(false);
-            }
-            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             getEmbedding(): number[] {
                 const symmetry: com.vzome.core.math.symmetry.Symmetry = this.getSymmetry();
                 const field: com.vzome.core.algebra.AlgebraicField = symmetry.getField();
@@ -45825,6 +45860,10 @@ namespace com.vzome.core.edits {
                 embedding[14] = 0.0;
                 embedding[15] = 1.0;
                 return embedding;
+            }
+            /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+            getOrientations$(): number[][] {
+                return this.getOrientations(false);
             }
             /* Default method injected from com.vzome.core.editor.api.OrbitSource */
             public getOrientations(rowMajor?: any): number[][] {
@@ -47905,8 +47944,10 @@ namespace com.vzome.core.editor {
          * @param {boolean} hidden
          */
         public setHidden(hidden: boolean) {
+            const wasHidden: boolean = this.hidden;
             this.hidden = hidden;
-            this.tools.hideTool(this);
+            if (hidden === wasHidden)return;
+            if (hidden)this.tools.hideTool(this); else this.tools.unhideTool(this);
         }
     }
     Tool["__class"] = "com.vzome.core.editor.Tool";
@@ -50949,6 +50990,8 @@ com.vzome.core.exporters.PlyExporter.__static_initialize();
 com.vzome.desktop.controller.PreviewStrut.logger_$LI$();
 
 com.vzome.desktop.controller.LengthController.SCALE_OFFSET_$LI$();
+
+com.vzome.desktop.controller.SymmetryController.UNTOOLBARED_LABELS_$LI$();
 
 com.vzome.desktop.controller.NumberController.MATH_OPS_$LI$();
 

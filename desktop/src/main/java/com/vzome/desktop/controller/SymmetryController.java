@@ -4,10 +4,13 @@ package com.vzome.desktop.controller;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.vzome.api.Tool;
 import com.vzome.core.algebra.AlgebraicField;
@@ -26,6 +29,17 @@ import com.vzome.desktop.api.Controller;
 
 public class SymmetryController extends DefaultController
 {
+    // Predefined tools (by label) that are intentionally kept off the toolbar.  They are still
+    //  created in predefineTools() so that legacy designs referencing them continue to load;
+    //  they are simply not offered as toolbar buttons in any symmetry system.
+    private static final Set<String> UNTOOLBARED_LABELS = new HashSet<>( Arrays.asList(
+            "reflection through XY plane",
+            "reflection through X=Y green plane",
+            "symmetry around red through origin",
+            "rotate around red through origin",
+            "b1 move along +X"
+    ) );
+
     @Override
     public String getProperty( String string )
     {
@@ -205,19 +219,23 @@ public class SymmetryController extends DefaultController
 
         case "builtInSymmetryTools":
 
-            // This will be called only once, before any relevant getSubController, so it is OK to do creations
+            // This will be called only once, before any relevant getSubController, so it is OK to do creations.
+            // A few predefined tools are intentionally omitted from the toolbar (see UNTOOLBARED_LABELS);
+            // they remain defined in the model so that legacy designs referencing them still load.
             List<String> toolNames = new ArrayList<>();
             for ( Tool tool : this .symmetrySystem .getPredefinedTools( Tool.Kind.SYMMETRY ) )
-                toolNames .add( tool .getId() );
+                if ( ! UNTOOLBARED_LABELS .contains( tool .getLabel() ) )
+                    toolNames .add( tool .getId() );
             return toolNames .toArray( new String[]{} );
 
 
         case "builtInTransformTools":
 
-            // This will be called only once, before any relevant getSubController, so it is OK to do creations
+            // This will be called only once, before any relevant getSubController, so it is OK to do creations.
             List<String> transformToolNames = new ArrayList<>();
             for ( Tool tool : this .symmetrySystem .getPredefinedTools( Tool.Kind.TRANSFORM ) )
-                transformToolNames .add( tool .getId() );
+                if ( ! UNTOOLBARED_LABELS .contains( tool .getLabel() ) )
+                    transformToolNames .add( tool .getId() );
             return transformToolNames .toArray( new String[]{} );
 
         default:

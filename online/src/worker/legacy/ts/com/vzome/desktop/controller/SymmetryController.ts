@@ -1,6 +1,8 @@
 /* Generated from Java with JSweet 3.2.0-SNAPSHOT - http://www.jsweet.org */
 namespace com.vzome.desktop.controller {
     export class SymmetryController extends com.vzome.desktop.controller.DefaultController {
+        static UNTOOLBARED_LABELS: java.util.Set<string>; public static UNTOOLBARED_LABELS_$LI$(): java.util.Set<string> { if (SymmetryController.UNTOOLBARED_LABELS == null) { SymmetryController.UNTOOLBARED_LABELS = <any>(new java.util.HashSet<any>(java.util.Arrays.asList<any>("reflection through XY plane", "reflection through X=Y green plane", "symmetry around red through origin", "rotate around red through origin", "b1 move along +X"))); }  return SymmetryController.UNTOOLBARED_LABELS; }
+
         /**
          * 
          * @param {string} string
@@ -195,14 +197,14 @@ namespace com.vzome.desktop.controller {
                 const toolNames: java.util.List<string> = <any>(new java.util.ArrayList<any>());
                 for(let index=this.symmetrySystem.getPredefinedTools(com.vzome.api.Tool.Kind.SYMMETRY).iterator();index.hasNext();) {
                     let tool = index.next();
-                    toolNames.add(tool.getId())
+                    if (!SymmetryController.UNTOOLBARED_LABELS_$LI$().contains(tool.getLabel()))toolNames.add(tool.getId());
                 }
                 return toolNames.toArray<any>([]);
             case "builtInTransformTools":
                 const transformToolNames: java.util.List<string> = <any>(new java.util.ArrayList<any>());
                 for(let index=this.symmetrySystem.getPredefinedTools(com.vzome.api.Tool.Kind.TRANSFORM).iterator();index.hasNext();) {
                     let tool = index.next();
-                    transformToolNames.add(tool.getId())
+                    if (!SymmetryController.UNTOOLBARED_LABELS_$LI$().contains(tool.getLabel()))transformToolNames.add(tool.getId());
                 }
                 return transformToolNames.toArray<any>([]);
             default:
