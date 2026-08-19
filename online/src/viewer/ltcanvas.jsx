@@ -1,66 +1,57 @@
 
-import { useFrame, Canvas } from "solid-three";
-import { Color } from "three";
-import { createMemo, createRenderEffect, mergeProps, onMount } from "solid-js";
+import { Color, Scene, Group, Mesh, AmbientLight, DirectionalLight, WebGLRenderer } from "three";
+import { WebGPURenderer } from 'three/webgpu';
+import { createRenderEffect, createResource, createSignal, onMount, For, Show, Suspense } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
-import { PerspectiveCamera } from "./perspectivecamera.jsx";
-import { OrthographicCamera } from "./orthographiccamera.jsx";
+import { Canvas, createT, createXR, useFrame } from 'solid-three';
+const T = createT({ Group, Mesh, AmbientLight, DirectionalLight });
+
 import { TrackballControls } from "./trackballcontrols.jsx";
-import { useInteractionTool } from "../viewer/context/interaction.jsx";
-import { useCamera } from "../viewer/context/camera.jsx";
+import { ControlledPerspectiveCamera } from "./perspectivecamera.jsx";
+import { ControlledOrthographicCamera } from "./orthographiccamera.jsx";
+import { useInteractionTool } from "./context/interaction.jsx";
+import { useCamera } from "./context/camera.jsx";
 import { Labels } from "./labels.jsx";
 import { useViewer } from "./context/viewer.jsx";
+import { WebXRSupport } from "./context/webxr.jsx";
 
 const Lighting = () =>
 {
-  const { state } = useCamera();
-  const color = createMemo( () => new Color( state.lighting.backgroundColor ) );
-  useFrame( ({scene}) => { scene.background = color() } )
+  const { state, perspectiveProps } = useCamera();
+  // Adopting changes as required by https://discourse.threejs.org/t/updates-to-color-management-in-three-js-r152/50791
+  //   and https://discourse.threejs.org/t/updates-to-lighting-in-three-js-r155/53733
+  const mapColor = color => new Color() .setStyle( color ) .multiplyScalar( Math.PI );
+  useFrame( ({scene}) => { scene.background = new Color() .setStyle( state.lighting.backgroundColor ) } ); // NOT converting to Linear!
   let centerObject;
   // The ambientLight has to be "invisible" so we don't get an empty node in glTF export.
 
   return (
-    <>
-      <object3D ref={centerObject} visible={false} />
-      <ambientLight color={state.lighting.ambientColor} />
-      <For each={state.lighting.directionalLights}>{ ( { color, direction } ) =>
-        <directionalLight target={centerObject} intensity={1.7} color={color} position={direction.map( x => -x )} />
+    <T.Group position={perspectiveProps.position} up={perspectiveProps.up} target={perspectiveProps.target}>
+      <T.Mesh ref={centerObject} visible={false} />
+      <T.AmbientLight color={mapColor( state.lighting.ambientColor )} />
+      <For each={state.lighting.directionalLights}>{ ( { direction, color } ) =>
+        <T.DirectionalLight target={centerObject} intensity={1.4}
+          color={mapColor( color )} position={direction.map( x => -x )} />
       }</For>
-    </>
+    </T.Group>
   )
 }
 
-const LightedCameraControls = (props) =>
+const ControlledCamera = (props) =>
 {
-  const { perspectiveProps, trackballProps, name, state, cancelTweens } = useCamera();
-  const [ tool ] = useInteractionTool();
-  const enableTrackball = () => ( tool === undefined ) || tool .allowTrackball();
-  props = mergeProps( { rotateSpeed: 4.5, zoomSpeed: 3, panSpeed: 1 }, props );
-  const halfWidth = () => perspectiveProps.width / 2;
-
-  const onTrackballEnd = () => ( tool !== undefined ) && tool .onTrackballEnd();
+  const { state } = useCamera();
 
   return (
-    <>
-      <Show when={state.camera.perspective} fallback={
-        <OrthographicCamera aspect={props.aspect} name={name} outlines={state.outlines}
-            position={perspectiveProps.position} up={perspectiveProps.up} halfWidth={halfWidth()}
-            near={perspectiveProps.near} far={perspectiveProps.far} target={perspectiveProps.target} >
-          <Lighting />
-        </OrthographicCamera>
-      }>
-        <PerspectiveCamera aspect={props.aspect} name={name} outlines={state.outlines}
-            position={perspectiveProps.position} up={perspectiveProps.up} fov={perspectiveProps.fov( props.aspect )}
-            near={perspectiveProps.near} far={perspectiveProps.far} target={perspectiveProps.target} >
-          <Lighting />
-        </PerspectiveCamera>
-      </Show>
-      <TrackballControls enabled={enableTrackball()} rotationOnly={props.rotationOnly} name={name}
-        camera={trackballProps.camera} target={perspectiveProps.target} sync={trackballProps.sync}
-        trackballStart={cancelTweens} trackballEnd={onTrackballEnd}
-        rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} />
-    </>
+    <Show when={state.camera.perspective} fallback={
+      <ControlledOrthographicCamera aspect={props.aspect}>
+        {props.children}
+      </ControlledOrthographicCamera>
+    }>
+      <ControlledPerspectiveCamera aspect={props.aspect}>
+        {props.children}
+      </ControlledPerspectiveCamera>
+    </Show>
   );
 }
 
@@ -81,6 +72,19 @@ export const LightedTrackballCanvas = ( props ) =>
   const canvasSize = () => size;
   const { labels } = useViewer();
 
+  const xr = createXR();
+  const [xrSupported] = createResource( () => xr.isSupported( 'immersive-ar' ) );
+
+  // connectRef captures the canvas DOM element (via ctx.gl.domElement) and wires createXR.
+  // Canvas must be rendered inside <xr.Provider> (not pre-assigned) so that useXR() in
+  // Canvas children can find the provider context.
+  const [canvasEl, setCanvasEl] = createSignal( null );
+  size = createElementSize( canvasEl );
+  const connectRef = ( ctx ) => {
+    setCanvasEl( ctx.gl.domElement );
+    return xr.connect( ctx );
+  };
+
   const [ tool ] = useInteractionTool();
 
   const handlePointerMove = ( e ) =>
@@ -93,6 +97,19 @@ export const LightedTrackballCanvas = ( props ) =>
   }
   const handlePointerUp = ( e ) =>
   {
+    // SymmetryGeometry attaches its own 'pointerup' listener directly on this same canvas
+    // element (see symmetry-geometry.jsx), which calls tool.onDragEnd with the correct,
+    // complete (e, id, position, type, selected, label) it resolved itself via pickAt --
+    // and, on success, resets InteractionToolProvider's shared dragStartEmitted state back
+    // to false. If this listener also fired right after (same element, same event -- DOM
+    // doesn't suppress sibling listeners just because one called stopPropagation), it would
+    // call tool.onDragEnd(e) with everything else undefined, and by then dragStartEmitted
+    // would already be false again, so interaction.jsx's onDragEnd falls into its
+    // click-fallback branch -- a spurious extra click, possibly right after a real one.
+    // Skipped entirely when SymmetryGeometry is active, since it already fully owns
+    // pointerup itself (mirrors the same bypass on handlePointerMissed below).
+    if ( props.symmetryRenderer )
+      return;
     const handler = tool ?.onDragEnd;
     if ( isLeftMouseButton( e ) && handler ) {
       // e.stopPropagation()
@@ -100,46 +117,123 @@ export const LightedTrackballCanvas = ( props ) =>
     }
   }
   const handleWheel = ( e ) =>
-    {
-      const handler = tool ?.onWheel;
-      if ( handler ) {
-        e.preventDefault();
-        handler( e.deltaY );
-      }
-    }
-    const handlePointerMissed = ( e ) =>
   {
+    const handler = tool ?.onWheel;
+    if ( handler ) {
+      e.preventDefault();
+      handler( e.deltaY );
+    }
+  }
+  const handlePointerMissed = ( e ) =>
+  {
+    // solid-three's onClickMissed fires whenever ITS OWN raycasting registry (built from
+    // <T.*>-declared, event-registered objects) finds zero intersections -- it has no idea
+    // SymmetryGeometry's GPU-instanced meshes exist at all, since they're never JSX-declared
+    // <T.*> elements. So with symmetryRenderer active, this would fire (and call bkgdClick,
+    // e.g. DeselectAll) on literally every click, including ones that DID hit an instance
+    // via SymmetryGeometry's own pickAt-based click handler -- immediately undoing every
+    // click-to-select. SymmetryGeometry owns both the hit and miss cases itself (see its own
+    // click handler), so this canvas-level path is skipped entirely when it's active.
+    if ( props.symmetryRenderer )
+      return;
     const handler = tool ?.bkgdClick;
-    if ( isLeftMouseButton( e ) && handler ) {
-      e.stopPropagation();
+
+    // NOTE: this is a solid-three handler, so the event is wrapped in a synthetic event,
+    //  and the native event is in e.nativeEvent.  We have to check the button on the native event,
+    //  but we can stop propagation on the synthetic event.
+    if ( isLeftMouseButton( e.nativeEvent ) && handler ) {
+      // e.stopPropagation();  // NOT available!  Is this a problem?
       handler( e );
     }
   }
 
-  const canvas =
-    <Canvas class='canvas3d' dpr={ window.devicePixelRatio } gl={{ antialias: true, alpha: false, preserveDrawingBuffer: true }}
-        height={props.height ?? "100vh"} width={props.width ?? "100vw"}
-        frameloop="always" onPointerMissed={handlePointerMissed} >
-      <LightedCameraControls aspect={aspect()}
-        rotationOnly={props.rotationOnly} rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} />
-
-      {props.children}
-
-      {labels && labels() && <Labels size={canvasSize()} />}
-    </Canvas>;
-  
-  canvas.style.display = 'flex';
-  size = createElementSize( canvas );
+  const makeCustomRenderer = ( canvas ) =>
+  {
+    // props.useWebGL is resolved by the capability probe upstream (see SceneCanvas and
+    // renderer-support.js). On machines where WebGPURenderer fails to initialize -- notably
+    // Intel Macs on Safari/Sequoia, where the viewer otherwise renders solid white -- we fall
+    // back to the classic WebGLRenderer here. That path also forces symmetryRenderer off (see
+    // SceneCanvas), since the classic renderer can't consume the symmetry renderer's TSL node
+    // materials; the combined fallback is WebGLRenderer + ShapedGeometry.
+    if ( props.useWebGL ) {
+      const renderer = new WebGLRenderer({
+        powerPreference: "high-performance",
+        canvas,
+        antialias: true,
+        alpha: true,
+        preserveDrawingBuffer: true,
+      });
+      return renderer;
+    }
+    const renderer = new WebGPURenderer({
+      powerPreference: "high-performance",
+      canvas,
+      antialias: true,
+      alpha: true,
+      preserveDrawingBuffer: true,
+      forceWebGL: true,
+    });
+    // renderer.xr.enabled = true;
+    return renderer;
+  }
 
   createRenderEffect( () => {
-    canvas.style.cursor = (tool ?.cursor()) || 'auto';
-  });
-  
-  onMount( () => {
-    // canvas .addEventListener( 'pointermove', handlePointerMove );
-    canvas .addEventListener( 'pointerup', handlePointerUp );
-    canvas .addEventListener( 'wheel', handleWheel );
+    const el = canvasEl();
+    if ( el ) el.style.cursor = (tool ?.cursor()) || 'auto';
   });
 
-  return canvas;
+  onMount( () => {
+    const el = canvasEl();
+    if ( el ) {
+      // el.addEventListener( 'pointermove', handlePointerMove );
+      el.addEventListener( 'pointerup', handlePointerUp );
+      el.addEventListener( 'wheel', handleWheel );
+    }
+  });
+
+  return (
+    <xr.Provider>
+      <div style={{ position: 'relative', height: props.height ?? "100%", width: props.width ?? "100%" }}>
+        <Canvas ref={connectRef} class='canvas3d' dpr={ window.devicePixelRatio } gl={makeCustomRenderer}
+            style={{
+              height: "100%",
+              width: "100%",
+              display: 'flex',
+            }}
+            frameloop="always" onClickMissed={handlePointerMissed} >
+          <WebXRSupport xrSupported={xrSupported}>
+
+            { /* This should add the camera to the scene so that the lights move with the camera,
+                  but it apparently does not. */ }
+            <ControlledCamera aspect={aspect()} >
+              <Lighting />
+            </ControlledCamera>
+
+            <TrackballControls rotationOnly={props.rotationOnly}
+              rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} />
+
+            {props.children}
+
+            {labels && labels() && <Labels size={canvasSize()} />}
+
+          </WebXRSupport>
+        </Canvas>
+        <Suspense>
+          <Show when={xrSupported()}>
+            <button
+              style={{
+                position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
+                padding: '12px 24px', 'border-radius': '4px', border: 'none',
+                background: 'rgba(0,0,0,0.7)', color: 'white', cursor: 'pointer',
+                'font-size': '13px', 'font-family': 'sans-serif',
+              }}
+              onClick={() => xr.enter( 'immersive-ar', { optionalFeatures: ['local-floor', 'hand-tracking'] } )}
+            >
+              START AR
+            </button>
+          </Show>
+        </Suspense>
+      </div>
+    </xr.Provider>
+  );
 }

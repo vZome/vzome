@@ -1,7 +1,9 @@
 
-import { createEffect, createMemo, onMount } from "solid-js";
-import { Vector3, Matrix4, BufferGeometry, Float32BufferAttribute } from "three";
-import { useThree } from "solid-three";
+import { createEffect, createMemo, onCleanup, onMount } from "solid-js";
+import { Vector3, Matrix4, BufferGeometry, Float32BufferAttribute, Color, Group, Mesh, MeshLambertMaterial, LineSegments, LineBasicMaterial } from "three";
+
+import { createT, useThree } from 'solid-three';
+const T = createT({ Group, Mesh, MeshLambertMaterial, LineSegments, LineBasicMaterial });
 
 import { useInteractionTool } from "./context/interaction.jsx";
 
@@ -41,7 +43,7 @@ const Instance = ( props ) =>
   }
   const handlePointerDown = ( e ) =>
   {
-    if ( e.button !== 0 ) // left-clicks only, please
+    if ( e.nativeEvent.button !== 0 ) // left-clicks only, please
       return;
     const handler = tool ?.onDragStart;
     if ( handler ) {
@@ -59,9 +61,19 @@ const Instance = ( props ) =>
   }
   const handlePointerUp = ( e ) =>
   {
-    if ( e.button !== 0 ) // left-clicks only, please
+    if ( e.nativeEvent.button !== 0 ) // left-clicks only, please
       return;
     const handler = tool ?.onDragEnd;
+    if ( handler ) {
+      e.stopPropagation();
+      handler( e.nativeEvent, props.id, props.position, props.type, props.selected, props.label );
+    }
+  }
+  const handleClick = ( e ) =>
+  {
+    if ( e.nativeEvent.button !== 0 ) // left-clicks only, please
+      return;
+    const handler = tool ?.onClick;
     if ( handler ) {
       e.stopPropagation();
       handler( e.nativeEvent, props.id, props.position, props.type, props.selected, props.label );
@@ -70,23 +82,27 @@ const Instance = ( props ) =>
 
   onMount( () => linesRef && linesRef.layers.set( 4 ) );
 
+  // Adopting changes as required by https://discourse.threejs.org/t/updates-to-color-management-in-three-js-r152/50791
+  const color = new Color() .setStyle( props.color ); // not reactive, don't care, I think
+
   // TODO give users control over emissive color
   const emissive = () => props.selected? "#c8c8c8" : "black"
   // TODO: cache materials
   return (
-    <group position={ props.position } name={props.id} >
-      <mesh matrixAutoUpdate={false} ref={meshRef} geometry={props.geometry}
-          onPointerOver={handleHover(true)} onPointerOut={handleHover(false)} onPointerMove={handlePointerMove}
+    <T.Group position={ props.position } name={props.id} >
+      <T.Mesh matrixAutoUpdate={false} ref={meshRef} geometry={props.geometry}
+          onPointerEnter={handleHover(true)} onPointerLeave={handleHover(false)} onPointerMove={handlePointerMove}
+          onClick={handleClick}
           onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onContextMenu={handleContextMenu}>
-        <meshLambertMaterial attach="material" color={props.color} emissive={emissive()} />
-      </mesh>
+        <T.MeshLambertMaterial attach="material" color={color} emissive={emissive()} />
+      </T.Mesh>
       { !!props.outlineGeometry &&
-        <lineSegments matrixAutoUpdate={false} ref={linesRef} geometry={props.outlineGeometry} >
-          <lineBasicMaterial attach="material" linewidth={4.4} color='black' />
-        </lineSegments>
+        <T.LineSegments matrixAutoUpdate={false} ref={linesRef} geometry={props.outlineGeometry} >
+          <T.LineBasicMaterial attach="material" linewidth={4.4} color='black' />
+        </T.LineSegments>
       }
       {!!props.label && <Label parent={meshRef} position={props.geometry.shapeCentroid} text={props.label} />}
-    </group>
+    </T.Group>
   )
 }
 
@@ -100,6 +116,66 @@ const centroid = vertices =>
   return { x: sx/num, y: sy/num, z: sz/num };
 }
 
+// Builds a triangulated (or polygon-fan) BufferGeometry for a shape, decoupled from
+// SolidJS so it can be reused outside a reactive/component context (e.g. by a
+// symmetry renderer that owns its geometries imperatively).
+export const buildShapeGeometry = ( shape, polygons ) =>
+{
+  // TODO: use indexed vertices, if I can understand how to do normals
+  const { vertices, faces } = shape;
+  const computeNormal = ( [ v0, v1, v2 ] ) => {
+    const e1 = new Vector3().subVectors( v1, v0 )
+    const e2 = new Vector3().subVectors( v2, v0 )
+    return new Vector3().crossVectors( e1, e2 ).normalize()
+  }
+  let positions = [];
+  let normals = [];
+  faces.forEach( face => {
+    const corners = face.vertices.map( i => vertices[ i ] )
+    const { x:nx, y:ny, z:nz } = computeNormal( corners )
+    const addVertex = ( { x, y, z } ) =>
+    {
+      positions.push( x, y, z );
+      normals.push( nx, ny, nz )
+    }
+    if ( polygons ) {
+      for (let index = 0; index < corners.length-2; index++) {
+        addVertex( corners[ 0 ] );
+        addVertex( corners[ (index+1) % corners.length ] );
+        addVertex( corners[ (index+2) % corners.length ] );
+      }
+    } else {
+      corners.forEach( addVertex );
+    }
+  } );
+  const geometry = new BufferGeometry();
+  geometry.setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
+  geometry.setAttribute( 'normal', new Float32BufferAttribute( normals, 3 ) );
+  geometry.computeBoundingSphere();
+  geometry.shapeCentroid = centroid( vertices );
+  return geometry;
+}
+
+// Builds a wireframe (edge) BufferGeometry for a shape's outline, decoupled from SolidJS.
+export const buildOutlineGeometry = ( shape ) =>
+{
+  const { vertices, faces } = shape;
+  let positions = [];
+  vertices .map( ( { x, y, z } ) => positions.push( x, y, z ) );
+  let indices = [];
+  faces.forEach( face => {
+    for (let i = 0; i < face.vertices.length; i++) {
+      indices .push( face.vertices[ i ] );
+      indices .push( face.vertices[ (i+1) % face.vertices.length ] );
+    }
+  } );
+  const geometry = new BufferGeometry();
+  geometry .setIndex( indices );
+  geometry .setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
+  geometry .computeBoundingSphere();
+  return geometry;
+}
+
 const InstancedShape = ( props ) =>
 {
   const { scene } = useScene();
@@ -107,57 +183,15 @@ const InstancedShape = ( props ) =>
 
   const geometry = createMemo( () =>
   {
-    // TODO: use indexed vertices, if I can understand how to do normals
-    const { vertices, faces } = props.shape;
-    const computeNormal = ( [ v0, v1, v2 ] ) => {
-      const e1 = new Vector3().subVectors( v1, v0 )
-      const e2 = new Vector3().subVectors( v2, v0 )
-      return new Vector3().crossVectors( e1, e2 ).normalize()
-    }
-    let positions = [];
-    let normals = [];
-    faces.forEach( face => {
-      const corners = face.vertices.map( i => vertices[ i ] )
-      const { x:nx, y:ny, z:nz } = computeNormal( corners )
-      const addVertex = ( { x, y, z } ) =>
-      {
-        positions.push( x, y, z );
-        normals.push( nx, ny, nz )
-      }
-      if ( scene.polygons ) {
-        for (let index = 0; index < corners.length-2; index++) {
-          addVertex( corners[ 0 ] );
-          addVertex( corners[ (index+1) % corners.length ] );
-          addVertex( corners[ (index+2) % corners.length ] );
-        }  
-      } else {
-        corners.forEach( addVertex );
-      }
-    } );
-    const geometry = new BufferGeometry();
-    geometry.setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
-    geometry.setAttribute( 'normal', new Float32BufferAttribute( normals, 3 ) );
-    geometry.computeBoundingSphere();
-    geometry.shapeCentroid = centroid( vertices );
+    const geometry = buildShapeGeometry( props.shape, scene.polygons );
+    onCleanup( () => geometry.dispose() );
     return geometry;
   } );
 
   const outlineGeometry = createMemo( () =>
   {
-    const { vertices, faces } = props.shape;
-    let positions = [];
-    vertices .map( ( { x, y, z } ) => positions.push( x, y, z ) );
-    let indices = [];
-    faces.forEach( face => {
-      for (let i = 0; i < face.vertices.length; i++) {
-        indices .push( face.vertices[ i ] );
-        indices .push( face.vertices[ (i+1) % face.vertices.length ] );
-      }
-    } );
-    const geometry = new BufferGeometry();
-    geometry .setIndex( indices );
-    geometry .setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
-    geometry .computeBoundingSphere();
+    const geometry = buildOutlineGeometry( props.shape );
+    onCleanup( () => geometry.dispose() );
     return geometry;
   } );
 
@@ -172,24 +206,25 @@ const InstancedShape = ( props ) =>
 
 export const ShapedGeometry = ( props ) =>
 {
-  const scene = useThree(({ scene }) => scene);
   const { setExporter } = useGltfExporter();
+  const { scene, render, canvas, camera } = useThree();
   const exportGltf = callback => {
     const exporter = new GLTFExporter();
+    const onError = ( error ) => {
+      console.error( 'An error happened during glTF export:', error );
+    }
     // Parse the input and generate the glTF output
-    exporter.parse( scene(), callback, { onlyVisible: false } );
+    exporter.parse( scene, callback, onError, { onlyVisible: false, binary: true } );
   };
   setExporter( { exportGltf } );
 
-  const gl = useThree( ({ gl }) => gl );
-  const camera = useThree( ({ camera }) => camera );
   const { setCapturer } = useImageCapture();
   const capture = ( mimeType, saveBlob ) => {
     // See:
     //   https://github.com/pmndrs/react-three-fiber/discussions/2054
     //   https://stackoverflow.com/questions/12168909/blob-from-dataurl
-    gl() .render( scene(), camera() ); // The HTML canvas state is only guaranteed immediately after render
-    gl() .domElement .toBlob( blob => {
+    render( scene, camera ); // The HTML canvas state is only guaranteed immediately after render
+    canvas .toBlob( blob => {
       console.log( `Captured ${mimeType} image of size ${blob.size} bytes` );
       saveBlob( blob );
     }, mimeType );
@@ -210,11 +245,11 @@ export const ShapedGeometry = ( props ) =>
   })
   return (
     // <Show when={ () => props.shapes }>
-      <group matrixAutoUpdate={false} ref={groupRef} >
+      <T.Group matrixAutoUpdate={false} ref={groupRef} >
         <For each={Object.values( props.shapes || {} )}>{ shape =>
           <InstancedShape shape={shape} />
         }</For>
-      </group>
+      </T.Group>
     // </Show>
   )
 };

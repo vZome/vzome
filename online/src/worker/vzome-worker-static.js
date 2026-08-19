@@ -19,7 +19,8 @@ export const DEFAULT_SNAPSHOT = -1;
 
 // Take a normalized scene and prepare it to send to the client, by
 //   resolving the shapes and snapshot
-// TODO: change the client contract to avoid sending shapes and rotation matrices all the time!
+// TODO: once SymmetryGeometry replaces ShapedGeometry, stop sending rotation
+//   matrices per-instance and have the client resolve them from orientations.
 const prepareSceneResponse = ( design, snapshot ) =>
 {
   const { embedding, polygons, snapshots, orientations, instances } = design.rendered;
@@ -32,8 +33,17 @@ const prepareSceneResponse = ( design, snapshot ) =>
     }
     shapes[ instance.shapeId ].instances.push( { ...instance, rotation } );
   }
-  const parts = createPartsList( shapes, design.wrapper?.controller?.symmController );
-  return { shapes, embedding, polygons, parts };
+  const symmController = design.wrapper?.controller?.symmController;
+  const parts = createPartsList( shapes, symmController );
+  // Stamp the render with the symmetry system it was built for. During rapid symmetry switches
+  // (e.g. the classic trackball reloading a design on each switch) a SCENE_RENDERED computed for
+  // the previous symmetry can arrive AFTER the switch, carrying shapes whose per-instance
+  // orientation indices belong to the old (larger) orientation set. The client drops any render
+  // whose symmetryId != the current one, so those stale shapes never reach the new symmetry group
+  // (where out-of-range indices throw in the renderer).
+  const orbitSource = symmController?.getOrbitSource?.();
+  const symmetryId = orbitSource ? `${orbitSource.getSymmetry().getField().getName()}:${orbitSource.getName()}` : undefined;
+  return { shapes, embedding, polygons, parts, orientations, symmetryId };
 }
 
 const prepareEditSceneResponse = ( design, edit, before ) =>
@@ -56,7 +66,7 @@ const prepareEditSceneResponse = ( design, edit, before ) =>
     }
     shapes[ instance.shapeId ].instances.push( { ...instance, rotation } );
   }
-  return { scene: { shapes, polygons }, edit };
+  return { scene: { shapes, polygons, orientations }, edit };
 }
 
 const fetchUrlText = async ( url ) =>
@@ -130,35 +140,11 @@ const clientEvents = report =>
     xmlParsed, scenesDiscovered, snapshotCaptured, propertyChanged, errorReported, textExported, buildPlaneSelected, };
 }
 
-const trackballs = {};
-
-const fetchTrackballScene = ( url, report, polygons ) =>
-{
-  const reportTrackballScene = scene => report( { type: 'TRACKBALL_SCENE_LOADED', payload: scene } );
-  const cachedScene = trackballs[ url ];
-  if ( !!cachedScene ) {
-    reportTrackballScene( cachedScene );
-    return;
-  }
-  Promise.all( [ importLegacy(), fetchUrlText( new URL( `/app/classic/resources/${url}`, baseURL ) ) ] )
-    .then( async ([ legacy, xml ]) => {
-      const trackballDesign = await legacy .loadDesign( xml, false, polygons, clientEvents( ()=>{} ) );
-      const scene = prepareSceneResponse( trackballDesign, DEFAULT_SNAPSHOT );
-      trackballs[ url ] = scene;
-      reportTrackballScene( scene );
-    } );
-}
-
-const connectTrackballScene = ( report, polygons ) =>
-{
-  // console.log( "call", uniqueId );
-  const trackballUpdater = () => fetchTrackballScene( design.wrapper .getTrackballUrl(), report, polygons );
-  trackballUpdater();
-  design.wrapper.controller .addPropertyListener( { propertyChange: pce =>
-  {
-    if ( 'symmetry' === pce.getPropertyName() ) { trackballUpdater(); }
-  } });
-}
+// NOTE: the trackball model is no longer rendered through this (editor) worker. The classic
+// editor now loads each symmetry's trackball .vZome as an ordinary design on its OWN dedicated
+// worker (see TrackballViewer in app/classic/components/camera.jsx), so all the former
+// trackball plumbing here -- fetchTrackballScene, connectTrackballScene, the trackballs cache,
+// the 'connectTrackballScene' action, and wrapper.getTrackballUrl -- was removed.
 
 const createDesign = async ( report, fieldName ) =>
 {
@@ -211,7 +197,11 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, shapshot=D
           const api = await legacy .initialize();
           const field = api .getField( 'golden' );
           field .setInterpreterModule( zomic, legacy .vzomePkg );
-          doLoad();
+          doLoad()
+            .catch( error => {
+              console.log( `openDesign failure: ${error.message}` );
+              report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model: ${error.message}` } );
+            });
         })
         .catch( error => {
           console.log( `openDesign failure: ${error.message}` );
@@ -301,30 +291,72 @@ const fileLoader = ( report, payload ) =>
   openDesign( xmlLoading, name, report, debug, polygons );
 }
 
+const doImport = ( text, format, report ) =>
+{
+  const action = IMPORT_ACTIONS[ format ];
+  try {
+    design.wrapper .doAction( '', action, { vef: text } );
+    reportDefaultScene( report );
+  } catch (error) {
+    console.log( `${action} actionPerformed error: ${error.message}` );
+    report( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
+  }
+}
+
+const importDesign = async ( report, url, format ) =>
+{
+  report( { type: 'FETCH_STARTED', payload: { name: 'untitled.vZome', preview: false } } );
+  try {
+    const text = await fetchUrlText( url );
+    let fieldName = 'golden';
+    if ( format !== 'vef' ) {
+      const json = JSON.parse( text ); // an extra parse, yes, but we need to get the field name out of the JSON before we can import it.
+      fieldName = json.field || fieldName;
+    }
+
+    const legacy = await importLegacy();
+    design = await legacy .newDesign( fieldName, clientEvents( report ) );
+    report({ type: 'CONTROLLER_CREATED' }); // do we really need this for previewing?
+
+    doImport( text, format, report );
+
+  } catch (error) {
+    console.log(`importDesign failure: ${error.message}`);
+    report({ type: 'ALERT_RAISED', payload: 'Failed to import vZome model.' });
+    return false;
+  }
+}
+
 const fileImporter = ( report, payload ) =>
 {
-  const IMPORT_ACTIONS = {
-    'mesh' : 'ImportSimpleMeshJson',
-    'cmesh': 'ImportColoredMeshJson',
-    'vef'  : 'LoadVEF',
-  }
   const { file, format } = payload;
-  const action = IMPORT_ACTIONS[ format ];
   fetchFileText( file )
-
-    .then( text => {
-      try {
-        design.wrapper .doAction( '', action, { vef: text } );
-        reportDefaultScene( report );
-      } catch (error) {
-        console.log( `${action} actionPerformed error: ${error.message}` );
-        report( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
-      }
-    } )
+    .then( text => doImport( text, format, report ) )
     .catch( error => {
       console.log( error.message );
       console.log( 'Import failed' );
     } )
+}
+
+const IMPORT_ACTIONS = {
+  'mesh' : 'ImportSimpleMeshJson',
+  'cmesh': 'ImportColoredMeshJson',
+  'vef'  : 'LoadVEF',
+}
+const IMPORT_FORMATS = {
+  '.mesh.json' : 'mesh',
+  '.cmesh.json': 'cmesh',
+  '.vef'       : 'vef',
+}
+const importFormat = url =>
+{
+  const normalized = url.split( /[?#]/, 1 )[0].toLowerCase();
+  for ( const extension of Object.keys( IMPORT_FORMATS ) ) {
+    if ( normalized.endsWith( extension ) ) {
+      return IMPORT_FORMATS[ extension ];
+    }
+  }
+  return undefined;
 }
 
 const defaultLoad = { design: true, bom: false, };
@@ -337,6 +369,12 @@ const urlLoader = async ( report, payload ) =>
     throw new Error( "No url field in URL_PROVIDED event payload" );
   }
   const name = url.split( '\\' ).pop().split( '/' ).pop()
+
+  const format = importFormat( url );
+  if ( !! format ) {
+    return importDesign( report, url, format );
+  }
+
   report( { type: 'FETCH_STARTED', payload } );
 
   console.log( `%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ${preview? "previewing" : "interpreting " } ${url}` );
@@ -510,10 +548,6 @@ onmessage = ({ data }) =>
     {
       const { controllerPath, action, parameters, polygons } = payload;
       try {
-        if ( action === 'connectTrackballScene' ) {
-          connectTrackballScene( sendToClient, polygons );
-          return;
-        }
         if ( action === 'shareToGitHub' ) {
           const { target, config, data } = parameters;
           shareToGitHub( target, config, data, sendToClient );
@@ -611,7 +645,7 @@ onmessage = ({ data }) =>
     }
   
     default:
-      console.log( 'action not handled:', type, payload );
+      console.log( 'action not handled:', data, type, payload );
   }
   } catch (error) {
     console.log( `${type} onmessage error: ${error.message}` );

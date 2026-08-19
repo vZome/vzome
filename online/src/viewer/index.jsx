@@ -70,10 +70,14 @@ const SceneViewer = ( props ) =>
         <GltfExportProvider>
 
           {/* This renders the light DOM if the scene couldn't load.
-            TODO: refactor more for use in VRML and glTF, where there is no scene context.
+            symmetryRenderer defaults on (the vZome viewer/editor), but the gltf-viewer and
+            vrml-viewer web components pass symmetryRenderer={false}: they have no vZome scene
+            context (their content is external three.js meshes added via children3d), so the GPU
+            symmetry renderer is pointless there and the classic WebGLRenderer path is what those
+            external-mesh viewers were built for.
           */}
           <Show when={scene} fallback={props.children}>
-            <SceneCanvas id='scene-canvas' height={props.height} width={props.width} >
+            <SceneCanvas symmetryRenderer={dynConfig().symmetryRenderer !== false} id='scene-canvas' height={props.height} width={props.width} >
               {props.children3d}
             </SceneCanvas>
           </Show>

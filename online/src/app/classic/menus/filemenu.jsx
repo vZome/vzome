@@ -8,8 +8,8 @@ import { saveFileAs, openFile, saveTextFileAs, } from "../../../viewer/util/file
 import { CommandAction, Divider, Menu, MenuAction, MenuItem, SubMenu, LinkItem, } from "../../framework/menus.jsx";
 import { UrlDialog } from '../dialogs/webloader.jsx'
 import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
-import { useCamera } from "../../../viewer/context/camera.jsx";
-import { useImageCapture } from "../../../viewer/context/export.jsx";
+import { INITIAL_DISTANCE, useCamera } from "../../../viewer/context/camera.jsx";
+import { useImageCapture, useGltfExporter } from "../../../viewer/context/export.jsx";
 import { useViewer, EXPORT_FORMATS } from "../../../viewer/context/viewer.jsx";
 
 const queryParams = new URLSearchParams( window.location.search );
@@ -139,13 +139,21 @@ export const FileMenu = () =>
 
   const [ svgPreview, setSvgPreview ] = createSignal( false );
 
+  const { exporter } = useGltfExporter();
+
   const exportFile = ( extension, mimeType, format, params={} ) => evt =>
   {
-    exportAs( format, params )
-      .then( text => {
-        const name = (state.designName || 'untitled') .concat( "." + extension );
-        saveTextFileAs( name, text, mimeType );
-      });
+    if (format === 'gltf') {
+      const { exportGltf } = exporter();
+      const name = (state.designName || 'untitled') .concat( ".glb" );
+      exportGltf( glb => saveFileAs( name, glb, "model/gltf+binary" ) );
+    } else {
+      exportAs( format, params )
+        .then( text => {
+          const name = (state.designName || 'untitled') .concat( "." + extension );
+          saveTextFileAs( name, text, mimeType );
+        });
+    }
   }
 
   const { captureImage } = useImageCapture();
@@ -173,7 +181,7 @@ export const FileMenu = () =>
     return <MenuItem onClick={ doCaptureImage( props.ext, props.mime ) } disabled={props.disabled}>{props.label}</MenuItem>
   }
   
-    return (
+  return (
     <Menu label="File" dialogs={<>
       <UrlDialog show={showDialog()} setShow={setShowDialog} openDesign={openUrl} />
 
@@ -217,6 +225,7 @@ export const FileMenu = () =>
         <Divider/>
 
         <SubMenu label="Export 3D Rendering">
+          <ExportItem format="gltf" />
           <ExportItem format="dae" disabled={true} />
           <ExportItem format="pov" />
           <ExportItem format="shapes" />

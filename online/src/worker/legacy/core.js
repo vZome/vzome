@@ -347,53 +347,78 @@ export const loadAndInjectResource = async ( path, url ) =>
     }
   ) )
 
-  const fieldApps = {}
+  // Static registry of every registrable field: NAMES and LABELS only, with no
+  // FieldApplication construction.  A FieldApplication is heavy (it registers
+  // symmetry perspectives, orbit sets, tool factories, etc.), and a given
+  // worker typically needs only one or two fields, so we construct each app
+  // lazily on first getFieldApp() and cache it in `fieldApps`.
+  //
+  //   kind 'new'    -> new JsAlgebraicField( jsField )        (golden, rootTwo, ...)
+  //   kind 'legacy' -> new FieldClass( algebraicNumberFactory )
+  //   polygonN      -> dynamic, not registered here (see constructFieldApp)
+  //
+  // `label` is exactly what the corresponding Java *FieldApplication.getLabel()
+  // returns; null means "not shown in the New Design menu" (see filemenu.jsx).
+  // Storing it statically lets the picker enumerate/filter fields without
+  // forcing construction.  The class/field references are thunks so that merely
+  // defining this table does not dereference vzomePkg.* eagerly.
+  //
+  // The registry key MUST equal the field's getName() -- design XML records
+  // field.name and the client passes that name back to getField/createDesign.
+  const fieldRegistry = {
+    golden:        { kind: 'new',    label: 'Zome (Golden)',     jsField: goldenField,   appClass: () => vzomePkg.core.kinds.GoldenFieldApplication },
+    rootTwo:       { kind: 'new',    label: '√2',           jsField: root2Field,    appClass: () => vzomePkg.core.kinds.RootTwoFieldApplication },
+    rootThree:     { kind: 'new',    label: '√3',           jsField: root3Field,    appClass: () => vzomePkg.core.kinds.RootThreeFieldApplication },
+    heptagon:      { kind: 'new',    label: 'Heptagon',          jsField: heptagonField, appClass: () => vzomePkg.core.kinds.HeptagonFieldApplication },
+
+    sqrtPhi:       { kind: 'legacy', label: '√φ',      fieldClass: () => vzomePkg.fields.sqrtphi.SqrtPhiField,      appClass: () => vzomePkg.fields.sqrtphi.SqrtPhiFieldApplication },
+    snubCube:      { kind: 'legacy', label: 'Snub Cube',         fieldClass: () => vzomePkg.core.algebra.SnubCubeField,      appClass: () => vzomePkg.core.kinds.SnubCubeFieldApplication },
+    snubDodec:     { kind: 'legacy', label: 'Snub Dodecahedron', fieldClass: () => vzomePkg.core.algebra.SnubDodecField,     appClass: () => vzomePkg.core.kinds.SnubDodecFieldApplication },
+    superGolden:   { kind: 'legacy', label: null,                fieldClass: () => vzomePkg.core.algebra.SuperGoldenField,   appClass: () => vzomePkg.core.kinds.DefaultFieldApplication },
+    plasticNumber: { kind: 'legacy', label: null,                fieldClass: () => vzomePkg.core.algebra.PlasticNumberField, appClass: () => vzomePkg.core.kinds.DefaultFieldApplication },
+    plasticPhi:    { kind: 'legacy', label: null,                fieldClass: () => vzomePkg.core.algebra.PlasticPhiField,    appClass: () => vzomePkg.core.kinds.PlasticPhiFieldApplication },
+    edPegg:        { kind: 'legacy', label: null,                fieldClass: () => vzomePkg.core.algebra.EdPeggField,        appClass: () => vzomePkg.core.kinds.DefaultFieldApplication },
+  };
+
+  const fieldApps = {}   // cache of CONSTRUCTED apps, keyed by field name
   const wrapLegacyField = ( legacyField ) => ({
     name: legacyField.getName(),
   })
-  const addLegacyField = ( fieldClass, appClass ) =>
+
+  // Build (and cache) the FieldApplication for one name; undefined if unknown.
+  const constructFieldApp = ( name ) =>
   {
-    const legacyField = new fieldClass( algebraicNumberFactory );
-    legacyField.delegate = wrapLegacyField( legacyField )
-    fieldApps[ legacyField.getName() ] = new appClass( legacyField )
-  }
-  const addNewField = ( field, appClass ) =>
-  {
-    const legacyField = new vzomePkg.jsweet.JsAlgebraicField( field )
-    fieldApps[ field.name ] = new appClass( legacyField )
-  }
-  const fieldsReady = groupResourcesReady .then( () => {
-    addNewField( goldenField, vzomePkg.core.kinds.GoldenFieldApplication )
-    addNewField( root2Field, vzomePkg.core.kinds.RootTwoFieldApplication )
-    addNewField( root3Field, vzomePkg.core.kinds.RootThreeFieldApplication )
-    addNewField( heptagonField, vzomePkg.core.kinds.HeptagonFieldApplication )
-    addLegacyField( vzomePkg.fields.sqrtphi.SqrtPhiField, vzomePkg.fields.sqrtphi.SqrtPhiFieldApplication )
-    addLegacyField( vzomePkg.core.algebra.SnubCubeField, vzomePkg.core.kinds.SnubCubeFieldApplication )
-    addLegacyField( vzomePkg.core.algebra.SnubDodecField, vzomePkg.core.kinds.SnubDodecFieldApplication )
-    addLegacyField( vzomePkg.core.algebra.SuperGoldenField, vzomePkg.core.kinds.DefaultFieldApplication )
-    addLegacyField( vzomePkg.core.algebra.PlasticNumberField, vzomePkg.core.kinds.DefaultFieldApplication )
-    addLegacyField( vzomePkg.core.algebra.PlasticPhiField, vzomePkg.core.kinds.PlasticPhiFieldApplication )
-    addLegacyField( vzomePkg.core.algebra.EdPeggField, vzomePkg.core.kinds.DefaultFieldApplication )  
-  });
-  const getFieldApp = ( name='golden' ) =>
-  {
-    let fieldApp = fieldApps[ name ]
-    if ( ! fieldApp ) {
-      if ( name.startsWith( "polygon" ) ) {
-        const nsides = parseInt( name.replace( /^polygon/, '' ) )
-        const legacyField = new vzomePkg.core.algebra.PolygonField( "polygon"+nsides, nsides, algebraicNumberFactory )
-        legacyField.delegate = wrapLegacyField( legacyField )
-        fieldApp = new vzomePkg.core.kinds.PolygonFieldApplication( legacyField )
-        fieldApps[ legacyField.getName() ] = fieldApp
-      }
+    if ( name.startsWith( "polygon" ) ) {
+      const nsides = parseInt( name.replace( /^polygon/, '' ) )
+      const legacyField = new vzomePkg.core.algebra.PolygonField( "polygon"+nsides, nsides, algebraicNumberFactory )
+      legacyField.delegate = wrapLegacyField( legacyField )
+      const fieldApp = new vzomePkg.core.kinds.PolygonFieldApplication( legacyField )
+      fieldApps[ legacyField.getName() ] = fieldApp
+      return fieldApp
     }
+    const entry = fieldRegistry[ name ]
+    if ( ! entry )
+      return undefined
+    let fieldApp
+    if ( entry.kind === 'new' ) {
+      const legacyField = new vzomePkg.jsweet.JsAlgebraicField( entry.jsField )
+      fieldApp = new (entry.appClass())( legacyField )
+    }
+    else { // 'legacy'
+      const legacyField = new (entry.fieldClass())( algebraicNumberFactory )
+      legacyField.delegate = wrapLegacyField( legacyField )
+      fieldApp = new (entry.appClass())( legacyField )
+    }
+    fieldApps[ name ] = fieldApp
     return fieldApp
   }
 
-  const getFieldNames = () => {
-    return Object .keys( fieldApps );
-  }
-  
+  const getFieldApp = ( name='golden' ) => fieldApps[ name ] || constructFieldApp( name )
+
+  // All registrable field names (does NOT force construction).  polygonN fields
+  // are dynamic and not enumerated here, as before.
+  const getFieldNames = () => Object .keys( fieldRegistry )
+
   const getField = fieldName =>
   {
     const fieldApp = getFieldApp( fieldName )
@@ -402,8 +427,14 @@ export const loadAndInjectResource = async ( path, url ) =>
     return fieldApp.getField();
   }
 
+  // Label WITHOUT construction (null => hidden in the New Design picker).
   const getFieldLabel = ( fieldName ) =>
   {
+    const entry = fieldRegistry[ fieldName ]
+    if ( entry )
+      return entry.label;
+    // polygonN or unknown: fall back to constructing to read getLabel(),
+    // preserving prior behavior for names not in the static table.
     const fieldApp = getFieldApp( fieldName )
     if ( !fieldApp )
       return { error: `No such field name: ${fieldName}` };
@@ -654,9 +685,26 @@ export const loadAndInjectResource = async ( path, url ) =>
         const expectedText = JSON.stringify( expectedEffects, null, 2 );
         const actualText = JSON.stringify( actualEffects, null, 2 );
         if ( actualText !== expectedText ) {
+          const { id, index, tagName } = element.nativeElement
+          const editNumber = element.getAttribute('editNumber')
+          const nExpected = expectedEffects.children.length
+          const nActual = actualEffects.children.length
+          console.groupCollapsed(`${tagName} effects do not match recorded history!`)
+          console.log({ editNumber, id, index, nExpected, nActual, tagName })
           console.log( 'EXPECTED: ', expectedText );
           console.log( 'ACTUAL  : ', actualText );
-          throw new Error( 'Side effects from edit do not match recorded history!' );
+          console.groupEnd()
+          // DJH: This method originally threw an error at this point which meant that subsequent parsing wouldn't occur,
+          // but in some cases, the side effect lists are equivalent but just listed in a different order so the 
+          // string comparison fails.
+          // I think in some cases, it is helpful to allow the parsing to continue just to see if the reordering matters.
+          // With that in mind, I am always logging any differences (above), but only throwing an error if the counts are different.
+          // TODO: We could make more extensive comparisons as the basis for failing, but since this is just a seldom used
+          // diagnostic tool, this is the only change I'm going to make for now, except to include tagName and editNumber
+          // in the Error message when an error is actually thrown.
+          if(nExpected != nActual) {
+            throw new Error(`Side effects from edit number ${editNumber} (${tagName}) do not match recorded history!`)
+          }
         }
       }
     }
@@ -765,7 +813,10 @@ export const loadAndInjectResource = async ( path, url ) =>
 
 export const initialize = async () =>
 {
-  await Promise.all( [ fieldsReady, shapesReady ] );
+  // Fields are now constructed lazily (see fieldRegistry / getFieldApp), so we
+  // only wait for the group symmetry resources (needed before any field-app
+  // construction) and the shapes.
+  await Promise.all( [ groupResourcesReady, shapesReady ] );
   const parse = createParser( documentFactory );
   return {
     getFieldNames, getField, getFieldLabel, getSymmetry,

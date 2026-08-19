@@ -1,12 +1,14 @@
 
 import { createEffect, createSignal } from 'solid-js';
-import { Vector3 } from 'three';
-import { useThree } from "solid-three";
+import { createT } from 'solid-three';
+import { Group } from "three";
+const T = createT({ Group });
 
 import { useInteractionTool } from '../../../viewer/context/interaction.jsx';
 import { ObjectTrackball } from './trackball.jsx';
 import { VectorArrow } from './arrow.jsx';
 import { subController, useEditor } from '../../framework/context/editor.jsx';
+import { useCamera } from '../../../viewer/context/camera.jsx';
 
 /*
 This combines the behaviors of StrutDragTool and SelectionTool, to better
@@ -17,7 +19,7 @@ I'd like to reuse their code, but that seems too complicated for the benefit.
 
 const UnifiedTool = props =>
 {
-  const eye = useThree(({ camera }) => camera.position);
+  const { state } = useCamera();
   const { startPreviewStrut, endPreviewStrut, movePreviewStrut, scalePreviewStrut,
           rootController, setState, controllerAction } = useEditor();
   const pickingController  = () => subController( rootController(), 'picking' );
@@ -43,7 +45,8 @@ const UnifiedTool = props =>
     
     bkgdClick: () =>
     {
-      controllerAction( rootController(), 'DeselectAll' );
+      if ( ! operating() ) // don't deselect if we are in the middle of dragging a strut
+        controllerAction( rootController(), 'DeselectAll' );
     },
     
     onWheel: deltaY => {
@@ -68,9 +71,9 @@ const UnifiedTool = props =>
         return;
       totalY = 0;
       setPosition( position );
-      const { x, y, z } = new Vector3() .copy( eye() ) .sub( new Vector3( ...position ) ) .normalize();
-      setLine( [ x, y, z ] );
-      startPreviewStrut( id, [ x, y, z ] );
+      const eye = state .camera .lookDir .map( x => -x ); // invert the lookDir to get eye direction in world coordinates
+      setLine( eye );
+      startPreviewStrut( id, eye );
       setOperating( evt ); // so we can pass it to the ObjectTrackball
     },
     onDrag: () => {},
@@ -93,12 +96,12 @@ const UnifiedTool = props =>
 
   return (
     <Show when={operating()}>
-      <group position={position()}>
+      <T.Group position={position()}>
         <ObjectTrackball startEvent={operating()} line={line()} setLine={setLine} rotateSpeed={0.9} debug={props.debug} />
         <Show when={props.debug}>
           <VectorArrow vector={line()} />
         </Show>
-      </group>
+      </T.Group>
     </Show>
   );
 }

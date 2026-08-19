@@ -111,6 +111,10 @@ namespace com.vzome.core.render {
             return this.mShape.getGuid();
         }
 
+        public getShapeKey(): string {
+            return this.mShape.getShapeKey();
+        }
+
         public getShape(): com.vzome.core.math.Polyhedron {
             return this.mShape;
         }

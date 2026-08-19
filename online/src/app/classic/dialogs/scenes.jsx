@@ -274,7 +274,7 @@ const ScenesDialog = props =>
                 <div class='absolute-0'>
                   <SceneProvider config={{ labels: props.config?.labels }}>
                     <SceneIndexingProvider index={ sceneIndex() }>
-                      <SceneCanvas height="100%" width="100%" />
+                      <SceneCanvas symmetryRenderer={true} height="100%" width="100%" />
                     </SceneIndexingProvider>
                   </SceneProvider>
                   <Stack class='scene-actions'>

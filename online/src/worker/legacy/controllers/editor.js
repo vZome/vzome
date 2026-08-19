@@ -183,7 +183,21 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
       return [ ...Array( field .getOrder() - 1 ) .keys() ] .map( i => field .getUnitTerm( i+1 ) .evaluate() );
     })( symmetry .getField() );
     const resourcePath = symmetrySystem .getModelResourcePath();
-    this.clientEvents .symmetryChanged( { orientations, permutations, scalars, planes, resourcePath } );
+    // The embedding transform is symmetry-system-specific, not just field-specific: e.g. in the
+    // heptagon field the antiprism system has a skewed embedding while its octahedral system is
+    // trivial. It must travel with SYMMETRY_CHANGED so the client updates it on a switch; otherwise
+    // the client keeps the embedding from the last SCENE_RENDERED and renders the new symmetry with
+    // the wrong transform.
+    const embedding = symmetrySystem .getEmbedding();
+    // fieldName + symmetryName let the client key its renderer group on a STABLE identity rather
+    // than hashing the orientation float matrices. The float matrices are the symmetry's real
+    // rotations, which are field-INDEPENDENT for a given symmetry type (e.g. octahedral rotations
+    // are the same reals in the golden field and a non-golden field), so an orientation-content
+    // hash collides across fields -- reusing one field's renderer group (and its field-specific
+    // shapes) for another field, corrupting non-golden orientations. field:symmetry is unique.
+    const fieldName = symmetry .getField() .getName();
+    const symmetryName = symmetrySystem .getName();
+    this.clientEvents .symmetryChanged( { orientations, permutations, scalars, planes, resourcePath, fieldName, symmetryName, embedding } );
     
     // TODO: test this change with buildPlane
     this.getSubController( 'buildPlane' ) .setOrbitSource( symmetrySystem );

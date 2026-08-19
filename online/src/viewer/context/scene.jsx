@@ -1,5 +1,5 @@
 
-import { createContext, createEffect, createSignal, useContext } from "solid-js";
+import { batch, createContext, createEffect, createSignal, useContext } from "solid-js";
 import { createStore, reconcile, unwrap } from "solid-js/store";
 
 import { useWorkerClient } from "./worker.jsx";
@@ -7,7 +7,16 @@ import { useCamera } from "./camera.jsx";
 import { encodeEntities, selectSnapshot } from "../util/actions.js";
 import { useViewer } from "./viewer.jsx";
 
-const SceneContext = createContext( { scene: ()=> { console.log( 'NO SceneProvider' ); } } );
+// Stub used when there is no SceneProvider ancestor (e.g. the gltf-viewer / vrml-viewer web
+// components, which mount SceneViewer -> SceneCanvas -> SymmetryGeometry directly under only a
+// CameraProvider). SymmetryGeometry reads setSelectionHighlighter from here, so it must exist as a
+// no-op; without it, `setSelectionHighlighter is not a function` throws on mount. (Those viewers
+// have no vZome shapes anyway -- their content is added to the three.js scene via children3d.)
+const SceneContext = createContext( {
+  scene: () => { console.log( 'NO SceneProvider' ); },
+  setSelectionHighlighter: () => {},
+  highlightSelection: () => {},
+} );
 
 const SceneProvider = ( props ) =>
 {
@@ -42,7 +51,33 @@ const SceneProvider = ( props ) =>
     }
   }
 
-  const apiObject = { scene, setScene, labels, updateShapes, addShape, useViewer, }
+  // Clear all design-derived scene state, for a component that loads a SUCCESSION of designs into
+  // ONE reused SceneProvider (the classic editor's trackball, which now keeps one long-lived
+  // worker/scene and reloads a new trackball design on every symmetry/field switch, instead of
+  // remounting). updateShapes only empties the INSTANCES of shapes absent from the next scene; it
+  // leaves stale shape ENTRIES, and never touches orientations/symmetryId. That's fine within one
+  // design, but across a field switch the shape set, orientation set, and symmetryId all differ,
+  // so the next design must start from a truly empty store: otherwise SymmetryGeometry would keep
+  // the previous field's shapes, and -- because its group-switch effect early-returns when the key
+  // is unchanged -- could fail to switch groups. reconcile('') replaces the whole store; clearing
+  // symmetryId here guarantees the next design's symmetryId reads as a change.
+  const resetScene = () => setScene( reconcile( {} ) );
+
+  // Optional imperative selection-highlight hook. SymmetryGeometry registers a callback here
+  // (id, selected) so the SELECTION_TOGGLED handler can update the one flipped instance's GPU
+  // highlight in O(1) -- an id-keyed lookup inside the renderer -- instead of the previous
+  // reactive effect that re-scanned every instance of every shape (through slow store proxies)
+  // on every toggle just to rediscover which id the message already named. That scan was the
+  // dominant per-click cost on large models; select-all/deselect-all (one SELECTION_TOGGLED per
+  // manifestation) made it O(N^2). The store's `selected` flag is still written surgically
+  // below regardless, so non-symmetry readers (ShapedGeometry, context menu) stay correct; this
+  // hook is purely the fast highlight path and is a no-op when unset (e.g. the ShapedGeometry
+  // path, which highlights reactively per-<Instance>).
+  let selectionHighlighter = null;
+  const setSelectionHighlighter = fn => { selectionHighlighter = fn; };
+  const highlightSelection = ( shapeId, id, selected ) => selectionHighlighter?.( shapeId, id, selected );
+
+  const apiObject = { scene, setScene, labels, updateShapes, addShape, resetScene, useViewer, setSelectionHighlighter, highlightSelection, }
 
   return (
     <SceneContext.Provider value={ apiObject }>
@@ -76,6 +111,12 @@ const SceneIndexingProvider = ( props ) =>
       setLastSceneIndex( sceneIndex );
       setScene( 'embedding', reconcile( scene.embedding ) );
       setScene( 'polygons', scene.polygons );
+      // Needed by SymmetryGeometry -- see the longer comment on the SCENE_RENDERED
+      // subscription below. This is the SceneViewer/DesignViewer/UrlViewer scene-loading
+      // path (via InitializeScene -> showIndexedScene), which never mounts
+      // SceneChangeListener at all, so that comment's fix doesn't reach this path either.
+      if ( scene.orientations )
+        setScene( 'orientations', scene.orientations );
       const { camera } = config || { camera: true };
       setTimeout( () => {
         ( camera? tweenCamera( scenes[ sceneIndex ] .camera ) : Promise.resolve() )
@@ -87,7 +128,7 @@ const SceneIndexingProvider = ( props ) =>
   createEffect( () => {
     if ( props.index !== undefined ) {
       // if index is given, show that scene
-      console.log( `SceneIndexingProvider effect showing ${props.index}` );     
+      console.log( `SceneIndexingProvider effect showing ${props.index}` );
       showIndexedScene( props.index );
     }
   } );
@@ -138,7 +179,21 @@ const SceneTitlesProvider = (props) =>
     : ( props.show === 'titled' )? namedScenes()
     : scenes .map( (scene,index) => scene.title?.trim() || (( index === 0 )? "default scene" : `#${index}`) );
   const [ sceneTitle, setSceneTitle ] = createSignal(( props.show === 'given' )? props.title : sceneTitles()[0] );
-  
+
+  // `scenes` (from useViewer()) loads asynchronously from the worker, so it's almost
+  // always still empty at the createSignal() call above, freezing sceneTitle at
+  // sceneTitles()[0] === undefined forever (signals don't recompute their initializer).
+  // setSceneTitle was never called anywhere to correct this once scenes actually arrive,
+  // so InitializeScene's showTitledScene(sceneTitle()) call would silently fall back to
+  // scene index 0 ("default scene") on first paint instead of the scene actually wanted.
+  if ( props.show !== 'given' ) {
+    createEffect( () => {
+      if ( sceneTitle() === undefined && scenes.length > 0 ) {
+        setSceneTitle( sceneTitles()[0] );
+      }
+    } );
+  }
+
   const showTitledScene = ( name, config ) =>
   {
     const index = getSceneTitleIndex( scenes, name );
@@ -156,16 +211,84 @@ const SceneTitlesProvider = (props) =>
 
 const SceneChangeListener = () =>
 {
-  const { scene, updateShapes, addShape, setScene } = useScene();
+  const { scene, updateShapes, addShape, setScene, highlightSelection } = useScene();
   const { subscribeFor } = useWorkerClient();
 
-  subscribeFor( 'SYMMETRY_CHANGED', ( { orientations } ) => {
-    setScene( 'orientations', orientations );
+  // Reads the store's current symmetryId; kept as a helper because the SCENE_RENDERED handler
+  // shadows the store `scene` with its payload parameter of the same name.
+  const storeSceneSymmetryId = () => scene.symmetryId;
+
+  subscribeFor( 'SYMMETRY_CHANGED', ( { orientations, fieldName, symmetryName, embedding } ) => {
+    // fieldName + symmetryName (present for vZome files; see EditorController.setSymmetryController)
+    // give SymmetryGeometry a STABLE renderer-group key. Keying on the orientation float matrices
+    // instead collides across algebraic fields -- the symmetry rotations are the same reals in
+    // every field -- which reused one field's group (and shapes) for another, corrupting non-
+    // golden-field orientations. Undefined on the preview/viewer path, where SymmetryGeometry
+    // falls back to hashing the orientations.
+    const nextSymmetryId = ( fieldName && symmetryName ) ? `${fieldName}:${symmetryName}` : undefined;
+
+    // batch() is REQUIRED, not just an optimization: this handler runs from the worker's async
+    // onmessage, OUTSIDE any reactive context, so without batch each setScene flushes effects
+    // synchronously on its own. SymmetryGeometry's group-switch effect keys on symmetryId but
+    // REGISTERS the renderer group from orientations -- so an unbatched `setScene('symmetryId')`
+    // (before the `setScene('orientations')` below) fired that effect with the NEW symmetryId but
+    // the OLD orientations, registering e.g. the golden:octahedral group with the 60 icosahedral
+    // matrices. The later orientations update re-ran the effect, but the group was already
+    // registered (same key) so it kept the wrong matrices -> every octahedral strut rendered with
+    // an icosahedral rotation. batch() flushes all three writes together, so the effect sees
+    // symmetryId and orientations consistent, in one run.
+    batch( () => {
+      // Clear the OLD symmetry's shapes on a real symmetry change. SYMMETRY_CHANGED fires (with
+      // the new orientations) BEFORE the following scene render repopulates shapes, so without this
+      // the group-switch effect activates the new group while props.shapes still holds the previous
+      // symmetry's shapes -- and SymmetryGeometry then tries to register those stale instances,
+      // whose orientation indices belong to the OLD orientation set, against the NEW (possibly
+      // smaller) group ("orientationIndex out of range for group"). Clearing to {} means the effect
+      // has nothing stale to register until the new scene arrives. SYMMETRY_CHANGED only fires on
+      // load or a genuine symmetry switch (never routine edits), always followed by a scene render,
+      // so this clear is safe. Guard on an actual change so a redundant same-symmetry event doesn't
+      // needlessly drop and rebuild all shapes.
+      const symmetryChanged = nextSymmetryId === undefined || nextSymmetryId !== scene.symmetryId;
+      if ( symmetryChanged )
+        setScene( 'shapes', reconcile( {} ) );
+
+      if ( nextSymmetryId )
+        setScene( 'symmetryId', nextSymmetryId );
+      setScene( 'orientations', orientations );
+      // The embedding is symmetry-system-specific (e.g. heptagon antiprism is skewed, its
+      // octahedral system is trivial), so update it on a switch. Without this the embedding
+      // only refreshed on SCENE_RENDERED, leaving the new symmetry rendered with the old
+      // transform. Undefined on the viewer/preview path, which never fires SYMMETRY_CHANGED.
+      if ( embedding )
+        setScene( 'embedding', reconcile( embedding ) );
+    } );
   });
 
   subscribeFor( 'SCENE_RENDERED', ( { scene } ) => {
+    // Drop a render that was computed for a different symmetry than the one now active. During
+    // rapid symmetry switches (notably the classic trackball, which reloads its whole design on
+    // every switch), a SCENE_RENDERED for the previous symmetry can arrive AFTER the switch,
+    // carrying shapes whose per-instance orientation indices belong to the old (larger) orientation
+    // set -- out of range for the new symmetry group, which throws in the renderer
+    // (normalizeOrientationIndex). The worker stamps each render with its symmetryId
+    // (prepareSceneResponse); drop any whose id != the current one. Only guard when both ids are
+    // known: edit/legacy render paths omit symmetryId, and the store id is unset before the first
+    // SYMMETRY_CHANGED.
+    if ( scene.symmetryId && storeSceneSymmetryId() && scene.symmetryId !== storeSceneSymmetryId() )
+      return;
     setScene( 'embedding', reconcile( scene.embedding ) );
     setScene( 'polygons', scene.polygons );
+    // Needed by SymmetryGeometry. SYMMETRY_CHANGED (above) is the usual source of
+    // scene.orientations, but the legacy Java loadDesign/newDesign path is the only one
+    // that fires it. SCENE_RENDERED always carries `orientations` too though (see
+    // prepareSceneResponse in vzome-worker-static.js), so read it here as well. Note:
+    // this SceneChangeListener component is only mounted by the classic editor and
+    // buildplane apps (see their index.jsx) -- the SceneViewer/DesignViewer/UrlViewer
+    // path (the "viewer"/web-component embed) never mounts it at all, and gets its scene
+    // data through SceneIndexingProvider's showIndexedScene() instead, which needed the
+    // identical fix separately (see below).
+    if ( scene.orientations )
+      setScene( 'orientations', scene.orientations );
     updateShapes( scene.shapes );
     // logShapes();
   } );
@@ -191,13 +314,23 @@ const SceneChangeListener = () =>
   } );
   
   subscribeFor( 'SELECTION_TOGGLED', ( { shapeId, id, selected } ) => {
-    // TODO use nested signal
+    // Fast path: update the flipped instance's GPU highlight directly, id-keyed and O(1), via
+    // SymmetryGeometry's registered hook (no-op on other render paths). This is what keeps a
+    // single click's highlight cheap on a big model -- see setSelectionHighlighter in
+    // SceneProvider for why the previous reactive-scan approach was O(N) per toggle.
+    highlightSelection( shapeId, id, selected );
+
+    // Surgical nested store update: flip ONLY this one instance's `selected` flag, leaving the
+    // shapes object, the shape, and the instances array all at their existing identities. This
+    // keeps the store correct for readers that don't use the fast hook (ShapedGeometry, the
+    // context menu, pick metadata) while NOT triggering SymmetryGeometry's expensive instance-
+    // registration effect (which rebuilds whole GPU buffers) -- that effect untracks its
+    // `selected` reads precisely so a selection toggle doesn't re-run it.
     const shape = scene.shapes[ shapeId ];
-    const instances = shape .instances.map( inst => (
-      inst.id !== id ? inst : { ...inst, selected }
-    ));
-    const shapes = { ...scene.shapes, [ shapeId ]: { ...shape, instances } };
-    setScene( { ...scene, shapes } );
+    const index = shape ?.instances.findIndex( inst => inst.id === id );
+    if ( index === undefined || index < 0 )
+      return;
+    setScene( 'shapes', shapeId, 'instances', index, 'selected', selected );
     // TODO lower ambient light if anything is selected
   } );
 

@@ -18,7 +18,7 @@ The live website at <https://vzome.com> is partly built from the `website/` fold
 | `core/` | Java | Active | Core domain model: algebraic fields, symmetry systems, edit commands, construction geometry, exporters.  No UI code. |
 | `desktop/` | Java (Swing) | Frozen | Desktop vZome controllers and views.  Depends on `core`. |
 | `online/` | JavaScript (SolidJS) | **Active** | Web application + `<vzome-viewer>` web component.  Uses `esbuild` for bundling. |
-| `website/` | Markdown / Eleventy | Active | Source for <https://vzome.com>. |
+| `website/` | Markdown / Eleventy | Active | Source for much of <https://vzome.com>. |
 | `pwa/` | React | Superseded | Earlier progressive web app experiment, replaced by `online`. |
 | `server/` | Java | Abandoned | WebSocket server + exporter servlet (was on Heroku).  Client-server approach abandoned for pure client-side. |
 | `oculus/` | C# / Unity | Dormant | VR app for Meta Quest.  Frameworks out of date; future VR will use WebXR in `online`. |
@@ -82,6 +82,19 @@ Key concepts:
 
 Zomic is a scripting language for programmatic Zome model construction, with a virtual machine model (location, orientation, scale, build mode).  Grammar and reference are in `core/docs/ZomicReference.md`.  Parser is in `com.vzome.core.zomic`.
 
+## Desktop vZome Architecture
+
+There are three main layers:
+1. **Model** (`core/`) — pure Java domain model (fields, symmetry, edit commands, construction geometry, exporters).  No UI code.
+2. **Controllers** (`desktop/src/main/java/com/vzome/desktop/controller/`) — handle user input and coordinate between the model and the view.
+3. **Views** (`desktop/src/main/java/org/vorthmann/`) — UI components and rendering logic.
+
+The separation of `core` from `desktop` allows the core logic to be reused in other contexts (e.g., online (through JSweet), VR) without any Swing or AWT dependencies. 
+
+The generic `Controller` interface in `desktop` is the main entry point for handling user actions.  The various controllers maintain the current `RealizedModel`, the edit history, the selection state, etc.  The view layer should not have any direct dependencies on specific controller classes.
+This isolation allows the online version to transpile and use a number of controller classes directly.  It also would allow
+the Java Swing UI to be replaced with a different framework (even a native one, or a command-line) if desired, without affecting the core logic.
+
 ## Online vZome Architecture
 
 ### Build System
@@ -105,11 +118,15 @@ Zomic is a scripting language for programmatic Zome model construction, with a v
 
 ### Web Worker Architecture
 
-Heavy computation (parsing `.vZome` files, executing edit commands, convex hulls, 4D projections) runs in a **Web Worker** to keep the UI responsive.  The worker is **stateful** — it maintains the mesh state for every open design.  Only rendering state ("render events") flows back to the main thread.
+Heavy computation (parsing `.vZome` files, executing edit commands, convex hulls, 4D projections) runs in a **Web Worker** to keep the UI responsive.  The worker is **stateful** — it maintains the mesh state for an open design.  Mostly rendering state ("render events") flows back to the main thread.
+At the moment, each worker manages a single open design, but the architecture could be extended to support multiple designs in memory if needed.
 
-Two loading paths:
+When the `vzome-viewer` web component is used, it gets a dedicated worker instance.  This allows multiple viewers on the same page, each with its own design and state.
+
+There are two loading paths:
 1. **`.shapes.json` preview** — fast path for viewing; contains pre-computed final geometry
-2. **`.vZome` file** — full path; replays the entire edit history (loads the large legacy code module)
+2. **`.vZome` file** — full path for editing; replays the entire edit history (loads the large legacy code module)
+The preview mode will fall back to the full path if the JSON is missing or incompatible with the current code version.
 
 ### SolidJS + solid-three
 
@@ -163,6 +180,8 @@ cicd/online.bash prod
 
 - **Java**: Standard Java conventions.  The `core` package avoids any UI or platform dependencies — it must remain portable (runs on Android for VR, transpiles to JS via JSweet).
 - **JavaScript/JSX**: SolidJS JSX (`.jsx` files), not React.  Components use SolidJS reactivity (signals, effects, stores) — do NOT apply React patterns like `useState`/`useEffect`.
+  - **Prefer context over props.**  Components should pull what they need from context providers (`WorkerProvider`, `ViewerProvider`, `SceneProvider`, `CameraProvider`, `SymmetryProvider`, etc.) rather than threading data down through prop chains.  Keep generic providers generic — don't add flags to a shared provider to serve one caller; compose the specialized behavior around it instead.
+  - **Add behaviors via composition — the "behavioral component."**  A component may render `null` and exist purely to install a behavior into the surrounding context, mounted as a sibling in the JSX tree (e.g. `TrackballLoader`, `SceneChangeListener`).  Add behaviors by placing such components in the tree, not by growing the API of an existing component.  This keeps each provider single-purpose and makes concerns individually removable.
 - **Web Components**: The `<vzome-viewer>` custom element uses Shadow DOM.  It's designed to be embedded on any website with a simple `<script>` tag.
 
 ## Important Caveats
@@ -172,6 +191,7 @@ cicd/online.bash prod
 3. **Algebraic fields use exact arithmetic**: Never introduce floating-point math where algebraic numbers are expected.  The entire point is exact computation.
 4. **The edit history is append-only**: A `.vZome` file must always open successfully regardless of code changes.  Backward compatibility of the XML format is paramount.
 5. **Orbit/direction data can be stored per-document**: This was introduced to insulate files from changes to orbit definitions in code.  See `developer-docs/Symmetry-System-Enhancements.md` for the design rationale.
+6. **Use yarn, never npm, in `online/`**: This project uses **yarn** as its package manager (`online/yarn.lock`).  Running bare `npm install`/`npm uninstall` — even with `--no-save` — rewrites `yarn.lock` with a large unwanted diff and leaves a stray `package-lock.json`.  Use `yarn add`/`yarn remove` instead, or isolate throwaway tooling in a scratchpad with its own `package.json` so it never touches the project lockfile.
 
 ## Key People
 
@@ -180,12 +200,21 @@ cicd/online.bash prod
 
 ## Where to Find More
 
+Two folders of design notes and architecture decision records are the primary place to look:
+
+- **`developer-docs/`** — repo-wide architecture and design notes (symmetry system, rendering state, regression testing, TypeScript-migration and LLM-knowledge plans, the full action-name catalog).  Partially stale, but the best record of *why* things are the way they are.
+- **`online/developer-docs/`** — online-vZome-specific docs (architecture, the symmetry-renderer plan/status, worker↔client scene protocol, testing strategy).
+
+Frequently useful individual files:
+
 | Topic | Location |
 |-------|----------|
 | Online architecture | `online/developer-docs/architecture.md` |
+| Worker↔client scene protocol | `online/developer-docs/worker-client-scene-protocol.md` |
+| Symmetry renderer plan / status | `online/developer-docs/symmetry-renderer-plan.md`, `online/developer-docs/symmetry-renderer-status.md` |
 | Symmetry system design | `developer-docs/Symmetry-System-Enhancements.md` |
 | Rendering state model | `developer-docs/rendering-state.md` |
-| Regression testing ideas | `developer-docs/regression-testing.md` |
+| Regression testing ideas | `developer-docs/regression-testing.md`, `online/developer-docs/testing-strategy.md` |
 | Zomic language reference | `core/docs/ZomicReference.md` |
 | All action/command names | `developer-docs/vZome-action-names.txt` |
 | Online TODO items | `online/TODO.md` |

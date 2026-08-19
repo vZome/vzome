@@ -72,7 +72,12 @@ const InteractionToolProvider = (props) =>
         // We are dragging... we must have seen a move event with sufficient change in distance
         const handler = tool && tool() ?.onDragEnd;
         if ( handler ) {
-          handler( e, props.id, props.position, props.type, props.selected );
+          // BUG FIX: this previously read `props.id`/`props.position`/etc, which are
+          // InteractionToolProvider's own component props (irrelevant here, always
+          // undefined) rather than this call's actual id/position/type/selected
+          // parameters -- so every tool's onDragEnd received undefined for all four
+          // whenever a real drag completed. Pre-existing, affects ShapedGeometry too.
+          handler( e, id, position, type, selected, label );
         }
         dragStartEmitted = false;
       } else {

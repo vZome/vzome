@@ -1,7 +1,7 @@
 
 // Copied gratefully from https://github.com/ggorlen/gist-list/blob/da3e4486111ffc27c30d38674399a74427c898d8/index.html#L135
   
-class GHRequestError extends Error {
+export class GHRequestError extends Error {
   constructor(limits = {}, ...params) {
     super(...params);
 

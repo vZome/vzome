@@ -9,23 +9,25 @@ const commonConfig = {
   conditions: ["development", "browser"],
   minify: false,
   sourcemap: true,
-  outdir: 'public/modules',
+  outdir: 'serve/modules',
 };
 let ctx = await esbuild.context( commonConfig );
 
 const security = {
-  key: fs.readFileSync('public/localhost-key.pem'),
-  cert: fs.readFileSync('public/localhost.pem')
+  key: fs.readFileSync('serve/localhost-key.pem'),
+  cert: fs.readFileSync('serve/localhost.pem')
 };
 
 // Start esbuild's server on a random local port
-ctx .serve( { servedir: 'public' } )
+ctx .serve( { servedir: 'serve' } )
 .then( result => {
   // The result tells us where esbuild's local server is
   const { host, port } = result;
 
   // Then start a proxy server on port 8532
   https.createServer( security, (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
     const options = {
       hostname: host,
       port: port,
@@ -38,13 +40,19 @@ ctx .serve( { servedir: 'public' } )
     const proxyReq = http.request( options, proxyRes => {
       // If esbuild returns "not found", send a custom 404 page
       if (proxyRes.statusCode === 404) {
-        res.writeHead(404, { 'Content-Type': 'text/html' });
+        res.writeHead(404, {
+          'Content-Type': 'text/html',
+          'Access-Control-Allow-Origin': '*'
+        });
         res.end('<h1>A wacky custom 404 page</h1>');
         return;
       }
 
       // Otherwise, forward the response from esbuild to the client
-      res.writeHead( proxyRes.statusCode, proxyRes.headers );
+      res.writeHead( proxyRes.statusCode, {
+        ...proxyRes.headers,
+        'access-control-allow-origin': '*'
+      } );
       proxyRes.pipe( res, { end: true } );
     });
 
