@@ -250,6 +250,119 @@ img {
   align-self: center;
 }
 
+/* In the bookmarks panel the hint must wrap within the unpinned area's two-column width, rather
+   than laying out on one line and forcing the "Create" column to the right. */
+.custom-bookmarks-unpinned .custom-tools-drop-hint {
+  max-width: 168px;          /* the two-column min-width of the unpinned area */
+  text-align: center;
+  margin-top: 20px;          /* separate the hint from the "Unpinned" label above */
+}
+
+/* ===== Bookmarks: the COLUMN analog of the custom-tools area (vertical L, notch bottom-left). ===== */
+
+.custom-bookmarks-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Collapsed, in-flow: a bordered column of pinned bookmarks + the "more" toggle beneath it. */
+.custom-bookmarks-collapsed {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 1px 2px;
+  border: 1px solid darkgray;
+  border-radius: 4px;
+}
+
+/* A vertical stack of bookmark buttons. */
+.custom-bookmarks-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+/* Bookmark drop zones are columns, so they need a real WIDTH (not just height) to be a hittable
+   target when empty, for intersection-based collision detection. */
+.custom-bookmarks-column.custom-tools-dropzone {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* The expanded panel wrapper — bare, carries only the drop-shadow so it traces the whole L.
+   Row layout: arm (pinned column) at left, body at right; align-items:flex-start puts the arm at
+   the top so the body extends BELOW it → the notch is at the bottom-left. */
+.custom-bookmarks-panel {
+  z-index: 31;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  filter: drop-shadow( 0 4px 8px rgba(0, 0, 0, 0.3) );
+}
+
+/* Left arm of the L — the pinned bookmarks column + close. Overlaps the body's left border by 1px
+   (opaque bg hides it) so arm and body read as one outline. No RIGHT border; rounded on the left. */
+.custom-bookmarks-arm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;                  /* match the collapsed column's toggle→bookmarks spacing, so the
+                                pinned bookmarks don't shift when the panel opens */
+  min-height: 60px;
+  padding: 3px 1px 2px;
+  margin-right: -1px;        /* overlap the body's left border */
+  position: relative;
+  z-index: 1;
+  background-color: white;
+  border: 1px solid darkgray;
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+}
+
+/* Body of the L — the taller right block (unpinned column + factory). Full border; top-LEFT corner
+   is square where the arm meets it, the other three rounded. */
+.custom-bookmarks-body {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  min-height: 280px;
+  padding: 4px 8px 8px;
+  background-color: white;
+  border: 1px solid darkgray;
+  border-radius: 0 4px 4px 4px;
+}
+
+/* A labeled group within the body (the unpinned column, or the factory column). */
+.custom-bookmarks-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* The unpinned bookmarks area is a FIXED-height, column-wrapping box: bookmarks fill down a
+   column, then wrap into a new column to the RIGHT, growing the box (and the whole panel)
+   horizontally rather than vertically. A fixed min-width reserves room for two columns from the
+   start, so the width does not collapse when the "Drag bookmarks..." hint is replaced by a single
+   short column. */
+.custom-bookmarks-column.custom-bookmarks-unpinned {
+  flex-wrap: wrap;
+  align-content: flex-start;   /* pack wrapped columns to the left, no stretching */
+  height: 244px;               /* constant height (panel min is 300px, less label + padding) */
+  min-width: 168px;            /* room for two 80px button columns + gap; overrides the 44px
+                                  drop-zone min-width, which otherwise wins on specificity */
+  column-gap: 8px;
+}
+
+/* The close button sits at the TOP of the arm, in the same spot the collapsed "more" toggle
+   occupied, so the toggle→close swap and the pinned column beneath both stay stationary. */
+.custom-bookmarks-arm .custom-tools-close {
+  margin-left: 0;
+  order: -1;                 /* place the close above the pinned column */
+  align-self: center;
+}
+
 .tool-config-icon-label {
   display: grid;
   grid-template-columns: min-content 1fr;

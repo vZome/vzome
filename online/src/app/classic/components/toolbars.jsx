@@ -49,8 +49,7 @@ const ToolFactoryButton = props =>
   // Factory titles all read "Create a/an <thing> tool"; the "Create a/an " is noise on the button
   //  (though kept in the tooltip). Strip it for the caption only.
   const displayLabel = () => ( label() || '' ).replace( /^create an? /i, '' );
-  const handleClick = () =>
-    controllerAction( controller(), 'createTool' );
+  const handleClick = () => controllerAction( controller(), 'createTool' );
   return (
     <ToolbarButton label={label()} displayLabel={displayLabel()} image={`newTool/${props.factoryName}`} onClick={handleClick} disabled={!enabled()} />
   )
@@ -121,15 +120,102 @@ const ToolButton = props =>
   )
 }
 
-// A draggable wrapper around a custom-tool ToolButton, for reordering within the open panel.
-// Each tool is a sortable (draggable + a droppable, so you can drop onto it for fine ordering).
-const SortableToolButton = props =>
+// Shared pin/unpin + reorder behavior for a customizable area (tools or bookmarks). Given the
+// worker list names and reorder action, it exposes the ordered pinned/unpinned id lists, a
+// collision detector, and an onDragEnd. Layout (rows vs columns) is left to each caller.
+//   controller     — an ACCESSOR (`() => toolsController`) for the tools controller, so the reads
+//                     always resolve the LIVE controller from props rather than a value snapshotted
+//                     during body execution (which could be undefined before props resolve, leaving
+//                     the accessors bound to a stale/empty object that never becomes reactive).
+//   allListName    — worker list of ALL custom items in order (e.g. 'allCustomTools')
+//   pinnedListName — worker list of just the PINNED items (e.g. 'customTools')
+//   reorderAction  — controller action to persist a new order (e.g. 'reorderTools')
+const createPinnableArea = ( controller, allListName, pinnedListName, reorderAction ) =>
 {
-  const sortable = createSortable( props.toolId );
+  const { controllerAction, setEdited } = useEditor();
+  const allNames = () => controllerProperty( controller(), allListName, allListName, true );
+  const pinnedNames = () => controllerProperty( controller(), pinnedListName, pinnedListName, true );
+
+  const isPinned = id => pinnedNames() .includes( id );
+  const order = () => allNames();
+  const pinnedOrder = () => order() .filter( isPinned );
+  const unpinnedOrder = () => order() .filter( id => ! isPinned( id ) );
+
+  // Which segment a droppable belongs to: a zone id encodes it; an item id is read from pin state.
+  const droppableIsPinned = id =>
+    ( typeof id === 'string' && id .startsWith( ZONE_PREFIX ) )
+      ? id .slice( ZONE_PREFIX .length ) === 'pinned'
+      : isPinned( id );
+
+  // SAME segment → normal intersection (drop onto an item → reorder). CROSS segment → force the
+  //  destination ZONE (never an item), so the whole segment stays highlighted, the sortable
+  //  "move out of the way" preview is suppressed, and the drop appends to the end (pin/unpin).
+  const collisionDetector = ( draggable, droppables, context ) => {
+    const target = mostIntersecting( draggable, droppables, context );
+    if ( ! target )
+      return null;
+    if ( isPinned( draggable.id ) === droppableIsPinned( target.id ) )
+      return target;
+    const zoneId = ZONE_PREFIX + ( droppableIsPinned( target.id )? 'pinned' : 'unpinned' );
+    return droppables .find( d => d.id === zoneId ) || target;
+  };
+
+  const onDragEnd = ( { draggable, droppable } ) => {
+    if ( ! draggable || ! droppable )
+      return;
+    const fromId = draggable.id;
+    const dropId = droppable.id;
+    const current = order();
+    if ( current .indexOf( fromId ) < 0 )
+      return;
+
+    let targetPinned, next;
+    const withoutDragged = current .filter( id => id !== fromId );
+
+    if ( typeof dropId === 'string' && dropId .startsWith( ZONE_PREFIX ) ) {
+      // Zone drop: append to the END of that segment.
+      targetPinned = dropId .slice( ZONE_PREFIX .length ) === 'pinned';
+      const zoneIds = withoutDragged .filter( id => isPinned( id ) === targetPinned );
+      const lastZoneId = zoneIds[ zoneIds .length - 1 ];
+      const insertAt = lastZoneId === undefined
+          ? ( targetPinned ? 0 : withoutDragged .length )        // empty zone
+          : withoutDragged .indexOf( lastZoneId ) + 1;
+      next = [ ...withoutDragged ];
+      next .splice( insertAt, 0, fromId );
+    }
+    else {
+      // Item drop (same segment only): insert immediately before it.
+      if ( dropId === fromId )
+        return;
+      targetPinned = isPinned( dropId );
+      const insertAt = withoutDragged .indexOf( dropId );
+      if ( insertAt < 0 )
+        return;
+      next = [ ...withoutDragged ];
+      next .splice( insertAt, 0, fromId );
+    }
+
+    // If the item changed segments, flip its hidden flag first so the worker's re-emitted lists
+    //  reflect the new pinned status; then persist the new order.
+    if ( isPinned( fromId ) !== targetPinned )
+      controllerAction( subController( controller(), fromId ),
+          targetPinned? 'unhideTool' : 'hideTool' );
+    controllerAction( controller(), reorderAction, { order: next .join( ',' ) } );
+    setEdited( true ); // reorder/pin persists with the design, so mark it dirty
+  };
+
+  return { order, pinnedNames, pinnedOrder, unpinnedOrder, collisionDetector, onDragEnd };
+}
+
+// A draggable/sortable wrapper for a custom item (tool or bookmark) in the open panel. The item
+// id is the sortable id; children are the actual button (ToolButton / BookmarkButton).
+const SortableItem = props =>
+{
+  const sortable = createSortable( props.itemId );
   return (
     <div use:sortable class='sortable-tool'
         classList={{ 'sortable-tool-dragging': sortable.isActiveDraggable }}>
-      <ToolButton showWhenHidden={props.showWhenHidden} controller={props.controller}/>
+      {props.children}
     </div>
   );
 }
@@ -161,12 +247,10 @@ const DropZone = props =>
 // gesture; the only difference is Pin vs. Unpin, which ToolConfig derives from each tool's state.
 const CustomToolsArea = props =>
 {
-  const { controllerAction, setEdited } = useEditor();
   const { symmetryController, symmetryDefined } = useSymmetry();
-  // Full roster of user-created tools, including unpinned ones (customTools omits hidden).
-  const allCustomNames = () => controllerProperty( props.toolsController, 'allCustomTools', 'allCustomTools', true );
-  // Just the pinned tools (customTools omits hidden), so we can show a label when none are pinned.
-  const pinnedNames = () => controllerProperty( props.toolsController, 'customTools', 'customTools', true );
+  const { order, pinnedNames, pinnedOrder, unpinnedOrder, collisionDetector, onDragEnd } =
+    createPinnableArea( () => props.toolsController, 'allCustomTools', 'customTools', 'reorderTools' );
+
   // Tool factories, relocated here from the removed ToolFactoryBar.
   const symmFactoryNames = () => controllerProperty( symmetryController(), 'symmetryToolFactories', 'symmetryToolFactories', true );
   const transFactoryNames = () => controllerProperty( symmetryController(), 'transformToolFactories', 'transformToolFactories', true );
@@ -179,88 +263,6 @@ const CustomToolsArea = props =>
     controllerProperty( subController( symmetryController(), factoryName ), 'enabled' ) === 'true';
   const anyFactoryEnabled = () =>
     [ ...symmFactoryNames(), ...transFactoryNames(), ...mapFactoryNames() ].some( factoryEnabled );
-
-  // ----- Reordering (persisted with the design via the worker) -----
-  // The worker's allCustomTools list IS the authoritative, user-controlled order (sorted by each
-  //  tool's persisted `order`). The pinned row shows the not-hidden tools in that order; the
-  //  unpinned row shows the hidden ones in the same order. A drag reorders this single list and
-  //  can also carry a tool across the pin boundary.
-  const isPinned = id => pinnedNames() .includes( id );
-  const order = () => allCustomNames();
-  const pinnedOrder = () => order() .filter( isPinned );
-  const unpinnedOrder = () => order() .filter( id => ! isPinned( id ) );
-
-  // Which row a droppable belongs to: a zone id encodes it; a tool id is read from its pin state.
-  const droppableIsPinnedRow = id =>
-    ( typeof id === 'string' && id .startsWith( ZONE_PREFIX ) )
-      ? id .slice( ZONE_PREFIX .length ) === 'pinned'
-      : isPinned( id );
-
-  // Collision detection that cleanly separates the two gestures:
-  //   - SAME row  → normal intersection (drop onto a tool → reorder relative to it).
-  //   - CROSS row → resolve to the destination ROW's ZONE, never a tool. This keeps the whole
-  //                 destination row highlighted and suppresses the sortable "move out of the way"
-  //                 preview, so a pin/unpin drag reads as one clear append-to-end target.
-  const collisionDetector = ( draggable, droppables, context ) => {
-    const target = mostIntersecting( draggable, droppables, context );
-    if ( ! target )
-      return null;
-    const fromPinned = isPinned( draggable.id );
-    const toPinned = droppableIsPinnedRow( target.id );
-    if ( fromPinned === toPinned )
-      return target; // same row: allow item-level reorder
-    // Crossing rows: force the destination zone as the collision target.
-    const zoneId = ZONE_PREFIX + ( toPinned? 'pinned' : 'unpinned' );
-    return droppables .find( d => d.id === zoneId ) || target;
-  };
-
-  const onDragEnd = ( { draggable, droppable } ) => {
-    if ( ! draggable || ! droppable )
-      return;
-    const fromId = draggable.id;
-    const dropId = droppable.id;
-    const current = order();
-    const fromIndex = current .indexOf( fromId );
-    if ( fromIndex < 0 )
-      return;
-
-    // The collisionDetector guarantees: a CROSS-row drag resolves to a ZONE (pin/unpin, append to
-    //  the end of that row); a SAME-row drag resolves to a TOOL (reorder before it) or its own
-    //  zone (append within the row).
-    let targetPinned, next;
-    const withoutDragged = current .filter( id => id !== fromId );
-
-    if ( typeof dropId === 'string' && dropId .startsWith( ZONE_PREFIX ) ) {
-      // Zone drop: append to the END of that row's segment.
-      targetPinned = dropId .slice( ZONE_PREFIX .length ) === 'pinned';
-      const zoneIds = withoutDragged .filter( id => isPinned( id ) === targetPinned );
-      const lastZoneId = zoneIds[ zoneIds .length - 1 ];
-      const insertAt = lastZoneId === undefined
-          ? ( targetPinned ? 0 : withoutDragged .length )        // empty zone
-          : withoutDragged .indexOf( lastZoneId ) + 1;
-      next = [ ...withoutDragged ];
-      next .splice( insertAt, 0, fromId );
-    }
-    else {
-      // Tool drop (same row only): insert immediately before it.
-      if ( dropId === fromId )
-        return;
-      targetPinned = isPinned( dropId );
-      const insertAt = withoutDragged .indexOf( dropId );
-      if ( insertAt < 0 )
-        return;
-      next = [ ...withoutDragged ];
-      next .splice( insertAt, 0, fromId );
-    }
-
-    // If the tool changed rows, flip its hidden flag first so the worker's re-emitted
-    //  customTools/allCustomTools reflect the new pinned status; then persist the new order.
-    if ( isPinned( fromId ) !== targetPinned )
-      controllerAction( subController( props.toolsController, fromId ),
-          targetPinned? 'unhideTool' : 'hideTool' );
-    controllerAction( props.toolsController, 'reorderTools', { order: next .join( ',' ) } );
-    setEdited( true ); // reorder/pin persists with the design, so mark it dirty
-  };
 
   const [ open, setOpen ] = createSignal( false );
   // Viewport position of the collapsed row, so the floating (fixed) panel can overlay it at the
@@ -335,7 +337,9 @@ const CustomToolsArea = props =>
               <DropZone zone='pinned' class='custom-tools-row custom-tools-dropzone'>
                 <Show when={pinnedOrder().length > 0} fallback={<span class='custom-tools-empty-label'>Custom Tools</span>}>
                   <For each={pinnedOrder()}>{ toolId =>
-                    <SortableToolButton toolId={toolId} controller={subController( props.toolsController, toolId )}/>
+                    <SortableItem itemId={toolId}>
+                      <ToolButton controller={subController( props.toolsController, toolId )}/>
+                    </SortableItem>
                   }</For>
                 </Show>
               </DropZone>
@@ -352,7 +356,9 @@ const CustomToolsArea = props =>
                 <Show when={unpinnedOrder().length > 0}
                     fallback={<span class='custom-tools-drop-hint'>Drag tools here to unpin</span>}>
                   <For each={unpinnedOrder()}>{ toolId =>
-                    <SortableToolButton showWhenHidden toolId={toolId} controller={subController( props.toolsController, toolId )}/>
+                    <SortableItem itemId={toolId}>
+                      <ToolButton showWhenHidden controller={subController( props.toolsController, toolId )}/>
+                    </SortableItem>
                   }</For>
                 </Show>
               </DropZone>
@@ -438,17 +444,20 @@ export const ToolBar = props =>
   )
 }
 
-let nextBookmarkIcon = 0;
+// Pick one of the 4 bookmark icons deterministically from the bookmark's id, so the SAME
+// bookmark always shows the SAME icon everywhere it is rendered (collapsed column AND panel).
+const bookmarkIconFor = id => {
+  let h = 0;
+  for ( let i = 0; i < (id||'') .length; i++ )
+    h = ( h * 31 + id .charCodeAt( i ) ) & 0x7fffffff;
+  return `bookmark_${ h % 4 }`;
+}
 
 const BookmarkButton = props =>
 {
   const { controllerAction } = useEditor();
   const label = () => controllerProperty( props.controller, 'label', 'label', false ) || ''; // always defined, to control the ToolConfig
-  const [ iconName, setIconName ] = createSignal( null );
-  createEffect( () => {
-    setIconName( `bookmark_${nextBookmarkIcon}` );
-    nextBookmarkIcon = ( nextBookmarkIcon + 1 ) % 4;
-  }, [] );
+  const iconName = () => bookmarkIconFor( props.bookmarkId );
   const handleClick = () => controllerAction( props.controller, 'apply' );
   const [anchorEl, setAnchorEl] = createSignal(null);
   const handleOpen = (e) =>
@@ -468,22 +477,128 @@ const BookmarkButton = props =>
   </> )
 }
 
+// The customizable bookmarks area — the column analog of CustomToolsArea. Collapsed, it is the
+// in-flow vertical column of pinned bookmarks plus a "⋯" toggle. Expanded, a vertical L floats to
+// the RIGHT: the arm (pinned column) sits at top-left over the collapsed column (notch at
+// bottom-left), and the body extends rightward with the unpinned column beside it plus the single
+// bookmark-factory button. Uses the same drag model as tools, with columns instead of rows.
+const CustomBookmarksArea = props =>
+{
+  const { symmetryController, symmetryDefined } = useSymmetry();
+  const { order, pinnedNames, pinnedOrder, unpinnedOrder, collisionDetector, onDragEnd } =
+    createPinnableArea( () => props.toolsController, 'allCustomBookmarks', 'customBookmarks', 'reorderBookmarks' );
+
+  const [ open, setOpen ] = createSignal( false );
+  const [ anchorRect, setAnchorRect ] = createSignal( null );
+  let collapsedRef;
+  const captureAnchor = () => collapsedRef && setAnchorRect( collapsedRef.getBoundingClientRect() );
+  const handleOpen = () => { suspendMenuKeyEvents(); captureAnchor(); setOpen( true ); }
+  const handleClose = () => { resumeMenuKeyEvents(); setOpen( false ); }
+
+  createEffect( () => {
+    if ( ! open() ) return;
+    const onResize = () => captureAnchor();
+    window.addEventListener( 'resize', onResize );
+    onCleanup( () => window.removeEventListener( 'resize', onResize ) );
+  });
+
+  // The floating panel is anchored to the collapsed column's viewport rect (top-left).
+  const panelStyle = () => {
+    const r = anchorRect();
+    return r? { position: 'fixed', top: `${r.top}px`, left: `${r.left}px` } : {};
+  };
+
+  const bookmark = id => subController( props.toolsController, id );
+
+  return (
+    <Show when={symmetryDefined()}>
+      <div class='custom-bookmarks-area'>
+
+        {/* Collapsed, in-flow: the "more" toggle at the TOP, then the pinned bookmarks column below
+            it. Placing the toggle above the column (where the panel's close button also sits) keeps
+            the toggle stationary as the panel opens/closes, and the pinned bookmarks roughly so. */}
+        <div class='custom-bookmarks-collapsed' ref={collapsedRef}>
+          <IconButton class='custom-tools-more' aria-label='More bookmarks' title='More bookmarks'
+              size='small' onClick={handleOpen}>
+            <MoreHorizIcon fontSize='small'/>
+          </IconButton>
+          <div class='custom-bookmarks-column'>
+            <For each={pinnedOrder()}>{ id =>
+              <BookmarkButton bookmarkId={id} controller={bookmark( id )}/>
+            }</For>
+          </div>
+        </div>
+
+        <Show when={open()}>
+          <div class='custom-tools-backdrop' onClick={handleClose} />
+          <div class='custom-bookmarks-panel' style={panelStyle()}>
+           <DragDropProvider onDragEnd={onDragEnd} collisionDetector={collisionDetector}>
+            <DragDropSensors/>
+            <SortableProvider ids={order()}>
+
+            {/* Arm — the pinned bookmarks column (top-left), plus the close button. */}
+            <div class='custom-bookmarks-arm'>
+              <DropZone zone='pinned' class='custom-bookmarks-column custom-tools-dropzone'>
+                <For each={pinnedOrder()}>{ id =>
+                  <SortableItem itemId={id}>
+                    <BookmarkButton bookmarkId={id} controller={bookmark( id )}/>
+                  </SortableItem>
+                }</For>
+              </DropZone>
+              <IconButton class='custom-tools-close' aria-label='Close bookmarks' title='Close'
+                  size='small' onClick={handleClose}>
+                <CloseIcon fontSize='small'/>
+              </IconButton>
+            </div>
+
+            {/* Body — the unpinned column beside the arm, then the bookmark factory. */}
+            <div class='custom-bookmarks-body'>
+              <div class='custom-bookmarks-group'>
+                <div class='custom-tools-section-label'>Unpinned</div>
+                <DropZone zone='unpinned' class='custom-bookmarks-column custom-bookmarks-unpinned custom-tools-dropzone'>
+                  <Show when={unpinnedOrder().length > 0}
+                      fallback={<span class='custom-tools-drop-hint'>Drag bookmarks here to unpin</span>}>
+                    <For each={unpinnedOrder()}>{ id =>
+                      <SortableItem itemId={id}>
+                        <BookmarkButton bookmarkId={id} controller={bookmark( id )}/>
+                      </SortableItem>
+                    }</For>
+                  </Show>
+                </DropZone>
+              </div>
+
+              <div class='custom-bookmarks-group'>
+                <div class='custom-tools-section-label'>Create</div>
+                <div class='custom-bookmarks-column'>
+                  <ToolFactoryButton factoryName='bookmark'/>
+                </div>
+              </div>
+            </div>
+
+            </SortableProvider>
+           </DragDropProvider>
+          </div>
+        </Show>
+      </div>
+    </Show>
+  )
+}
+
 export const BookmarkBar = props =>
 {
   const { symmetryController, symmetryDefined } = useSymmetry();
-  const bookmarkNames = () => controllerProperty( props.toolsController, 'customBookmarks', 'customBookmarks', true );
 
   return (
     <div id='tools-bar' class='toolbar-vert'>
       <Show when={symmetryDefined()}>
         <ToolbarSpacer/>
+        {/* The bookmark factory stays here, above the column (also duplicated in the panel). */}
         <ToolFactoryButton factoryName='bookmark' controller={symmetryController()}/>
       </Show>
       <ToolbarSpacer/>
-      <BookmarkButton predefined controller={subController( props.toolsController, 'bookmark.builtin/ball at origin' )}/>
-      <For each={bookmarkNames()}>{ toolName =>
-        <BookmarkButton controller={subController( props.toolsController, toolName )}/>
-      }</For>
+      <BookmarkButton predefined bookmarkId='bookmark.builtin/ball at origin'
+          controller={subController( props.toolsController, 'bookmark.builtin/ball at origin' )}/>
+      <CustomBookmarksArea toolsController={props.toolsController}/>
     </div>
   )
 }
