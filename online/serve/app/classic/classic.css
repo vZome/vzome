@@ -74,6 +74,9 @@ img {
 .toolbar-image {
   border-radius: 3px;
   flex: none;
+  /* Prevent the native image drag from hijacking the sortable (drag-to-reorder) gesture. */
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 /* Button caption: the former tooltip text, shown to the right of the icon. Sized to allow the
@@ -212,6 +215,39 @@ img {
   width: 809px;
   max-height: 40vh;
   overflow-y: auto;
+}
+
+/* Draggable wrapper around a custom-tool button in the open panel (solid-dnd sortable). */
+.sortable-tool {
+  display: inline-flex;
+  touch-action: none;
+}
+
+.sortable-tool-dragging {
+  opacity: 0.25;
+}
+
+/* A droppable row (pinned or unpinned). Kept as an explicit drop region so it is a valid target
+   even when empty (needed to drag the only tool into an empty row to pin/unpin it). The generous
+   min-height gives the empty zone real area for intersection-based collision detection. */
+.custom-tools-dropzone {
+  min-height: 44px;
+  border-radius: 4px;
+}
+
+/* Highlight the row currently under the drag, so the pin/unpin target is unambiguous. */
+.drop-zone-active {
+  background-color: rgba( 65, 105, 225, 0.12 ); /* royalblue tint */
+  outline: 1px dashed royalblue;
+}
+
+/* Placeholder shown in the empty unpinned row, giving a visible target to drop onto. */
+.custom-tools-drop-hint {
+  padding: 0 8px;
+  font-size: small;
+  font-style: italic;
+  color: gray;
+  align-self: center;
 }
 
 .tool-config-icon-label {

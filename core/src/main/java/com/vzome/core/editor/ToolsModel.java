@@ -36,6 +36,7 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
     private final Map<String, Boolean> toolDeleteInputs = new HashMap<>();
     private final Map<String, Boolean> toolSelectInputs = new HashMap<>();
     private final Map<String, Boolean> toolCopyColors = new HashMap<>();
+    private final Map<String, Integer> toolOrder = new HashMap<>();
     private final Set<String> hiddenTools = new HashSet<>();
     
     // Adding these for the web client
@@ -70,7 +71,13 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
 		Tool result = super .put( key, tool );
 		// PCE listeners may access this map!
         this .pcs .firePropertyChange( "tool.instances", null, tool );
-        
+
+        // Give a newly created custom tool an explicit toolbar order at the end, so it sorts after
+        //  existing tools. (When LOADING, setConfiguration() overwrites this with the saved order,
+        //  or leaves it if the file predates ordering.)
+        if ( ! tool .isPredefined() && tool .getOrder() < 0 )
+            tool .setOrder( this .nextToolOrder() );
+
         // Adding this for the web client, which is quite nicely generic React or SolidJS
         if ( ! tool .isPredefined() && ! tool .isHidden() ) {
             if ( tool .getCategory() .equals( BookmarkTool.ID ) ) {
@@ -85,22 +92,81 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
         return result;
 	}
 	
+	// The pinned (visible) custom tools or bookmarks, in user-controlled toolbar order.
 	public String[] getToolIDs( boolean bookmarks )
 	{
-	    return bookmarks? this .customBookmarks .toArray( new String[]{} ) : this .customTools .toArray( new String[]{} );
+	    List<String> ids = bookmarks? this .customBookmarks : this .customTools;
+	    List<Tool> tools = new ArrayList<>();
+	    for ( String id : ids ) {
+	        Tool tool = this .get( id );
+	        if ( tool != null )
+	            tools .add( tool );
+	    }
+	    tools .sort( TOOLBAR_ORDER );
+	    List<String> result = new ArrayList<>();
+	    for ( Tool tool : tools )
+	        result .add( tool .getId() );
+	    return result .toArray( new String[]{} );
 	}
 
 	// The complete roster of user-created (non-predefined) tools, INCLUDING hidden (unpinned)
 	//  ones, unlike getToolIDs() which tracks only the currently-pinned customs.  The web
 	//  client's "more tools" overflow derives from this to offer unpinned customs for re-pinning.
+	//  Returned in user-controlled toolbar order: tools with an explicit order (getOrder() >= 0)
+	//  sort first by that order; tools with no saved order (-1, e.g. legacy files) fall back to
+	//  id/creation order after them.  Legacy files (all unset) thus keep today's id order exactly.
 	public String[] getAllCustomToolIDs( boolean bookmarks )
 	{
-	    List<String> result = new ArrayList<>();
+	    List<Tool> tools = new ArrayList<>();
 	    for ( Tool tool : this .values() )
 	        if ( ! tool .isPredefined()
 	                && tool .getCategory() .equals( BookmarkTool.ID ) == bookmarks )
-	            result .add( tool .getId() );
+	            tools .add( tool );
+	    tools .sort( TOOLBAR_ORDER );
+	    List<String> result = new ArrayList<>();
+	    for ( Tool tool : tools )
+	        result .add( tool .getId() );
 	    return result .toArray( new String[]{} );
+	}
+
+	// The next toolbar-order value to assign to a newly created custom tool: one past the highest
+	//  order currently in use (0 if none), so new tools land at the end.
+	private int nextToolOrder()
+	{
+	    int max = -1;
+	    for ( Tool tool : this .values() )
+	        if ( ! tool .isPredefined() && tool .getOrder() > max )
+	            max = tool .getOrder();
+	    return max + 1;
+	}
+
+	// Sort by explicit toolbar order when set; unset (-1) tools go last, tie-broken by id so the
+	//  order is stable and matches legacy id-order when nothing has an explicit order.
+	private static final java.util.Comparator<Tool> TOOLBAR_ORDER = ( a, b ) -> {
+	    int oa = a .getOrder(), ob = b .getOrder();
+	    boolean sa = oa >= 0, sb = ob >= 0;
+	    if ( sa && sb && oa != ob ) return Integer .compare( oa, ob );
+	    if ( sa != sb ) return sa? -1 : 1; // set tools before unset
+	    return a .getId() .compareTo( b .getId() );
+	};
+
+	// Assign a new toolbar order to the given custom tools (or bookmarks). The client sends the
+	//  full desired sequence of ids; we stamp order = 0,1,2,... by position, then refresh the
+	//  client-facing lists. This is a non-undoable UI-layout change, like hide/unhide.
+	public void reorderTools( boolean bookmarks, String[] orderedIds )
+	{
+	    for ( int i = 0; i < orderedIds .length; i++ ) {
+	        Tool tool = this .get( orderedIds[ i ] );
+	        if ( tool != null )
+	            tool .setOrder( i );
+	    }
+	    if ( bookmarks )
+	        this .pcs .firePropertyChange( "customBookmarks", null, this .getToolIDs( true ) );
+	    else
+	        this .pcs .firePropertyChange( "customTools", null, this .getToolIDs( false ) );
+	    // The full roster (which drives the client's ordered list) also changed.
+	    this .pcs .firePropertyChange( bookmarks? "allCustomBookmarks" : "allCustomTools", null,
+	            this .getAllCustomToolIDs( bookmarks ) );
 	}
 
 	// Create from deserializing
@@ -180,6 +246,9 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
         		DomUtils .addAttribute( toolElem, "label", tool .getLabel() );
         		if ( tool .isHidden() )
         		    DomUtils .addAttribute( toolElem, "hidden", "true" );
+        		// User-controlled toolbar order (additive; absent in files that predate ordering).
+        		if ( tool .getOrder() >= 0 )
+        		    DomUtils .addAttribute( toolElem, "order", Integer .toString( tool .getOrder() ) );
         		// Always be explicit, to override implicit legacy default behaviors in loadFromXml() and setConfiguration()
         		toolElem .setAttribute( "selectInputs", Boolean.toString( tool .isSelectInputs() ) );
         		toolElem .setAttribute( "deleteInputs", Boolean.toString( tool .isDeleteInputs() ) );
@@ -214,6 +283,10 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
                 String hiddenStr = toolElem .getAttribute( "hidden" );
                 if ( hiddenStr != null && hiddenStr .equals( "true" ) )
                     this .hiddenTools .add( id );
+
+                String orderStr = toolElem .getAttribute( "order" );
+                if ( orderStr != null && ! orderStr .equals( "" ) )
+                    this .toolOrder .put( id, Integer .parseInt( orderStr ) );
             }
         }
     }
@@ -235,6 +308,11 @@ public class ToolsModel extends TreeMap<String, Tool> implements Tool.Source
         if ( this .toolCopyColors .containsKey( id ) ) {
             tool .setCopyColors( this .toolCopyColors .get( id ) );
         }
+
+        // Apply the saved toolbar order if present; absent (legacy files) leaves the order that
+        //  put() assigned at creation, so those keep today's id/creation order.
+        if ( this .toolOrder .containsKey( id ) )
+            tool .setOrder( this .toolOrder .get( id ) );
 
         tool .setHidden( this .hiddenTools .contains( id ) );
     }

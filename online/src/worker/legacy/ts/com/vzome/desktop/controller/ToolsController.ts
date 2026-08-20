@@ -12,6 +12,24 @@ namespace com.vzome.desktop.controller {
 
         /**
          * 
+         * @param {string} action
+         * @param {java.util.Properties} params
+         */
+        doParamAction(action: string, params: java.util.Properties) {
+            switch((action)) {
+            case "reorderTools":
+            case "reorderBookmarks":
+                const order: string = params.getProperty("order");
+                const ids: string[] = (order == null || /* isEmpty */(order.length === 0)) ? [] : order.split(",");
+                this.tools.reorderTools(action === ("reorderBookmarks"), ids);
+                break;
+            default:
+                super.doParamAction(action, params);
+            }
+        }
+
+        /**
+         * 
          * @param {string} name
          * @return {*}
          */

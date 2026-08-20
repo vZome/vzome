@@ -5,6 +5,15 @@ import IconButton from '@suid/material/IconButton';
 import MoreHorizIcon from '@suid/icons-material/MoreHoriz';
 import CloseIcon from '@suid/icons-material/Close';
 
+import {
+  DragDropProvider,
+  DragDropSensors,
+  SortableProvider,
+  createSortable,
+  createDroppable,
+  mostIntersecting,
+} from "@thisbeyond/solid-dnd";
+
 import { controllerProperty, subController, useEditor } from '../../framework/context/editor.jsx';
 import { resumeMenuKeyEvents, suspendMenuKeyEvents } from '../context/commands.jsx';
 import { useSymmetry } from "../context/symmetry.jsx";
@@ -21,7 +30,7 @@ const ToolbarButton = props =>
   // The tooltip (title) always shows the full label; the visible caption uses displayLabel when
   // provided (e.g. factory buttons strip a redundant "Create a/an " prefix), else the full label.
   <button aria-label={props.label} title={props.label} class='toolbar-button' onClick={props.onClick} onContextMenu={props.onContextMenu} disabled={props.disabled}>
-    <img src={ resourceUrl( `icons/tools/${props.image}.png` ) } class='toolbar-image'/>
+    <img draggable={false} src={ resourceUrl( `icons/tools/${props.image}.png` ) } class='toolbar-image'/>
     <span class='toolbar-label'>{capitalizeFirst( props.displayLabel ?? props.label )}</span>
   </button>
 )
@@ -112,6 +121,37 @@ const ToolButton = props =>
   )
 }
 
+// A draggable wrapper around a custom-tool ToolButton, for reordering within the open panel.
+// Each tool is a sortable (draggable + a droppable, so you can drop onto it for fine ordering).
+const SortableToolButton = props =>
+{
+  const sortable = createSortable( props.toolId );
+  return (
+    <div use:sortable class='sortable-tool'
+        classList={{ 'sortable-tool-dragging': sortable.isActiveDraggable }}>
+      <ToolButton showWhenHidden={props.showWhenHidden} controller={props.controller}/>
+    </div>
+  );
+}
+
+// The prefix distinguishing a zone droppable id from a tool id, so onDragEnd can tell whether a
+// drop landed on a tool (fine ordering) or in the empty area of a row (append to that zone).
+const ZONE_PREFIX = 'zone:';
+
+// A droppable ROW (pinned or unpinned). Being a droppable in its own right, it is a valid drop
+// target even when empty — which is what makes "drag the only tool into the unpinned row" work,
+// and gives the two rows distinct, predictable pin/unpin drop regions.
+const DropZone = props =>
+{
+  const droppable = createDroppable( ZONE_PREFIX + props.zone );
+  return (
+    <div use:droppable class={props.class}
+        classList={{ 'drop-zone-active': droppable.isActiveDroppable }}>
+      {props.children}
+    </div>
+  );
+}
+
 // The custom-tools area — a single container with collapsed and expanded states (NOT a portalled
 // popover). Collapsed, it sits in the toolbar flow showing the pinned custom tools and a "⋯"
 // button. Expanded, a panel floats ABOVE the toolbar (absolutely positioned, so it does not
@@ -121,6 +161,7 @@ const ToolButton = props =>
 // gesture; the only difference is Pin vs. Unpin, which ToolConfig derives from each tool's state.
 const CustomToolsArea = props =>
 {
+  const { controllerAction, setEdited } = useEditor();
   const { symmetryController, symmetryDefined } = useSymmetry();
   // Full roster of user-created tools, including unpinned ones (customTools omits hidden).
   const allCustomNames = () => controllerProperty( props.toolsController, 'allCustomTools', 'allCustomTools', true );
@@ -138,6 +179,88 @@ const CustomToolsArea = props =>
     controllerProperty( subController( symmetryController(), factoryName ), 'enabled' ) === 'true';
   const anyFactoryEnabled = () =>
     [ ...symmFactoryNames(), ...transFactoryNames(), ...mapFactoryNames() ].some( factoryEnabled );
+
+  // ----- Reordering (persisted with the design via the worker) -----
+  // The worker's allCustomTools list IS the authoritative, user-controlled order (sorted by each
+  //  tool's persisted `order`). The pinned row shows the not-hidden tools in that order; the
+  //  unpinned row shows the hidden ones in the same order. A drag reorders this single list and
+  //  can also carry a tool across the pin boundary.
+  const isPinned = id => pinnedNames() .includes( id );
+  const order = () => allCustomNames();
+  const pinnedOrder = () => order() .filter( isPinned );
+  const unpinnedOrder = () => order() .filter( id => ! isPinned( id ) );
+
+  // Which row a droppable belongs to: a zone id encodes it; a tool id is read from its pin state.
+  const droppableIsPinnedRow = id =>
+    ( typeof id === 'string' && id .startsWith( ZONE_PREFIX ) )
+      ? id .slice( ZONE_PREFIX .length ) === 'pinned'
+      : isPinned( id );
+
+  // Collision detection that cleanly separates the two gestures:
+  //   - SAME row  → normal intersection (drop onto a tool → reorder relative to it).
+  //   - CROSS row → resolve to the destination ROW's ZONE, never a tool. This keeps the whole
+  //                 destination row highlighted and suppresses the sortable "move out of the way"
+  //                 preview, so a pin/unpin drag reads as one clear append-to-end target.
+  const collisionDetector = ( draggable, droppables, context ) => {
+    const target = mostIntersecting( draggable, droppables, context );
+    if ( ! target )
+      return null;
+    const fromPinned = isPinned( draggable.id );
+    const toPinned = droppableIsPinnedRow( target.id );
+    if ( fromPinned === toPinned )
+      return target; // same row: allow item-level reorder
+    // Crossing rows: force the destination zone as the collision target.
+    const zoneId = ZONE_PREFIX + ( toPinned? 'pinned' : 'unpinned' );
+    return droppables .find( d => d.id === zoneId ) || target;
+  };
+
+  const onDragEnd = ( { draggable, droppable } ) => {
+    if ( ! draggable || ! droppable )
+      return;
+    const fromId = draggable.id;
+    const dropId = droppable.id;
+    const current = order();
+    const fromIndex = current .indexOf( fromId );
+    if ( fromIndex < 0 )
+      return;
+
+    // The collisionDetector guarantees: a CROSS-row drag resolves to a ZONE (pin/unpin, append to
+    //  the end of that row); a SAME-row drag resolves to a TOOL (reorder before it) or its own
+    //  zone (append within the row).
+    let targetPinned, next;
+    const withoutDragged = current .filter( id => id !== fromId );
+
+    if ( typeof dropId === 'string' && dropId .startsWith( ZONE_PREFIX ) ) {
+      // Zone drop: append to the END of that row's segment.
+      targetPinned = dropId .slice( ZONE_PREFIX .length ) === 'pinned';
+      const zoneIds = withoutDragged .filter( id => isPinned( id ) === targetPinned );
+      const lastZoneId = zoneIds[ zoneIds .length - 1 ];
+      const insertAt = lastZoneId === undefined
+          ? ( targetPinned ? 0 : withoutDragged .length )        // empty zone
+          : withoutDragged .indexOf( lastZoneId ) + 1;
+      next = [ ...withoutDragged ];
+      next .splice( insertAt, 0, fromId );
+    }
+    else {
+      // Tool drop (same row only): insert immediately before it.
+      if ( dropId === fromId )
+        return;
+      targetPinned = isPinned( dropId );
+      const insertAt = withoutDragged .indexOf( dropId );
+      if ( insertAt < 0 )
+        return;
+      next = [ ...withoutDragged ];
+      next .splice( insertAt, 0, fromId );
+    }
+
+    // If the tool changed rows, flip its hidden flag first so the worker's re-emitted
+    //  customTools/allCustomTools reflect the new pinned status; then persist the new order.
+    if ( isPinned( fromId ) !== targetPinned )
+      controllerAction( subController( props.toolsController, fromId ),
+          targetPinned? 'unhideTool' : 'hideTool' );
+    controllerAction( props.toolsController, 'reorderTools', { order: next .join( ',' ) } );
+    setEdited( true ); // reorder/pin persists with the design, so mark it dirty
+  };
 
   const [ open, setOpen ] = createSignal( false );
   // Viewport position of the collapsed row, so the floating (fixed) panel can overlay it at the
@@ -161,10 +284,11 @@ const CustomToolsArea = props =>
     return r? { position: 'fixed', top: `${r.top}px`, left: `${r.left}px` } : {};
   };
 
-  // The pinned custom tools row, reused for both the collapsed (in-flow) and expanded (floating) states.
+  // The pinned custom tools, in user order — plain (non-draggable) buttons, used in the collapsed
+  //  in-flow row. (The expanded panel uses the sortable variants below.)
   const PinnedRow = () => (
-    <For each={allCustomNames()}>{ toolName =>
-      <ToolButton controller={subController( props.toolsController, toolName )}/>
+    <For each={pinnedOrder()}>{ toolId =>
+      <ToolButton controller={subController( props.toolsController, toolId )}/>
     }</For>
   );
 
@@ -198,14 +322,23 @@ const CustomToolsArea = props =>
               border, and the arm overlaps the body's top edge by 1px to hide the seam. */}
           <div class='custom-tools-panel' style={panelStyle()}>
 
+           {/* One DragDropProvider spans BOTH the pinned (arm) and unpinned (body) rows, so a drag
+               can reorder within a row and also carry a tool across the pin boundary. SortableProvider
+               ids = the whole shared order. */}
+           <DragDropProvider onDragEnd={onDragEnd} collisionDetector={collisionDetector}>
+            <DragDropSensors/>
+            <SortableProvider ids={order()}>
+
             {/* Top arm — sized to its content (not stretched to body width), so the body is wider
                 and the notch appears at the top-right. */}
             <div class='custom-tools-arm'>
-              <div class='custom-tools-row'>
-                <Show when={pinnedNames().length > 0} fallback={<span class='custom-tools-empty-label'>Custom Tools</span>}>
-                  <PinnedRow/>
+              <DropZone zone='pinned' class='custom-tools-row custom-tools-dropzone'>
+                <Show when={pinnedOrder().length > 0} fallback={<span class='custom-tools-empty-label'>Custom Tools</span>}>
+                  <For each={pinnedOrder()}>{ toolId =>
+                    <SortableToolButton toolId={toolId} controller={subController( props.toolsController, toolId )}/>
+                  }</For>
                 </Show>
-              </div>
+              </DropZone>
               <IconButton class='custom-tools-close' aria-label='Close custom tools' title='Close'
                   size='small' onClick={handleClose}>
                 <CloseIcon fontSize='small'/>
@@ -215,11 +348,14 @@ const CustomToolsArea = props =>
             {/* Body — the larger rectangle. */}
             <div class='custom-tools-body'>
               <div class='custom-tools-section-label'>Unpinned tools</div>
-              <div class='custom-tools-row custom-tools-unpinned'>
-                <For each={allCustomNames()}>{ toolName =>
-                  <ToolButton showWhenHidden controller={subController( props.toolsController, toolName )}/>
-                }</For>
-              </div>
+              <DropZone zone='unpinned' class='custom-tools-row custom-tools-unpinned custom-tools-dropzone'>
+                <Show when={unpinnedOrder().length > 0}
+                    fallback={<span class='custom-tools-drop-hint'>Drag tools here to unpin</span>}>
+                  <For each={unpinnedOrder()}>{ toolId =>
+                    <SortableToolButton showWhenHidden toolId={toolId} controller={subController( props.toolsController, toolId )}/>
+                  }</For>
+                </Show>
+              </DropZone>
 
               <Show when={anyFactoryEnabled()}
                   fallback={<div class='custom-tools-section-label custom-tools-hint'><i>Select objects to enable tool creation</i></div>}>
@@ -243,6 +379,8 @@ const CustomToolsArea = props =>
               </div>
             </div>
 
+            </SortableProvider>
+           </DragDropProvider>
           </div>
         </Show>
       </div>

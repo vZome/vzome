@@ -19,6 +19,8 @@ namespace com.vzome.core.editor {
 
         /*private*/ toolCopyColors: java.util.Map<string, boolean>;
 
+        /*private*/ toolOrder: java.util.Map<string, number>;
+
         /*private*/ hiddenTools: java.util.Set<string>;
 
         /*private*/ customTools: java.util.List<string>;
@@ -36,6 +38,7 @@ namespace com.vzome.core.editor {
             this.toolDeleteInputs = <any>(new java.util.HashMap<any, any>());
             this.toolSelectInputs = <any>(new java.util.HashMap<any, any>());
             this.toolCopyColors = <any>(new java.util.HashMap<any, any>());
+            this.toolOrder = <any>(new java.util.HashMap<any, any>());
             this.hiddenTools = <any>(new java.util.HashSet<any>());
             this.customTools = <any>(new java.util.ArrayList<any>());
             this.customBookmarks = <any>(new java.util.ArrayList<any>());
@@ -64,6 +67,7 @@ namespace com.vzome.core.editor {
         public put(key: string, tool: com.vzome.core.editor.Tool): com.vzome.core.editor.Tool {
             const result: com.vzome.core.editor.Tool = super.put(key, tool);
             this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("tool.instances", null, tool);
+            if (!tool.isPredefined() && tool.getOrder() < 0)tool.setOrder(this.nextToolOrder());
             if (!tool.isPredefined() && !tool.isHidden()){
                 if (tool.getCategory() === com.vzome.core.tools.BookmarkTool.ID){
                     this.customBookmarks.add(key);
@@ -77,16 +81,65 @@ namespace com.vzome.core.editor {
         }
 
         public getToolIDs(bookmarks: boolean): string[] {
-            return bookmarks ? this.customBookmarks.toArray<any>([]) : this.customTools.toArray<any>([]);
+            const ids: java.util.List<string> = bookmarks ? this.customBookmarks : this.customTools;
+            const tools: java.util.List<com.vzome.core.editor.Tool> = <any>(new java.util.ArrayList<any>());
+            for(let index=ids.iterator();index.hasNext();) {
+                let id = index.next();
+                {
+                    const tool: com.vzome.core.editor.Tool = this.get(id);
+                    if (tool != null)tools.add(tool);
+                }
+            }
+            tools.sort(<any>(((funcInst: any) => { if (funcInst == null || typeof funcInst == 'function') { return funcInst } return (arg0, arg1) =>  (funcInst['compare'] ? funcInst['compare'] : funcInst) .call(funcInst, arg0, arg1)})(ToolsModel.TOOLBAR_ORDER_$LI$())));
+            const result: java.util.List<string> = <any>(new java.util.ArrayList<any>());
+            for(let index=tools.iterator();index.hasNext();) {
+                let tool = index.next();
+                result.add(tool.getId())
+            }
+            return result.toArray<any>([]);
         }
 
         public getAllCustomToolIDs(bookmarks: boolean): string[] {
-            const result: java.util.List<string> = <any>(new java.util.ArrayList<any>());
+            const tools: java.util.List<com.vzome.core.editor.Tool> = <any>(new java.util.ArrayList<any>());
             for(let index=this.values().iterator();index.hasNext();) {
                 let tool = index.next();
-                if (!tool.isPredefined() && (tool.getCategory() === com.vzome.core.tools.BookmarkTool.ID) === bookmarks)result.add(tool.getId());
+                if (!tool.isPredefined() && (tool.getCategory() === com.vzome.core.tools.BookmarkTool.ID) === bookmarks)tools.add(tool);
+            }
+            tools.sort(<any>(((funcInst: any) => { if (funcInst == null || typeof funcInst == 'function') { return funcInst } return (arg0, arg1) =>  (funcInst['compare'] ? funcInst['compare'] : funcInst) .call(funcInst, arg0, arg1)})(ToolsModel.TOOLBAR_ORDER_$LI$())));
+            const result: java.util.List<string> = <any>(new java.util.ArrayList<any>());
+            for(let index=tools.iterator();index.hasNext();) {
+                let tool = index.next();
+                result.add(tool.getId())
             }
             return result.toArray<any>([]);
+        }
+
+        /*private*/ nextToolOrder(): number {
+            let max: number = -1;
+            for(let index=this.values().iterator();index.hasNext();) {
+                let tool = index.next();
+                if (!tool.isPredefined() && tool.getOrder() > max)max = tool.getOrder();
+            }
+            return max + 1;
+        }
+
+        static TOOLBAR_ORDER: java.util.Comparator<com.vzome.core.editor.Tool>; public static TOOLBAR_ORDER_$LI$(): java.util.Comparator<com.vzome.core.editor.Tool> { if (ToolsModel.TOOLBAR_ORDER == null) { ToolsModel.TOOLBAR_ORDER = (a, b) => {
+            const oa: number = a.getOrder();
+            const ob: number = b.getOrder();
+            const sa: boolean = oa >= 0;
+            const sb: boolean = ob >= 0;
+            if (sa && sb && oa !== ob)return /* compare */(oa - ob);
+            if (sa !== sb)return sa ? -1 : 1;
+            return /* compareTo */a.getId().localeCompare(b.getId());
+        }; }  return ToolsModel.TOOLBAR_ORDER; }
+
+        public reorderTools(bookmarks: boolean, orderedIds: string[]) {
+            for(let i: number = 0; i < orderedIds.length; i++) {{
+                const tool: com.vzome.core.editor.Tool = this.get(orderedIds[i]);
+                if (tool != null)tool.setOrder(i);
+            };}
+            if (bookmarks)this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customBookmarks", null, this.getToolIDs(true)); else this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customTools", null, this.getToolIDs(false));
+            this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object(bookmarks ? "allCustomBookmarks" : "allCustomTools", null, this.getAllCustomToolIDs(bookmarks));
         }
 
         public createEdit(className: string): com.vzome.core.editor.api.UndoableEdit {
@@ -154,6 +207,7 @@ namespace com.vzome.core.editor {
                     com.vzome.xml.DomUtils.addAttribute(toolElem, "id", tool.getId());
                     com.vzome.xml.DomUtils.addAttribute(toolElem, "label", tool.getLabel());
                     if (tool.isHidden())com.vzome.xml.DomUtils.addAttribute(toolElem, "hidden", "true");
+                    if (tool.getOrder() >= 0)com.vzome.xml.DomUtils.addAttribute(toolElem, "order", /* toString */(''+(tool.getOrder())));
                     toolElem.setAttribute("selectInputs", javaemul.internal.BooleanHelper.toString(tool.isSelectInputs()));
                     toolElem.setAttribute("deleteInputs", javaemul.internal.BooleanHelper.toString(tool.isDeleteInputs()));
                     toolElem.setAttribute("copyColors", javaemul.internal.BooleanHelper.toString(tool.isCopyColors()));
@@ -180,6 +234,8 @@ namespace com.vzome.core.editor {
                     if (value != null && !(value === ("")))this.toolCopyColors.put(id, javaemul.internal.BooleanHelper.parseBoolean(value));
                     const hiddenStr: string = toolElem.getAttribute("hidden");
                     if (hiddenStr != null && (hiddenStr === ("true")))this.hiddenTools.add(id);
+                    const orderStr: string = toolElem.getAttribute("order");
+                    if (orderStr != null && !(orderStr === ("")))this.toolOrder.put(id, javaemul.internal.IntegerHelper.parseInt(orderStr));
                 }
             };}
         }
@@ -196,6 +252,7 @@ namespace com.vzome.core.editor {
             if (this.toolCopyColors.containsKey(id)){
                 tool.setCopyColors(this.toolCopyColors.get(id));
             }
+            if (this.toolOrder.containsKey(id))tool.setOrder(this.toolOrder.get(id));
             tool.setHidden(this.hiddenTools.contains(id));
         }
 

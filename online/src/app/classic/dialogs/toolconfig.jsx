@@ -28,7 +28,7 @@ const ConfigDialogTitle = (props) =>
 
 export const ToolConfig = (props) =>
 {
-  const { controllerAction } = useEditor();
+  const { controllerAction, setEdited } = useEditor();
   const open = () => !!props.anchor;
   const id = () => (open() ? "tool-config-popper" : undefined);
 
@@ -57,6 +57,7 @@ export const ToolConfig = (props) =>
     //  defined, and its pinned/unpinned state persists with the design.
     props.onClose();
     controllerAction( props.controller, hidden()? 'unhideTool' : 'hideTool' );
+    setEdited( true ); // pin/unpin persists with the design, so mark it dirty
   }
   const handleKeyDown = (e) =>
   {

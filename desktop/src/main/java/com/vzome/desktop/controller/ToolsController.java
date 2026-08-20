@@ -3,6 +3,7 @@ package com.vzome.desktop.controller;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Properties;
 
 import com.vzome.api.Tool;
 import com.vzome.core.editor.ToolsModel;
@@ -18,6 +19,25 @@ public class ToolsController extends DefaultController implements PropertyChange
 
         this .tools = tools;
         tools .addPropertyListener( this );
+    }
+
+    @Override
+    protected void doParamAction( String action, Properties params ) throws Exception
+    {
+        switch ( action ) {
+
+        case "reorderTools":
+        case "reorderBookmarks":
+            // The client sends the full desired sequence of ids as a comma-joined "order" param
+            //  (custom-tool ids are "tool-N", so comma is a safe delimiter).
+            String order = params .getProperty( "order" );
+            String[] ids = ( order == null || order .isEmpty() )? new String[0] : order .split( "," );
+            this .tools .reorderTools( action .equals( "reorderBookmarks" ), ids );
+            break;
+
+        default:
+            super .doParamAction( action, params );
+        }
     }
 
     @Override

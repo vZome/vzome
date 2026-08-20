@@ -23,6 +23,7 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
     private boolean predefined, hidden;
     private String label;
     private boolean selectInputs, deleteInputs, copyColors;
+    private int order = -1; // -1 = unset (fall back to creation/id order)
     private final PropertyChangeSupport pcs = new PropertyChangeSupport( this );
 
     public Tool( String id, ToolsModel tools )
@@ -206,5 +207,17 @@ public abstract class Tool extends ChangeManifestations implements com.vzome.api
             this .tools .hideTool( this );
         else
             this .tools .unhideTool( this );
+    }
+
+    @Override
+    public int getOrder()
+    {
+        return this .order;
+    }
+
+    @Override
+    public void setOrder( int order )
+    {
+        this .order = order;
     }
 }
