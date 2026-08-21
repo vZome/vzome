@@ -366,7 +366,19 @@ img {
 .tool-config-icon-label {
   display: grid;
   grid-template-columns: min-content 1fr;
-  border: 1px solid darkgray;
+  margin: 0.5em 1em;
+}
+
+/* Tighten the MUI outlined "name" input's default 16.5px/14px padding. */
+.tool-config-icon-label .MuiOutlinedInput-input {
+  padding: 9px;
+}
+
+/* The icon button reuses .toolbar-button, but here there is no label caption — so drop the
+   toolbar's fixed 80px width and wide padding and let it hug the icon. */
+.tool-config-icon-label .toolbar-button {
+  width: auto;
+  padding: 8px;
 }
 
 .tool-config-button {
@@ -378,7 +390,7 @@ img {
 .tool-config-checkboxes {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  margin-top: 1.5rem;
+  margin: 1.5rem 1em 0;
 }
 
 .tool-config-checkbox-pair {

@@ -72,8 +72,7 @@ export const ToolConfig = (props) =>
       <ConfigDialogTitle onClose={props.onClose}>{props.bookmark? 'Selection Bookmark' : 'Tool'}</ConfigDialogTitle>
 
       <div class='tool-config-icon-label' onKeydown={handleKeyDown} >
-        <button aria-label={props.label} class='toolbar-button' onClick={handleToolClick} disabled={props.disabled}
-            style={{ padding: '0.5em' }}>
+        <button aria-label={props.label} class='toolbar-button' onClick={handleToolClick} disabled={props.disabled}>
           <img src={ resourceUrl( `icons/tools/${props.image}.png` ) } class='toolbar-image'/>
         </button>
         { !!props.predefined?
