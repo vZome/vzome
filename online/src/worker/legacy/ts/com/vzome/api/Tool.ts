@@ -28,6 +28,10 @@ namespace com.vzome.api {
         isHidden(): boolean;
 
         setHidden(hidden: boolean);
+
+        getOrder(): number;
+
+        setOrder(order: number);
     }
 
     export namespace Tool {

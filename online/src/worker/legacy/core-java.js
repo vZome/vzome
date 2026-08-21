@@ -3335,29 +3335,6 @@ export var com;
                             return this.getOrientations(false);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getEmbedding() {
-                            const symmetry = this.getSymmetry();
-                            const field = symmetry.getField();
-                            const embedding = (s => { let a = []; while (s-- > 0)
-                                a.push(0); return a; })(16);
-                            for (let i = 0; i < 3; i++) {
-                                {
-                                    const columnSelect = field.basisVector(3, i);
-                                    const colRV = symmetry.embedInR3(columnSelect);
-                                    embedding[i * 4 + 0] = colRV.x;
-                                    embedding[i * 4 + 1] = colRV.y;
-                                    embedding[i * 4 + 2] = colRV.z;
-                                    embedding[i * 4 + 3] = 0.0;
-                                }
-                                ;
-                            }
-                            embedding[12] = 0.0;
-                            embedding[13] = 0.0;
-                            embedding[14] = 0.0;
-                            embedding[15] = 1.0;
-                            return embedding;
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
                             if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                                 let __args = arguments;
@@ -3410,6 +3387,29 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getEmbedding() {
+                            const symmetry = this.getSymmetry();
+                            const field = symmetry.getField();
+                            const embedding = (s => { let a = []; while (s-- > 0)
+                                a.push(0); return a; })(16);
+                            for (let i = 0; i < 3; i++) {
+                                {
+                                    const columnSelect = field.basisVector(3, i);
+                                    const colRV = symmetry.embedInR3(columnSelect);
+                                    embedding[i * 4 + 0] = colRV.x;
+                                    embedding[i * 4 + 1] = colRV.y;
+                                    embedding[i * 4 + 2] = colRV.z;
+                                    embedding[i * 4 + 3] = 0.0;
+                                }
+                                ;
+                            }
+                            embedding[12] = 0.0;
+                            embedding[13] = 0.0;
+                            embedding[14] = 0.0;
+                            embedding[15] = 1.0;
+                            return embedding;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getZone(orbit, orientation) {
@@ -15499,197 +15499,6 @@ export var com;
         var core;
         (function (core) {
             var editor;
-            (function (editor_1) {
-                class ToolsModel extends java.util.TreeMap {
-                    constructor(context, originPoint) {
-                        super();
-                        if (this.editor === undefined) {
-                            this.editor = null;
-                        }
-                        this.lastId = 0;
-                        this.pcs = new java.beans.PropertyChangeSupport(this);
-                        if (this.context === undefined) {
-                            this.context = null;
-                        }
-                        if (this.originPoint === undefined) {
-                            this.originPoint = null;
-                        }
-                        this.toolLabels = (new java.util.HashMap());
-                        this.toolDeleteInputs = (new java.util.HashMap());
-                        this.toolSelectInputs = (new java.util.HashMap());
-                        this.toolCopyColors = (new java.util.HashMap());
-                        this.hiddenTools = (new java.util.HashSet());
-                        this.customTools = (new java.util.ArrayList());
-                        this.customBookmarks = (new java.util.ArrayList());
-                        this.context = context;
-                        this.originPoint = originPoint;
-                    }
-                    reserveId() {
-                        return this.lastId++;
-                    }
-                    /**
-                     * Only called during load of a document, before any new tool creations with reserveId.
-                     * @param {number} id
-                     */
-                    setMaxId(id) {
-                        if (id >= this.lastId)
-                            this.lastId = id + 1;
-                    }
-                    /**
-                     *
-                     * @param {string} key
-                     * @param {com.vzome.core.editor.Tool} tool
-                     * @return {com.vzome.core.editor.Tool}
-                     */
-                    put(key, tool) {
-                        const result = super.put(key, tool);
-                        this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("tool.instances", null, tool);
-                        if (!tool.isPredefined() && !tool.isHidden()) {
-                            if (tool.getCategory() === com.vzome.core.tools.BookmarkTool.ID) {
-                                this.customBookmarks.add(key);
-                                this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customBookmarks", null, this.getToolIDs(true));
-                            }
-                            else {
-                                this.customTools.add(key);
-                                this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customTools", null, this.getToolIDs(false));
-                            }
-                        }
-                        return result;
-                    }
-                    getToolIDs(bookmarks) {
-                        return bookmarks ? this.customBookmarks.toArray([]) : this.customTools.toArray([]);
-                    }
-                    createEdit(className) {
-                        switch ((className)) {
-                            case "ToolApplied":
-                                return new com.vzome.core.editor.ApplyTool(this, null, false, false, false, false, false, true);
-                            case "ApplyTool":
-                                return new com.vzome.core.editor.ApplyTool(this, null, false, false, false, false, true, true);
-                            case "SelectToolParameters":
-                                return new com.vzome.core.editor.SelectToolParameters(this, null);
-                            default:
-                                return null;
-                        }
-                    }
-                    applyTool(tool, selectInputs, deleteInputs, createOutputs, selectOutputs, copyColors) {
-                        const edit = new com.vzome.core.editor.ApplyTool(this, tool, selectInputs, deleteInputs, createOutputs, selectOutputs, true, copyColors);
-                        this.getContext().performAndRecord(edit);
-                    }
-                    selectToolParameters(tool) {
-                        const edit = new com.vzome.core.editor.SelectToolParameters(this, tool);
-                        this.getContext().performAndRecord(edit);
-                    }
-                    addPropertyListener(listener) {
-                        this.pcs.addPropertyChangeListener$java_beans_PropertyChangeListener(listener);
-                    }
-                    removePropertyListener(listener) {
-                        this.pcs.removePropertyChangeListener$java_beans_PropertyChangeListener(listener);
-                    }
-                    setEditorModel(editor) {
-                        this.editor = editor;
-                    }
-                    getEditorModel() {
-                        return this.editor;
-                    }
-                    /**
-                     *
-                     * @param {string} id
-                     * @return {com.vzome.core.editor.Tool}
-                     */
-                    getPredefinedTool(id) {
-                        return this.get(id);
-                    }
-                    getContext() {
-                        return this.context;
-                    }
-                    getOriginPoint() {
-                        return this.originPoint;
-                    }
-                    getXml(doc) {
-                        const result = doc.createElement("Tools");
-                        for (let index = this.values().iterator(); index.hasNext();) {
-                            let tool = index.next();
-                            if (!tool.isPredefined()) {
-                                const toolElem = doc.createElement("Tool");
-                                com.vzome.xml.DomUtils.addAttribute(toolElem, "id", tool.getId());
-                                com.vzome.xml.DomUtils.addAttribute(toolElem, "label", tool.getLabel());
-                                if (tool.isHidden())
-                                    com.vzome.xml.DomUtils.addAttribute(toolElem, "hidden", "true");
-                                toolElem.setAttribute("selectInputs", javaemul.internal.BooleanHelper.toString(tool.isSelectInputs()));
-                                toolElem.setAttribute("deleteInputs", javaemul.internal.BooleanHelper.toString(tool.isDeleteInputs()));
-                                toolElem.setAttribute("copyColors", javaemul.internal.BooleanHelper.toString(tool.isCopyColors()));
-                                result.appendChild(toolElem);
-                            }
-                        }
-                        return result;
-                    }
-                    loadFromXml(xml) {
-                        const nodes = xml.getChildNodes();
-                        for (let i = 0; i < nodes.getLength(); i++) {
-                            {
-                                const node = nodes.item(i);
-                                if (node != null && (node.constructor != null && node.constructor["__interfaces"] != null && node.constructor["__interfaces"].indexOf("org.w3c.dom.Element") >= 0)) {
-                                    const toolElem = node;
-                                    const id = toolElem.getAttribute("id");
-                                    const label = toolElem.getAttribute("label");
-                                    this.toolLabels.put(id, label);
-                                    let value = toolElem.getAttribute("selectInputs");
-                                    if (value != null && !(value === ("")))
-                                        this.toolSelectInputs.put(id, javaemul.internal.BooleanHelper.parseBoolean(value));
-                                    value = toolElem.getAttribute("deleteInputs");
-                                    if (value != null && !(value === ("")))
-                                        this.toolDeleteInputs.put(id, javaemul.internal.BooleanHelper.parseBoolean(value));
-                                    value = toolElem.getAttribute("copyColors");
-                                    if (value != null && !(value === ("")))
-                                        this.toolCopyColors.put(id, javaemul.internal.BooleanHelper.parseBoolean(value));
-                                    const hiddenStr = toolElem.getAttribute("hidden");
-                                    if (hiddenStr != null && (hiddenStr === ("true")))
-                                        this.hiddenTools.add(id);
-                                }
-                            }
-                            ;
-                        }
-                    }
-                    setConfiguration(tool) {
-                        const id = tool.getId();
-                        const label = this.toolLabels.get(id);
-                        if (label != null)
-                            tool.setLabel(label);
-                        if (this.toolDeleteInputs.containsKey(id) || this.toolSelectInputs.containsKey(id)) {
-                            const deleteInputs = this.toolDeleteInputs.containsKey(id) ? this.toolDeleteInputs.get(id) : true;
-                            const selectInputs = this.toolSelectInputs.containsKey(id) ? this.toolSelectInputs.get(id) : false;
-                            tool.setInputBehaviors(selectInputs, deleteInputs);
-                        }
-                        if (this.toolCopyColors.containsKey(id)) {
-                            tool.setCopyColors(this.toolCopyColors.get(id));
-                        }
-                        tool.setHidden(this.hiddenTools.contains(id));
-                    }
-                    hideTool(tool) {
-                        this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("tool.instances", tool, null);
-                        if (tool.getCategory() === com.vzome.core.tools.BookmarkTool.ID) {
-                            this.customBookmarks.remove(tool.getId());
-                            this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customBookmarks", null, this.getToolIDs(true));
-                        }
-                        else {
-                            this.customTools.remove(tool.getId());
-                            this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customTools", null, this.getToolIDs(false));
-                        }
-                    }
-                }
-                editor_1.ToolsModel = ToolsModel;
-                ToolsModel["__class"] = "com.vzome.core.editor.ToolsModel";
-                ToolsModel["__interfaces"] = ["java.lang.Cloneable", "com.vzome.api.Tool.Source", "java.util.Map", "java.util.NavigableMap", "java.util.SortedMap", "java.io.Serializable"];
-            })(editor = core.editor || (core.editor = {}));
-        })(core = vzome.core || (vzome.core = {}));
-    })(vzome = com.vzome || (com.vzome = {}));
-})(com || (com = {}));
-(function (com) {
-    var vzome;
-    (function (vzome) {
-        var core;
-        (function (core) {
-            var editor;
             (function (editor) {
                 class Duplicator {
                     constructor(edit, offset) {
@@ -16128,7 +15937,7 @@ export var com;
         var core;
         (function (core) {
             var editor;
-            (function (editor_2) {
+            (function (editor_1) {
                 class SymmetrySystem {
                     constructor(symmXml, symmetryPerspective, context, colors, allowNonstandard) {
                         this.nextNewAxis = 0;
@@ -16245,29 +16054,6 @@ export var com;
                         return this.getOrientations(false);
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                    getEmbedding() {
-                        const symmetry = this.getSymmetry();
-                        const field = symmetry.getField();
-                        const embedding = (s => { let a = []; while (s-- > 0)
-                            a.push(0); return a; })(16);
-                        for (let i = 0; i < 3; i++) {
-                            {
-                                const columnSelect = field.basisVector(3, i);
-                                const colRV = symmetry.embedInR3(columnSelect);
-                                embedding[i * 4 + 0] = colRV.x;
-                                embedding[i * 4 + 1] = colRV.y;
-                                embedding[i * 4 + 2] = colRV.z;
-                                embedding[i * 4 + 3] = 0.0;
-                            }
-                            ;
-                        }
-                        embedding[12] = 0.0;
-                        embedding[13] = 0.0;
-                        embedding[14] = 0.0;
-                        embedding[15] = 1.0;
-                        return embedding;
-                    }
-                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getOrientations(rowMajor) {
                         if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                             let __args = arguments;
@@ -16341,6 +16127,29 @@ export var com;
                         }
                         else
                             throw new Error('invalid overload');
+                    }
+                    /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                    getEmbedding() {
+                        const symmetry = this.getSymmetry();
+                        const field = symmetry.getField();
+                        const embedding = (s => { let a = []; while (s-- > 0)
+                            a.push(0); return a; })(16);
+                        for (let i = 0; i < 3; i++) {
+                            {
+                                const columnSelect = field.basisVector(3, i);
+                                const colRV = symmetry.embedInR3(columnSelect);
+                                embedding[i * 4 + 0] = colRV.x;
+                                embedding[i * 4 + 1] = colRV.y;
+                                embedding[i * 4 + 2] = colRV.z;
+                                embedding[i * 4 + 3] = 0.0;
+                            }
+                            ;
+                        }
+                        embedding[12] = 0.0;
+                        embedding[13] = 0.0;
+                        embedding[14] = 0.0;
+                        embedding[15] = 1.0;
+                        return embedding;
                     }
                     /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                     getZone(orbit, orientation) {
@@ -16633,7 +16442,7 @@ export var com;
                         }
                     }
                 }
-                editor_2.SymmetrySystem = SymmetrySystem;
+                editor_1.SymmetrySystem = SymmetrySystem;
                 SymmetrySystem["__class"] = "com.vzome.core.editor.SymmetrySystem";
                 SymmetrySystem["__interfaces"] = ["com.vzome.core.editor.api.OrbitSource"];
             })(editor = core.editor || (core.editor = {}));
@@ -29383,7 +29192,7 @@ export var com;
         var core;
         (function (core) {
             var editor;
-            (function (editor_3) {
+            (function (editor_2) {
                 /**
                  * Just a marker in the history.
                  * @author Scott Vorthmann
@@ -29470,7 +29279,7 @@ export var com;
                         return false;
                     }
                 }
-                editor_3.EndBlock = EndBlock;
+                editor_2.EndBlock = EndBlock;
                 EndBlock["__class"] = "com.vzome.core.editor.EndBlock";
             })(editor = core.editor || (core.editor = {}));
         })(core = vzome.core || (vzome.core = {}));
@@ -30537,7 +30346,7 @@ export var com;
         var core;
         (function (core) {
             var editor;
-            (function (editor_4) {
+            (function (editor_3) {
                 /**
                  * Just a marker in the history.
                  * @author Scott Vorthmann
@@ -30624,7 +30433,7 @@ export var com;
                     configure(props) {
                     }
                 }
-                editor_4.BeginBlock = BeginBlock;
+                editor_3.BeginBlock = BeginBlock;
                 BeginBlock["__class"] = "com.vzome.core.editor.BeginBlock";
             })(editor = core.editor || (core.editor = {}));
         })(core = vzome.core || (vzome.core = {}));
@@ -33797,6 +33606,11 @@ export var com;
                                 break;
                             case "hideTool":
                                 this.tool.setHidden(true);
+                                this.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("hidden", null, "true");
+                                break;
+                            case "unhideTool":
+                                this.tool.setHidden(false);
+                                this.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("hidden", null, "false");
                                 break;
                             case "selectParams":
                                 this.tool.selectParameters();
@@ -33849,6 +33663,8 @@ export var com;
                                 return this.tool.getCategory();
                             case "predefined":
                                 return javaemul.internal.BooleanHelper.toString(this.tool.isPredefined());
+                            case "hidden":
+                                return javaemul.internal.BooleanHelper.toString(this.tool.isHidden());
                             case "selectInputs":
                                 return javaemul.internal.BooleanHelper.toString(this.tool.isSelectInputs());
                             case "deleteInputs":
@@ -34379,6 +34195,9 @@ export var com;
                         if (presetStyle != null)
                             this.symmetrySystem.setStyle(presetStyle);
                     }
+                    static UNTOOLBARED_LABELS_$LI$() { if (SymmetryController.UNTOOLBARED_LABELS == null) {
+                        SymmetryController.UNTOOLBARED_LABELS = (new java.util.HashSet(java.util.Arrays.asList("reflection through XY plane", "reflection through X=Y green plane", "symmetry around red through origin", "rotate around red through origin", "b1 move along +X")));
+                    } return SymmetryController.UNTOOLBARED_LABELS; }
                     /**
                      *
                      * @param {string} string
@@ -34469,14 +34288,16 @@ export var com;
                                 const toolNames = (new java.util.ArrayList());
                                 for (let index = this.symmetrySystem.getPredefinedTools(com.vzome.api.Tool.Kind.SYMMETRY).iterator(); index.hasNext();) {
                                     let tool = index.next();
-                                    toolNames.add(tool.getId());
+                                    if (!SymmetryController.UNTOOLBARED_LABELS_$LI$().contains(tool.getLabel()))
+                                        toolNames.add(tool.getId());
                                 }
                                 return toolNames.toArray([]);
                             case "builtInTransformTools":
                                 const transformToolNames = (new java.util.ArrayList());
                                 for (let index = this.symmetrySystem.getPredefinedTools(com.vzome.api.Tool.Kind.TRANSFORM).iterator(); index.hasNext();) {
                                     let tool = index.next();
-                                    transformToolNames.add(tool.getId());
+                                    if (!SymmetryController.UNTOOLBARED_LABELS_$LI$().contains(tool.getLabel()))
+                                        transformToolNames.add(tool.getId());
                                 }
                                 return transformToolNames.toArray([]);
                             default:
@@ -34640,6 +34461,23 @@ export var com;
                     }
                     /**
                      *
+                     * @param {string} action
+                     * @param {java.util.Properties} params
+                     */
+                    doParamAction(action, params) {
+                        switch ((action)) {
+                            case "reorderTools":
+                            case "reorderBookmarks":
+                                const order = params.getProperty("order");
+                                const ids = (order == null || /* isEmpty */ (order.length === 0)) ? [] : order.split(",");
+                                this.tools.reorderTools(action === ("reorderBookmarks"), ids);
+                                break;
+                            default:
+                                super.doParamAction(action, params);
+                        }
+                    }
+                    /**
+                     *
                      * @param {string} name
                      * @return {*}
                      */
@@ -34664,8 +34502,12 @@ export var com;
                     propertyChange(evt) {
                         switch ((evt.getPropertyName())) {
                             case "customTools":
+                                this.firePropertyChange$java_beans_PropertyChangeEvent(new java.beans.PropertyChangeEvent(this, evt.getPropertyName(), null, evt.getNewValue()));
+                                this.firePropertyChange$java_beans_PropertyChangeEvent(new java.beans.PropertyChangeEvent(this, "allCustomTools", null, this.tools.getAllCustomToolIDs(false)));
+                                break;
                             case "customBookmarks":
                                 this.firePropertyChange$java_beans_PropertyChangeEvent(new java.beans.PropertyChangeEvent(this, evt.getPropertyName(), null, evt.getNewValue()));
+                                this.firePropertyChange$java_beans_PropertyChangeEvent(new java.beans.PropertyChangeEvent(this, "allCustomBookmarks", null, this.tools.getAllCustomToolIDs(true)));
                                 break;
                             case "tool.instances":
                                 if (evt.getOldValue() == null) {
@@ -34695,6 +34537,10 @@ export var com;
                                 return this.tools.getToolIDs(false);
                             case "customBookmarks":
                                 return this.tools.getToolIDs(true);
+                            case "allCustomTools":
+                                return this.tools.getAllCustomToolIDs(false);
+                            case "allCustomBookmarks":
+                                return this.tools.getAllCustomToolIDs(true);
                             default:
                                 break;
                         }
@@ -47823,29 +47669,6 @@ export var com;
                             return this.getOrientations(false);
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-                        getEmbedding() {
-                            const symmetry = this.getSymmetry();
-                            const field = symmetry.getField();
-                            const embedding = (s => { let a = []; while (s-- > 0)
-                                a.push(0); return a; })(16);
-                            for (let i = 0; i < 3; i++) {
-                                {
-                                    const columnSelect = field.basisVector(3, i);
-                                    const colRV = symmetry.embedInR3(columnSelect);
-                                    embedding[i * 4 + 0] = colRV.x;
-                                    embedding[i * 4 + 1] = colRV.y;
-                                    embedding[i * 4 + 2] = colRV.z;
-                                    embedding[i * 4 + 3] = 0.0;
-                                }
-                                ;
-                            }
-                            embedding[12] = 0.0;
-                            embedding[13] = 0.0;
-                            embedding[14] = 0.0;
-                            embedding[15] = 1.0;
-                            return embedding;
-                        }
-                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getOrientations(rowMajor) {
                             if (((typeof rowMajor === 'boolean') || rowMajor === null)) {
                                 let __args = arguments;
@@ -47892,6 +47715,29 @@ export var com;
                             }
                             else
                                 throw new Error('invalid overload');
+                        }
+                        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+                        getEmbedding() {
+                            const symmetry = this.getSymmetry();
+                            const field = symmetry.getField();
+                            const embedding = (s => { let a = []; while (s-- > 0)
+                                a.push(0); return a; })(16);
+                            for (let i = 0; i < 3; i++) {
+                                {
+                                    const columnSelect = field.basisVector(3, i);
+                                    const colRV = symmetry.embedInR3(columnSelect);
+                                    embedding[i * 4 + 0] = colRV.x;
+                                    embedding[i * 4 + 1] = colRV.y;
+                                    embedding[i * 4 + 2] = colRV.z;
+                                    embedding[i * 4 + 3] = 0.0;
+                                }
+                                ;
+                            }
+                            embedding[12] = 0.0;
+                            embedding[13] = 0.0;
+                            embedding[14] = 0.0;
+                            embedding[15] = 1.0;
+                            return embedding;
                         }
                         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
                         getZone(orbit, orientation) {
@@ -49576,7 +49422,7 @@ export var com;
         var core;
         (function (core) {
             var editor;
-            (function (editor_5) {
+            (function (editor_4) {
                 /**
                  * Just a mechanism to incorporate the legacy edit mechanism into the new undo/redo.
                  *
@@ -49860,7 +49706,7 @@ export var com;
                             super.loadAndPerform(xml, format, context);
                     }
                 }
-                editor_5.CommandEdit = CommandEdit;
+                editor_4.CommandEdit = CommandEdit;
                 CommandEdit["__class"] = "com.vzome.core.editor.CommandEdit";
                 (function (CommandEdit) {
                     class NewConstructions extends java.util.ArrayList {
@@ -49892,7 +49738,7 @@ export var com;
                     CommandEdit.NewConstructions = NewConstructions;
                     NewConstructions["__class"] = "com.vzome.core.editor.CommandEdit.NewConstructions";
                     NewConstructions["__interfaces"] = ["java.util.RandomAccess", "java.util.List", "java.lang.Cloneable", "com.vzome.core.construction.ConstructionChanges", "java.util.Collection", "java.lang.Iterable", "java.io.Serializable"];
-                })(CommandEdit = editor_5.CommandEdit || (editor_5.CommandEdit = {}));
+                })(CommandEdit = editor_4.CommandEdit || (editor_4.CommandEdit = {}));
             })(editor = core.editor || (core.editor = {}));
         })(core = vzome.core || (vzome.core = {}));
     })(vzome = com.vzome || (com.vzome = {}));
@@ -49935,6 +49781,7 @@ export var com;
                         if (this.copyColors === undefined) {
                             this.copyColors = false;
                         }
+                        this.order = -1;
                         this.pcs = new java.beans.PropertyChangeSupport(this);
                         this.tools = tools;
                         this.id = id;
@@ -50077,8 +49924,28 @@ export var com;
                      * @param {boolean} hidden
                      */
                     setHidden(hidden) {
+                        const wasHidden = this.hidden;
                         this.hidden = hidden;
-                        this.tools.hideTool(this);
+                        if (hidden === wasHidden)
+                            return;
+                        if (hidden)
+                            this.tools.hideTool(this);
+                        else
+                            this.tools.unhideTool(this);
+                    }
+                    /**
+                     *
+                     * @return {number}
+                     */
+                    getOrder() {
+                        return this.order;
+                    }
+                    /**
+                     *
+                     * @param {number} order
+                     */
+                    setOrder(order) {
+                        this.order = order;
                     }
                 }
                 editor.Tool = Tool;
@@ -51692,6 +51559,297 @@ export var com;
                 ModuleTool["__class"] = "com.vzome.core.tools.ModuleTool";
                 ModuleTool["__interfaces"] = ["com.vzome.api.Tool"];
             })(tools = core.tools || (core.tools = {}));
+        })(core = vzome.core || (vzome.core = {}));
+    })(vzome = com.vzome || (com.vzome = {}));
+})(com || (com = {}));
+(function (com) {
+    var vzome;
+    (function (vzome) {
+        var core;
+        (function (core) {
+            var editor;
+            (function (editor_5) {
+                class ToolsModel extends java.util.TreeMap {
+                    constructor(context, originPoint) {
+                        super();
+                        if (this.editor === undefined) {
+                            this.editor = null;
+                        }
+                        this.lastId = 0;
+                        this.pcs = new java.beans.PropertyChangeSupport(this);
+                        if (this.context === undefined) {
+                            this.context = null;
+                        }
+                        if (this.originPoint === undefined) {
+                            this.originPoint = null;
+                        }
+                        this.toolLabels = (new java.util.HashMap());
+                        this.toolDeleteInputs = (new java.util.HashMap());
+                        this.toolSelectInputs = (new java.util.HashMap());
+                        this.toolCopyColors = (new java.util.HashMap());
+                        this.toolOrder = (new java.util.HashMap());
+                        this.hiddenTools = (new java.util.HashSet());
+                        this.customTools = (new java.util.ArrayList());
+                        this.customBookmarks = (new java.util.ArrayList());
+                        this.context = context;
+                        this.originPoint = originPoint;
+                    }
+                    reserveId() {
+                        return this.lastId++;
+                    }
+                    /**
+                     * Only called during load of a document, before any new tool creations with reserveId.
+                     * @param {number} id
+                     */
+                    setMaxId(id) {
+                        if (id >= this.lastId)
+                            this.lastId = id + 1;
+                    }
+                    /**
+                     *
+                     * @param {string} key
+                     * @param {com.vzome.core.editor.Tool} tool
+                     * @return {com.vzome.core.editor.Tool}
+                     */
+                    put(key, tool) {
+                        const result = super.put(key, tool);
+                        this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("tool.instances", null, tool);
+                        if (!tool.isPredefined() && tool.getOrder() < 0)
+                            tool.setOrder(this.nextToolOrder());
+                        if (!tool.isPredefined() && !tool.isHidden()) {
+                            if (tool.getCategory() === com.vzome.core.tools.BookmarkTool.ID) {
+                                this.customBookmarks.add(key);
+                                this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customBookmarks", null, this.getToolIDs(true));
+                            }
+                            else {
+                                this.customTools.add(key);
+                                this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customTools", null, this.getToolIDs(false));
+                            }
+                        }
+                        return result;
+                    }
+                    getToolIDs(bookmarks) {
+                        const ids = bookmarks ? this.customBookmarks : this.customTools;
+                        const tools = (new java.util.ArrayList());
+                        for (let index = ids.iterator(); index.hasNext();) {
+                            let id = index.next();
+                            {
+                                const tool = this.get(id);
+                                if (tool != null)
+                                    tools.add(tool);
+                            }
+                        }
+                        tools.sort((((funcInst) => { if (funcInst == null || typeof funcInst == 'function') {
+                            return funcInst;
+                        } return (arg0, arg1) => (funcInst['compare'] ? funcInst['compare'] : funcInst).call(funcInst, arg0, arg1); })(ToolsModel.TOOLBAR_ORDER_$LI$())));
+                        const result = (new java.util.ArrayList());
+                        for (let index = tools.iterator(); index.hasNext();) {
+                            let tool = index.next();
+                            result.add(tool.getId());
+                        }
+                        return result.toArray([]);
+                    }
+                    getAllCustomToolIDs(bookmarks) {
+                        const tools = (new java.util.ArrayList());
+                        for (let index = this.values().iterator(); index.hasNext();) {
+                            let tool = index.next();
+                            if (!tool.isPredefined() && (tool.getCategory() === com.vzome.core.tools.BookmarkTool.ID) === bookmarks)
+                                tools.add(tool);
+                        }
+                        tools.sort((((funcInst) => { if (funcInst == null || typeof funcInst == 'function') {
+                            return funcInst;
+                        } return (arg0, arg1) => (funcInst['compare'] ? funcInst['compare'] : funcInst).call(funcInst, arg0, arg1); })(ToolsModel.TOOLBAR_ORDER_$LI$())));
+                        const result = (new java.util.ArrayList());
+                        for (let index = tools.iterator(); index.hasNext();) {
+                            let tool = index.next();
+                            result.add(tool.getId());
+                        }
+                        return result.toArray([]);
+                    }
+                    /*private*/ nextToolOrder() {
+                        let max = -1;
+                        for (let index = this.values().iterator(); index.hasNext();) {
+                            let tool = index.next();
+                            if (!tool.isPredefined() && tool.getOrder() > max)
+                                max = tool.getOrder();
+                        }
+                        return max + 1;
+                    }
+                    static TOOLBAR_ORDER_$LI$() {
+                        if (ToolsModel.TOOLBAR_ORDER == null) {
+                            ToolsModel.TOOLBAR_ORDER = (a, b) => {
+                                const oa = a.getOrder();
+                                const ob = b.getOrder();
+                                const sa = oa >= 0;
+                                const sb = ob >= 0;
+                                if (sa && sb && oa !== ob)
+                                    return /* compare */ (oa - ob);
+                                if (sa !== sb)
+                                    return sa ? -1 : 1;
+                                return /* compareTo */ a.getId().localeCompare(b.getId());
+                            };
+                        }
+                        return ToolsModel.TOOLBAR_ORDER;
+                    }
+                    reorderTools(bookmarks, orderedIds) {
+                        for (let i = 0; i < orderedIds.length; i++) {
+                            {
+                                const tool = this.get(orderedIds[i]);
+                                if (tool != null)
+                                    tool.setOrder(i);
+                            }
+                            ;
+                        }
+                        if (bookmarks)
+                            this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customBookmarks", null, this.getToolIDs(true));
+                        else
+                            this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customTools", null, this.getToolIDs(false));
+                        this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object(bookmarks ? "allCustomBookmarks" : "allCustomTools", null, this.getAllCustomToolIDs(bookmarks));
+                    }
+                    createEdit(className) {
+                        switch ((className)) {
+                            case "ToolApplied":
+                                return new com.vzome.core.editor.ApplyTool(this, null, false, false, false, false, false, true);
+                            case "ApplyTool":
+                                return new com.vzome.core.editor.ApplyTool(this, null, false, false, false, false, true, true);
+                            case "SelectToolParameters":
+                                return new com.vzome.core.editor.SelectToolParameters(this, null);
+                            default:
+                                return null;
+                        }
+                    }
+                    applyTool(tool, selectInputs, deleteInputs, createOutputs, selectOutputs, copyColors) {
+                        const edit = new com.vzome.core.editor.ApplyTool(this, tool, selectInputs, deleteInputs, createOutputs, selectOutputs, true, copyColors);
+                        this.getContext().performAndRecord(edit);
+                    }
+                    selectToolParameters(tool) {
+                        const edit = new com.vzome.core.editor.SelectToolParameters(this, tool);
+                        this.getContext().performAndRecord(edit);
+                    }
+                    addPropertyListener(listener) {
+                        this.pcs.addPropertyChangeListener$java_beans_PropertyChangeListener(listener);
+                    }
+                    removePropertyListener(listener) {
+                        this.pcs.removePropertyChangeListener$java_beans_PropertyChangeListener(listener);
+                    }
+                    setEditorModel(editor) {
+                        this.editor = editor;
+                    }
+                    getEditorModel() {
+                        return this.editor;
+                    }
+                    /**
+                     *
+                     * @param {string} id
+                     * @return {com.vzome.core.editor.Tool}
+                     */
+                    getPredefinedTool(id) {
+                        return this.get(id);
+                    }
+                    getContext() {
+                        return this.context;
+                    }
+                    getOriginPoint() {
+                        return this.originPoint;
+                    }
+                    getXml(doc) {
+                        const result = doc.createElement("Tools");
+                        for (let index = this.values().iterator(); index.hasNext();) {
+                            let tool = index.next();
+                            if (!tool.isPredefined()) {
+                                const toolElem = doc.createElement("Tool");
+                                com.vzome.xml.DomUtils.addAttribute(toolElem, "id", tool.getId());
+                                com.vzome.xml.DomUtils.addAttribute(toolElem, "label", tool.getLabel());
+                                if (tool.isHidden())
+                                    com.vzome.xml.DomUtils.addAttribute(toolElem, "hidden", "true");
+                                if (tool.getOrder() >= 0)
+                                    com.vzome.xml.DomUtils.addAttribute(toolElem, "order", /* toString */ ('' + (tool.getOrder())));
+                                toolElem.setAttribute("selectInputs", javaemul.internal.BooleanHelper.toString(tool.isSelectInputs()));
+                                toolElem.setAttribute("deleteInputs", javaemul.internal.BooleanHelper.toString(tool.isDeleteInputs()));
+                                toolElem.setAttribute("copyColors", javaemul.internal.BooleanHelper.toString(tool.isCopyColors()));
+                                result.appendChild(toolElem);
+                            }
+                        }
+                        return result;
+                    }
+                    loadFromXml(xml) {
+                        const nodes = xml.getChildNodes();
+                        for (let i = 0; i < nodes.getLength(); i++) {
+                            {
+                                const node = nodes.item(i);
+                                if (node != null && (node.constructor != null && node.constructor["__interfaces"] != null && node.constructor["__interfaces"].indexOf("org.w3c.dom.Element") >= 0)) {
+                                    const toolElem = node;
+                                    const id = toolElem.getAttribute("id");
+                                    const label = toolElem.getAttribute("label");
+                                    this.toolLabels.put(id, label);
+                                    let value = toolElem.getAttribute("selectInputs");
+                                    if (value != null && !(value === ("")))
+                                        this.toolSelectInputs.put(id, javaemul.internal.BooleanHelper.parseBoolean(value));
+                                    value = toolElem.getAttribute("deleteInputs");
+                                    if (value != null && !(value === ("")))
+                                        this.toolDeleteInputs.put(id, javaemul.internal.BooleanHelper.parseBoolean(value));
+                                    value = toolElem.getAttribute("copyColors");
+                                    if (value != null && !(value === ("")))
+                                        this.toolCopyColors.put(id, javaemul.internal.BooleanHelper.parseBoolean(value));
+                                    const hiddenStr = toolElem.getAttribute("hidden");
+                                    if (hiddenStr != null && (hiddenStr === ("true")))
+                                        this.hiddenTools.add(id);
+                                    const orderStr = toolElem.getAttribute("order");
+                                    if (orderStr != null && !(orderStr === ("")))
+                                        this.toolOrder.put(id, javaemul.internal.IntegerHelper.parseInt(orderStr));
+                                }
+                            }
+                            ;
+                        }
+                    }
+                    setConfiguration(tool) {
+                        const id = tool.getId();
+                        const label = this.toolLabels.get(id);
+                        if (label != null)
+                            tool.setLabel(label);
+                        if (this.toolDeleteInputs.containsKey(id) || this.toolSelectInputs.containsKey(id)) {
+                            const deleteInputs = this.toolDeleteInputs.containsKey(id) ? this.toolDeleteInputs.get(id) : true;
+                            const selectInputs = this.toolSelectInputs.containsKey(id) ? this.toolSelectInputs.get(id) : false;
+                            tool.setInputBehaviors(selectInputs, deleteInputs);
+                        }
+                        if (this.toolCopyColors.containsKey(id)) {
+                            tool.setCopyColors(this.toolCopyColors.get(id));
+                        }
+                        if (this.toolOrder.containsKey(id))
+                            tool.setOrder(this.toolOrder.get(id));
+                        tool.setHidden(this.hiddenTools.contains(id));
+                    }
+                    hideTool(tool) {
+                        this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("tool.instances", tool, null);
+                        if (tool.getCategory() === com.vzome.core.tools.BookmarkTool.ID) {
+                            this.customBookmarks.remove(tool.getId());
+                            this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customBookmarks", null, this.getToolIDs(true));
+                        }
+                        else {
+                            this.customTools.remove(tool.getId());
+                            this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customTools", null, this.getToolIDs(false));
+                        }
+                    }
+                    unhideTool(tool) {
+                        this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("tool.instances", null, tool);
+                        if (!tool.isPredefined()) {
+                            if (tool.getCategory() === com.vzome.core.tools.BookmarkTool.ID) {
+                                if (!this.customBookmarks.contains(tool.getId()))
+                                    this.customBookmarks.add(tool.getId());
+                                this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customBookmarks", null, this.getToolIDs(true));
+                            }
+                            else {
+                                if (!this.customTools.contains(tool.getId()))
+                                    this.customTools.add(tool.getId());
+                                this.pcs.firePropertyChange$java_lang_String$java_lang_Object$java_lang_Object("customTools", null, this.getToolIDs(false));
+                            }
+                        }
+                    }
+                }
+                editor_5.ToolsModel = ToolsModel;
+                ToolsModel["__class"] = "com.vzome.core.editor.ToolsModel";
+                ToolsModel["__interfaces"] = ["java.lang.Cloneable", "com.vzome.api.Tool.Source", "java.util.Map", "java.util.NavigableMap", "java.util.SortedMap", "java.io.Serializable"];
+            })(editor = core.editor || (core.editor = {}));
         })(core = vzome.core || (vzome.core = {}));
     })(vzome = com.vzome || (com.vzome = {}));
 })(com || (com = {}));
@@ -53338,6 +53496,7 @@ export var com;
         })(core = vzome.core || (vzome.core = {}));
     })(vzome = com.vzome || (com.vzome = {}));
 })(com || (com = {}));
+com.vzome.core.editor.ToolsModel.TOOLBAR_ORDER_$LI$();
 com.vzome.core.editor.ApplyTool.logger_$LI$();
 com.vzome.core.editor.CommandEdit.loadAndPerformLgger_$LI$();
 com.vzome.core.editor.CommandEdit.logger_$LI$();
@@ -53376,6 +53535,7 @@ com.vzome.core.exporters.PlyExporter.FORMAT_$LI$();
 com.vzome.core.exporters.PlyExporter.__static_initialize();
 com.vzome.desktop.controller.PreviewStrut.logger_$LI$();
 com.vzome.desktop.controller.LengthController.SCALE_OFFSET_$LI$();
+com.vzome.desktop.controller.SymmetryController.UNTOOLBARED_LABELS_$LI$();
 com.vzome.desktop.controller.NumberController.MATH_OPS_$LI$();
 com.vzome.desktop.controller.NumberController.OPTIONAL_NAMED_VALUES_$LI$();
 com.vzome.core.algebra.SnubDodecField.IRRATIONAL_LABELS_$LI$();
