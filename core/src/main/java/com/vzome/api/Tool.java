@@ -53,4 +53,10 @@ public interface Tool
     boolean isHidden();
 
     void setHidden( boolean hidden );
+
+    // Toolbar ordering (a user-controlled toolbar-layout preference, persisted with the design).
+    //  Lower values sort earlier. -1 means "unset" (fall back to creation/id order).
+    int getOrder();
+
+    void setOrder( int order );
 }

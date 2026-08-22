@@ -28,7 +28,7 @@ const ConfigDialogTitle = (props) =>
 
 export const ToolConfig = (props) =>
 {
-  const { controllerAction } = useEditor();
+  const { controllerAction, setEdited } = useEditor();
   const open = () => !!props.anchor;
   const id = () => (open() ? "tool-config-popper" : undefined);
 
@@ -48,10 +48,16 @@ export const ToolConfig = (props) =>
     props.onClose();
     controllerAction( props.controller, 'selectParams' );
   }
-  const handleRemove = () =>
+  // Pin state, so the dialog can offer the opposite action. A hidden (unpinned) tool
+  //  offers "Pin"; a visible (pinned) tool offers "Unpin".
+  const hidden = () => controllerProperty( props.controller, 'hidden', 'hidden', false ) === 'true';
+  const handleTogglePin = () =>
   {
+    // "Unpin": hide the tool from the toolbar; "Pin": bring it back. Either way it remains
+    //  defined, and its pinned/unpinned state persists with the design.
     props.onClose();
-    controllerAction( props.controller, 'hideTool' );
+    controllerAction( props.controller, hidden()? 'unhideTool' : 'hideTool' );
+    setEdited( true ); // pin/unpin persists with the design, so mark it dirty
   }
   const handleKeyDown = (e) =>
   {
@@ -66,8 +72,7 @@ export const ToolConfig = (props) =>
       <ConfigDialogTitle onClose={props.onClose}>{props.bookmark? 'Selection Bookmark' : 'Tool'}</ConfigDialogTitle>
 
       <div class='tool-config-icon-label' onKeydown={handleKeyDown} >
-        <button aria-label={props.label} class='toolbar-button' onClick={handleToolClick} disabled={props.disabled}
-            style={{ padding: '0.5em' }}>
+        <button aria-label={props.label} class='toolbar-button' onClick={handleToolClick} disabled={props.disabled}>
           <img src={ resourceUrl( `icons/tools/${props.image}.png` ) } class='toolbar-image'/>
         </button>
         { !!props.predefined?
@@ -130,8 +135,8 @@ export const ToolConfig = (props) =>
       </>}
 
       <div class='tool-config-button'>
-        <Button size="small" variant="outlined" onClick={handleRemove} disabled={!!props.predefined} >
-          Remove {props.bookmark? 'Bookmark' : 'Tool'}
+        <Button size="small" variant="outlined" onClick={handleTogglePin} disabled={!!props.predefined} >
+          {hidden()? 'Pin' : 'Unpin'} {props.bookmark? 'Bookmark' : 'Tool'}
         </Button>
       </div>
     </Popover>

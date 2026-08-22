@@ -21,6 +21,8 @@ namespace com.vzome.core.editor {
 
         /*private*/ copyColors: boolean;
 
+        /*private*/ order: number;
+
         /*private*/ pcs: java.beans.PropertyChangeSupport;
 
         public constructor(id: string, tools: com.vzome.core.editor.ToolsModel) {
@@ -35,6 +37,7 @@ namespace com.vzome.core.editor {
             if (this.selectInputs === undefined) { this.selectInputs = false; }
             if (this.deleteInputs === undefined) { this.deleteInputs = false; }
             if (this.copyColors === undefined) { this.copyColors = false; }
+            this.order = -1;
             this.pcs = new java.beans.PropertyChangeSupport(this);
             this.tools = tools;
             this.id = id;
@@ -220,8 +223,26 @@ namespace com.vzome.core.editor {
          * @param {boolean} hidden
          */
         public setHidden(hidden: boolean) {
+            const wasHidden: boolean = this.hidden;
             this.hidden = hidden;
-            this.tools.hideTool(this);
+            if (hidden === wasHidden)return;
+            if (hidden)this.tools.hideTool(this); else this.tools.unhideTool(this);
+        }
+
+        /**
+         * 
+         * @return {number}
+         */
+        public getOrder(): number {
+            return this.order;
+        }
+
+        /**
+         * 
+         * @param {number} order
+         */
+        public setOrder(order: number) {
+            this.order = order;
         }
     }
     Tool["__class"] = "com.vzome.core.editor.Tool";

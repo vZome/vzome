@@ -52,6 +52,10 @@ namespace com.vzome.core.editor {
             } else throw new Error('invalid overload');
         }
         /* Default method injected from com.vzome.core.editor.api.OrbitSource */
+        getOrientations$(): number[][] {
+            return this.getOrientations(false);
+        }
+        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
         getZone(orbit: string, orientation: number): com.vzome.core.math.symmetry.Axis {
             return this.getSymmetry().getDirection(orbit).getAxis(com.vzome.core.math.symmetry.Symmetry.PLUS, orientation);
         }
@@ -73,10 +77,6 @@ namespace com.vzome.core.editor {
             embedding[14] = 0.0;
             embedding[15] = 1.0;
             return embedding;
-        }
-        /* Default method injected from com.vzome.core.editor.api.OrbitSource */
-        getOrientations$(): number[][] {
-            return this.getOrientations(false);
         }
         static LOGGER: java.util.logging.Logger; public static LOGGER_$LI$(): java.util.logging.Logger { if (SymmetrySystem.LOGGER == null) { SymmetrySystem.LOGGER = java.util.logging.Logger.getLogger("com.vzome.core.editor"); }  return SymmetrySystem.LOGGER; }
 
