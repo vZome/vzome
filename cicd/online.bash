@@ -192,8 +192,20 @@ installJsDependencies(){
   yarn install || exit $?
 }
 
+typecheckJs() {
+  banner 'Typechecking TypeScript'
+  # esbuild strips type annotations without ever checking them, so a genuine type
+  # error would otherwise build and ship in silence.  This is the gate that makes
+  # the strictness in online/tsconfig.app.json load-bearing: it runs in CI, via
+  # `cicd/online.bash prod`, so a type error cannot reach the deployed site.
+  # Incremental (tsc -b), so the cost after the first run is small.
+  yarn run typecheck || exit $?
+}
+
 buildForProduction() {
   installJsDependencies || exit $?
+
+  typecheckJs || exit $?
 
   rm -rf dist || exit $?
   yarn run build || exit $?
