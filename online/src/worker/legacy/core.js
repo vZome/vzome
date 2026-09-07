@@ -870,6 +870,29 @@ export const loadAndInjectResource = async ( path, url ) =>
       renderedModel, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };
   }
 
+// The ten official Zometool colors, in the order desktop vZome presents them in its
+//  "Zometool Colors" chooser panel (see desktop ColorListPanel.ZOMETOOL_COLORS).
+//  Only the names are listed here; the RGB values come from the `defaults` above, which
+//  is the copy of core's defaultPrefs.properties, so there is one source for the values.
+//  The remaining color.* entries in defaults are not Zometool colors -- they are lights,
+//  backgrounds, highlights, and the extended palette -- so they cannot be discovered by
+//  simply filtering for the "color." prefix.
+const ZOMETOOL_COLOR_NAMES = [
+  'blue', 'yellow', 'red', 'green', 'turquoise',
+  'white', 'black', 'orange', 'purple', 'gray',
+];
+
+const capitalize = s => s .charAt(0) .toUpperCase() + s .slice(1);
+
+// Each entry is "Name #rrggbb", so the client gets label and value in one list property,
+//  which is all the controller list protocol can carry (an array of strings).
+const getZometoolColors = () => ZOMETOOL_COLOR_NAMES .map( name => {
+  const rgb = defaults[ `color.${name}` ] .split( ',' )
+    .map( n => Number( n .trim() ) .toString( 16 ) .padStart( 2, '0' ) )
+    .join( '' );
+  return `${capitalize( name )} #${rgb}`;
+} );
+
 export const initialize = async () =>
 {
   // Fields are now constructed lazily (see fieldRegistry / getFieldApp), so we
@@ -879,6 +902,7 @@ export const initialize = async () =>
   const parse = createParser( documentFactory );
   return {
     getFieldNames, getField, getFieldLabel, getSymmetry,
+    getZometoolColors,
     documentFactory, parse,
     enhanceTopologicalMesh: enhanceTopologicalMesh( getField ),
   };

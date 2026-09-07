@@ -165,6 +165,10 @@ export class EditorController extends DefaultController
       case "fields":
         return this.core.getFieldNames();
 
+      // Each entry is "Name #rrggbb"; see getZometoolColors in core.js.
+      case "zometoolColors":
+        return this.core.getZometoolColors();
+
       case "affinePolygon.modes": {
         const modes = AffinePolygon.getPolygonModes( legacyField ) .keySet() .toArray();
         return modes .slice( 3 );

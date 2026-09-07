@@ -27,6 +27,12 @@ const initialState = () => {
       style: defaultSharingStyle( scenes ),
     },
     copiedCamera: copyOfCamera( camera ),
+    // The color last CHOSEN in the "Set Color" picker, so it reopens where the user left
+    //  off.  Desktop vZome keeps the equivalent as DocumentController.lastObjectColor,
+    //  including this initial value, but it is purely a UI convenience -- the worker never
+    //  needs it -- so online keeps it client-side.  Note it is NOT the color of the current
+    //  selection.
+    lastObjectColor: '#ffffff',
   };
 }
 
@@ -251,6 +257,8 @@ const EditorProvider = props =>
   const providerValue = {
     ...store,
     guard, edited, setEdited,
+    lastObjectColor: () => state.lastObjectColor,
+    setLastObjectColor: hex => setState( 'lastObjectColor', hex ),
     rootController,
     controllerAction,
     shareToGitHub,
