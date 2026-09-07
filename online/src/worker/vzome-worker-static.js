@@ -2,6 +2,7 @@
 import { resourceIndex, importLegacy, importZomic } from '../revision.js';
 import { commitToGitHub, assemblePartsList, normalizePreview } from '../both-contexts.js';
 import { createPartsList } from './legacy/partslist.js';
+import { clientEvents } from './client-events.js';
 
 // const uniqueId = Math.random();
 
@@ -106,39 +107,6 @@ const fetchFileText = selected =>
 const parts_catalog_url = 'https://zometool.github.io/vzome-sharing/metadata/zometool-parts.json';
 const partsPromise = fetch( parts_catalog_url ) .then( response => response.text() ) .then( text => JSON.parse( text ) );
 
-const clientEvents = report =>
-{
-  const sceneChanged = ( scene, edit='--START--' ) => report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
-
-  const shapeDefined = shape => report( { type: 'SHAPE_DEFINED', payload: shape } );
-
-  const instanceAdded = instance => report( { type: 'INSTANCE_ADDED', payload: instance } );
-
-  const latestBallAdded = instance => report( { type: 'LAST_BALL_CREATED', payload: instance } );
-
-  const instanceRemoved = ( shapeId, id ) => report( { type: 'INSTANCE_REMOVED', payload: { shapeId, id } } );
-
-  const selectionToggled = ( shapeId, id, selected ) => report( { type: 'SELECTION_TOGGLED', payload: { shapeId, id, selected } } );
-
-  const symmetryChanged = details => report( { type: 'SYMMETRY_CHANGED', payload: details } );
-
-  const xmlParsed = xmlTree => report( { type: 'DESIGN_XML_PARSED', payload: xmlTree } );
-
-  const propertyChanged = ( controllerPath, name, value ) => report( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name, value } } );
-
-  const errorReported = message => report( { type: 'ALERT_RAISED', payload: message } );
-
-  const scenesDiscovered = s => report( { type: 'SCENES_DISCOVERED', payload: s } );
-
-  const snapshotCaptured = s => report( { type: 'SNAPSHOT_CAPTURED', payload: s } );
-
-  const textExported = ( action, text ) => report( { type: 'TEXT_EXPORTED', payload: { action, text } } ) ;
-
-  const buildPlaneSelected = ( center, diskZone, hingeZone ) => report( { type: 'PLANE_CHANGED', payload: { center, diskZone, hingeZone } } );
-
-  return { sceneChanged, shapeDefined, instanceAdded, instanceRemoved, selectionToggled, symmetryChanged, latestBallAdded,
-    xmlParsed, scenesDiscovered, snapshotCaptured, propertyChanged, errorReported, textExported, buildPlaneSelected, };
-}
 
 // NOTE: the trackball model is no longer rendered through this (editor) worker. The classic
 // editor now loads each symmetry's trackball .vZome as an ordinary design on its OWN dedicated

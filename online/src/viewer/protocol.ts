@@ -205,6 +205,9 @@ export type WorkerEvent =
 
 export type WorkerEventType = WorkerEvent[ 'type' ];
 
+/** The single WorkerEvent with a given type, e.g. EventOf<'SELECTION_TOGGLED'>. */
+export type EventOf< T extends WorkerEventType > = Extract< WorkerEvent, { type: T } >;
+
 /** A WorkerEvent as it goes over postMessage, echoing the requestId of the action it answers. */
 export type WorkerResponse = WorkerEvent & {
   requestId?: string;
