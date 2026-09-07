@@ -22,3 +22,6 @@ app.tgz
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# TypeScript incremental build state, written by `tsc -b` (yarn typecheck)
+*.tsbuildinfo

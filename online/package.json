@@ -7,7 +7,7 @@
     "nolegacy": "node scripts/test-app.mjs nolegacy",
     "dev": "node scripts/test-app.mjs",
     "https": "node scripts/test-https.mjs",
-    "typecheck": "tsc -p tsconfig.json",
+    "typecheck": "tsc -b tsconfig.json",
     "check:numberformat": "node scripts/check-number-format.mjs"
   },
   "dependencies": {
