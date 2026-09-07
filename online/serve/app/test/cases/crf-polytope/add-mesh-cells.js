@@ -9,9 +9,9 @@
 */
 
 import { downloadJSON, fetchUrlJSON, } from "./utils.js";
-import { initialize, vzomePkg, simpleMeshToTopologicalMesh, coloredMeshToSimpleMesh, } from "/modules/vzome-legacy.js";
+import { initialize, AlgebraicVectors, simpleMeshToTopologicalMesh, coloredMeshToSimpleMesh, } from "/modules/vzome-legacy.js";
 
-const getCentroid = vzomePkg.core.algebra.AlgebraicVectors.getCentroid;
+const getCentroid = AlgebraicVectors.getCentroid;
 
 const cellSets = [
   "core-j91",

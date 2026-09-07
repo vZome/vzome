@@ -92,67 +92,46 @@ All official builds for online vZome are performed using GitHub Actions.  See `.
 
 The `vZome online: Clean` task removes all temporary files and build artifacts.
 
-## Legacy Code Workflow
+## Legacy Code
 
-> This workflow is no longer viable unless you *already* have all of the JSweet components built and installed locally.
-> The JSweet Artifactory server is offline for good, and so the build is not working.
-> Nonetheless, I'm keeping these instructions here for my own use.
+The `online/src/worker/legacy/from-java/` folder holds 433 TypeScript modules that were
+originally transpiled from this repository's Java `core` (and parts of `desktop`) with
+[JSweet](https://www.jsweet.org/).
 
-You'll need [Maven](https://maven.apache.org/) installed for these steps.
-You will also require an installation of [JDK 11](https://www.oracle.com/java/technologies/javase/jdk11-archive-downloads.html).
+**That transpile can no longer be run** — it depended on custom branches of four
+repositories whose Artifactory server is permanently offline — so the TypeScript has been
+adopted as source and is now edited directly.  There is no Java build step in the online
+workflow any more: `cicd/online.bash dev` is the whole story, and esbuild consumes the
+`.ts` files directly.
 
-The vZome legacy code is part of the Java code from this repository (for desktop vZome)
-that has been transpiled into Javascript using
-[JSweet](https://www.jsweet.org/).  This transpilation step complicates the development workflow considerably,
-particularly because it requires my own branches of several GitHub repositories:
+The important consequence is that nothing keeps the two languages in agreement:
 
- - [vorth/jsweet](https://github.com/vorth/jsweet)
- - [vorth/jsweet-maven-plugin](https://github.com/vorth/jsweet-maven-plugin)
- - [vorth/j4ts](https://github.com/vorth/j4ts)
- - [vorth/jsweet-gradle-plugin](https://github.com/vorth/jsweet-gradle-plugin)
+    core/src/main/java/com/vzome/core/edits/Foo.java     drives desktop vZome
+    online/src/worker/legacy/from-java/com/vzome/core/edits/Foo.ts    drives online vZome
 
-These branches contain defect fixes that have been submitted to the corresponding
-upstream projects but not yet merged, or merged but no release has been
-published, since the JSweet maintainers have largely
-moved on to other projects.
+**A change to either must be mirrored by hand in the other.**  A missed mirror passes both
+`./gradlew core:test` and `yarn typecheck` — each tree still compiles — and the two
+versions of vZome simply behave differently.
 
-For these steps, the working directory should be the root folder for the
-Git repository; this is the parent of the `online` folder.
+See [`src/worker/legacy/from-java/README.md`](./src/worker/legacy/from-java/README.md) for what to know
+before editing that tree, and the *Coding Conventions* section of the repository's
+`AGENTS.md` for the mirroring rule in full.
 
-First, execute this script:
+### Typechecking
+
 ```
-cicd/online.bash prepareJSweet
+cd online && yarn typecheck
 ```
-This will create a `jsweet-branches` folder as a sibling of `online`,
-check out the four branches listed above, and build them in sequence.
-When the script completes, you can delete the `jsweet-branches` folder
-if you wish, since the tools and library will already be installed in your
-local Maven cache.
-Since this steps is not touching any code in this repository,
-you should not need to repeat it unless you set up another machine to work on vZome Online.
 
-Next, run:
-```
-cicd/online.bash java
-```
-You'll need to do this whenever the Java source code has changed, since it does the JSweet transpile.  You'll see a number of errors during the transpilation, but that is expected.  The script checks for the expected number of errors, and fails if there are more errors or fewer.
+This is the only automated check the legacy tree has.  Run it after any change there.
 
-This command also starts a dev server, which means it will detect file changes and update the live server.
-You can leave this running for hours or days as you do your development.
-However, it is not set up for hot module reloading, so you'll need to refresh your browser
-pages manually.
+### Debugging
 
-Finally, copy `vscode-launch-template.json` as `.vscode/launch.json` (relative to the main folder).
-This gives you several launch profiles.  Using the VS Code debugging view, launch the `TEST` profile.  This will start a dedicated Chrome window running vZome Online, with the ability to set breakpoints in the `online` source code in VS Code.  Note that this only starts the client-side Chrome.  You must have the dev server started also, per the prior paragraph.
-
-If you cancel the running dev server, and want to test Javascript-only changes,
-you can simply run:
-```
-cicd/online.bash dev
-```
-This is only appropriate if you have not touched any Java code.
-This is my most common workflow step, as I'm usually working on Javascript code, not Java code.
-Like the `java` subcommand, it leaves a dev server running.
+Copy `vscode-launch-template.json` to `.vscode/launch.json` (relative to the main folder).
+This gives you several launch profiles.  From the VS Code debugging view, launch the
+`TEST` profile to start a dedicated Chrome window running vZome Online with breakpoints
+available in the `online` sources.  That only starts the client side; you still need a dev
+server running, per [Development](#development) above.
 
 ## Architecture Notes
 

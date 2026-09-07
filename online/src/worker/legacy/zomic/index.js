@@ -4,7 +4,23 @@ import ZomicLexer from './ZomicLexer.js';
 import ZomicParser from './ZomicParser.js';
 import ZomicParserListener from './ZomicParserListener.js';
 
-export const interpretScript = ( script, language, offset, symmetry, effects, vzomePkg ) =>
+//  These were reached through a `vzomePkg` namespace object passed in from
+//  core.js.  Importing them directly lets esbuild bundle only the zomic classes
+//  this module actually uses.
+import { ZomicVirtualMachine } from '../from-java/com/vzome/core/commands/ZomicVirtualMachine.js';
+import { Interpreter } from '../from-java/com/vzome/core/zomic/Interpreter.js';
+import { ZomicCompilerState } from '../from-java/com/vzome/core/zomic/ZomicCompilerState.js';
+import { ZomicNamingConvention } from '../from-java/com/vzome/core/zomic/ZomicNamingConvention.js';
+import { ZomicEventHandler } from '../from-java/com/vzome/core/render/ZomicEventHandler.js';
+import { Build } from '../from-java/com/vzome/core/zomic/program/Build.js';
+import { Label } from '../from-java/com/vzome/core/zomic/program/Label.js';
+import { Repeat } from '../from-java/com/vzome/core/zomic/program/Repeat.js';
+import { Save } from '../from-java/com/vzome/core/zomic/program/Save.js';
+import { Symmetry } from '../from-java/com/vzome/core/zomic/program/Symmetry.js';
+import { Walk } from '../from-java/com/vzome/core/zomic/program/Walk.js';
+
+
+export const interpretScript = ( script, language, offset, symmetry, effects ) =>
 {
   if ( language !== 'zomic' )
     throw new Error( `${language} is not a supported script language.` );
@@ -14,22 +30,19 @@ export const interpretScript = ( script, language, offset, symmetry, effects, vz
   const tokens = new antlr4.CommonTokenStream( lexer );
   const parser = new ZomicParser( tokens );
   const tree = parser.program();
-  const compiler = new ZomicCompiler( symmetry, vzomePkg );
+  const compiler = new ZomicCompiler( symmetry );
   antlr4.tree.ParseTreeWalker.DEFAULT.walk( compiler, tree );
   const program = compiler .getProgram();
 
-  const builder = new vzomePkg.core.commands.ZomicVirtualMachine( offset, effects, symmetry );
-  program .accept( new vzomePkg.core.zomic.Interpreter( builder, symmetry ) );
+  const builder = new ZomicVirtualMachine( offset, effects, symmetry );
+  program .accept( new Interpreter( builder, symmetry ) );
 }
 
 class ZomicCompiler extends ZomicParserListener
 {
-  constructor( symmetry, vzomePkg ) {
+  constructor( symmetry ) {
     super();
-    this.state = new vzomePkg.core.zomic.ZomicCompilerState( symmetry );
-    this.pkg = vzomePkg.core.zomic;
-    this.render = vzomePkg.core.render;
-    this.program = this.pkg.program;
+    this.state = new ZomicCompilerState( symmetry );
   }
 
   getProgram() {
@@ -37,8 +50,8 @@ class ZomicCompiler extends ZomicParserListener
   }
 
 	enterProgram(ctx) {
-		this .state .prepareStatement( new this.program.Walk() );
-		this .state .prepareStatement( new this.program.Walk() );	// old parser had an extra Walk on the stack so we will too
+		this .state .prepareStatement( new Walk() );
+		this .state .prepareStatement( new Walk() );	// old parser had an extra Walk on the stack so we will too
 	}
 
 	exitProgram(ctx) {
@@ -49,7 +62,7 @@ class ZomicCompiler extends ZomicParserListener
 	}
 
 	enterCompound_stmt(ctx) {
-    this .state .prepareStatement( new this.program.Walk() );
+    this .state .prepareStatement( new Walk() );
 	}
 
 	exitCompound_stmt(ctx) {
@@ -70,7 +83,7 @@ class ZomicCompiler extends ZomicParserListener
   }
 
 	exitLabel_stmt(ctx) {
-    this .state .commit( new this.program.Label( ctx.IDENT() .text ) );
+    this .state .commit( new Label( ctx.IDENT() .text ) );
 	}
 
 	enterScale_stmt(ctx) {
@@ -86,11 +99,11 @@ class ZomicCompiler extends ZomicParserListener
 	}
 
   exitBuild_stmt(ctx) {
-    this .state .commit( new this.program.Build( /*build*/ true, /*destroy*/ false ) );
+    this .state .commit( new Build( /*build*/ true, /*destroy*/ false ) );
 	}
 
   exitMove_stmt(ctx) {
-    this .state .commit( new this.program.Build(/*build*/ false, /*destroy*/ false) );
+    this .state .commit( new Build(/*build*/ false, /*destroy*/ false) );
 	}
 
 	enterRotate_stmt(ctx) {
@@ -124,9 +137,9 @@ class ZomicCompiler extends ZomicParserListener
 	}
 
 	enterFrom_stmt(ctx) {
-    this .state .prepareStatement( new this.program.Save( this.render.ZomicEventHandler.ACTION ) );
-    this .state .prepareStatement( new this.program.Walk() );
-    this .state .commit( new this.program.Build(/*build*/ false, /*destroy*/ false) );
+    this .state .prepareStatement( new Save( ZomicEventHandler.ACTION ) );
+    this .state .prepareStatement( new Walk() );
+    this .state .commit( new Build(/*build*/ false, /*destroy*/ false) );
   }
 
 	exitFrom_stmt(ctx) {
@@ -137,20 +150,20 @@ class ZomicCompiler extends ZomicParserListener
 	enterSymmetry_stmt(ctx) {
     let symmetryMode;
 		if( ctx.axis_expr() !== null ) {
-			symmetryMode = this.pkg.ZomicCompilerState.SymmetryModeEnum.RotateAroundAxis;
+			symmetryMode = ZomicCompilerState.SymmetryModeEnum.RotateAroundAxis;
 		} else if( ctx.symmetry_center_expr() === null ) {
-			symmetryMode = this.pkg.ZomicCompilerState.SymmetryModeEnum.Icosahedral;
+			symmetryMode = ZomicCompilerState.SymmetryModeEnum.Icosahedral;
 		} else if(ctx.symmetry_center_expr().blueAxisIndexNumber !== null) {
-			symmetryMode = this.pkg.ZomicCompilerState.SymmetryModeEnum.MirrorThroughBlueAxis;
+			symmetryMode = ZomicCompilerState.SymmetryModeEnum.MirrorThroughBlueAxis;
 		} else if(ctx.symmetry_center_expr().CENTER() !== null) {
-			symmetryMode = this.pkg.ZomicCompilerState.SymmetryModeEnum.ReflectThroughOrigin;
+			symmetryMode = ZomicCompilerState.SymmetryModeEnum.ReflectThroughOrigin;
 		} else {
 			throw new Error( "Unexpected symmetry mode: " + ctx.text );
 		}
 		// push a SymmetryTemplate on the Templates stack to collect the Symmetry parameters
 		this .state .prepareSymmetryTemplate(symmetryMode);
 		// push an actual Symmetry statement on the Statements stack to collect the body
-		this .state .prepareStatement(new this.program.Symmetry());
+		this .state .prepareStatement(new Symmetry());
 	}
 
 	exitSymmetry_stmt(ctx) {
@@ -172,7 +185,7 @@ class ZomicCompiler extends ZomicParserListener
 		// negative numbers are allowed but the sign is silently removed
     const txt = ctx.count.text;
     const count = parseInt( txt );
-    this .state .prepareStatement( new this.program.Repeat( Math.abs( count )) );
+    this .state .prepareStatement( new Repeat( Math.abs( count )) );
 	}
 
 	exitRepeat_stmt(ctx) {
@@ -180,7 +193,7 @@ class ZomicCompiler extends ZomicParserListener
 	}
 
 	enterBranch_stmt(ctx) {
-    this .state .prepareStatement( new this.program.Save( this.render.ZomicEventHandler.LOCATION ) );
+    this .state .prepareStatement( new Save( ZomicEventHandler.LOCATION ) );
 	}
 
 	exitBranch_stmt(ctx) {
@@ -191,24 +204,24 @@ class ZomicCompiler extends ZomicParserListener
 		let state = 0;
 		switch(ctx.state.text) {
 			case "orientation":
-				state = this.render.ZomicEventHandler.ORIENTATION;
+				state = ZomicEventHandler.ORIENTATION;
 				break;
 			case "scale":
-				state = this.render.ZomicEventHandler.SCALE;
+				state = ZomicEventHandler.SCALE;
 				break;
 			case "location":
-				state = this.render.ZomicEventHandler.LOCATION;
+				state = ZomicEventHandler.LOCATION;
 				break;
 			case "build":
-				state = this.render.ZomicEventHandler.ACTION;
+				state = ZomicEventHandler.ACTION;
 				break;
 			case "all":
-				state = this.render.ZomicEventHandler.ALL;
+				state = ZomicEventHandler.ALL;
 				break;
 			default:
 				throw new Error( "Unexpected save parameter: " + ctx.state.text );
 		}
-		this .state .prepareStatement( new this.program.Save( state ) );
+		this .state .prepareStatement( new Save( state ) );
 	}
 
 	exitSave_stmt(ctx) {
@@ -246,15 +259,15 @@ class ZomicCompiler extends ZomicParserListener
 	}
 
 	exitSizeShort(ctx) {
-    this .state .setCurrentScale( this.pkg.ZomicNamingConvention.SHORT );
+    this .state .setCurrentScale( ZomicNamingConvention.SHORT );
 	}
 
   exitSizeLong(ctx) {
-    this .state .setCurrentScale( this.pkg.ZomicNamingConvention.LONG );
+    this .state .setCurrentScale( ZomicNamingConvention.LONG );
 	}
 
   exitSizeMedium(ctx) {
-    this .state .setCurrentScale( this.pkg.ZomicNamingConvention.MEDIUM );
+    this .state .setCurrentScale( ZomicNamingConvention.MEDIUM );
 	}
 
 	exitSymmetry_center_expr(ctx) {

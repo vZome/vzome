@@ -403,6 +403,44 @@ function bigRationalToMathML( num, denom )
     return `<mfrac><mn>${num.toString()}</mn><mn>${denom.toString()}</mn></mfrac>`;
 }
 
+/**
+ * Renders one term of an algebraic number the way Java's AbstractAlgebraicField does for
+ * DEFAULT_FORMAT and EXPRESSION_FORMAT (see AlgebraicField.DEFAULT_FORMAT, "4 + 3phi", versus
+ * EXPRESSION_FORMAT, "4 +3*phi").  The two differ in two details that matter, because the shape
+ * keys built from these strings must agree across Java and Javascript:
+ *   - a coefficient of exactly 1 is omitted entirely in DEFAULT_FORMAT ("1+1*phi" vs "1 +phi")
+ *   - the "*" between coefficient and irrational appears only in EXPRESSION_FORMAT
+ * Terms after the first are separated by " " and carry their own sign, again matching Java.
+ */
+const appendTerm = ( text, coefficient, denominator, irrational, expression ) =>
+{
+  if ( coefficient === 0n )
+    return text;
+  // Reduce first.  Java holds each coefficient as an already-reduced BigRational, so a term
+  // that is really 1 arrives here as 2/2 or 6/6 and must be recognized as one -- otherwise we
+  // print "-2/2phi" where Java prints "-phi", and the shape keys built from these strings
+  // disagree between the two platforms.
+  let [ value, divisor ] = simplify( [ coefficient, denominator ] );
+  let out = text;
+  if ( out.length > 0 )
+    out += " ";
+  if ( value < 0n ) {
+    value = 0n - value;
+    out += "-";
+  }
+  else if ( text.length > 0 )
+    out += "+";
+  const isOne = ( value === 1n && divisor === 1n );
+  if ( irrational === null )
+    return out + bigRationalToString( value, divisor );
+  if ( ! isOne ) {
+    out += bigRationalToString( value, divisor );
+    if ( expression )
+      out += "*";
+  }
+  return out + irrational;
+}
+
 const toString2 = getIrrational => ( trailingDivisor, format ) =>
 {
   const a0 = BigInt(trailingDivisor[0] || 0), a1 = BigInt(trailingDivisor[1] || 0), d = BigInt(trailingDivisor[2] || 1);
@@ -451,19 +489,13 @@ const toString2 = getIrrational => ( trailingDivisor, format ) =>
           return bigRationalToString( a0, d ) + "+" + bigRationalToString( a1, d ) + irrat;
       }
   
-    default:
-      if ( a0 === 0n ) {
-        if ( a1 === 0n )
-          return "0";
-        else
-          return bigRationalToString( a1, d ) + "*" + irrat;
-      }
-      else {
-        if ( a1 === 0n )
-          return bigRationalToString( a0, d );
-        else
-          return bigRationalToString( a0, d ) + "+" + bigRationalToString( a1, d ) + "*" + irrat;
-      }
+    default: {
+      // Covers Format.DEFAULT and Format.EXPRESSION, matching Java's shared implementation.
+      const expression = ( format === Format.EXPRESSION );
+      let text = appendTerm( "", BigInt( a0 ), BigInt( d ), null, expression );
+      text = appendTerm( text, BigInt( a1 ), BigInt( d ), irrat, expression );
+      return text.length === 0 ? "0" : text;
+    }
   }
 }
 
@@ -508,36 +540,14 @@ const toString3 = getIrrational => ( trailingDivisor, format ) =>
         return '<mn>0</mn>';
       return '<mrow>' + result + '</mrow>';
   
-    default:
-      // NOTE: this is untested code as of this writing
-      if ( a0 === 0n ) {
-        if ( a1 === 0n ) {
-          if ( a2 === 0n )
-            return "0";
-          else
-            return bigRationalToString( a2, d ) + "*b";
-        }
-        else {
-          if ( a2 === 0n )
-            return bigRationalToString( a1, d ) + "*a";
-          else
-            return bigRationalToString( a1, d ) + "*a +" + bigRationalToString( a2, d ) + "*b";
-        }
-      }
-      else {
-        if ( a1 === 0n ) {
-          if ( a2 === 0n )
-            return bigRationalToString( a0, d );
-          else
-            return bigRationalToString( a0, d ) + " +" + bigRationalToString( a2, d ) + "*b";
-        }
-        else {
-          if ( a2 === 0n )
-            return bigRationalToString( a0, d ) + " +" + bigRationalToString( a1, d ) + "*a";
-          else
-            return bigRationalToString( a0, d ) + " +" + bigRationalToString( a1, d ) + "*a +" + bigRationalToString( a2, d ) + "*b";
-        }
-      }
+    default: {
+      // Covers Format.DEFAULT and Format.EXPRESSION, matching Java's shared implementation.
+      const expression = ( format === Format.EXPRESSION );
+      let text = appendTerm( "", BigInt( a0 ), BigInt( d ), null, expression );
+      text = appendTerm( text, BigInt( a1 ), BigInt( d ), getIrrational( 1 ), expression );
+      text = appendTerm( text, BigInt( a2 ), BigInt( d ), getIrrational( 2 ), expression );
+      return text.length === 0 ? "0" : text;
+    }
   }
 }
 

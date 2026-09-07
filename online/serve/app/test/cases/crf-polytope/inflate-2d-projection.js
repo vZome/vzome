@@ -10,7 +10,7 @@
 import { findFaces } from "./netfaces.js";
 import { enhanceMesh } from "./enhance-mesh.js";
 import { downloadJSON, fetchUrlJSON } from "./utils.js";
-import { initialize, vzomePkg, util } from "/modules/vzome-legacy.js";
+import { initialize, util, GrahamScan2D } from "/modules/vzome-legacy.js";
 
 Promise.all( [ initialize(), fetchUrlJSON( "./dodec-projection.mesh.json" ) ] )
 .then( ( [ api, simpleMesh ] ) =>
@@ -23,7 +23,7 @@ Promise.all( [ initialize(), fetchUrlJSON( "./dodec-projection.mesh.json" ) ] )
   //   equal their convex hull.  We will need these faces to enforce planarity of their pre-images.
 
   // Graph created, now find the convex hull of the vertices
-  const hull2d = vzomePkg.core.math.convexhull.GrahamScan2D.buildHull( vertexSet );
+  const hull2d = GrahamScan2D.buildHull( vertexSet );
   // Now recover the vertex corresponding to each hull point
   const hullVertices = hull2d .map( vector => {
     return enhancedMesh .vertices .find( vtx => vector .equals( vtx .vector  ) ) ;

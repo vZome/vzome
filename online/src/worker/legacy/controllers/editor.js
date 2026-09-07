@@ -1,15 +1,26 @@
 
-import { com } from '../core-java.js';
+import { AffinePolygon } from '../from-java/com/vzome/core/edits/AffinePolygon.js';
+import { AlgebraicField } from '../from-java/com/vzome/core/algebra/AlgebraicField.js';
+import { AlgebraicVector } from '../from-java/com/vzome/core/algebra/AlgebraicVector.js';
+import { Controller } from '../from-java/com/vzome/desktop/api/Controller.js';
+import { DefaultController } from '../from-java/com/vzome/desktop/controller/DefaultController.js';
+import { MeasureController } from '../from-java/com/vzome/desktop/controller/MeasureController.js';
+import { PolytopesController } from '../from-java/com/vzome/desktop/controller/PolytopesController.js';
+import { StrutBuilderController } from '../from-java/com/vzome/desktop/controller/StrutBuilderController.js';
+import { SymmetryController } from '../from-java/com/vzome/desktop/controller/SymmetryController.js';
+import { ToolFactoryController } from '../from-java/com/vzome/desktop/controller/ToolFactoryController.js';
+import { ToolsController } from '../from-java/com/vzome/desktop/controller/ToolsController.js';
+import { UndoRedoController } from '../from-java/com/vzome/desktop/controller/UndoRedoController.js';
+import { VectorController } from '../from-java/com/vzome/desktop/controller/VectorController.js';
 import { java } from '../candies/j4ts-2.1.0-SNAPSHOT/bundle.js';
 import { JsProperties } from '../jsweet2js.js';
 import { PickingController } from './picking.js';
 import { BuildPlaneController } from './buildplane.js';
 import { modelToJS } from "../json.js";
-import { export2d, export3d, export3dDocument } from "../exporters.js";
 import { resolveBuildPlanes } from '../scenes.js';
 
 
-export class EditorController extends com.vzome.desktop.controller.DefaultController
+export class EditorController extends DefaultController
 {
   constructor( legacyDesign, core, clientEvents ) {
     super();
@@ -23,7 +34,7 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
 
   reportError( message, args ) {
     console.log('controller error:', message, args);
-    if (message === com.vzome.desktop.api.Controller.UNKNOWN_ERROR_CODE) {
+    if (message === Controller.UNKNOWN_ERROR_CODE) {
       const exception = args[0];
       const action = args[1];
       if ( exception.constructor.__class === 'com.vzome.core.commands.Command.Failure' ) {
@@ -55,22 +66,22 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
     const buildPlaneController = new BuildPlaneController( this.legacyDesign, this.clientEvents );
     this.addSubController('buildPlane', buildPlaneController);
 
-    const polytopesController = new com.vzome.desktop.controller.PolytopesController( editor, editContext );
+    const polytopesController = new PolytopesController( editor, editContext );
     this.addSubController('polytopes', polytopesController);
 
-    const undoRedoController = new com.vzome.desktop.controller.UndoRedoController(history);
+    const undoRedoController = new UndoRedoController(history);
     this.addSubController('undoRedo', undoRedoController);
 
-    const bookmarkController = new com.vzome.desktop.controller.ToolFactoryController(bookmarkFactory);
+    const bookmarkController = new ToolFactoryController(bookmarkFactory);
     this.addSubController('bookmark', bookmarkController);
 
-    const quaternionController = new com.vzome.desktop.controller.VectorController( legacyField .basisVector( 4, com.vzome.core.algebra.AlgebraicVector.W4 ) );
+    const quaternionController = new VectorController( legacyField .basisVector( 4, AlgebraicVector.W4 ) );
     this .addSubController( "quaternion", quaternionController );
 
-    const measureController = new com.vzome.desktop.controller.MeasureController( editor, renderedModel );
+    const measureController = new MeasureController( editor, renderedModel );
     this .addSubController( "measure", measureController );
 
-    const strutBuilder = new com.vzome.desktop.controller.StrutBuilderController( editContext, legacyField )
+    const strutBuilder = new StrutBuilderController( editContext, legacyField )
       .withGraphicalViews( true )   // TODO use preset
       .withShowStrutScales( true ); // TODO use preset
       this.addSubController('strutBuilder', strutBuilder);
@@ -90,14 +101,14 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
         if ( system.getName() === docSymmetrySystem.getName() ) {
           docLabel = label; // for setSymmetryController(), later
         }
-        const symmController = new com.vzome.desktop.controller.SymmetryController( label, strutBuilder, system, renderedModel );
+        const symmController = new SymmetryController( label, strutBuilder, system, renderedModel );
         strutBuilder .addSubController( `symmetry.${label}`, symmController );
         this .addSubController( `symmetry.${label}`, symmController );
         this.symmetries[ label ] = symmController;
       }
     }
   
-    const toolsController = new com.vzome.desktop.controller.ToolsController(toolsModel);
+    const toolsController = new ToolsController(toolsModel);
     toolsController.addTool(toolsModel.get("bookmark.builtin/ball at origin"));
     strutBuilder.addSubController('tools', toolsController);
 
@@ -146,21 +157,25 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
         return Object.keys( this.symmetries );
 
       case "field.irrationals":
-        return com.vzome.core.algebra.AlgebraicField .getIrrationals( legacyField );
+        return AlgebraicField .getIrrationals( legacyField );
 
       case "field.multipliers":
-        return com.vzome.core.algebra.AlgebraicField .getMultipliers( legacyField );
+        return AlgebraicField .getMultipliers( legacyField );
 
       case "fields":
         return this.core.getFieldNames();
 
+      // Each entry is "Name #rrggbb"; see getZometoolColors in core.js.
+      case "zometoolColors":
+        return this.core.getZometoolColors();
+
       case "affinePolygon.modes": {
-        const modes = com.vzome.core.edits.AffinePolygon.getPolygonModes( legacyField ) .keySet() .toArray();
+        const modes = AffinePolygon.getPolygonModes( legacyField ) .keySet() .toArray();
         return modes .slice( 3 );
       }
 
       case "affinePolygon.labels": {
-        const modes = com.vzome.core.edits.AffinePolygon.getPolygonModes( legacyField ) .values() .toArray();
+        const modes = AffinePolygon.getPolygonModes( legacyField ) .values() .toArray();
         return modes .slice( 3 );
       }
   
@@ -260,7 +275,11 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
       }
 
       case "exportText":
-        const { format, selection, camera, lighting, height=500, width=800,
+        //  `exporters` is the dynamically-imported ../exporters.js module, passed in by
+        //  the EXPORT_TRIGGERED handler in vzome-worker-static.js.  Importing it there
+        //  rather than statically here keeps every exporter -- and its transitive
+        //  geometry -- out of the chunk loaded to open a design.
+        const { format, selection, camera, lighting, exporters, height=500, width=800,
                 useShapes=true, drawOutlines=true, monochrome=false, showBackground=true, useLighting=true } = params.getConfig();
         let exported;
 
@@ -279,19 +298,19 @@ export class EditorController extends com.vzome.desktop.controller.DefaultContro
           case 'svg': {
             const { renderedModel } = this.legacyDesign;
             const config = { format, height, width, useShapes, drawOutlines, monochrome, showBackground, useLighting };
-            exported = export2d( { renderedModel, camera, lighting }, config );
+            exported = exporters.export2d( { renderedModel, camera, lighting }, config );
             break;
           }
 
           case 'pov': {
             lighting .useWorldDirection = true;
-            exported = export3dDocument( this.legacyDesign, camera, lighting, { format, height, width } );
+            exported = exporters.export3dDocument( this.legacyDesign, camera, lighting, { format, height, width } );
             break;
           }
 
           default: {
             const { renderedModel } = this.legacyDesign;
-            exported = export3d( { renderedModel, camera, lighting }, { format, height, width } );
+            exported = exporters.export3d( { renderedModel, camera, lighting }, { format, height, width } );
             break;
           }
         }

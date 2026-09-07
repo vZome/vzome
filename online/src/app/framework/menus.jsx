@@ -6,7 +6,41 @@ import { Menubar } from "@kobalte/core/menubar";
 import { ContextMenu } from "@kobalte/core/context-menu";
 
 import { useEditor } from "./context/editor.jsx";
+// LAYERING VIOLATION: framework/ should not import from classic/.  See the note below on
+//  CommandAction and DeclarativeMenu.
 import { useCommands } from "../classic/context/commands.jsx";
+
+/*
+  TODO: move the command-aware menu pieces out of framework/ and into classic/.
+
+  Everything in this file is a thin Kobalte wrapper EXCEPT three exports, which reach into
+  the classic app's command registry via useCommands():
+
+      CommandAction         -- calls useCommands() directly
+      DeclarativeMenuItems  -- falls through to CommandAction for any item without a
+                                 divider/submenu/menuSlot, so every declarative menu does
+      DeclarativeMenu       -- renders DeclarativeMenuItems
+
+  Those three are why framework/ imports classic/, which is backwards: framework/ is the
+  shared layer that classic/, buildplane/ and bhall/ all build on.  Moving them to
+  classic/menus/ would leave this file dependency-free.
+
+  Two things to know before doing it:
+
+  1. It is not enough to move DeclarativeMenu alone.  CommandAction is imported on its own
+     by filemenu.jsx and toolsmenu.jsx (no DeclarativeMenu in sight), so it carries the
+     classic dependency by itself.  All three have to go together.
+
+  2. The move is otherwise low-risk: every consumer of this file already lives in
+     classic/ (the 8 files under classic/menus/ plus classic/components/editor.jsx).
+     buildplane/ and bhall/ use framework/ but only context/editor.jsx and tabs.jsx --
+     neither imports menus.jsx -- so nothing outside classic/ would need to change, and
+     nothing under viewer/ or wc/ imports framework/ at all.
+
+  The remaining exports here (Menu, SubMenu, MenuItem, MenuAction, Divider, Choices,
+  LinkItem, the ContextMenu* family, createMenuAction, createCheckboxItem) are pure Kobalte
+  presentation and belong in framework/.
+*/
 
 export const MenuAction = ( props ) =>
 {

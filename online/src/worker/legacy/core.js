@@ -8,15 +8,61 @@ import { JavaDomDocument, JavaDomElement } from './dom.js';
 import { configureLogging } from './logging.js'
 
 import allShapes from './resources/com/vzome/core/parts/index.js'
+import shapeColors from './resources/com/vzome/core/parts/colors.js'
 import groupResources from './resources/com/vzome/core/math/symmetry/index.js'
 
-import { com } from './core-java.js'
+import { BookmarkToolFactory } from './from-java/com/vzome/core/tools/BookmarkToolFactory.js';
+import { Color } from './from-java/com/vzome/core/construction/Color.js';
+import { Colors } from './from-java/com/vzome/core/render/Colors.js';
+import { CommandEdit } from './from-java/com/vzome/core/editor/CommandEdit.js';
+import { DefaultFieldApplication } from './from-java/com/vzome/core/kinds/DefaultFieldApplication.js';
+import { EdPeggField } from './from-java/com/vzome/core/algebra/EdPeggField.js';
+import { EditHistory } from './from-java/com/vzome/core/editor/EditHistory.js';
+import { FreePoint } from './from-java/com/vzome/core/construction/FreePoint.js';
+import { GoldenFieldApplication } from './from-java/com/vzome/core/kinds/GoldenFieldApplication.js';
+import { HeptagonFieldApplication } from './from-java/com/vzome/core/kinds/HeptagonFieldApplication.js';
+import { ImportMesh } from './from-java/com/vzome/core/edits/ImportMesh.js';
+import { JsAlgebraicField } from './from-java/com/vzome/jsweet/JsAlgebraicField.js';
+import { JsEditorModel } from './from-java/com/vzome/jsweet/JsEditorModel.js';
+import { PlaneOrbitSet } from './from-java/com/vzome/core/math/symmetry/PlaneOrbitSet.js';
+import { PlasticNumberField } from './from-java/com/vzome/core/algebra/PlasticNumberField.js';
+import { PlasticPhiField } from './from-java/com/vzome/core/algebra/PlasticPhiField.js';
+import { PlasticPhiFieldApplication } from './from-java/com/vzome/core/kinds/PlasticPhiFieldApplication.js';
+import { PolygonField } from './from-java/com/vzome/core/algebra/PolygonField.js';
+import { PolygonFieldApplication } from './from-java/com/vzome/core/kinds/PolygonFieldApplication.js';
+import { PolygonFromVertices } from './from-java/com/vzome/core/construction/PolygonFromVertices.js';
+import { Projection } from './from-java/com/vzome/core/math/Projection.js';
+import { RealizedModelImpl } from './from-java/com/vzome/core/model/RealizedModelImpl.js';
+import { RenderedModel } from './from-java/com/vzome/core/render/RenderedModel.js';
+import { ResourceLoader } from './from-java/com/vzome/xml/ResourceLoader.js';
+import { RootThreeFieldApplication } from './from-java/com/vzome/core/kinds/RootThreeFieldApplication.js';
+import { RootTwoFieldApplication } from './from-java/com/vzome/core/kinds/RootTwoFieldApplication.js';
+import { SegmentJoiningPoints } from './from-java/com/vzome/core/construction/SegmentJoiningPoints.js';
+import { SelectionImpl } from './from-java/com/vzome/core/editor/SelectionImpl.js';
+import { SnubCubeField } from './from-java/com/vzome/core/algebra/SnubCubeField.js';
+import { SnubCubeFieldApplication } from './from-java/com/vzome/core/kinds/SnubCubeFieldApplication.js';
+import { SnubDodecField } from './from-java/com/vzome/core/algebra/SnubDodecField.js';
+import { SnubDodecFieldApplication } from './from-java/com/vzome/core/kinds/SnubDodecFieldApplication.js';
+import { SqrtPhiField } from './from-java/com/vzome/fields/sqrtphi/SqrtPhiField.js';
+import { SqrtPhiFieldApplication } from './from-java/com/vzome/fields/sqrtphi/SqrtPhiFieldApplication.js';
+import { SuperGoldenField } from './from-java/com/vzome/core/algebra/SuperGoldenField.js';
+import { SymmetrySystem } from './from-java/com/vzome/core/editor/SymmetrySystem.js';
+import { ToolsModel } from './from-java/com/vzome/core/editor/ToolsModel.js';
+import { XmlSymmetryFormat } from './from-java/com/vzome/core/commands/XmlSymmetryFormat.js';
+import { Properties } from './from-java/java/util/Properties.js';
+import { AlgebraicVector } from './from-java/com/vzome/core/algebra/AlgebraicVector.js';
+import { AlgebraicVectors } from './from-java/com/vzome/core/algebra/AlgebraicVectors.js';
+import { AlgebraicMatrix } from './from-java/com/vzome/core/algebra/AlgebraicMatrix.js';
+import { GrahamScan2D } from './from-java/com/vzome/core/math/convexhull/GrahamScan2D.js';
+import { GitHubShare } from './from-java/com/vzome/core/exporters/GitHubShare.js';
+import { SideEffects } from './from-java/com/vzome/core/editor/api/SideEffects.js';
+import { editClasses, commandClasses, editorClasses } from './registry.js';
 import { java } from './candies/j4ts-2.1.0-SNAPSHOT/bundle.js'
 import { createParser } from './parser.js'
 import { enhanceTopologicalMesh, } from './meshes.js';
 
 // monkey-patch
-com.vzome.core.editor.api.SideEffects.logBugAccommodation = function(message) {
+SideEffects.logBugAccommodation = function(message) {
   console.log("SideEffects logBugAccommodation: " + message);
   throw new Error(message);
 }
@@ -106,7 +152,12 @@ const makeFloatMatrices = ( matrices ) =>
   });
 }
 
-export const vzomePkg = com.vzome;
+//  Classes needed by name outside this module.  These replace the old
+//  whole-namespace `vzomePkg` export: GitHubShare for the worker's sharing
+//  action, and the algebra/hull classes for the standalone experiment pages
+//  under serve/app/test/cases/.
+export { GitHubShare };
+export { AlgebraicVector, AlgebraicVectors, AlgebraicMatrix, GrahamScan2D };
 export const util = java.util;
 
 // This is a bit of a hack, but how else would you configure system props for JSweet?
@@ -126,7 +177,7 @@ const verticesBigIntReviver = ( key, value, context ) =>
   return value;
 }
 
-class ImportColoredMeshJson extends vzomePkg.core.edits.ImportMesh
+class ImportColoredMeshJson extends ImportMesh
 {
     getXmlElementName() { return "ImportColoredMeshJson"; }
 
@@ -150,28 +201,28 @@ class ImportColoredMeshJson extends vzomePkg.core.edits.ImportMesh
       // TODO: handle legacy format; see ColoredMeshJson.java
       coloredMesh.balls.forEach( ball => {
         const vertex = vertices[ ball.vertex ]
-        const color = ball.color && vzomePkg.core.construction.Color.parseWebColor( ball.color )
-        events.constructionAdded( new vzomePkg.core.construction.FreePoint( vertex ), color );
+        const color = ball.color && Color.parseWebColor( ball.color )
+        events.constructionAdded( new FreePoint( vertex ), color );
       });
       coloredMesh.struts.forEach( strut => {
-        const point1 = new vzomePkg.core.construction.FreePoint( vertices[ strut.vertices[ 0 ] ] )
-        const point2 = new vzomePkg.core.construction.FreePoint( vertices[ strut.vertices[ 1 ] ] )
-        const color = strut.color && vzomePkg.core.construction.Color.parseWebColor( strut.color )
-        events.constructionAdded( new vzomePkg.core.construction.SegmentJoiningPoints( point1, point2 ), color );
+        const point1 = new FreePoint( vertices[ strut.vertices[ 0 ] ] )
+        const point2 = new FreePoint( vertices[ strut.vertices[ 1 ] ] )
+        const color = strut.color && Color.parseWebColor( strut.color )
+        events.constructionAdded( new SegmentJoiningPoints( point1, point2 ), color );
       });
       coloredMesh.panels.forEach( panel => {
         const points = []
         panel.vertices.forEach( i => {
-          points.push( new vzomePkg.core.construction.FreePoint( vertices[ i ] ) )
+          points.push( new FreePoint( vertices[ i ] ) )
         } )
-        const color = panel.color && vzomePkg.core.construction.Color.parseWebColor( panel.color )
-        events.constructionAdded( new vzomePkg.core.construction.PolygonFromVertices( points ), color );
+        const color = panel.color && Color.parseWebColor( panel.color )
+        events.constructionAdded( new PolygonFromVertices( points ), color );
       });
       // TODO: handle panels
     }
 }
 
-class ImportSimpleMeshJson extends vzomePkg.core.edits.ImportMesh
+class ImportSimpleMeshJson extends ImportMesh
 {
     scaleAndProject = true;
 
@@ -204,7 +255,7 @@ class ImportSimpleMeshJson extends vzomePkg.core.edits.ImportMesh
       if ( ! this.scaleAndProject ) {
           const field = this.mManifestations .getField();
           this.scale = field .one();
-          this.projection = new vzomePkg.core.math.Projection.Default( field );
+          this.projection = new Projection.Default( field );
       }
 
       const simpleMesh = JSON.parse( this.meshData, verticesBigIntReviver ); // No loss of integer precision!
@@ -222,18 +273,18 @@ class ImportSimpleMeshJson extends vzomePkg.core.edits.ImportMesh
         return vertex
       } )
       simpleMesh.edges.forEach( strut => {
-        const point1 = new vzomePkg.core.construction.FreePoint( vertices[ strut[ 0 ] ] )
-        const point2 = new vzomePkg.core.construction.FreePoint( vertices[ strut[ 1 ] ] )
+        const point1 = new FreePoint( vertices[ strut[ 0 ] ] )
+        const point2 = new FreePoint( vertices[ strut[ 1 ] ] )
         events.constructionAdded( point1 )
         events.constructionAdded( point2 )
-        events.constructionAdded( new vzomePkg.core.construction.SegmentJoiningPoints( point1, point2 ) );
+        events.constructionAdded( new SegmentJoiningPoints( point1, point2 ) );
       });
       simpleMesh.faces.forEach( panel => {
         const points = []
         panel.forEach( i => {
-          points.push( new vzomePkg.core.construction.FreePoint( vertices[ i ] ) )
+          points.push( new FreePoint( vertices[ i ] ) )
         } )
-        events.constructionAdded( new vzomePkg.core.construction.PolygonFromVertices( points ) );
+        events.constructionAdded( new PolygonFromVertices( points ) );
       });
     }
 }
@@ -255,7 +306,7 @@ const xmlToEditClass = editName =>
       apiProxy: "ApiEdit",
     }
     editName = legacyNames[ editName ] || editName
-    return vzomePkg.core.edits[ editName ] || vzomePkg.core.editor[ editName ]
+    return editClasses[ editName ] || editorClasses[ editName ]
 }
 
 const editFactory = ( editor, toolFactories, toolsModel ) => xmlElement =>
@@ -306,7 +357,7 @@ const editFactory = ( editor, toolFactories, toolsModel ) => xmlElement =>
       return edit;
     }
     else
-      return new vzomePkg.core.editor.CommandEdit( null, editor )
+      return new CommandEdit( null, editor )
 }
 
 const resources = {}
@@ -332,20 +383,28 @@ export const loadAndInjectResource = async ( path, url ) =>
 
   // Now we can setup the ResourceLoader; we must do this before initializing the fieldApps,
   //  since they need the colors.properties to create the ExportedVEFShapes.
-  vzomePkg.xml.ResourceLoader.setResourceLoader( {
+  ResourceLoader.setResourceLoader( {
     loadTextResource: path => resources[ path ]
   } )
 
   // Initialize the field application
   const groupResourcesReady = Promise.all( Object.entries( groupResources ).map( ([ key, value ]) => loadAndInjectResource( `com/vzome/core/math/symmetry/${key}.vef`, value ) ) )
   const properties = new JsProperties( defaults )
-  const colors = new vzomePkg.core.render.Colors( properties )
+  const colors = new Colors( properties )
 
   const shapesReady = Promise.all( Object.entries( allShapes ).map(
     async ([ family, shapes ]) => {
       await Promise.all( Object.entries( shapes ).map( ([ key, value ]) => loadAndInjectResource( `com/vzome/core/parts/${family}/${key}.vef`, value ) ) )
     }
   ) )
+
+  //  A few shape packages recolour an orbit -- in bigzome, blue struts are white, and
+  //  connectors are silver.  ExportedVEFShapes reads colors.properties in its constructor,
+  //  so these must be injected before any field app is constructed, alongside the shapes.
+  //  'vienne' ships one with no .vef files at all, so this is keyed separately from
+  //  allShapes rather than derived from it.
+  const shapeColorsReady = Promise.all( Object.entries( shapeColors )
+    .map( ([ pkg, url ]) => loadAndInjectResource( `com/vzome/core/parts/${pkg}/colors.properties`, url ) ) )
 
   // Static registry of every registrable field: NAMES and LABELS only, with no
   // FieldApplication construction.  A FieldApplication is heavy (it registers
@@ -366,18 +425,18 @@ export const loadAndInjectResource = async ( path, url ) =>
   // The registry key MUST equal the field's getName() -- design XML records
   // field.name and the client passes that name back to getField/createDesign.
   const fieldRegistry = {
-    golden:        { kind: 'new',    label: 'Zome (Golden)',     jsField: goldenField,   appClass: () => vzomePkg.core.kinds.GoldenFieldApplication },
-    rootTwo:       { kind: 'new',    label: '√2',           jsField: root2Field,    appClass: () => vzomePkg.core.kinds.RootTwoFieldApplication },
-    rootThree:     { kind: 'new',    label: '√3',           jsField: root3Field,    appClass: () => vzomePkg.core.kinds.RootThreeFieldApplication },
-    heptagon:      { kind: 'new',    label: 'Heptagon',          jsField: heptagonField, appClass: () => vzomePkg.core.kinds.HeptagonFieldApplication },
+    golden:        { kind: 'new',    label: 'Zome (Golden)',     jsField: goldenField,   appClass: () => GoldenFieldApplication },
+    rootTwo:       { kind: 'new',    label: '√2',           jsField: root2Field,    appClass: () => RootTwoFieldApplication },
+    rootThree:     { kind: 'new',    label: '√3',           jsField: root3Field,    appClass: () => RootThreeFieldApplication },
+    heptagon:      { kind: 'new',    label: 'Heptagon',          jsField: heptagonField, appClass: () => HeptagonFieldApplication },
 
-    sqrtPhi:       { kind: 'legacy', label: '√φ',      fieldClass: () => vzomePkg.fields.sqrtphi.SqrtPhiField,      appClass: () => vzomePkg.fields.sqrtphi.SqrtPhiFieldApplication },
-    snubCube:      { kind: 'legacy', label: 'Snub Cube',         fieldClass: () => vzomePkg.core.algebra.SnubCubeField,      appClass: () => vzomePkg.core.kinds.SnubCubeFieldApplication },
-    snubDodec:     { kind: 'legacy', label: 'Snub Dodecahedron', fieldClass: () => vzomePkg.core.algebra.SnubDodecField,     appClass: () => vzomePkg.core.kinds.SnubDodecFieldApplication },
-    superGolden:   { kind: 'legacy', label: null,                fieldClass: () => vzomePkg.core.algebra.SuperGoldenField,   appClass: () => vzomePkg.core.kinds.DefaultFieldApplication },
-    plasticNumber: { kind: 'legacy', label: null,                fieldClass: () => vzomePkg.core.algebra.PlasticNumberField, appClass: () => vzomePkg.core.kinds.DefaultFieldApplication },
-    plasticPhi:    { kind: 'legacy', label: null,                fieldClass: () => vzomePkg.core.algebra.PlasticPhiField,    appClass: () => vzomePkg.core.kinds.PlasticPhiFieldApplication },
-    edPegg:        { kind: 'legacy', label: null,                fieldClass: () => vzomePkg.core.algebra.EdPeggField,        appClass: () => vzomePkg.core.kinds.DefaultFieldApplication },
+    sqrtPhi:       { kind: 'legacy', label: '√φ',      fieldClass: () => SqrtPhiField,      appClass: () => SqrtPhiFieldApplication },
+    snubCube:      { kind: 'legacy', label: 'Snub Cube',         fieldClass: () => SnubCubeField,      appClass: () => SnubCubeFieldApplication },
+    snubDodec:     { kind: 'legacy', label: 'Snub Dodecahedron', fieldClass: () => SnubDodecField,     appClass: () => SnubDodecFieldApplication },
+    superGolden:   { kind: 'legacy', label: null,                fieldClass: () => SuperGoldenField,   appClass: () => DefaultFieldApplication },
+    plasticNumber: { kind: 'legacy', label: null,                fieldClass: () => PlasticNumberField, appClass: () => DefaultFieldApplication },
+    plasticPhi:    { kind: 'legacy', label: null,                fieldClass: () => PlasticPhiField,    appClass: () => PlasticPhiFieldApplication },
+    edPegg:        { kind: 'legacy', label: null,                fieldClass: () => EdPeggField,        appClass: () => DefaultFieldApplication },
   };
 
   const fieldApps = {}   // cache of CONSTRUCTED apps, keyed by field name
@@ -390,9 +449,9 @@ export const loadAndInjectResource = async ( path, url ) =>
   {
     if ( name.startsWith( "polygon" ) ) {
       const nsides = parseInt( name.replace( /^polygon/, '' ) )
-      const legacyField = new vzomePkg.core.algebra.PolygonField( "polygon"+nsides, nsides, algebraicNumberFactory )
+      const legacyField = new PolygonField( "polygon"+nsides, nsides, algebraicNumberFactory )
       legacyField.delegate = wrapLegacyField( legacyField )
-      const fieldApp = new vzomePkg.core.kinds.PolygonFieldApplication( legacyField )
+      const fieldApp = new PolygonFieldApplication( legacyField )
       fieldApps[ legacyField.getName() ] = fieldApp
       return fieldApp
     }
@@ -401,7 +460,7 @@ export const loadAndInjectResource = async ( path, url ) =>
       return undefined
     let fieldApp
     if ( entry.kind === 'new' ) {
-      const legacyField = new vzomePkg.jsweet.JsAlgebraicField( entry.jsField )
+      const legacyField = new JsAlgebraicField( entry.jsField )
       fieldApp = new (entry.appClass())( legacyField )
     }
     else { // 'legacy'
@@ -462,13 +521,13 @@ export const loadAndInjectResource = async ( path, url ) =>
     const legacyField = fieldApp.getField();
     const field = legacyField.delegate
 
-    const originPoint = new vzomePkg.core.construction.FreePoint( legacyField.origin( 3 ) )
+    const originPoint = new FreePoint( legacyField.origin( 3 ) )
 
     const systemXml = xml && xml.getChildElement( "SymmetrySystem" )
     const symmName = systemXml && systemXml.getAttribute( "name" )
     const symmPer = ( symmName && fieldApp.getSymmetryPerspective( symmName ) ) || fieldApp.getDefaultSymmetryPerspective()
 
-    const history = new vzomePkg.core.editor.EditHistory();
+    const history = new EditHistory();
     history .setSerializer( { serialize: element => element .serialize( "" ) } );
 
     let changeCount = 0;
@@ -480,7 +539,7 @@ export const loadAndInjectResource = async ( path, url ) =>
       createEdit: () => { throw new Error( "createEdit should never be called" ) },
 
       createLegacyCommand: name => {
-        const constructor = vzomePkg.core.commands[ name ]
+        const constructor = commandClasses[ name ]
         if ( constructor )
           return new constructor()
         else
@@ -505,7 +564,7 @@ export const loadAndInjectResource = async ( path, url ) =>
         const command = fieldApp .getLegacyCommand( className );
         if ( command )
         {
-          const edit = new vzomePkg.core.editor.CommandEdit( command, editor );
+          const edit = new CommandEdit( command, editor );
           editContext .performAndRecord( edit );
           return;
         }
@@ -529,20 +588,20 @@ export const loadAndInjectResource = async ( path, url ) =>
       editContext .doEdit( className, props );
     }
 
-    const toolsModel = new vzomePkg.core.editor.ToolsModel( editContext, originPoint )
+    const toolsModel = new ToolsModel( editContext, originPoint )
 
     // Initialize the default SymmetrySystems from the FieldApplication
     const symmetrySystems = {}
     const symmPerspectives = fieldApp.getSymmetryPerspectives().iterator()
     while ( symmPerspectives.hasNext() ) {
       const perspective = symmPerspectives.next()
-      const osm = new vzomePkg.core.editor.SymmetrySystem( null, perspective, editContext, colors, true )
+      const osm = new SymmetrySystem( null, perspective, editContext, colors, true )
       symmetrySystems[ osm.getName() ] = osm
     }
 
     // Now overwrite some or all of those default SymmetrySystems with those stored in the file.
     //   This is important mostly for the automatic orbits, but can also carry color overrides.
-    symmetrySystems[ symmPer.getName() ] = new vzomePkg.core.editor.SymmetrySystem( systemXml, symmPer, editContext, colors, true )
+    symmetrySystems[ symmPer.getName() ] = new SymmetrySystem( systemXml, symmPer, editContext, colors, true )
     if ( xml ) {
       const symms = xml.getChildElement( "OtherSymmetries" )
       if ( symms ) {
@@ -551,7 +610,7 @@ export const loadAndInjectResource = async ( path, url ) =>
           const symmElem = nodes.item( i )
           const symmName = symmElem.getAttribute( "name" )
           const symmPerspective = fieldApp.getSymmetryPerspective( symmName )
-          const otherSymmetrySystem = new vzomePkg.core.editor.SymmetrySystem( symmElem, symmPerspective, this, colors, true )
+          const otherSymmetrySystem = new SymmetrySystem( symmElem, symmPerspective, this, colors, true )
           symmetrySystems[ symmName ] = otherSymmetrySystem
         }
       }
@@ -569,11 +628,11 @@ export const loadAndInjectResource = async ( path, url ) =>
     OSField.__interfaces = [ "com.vzome.core.math.symmetry.OrbitSet.Field" ];
     const orbitSetField = new OSField();
 
-    const projection = new vzomePkg.core.math.Projection.Default( legacyField );
-    const realizedModel = new vzomePkg.core.model.RealizedModelImpl( legacyField, projection );
+    const projection = new Projection.Default( legacyField );
+    const realizedModel = new RealizedModelImpl( legacyField, projection );
 
     let orbitSource = symmetrySystems[ symmPer.getName() ];
-    const renderedModel = new vzomePkg.core.render.RenderedModel( legacyField, orbitSource );
+    const renderedModel = new RenderedModel( legacyField, orbitSource );
     realizedModel .addListener( renderedModel );
 
     const originBall = realizedModel .manifest( originPoint );
@@ -582,10 +641,10 @@ export const loadAndInjectResource = async ( path, url ) =>
 
     realizedModel .show( originBall );
 
-    const getBall = location => realizedModel .getManifestation( new vzomePkg.core.construction.FreePoint( location ) );
+    const getBall = location => realizedModel .getManifestation( new FreePoint( location ) );
 
-    const selection = new vzomePkg.core.editor.SelectionImpl();
-    const editor = new vzomePkg.jsweet.JsEditorModel( realizedModel, selection, fieldApp, orbitSource, symmetrySystems );
+    const selection = new SelectionImpl();
+    const editor = new JsEditorModel( realizedModel, selection, fieldApp, orbitSource, symmetrySystems );
     for ( const symmetrySystem of Object.values( symmetrySystems ) ) {
       symmetrySystem .setEditorModel( editor );
     }
@@ -622,8 +681,8 @@ export const loadAndInjectResource = async ( path, url ) =>
       return editor .getSymmetrySystem( name? name : undefined );
     }
 
-    const format = namespace && vzomePkg.core.commands.XmlSymmetryFormat.getFormat( namespace )
-    format && format.initialize( legacyField, orbitSetField, 0, "vZome Online", new util.Properties() )
+    const format = namespace && XmlSymmetryFormat.getFormat( namespace )
+    format && format.initialize( legacyField, orbitSetField, 0, "vZome Online", new Properties() )
 
     const toolFactories = new util.HashMap()
     for ( const symmetrySystem of Object.values( symmetrySystems ) ) {
@@ -638,7 +697,7 @@ export const loadAndInjectResource = async ( path, url ) =>
 
     fieldApp.registerToolFactories( toolFactories, toolsModel )
     
-    const bookmarkFactory = new vzomePkg.core.tools.BookmarkToolFactory( toolsModel );
+    const bookmarkFactory = new BookmarkToolFactory( toolsModel );
     editor .addSelectionSummaryListener( bookmarkFactory );
     bookmarkFactory.createPredefinedTool( "ball at origin" );
 
@@ -749,7 +808,7 @@ export const loadAndInjectResource = async ( path, url ) =>
     }
 
     const batchRender = renderingListener => {
-      const RM = vzomePkg.core.render.RenderedModel;
+      const RM = RenderedModel;
       RM.renderChange( new RM( null, null ), renderedModel, renderingListener );
     }
 
@@ -811,15 +870,39 @@ export const loadAndInjectResource = async ( path, url ) =>
       renderedModel, symmetrySystems, toolsModel, bookmarkFactory, history, editContext };
   }
 
+// The ten official Zometool colors, in the order desktop vZome presents them in its
+//  "Zometool Colors" chooser panel (see desktop ColorListPanel.ZOMETOOL_COLORS).
+//  Only the names are listed here; the RGB values come from the `defaults` above, which
+//  is the copy of core's defaultPrefs.properties, so there is one source for the values.
+//  The remaining color.* entries in defaults are not Zometool colors -- they are lights,
+//  backgrounds, highlights, and the extended palette -- so they cannot be discovered by
+//  simply filtering for the "color." prefix.
+const ZOMETOOL_COLOR_NAMES = [
+  'blue', 'yellow', 'red', 'green', 'turquoise',
+  'white', 'black', 'orange', 'purple', 'gray',
+];
+
+const capitalize = s => s .charAt(0) .toUpperCase() + s .slice(1);
+
+// Each entry is "Name #rrggbb", so the client gets label and value in one list property,
+//  which is all the controller list protocol can carry (an array of strings).
+const getZometoolColors = () => ZOMETOOL_COLOR_NAMES .map( name => {
+  const rgb = defaults[ `color.${name}` ] .split( ',' )
+    .map( n => Number( n .trim() ) .toString( 16 ) .padStart( 2, '0' ) )
+    .join( '' );
+  return `${capitalize( name )} #${rgb}`;
+} );
+
 export const initialize = async () =>
 {
   // Fields are now constructed lazily (see fieldRegistry / getFieldApp), so we
   // only wait for the group symmetry resources (needed before any field-app
   // construction) and the shapes.
-  await Promise.all( [ groupResourcesReady, shapesReady ] );
+  await Promise.all( [ groupResourcesReady, shapesReady, shapeColorsReady ] );
   const parse = createParser( documentFactory );
   return {
     getFieldNames, getField, getFieldLabel, getSymmetry,
+    getZometoolColors,
     documentFactory, parse,
     enhanceTopologicalMesh: enhanceTopologicalMesh( getField ),
   };
@@ -855,7 +938,7 @@ export const initialize = async () =>
 
       const zones = [];
 
-      const planeOrbits = new vzomePkg.core.math.symmetry.PlaneOrbitSet( orbitSource.getOrbits(), normal );
+      const planeOrbits = new PlaneOrbitSet( orbitSource.getOrbits(), normal );
       const iterator = planeOrbits .zones();
       while ( iterator .hasNext() ) {
         const zone = iterator .next()

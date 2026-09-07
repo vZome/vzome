@@ -1,5 +1,5 @@
 
-import { Switch, Match, createSignal, createEffect } from 'solid-js';
+import { Switch, Match, createSignal } from 'solid-js';
 
 import { createT } from 'solid-three';
 import { Group } from "three";
@@ -10,6 +10,7 @@ import ToggleButton from "@suid/material/ToggleButton";
 import ToggleButtonGroup from "@suid/material/ToggleButtonGroup";
 
 import { LabelDialog } from '../dialogs/label.jsx';
+import { ColorPicker } from '../../framework/colorpicker.jsx';
 
 import { useCamera } from '../../../viewer/context/camera.jsx';
 import { InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
@@ -26,7 +27,7 @@ import { useScene } from '../../../viewer/context/scene.jsx';
 export const SceneEditor = ( props ) =>
 {
   const { setState } = useEditor();
-  const { setLighting } = useCamera();
+  const { setLighting, state } = useCamera();
   const { scene } = useScene();
   const [ viewing, setViewing ] = createSignal( false );
   const toolValue = () => viewing()? 'camera' : 'select';
@@ -63,14 +64,18 @@ export const SceneEditor = ( props ) =>
       setState( 'picked', undefined );
   }
 
-  let colorPicker;
-  createEffect( () => {
-    colorPicker .addEventListener( "input", e => {
-      const color = e.target.value;
-      console.log( 'new background is', color );
-      setLighting( { backgroundColor: color } )
-    }, false );
-  });
+  // The background picker previews live, as the old native input did on its "input" event.
+  // Cancel therefore has to restore the color we started with, so we stash it on open.
+  const [ pickingColor, setPickingColor ] = createSignal( false );
+  const [ priorBackground, setPriorBackground ] = createSignal( null );
+  const background = () => state.lighting.backgroundColor;
+  const previewBackground = color => setLighting( { backgroundColor: color } );
+  const closeColorPicker = hex =>
+  {
+    setPickingColor( false );
+    if ( !hex ) // cancelled; undo the live preview
+      setLighting( { backgroundColor: priorBackground() } );
+  }
   const [ labeling, setLabeling ] = createSignal( null );
   const [ label, setLabel ] = createSignal( null );
   const showDialog = (key,...rest) =>
@@ -78,7 +83,8 @@ export const SceneEditor = ( props ) =>
     switch (key) {
 
       case 'color':
-        colorPicker .click();
+        setPriorBackground( background() );
+        setPickingColor( true );
         break;
     
       case 'label':
@@ -101,7 +107,8 @@ export const SceneEditor = ( props ) =>
   // not using DesignViewer because it has its own UI, not corresponding to classic desktop vZome
   return (
     <div class="relative-h100">
-      <input ref={colorPicker} type="color" name="color-picker" class='hidden-color-input' />
+      <ColorPicker show={pickingColor()} close={closeColorPicker} title="Background Color"
+          color={priorBackground()} onPreview={previewBackground} />
       <LabelDialog open={!!labeling()} close={hideLabelDialog} id={labeling()} label={label()} />
       <InteractionToolProvider>
         <ContextualMenuArea menu={<ContextualMenu showDialog={showDialog} />} class="absolute-0" disabled={viewing()} onOpenChange={resetPicked}>

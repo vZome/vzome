@@ -1,5 +1,5 @@
 
-import { com } from '../core-java.js';
+import { RealVector } from '../from-java/com/vzome/core/math/RealVector.js';
 import { initialize } from '../core.js';
 import { Interpreter, RenderHistory, Step } from '../interpreter.js';
 import { ControllerWrapper } from './wrapper.js';
@@ -32,13 +32,13 @@ const createControllers = ( design, core, renderingChanges, clientEvents ) =>
     const rm = renderedModel.getRenderedManifestation( ballId );
     const point = rm ?.getManifestation() ?.toConstruction();
     if ( point ) {
-      strutBuilder .startRendering( point, new com.vzome.core.math.RealVector( x, y, z ) );
+      strutBuilder .startRendering( point, new RealVector( x, y, z ) );
     } else
       throw new Error( `No ball for ID ${ballId}` );
   }
   wrapper.movePreviewStrut = ( direction ) => {
     const [ x, y, z ] = direction;
-    strutBuilder .previewStrut .zoneBall .setVector( new com.vzome.core.math.RealVector( x, y, z ) );
+    strutBuilder .previewStrut .zoneBall .setVector( new RealVector( x, y, z ) );
   }
   wrapper.scalePreviewStrut = increment => {
     const lengthController = strutBuilder .previewStrut .getLengthController();
@@ -57,8 +57,8 @@ const createControllers = ( design, core, renderingChanges, clientEvents ) =>
 export const snapCamera = ( symmController, upArray, lookArray ) =>
 {
   const snapper = symmController .getSnapper();
-  let up = new com.vzome.core.math.RealVector( ...upArray );
-  let look = new com.vzome.core.math.RealVector( ...lookArray );
+  let up = new RealVector( ...upArray );
+  let look = new RealVector( ...lookArray );
   look = snapper .snapZ( look ) .normalize();
   up = snapper .snapY( look, up ) .normalize();
   const toArray = rv => {
@@ -81,7 +81,14 @@ const initializeDesign = ( loading, polygons, legacyDesign, core, clientEvents )
   if ( loading ) {
     // interpretation may take several seconds, which is why we already reported PARSE_COMPLETED
     interpreter .interpret( Step.DONE );
-    history .goToEdit( targetEdit )
+    //  targetEdit counts edits as written in the file, but goToEdit indexes the internal
+    //  history, which grows when an old-format file's edits are migrated.  Translating is
+    //  what keeps the history pointer consistent with the scene we render below; without
+    //  it the scene looks right (it comes from a snapshot taken during interpretation) but
+    //  the model underneath is rewound, so the first undo or redo jumps.
+    const internalTarget = interpreter .getInternalEditNumber( targetEdit );
+    if ( internalTarget !== undefined )
+      history .goToEdit( internalTarget )
   } // else in debug mode, we'll interpret incrementally
 
   // TODO: define a better contract for before/after.

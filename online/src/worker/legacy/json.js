@@ -1,5 +1,5 @@
 
-import { com } from "./core-java.js";
+import { Manifestations } from "./from-java/com/vzome/core/editor/api/Manifestations.js";
 import { toWebColor } from "./scenes.js";
 
 class VertexSet
@@ -37,7 +37,7 @@ export const modelToJS = ( manifestations, legacyField, withColors=true ) =>
 {
   const sortedVertices = new VertexSet();
   const field = legacyField.getName()
-  let origin = com.vzome.core.editor.api.Manifestations.sortVertices( manifestations, sortedVertices );
+  let origin = Manifestations.sortVertices( manifestations, sortedVertices );
   if(!origin) { // manifestations may be empty or might not include any balls
     origin = legacyField.origin(3);
   }

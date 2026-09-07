@@ -89,17 +89,18 @@ There are three main layers:
 2. **Controllers** (`desktop/src/main/java/com/vzome/desktop/controller/`) — handle user input and coordinate between the model and the view.
 3. **Views** (`desktop/src/main/java/org/vorthmann/`) — UI components and rendering logic.
 
-The separation of `core` from `desktop` allows the core logic to be reused in other contexts (e.g., online (through JSweet), VR) without any Swing or AWT dependencies. 
+The separation of `core` from `desktop` allows the core logic to be reused in other contexts (online, VR) without any Swing or AWT dependencies. 
 
 The generic `Controller` interface in `desktop` is the main entry point for handling user actions.  The various controllers maintain the current `RealizedModel`, the edit history, the selection state, etc.  The view layer should not have any direct dependencies on specific controller classes.
-This isolation allows the online version to transpile and use a number of controller classes directly.  It also would allow
+This isolation is what allowed the online version to take over a number of controller classes directly; they now live, as TypeScript, in `online/src/worker/legacy/from-java/com/vzome/desktop/controller/` and must be kept in sync with their Java counterparts.  It also would allow
 the Java Swing UI to be replaced with a different framework (even a native one, or a command-line) if desired, without affecting the core logic.
 
 ## Online vZome Architecture
 
 ### Build System
 
-- **esbuild** for bundling ES modules (config in `online/scripts/esbuild-config.mjs`)
+- **esbuild** for bundling ES modules (config in `online/scripts/esbuild-config.mjs`).  It consumes `.ts` directly — there is no separate transpile step.
+- **TypeScript** for typechecking only (`online/tsconfig.json`, `yarn typecheck`)
 - **Yarn** as the package manager
 - Dev server started via VS Code build task or `cicd/online.bash dev`
 - Test page at `online/serve/app/test/index.html`
@@ -112,7 +113,8 @@ the Java Swing UI to be replaced with a different framework (even a native one, 
 | `viewer/` | SolidJS components for 3D viewing (Three.js via solid-three): scene canvas, camera controls, geometry rendering |
 | `wc/` | Web components, primarily `<vzome-viewer>` (`vzome-viewer.js`) — the embeddable viewer for any website |
 | `worker/` | Web Worker code — loads and interprets vZome designs off the main thread |
-| `worker/legacy/` | JSweet-transpiled Java code (the bridge from Java `core` to JavaScript) |
+| `worker/legacy/` | Hand-written JS that drives the transpiled model, plus the j4ts runtime |
+| `worker/legacy/from-java/` | **433 TypeScript modules transpiled from Java `core` — now edited directly** |
 | `worker/fields/` | Field-specific worker modules |
 | `both-contexts.js` | Code shared between main thread and worker |
 
@@ -132,12 +134,34 @@ The preview mode will fall back to the full path if the JSON is missing or incom
 
 The UI framework is **SolidJS** (not React).  3D rendering uses **Three.js** via **solid-three**.  State flows between the main SolidJS context and the web worker, mapped to the legacy Controller architecture in the transpiled Java code.
 
-### JSweet Legacy Bridge
+### Legacy Bridge: TypeScript is now the source of truth
 
-The core Java code is transpiled to JavaScript using **JSweet** (a now-dormant project).  Scott maintains custom forks of 4 JSweet repos:
+The `core` Java code was originally transpiled to JavaScript using **JSweet** (a now-dormant project).  Scott maintains custom forks of 4 JSweet repos:
 - `vorth/jsweet`, `vorth/jsweet-maven-plugin`, `vorth/j4ts`, `vorth/jsweet-gradle-plugin`
 
-**The JSweet Artifactory server is permanently offline**, so the transpilation pipeline is no longer viable for new contributors.  The transpiled output is checked into the repo under `online/src/worker/legacy/`.  Any changes to Java code that need to reach the web version require someone with a working local JSweet build.
+**The JSweet Artifactory server is permanently offline**, so that pipeline can no longer be run by new contributors.  Rather than stay frozen, the generated TypeScript has been adopted as real source:
+
+- `online/src/worker/legacy/from-java/` holds **433 per-class ES modules** (see its [README](online/src/worker/legacy/from-java/README.md)) — `com/vzome/...`, plus the `java/*` and `org/w3c/dom/*` shims vZome transpiled for itself.  This is now **the source of truth for the online version** — edit it directly.
+- `yarn typecheck` (`online/tsconfig.json`) typechecks the whole tree and must stay green.  It is typecheck-only; **esbuild** consumes the `.ts` files directly and does the transpiling.
+- `online/src/worker/legacy/candies/j4ts-2.1.0-SNAPSHOT/` holds the j4ts runtime (`bundle.js`) and its types (`j4ts.d.ts`, `bundle.d.ts`).  `j4ts.d.ts` carries a local edit making `Iterable.forEach` / `Iterator.forEachRemaining` / `remove` optional, because JSweet never emits them — re-apply it if that file is ever refreshed.
+- `online/src/worker/legacy/from-java/shims.d.ts` declares a few types j4ts lacks (`java.math`, `java.io.FileWriter`, `java.lang.Thread`) that exist only on unreachable paths.
+
+`online/scripts/ts-to-esm.mjs` is the one-time codemod that performed the namespace-to-ESM conversion.  It is kept as a record of how the conversion was done; it is **not** part of the build and is not idempotent (it keys on `namespace X {`, which the converted files no longer contain).
+
+#### Runtime type identity is a cross-language ABI
+
+JSweet emits `X["__class"] = "com.vzome.core.edits.Foo"` and `X["__interfaces"] = [...]`, and code tests them with `.indexOf("com.vzome.core.model.Panel")`.  This is the `instanceof` emulation, and hand-written JavaScript participates in it (`json.js`, `dom.js`, `core.js`, `jsweet2js.js`, `controllers/buildplane.js` all register or test these strings).
+
+**Never "clean up" one of these fully-qualified strings**, even when the surrounding code no longer mentions that package.  They are matched by value at runtime, `tsc` cannot see the breakage, and the failure surfaces far from the edit.
+
+#### Name-keyed lookups must stay in the registries
+
+Edit names, command names, and export formats come out of `.vZome` XML or client config, so a bundler cannot infer which classes are reachable.  They are listed explicitly:
+
+- `online/src/worker/legacy/registry.js` — edit, command, and editor classes
+- `online/src/worker/legacy/exporters.js` — the 2D and 3D exporter tables
+
+**Adding an edit, command, or exporter means adding it to the corresponding table**, or it will be tree-shaken out and fail only at runtime, only for designs that use it.
 
 ## File Formats
 
@@ -176,9 +200,46 @@ cicd/online.bash prod
 ./gradlew core:test
 ```
 
+### Typechecking the online legacy code
+
+```bash
+cd online && yarn typecheck     # tsc --noEmit over worker/legacy/from-java
+```
+
+Run this after any change under `online/src/worker/legacy/from-java/`.  It is the only
+automated check that tree has.
+
 ## Coding Conventions
 
-- **Java**: Standard Java conventions.  The `core` package avoids any UI or platform dependencies — it must remain portable (runs on Android for VR, transpiles to JS via JSweet).
+### Java and TypeScript must be kept in sync — BY HAND
+
+This is the single most important rule for `core` changes.
+
+JSweet can no longer be run, so **nothing regenerates the TypeScript from the Java**.  The two trees are now independent sources that happen to describe the same model:
+
+| Source | Drives |
+|--------|--------|
+| `core/src/main/java/com/vzome/...` | Desktop vZome |
+| `online/src/worker/legacy/from-java/com/vzome/...` | Online vZome |
+
+**A change to one must be mirrored in the other, in the same commit.**  Both directions matter:
+
+- Changing Java for the desktop?  Port the same change to the corresponding `.ts` file, or online silently keeps the old behavior.
+- Changing TypeScript for online?  Back-port it to the Java, or desktop silently keeps the old behavior — and the next person to diff the trees cannot tell which side is correct.
+
+Where a class exists on both sides, the paths correspond exactly: `com/vzome/core/edits/Foo.java` ↔ `from-java/com/vzome/core/edits/Foo.ts`, and the TypeScript reads like the Java, so most edits translate almost literally.
+
+**Not every Java class has a counterpart.**  The original transpile had an explicit include/exclude list (recoverable from git history: `git show 51264def5:online/build.gradle`).  Of 581 Java classes in `core` + `desktop`, **406 have a TypeScript equivalent and 175 do not**.  Most of those 175 are desktop UI (`org.vorthmann.zome.ui`, `com.vzome.desktop.awt`) and are correctly desktop-only, but some sit in `core` packages — a number of `core.editor`, `core.exporters`, `core.algebra`, and `core.zomic` classes were deliberately excluded or reimplemented in hand-written JavaScript.  Conversely 27 TypeScript modules have no Java source: the `java/*` and `org/w3c/dom/*` shims vZome transpiles for itself, and the `com.vzome.jsweet.*` bridge classes.
+
+So before mirroring: **check whether the counterpart file exists.**  If it does, mirror the change.  If it does not, decide deliberately whether the online version needs that class at all, rather than assuming the absence is an oversight.
+
+If you genuinely cannot mirror a change (a Java-only dependency, or an online-only feature), **say so explicitly in the commit message** and note why, so the divergence is deliberate and discoverable rather than a silent bug.
+
+Anything touching the `.vZome` file format is especially sensitive: a design saved by one version must still open in the other.
+
+After editing TypeScript, run `yarn typecheck` in `online/`.  After editing Java, run `./gradlew core:test`.
+
+- **Java**: Standard Java conventions.  The `core` package avoids any UI or platform dependencies — it must remain portable (runs on Android for VR, and its transpiled TypeScript counterpart drives the web version).
 - **JavaScript/JSX**: SolidJS JSX (`.jsx` files), not React.  Components use SolidJS reactivity (signals, effects, stores) — do NOT apply React patterns like `useState`/`useEffect`.
   - **Prefer context over props.**  Components should pull what they need from context providers (`WorkerProvider`, `ViewerProvider`, `SceneProvider`, `CameraProvider`, `SymmetryProvider`, etc.) rather than threading data down through prop chains.  Keep generic providers generic — don't add flags to a shared provider to serve one caller; compose the specialized behavior around it instead.
   - **Add behaviors via composition — the "behavioral component."**  A component may render `null` and exist purely to install a behavior into the surrounding context, mounted as a sibling in the JSX tree (e.g. `TrackballLoader`, `SceneChangeListener`).  Add behaviors by placing such components in the tree, not by growing the API of an existing component.  This keeps each provider single-purpose and makes concerns individually removable.
@@ -186,7 +247,8 @@ cicd/online.bash prod
 
 ## Important Caveats
 
-1. **JSweet is fragile**: The transpilation from Java to JS is a one-way bridge maintained by custom forks of a dormant project.  Changes to core Java code must be careful not to break JSweet compatibility (e.g., avoid Java features JSweet doesn't support).
+1. **Java and TypeScript no longer regenerate — they drift**: JSweet cannot be run any more, so `core/src/main/java` and `online/src/worker/legacy/from-java` are two independent sources for the same model.  Every change to one must be mirrored by hand in the other (see *Coding Conventions*).  A missed mirror is invisible to both `./gradlew core:test` and `yarn typecheck`: each tree still compiles, and the two versions of vZome simply behave differently.
+   - Corollary: the old advice to "avoid Java features JSweet doesn't support" now only matters if you intend to re-run a transpile.  The live constraint is that a human keeps the two trees equivalent.
 2. **No automated testing for online**: Regression testing of the web version is entirely manual.  This is a known critical gap.
 3. **Algebraic fields use exact arithmetic**: Never introduce floating-point math where algebraic numbers are expected.  The entire point is exact computation.
 4. **The edit history is append-only**: A `.vZome` file must always open successfully regardless of code changes.  Backward compatibility of the XML format is paramount.

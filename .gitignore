@@ -2,7 +2,6 @@
 node_modules
 .gradle/
 .idea/
-.jsweet/
 .nb-gradle/
 .settings/
 bin/
@@ -39,25 +38,18 @@ oculus/.vscode
 *.jar.js
 client/app.tgz
 client/app
-client/src/jsweet
 
 core/src/main/antlr/com/vzome/core/grammar/zomic/.antlr
 client/public/resources
 client/.vscode
-.tsc-rootfile.js
 react-vzome-viewer/dist
 .eslintcache
 react-vzome-*.tgz
 build.properties
-online/jsweetOut
-transpiled-java.js
-# core-java.js
 desktop-java.js
 vzome-react-vzome-*.tgz
 online/dist
 history.txt
-core-errors.txt
-jsweet-errors.txt
 online-app.zip
 online.tgz
 deploy-to-dreamhost.sh
@@ -65,11 +57,15 @@ deploy-to-dreamhost.sh
 # online/src/worker/legacy/candies
 # online/src/ui/legacy/candies
 
-desktop-errors.txt
 
 online/src/revision.js
 
-jsweet-branches/
+# Shape resources, synced from core by cicd/online.bash (syncShapeResources),
+# along with the index.js files that enumerate them for bundling.  Core is the
+# source of truth; the .vZome design sources and .zomic legacy exports stay
+# there and are not copied.
+online/src/worker/legacy/resources/
+
 
 online/meta.json
 

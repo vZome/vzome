@@ -1,5 +1,5 @@
 
-import { com } from './core-java.js';
+import { Branch } from './from-java/com/vzome/core/editor/Branch.js';
 import { realizeShape, normalizeRenderedManifestation } from './scenes.js';
 
 //  Right now this is duplicated!
@@ -82,6 +82,37 @@ export class Interpreter
     this.lastEdit = '--START--';
     this.breakpoint = null;
     this.error = null; // TODO: catch errors from edit.perform()
+
+    //  The <EditHistory editNumber="N"> in the file counts edits AS WRITTEN there, but
+    //  migrating an old-format file expands one recorded edit into several internal ones
+    //  (and snapshots get inserted), so N is not an index into history.mEdits.  Passing it
+    //  straight to goToEdit() rewinds far too far: one design with editNumber="40" has 248
+    //  internal edits, and goToEdit(40) discards ~208 edits' worth of geometry.
+    //
+    //  So record, for each top-level edit id we replay, the internal edit number reached
+    //  once it is done.  Java does the same translation in EditHistory.synchronize():
+    //  "lastDoneEdit is in terms of the edits in the file, and we need to translate it to
+    //  match the actual edit numbers, after migration and snapshot creation."
+    this.internalEditNumbers = new Map();
+  }
+
+  /**
+   * Translates a file-level edit number to the internal history edit number that replaying
+   * it produced.  Returns undefined when the file number was never reached, in which case
+   * the caller should leave the history where interpretation left it.
+   */
+  getInternalEditNumber( fileEditNumber )
+  {
+    return this.internalEditNumbers .get( `:${ fileEditNumber }:` );
+  }
+
+  /** Notes where the history stands after finishing one top-level edit. */
+  recordInternalEditNumber( editId )
+  {
+    //  Only top-level ids, of the form ":N:" -- nested edits inside a Branch carry longer
+    //  ids and are not what editNumber counts.
+    if ( /^:\d+:$/ .test( editId ) )
+      this.internalEditNumbers .set( editId, this.design.history.mEditNumber );
   }
 
   getLastEdit()
@@ -110,17 +141,20 @@ export class Interpreter
       if ( edit .nextSibling() ) {
         this.effects .recordSnapshot( edit.id(), edit .nextSibling() .id() );
         this.lastEdit = edit.id();
+        this.recordInternalEditNumber( edit.id() );
         this.cursor .setNextEdit( edit .nextSibling() );
         return breakpointHit? Step.DONE : Step.OVER;
       } else {
         this.effects .recordSnapshot( edit.id(), '--END--' ); // last one will be the real before-end
         this.lastEdit = edit.id();
+        this.recordInternalEditNumber( edit.id() );
         let top;
         do {
           top = this.stack .pop();
           if ( !! top ) {
             this.cursor .endBranch( top.branch );
             this.cursor = top.cursor;  // overwrite and discard the prior value
+            this.recordInternalEditNumber( top.branch .id() );
             this.cursor .setNextEdit( top.branch .nextSibling() );
           }
         } while ( top && ! top.branch .nextSibling() )
@@ -214,7 +248,7 @@ export class EditCursor
 
   startBranch( parsedEdit, editContext )
   {
-    const branch = new com.vzome.core.editor.Branch( editContext );
+    const branch = new Branch( editContext );
     this.history .addEdit( branch, editContext );
     parsedEdit .legacyEdit = branch; // oops, violating encapsulation
     return new EditCursor( branch, parsedEdit.firstChild() );

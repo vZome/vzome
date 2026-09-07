@@ -1,7 +1,7 @@
-import { com } from '../core-java.js';
+import { DefaultController } from '../from-java/com/vzome/desktop/controller/DefaultController.js';
 import { JsProperties } from '../jsweet2js.js';
 
-export class PickingController extends com.vzome.desktop.controller.DefaultController {
+export class PickingController extends DefaultController {
   constructor(renderedModel) {
     super();
     this.renderedModel = renderedModel;

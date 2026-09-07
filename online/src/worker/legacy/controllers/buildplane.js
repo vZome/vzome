@@ -1,9 +1,10 @@
-import { com } from '../core-java.js';
+import { AlgebraicVectors } from '../from-java/com/vzome/core/algebra/AlgebraicVectors.js';
+import { DefaultController } from '../from-java/com/vzome/desktop/controller/DefaultController.js';
 import { java } from '../candies/j4ts-2.1.0-SNAPSHOT/bundle.js';
 import { JsProperties } from '../jsweet2js.js';
 import { normalizeRenderedManifestation } from '../scenes.js';
 
-export class BuildPlaneController extends com.vzome.desktop.controller.DefaultController
+export class BuildPlaneController extends DefaultController
 {
   constructor( design, clientEvents )
   {
@@ -79,7 +80,7 @@ export class BuildPlaneController extends com.vzome.desktop.controller.DefaultCo
 
       case 'HINGE_STRUT_SELECTED': {
         const { strutId, centerId, hingeZone: oldHingeZone } = config;
-        const vectorAlgebra = com.vzome.core.algebra.AlgebraicVectors;
+        const vectorAlgebra = AlgebraicVectors;
 
         const oldCenterRm = this.renderedModel .getRenderedManifestation( centerId );
         if ( !oldCenterRm ) return;

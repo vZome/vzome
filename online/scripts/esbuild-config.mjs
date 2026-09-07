@@ -78,6 +78,7 @@ export const esbuildConfig = {
   loader: {
     // These are resource types that are fetched from the client
     '.vef': 'dataurl', // see https://esbuild.github.io/content-types/#data-url
+    '.properties': 'dataurl', // shape colors.properties, fetched the same way as .vef
     '.svg': 'text',    // see https://esbuild.github.io/content-types/#text
   },
   format: 'esm',

@@ -1,7 +1,7 @@
 
-import { com } from './core-java.js'
+import { AlgebraicVectors } from './from-java/com/vzome/core/algebra/AlgebraicVectors.js'
 
-const getCentroid = com.vzome.core.algebra.AlgebraicVectors.getCentroid;
+const getCentroid = AlgebraicVectors.getCentroid;
 
 /*
   A simple mesh has vertices, edges, and faces, and each face lists its vertex indices.

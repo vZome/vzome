@@ -9,7 +9,8 @@
 */
 
 import { downloadJSON, downloadText, fetchUrlJSON, fetchUrlText, } from "./utils.js";
-import { initialize, vzomePkg, util, coloredMeshToSimpleMesh, simpleMeshToTopologicalMesh,
+import { initialize, util, AlgebraicVector, AlgebraicVectors, AlgebraicMatrix,
+          coloredMeshToSimpleMesh, simpleMeshToTopologicalMesh,
           enhanced4dToSimpleMesh, enhanced4dToTopologicalMesh, enhancedMeshTo4OFF, } from "/modules/vzome-legacy.js";
 
 Promise.all( [ initialize(), fetchUrlJSON( "./CRF.tmesh.json" ), fetchUrlJSON( "./starter-blues.cmesh.json" ) ] )
@@ -161,7 +162,7 @@ Promise.all( [ initialize(), fetchUrlJSON( "./CRF.tmesh.json" ), fetchUrlJSON( "
             edgeColl .add( edge1 .endpoints[1] .vector );
             edgeColl .add( edge  .endpoints[0] .vector );
             edgeColl .add( edge  .endpoints[1] .vector );
-            if ( vzomePkg.core.algebra.AlgebraicVectors.areCoplanar( edgeColl ) ) {
+            if ( AlgebraicVectors.areCoplanar( edgeColl ) ) {
               return; // skip coplanar edges
             }
             edge2 = edge;
@@ -178,8 +179,8 @@ Promise.all( [ initialize(), fetchUrlJSON( "./CRF.tmesh.json" ), fetchUrlJSON( "
       const oldColVectors = endpoints .map( e => lift3to4( e .vector ) );
       const newColVectors = endpoints .map( e => e .vector4d );
 
-      const oldMatrix = new vzomePkg.core.algebra.AlgebraicMatrix( oldColVectors );
-      const newMatrix = new vzomePkg.core.algebra.AlgebraicMatrix( newColVectors );
+      const oldMatrix = new AlgebraicMatrix( oldColVectors );
+      const newMatrix = new AlgebraicMatrix( newColVectors );
       const transform = newMatrix .times( oldMatrix .inverse() );
       // Now, apply this transform to all vertices in the cell that are not yet inflated
       cell .adjacentFaces .forEach( face => {
@@ -222,7 +223,7 @@ Promise.all( [ initialize(), fetchUrlJSON( "./CRF.tmesh.json" ), fetchUrlJSON( "
         if ( w .isZero() ) {
           vertex .reflection = vertex .index; // mark for later processing
         } else {
-          const negVec4d = new vzomePkg.core.algebra.AlgebraicVector(
+          const negVec4d = new AlgebraicVector(
             w .negate(),
             vertex .vector4d .getComponent( 1 ),
             vertex .vector4d .getComponent( 2 ),

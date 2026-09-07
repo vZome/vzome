@@ -1,33 +1,31 @@
 
-import { createEffect } from "solid-js";
+import { createSignal } from "solid-js";
 import { DeclarativeMenu, MenuItem } from "../../framework/menus.jsx";
 
-import { useEditor } from '../../framework/context/editor.jsx';
-
-const SetColorItem = props =>
-{
-  const { controllerAction } = useEditor();
-  let colorInputElement;
-  const handleClick = () =>
-  {
-    colorInputElement.click();
-  }
-  const setColor = color =>
-  {
-    controllerAction( props.ctrlr, `ColorManifestations/${color}ff` );
-  }
-  createEffect( () => {
-    // skip the leading "#"
-    colorInputElement.addEventListener( "change", e => setColor( e.target.value.substring(1) ), false );
-  });
-  return ( <>
-    <MenuItem onClick={handleClick} >Set Color...</MenuItem>
-    <input ref={colorInputElement} type="color" name="color-picker" class='hidden-color-input' />
-  </>);
-}
+import { controllerProperty, useEditor } from '../../framework/context/editor.jsx';
+import { ColorPicker } from '../../framework/colorpicker.jsx';
 
 export const EditMenu = () =>
 {
+  const { rootController, controllerAction, lastObjectColor, setLastObjectColor } = useEditor();
+
+  // The dialog CANNOT live in the menu slot beside its MenuItem.  Menubar.Item is
+  // closeOnSelect, so choosing the item tears down the whole menu subtree, and a dialog
+  // rendered inside that subtree unmounts the instant it opens.  Only the trigger goes in
+  // the slot; the dialog is rendered as a sibling of the menu, driven by this signal --
+  // the same arrangement LabelDialog uses in classic/components/editor.jsx.
+  const [ picking, setPicking ] = createSignal( false );
+  const zometoolColors = () => controllerProperty( rootController(), 'zometoolColors', 'zometoolColors', true );
+
+  const closeColorPicker = hex =>
+  {
+    setPicking( false );
+    if ( hex ) { // undefined on cancel
+      setLastObjectColor( hex ); // so the picker reopens on this choice
+      controllerAction( rootController(), `ColorManifestations/${hex.substring(1)}ff` ); // skip the leading "#"
+    }
+  }
+
   const items = [
     { label: "Undo",     action: "undo" },
     { label: "Redo",     action: "redo" },
@@ -129,9 +127,11 @@ export const EditMenu = () =>
     }
   ];
 
-  return (
+  return ( <>
     <DeclarativeMenu label="Edit" items={items}
-      menuSlots={{ setColorItem: <SetColorItem ctrlr={rootController()} /> }}
+      menuSlots={{ setColorItem: <MenuItem onClick={ () => setPicking( true ) }>Set Color...</MenuItem> }}
     />
-  );
+    <ColorPicker show={picking()} close={closeColorPicker} title="Set Color"
+        color={lastObjectColor()} palette={zometoolColors()} />
+  </>);
 }

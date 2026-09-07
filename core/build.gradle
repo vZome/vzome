@@ -324,29 +324,195 @@ task regression(type: JavaExec, dependsOn: check) {
 regression.dependsOn makeRegressionOutputDir
 
 
-[ '01-Jan', '02-Feb', '03-Mar', '04-Apr', '05-May', '06-Jun', '07-Jul', '08-Aug', '09-Sep', '10-Oct', '11-Nov', '12-Dec' ]
-.each { def month ->
-    task "regression-$month"( dependsOn: [check, makeRegressionOutputDir], type: JavaExec ) {
-        def testHome = 'src/regression/files'
-        if( project .hasProperty( "regressionHome" ) ){
-            testHome = regressionHome
+// Batch POV-Ray export, used to record and to check a regression baseline.
+// The exported ".pov" files are deterministic, so a plain comparison against a recorded
+// baseline detects any change in the geometry, shapes, colors, or camera of every design.
+//
+//   record:   ./gradlew core:batchPov -PpovInput=<dir-or-file> -PpovOutput=<dir>
+//   regress:  ./gradlew core:batchPov -PpovInput=<dir-or-file> -PpovOutput=<dir> -PpovGolden=<dir>
+//
+// Parallelism is by PROCESS, not by thread: loading a design mutates static state (see the
+// comment on BatchPovExporter), so -PpovWorkers=N forks N JVMs that each take a slice of the
+// files.  Folders in the test collection may contain a "skipKnownFailures.testsuite" file,
+// which lists exactly what to test there; anything it omits is skipped as a known failure.
+task batchPov( dependsOn: compileRegressionJava ) {
+    group = 'Verification'
+    description = """Batch export designs to POV-Ray, and optionally compare against a baseline
+        command-line options:
+            -PpovInput=<dir-or-file>   (required) a .vZome file, or a folder to search
+            -PpovOutput=<dir>          (required) root of the mirrored output tree
+            -PpovGolden=<dir>          (optional) baseline to compare against; enables regression mode
+            -PpovGeometryOnly          (optional) ignore camera and lighting when comparing
+            -PpovWorkers=6             (default shown) how many JVMs to run in parallel
+            -PpovHeap=3072M            (default shown) max heap PER WORKER
+            -PpovTimeout=60            (default shown) per-file timeout, in seconds
+    """
+
+    doLast {
+        if ( ! project.hasProperty( 'povInput' ) || ! project.hasProperty( 'povOutput' ) )
+            throw new GradleException( "batchPov requires -PpovInput and -PpovOutput\n" + description )
+
+        def workers = ( project.hasProperty( 'povWorkers' ) ? povWorkers : '6' ) as int
+        def timeout = ( project.hasProperty( 'povTimeout' ) ? povTimeout : '60' ) as int
+        // Each worker is a separate JVM, so this is per-worker, not for the run as a whole.
+        // Lower it on memory-constrained machines (a NAS, say) and reduce povWorkers to match.
+        def heap = project.hasProperty( 'povHeap' ) ? povHeap : '3072M'
+        def classpath = sourceSets.regression.runtimeClasspath.asPath
+        def outputDir = file( povOutput )
+
+        def commonArgs = [ file( povInput ).absolutePath, outputDir.absolutePath,
+                           '--timeout', timeout as String ]
+        if ( project.hasProperty( 'povGolden' ) )
+            commonArgs += [ '--compare', file( povGolden ).absolutePath ]
+        // Camera and lighting are viewing preferences, not edit-history output, and the
+        // Javascript exporter cannot reproduce light directions headlessly.
+        if ( project.hasProperty( 'povGeometryOnly' ) )
+            commonArgs += [ '--geometry-only' ]
+
+        // Each worker is a separate JVM, so the static state that makes concurrent loading
+        // unsafe is not shared.  Their stdout is captured and printed as each one finishes,
+        // to keep the interleaved progress readable.
+        // Each worker's stdout is read live, rather than buffered to a temp file and printed
+        // when it exits -- otherwise a multi-hour run shows nothing at all until a whole shard
+        // finishes.  The workers emit "@total N" once and "@progress STATUS path" per design;
+        // everything else is their human-readable summary, kept for the end.
+        //
+        // The reader threads are not optional: with the child's output on a pipe, nobody
+        // draining it means the worker blocks forever once the OS pipe buffer fills.
+        def grandTotal = new java.util.concurrent.atomic.AtomicInteger( 0 )
+        def completed  = new java.util.concurrent.atomic.AtomicInteger( 0 )
+        def failedCount = new java.util.concurrent.atomic.AtomicInteger( 0 )
+        def differedCount = new java.util.concurrent.atomic.AtomicInteger( 0 )
+        def summaries = java.util.Collections.synchronizedList( [] )
+
+        def procs = (0..<workers).collect { shard ->
+            def args = [ 'java', "-Xmx${heap}" as String, '-cp', classpath,
+                         'com.vzome.core.regression.BatchPovExporter' ] + commonArgs
+            if ( workers > 1 )
+                args += [ '--shard', shard as String, '--split', workers as String ]
+            def process = new ProcessBuilder( args ).redirectErrorStream( true ).start()
+            def buffered = new StringBuilder()
+            def reader = Thread.start {
+                process.inputStream.withReader( 'UTF-8' ) { r ->
+                    def line
+                    while ( ( line = r.readLine() ) != null ) {
+                        if ( line.startsWith( '@total ' ) )
+                            grandTotal.addAndGet( line.substring( 7 ).trim() as int )
+                        else if ( line.startsWith( '@progress ' ) ) {
+                            def status = line.substring( 10 ).tokenize( ' ' )[ 0 ]
+                            completed.incrementAndGet()
+                            if ( status == 'FAILED' ) failedCount.incrementAndGet()
+                            if ( status == 'DIFFERED' ) differedCount.incrementAndGet()
+                        }
+                        else
+                            buffered.append( line ).append( '\n' )
+                    }
+                }
+            }
+            [ shard: shard, process: process, reader: reader, buffered: buffered ]
         }
-        def testYear = '2015'
-        if( project .hasProperty( "regressionYear" ) ){
-            testYear = regressionYear
+        procs.each { summaries << it.buffered }
+
+        // One combined progress line for the whole run, refreshed while the workers run.
+        def started = System.currentTimeMillis()
+        def interactive = ( System.console() != null )
+        def printer = Thread.start {
+            try {
+                while ( procs.any { it.process.isAlive() } ) {
+                    Thread.sleep( 2000 )
+                    def done = completed.get()
+                    def all = grandTotal.get()
+                    if ( all == 0 ) continue
+                    def elapsed = ( System.currentTimeMillis() - started ) / 1000.0
+                    def rate = done > 0 ? elapsed / done : 0
+                    def remain = ( ( all - done ) * rate ) as long
+                    def eta = done > 0 ? String.format( "  ~%d:%02d left", (long)(remain/60), (long)(remain%60) ) : ""
+                    def pct = all > 0 ? (int)( 100.0 * done / all ) : 0
+                    def bad = failedCount.get() + differedCount.get()
+                    def note = bad > 0 ? "  failures/diffs: ${bad}" : ""
+                    def text = "  ${done} / ${all}  (${pct}%)${eta}${note}"
+                    if ( interactive )
+                        print "\r${text}          "
+                    else
+                        println text
+                }
+            } catch ( InterruptedException ignored ) { }
         }
-        def testFile = "${testYear}/${month}"
-        def testOut = "build/test-results/regression/TEST-${testYear}-${month}.xml"
-        if( project .hasProperty( "regressionOutput" ) ){
-            testOut = regressionOutput
+
+        def failed = 0
+        procs.each { p ->
+            def code = p.process.waitFor()
+            p.reader.join()
+            if ( code != 0 ) failed++
         }
-        classpath = sourceSets.regression.runtimeClasspath
-        main = 'com.vzome.core.regression.TestVZomeFiles'
-        args( testHome, testFile, testOut )
-        jvmArgs( '-Xmx3072M' )
+        printer.interrupt()
+        printer.join()
+        // One final line, so the count lands on the true total rather than wherever the
+        // printer happened to be when the last worker exited.
+        def finalBad = failedCount.get() + differedCount.get()
+        println "  ${completed.get()} / ${grandTotal.get()}  (100%)" +
+                ( finalBad > 0 ? "  failures/diffs: ${finalBad}" : "" ) +
+                "  in ${(long)((System.currentTimeMillis()-started)/1000)}s"
+
+        // Now the per-worker summaries, which are only meaningful once a worker has finished.
+        summaries.each { print it.toString() }
+
+        // Merge the per-shard reports into one file per kind, so the result reads the same
+        // whether the run used one worker or many.
+        if ( workers > 1 ) {
+            [ 'manifest', 'run', 'failures', 'regressions', 'improved', 'changed', 'unknown', 'new' ].each { kind ->
+                def parts = (0..<workers).collect { new File( outputDir, "${kind}-${it}.txt" ) }
+                                         .findAll { it.exists() }
+                def merged = new File( outputDir, "${kind}.txt" )
+                if ( parts.isEmpty() )
+                    merged.delete()
+                else {
+                    merged.text = parts.collect { it.text }.join( '' )
+                    println "  merged ${merged}"
+                }
+                parts.each { it.delete() }
+            }
+        }
+
+        // One summary for the whole run.  Each worker prints its own block, which with six of
+        // them means six partial counts and no total; these are the real numbers, counted from
+        // the merged reports rather than by adding up what scrolled past.
+        def countLines = { String name ->
+            def f = new File( outputDir, name )
+            f.exists() ? f.readLines().count { it && !it.startsWith( '      ' ) } : 0
+        }
+        def manifest = new File( outputDir, 'manifest.txt' )
+        def total = manifest.exists() ? manifest.readLines().count { it.trim() } : 0
+        def regressed = countLines( 'regressions.txt' )
+
+        println ""
+        def comparing = project.hasProperty( 'povGolden' )
+        // A banner, because Gradle's own output is voluminous and this is the one part of it
+        // anybody actually wants to read.
+        def rule = '%' * 80
+        println ""
+        println rule
+        println rule
+        println "  ${comparing ? 'COMPARED' : 'RECORDED'} ${total} designs"
+        if ( comparing ) {
+            def improved = countLines( 'improved.txt' ), changed = countLines( 'changed.txt' )
+            def unknown  = countLines( 'unknown.txt' ),  fresh   = countLines( 'new.txt' )
+            println "    unchanged:  ${total - regressed - improved - changed - unknown - fresh}"
+            println "    REGRESSED:  ${regressed}"
+            println "    improved:   ${improved}"
+            println "    changed:    ${changed}"
+            println "    unknown:    ${unknown}   (a timeout on one side or the other)"
+            println "    new:        ${fresh}"
+        }
+        println "    (failed or timed out: ${countLines( 'failures.txt' )})"
+        println rule
+        println rule
+        println ""
+
+        if ( failed > 0 )
+            throw new GradleException( "batchPov: ${regressed > 0 ? regressed + ' regression(s)' : failed + ' of ' + workers + ' workers reported a problem' }" )
     }
 }
-task regressionYear( dependsOn: tasks.matching { Task task -> task.name.startsWith( "regression-" ) } )
 
 
 task dump4dPolytope( type: JavaExec, dependsOn: build ) {

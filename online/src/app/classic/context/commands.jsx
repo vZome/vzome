@@ -5,11 +5,12 @@ import { subController, useEditor } from "../../framework/context/editor.jsx";
 import { useSymmetry } from './symmetry.jsx';
 import { saveTextFileAs, saveTextFile } from "../../../viewer/util/files.js";
 import { useViewer } from "../../../viewer/context/viewer.jsx";
+import { menuKeyEventsSuspended, resumeMenuKeyEvents, suspendMenuKeyEvents } from "../../framework/keyevents.js";
 
-let menuKeyEventsSuspended = false;
-
-export const suspendMenuKeyEvents = () => menuKeyEventsSuspended = true;
-export const resumeMenuKeyEvents = () => menuKeyEventsSuspended = false;
+// The suspend flag itself lives in framework/keyevents.js, since framework components need
+// it too and framework must not depend on classic.  Re-exported here because this module
+// has long been where the rest of the app imports it from.
+export { suspendMenuKeyEvents, resumeMenuKeyEvents };
 
 const CommandsContext = createContext();
 
@@ -92,7 +93,7 @@ export const CommandsProvider = props =>
       const hasShift = !! modifiers ?.includes( '⇧' );
       const hasOption = !! modifiers ?.includes( '⌥' );
       document.body .addEventListener( "keydown", evt => {
-        if ( menuKeyEventsSuspended )
+        if ( menuKeyEventsSuspended() )
           return;
         if ( targetCodes .indexOf( evt.code ) < 0 )
           return;

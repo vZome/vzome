@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +32,12 @@ import com.vzome.xml.ResourceLoader;
 public class POVRayExporter extends DocumentExporter
 {
 	private static final NumberFormat FORMAT = NumberFormat .getNumberInstance( Locale .US );
+	static {
+		// POV-Ray is reading these numbers, so never group the integer part: the default
+		// grouping turned a view distance of 1901.96 into "1,901.96", which is not valid
+		// POV-Ray syntax (and did not match the Javascript exporter either).
+		FORMAT .setGroupingUsed( false );
+	}
 	
 	private static final String PREAMBLE_FILE = "com/vzome/core/exporters/povray/preamble.pov";
 
@@ -57,11 +65,15 @@ public class POVRayExporter extends DocumentExporter
         output .println();
         output .println( "#declare             up_dir = " + printTuple3d( upDir ) + ";" );
         output .println();
-        output .println( "#declare viewpoint_distance = " + mScene .getViewDistance() + ";" );
+        // Format these explicitly rather than relying on Java's float-to-string, which has no
+        // equivalent in Javascript -- the transpiled exporter would print the full double
+        // ("346.845458984375" where Java prints "346.84546"), so the two platforms could never
+        // produce the same file.  FORMAT rounds both to the same 8 fraction digits.
+        output .println( "#declare viewpoint_distance = " + FORMAT .format( mScene .getViewDistance() ) + ";" );
         output .println();
 		output .println( "#declare      look_at_point = " + printTuple3d( mScene .getLookAtPointRV() ) + ";" );
         output .println();
-		output .println( "#declare      field_of_view = " + mScene .getFieldOfView() + ";" );
+		output .println( "#declare      field_of_view = " + FORMAT .format( mScene .getFieldOfView() ) + ";" );
         output .println();
         output .println( "#declare      parallel_proj = " + (mScene .isPerspective()?0:1) + ";" );
         output .println();
@@ -92,8 +104,6 @@ public class POVRayExporter extends DocumentExporter
         printColor( mLights .getBackgroundColor() );
         output .println( " }" );
         output .println();
-		
-//		FORMAT .setMaximumFractionDigits( 3 );
 
 		StringBuffer instances = new StringBuffer();
 
@@ -109,11 +119,15 @@ public class POVRayExporter extends DocumentExporter
             {
                 AlgebraicVector columnSelect = field .basisVector( 3, i );
                 RealVector columnI = embedding .embedInR3( columnSelect );
-                output .print( columnI .x );
+                // Through FORMAT, like every other number here: printing the raw float wrote
+                // Java's "1.0, 0.0, 0.04486483" where Javascript wrote the full double,
+                // "1, 0, 0.04486482962965965", so this one line differed on every embedded
+                // design even when the geometry was identical.
+                output .print( FORMAT .format( columnI .x ) );
                 output .print( ", " );
-                output .print( columnI .y );
+                output .print( FORMAT .format( columnI .y ) );
                 output .print( ", " );
-                output .print( columnI .z );
+                output .print( FORMAT .format( columnI .z ) );
                 output .print( ", " );
             }
             output .println( " 0, 0, 0 > }" );
@@ -124,7 +138,23 @@ public class POVRayExporter extends DocumentExporter
 		HashSet<String> shapes = new HashSet<>();
 		Map<AlgebraicMatrix, String> transforms = new HashMap<>();
 		Map<Color, String> colors = new HashMap<>();
-        for (RenderedManifestation rm : mModel) {
+
+		// Emit in a deterministic, content-derived order.  RenderedModel iterates a HashSet of
+		// RenderedManifestations whose hashCode() is a random per-object UUID, so the iteration
+		// order varies from run to run.  That alone would reorder the "object" lines below, and
+		// because the shape/transform/color names are generated lazily in encounter order
+		// ("trans0", "trans1", ...), the same transform would get a different name on each run.
+		// The result was that exporting one design twice produced two different .pov files,
+		// which defeats any diff-based regression testing.  Sorting by content (never by guid)
+		// fixes both, and makes this exporter agree with the transpiled Javascript twin, whose
+		// HashSet is backed by a JS Map and therefore iterates in insertion order instead.
+		// Keep this in sync with the transpiled POVRayExporter under online/src/worker/legacy.
+		List<RenderedManifestation> sorted = new ArrayList<>();
+		for (RenderedManifestation rm : mModel)
+		    sorted .add( rm );
+		Collections .sort( sorted, POVRayExporter::compareForExport );
+
+        for (RenderedManifestation rm : sorted) {
             // Content-derived shape key (see Polyhedron.shapeKey); strip characters not valid in
             // a POV-Ray identifier. Was getShapeId() (per-object UUID); the key dedups content-
             // identical shapes and is stable, and the sanitizer keeps the declared-name legal.
@@ -183,6 +213,53 @@ public class POVRayExporter extends DocumentExporter
 	}
 
 
+    /**
+     * Orders RenderedManifestations by content, for reproducible export.  Every component is
+     * derived from what the manifestation IS, never from its identity (guid), so two runs -- or
+     * two platforms -- computing the same geometry produce the same order.  The four keys
+     * together are what the exporter actually emits per instance, so ties are only possible
+     * between manifestations that would emit identical lines anyway.
+     */
+    private static int compareForExport( RenderedManifestation a, RenderedManifestation b )
+    {
+        int comparison = nullSafeCompare( a .getShapeKey(), b .getShapeKey() );
+        if ( comparison != 0 )
+            return comparison;
+
+        AlgebraicMatrix aOrientation = a .getOrientation();
+        AlgebraicMatrix bOrientation = b .getOrientation();
+        comparison = nullSafeCompare(
+                aOrientation == null ? null : aOrientation .toString(),
+                bOrientation == null ? null : bOrientation .toString() );
+        if ( comparison != 0 )
+            return comparison;
+
+        AlgebraicVector aLocation = a .getLocationAV();
+        AlgebraicVector bLocation = b .getLocationAV();
+        if ( aLocation != null && bLocation != null ) {
+            comparison = aLocation .compareTo( bLocation );
+            if ( comparison != 0 )
+                return comparison;
+        }
+        else if ( aLocation != bLocation )
+            return aLocation == null ? -1 : 1;
+
+        Color aColor = a .getColor();
+        Color bColor = b .getColor();
+        return nullSafeCompare(
+                aColor == null ? null : aColor .toString(),
+                bColor == null ? null : bColor .toString() );
+    }
+
+    private static int nullSafeCompare( String a, String b )
+    {
+        if ( a == null )
+            return b == null ? 0 : -1;
+        if ( b == null )
+            return 1;
+        return a .compareTo( b );
+    }
+
     String nameColor( Color color )
     {
         return "color_" + color .toString() .replace( ',', '_' );
@@ -191,11 +268,11 @@ public class POVRayExporter extends DocumentExporter
     private String printTuple3d( RealVector t )
     {
     	StringBuilder buf = new StringBuilder( "<" );
-    	buf .append( FORMAT.format(t.x) );
+    	buf .append( FORMAT .format(t.x) );
     	buf .append( "," );
-    	buf .append( FORMAT.format(t.y) );
+    	buf .append( FORMAT .format(t.y) );
     	buf .append( "," );
-    	buf .append( FORMAT.format(t.z) );
+    	buf .append( FORMAT .format(t.z) );
     	buf .append( ">" );
     	return buf .toString();
     }
@@ -215,15 +292,15 @@ public class POVRayExporter extends DocumentExporter
     	else
     		output .print( "color rgb <" );
 		float[] rgb = color .getRGBColorComponents( new float[4] );
-		output .print( FORMAT.format(rgb[0]) + "," );
-		output .print( FORMAT.format(rgb[1]) + "," );
+		output .print( FORMAT .format(rgb[0]) + "," );
+		output .print( FORMAT .format(rgb[1]) + "," );
 		if ( doAlpha )
 		{
-			output .print( FORMAT.format(rgb[2]) + "," );
-			output .print( FORMAT.format(rgb[3]) );
+			output .print( FORMAT .format(rgb[2]) + "," );
+			output .print( FORMAT .format(rgb[3]) );
 		}
 		else {
-			output .print( FORMAT.format(rgb[2]) );
+			output .print( FORMAT .format(rgb[2]) );
 		}
 		output .print( ">" );
     }
@@ -235,11 +312,11 @@ public class POVRayExporter extends DocumentExporter
 	protected void appendVector( AlgebraicVector loc, StringBuffer buf )
 	{
 	    RealVector vector = loc .toRealVector();
-        buf .append( FORMAT.format(vector.x) );
+        buf .append( FORMAT .format(vector.x) );
         buf .append( ", " );
-        buf .append( FORMAT.format(vector.y) );
+        buf .append( FORMAT .format(vector.y) );
         buf .append( ", " );
-        buf .append( FORMAT.format(vector.z) );
+        buf .append( FORMAT .format(vector.z) );
 	}
 
     private void exportShape( String shapeName, Polyhedron poly )
@@ -247,19 +324,27 @@ public class POVRayExporter extends DocumentExporter
         output .print( "#declare " + shapeName + " = " );
         List<AlgebraicVector> vertices = poly .getVertexList();
         output .println( "mesh {" );
-        poly .getTriangleFaces();
+
+        // Emit the triangles in a stable order.  Polyhedron holds its faces in a HashSet, so the
+        // order they come out in is an artifact of the container, and differs between Java and
+        // the transpiled Javascript (whose HashSet is backed by an insertion-ordered JS Map).
+        // The triangles themselves are identical either way, so sorting by the text we are about
+        // to write makes the two platforms produce the same file without changing any geometry.
+        List<String> triangles = new ArrayList<>();
         for (Polyhedron.Face.Triangle face : poly .getTriangleFaces()) {
-            output .print( "triangle {" );
+            StringBuffer buf = new StringBuffer( "triangle {" );
             for ( int index : face.vertices ) {
-                AlgebraicVector loc = vertices .get( index );
-                StringBuffer buf = new StringBuffer();
                 buf .append( "<" );
-                appendVector( loc, buf );
+                appendVector( vertices .get( index ), buf );
                 buf .append( ">" );
-                output .print( buf.toString() );
             }
-            output .println( "}" );
+            buf .append( "}" );
+            triangles .add( buf .toString() );
         }
+        Collections .sort( triangles );
+        for ( String triangle : triangles )
+            output .println( triangle );
+
         output .println( "}" );
         output .flush();
     }

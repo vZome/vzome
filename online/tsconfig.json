@@ -1,0 +1,23 @@
+{
+  // Typecheck-only.  esbuild does the actual transpiling and bundling; this
+  // config exists so `yarn typecheck` can gate changes to the TypeScript under
+  // src/worker/legacy/from-java, which is transpiled-from-Java code that we are
+  // migrating to become the source of truth.
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2020",
+    "moduleResolution": "bundler",
+    "lib": [ "ES2020", "DOM" ],
+    "noEmit": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "allowJs": false,
+    "forceConsistentCasingInFileNames": true
+  },
+  "files": [ "src/worker/legacy/from-java/shims.d.ts" ],
+  "include": [
+    "src/worker/legacy/from-java/com/**/*.ts",
+    "src/worker/legacy/from-java/java/**/*.ts",
+    "src/worker/legacy/from-java/org/**/*.ts"
+  ]
+}
