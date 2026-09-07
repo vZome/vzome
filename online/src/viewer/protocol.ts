@@ -77,6 +77,14 @@ export type DesignConfig = {
 /** The formats accepted by MESH_FILE_PROVIDED and recognised in a URL by importFormat(). */
 export type ImportFormat = 'mesh' | 'cmesh' | 'vef';
 
+/**
+ * A direction in world space, as a unit vector.  The preview-strut call sites all build
+ * one the same way -- destructuring a THREE.Vector3 into [ x, y, z ] -- so this is a tuple
+ * rather than number[]: it is the one place a length mistake could silently produce a
+ * strut pointing somewhere unintended.
+ */
+export type Direction = [ number, number, number ];
+
 /** One controller action, as sent singly by ACTION_TRIGGERED or in a list by MACRO_TRIGGERED. */
 export type ControllerAction = {
   controllerPath: string;
@@ -116,8 +124,8 @@ export type WorkerAction =
   | { type: 'HINGE_STRUT_SELECTED'; payload: { strutId: string; centerId: string; diskZone: unknown; hingeZone: unknown } }
 
   //  The preview strut, dragged in the editor.
-  | { type: 'PREVIEW_STRUT_START'; payload: { ballId: string; direction: unknown } }
-  | { type: 'PREVIEW_STRUT_MOVE'; payload: { direction: unknown } }
+  | { type: 'PREVIEW_STRUT_START'; payload: { ballId: string; direction: Direction } }
+  | { type: 'PREVIEW_STRUT_MOVE'; payload: { direction: Direction } }
   | { type: 'PREVIEW_STRUT_SCALE'; payload: { increment: number } }
   | { type: 'PREVIEW_STRUT_END'; payload: Record<string, never> }
 
@@ -127,6 +135,9 @@ export type WorkerAction =
   ;
 
 export type WorkerActionType = WorkerAction[ 'type' ];
+
+/** The single WorkerAction with a given type, e.g. ActionOf<'PREVIEW_STRUT_MOVE'>. */
+export type ActionOf< T extends WorkerActionType > = Extract< WorkerAction, { type: T } >;
 
 /**
  * A WorkerAction as it actually goes over postMessage.
