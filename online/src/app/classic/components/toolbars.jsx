@@ -18,6 +18,7 @@ import { controllerProperty, subController, useEditor } from '../../framework/co
 import { resumeMenuKeyEvents, suspendMenuKeyEvents } from '../context/commands.jsx';
 import { useSymmetry } from "../context/symmetry.jsx";
 import { ToolConfig } from "../dialogs/toolconfig.jsx";
+import { ColorPicker } from "../../framework/colorpicker.jsx";
 import { resourceUrl } from "./length.jsx";
 
 const ToolbarSpacer = () => ( <div style={{ 'min-width': '10px', 'min-height': '10px' }}></div> )
@@ -66,23 +67,25 @@ const CommandButton = props =>
 
 const SetColorButton = props =>
 {
-  const { controllerAction } = useEditor();
-  let colorInputElement;
-  const handleClick = () =>
+  const { controllerAction, lastObjectColor, setLastObjectColor } = useEditor();
+  const [ picking, setPicking ] = createSignal( false );
+  const zometoolColors = () => controllerProperty( props.ctrlr, 'zometoolColors', 'zometoolColors', true );
+
+  const handleClick = () => setPicking( true );
+
+  const close = hex =>
   {
-    colorInputElement.click();
+    setPicking( false );
+    if ( hex ) { // undefined on cancel
+      setLastObjectColor( hex ); // so the picker reopens on this choice
+      controllerAction( props.ctrlr, `ColorManifestations/${hex.substring(1)}ff` ); // skip the leading "#"
+    }
   }
-  const setColor = color =>
-  {
-    controllerAction( props.ctrlr, `ColorManifestations/${color}ff` );
-  }
-  createEffect( () => {
-    // skip the leading "#"
-    colorInputElement.addEventListener( "change", e => setColor( e.target.value.substring(1) ), false );
-  });
+
   return ( <>
     <ToolbarButton label={props.hoverText} image={`small/setItemColor`} onClick={handleClick} />
-    <input ref={colorInputElement} type="color" name="color-picker" class='hidden-color-input' />
+    <ColorPicker show={picking()} close={close} title="Set Color"
+        color={lastObjectColor()} palette={zometoolColors()} />
   </>);
 }
 
