@@ -1,0 +1,15 @@
+{
+  // Use the repo's own TypeScript (online/node_modules/typescript, currently 5.9.x)
+  // rather than the version bundled with VS Code, so the editor and
+  // `yarn typecheck` are always the same compiler.  Without this they can differ
+  // by several releases, which shows up as an error red in one and absent in the
+  // other -- an especially confusing failure while migrating to TypeScript.
+  //
+  // The path is relative to the workspace folder, which is the repository root
+  // (see vscode-launch-template.json, whose paths are ${workspaceFolder}/online/...).
+  "typescript.tsdk": "online/node_modules/typescript/lib",
+
+  // Prompt to use the workspace version rather than silently falling back to the
+  // bundled one when online/node_modules has not been installed yet.
+  "typescript.enablePromptUseWorkspaceTsdk": true
+}

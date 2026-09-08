@@ -1,0 +1,21 @@
+{
+  // The transpiled-from-Java tree under src/worker/legacy/from-java, which is now
+  // the source of truth for that code (JSweet is gone) and is mirrored by hand
+  // against the Java in core/.  See from-java/README.md before editing it.
+  //
+  // This project stays at "strict": false deliberately.  Turning strict on here
+  // yields 4,216 errors, overwhelmingly JSweet's any-heavy calling conventions
+  // rather than real defects -- machine output we mirror, not code we write.
+  // New hand-written code gets "strict": true via tsconfig.app.json instead, so
+  // that the legacy baseline does not drag it down.
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "strict": false
+  },
+  "files": [ "src/worker/legacy/from-java/shims.d.ts" ],
+  "include": [
+    "src/worker/legacy/from-java/com/**/*.ts",
+    "src/worker/legacy/from-java/java/**/*.ts",
+    "src/worker/legacy/from-java/org/**/*.ts"
+  ]
+}

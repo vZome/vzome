@@ -1,0 +1,39 @@
+{
+  // Hand-written TypeScript: everything under src/ except the transpiled-from-Java
+  // tree, which has its own looser project (tsconfig.legacy.json).
+  //
+  // "allowJs" stays false (inherited), so this project sees only files that have
+  // actually been converted to .ts/.tsx.  A .js file is invisible to tsc here even
+  // though esbuild still bundles it -- which is what makes the migration safely
+  // incremental: converting one file adds exactly that file to the typecheck, and
+  // its importers keep working untouched because 98% of relative imports in this
+  // codebase already carry an explicit '.js' specifier, which resolves to the .ts
+  // source in both tsc and esbuild.
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "strict": true,
+
+    // SolidJS compiles JSX itself and ships its own JSX types, so tsc must leave
+    // JSX alone rather than emitting React.createElement calls.  Required before
+    // any .tsx in this project will typecheck.
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+
+    // Let a .ts file import the .json resources this codebase already imports.
+    "resolveJsonModule": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  "exclude": [
+    "src/worker/legacy/from-java",
+
+    // Already TypeScript, but it was never typechecked: the single project this
+    // split replaced included only the from-java tree, so nothing outside that
+    // tree was ever seen by tsc.  It imports 'three', which ships no types at
+    // 0.184, so including it here would fail on TS7016 alone.  Bringing it in
+    // is part of the viewer/@types/three work, not of this split.
+    "src/app/classic/tools/drag.ts"
+  ]
+}

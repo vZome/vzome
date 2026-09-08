@@ -75,7 +75,9 @@ online/.yalc/
 
 online/yalc.lock
 
-.vscode/settings.json
+# .vscode/settings.json is shared, deliberately: it pins the editor to the repo's
+# own TypeScript so VS Code and `yarn typecheck` are the same compiler.
+# (launch.json and tasks.json are tracked too.)
 
 online/serve/app/classic/resources/
 online/serve/app/inspector/models/
