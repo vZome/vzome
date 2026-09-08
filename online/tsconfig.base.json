@@ -1,0 +1,20 @@
+{
+  // Options shared by tsconfig.legacy.json and tsconfig.app.json.  Neither of
+  // those is a typecheck target on its own -- `yarn typecheck` runs both, via
+  // the solution-style tsconfig.json.
+  //
+  // Everything here is transpile-independent: esbuild does the actual building
+  // (it resolves a '.js' import specifier to a '.ts' source, which is what lets
+  // a file be renamed .js -> .ts without touching any importer), so these
+  // options only ever affect what tsc reports.
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2020",
+    "moduleResolution": "bundler",
+    "lib": [ "ES2020", "DOM" ],
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowJs": false,
+    "forceConsistentCasingInFileNames": true
+  }
+}

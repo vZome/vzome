@@ -2,6 +2,7 @@
 import { resourceIndex, importLegacy, importZomic } from '../revision.js';
 import { commitToGitHub, assemblePartsList, normalizePreview } from '../both-contexts.js';
 import { createPartsList } from './legacy/partslist.js';
+import { clientEvents } from './client-events.js';
 
 // const uniqueId = Math.random();
 
@@ -106,39 +107,6 @@ const fetchFileText = selected =>
 const parts_catalog_url = 'https://zometool.github.io/vzome-sharing/metadata/zometool-parts.json';
 const partsPromise = fetch( parts_catalog_url ) .then( response => response.text() ) .then( text => JSON.parse( text ) );
 
-const clientEvents = report =>
-{
-  const sceneChanged = ( scene, edit='--START--' ) => report( { type: 'SCENE_RENDERED', payload: { scene, edit } } );
-
-  const shapeDefined = shape => report( { type: 'SHAPE_DEFINED', payload: shape } );
-
-  const instanceAdded = instance => report( { type: 'INSTANCE_ADDED', payload: instance } );
-
-  const latestBallAdded = instance => report( { type: 'LAST_BALL_CREATED', payload: instance } );
-
-  const instanceRemoved = ( shapeId, id ) => report( { type: 'INSTANCE_REMOVED', payload: { shapeId, id } } );
-
-  const selectionToggled = ( shapeId, id, selected ) => report( { type: 'SELECTION_TOGGLED', payload: { shapeId, id, selected } } );
-
-  const symmetryChanged = details => report( { type: 'SYMMETRY_CHANGED', payload: details } );
-
-  const xmlParsed = xmlTree => report( { type: 'DESIGN_XML_PARSED', payload: xmlTree } );
-
-  const propertyChanged = ( controllerPath, name, value ) => report( { type: 'CONTROLLER_PROPERTY_CHANGED', payload: { controllerPath, name, value } } );
-
-  const errorReported = message => report( { type: 'ALERT_RAISED', payload: message } );
-
-  const scenesDiscovered = s => report( { type: 'SCENES_DISCOVERED', payload: s } );
-
-  const snapshotCaptured = s => report( { type: 'SNAPSHOT_CAPTURED', payload: s } );
-
-  const textExported = ( action, text ) => report( { type: 'TEXT_EXPORTED', payload: { action, text } } ) ;
-
-  const buildPlaneSelected = ( center, diskZone, hingeZone ) => report( { type: 'PLANE_CHANGED', payload: { center, diskZone, hingeZone } } );
-
-  return { sceneChanged, shapeDefined, instanceAdded, instanceRemoved, selectionToggled, symmetryChanged, latestBallAdded,
-    xmlParsed, scenesDiscovered, snapshotCaptured, propertyChanged, errorReported, textExported, buildPlaneSelected, };
-}
 
 // NOTE: the trackball model is no longer rendered through this (editor) worker. The classic
 // editor now loads each symmetry's trackball .vZome as an ordinary design on its OWN dedicated
@@ -148,15 +116,16 @@ const clientEvents = report =>
 
 const createDesign = async ( report, fieldName ) =>
 {
+  const events = clientEvents( report );
   report( { type: 'FETCH_STARTED', payload: { name: 'untitled.vZome', preview: false } } );
   try {
     const legacy = await importLegacy();
-    design = await legacy .newDesign( fieldName, clientEvents( report ) );
+    design = await legacy .newDesign( fieldName, events );
     report({ type: 'CONTROLLER_CREATED' }); // do we really need this for previewing?
     reportDefaultScene( report );
   } catch (error) {
     console.log(`createDesign failure: ${error.message}`);
-    report({ type: 'ALERT_RAISED', payload: 'Failed to create vZome model.' });
+    events .errorReported( 'Failed to create vZome model.' );
     return false;
   }
 }
@@ -180,7 +149,7 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, shapshot=D
 
     .then( async ([ legacy, xml ]) => {
       if ( !xml ) {
-        report( { type: 'ALERT_RAISED', payload: 'Unable to load .vZome content' } );
+        events .errorReported( 'Unable to load .vZome content' );
         return;
       }
 
@@ -200,25 +169,25 @@ const openDesign = async ( xmlLoading, name, report, debug, polygons, shapshot=D
           doLoad()
             .catch( error => {
               console.log( `openDesign failure: ${error.message}` );
-              report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model: ${error.message}` } );
+              events .errorReported( `Failed to load vZome model: ${error.message}` );
             });
         })
         .catch( error => {
           console.log( `openDesign failure: ${error.message}` );
-          report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model: ${error.message}` } );
+          events .errorReported( `Failed to load vZome model: ${error.message}` );
          } );
       }
       else
         doLoad()
           .catch( error => {
             console.log( `openDesign failure: ${error.message}` );
-            report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model: ${error.message}` } );
+            events .errorReported( `Failed to load vZome model: ${error.message}` );
           });
     } )
 
     .catch( error => {
       console.log( `openDesign failure: ${error.message}` );
-      report( { type: 'ALERT_RAISED', payload: `Failed to load vZome model: ${error.message}` } );
+      events .errorReported( `Failed to load vZome model: ${error.message}` );
      } );
 }
 
@@ -293,18 +262,20 @@ const fileLoader = ( report, payload ) =>
 
 const doImport = ( text, format, report ) =>
 {
+  const events = clientEvents( report );
   const action = IMPORT_ACTIONS[ format ];
   try {
     design.wrapper .doAction( '', action, { vef: text } );
     reportDefaultScene( report );
   } catch (error) {
     console.log( `${action} actionPerformed error: ${error.message}` );
-    report( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
+    events .errorReported( `Failed to perform action: ${action}` );
   }
 }
 
 const importDesign = async ( report, url, format ) =>
 {
+  const events = clientEvents( report );
   report( { type: 'FETCH_STARTED', payload: { name: 'untitled.vZome', preview: false } } );
   try {
     const text = await fetchUrlText( url );
@@ -315,14 +286,14 @@ const importDesign = async ( report, url, format ) =>
     }
 
     const legacy = await importLegacy();
-    design = await legacy .newDesign( fieldName, clientEvents( report ) );
+    design = await legacy .newDesign( fieldName, events );
     report({ type: 'CONTROLLER_CREATED' }); // do we really need this for previewing?
 
     doImport( text, format, report );
 
   } catch (error) {
     console.log(`importDesign failure: ${error.message}`);
-    report({ type: 'ALERT_RAISED', payload: 'Failed to import vZome model.' });
+    events .errorReported( 'Failed to import vZome model.' );
     return false;
   }
 }
@@ -458,6 +429,11 @@ onmessage = ({ data }) =>
     }
   }
 
+  //  Must be created after the assignment above, so it captures the requestId-stamping
+  //  wrapper when there is one.  A reply to a postRequest that skipped that wrapper would
+  //  leave the client's promise unresolved.
+  const events = clientEvents( sendToClient );
+
   try {
     
   switch (type) {
@@ -511,7 +487,7 @@ onmessage = ({ data }) =>
         sendToClient( { type: 'SCENE_RENDERED', payload: response } );
       } catch (error) {
         console.log( `EDIT_SELECTED error: ${error.message}` );
-        sendToClient( { type: 'ALERT_RAISED', payload: error.message } );
+        events .errorReported( error.message );
       }
       break;
     }
@@ -526,7 +502,7 @@ onmessage = ({ data }) =>
         reportDefaultScene( sendToClient );
       } catch (error) {
         console.log( `Macro error: ${error.message}` );
-        sendToClient( { type: 'ALERT_RAISED', payload: `Failed to complete macro.` } );
+        events .errorReported( `Failed to complete macro.` );
       }
       break;
     }
@@ -536,17 +512,17 @@ onmessage = ({ data }) =>
       const { format, camera, lighting, scenes } = payload;
       if ( format === 'shapes' ) {
         const preview = exportPreview( camera, lighting, scenes );
-        clientEvents( sendToClient ) .textExported( 'exportText', preview );
+        events .textExported( 'exportText', preview );
         return;
       }
 
       if ( !design?.wrapper ) {
-        sendToClient( { type: 'ALERT_RAISED', payload: `No design loaded; cannot export as ${format}.` } );
+        events .errorReported( `No design loaded; cannot export as ${format}.` );
         return;
       }
       if ( format === 'vZome' ) {
         const xml = design.wrapper .serializeVZomeXml( lighting, camera, scenes );
-        clientEvents( sendToClient ) .textExported( 'exportText', xml );
+        events .textExported( 'exportText', xml );
         return;
       }
       //  Load the exporters only when an export is actually requested.  They pull in a
@@ -573,7 +549,7 @@ onmessage = ({ data }) =>
           const snapshot = snapshots.length;
           snapshots .push( [ ...instances ] );
           design.wrapper .doAction( controllerPath, 'Snapshot', { id: snapshot } ); // no-op, but the edit must be in the history
-          clientEvents( sendToClient ) .snapshotCaptured( snapshot );
+          events .snapshotCaptured( snapshot );
           return;
         }
         if ( action === 'snapCamera' ) {
@@ -588,7 +564,7 @@ onmessage = ({ data }) =>
         reportDefaultScene( sendToClient );
       } catch (error) {
         console.log( `${action} actionPerformed error: ${error.message}` );
-        sendToClient( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${action}` } );
+        events .errorReported( `Failed to perform action: ${action}` );
       }
       break;
     }
@@ -599,8 +575,8 @@ onmessage = ({ data }) =>
       try {
         design.wrapper .setProperty( controllerPath, name, value );
       } catch (error) {
-        console.log( `${action} setProperty error: ${error.message}` );
-        sendToClient( { type: 'ALERT_RAISED', payload: `Failed to set property: ${name}` } );
+        console.log( `setProperty error: ${error.message}` );
+        events .errorReported( `Failed to set property: ${name}` );
       }
       break;
     }
@@ -664,6 +640,6 @@ onmessage = ({ data }) =>
   }
   } catch (error) {
     console.log( `${type} onmessage error: ${error.message}` );
-    sendToClient( { type: 'ALERT_RAISED', payload: `Failed to perform action: ${type}` } );
+    events .errorReported( `Failed to perform action: ${type}` );
   }
 }
