@@ -1,6 +1,7 @@
 # TypeScript migration
 
-**Phase 1 (legacy transpiled code): COMPLETE.**  **Phase 2 (the rest of `online/`): proposed, not started.**
+**Phase 1 (legacy transpiled code): COMPLETE.**  **Phase 2 (the rest of `online/`): started —
+the worker ↔ client protocol is done and merged (PR #1147); see *Suggested order* for what is next.**
 
 ---
 
@@ -151,7 +152,7 @@ This was verified, not assumed:
   dozen extensionless imports exist (e.g. `./drag`, `../fields/common`); they resolve
   fine either way, but are worth normalising when touched.
 
-Two gaps to close before starting, both one-liners in `online/tsconfig.json`:
+Two gaps to close before starting, both since closed by the tsconfig split (PR #1147):
 
 1. `include` currently covers only `src/worker/legacy/from-java/**`.  New `.ts` outside that tree
    would compile via esbuild but never be typechecked — the worst of both worlds.  Add the
@@ -182,48 +183,50 @@ not an afterthought.
 Ranked by payoff, not by size.  The ordering reflects one idea: **types are worth most
 where a contract crosses a boundary that the runtime does not check.**
 
-#### 1. The worker ↔ client message protocol — highest value by a wide margin
+#### 1. The worker ↔ client message protocol — DONE (merged, PR #1147)
 
-`vzome-worker-static.js` handles **22 distinct message types** (`ACTION_TRIGGERED`,
-`PREVIEW_STRUT_MOVE`, `SNAPSHOT_SELECTED`, …).  Everything crosses `postMessage`, so it is
-structurally unchecked: a renamed field or a wrong payload shape produces no error
-anywhere — it just silently does nothing.
+*Kept here because the reasoning still explains why it was worth doing, and because what
+it turned up changes the estimates for what is left.*
 
-`worker-client-scene-protocol.md` already says this in as many words: these failures cost
-"significant time to track down because they fail *silently* (no console error, no thrown
-exception, just wrong or missing rendering)."  That is the exact failure mode a
-discriminated union eliminates at the keystroke.
+Everything crosses `postMessage`, so it is structurally unchecked: a renamed field or a
+wrong payload shape produces no error anywhere — it just silently does nothing.
+`worker-client-scene-protocol.md` records those failures costing "significant time to track
+down because they fail *silently* (no console error, no thrown exception, just wrong or
+missing rendering)."
 
-**The send side is already centralised, which makes this remarkably cheap.**
-`viewer/util/actions.js` is 94 lines holding 23 action creators, all funnelled through one
-helper:
+What shipped:
 
-```js
-const workerAction = ( type, payload ) => ( { type, payload } );
-export const selectSnapshot = ( snapshot, load=defaultLoad ) =>
-  workerAction( 'SNAPSHOT_SELECTED', { snapshot, load } );
-```
+- `viewer/protocol.ts` — `WorkerAction` (22 inbound) and `WorkerEvent` (22 outbound) as
+  discriminated unions, plus the `postMessage` envelope and `ActionOf<T>` / `EventOf<T>`.
+- `viewer/util/actions.js` → `.ts`, 19 creators typed.  No importer changed: all seven
+  already used `.js` specifiers, which tsc and esbuild both resolve to the `.ts` source.
+- `worker/client-events.ts` — `clientEvents` extracted from `vzome-worker-static.js` and
+  its 14 senders typed.
+- All 14 open-coded `ALERT_RAISED` sends routed through `errorReported`.
 
-Converting this one file to `.ts` types **19 of the 22** message types (the other three —
-`BOM_REQUESTED`, `WINDOW_LOCATION`, `WORKER_PROBE` — are lifecycle/probe messages sent from
-elsewhere), and every caller gets checked for free: `editor.jsx`, `buildplane.jsx` and the
-rest call these creators rather than building message objects by hand, so **they need no
-changes at all**:
+Four things the plan had wrong or did not know:
 
-```ts
-type WorkerAction =
-  | { type: 'SNAPSHOT_SELECTED'; payload: { snapshot: number; load: LoadFlags } }
-  | { type: 'PREVIEW_STRUT_MOVE'; payload: { direction: Direction } }
-  | ...
-const workerAction = <T extends WorkerAction>( type: T['type'], payload: T['payload'] ): T => ...
-```
+- **The receive side was already centralised too.**  The plan treated worker → client as an
+  afterthought; in fact `clientEvents` was an exact structural twin of `workerAction`, 14
+  named senders in 30 lines.  It was the cheaper *and* higher-value half, since that is the
+  direction the silent-rendering bugs travel.
+- **`isInspector` is a live compatibility contract, not dead code.**  An older React client,
+  whose source no longer exists, sets it; the worker turns it into `payload.polygons` for
+  every message type.  It is an envelope concern and has to keep working.
+- **The 8 "inline" outbound sends were 31**, and 15 of them were `ALERT_RAISED` — a message
+  that already had a sender.  That duplication had hidden a real defect: `PROPERTY_SET`'s
+  catch block logged an out-of-scope `${action}`, so a failing `setProperty` threw a
+  `ReferenceError` before its alert could send, and the user got a generic message instead
+  of the property name.  Fixed.
+- **Typechecking ran nowhere.**  esbuild strips types without checking them, and no build or
+  dev path invoked `tsc`, so the strict project was a gate nobody walked through.
+  `cicd/online.bash` now typechecks in `buildForProduction`, which is what CI runs.
 
-The receive side is the `switch` in `vzome-worker-static.js`; once the union exists,
-converting that file makes the compiler enforce that every case is handled and that each
-branch destructures the right payload.
+The limit worth remembering: the callers are still `.jsx`, and `allowJs` is false, so their
+*arguments* are not checked yet.  `editor.jsx` calling `selectSnapshot('wrong')` still
+compiles.  Those files get hover and completion now; enforcement arrives as each is
+converted.  A discriminated union pins the boundary only where both sides are typed.
 
-**This is the single highest-leverage change in Phase 2**: one small file, no runtime
-behaviour change, and it covers the boundary where the bugs actually live.
 
 #### 2. The scene records — shapes, instances, orientations
 
@@ -354,20 +357,49 @@ riskier, and with no user-visible gain.
 
 ### Suggested order
 
-1. `tsconfig` split: legacy stays loose, new code strict.  Add the `jsx` settings.
-2. **`viewer/util/actions.js` → `.ts`** with the `WorkerAction` union.  94 lines, no
-   callers change, covers 19 of 22 messages.  This is the one to do first.
-3. `worker/vzome-worker-static.js` → `.ts`, so the receiving `switch` is checked against
-   that union.  Larger (654 lines) but mechanical, and it closes the loop.
-4. **Scene record types** — instance, shape, orientation, plus branded `ShapeId` /
-   `ShapeKey`.  A `.d.ts` is enough at first; `scenes.js` can adopt it later.
-5. `worker/fields/common.js` → `.ts`.  Small, pure, high-reuse.
-6. Narrowing predicates for `Strut` / `Connector` / `Panel` / `Manifestation`,
-   implemented over the existing tag.  Pairs naturally with step 4, since they
-   are the same types the scene records describe.
-7. `@types/three`, then `viewer/context/worker.jsx` and the other context providers.
-8. Thereafter: opportunistic.  Convert a file when you are already editing it and the types
-   would have helped.
+Steps 1-5 are done and merged (PR #1147): the tsconfig split, the protocol unions, the
+typed action creators, the typed `clientEvents`, and the `ALERT_RAISED` consolidation.
+The CI typecheck gate and the VS Code compiler pin went in alongside them.
+
+**6. The seven remaining inline outbound sends.**  `FETCH_STARTED`, `TEXT_FETCHED`,
+   `CONTROLLER_CREATED`, `WORKER_READY`, `SHARE_SUCCESS` / `SHARE_FAILURE`,
+   `CAMERA_SNAPPED`, `BOM_CHANGED` are still built as object literals in
+   `vzome-worker-static.js`.  Give each a `clientEvents` sender and migrate its call sites,
+   as was done for `ALERT_RAISED`.  Note `TEXT_FETCHED` deliberately withholds `name` on
+   some paths and sends it again once loading has succeeded — that is not an oversight to
+   normalise away.
+
+   **Constraint that governs this step:** `report` and `sendToClient` are not
+   interchangeable.  A reply answering a `postRequest` must go through the
+   `requestId`-stamping wrapper or the client's promise never resolves.  Preserve which
+   sender each site uses; do not just swap the call.
+
+7. `worker/vzome-worker-static.js` → `.ts`, so the receiving `switch` is checked against
+   `WorkerAction`.  Larger (669 lines) and *not* purely mechanical: `onmessage` mutates
+   `payload.polygons` before the `switch` narrows on `type`, which fights narrowing and
+   wants restructuring first.  Doing step 6 first shrinks it.
+
+8. **Scene record types** — instance, shape, orientation, plus branded `ShapeId` /
+   `ShapeKey`.  The protocol deliberately left payload interiors as `unknown`; this is the
+   step that fills them in.  A `.d.ts` is enough at first.
+
+9. `worker/fields/common.js` → `.ts`.  Small, pure, high-reuse.
+
+10. Narrowing predicates for `Strut` / `Connector` / `Panel` / `Manifestation`,
+    implemented over the existing tag.  Pairs naturally with step 8.
+
+11. `@types/three` (0.184.1 is version-matched), then `viewer/context/worker.jsx` and the
+    other context providers.  This also unblocks `src/app/classic/tools/drag.ts`, which is
+    already TypeScript but excluded from `tsconfig.app.json` because `three` ships no types.
+
+12. Thereafter: opportunistic.  Convert a file when you are already editing it and the types
+    would have helped.
+
+**Not `checkJs`.**  Measured: turning it on across the hand-written surface yields **1,393
+errors**.  About 491 are in generated files (the ANTLR Zomic parser), 179 are missing
+third-party types, and the ~838 `TS2339`s are largely untyped context values — i.e. the
+thing steps 8 and 11 exist to fix.  It becomes practical as a *result* of that work, not as
+a shortcut past it.
 
 ### How to tell it is working
 
