@@ -1,5 +1,5 @@
 
-import { createEffect, createSignal, mergeProps } from 'solid-js';
+import { createEffect, createSignal, mergeProps, on } from 'solid-js';
 import { render } from 'solid-js/web';
 import { unwrap } from 'solid-js/store';
 
@@ -17,6 +17,7 @@ import { urlViewerCSS } from "../../viewer/urlviewer.css.js";
 import { ZometoolPartsElement } from './parts-list.jsx';
 import { ZometoolProductsElement } from './products-list.jsx';
 import { normalizeBOM } from './bom.js';
+import { PLACEHOLDER_BACKGROUND_COLOR } from '../../viewer/util/colors.js';
 
 const debug = false;
 
@@ -77,7 +78,7 @@ const StepControls = props =>
 
 export const ZometoolInstructions = props =>
 {
-  const { scenes, requestBOM } = useViewer();
+  const { scenes, requestBOM, setBackgroundOverride } = useViewer();
   const { subscribeFor } = useWorkerClient();
   const { showIndexedScene } = useSceneIndexing();
   const [ hasScenes, setHasScenes ] = createSignal( false );
@@ -116,6 +117,9 @@ export const ZometoolInstructions = props =>
     }
   });
 
+  // The initial background is applied by ViewerProvider; this handles later attribute changes.
+  createEffect( on( props.backgroundColor, color => setBackgroundOverride( color ), { defer: true } ) );
+
   subscribeFor( 'BOM_CHANGED', bom => {
     partsPromise .then( parts => {
       const detail = normalizeBOM( bom, parts );
@@ -152,17 +156,19 @@ export const ZometoolInstructions = props =>
   );
 }
 
-const renderComponent = ( url, container, dispatch, config ) =>
+const renderComponent = ( url, container, dispatch, config, backgroundColor ) =>
   {
     const bindComponent = () =>
     {
+      const initialBackground = backgroundColor(); // later changes are handled in ZometoolInstructions
       return (
         <CameraProvider tweening={ { duration: 500 } }>
           <WorkerProvider>
-            <ViewerProvider config={{ url, preview: true, debug: false, labels: true, source: true }}>
+            <ViewerProvider config={{ url, preview: true, debug: false, labels: true, source: true,
+              backgroundColor: initialBackground, defaultBackground: PLACEHOLDER_BACKGROUND_COLOR }}>
               <SceneProvider>
                 <SceneIndexingProvider config={ {} } >
-                  <ZometoolInstructions dispatch={dispatch} config={config} />
+                  <ZometoolInstructions dispatch={dispatch} config={config} backgroundColor={backgroundColor} />
                 </SceneIndexingProvider>
               </SceneProvider>
             </ViewerProvider>
@@ -186,10 +192,14 @@ class ZometoolInstructionsElement extends HTMLElement
   #container;
   #url;
   #module;
+  #backgroundColor;
+  #setBackgroundColor;
 
   constructor()
   {
     super();
+    // A signal, since unlike src and module, background-color can change after connectedCallback
+    [ this.#backgroundColor, this.#setBackgroundColor ] = createSignal( null );
     const root = this.attachShadow({ mode: "open" });
 
     root.appendChild( document.createElement("style") ).textContent = instructionsCSS;
@@ -203,12 +213,12 @@ class ZometoolInstructionsElement extends HTMLElement
   {
     debug && console.log( 'ZometoolInstructionsElement connected' );
 
-    renderComponent( this.#url, this.#container, evt => this.dispatchEvent(evt), { module: this.#module } );
+    renderComponent( this.#url, this.#container, evt => this.dispatchEvent(evt), { module: this.#module }, this.#backgroundColor );
   }
 
   static get observedAttributes()
   {
-    return [ "src", "module" ];
+    return [ "src", "module", "background-color" ];
   }
 
   // This callback can happen *before* connectedCallback()!
@@ -222,9 +232,28 @@ class ZometoolInstructionsElement extends HTMLElement
       console.log( `module ${this.#module}` );
       break;
 
+    case "background-color":
+      // null when the attribute is removed, which restores the design's own background
+      this.#setBackgroundColor( _newValue );
+      break;
+
     case "src":
       this.#url = new URL( _newValue, window.location ) .toString();
     }
+  }
+
+  set backgroundColor( newValue )
+  {
+    if ( newValue === null ) {
+      this.removeAttribute( "background-color" );
+    } else {
+      this.setAttribute( "background-color", newValue );
+    }
+  }
+
+  get backgroundColor()
+  {
+    return this.getAttribute( "background-color" );
   }
 
   getParts()

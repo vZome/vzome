@@ -3,8 +3,9 @@ import { createContext, createSignal, useContext } from "solid-js";
 import { createStore, reconcile, unwrap } from "solid-js/store";
 
 import { useWorkerClient } from "./worker.jsx";
-import { INITIAL_DISTANCE, useCamera } from "./camera.jsx";
+import { DEFAULT_BACKGROUND_COLOR, INITIAL_DISTANCE, useCamera } from "./camera.jsx";
 import { decodeEntities, fetchDesign, requestExport, openTextContent } from "../util/actions.js";
+import { normalizeCssColor } from "../util/colors.js";
 
 const ViewerContext = createContext( { scene: ()=> { console.log( 'NO ViewerProvider' ); }, problem: ()=>null } );
 
@@ -12,7 +13,10 @@ const ViewerProvider = ( props ) =>
 {
   // config.camera (default true): whether this viewer drives the camera AND background from the
   // loaded design on SCENES_DISCOVERED. false for the trackball, which mirrors the main view.
-  const { url, labels: showLabels, camera: driveViewFromDesign = true } = props.config || {};
+  // config.backgroundColor (optional): a CSS color that overrides the background of any loaded design.
+  // config.defaultBackground (optional): shown until a design's background is known, instead of DEFAULT_BACKGROUND_COLOR.
+  const { url, labels: showLabels, camera: driveViewFromDesign = true, backgroundColor: initialBackground,
+    defaultBackground = DEFAULT_BACKGROUND_COLOR } = props.config || {};
   const [ reload, setReload ] = createSignal( true );
   const [ scenes, setScenes ] = createStore( [] );
   const [ source, setSource ] = createStore( {} );
@@ -21,6 +25,34 @@ const ViewerProvider = ( props ) =>
   const [ labels, setLabels ] = createSignal( showLabels );
   const { postMessage, subscribeFor } = useWorkerClient();
   const { state, setTweenDuration, tweenCamera, setLighting, mapViewToWorld } = useCamera();
+
+  // Deliberately not reactive: the background must be re-applied on every design load, even when the
+  //   color is unchanged, since the editor's resetCamera() may have reset the lighting in the meantime.
+  let designBackground = null;
+  let backgroundOverride = null;
+  const applyBackground = () =>
+  {
+    if ( ! driveViewFromDesign )
+      return;
+    const backgroundColor = backgroundOverride || designBackground || defaultBackground;
+    setLighting( { ...state.lighting, backgroundColor } );
+  }
+  // Pass null to remove the override, restoring the design's background.
+  const setBackgroundOverride = color =>
+  {
+    backgroundOverride = null;
+    if ( color !== null && color !== undefined ) {
+      backgroundOverride = normalizeCssColor( color );
+      if ( ! backgroundOverride )
+        console.warn( `Ignoring invalid background color: "${color}"` );
+    }
+    applyBackground();
+  }
+  // Applied synchronously, before any canvas exists, so DEFAULT_BACKGROUND_COLOR never shows unless intended.
+  if ( initialBackground )
+    setBackgroundOverride( initialBackground );
+  else if ( defaultBackground !== DEFAULT_BACKGROUND_COLOR )
+    applyBackground();
 
   const indexResources = () => postMessage( { type: 'WINDOW_LOCATION', payload: window.location.toString() } );
   
@@ -75,8 +107,8 @@ const ViewerProvider = ( props ) =>
     // would clobber that mirror (loadDesign/initializeDesign always emits SCENES_DISCOVERED with
     // the design's lighting). Matches the same `camera:false` flag honored by showIndexedScene.
     if ( !! lighting && driveViewFromDesign ) { // lighting only present in loaded designs
-      const { backgroundColor } = lighting;
-      setLighting( { ...state.lighting, backgroundColor } ); // no per-scene lighting yet
+      designBackground = lighting.backgroundColor; // no per-scene lighting yet
+      applyBackground();
     }
     const camera = scenes[ 0 ].camera;
     if ( !! camera && driveViewFromDesign ) // camera only present in loaded designs
@@ -106,6 +138,7 @@ const ViewerProvider = ( props ) =>
     clearProblem: () => setProblem( '' ),
     requestBOM: ( scenes ) => postMessage( { type: 'BOM_REQUESTED', payload: scenes } ),
     setTweenDuration,
+    setBackgroundOverride,
     useWorker: useWorkerClient,
     exportAs, indexResources,
   };
