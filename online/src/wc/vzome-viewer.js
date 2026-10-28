@@ -232,7 +232,7 @@ class VZomeViewer extends HTMLElement
 
   static get observedAttributes()
   {
-    return [ "src", "show-scenes", "scene", "load-camera", "reactive", "labels", "show-perspective", "show-settings", "tween-duration", "indexed", "download", "progress" ];
+    return [ "src", "show-scenes", "scene", "load-camera", "reactive", "labels", "show-perspective", "show-settings", "tween-duration", "indexed", "download", "progress", "background-color" ];
   }
 
   // This callback can happen *before* connectedCallback()!
@@ -304,6 +304,15 @@ class VZomeViewer extends HTMLElement
       this.#whenApiReady .then( ( api ) => api .setTweenDuration( duration ) );
     break;
     
+    case "background-color":
+      // null when the attribute is removed, which restores the design's own background
+      const backgroundColor = _newValue;
+      // for the static case, before connectedCallback, applied before the first render
+      this.#config = { ...this.#config, backgroundColor };
+      // for the dynamic case, after connectedCallback; like tween-duration, this also fires once for the static case
+      this.#whenApiReady .then( ( api ) => api .setBackgroundColor( backgroundColor ) );
+      break;
+
     case "reactive":
       if ( this.#indexed )
         break;
@@ -431,6 +440,20 @@ class VZomeViewer extends HTMLElement
   get showSettings()
   {
     return this.getAttribute( "show-settings" );
+  }
+
+  set backgroundColor( newValue )
+  {
+    if ( newValue === null ) {
+      this.removeAttribute( "background-color" );
+    } else {
+      this.setAttribute( "background-color", newValue );
+    }
+  }
+
+  get backgroundColor()
+  {
+    return this.getAttribute( "background-color" );
   }
 
   set reactive( value )

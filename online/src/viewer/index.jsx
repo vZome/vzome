@@ -4,6 +4,7 @@ import { REVISION } from '../revision.js'
 console.log( `vzome-viewer revision ${REVISION}` );
 
 import { urlViewerCSS } from "./urlviewer.css";
+import { PLACEHOLDER_BACKGROUND_COLOR } from './util/colors.js';
 
 import { createEffect, createSignal, getOwner, Match, mergeProps, onCleanup, onMount, Show, Switch } from 'solid-js';
 import { render } from 'solid-js/web';
@@ -188,7 +189,9 @@ const UrlViewer = (props) =>
               preview: true,
               debug: false,
               labels: props.config?.labels,
-              source: props.config?.download
+              source: props.config?.download,
+              backgroundColor: props.config?.backgroundColor,
+              defaultBackground: PLACEHOLDER_BACKGROUND_COLOR,
             }}>
           <SceneProvider index={ props.config.snapshot } config={ props.config }>
             <SceneIndexingProvider>
@@ -211,10 +214,10 @@ const WebComponentBindings = (props) =>
 {
   const { showIndexedScene, lastSceneIndex, setLastSceneIndex } = useSceneIndexing();
   const { setTweenDuration } = useCamera();
-  const { requestDesign, resetScenes, openText, exportAs, indexResources, } = useViewer();
+  const { requestDesign, resetScenes, openText, exportAs, indexResources, setBackgroundOverride, } = useViewer();
   const { captureImage } = useImageCapture();
   const { showTitledScene } = useSceneTitles();
-  const apiObject = { showIndexedScene, showTitledScene, requestDesign, setTweenDuration, resetScenes, openText, exportAs, captureImage, };
+  const apiObject = { showIndexedScene, showTitledScene, requestDesign, setTweenDuration, setBackgroundColor: setBackgroundOverride, resetScenes, openText, exportAs, captureImage, };
   const { subscribeFor } = useWorkerClient();
   const { setApi, onAlert, onSceneRendered, onScenesDiscovered } = props.callbacks;
 

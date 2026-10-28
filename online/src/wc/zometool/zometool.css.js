@@ -1,3 +1,5 @@
+import { PLACEHOLDER_BACKGROUND_COLOR } from '../../viewer/util/colors.js';
+
 export const instructionsCSS = `
 :host {
   display: inline-grid;
@@ -9,7 +11,7 @@ export const instructionsCSS = `
 }
 
 :host > div:empty {
-  background: radial-gradient(#EEE, #AAA);
+  background-color: ${PLACEHOLDER_BACKGROUND_COLOR};
 }
 
 :host > div,
