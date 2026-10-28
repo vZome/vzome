@@ -8,6 +8,7 @@ import { createStore } from 'solid-js/store';
 const METERS_PER_UNIT = 0.0088; // default global scale for vZome models
 
 export const INITIAL_DISTANCE = 108;
+export const DEFAULT_BACKGROUND_COLOR = '#8CC2E7';
 const NEAR_FACTOR = 0.1 / INITIAL_DISTANCE;
 const FAR_FACTOR = 2.0;
 const WIDTH_FACTOR = 0.45;
@@ -29,7 +30,7 @@ const defaultCamera = () => ({
 });
 
 const defaultLighting = () => ({
-  backgroundColor: '#8CC2E7',
+  backgroundColor: DEFAULT_BACKGROUND_COLOR,
   ambientColor: '#333333',
   directionalLights: [ // These are the vZome defaults, for consistency
     { direction: [ 1, -1, -0.3 ], color: '#FDFDFD' },

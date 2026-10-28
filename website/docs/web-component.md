@@ -87,6 +87,23 @@ You can control the duration of the animation with the `tween-duration` attribut
 A duration of zero (as shown) disables the animation completely.  Durations longer than 2000ms might not be a good experience,
 but ultimately you can judge for yourself.
 
+## Background Color
+
+Every vZome design records its own background color, and the viewer normally uses it.
+You can override it with the `background-color` attribute, using any CSS color value:
+```html
+<vzome-viewer background-color="white"
+       src="https://vorth.github.io/vzome-sharing/2022/06/19/06-37-55-welcomeDodec/welcomeDodec.vZome" >
+</vzome-viewer>
+```
+The override applies to every design and scene the viewer shows, and to image captures and exports,
+though not to the downloaded `.vZome` source.
+You can also change it from Javascript, with the `backgroundColor` property or `setAttribute`.
+Removing the attribute restores the design's own background color.
+Any transparency in the color is ignored, and an invalid color is ignored with a console warning.
+
+The `zometool-instructions` web component supports the same `background-color` attribute.
+
 ## Disabling vZome Source Access
 
 If the `.vZome` design source is available, the viewer displays a download button in the lower left.
