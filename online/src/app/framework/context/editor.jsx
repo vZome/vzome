@@ -44,7 +44,7 @@ const EditorProvider = props =>
 {
   const workerClient = useWorkerClient();
   const { resetCamera, state: cameraState } = useCamera();
-  const { scenes, resetScenes, setReload, setSource } = useViewer();
+  const { scenes, resetScenes, setReload, setSource, setWaiting, setProblem } = useViewer();
   // Beware, createStore does not make a copy, shallow or deep!
   const [ state, setState ] = createStore( { ...initialState() } );
 
@@ -241,6 +241,8 @@ const EditorProvider = props =>
     setSceneIndex( 0 );
     setState( 'source', { type: 'file', data: file } );
     setState( 'originalDate', null ); // NOT loaded from my Dropbox
+    setWaiting( true ); // cleared by ViewerProvider on SCENES_DISCOVERED or ALERT_RAISED
+    setProblem( '' );
     workerClient .postMessage( actions.openDesignFile( file, debug ) );
   }
 

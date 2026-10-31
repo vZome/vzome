@@ -45,8 +45,8 @@ export const ClassicApp = () =>
 {
   return (
     <SymmetryProvider>
-      <CommandsProvider>
-        <GltfExportProvider>
+      <GltfExportProvider>
+        <CommandsProvider>
         <VZomeAppBar title=''
           spacer={ <>
             <Menubar>
@@ -81,8 +81,8 @@ export const ClassicApp = () =>
         <SceneChangeListener/>
 
         <ClassicEditor/>
+        </CommandsProvider>
       </GltfExportProvider>
-      </CommandsProvider>
     </SymmetryProvider>
   );
 }

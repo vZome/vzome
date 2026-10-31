@@ -111,17 +111,63 @@ To make a large menu more manageable, group items into submenus:
 Remember that nested menus can be a little tricky to interact with,
 so you probably don't want to go three levels deep.
 
+## Exports and Image Captures
+
+The custom menu can also export your design or capture an image, just like the
+items in the "File" menu.
+Use an action of the form `export.<format>` or `capture.<format>`:
+```json
+[
+  {
+    "label": "Export",
+    "submenu": [
+      { "label": "POV-Ray",  "action": "export.pov", "key": "R" },
+      { "label": "OpenSCAD", "action": "export.scad" },
+      { "label": "PNG Image", "action": "capture.png", "key": "I" }
+    ]
+  }
+]
+```
+The format names are short codes, not the labels you see in the "File" menu:
+
+| Action | File menu item |
+| --- | --- |
+| `export.gltf` | glTF |
+| `export.pov` | POV-Ray |
+| `export.shapes` | vZome Shapes JSON |
+| `export.vrml` | VRML |
+| `export.stl` | StL (mm) |
+| `export.off` | OFF |
+| `export.ply` | PLY |
+| `export.step` | STEP |
+| `export.mesh` | Simple Mesh JSON |
+| `export.cmesh` | Colored Mesh JSON |
+| `export.dxf` | AutoCAD DXF |
+| `export.scad` | OpenSCAD |
+| `export.build123d` | Build123d Python |
+| `export.svg` | SVG |
+| `export.ps` | Postscript |
+| `capture.png` | PNG |
+| `capture.jpg` | JPEG |
+| `capture.webp` | WebP |
+| `capture.bmp` | BMP |
+
+Exports use the same file name as the "File" menu, based on your design's name.
+SVG exports use the default settings, not those from the "Customize..." dialog.
+
 ## Limitations
 
-As of this writing, the custom menu is limited to actions that operate on
-the design itself, usually with a selection, and that don't require any
-additional UI, such as a popup dialog.
+The custom menu is limited to actions that operate on the design itself
+(usually with a selection), plus the exports and captures above,
+and the "Save", "Cut", "Copy", "Paste", "Undo" and "Redo" family of commands.
+Actions that require additional UI, such as a popup dialog, are not supported.
 
-This means that you won't be able to add a custom menu item to change the
-keyboard shortcut for things like "Save".
+You can give any of those built-in commands an additional keyboard shortcut
+with a custom menu item, for example `{ "label": "Save", "key": "S" }`.
+The command's original shortcut keeps working too.
 
-Future releases will include support for certain additional commands, such as
-exporting files in various formats.
+If an action string is misspelled or unknown, vZome will treat it as a design edit,
+and that menu item will not work.
 
 ## Built-in Commands
 

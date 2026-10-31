@@ -14,7 +14,7 @@ export const MeasurePanel = () =>
   const { rootController } = useEditor();
   const measureController = () => subController( rootController(), 'measure' );
   const measures = () => controllerProperty( measureController(), 'measures', 'measures', true );
-  const value = measure => controllerProperty( measureController(), measure );
+  const value = measure => controllerProperty( measureController(), measure, 'measures' );
   
   const cellStyle = { padding: '6px 0px', border: '0px' };
   const headerStyle = { ...cellStyle, borderBlockEnd: '1px solid darkgray', fontWeight: 'bold' };
