@@ -120,10 +120,6 @@ const BHallBasic = () =>
 {
   const [ difficulty, setDifficulty ] = createSignal( "easier" );
 
-  const handleChange = (event, newValue) => {
-    setDifficulty( newValue )
-  };
-  
   return (
     <ErrorBoundary fallback={err => <div>{err.toString()}</div>} >
       <VZomeAppBar title='Apps'
@@ -153,7 +149,7 @@ const BHallBasic = () =>
           <Typography gutterBottom color='secondary' >
             The panels are interactive, not images; you can use your mouse to rotate, pan, and zoom.
           </Typography>
-          <Tabs label="choose difficulty" values={ Object.keys( metadata )} value={difficulty()} onChange={handleChange}>
+          <Tabs label="choose difficulty" values={ Object.keys( metadata )} value={difficulty()} onChange={setDifficulty}>
             <For each={ Object.keys( metadata ) }>{ tabname =>
               <Tab value={tabname}>
                 <For each={ Object.keys( metadata[ tabname ] ) }>{ name =>
