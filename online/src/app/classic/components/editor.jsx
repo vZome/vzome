@@ -1,5 +1,5 @@
 
-import { Switch, Match, createSignal } from 'solid-js';
+import { Switch, Match, Show, createSignal } from 'solid-js';
 
 import { createT } from 'solid-three';
 import { Group } from "three";
@@ -17,6 +17,8 @@ import { InteractionToolProvider } from '../../../viewer/context/interaction.jsx
 import { useEditor } from '../../framework/context/editor.jsx';
 import { resumeMenuKeyEvents, suspendMenuKeyEvents } from '../context/commands.jsx';
 import { SceneCanvas } from '../../../viewer/index.jsx';
+import { Spinner } from '../../../viewer/spinner.jsx';
+import { useViewer } from '../../../viewer/context/viewer.jsx';
 
 import { SnapCameraTool } from '../tools/snapcamera.jsx';
 import { ContextualMenuArea } from '../../framework/menus.jsx';
@@ -104,9 +106,14 @@ export const SceneEditor = ( props ) =>
     setLabeling( null );
   }
 
+  const { waiting } = useViewer();
+
   // not using DesignViewer because it has its own UI, not corresponding to classic desktop vZome
   return (
     <div class="relative-h100">
+      <Show when={waiting()}>
+        <Spinner/>
+      </Show>
       <ColorPicker show={pickingColor()} close={closeColorPicker} title="Background Color"
           color={priorBackground()} onPreview={previewBackground} />
       <LabelDialog open={!!labeling()} close={hideLabelDialog} id={labeling()} label={label()} />

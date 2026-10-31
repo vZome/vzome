@@ -31,6 +31,7 @@ import { CameraProvider, copyOfCamera } from "../../../viewer/context/camera.jsx
 import { SceneIndexingProvider, SceneProvider } from "../../../viewer/context/scene.jsx"
 import { useCamera } from "../../../viewer/context/camera.jsx"
 import { ImageCaptureProvider, GltfExportProvider } from "../../../viewer/context/export.jsx"
+import { ThumbnailCapturer, thumbnailKey, useThumbnails } from "../context/thumbnails.jsx"
 
 export const copyScenes = (scenes) => scenes .map( scene => { const { ...all } = unwrap( scene ); return { ...all }; } );
 
@@ -127,9 +128,28 @@ const DraggableScene = (props) =>
           "transition-transform": !!state.active.draggable,
         }}
         onClick={ () => { setSceneIndex( props.item ); setReload( true ); } } >
-      <span>{props.item}</span>
-      <Input sx={{ borderBottom: 0 }} value={ props.scene.title || ' ' } onChange={ saveTitle(props.item) } />
+      <SceneThumbnail scene={ props.scene } index={ props.item } />
+      {/* multiline so long titles wrap; Enter must not insert a newline, since titles are single-line */}
+      <Input class='scene-title-input' sx={{ borderBottom: 0 }} multiline maxRows={2}
+        value={ props.scene.title || ' ' } onChange={ saveTitle(props.item) }
+        onKeyDown={ evt => evt.key === 'Enter' && evt.preventDefault() } />
       <UseCameraButton index={ props.item } />
+    </div>
+  );
+}
+
+const SceneThumbnail = props =>
+{
+  const { thumbnail } = useThumbnails();
+  const { state: { lighting } } = useCamera();
+  const url = () => thumbnail( thumbnailKey( props.scene, lighting ) );
+
+  return (
+    <div class='scene-thumbnail'>
+      <Show when={ url() }>
+        <img src={ url() } alt='' draggable={false} />
+      </Show>
+      <span class='scene-index'>{props.index}</span>
     </div>
   );
 }
@@ -285,6 +305,7 @@ const ScenesDialog = props =>
                     <SceneProvider config={{ labels: props.config?.labels }}>
                       <SceneIndexingProvider index={ sceneIndex() }>
                         <SceneCanvas symmetryRenderer={true} height="100%" width="100%" />
+                        <ThumbnailCapturer />
                       </SceneIndexingProvider>
                     </SceneProvider>
                   </GltfExportProvider>

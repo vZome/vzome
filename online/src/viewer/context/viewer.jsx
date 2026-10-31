@@ -168,6 +168,7 @@ export const EXPORT_FORMATS = {
   off:       { label: 'OFF',               mime: 'text/plain' },
   ply:       { label: 'PLY',               mime: 'text/plain' },
   step:      { label: 'STEP',              mime: 'application/STEP' },
+  openscad:  { label: 'Strut Design',      mime: 'text/plain' },
 
   // 3D Points & Lines
   mesh:      { label: 'Simple Mesh JSON',  mime: 'application/json',     ext: "mesh.json" },

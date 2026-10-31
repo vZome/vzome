@@ -25,7 +25,6 @@ export const ClassicEditor = () =>
   const toolsController    = () => subController( strutBuilder(), 'tools' );
 
   const [ tab, setTab ] = createSignal( "Build" );
-  const changeTab = (event, newValue) => setTab( newValue );
 
   let alertRoot;
   return (
@@ -46,7 +45,7 @@ export const ClassicEditor = () =>
 
         <div class='editor-drawer grid-rows-min-1 relative-h100'>
           <CameraControls/>
-          <Tabs values={ [ 'Build', 'Parts', 'Measure'] } value={tab()} onChange={changeTab}>
+          <Tabs values={ [ 'Build', 'Parts', 'Measure'] } value={tab()} onChange={setTab}>
             <Tab value='Build'>
               <StrutBuildPanel/>
             </Tab>

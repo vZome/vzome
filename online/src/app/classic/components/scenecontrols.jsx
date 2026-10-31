@@ -8,6 +8,7 @@ import { insertScene, ScenesDialog } from '../dialogs/scenes.jsx';
 import { copyOfCamera, useCamera } from '../../../viewer/context/camera.jsx';
 import { useEditor } from '../../framework/context/editor.jsx';
 import { useViewer } from '../../../viewer/context/viewer.jsx';
+import { ThumbnailsProvider } from '../context/thumbnails.jsx';
 
 export const SceneControls = () =>
   {
@@ -51,7 +52,9 @@ export const SceneControls = () =>
       <div id='model-article' >
         <Button variant="outlined" style={buttonStyle} onClick={ doCapture } >Capture Scene</Button>
         <Button variant="outlined" style={buttonStyle} onClick={ doOpen } disabled={noScenes()} >Show Scenes</Button>
-        <ScenesDialog open={ showScenes() && !noScenes() } close={ doClose }/>
+        <ThumbnailsProvider>
+          <ScenesDialog open={ showScenes() && !noScenes() } close={ doClose }/>
+        </ThumbnailsProvider>
       </div>
     );
   }

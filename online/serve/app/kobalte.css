@@ -440,3 +440,52 @@
 .colorpicker__button--primary:hover {
   background-color: hsl(201 90% 27%);
 }
+
+/* Loading spinner (viewer/spinner.jsx); DesignViewer gets these from urlviewer.css.js */
+.progress__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-color: rgb(0 0 0 / 0.2);
+}
+.progress__positioner {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.progress__content {
+  z-index: 50;
+  max-width: min(calc(100vw - 16px), 500px);
+  border: 1px solid hsl(240 5% 84%);
+  border-radius: 6px;
+  padding: 16px;
+  background-color: white;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 300px;
+}
+.progress__label-container {
+  display: flex;
+  justify-content: space-between;
+}
+.progress__label {
+  color: hsl(240 4% 16%);
+  font-size: 14px;
+}
+.progress__track {
+  height: 10px;
+  background-color: hsl(240 6% 90%);
+}
+.progress__fill {
+  background-color: hsl(200 98% 39%);
+  height: 100%;
+  width: var(--kb-progress-fill-width);
+  transition: width 250ms linear;
+}

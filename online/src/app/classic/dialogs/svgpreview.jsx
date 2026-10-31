@@ -12,11 +12,13 @@ import FormControlLabel from "@suid/material/FormControlLabel";
 
 import { useCamera } from "../../../viewer/context/camera"
 import { useViewer } from "../../../viewer/context/viewer"
+import { useFileExports } from "../context/exports.js"
 
 const SvgPreviewDialog = props =>
 {
   const { state, mapViewToWorld } = useCamera();
   const { exportAs } = useViewer();
+  const { exportFile } = useFileExports();
   const [ useLighting, setUseLighting ] = createSignal( true );
   const [ useShapes, setUseShapes ] = createSignal( true );
   const [ drawOutlines, setDrawOutlines ] = createSignal( false );
@@ -46,7 +48,7 @@ const SvgPreviewDialog = props =>
     }
   });
 
-  const exportConfigured = ( ext, mime ) => () =>
+  const exportConfigured = format => () =>
   {
     props.close();
     const params = {
@@ -56,7 +58,7 @@ const SvgPreviewDialog = props =>
       showBackground: showBackground(),
       useLighting   : useLighting(),
     }
-    props.exportFile( ext, mime, ext, params )();
+    exportFile( format, params );
   }
 
   return (
@@ -92,9 +94,9 @@ const SvgPreviewDialog = props =>
       </DialogContent>
       <DialogActions>
         <Button size="small" onClick={ ()=>props.close() } color="primary">Cancel</Button>
-        <Button size="small" onClick={ exportConfigured( 'svg', 'image/svg+xml' ) } color="primary">Save SVG</Button>
-        <Button size="small" onClick={ exportConfigured( 'pdf', 'application/pdf' ) } color="primary" disabled={true}>Save PDF</Button> {/* missing boilerplate resource */}
-        <Button size="small" onClick={ exportConfigured( 'ps', 'application/postscript' ) } color="primary">Save Postscript</Button>
+        <Button size="small" onClick={ exportConfigured( 'svg' ) } color="primary">Save SVG</Button>
+        <Button size="small" onClick={ exportConfigured( 'pdf' ) } color="primary" disabled={true}>Save PDF</Button> {/* missing boilerplate resource */}
+        <Button size="small" onClick={ exportConfigured( 'ps' ) } color="primary">Save Postscript</Button>
       </DialogActions>
     </Dialog>
   );

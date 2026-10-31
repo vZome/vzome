@@ -496,8 +496,9 @@ button:disabled > .toolbar-image {
   padding: 0.5rem;
   margin: 0.4rem;
   display: grid;
-  gap: 4px;
-  grid-template-columns: 1.5rem 5fr 1fr;
+  gap: 8px;
+  grid-template-columns: 100px 1fr;
+  align-items: start;
 }
 .scenes-entry:hover {
   cursor: move;
@@ -505,6 +506,38 @@ button:disabled > .toolbar-image {
 }
 .scenes-selected {
   border: 2px solid royalblue;
+}
+
+.scene-thumbnail {
+  position: relative;
+  width: 100px;
+  aspect-ratio: 4 / 3;
+  border-radius: 2px;
+  background-color: #eee;
+  overflow: hidden;
+}
+
+.scene-index {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0 4px;
+  border-bottom-right-radius: 2px;
+  background-color: rgba(128, 128, 128, 0.5);
+  color: white;
+  font-size: 1.28rem;
+  line-height: 1.3;
+}
+
+/* leave room for the "use camera" button in the entry's bottom-right corner */
+.scene-title-input {
+  padding-inline-end: 28px;
+}
+
+.scene-thumbnail img {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .transition-transform {
@@ -1090,7 +1123,8 @@ button:disabled > .toolbar-image {
   padding-block-start: 13px;
 }
 
-.scenes-entry div input {
+.scenes-entry div input,
+.scenes-entry div textarea {
   padding: 0;
 }
 

@@ -17,7 +17,7 @@ const Tab = (props) =>
 const Tabs = (props) =>
 {
   return (
-    <KTabs aria-label={props.label} class="tabs relative-h100 grid-rows-min-1" value={props.value} onChange={props.onChange}>
+    <KTabs aria-label={props.label} class="tabs relative-h100 grid-rows-min-1" value={props.value} onChange={ value => props.onChange?.( value ) }>
       <KTabs.List class="tabs__list">
         <For each={ props.values }>{ name =>
           <KTabs.Trigger class="tabs__trigger" value={name}>{name}</KTabs.Trigger>
