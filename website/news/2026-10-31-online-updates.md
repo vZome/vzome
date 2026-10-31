@@ -1,7 +1,7 @@
 ---
 title: Online vZome Updates, October 2026
-description: Exports in the custom menu, a loading indicator, and fixes for the Parts and Measure tabs
-published: false
+description: Exports in the custom menu, a loading indicator, scene thumbnails, and fixes for the Parts and Measure tabs
+published: true
 layout: vzome
 ---
 
@@ -27,7 +27,15 @@ its shortcut too.
 When you open a design file, online vZome now shows a "loading" indicator until the design is ready,
 so you can tell that something is happening with a large design.
 
-## Fixes
+## Scene Thumbnails
+
+The "Scenes" dialog now shows a small picture of each scene next to its title,
+so it's much easier to find the scene you want in a long list.
+A scene's picture appears once you have viewed that scene in the dialog,
+and it updates when you use "Save Camera".
+Long scene titles now wrap onto a second line, instead of being cut off.
+
+## Defect Fixes
 
 - The "Parts" and "Measure" tabs now work the first time you click them.
 - The "Measure" tab now updates when you change the selection.

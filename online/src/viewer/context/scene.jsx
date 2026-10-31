@@ -110,6 +110,10 @@ const SceneIndexingProvider = ( props ) =>
   const { tweenCamera } = useCamera();
   const { scenes } = useViewer();
   const [ lastSceneIndex, setLastSceneIndex ] = createSignal( null );
+  // The index of the scene whose camera and shapes have both been fully applied, or null while
+  //  a scene change is in progress.  Only the most recent showIndexedScene call can set it.
+  const [ settledSceneIndex, setSettledSceneIndex ] = createSignal( null );
+  let latestRequest = 0;
 
   const showIndexedScene = ( sceneIndex, config ) =>
   {
@@ -117,6 +121,8 @@ const SceneIndexingProvider = ( props ) =>
       return;
     if ( sceneIndex >= scenes.length )
       sceneIndex = 0;
+    const request = ++latestRequest;
+    setSettledSceneIndex( null );
     postRequest( selectSnapshot( scenes[ sceneIndex ] .snapshot ) )
     .then( ( { payload: { scene } } ) => {
       setLastSceneIndex( sceneIndex );
@@ -131,7 +137,11 @@ const SceneIndexingProvider = ( props ) =>
       const { camera } = config || { camera: true };
       setTimeout( () => {
         ( camera? tweenCamera( scenes[ sceneIndex ] .camera ) : Promise.resolve() )
-          .then( () => updateShapes( scene.shapes ) );
+          .then( () => {
+            updateShapes( scene.shapes );
+            if ( request === latestRequest )
+              setSettledSceneIndex( sceneIndex );
+          } );
       } );
     });
   }
@@ -145,7 +155,7 @@ const SceneIndexingProvider = ( props ) =>
   } );
   
   return (
-    <SceneIndexingContext.Provider value={ { showIndexedScene, lastSceneIndex, setLastSceneIndex } }>
+    <SceneIndexingContext.Provider value={ { showIndexedScene, lastSceneIndex, setLastSceneIndex, settledSceneIndex } }>
       {props.children}
     </SceneIndexingContext.Provider>
   );
