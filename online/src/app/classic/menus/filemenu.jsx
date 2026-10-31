@@ -3,14 +3,13 @@ import { createEffect, createSignal, mergeProps, onMount } from "solid-js";
 
 import { controllerProperty, useEditor } from '../../framework/context/editor.jsx';
 import { suspendMenuKeyEvents } from '../context/commands.jsx';
-import { saveFileAs, openFile, saveTextFileAs, } from "../../../viewer/util/files.js";
+import { openFile, } from "../../../viewer/util/files.js";
 
 import { CommandAction, Divider, Menu, MenuAction, MenuItem, SubMenu, LinkItem, } from "../../framework/menus.jsx";
 import { UrlDialog } from '../dialogs/webloader.jsx'
 import { SvgPreviewDialog } from "../dialogs/svgpreview.jsx";
-import { INITIAL_DISTANCE, useCamera } from "../../../viewer/context/camera.jsx";
-import { useImageCapture, useGltfExporter } from "../../../viewer/context/export.jsx";
-import { useViewer, EXPORT_FORMATS } from "../../../viewer/context/viewer.jsx";
+import { EXPORT_FORMATS } from "../../../viewer/context/viewer.jsx";
+import { IMAGE_FORMATS, exportAction, captureAction } from "../context/exports.js";
 
 const queryParams = new URLSearchParams( window.location.search );
 const relativeUrl = queryParams.get( 'design' );
@@ -31,10 +30,8 @@ const NewDesignItem = props =>
 
 export const FileMenu = () =>
 {
-  const { rootController, state, setState,
+  const { rootController, setState,
     createDesign, openDesignFile, fetchDesignUrl, importMeshFile, guard, edited } = useEditor();
-  const { setProblem, exportAs } = useViewer();
-  const { state: cameraState } = useCamera();
   const [ showDialog, setShowDialog ] = createSignal( false );
   const fields = () => controllerProperty( rootController(), 'fields', 'fields', true );
 
@@ -139,53 +136,17 @@ export const FileMenu = () =>
 
   const [ svgPreview, setSvgPreview ] = createSignal( false );
 
-  const { exporter } = useGltfExporter();
-
-  const exportFile = ( extension, mimeType, format, params={} ) => evt =>
-  {
-    if (format === 'gltf') {
-      const { exportGltf } = exporter();
-      const name = (state.designName || 'untitled') .concat( ".glb" );
-      exportGltf( glb => saveFileAs( name, glb, "model/gltf+binary" ) );
-    } else {
-      exportAs( format, params )
-        .then( text => {
-          const name = (state.designName || 'untitled') .concat( "." + extension );
-          saveTextFileAs( name, text, mimeType );
-        });
-    }
-  }
-
-  const { captureImage } = useImageCapture();
-  const doCaptureImage = ( extension, mimeType ) => evt =>
-  {
-    captureImage( mimeType ) .then( blob => {
-      if ( blob.size === 0 ) {
-        setProblem( 'Captured image is empty; please report this as a defect' );
-        return;
-      }
-      const name = (state.designName || 'untitled') .concat( "." + extension );
-      saveFileAs( name, blob, mimeType );
-    });
-  }
-
   const ExportItem = props =>
-  {
-    const { ext=props.format, mime, label } = EXPORT_FORMATS[ props.format ];
-    const params = { drawOutlines: cameraState.outlines }; // for SVG
-    return <MenuItem onClick={ exportFile( ext, mime, props.format, params ) } disabled={props.disabled}>{label}</MenuItem>
-  }
+    <CommandAction label={EXPORT_FORMATS[ props.format ].label} action={exportAction( props.format )} disabled={props.disabled} />
 
   const ImageCaptureItem = props =>
-  {
-    return <MenuItem onClick={ doCaptureImage( props.ext, props.mime ) } disabled={props.disabled}>{props.label}</MenuItem>
-  }
-  
+    <CommandAction label={IMAGE_FORMATS[ props.ext ].label} action={captureAction( props.ext )} disabled={props.disabled} />
+
   return (
     <Menu label="File" dialogs={<>
       <UrlDialog show={showDialog()} setShow={setShowDialog} openDesign={openUrl} />
 
-      <SvgPreviewDialog open={svgPreview()} close={()=>setSvgPreview(false)} exportFile={exportFile} />
+      <SvgPreviewDialog open={svgPreview()} close={()=>setSvgPreview(false)} />
     </>}>
         <SubMenu label="New Design...">
           <For each={fields()}>{ field =>
@@ -254,10 +215,10 @@ export const FileMenu = () =>
         <Divider/>
 
         <SubMenu label="Capture Image">
-          <ImageCaptureItem ext="png" label="PNG" mime="image/png" />
-          <ImageCaptureItem ext="jpg" label="JPEG" mime="image/jpeg" />
-          <ImageCaptureItem ext="webp" label="WebP" mime="image/webp" />
-          <ImageCaptureItem ext="bmp" label="BMP" mime="image/bmp" />
+          <ImageCaptureItem ext="png" />
+          <ImageCaptureItem ext="jpg" />
+          <ImageCaptureItem ext="webp" />
+          <ImageCaptureItem ext="bmp" />
         </SubMenu>
 
         <MenuItem disabled={true} action="capture-wiggle-gif" >Capture Animation</MenuItem>

@@ -4,7 +4,9 @@ import { createContext, useContext } from "solid-js";
 import { subController, useEditor } from "../../framework/context/editor.jsx";
 import { useSymmetry } from './symmetry.jsx';
 import { saveTextFileAs, saveTextFile } from "../../../viewer/util/files.js";
-import { useViewer } from "../../../viewer/context/viewer.jsx";
+import { useViewer, EXPORT_FORMATS } from "../../../viewer/context/viewer.jsx";
+import { useCamera } from "../../../viewer/context/camera.jsx";
+import { useFileExports, IMAGE_FORMATS, exportAction, captureAction } from "./exports.js";
 import { menuKeyEventsSuspended, resumeMenuKeyEvents, suspendMenuKeyEvents } from "../../framework/keyevents.js";
 
 // The suspend flag itself lives in framework/keyevents.js, since framework components need
@@ -19,6 +21,8 @@ export const CommandsProvider = props =>
   const { rootController, controllerAction, state, setState, setEdited } = useEditor();
   const { showPolytopesDialog, symmetryController } = useSymmetry();
   const { exportAs } = useViewer();
+  const { state: cameraState } = useCamera();
+  const { exportFile, captureImageFile } = useFileExports();
   const globalAction   = action => () => controllerAction( rootController(), action );
   const undoRedoAction = action => () => controllerAction( subController( rootController(), 'undoRedo' ), action );
   const symmetryAction = ( symm, action ) => () => controllerAction( subController( rootController(), `symmetry.${symm}` ), action );
@@ -114,7 +118,7 @@ export const CommandsProvider = props =>
 
   const isMac = navigator.userAgentData?.platform === 'macOS' || navigator.userAgent .includes( 'Macintosh' );
 
-  const createCommand = ( action, keyEquiv, handler=globalAction(action) ) =>
+  const createCommand = ( action, keyEquiv, handler=globalAction(action), rebinding=false ) =>
   {
     let keystroke = '';  
     if ( !! keyEquiv ) {
@@ -135,7 +139,7 @@ export const CommandsProvider = props =>
       registerKeyListener( modifiers, keyEquiv.deleteKey, keyEquiv.key, handler );
       keystroke = (!keyEquiv)? '' : ( keyEquiv.deleteKey? "⌫" : prefix + keyEquiv.key );
     }
-    if ( !! commands[ action ] ) {
+    if ( !! commands[ action ] && ! rebinding ) {
       console.warn( `Command for action ${action} is being replaced; original key binding may be lost.` );
     }
     commands[ action ] = { keystroke, handler };
@@ -187,12 +191,26 @@ export const CommandsProvider = props =>
   // current system and style (mode) like the desktop app does.
   createCommand( 'ReplaceWithShape', undefined, () => controllerAction( symmetryController(), 'ReplaceWithShape' ) );
 
+  // File exports and image captures, so they can appear in custom menus with key bindings.
+  //   These must be created before the custom commands below, or those would bind the
+  //   action names as controller actions.
+  for ( const format of Object.keys( EXPORT_FORMATS ) .filter( f => ! EXPORT_FORMATS[ f ] .image ) ) // images use capture.*
+    createCommand( exportAction( format ), undefined, () => exportFile( format, { drawOutlines: cameraState.outlines } ) ); // params for SVG
+  for ( const ext of Object.keys( IMAGE_FORMATS ) )
+    createCommand( captureAction( ext ), undefined, () => captureImageFile( ext ) );
+
   const createCustomCommands = items => {
     items .forEach( item => {
-      if ( item .action && ! commands[ item .action ] ) {
-        createCommand( item .action, item .key? { mods: item .mods || '⌥⌃', key: item .key } : undefined );
-      } else if ( !! item .submenu ) {
+      if ( !! item .submenu ) {
         createCustomCommands( item .submenu );
+      } else if ( ! item .divider && ! item .menuSlot ) {
+        const action = item .action || item .label; // as in DeclarativeMenuItems
+        const keyEquiv = item .key? { mods: item .mods || '⌥⌃', key: item .key } : undefined;
+        const existing = commands[ action ];
+        if ( ! existing )
+          createCommand( action, keyEquiv );
+        else if ( keyEquiv )
+          createCommand( action, keyEquiv, existing .handler, true ); // add a shortcut to a built-in command
       }
     } );
   }
