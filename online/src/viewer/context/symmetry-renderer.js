@@ -1118,6 +1118,12 @@ export function createSymmetryRenderer(parent)
     return null;
   }
 
+  // Starts the picking renderer's lazy initialization ahead of the first pick, so that pick
+  // doesn't stall on it.  Safe to call repeatedly.
+  function warmPicking() {
+    getPickingRenderer().catch((error) => console.warn("Picking renderer failed to initialize:", error));
+  }
+
   // Expose a setOrigin method to set the group's position
   function setOrigin(vec3) {
     originGroup.position.copy(vec3);
@@ -1145,6 +1151,7 @@ export function createSymmetryRenderer(parent)
     getActiveGroup,
     listShapeKeys,
     pickAt,
+    warmPicking,
     setOrigin,
     originGroup,
   };

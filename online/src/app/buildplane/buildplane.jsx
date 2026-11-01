@@ -7,7 +7,7 @@ import { normalize, vlength, vscale } from './vectors.js';
 import { reducer, initialState, doToggleDisk, doSetCenter, doStrutPreview, doSelectPlane, doSelectHinge, doToggleBuild } from './planes.js';
 import { useWorkerClient } from '../../viewer/context/worker.jsx';
 import { createStrut, joinBalls, newDesign } from '../../viewer/util/actions.js';
-import { useInteractionTool } from '../../viewer/context/interaction.jsx';
+import { NO_PICKS, useInteractionTool } from '../../viewer/context/interaction.jsx';
 import { setHingeStrut } from '../../viewer/util/actions.js';
 import { createT } from 'solid-three';
 const T = createT({ Mesh, MeshLambertMaterial, Group });
@@ -192,18 +192,21 @@ export const BuildPlaneTool = props =>
 
   const handlers = {
 
-    allowTrackball: true,
+    allowTrackball: true, // TrackballControls handles every drag
+
+    // Picking stays off for now.  This tool's own widgets (disks, hoops, zone tubes) handle
+    // their clicks through solid-three, outside the InteractionToolProvider, so with picking
+    // on, every widget click would also arrive here as a bkgdClick.  Making the widgets a hit
+    // source fixes that; see developer-docs/mouse-tools.md.
+    picks: NO_PICKS,
 
     cursor: 'cell',
 
-    onDrag: () => {},
-    onDragStart: () => {},
-    onDragEnd: () => {},
     onTrackballEnd: () => {},
 
     bkgdClick: () => dispatch( doToggleDisk() ),
 
-    onClick: ( id, position, type, selected ) => {
+    onClick: ( e, { id, position, type } ) => {
       if ( type === 'ball' ) {
         if ( state.preview ) {
           postMessage( joinBalls( state.center.id, id ) );
@@ -214,8 +217,9 @@ export const BuildPlaneTool = props =>
       }
     },
     
-    onHover: ( id, position, type, starting ) => {
-      if ( starting && state.buildingStruts && state.center ?.position ) {
+    onHover: ( e, hit ) => {
+      if ( hit && state.buildingStruts && state.center ?.position ) {
+        const { position, type } = hit;
         if ( type === 'ball' ) {
           const [ x0, y0, z0 ] = state.center.position;
           const [ x1, y1, z1 ] = position;

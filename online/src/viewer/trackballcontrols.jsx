@@ -15,7 +15,7 @@ export const TrackballControls = (props) =>
   const { perspectiveProps, trackballProps, name, cancelTweens } = useCamera();
   const [ tool ] = useInteractionTool();
   const { canvas, bounds } = useThree();
-  const { setTrackball } = useWebXRClient();
+  const { addCameraControl } = useWebXRClient();
 
   createEffect(() => {
     // SV: This effect is necessary so that we get correctly connected to the domElement
@@ -25,11 +25,31 @@ export const TrackballControls = (props) =>
     trackballControls() .connect( canvas );
   });
 
-  const trackballControls = createMemo( () => {
-    const controls = new TrackballControlsImpl( trackballProps .camera );
-    setTrackball(controls);
-    return controls;
-  } );
+  const trackballControls = createMemo( () => new TrackballControlsImpl( trackballProps .camera ) );
+
+  // Strictly boolean: TrackballControls' own event handlers test `enabled === false`, so an
+  // undefined allowTrackball (any tool that doesn't mention it) would leave them active.
+  const allowed = () => ( tool === undefined ) || !! tool .allowTrackball();
+
+  // WebXR suspends camera controls during a session.  TrackballControls caches camera state,
+  // so resume() must restore its target and resync it from the restored camera with update().
+  createEffect( () => {
+    const controls = trackballControls();
+    let savedTarget = null;
+    const removeControl = addCameraControl ?.( {
+      suspend: () => {
+        savedTarget = controls.target .clone();
+        controls.enabled = false;
+      },
+      resume: () => {
+        if ( savedTarget )
+          controls.target .copy( savedTarget );
+        controls.enabled = allowed();
+        controls .update();
+      },
+    } );
+    onCleanup( () => removeControl ?.() );
+  });
 
   useFrame(() => {
     let controls = trackballControls();
@@ -41,7 +61,7 @@ export const TrackballControls = (props) =>
   });
 
   createEffect( () => {
-    trackballControls() .enabled = ( tool === undefined ) || tool .allowTrackball();
+    trackballControls() .enabled = allowed();
   });
 
   createEffect(() =>

@@ -13,7 +13,7 @@ import { CameraProvider, useCamera } from '../../../viewer/context/camera.jsx';
 import { InteractionToolProvider } from '../../../viewer/context/interaction.jsx';
 import { SceneCanvas } from '../../../viewer/scenecanvas.jsx';
 
-import { SnapCameraTool } from '../tools/snapcamera.jsx';
+import { CameraTool } from '../tools/camera.jsx';
 import { GltfExportProvider, ImageCaptureProvider } from '../../../viewer/context/export.jsx';
 import { ZoomSlider } from './zoomslider.jsx';
 import { SceneProvider, SceneChangeListener, useScene } from '../../../viewer/context/scene.jsx';
@@ -90,7 +90,7 @@ const TrackballViewer = () =>
             <SceneChangeListener />
             <TrackballLoader url={ trackballUrl } />
             <InteractionToolProvider>
-              <SnapCameraTool />
+              <CameraTool />
               <TrackballCanvas />
             </InteractionToolProvider>
           </SceneProvider>
@@ -154,23 +154,20 @@ const TrackballLoader = ( props ) =>
 // TrackballViewer). ShapedGeometry uses stock MeshLambertMaterial, whose shader the main editor
 // canvas has already compiled, so it's a warm cache hit instead.
 //
-// WHAT WE GIVE UP: nothing that this view uses. GPU picking is already fully suppressed here --
-// SnapCameraTool spreads grabTool, whose allowTrackball:true makes symmetry-geometry.jsx's
-// pickingSuppressed() short-circuit every pointer handler (and pickAt is what lazily builds the
-// picking renderer, so it was never built for the trackball anyway). The cameraState.outlines
+// WHAT WE GIVE UP: nothing that this view uses. GPU picking never happens here --
+// CameraTool declares `picks: NO_PICKS`, which means the InteractionToolProvider
+// never asks a hit source to pick (and pickAt is what lazily builds the picking renderer, so it
+// was never built for the trackball anyway). The cameraState.outlines
 // wiring is moot because this view hard-codes outlines={false} on its CameraProvider above. The
 // O(1) selection-highlight hook is moot because nothing here is ever selected. Multi-group
 // orientation switching is moot because TrackballLoader resetScene()s on every symmetry change.
 // Image capture / glTF export are unaffected: CanvasExportBindings is mounted by BOTH geometry
-// paths. Rotation and snap-camera live in TrackballControls/SnapCameraTool, independent of this.
+// paths. Rotation and snap-camera live in CameraTool and the canvas's CameraTrackball, independent
+// of this.
 //
 // The per-instance-mesh cost that SymmetryGeometry exists to avoid is irrelevant at this scale:
 // trackball models are tiny (21 vertices for rZomeTrackball, 174 for the largest, 12-gon) and
 // static once loaded, so there is no per-edit rebuild churn to amortize.
-//
-// Side effect, benign: with symmetryRenderer false, ltcanvas.jsx's two `if (props.symmetryRenderer)
-// return;` bypasses (handlePointerUp, handlePointerMissed) no longer fire, so solid-three's own
-// raycasting event system is live on this canvas again. grabTool's handlers are all no-ops.
 const TrackballCanvas = () =>
 {
   const { scene } = useScene();

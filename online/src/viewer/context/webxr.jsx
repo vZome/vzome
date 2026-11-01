@@ -22,16 +22,23 @@ export const WebXRSupport = (props) =>
   // well after mount (XRGripToMove etc., inside onViewerStart/frame callbacks -- see
   // getRootGroup below) can keep reading the plain `originGroup` variable directly.
   let originGroup = null;
-  let trackball = null;
+
+  // Camera controls (TrackballControls, CameraTrackball), each { suspend(), resume() }, which the
+  // XR session manager suspends while the headset drives the camera.
+  const cameraControls = new Set();
+  const addCameraControl = ( control ) => {
+    cameraControls .add( control );
+    return () => cameraControls .delete( control );
+  };
+  const allCameraControls = {
+    suspend: () => cameraControls .forEach( control => control .suspend() ),
+    resume: () => cameraControls .forEach( control => control .resume() ),
+  };
 
   const [ originGroupReady, setOriginGroupReady ] = createSignal( null );
   const captureOriginGroup = ( g ) => {
     originGroup = g;
     setOriginGroupReady( g );
-  };
-
-  const setTrackball = (tb) => {
-    trackball = tb;
   };
 
   const StartXRButton = lazy(() => import( "../../xr/index.jsx" ));
@@ -51,14 +58,14 @@ export const WebXRSupport = (props) =>
   return (
     <>
       <T.Group ref={captureOriginGroup} scale={globalScale} >
-        <WebXRContext.Provider value={ { setRootScene, setTrackball, originGroupReady, } }>
+        <WebXRContext.Provider value={ { setRootScene, addCameraControl, originGroupReady, } }>
           {props.children}
         </WebXRContext.Provider>
       </T.Group>
       {/* Having this Suspense inside the T.Group was causing a weird scaling issue when XR is supported */}
       <Suspense>
         <Show when={props.xrSupported && props.xrSupported()}>
-          <StartXRButton getRootGroup={() => originGroup} trackball={trackball} />
+          <StartXRButton getRootGroup={() => originGroup} cameraControls={allCameraControls} />
         </Show>
       </Suspense>
     </>

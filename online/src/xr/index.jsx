@@ -9,7 +9,7 @@ import { XRScaling } from "./scaling.jsx";
 // All bundled here so the dynamic module can be a single import in the main viewer.
 
 const StartXRButton = ( props ) => (
-  <XRSessionManager trackball={props.trackball} getRootGroup={props.getRootGroup}>
+  <XRSessionManager cameraControls={props.cameraControls} getRootGroup={props.getRootGroup}>
     <XRInstructionText text="Grip to move the model" />
     <XRScaling/>
     <XRGripToMove/>
