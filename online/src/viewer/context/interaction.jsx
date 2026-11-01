@@ -51,7 +51,8 @@ const InteractionToolProvider = (props) =>
         // lastPointerDown is only non-null if the onDragStart handler exists, and we got a pointerDown event
         const deltaX = e.x - lastPointerDown .x;
         const deltaY = e.y - lastPointerDown .y;
-        if ( deltaX > MAX_CLICK_DISTANCE || deltaY > MAX_CLICK_DISTANCE ) {
+        // Once a drag has started, keep forwarding moves even if the pointer returns near its start.
+        if ( dragStartEmitted || Math.hypot( deltaX, deltaY ) > MAX_CLICK_DISTANCE ) {
           // We are dragging... distance has changed sufficiently
           if ( !dragStartEmitted ) {
             // Emit the deferred onDragStart callback.  We already know the handler exists.
