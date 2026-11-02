@@ -6,7 +6,9 @@ import { createContext, createEffect, createSignal, useContext } from "solid-js"
 // InteractionToolProvider owns all gesture recognition for one canvas.  Renderers never see
 // the tool: they register as hit sources (addHitSource), answering "what is under this
 // point?" with an opaque hit record (pickAt), and optionally "what lies entirely inside this
-// screen rectangle?" (hitsInRect, for marquee selection).  The canvas registers itself (attachCanvas), and the
+// screen rectangle?" (hitsInRect, for marquee selection).  Sources are asked in order of their
+// `priority` (default 0, higher first); e.g. a tool's widgets can be consulted only where the
+// scene has nothing (as in app/buildplane), since sources can't compare depths.  The canvas registers itself (attachCanvas), and the
 // provider turns its raw pointer events into tool calls:
 //
 //   onClick( e, hit )         a left-button click on something
@@ -65,13 +67,15 @@ const InteractionToolProvider = (props) =>
     return () => setCameraControlSignal( current => ( current === control )? null : current );
   }
 
+  const priorityOf = source => source .priority ?? 0;
   const addHitSource = source =>
   {
-    setHitSources( sources => [ ...sources, source ] );
+    // Stable sort, so equal priorities keep their registration order.
+    setHitSources( sources => [ ...sources, source ] .sort( ( a, b ) => priorityOf( b ) - priorityOf( a ) ) );
     return () => setHitSources( sources => sources .filter( s => s !== source ) );
   }
 
-  // The first hit any source reports, asking them in registration order.
+  // The first hit any source reports, asking them in priority order.
   const pickAt = async ( clientX, clientY ) =>
   {
     for ( const source of hitSources() ) {

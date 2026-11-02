@@ -1,19 +1,19 @@
 
 import { createContext, createEffect, createMemo, onCleanup, onMount, useContext } from "solid-js";
-import { Vector2, Vector3, Matrix4, BufferGeometry, Float32BufferAttribute, Color, Group, Mesh, MeshLambertMaterial, LineSegments, LineBasicMaterial, Raycaster } from "three";
+import { Vector3, Matrix4, BufferGeometry, Float32BufferAttribute, Color, Group, Mesh, MeshLambertMaterial, LineSegments, LineBasicMaterial } from "three";
 
 import { createT, useThree } from 'solid-three';
 const T = createT({ Group, Mesh, MeshLambertMaterial, LineSegments, LineBasicMaterial });
 
 import { useInteractionSurface } from "./context/interaction.jsx";
-import { createRectTest } from "./rectpicking.js";
+import { createRaycastHitSource } from "./raycasting.js";
 
 import { GLTFExporter } from "three-stdlib";
 import { Label } from "./labels.jsx";
 import { useGltfExporter, useImageCapture } from "./context/export.jsx";
 import { useScene } from "./context/scene.jsx";
 
-// Maps each Instance's mesh to a function returning its hit record; see ShapedGeometry.
+// ShapedGeometry's raycasting hit source, where each Instance registers its mesh.
 const PickablesContext = createContext();
 
 const Instance = ( props ) =>
@@ -29,10 +29,11 @@ const Instance = ( props ) =>
 
   // Make this mesh pickable by ShapedGeometry's hit source, which answers with this record.
   const pickables = useContext( PickablesContext );
-  onMount( () => pickables ?.set( meshRef, () => ( {
+  let removePickable;
+  onMount( () => removePickable = pickables ?.add( meshRef, () => ( {
     source: 'scene', id: props.id, position: props.position, type: props.type, selected: props.selected, label: props.label,
   } ) ) );
-  onCleanup( () => pickables ?.delete( meshRef ) );
+  onCleanup( () => removePickable ?.() );
 
   onMount( () => linesRef && linesRef.layers.set( 4 ) );
 
@@ -208,37 +209,10 @@ export const ShapedGeometry = ( props ) =>
   // handling (see context/interaction.jsx).  Every ball/strut/panel is its own mesh here, so a
   // raycast finds the nearest one; each Instance registers its mesh in `pickables`.  (The outline
   // LineSegments are on layer 4, which the raycaster ignores.)
-  const three = useThree();
   const surface = useInteractionSurface();
-  const pickables = new Map(); // mesh -> () => hit record
-  const raycaster = new Raycaster();
-  const pointer = new Vector2();
-  const pickAt = ( clientX, clientY ) =>
-  {
-    const rect = three.canvas .getBoundingClientRect();
-    pointer.set( ( clientX - rect.left ) / rect.width * 2 - 1, - ( clientY - rect.top ) / rect.height * 2 + 1 );
-    raycaster .setFromCamera( pointer, three.camera ); // three.camera is a live getter; read it fresh
-    const [ nearest ] = raycaster .intersectObjects( [ ...pickables.keys() ], false );
-    return nearest? pickables .get( nearest.object )() : null;
-  }
-  // Marquee selection: every instance whose mesh vertices all project inside the rectangle.
-  const hitsInRect = ( rect ) =>
-  {
-    const test = createRectTest( three.camera, three.canvas, rect );
-    const hits = [];
-    for ( const [ mesh, getHit ] of pickables ) {
-      test .setModelMatrix( mesh.matrixWorld );
-      const positions = mesh.geometry .getAttribute( 'position' );
-      let inside = true;
-      for ( let i = 0; inside && i < positions.count; i++ )
-        inside = test .contains( positions .getX( i ), positions .getY( i ), positions .getZ( i ) );
-      if ( inside )
-        hits .push( getHit() );
-    }
-    return hits;
-  }
+  const pickables = createRaycastHitSource( useThree() );
   if ( surface )
-    onCleanup( surface .addHitSource( { pickAt, hitsInRect } ) );
+    onCleanup( surface .addHitSource( { pickAt: pickables.pickAt, hitsInRect: pickables.hitsInRect } ) );
 
   let groupRef;
   createEffect( () => {

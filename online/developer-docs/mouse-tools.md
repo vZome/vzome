@@ -1,10 +1,9 @@
 # Design Note: The Mouse Tool Framework
 
-Status (2026-11-02): steps 1 to 4 of the suggested order are implemented.
+Status (2026-11-02): steps 1 to 5 of the suggested order are implemented.
 
 - Step 1: gesture recognition in `InteractionToolProvider`, hit sources, `picks`, and early
-  picking-renderer warm-up.  Buildplane declares `picks: NO_PICKS` until its widgets become a
-  hit source (step 5).
+  picking-renderer warm-up.
 - Step 2: `CameraTrackball` (`src/viewer/cameratrackball.js`), one per canvas, reached by
   tools through `useCameraControl()`; `CameraTool` replaces `SnapCameraTool` in the editor and
   its camera panel; WebXR suspends `{ suspend(), resume() }` camera controls instead of using
@@ -24,6 +23,15 @@ Status (2026-11-02): steps 1 to 4 of the suggested order are implemented.
   object; no explicit `BeginBlock`/`EndBlock` is needed, because `performAndRecord` already calls
   `mergeSelectionChanges()`, which brackets consecutive selection edits.  As with runs of clicks,
   the newest selection edit stays just outside the block, so undoing a marquee takes two steps.
+- Step 5: buildplane on the framework.  Hit sources gained a `priority`.  Buildplane's widgets
+  register through a shared raycasting hit source (`src/viewer/raycasting.js`, which
+  ShapedGeometry now uses too), at priority -1: asked only where the scene has nothing, so balls
+  seen through the large translucent disk stay clickable.  (The scene's GPU pick reports no
+  depth, so nearest-wins across sources isn't possible; among widgets, the nearest wins.)  A
+  widget's hit record carries its own `click()` and `hover( entering )`.  Hover works on the
+  symmetry renderer through the provider's generic hover picking.  Buildplane's drags now use
+  `CameraTrackball` instead of `TrackballControls` (same touch and A/S/D-key losses as step 2).
+  `TrackballControls` remains only in the viewer and 59icosahedra.
 
 Everything else is still a recommendation.
 

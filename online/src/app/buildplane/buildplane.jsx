@@ -1,5 +1,5 @@
 
-import { For, Show, createEffect, createMemo } from 'solid-js';
+import { For, Show, createContext, createEffect, createMemo, onCleanup, useContext } from 'solid-js';
 import { createStore, reconcile, unwrap } from 'solid-js/store';
 import { DoubleSide, Matrix4, Quaternion, Vector3, CylinderGeometry, TorusGeometry, Mesh, MeshLambertMaterial, Group } from 'three';
 
@@ -7,9 +7,10 @@ import { normalize, vlength, vscale } from './vectors.js';
 import { reducer, initialState, doToggleDisk, doSetCenter, doStrutPreview, doSelectPlane, doSelectHinge, doToggleBuild } from './planes.js';
 import { useWorkerClient } from '../../viewer/context/worker.jsx';
 import { createStrut, joinBalls, newDesign } from '../../viewer/util/actions.js';
-import { NO_PICKS, useInteractionTool } from '../../viewer/context/interaction.jsx';
+import { useInteractionTool, useInteractionSurface, useCameraControl } from '../../viewer/context/interaction.jsx';
+import { createRaycastHitSource } from '../../viewer/raycasting.js';
 import { setHingeStrut } from '../../viewer/util/actions.js';
-import { createT } from 'solid-three';
+import { createT, useThree } from 'solid-three';
 const T = createT({ Mesh, MeshLambertMaterial, Group });
 
 const makeRotation = ( from, to ) =>
@@ -35,6 +36,29 @@ const makeOrientation = ( buildPlanes, orientation ) =>
   return new Quaternion() .setFromRotationMatrix( matrix );
 }
 
+// The tool's widgets form one raycasting hit source for the InteractionToolProvider, asked only
+// after the scene: the big translucent disk covers most balls on screen, so if widgets came first
+// every ball seen through it would be unclickable.  The scene's GPU pick reports no depth, so
+// "nearest wins" across the two isn't possible; among the widgets themselves, the nearest wins.
+// A widget's hit record carries its own actions: click(), and optionally hover( entering ).
+const WidgetsContext = createContext();
+let widgetCount = 0;
+
+// Returns a ref callback that registers the widget's mesh with a hit source.
+const widgetRef = ( source, actions ) =>
+{
+  const id = `widget:${++widgetCount}`; // distinct ids, so hovering from widget to widget is a change
+  let remove;
+  onCleanup( () => remove ?.() );
+  return mesh => {
+    remove ?.();
+    remove = source ?.add( mesh, () => ( { source: 'widget', id, ...actions } ) );
+  };
+}
+
+// For widget components below the tool, which provides the hit source through WidgetsContext.
+const useWidget = ( actions ) => widgetRef( useContext( WidgetsContext ), actions );
+
 const discSize = 35;
 const cylinderSize = 1/8;
 const TORUS_AXIS = [0,0,1];
@@ -56,23 +80,13 @@ const StrutPreview = props =>
 
 const BuildDot = props =>
 {
-  const handleHover = value => e =>
-  {
-    e.stopPropagation();
-    if ( value )
-      props.previewStrut( props.position );
-    else
-      props.previewStrut( null );
-  }
-  const handleClick = ( e ) =>
-  {
-    e.stopPropagation();
-    props.createStrut();
-  }
+  const widget = useWidget( {
+    click: () => props.createStrut(),
+    hover: entering => props.previewStrut( entering? props.position : null ),
+  } );
 
   return (
-    <T.Mesh position={props.position} quaternion={props.diskRotation} material={props.material}
-        onPointerOver={ handleHover( true ) } onPointerOut={ handleHover( false ) } onClick={ handleClick }
+    <T.Mesh ref={widget} position={props.position} quaternion={props.diskRotation} material={props.material}
         geometry={ new CylinderGeometry( 0.5, 0.5, 0.35, 20 )} />
   )
 }
@@ -100,18 +114,14 @@ const BuildZone = props =>
 
 const HingeOption = props =>
 {
-  const handleClick = e =>
-  {
-    e.stopPropagation();
-    props.changeHinge( props.zone.name, props.zone.orientation );
-  }
+  const widget = useWidget( { click: () => props.changeHinge( props.zone.name, props.zone.orientation ) } );
 
   const tubeCenter = createMemo( () => vscale( normalize( props.zone.vectors[ 0 ] ), 13 ) );
   const zoneQuaternion = createMemo( () => makeRotation( CYLINDER_AXIS, props.zone.vectors[ 0 ] ) );
 
   return (
     <T.Group>
-      <T.Mesh position={tubeCenter()} quaternion={zoneQuaternion()} onClick={handleClick}
+      <T.Mesh ref={widget} position={tubeCenter()} quaternion={zoneQuaternion()}
           geometry={ new CylinderGeometry( 0.6, 0.6, 3, 36 )} >
         <T.MeshLambertMaterial attach="material" color={props.zone.color} side={DoubleSide} />
       </T.Mesh>
@@ -123,14 +133,10 @@ const PlaneOption = props =>
 {
   const vector = props.zone.vectors[ 0 ];
   const quaternion = createMemo( () => makeRotation( CYLINDER_AXIS, vector ) );
-  const handleClick = e =>
-  {
-    e.stopPropagation();
-    props.changePlane( props.zone.name, props.zone.orientation );
-  }
+  const widget = useWidget( { click: () => props.changePlane( props.zone.name, props.zone.orientation ) } );
   return (
     <T.Group>
-      <T.Mesh quaternion={quaternion()} onClick={handleClick}
+      <T.Mesh ref={widget} quaternion={quaternion()}
           geometry={ new CylinderGeometry( 5, 5, 0.4, 48 )} >
         <T.MeshLambertMaterial attach="material" color={props.zone.color} transparent={true} opacity={0.5} />
       </T.Mesh>
@@ -190,23 +196,43 @@ export const BuildPlaneTool = props =>
     postMessage( newDesign() );
   } );
 
+  // The widgets' hit source (see useWidget), asked after the scene.
+  const surface = useInteractionSurface();
+  const widgets = createRaycastHitSource( useThree() );
+  if ( surface )
+    onCleanup( surface .addHitSource( { pickAt: widgets.pickAt, priority: -1 } ) );
+
+  const camera = useCameraControl();
+  let hovered = null;
+
   const handlers = {
 
-    allowTrackball: true, // TrackballControls handles every drag
-
-    // Picking stays off for now.  This tool's own widgets (disks, hoops, zone tubes) handle
-    // their clicks through solid-three, outside the InteractionToolProvider, so with picking
-    // on, every widget click would also arrive here as a bkgdClick.  Making the widgets a hit
-    // source fixes that; see developer-docs/mouse-tools.md.
-    picks: NO_PICKS,
+    picks: { click: true, drag: false, hover: true },
 
     cursor: 'cell',
 
-    onTrackballEnd: () => {},
+    suppressContextMenu: true, // the right button pans
+
+    // Every drag moves the camera: this app has no separate camera mode.
+    onDragStart: e => {
+      switch ( e.button ) {
+        case 0:  return e.shiftKey? camera.pan( e ) : camera.rotate( e );
+        case 1:  return camera.zoom( e );
+        case 2:  return camera.pan( e );
+        default: return null;
+      }
+    },
+
+    onWheel: camera.onWheel,
 
     bkgdClick: () => dispatch( doToggleDisk() ),
 
-    onClick: ( e, { id, position, type } ) => {
+    onClick: ( e, hit ) => {
+      if ( hit.source === 'widget' ) {
+        hit.click ?.();
+        return;
+      }
+      const { id, position, type } = hit;
       if ( type === 'ball' ) {
         if ( state.preview ) {
           postMessage( joinBalls( state.center.id, id ) );
@@ -218,6 +244,15 @@ export const BuildPlaneTool = props =>
     },
     
     onHover: ( e, hit ) => {
+      if ( hovered ?.source === 'widget' )
+        hovered.hover ?.( false );
+      hovered = hit;
+      if ( hit ?.source === 'widget' && hit.hover ) {
+        hit.hover( true );
+        return;
+      }
+      if ( hit ?.source !== 'scene' )
+        hit = null; // e.g. the disk: nothing in the scene under the pointer
       if ( hit && state.buildingStruts && state.center ?.position ) {
         const { position, type } = hit;
         if ( type === 'ball' ) {
@@ -251,19 +286,15 @@ export const BuildPlaneTool = props =>
 
   const createZoneStrut = zoneIndex => index => actions.createStrut( state.diskZone.orbit, zoneIndex, index, state.diskZone.orientation );
 
-  const diskClick = e => {
-    if ( e.delta < 5 ) {
-      e.stopPropagation();
-      actions.toggleBuild();
-    }
-  }
-  
+  const disk = widgetRef( widgets, { click: () => actions.toggleBuild() } );
+
   return (
+    <WidgetsContext.Provider value={widgets}>
     <T.Group>
     <Show when={state.buildPlanes && state.enabled && state.center}>
       <T.Group position={state.center.position}>
         <T.Group quaternion={globalRotation()}>
-          <T.Mesh quaternion={diskRotation()} onClick={diskClick}
+          <T.Mesh ref={disk} quaternion={diskRotation()}
               geometry={ new CylinderGeometry( discSize, discSize, 0.05, 60 ) } >
             <T.MeshLambertMaterial attach="material" transparent={true} opacity={0.5} color={plane().color} />
           </T.Mesh>
@@ -300,5 +331,6 @@ export const BuildPlaneTool = props =>
       </T.Group>
     </Show>
     </T.Group>
+    </WidgetsContext.Provider>
   )
 }
