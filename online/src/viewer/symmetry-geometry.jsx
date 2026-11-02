@@ -1,5 +1,6 @@
 
 import { createEffect, createSignal, onCleanup, Show, untrack } from "solid-js";
+import { unwrap } from "solid-js/store";
 import { Matrix4, Vector3 } from "three";
 import { CSS2DObject } from "three-stdlib";
 import { useThree } from "solid-three";
@@ -10,6 +11,7 @@ import { useCamera } from "./context/camera.jsx";
 import { useWebXRClient } from "./context/webxr.jsx";
 import { useInteractionSurface } from "./context/interaction.jsx";
 import { useScene } from "./context/scene.jsx";
+import { createRectTest } from "./rectpicking.js";
 
 const STYLE_ID = "default";
 
@@ -436,8 +438,36 @@ const SymmetryGeometryImpl = ( props ) =>
     // null on a miss, or for a stale pick racing a rebuild (props.shapes changed mid-flight)
     return ( hit && metadataByInstanceId.get( hit.instanceId ) ) || null;
   };
+
+  // Marquee selection: every instance whose shape projects entirely inside the rectangle.  This
+  // replicates the vertex shader's transform (originGroup world * translation * orientation) on
+  // the CPU, once per marquee; hidden-behind-others instances count, since this isn't a GPU pick.
+  const hitsInRect = ( rect ) =>
+  {
+    const test = createRectTest( three.camera, three.canvas, rect );
+    renderer.originGroup .updateMatrixWorld( true );
+    const originWorld = renderer.originGroup.matrixWorld;
+    const instanceMatrix = new Matrix4(), modelMatrix = new Matrix4(), identity = new Matrix4();
+    const hits = [];
+    const shapes = unwrap( untrack( () => props.shapes ) ) || {};
+    for ( const shape of Object.values( shapes ) ) {
+      for ( const instance of shape.instances ) {
+        const ref = instanceRefById.get( instance.id );
+        const meta = ref && metadataByInstanceId.get( ref.instanceId );
+        if ( ! meta )
+          continue;
+        const [ x, y, z ] = instance.position;
+        instanceMatrix .copy( orientationMatrices[ orientationIndexOf( instance ) ] || identity ) .setPosition( x, y, z );
+        test .setModelMatrix( modelMatrix .multiplyMatrices( originWorld, instanceMatrix ) );
+        if ( shape.vertices .every( v => test .contains( v.x, v.y, v.z ) ) )
+          hits .push( meta );
+      }
+    }
+    return hits;
+  };
+
   if ( surface )
-    onCleanup( surface.addHitSource( { pickAt, warmUp: renderer.warmPicking } ) );
+    onCleanup( surface.addHitSource( { pickAt, hitsInRect, warmUp: renderer.warmPicking } ) );
 
   // This component contributes no JSX scene content of its own -- the renderer's GPU-instanced
   // meshes are parented imperatively under props.parent -- but it still must mount

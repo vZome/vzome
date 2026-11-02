@@ -1,6 +1,6 @@
 # Design Note: The Mouse Tool Framework
 
-Status (2026-11-02): steps 1 to 3 of the suggested order are implemented.
+Status (2026-11-02): steps 1 to 4 of the suggested order are implemented.
 
 - Step 1: gesture recognition in `InteractionToolProvider`, hit sources, `picks`, and early
   picking-renderer warm-up.  Buildplane declares `picks: NO_PICKS` until its widgets become a
@@ -17,6 +17,13 @@ Status (2026-11-02): steps 1 to 3 of the suggested order are implemented.
   `StrutDragTool` the build mode's drag-out metaphor (the sketches below call them
   `SelectTool` and `BuildTool`); `UnifiedTool` is gone.  The editor already had a
   hold-Alt key for temporary camera mode, which now returns to the last editing mode.
+- Step 4: marquee selection in select mode (`useMarquee`, `app/classic/tools/marquee.jsx`),
+  via the provider's `hitsInRect` and `setOverlay`.  An object is inside when every vertex of
+  its shape projects inside the box (stricter than "a ball's center").  The worker gets one
+  `SelectManifestations` picking-controller action and records one `SelectManifestation` per
+  object; no explicit `BeginBlock`/`EndBlock` is needed, because `performAndRecord` already calls
+  `mergeSelectionChanges()`, which brackets consecutive selection edits.  As with runs of clicks,
+  the newest selection edit stays just outside the block, so undoing a marquee takes two steps.
 
 Everything else is still a recommendation.
 

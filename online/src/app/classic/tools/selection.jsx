@@ -3,14 +3,16 @@ import { createEffect } from "solid-js";
 
 import { useInteractionTool, useCameraControl } from "../../../viewer/context/interaction.jsx";
 import { subController, useEditor } from '../../framework/context/editor.jsx';
+import { useMarquee } from './marquee.jsx';
 
 // Select mode: only changes the selection.  Click an object to select or deselect it; click empty
-// space to deselect everything.  (Marquee selection by dragging is not implemented yet.)
+// space to deselect everything; drag anywhere, even from an object, to add everything inside a box.
 const SelectionTool = props =>
 {
   const { rootController, setState, controllerAction } = useEditor();
   const pickingController  = () => subController( rootController(), 'picking' );
   const camera = useCameraControl();
+  const marquee = useMarquee();
 
   const handlers = {
 
@@ -21,6 +23,7 @@ const SelectionTool = props =>
       lines: [
         'Click: select or deselect',
         'Click empty space: deselect all',
+        'Drag: add everything inside a box',
         'Wheel: zoom',
         'Right-click: menu',
         'Hold Alt: camera mode',
@@ -34,6 +37,7 @@ const SelectionTool = props =>
     {
       controllerAction( rootController(), 'DeselectAll' );
     },
+    onDragStart: e => ( e.button === 0 )? marquee.startDrag( e ) : null,
     onWheel: camera.onWheel,
     onContextMenu: ( e, { id, position, type, selected, label } ) => {
       setState( 'picked', { id, position, type, selected, label } );

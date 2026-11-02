@@ -6,6 +6,7 @@ import { createT, useThree } from 'solid-three';
 const T = createT({ Group, Mesh, MeshLambertMaterial, LineSegments, LineBasicMaterial });
 
 import { useInteractionSurface } from "./context/interaction.jsx";
+import { createRectTest } from "./rectpicking.js";
 
 import { GLTFExporter } from "three-stdlib";
 import { Label } from "./labels.jsx";
@@ -220,8 +221,24 @@ export const ShapedGeometry = ( props ) =>
     const [ nearest ] = raycaster .intersectObjects( [ ...pickables.keys() ], false );
     return nearest? pickables .get( nearest.object )() : null;
   }
+  // Marquee selection: every instance whose mesh vertices all project inside the rectangle.
+  const hitsInRect = ( rect ) =>
+  {
+    const test = createRectTest( three.camera, three.canvas, rect );
+    const hits = [];
+    for ( const [ mesh, getHit ] of pickables ) {
+      test .setModelMatrix( mesh.matrixWorld );
+      const positions = mesh.geometry .getAttribute( 'position' );
+      let inside = true;
+      for ( let i = 0; inside && i < positions.count; i++ )
+        inside = test .contains( positions .getX( i ), positions .getY( i ), positions .getZ( i ) );
+      if ( inside )
+        hits .push( getHit() );
+    }
+    return hits;
+  }
   if ( surface )
-    onCleanup( surface .addHitSource( { pickAt } ) );
+    onCleanup( surface .addHitSource( { pickAt, hitsInRect } ) );
 
   let groupRef;
   createEffect( () => {

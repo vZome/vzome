@@ -5,7 +5,8 @@ import { createContext, createEffect, createSignal, useContext } from "solid-js"
 //
 // InteractionToolProvider owns all gesture recognition for one canvas.  Renderers never see
 // the tool: they register as hit sources (addHitSource), answering "what is under this
-// point?" with an opaque hit record.  The canvas registers itself (attachCanvas), and the
+// point?" with an opaque hit record (pickAt), and optionally "what lies entirely inside this
+// screen rectangle?" (hitsInRect, for marquee selection).  The canvas registers itself (attachCanvas), and the
 // provider turns its raw pointer events into tool calls:
 //
 //   onClick( e, hit )         a left-button click on something
@@ -26,7 +27,8 @@ import { createContext, createEffect, createSignal, useContext } from "solid-js"
 // { title, lines } or just a title string, for a canvas that displays it (see hint below).
 //
 // The canvas also registers its camera control (setCameraControl), a CameraTrackball (see
-// ../cameratrackball.js); tools reach it through useCameraControl().
+// ../cameratrackball.js); tools reach it through useCameraControl().  Tools can draw over the
+// canvas with setOverlay( component ), e.g. a marquee rectangle; null removes it.
 
 const InteractionToolContext = createContext();
 
@@ -79,6 +81,21 @@ const InteractionToolProvider = (props) =>
     }
     return null;
   }
+
+  // Every hit, from every source that supports rectangles; rect is { left, top, right, bottom }
+  // in client coordinates.
+  const hitsInRect = async rect =>
+  {
+    const hits = [];
+    for ( const source of hitSources() )
+      if ( source .hitsInRect )
+        hits .push( ...await source .hitsInRect( rect ) );
+    return hits;
+  }
+
+  // A component the canvas renders over itself, in a layer the same size as the canvas.
+  const [ overlay, setOverlaySignal ] = createSignal( null );
+  const setOverlay = component => setOverlaySignal( () => component );
 
   // Let hit sources prepare for picking (e.g. the GPU picking renderer, whose lazy
   // initialization otherwise stalls the first click) as soon as a tool that picks is active.
@@ -258,7 +275,7 @@ const InteractionToolProvider = (props) =>
   };
 
   return (
-    <InteractionToolContext.Provider value={ { tool: wrappedTool, setTool, addHitSource, attachCanvas, setCameraControl, cameraControl, hint } }>
+    <InteractionToolContext.Provider value={ { tool: wrappedTool, setTool, addHitSource, attachCanvas, setCameraControl, cameraControl, hint, hitsInRect, overlay, setOverlay } }>
       {props.children}
     </InteractionToolContext.Provider>
   );
@@ -272,8 +289,9 @@ const useInteractionTool = () =>
   return context? [ context.tool, context.setTool ] : [];
 }
 
-// For renderers and the canvas: { addHitSource, attachCanvas, setCameraControl, hint }, or
-// undefined outside any InteractionToolProvider.
+// For renderers, the canvas, and tools that need more than gestures: { addHitSource,
+// attachCanvas, setCameraControl, hint, hitsInRect, overlay, setOverlay }, or undefined outside
+// any InteractionToolProvider.
 const useInteractionSurface = () => useContext( InteractionToolContext );
 
 // For tools: the canvas's camera control.  Each gesture method takes a drag's pointerdown event

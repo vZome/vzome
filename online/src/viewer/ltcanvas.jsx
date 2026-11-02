@@ -4,6 +4,7 @@ import { WebGPURenderer } from 'three/webgpu';
 import { createEffect, createRenderEffect, createResource, createSignal, mergeProps, onCleanup, For, Show, Suspense } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
+import { Dynamic } from "solid-js/web";
 import { Canvas, createT, createXR, useFrame } from 'solid-three';
 const T = createT({ Group, Mesh, AmbientLight, DirectionalLight });
 
@@ -224,6 +225,12 @@ export const LightedTrackballCanvas = ( props ) =>
 
           </WebXRSupport>
         </Canvas>
+        {/* Whatever the active tool draws over the canvas, e.g. a marquee rectangle. */}
+        <Show when={ surface ?.overlay() }>{ overlay =>
+          <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', 'pointer-events': 'none' }}>
+            <Dynamic component={ overlay() } />
+          </div>
+        }</Show>
         {/* Only canvases that ask for it show the hint panel. */}
         <Show when={ props.hints && surface ?.hint() }>
           <HintPanel hint={ surface.hint() } />
