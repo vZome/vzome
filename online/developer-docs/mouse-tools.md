@@ -1,6 +1,6 @@
 # Design Note: The Mouse Tool Framework
 
-Status (2026-11-02): steps 1 to 5 of the suggested order are implemented.
+Status (2026-11-03): steps 1 to 6 of the suggested order are implemented.
 
 - Step 1: gesture recognition in `InteractionToolProvider`, hit sources, `picks`, and early
   picking-renderer warm-up.
@@ -32,6 +32,11 @@ Status (2026-11-02): steps 1 to 5 of the suggested order are implemented.
   symmetry renderer through the provider's generic hover picking.  Buildplane's drags now use
   `CameraTrackball` instead of `TrackballControls` (same touch and A/S/D-key losses as step 2).
   `TrackballControls` remains only in the viewer and 59icosahedra.
+- Step 6 (redesigned and implemented 2026-11-03): the "classic preference" became two
+  independent build-mode options, `vzome.buildClick` and `vzome.buildDrag`, and the editor
+  stays at three tools.  `StrutDragTool` became the `useStrutDrag()` hook, and `BuildTool`
+  (`app/classic/tools/build.jsx`) is composed from the option tables.  The modes are a
+  `MODES` array in `editor.jsx`.  See "Build-mode options" and recommendation step 4.
 
 Everything else is still a recommendation.
 
@@ -42,7 +47,7 @@ This note evaluates that framework against four goals and recommends how to evol
    and strut creation.  Online splits these into separate modes, because the combined tool
    confuses users, makes accidental struts easy, and makes it hard to decide which gesture
    a drag is.  We still want to offer the combined behavior as an option for users who
-   know desktop (the "classic preference" below).
+   know desktop (the "build-mode options" below).
 2. **Marquee selection** in the editor: drag a box on screen and select every object whose
    projection falls inside it.
 3. **No built-in construction metaphor.**  The framework must make no assumptions about
@@ -56,7 +61,8 @@ inside it, make hits opaque records from pluggable sources, and keep everything 
 balls, struts and selection out of the framework and in each app's behaviors.  Replace
 `TrackballControls` in the editor and buildplane with our own camera trackball.  For
 users, offer three orthogonal modes (camera, select, build), explain them with a hint bar
-over the canvas, and offer desktop-style building as an opt-in preference.**
+over the canvas.  Two opt-in preferences add clicks and other drags to build mode;
+desktop-style building is one setting of the two.**
 
 ---
 
@@ -128,7 +134,7 @@ is missing is the plumbing around it.
    cancelling it once the pick resolves would visibly jerk the camera.
 2. **Only drags that start on an object exist as drags.**  `symmetry-geometry.jsx`
    forwards pointermove only when the pick hit something.  On pointerup after a miss it
-   always calls `bkgdClick`, however far the pointer moved.  In the classic preference,
+   always calls `bkgdClick`, however far the pointer moved.  In a desktop-style build mode,
    every camera rotation would end with Deselect All, and a marquee drag has nowhere to
    start.
 3. **Click/drag recognition is spread across three files.**  The provider,
@@ -216,10 +222,11 @@ Choices behind this table:
   toggle (`SelectManifestation`) rather than replace.  "Replace" is a background click
   followed by a marquee.  No add/replace modifier is needed.  A "subtract" modifier can
   come later if people ask for it.
-- **Camera mode doesn't select, and build mode doesn't rotate.**  A drag in build mode that
-  the build metaphor doesn't use does nothing.  Making it rotate would bring back the
-  desktop problem this design started from: accidental struts when the user meant to
-  rotate.  The hint bar (below) says what to do instead.
+- **Camera mode doesn't select, and by default build mode doesn't rotate.**  By default, a
+  drag in build mode that the build metaphor doesn't use does nothing.  Making it rotate
+  would bring back the desktop problem this design started from: accidental struts when the
+  user meant to rotate.  The hint bar (below) says what to do instead.  Users who want
+  rotation or selection in build mode can opt in (see "Build-mode options").
 
 ### Build metaphors
 
@@ -238,8 +245,9 @@ The standalone `buildplane` app has no mode toolbar, so its tool adds camera rot
 drag to the click-to-join metaphor.  That is an app-level choice, made by composing
 behaviors, not something the framework has to know about.
 
-A click in the drag-out metaphor does nothing (decided 2026-11-02): strict orthogonality, so
-build mode never changes the selection.
+By default, a click in the drag-out metaphor does nothing (decided 2026-11-02): strict
+orthogonality, so build mode never changes the selection.  The build-mode options below
+can change that.
 
 ### Showing users what the mouse will do
 
@@ -265,11 +273,11 @@ Two cheap reinforcements:
 - **two-line tooltips** on the mode buttons ("Click: select · Drag: box select"),
   including the mode's shortcut key.
 
-**Letting users compose behaviors themselves was considered and rejected.**  Every
-combination would have to resolve conflicts (two behaviors claiming the same drag), and
-each would have to be documented and supported.  Curated combinations, such as the classic
-preference, give most of the benefit.  The code is built by composition (step 4), so more
-presets would be cheap if people ask for them.
+**Letting users compose arbitrary behaviors themselves was considered and rejected.**
+Every combination would have to resolve conflicts (two behaviors claiming the same drag),
+and each would have to be documented and supported.  Users choose only among a few
+build-mode options, which never conflict, because each one fills a gesture that build mode
+otherwise leaves unused (see "Build-mode options").
 
 ### Easing mode switches
 
@@ -289,26 +297,58 @@ works only in camera mode (by reading: `TrackballControls`, which handles the wh
 disabled whenever `allowTrackball` is false).  They do lose click-to-select while in build
 mode.  No setting is needed for this group.
 
-### Desktop users: the classic preference
+### Build-mode options
 
-Desktop users opt in with a preference.  For now it is a flag in `localStorage` (e.g.
-`vzome.classicMouse`), read inside try/catch and treated as off if storage is
-unavailable.  It changes only build mode's drag-out metaphor, into desktop's
-combination:
+The editor always shows the same three buttons: camera, select and build.  Build mode
+always builds a strut when a drag starts on a ball.  Two independent preferences fill the
+gestures it otherwise leaves unused:
 
-| Mode | Click | Drag from a ball | Drag from anywhere else | Wheel |
-|---|---|---|---|---|
-| **Build (classic)** | select (toggles) / background: deselect all | build a strut | rotate | zoom; strut length while building |
+| Preference | Values | Default | What it adds to build mode |
+|---|---|---|---|
+| **Build click** | `none`, `select` | `none` | `select`: a click toggles selection; a click on empty space deselects all |
+| **Build drag** | `none`, `rotate`, `marquee` | `none` | a left-drag that doesn't start on a ball: `rotate` the camera (snapping at the end), or draw a `marquee` that adds to the selection |
 
-- A drag from a strut or panel rotates, as on desktop, where the trackball filter checks
-  only for a ball (`Connector`).
-- Camera and select modes are unchanged.  Desktop users who want a marquee switch to
-  select mode like everyone else, so the preference needs no modifier keys.
+For now each is a `localStorage` key (`vzome.buildClick`, `vzome.buildDrag`), read inside
+try/catch when the editor opens.  An unknown value, or storage that is unavailable, means
+`none`.
 
-Classic build mode is effectively desktop's single mode.  If many people turn the
-preference on and like it, that is evidence for revisiting the default.  The original
-objection still stands, though: on desktop, accidental struts happen precisely when the
-user is trying to rotate.
+"Desktop mode" is not a separate feature.  It is documentation telling users to set
+**`select` + `rotate`**.  Some combinations worth naming in that documentation:
+
+| Click | Drag | Gives |
+|---|---|---|
+| `none` | `none` | the default: build mode only builds |
+| `select` | `rotate` | desktop vZome's single mode |
+| `select` | `marquee` | today's `main`-branch select mode, plus marquee |
+| `select` | `none` | exactly today's `main`-branch select mode |
+
+For example, from the browser console:
+`localStorage.setItem('vzome.buildClick', 'select'); localStorage.setItem('vzome.buildDrag', 'rotate')`.
+
+Notes:
+
+- **A drag from a strut or panel counts as "not on a ball."**  It rotates or draws a
+  marquee, as on desktop, where the trackball filter checks only for a ball (`Connector`).
+  With `marquee`, the only box that can't be drawn in build mode is one starting on a ball;
+  select mode remains the place for that.
+- **Camera and select modes never change.**  So the clicks in `select` mode are redundant
+  with select mode on purpose: a click means the same thing in both, and switching modes
+  never changes it.
+- **The UI reflects the options.**  The build button's tooltip and the hint panel list
+  the lines each chosen value adds, so a user can see what their preferences do.
+- **The cost of the options is ambiguity by target.**  With `rotate` or `marquee`, what a
+  left-drag does depends on whether it starts on a ball, and a near miss changes the
+  outcome: a drag just beside a ball rotates or selects instead of building, and a click
+  that drifts more than 2px builds a strut instead of selecting.  That is desktop's
+  behavior, and it is why both options are off by default.  Context-sensitive cursors and
+  hints (step 7) matter more for users who turn them on.
+- **Panning in build mode** still means camera mode (C, or hold Alt).  Right-click stays the
+  context menu, because on macOS `contextmenu` fires on the press and can't share the
+  button with a right-drag.
+
+If many people turn on `select` + `rotate` and like it, that is evidence for revisiting the
+default.  The original objection still stands, though: on desktop, accidental struts happen
+precisely when the user is trying to rotate.
 
 ### Not covered
 
@@ -366,49 +406,80 @@ through without looking inside it, except for a `source` tag:
 - the scene renderer (SymmetryGeometry or ShapedGeometry) answers
   `{ source: 'scene', id, position, type, selected, label }`, and both renderers return
   the same shape (fixing weakness 6);
-- tool-owned widgets, such as buildplane's disks and hoops, register as a second source
-  and answer with whatever data the widget attaches, e.g. `{ source: 'widget', zone }`.
-  Widgets are few and drawn on top, so they can be raycast on the CPU and consulted before
-  the scene's GPU pick.  Widget gestures then go through the same click/drag arbitration
-  (fixing weakness 7).
+- tool-owned widgets, such as buildplane's disks, hoops and build dots, register as a
+  second source and answer with whatever the tool attaches.  Buildplane's widgets answer
+  `{ source: 'widget', id, click, hover }`, carrying their own actions.  Widgets are few,
+  so they are raycast on the CPU (`src/viewer/raycasting.js`).  Widget gestures then go
+  through the same click/drag arbitration (fixing weakness 7).
 
-A hit source offers `pickAt( x, y )`, and optionally `hitsInRect( rect, mode )` for
-marquee selection (step 5).
+A hit source offers `pickAt( x, y )`, and optionally `hitsInRect( rect )` for marquee
+selection (step 5), `warmUp()` to prepare for picking early (step 6), and a `priority`.
+The provider asks sources in priority order (default 0, higher first) and takes the first
+hit.  It can't take the nearest hit instead, because the scene's GPU pick reports no
+depth.  Buildplane registers its widgets at priority -1, so they answer only where the
+scene has nothing.  Otherwise its large translucent disk would hide every ball seen
+through it.
 
 **Tools declare what they need, instead of `allowTrackball`.**  For example
 `picks: { click: true, drag: false }`: select mode picks on click, but every drag is a
-marquee, so it skips the pick cost on drag; the camera tool needs neither.  A tool that
-doesn't declare `picks` gets both.  This replaces the second meaning of `allowTrackball`
-(weakness 5).  `allowTrackball`, `onTrackballEnd` and `grabTool` leave the contract
-entirely; camera behavior becomes an ordinary behavior (steps 3 and 4).
+marquee, so it skips the pick cost on drag; the camera tool needs none of the three
+(`NO_PICKS`).  A tool that doesn't declare `picks` gets all three: click, drag and hover.
+This replaces the second meaning of `allowTrackball` (weakness 5).  Camera behavior
+becomes an ordinary behavior (steps 3 and 4).  `allowTrackball`, `onTrackballEnd` and
+`grabTool` remain only for tools that still rely on `TrackballControls`: the viewer and
+59icosahedra.
 
 **Hover is part of the contract.**  The provider sends `onHover( e, hit )` only to tools
-that define it (or that compute hints from the hit, below).  The scene renderer then picks
-at most once per frame while the pointer moves without a button down.  SymmetryGeometry
-needs this added; the click-to-join metaphor depends on it.
+that define it and declare `picks.hover`, and only when the hit under the pointer changes
+(`hit` is null when the pointer leaves everything).  The provider picks at most once per
+frame while the pointer moves without a button down, through the same hit sources as
+clicks, so no renderer needs hover code of its own.  The click-to-join metaphor depends
+on it.
 
-**Hints are part of the contract.**  A tool supplies `hint`: either a fixed string, or a
-function of the hit under the pointer, for the context-sensitive version.  The provider
-publishes the current hint, and `ltcanvas.jsx` renders the hint bar.  The framework
-displays the text without knowing what it says.
+**Hints are part of the contract.**  A tool supplies `hint`: `{ title, lines }`, or just a
+title string.  The provider publishes the current tool's hint, and `ltcanvas.jsx` renders
+it in the hint panel, on canvases that ask for one (`hints` on `SceneCanvas`; the editor
+does, buildplane doesn't).  The framework displays the text without knowing what it says.
+A hint that depends on the hit under the pointer is step 7.
 
 **The overlay is generic.**  Tools render inside the solid-three tree, so they can't
 easily put HTML over the canvas.  The provider offers `setOverlay( jsx | null )`, and
 `ltcanvas.jsx` renders it in a positioned layer over the canvas.  The marquee rectangle
 is the first user; nothing about it is marquee-specific.
 
-**Acceptance test:** `BuildPlaneTool` written against the new contract, with no
-framework changes made just for it:
+**Acceptance test:** `BuildPlaneTool` written against the new contract.  The only
+framework change it needed was hit-source `priority`, described above.  Abridged from
+`src/app/buildplane/buildplane.jsx`:
 
 ```jsx
-useTool( {
-  picks: { click: true, drag: false },
-  hint: 'click a ball — set center or join   drag — rotate',
-  onClick: ( e, hit ) => hit.source === 'widget' ? widgetClick( hit ) : sceneClick( hit ),
-  bkgdClick: () => dispatch( doToggleDisk() ),
-  onHover: ( e, hit ) => previewTo( hit ),
+// The widgets' hit source, asked after the scene.  Widget components register their meshes
+// with widgetRef( widgets, { click, hover } ), so each hit record carries its own actions.
+const widgets = createRaycastHitSource( useThree() );
+onCleanup( surface .addHitSource( { pickAt: widgets.pickAt, priority: -1 } ) );
+
+setTool( {
+  picks: { click: true, drag: false, hover: true },
+  cursor: 'cell',
+  suppressContextMenu: true, // the right button pans
+
+  // Every drag moves the camera: this app has no separate camera mode.
+  onDragStart: e => {
+    switch ( e.button ) {
+      case 0:  return e.shiftKey? camera.pan( e ) : camera.rotate( e );
+      case 1:  return camera.zoom( e );
+      case 2:  return camera.pan( e );
+      default: return null;
+    }
+  },
   onWheel: camera.onWheel,
-  onDragStart: e => camera.rotate( e ),
+
+  bkgdClick: () => dispatch( doToggleDisk() ),
+  onClick: ( e, hit ) => ( hit.source === 'widget' )? hit.click?.() : sceneClick( hit ),
+                                               // ball: set center or join; strut: set hinge
+  onHover: ( e, hit ) => {
+    // widgets: hover( true / false ) on enter and leave; balls: preview a strut to them;
+    // anything else (e.g. the disk) counts as nothing, clearing the preview
+  },
 } );
 ```
 
@@ -442,65 +513,130 @@ adjusted during a strut drag, as desktop's `previewStrutLength` does.
 Once the decision happens at drag start, reuse is easy (contrary to the comment at the top
 of `unified.jsx`).
 
-**Behaviors become hooks, not components.**  `StrutDragTool` is a component today only
-because it renders `<ObjectTrackball>`, which exists to attach its own `document`
-listeners.  Once the provider delivers every move, the strut roll is just a call to the
-shared trackball helper, and nothing is left to render except the debug arrow.  So:
+**Behaviors become hooks, not tools.**  Each behavior is a hook that a tool calls, and each
+returns handlers or a `startDrag` that the tool routes to:
 
-- `useCameraControl()` (framework) returns `{ rotate( e, options ), pan( e ), onWheel }`;
-- `useSelection()` (classic) returns `{ onClick, bkgdClick, onContextMenu }`;
-- `useMarquee()` (classic) returns `{ startDrag( e ) }` (step 5);
-- `useStrutBuild()` (classic) returns `{ startDrag( e, hit ) }`: the drag-out metaphor;
+- `useCameraControl()` (framework) returns `{ rotate( e, options ), pan( e ), zoom( e ), onWheel }`;
+- `useSelectClicks()` (classic, `tools/selection.jsx`) returns `{ onClick, bkgdClick }`;
+- `useMarquee()` (classic, `tools/marquee.jsx`) returns `{ startDrag( e ) }`;
+- `useStrutDrag()` (classic, `tools/strutdrag.jsx`) returns `{ startDrag( e, hit ), Preview }`:
+  the drag-out metaphor.  `startDrag` returns `null` unless the drag is a left-drag from a
+  ball.  `Preview` is a component the tool renders: it puts `<ObjectTrackball>`, which rolls
+  the preview strut's direction, in the scene during a drag.  (It still attaches its own
+  `document` listeners; moving the roll onto the drag object's `onDrag` would leave nothing
+  to render, and is a possible later cleanup.)
 - buildplane's click-to-join metaphor is its own behavior in `src/app/buildplane/`.
 
-`rotate`, `pan` and `startDrag` all return the drag object described in step 1.
+`rotate`, `pan`, `zoom` and every `startDrag` return the drag object described in step 1.
 
-**Each tool states its routing by hand.**  A tool is a few lines (`useTool` would be a
-small wrapper around today's `setTool` call):
+**Three tools; build mode's options are data.**  `CameraTool` and `SelectionTool` route
+their gestures by hand, as they do now.  There is only one build tool, not one per option
+combination.  Each option value is a row in a table: its hint lines at module level, so the
+toolbar tooltip can share them, and its behavior inside the tool, where the hooks are
+available.  The tool picks one row from each table:
 
 ```jsx
-const isBall = hit => hit?.source === 'scene' && hit.type === 'ball';
+// tools/build.jsx
 
-const CameraTool = () => {        // replaces SnapCameraTool
-  const camera = useCameraControl(), { snapCamera } = useSymmetry();
-  useTool( { picks: { click: false, drag: false }, onWheel: camera.onWheel,
-    hint: 'drag — rotate   right-drag or shift-drag — pan   wheel — zoom',
-    onDragStart: e => ( e.button === 2 || e.shiftKey ) ? camera.pan( e )
-                                                       : camera.rotate( e, { onEnd: snapCamera } ) } );
+// Each option value's hint lines.  BuildTool supplies the matching behavior.
+export const BUILD_CLICKS = {
+  none:   [],
+  select: [ 'Click: select or deselect', 'Click empty space: deselect all' ],
+};
+export const BUILD_DRAGS = {
+  none:    [],
+  rotate:  [ 'Drag elsewhere: rotate' ],
+  marquee: [ 'Drag elsewhere: add everything inside a box' ],
 };
 
-const SelectTool = () => {        // revives SelectionTool, plus marquee
-  const camera = useCameraControl(), select = useSelection(), marquee = useMarquee();
-  useTool( { ...select, picks: { click: true, drag: false }, onWheel: camera.onWheel,
-    hint: 'click — select/deselect   drag — box select',
-    onDragStart: e => marquee.startDrag( e ) } );
-};
+// { click, drag } from localStorage ('vzome.buildClick', 'vzome.buildDrag'), each 'none'
+// unless it names a key of its table; every access inside try/catch.
+export const readBuildOptions = () => ...;
 
-const BuildTool = () => {         // drag-out metaphor; revives StrutDragTool
-  const camera = useCameraControl(), strut = useStrutBuild();
-  useTool( { onWheel: camera.onWheel,
-    hint: hit => isBall( hit ) ? 'drag — build a strut' : 'drag from a ball to build a strut',
-    onDragStart: ( e, hit ) => isBall( hit ) ? strut.startDrag( e, hit ) : null } );
-};
+// What build mode does with these options, for the hint panel and the toolbar tooltip.
+export const buildSummary = ( { click = 'none', drag = 'none' } = {} ) =>
+  [ 'Drag from a ball: build a strut', ...BUILD_CLICKS[ click ], ...BUILD_DRAGS[ drag ] ];
 
-const ClassicBuildTool = () => {  // the classic preference
-  const camera = useCameraControl(), select = useSelection(), strut = useStrutBuild();
-  useTool( { ...select, onWheel: camera.onWheel,
-    hint: hit => isBall( hit ) ? 'drag — build a strut' : 'click — select   drag — rotate',
-    onDragStart: ( e, hit ) => isBall( hit ) ? strut.startDrag( e, hit ) : camera.rotate( e ) } );
-};
+export const BuildTool = props =>   // props: { click, drag }, from readBuildOptions()
+{
+  const { setState } = useEditor();
+  const { snapCamera } = useSymmetry();
+  const camera = useCameraControl();
+  const strut = useStrutDrag();
+  const marquee = useMarquee();
+
+  // The behavior for each option value: hooks are called unconditionally, and only the
+  // chosen entries are used.
+  const clicks = { none: {}, select: useSelectClicks() };
+  const drags = {
+    none:    () => null,
+    rotate:  e => camera.rotate( e, { onEnd: snapCamera } ),
+    marquee: e => marquee.startDrag( e ),
+  };
+
+  const [ _, setTool ] = useInteractionTool();
+  createEffect( () => {
+    const click = props.click || 'none';
+    const drag = drags[ props.drag ] || drags.none;
+    const [ ballDrag, ...others ] = buildSummary( props );
+    setTool( {
+      cursor: 'cell',
+      // A pick on click only when a click does something: without one, the provider never
+      // calls onClick or bkgdClick.
+      picks: { click: click !== 'none', drag: true, hover: false },
+      hint: {
+        title: 'Build mode (B)',
+        lines: [ ballDrag, 'Wheel while dragging: strut length', ...others,
+                 'Wheel: zoom', 'Right-click: menu', 'Hold Alt: camera mode' ],
+      },
+      ...clicks[ click ],
+      // The strut drag always comes first: only a left-drag that it declines (not from a
+      // ball) reaches the option.  Other buttons do nothing; right-click is the menu.
+      onDragStart: ( e, hit ) => strut.startDrag( e, hit ) || ( ( e.button === 0 )? drag( e ) : null ),
+      onWheel: camera.onWheel,   // the strut drag object claims the wheel while it lasts
+      onContextMenu: ( e, hit ) => setState( 'picked', hit ),
+    } );
+  } );
+
+  return <strut.Preview debug={props.debug} />;
+}
 ```
 
-The rejected alternative is a generic `combine( select, strut, camera )` that offers each
-drag to the behaviors in order, the first to accept winning.  That is the "first one eats"
-chain desktop's principle 1 rejects: order would matter without being visible, and a tool's
-behavior would no longer be readable in one place.  With a handful of tools, writing the
-routing by hand is shorter and clearer.  If tools multiply, a helper can come later.
+The routing is still explicit in one line of `onDragStart`, not a generic "first one eats"
+chain.  The rejected alternative was `combine( select, strut, camera )`, which offers each
+drag to the behaviors in order and lets the first to accept win.  That is the chain
+desktop's principle 1 rejects: order would matter without being visible, and a tool's
+behavior would no longer be readable in one place.  Here the order is fixed (strut first),
+and the options only fill what the strut drag leaves unused, so they can't conflict.
 
-Switching tools at runtime needs nothing new: the `Switch` in `editor.jsx` mounts one
-tool component or another, as it does for the two modes today; it gains a third branch.
-The classic preference just chooses `ClassicBuildTool` instead of `BuildTool` for build
-mode.
+**The modes are data too.**  `editor.jsx` keeps one array, and the toolbar buttons, the C
+/ S / B keys and the active tool all come from it.  So adding or reordering a mode is a
+one-place change:
+
+```jsx
+const MODES = [
+  { value: 'camera', key: 'KeyC', label: 'Camera (C)', Tool: CameraTool, Icon: ...,
+    summary: () => [ 'Drag: rotate', 'Right-drag: pan', 'Wheel: zoom' ] },
+  { value: 'select', key: 'KeyS', label: 'Select (S)', Tool: SelectionTool, Icon: ...,
+    summary: () => [ 'Click: select', 'Click empty space: deselect all' ] },
+  { value: 'build',  key: 'KeyB', label: 'Build (B)',  Tool: BuildTool,     Icon: ...,
+    summary: buildSummary },
+];
+
+// In SceneEditor:
+const buildOptions = readBuildOptions();   // read once, when the editor opens
+...
+<Dynamic component={ currentMode() .Tool } {...buildOptions} />
+...
+<For each={MODES}>{ m =>
+  <ToggleButton value={ m.value } aria-label={ m.value }
+      title={ [ m.label, m.summary( buildOptions ) .join( ' · ' ) ] .join( '\n' ) }>
+    <m.Icon/>
+  </ToggleButton>
+}</For>
+```
+
+Hold-Alt keeps working as it does now: camera mode, then back to the last editing mode.
 
 ### 5. Marquee selection
 
@@ -604,10 +740,17 @@ WebXR code is in `ltcanvas.jsx`, so it can, but the viewer is clearly the main u
 4. Marquee selection in `SelectTool`.
 5. Buildplane on the new framework: widgets as a hit source, hover in SymmetryGeometry,
    declared picking.  This is the test of recommendation step 2.
-6. `ClassicBuildTool` behind the `localStorage` preference.
-7. Context-sensitive hints.
+6. Build-mode options: the behavior hooks (`useStrutDrag`, `useSelectClicks`), one
+   `BuildTool` composed from the two option tables, the modes as data in `editor.jsx`, and
+   the two `localStorage` preferences.  With both options at `none`, nothing changes for
+   users, so the refactor can be tested against step 3's behavior first.
+7. Context-sensitive hints and cursors, which matter most once a build option is on.
 
 ### Open decisions
 
-- Where the classic preference is eventually exposed in the UI, beyond the
-  `localStorage` flag.
+- Where the build-mode options are eventually exposed in the UI, beyond `localStorage`.
+- Where the "desktop mode" instructions (`select` + `rotate`) live for users: the news
+  post, the online help, or both.
+- Whether the editor should notice a change to the options while it is open (a `storage`
+  event, or a settings UI that writes through a signal).  For now they are read when the
+  editor opens.

@@ -5,13 +5,31 @@ import { useInteractionTool, useCameraControl } from "../../../viewer/context/in
 import { subController, useEditor } from '../../framework/context/editor.jsx';
 import { useMarquee } from './marquee.jsx';
 
+// Selecting by clicks, as a behavior for tools: { onClick, bkgdClick } handlers that select or
+// deselect the object clicked, or deselect everything on a click in empty space.
+export const useSelectClicks = () =>
+{
+  const { rootController, controllerAction } = useEditor();
+  const pickingController  = () => subController( rootController(), 'picking' );
+
+  return {
+    onClick: ( e, hit ) => {
+      controllerAction( pickingController(), 'SelectManifestation', { id: hit.id } )
+    },
+    bkgdClick: () =>
+    {
+      controllerAction( rootController(), 'DeselectAll' );
+    },
+  };
+}
+
 // Select mode: only changes the selection.  Click an object to select or deselect it; click empty
 // space to deselect everything; drag anywhere, even from an object, to add everything inside a box.
 const SelectionTool = props =>
 {
-  const { rootController, setState, controllerAction } = useEditor();
-  const pickingController  = () => subController( rootController(), 'picking' );
+  const { setState } = useEditor();
   const camera = useCameraControl();
+  const clicks = useSelectClicks();
   const marquee = useMarquee();
 
   const handlers = {
@@ -30,13 +48,7 @@ const SelectionTool = props =>
       ],
     },
 
-    onClick: ( e, hit ) => {
-      controllerAction( pickingController(), 'SelectManifestation', { id: hit.id } )
-    },
-    bkgdClick: () =>
-    {
-      controllerAction( rootController(), 'DeselectAll' );
-    },
+    ...clicks,
     onDragStart: e => ( e.button === 0 )? marquee.startDrag( e ) : null,
     onWheel: camera.onWheel,
     onContextMenu: ( e, { id, position, type, selected, label } ) => {

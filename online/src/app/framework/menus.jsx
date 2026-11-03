@@ -1,5 +1,5 @@
 
-import { mergeProps, Show, Switch } from "solid-js";
+import { mergeProps, onCleanup, Show, Switch } from "solid-js";
 
 import { Link } from "@kobalte/core/link";
 import { Menubar } from "@kobalte/core/menubar";
@@ -164,8 +164,29 @@ export const Choices = props =>
 
 export const ContextualMenuArea = props =>
 {
+  // While the menu is open, Kobalte makes the rest of the page ignore the pointer, so a second
+  // right-click never reaches the trigger, and the browser would show its own menu over ours.
+  // Kobalte closes the menu on the pointerdown, before the contextmenu event arrives, so what
+  // matters is whether the menu was open when the press started.
+  let open = false;
+  let openAtPress = false;
+  const onOpenChange = isOpen =>
+  {
+    open = isOpen;
+    props.onOpenChange ?.( isOpen );
+  }
+  const onPointerDown = () => openAtPress = open;
+  const onContextMenu = e => ( open || openAtPress ) && e .preventDefault();
+  // Capturing on window, ahead of Kobalte's own document listeners.
+  window .addEventListener( 'pointerdown', onPointerDown, true );
+  window .addEventListener( 'contextmenu', onContextMenu, true );
+  onCleanup( () => {
+    window .removeEventListener( 'pointerdown', onPointerDown, true );
+    window .removeEventListener( 'contextmenu', onContextMenu, true );
+  } );
+
   return (
-    <ContextMenu onOpenChange={props.onOpenChange}>
+    <ContextMenu onOpenChange={onOpenChange}>
       <ContextMenu.Trigger class={`context-menu__trigger ${props.class}`} disabled={props.disabled}>
         {props.children}
       </ContextMenu.Trigger>

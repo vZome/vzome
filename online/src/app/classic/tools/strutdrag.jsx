@@ -4,7 +4,6 @@ import { createT } from 'solid-three';
 import { Group } from "three";
 const T = createT({ Group });
 
-import { useInteractionTool, useCameraControl } from '../../../viewer/context/interaction.jsx';
 import { ObjectTrackball } from './trackball.jsx';
 import { VectorArrow } from './arrow.jsx';
 import { useEditor } from '../../framework/context/editor.jsx';
@@ -12,9 +11,10 @@ import { useCamera } from '../../../viewer/context/camera.jsx';
 
 /*
 
-Build mode, with the "drag out struts" metaphor: drag from a ball to build a strut, rolling its
-direction like a trackball, with the wheel adjusting its length while dragging.  Clicks do nothing;
-selecting is for select mode.
+Strut dragging, as a behavior for tools: drag from a ball to build a strut, rolling its direction
+like a trackball, with the wheel adjusting its length while dragging.  startDrag( e, hit ) returns
+the drag object, or null if the drag didn't start on a ball.  The tool must render Preview, which
+puts the ObjectTrackball in the scene while a strut is being dragged.
 
 After digging through three.js TrackballControls.js
 
@@ -29,11 +29,10 @@ of TrackballControls.js and implement the transformations myself.  See ObjectTra
 
 */
 
-const StrutDragTool = props =>
+export const useStrutDrag = () =>
 {
   const { state } = useCamera();
-  const { startPreviewStrut, endPreviewStrut, movePreviewStrut, scalePreviewStrut, setState } = useEditor();
-  const camera = useCameraControl();
+  const { startPreviewStrut, endPreviewStrut, movePreviewStrut, scalePreviewStrut } = useEditor();
 
   const [ line, setLine ] = createSignal( [ 0, 0, 1 ] );
   const [ operating, setOperating ] = createSignal( null );
@@ -41,60 +40,37 @@ const StrutDragTool = props =>
 
   const MOUSE_WHEEL_TICKS_PER_SCALE = 25;
 
-  const handlers = {
-
-    cursor: 'cell',
-
-    picks: { click: false, drag: true, hover: false },
-
-    hint: {
-      title: 'Build mode (B)',
-      lines: [
-        'Drag from a ball: build a strut',
-        'Wheel while dragging: strut length',
-        'Wheel: zoom',
-        'Right-click: menu',
-        'Hold Alt: camera mode',
-      ],
-    },
-
-    onWheel: camera.onWheel,
-
-    onContextMenu: ( e, { id, position, type, selected, label } ) => {
-      setState( 'picked', { id, position, type, selected, label } );
-    },
-
-    onDragStart: ( evt, hit ) => {
-      if ( evt.button !== 0 || hit ?.source !== 'scene' || hit.type !== 'ball' )
-        return null;
-      let totalY = 0;
-      setPosition( hit.position );
-      const eye = state .camera .lookDir .map( x => -x ); // invert the lookDir to get eye direction in world coordinates
-      setLine( eye );
-      startPreviewStrut( hit.id, eye );
-      setOperating( evt ); // so we can pass it to the ObjectTrackball
-      return {
-        onWheel: e => {
-          // Logic copied from the desktop implementation, so we are not so sensitive.
-          //    (See LengthCanvasTool.java)
-          totalY += e.deltaY;
-          let increment = 0;
-          if ( totalY > MOUSE_WHEEL_TICKS_PER_SCALE )
-            increment = +1;
-          else if ( totalY < -MOUSE_WHEEL_TICKS_PER_SCALE )
-            increment = -1;
-          if ( increment ) {
-            scalePreviewStrut( -increment ); // sense must be reversed
-            totalY = 0;
-          }
-        },
-        onDragEnd: () => {
-          setOperating( null );
-          endPreviewStrut();
-        },
-      };
-    },
-  };
+  const startDrag = ( evt, hit ) =>
+  {
+    if ( evt.button !== 0 || hit ?.source !== 'scene' || hit.type !== 'ball' )
+      return null;
+    let totalY = 0;
+    setPosition( hit.position );
+    const eye = state .camera .lookDir .map( x => -x ); // invert the lookDir to get eye direction in world coordinates
+    setLine( eye );
+    startPreviewStrut( hit.id, eye );
+    setOperating( evt ); // so we can pass it to the ObjectTrackball
+    return {
+      onWheel: e => {
+        // Logic copied from the desktop implementation, so we are not so sensitive.
+        //    (See LengthCanvasTool.java)
+        totalY += e.deltaY;
+        let increment = 0;
+        if ( totalY > MOUSE_WHEEL_TICKS_PER_SCALE )
+          increment = +1;
+        else if ( totalY < -MOUSE_WHEEL_TICKS_PER_SCALE )
+          increment = -1;
+        if ( increment ) {
+          scalePreviewStrut( -increment ); // sense must be reversed
+          totalY = 0;
+        }
+      },
+      onDragEnd: () => {
+        setOperating( null );
+        endPreviewStrut();
+      },
+    };
+  }
 
   createEffect( () => {
     if ( operating() ) {
@@ -102,10 +78,7 @@ const StrutDragTool = props =>
     }
   });
 
-  const [ _, setTool ] = useInteractionTool();
-  createEffect( () => setTool( handlers ) );
-
-  return (
+  const Preview = props => (
     <Show when={operating()}>
       <T.Group position={position()}>
         <ObjectTrackball startEvent={operating()} line={line()} setLine={setLine} rotateSpeed={0.9} debug={props.debug} />
@@ -115,6 +88,6 @@ const StrutDragTool = props =>
       </T.Group>
     </Show>
   );
-}
 
-export { StrutDragTool };
+  return { startDrag, Preview };
+}
