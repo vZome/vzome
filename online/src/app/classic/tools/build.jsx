@@ -7,51 +7,38 @@ import { useSymmetry } from '../context/symmetry.jsx';
 import { useMarquee } from './marquee.jsx';
 import { useSelectClicks } from './selection.jsx';
 import { useStrutDrag } from './strutdrag.jsx';
+import { createSetting } from '../../framework/settings.js';
 
 // Build mode: drag from a ball to build a strut, with the wheel adjusting its length while
-// dragging.  What the other gestures do is composed from two options, each a user preference
-// (see readBuildOptions below, and developer-docs/mouse-tools.md):
+// dragging.  What the other gestures do is composed from two settings (see the Settings dialog,
+// classic/settings.jsx, and developer-docs/mouse-tools.md):
 //
-//   click   what a click does:                'none' or 'select'
-//   drag    what a drag that doesn't start    'none', 'rotate' (snapping at the end, as in
-//           on a ball does:                   desktop vZome), or 'marquee'
+//   buildClick   what a click does:                'none' or 'select'
+//   buildDrag    what a left-drag that doesn't     'none', 'rotate' (snapping at the end, as in
+//                start on a ball does:             desktop vZome), or 'marquee'
 //
-// Each option value lists the hint lines describing it; BuildTool composes its behavior below.
+// Desktop vZome's behavior is 'select' with 'rotate'.  Each value has a label for the Settings
+// dialog and the hint lines describing it; BuildTool composes the matching behavior below.
 export const BUILD_CLICKS = {
-  none:   [],
-  select: [ 'Click: select or deselect', 'Click empty space: deselect all' ],
+  none:   { label: 'Nothing', lines: [] },
+  select: { label: 'Select or deselect, as in select mode',
+            lines: [ 'Click: select or deselect', 'Click empty space: deselect all' ] },
 };
 export const BUILD_DRAGS = {
-  none:    [],
-  rotate:  [ 'Drag elsewhere: rotate' ],
-  marquee: [ 'Drag elsewhere: add everything inside a box' ],
+  none:    { label: 'Nothing', lines: [] },
+  rotate:  { label: 'Rotate the view, as in camera mode',
+             lines: [ 'Drag elsewhere: rotate' ] },
+  marquee: { label: 'Select everything inside a box, as in select mode',
+             lines: [ 'Drag elsewhere: add everything inside a box' ] },
 };
 
-const BUILD_CLICK_KEY = 'vzome.buildClick';
-const BUILD_DRAG_KEY = 'vzome.buildDrag';
+export const buildClick = createSetting( 'vzome.buildClick', BUILD_CLICKS, 'none' );
+export const buildDrag = createSetting( 'vzome.buildDrag', BUILD_DRAGS, 'none' );
 
-const readOption = ( key, values ) =>
-{
-  try {
-    const value = globalThis.localStorage ?.getItem( key );
-    if ( value in values )
-      return value;
-  } catch ( e ) {
-    // localStorage can throw in sandboxed or partitioned iframes; use the default
-  }
-  return 'none';
-}
-
-// The user's build-mode options, { click, drag }, from localStorage.  Desktop vZome's behavior
-// is click 'select' with drag 'rotate'.
-export const readBuildOptions = () => ( {
-  click: readOption( BUILD_CLICK_KEY, BUILD_CLICKS ),
-  drag: readOption( BUILD_DRAG_KEY, BUILD_DRAGS ),
-} );
-
-// What build mode does with these options, beyond the general lines in the hint, e.g. for a tooltip.
-export const buildSummary = ( { click = 'none', drag = 'none' } = {} ) =>
-  [ 'Drag from a ball: build a strut', ...BUILD_CLICKS[ click ], ...BUILD_DRAGS[ drag ] ];
+// What build mode does with the current settings, beyond the general lines in the hint, e.g.
+// for a tooltip.  Reactive: it reads the settings.
+export const buildSummary = () =>
+  [ 'Drag from a ball: build a strut', ...BUILD_CLICKS[ buildClick.value() ].lines, ...BUILD_DRAGS[ buildDrag.value() ].lines ];
 
 export const BuildTool = props =>
 {
@@ -69,9 +56,10 @@ export const BuildTool = props =>
 
   const [ _, setTool ] = useInteractionTool();
   createEffect( () => {
-    const click = props.click || 'none';
-    const drag = drags[ props.drag ] || drags.none;
-    const [ ballDrag, ...others ] = buildSummary( props );
+    // Re-run whenever a setting changes, so the Settings dialog takes effect at once.
+    const click = buildClick.value();
+    const drag = drags[ buildDrag.value() ];
+    const [ ballDrag, ...others ] = buildSummary();
     setTool( {
 
       cursor: 'cell',

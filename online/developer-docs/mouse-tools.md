@@ -36,7 +36,9 @@ Status (2026-11-03): steps 1 to 6 of the suggested order are implemented.
   independent build-mode options, `vzome.buildClick` and `vzome.buildDrag`, and the editor
   stays at three tools.  `StrutDragTool` became the `useStrutDrag()` hook, and `BuildTool`
   (`app/classic/tools/build.jsx`) is composed from the option tables.  The modes are a
-  `MODES` array in `editor.jsx`.  See "Build-mode options" and recommendation step 4.
+  `MODES` array in `editor.jsx`.  Users set the options in a generic Settings dialog, to
+  which each app contributes its own categories.  See "Build-mode options" and
+  recommendation step 4.
 
 Everything else is still a recommendation.
 
@@ -308,9 +310,18 @@ gestures it otherwise leaves unused:
 | **Build click** | `none`, `select` | `none` | `select`: a click toggles selection; a click on empty space deselects all |
 | **Build drag** | `none`, `rotate`, `marquee` | `none` | a left-drag that doesn't start on a ball: `rotate` the camera (snapping at the end), or draw a `marquee` that adds to the selection |
 
-For now each is a `localStorage` key (`vzome.buildClick`, `vzome.buildDrag`), read inside
-try/catch when the editor opens.  An unknown value, or storage that is unavailable, means
-`none`.
+Users set them in the **Settings dialog** (the gear at the right end of the app bar),
+under **Build Tool**, and each change takes effect at once.  Each is a reactive setting
+(`createSetting` in `src/app/framework/settings.js`) stored in a `localStorage` key
+(`vzome.buildClick`, `vzome.buildDrag`), with every access inside try/catch.  An unknown
+value, or storage that is unavailable, means `none`.
+
+**The Settings dialog is generic.**  `SettingsDialog` (`src/app/framework/settingsdialog.jsx`)
+lists categories on the left and shows the selected one's panel on the right.  Each app
+contributes its own categories, `[ { id, label, Panel } ]`, through `VZomeAppBar`'s
+`settings` prop, and the gear appears only when there are some.  So far only the classic
+app does (`src/app/classic/settings.jsx`); buildplane and the GitHub browser can add theirs
+the same way.
 
 "Desktop mode" is not a separate feature.  It is documentation telling users to set
 **`select` + `rotate`**.  Some combinations worth naming in that documentation:
@@ -322,8 +333,7 @@ try/catch when the editor opens.  An unknown value, or storage that is unavailab
 | `select` | `marquee` | today's `main`-branch select mode, plus marquee |
 | `select` | `none` | exactly today's `main`-branch select mode |
 
-For example, from the browser console:
-`localStorage.setItem('vzome.buildClick', 'select'); localStorage.setItem('vzome.buildDrag', 'rotate')`.
+In the dialog, desktop style is "Select or deselect" plus "Rotate the view".
 
 Notes:
 
@@ -538,26 +548,30 @@ available.  The tool picks one row from each table:
 ```jsx
 // tools/build.jsx
 
-// Each option value's hint lines.  BuildTool supplies the matching behavior.
+// Each option value's label (for the Settings dialog) and hint lines.  BuildTool supplies
+// the matching behavior.
 export const BUILD_CLICKS = {
-  none:   [],
-  select: [ 'Click: select or deselect', 'Click empty space: deselect all' ],
+  none:   { label: 'Nothing', lines: [] },
+  select: { label: 'Select or deselect, as in select mode',
+            lines: [ 'Click: select or deselect', 'Click empty space: deselect all' ] },
 };
 export const BUILD_DRAGS = {
-  none:    [],
-  rotate:  [ 'Drag elsewhere: rotate' ],
-  marquee: [ 'Drag elsewhere: add everything inside a box' ],
+  none:    { label: 'Nothing', lines: [] },
+  rotate:  { label: 'Rotate the view, as in camera mode', lines: [ 'Drag elsewhere: rotate' ] },
+  marquee: { label: 'Select everything inside a box, as in select mode',
+             lines: [ 'Drag elsewhere: add everything inside a box' ] },
 };
 
-// { click, drag } from localStorage ('vzome.buildClick', 'vzome.buildDrag'), each 'none'
-// unless it names a key of its table; every access inside try/catch.
-export const readBuildOptions = () => ...;
+// Reactive settings, shared with the Settings dialog (framework/settings.js).
+export const buildClick = createSetting( 'vzome.buildClick', BUILD_CLICKS, 'none' );
+export const buildDrag = createSetting( 'vzome.buildDrag', BUILD_DRAGS, 'none' );
 
-// What build mode does with these options, for the hint panel and the toolbar tooltip.
-export const buildSummary = ( { click = 'none', drag = 'none' } = {} ) =>
-  [ 'Drag from a ball: build a strut', ...BUILD_CLICKS[ click ], ...BUILD_DRAGS[ drag ] ];
+// What build mode does with the current settings, for the hint panel and the toolbar tooltip.
+export const buildSummary = () =>
+  [ 'Drag from a ball: build a strut',
+    ...BUILD_CLICKS[ buildClick.value() ].lines, ...BUILD_DRAGS[ buildDrag.value() ].lines ];
 
-export const BuildTool = props =>   // props: { click, drag }, from readBuildOptions()
+export const BuildTool = props =>
 {
   const { setState } = useEditor();
   const { snapCamera } = useSymmetry();
@@ -576,9 +590,10 @@ export const BuildTool = props =>   // props: { click, drag }, from readBuildOpt
 
   const [ _, setTool ] = useInteractionTool();
   createEffect( () => {
-    const click = props.click || 'none';
-    const drag = drags[ props.drag ] || drags.none;
-    const [ ballDrag, ...others ] = buildSummary( props );
+    // Re-runs whenever a setting changes, so the Settings dialog takes effect at once.
+    const click = buildClick.value();
+    const drag = drags[ buildDrag.value() ];
+    const [ ballDrag, ...others ] = buildSummary();
     setTool( {
       cursor: 'cell',
       // A pick on click only when a click does something: without one, the provider never
@@ -624,13 +639,11 @@ const MODES = [
 ];
 
 // In SceneEditor:
-const buildOptions = readBuildOptions();   // read once, when the editor opens
-...
-<Dynamic component={ currentMode() .Tool } {...buildOptions} />
+<Dynamic component={ currentMode() .Tool } />
 ...
 <For each={MODES}>{ m =>
   <ToggleButton value={ m.value } aria-label={ m.value }
-      title={ [ m.label, m.summary( buildOptions ) .join( ' · ' ) ] .join( '\n' ) }>
+      title={ [ m.label, m.summary() .join( ' · ' ) ] .join( '\n' ) }>
     <m.Icon/>
   </ToggleButton>
 }</For>
@@ -741,16 +754,14 @@ WebXR code is in `ltcanvas.jsx`, so it can, but the viewer is clearly the main u
 5. Buildplane on the new framework: widgets as a hit source, hover in SymmetryGeometry,
    declared picking.  This is the test of recommendation step 2.
 6. Build-mode options: the behavior hooks (`useStrutDrag`, `useSelectClicks`), one
-   `BuildTool` composed from the two option tables, the modes as data in `editor.jsx`, and
-   the two `localStorage` preferences.  With both options at `none`, nothing changes for
-   users, so the refactor can be tested against step 3's behavior first.
+   `BuildTool` composed from the two option tables, the modes as data in `editor.jsx`, the
+   two settings, and the generic Settings dialog.  With both options at `none`, nothing
+   changes for users, so the refactor can be tested against step 3's behavior first.
 7. Context-sensitive hints and cursors, which matter most once a build option is on.
 
 ### Open decisions
 
-- Where the build-mode options are eventually exposed in the UI, beyond `localStorage`.
 - Where the "desktop mode" instructions (`select` + `rotate`) live for users: the news
-  post, the online help, or both.
-- Whether the editor should notice a change to the options while it is open (a `storage`
-  event, or a settings UI that writes through a signal).  For now they are read when the
-  editor opens.
+  post, the online help, or both.  The Build Tool settings panel mentions them briefly.
+- Whether settings changed in another tab should apply here too (a `storage` event).
+  For now each tab reads them when it loads.

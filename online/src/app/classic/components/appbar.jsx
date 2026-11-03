@@ -9,6 +9,7 @@ import { OpenMenu } from './folder.jsx'
 import { VZomeLogo } from './logo.jsx'
 import { AboutDialog } from '../dialogs/about.jsx';
 import { SharingDialog } from '../dialogs/sharing.jsx';
+import { SettingsDialog } from '../../framework/settingsdialog.jsx';
 
 export const Spacer = () => <div style={{ flex: '1 1 auto' }}></div>
 
@@ -44,6 +45,10 @@ export const VZomeAppBar = ( props ) =>
             <SharingDialog/>  
           </Show>
           <AboutDialog title={props.customTitle? props.title : 'vZome '+ props.title} about={props.about} />
+          {/* Each app contributes its own settings categories; see framework/settingsdialog.jsx */}
+          <Show when={ merged.settings ?.length } >
+            <SettingsDialog categories={merged.settings} />
+          </Show>
         </Toolbar>
       </AppBar>
     </div>

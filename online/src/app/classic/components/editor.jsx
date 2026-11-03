@@ -26,7 +26,7 @@ import { CameraTool } from '../tools/camera.jsx';
 import { ContextualMenuArea } from '../../framework/menus.jsx';
 import { ContextualMenu } from '../menus/contextmenu.jsx';
 import { SelectionTool } from '../tools/selection.jsx';
-import { BuildTool, buildSummary, readBuildOptions } from '../tools/build.jsx';
+import { BuildTool, buildSummary } from '../tools/build.jsx';
 import { useScene } from '../../../viewer/context/scene.jsx';
 
 // The mouse modes, in toolbar order.  Each has a tool, a key, a toolbar icon, and a tooltip
@@ -77,8 +77,6 @@ export const SceneEditor = ( props ) =>
   // The mouse mode: the value of one of the MODES.
   const [ mode, setModeSignal ] = createSignal( DEFAULT_MODE );
   const currentMode = () => MODES .find( m => m.value === mode() );
-  // The user's preferences for build mode's clicks and other drags, read when the editor opens.
-  const buildOptions = readBuildOptions();
   const viewing = () => mode() === 'camera';
   let lastEditingMode = mode(); // the most recent non-camera mode
   const setMode = newMode =>
@@ -197,7 +195,7 @@ export const SceneEditor = ( props ) =>
           <SceneCanvas symmetryRenderer={true} height="100%" width="100%" scene={scene} rotationOnly={false} hints={true} >
             {/* The group is only necessary because of https://github.com/solidjs-community/solid-three/issues/11 */}
             <T.Group>
-              <Dynamic component={ currentMode() .Tool } {...buildOptions} />
+              <Dynamic component={ currentMode() .Tool } />
             </T.Group>
           </SceneCanvas>
         </ContextualMenuArea>
@@ -207,7 +205,7 @@ export const SceneEditor = ( props ) =>
           onChange={handleToolMode}
         >
         <For each={MODES}>{ m =>
-          <ToggleButton value={ m.value } aria-label={ m.value } title={ [ m.label, m.summary( buildOptions ) .join( ' · ' ) ] .join( '\n' ) }>
+          <ToggleButton value={ m.value } aria-label={ m.value } title={ [ m.label, m.summary() .join( ' · ' ) ] .join( '\n' ) }>
             <m.Icon/>
           </ToggleButton>
         }</For>

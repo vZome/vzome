@@ -15,6 +15,7 @@ import { useEditor } from '../framework/context/editor.jsx';
 
 import { VZomeAppBar } from './components/appbar.jsx';
 import { ClassicEditor } from './classic.jsx';
+import { classicSettings } from './settings.jsx';
 import { SymmetryProvider } from './context/symmetry.jsx';
 import { CommandsProvider } from './context/commands.jsx';
 import { SceneChangeListener } from '../../viewer/context/scene.jsx';
@@ -47,7 +48,7 @@ export const ClassicApp = () =>
     <SymmetryProvider>
       <GltfExportProvider>
         <CommandsProvider>
-        <VZomeAppBar title=''
+        <VZomeAppBar title='' settings={classicSettings}
           spacer={ <>
             <Menubar>
               <FileMenu/>
