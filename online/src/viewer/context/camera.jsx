@@ -131,6 +131,13 @@ const CameraProvider = ( props ) =>
     setState( 'outlines', props.outlines );
   }
 
+  // The projection a new camera starts with, here and on resetCamera(); a loaded design's own
+  // camera then sets it (see tweenCamera).
+  const defaultPerspective = props.perspective;
+  if ( defaultPerspective !== undefined ) {
+    setState( 'camera', 'perspective', defaultPerspective );
+  }
+
   if ( !! props.lighting ) {
     setState( 'lighting', props.lighting );
   }
@@ -211,6 +218,8 @@ const CameraProvider = ( props ) =>
   const resetCamera = () =>
   {
     setState( 'camera', defaultCamera() );
+    if ( defaultPerspective !== undefined )
+      setState( 'camera', 'perspective', defaultPerspective );
     setState( 'lighting', defaultLighting() );
   }
 
@@ -241,6 +250,10 @@ const CameraProvider = ( props ) =>
     }
 
     cancelTweens();
+
+    // The projection can't be tweened, so it switches at once.
+    if ( goalCamera.perspective !== undefined )
+      setCamera( { perspective: goalCamera.perspective } );
     
     const { distance, lookAt: [x,y,z] } = goalCamera; // target values
 

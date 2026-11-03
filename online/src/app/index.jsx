@@ -15,6 +15,7 @@ import { CameraProvider } from '../viewer/context/camera.jsx';
 import { EditorProvider } from './framework/context/editor.jsx';
 import { ImageCaptureProvider } from '../viewer/context/export.jsx';
 import { ClassicApp } from './classic/index.jsx';
+import { projection, showOutlines } from './classic/context/rendering.jsx';
 import { SceneIndexingProvider, SceneProvider } from '../viewer/context/scene.jsx';
 
 const queryParams = new URLSearchParams( window.location.search );
@@ -74,7 +75,9 @@ const Online = () =>
 
   return (
     <ErrorBoundary fallback={ reportError } >
-      <CameraProvider name='main' >
+      {/* The editor's Rendering settings choose how a new window starts; not for the legacy viewer. */}
+      <CameraProvider name='main' { ...( legacyViewerMode? {} : {
+          perspective: projection .value() === 'perspective', outlines: showOutlines .value() } ) } >
         <WorkerProvider>
           <ImageCaptureProvider>
             <ViewerProvider config={config}>

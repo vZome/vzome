@@ -46,3 +46,13 @@ export const createSetting = ( key, values, defaultValue ) =>
 
   return { value, set };
 }
+
+// A setting that is on or off, for a checkbox: value() is a boolean, and set( v ) takes one.
+export const createBooleanSetting = ( key, defaultValue ) =>
+{
+  const setting = createSetting( key, { true: true, false: false }, String( defaultValue ) );
+  return {
+    value: () => setting .value() === 'true',
+    set: v => setting .set( String( !! v ) ),
+  };
+}

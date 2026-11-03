@@ -51,15 +51,16 @@ export const SettingsDialog = props =>
       </Tooltip>
       <Dialog onClose={handleClose} aria-labelledby="settings-dialog-title" open={open()} maxWidth="md" fullWidth>
         <DialogTitle id="settings-dialog-title">Settings</DialogTitle>
-        <DialogContent dividers sx={{ display: 'flex', gap: '24px', padding: 0, minHeight: '360px' }}>
-          <List sx={{ width: '200px', flexShrink: 0, borderRight: '1px solid rgba(0,0,0,0.12)' }} aria-label="settings categories">
+        {/* A fixed height, so the dialog keeps its size as the category changes; a tall Panel scrolls. */}
+        <DialogContent dividers sx={{ display: 'flex', gap: '24px', padding: 0, height: 'min(480px, 70vh)', overflow: 'hidden' }}>
+          <List sx={{ width: '200px', flexShrink: 0, overflowY: 'auto', borderRight: '1px solid rgba(0,0,0,0.12)' }} aria-label="settings categories">
             <For each={props.categories}>{ category =>
               <ListItemButton selected={ selected() ?.id === category.id } onClick={ () => setSelectedId( category.id ) }>
                 <ListItemText primary={category.label} />
               </ListItemButton>
             }</For>
           </List>
-          <div style={{ flex: '1 1 auto', padding: '16px 24px 16px 0', 'min-width': 0 }}>
+          <div style={{ flex: '1 1 auto', padding: '16px 24px 16px 0', 'min-width': 0, 'overflow-y': 'auto' }}>
             <Show when={selected()}>
               <Dynamic component={ selected() .Panel } />
             </Show>

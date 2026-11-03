@@ -183,6 +183,8 @@ export const CameraControlsUI = (props) =>
   const { state, togglePerspective, toggleOutlines } = useCamera();
   const { snapping, toggleSnapping } = useSymmetry();
 
+  // These switches affect only this session.  The Rendering settings (context/rendering.jsx)
+  // just choose their starting values in a new window.
   const isPerspective = () => state.camera.perspective;
 
   return (
