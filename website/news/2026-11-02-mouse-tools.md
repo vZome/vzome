@@ -2,7 +2,7 @@
 title: Mouse Tool Improvements for Online vZome
 description: Three mouse modes, on-screen mouse hints, box selection, a new Settings dialog, more camera controls, and a working Build Plane app
 image: https://vzome.com/assets/marquee-selection.png
-published: false
+published: true
 layout: vzome
 ---
 
