@@ -42,7 +42,6 @@ export const XRSessionManager = ( props ) =>
   let _origBackground, _origFog;
   let _origFov, _origAspect, _origNear, _origFar;
   let _origCameraPos, _origCameraQuat;
-  let _origControlsTarget;
   let needsCameraRestore = false;
   let sessionActivated = false;
   let sessionInProgress = false;
@@ -50,7 +49,7 @@ export const XRSessionManager = ( props ) =>
 
   const startSession = () =>
   {
-    // Toggle scene background/fog and orbit trackball for AR passthrough
+    // Toggle scene background/fog and suspend the camera controls for AR passthrough
     _origBackground = store.scene.background;
     _origFog        = store.scene.fog;
     _origFov        = store.camera.fov;
@@ -59,11 +58,10 @@ export const XRSessionManager = ( props ) =>
     _origFar        = store.camera.far;
     _origCameraPos  = store.camera.position.clone();
     _origCameraQuat = store.camera.quaternion.clone();
-    _origControlsTarget = props.trackball.target.clone();
 
     store.scene.background = null;
     store.scene.fog        = null;
-    props.trackball.enabled = false;
+    props.cameraControls.suspend();
 
     // XR controls FOV/pose from the headset, but near/far come from the Three.js camera.
     // The saved values reflect vZome's abstract coordinate scale; AR is real-world scale,
@@ -87,8 +85,6 @@ export const XRSessionManager = ( props ) =>
     store.camera.position.copy(_origCameraPos);
     store.camera.quaternion.copy(_origCameraQuat);
 
-    props.trackball.target.copy(_origControlsTarget);
-    props.trackball.enabled = true;
 
     sessionInProgress = false;
     for (const fn of viewerEndHandlers) fn();
@@ -118,7 +114,7 @@ export const XRSessionManager = ( props ) =>
       needsCameraRestore = false;
       store.camera.updateProjectionMatrix();
       store.camera.updateMatrixWorld(true);
-      props.trackball.update();              // re-derives its internal state from camera
+      props.cameraControls.resume();         // e.g. TrackballControls re-derives its internal state from the camera
       store.gl.render( store.scene, store.camera ); // render a frame to ensure the restored camera state is visible immediately
     }
     if ( sessionActivated ) {

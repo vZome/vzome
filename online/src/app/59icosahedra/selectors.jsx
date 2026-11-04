@@ -17,9 +17,11 @@ const CellSelectorTool = props =>
 
   const handlers = {
 
-    allowTrackball: true,
+    allowTrackball: true, // TrackballControls handles every drag
 
-    onClick: ( id, position, type, selected, label ) => {
+    picks: { click: true, drag: false, hover: false },
+
+    onClick: ( e, { label } ) => {
       if ( !!label ) { // a labeled panel
         setOrbit( label, value => !value );
       }
@@ -32,10 +34,6 @@ const CellSelectorTool = props =>
       });
     },
 
-    onDragStart: () => {},
-    onDrag: () => {},
-    onDragEnd: () => {},
-    onContextMenu: ( id, position, type, selected ) => {},
     onTrackballEnd: () => {},
   };
 

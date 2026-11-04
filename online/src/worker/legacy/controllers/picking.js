@@ -10,6 +10,16 @@ export class PickingController extends DefaultController {
   // There are no implementors of doParamAction() in the Java code
   doParamAction(action, params) {
     const config = params.getConfig();
+
+    // Marquee selection: one message for many objects, recorded as one SelectManifestation edit
+    // each.  No new history element, so desktop can read the file; and since performAndRecord
+    // merges consecutive selection edits into a BeginBlock/EndBlock, they undo together.
+    if (action === 'SelectManifestations') {
+      for (const id of config.ids || [])
+        this.doParamAction('SelectManifestation', new JsProperties({ id }));
+      return;
+    }
+
     const { id } = config;
     if (id) {
       const rm = this.renderedModel.getRenderedManifestation(id);

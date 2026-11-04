@@ -24,7 +24,7 @@ const SceneCanvas = ( props ) =>
   return (
     <Show when={ webgpuOk() !== undefined }>
       <LightedTrackballCanvas
-          height={props.height} width={props.width} rotationOnly={props.rotationOnly}
+          height={props.height} width={props.width} rotationOnly={props.rotationOnly} hints={props.hints}
           rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed}
           useWebGL={useWebGL()} symmetryRenderer={useSymmetry()} >
         <Show when={ () => props.scene?.shapes }>

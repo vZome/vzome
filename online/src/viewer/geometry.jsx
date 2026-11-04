@@ -1,16 +1,20 @@
 
-import { createEffect, createMemo, onCleanup, onMount } from "solid-js";
+import { createContext, createEffect, createMemo, onCleanup, onMount, useContext } from "solid-js";
 import { Vector3, Matrix4, BufferGeometry, Float32BufferAttribute, Color, Group, Mesh, MeshLambertMaterial, LineSegments, LineBasicMaterial } from "three";
 
 import { createT, useThree } from 'solid-three';
 const T = createT({ Group, Mesh, MeshLambertMaterial, LineSegments, LineBasicMaterial });
 
-import { useInteractionTool } from "./context/interaction.jsx";
+import { useInteractionSurface } from "./context/interaction.jsx";
+import { createRaycastHitSource } from "./raycasting.js";
 
 import { GLTFExporter } from "three-stdlib";
 import { Label } from "./labels.jsx";
 import { useGltfExporter, useImageCapture } from "./context/export.jsx";
 import { useScene } from "./context/scene.jsx";
+
+// ShapedGeometry's raycasting hit source, where each Instance registers its mesh.
+const PickablesContext = createContext();
 
 const Instance = ( props ) =>
 {
@@ -23,62 +27,13 @@ const Instance = ( props ) =>
       linesRef.matrix = m.clone();
   } );
 
-  const [ tool ] = useInteractionTool();
-
-  const handleHover = value => e =>
-  {
-    const handler = tool ?.onHover;
-    if ( handler ) {
-      e.stopPropagation();
-      handler( props.id, props.position, props.type, value );
-    }
-  }
-  const handleContextMenu = ( e ) =>
-  {
-    const handler = tool ?.onContextMenu;
-    if ( handler ) {
-      e.stopPropagation();
-      handler( props.id, props.position, props.type, props.selected, props.label )
-    }
-  }
-  const handlePointerDown = ( e ) =>
-  {
-    if ( e.nativeEvent.button !== 0 ) // left-clicks only, please
-      return;
-    const handler = tool ?.onDragStart;
-    if ( handler ) {
-      e.stopPropagation();
-      handler( e.nativeEvent, props.id, props.position, props.type, props.selected );
-    }
-  }
-  const handlePointerMove = ( e ) =>
-  {
-    const handler = tool ?.onDrag;
-    if ( handler ) {
-      e.stopPropagation();
-      handler( e.nativeEvent, props.id, props.position, props.type, props.selected );
-    }
-  }
-  const handlePointerUp = ( e ) =>
-  {
-    if ( e.nativeEvent.button !== 0 ) // left-clicks only, please
-      return;
-    const handler = tool ?.onDragEnd;
-    if ( handler ) {
-      e.stopPropagation();
-      handler( e.nativeEvent, props.id, props.position, props.type, props.selected, props.label );
-    }
-  }
-  const handleClick = ( e ) =>
-  {
-    if ( e.nativeEvent.button !== 0 ) // left-clicks only, please
-      return;
-    const handler = tool ?.onClick;
-    if ( handler ) {
-      e.stopPropagation();
-      handler( e.nativeEvent, props.id, props.position, props.type, props.selected, props.label );
-    }
-  }
+  // Make this mesh pickable by ShapedGeometry's hit source, which answers with this record.
+  const pickables = useContext( PickablesContext );
+  let removePickable;
+  onMount( () => removePickable = pickables ?.add( meshRef, () => ( {
+    source: 'scene', id: props.id, position: props.position, type: props.type, selected: props.selected, label: props.label,
+  } ) ) );
+  onCleanup( () => removePickable ?.() );
 
   onMount( () => linesRef && linesRef.layers.set( 4 ) );
 
@@ -90,10 +45,7 @@ const Instance = ( props ) =>
   // TODO: cache materials
   return (
     <T.Group position={ props.position } name={props.id} >
-      <T.Mesh matrixAutoUpdate={false} ref={meshRef} geometry={props.geometry}
-          onPointerEnter={handleHover(true)} onPointerLeave={handleHover(false)} onPointerMove={handlePointerMove}
-          onClick={handleClick}
-          onPointerDown={handlePointerDown} onPointerUp={handlePointerUp} onContextMenu={handleContextMenu}>
+      <T.Mesh matrixAutoUpdate={false} ref={meshRef} geometry={props.geometry} >
         <T.MeshLambertMaterial attach="material" color={color} emissive={emissive()} />
       </T.Mesh>
       { !!props.outlineGeometry &&
@@ -253,6 +205,15 @@ export const CanvasExportBindings = () =>
 
 export const ShapedGeometry = ( props ) =>
 {
+  // Picking: register as a hit source with the InteractionToolProvider, which owns all pointer
+  // handling (see context/interaction.jsx).  Every ball/strut/panel is its own mesh here, so a
+  // raycast finds the nearest one; each Instance registers its mesh in `pickables`.  (The outline
+  // LineSegments are on layer 4, which the raycaster ignores.)
+  const surface = useInteractionSurface();
+  const pickables = createRaycastHitSource( useThree() );
+  if ( surface )
+    onCleanup( surface .addHitSource( { pickAt: pickables.pickAt, hitsInRect: pickables.hitsInRect } ) );
+
   let groupRef;
   createEffect( () => {
     if ( props.embedding && groupRef && groupRef.matrix ) {
@@ -267,14 +228,14 @@ export const ShapedGeometry = ( props ) =>
   })
   return (
     // <Show when={ () => props.shapes }>
-      <>
+      <PickablesContext.Provider value={pickables}>
         <CanvasExportBindings />
         <T.Group matrixAutoUpdate={false} ref={groupRef} >
           <For each={Object.values( props.shapes || {} )}>{ shape =>
             <InstancedShape shape={shape} />
           }</For>
         </T.Group>
-      </>
+      </PickablesContext.Provider>
     // </Show>
   )
 };
