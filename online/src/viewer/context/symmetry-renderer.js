@@ -83,6 +83,7 @@ export function createSymmetryRenderer(parent)
   const symmetryGroups = new Map();
   let activeGroupId = null;
   let discardInactiveShaders = false;
+  let outlinesVisible = false; // see setOutlinesVisible
 
   // Picking uses its own dedicated WebGPURenderer, rendering to an offscreen canvas that's
   // never inserted into the DOM. This rules out any state confusion from sharing the main
@@ -193,9 +194,9 @@ export function createSymmetryRenderer(parent)
     }
   }
 
-  // Outline (wireframe) geometry is registered per-shape. Every registered outline mesh
-  // starts hidden (see makeOutlineMesh); call setOutlinesVisible() to show them -- this is
-  // independent of fill style (see the comment on setOutlinesVisible).
+  // Outline (wireframe) geometry is registered per-shape. Every outline mesh starts with the
+  // current setOutlinesVisible() state (see makeOutlineMesh) -- this is independent of fill
+  // style (see the comment on setOutlinesVisible).
   function registerOutline(groupId, slotId, outlineGeometry) {
     if (!(outlineGeometry instanceof BufferGeometry)) {
       throw new Error("Outline geometry must be a BufferGeometry.");
@@ -275,12 +276,16 @@ export function createSymmetryRenderer(parent)
   // fill geometry (the fan-triangulated one; see the long comment where symmetry-geometry.jsx
   // builds it) is correct for every shape regardless of outline visibility, so there is no
   // reason to route this through a style switch.
+  // The state is remembered, so outline meshes built later (shapes arriving after outlines
+  // were turned on, e.g. on a reload with outlines on) start out matching it.
   function setOutlinesVisible(visible) {
-    const group = getActiveGroup();
-    if (!group.gpu) return;
-    for (const entry of group.gpu.shapeEntries.values()) {
-      if (entry.outlineMesh) {
-        entry.outlineMesh.visible = visible;
+    outlinesVisible = Boolean(visible);
+    for (const group of symmetryGroups.values()) {
+      if (!group.gpu) continue;
+      for (const entry of group.gpu.shapeEntries.values()) {
+        if (entry.outlineMesh) {
+          entry.outlineMesh.visible = outlinesVisible;
+        }
       }
     }
   }
@@ -530,9 +535,9 @@ export function createSymmetryRenderer(parent)
     initializeIdentityMatrices(outlineMesh, capacity);
     outlineMesh.count = 0;
     outlineMesh.frustumCulled = false;
-    // Default hidden; callers that need it visible (e.g. ensureShapeCapacity's
-    // regrowth path, carrying over the previous mesh's visibility) set this after return.
-    outlineMesh.visible = false;
+    // Starts with the current setOutlinesVisible() state; ensureShapeCapacity's regrowth
+    // path also carries over the previous mesh's visibility after return.
+    outlineMesh.visible = outlinesVisible;
     return outlineMesh;
   }
 
@@ -1118,6 +1123,12 @@ export function createSymmetryRenderer(parent)
     return null;
   }
 
+  // Starts the picking renderer's lazy initialization ahead of the first pick, so that pick
+  // doesn't stall on it.  Safe to call repeatedly.
+  function warmPicking() {
+    getPickingRenderer().catch((error) => console.warn("Picking renderer failed to initialize:", error));
+  }
+
   // Expose a setOrigin method to set the group's position
   function setOrigin(vec3) {
     originGroup.position.copy(vec3);
@@ -1145,6 +1156,7 @@ export function createSymmetryRenderer(parent)
     getActiveGroup,
     listShapeKeys,
     pickAt,
+    warmPicking,
     setOrigin,
     originGroup,
   };

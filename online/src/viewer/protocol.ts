@@ -131,7 +131,7 @@ export type WorkerAction =
 
   //  Output.
   | { type: 'EXPORT_TRIGGERED'; payload: { format: string; camera?: unknown; lighting?: unknown; scenes?: unknown } }
-  | { type: 'BOM_REQUESTED'; payload: unknown }
+  | { type: 'BOM_REQUESTED'; payload: { scenes: unknown; colors: Record<string, string> } }
   ;
 
 export type WorkerActionType = WorkerAction[ 'type' ];

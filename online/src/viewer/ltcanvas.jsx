@@ -1,20 +1,22 @@
 
 import { Color, Scene, Group, Mesh, AmbientLight, DirectionalLight, WebGLRenderer } from "three";
 import { WebGPURenderer } from 'three/webgpu';
-import { createRenderEffect, createResource, createSignal, onMount, For, Show, Suspense } from "solid-js";
+import { createEffect, createRenderEffect, createResource, createSignal, mergeProps, onCleanup, For, Show, Suspense } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
+import { Dynamic } from "solid-js/web";
 import { Canvas, createT, createXR, useFrame } from 'solid-three';
 const T = createT({ Group, Mesh, AmbientLight, DirectionalLight });
 
 import { TrackballControls } from "./trackballcontrols.jsx";
 import { ControlledPerspectiveCamera } from "./perspectivecamera.jsx";
 import { ControlledOrthographicCamera } from "./orthographiccamera.jsx";
-import { useInteractionTool } from "./context/interaction.jsx";
+import { useInteractionTool, useInteractionSurface } from "./context/interaction.jsx";
 import { useCamera } from "./context/camera.jsx";
 import { Labels } from "./labels.jsx";
 import { useViewer } from "./context/viewer.jsx";
-import { WebXRSupport } from "./context/webxr.jsx";
+import { WebXRSupport, useWebXRClient } from "./context/webxr.jsx";
+import { createCameraTrackball } from "./cameratrackball.js";
 
 const Lighting = () =>
 {
@@ -38,6 +40,56 @@ const Lighting = () =>
   )
 }
 
+// The hint panel: what the mouse does in the active tool.  A hint is { title, lines }, or just a
+// title string.  The title row sits at the bottom with a collapse toggle, so the lines expand
+// upward; the width is fixed, so it doesn't jump between tools or states.  Whether it is collapsed
+// is remembered in localStorage, a per-browser convenience.
+const HINTS_COLLAPSED_KEY = 'vzome.hintsCollapsed';
+const readHintsCollapsed = () => { try { return localStorage.getItem( HINTS_COLLAPSED_KEY ) === 'true'; } catch { return false; } };
+const writeHintsCollapsed = value => { try { localStorage.setItem( HINTS_COLLAPSED_KEY, String( value ) ); } catch {} };
+
+const HintPanel = ( props ) =>
+{
+  const [ collapsed, setCollapsed ] = createSignal( readHintsCollapsed() );
+  const toggle = () => {
+    setCollapsed( value => ! value );
+    writeHintsCollapsed( collapsed() );
+  };
+  const title = () => ( typeof props.hint === 'string' )? props.hint : props.hint ?.title;
+  const lines = () => ( typeof props.hint === 'string' )? [] : ( props.hint ?.lines || [] );
+
+  return (
+    <div style={{
+      position: 'absolute', left: '8px', bottom: '8px', width: '300px', 'max-width': 'calc(100% - 16px)',
+      'box-sizing': 'border-box', padding: '6px 6px 6px 10px', 'border-radius': '4px',
+      background: 'rgba(0,0,0,0.6)', color: 'white', 'font-size': '13px', 'line-height': '1.45',
+      'font-family': 'sans-serif', 'pointer-events': 'none', 'user-select': 'none',
+    }}>
+      <Show when={ ! collapsed() && lines().length }>
+        <div style={{ 'padding-bottom': '4px', 'margin-bottom': '4px', 'border-bottom': '1px solid rgba(255,255,255,0.25)' }}>
+          <For each={ lines() }>{ line => <div>{ line }</div> }</For>
+        </div>
+      </Show>
+      <div style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'space-between', gap: '8px' }}>
+        <span style={{ 'font-weight': 'bold' }}>{ title() }</span>
+        <Show when={ lines().length }>
+          <button onClick={toggle} aria-label={ collapsed()? 'Show mouse hints' : 'Hide mouse hints' }
+              aria-expanded={ ! collapsed() } title={ collapsed()? 'Show mouse hints' : 'Hide mouse hints' }
+              style={{
+                'pointer-events': 'auto', cursor: 'pointer', background: 'transparent', border: 'none',
+                color: 'inherit', padding: '0 2px', display: 'flex', 'align-items': 'center',
+              }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+              <path d={ collapsed()? 'M4 10l4-4 4 4' : 'M4 6l4 4 4-4' } fill="none" stroke="currentColor"
+                  stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+        </Show>
+      </div>
+    </div>
+  );
+}
+
 const ControlledCamera = (props) =>
 {
   const { state } = useCamera();
@@ -55,14 +107,13 @@ const ControlledCamera = (props) =>
   );
 }
 
-const isLeftMouseButton = e =>
+// Lets WebXR suspend the camera control during a session.  Must be inside WebXRSupport.
+const XRCameraControl = ( props ) =>
 {
-  e = e || window.event;
-  if ( "which" in e )  // Gecko (Firefox), WebKit (Safari/Chrome) & Opera
-    return e.which === 1
-  else if ( "button" in e )  // IE, Opera 
-    return e.button === 0
-  return false
+  const { addCameraControl } = useWebXRClient();
+  if ( addCameraControl )
+    onCleanup( addCameraControl( props.control ) );
+  return null;
 }
 
 export const LightedTrackballCanvas = ( props ) =>
@@ -86,66 +137,30 @@ export const LightedTrackballCanvas = ( props ) =>
   };
 
   const [ tool ] = useInteractionTool();
+  const surface = useInteractionSurface();
 
-  const handlePointerMove = ( e ) =>
-  {
-    const handler = tool ?.onDrag;
-    if ( isLeftMouseButton( e ) && handler ) {
-      e.stopPropagation()
-      handler( e );
-    }
-  }
-  const handlePointerUp = ( e ) =>
-  {
-    // SymmetryGeometry attaches its own 'pointerup' listener directly on this same canvas
-    // element (see symmetry-geometry.jsx), which calls tool.onDragEnd with the correct,
-    // complete (e, id, position, type, selected, label) it resolved itself via pickAt --
-    // and, on success, resets InteractionToolProvider's shared dragStartEmitted state back
-    // to false. If this listener also fired right after (same element, same event -- DOM
-    // doesn't suppress sibling listeners just because one called stopPropagation), it would
-    // call tool.onDragEnd(e) with everything else undefined, and by then dragStartEmitted
-    // would already be false again, so interaction.jsx's onDragEnd falls into its
-    // click-fallback branch -- a spurious extra click, possibly right after a real one.
-    // Skipped entirely when SymmetryGeometry is active, since it already fully owns
-    // pointerup itself (mirrors the same bypass on handlePointerMissed below).
-    if ( props.symmetryRenderer )
-      return;
-    const handler = tool ?.onDragEnd;
-    if ( isLeftMouseButton( e ) && handler ) {
-      // e.stopPropagation()
-      handler( e );
-    }
-  }
-  const handleWheel = ( e ) =>
-  {
-    const handler = tool ?.onWheel;
-    if ( handler ) {
-      e.preventDefault();
-      handler( e.deltaY );
-    }
-  }
-  const handlePointerMissed = ( e ) =>
-  {
-    // solid-three's onClickMissed fires whenever ITS OWN raycasting registry (built from
-    // <T.*>-declared, event-registered objects) finds zero intersections -- it has no idea
-    // SymmetryGeometry's GPU-instanced meshes exist at all, since they're never JSX-declared
-    // <T.*> elements. So with symmetryRenderer active, this would fire (and call bkgdClick,
-    // e.g. DeselectAll) on literally every click, including ones that DID hit an instance
-    // via SymmetryGeometry's own pickAt-based click handler -- immediately undoing every
-    // click-to-select. SymmetryGeometry owns both the hit and miss cases itself (see its own
-    // click handler), so this canvas-level path is skipped entirely when it's active.
-    if ( props.symmetryRenderer )
-      return;
-    const handler = tool ?.bkgdClick;
+  // All pointer, wheel and context-menu handling belongs to the InteractionToolProvider
+  // (context/interaction.jsx); the canvas just hands it the element.
+  createEffect( () => {
+    const el = canvasEl();
+    if ( el && surface )
+      onCleanup( surface.attachCanvas( el ) );
+  });
 
-    // NOTE: this is a solid-three handler, so the event is wrapped in a synthetic event,
-    //  and the native event is in e.nativeEvent.  We have to check the button on the native event,
-    //  but we can stop propagation on the synthetic event.
-    if ( isLeftMouseButton( e.nativeEvent ) && handler ) {
-      // e.stopPropagation();  // NOT available!  Is this a problem?
-      handler( e );
-    }
-  }
+  // The camera control that tools use (see cameratrackball.js), configured for this canvas.
+  // TrackballControls, below, is still used by tools that set allowTrackball.
+  const { trackballProps, perspectiveProps, cancelTweens } = useCamera();
+  const cameraSettings = mergeProps( { rotateSpeed: 4.5, zoomSpeed: 3, panSpeed: 1 }, props );
+  const cameraTrackball = createCameraTrackball( {
+    camera: trackballProps.camera,
+    getTarget: () => perspectiveProps.target,
+    sync: target => trackballProps.sync( target ),
+    onStart: cancelTweens,
+    getCanvas: canvasEl,
+    settings: () => cameraSettings,
+  } );
+  if ( surface )
+    onCleanup( surface.setCameraControl( cameraTrackball ) );
 
   const makeCustomRenderer = ( canvas ) =>
   {
@@ -182,15 +197,6 @@ export const LightedTrackballCanvas = ( props ) =>
     if ( el ) el.style.cursor = (tool ?.cursor()) || 'auto';
   });
 
-  onMount( () => {
-    const el = canvasEl();
-    if ( el ) {
-      // el.addEventListener( 'pointermove', handlePointerMove );
-      el.addEventListener( 'pointerup', handlePointerUp );
-      el.addEventListener( 'wheel', handleWheel );
-    }
-  });
-
   return (
     <xr.Provider>
       <div style={{ position: 'relative', height: props.height ?? "100%", width: props.width ?? "100%" }}>
@@ -200,7 +206,7 @@ export const LightedTrackballCanvas = ( props ) =>
               width: "100%",
               display: 'flex',
             }}
-            frameloop="always" onClickMissed={handlePointerMissed} >
+            frameloop="always" >
           <WebXRSupport xrSupported={xrSupported}>
 
             { /* This should add the camera to the scene so that the lights move with the camera,
@@ -211,6 +217,7 @@ export const LightedTrackballCanvas = ( props ) =>
 
             <TrackballControls rotationOnly={props.rotationOnly}
               rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} />
+            <XRCameraControl control={cameraTrackball} />
 
             {props.children}
 
@@ -218,6 +225,16 @@ export const LightedTrackballCanvas = ( props ) =>
 
           </WebXRSupport>
         </Canvas>
+        {/* Whatever the active tool draws over the canvas, e.g. a marquee rectangle. */}
+        <Show when={ surface ?.overlay() }>{ overlay =>
+          <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', 'pointer-events': 'none' }}>
+            <Dynamic component={ overlay() } />
+          </div>
+        }</Show>
+        {/* Only canvases that ask for it show the hint panel. */}
+        <Show when={ props.hints && surface ?.hint() }>
+          <HintPanel hint={ surface.hint() } />
+        </Show>
         <Suspense>
           <Show when={xrSupported()}>
             <button

@@ -17,12 +17,10 @@ import { urlViewerCSS } from "../../viewer/urlviewer.css.js";
 import { ZometoolPartsElement } from './parts-list.jsx';
 import { ZometoolProductsElement } from './products-list.jsx';
 import { normalizeBOM } from './bom.js';
+import { fetchMetadata, metadataUrl, PARTS_CATALOG } from './metadata.js';
 import { PLACEHOLDER_BACKGROUND_COLOR } from '../../viewer/util/colors.js';
 
 const debug = false;
-
-const parts_catalog_url = 'https://zometool.github.io/vzome-sharing/metadata/zometool-parts.json';
-const partsPromise = fetch( parts_catalog_url ) .then( response => response.text() ) .then( text => JSON.parse( text ) );
 
 const StepControls = props =>
 {
@@ -107,8 +105,10 @@ export const ZometoolInstructions = props =>
     setIndex( minIndex );
     setMaxIndex( maxIndex );
     setHasScenes( scenes?.length > 1 );
-    if ( scenes?.length > 1 )
-      requestBOM( unwrap(scenes) );
+    if ( scenes?.length > 1 ) {
+      const unwrapped = unwrap(scenes); // read synchronously, so the effect still tracks scenes
+      fetchMetadata( props.partsUrl ) .then( ({ colors = {} }) => requestBOM( unwrapped, colors ) );
+    }
   });
 
   createEffect( () => {
@@ -121,7 +121,7 @@ export const ZometoolInstructions = props =>
   createEffect( on( props.backgroundColor, color => setBackgroundOverride( color ), { defer: true } ) );
 
   subscribeFor( 'BOM_CHANGED', bom => {
-    partsPromise .then( parts => {
+    fetchMetadata( props.partsUrl ) .then( parts => {
       const detail = normalizeBOM( bom, parts );
       props.dispatch( new CustomEvent( 'zometool-instructions-loaded', { detail } ) );
     });
@@ -156,7 +156,7 @@ export const ZometoolInstructions = props =>
   );
 }
 
-const renderComponent = ( url, container, dispatch, config, backgroundColor ) =>
+const renderComponent = ( url, container, dispatch, config, backgroundColor, partsUrl ) =>
   {
     const bindComponent = () =>
     {
@@ -168,7 +168,7 @@ const renderComponent = ( url, container, dispatch, config, backgroundColor ) =>
               backgroundColor: initialBackground, defaultBackground: PLACEHOLDER_BACKGROUND_COLOR }}>
               <SceneProvider>
                 <SceneIndexingProvider config={ {} } >
-                  <ZometoolInstructions dispatch={dispatch} config={config} backgroundColor={backgroundColor} />
+                  <ZometoolInstructions dispatch={dispatch} config={config} backgroundColor={backgroundColor} partsUrl={partsUrl} />
                 </SceneIndexingProvider>
               </SceneProvider>
             </ViewerProvider>
@@ -192,6 +192,8 @@ class ZometoolInstructionsElement extends HTMLElement
   #container;
   #url;
   #module;
+  #metadata;
+  #revision;
   #backgroundColor;
   #setBackgroundColor;
 
@@ -213,12 +215,13 @@ class ZometoolInstructionsElement extends HTMLElement
   {
     debug && console.log( 'ZometoolInstructionsElement connected' );
 
-    renderComponent( this.#url, this.#container, evt => this.dispatchEvent(evt), { module: this.#module }, this.#backgroundColor );
+    const partsUrl = metadataUrl( PARTS_CATALOG, this.#metadata, this.#revision );
+    renderComponent( this.#url, this.#container, evt => this.dispatchEvent(evt), { module: this.#module }, this.#backgroundColor, partsUrl );
   }
 
   static get observedAttributes()
   {
-    return [ "src", "module", "background-color" ];
+    return [ "src", "module", "background-color", "metadata", "revision" ];
   }
 
   // This callback can happen *before* connectedCallback()!
@@ -230,6 +233,14 @@ class ZometoolInstructionsElement extends HTMLElement
     case "module":
       this.#module = _newValue;
       console.log( `module ${this.#module}` );
+      break;
+
+    case "metadata":
+      this.#metadata = _newValue;
+      break;
+
+    case "revision":
+      this.#revision = _newValue;
       break;
 
     case "background-color":

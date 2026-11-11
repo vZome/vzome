@@ -136,7 +136,7 @@ const ViewerProvider = ( props ) =>
     resetScenes: () => setScenes( [] ),
     setProblem,
     clearProblem: () => setProblem( '' ),
-    requestBOM: ( scenes ) => postMessage( { type: 'BOM_REQUESTED', payload: scenes } ),
+    requestBOM: ( scenes, colors ) => postMessage( { type: 'BOM_REQUESTED', payload: { scenes, colors } } ),
     setTweenDuration,
     setBackgroundOverride,
     useWorker: useWorkerClient,

@@ -1,5 +1,5 @@
 
-import { createContext, createSignal, useContext } from "solid-js";
+import { createContext, createEffect, createSignal, on, useContext } from "solid-js";
 
 import { controllerProperty, subController, useEditor } from '../../framework/context/editor.jsx';
 import { useCamera } from "../../../viewer/context/camera.jsx";
@@ -9,6 +9,7 @@ import { ShapesDialog } from "../dialogs/shapes.jsx";
 import { OrbitsDialog } from "../dialogs/orbits.jsx";
 import { PolytopesDialog } from "../dialogs/polytopes.jsx";
 import { unwrap } from "solid-js/store";
+import { snapCamera as snapCameraSetting } from "./rendering.jsx";
 
 
 const SymmetryContext = createContext();
@@ -27,7 +28,8 @@ export const SymmetryProvider = (props) =>
   const [ showOrbitsDialog, setShowOrbitsDialog ] = createSignal( false );
   const [ showPolytopesDialog, setShowPolytopesDialog ] = createSignal( false );
 
-  const [ snapping, setSnapping ] = createSignal( false );
+  // For this session; the Rendering setting only chooses where it starts.
+  const [ snapping, setSnapping ] = createSignal( snapCameraSetting .value() );
   const snapCamera = () =>
   {
     if ( snapping() ) {
@@ -49,8 +51,10 @@ export const SymmetryProvider = (props) =>
     },
   };
 
-  // TODO: this doesn't work, with or without the setTimeout()
-  subscribeFor( 'SYMMETRY_CHANGED', () => setTimeout( () => snapCamera() ) );
+  // Snap whenever the symmetry changes, including the first one on load.  Not on SYMMETRY_CHANGED:
+  // the worker sends that before the 'symmetry' property, so symmController() would name the old
+  // symmetry, or none at all on load, and the worker would fail to find the controller.
+  createEffect( on( symmetry, s => { if ( s ) snapCamera(); } ) );
 
   subscribeFor( 'CAMERA_SNAPPED', ( data ) => {
     const { up, lookDir } = data;
