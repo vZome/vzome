@@ -103,10 +103,6 @@ const fetchFileText = selected =>
   })
 }
 
-// Fetch the official Zometool colors
-const parts_catalog_url = 'https://zometool.github.io/vzome-sharing/metadata/zometool-parts.json';
-const partsPromise = fetch( parts_catalog_url ) .then( response => response.text() ) .then( text => JSON.parse( text ) );
-
 
 // NOTE: the trackball model is no longer rendered through this (editor) worker. The classic
 // editor now loads each symmetry's trackball .vZome as an ordinary design on its OWN dedicated
@@ -472,10 +468,9 @@ onmessage = ({ data }) =>
     }
 
     case 'BOM_REQUESTED': {
-      partsPromise .then( ({ colors }) => {
-        const bom = assemblePartsList( design.rendered, colors, payload );
-        sendToClient( { type: 'BOM_CHANGED', payload: bom } );
-      });
+      const { scenes, colors } = payload; // the official Zometool colors, from the client's parts catalog
+      const bom = assemblePartsList( design.rendered, colors, scenes );
+      sendToClient( { type: 'BOM_CHANGED', payload: bom } );
       break;
     }
 

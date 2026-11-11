@@ -4,13 +4,9 @@ import { render } from "solid-js/web";
 import { Link } from "@kobalte/core/link";
 
 import { instructionsCSS } from "./zometool.css.js";
+import { fetchMetadata, metadataUrl, PRODUCTS_CATALOG } from "./metadata.js";
 
 const debug = false;
-
-const product_catalog_url = 'https://zometool.github.io/vzome-sharing/metadata/zometool-products.json';
-
-const fetchJSON = url => fetch( url ) .then( response => response.text() ) .then( text => JSON.parse( text ) );
-const productsPromise = fetchJSON( product_catalog_url );
 
 const findProducts = ( bom, products ) =>
 {
@@ -31,7 +27,7 @@ const ZometoolProducts = props =>
 {
   const [ matchingProducts, setMatchingProducts ] = createSignal( [] );
 
-  productsPromise
+  props.productsPromise
     .then( ( products ) => {
       setMatchingProducts( findProducts( props.bom, products ) );
     } );
@@ -51,12 +47,12 @@ const ZometoolProducts = props =>
   );
 }
 
-const renderComponent = ( container, bom ) =>
+const renderComponent = ( container, bom, productsPromise ) =>
   {
     const bindComponent = () =>
     {
       return (
-        <ZometoolProducts bom={bom}>
+        <ZometoolProducts bom={bom} productsPromise={productsPromise}>
         </ZometoolProducts>
       );
     }
@@ -103,6 +99,11 @@ export class ZometoolProductsElement extends HTMLElement
       return;
     }
 
+    // The metadata location is always that of the associated zometool-instructions
+    const metadata = this.#instructions .getAttribute( 'metadata' );
+    const revision = this.#instructions .getAttribute( 'revision' );
+    const productsPromise = fetchMetadata( metadataUrl( PRODUCTS_CATALOG, metadata, revision ) );
+
     this.#instructions .addEventListener( "zometool-instructions-loaded", (e) => {
       if ( this.#bomLoaded )
         return;
@@ -115,7 +116,7 @@ export class ZometoolProductsElement extends HTMLElement
       container .classList .add( 'zometool-products-container' );
       this .appendChild( container );
   
-      renderComponent( container, e.detail )
+      renderComponent( container, e.detail, productsPromise )
     } );
 
     debug && console.log( 'ZometoolProductsElement connected' );

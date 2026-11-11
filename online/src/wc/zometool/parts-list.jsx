@@ -47,9 +47,12 @@ const svgStrings = {
   hg2 : hg2Svg,
 }
 
-const getSvgNode = ( key, color ) =>
+const getSvgNode = ( shape, color ) =>
 {
-  let doc = new DOMParser() .parseFromString( svgStrings[ key ], 'application/xml' );
+  const svgString = svgStrings[ shape .toLowerCase() ];
+  if ( ! svgString )
+    return null; // no picture for this part
+  let doc = new DOMParser() .parseFromString( svgString, 'application/xml' );
   const svg = document .importNode( doc.documentElement, true );
   svg .setAttribute( 'fill', color );
   return svg;
@@ -61,9 +64,11 @@ const ZometoolParts = props =>
 {
   const partSx = { height: '24px', padding: '0', width: '210px', lineHeight: '0' };
   return (
-    <div class='zometool-parts-table'>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 250 }} aria-label="parts table" size="small">
+    // The TableContainer is the scrolling element (it has overflow), so it must be limited
+    //  to the available height for the sticky header to stay in view.
+    <div class='zometool-parts-table' style={{ height: '100%' }}>
+      <TableContainer component={Paper} sx={{ maxHeight: '100%' }}>
+        <Table stickyHeader sx={{ minWidth: 250 }} aria-label="parts table" size="small">
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>Part</TableCell>
@@ -72,12 +77,12 @@ const ZometoolParts = props =>
             </TableRow>
           </TableHead>
           <TableBody>
-          <For each={props.bom}>{ ({ key, count, color }) =>
+          <For each={props.bom}>{ ({ shape, count, color }) =>
             <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }} >
               <TableCell align="left" component="th" scope="row" sx={partSx}>
-                {getSvgNode( key, color )}
+                {getSvgNode( shape, color )}
               </TableCell>
-              <TableCell component="th" scope="row">{ ((key==='ball')? '' : key) .toUpperCase() }</TableCell>
+              <TableCell component="th" scope="row">{ (shape==='BALL')? '' : shape }</TableCell>
               <TableCell align="right">{count}</TableCell>
             </TableRow>
           }</For>
