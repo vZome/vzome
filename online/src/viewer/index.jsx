@@ -35,11 +35,20 @@ const normalStyle = {
   overflow: 'hidden',    // curiously, this forces Canvas to recompute its size when changing back
 };
 
+// The symmetry renderer is built for designs with a few highly-reused shapes; its costs scale with
+//  the number of distinct shapes.  Older desktop previews export every panel as its own shape (over
+//  1000 of them in some shared designs), which it renders orders of magnitude slower than ShapedGeometry.
+const SYMMETRY_RENDERER_MAX_SHAPES = 40;
+
 const SceneViewer = ( props ) =>
 {
   const dynConfig = () => mergeProps( { allowFullViewport: false, showSettings: true, showOutlines: true }, props.config );
 
   const { scene } = useScene();
+  const { shapeCount } = useViewer();
+  // shapeCount arrives with SCENES_DISCOVERED, before any shapes reach the scene store
+  const useSymmetryRenderer = () => dynConfig().symmetryRenderer !== false
+    && ! ( shapeCount?.() > SYMMETRY_RENDERER_MAX_SHAPES );
 
   const [ showSettings, setShowSettings ] = createSignal( false );
 
@@ -78,7 +87,7 @@ const SceneViewer = ( props ) =>
             external-mesh viewers were built for.
           */}
           <Show when={scene} fallback={props.children}>
-            <SceneCanvas symmetryRenderer={dynConfig().symmetryRenderer !== false} id='scene-canvas' height={props.height} width={props.width} >
+            <SceneCanvas symmetryRenderer={useSymmetryRenderer()} id='scene-canvas' height={props.height} width={props.width} >
               {props.children3d}
             </SceneCanvas>
           </Show>

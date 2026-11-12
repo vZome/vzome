@@ -118,7 +118,7 @@ const initializeDesign = ( loading, polygons, legacyDesign, core, clientEvents )
   // Normalize the scenes, always including the default scene
   scenes .splice( 0, 0, { title: 'default scene', camera, snapshot: -1 } );
   if ( polygons ) // modern client
-    clientEvents .scenesDiscovered( { lighting, scenes } );
+    clientEvents .scenesDiscovered( { lighting, scenes, shapeCount: Object.keys( shapes ) .length } );
   else // legacy client, the inspector UI
     clientEvents .sceneChanged( { shapes: [], camera, lighting } ); // Just to send the camera and lighting, since they won't go otherwise
 

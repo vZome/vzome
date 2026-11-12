@@ -176,7 +176,7 @@ export type WorkerEvent =
 
   //  Scene rendering.
   | { type: 'SCENE_RENDERED'; payload: { scene: Scene; edit?: string } }
-  | { type: 'SCENES_DISCOVERED'; payload: { lighting?: unknown; scenes?: unknown } }
+  | { type: 'SCENES_DISCOVERED'; payload: { lighting?: unknown; scenes?: unknown; shapeCount?: number } }
   | { type: 'SYMMETRY_CHANGED'; payload: { orientations?: unknown; permutations?: unknown; scalars?: unknown; planes?: unknown; resourcePath?: string; fieldName?: string; symmetryName?: string; embedding?: unknown } }
 
   //  Incremental scene edits.  Editor-only in practice: the viewer/web-component path

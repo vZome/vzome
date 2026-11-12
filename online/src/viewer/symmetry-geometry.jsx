@@ -103,6 +103,9 @@ const SymmetryGeometryImpl = ( props ) =>
   const { state: cameraState } = useCamera();
 
   const renderer = createSymmetryRenderer( props.parent );
+  // The viewer can swap this component out for ShapedGeometry when a design loads (see SceneViewer),
+  //  so its content must leave the scene with it.  (GPU resources are not yet disposed.)
+  onCleanup( () => props.parent.remove( renderer.originGroup ) );
 
   // The renderer group key currently switched-to (null until the first group is registered).
   // Its identity is what every downstream effect keys off; see groupKeyFor.
