@@ -378,7 +378,9 @@ const urlLoader = async ( report, payload ) =>
           return;
         }
 
-        events .scenesDiscovered( { lighting, scenes } ); // send to client, where the state will be managed
+        // shapeCount lets the viewer pick a renderer before any shapes arrive; see SceneViewer
+        const shapeCount = Object.keys( rendered.shapes ) .length;
+        events .scenesDiscovered( { lighting, scenes, shapeCount } ); // send to client, where the state will be managed
         design.rendered = { ...rendered };
         events .sceneChanged( prepareSceneResponse( design, snapshot ) );
       } )

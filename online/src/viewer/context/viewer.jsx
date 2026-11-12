@@ -23,6 +23,8 @@ const ViewerProvider = ( props ) =>
   const [ problem, setProblem ] = createSignal( '' ); // cooperatively managed by both worker and client
   const [ waiting, setWaiting ] = createSignal( false );
   const [ labels, setLabels ] = createSignal( showLabels );
+  // Distinct shapes in the loaded design (all scenes), from SCENES_DISCOVERED; undefined until then
+  const [ shapeCount, setShapeCount ] = createSignal( undefined );
   const { postMessage, subscribeFor } = useWorkerClient();
   const { state, setTweenDuration, tweenCamera, setLighting, mapViewToWorld } = useCamera();
 
@@ -96,8 +98,9 @@ const ViewerProvider = ( props ) =>
     }
   } );
 
-  subscribeFor( 'SCENES_DISCOVERED', ( { lighting, scenes } ) => {
+  subscribeFor( 'SCENES_DISCOVERED', ( { lighting, scenes, shapeCount } ) => {
     setWaiting( false );
+    setShapeCount( shapeCount );
     const newScenes = scenes .map( scene => ({ ...scene, title: decodeEntities( scene.title ), content: decodeEntities( scene.content || ' ' ) }));
     setScenes( newScenes );
     // config.camera:false means this viewer must NOT drive the camera OR the background from the
@@ -130,7 +133,7 @@ const ViewerProvider = ( props ) =>
   } );
       
   const providerValue = {
-    requestDesign, openText, scenes, source, setSource, problem, waiting, setWaiting, labels,
+    requestDesign, openText, scenes, shapeCount, source, setSource, problem, waiting, setWaiting, labels,
     reload, setReload,
     setScenes,
     resetScenes: () => setScenes( [] ),
