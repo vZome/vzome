@@ -133,7 +133,7 @@ export const ZometoolInstructions = props =>
       <div class="step-controls">
         <Show when={hasScenes()} fallback={<div class="step-buttons"></div>}>
           <Switch class="step-switch" checked={steps()} onChange={toggleSteps} >
-            <Switch.Label class="step_switch__label">Show Build Steps</Switch.Label>
+            <Switch.Label class="step_switch__label">{props.stepsLabel() ?? 'Show Build Steps'}</Switch.Label>
             <Switch.Input class="switch__input" />
             <Switch.Control class="switch__control">
               <Switch.Thumb class="switch__thumb" />
@@ -156,7 +156,7 @@ export const ZometoolInstructions = props =>
   );
 }
 
-const renderComponent = ( url, container, dispatch, config, backgroundColor, partsUrl ) =>
+const renderComponent = ( url, container, dispatch, config, backgroundColor, partsUrl, stepsLabel ) =>
   {
     const bindComponent = () =>
     {
@@ -168,7 +168,7 @@ const renderComponent = ( url, container, dispatch, config, backgroundColor, par
               backgroundColor: initialBackground, defaultBackground: PLACEHOLDER_BACKGROUND_COLOR }}>
               <SceneProvider>
                 <SceneIndexingProvider config={ {} } >
-                  <ZometoolInstructions dispatch={dispatch} config={config} backgroundColor={backgroundColor} partsUrl={partsUrl} />
+                  <ZometoolInstructions dispatch={dispatch} config={config} backgroundColor={backgroundColor} partsUrl={partsUrl} stepsLabel={stepsLabel} />
                 </SceneIndexingProvider>
               </SceneProvider>
             </ViewerProvider>
@@ -196,12 +196,15 @@ class ZometoolInstructionsElement extends HTMLElement
   #revision;
   #backgroundColor;
   #setBackgroundColor;
+  #stepsLabel;
+  #setStepsLabel;
 
   constructor()
   {
     super();
     // A signal, since unlike src and module, background-color can change after connectedCallback
     [ this.#backgroundColor, this.#setBackgroundColor ] = createSignal( null );
+    [ this.#stepsLabel, this.#setStepsLabel ] = createSignal( null );
     const root = this.attachShadow({ mode: "open" });
 
     root.appendChild( document.createElement("style") ).textContent = instructionsCSS;
@@ -216,12 +219,12 @@ class ZometoolInstructionsElement extends HTMLElement
     debug && console.log( 'ZometoolInstructionsElement connected' );
 
     const partsUrl = metadataUrl( PARTS_CATALOG, this.#metadata, this.#revision );
-    renderComponent( this.#url, this.#container, evt => this.dispatchEvent(evt), { module: this.#module }, this.#backgroundColor, partsUrl );
+    renderComponent( this.#url, this.#container, evt => this.dispatchEvent(evt), { module: this.#module }, this.#backgroundColor, partsUrl, this.#stepsLabel );
   }
 
   static get observedAttributes()
   {
-    return [ "src", "module", "background-color", "metadata", "revision" ];
+    return [ "src", "module", "background-color", "metadata", "revision", "steps-label" ];
   }
 
   // This callback can happen *before* connectedCallback()!
@@ -246,6 +249,11 @@ class ZometoolInstructionsElement extends HTMLElement
     case "background-color":
       // null when the attribute is removed, which restores the design's own background
       this.#setBackgroundColor( _newValue );
+      break;
+
+    case "steps-label":
+      // null when the attribute is removed, which restores the default label
+      this.#setStepsLabel( _newValue );
       break;
 
     case "src":

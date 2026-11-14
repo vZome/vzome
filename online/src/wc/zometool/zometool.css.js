@@ -5,9 +5,25 @@ export const instructionsCSS = `
   display: inline-grid;
   overflow: hidden;
   position: relative;
-  font-family: sans-serif;
+  font-family: var(--zometool-font-family, sans-serif);
+  font-size: var(--zometool-font-size, 17px); /* text sizes below are in em, so this scales them all */
   --vzome-label-background: white;
   container-type: inline-size;
+
+  /* Theming API: a host page may set any --zometool-* property, on this element or any ancestor.
+     The private --_* copies supply the defaults, so that ancestor settings are not blocked here. */
+  --_accent: var(--zometool-accent, hsl(200 98% 39%));
+  --_accent-hover: var(--zometool-accent-hover, hsl(201 98% 44%));
+  --_accent-active: var(--zometool-accent-active, hsl(201 98% 48%));
+  --_accent-disabled: var(--zometool-accent-disabled, hsl(200deg 44.28% 69.6%));
+  --_button-text: var(--zometool-button-text, white);
+  --_button-text-disabled: var(--zometool-button-text-disabled, rgba(255, 255, 255, 0.2));
+  --_button-border: var(--zometool-button-border, black);
+  --_button-border-disabled: var(--zometool-button-border-disabled, light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3)));
+  --_button-radius: var(--zometool-button-radius, 18px);
+  --_switch-track: var(--zometool-switch-track, hsl(200deg 38.91% 75%));
+  --_switch-thumb: var(--zometool-switch-thumb, white);
+  --_text: var(--zometool-text, hsl(240 6% 10%));
 }
 
 :host > div:empty {
@@ -30,18 +46,28 @@ export const instructionsCSS = `
     height: 25px;
     border-radius: 13px;
     width: 45px;
+    border-color: var(--_accent);
+    background-color: var(--_switch-track);
     .switch__thumb {
       height: 25px;
       width: 25px;
       border-radius: 13px;
+      background-color: var(--_switch-thumb);
     }
+  }
+  .switch__control[data-checked] {
+    border-color: var(--_accent);
+    background-color: var(--_accent);
+  }
+  .switch__input:focus-visible + .switch__control {
+    outline-color: var(--_accent);
   }
 }
 .step_switch__label {
   margin-right: 8px;
-  color: hsl(240 6% 10%);
+  color: var(--_text);
   user-select: none;
-  font-size: 17px;
+  font-size: 1em;
   min-width: max-content;
 }
 
@@ -51,6 +77,8 @@ export const instructionsCSS = `
 }
 
 .step-number {
+  color: var(--_text);
+  font-size: 2em;
   min-width: 2em;
   display: flex;
   justify-content: center;
@@ -69,19 +97,19 @@ export const instructionsCSS = `
   appearance: none;
   height: 60px;
   outline: none;
-  border: 1px solid black;
-  border-radius: 18px;
+  border: 1px solid var(--_button-border);
+  border-radius: var(--_button-radius);
   padding: 0 16px;
-  background-color: hsl(200 98% 39%);
-  color: white;
-  font-size: 3.5rem;
+  background-color: var(--_accent);
+  color: var(--_button-text);
+  font-size: 56px; /* not rem, which would tie the icon to the host page's root font size */
   line-height: 0;
 }
 
 .limit-step {
   height: 48px;
   padding: 0 12px;
-  font-size: 2rem;
+  font-size: 32px;
 }
 
 .step-button-svg {
@@ -93,19 +121,19 @@ export const instructionsCSS = `
   flex-shrink: 0;
 }
 .step-button:hover {
-  background-color: hsl(201 98% 44%);
+  background-color: var(--_accent-hover);
 }
 .step-button:active {
-  background-color: hsl(201 98% 48%);
+  background-color: var(--_accent-active);
 }
 .step-button:disabled {
-  background-color: hsl(200deg 44.28% 69.6%);
-  color: rgba(255, 255, 255, 0.2);
-  border-color: light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
+  background-color: var(--_accent-disabled);
+  color: var(--_button-text-disabled);
+  border-color: var(--_button-border-disabled);
 }
 
 .step-button:focus-visible {
-  outline: 2px solid hsl(200 98% 39%);
+  outline: 2px solid var(--_accent);
   outline-offset: 2px;
 }
 
@@ -115,8 +143,24 @@ export const instructionsCSS = `
   grid-template-rows: min-content 1fr;
 }
 
-zometool-covering-products::before {
-   content: "Supporting products:";
+:where(.zometool-products-heading) {
+  font-weight: bold;
+}
+
+/* Theming for zometool-covering-products, which renders into light DOM, not a shadow root.
+   A var() with no fallback, when its property is not set, makes the declaration act as if absent,
+   so by default everything still inherits from the page.  :where() gives zero specificity,
+   so any ordinary page rule still wins. */
+:where(zometool-covering-products) {
+  color: var(--zometool-text);
+  font-family: var(--zometool-font-family);
+  font-size: var(--zometool-font-size);
+}
+:where(.zometool-products-container .link) {
+  color: var(--zometool-accent, LinkText);
+}
+:where(.zometool-products-container .link:visited) {
+  color: var(--zometool-accent, VisitedText);
 }
 
 .zometool-products-container {

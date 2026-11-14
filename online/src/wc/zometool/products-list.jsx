@@ -72,6 +72,7 @@ export class ZometoolProductsElement extends HTMLElement
   #instructionsId;
   #instructions;
   #bomLoaded;
+  #heading;
 
   constructor()
   {
@@ -80,8 +81,22 @@ export class ZometoolProductsElement extends HTMLElement
     debug && console.log( 'ZometoolProductsElement constructed' );
   }
 
+  #headingText()
+  {
+    return this .getAttribute( 'heading' ) ?? 'Supporting products:';
+  }
+
   connectedCallback()
   {
+    // The heading shows immediately, before the BOM arrives
+    if ( ! this.#heading ) {
+      this .appendChild( document.createElement("style") ).textContent = instructionsCSS;
+      this.#heading = document.createElement("div");
+      this.#heading .classList .add( 'zometool-products-heading' );
+      this.#heading .textContent = this.#headingText();
+      this .appendChild( this.#heading );
+    }
+
     if ( !! this.#instructionsId ) {
       this.#instructions = document .querySelector( `#${this.#instructionsId}` );
       if ( ! this.#instructions ) {
@@ -111,7 +126,6 @@ export class ZometoolProductsElement extends HTMLElement
       this.#bomLoaded = true;
       debug && console.log( JSON.stringify( e.detail ) );
 
-      this .appendChild( document.createElement("style") ).textContent = instructionsCSS;
       const container = document.createElement("div");
       container .classList .add( 'zometool-products-container' );
       this .appendChild( container );
@@ -124,7 +138,7 @@ export class ZometoolProductsElement extends HTMLElement
 
   static get observedAttributes()
   {
-    return [ "instructions" ];
+    return [ "instructions", "heading" ];
   }
 
   attributeChangedCallback( attributeName, _oldValue, _newValue )
@@ -134,6 +148,12 @@ export class ZometoolProductsElement extends HTMLElement
 
     case "instructions":
       this.#instructionsId = _newValue;
+      break;
+
+    case "heading":
+      // Before connectedCallback, there is no heading element yet; it will read the attribute then.
+      if ( this.#heading )
+        this.#heading .textContent = this.#headingText();
       break;
     }
   }
