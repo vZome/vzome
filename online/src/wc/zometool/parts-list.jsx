@@ -60,20 +60,31 @@ const getSvgNode = ( shape, color ) =>
 
 const debug = false;
 
+// Theming: each var() fallback is the MUI default, so the table looks unchanged until a host page
+//  sets the corresponding --zometool-* property (on this element or any ancestor).
+const TABLE_BACKGROUND = 'var(--zometool-table-background, #fff)';
+const cellSx = {
+  color: 'var(--zometool-text, rgba(0, 0, 0, 0.87))',
+  fontFamily: 'var(--zometool-font-family, "Roboto", "Helvetica", "Arial", sans-serif)',
+  fontSize: 'var(--zometool-font-size, 0.875rem)',
+  borderBottomColor: 'var(--zometool-table-border, rgb(224, 224, 224))',
+};
+const headSx = { ...cellSx, fontWeight: 'bold', backgroundColor: TABLE_BACKGROUND }; // sticky header needs an opaque background
+
 const ZometoolParts = props =>
 {
-  const partSx = { height: '24px', padding: '0', width: '210px', lineHeight: '0' };
+  const partSx = { ...cellSx, height: '24px', padding: '0', width: '210px', lineHeight: '0' };
   return (
     // The TableContainer is the scrolling element (it has overflow), so it must be limited
     //  to the available height for the sticky header to stay in view.
     <div class='zometool-parts-table' style={{ height: '100%' }}>
-      <TableContainer component={Paper} sx={{ maxHeight: '100%' }}>
+      <TableContainer component={Paper} sx={{ maxHeight: '100%', backgroundColor: TABLE_BACKGROUND }}>
         <Table stickyHeader sx={{ minWidth: 250 }} aria-label="parts table" size="small">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>Part</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Length</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }} align="right">Count</TableCell>
+              <TableCell sx={headSx}>Part</TableCell>
+              <TableCell sx={headSx}>Length</TableCell>
+              <TableCell sx={headSx} align="right">Count</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -82,8 +93,8 @@ const ZometoolParts = props =>
               <TableCell align="left" component="th" scope="row" sx={partSx}>
                 {getSvgNode( shape, color )}
               </TableCell>
-              <TableCell component="th" scope="row">{ (shape==='BALL')? '' : shape }</TableCell>
-              <TableCell align="right">{count}</TableCell>
+              <TableCell component="th" scope="row" sx={cellSx}>{ (shape==='BALL')? '' : shape }</TableCell>
+              <TableCell align="right" sx={cellSx}>{count}</TableCell>
             </TableRow>
           }</For>
           </TableBody>

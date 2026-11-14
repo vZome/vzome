@@ -67,6 +67,61 @@ zometool-instructions {
   grid-area: viewer;
 }
 
+/* Overrides every theming variable exposed by the Zometool components, to exercise the API.
+   One set of --zometool-* variables themes all three: zometool-instructions,
+   zometool-parts-required, and zometool-covering-products.
+
+   The variables are the only supported way to style zometool-instructions internals,
+   since it renders into a shadow DOM; ordinary selectors here cannot reach inside it.
+   (The other two render into light DOM, so page CSS can reach them, but their internal
+   class names are not a stable contract; prefer the variables.)
+   Each variable is optional, and falls back to the default look when unset.
+
+   They may be set on the elements themselves or on any ancestor (here, <body>), since they inherit.
+   Plain font-family and font-size, by contrast, only take effect when set directly on the
+   zometool-instructions element; on an ancestor they are blocked, so use the variables.
+
+   The 3D scene background is not themed here; use the zometool-instructions
+   background-color attribute. */
+.themed {
+  /* The accent is used in several places: step button fill, focus rings,
+     the switch border, the switch track when on, and the product links. */
+  --zometool-accent: hsl(330 80% 40%);
+  /* Hover, pressed, and disabled colors are NOT derived from the accent;
+     set them too, or they keep the default blues. */
+  --zometool-accent-hover: hsl(330 80% 50%);
+  --zometool-accent-active: hsl(330 80% 60%);
+  --zometool-accent-disabled: hsl(330 25% 75%);
+  /* The step button "text" is the arrow icon color */
+  --zometool-button-text: hsl(55 100% 75%);
+  --zometool-button-text-disabled: hsl(55 40% 90% / 0.5);
+  --zometool-button-border: hsl(150 80% 25%);
+  --zometool-button-border-disabled: hsl(150 30% 70%);
+  --zometool-button-radius: 2px;
+  /* The switch track color when off; when on, it uses the accent */
+  --zometool-switch-track: hsl(150 40% 80%);
+  --zometool-switch-thumb: hsl(55 100% 60%);
+  /* Covers the "Show Build Steps" label, the step number, the parts table text,
+     and the products list text (including the "Supporting products:" heading) */
+  --zometool-text: hsl(270 70% 35%);
+  /* Like --zometool-text, applies across all three components */
+  --zometool-font-family: Georgia, "Times New Roman", serif;
+  /* The base text size for all three components.  In zometool-instructions it scales the text
+     only (label at 1x, step number at 2x); the step buttons, arrow icons, and switch keep their
+     fixed sizes.  The parts table and products list use it as-is.  Note that the defaults differ
+     when unset: 17px for instructions, 14px for the parts table, and inherited for the products. */
+  --zometool-font-size: 22px;
+  /* Parts table only: the background also fills the sticky header row */
+  --zometool-table-background: hsl(55 100% 95%);
+  --zometool-table-border: hsl(150 30% 70%);
+}
+
+.title .theme-toggle {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+}
+
 zometool-parts-required {
   grid-area: parts;
   position: relative;
@@ -75,11 +130,6 @@ zometool-parts-required {
 zometool-covering-products {
   grid-area: products;
   padding-inline-end: 1rem;
-}
-
-zometool-covering-products::before {
-  content: "Supporting products:";
-  font-weight: bold;
 }
 
 .vzome-viewer-index-button {
