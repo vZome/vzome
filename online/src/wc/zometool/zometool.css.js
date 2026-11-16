@@ -21,8 +21,6 @@ export const instructionsCSS = `
   --_button-border: var(--zometool-button-border, black);
   --_button-border-disabled: var(--zometool-button-border-disabled, light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3)));
   --_button-radius: var(--zometool-button-radius, 18px);
-  --_switch-track: var(--zometool-switch-track, hsl(200deg 38.91% 75%));
-  --_switch-thumb: var(--zometool-switch-thumb, white);
   --_text: var(--zometool-text, hsl(240 6% 10%));
 }
 
@@ -36,44 +34,24 @@ export const instructionsCSS = `
   inset: 0;
 }
 
-.step-switch {
-  display: inherit;
-  height: 30px;
+.mode-button {
+  appearance: none;
+  align-self: center;
+  justify-self: start;
   margin: 9px;
-  .switch__control {
-    display: block;
-    margin: 23px;
-    height: 25px;
-    border-radius: 13px;
-    width: 45px;
-    border-color: var(--_accent);
-    background-color: var(--_switch-track);
-    .switch__thumb {
-      height: 25px;
-      width: 25px;
-      border-radius: 13px;
-      background-color: var(--_switch-thumb);
-    }
-  }
-  .switch__control[data-checked] {
-    border-color: var(--_accent);
-    background-color: var(--_accent);
-  }
-  .switch__input:focus-visible + .switch__control {
-    outline-color: var(--_accent);
-  }
-}
-.step_switch__label {
-  margin-right: 8px;
-  color: var(--_text);
-  user-select: none;
-  font-size: 1em;
-  min-width: max-content;
+  padding: 0.5em 1em;
+  outline: none;
+  border: 1px solid var(--_button-border);
+  border-radius: var(--_button-radius);
+  background-color: var(--_accent);
+  color: var(--_button-text);
+  font: inherit; /* buttons do not inherit fonts by default */
+  cursor: pointer;
 }
 
 .step-controls {
   display: grid;
-  grid-template-columns: 1fr 3fr;
+  grid-template-columns: 1.3fr 3fr;
 }
 
 .step-number {
@@ -120,10 +98,12 @@ export const instructionsCSS = `
   fill: currentColor;
   flex-shrink: 0;
 }
-.step-button:hover {
+.step-button:hover,
+.mode-button:hover {
   background-color: var(--_accent-hover);
 }
-.step-button:active {
+.step-button:active,
+.mode-button:active {
   background-color: var(--_accent-active);
 }
 .step-button:disabled {
@@ -132,7 +112,8 @@ export const instructionsCSS = `
   border-color: var(--_button-border-disabled);
 }
 
-.step-button:focus-visible {
+.step-button:focus-visible,
+.mode-button:focus-visible {
   outline: 2px solid var(--_accent);
   outline-offset: 2px;
 }
@@ -142,37 +123,8 @@ export const instructionsCSS = `
   display: grid;
   grid-template-rows: min-content 1fr;
 }
-
-:where(.zometool-products-heading) {
-  font-weight: bold;
-}
-
-/* Theming for zometool-covering-products, which renders into light DOM, not a shadow root.
-   A var() with no fallback, when its property is not set, makes the declaration act as if absent,
-   so by default everything still inherits from the page.  :where() gives zero specificity,
-   so any ordinary page rule still wins. */
-:where(zometool-covering-products) {
-  color: var(--zometool-text);
-  font-family: var(--zometool-font-family);
-  font-size: var(--zometool-font-size);
-}
-:where(.zometool-products-container .link) {
-  color: var(--zometool-accent, LinkText);
-}
-:where(.zometool-products-container .link:visited) {
-  color: var(--zometool-accent, VisitedText);
-}
-
-.zometool-products-container {
-  max-height: 8.7rem;
-  overflow: auto;
-  margin-block-start: 8px;
-}
-
-.matched-product {
-  min-width: 250px;
-  display: flex;
-  justify-content: space-between;
+.zometool-instructions.no-controls {
+  grid-template-rows: 1fr;
 }
 
 @container ( max-width: 650px ) {
@@ -185,12 +137,9 @@ export const instructionsCSS = `
     display: block;
   }
 
-  .step-switch {
-    display: inherit;
-    .switch__control {
-      display: inline-flex;
-      margin: 5px;
-    }
+  .mode-button {
+    display: block;
+    margin: 5px auto;
   }
 
   .step-buttons {

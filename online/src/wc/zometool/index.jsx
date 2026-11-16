@@ -1,10 +1,9 @@
 
-import { createEffect, createSignal, mergeProps, on } from 'solid-js';
+import { createEffect, createMemo, createSignal, mergeProps, on, untrack } from 'solid-js';
 import { render } from 'solid-js/web';
 import { unwrap } from 'solid-js/store';
 
 import { Button } from "@kobalte/core/button";
-import { Switch } from "@kobalte/core/switch";
 
 import { CameraProvider, DesignViewer } from '../../viewer/index.jsx';
 import { ViewerProvider, useViewer } from '../../viewer/context/viewer.jsx';
@@ -14,8 +13,6 @@ import { getSceneTitleIndex, SceneIndexingProvider, SceneProvider, SceneTitlesPr
 import { instructionsCSS } from "./zometool.css.js";
 import { urlViewerCSS } from "../../viewer/urlviewer.css.js";
 
-import { ZometoolPartsElement } from './parts-list.jsx';
-import { ZometoolProductsElement } from './products-list.jsx';
 import { normalizeBOM } from './bom.js';
 import { fetchMetadata, metadataUrl, PARTS_CATALOG } from './metadata.js';
 import { PLACEHOLDER_BACKGROUND_COLOR } from '../../viewer/util/colors.js';
@@ -24,13 +21,8 @@ const debug = false;
 
 const StepControls = props =>
 {
-  const { showIndexedScene } = useSceneIndexing();
   const atStart = () => props.index === props.minIndex;  // NOTE: scene 0 is the default scene, which we ignore
   const atEnd = () => props.index === props.maxIndex;
-  
-  createEffect( () => {
-    showIndexedScene( props.index, { camera: true } );
-  } );
 
   const change = ( delta ) => evt =>
   {
@@ -93,6 +85,22 @@ export const ZometoolInstructions = props =>
   } );
   const toggleSteps = () => setSteps( v => !v );
 
+  // The public step API numbers steps from 1 to stepCount, hiding the default scene (index 0)
+  //  and the module start/end scene titles.  A null step means the finished design.
+  const discovered = () => scenes?.length > 0;
+  const stepCount = createMemo( () => hasScenes()? maxIndex() - minIndex() + 1 : 0 );
+  const currentStep = createMemo( () => steps()? index() - minIndex() + 1 : null );
+  const showStep = step =>
+  {
+    if ( step === null ) {
+      setSteps( false );
+    } else if ( stepCount() > 0 ) {
+      const clamped = Math.min( Math.max( Math.round( step ), 1 ), stepCount() );
+      setIndex( minIndex() + clamped - 1 );
+      setSteps( true );
+    }
+  }
+
   createEffect( () => {
     let minIndex = 1;
     let maxIndex = scenes?.length - 1;
@@ -111,11 +119,25 @@ export const ZometoolInstructions = props =>
     }
   });
 
+  // Here rather than in StepControls, so that page-supplied controls (controls="none") work too
   createEffect( () => {
-    if ( ! steps() ) {
+    if ( steps() ) {
+      showIndexedScene( index(), { camera: true } );
+    } else {
       showIndexedScene( hasScenes()? maxIndex(): 0, { camera: true } );
     }
   });
+
+  // Rerun when stepCount changes too, so a step requested before the scenes are discovered still applies
+  createEffect( on( [ () => props.stepRequest?.(), stepCount ], ( [ request ] ) => {
+    if ( request !== undefined )
+      untrack( () => showStep( request.step ) );
+  } ) );
+
+  createEffect( () => {
+    if ( discovered() )
+      props.onStepShown?.( currentStep(), stepCount() );
+  } );
 
   // The initial background is applied by ViewerProvider; this handles later attribute changes.
   createEffect( on( props.backgroundColor, color => setBackgroundOverride( color ), { defer: true } ) );
@@ -123,22 +145,22 @@ export const ZometoolInstructions = props =>
   subscribeFor( 'BOM_CHANGED', bom => {
     fetchMetadata( props.partsUrl ) .then( parts => {
       const detail = normalizeBOM( bom, parts );
-      props.dispatch( new CustomEvent( 'zometool-instructions-loaded', { detail } ) );
+      props.dispatch?.( new CustomEvent( 'zometool-instructions-loaded', { detail } ) );
     });
   } );
 
   return (
-    <div class='zometool-instructions'>
+    <div class='zometool-instructions' classList={{ 'no-controls': props.controls?.() === 'none' }}>
 
+      <Show when={ props.controls?.() !== 'none' }>
       <div class="step-controls">
         <Show when={hasScenes()} fallback={<div class="step-buttons"></div>}>
-          <Switch class="step-switch" checked={steps()} onChange={toggleSteps} >
-            <Switch.Label class="step_switch__label">{props.stepsLabel() ?? 'Show Build Steps'}</Switch.Label>
-            <Switch.Input class="switch__input" />
-            <Switch.Control class="switch__control">
-              <Switch.Thumb class="switch__thumb" />
-            </Switch.Control>
-          </Switch>
+          {/* A call to action for the other mode, so the label names what a click will show */}
+          <Button class='mode-button' onClick={toggleSteps} >
+            { steps()
+              ? props.designLabel?.() ?? 'Show finished design'
+              : props.stepsLabel?.() ?? 'Show step-by-step' }
+          </Button>
         </Show>
         <div class="step-buttons">
           <Show when={steps()}>
@@ -146,6 +168,7 @@ export const ZometoolInstructions = props =>
           </Show>
         </div>
       </div>
+      </Show>
 
       <DesignViewer config={ dynConfig() }
           componentRoot={props.componentRoot}
@@ -156,7 +179,7 @@ export const ZometoolInstructions = props =>
   );
 }
 
-const renderComponent = ( url, container, dispatch, config, backgroundColor, partsUrl, stepsLabel ) =>
+const renderComponent = ( container, { url, backgroundColor, ...instructionsProps } ) =>
   {
     const bindComponent = () =>
     {
@@ -168,7 +191,7 @@ const renderComponent = ( url, container, dispatch, config, backgroundColor, par
               backgroundColor: initialBackground, defaultBackground: PLACEHOLDER_BACKGROUND_COLOR }}>
               <SceneProvider>
                 <SceneIndexingProvider config={ {} } >
-                  <ZometoolInstructions dispatch={dispatch} config={config} backgroundColor={backgroundColor} partsUrl={partsUrl} stepsLabel={stepsLabel} />
+                  <ZometoolInstructions backgroundColor={backgroundColor} {...instructionsProps} />
                 </SceneIndexingProvider>
               </SceneProvider>
             </ViewerProvider>
@@ -198,6 +221,14 @@ class ZometoolInstructionsElement extends HTMLElement
   #setBackgroundColor;
   #stepsLabel;
   #setStepsLabel;
+  #designLabel;
+  #setDesignLabel;
+  #controls;
+  #setControls;
+  #stepRequest;
+  #setStepRequest;
+  #step = null;
+  #stepCount;
 
   constructor()
   {
@@ -205,6 +236,10 @@ class ZometoolInstructionsElement extends HTMLElement
     // A signal, since unlike src and module, background-color can change after connectedCallback
     [ this.#backgroundColor, this.#setBackgroundColor ] = createSignal( null );
     [ this.#stepsLabel, this.#setStepsLabel ] = createSignal( null );
+    [ this.#designLabel, this.#setDesignLabel ] = createSignal( null );
+    [ this.#controls, this.#setControls ] = createSignal( null );
+    // Not deduplicated, so that requesting the same step again still shows it, if it has changed since
+    [ this.#stepRequest, this.#setStepRequest ] = createSignal( undefined, { equals: false } );
     const root = this.attachShadow({ mode: "open" });
 
     root.appendChild( document.createElement("style") ).textContent = instructionsCSS;
@@ -219,12 +254,27 @@ class ZometoolInstructionsElement extends HTMLElement
     debug && console.log( 'ZometoolInstructionsElement connected' );
 
     const partsUrl = metadataUrl( PARTS_CATALOG, this.#metadata, this.#revision );
-    renderComponent( this.#url, this.#container, evt => this.dispatchEvent(evt), { module: this.#module }, this.#backgroundColor, partsUrl, this.#stepsLabel );
+    renderComponent( this.#container, {
+      url: this.#url,
+      dispatch: evt => this.dispatchEvent(evt),
+      config: { module: this.#module },
+      backgroundColor: this.#backgroundColor,
+      partsUrl,
+      stepsLabel: this.#stepsLabel,
+      designLabel: this.#designLabel,
+      controls: this.#controls,
+      stepRequest: this.#stepRequest,
+      onStepShown: ( step, stepCount ) => {
+        this.#step = step;
+        this.#stepCount = stepCount;
+        this .dispatchEvent( new CustomEvent( 'zometool-step-shown', { detail: { step, stepCount } } ) );
+      },
+    } );
   }
 
   static get observedAttributes()
   {
-    return [ "src", "module", "background-color", "metadata", "revision", "steps-label" ];
+    return [ "src", "module", "background-color", "metadata", "revision", "steps-label", "design-label", "controls" ];
   }
 
   // This callback can happen *before* connectedCallback()!
@@ -256,6 +306,15 @@ class ZometoolInstructionsElement extends HTMLElement
       this.#setStepsLabel( _newValue );
       break;
 
+    case "design-label":
+      this.#setDesignLabel( _newValue );
+      break;
+
+    case "controls":
+      // "none" hides the built-in step controls, so the page can supply its own using the step API
+      this.#setControls( _newValue );
+      break;
+
     case "src":
       this.#url = new URL( _newValue, window.location ) .toString();
     }
@@ -273,6 +332,25 @@ class ZometoolInstructionsElement extends HTMLElement
   get backgroundColor()
   {
     return this.getAttribute( "background-color" );
+  }
+
+  // The step API, for page-supplied controls: a number from 1 to stepCount shows that step,
+  //  and null shows the finished design.  Out-of-range numbers are clamped.
+  //  It may be set before the design loads; the request applies once the scenes are discovered.
+  set step( newValue )
+  {
+    this.#setStepRequest( { step: newValue ?? null } );
+  }
+
+  get step()
+  {
+    return this.#step;
+  }
+
+  // Undefined until the scenes are discovered; zero for a design with no scenes
+  get stepCount()
+  {
+    return this.#stepCount;
   }
 
   getParts()
@@ -303,7 +381,5 @@ class ZometoolInstructionsElement extends HTMLElement
 }
 
 customElements.define( "zometool-instructions", ZometoolInstructionsElement );
-customElements.define( "zometool-parts-required", ZometoolPartsElement );
-customElements.define( "zometool-covering-products", ZometoolProductsElement );
 
 

@@ -63,91 +63,208 @@ h1 {
   content: 'Expert';
 }
 
-zometool-instructions {
+[hidden] {
+  display: none !important; /* so that display rules below do not defeat the hidden attribute */
+}
+
+/* // =============================================================================
+// Sample code styling: the viewer and its step controls (step-controls.js)
+// ============================================================================= */
+
+.zometool-viewer {
   grid-area: viewer;
+  display: grid;
+  grid-template-rows: min-content 1fr;
+  container-type: inline-size;
 }
 
-/* Overrides every theming variable exposed by the Zometool components, to exercise the API.
-   One set of --zometool-* variables themes all three: zometool-instructions,
-   zometool-parts-required, and zometool-covering-products.
-
-   The variables are the only supported way to style zometool-instructions internals,
-   since it renders into a shadow DOM; ordinary selectors here cannot reach inside it.
-   (The other two render into light DOM, so page CSS can reach them, but their internal
-   class names are not a stable contract; prefer the variables.)
-   Each variable is optional, and falls back to the default look when unset.
-
-   They may be set on the elements themselves or on any ancestor (here, <body>), since they inherit.
-   Plain font-family and font-size, by contrast, only take effect when set directly on the
-   zometool-instructions element; on an ancestor they are blocked, so use the variables.
-
-   The 3D scene background is not themed here; use the zometool-instructions
-   background-color attribute. */
-.themed {
-  /* The accent is used in several places: step button fill, focus rings,
-     the switch border, the switch track when on, and the product links. */
-  --zometool-accent: hsl(330 80% 40%);
-  /* Hover, pressed, and disabled colors are NOT derived from the accent;
-     set them too, or they keep the default blues. */
-  --zometool-accent-hover: hsl(330 80% 50%);
-  --zometool-accent-active: hsl(330 80% 60%);
-  --zometool-accent-disabled: hsl(330 25% 75%);
-  /* The step button "text" is the arrow icon color */
-  --zometool-button-text: hsl(55 100% 75%);
-  --zometool-button-text-disabled: hsl(55 40% 90% / 0.5);
-  --zometool-button-border: hsl(150 80% 25%);
-  --zometool-button-border-disabled: hsl(150 30% 70%);
-  --zometool-button-radius: 2px;
-  /* The switch track color when off; when on, it uses the accent */
-  --zometool-switch-track: hsl(150 40% 80%);
-  --zometool-switch-thumb: hsl(55 100% 60%);
-  /* Covers the "Show Build Steps" label, the step number, the parts table text,
-     and the products list text (including the "Supporting products:" heading) */
-  --zometool-text: hsl(270 70% 35%);
-  /* Like --zometool-text, applies across all three components */
-  --zometool-font-family: Georgia, "Times New Roman", serif;
-  /* The base text size for all three components.  In zometool-instructions it scales the text
-     only (label at 1x, step number at 2x); the step buttons, arrow icons, and switch keep their
-     fixed sizes.  The parts table and products list use it as-is.  Note that the defaults differ
-     when unset: 17px for instructions, 14px for the parts table, and inherited for the products. */
-  --zometool-font-size: 22px;
-  /* Parts table only: the background also fills the sticky header row */
-  --zometool-table-background: hsl(55 100% 95%);
-  --zometool-table-border: hsl(150 30% 70%);
+zometool-instructions {
+  /* Always the second row, even while the step controls are hidden; otherwise it would fall into
+     the min-content row and get zero height, since its content is all absolutely positioned. */
+  grid-row: 2;
+  min-height: 0; /* let the grid row, not the 3D canvas, determine the height */
 }
 
-.title .theme-toggle {
-  position: absolute;
-  right: 1rem;
-  top: 1rem;
+.step-controls {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  color: hsl(240 6% 10%);
 }
 
-zometool-parts-required {
-  grid-area: parts;
-  position: relative;
+.mode-button,
+.step-button {
+  appearance: none;
+  border: 1px solid black;
+  border-radius: 18px;
+  background-color: hsl(200 98% 39%);
+  color: white;
+  cursor: pointer;
+}
+.mode-button:hover,
+.step-button:hover {
+  background-color: hsl(201 98% 44%);
+}
+.mode-button:active,
+.step-button:active {
+  background-color: hsl(201 98% 48%);
+}
+.mode-button:focus-visible,
+.step-button:focus-visible {
+  outline: 2px solid hsl(200 98% 39%);
+  outline-offset: 2px;
 }
 
-zometool-covering-products {
+.mode-button {
+  align-self: center;
+  justify-self: start;
+  margin: 9px;
+  padding: 0.5em 1em;
+  font: inherit;
+  font-size: 17px;
+}
+
+.step-buttons {
+  margin: auto;
+  min-height: 6rem;
+  gap: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-button {
+  height: 60px;
+  padding: 0 16px;
+  font-size: 56px; /* sizes the icon */
+  line-height: 0;
+}
+.step-button svg {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+}
+.step-button:disabled {
+  background-color: hsl(200deg 44.28% 69.6%);
+  color: rgba(255, 255, 255, 0.2);
+  border-color: light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
+  cursor: default;
+}
+
+.limit-step {
+  height: 48px;
+  padding: 0 12px;
+  font-size: 32px;
+}
+
+.step-number {
+  min-width: 2em;
+  font-size: 34px;
+  font-weight: bold;
+  text-align: center;
+}
+
+@container ( max-width: 650px ) {
+  .step-controls {
+    display: block;
+  }
+  .mode-button {
+    display: block;
+    margin: 5px auto;
+  }
+  .step-buttons {
+    transform: scale(0.8);
+    min-height: 4rem;
+  }
+  .step-button {
+    padding: 0;
+  }
+  .limit-step {
+    padding: 0 6px;
+  }
+  .step-number {
+    min-width: 1.4em;
+  }
+}
+
+/* // =============================================================================
+// Sample code styling: the products list (products-list.js)
+// ============================================================================= */
+
+.zometool-products {
   grid-area: products;
   padding-inline-end: 1rem;
 }
 
-.vzome-viewer-index-button {
-  border: 2px solid stencilColor("color-primaryDarker");
-  border-radius: 6px;
-  font-size: x-large;
+.products-heading {
+  font-weight: bold;
 }
 
+.products-list {
+  max-height: 8.7rem;
+  overflow: auto;
+  margin-block: 8px 0;
+}
 
-.zometool-parts-container {
+/* // =============================================================================
+// Sample code styling: the parts table (parts-list.js)
+// ============================================================================= */
+
+.zometool-parts {
+  grid-area: parts;
+  position: relative;
+}
+
+.parts-scroller {
   overflow: auto;
   position: absolute;
   inset: 0;
+  border-radius: 4px;
+  box-shadow: 0 2px 1px -1px rgba(0,0,0,0.2), 0 1px 1px 0 rgba(0,0,0,0.14), 0 1px 3px 0 rgba(0,0,0,0.12);
+}
+
+.parts-table {
+  min-width: 250px;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.parts-table th,
+.parts-table td {
+  padding: 6px 16px;
+  text-align: left;
+  border-bottom: 1px solid rgb(224, 224, 224);
+}
+
+.parts-table thead th {
+  position: sticky; /* keep the header in view while the table scrolls */
+  top: 0;
+  background-color: white;
+}
+
+.parts-table .count,
+.parts-table td:last-child {
+  text-align: right;
+}
+
+.parts-table td:first-child {
+  width: 210px;
+  height: 24px;
+  padding: 0;
+  line-height: 0;
+}
+.parts-table td:first-child svg {
+  height: 24px;
+  width: 210px;
+}
+
+.parts-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 @media ( max-width: 800px ) {
 
-  zometool-instructions {
+  .zometool-viewer {
     border: 1px solid black;
   }
 
@@ -165,20 +282,17 @@ zometool-covering-products {
       "products"
       "parts";
     }
-    
-  .zometool-parts-container {
+
+  .parts-scroller {
     overflow: visible;
-    max-height: none;
     position: static;
   }
-  .zometool-parts-table {
-    position: relative;
-  }
 
-  .MuiTableCell-sizeSmall {
+  .parts-table th,
+  .parts-table td {
     padding: 6px 11px;
   }
-  .MuiTableCell-alignLeft {
+  .parts-table td:first-child {
     padding: 0;
   }
 }
