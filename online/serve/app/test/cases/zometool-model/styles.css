@@ -84,30 +84,28 @@ zometool-instructions {
    The 3D scene background is not themed here; use the zometool-instructions
    background-color attribute. */
 .themed {
-  /* The accent is used in several places: step button fill, focus rings,
-     the switch border, the switch track when on, and the product links. */
+  /* The accent is used in several places: the fill of the step buttons and the mode button,
+     focus rings, and the product links. */
   --zometool-accent: hsl(330 80% 40%);
   /* Hover, pressed, and disabled colors are NOT derived from the accent;
      set them too, or they keep the default blues. */
   --zometool-accent-hover: hsl(330 80% 50%);
   --zometool-accent-active: hsl(330 80% 60%);
   --zometool-accent-disabled: hsl(330 25% 75%);
-  /* The step button "text" is the arrow icon color */
+  /* The mode button text, and the step button arrow icons */
   --zometool-button-text: hsl(55 100% 75%);
   --zometool-button-text-disabled: hsl(55 40% 90% / 0.5);
   --zometool-button-border: hsl(150 80% 25%);
   --zometool-button-border-disabled: hsl(150 30% 70%);
+  /* The border, radius, and hover/pressed colors also apply to the mode button */
   --zometool-button-radius: 2px;
-  /* The switch track color when off; when on, it uses the accent */
-  --zometool-switch-track: hsl(150 40% 80%);
-  --zometool-switch-thumb: hsl(55 100% 60%);
-  /* Covers the "Show Build Steps" label, the step number, the parts table text,
+  /* Covers the step number, the parts table text,
      and the products list text (including the "Supporting products:" heading) */
   --zometool-text: hsl(270 70% 35%);
   /* Like --zometool-text, applies across all three components */
   --zometool-font-family: Georgia, "Times New Roman", serif;
   /* The base text size for all three components.  In zometool-instructions it scales the text
-     only (label at 1x, step number at 2x); the step buttons, arrow icons, and switch keep their
+     only (mode button at 1x, step number at 2x); the step buttons and arrow icons keep their
      fixed sizes.  The parts table and products list use it as-is.  Note that the defaults differ
      when unset: 17px for instructions, 14px for the parts table, and inherited for the products. */
   --zometool-font-size: 22px;

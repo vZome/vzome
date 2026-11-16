@@ -4,7 +4,6 @@ import { render } from 'solid-js/web';
 import { unwrap } from 'solid-js/store';
 
 import { Button } from "@kobalte/core/button";
-import { Switch } from "@kobalte/core/switch";
 
 import { CameraProvider, DesignViewer } from '../../viewer/index.jsx';
 import { ViewerProvider, useViewer } from '../../viewer/context/viewer.jsx';
@@ -132,13 +131,12 @@ export const ZometoolInstructions = props =>
 
       <div class="step-controls">
         <Show when={hasScenes()} fallback={<div class="step-buttons"></div>}>
-          <Switch class="step-switch" checked={steps()} onChange={toggleSteps} >
-            <Switch.Label class="step_switch__label">{props.stepsLabel() ?? 'Show Build Steps'}</Switch.Label>
-            <Switch.Input class="switch__input" />
-            <Switch.Control class="switch__control">
-              <Switch.Thumb class="switch__thumb" />
-            </Switch.Control>
-          </Switch>
+          {/* A call to action for the other mode, so the label names what a click will show */}
+          <Button class='mode-button' onClick={toggleSteps} >
+            { steps()
+              ? props.designLabel() ?? 'Show finished design'
+              : props.stepsLabel() ?? 'Show step-by-step' }
+          </Button>
         </Show>
         <div class="step-buttons">
           <Show when={steps()}>
@@ -156,7 +154,7 @@ export const ZometoolInstructions = props =>
   );
 }
 
-const renderComponent = ( url, container, dispatch, config, backgroundColor, partsUrl, stepsLabel ) =>
+const renderComponent = ( url, container, dispatch, config, backgroundColor, partsUrl, stepsLabel, designLabel ) =>
   {
     const bindComponent = () =>
     {
@@ -168,7 +166,7 @@ const renderComponent = ( url, container, dispatch, config, backgroundColor, par
               backgroundColor: initialBackground, defaultBackground: PLACEHOLDER_BACKGROUND_COLOR }}>
               <SceneProvider>
                 <SceneIndexingProvider config={ {} } >
-                  <ZometoolInstructions dispatch={dispatch} config={config} backgroundColor={backgroundColor} partsUrl={partsUrl} stepsLabel={stepsLabel} />
+                  <ZometoolInstructions dispatch={dispatch} config={config} backgroundColor={backgroundColor} partsUrl={partsUrl} stepsLabel={stepsLabel} designLabel={designLabel} />
                 </SceneIndexingProvider>
               </SceneProvider>
             </ViewerProvider>
@@ -198,6 +196,8 @@ class ZometoolInstructionsElement extends HTMLElement
   #setBackgroundColor;
   #stepsLabel;
   #setStepsLabel;
+  #designLabel;
+  #setDesignLabel;
 
   constructor()
   {
@@ -205,6 +205,7 @@ class ZometoolInstructionsElement extends HTMLElement
     // A signal, since unlike src and module, background-color can change after connectedCallback
     [ this.#backgroundColor, this.#setBackgroundColor ] = createSignal( null );
     [ this.#stepsLabel, this.#setStepsLabel ] = createSignal( null );
+    [ this.#designLabel, this.#setDesignLabel ] = createSignal( null );
     const root = this.attachShadow({ mode: "open" });
 
     root.appendChild( document.createElement("style") ).textContent = instructionsCSS;
@@ -219,12 +220,12 @@ class ZometoolInstructionsElement extends HTMLElement
     debug && console.log( 'ZometoolInstructionsElement connected' );
 
     const partsUrl = metadataUrl( PARTS_CATALOG, this.#metadata, this.#revision );
-    renderComponent( this.#url, this.#container, evt => this.dispatchEvent(evt), { module: this.#module }, this.#backgroundColor, partsUrl, this.#stepsLabel );
+    renderComponent( this.#url, this.#container, evt => this.dispatchEvent(evt), { module: this.#module }, this.#backgroundColor, partsUrl, this.#stepsLabel, this.#designLabel );
   }
 
   static get observedAttributes()
   {
-    return [ "src", "module", "background-color", "metadata", "revision", "steps-label" ];
+    return [ "src", "module", "background-color", "metadata", "revision", "steps-label", "design-label" ];
   }
 
   // This callback can happen *before* connectedCallback()!
@@ -254,6 +255,10 @@ class ZometoolInstructionsElement extends HTMLElement
     case "steps-label":
       // null when the attribute is removed, which restores the default label
       this.#setStepsLabel( _newValue );
+      break;
+
+    case "design-label":
+      this.#setDesignLabel( _newValue );
       break;
 
     case "src":
