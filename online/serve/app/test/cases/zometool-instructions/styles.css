@@ -28,3 +28,46 @@ zometool-instructions {
   border: 1px solid black;
   border-radius: 8px;
 }
+
+.theme-toggle {
+  position: absolute;
+  top: 0;
+  right: 1.5rem;
+  font-size: small;
+}
+
+/* Overrides every theming variable for the built-in step controls of zometool-instructions,
+   to exercise that API.  (Pages that use controls="none" style their own controls directly.)
+
+   The variables are the only supported way to style the built-in controls,
+   since they render into a shadow DOM; ordinary selectors here cannot reach inside it.
+   Each variable is optional, and falls back to the default look when unset.
+
+   They may be set on the element itself or on any ancestor (here, <body>), since they inherit.
+   Plain font-family and font-size, by contrast, only take effect when set directly on the
+   zometool-instructions element; on an ancestor they are blocked, so use the variables.
+
+   The 3D scene background is not themed here; use the background-color attribute. */
+.themed {
+  /* The accent is used in several places: the fill of the step buttons and the mode button,
+     and focus rings. */
+  --zometool-accent: hsl(330 80% 40%);
+  /* Hover, pressed, and disabled colors are NOT derived from the accent;
+     set them too, or they keep the default blues. */
+  --zometool-accent-hover: hsl(330 80% 50%);
+  --zometool-accent-active: hsl(330 80% 60%);
+  --zometool-accent-disabled: hsl(330 25% 75%);
+  /* The mode button text, and the step button arrow icons */
+  --zometool-button-text: hsl(55 100% 75%);
+  --zometool-button-text-disabled: hsl(55 40% 90% / 0.5);
+  /* The border, radius, and hover/pressed colors also apply to the mode button */
+  --zometool-button-border: hsl(150 80% 25%);
+  --zometool-button-border-disabled: hsl(150 30% 70%);
+  --zometool-button-radius: 2px;
+  /* The step number */
+  --zometool-text: hsl(270 70% 35%);
+  --zometool-font-family: Georgia, "Times New Roman", serif;
+  /* Scales the text only (mode button at 1x, step number at 2x); the step buttons
+     and arrow icons keep their fixed sizes.  Defaults to 17px. */
+  --zometool-font-size: 22px;
+}

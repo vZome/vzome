@@ -13,6 +13,22 @@
 </head>
 <body>
 
+  <label class="theme-toggle">
+    <input type="checkbox" id="themed" />
+    themed
+  </label>
+
+  <script>
+    document.getElementById( 'themed' ) .addEventListener( 'change', evt =>
+      document.body.classList.toggle( 'themed', evt.target.checked ) );
+  </script>
+
+  <!-- The text labels of the built-in mode button can be set with optional attributes,
+       e.g. for translation:
+         <zometool-instructions steps-label="Show step-by-step"
+                                design-label="Show finished design" ...>
+       Those values are the defaults.  Pages that need more control than this can hide the
+       built-in controls with controls="none" and supply their own; see the zometool-model test case. -->
   <zometool-instructions src="./all-parts.vZome">
   </zometool-instructions>
 

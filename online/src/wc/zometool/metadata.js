@@ -1,8 +1,8 @@
 
-// The metadata filenames are fixed, part of the contract; the "metadata" and "revision"
-//  attributes of the zometool web components only determine where they are fetched from.
+// The metadata filename is fixed, part of the contract; the "metadata" and "revision"
+//  attributes of zometool-instructions only determine where it is fetched from.
+//  (The zometool-products.json catalog alongside it is fetched by page code; see the zometool-model test case.)
 export const PARTS_CATALOG = 'zometool-parts.json';
-export const PRODUCTS_CATALOG = 'zometool-products.json';
 
 const DEFAULT_METADATA = 'https://zometool.github.io/vzome-sharing/metadata/';
 

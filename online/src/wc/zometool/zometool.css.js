@@ -123,37 +123,8 @@ export const instructionsCSS = `
   display: grid;
   grid-template-rows: min-content 1fr;
 }
-
-:where(.zometool-products-heading) {
-  font-weight: bold;
-}
-
-/* Theming for zometool-covering-products, which renders into light DOM, not a shadow root.
-   A var() with no fallback, when its property is not set, makes the declaration act as if absent,
-   so by default everything still inherits from the page.  :where() gives zero specificity,
-   so any ordinary page rule still wins. */
-:where(zometool-covering-products) {
-  color: var(--zometool-text);
-  font-family: var(--zometool-font-family);
-  font-size: var(--zometool-font-size);
-}
-:where(.zometool-products-container .link) {
-  color: var(--zometool-accent, LinkText);
-}
-:where(.zometool-products-container .link:visited) {
-  color: var(--zometool-accent, VisitedText);
-}
-
-.zometool-products-container {
-  max-height: 8.7rem;
-  overflow: auto;
-  margin-block-start: 8px;
-}
-
-.matched-product {
-  min-width: 250px;
-  display: flex;
-  justify-content: space-between;
+.zometool-instructions.no-controls {
+  grid-template-rows: 1fr;
 }
 
 @container ( max-width: 650px ) {

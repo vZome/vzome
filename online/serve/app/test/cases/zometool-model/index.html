@@ -10,21 +10,17 @@
   <script type="module" src="/modules/zometool.js" >
   </script>
 
+  <!-- Sample code, built on the zometool-instructions API -->
+  <script type="module" src="./step-controls.js"></script>
+  <script type="module" src="./parts-list.js"></script>
+  <script type="module" src="./products-list.js"></script>
+
 </head>
 <body>
 
     <div class="title">
       <h1>Zometool Model Demo</h1>
-      <label class="theme-toggle">
-        <input type="checkbox" id="themed" />
-        themed
-      </label>
     </div>
-
-    <script>
-      document.getElementById( 'themed' ) .addEventListener( 'change', evt =>
-        document.body.classList.toggle( 'themed', evt.target.checked ) );
-    </script>
 
     <!-- vvvvvvv ----- This is the portion you will enter as content HTML for the page -->
     <div class="zometool-model">
@@ -47,23 +43,66 @@
       <div class="zometool-model-difficulty" data-difficulty="medium">
       </div>
 
-      <zometool-instructions src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2024/09/25/23-37-59-596Z-standard-colors-and-lengths-instructions/standard-colors-and-lengths-instructions.vZome">
-      <!-- <zometool-instructions src="./RYB.vZome"> -->
-      <!-- <zometool-instructions src="https://raw.githubusercontent.com/lucosmic/vzome-sharing/main/2025/01/12/01-29-12-PRJ-DNA-kit/PRJ-DNA-kit.vZome"> -->
-      <!-- <zometool-instructions src="https://zometool.github.io/vzome-sharing/2025/03/25/05-15-03-815Z-PRJ-BUB-5-Flower/PRJ-BUB-5-Flower.vZome      "> -->
-      <!-- <zometool-instructions src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2024/09/01/21-01-21-623Z-standard-colors-and-lengths/standard-colors-and-lengths.vZome"> -->
-      <!-- <zometool-instructions src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2024/09/24/02-42-34-519Z-hyperdo-steps-correct-scale/hyperdo-steps-correct-scale.vZome"> -->
-      </zometool-instructions>      
+      <!-- The step controls are sample code (step-controls.js), built on the step API that
+           <zometool-instructions> exposes when its built-in controls are turned off. -->
+      <div class="zometool-viewer">
 
-      <zometool-parts-required></zometool-parts-required>
-      <zometool-covering-products></zometool-covering-products>
+        <div class="step-controls" hidden>
+          <button class="mode-button"
+              data-steps-label="Show step-by-step instructions" data-design-label="Show finished design">
+            Show step-by-step instructions
+          </button>
+          <div class="step-buttons" hidden>
+            <button class="step-button limit-step first-step" title="First step">
+              <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                <path d="M17.7 15.89L13.82 12l3.89-3.89c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0l-4.59 4.59c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .38-.38.38-1.02-.01-1.4zM7 6c.55 0 1 .45 1 1v10c0 .55-.45 1-1 1s-1-.45-1-1V7c0-.55.45-1 1-1z"></path>
+              </svg>
+            </button>
+            <button class="step-button previous-step" title="Previous step">
+              <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                <path d="M14.91 6.71c-.39-.39-1.02-.39-1.41 0L8.91 11.3c-.39.39-.39 1.02 0 1.41l4.59 4.59c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L11.03 12l3.88-3.88c.38-.39.38-1.03 0-1.41z"></path>
+              </svg>
+            </button>
+            <span class="step-number" aria-live="polite"></span>
+            <button class="step-button next-step" title="Next step">
+              <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                <path d="M9.31 6.71c-.39.39-.39 1.02 0 1.41L13.19 12l-3.88 3.88c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41L10.72 6.7c-.38-.38-1.02-.38-1.41.01z"></path>
+              </svg>
+            </button>
+            <button class="step-button limit-step last-step" title="Last step">
+              <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                <path d="M6.29 8.11L10.18 12l-3.89 3.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l4.59-4.59c.39-.39.39-1.02 0-1.41L7.7 6.7c-.39-.39-1.02-.39-1.41 0-.38.39-.38 1.03 0 1.41zM17 6c.55 0 1 .45 1 1v10c0 .55-.45 1-1 1s-1-.45-1-1V7c0-.55.45-1 1-1z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
 
-      <!-- The text labels are set with optional attributes, e.g. for translation:
-             <zometool-instructions steps-label="Show step-by-step instructions"
-                                    design-label="Show finished design" ...>
-             <zometool-covering-products heading="Supporting products:">
-           Those values are the defaults.  The products heading can be styled with
-           the .zometool-products-heading selector; it is bold by default. -->
+        <zometool-instructions controls="none" src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2024/09/25/23-37-59-596Z-standard-colors-and-lengths-instructions/standard-colors-and-lengths-instructions.vZome">
+        <!-- <zometool-instructions controls="none" src="./RYB.vZome"> -->
+        <!-- <zometool-instructions controls="none" src="https://raw.githubusercontent.com/lucosmic/vzome-sharing/main/2025/01/12/01-29-12-PRJ-DNA-kit/PRJ-DNA-kit.vZome"> -->
+        <!-- <zometool-instructions controls="none" src="https://zometool.github.io/vzome-sharing/2025/03/25/05-15-03-815Z-PRJ-BUB-5-Flower/PRJ-BUB-5-Flower.vZome"> -->
+        <!-- <zometool-instructions controls="none" src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2024/09/01/21-01-21-623Z-standard-colors-and-lengths/standard-colors-and-lengths.vZome"> -->
+        <!-- <zometool-instructions controls="none" src="https://raw.githubusercontent.com/vorth/vzome-sharing/main/2024/09/24/02-42-34-519Z-hyperdo-steps-correct-scale/hyperdo-steps-correct-scale.vZome"> -->
+        </zometool-instructions>
+      </div>
+
+      <!-- Sample code: products-list.js -->
+      <div class="zometool-products">
+        <div class="products-heading">Supporting products:</div>
+        <ul class="products-list"></ul>
+      </div>
+
+      <!-- Sample code: parts-list.js -->
+      <div class="zometool-parts">
+        <div class="parts-scroller">
+          <table class="parts-table">
+            <thead>
+              <tr><th>Part</th><th>Length</th><th class="count">Count</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
 
     </div>
     <!-- ^^^^^^^ ----- This is the portion you will enter as content HTML for the page -->
