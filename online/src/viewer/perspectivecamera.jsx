@@ -21,6 +21,16 @@ export const ControlledPerspectiveCamera = (props) =>
       cam.layers .disable( 4 );
   });
 
+  // This must run before the lookAt effect below.  solid-three first parents the camera under
+  //  WebXRSupport's scaled originGroup, and lookAt() aims from the camera's WORLD position, so a
+  //  camera created after mount (e.g. toggling perspective) would aim wrong for any off-origin target.
+  createEffect( () => {
+    setCamera( cam );
+    // I don't know why this is necessary... I guess a camera is not added automatically
+    scene .add( cam );
+    onCleanup( () => scene .remove( cam ) );
+  } );
+
   createEffect( () => {
     const [ x, y, z ] = perspectiveProps .target;
     cam .lookAt( x * globalScale, y * globalScale, z * globalScale );
@@ -33,13 +43,6 @@ export const ControlledPerspectiveCamera = (props) =>
     cam.aspect = props.aspect;
     cam.updateProjectionMatrix();
   });
-
-  createEffect( () => {
-    setCamera( cam );
-    // I don't know why this is necessary... I guess a camera is not added automatically
-    scene .add( cam );
-    onCleanup( () => scene .remove( cam ) );
-  } );
 
   return (
     <T.PerspectiveCamera ref={cam} position={perspectiveProps .position.map( e => e * globalScale )} up={perspectiveProps .up} >

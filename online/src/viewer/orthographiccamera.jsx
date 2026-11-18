@@ -33,17 +33,18 @@ export const ControlledOrthographicCamera = (props) =>
     cam.updateProjectionMatrix();
   });
 
-  createEffect( () => {
-    const [ x, y, z ] = perspectiveProps .target;
-    cam .lookAt( x * globalScale, y * globalScale, z * globalScale );
-  });
-
+  // This must run before the lookAt effect below; see perspectivecamera.jsx.
   createEffect( () => {
     setCamera( cam );
     // I don't know why this is necessary... I guess a camera is not added automatically
     scene .add( cam );
     onCleanup( () => scene .remove( cam ) );
   } );
+
+  createEffect( () => {
+    const [ x, y, z ] = perspectiveProps .target;
+    cam .lookAt( x * globalScale, y * globalScale, z * globalScale );
+  });
 
   return (
     <T.OrthographicCamera ref={cam} position={perspectiveProps .position.map( e => e * globalScale )} up={perspectiveProps .up} >

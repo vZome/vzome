@@ -1,11 +1,11 @@
 
-import { Color, Scene, Group, Mesh, AmbientLight, DirectionalLight, WebGLRenderer } from "three";
+import { Color, Scene, Group, Mesh, AmbientLight, DirectionalLight, WebGLRenderer, Quaternion } from "three";
 import { WebGPURenderer } from 'three/webgpu';
 import { createEffect, createRenderEffect, createResource, createSignal, mergeProps, onCleanup, For, Show, Suspense } from "solid-js";
 import { createElementSize } from "@solid-primitives/resize-observer";
 
 import { Dynamic } from "solid-js/web";
-import { Canvas, createT, createXR, useFrame } from 'solid-three';
+import { Canvas, createT, createXR, useFrame, useThree } from 'solid-three';
 const T = createT({ Group, Mesh, AmbientLight, DirectionalLight });
 
 import { TrackballControls } from "./trackballcontrols.jsx";
@@ -18,18 +18,33 @@ import { useViewer } from "./context/viewer.jsx";
 import { WebXRSupport, useWebXRClient } from "./context/webxr.jsx";
 import { createCameraTrackball } from "./cameratrackball.js";
 
+// The lights follow the camera, but they are NOT its children: toggling perspective swaps in a new
+//  camera, and lights recreated with it would get new ids, which changes three's lights cache key
+//  and forces a rebuild of every lit node material (over a second of shader work).  Instead this
+//  one rig lives for the life of the canvas, and matches the current camera's orientation every frame.
+//  Only orientation matters, since the lights are directional (and ambient).
 const Lighting = () =>
 {
-  const { state, perspectiveProps } = useCamera();
+  const { state } = useCamera();
+  const three = useThree();
   // Adopting changes as required by https://discourse.threejs.org/t/updates-to-color-management-in-three-js-r152/50791
   //   and https://discourse.threejs.org/t/updates-to-lighting-in-three-js-r155/53733
   const mapColor = color => new Color() .setStyle( color ) .multiplyScalar( Math.PI );
-  useFrame( ({scene}) => { scene.background = new Color() .setStyle( state.lighting.backgroundColor ) } ); // NOT converting to Linear!
-  let centerObject;
+  let rig, centerObject;
+  const parentQuaternion = new Quaternion();
+  useFrame( ({scene}) => {
+    scene.background = new Color() .setStyle( state.lighting.backgroundColor ); // NOT converting to Linear!
+    if ( ! rig ?.parent ) return;
+    // This sets the rig's local orientation to make its WORLD orientation match the camera's, so it
+    //  doesn't depend on where the rig is parented (currently the scene itself; see LightedTrackballCanvas).
+    //  three.camera is a live getter; read it fresh each frame.
+    rig.parent .getWorldQuaternion( parentQuaternion ) .invert();
+    three.camera .getWorldQuaternion( rig.quaternion ) .premultiply( parentQuaternion );
+  } );
   // The ambientLight has to be "invisible" so we don't get an empty node in glTF export.
 
   return (
-    <T.Group position={perspectiveProps.position} up={perspectiveProps.up} target={perspectiveProps.target}>
+    <T.Group ref={rig}>
       <T.Mesh ref={centerObject} visible={false} />
       <T.AmbientLight color={mapColor( state.lighting.ambientColor )} />
       <For each={state.lighting.directionalLights}>{ ( { direction, color } ) =>
@@ -207,13 +222,12 @@ export const LightedTrackballCanvas = ( props ) =>
               display: 'flex',
             }}
             frameloop="always" >
+          {/* Outside WebXRSupport, so the lights are a direct child of the scene: the glTF and VRML
+              viewers' setRootScene() clears everything inside WebXRSupport's originGroup. */}
+          <Lighting />
           <WebXRSupport xrSupported={xrSupported}>
 
-            { /* This should add the camera to the scene so that the lights move with the camera,
-                  but it apparently does not. */ }
-            <ControlledCamera aspect={aspect()} >
-              <Lighting />
-            </ControlledCamera>
+            <ControlledCamera aspect={aspect()} />
 
             <TrackballControls rotationOnly={props.rotationOnly}
               rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed} />
