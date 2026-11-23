@@ -26,7 +26,7 @@ const SceneCanvas = ( props ) =>
       <LightedTrackballCanvas
           height={props.height} width={props.width} rotationOnly={props.rotationOnly} hints={props.hints}
           rotateSpeed={props.rotateSpeed} zoomSpeed={props.zoomSpeed} panSpeed={props.panSpeed}
-          useWebGL={useWebGL()} symmetryRenderer={useSymmetry()} >
+          useWebGL={useWebGL()} symmetryRenderer={useSymmetry()} allowAR={props.allowAR} >
         <Show when={ () => props.scene?.shapes }>
           { useSymmetry()
             ? <SymmetryGeometry embedding={scene?.embedding} shapes={scene?.shapes} orientations={scene?.orientations} polygons={scene?.polygons} symmetryId={scene?.symmetryId} />

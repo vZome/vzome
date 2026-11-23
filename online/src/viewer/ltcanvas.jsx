@@ -140,6 +140,8 @@ export const LightedTrackballCanvas = ( props ) =>
 
   const xr = createXR();
   const [xrSupported] = createResource( () => xr.isSupported( 'immersive-ar' ) );
+  // allowAR defaults on; false hides "START AR" even where the browser supports it
+  const arOffered = () => props.allowAR !== false && xrSupported();
 
   // connectRef captures the canvas DOM element (via ctx.gl.domElement) and wires createXR.
   // Canvas must be rendered inside <xr.Provider> (not pre-assigned) so that useXR() in
@@ -225,7 +227,7 @@ export const LightedTrackballCanvas = ( props ) =>
           {/* Outside WebXRSupport, so the lights are a direct child of the scene: the glTF and VRML
               viewers' setRootScene() clears everything inside WebXRSupport's originGroup. */}
           <Lighting />
-          <WebXRSupport xrSupported={xrSupported}>
+          <WebXRSupport xrSupported={arOffered}>
 
             <ControlledCamera aspect={aspect()} />
 
@@ -250,7 +252,7 @@ export const LightedTrackballCanvas = ( props ) =>
           <HintPanel hint={ surface.hint() } />
         </Show>
         <Suspense>
-          <Show when={xrSupported()}>
+          <Show when={arOffered()}>
             <button
               style={{
                 position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
