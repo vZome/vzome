@@ -87,7 +87,7 @@ const SceneViewer = ( props ) =>
             external-mesh viewers were built for.
           */}
           <Show when={scene} fallback={props.children}>
-            <SceneCanvas symmetryRenderer={useSymmetryRenderer()} id='scene-canvas' height={props.height} width={props.width} >
+            <SceneCanvas symmetryRenderer={useSymmetryRenderer()} allowAR={dynConfig().allowAR} id='scene-canvas' height={props.height} width={props.width} >
               {props.children3d}
             </SceneCanvas>
           </Show>

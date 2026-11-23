@@ -79,11 +79,14 @@ export const ZometoolInstructions = props =>
   // As for vzome-viewer's download, only "true" counts as true; the default (no attribute) allows it.
   const downloadAllowed = () => ( props.download?.() ?? 'true' ) === 'true';
   const fullScreenAllowed = () => ( props.fullScreen?.() ?? 'true' ) === 'true';
+  // Unlike the others, AR is opt-in: only ar="true" offers it, where the browser supports it
+  const arAllowed = () => props.ar?.() === 'true';
   const dynConfig = () => mergeProps( {
     useSpinner: false,
     showSettings: true, showOutlines: true },
     props.config, {
     allowFullViewport: fullScreenAllowed(),
+    allowAR: arAllowed(),
     showScenes: steps()? 'indexed' : 'managed',
     download: downloadAllowed() && !steps(), // never offered while showing steps
   } );
@@ -233,6 +236,8 @@ class ZometoolInstructionsElement extends HTMLElement
   #setDownload;
   #fullScreen;
   #setFullScreen;
+  #ar;
+  #setAr;
   #stepRequest;
   #setStepRequest;
   #step = null;
@@ -248,6 +253,7 @@ class ZometoolInstructionsElement extends HTMLElement
     [ this.#controls, this.#setControls ] = createSignal( null );
     [ this.#download, this.#setDownload ] = createSignal( null );
     [ this.#fullScreen, this.#setFullScreen ] = createSignal( null );
+    [ this.#ar, this.#setAr ] = createSignal( null );
     // Not deduplicated, so that requesting the same step again still shows it, if it has changed since
     [ this.#stepRequest, this.#setStepRequest ] = createSignal( undefined, { equals: false } );
     const root = this.attachShadow({ mode: "open" });
@@ -275,6 +281,7 @@ class ZometoolInstructionsElement extends HTMLElement
       controls: this.#controls,
       download: this.#download,
       fullScreen: this.#fullScreen,
+      ar: this.#ar,
       stepRequest: this.#stepRequest,
       onStepShown: ( step, stepCount ) => {
         this.#step = step;
@@ -286,7 +293,7 @@ class ZometoolInstructionsElement extends HTMLElement
 
   static get observedAttributes()
   {
-    return [ "src", "module", "background-color", "metadata", "revision", "steps-label", "design-label", "controls", "download", "full-screen" ];
+    return [ "src", "module", "background-color", "metadata", "revision", "steps-label", "design-label", "controls", "download", "full-screen", "ar" ];
   }
 
   // This callback can happen *before* connectedCallback()!
@@ -329,6 +336,10 @@ class ZometoolInstructionsElement extends HTMLElement
 
     case "full-screen":
       this.#setFullScreen( _newValue );
+      break;
+
+    case "ar":
+      this.#setAr( _newValue );
       break;
 
     case "controls":
@@ -381,6 +392,20 @@ class ZometoolInstructionsElement extends HTMLElement
   get fullScreen()
   {
     return this.getAttribute( "full-screen" );
+  }
+
+  set ar( newValue )
+  {
+    if ( newValue === null ) {
+      this.removeAttribute( "ar" );
+    } else {
+      this.setAttribute( "ar", newValue );
+    }
+  }
+
+  get ar()
+  {
+    return this.getAttribute( "ar" );
   }
 
   // The step API, for page-supplied controls: a number from 1 to stepCount shows that step,
